@@ -707,7 +707,7 @@ app.post("/api/videos/:id/post-now", async (req, reply) => {
 // ---- Generators / Studio (per-user used counter) ----
 app.get("/api/generators", async (req) => {
   const used = db.usedAnecdoteKeys(uid(req));
-  return DECKS.map((d) => {
+  const base = DECKS.map((d) => {
     const s = libraryStats(d.id, used);
     return {
       id: d.id,
@@ -724,6 +724,25 @@ app.get("/api/generators", async (req) => {
       untitledTotal: s.untitledTotal,
     };
   });
+  // Psychology cards (DE) — standalone generator (preview-only; not a deck-pipeline language).
+  const psychCount = listPsychCards().length;
+  if (psychCount > 0) {
+    base.push({
+      id: "psych",
+      name: "Psychologie (DE)",
+      ai: true,
+      total: psychCount,
+      titled: psychCount,
+      used: 0,
+      available: psychCount,
+      packs: 1,
+      range: [0, 0],
+      readyPacks: [],
+      untitledPacks: 0,
+      untitledTotal: 0,
+    });
+  }
+  return base;
 });
 
 let previewCounter = 0;
