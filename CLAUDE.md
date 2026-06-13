@@ -73,8 +73,10 @@ unattended, managed from a web dashboard. Spec: `ТЗ.pdf`. Architecture & resea
   лежит в titled.json и протянут через `pipeline.ts` + 4 точки `server/index.ts`. Фронт деко-агностичен
   (язык `tips` в `LANGS`, генераторы из `/api/generators`). Перегенерация — повторный Haiku-воркфлоу
   (правило: лайфхаки → Haiku). Тесты: `src/scripts/render-lifehack-test.ts`, `src/scripts/tips-e2e.ts`.
-- **Немецкие лайфхаки (дека `tips-de`, «Deutsche Lifehacks»):** 1319 советов, та же структура и
-  **общие фоны** `profession_<key>.jpg` (ключи англ.), сборка `src/anecdotes/build-tips-de.ts`
+- **Немецкие лайфхаки (дека `tips-de`, «Deutsche Lifehacks»):** 1319 советов, та же структура.
+  Фоны — усатый вариант `profession_<key>_chaplin.jpg` (поле `lifehackVariant: "chaplin"` в `decks.ts`;
+  русская `tips` — без усов, `profession_<key>.jpg`); `lifehackBgFile(profession, variant)` в `render.ts`.
+  Ключи англ. Сборка `src/anecdotes/build-tips-de.ts`
   (длина 300–500; `parseItems` чинит немецкие кавычки `„…"` с прямой `"`). Любая lifehack-дека
   помечается `lifehack: true` в `decks.ts` → один диспетч на все. Серверных правок не нужно.
 - **Статистика каналов (вкладка `/statistics`, видна ВСЕМ юзерам):** снимки YouTube-метрик во времени.

@@ -11,6 +11,9 @@ export interface Deck {
   genericTitles: string[]; // fallback headings when an anecdote has no title yet
   /** When true, render via the lifehack (profession) layout instead of the anecdote card. */
   lifehack?: boolean;
+  /** Lifehack background style suffix, e.g. "chaplin" → profession_<key>_chaplin.jpg (with moustache).
+   *  Omitted → the plain profession_<key>.jpg (no moustache). */
+  lifehackVariant?: string;
 }
 
 export const DECKS: Deck[] = [
@@ -75,6 +78,7 @@ export const DECKS: Deck[] = [
     tags: ["lifehacks", "tipps", "alltagstipps", "lifehack", "haushalt", "tricks", "shorts"],
     genericTitles: ["Lifehack", "Nützlicher Tipp", "Gut zu wissen", "Profi-Trick", "Tipp des Tages", "Merk dir das"],
     lifehack: true,
+    lifehackVariant: "chaplin", // мужчины с усами Чаплина (немецкая дека)
   },
 ];
 
