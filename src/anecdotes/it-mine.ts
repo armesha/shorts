@@ -40,20 +40,25 @@ function main() {
   const maxFiles = rest[0] ?? 70;
   const chunk = rest[1] ?? 50;
   const cap = maxFiles * chunk;
-  const step = Math.max(1, Math.floor(pool.length / cap));
-  const picked = pool.filter((_, i) => i % step === 0).slice(0, cap);
+  // step>=2 so two runs with IT_OFFSET 0 and 1 pick DISJOINT slices (top-up without re-cleaning).
+  const offset = Number(process.env.IT_OFFSET ?? 0);
+  const start = Number(process.env.IT_START ?? 1); // first cand file number (append, don't clobber)
+  const append = process.argv.includes("--append");
+  const step = Math.max(2, Math.floor(pool.length / cap));
+  const picked = pool.filter((_, i) => i % step === offset % step).slice(0, cap);
 
-  if (existsSync(GEN_DIR)) rmSync(GEN_DIR, { recursive: true, force: true });
+  if (!append && existsSync(GEN_DIR)) rmSync(GEN_DIR, { recursive: true, force: true });
   mkdirSync(GEN_DIR, { recursive: true });
   let files = 0;
   for (let i = 0; i < picked.length; i += chunk) {
-    files++;
     writeFileSync(
-      resolve(GEN_DIR, `cand-${String(files).padStart(3, "0")}.json`),
+      resolve(GEN_DIR, `cand-${String(start + files).padStart(3, "0")}.json`),
       JSON.stringify(picked.slice(i, i + chunk), null, 1),
     );
+    files++;
   }
-  console.log(`=== EMITTED ${picked.length} candidates into ${files} file(s) at ${GEN_DIR} ===`);
+  const from = String(start).padStart(3, "0");
+  console.log(`=== EMITTED ${picked.length} candidates (offset ${offset}, step ${step}) into ${files} file(s) [cand-${from}..] ===`);
 }
 
 main();
