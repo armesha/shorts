@@ -174,13 +174,20 @@ async function buildLibraryVideo(input: {
 app.post("/api/videos", async (req, reply) => {
   const body = (req.body as { accountId?: number; text?: string; title?: string; bg?: string; music?: string; deck?: string }) ?? {};
   if (!body.accountId || !body.text) return reply.code(400).send({ error: "accountId и text обязательны" });
+  const acc = db.getAccount(body.accountId);
+  if (!acc) return reply.code(404).send({ error: "Канал не найден" });
+  const channelDeck = DECKS.find((d) => d.id === acc.lang);
+  if (!channelDeck)
+    return reply.code(400).send({ error: `У канала язык «${acc.lang}» без пака — смените язык канала.` });
+  if ((body.deck || channelDeck.id) !== channelDeck.id)
+    return reply.code(400).send({ error: `Язык ролика не совпадает с языком канала (${channelDeck.name}) — не сохранено.` });
   return buildLibraryVideo({
     accountId: body.accountId,
     text: body.text,
     title: body.title,
     bg: body.bg,
     music: body.music,
-    deck: body.deck,
+    deck: channelDeck.id, // forced to the channel's language
   });
 });
 
@@ -188,7 +195,12 @@ app.post("/api/videos", async (req, reply) => {
 app.post("/api/videos/batch", async (req, reply) => {
   const body = (req.body as { accountId?: number; count?: number; bg?: string; music?: string; deck?: string }) ?? {};
   if (!body.accountId) return reply.code(400).send({ error: "accountId обязателен" });
-  const deckId = getDeck(body.deck).id;
+  const acc = db.getAccount(body.accountId);
+  if (!acc) return reply.code(404).send({ error: "Канал не найден" });
+  const channelDeck = DECKS.find((d) => d.id === acc.lang);
+  if (!channelDeck)
+    return reply.code(400).send({ error: `У канала язык «${acc.lang}» без пака — смените язык канала.` });
+  const deckId = channelDeck.id; // FORCE the channel's language — no cross-language mixing
   const requested = Math.max(1, Math.min(20, Number(body.count) || 5));
   const seen = new Set<string>(db.usedAnecdoteKeys()); // exclude already-used + dedupe within this batch
   const created: unknown[] = [];
@@ -220,6 +232,10 @@ app.post("/api/videos/:id/post-now", async (req, reply) => {
   if (!v) return reply.code(404).send({ error: "not found" });
   const token = db.getRefreshToken(v.accountId);
   if (!token) return reply.code(400).send({ error: "Канал не подключён к YouTube" });
+  // HARD language guard: never post a video whose language differs from the channel's.
+  const pacc = db.getAccount(v.accountId);
+  if (pacc && DECKS.some((d) => d.id === pacc.lang) && v.deck !== pacc.lang)
+    return reply.code(400).send({ error: `Язык ролика (${v.deck}) ≠ язык канала (${pacc.lang}) — не выложено.` });
   // Optional publishAt (RFC3339) → scheduled (private until then); empty → publish now.
   const publishAt = ((req.body as { publishAt?: string })?.publishAt || "").trim() || null;
   try {

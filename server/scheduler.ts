@@ -2,7 +2,7 @@ import { resolve } from "node:path";
 import { unlinkSync } from "node:fs";
 import cron from "node-cron";
 import type { Db, Video } from "./db.ts";
-import { getDeck, ytMeta } from "../src/anecdotes/decks.ts";
+import { DECKS, ytMeta } from "../src/anecdotes/decks.ts";
 import { uploadShort } from "./youtube.ts";
 
 /** Delete a posted video's rendered files (best-effort). */
@@ -52,17 +52,25 @@ export function startScheduler(opts: SchedulerOpts) {
       try {
         opts.log(`[sched] account ${acc.id} (${acc.channelName}) firing at ${hhmm}`);
 
-        // Post-once queue: a pinned video (if still present & unposted), else the next unposted
-        // library video. Each posts ONCE then is removed — no rotation, no auto-generation.
+        // HARD language guard: a channel only ever posts videos in its OWN content language
+        // (acc.lang) — a Russian video can never go to an Italian/German channel, etc.
+        const channelDeck = DECKS.find((d) => d.id === acc.lang);
+        if (!channelDeck) {
+          opts.log(`[sched] account ${acc.id}: язык «${acc.lang}» без пака — пропуск`);
+          continue;
+        }
+        // Post-once queue: a pinned video (if present, unposted & same language), else the next
+        // unposted video IN THE CHANNEL'S LANGUAGE. Each posts ONCE then is removed.
         const pinnedId = acc.slotVideos?.[hhmm];
         const pinned = pinnedId ? opts.db.getVideo(pinnedId) : null;
         const lib =
-          (pinned && pinned.postCount === 0 ? pinned : null) ?? opts.db.nextUnpostedVideo(acc.id);
+          (pinned && pinned.postCount === 0 && pinned.deck === channelDeck.id ? pinned : null) ??
+          opts.db.nextUnpostedVideo(acc.id, channelDeck.id);
         if (!lib) {
-          opts.log(`[sched] account ${acc.id}: library empty — nothing to post`);
+          opts.log(`[sched] account ${acc.id}: нет роликов на языке «${channelDeck.id}» — нечего постить`);
           continue;
         }
-        const meta = ytMeta(getDeck(lib.deck), lib.title, lib.text);
+        const meta = ytMeta(channelDeck, lib.title, lib.text);
         const videoId = await uploadShort(opts.credsPath(), opts.redirectUri, token, {
           videoPath: resolve(opts.outputDir, lib.videoRel),
           title: meta.title,

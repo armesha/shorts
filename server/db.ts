@@ -254,11 +254,19 @@ export function openDb(path: string) {
         .get(accountId) as Row | undefined;
       return r ? rowToVideo(r) : null;
     },
-    // Next never-posted video (FIFO) — for the post-once queue (each video uploaded exactly once).
-    nextUnpostedVideo(accountId: number): Video | null {
-      const r = db
-        .prepare("SELECT * FROM videos WHERE account_id = ? AND post_count = 0 ORDER BY id ASC LIMIT 1")
-        .get(accountId) as Row | undefined;
+    // Next never-posted video (FIFO) for the post-once queue, optionally restricted to a deck/language.
+    nextUnpostedVideo(accountId: number, deck?: string): Video | null {
+      const r = (
+        deck
+          ? db
+              .prepare(
+                "SELECT * FROM videos WHERE account_id = ? AND post_count = 0 AND deck = ? ORDER BY id ASC LIMIT 1",
+              )
+              .get(accountId, deck)
+          : db
+              .prepare("SELECT * FROM videos WHERE account_id = ? AND post_count = 0 ORDER BY id ASC LIMIT 1")
+              .get(accountId)
+      ) as Row | undefined;
       return r ? rowToVideo(r) : null;
     },
     listHistory(): HistoryItem[] {

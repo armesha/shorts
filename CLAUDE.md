@@ -4,6 +4,9 @@ Automated YouTube Shorts pipeline: LLM generates "N facts" content → fills a t
 1080×1920 image → 5–6s vertical video → scheduled upload to multiple YouTube channels,
 unattended, managed from a web dashboard. Spec: `ТЗ.pdf`. Architecture & research: `docs/STACK.md`.
 
+## Язык общения (MANDATORY)
+- Отвечай пользователю **ТОЛЬКО на русском** (always reply to the user in Russian), независимо от языка кода, логов и т.п.
+
 ## 🔒 Security rules (MANDATORY)
 - **NEVER read, cat, open, print, grep, or otherwise access** the Google OAuth client-secret file:
   `/home/davtian/Documents/shorts/client_secret_735991879461-lcvblrn3co3hlrrqi1ljvik2ih68oarp.apps.googleusercontent.com.json`

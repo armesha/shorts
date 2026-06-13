@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
 import { ArrowLeft, Save, Trash2, Check, Plus, Upload, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { apiClient, type Account, type VideoItem, type Generator } from "../lib/api";
-import { useDeck } from "../lib/deck";
 
 const LANGS: [string, string][] = [
   ["de", "Немецкий"],
@@ -34,9 +33,9 @@ export default function AccountDetail() {
   const [posting, setPosting] = useState<number | null>(null);
   const [slotVideos, setSlotVideos] = useState<Record<string, number>>({});
   const [lastPosted, setLastPosted] = useState<{ title: string; url: string } | null>(null);
+  const [preview, setPreview] = useState<VideoItem | null>(null);
   const [batching, setBatching] = useState<number | null>(null);
   const [page, setPage] = useState(1);
-  const [deck, setDeck] = useDeck();
   const [gens, setGens] = useState<Generator[]>([]);
 
   const reloadVideos = () => apiClient.videos(id!).then(setVideos).catch(() => {});
@@ -110,7 +109,7 @@ export default function AccountDetail() {
   async function makeBatch(n: number) {
     setBatching(n);
     try {
-      const r = await apiClient.batchVideos(Number(id), n, deck);
+      const r = await apiClient.batchVideos(Number(id), n);
       await reloadVideos();
       if (r.exhausted)
         alert(`Сделано ${r.made} из ${n} — свободные (неиспользованные) анекдоты закончились.`);
@@ -324,59 +323,50 @@ export default function AccountDetail() {
 
       <section className="card bg-base-100 border border-base-300">
         <div className="card-body">
-          <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
             <h2 className="card-title text-base">Библиотека роликов ({videos.length})</h2>
-            <div className="flex items-center gap-2 flex-wrap">
-              <select
-                className="select select-bordered select-sm"
-                value={deck}
-                onChange={(e) => setDeck(e.target.value)}
-                title="Пак анекдотов для генерации"
-              >
-                {gens.length === 0 && <option value={deck}>пак…</option>}
-                {gens.filter((x) => x.total > 0).map((x) => (
-                  <option key={x.id} value={x.id}>
-                    {x.name}
-                  </option>
-                ))}
-              </select>
-              <span className="text-sm text-base-content/60">Сделать сразу:</span>
+            <select
+              className="select select-bordered select-sm"
+              value={sort}
+              onChange={(e) => setSort(e.target.value as "date" | "title" | "posts")}
+            >
+              <option value="date">сначала новые</option>
+              <option value="title">по названию</option>
+              <option value="posts">по числу выкладок</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-base-300">
+            <span className="text-sm text-base-content/70">
+              Пак: <b>{gens.find((g) => g.id === account.lang)?.name ?? account.lang}</b>{" "}
+              <span className="text-base-content/40">(по языку канала)</span>
+            </span>
+            <span className="text-sm text-base-content/70 ml-1">Сделать сразу:</span>
+            <button
+              className="btn btn-sm btn-outline gap-1"
+              onClick={() => makeBatch(5)}
+              disabled={batching !== null}
+              title="Сгенерировать 5 случайных роликов в библиотеку"
+            >
+              {batching === 5 ? <Loader2 className="animate-spin" size={14} /> : <Plus size={14} />}5
+            </button>
+            <button
+              className="btn btn-sm btn-outline gap-1"
+              onClick={() => makeBatch(10)}
+              disabled={batching !== null}
+              title="Сгенерировать 10 случайных роликов в библиотеку"
+            >
+              {batching === 10 ? <Loader2 className="animate-spin" size={14} /> : <Plus size={14} />}10
+            </button>
+            {postedTwicePlus > 0 && (
               <button
-                className="btn btn-xs btn-outline gap-1"
-                onClick={() => makeBatch(5)}
+                className="btn btn-sm btn-ghost text-error gap-1 ml-auto"
+                onClick={removePosted}
                 disabled={batching !== null}
-                title="Сгенерировать 5 случайных роликов в библиотеку"
+                title="Удалить ролики, которые выкладывались больше одного раза"
               >
-                {batching === 5 ? <Loader2 className="animate-spin" size={12} /> : <Plus size={12} />}5
+                <Trash2 size={14} /> вылож. ≥2× ({postedTwicePlus})
               </button>
-              <button
-                className="btn btn-xs btn-outline gap-1"
-                onClick={() => makeBatch(10)}
-                disabled={batching !== null}
-                title="Сгенерировать 10 случайных роликов в библиотеку"
-              >
-                {batching === 10 ? <Loader2 className="animate-spin" size={12} /> : <Plus size={12} />}10
-              </button>
-              {postedTwicePlus > 0 && (
-                <button
-                  className="btn btn-xs btn-ghost text-error gap-1"
-                  onClick={removePosted}
-                  disabled={batching !== null}
-                  title="Удалить ролики, которые выкладывались больше одного раза"
-                >
-                  <Trash2 size={12} /> вылож. ≥2× ({postedTwicePlus})
-                </button>
-              )}
-              <select
-                className="select select-bordered select-sm"
-                value={sort}
-                onChange={(e) => setSort(e.target.value as "date" | "title" | "posts")}
-              >
-                <option value="date">сначала новые</option>
-                <option value="title">по названию</option>
-                <option value="posts">по числу выкладок</option>
-              </select>
-            </div>
+            )}
           </div>
           {batching !== null && (
             <div className="text-xs text-base-content/60 mt-1 flex items-center gap-1">
@@ -403,18 +393,24 @@ export default function AccountDetail() {
               {pageVideos.map((v) => (
                 <div key={v.id} className="border border-base-300 rounded-lg p-2 flex flex-col gap-2">
                   <div className="flex gap-3 items-center">
-                    {v.imageRel && (
-                      <img src={`/files/${v.imageRel}`} alt="" className="w-11 h-20 object-cover rounded shrink-0" />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate">{v.title}</div>
-                      <div className="text-xs text-base-content/60 mt-1 flex items-center gap-1 flex-wrap">
-                        {v.postCount > 0 ? (
-                          <span className="badge badge-success badge-sm">x{v.postCount}</span>
-                        ) : (
-                          <span className="badge badge-ghost badge-sm">не выкладывался</span>
-                        )}
-                        {v.lastPostedAt && <span>· {new Date(v.lastPostedAt).toLocaleDateString()}</span>}
+                    <div
+                      className="flex gap-3 items-center flex-1 min-w-0 cursor-pointer hover:opacity-80"
+                      onClick={() => setPreview(v)}
+                      title="Открыть превью"
+                    >
+                      {v.imageRel && (
+                        <img src={`/files/${v.imageRel}`} alt="" className="w-11 h-20 object-cover rounded shrink-0" />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium truncate">{v.title}</div>
+                        <div className="text-xs text-base-content/60 mt-1 flex items-center gap-1 flex-wrap">
+                          {v.postCount > 0 ? (
+                            <span className="badge badge-success badge-sm">x{v.postCount}</span>
+                          ) : (
+                            <span className="badge badge-ghost badge-sm">не выкладывался</span>
+                          )}
+                          {v.lastPostedAt && <span>· {new Date(v.lastPostedAt).toLocaleDateString()}</span>}
+                        </div>
                       </div>
                     </div>
                     <button
@@ -464,6 +460,52 @@ export default function AccountDetail() {
           )}
         </div>
       </section>
+
+      {preview && (
+        <div className="modal modal-open" onClick={() => setPreview(null)}>
+          <div className="modal-box max-w-lg" onClick={(e) => e.stopPropagation()}>
+            <h3 className="font-bold text-lg mb-3">{preview.title}</h3>
+            <div className="flex gap-4">
+              <video
+                src={`/files/${preview.videoRel}`}
+                className="w-40 rounded-lg border border-base-300 shrink-0"
+                controls
+                autoPlay
+                loop
+                muted
+              />
+              <div className="flex-1 min-w-0 text-sm space-y-2">
+                <p className="whitespace-pre-wrap leading-relaxed">{preview.text}</p>
+                <div className="text-xs text-base-content/50">
+                  {preview.text.length} симв. · фон {preview.bg || "—"}
+                  {preview.music && preview.music !== "none"
+                    ? ` · 🎵 ${preview.music.split("/").pop()?.replace(/\.\w+$/, "")}`
+                    : " · 🔇 без музыки"}
+                </div>
+              </div>
+            </div>
+            <div className="modal-action">
+              <a href={`/files/${preview.videoRel}`} download className="btn btn-sm btn-ghost">
+                Скачать MP4
+              </a>
+              <button className="btn btn-sm" onClick={() => setPreview(null)}>
+                Закрыть
+              </button>
+              <button
+                className="btn btn-sm btn-primary gap-1"
+                disabled={account.status !== "connected" || posting === preview.id}
+                onClick={() => {
+                  const pid = preview.id;
+                  setPreview(null);
+                  postNow(pid);
+                }}
+              >
+                <Upload size={14} /> Выложить сейчас
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {times.length > 0 && videos.length > 0 && (
         <section className="card bg-base-100 border border-base-300">

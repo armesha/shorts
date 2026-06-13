@@ -32,14 +32,14 @@ export default function Studio() {
     apiClient.generators().then(setGens).catch(() => {});
     apiClient.backgrounds().then(setBgs).catch(() => {});
     apiClient.music().then(setMusicList).catch(() => {});
-    apiClient
-      .accounts()
-      .then((a) => {
-        setAccounts(a);
-        if (a[0]) setChannelId(String(a[0].id));
-      })
-      .catch(() => {});
+    apiClient.accounts().then(setAccounts).catch(() => {});
   }, []);
+
+  // Keep the save-target channel matching the selected pack's language (hard language guard).
+  useEffect(() => {
+    const match = accounts.find((a) => a.lang === deck);
+    setChannelId(match ? String(match.id) : "");
+  }, [deck, accounts]);
 
   async function saveToLibrary() {
     if (!preview || !channelId) return;
@@ -245,8 +245,10 @@ export default function Studio() {
                     value={channelId}
                     onChange={(e) => setChannelId(e.target.value)}
                   >
-                    {accounts.length === 0 && <option value="">нет каналов</option>}
-                    {accounts.map((a) => (
+                    {accounts.filter((a) => a.lang === deck).length === 0 && (
+                      <option value="">нет каналов на этом языке</option>
+                    )}
+                    {accounts.filter((a) => a.lang === deck).map((a) => (
                       <option key={a.id} value={a.id}>
                         {a.channelName}
                       </option>
