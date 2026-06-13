@@ -38,6 +38,8 @@
 - **`npm run share`** — публичная HTTPS-ссылка через бесплатный **cloudflared**-туннель (без домена и
   без аккаунта). `scripts/tunnel.mjs` сам качает cloudflared (кросс-платформенно, в `node_modules/.cache`),
   собирает фронт, поднимает сервер и печатает ссылку для друзей.
+- **`scripts/set-password.ts`** — сброс пароля пользователя прямо в БД (CLI), пока нет UI смены пароля:
+  `node --import tsx --experimental-sqlite scripts/set-password.ts <логин> <пароль>`.
 
 ### Изменено
 - Планировщик: ротация/автогенерация → очередь «один раз».
