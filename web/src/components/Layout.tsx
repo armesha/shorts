@@ -1,14 +1,16 @@
 import type { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
-import { Tv, History, Settings, Clapperboard, Sparkles, BarChart3, LogOut } from "lucide-react";
+import { Tv, History, Settings, Clapperboard, Sparkles, BarChart3, Bug, LogOut, type LucideIcon } from "lucide-react";
 import { useAuth } from "../lib/auth";
 
-const NAV = [
+type NavItem = { to: string; label: string; icon: LucideIcon; end: boolean; adminOnly?: boolean };
+const NAV: NavItem[] = [
   { to: "/", label: "Каналы", icon: Tv, end: true },
   { to: "/studio", label: "Студия", icon: Sparkles, end: false },
   { to: "/history", label: "История", icon: History, end: false },
   { to: "/statistics", label: "Статистика", icon: BarChart3, end: false },
   { to: "/settings", label: "Настройки", icon: Settings, end: false },
+  { to: "/errors", label: "Ошибки", icon: Bug, end: false, adminOnly: true },
 ];
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -22,7 +24,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         </div>
         <nav className="p-3 flex-1">
           <ul className="menu gap-1 w-full">
-            {NAV.map(({ to, label, icon: Icon, end }) => (
+            {NAV.filter((n) => !n.adminOnly || user?.role === "admin").map(({ to, label, icon: Icon, end }) => (
               <li key={to}>
                 <NavLink
                   to={to}

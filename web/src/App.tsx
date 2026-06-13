@@ -5,6 +5,7 @@ import Accounts from "./pages/Accounts";
 import AccountDetail from "./pages/AccountDetail";
 import History from "./pages/History";
 import Statistics from "./pages/Statistics";
+import Errors from "./pages/Errors";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import { AuthProvider, useAuth } from "./lib/auth";
@@ -27,6 +28,7 @@ function Gate() {
         <Route path="/accounts/:id" element={<AccountDetail />} />
         <Route path="/history" element={<History />} />
         <Route path="/statistics" element={<Statistics />} />
+        <Route path="/errors" element={<Errors />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

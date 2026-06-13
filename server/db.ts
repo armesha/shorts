@@ -63,6 +63,18 @@ export interface ChannelSnapshot {
   takenAt: string;
 }
 
+/** One logged error (server-side crash or client-reported), shown on the admin Errors page. */
+export interface ErrorLogItem {
+  id: number;
+  source: string; // 'server' | 'client'
+  level: string; // 'error' | 'warn'
+  message: string;
+  detail: string | null; // stack / extra
+  context: string | null; // route, page url, accountId…
+  userId: number | null;
+  createdAt: string;
+}
+
 type Row = Record<string, any>;
 
 const rowToAccount = (r: Row): Account => ({
@@ -114,6 +126,17 @@ const rowToSnapshot = (r: Row): ChannelSnapshot => ({
   views: Number(r.views) || 0,
   videos: Number(r.videos) || 0,
   takenAt: r.taken_at,
+});
+
+const rowToError = (r: Row): ErrorLogItem => ({
+  id: r.id,
+  source: r.source,
+  level: r.level,
+  message: r.message,
+  detail: r.detail ?? null,
+  context: r.context ?? null,
+  userId: r.user_id ?? null,
+  createdAt: r.created_at,
 });
 
 export function openDb(path: string) {
@@ -194,6 +217,16 @@ export function openDb(path: string) {
       views INTEGER NOT NULL DEFAULT 0,
       videos INTEGER NOT NULL DEFAULT 0,
       taken_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE TABLE IF NOT EXISTS error_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      source TEXT NOT NULL DEFAULT 'server',
+      level TEXT NOT NULL DEFAULT 'error',
+      message TEXT NOT NULL,
+      detail TEXT,
+      context TEXT,
+      user_id INTEGER,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
   `);
 
@@ -522,6 +555,42 @@ export function openDb(path: string) {
         )
         .all(accountId, limit) as Row[];
       return rows.map(rowToSnapshot);
+    },
+    // ---- Error log (self-cleaning: keeps last 7 days, capped at 1000 rows) ----
+    addError(e: {
+      source?: string;
+      level?: string;
+      message: string;
+      detail?: string | null;
+      context?: string | null;
+      userId?: number | null;
+    }): void {
+      db.prepare(
+        "INSERT INTO error_log (source, level, message, detail, context, user_id) VALUES (?,?,?,?,?,?)",
+      ).run(
+        e.source ?? "server",
+        e.level ?? "error",
+        String(e.message).slice(0, 2000),
+        e.detail ? String(e.detail).slice(0, 8000) : null,
+        e.context ? String(e.context).slice(0, 500) : null,
+        e.userId ?? null,
+      );
+      db.prepare("DELETE FROM error_log WHERE created_at < datetime('now','-7 days')").run();
+      db.prepare(
+        "DELETE FROM error_log WHERE id NOT IN (SELECT id FROM error_log ORDER BY id DESC LIMIT 1000)",
+      ).run();
+    },
+    listErrors(limit = 200): ErrorLogItem[] {
+      return (db.prepare("SELECT * FROM error_log ORDER BY id DESC LIMIT ?").all(limit) as Row[]).map(
+        rowToError,
+      );
+    },
+    errorCount(): number {
+      const r = db.prepare("SELECT COUNT(*) AS n FROM error_log").get() as Row;
+      return Number(r.n) || 0;
+    },
+    clearErrors(): void {
+      db.prepare("DELETE FROM error_log").run();
     },
   };
 }

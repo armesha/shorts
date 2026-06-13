@@ -127,6 +127,18 @@ export interface StatPoint {
   takenAt: string;
 }
 
+/** One logged error row for the admin Errors page. */
+export interface ErrorLogItem {
+  id: number;
+  source: string; // 'server' | 'client'
+  level: string;
+  message: string;
+  detail: string | null;
+  context: string | null;
+  userId: number | null;
+  createdAt: string;
+}
+
 /** Error carrying the HTTP status + the server's `{error}` message (for lockout/attempt UI). */
 export class ApiError extends Error {
   status: number;
@@ -221,4 +233,11 @@ export const apiClient = {
   refreshStats: (scope?: "mine" | "all") =>
     send<StatRow[]>(`/stats/refresh${scope === "all" ? "?scope=all" : ""}`, "POST", {}),
   statsHistory: (accountId: number | string) => get<StatPoint[]>(`/stats/${accountId}/history`),
+  // Error log: admin views/clears; any page can report a client-side error (fire-and-forget).
+  errors: () => get<ErrorLogItem[]>("/errors"),
+  clearErrors: () => send<{ ok: boolean }>("/errors", "DELETE"),
+  reportClientError: (message: string, detail?: string, context?: string) =>
+    send<{ ok: boolean }>("/client-error", "POST", { message, detail, context }).catch(() => ({
+      ok: false,
+    })),
 };

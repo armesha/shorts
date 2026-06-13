@@ -169,6 +169,27 @@ app.addHook("onRequest", async (req, reply) => {
   (req as { userId?: number }).userId = sess.userId;
 });
 
+// Global crash handler → log to error_log (visible on the admin Errors page), return clean JSON.
+app.setErrorHandler((err, req, reply) => {
+  app.log.error(err);
+  const e = err as { message?: string; stack?: string; statusCode?: number };
+  try {
+    db.addError({
+      source: "server",
+      message: e?.message || String(err),
+      detail: e?.stack || null,
+      context: `${req.method} ${req.url.split("?")[0]}`,
+      userId: (req as { userId?: number }).userId ?? null,
+    });
+  } catch {
+    /* logging must never throw */
+  }
+  const sc = e?.statusCode;
+  reply
+    .code(sc && sc >= 400 && sc < 600 ? sc : 500)
+    .send({ error: e?.message || "Внутренняя ошибка сервера" });
+});
+
 // Self-service password change (logic in a separate file → minimal footprint in this shared module).
 registerPasswordRoutes(app, db, base.dbPath);
 
@@ -407,6 +428,12 @@ app.post("/api/stats/refresh", async (req) => {
         db.addChannelSnapshot({ accountId: a.id, subscribers: s.subscribers, views: s.views, videos: s.videos });
       } catch (err) {
         app.log.error({ err: String(err), accountId: a.id }, "stats refresh failed");
+        db.addError({
+          source: "server",
+          message: "Статистика: " + ytErrorMessage(err),
+          detail: (err as Error)?.stack ?? null,
+          context: `stats refresh account=${a.id}`,
+        });
         errors.set(a.id, ytErrorMessage(err));
       }
     }),
@@ -418,6 +445,31 @@ app.get("/api/stats/:id/history", async (req, reply) => {
   const a = visibleAccount(req, Number((req.params as { id: string }).id));
   if (!a) return reply.code(404).send({ error: "Канал не найден" });
   return db.listChannelSnapshots(a.id);
+});
+
+// ---- Error log: client-side reports (any user) + admin viewer/clear ----
+app.post("/api/client-error", async (req) => {
+  const b = (req.body as { message?: string; detail?: string; context?: string }) ?? {};
+  if (!b.message) return { ok: false };
+  db.addError({
+    source: "client",
+    message: b.message,
+    detail: b.detail ?? null,
+    context: b.context ?? null,
+    userId: uid(req),
+  });
+  return { ok: true };
+});
+
+app.get("/api/errors", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+  return db.listErrors(200);
+});
+
+app.delete("/api/errors", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+  db.clearErrors();
+  return { ok: true };
 });
 
 // ---- YouTube OAuth (connect a channel — uses the current user's key) ----
@@ -625,6 +677,13 @@ app.post("/api/videos/:id/post-now", async (req, reply) => {
     };
   } catch (err) {
     app.log.error(err);
+    db.addError({
+      source: "server",
+      message: "Загрузка видео: " + String((err as Error)?.message ?? err),
+      detail: (err as Error)?.stack ?? null,
+      context: `post-now account=${v.accountId} video=${v.id}`,
+      userId: uid(req),
+    });
     return reply.code(500).send({ error: "Ошибка загрузки: " + String(err).slice(0, 200) });
   }
 });
