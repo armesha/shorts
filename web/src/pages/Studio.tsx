@@ -337,6 +337,78 @@ export default function Studio() {
           ) : null}
         </div>
       </div>
+
+      <PsychPreview />
+    </div>
+  );
+}
+
+const PSYCH_PATTERNS = [
+  "numbered",
+  "numbered_tight",
+  "bullet",
+  "bullet_color",
+  "term",
+  "myth",
+  "quote",
+  "premium",
+];
+
+// Standalone preview of the generated German psychology cards (not part of the deck pipeline).
+function PsychPreview() {
+  const [img, setImg] = useState<string | null>(null);
+  const [pat, setPat] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  async function gen(pattern?: string) {
+    setLoading(true);
+    try {
+      const r = await apiClient.generatePsych(pattern);
+      if (r.imageUrl) {
+        setImg(r.imageUrl);
+        setPat(r.pattern ?? null);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+  return (
+    <div className="card bg-base-100 border border-base-300">
+      <div className="card-body gap-3">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <h2 className="card-title text-base">🧠 Психо-карточки (DE) — превью</h2>
+            <p className="text-sm text-base-content/60">
+              24 пробных карточки · 8 паттернов · «Notizen eines Psychologen»
+            </p>
+          </div>
+          <button className="btn btn-primary btn-sm gap-2" onClick={() => gen()} disabled={loading}>
+            {loading ? <Loader2 className="animate-spin" size={16} /> : <Wand2 size={16} />} Случайная
+          </button>
+        </div>
+        <div className="flex flex-wrap gap-1">
+          {PSYCH_PATTERNS.map((p) => (
+            <button
+              key={p}
+              className={`btn btn-xs ${pat === p ? "btn-primary" : "btn-outline"}`}
+              onClick={() => gen(p)}
+              disabled={loading}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+        {img && (
+          <div className="flex flex-col items-center gap-2 pt-2">
+            <img
+              src={img}
+              alt="psych preview"
+              className="rounded-xl border border-base-300 shadow"
+              style={{ width: 288, height: 512, objectFit: "cover" }}
+            />
+            {pat && <span className="text-xs text-base-content/50">паттерн: {pat}</span>}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

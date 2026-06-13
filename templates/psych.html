@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE_PLAIN}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Linden+Hill:ital@0;1&family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Kolker+Brush&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFFFF7; --ink:#111111; --brush:#FF4B4B;
+    --t-padx:65px; --t-top:61px; --t-bot:1623px; --title-size:80px;
+    --b-padx:67px; --b-top:316px; --b-bot:180px;
+    --body-size:49px; --body-line:1.27; --item-gap:28px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#d9d9d4;}
+  body{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:24px;font-family:"Lora",Georgia,serif;}
+  .stage{transform-origin:top left;}
+  .canvas{position:relative;width:1080px;height:1920px;background:var(--bg);overflow:hidden;}
+
+  .box-title{position:absolute;left:var(--t-padx);right:var(--t-padx);top:var(--t-top);bottom:var(--t-bot);
+    overflow:visible;display:flex;align-items:center;justify-content:center;}
+  .box-text{position:absolute;left:var(--b-padx);right:var(--b-padx);top:var(--b-top);bottom:var(--b-bot);overflow:hidden;}
+
+  .title-wrap{position:relative;display:flex;align-items:center;justify-content:center;width:100%;}
+  .brush{position:absolute;inset:-22px -48px;width:calc(100% + 96px);height:calc(100% + 44px);z-index:0;}
+  .title{position:relative;z-index:1;font-family:"Linden Hill","Playfair Display",serif;font-weight:400;font-size:var(--title-size);
+    letter-spacing:.5px;color:#1a1a1a;text-align:center;line-height:1.05;padding:0 16px;}
+
+  .list{list-style:none;}
+  .list li{font-family:"Lora",Georgia,serif;font-size:var(--body-size);line-height:var(--body-line);
+    color:var(--ink);margin-bottom:var(--item-gap);}
+  .list li:last-child{margin-bottom:0;}
+  .list li .m{font-weight:600;}
+
+  /* ---- паттерны ---- */
+  .list.numbered_tight li{margin-bottom:calc(var(--item-gap)*.6);}
+  .list.bullet li::before, .list.premium li::before{content:"•  ";color:var(--brush);font-weight:700;}
+  .list.bullet_color li .m{font-weight:700;color:#B5532A;}
+  .list.term li .term{font-weight:400;color:#333;}
+  .list.term li .m{font-weight:700;}
+  .list.myth li .pair{display:block;}
+  .list.myth li .m{font-weight:700;}
+  .list.quote li{font-style:italic;}
+  .list.quote li .m{font-style:normal;font-weight:600;}
+  .list.quote li .auth{font-style:italic;color:#555;font-weight:600;}
+  .list.premium li{font-size:calc(var(--body-size)*1.04);}
+
+  /* призыв к действию — приглушённо отделён */
+  .outro{margin-top:calc(var(--item-gap)*1.9);padding-top:calc(var(--item-gap)*1.1);
+    border-top:2px solid rgba(0,0,0,.18);text-align:center;text-indent:0;}
+  .outro::before{content:none !important;}
+  .outro .m{font-style:italic;font-weight:600;color:#555;}
+
+  .watermark{position:absolute;right:60px;bottom:70px;display:flex;align-items:center;gap:14px;color:#2a2a2a;z-index:6;}
+  .watermark .sig{font-family:"Kolker Brush",cursive;font-size:52px;line-height:1;transform:rotate(-4deg);}
+  .watermark .dot{width:26px;height:26px;position:relative;}
+  .watermark .dot::before{content:"";position:absolute;left:0;top:8px;width:18px;height:6px;border-radius:50%;background:#111;transform:rotate(18deg);}
+  .watermark .dot::after{content:"";position:absolute;right:0;top:2px;width:8px;height:8px;border-radius:50%;background:#111;}
+</style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <div class="canvas">
+      <div class="box-title" id="boxTitle">
+        <div class="title-wrap">
+          <svg class="brush" viewBox="65 105 955 232" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path fill="var(--brush)" d="M413.618 333.745C410.808 328.351 418.205 330.268 418.398 328.287C418.614 325.969 415.395 322.577 418.422 319.015C409.871 321.944 403.482 319.057 395.7 318.91C371.201 318.404 344.54 319.479 322.251 320.09C306.302 320.533 290.282 321.902 274.285 321.102L276.711 316.929L226.248 319.036L228.842 325.232L255.046 323.251L245.463 329.531C253.533 330.711 267.175 326.054 271.859 333.745C258.241 335.81 243.709 334.63 230.139 336.147C210.083 338.381 133.055 357.031 122.222 354.818C120.493 354.46 120.757 351.257 118.74 350.772C113.816 349.592 88.1397 347.295 86.9147 346.389C85.3295 339.203 91.9827 344.471 97.7952 342.427C100.726 341.395 104.256 340.362 103.752 336.927C93.1836 338.929 94.1684 324.831 91.142 321.607C89.6289 319.985 84.657 320.09 82.111 317.898C80.5257 316.529 80.0213 313.473 78.6283 311.345C78.0278 310.439 75.1215 310.523 75.1695 309.596C75.4578 305.866 79.6611 300.324 79.6851 294.739C79.7091 287.596 74.9534 277.987 77.1871 269.81L91.5023 260.77L86.8667 243.132L80.886 247.305C67.5556 236.536 87.5632 217.339 83.3359 209.458C81.6546 206.339 75.2656 204.948 75.0014 200.017C74.9053 198.416 79.7812 184.676 80.9581 182.063C96.0659 148.368 165.072 127.801 203.43 125.146C310.481 117.77 416.068 114.441 523.095 127L593.686 122.996L585.304 127.19C581.389 130.034 588.186 129.486 590.156 129.402C596.929 129.086 602.91 127.337 609.203 127.105C657.096 125.398 705.398 124.008 753.363 120.826C785.26 118.718 837.165 107.128 868.053 116.801C869.686 117.306 869.758 120.383 871.631 120.762C879.269 122.301 891.063 121.247 899.373 123.46C903.432 124.534 906.651 130.54 913.136 129.297C913.712 132.963 907.684 131.278 904.777 131.383C898.773 131.594 892.72 131.214 886.739 131.404L908.356 144.006L837.525 144.048L802.698 152.435C813.122 148.937 898.845 144.427 898.725 153.509L872.352 162.971C902.063 158.757 931.726 161.391 961.197 165.121C961.654 168.724 952.935 167.418 950.293 167.312C939.508 166.87 929.012 163.73 917.988 165.121C917.435 168.872 922.767 166.722 925.89 167.607C941.886 172.243 902.976 175.741 900.622 176.247C898.268 176.753 893.392 176.837 893.945 179.829C900.694 179.682 907.564 180.188 914.337 179.829C936.674 178.649 964.32 173.107 986.513 173.423C990.26 173.486 994.007 174.161 994.824 177.722L973.231 181.937L997.226 184.044L937.203 192.536C936.626 196.203 942.655 194.517 945.561 194.623C952.358 194.854 959.228 194.454 966.001 194.644L942.006 204.105L958.795 209.331C935.786 206.423 922.767 202.462 901.175 213.588C904.153 221.975 926.61 215.548 929.973 217.781L922.791 226.19C948.9 227.812 974.095 220.942 999.627 217.803L963.599 228.318H1012.84C1013.68 228.318 1016.39 231.078 1018.84 230.446C1019.73 231.479 1016.66 233.691 1014.71 234.155C995.112 238.918 969.652 234.998 949.212 240.983L981.829 247.115L1016.46 247.304C1013.58 253.816 1006.74 254.216 999.651 253.626L1009.23 259.906C995.352 259.906 986.801 254.322 972.222 255.902C968.595 256.282 957.859 258.473 956.418 262.013C962.206 263.783 981.878 257.736 980.412 266.249L925.169 270.485C924.617 274.172 930.622 272.465 933.528 272.571C949.5 273.203 964.704 270.19 980.388 272.592L962.254 280.979C960.285 283.234 969.94 287.174 963.647 290.546C960.957 292 925.313 292.864 921.999 291.199C918.276 289.303 919.381 285.636 914.433 285.046C901.967 283.592 899.133 287.385 890.126 289.26C881.119 291.136 870.238 287.132 869.902 299.944C876.675 300.134 883.545 299.713 890.318 299.944C894.017 300.071 899.829 297.964 898.677 303.063L855.467 312.588L860.271 318.868C844.274 319.036 826.933 319.437 811.08 321.017C740.777 328.034 674.99 325.316 604.591 325.126C572.142 325.042 539.644 325.358 507.219 325.232C505.538 334.061 527.971 326.075 531.214 333.64H413.522L413.618 333.745Z"/>
+          </svg>
+          <h1 class="title" id="title">{{TITLE}}</h1>
+        </div>
+      </div>
+      <div class="box-text" id="boxText">
+        <ul class="list {{PATTERN}}">{{ITEMS}}</ul>
+      </div>
+      <div class="watermark"><span class="sig">Notizen eines Psychologen</span><span class="dot"></span></div>
+    </div>
+  </div>
+<script>
+  const root=document.documentElement, boxTitle=document.getElementById('boxTitle'),
+        boxText=document.getElementById('boxText'), titleEl=document.getElementById('title');
+  function fitTitle(){
+    let s=80; titleEl.style.fontSize=s+'px';
+    while(s>34 && (titleEl.scrollWidth>boxTitle.clientWidth || titleEl.scrollHeight>boxTitle.clientHeight)){
+      s-=1; titleEl.style.fontSize=s+'px';}
+    root.style.setProperty('--title-size',s+'px');
+  }
+  function fitText(){
+    let s=49, g=28;
+    root.style.setProperty('--body-size',s+'px'); root.style.setProperty('--item-gap',g+'px');
+    let guard=0;
+    while(boxText.scrollHeight>boxText.clientHeight && guard<800){
+      if(s>22){s-=1;root.style.setProperty('--body-size',s+'px');}
+      else if(g>4){g-=1;root.style.setProperty('--item-gap',g+'px');}
+      else break; guard++;}
+    while(s<66 && boxText.scrollHeight<=boxText.clientHeight){
+      s+=1;root.style.setProperty('--body-size',s+'px');
+      if(boxText.scrollHeight>boxText.clientHeight){s-=1;root.style.setProperty('--body-size',s+'px');break;}}
+    window.__fitFontPx=s; window.__fitted=true;
+  }
+  function run(){fitTitle();fitText();}
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(run);} else run();
+  setTimeout(function(){ if(!window.__fitted) run(); },1500);
+</script>
+</body>
+</html>

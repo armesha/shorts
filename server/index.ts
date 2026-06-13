@@ -18,6 +18,7 @@ import {
 } from "./youtube.ts";
 import { startScheduler } from "./scheduler.ts";
 import { fetchChannelStats } from "./stats.ts";
+import { renderPsychCard, listPsychCards } from "../src/psych/render.ts";
 import {
   hashPassword,
   verifyPassword,
@@ -470,6 +471,21 @@ app.delete("/api/errors", async (req, reply) => {
   if (!requireAdmin(req, reply)) return;
   db.clearErrors();
   return { ok: true };
+});
+
+// ---- Psychology cards (DE) — preview only, NOT wired into decks/pipeline ----
+let psychCounter = 0;
+app.post("/api/generate/psych", async (req) => {
+  const body = (req.body as { pattern?: string }) ?? {};
+  const cards = listPsychCards();
+  if (!cards.length) return { error: "Нет психо-карточек (data/psych/cards.json пуст)" };
+  let pool = body.pattern ? cards.filter((c) => c.pattern === body.pattern) : cards;
+  if (!pool.length) pool = cards;
+  const card = pool[Math.floor(Math.random() * pool.length)];
+  psychCounter++;
+  const rel = `preview/psych-${Date.now()}-${psychCounter}.png`;
+  await renderPsychCard(card, resolve(process.cwd(), base.outputDir, rel));
+  return { imageUrl: `/files/${rel}`, pattern: card.pattern, title: (card.title_lines || []).join(" ") };
 });
 
 // ---- YouTube OAuth (connect a channel — uses the current user's key) ----

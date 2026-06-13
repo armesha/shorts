@@ -240,4 +240,11 @@ export const apiClient = {
     send<{ ok: boolean }>("/client-error", "POST", { message, detail, context }).catch(() => ({
       ok: false,
     })),
+  // Psychology cards (DE) — preview render of one card (optionally a specific pattern).
+  generatePsych: (pattern?: string) =>
+    send<{ imageUrl?: string; pattern?: string; title?: string; error?: string }>(
+      "/generate/psych",
+      "POST",
+      { pattern },
+    ),
 };

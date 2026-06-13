@@ -1,0 +1,995 @@
+[
+  {
+    "pattern": "numbered",
+    "title_lines": [
+      "Stille Signale",
+      "der Angststörung"
+    ],
+    "items": [
+      {
+        "lead": "Gedankenspiralen",
+        "text": "Dein Hirn wiederholt die gleiche Sorge ohne Grund"
+      },
+      {
+        "lead": "Körperscan-Fehler",
+        "text": "Du suchst überall nach Symptomen und findest sie"
+      },
+      {
+        "lead": "Katastrophendenken",
+        "text": "Leichte Kopfschmerzen = sofort ernste Krankheit"
+      },
+      {
+        "lead": "Vermeidungsschleife",
+        "text": "Je mehr du dich fernhältst, desto größer die Angst"
+      },
+      {
+        "lead": "Vergleichsfalle",
+        "text": "Du merkst, dass andere sich nicht ständig sorgen"
+      },
+      {
+        "lead": "Perfektionshunger",
+        "text": "Alles muss unter Kontrolle sein, sonst droht Chaos"
+      },
+      {
+        "lead": "Schlaf als Flucht",
+        "text": "Du verschläfst Probleme statt sie zu adressieren"
+      },
+      {
+        "lead": "Erleichterung beim Arzt",
+        "text": "Ängstler landen oft in der Notaufnahme, ohne organischen Grund"
+      }
+    ],
+    "outro": "Speichern, wenn du dich darin erkannt hast — das erste Merkmal ist bereits Selbstkenntnis."
+  },
+  {
+    "pattern": "numbered",
+    "title_lines": [
+      "Warum verlassen",
+      "wir Toxisches nicht?"
+    ],
+    "items": [
+      {
+        "lead": "Verlustangst",
+        "text": "Allein-Sein fühlt sich schlimmer an als Beschimpfung"
+      },
+      {
+        "lead": "Hoffnungsstillstand",
+        "text": "Du glaubst, nur dieser eine Mensch kann sich noch ändern"
+      },
+      {
+        "lead": "Schuldgefühl-Überlauf",
+        "text": "Du merkst es so, als wäre sein Leiden deine Verantwortung"
+      },
+      {
+        "lead": "Gewöhnungseffekt",
+        "text": "Die nächste Beleidigung tut weniger weh als die erste"
+      },
+      {
+        "lead": "Identitätsverschmelzung",
+        "text": "Du kennst dich nicht mehr ohne diese Person"
+      },
+      {
+        "lead": "Retterkomplex",
+        "text": "Du magst dich selbst nur, wenn du jemanden rettest"
+      },
+      {
+        "lead": "Zyklen-Versprechen",
+        "text": "Nach jeder Krise: kurze Ruhe, dann von vorne"
+      },
+      {
+        "lead": "Realitäts-Verzerrung",
+        "text": "Dein Hirn erinnert nur die guten Momente, blendet Schmerz aus"
+      }
+    ],
+    "outro": "Markiere jemanden, der das liest und endlich gehen darf — du darfst zuerst auf dich selbst hören."
+  },
+  {
+    "pattern": "numbered",
+    "title_lines": [
+      "5 Zeichen",
+      "emotionaler Reife"
+    ],
+    "items": [
+      {
+        "lead": "Du sagst Nein",
+        "text": "ohne dich schuldig oder verpflichtet zu fühlen"
+      },
+      {
+        "lead": "Kritik akzeptieren",
+        "text": "ohne Gegenangriff oder Rechtfertigung in der Sekunde"
+      },
+      {
+        "lead": "Andere Sichtweisen",
+        "text": "verstehen, ohne sie übernehmen zu müssen"
+      },
+      {
+        "lead": "Wut-Pausen",
+        "text": "du sprichst, wenn die Welle vorbei ist, nicht währenddessen"
+      },
+      {
+        "lead": "Grenzen setzen",
+        "text": "auch bei Menschen, die du liebst oder brauchst"
+      },
+      {
+        "lead": "Fehler eingestehen",
+        "text": "schnell, ohne Drama oder endlose Erklärungen"
+      },
+      {
+        "lead": "Allein-Sein ertragen",
+        "text": "ohne panisch neue Kontakte zu suchen oder zu clingen"
+      },
+      {
+        "lead": "Deine Grenzen kennen",
+        "text": "und sagen, wann du recharge-Pausen brauchst"
+      }
+    ],
+    "outro": "Folge — hier jeden Tag eine neue Psychologie-Erkenntnis, die du wirklich nutzen kannst."
+  },
+  {
+    "pattern": "numbered_tight",
+    "title_lines": [
+      "Warum wir uns",
+      "schlecht erinnern"
+    ],
+    "items": [
+      {
+        "lead": "Angst blockiert",
+        "text": "Im Stress schaltet das Gehirn Speichern ab"
+      },
+      {
+        "lead": "Zu viel Input",
+        "text": "Nur 5-9 Infos gleichzeitig möglich"
+      },
+      {
+        "lead": "Keine Wiederholung",
+        "text": "Ohne Abrufen → vergessen nach 24h"
+      },
+      {
+        "lead": "Emotionale Filter",
+        "text": "Wir vergessen, was wehtat — Selbstschutz"
+      },
+      {
+        "lead": "Schlaf fehlt",
+        "text": "Erst im Schlaf wird Gelerntes ins LZG"
+      },
+      {
+        "lead": "Ablenkung zerstört",
+        "text": "Jeder Kontextwechsel kostet Fokus"
+      },
+      {
+        "lead": "Falsche Strategie",
+        "text": "Passive Wiederholung wirkt nicht — Abrufen hilft"
+      },
+      {
+        "lead": "Stress-Hormon",
+        "text": "Cortisol vergiftet den Hippocampus"
+      },
+      {
+        "lead": "Alte Infos verdrängen",
+        "text": "Neues überschreibt Altes, wenn kein Schema"
+      }
+    ],
+    "outro": "Speichern, wenn du beim Lernen schon verzweifelt bist."
+  },
+  {
+    "pattern": "numbered_tight",
+    "title_lines": [
+      "Stille Zeichen",
+      "toxischer Menschen"
+    ],
+    "items": [
+      {
+        "lead": "Vorwürfe verpackt",
+        "text": "Nicht direkt, sondern als Sarkasmus/Witz"
+      },
+      {
+        "lead": "Du darfst nicht",
+        "text": "Ständige subtile Kontrolle über deine Zeit"
+      },
+      {
+        "lead": "Keine Grenze",
+        "text": "Sie spielen Opfer, wenn du 'Nein' sagst"
+      },
+      {
+        "lead": "Du bist schuld",
+        "text": "Ihre Gefühle sind immer deine Verantwortung"
+      },
+      {
+        "lead": "Lies Gedanken",
+        "text": "Erwartet, dass du verstehst, ohne zu reden"
+      },
+      {
+        "lead": "Zukunftsangst",
+        "text": "Du merkst, dass dir bei dieser Person bange wird"
+      },
+      {
+        "lead": "Einsam zusammen",
+        "text": "Nach Treffen fühlst du dich leerer als vorher"
+      },
+      {
+        "lead": "Grenzen-Chaos",
+        "text": "Deine 'Nein' werden ignoriert oder beweint"
+      },
+      {
+        "lead": "Selbstbild fällt",
+        "text": "Du zweifelst plötzlich an deinen Entscheidungen"
+      }
+    ],
+    "outro": "Markiere jemanden, der das braucht — kein Schuldschein."
+  },
+  {
+    "pattern": "numbered_tight",
+    "title_lines": [
+      "Was Perfektionismus",
+      "wirklich kostet"
+    ],
+    "items": [
+      {
+        "lead": "Lähmung statt Start",
+        "text": "Angst vor Fehler = Projekte werden nie angefangen"
+      },
+      {
+        "lead": "Burnout schneller",
+        "text": "Ständige innere Kritik erschöpft dich täglich"
+      },
+      {
+        "lead": "Beziehungen brechen",
+        "text": "Hohe Standards an andere = einsam am Ende"
+      },
+      {
+        "lead": "Zufriedenheit tot",
+        "text": "Selbst nach Erfolg: 'Hätte besser sein können'"
+      },
+      {
+        "lead": "Angststörer",
+        "text": "Blick auf Fehler → ständige Panik-Gedanken"
+      },
+      {
+        "lead": "Vergleich-Maschine",
+        "text": "Ständig gegen andere messen = immer zu wenig"
+      },
+      {
+        "lead": "Prokrastination-Falle",
+        "text": "Wartet auf perfekte Bedingungen → tut nichts"
+      },
+      {
+        "lead": "Lernblock",
+        "text": "Neue Skills? Nur wenn sofort gut — echte Angst"
+      },
+      {
+        "lead": "Körper zahlt",
+        "text": "Kopfschmerz, Schlaf, Magen — psychosomatisch"
+      }
+    ],
+    "outro": "Folge — hier jeden Tag Psychologie ohne Lügen."
+  },
+  {
+    "pattern": "bullet",
+    "title_lines": [
+      "Warum du nachts",
+      "nicht abschalten kannst"
+    ],
+    "items": [
+      {
+        "text": "Dein Gehirn lädt tagsüber Reize auf wie eine Batterie"
+      },
+      {
+        "text": "Besonders Konflikte und offene Aufgaben bleiben aktiv"
+      },
+      {
+        "text": "Stille macht alles schlimmer — die Gedanken lauter"
+      },
+      {
+        "text": "Melatonin sinkt später, wenn ständig Licht und Bildschirm"
+      },
+      {
+        "text": "Dein Körper erkennt das Bett nicht als Sicherheitszone"
+      },
+      {
+        "text": "Sorgen über Schlaflosigkeit selbst = Schlaffeind Nr. 1"
+      },
+      {
+        "text": "Aufregung vor morgen blockiert die Entspannungsreaktion"
+      },
+      {
+        "text": "Bewegung tagsüber = natürlicher Schlafmodus — ohne Ausfall"
+      },
+      {
+        "text": "Warme Umarmung oder vertraute Person stabilisiert schneller"
+      },
+      {
+        "text": "Dein Parasympathikus braucht 20 Min vorher als Signal"
+      }
+    ],
+    "outro": "Speichern, wenn dich nachts die Gedanken quälen"
+  },
+  {
+    "pattern": "bullet",
+    "title_lines": [
+      "Toxische Menschen",
+      "erkennen in 60 Sekunden"
+    ],
+    "items": [
+      {
+        "text": "Sie reden viel von sich, fragen selten nach dir"
+      },
+      {
+        "text": "Deine Probleme werden minimiert oder übergangen"
+      },
+      {
+        "text": "Sie rechtfertigen sich endlos, nehmen nie Verantwortung"
+      },
+      {
+        "text": "Dein Bauch sagt nein, obwohl verbal alles ok klingt"
+      },
+      {
+        "text": "Nach Treffen fühlst du dich leerer, nicht energiegeladener"
+      },
+      {
+        "text": "Sie versprechen Änderung, wiederholen aber das alte Muster"
+      },
+      {
+        "text": "Du entschuldigst dich für ihre Fehler"
+      },
+      {
+        "text": "Heimlichkeiten und Drama sind ihr natürliches Terrain"
+      },
+      {
+        "text": "Sie zerlegen dich hinter deinem Rücken, sind charmant davor"
+      },
+      {
+        "text": "Du fragst dich ständig, ob du unfair zu ihnen bist"
+      }
+    ],
+    "outro": "Markiere jemanden, der das braucht — zur Klarheit"
+  },
+  {
+    "pattern": "bullet",
+    "title_lines": [
+      "Warum Perfektionismus",
+      "dich lahmlegt"
+    ],
+    "items": [
+      {
+        "text": "Dein Standard ist unmöglich, nicht deine Realität"
+      },
+      {
+        "text": "Du wartest auf die perfekte Moment statt zu starten"
+      },
+      {
+        "text": "Kritik verletzt dich wie persönlicher Angriff"
+      },
+      {
+        "text": "Fehler = Versagen, nicht normales Lernen"
+      },
+      {
+        "text": "Du brauchst externe Bestätigung, um dich wertvoll zu fühlen"
+      },
+      {
+        "text": "Prokrastination ist dein unbewusster Selbstschutz"
+      },
+      {
+        "text": "Alles-oder-Nichts-Denken blockiert den Anfang"
+      },
+      {
+        "text": "Burnout wächst leise, weil du nicht 'nein' sagst"
+      },
+      {
+        "text": "Andere nehmen dir das nie ab — nur du selbst"
+      },
+      {
+        "text": "Imperfekt fertig schlägt perfekt nie in der Realität"
+      }
+    ],
+    "outro": "Folge — hier jeden Tag so, dein Kopf wird klarer"
+  },
+  {
+    "pattern": "bullet_color",
+    "title_lines": [
+      "Warum dein Körper",
+      "deine Gefühle verrät"
+    ],
+    "items": [
+      {
+        "lead": "Zittrige Hände",
+        "text": "Nervensystem signalisiert Bedrohung"
+      },
+      {
+        "lead": "Enge in der Brust",
+        "text": "Angst blockiert deine Atmung"
+      },
+      {
+        "lead": "Schwitzige Stirn",
+        "text": "Sympathikus läuft auf Hochtouren"
+      },
+      {
+        "lead": "Verspannter Nacken",
+        "text": "Du hältst dich unbewusst klein"
+      },
+      {
+        "lead": "Bauchschmerzen",
+        "text": "Darm reagiert auf emotionale Last"
+      },
+      {
+        "lead": "Schneller Puls",
+        "text": "Herz antwortet vor dem Verstand"
+      },
+      {
+        "lead": "Magenknoten",
+        "text": "Unbewusste Ablehnung zeigt sich hier"
+      },
+      {
+        "lead": "Kopfspannung",
+        "text": "Du pressest Gedanken fest zusammen"
+      },
+      {
+        "lead": "Kalte Füße",
+        "text": "Blutfluss meidet periphere Zonen"
+      }
+    ],
+    "outro": "Achte auf deine körpersprachlichen Signale — sie sagen dir, was du wirklich denkst."
+  },
+  {
+    "pattern": "bullet_color",
+    "title_lines": [
+      "3 Fehler im Umgang",
+      "mit nah stehenden Menschen"
+    ],
+    "items": [
+      {
+        "lead": "Zu viel Fix",
+        "text": "Du versuchst ihre Probleme zu lösen, statt zuzuhören"
+      },
+      {
+        "lead": "Deine Geschichte",
+        "text": "Machst alles auf dich und deine Erfahrung bezogen"
+      },
+      {
+        "lead": "Zu schnelle Urteile",
+        "text": "Du kennst die volle Situation nicht wirklich"
+      },
+      {
+        "lead": "Defensive Reaktion",
+        "text": "Wirst sofort persönlich beleidigt, wenn Kritik kommt"
+      },
+      {
+        "lead": "Selektives Hören",
+        "text": "Du planst deine Antwort, statt zu verstehen"
+      },
+      {
+        "lead": "Manipulative Güte",
+        "text": "Opferst dich auf, um Schuldgefühle zu schaffen"
+      },
+      {
+        "lead": "Grenzlose Nähe",
+        "text": "Dein Ego vermischt sich mit ihrer Identität"
+      },
+      {
+        "lead": "Stille als Strafe",
+        "text": "Du wirst kalt, statt offen zu kommunizieren"
+      },
+      {
+        "lead": "Vergangenheit hochfahren",
+        "text": "Wirfst alte Fehler auf, um aktuelle zu gewinnen"
+      }
+    ],
+    "outro": "Echte Nähe entsteht durch Grenzen, nicht durch Aufopferung."
+  },
+  {
+    "pattern": "bullet_color",
+    "title_lines": [
+      "Warum Perfektionisten",
+      "unbewusst sabotieren"
+    ],
+    "items": [
+      {
+        "lead": "Versagensangst",
+        "text": "Unbewusstes Bremsen schützt vor dem großen Fall"
+      },
+      {
+        "lead": "Sichtbarkeit fürchten",
+        "text": "Je erfolgreicher, desto mehr Kritik und Neid"
+      },
+      {
+        "lead": "Liebe an Bedingung",
+        "text": "Du glaubst, Liebe nur durch Leistung zu verdienen"
+      },
+      {
+        "lead": "Kontrolle verlieren",
+        "text": "Erfolg bedeutet weniger Kontrolle über dein Leben"
+      },
+      {
+        "lead": "Identität verlieren",
+        "text": "Du kennst dich nur über deine Leistung"
+      },
+      {
+        "lead": "Loyalität zu Leid",
+        "text": "Unbewusstes Vow — für deine Familie zu kämpfen"
+      },
+      {
+        "lead": "Unvollkommen sein",
+        "text": "Erlaubt dir, nicht bewertet zu werden"
+      },
+      {
+        "lead": "Anderer abhängig sein",
+        "text": "Zeigt dir, dass du nicht alles allein schaffst"
+      },
+      {
+        "lead": "Schuldgefühle genießen",
+        "text": "Sabotage als unbewusste Selbstbestrafung"
+      }
+    ],
+    "outro": "Erkenne dein Muster — dann hast du die Wahl, es zu brechen."
+  },
+  {
+    "pattern": "term",
+    "title_lines": [
+      "Antwortet sie",
+      "nach Stunden?"
+    ],
+    "items": [
+      {
+        "term": "Antwortet sofort",
+        "val": "Du stehst oben auf ihrer Priorität"
+      },
+      {
+        "term": "Antwortet in Minuten",
+        "val": "Normale Bindung, sie hat auch anderes zu tun"
+      },
+      {
+        "term": "Antwortet nach Stunden",
+        "val": "Distanz bewusst oder unbewusst eingezogen"
+      },
+      {
+        "term": "Liest, antwortet aber nicht",
+        "val": "Ambivalenz oder Vermeidung — nicht Vergessen"
+      },
+      {
+        "term": "Erklärt Verzögerung nicht",
+        "val": "Entweder Desinteresse oder Kontrollbedarf"
+      },
+      {
+        "term": "Antwortet nachts auffallend schnell",
+        "val": "Nachdenken über dich + Schlafmangel wegen dir"
+      },
+      {
+        "term": "Antwortet detailliert — lange Texts",
+        "val": "Investiert Mental-Energy, du bist nicht egal"
+      },
+      {
+        "term": "Kurze, knappe Antworten",
+        "val": "Entzug oder Schutz vor Nähe"
+      },
+      {
+        "term": "Antwortet unregelmäßig chaotisch",
+        "val": "Instabilität, emotionale Dysregulation möglich"
+      }
+    ],
+    "outro": "Speichern, wenn dich eine Antwortzeit besonders irritiert — das sagt etwas über deine Anhängigkeit aus."
+  },
+  {
+    "pattern": "term",
+    "title_lines": [
+      "Das sagt deine",
+      "Schlaflosigkeit"
+    ],
+    "items": [
+      {
+        "term": "Wach wegen Grübeln",
+        "val": "Ungelöste innere Konflikte — dein Kopf verhandelt"
+      },
+      {
+        "term": "Wach von Sorgen um andere",
+        "val": "Hyperverantwortung oder Coabhängenz-Pattern"
+      },
+      {
+        "term": "Körperliche Unruhe, nicht mental",
+        "val": "Nervensystem im Alarmzustand — Trauma-Response"
+      },
+      {
+        "term": "Wach exakt gleiche Uhrzeit jede Nacht",
+        "val": "Tiefer Versuch des Unterbewusstseins, dich zu wecken"
+      },
+      {
+        "term": "Am Wochenende schlafen, arbeiter-wach",
+        "val": "Stress-Insomnie konkret an dieser Situation gebunden"
+      },
+      {
+        "term": "Einschlaf schwierig, durchschlafen leicht",
+        "val": "Aktiviertes Nervensystem braucht Verwindung"
+      },
+      {
+        "term": "Schläfst, träumst intensiv / Albträume",
+        "val": "Verarbeitungsversuch bei Verdrängung tagsüber"
+      },
+      {
+        "term": "Wach, schaust aufs Handy — Endlosschleife",
+        "val": "Suche nach Bestätigung oder Flucht vor Gedanken"
+      },
+      {
+        "term": "Wach, aber schläfrig — verwirrt",
+        "val": "Depression möglich oder Dissoziations-Symptom"
+      }
+    ],
+    "outro": "Markiere jemanden, dessen Schlaf-Pattern du erkannt hast — und sag ihm, was es wirklich bedeutet."
+  },
+  {
+    "pattern": "term",
+    "title_lines": [
+      "Du vermeidest",
+      "aus Angst vor…"
+    ],
+    "items": [
+      {
+        "term": "Sags nicht, verstummst",
+        "val": "Angst vor Ablehnung oder Wut der anderen Person"
+      },
+      {
+        "term": "Prokrastinierst absichtlich",
+        "val": "Angst vor dem Scheitern selbst — nicht vor Arbeit"
+      },
+      {
+        "term": "Wirfst dich sofort in Neues",
+        "val": "Angst vor Leere oder Einsamkeit mit dir selbst"
+      },
+      {
+        "term": "Planst, startest nie",
+        "val": "Angst vor Verantwortung und realen Konsequenzen"
+      },
+      {
+        "term": "Fragst erstmal zehn andere",
+        "val": "Angst, falsch zu entscheiden — Fremdbestätigung gesucht"
+      },
+      {
+        "term": "Hältst dich beschäftigt, immer",
+        "val": "Angst vor Stille oder unbequemen Gefühlen"
+      },
+      {
+        "term": "Sagst ja, machst nein",
+        "val": "Angst vor Konflikt — erledige es später im Chaos"
+      },
+      {
+        "term": "Kritik? Direkt Gegenangriff",
+        "val": "Angst vor Unzulänglichkeit, schnell in Abwehr"
+      },
+      {
+        "term": "Stellst dich schlafend bei wichtigen Gesprächen",
+        "val": "Angst vor Konfrontation, wähle passive Flucht"
+      }
+    ],
+    "outro": "Folge für jeden Tag eine neue Entschlüsselung — deine unbewussten Angsten sichtbar gemacht."
+  },
+  {
+    "pattern": "myth",
+    "title_lines": [
+      "Positive Gedanken = ",
+      "besseres Leben?"
+    ],
+    "items": [
+      {
+        "myth": "Positive Denken heilt psychische Probleme",
+        "real": "Unterdrückte negative Gefühle werden toxisch"
+      },
+      {
+        "myth": "Angst ablehnen macht sie kleiner",
+        "real": "Anerkennung schwächt ihre Kraft"
+      },
+      {
+        "myth": "Trauer ist ein Zeichen von Schwäche",
+        "real": "Trauer ist emotionale Intelligenz in Aktion"
+      },
+      {
+        "myth": "Denken allein ändert die Chemie",
+        "real": "Aktion + Denken zusammen bewirken Veränderung"
+      },
+      {
+        "myth": "Optimismus ohne Plan funktioniert",
+        "real": "Hoffnung braucht konkrete Schritte"
+      },
+      {
+        "myth": "Negative Menschen sind selbst schuld",
+        "real": "Depression ist eine biologische Erkrankung, keine Wahl"
+      },
+      {
+        "myth": "Immer gut drauf wirken löst Problem",
+        "real": "Authentizität heilt, Maske schadet"
+      },
+      {
+        "myth": "Positive Affirmationen ersetzen Therapie",
+        "real": "Professionelle Hilfe + Arbeit an Mustern wirkt"
+      }
+    ],
+    "outro": "Speichern, wenn du dich hinter einer Maske erkannt hast."
+  },
+  {
+    "pattern": "myth",
+    "title_lines": [
+      "Narzissmus ist nur ",
+      "Eigenverliebtheit?"
+    ],
+    "items": [
+      {
+        "myth": "Narzissten lieben sich selbst zu sehr",
+        "real": "Tiefe Scham versteckt unter Überlegenheit"
+      },
+      {
+        "myth": "Sie wollen ständig Aufmerksamkeit",
+        "real": "Sie hungern nach Bestätigung, weil sie selbst zweifeln"
+      },
+      {
+        "myth": "Narzissten sind immer charmant",
+        "real": "Oberflächlicher Charme – echte Nähe fehlt"
+      },
+      {
+        "myth": "Sie merken ihre eigenen Grenzverletzungen",
+        "real": "Fehlendes Gespür für andere Menschen ist zentral"
+      },
+      {
+        "myth": "Mit Liebe kann man sie heilen",
+        "real": "Ohne Selbsteinsicht wächst nur Abhängigkeit"
+      },
+      {
+        "myth": "Jeder Egoist ist Narzisst",
+        "real": "Pathologischer Narzissmus ist diagnostizierbar"
+      },
+      {
+        "myth": "Sie sagen dir sofort, wer sie sind",
+        "real": "Hoovering und Love-Bombing verschleiern es lange"
+      },
+      {
+        "myth": "Ignorieren führt zum Kontakt",
+        "real": "No-Contact ist oft der einzige Weg zu Heilung"
+      }
+    ],
+    "outro": "Markiere jemanden, der das verstehen sollte."
+  },
+  {
+    "pattern": "myth",
+    "title_lines": [
+      "Trauma vergessen ",
+      "= genesen?"
+    ],
+    "items": [
+      {
+        "myth": "Verdrängen heilt das Trauma",
+        "real": "Unbewusste Erinnerungen steuern dein Verhalten"
+      },
+      {
+        "myth": "Schlimmes Sprechen macht es schlimmer",
+        "real": "Aussprechen und Verarbeiten sind essentiell"
+      },
+      {
+        "myth": "Therapie wühlt unnötig auf",
+        "real": "Heilung braucht zunächst das Aufwühlen"
+      },
+      {
+        "myth": "Trigger sind psychologischer Luxus",
+        "real": "Nervensystem speichert Bedrohung körperlich"
+      },
+      {
+        "myth": "Zeit heilt alle Wunden",
+        "real": "Zeit ohne Verarbeitung verschärft Trauma"
+      },
+      {
+        "myth": "Du solltest einfach weitermachen",
+        "real": "Stillschweigen verlängert das Leiden"
+      },
+      {
+        "myth": "Nur heftige Erlebnisse sind Trauma",
+        "real": "Chronische Vernachlässigung wirkt identisch destruktiv"
+      },
+      {
+        "myth": "Flashbacks sind ein Zeichen von Schwäche",
+        "real": "Sie zeigen, dass dein Gehirn noch verarbeitet"
+      }
+    ],
+    "outro": "Folge für mehr Erkenntnisse über dein inneres System."
+  },
+  {
+    "pattern": "quote",
+    "title_lines": [
+      "Viktor Frankl:",
+      "Sinn finden"
+    ],
+    "items": [
+      {
+        "quote": "Zwischen Reiz und Antwort liegt ein Raum. In diesem Raum liegt unsere Kraft, eine Antwort zu wählen.",
+        "author": "Viktor Frankl"
+      },
+      {
+        "quote": "Der Wille zum Sinn ist das Gegenteil von Angst.",
+        "author": "Viktor Frankl"
+      },
+      {
+        "quote": "Wer ein Warum hat zu leben, erträgt fast jedes Wie.",
+        "author": "Viktor Frankl"
+      },
+      {
+        "quote": "Die Suche nach Sinn ist das tiefste menschliche Bedürfnis.",
+        "author": "Viktor Frankl"
+      },
+      {
+        "quote": "Freiheit ist nicht das Freisein von etwas, sondern Freiheit zu etwas.",
+        "author": "Viktor Frankl"
+      },
+      {
+        "quote": "Was bleibt, wenn alles genommen wird, ist die Wahl der inneren Haltung.",
+        "author": "Viktor Frankl"
+      },
+      {
+        "quote": "Der Mensch, der sein Warum kennt, findet sein Wie.",
+        "author": "Viktor Frankl"
+      }
+    ],
+    "outro": "Speichern, wenn du gerade dein Warum suchst."
+  },
+  {
+    "pattern": "quote",
+    "title_lines": [
+      "Carl Jung:",
+      "Das Unbewusste"
+    ],
+    "items": [
+      {
+        "quote": "Bis du das Unbewusste bewusst machst, wird es dein Leben lenken und du wirst es Schicksal nennen.",
+        "author": "Carl G. Jung"
+      },
+      {
+        "quote": "Der Traum ist die kleine verborgene Tür tief in das tiefste Heiligtum der Seele.",
+        "author": "Carl G. Jung"
+      },
+      {
+        "quote": "Wenn du deine Schatten nicht siehst, werden sie dich kontrollieren.",
+        "author": "Carl G. Jung"
+      },
+      {
+        "quote": "Die Begegnung mit sich selbst gehört zu den unangenehmsten Dingen, denen man ausweicht.",
+        "author": "Carl G. Jung"
+      },
+      {
+        "quote": "Du bist was du unbewusst denkst. Alles ist in dir.",
+        "author": "Carl G. Jung"
+      },
+      {
+        "quote": "Der Fluss der Energie ist das Leben.",
+        "author": "Carl G. Jung"
+      },
+      {
+        "quote": "Wer sich selbst nicht kennt, bleibt fremd in der Welt.",
+        "author": "Carl G. Jung"
+      }
+    ],
+    "outro": "Teile das mit jemandem, der seine Schatten ignoriert."
+  },
+  {
+    "pattern": "quote",
+    "title_lines": [
+      "Erich Fromm:",
+      "Liebe & Freiheit"
+    ],
+    "items": [
+      {
+        "quote": "Die Liebe ist ein Handwerk und keine emotionale Impuls. Sie erfordert Wissen, Geduld und Anstrengung.",
+        "author": "Erich Fromm"
+      },
+      {
+        "quote": "Liebe ist aktiv, nicht passiv. Sie ist ein Geben, nicht ein Erhalten.",
+        "author": "Erich Fromm"
+      },
+      {
+        "quote": "Freiheit ist nutzlos, wenn wir nicht wissen, wie man lebt.",
+        "author": "Erich Fromm"
+      },
+      {
+        "quote": "Die tiefste menschliche Notwendigkeit ist, sich mit anderen verbunden zu fühlen.",
+        "author": "Erich Fromm"
+      },
+      {
+        "quote": "Der Mensch kann nicht ohne Liebe leben. Sie ist so notwendig wie Nahrung.",
+        "author": "Erich Fromm"
+      },
+      {
+        "quote": "Einsamkeit ist das Gefühl, von sich selbst und anderen getrennt zu sein.",
+        "author": "Erich Fromm"
+      },
+      {
+        "quote": "Wahre Liebe beginnt mit dem Respekt vor der Freiheit des anderen.",
+        "author": "Erich Fromm"
+      }
+    ],
+    "outro": "Folge für tägliche Weisheiten über Beziehungen und Seele."
+  },
+  {
+    "pattern": "premium",
+    "title_lines": [
+      "Wie gut erkennst du",
+      "deine Schutzmechanismen?"
+    ],
+    "items": [
+      {
+        "text": "Verleugnung: Du schiebst Gefühle einfach weg."
+      },
+      {
+        "text": "Projektion: Deine Fehler sind plötzlich bei anderen."
+      },
+      {
+        "text": "Rationalisierung: Logik statt Emotion — immer."
+      },
+      {
+        "text": "Flucht in Action: Beschäftigung statt Reflexion."
+      },
+      {
+        "text": "Sarkasmus: Humor als Panzer gegen Verletzung."
+      },
+      {
+        "text": "Abhängigkeit: Du brauchst andere, um dich ganz zu fühlen."
+      },
+      {
+        "text": "Sie schützen dich. Sie begrenzen dich auch."
+      }
+    ],
+    "outro": "Welcher dieser Mechanismen sitzt bei dir am tiefsten?"
+  },
+  {
+    "pattern": "premium",
+    "title_lines": [
+      "3 Fakten über",
+      "emotionale Vernachlässigung"
+    ],
+    "items": [
+      {
+        "text": "Sie hinterlässt oft weniger sichtbare Narben als Missbrauch."
+      },
+      {
+        "text": "Du wurdest nicht schlecht behandelt — sondern übersehen."
+      },
+      {
+        "text": "Folge: Du validierst deine eigenen Gefühle nicht."
+      },
+      {
+        "text": "Du schämst dich für Bedürfnisse, die normal sind."
+      },
+      {
+        "text": "Das Heilmittel: Lernen, dich selbst zu sehen."
+      },
+      {
+        "text": "Es braucht Zeit, um die Stille innerzustellen."
+      },
+      {
+        "text": "Aber es ist möglich."
+      }
+    ],
+    "outro": "Markiere jemanden, der das erkennen sollte."
+  },
+  {
+    "pattern": "premium",
+    "title_lines": [
+      "Versteckte Zeichen",
+      "von chronischem Stress"
+    ],
+    "items": [
+      {
+        "text": "Deine Schultern sind permanent angespannt — du merkst es gar nicht mehr."
+      },
+      {
+        "text": "Du kauerst zusammen, wenn jemand eine Tür zuschlägt."
+      },
+      {
+        "text": "Essen wird zur Ablenkung oder verschwindet ganz."
+      },
+      {
+        "text": "Konzentration ist unmöglich — dein Gehirn ist im Überlebensmodus."
+      },
+      {
+        "text": "Schlaf ist oberflächlich, voller Träume, nicht erholsam."
+      },
+      {
+        "text": "Du vergisst einfache Dinge (wo ist dein Schlüssel?!)."
+      },
+      {
+        "text": "Dein Körper versucht dir etwas zu sagen."
+      }
+    ],
+    "outro": "Speichern und deinem zukünftigen Ich danken."
+  }
+]
