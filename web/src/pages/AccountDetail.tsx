@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
 import { ArrowLeft, Save, Trash2, Check, Plus, Upload, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { apiClient, type Account, type VideoItem, type Generator } from "../lib/api";
+import { useAuth } from "../lib/auth";
 
 const LANGS: [string, string][] = [
   ["de", "Немецкий"],
@@ -18,6 +19,7 @@ const evenTimes = (n: number) =>
 
 export default function AccountDetail() {
   const { id } = useParams();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const justConnected = params.get("connected") === "1";
@@ -342,22 +344,18 @@ export default function AccountDetail() {
               <span className="text-base-content/40">(по языку канала)</span>
             </span>
             <span className="text-sm text-base-content/70 ml-1">Сделать сразу:</span>
-            <button
-              className="btn btn-sm btn-outline gap-1"
-              onClick={() => makeBatch(5)}
-              disabled={batching !== null}
-              title="Сгенерировать 5 случайных роликов в библиотеку"
-            >
-              {batching === 5 ? <Loader2 className="animate-spin" size={14} /> : <Plus size={14} />}5
-            </button>
-            <button
-              className="btn btn-sm btn-outline gap-1"
-              onClick={() => makeBatch(10)}
-              disabled={batching !== null}
-              title="Сгенерировать 10 случайных роликов в библиотеку"
-            >
-              {batching === 10 ? <Loader2 className="animate-spin" size={14} /> : <Plus size={14} />}10
-            </button>
+            {(user?.role === "admin" ? [5, 10] : [1, 5]).map((n) => (
+              <button
+                key={n}
+                className="btn btn-sm btn-outline gap-1"
+                onClick={() => makeBatch(n)}
+                disabled={batching !== null}
+                title={`Сгенерировать ${n} случайных роликов в библиотеку`}
+              >
+                {batching === n ? <Loader2 className="animate-spin" size={14} /> : <Plus size={14} />}
+                {n}
+              </button>
+            ))}
             {postedTwicePlus > 0 && (
               <button
                 className="btn btn-sm btn-ghost text-error gap-1 ml-auto"
