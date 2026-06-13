@@ -258,15 +258,27 @@ export function openDb(path: string) {
     /* column already exists (or fresh users table) */
   }
 
+  // "Uploaded today" per channel — count of published history rows dated today (UTC).
+  const countUploadsToday = (accountId: number): number => {
+    const r = db
+      .prepare(
+        "SELECT COUNT(*) AS n FROM history WHERE account_id = ? AND status = 'published' AND date(published_at) = date('now')",
+      )
+      .get(accountId) as Row;
+    return Number(r.n) || 0;
+  };
+
   return {
     db,
     listAccounts(): Account[] {
-      return (db.prepare("SELECT * FROM accounts ORDER BY id").all() as Row[]).map(rowToAccount);
+      return (db.prepare("SELECT * FROM accounts ORDER BY id").all() as Row[])
+        .map(rowToAccount)
+        .map((a) => ({ ...a, uploadsToday: countUploadsToday(a.id) }));
     },
     listAccountsByUser(userId: number): Account[] {
-      return (
-        db.prepare("SELECT * FROM accounts WHERE user_id = ? ORDER BY id").all(userId) as Row[]
-      ).map(rowToAccount);
+      return (db.prepare("SELECT * FROM accounts WHERE user_id = ? ORDER BY id").all(userId) as Row[])
+        .map(rowToAccount)
+        .map((a) => ({ ...a, uploadsToday: countUploadsToday(a.id) }));
     },
     // One-time migration: existing channels (no owner) become the first admin's.
     assignOrphanAccounts(userId: number): void {
@@ -274,7 +286,8 @@ export function openDb(path: string) {
     },
     getAccount(id: number): Account | null {
       const r = db.prepare("SELECT * FROM accounts WHERE id = ?").get(id) as Row | undefined;
-      return r ? rowToAccount(r) : null;
+      if (!r) return null;
+      return { ...rowToAccount(r), uploadsToday: countUploadsToday(r.id) };
     },
     createAccount(input: Partial<Account>): Account {
       const info = db
