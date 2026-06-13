@@ -27,6 +27,7 @@ export default function Studio() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [deck, setDeck] = useDeck();
+  const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
     apiClient.generators().then(setGens).catch(() => {});
@@ -64,6 +65,7 @@ export default function Studio() {
   async function gen(mode: "new" | "bg" | "edit", bgName?: string) {
     setLoading(true);
     setVideo(null);
+    setErr(null);
     try {
       const body =
         mode === "new"
@@ -72,8 +74,15 @@ export default function Studio() {
             ? { text: preview?.text, title: preview?.title, bg: bgName, deck }
             : { text, title: preview?.title, bg: preview?.bg, deck };
       const p = await apiClient.generateAnecdote(body);
+      // Server returns { error } with HTTP 200 when the pack is exhausted — handle it, never crash.
+      if ((p as { error?: string })?.error || !p?.text) {
+        setErr((p as { error?: string })?.error || "Не удалось сгенерировать ролик");
+        return;
+      }
       setPreview(p);
       setText(p.text);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Ошибка генерации");
     } finally {
       setLoading(false);
     }
@@ -82,6 +91,7 @@ export default function Studio() {
   async function buildVideo() {
     if (!preview) return;
     setBuilding(true);
+    setErr(null);
     try {
       const v = await apiClient.generateAnecdoteVideo({
         text: preview.text,
@@ -90,7 +100,13 @@ export default function Studio() {
         music,
         deck,
       });
+      if ((v as { error?: string })?.error || !v?.videoUrl) {
+        setErr((v as { error?: string })?.error || "Не удалось собрать видео");
+        return;
+      }
       setVideo(v);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Ошибка сборки видео");
     } finally {
       setBuilding(false);
     }
@@ -107,6 +123,12 @@ export default function Studio() {
           <p className="text-base-content/60">Генерация и предпросмотр ролика</p>
         </div>
       </header>
+
+      {err && (
+        <div className="alert alert-warning text-sm">
+          <span>{err}</span>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         {/* Controls */}
@@ -200,10 +222,12 @@ export default function Studio() {
                   <span className="label-text">Текст анекдота (можно править)</span>
                   <span
                     className={`badge badge-sm ${
-                      text.length >= 250 && text.length <= 400 ? "badge-success" : "badge-warning"
+                      (text || "").length >= 250 && (text || "").length <= 480
+                        ? "badge-success"
+                        : "badge-warning"
                     }`}
                   >
-                    {text.length} симв.
+                    {(text || "").length} симв.
                   </span>
                 </div>
                 <textarea
