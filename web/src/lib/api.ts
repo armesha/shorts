@@ -24,8 +24,8 @@ export interface HistoryItem {
 }
 
 export interface AppStatus {
-  credsConfigured: boolean;
-  credsFile: string;
+  hasGoogleKey: boolean;
+  credsConfigured: boolean; // alias of hasGoogleKey (back-compat for the channels badge)
   chromePath: string;
   llm: string;
 }
@@ -46,9 +46,15 @@ export interface Generator {
 }
 
 export interface AppSettings {
-  googleClientSecretFile: string;
-  exists: boolean;
-  isDefault: boolean;
+  hasGoogleKey: boolean;
+}
+
+export interface AdminUser {
+  id: number;
+  username: string;
+  role: string;
+  locked: boolean;
+  createdAt: string;
 }
 
 export interface GeneratedPreview {
@@ -137,8 +143,15 @@ export const apiClient = {
   logout: () => send<{ ok: boolean }>("/auth/logout", "POST", {}),
   status: () => get<AppStatus>("/config"),
   settings: () => get<AppSettings>("/settings"),
-  updateSettings: (googleClientSecretFile: string) =>
-    send<AppSettings>("/settings", "PUT", { googleClientSecretFile }),
+  uploadGoogleKey: (json: string) => send<AppSettings>("/settings/google-key", "PUT", { json }),
+  removeGoogleKey: () => send<AppSettings>("/settings/google-key", "DELETE"),
+  adminUsers: () => get<AdminUser[]>("/admin/users"),
+  createUser: (username: string, password: string, role?: string) =>
+    send<{ id: number; username: string; role: string }>("/admin/users", "POST", {
+      username,
+      password,
+      role,
+    }),
   accounts: () => get<Account[]>("/accounts"),
   account: (id: number | string) => get<Account>(`/accounts/${id}`),
   createAccount: () => send<Account>("/accounts", "POST", {}),

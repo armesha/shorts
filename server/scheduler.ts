@@ -3,7 +3,7 @@ import { unlinkSync } from "node:fs";
 import cron from "node-cron";
 import type { Db, Video } from "./db.ts";
 import { DECKS, ytMeta } from "../src/anecdotes/decks.ts";
-import { uploadShort } from "./youtube.ts";
+import { uploadShort, type ClientCreds } from "./youtube.ts";
 
 /** Delete a posted video's rendered files (best-effort). */
 function removeVideoFiles(outputDir: string, v: Video): void {
@@ -21,15 +21,16 @@ function removeVideoFiles(outputDir: string, v: Video): void {
 export interface SchedulerOpts {
   db: Db;
   outputDir: string;
-  credsPath: () => string;
+  /** Resolve the OAuth client creds for a channel's OWNER (per-user keys). */
+  credsForUser: (userId: number) => ClientCreds | null;
   redirectUri: string;
   log: (msg: string) => void;
 }
 
 /**
  * Per-minute scheduler. For each ENABLED + CONNECTED account whose schedule contains the
- * current HH:MM, it posts the NEXT unposted library video ONCE, then removes it (no rotation,
- * no auto-generation). Empty library → nothing is posted. Safe by default.
+ * current HH:MM, it posts the NEXT unposted library video ONCE with the OWNER's Google key,
+ * then removes it (no rotation, no auto-generation). Empty library → nothing is posted.
  */
 export function startScheduler(opts: SchedulerOpts) {
   const fired = new Set<string>(); // accountId|HH:MM|YYYY-MM-DD — prevents double-firing
@@ -52,8 +53,7 @@ export function startScheduler(opts: SchedulerOpts) {
       try {
         opts.log(`[sched] account ${acc.id} (${acc.channelName}) firing at ${hhmm}`);
 
-        // HARD language guard: a channel only ever posts videos in its OWN content language
-        // (acc.lang) — a Russian video can never go to an Italian/German channel, etc.
+        // HARD language guard: a channel only ever posts videos in its OWN content language.
         const channelDeck = DECKS.find((d) => d.id === acc.lang);
         if (!channelDeck) {
           opts.log(`[sched] account ${acc.id}: язык «${acc.lang}» без пака — пропуск`);
@@ -70,8 +70,14 @@ export function startScheduler(opts: SchedulerOpts) {
           opts.log(`[sched] account ${acc.id}: нет роликов на языке «${channelDeck.id}» — нечего постить`);
           continue;
         }
+        // Each channel posts with its OWNER's Google key (per-user isolation).
+        const creds = acc.userId != null ? opts.credsForUser(acc.userId) : null;
+        if (!creds) {
+          opts.log(`[sched] account ${acc.id}: у владельца нет Google-ключа — пропуск`);
+          continue;
+        }
         const meta = ytMeta(channelDeck, lib.title, lib.text);
-        const videoId = await uploadShort(opts.credsPath(), opts.redirectUri, token, {
+        const videoId = await uploadShort(creds, opts.redirectUri, token, {
           videoPath: resolve(opts.outputDir, lib.videoRel),
           title: meta.title,
           description: meta.description,

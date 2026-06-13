@@ -1,20 +1,21 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import fastifyStatic from "@fastify/static";
-import { basename, resolve } from "node:path";
-import { unlinkSync } from "node:fs";
-import {
-  loadBaseConfig,
-  resolveClientSecretFile,
-  credsFileExists,
-  DEFAULT_CLIENT_SECRET_FILE,
-} from "./config.ts";
+import { resolve } from "node:path";
+import { unlinkSync, readFileSync } from "node:fs";
+import { loadBaseConfig, resolveClientSecretFile, credsFileExists } from "./config.ts";
 import { openDb, type Account } from "./db.ts";
 import { randomAnecdote, libraryStats, anecdoteKey } from "../src/anecdotes/library.ts";
 import { DECKS, getDeck, ytMeta, pickGenericTitle } from "../src/anecdotes/decks.ts";
 import { renderAnecdote, listBackgrounds } from "../src/anecdotes/render.ts";
 import { assembleStillVideo, listAudio, audioPathFor } from "../src/video.ts";
-import { buildAuthUrl, exchangeAndGetChannel, uploadShort } from "./youtube.ts";
+import {
+  buildAuthUrl,
+  exchangeAndGetChannel,
+  uploadShort,
+  parseCreds,
+  type ClientCreds,
+} from "./youtube.ts";
 import { startScheduler } from "./scheduler.ts";
 import {
   hashPassword,
@@ -28,24 +29,17 @@ import {
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
 
-// Self-heal used-anecdote marks: every saved library video IS a used anecdote, so backfill its
-// key on boot. Idempotent (ON CONFLICT DO NOTHING) — keeps picks from ever repeating even if the
-// marks table was cleared or predates this feature.
-for (const acc of db.listAccounts()) {
-  for (const v of db.listVideos(acc.id)) db.markAnecdoteUsed(anecdoteKey(v.text));
-}
+const credsPath = (): string => resolveClientSecretFile(db.getSetting("googleClientSecretFile"));
 
-// Ensure seed users exist (idempotent — creates each only if missing, never clobbers a password).
-// Admin-creates-users model; a proper UI lands in Phase 2. Creds live in .env (gitignored).
+// ---- Seed users (idempotent — creates each only if missing, never clobbers a password) ----
 function ensureUser(username: string, password: string, role: string) {
   const u = username.trim();
   if (!u || !password) return;
-  if (db.getUserByUsername(u)) return; // already exists — leave its stored password untouched
+  if (db.getUserByUsername(u)) return;
   db.createUser({ username: u, passHash: hashPassword(password), role });
   console.log(`[auth] Seeded ${role} "${u}".`);
 }
 ensureUser(process.env.ADMIN_USERNAME ?? "", process.env.ADMIN_PASSWORD ?? "", "admin");
-// Extra non-admin users: SEED_USERS="name:pass,name2:pass2" (passwords must not contain ',' or ':').
 for (const entry of (process.env.SEED_USERS ?? "").split(",")) {
   const t = entry.trim();
   const idx = t.indexOf(":");
@@ -54,17 +48,51 @@ for (const entry of (process.env.SEED_USERS ?? "").split(",")) {
 if (db.countUsers() === 0)
   console.warn("[auth] No users seeded — set ADMIN_USERNAME/ADMIN_PASSWORD in .env, then restart.");
 
-const credsPath = (): string => resolveClientSecretFile(db.getSetting("googleClientSecretFile"));
+// ---- One-time migrations: all pre-existing data belongs to the first admin ----
+const firstAdmin = db.listUsers().find((u) => u.role === "admin") ?? db.listUsers()[0] ?? null;
+if (firstAdmin) {
+  db.assignOrphanAccounts(firstAdmin.id); // channels with no owner → admin
+  db.migrateGlobalUsedTo(firstAdmin.id); // old global used-marks → admin
+  // Seed the admin's Google key from the legacy global client-secret file so already-connected
+  // channels keep working (their refresh tokens were minted with that client_id).
+  if (!db.getUserClientSecret(firstAdmin.id)) {
+    try {
+      const p = credsPath();
+      if (credsFileExists(p)) db.setUserClientSecret(firstAdmin.id, readFileSync(p, "utf8"));
+    } catch {
+      /* no global file — admin uploads his own key in Settings */
+    }
+  }
+}
+
+// Self-heal used-anecdote marks PER OWNER (every saved library video is a used anecdote).
+for (const acc of db.listAccounts()) {
+  if (acc.userId == null) continue;
+  for (const v of db.listVideos(acc.id)) db.markAnecdoteUsed(acc.userId, anecdoteKey(v.text));
+}
+
 const REDIRECT_URI =
   process.env.GOOGLE_OAUTH_REDIRECT ?? `http://localhost:${process.env.PORT ?? 8080}/api/youtube/callback`;
 const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:5173";
 
-// FAIL FAST: the app won't start if the client-secret file is missing.
+// Multi-user: no global key required to boot — each user uploads their own in Settings.
 if (!credsFileExists(credsPath())) {
-  throw new Error(
-    `Google client-secret file not found:\n  ${credsPath()}\n` +
-      `The app requires this file to start. Set a valid path (Settings page, env GOOGLE_CLIENT_SECRET_FILE, or server/config.ts).`,
+  console.warn(
+    "[creds] Глобальный client-secret не найден — это нормально: каждый юзер грузит свой Google-ключ в Настройках.",
   );
+}
+
+// Per-user ONLY: a user can act on YouTube solely with THEIR OWN uploaded key (full isolation —
+// nobody inherits anyone else's key). The admin's key is seeded once from the legacy global file
+// in the migration above; everyone else uploads their own in Settings.
+function userCreds(userId: number): ClientCreds | null {
+  const json = db.getUserClientSecret(userId);
+  if (!json) return null;
+  try {
+    return parseCreds(json);
+  } catch {
+    return null;
+  }
 }
 
 const app = Fastify({ logger: true });
@@ -168,72 +196,137 @@ app.post("/api/auth/logout", async (req, reply) => {
 });
 
 app.get("/api/auth/me", async (req, reply) => {
-  const uid = (req as { userId?: number }).userId;
-  const user = uid ? db.getUserById(uid) : null;
+  const user = db.getUserById(uid(req));
   if (!user) return reply.code(401).send({ error: "Не авторизован" });
   return { id: user.id, username: user.username, role: user.role };
 });
 
+// uid of the authenticated request (guaranteed set by the hook for gated routes).
+const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
+type Replyish = { code: (n: number) => { send: (b: unknown) => unknown } };
+
+function requireAdmin(req: unknown, reply: Replyish): boolean {
+  const u = db.getUserById(uid(req));
+  if (u?.role !== "admin") {
+    reply.code(403).send({ error: "Только для администратора" });
+    return false;
+  }
+  return true;
+}
+// Return the account only if it belongs to the current user, else send 404 and return null.
+function ownAccount(req: unknown, reply: Replyish, id: number): Account | null {
+  const a = db.getAccount(id);
+  if (!a || a.userId !== uid(req)) {
+    reply.code(404).send({ error: "Канал не найден" });
+    return null;
+  }
+  return a;
+}
+
 app.get("/api/health", async () => ({ ok: true, time: new Date().toISOString() }));
 
-app.get("/api/config", async () => ({
-  credsConfigured: credsFileExists(credsPath()),
-  credsFile: basename(credsPath()),
-  chromePath: base.chromePath,
-  llm: "claude-code-headless",
-}));
-
-// ---- Settings (editable client-secret path) ----
-app.get("/api/settings", async () => {
-  const path = credsPath();
+app.get("/api/config", async (req) => {
+  const hasGoogleKey = !!userCreds(uid(req));
   return {
-    googleClientSecretFile: path,
-    exists: credsFileExists(path),
-    isDefault: path === DEFAULT_CLIENT_SECRET_FILE,
+    hasGoogleKey,
+    credsConfigured: hasGoogleKey, // alias kept for the channels badge
+    chromePath: base.chromePath,
+    llm: "claude-code-headless",
   };
 });
 
-app.put("/api/settings", async (req, reply) => {
-  const body = (req.body as { googleClientSecretFile?: string }) ?? {};
-  const path = (body.googleClientSecretFile ?? "").trim();
-  if (!path) return reply.code(400).send({ error: "Путь не указан" });
-  if (!credsFileExists(path)) return reply.code(400).send({ error: "Файл по этому пути не найден" });
-  db.setSetting("googleClientSecretFile", path);
-  return { googleClientSecretFile: path, exists: true, isDefault: path === DEFAULT_CLIENT_SECRET_FILE };
+// ---- Settings: per-user Google key (client_secret JSON, uploaded by each user) ----
+app.get("/api/settings", async (req) => ({ hasGoogleKey: !!db.getUserClientSecret(uid(req)) }));
+
+app.put("/api/settings/google-key", async (req, reply) => {
+  const body = (req.body as { json?: string }) ?? {};
+  const json = (body.json ?? "").trim();
+  if (!json) return reply.code(400).send({ error: "Пустой файл ключа" });
+  try {
+    parseCreds(json); // validate shape (client_id/client_secret present)
+  } catch (e) {
+    return reply.code(400).send({ error: "Неверный client_secret.json: " + String(e).slice(0, 120) });
+  }
+  db.setUserClientSecret(uid(req), json);
+  return { hasGoogleKey: true };
 });
 
-// ---- Accounts (SQLite-backed) ----
-app.get("/api/accounts", async () => db.listAccounts());
+app.delete("/api/settings/google-key", async (req) => {
+  db.setUserClientSecret(uid(req), null);
+  return { hasGoogleKey: false };
+});
+
+// ---- Admin: user management (admin creates accounts for friends) ----
+app.get("/api/admin/users", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+  return db.listUsers().map((u) => ({
+    id: u.id,
+    username: u.username,
+    role: u.role,
+    locked: !!(u.lockedUntil && new Date(u.lockedUntil).getTime() > Date.now()),
+    createdAt: u.createdAt,
+  }));
+});
+
+app.post("/api/admin/users", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+  const body = (req.body as { username?: string; password?: string; role?: string }) ?? {};
+  const username = (body.username ?? "").trim();
+  const password = body.password ?? "";
+  const role = body.role === "admin" ? "admin" : "user";
+  if (!username || password.length < 6)
+    return reply.code(400).send({ error: "Логин обязателен, пароль ≥ 6 символов" });
+  if (db.getUserByUsername(username)) return reply.code(409).send({ error: "Такой логин уже есть" });
+  const u = db.createUser({ username, passHash: hashPassword(password), role });
+  return { id: u.id, username: u.username, role: u.role };
+});
+
+// ---- Accounts (scoped to the current user) ----
+app.get("/api/accounts", async (req) => db.listAccountsByUser(uid(req)));
 app.get("/api/accounts/:id", async (req, reply) => {
-  const a = db.getAccount(Number((req.params as { id: string }).id));
-  if (!a) return reply.code(404).send({ error: "not found" });
+  const a = ownAccount(req, reply, Number((req.params as { id: string }).id));
+  if (!a) return;
   return a;
 });
-app.post("/api/accounts", async (req) => db.createAccount((req.body as Partial<Account>) ?? {}));
+app.post("/api/accounts", async (req) =>
+  db.createAccount({ ...((req.body as Partial<Account>) ?? {}), userId: uid(req) }),
+);
 app.put("/api/accounts/:id", async (req, reply) => {
-  const a = db.updateAccount(Number((req.params as { id: string }).id), (req.body as Partial<Account>) ?? {});
+  const id = Number((req.params as { id: string }).id);
+  if (!ownAccount(req, reply, id)) return;
+  const a = db.updateAccount(id, (req.body as Partial<Account>) ?? {});
   if (!a) return reply.code(404).send({ error: "not found" });
   return a;
 });
-app.delete("/api/accounts/:id", async (req) => {
-  db.deleteAccount(Number((req.params as { id: string }).id));
+app.delete("/api/accounts/:id", async (req, reply) => {
+  const id = Number((req.params as { id: string }).id);
+  if (!ownAccount(req, reply, id)) return;
+  db.deleteAccount(id);
   return { ok: true };
 });
 
-app.get("/api/history", async () => db.listHistory());
+app.get("/api/history", async (req) => db.listHistoryByUser(uid(req)));
 
-// ---- YouTube OAuth (connect a channel) ----
+// ---- YouTube OAuth (connect a channel — uses the current user's key) ----
 app.get("/api/youtube/auth-url", async (req, reply) => {
-  const accountId = String((req.query as { accountId?: string }).accountId ?? "");
+  const accountId = Number((req.query as { accountId?: string }).accountId ?? 0);
   if (!accountId) return reply.code(400).send({ error: "accountId required" });
-  return { url: buildAuthUrl(credsPath(), REDIRECT_URI, accountId) };
+  if (!ownAccount(req, reply, accountId)) return;
+  const creds = userCreds(uid(req));
+  if (!creds) return reply.code(400).send({ error: "Сначала загрузите свой Google-ключ в Настройках" });
+  return { url: buildAuthUrl(creds, REDIRECT_URI, String(accountId)) };
 });
 
 app.get("/api/youtube/callback", async (req, reply) => {
   const { code, state } = req.query as { code?: string; state?: string };
   if (!code || !state) return reply.code(400).send("Missing code/state");
+  // No session here (Google redirects the browser) — derive the owner's key from the account.
+  const acc = db.getAccount(Number(state));
+  if (!acc || acc.userId == null) return reply.redirect(`${WEB_ORIGIN}/?error=1`);
+  const creds = userCreds(acc.userId);
+  if (!creds) return reply.redirect(`${WEB_ORIGIN}/accounts/${state}?error=1`);
   try {
-    const r = await exchangeAndGetChannel(credsPath(), REDIRECT_URI, code);
+    const r = await exchangeAndGetChannel(creds, REDIRECT_URI, code);
     db.setYouTube(Number(state), r);
     return reply.redirect(`${WEB_ORIGIN}/accounts/${state}?connected=1`);
   } catch (err) {
@@ -243,14 +336,17 @@ app.get("/api/youtube/callback", async (req, reply) => {
 });
 
 // ---- Video library (save / list / delete / post-now) ----
-app.get("/api/videos", async (req) => {
+app.get("/api/videos", async (req, reply) => {
   const accountId = Number((req.query as { accountId?: string }).accountId ?? 0);
-  return accountId ? db.listVideos(accountId) : [];
+  if (!accountId) return [];
+  if (!ownAccount(req, reply, accountId)) return;
+  return db.listVideos(accountId);
 });
 
-// Render + assemble one library video, persist it, and mark the anecdote used (no repeats).
+// Render + assemble one library video, persist it, and mark the anecdote used for THIS user.
 // music: explicit track name | "none" = silent | empty/undefined = random track per video.
 async function buildLibraryVideo(input: {
+  userId: number;
   accountId: number;
   text: string;
   title?: string;
@@ -296,21 +392,22 @@ async function buildLibraryVideo(input: {
     videoRel: vidRel,
     imageRel: imgRel,
   });
-  db.markAnecdoteUsed(anecdoteKey(input.text)); // never reuse this anecdote
+  db.markAnecdoteUsed(input.userId, anecdoteKey(input.text)); // never reuse this anecdote for this user
   return v;
 }
 
 app.post("/api/videos", async (req, reply) => {
   const body = (req.body as { accountId?: number; text?: string; title?: string; bg?: string; music?: string; deck?: string }) ?? {};
   if (!body.accountId || !body.text) return reply.code(400).send({ error: "accountId и text обязательны" });
-  const acc = db.getAccount(body.accountId);
-  if (!acc) return reply.code(404).send({ error: "Канал не найден" });
+  const acc = ownAccount(req, reply, body.accountId);
+  if (!acc) return;
   const channelDeck = DECKS.find((d) => d.id === acc.lang);
   if (!channelDeck)
     return reply.code(400).send({ error: `У канала язык «${acc.lang}» без пака — смените язык канала.` });
   if ((body.deck || channelDeck.id) !== channelDeck.id)
     return reply.code(400).send({ error: `Язык ролика не совпадает с языком канала (${channelDeck.name}) — не сохранено.` });
   return buildLibraryVideo({
+    userId: uid(req),
     accountId: body.accountId,
     text: body.text,
     title: body.title,
@@ -324,14 +421,14 @@ app.post("/api/videos", async (req, reply) => {
 app.post("/api/videos/batch", async (req, reply) => {
   const body = (req.body as { accountId?: number; count?: number; bg?: string; music?: string; deck?: string }) ?? {};
   if (!body.accountId) return reply.code(400).send({ error: "accountId обязателен" });
-  const acc = db.getAccount(body.accountId);
-  if (!acc) return reply.code(404).send({ error: "Канал не найден" });
+  const acc = ownAccount(req, reply, body.accountId);
+  if (!acc) return;
   const channelDeck = DECKS.find((d) => d.id === acc.lang);
   if (!channelDeck)
     return reply.code(400).send({ error: `У канала язык «${acc.lang}» без пака — смените язык канала.` });
   const deckId = channelDeck.id; // FORCE the channel's language — no cross-language mixing
   const requested = Math.max(1, Math.min(20, Number(body.count) || 5));
-  const seen = new Set<string>(db.usedAnecdoteKeys()); // exclude already-used + dedupe within this batch
+  const seen = new Set<string>(db.usedAnecdoteKeys(uid(req))); // exclude this user's used + dedupe batch
   const created: unknown[] = [];
   for (let i = 0; i < requested; i++) {
     const a = randomAnecdote(deckId, seen);
@@ -339,6 +436,7 @@ app.post("/api/videos/batch", async (req, reply) => {
     seen.add(anecdoteKey(a.text));
     created.push(
       await buildLibraryVideo({
+        userId: uid(req),
         accountId: body.accountId,
         text: a.text,
         title: a.title,
@@ -351,25 +449,31 @@ app.post("/api/videos/batch", async (req, reply) => {
   return { created, requested, made: created.length, exhausted: created.length < requested };
 });
 
-app.delete("/api/videos/:id", async (req) => {
-  db.deleteVideo(Number((req.params as { id: string }).id));
+app.delete("/api/videos/:id", async (req, reply) => {
+  const v = db.getVideo(Number((req.params as { id: string }).id));
+  if (!v) return reply.code(404).send({ error: "not found" });
+  if (!ownAccount(req, reply, v.accountId)) return;
+  db.deleteVideo(v.id);
   return { ok: true };
 });
 
 app.post("/api/videos/:id/post-now", async (req, reply) => {
   const v = db.getVideo(Number((req.params as { id: string }).id));
   if (!v) return reply.code(404).send({ error: "not found" });
+  const acc = ownAccount(req, reply, v.accountId);
+  if (!acc) return;
   const token = db.getRefreshToken(v.accountId);
   if (!token) return reply.code(400).send({ error: "Канал не подключён к YouTube" });
+  const creds = userCreds(uid(req));
+  if (!creds) return reply.code(400).send({ error: "Сначала загрузите свой Google-ключ в Настройках" });
   // HARD language guard: never post a video whose language differs from the channel's.
-  const pacc = db.getAccount(v.accountId);
-  if (pacc && DECKS.some((d) => d.id === pacc.lang) && v.deck !== pacc.lang)
-    return reply.code(400).send({ error: `Язык ролика (${v.deck}) ≠ язык канала (${pacc.lang}) — не выложено.` });
+  if (DECKS.some((d) => d.id === acc.lang) && v.deck !== acc.lang)
+    return reply.code(400).send({ error: `Язык ролика (${v.deck}) ≠ язык канала (${acc.lang}) — не выложено.` });
   // Optional publishAt (RFC3339) → scheduled (private until then); empty → publish now.
   const publishAt = ((req.body as { publishAt?: string })?.publishAt || "").trim() || null;
   try {
     const meta = ytMeta(getDeck(v.deck), v.title, v.text);
-    const youtubeId = await uploadShort(credsPath(), REDIRECT_URI, token, {
+    const youtubeId = await uploadShort(creds, REDIRECT_URI, token, {
       videoPath: resolve(process.cwd(), base.outputDir, v.videoRel),
       title: meta.title,
       description: meta.description,
@@ -410,9 +514,9 @@ app.post("/api/videos/:id/post-now", async (req, reply) => {
   }
 });
 
-// ---- Generators / Studio ----
-app.get("/api/generators", async () => {
-  const used = db.usedAnecdoteKeys();
+// ---- Generators / Studio (per-user used counter) ----
+app.get("/api/generators", async (req) => {
+  const used = db.usedAnecdoteKeys(uid(req));
   return DECKS.map((d) => {
     const s = libraryStats(d.id, used);
     return {
@@ -439,11 +543,11 @@ app.post("/api/generate/anecdote", async (req) => {
   let text = body.text;
   let title = body.title;
   if (!text) {
-    const a = randomAnecdote(deck.id, db.usedAnecdoteKeys());
+    const a = randomAnecdote(deck.id, db.usedAnecdoteKeys(uid(req)));
     if (!a) return { error: "Нет свободных анекдотов (все уже использованы)" };
     text = a.text;
     title = a.title || undefined;
-    db.markAnecdoteUsed(anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот из пула
+    db.markAnecdoteUsed(uid(req), anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот
   }
   if (!title) title = pickGenericTitle(deck);
 
@@ -464,11 +568,11 @@ app.post("/api/generate/anecdote-video", async (req) => {
   let text = body.text;
   let title = body.title;
   if (!text) {
-    const a = randomAnecdote(deck.id, db.usedAnecdoteKeys());
+    const a = randomAnecdote(deck.id, db.usedAnecdoteKeys(uid(req)));
     if (!a) return { error: "Нет свободных анекдотов (все уже использованы)" };
     text = a.text;
     title = a.title || undefined;
-    db.markAnecdoteUsed(anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот из пула
+    db.markAnecdoteUsed(uid(req), anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот
   }
   if (!title) title = pickGenericTitle(deck);
 
@@ -506,7 +610,7 @@ app
     startScheduler({
       db,
       outputDir: resolve(process.cwd(), base.outputDir),
-      credsPath,
+      credsForUser: userCreds,
       redirectUri: REDIRECT_URI,
       log: (m) => app.log.info(m),
     });

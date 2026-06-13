@@ -4,6 +4,7 @@ import { dirname } from "node:path";
 
 export interface Account {
   id: number;
+  userId: number | null;
   channelName: string;
   theme: string;
   lang: string;
@@ -56,6 +57,7 @@ type Row = Record<string, any>;
 
 const rowToAccount = (r: Row): Account => ({
   id: r.id,
+  userId: r.user_id ?? null,
   channelName: r.channel_name,
   theme: r.theme,
   lang: r.lang,
@@ -160,6 +162,12 @@ export function openDb(path: string) {
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       expires_at TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS user_used_anecdotes (
+      user_id INTEGER NOT NULL,
+      key TEXT NOT NULL,
+      used_at TEXT NOT NULL DEFAULT (datetime('now')),
+      PRIMARY KEY (user_id, key)
+    );
   `);
 
   for (const col of ["yt_refresh_token", "yt_channel_id", "yt_channel_title"]) {
@@ -179,11 +187,30 @@ export function openDb(path: string) {
   } catch {
     /* column already exists */
   }
+  try {
+    db.exec("ALTER TABLE accounts ADD COLUMN user_id INTEGER");
+  } catch {
+    /* column already exists */
+  }
+  try {
+    db.exec("ALTER TABLE users ADD COLUMN client_secret_json TEXT");
+  } catch {
+    /* column already exists (or fresh users table) */
+  }
 
   return {
     db,
     listAccounts(): Account[] {
       return (db.prepare("SELECT * FROM accounts ORDER BY id").all() as Row[]).map(rowToAccount);
+    },
+    listAccountsByUser(userId: number): Account[] {
+      return (
+        db.prepare("SELECT * FROM accounts WHERE user_id = ? ORDER BY id").all(userId) as Row[]
+      ).map(rowToAccount);
+    },
+    // One-time migration: existing channels (no owner) become the first admin's.
+    assignOrphanAccounts(userId: number): void {
+      db.prepare("UPDATE accounts SET user_id = ? WHERE user_id IS NULL").run(userId);
     },
     getAccount(id: number): Account | null {
       const r = db.prepare("SELECT * FROM accounts WHERE id = ?").get(id) as Row | undefined;
@@ -192,9 +219,10 @@ export function openDb(path: string) {
     createAccount(input: Partial<Account>): Account {
       const info = db
         .prepare(
-          "INSERT INTO accounts (channel_name, theme, lang, schedule, template, status) VALUES (?,?,?,?,?,?)",
+          "INSERT INTO accounts (user_id, channel_name, theme, lang, schedule, template, status) VALUES (?,?,?,?,?,?,?)",
         )
         .run(
+          input.userId ?? null,
           input.channelName ?? "Новый канал",
           input.theme ?? "",
           input.lang ?? "de",
@@ -316,18 +344,51 @@ export function openDb(path: string) {
         }),
       );
     },
+    // History scoped to one user's channels only (join on accounts.user_id).
+    listHistoryByUser(userId: number): HistoryItem[] {
+      return (
+        db
+          .prepare(
+            "SELECT h.* FROM history h JOIN accounts a ON a.id = h.account_id WHERE a.user_id = ? ORDER BY h.id DESC LIMIT 100",
+          )
+          .all(userId) as Row[]
+      ).map((r) => ({
+        id: r.id,
+        accountId: r.account_id,
+        title: r.title,
+        status: r.status,
+        publishedAt: r.published_at,
+        createdAt: r.created_at,
+      }));
+    },
     // Used anecdotes: once an anecdote becomes a saved/auto-posted video, its key lands here
     // so randomAnecdote() never picks it again (per-install state — not shipped content).
-    markAnecdoteUsed(key: string): void {
-      db.prepare("INSERT INTO used_anecdotes (key) VALUES (?) ON CONFLICT(key) DO NOTHING").run(key);
+    markAnecdoteUsed(userId: number, key: string): void {
+      db.prepare(
+        "INSERT INTO user_used_anecdotes (user_id, key) VALUES (?, ?) ON CONFLICT(user_id, key) DO NOTHING",
+      ).run(userId, key);
     },
-    usedAnecdoteKeys(): Set<string> {
-      const rows = db.prepare("SELECT key FROM used_anecdotes").all() as Row[];
+    usedAnecdoteKeys(userId: number): Set<string> {
+      const rows = db
+        .prepare("SELECT key FROM user_used_anecdotes WHERE user_id = ?")
+        .all(userId) as Row[];
       return new Set(rows.map((r) => r.key as string));
     },
-    usedAnecdoteCount(): number {
-      const r = db.prepare("SELECT COUNT(*) AS n FROM used_anecdotes").get() as Row;
+    usedAnecdoteCount(userId: number): number {
+      const r = db
+        .prepare("SELECT COUNT(*) AS n FROM user_used_anecdotes WHERE user_id = ?")
+        .get(userId) as Row;
       return Number(r.n) || 0;
+    },
+    // One-time migration: copy the old GLOBAL used-marks into a user's per-user set (admin).
+    migrateGlobalUsedTo(userId: number): void {
+      try {
+        db.prepare(
+          "INSERT OR IGNORE INTO user_used_anecdotes (user_id, key) SELECT ?, key FROM used_anecdotes",
+        ).run(userId);
+      } catch {
+        /* old global table missing — nothing to migrate */
+      }
     },
     // ---- Auth: users & sessions ----
     countUsers(): number {
@@ -374,6 +435,17 @@ export function openDb(path: string) {
     },
     deleteSession(token: string): void {
       db.prepare("DELETE FROM sessions WHERE token = ?").run(token);
+    },
+    listUsers(): UserAuth[] {
+      return (db.prepare("SELECT * FROM users ORDER BY id").all() as Row[]).map(rowToUserAuth);
+    },
+    // Per-user Google client_secret JSON (uploaded in Settings). Never sent back to the frontend.
+    getUserClientSecret(userId: number): string | null {
+      const r = db.prepare("SELECT client_secret_json FROM users WHERE id = ?").get(userId) as Row | undefined;
+      return (r?.client_secret_json as string) ?? null;
+    },
+    setUserClientSecret(userId: number, json: string | null): void {
+      db.prepare("UPDATE users SET client_secret_json = ? WHERE id = ?").run(json, userId);
     },
     getSetting(key: string): string | null {
       const r = db.prepare("SELECT value FROM settings WHERE key = ?").get(key) as Row | undefined;
