@@ -372,6 +372,7 @@ async function buildLibraryVideo(input: {
   bg?: string;
   music?: string;
   deck?: string;
+  profession?: string;
 }) {
   const deck = getDeck(input.deck);
   const title = input.title || pickGenericTitle(deck);
@@ -393,7 +394,7 @@ async function buildLibraryVideo(input: {
   const imgRel = `library/vid-${stamp}.png`;
   const vidRel = `library/vid-${stamp}.mp4`;
   const r = await renderAnecdote(
-    { title, text: input.text, channel: deck.name, bg: input.bg },
+    { title, text: input.text, channel: deck.name, bg: input.bg, deck: deck.id, profession: input.profession },
     resolve(process.cwd(), base.outputDir, imgRel),
   );
   await assembleStillVideo(
@@ -462,6 +463,7 @@ app.post("/api/videos/batch", async (req, reply) => {
         bg: body.bg, // undefined → random background per video
         music: body.music || undefined, // empty/undefined → random track per video
         deck: deckId,
+        profession: a.profession, // tips deck → which profession background to render on
       }),
     );
   }
@@ -561,11 +563,13 @@ app.post("/api/generate/anecdote", async (req) => {
   const deck = getDeck(body.deck);
   let text = body.text;
   let title = body.title;
+  let profession: string | undefined;
   if (!text) {
     const a = randomAnecdote(deck.id, db.usedAnecdoteKeys(uid(req)));
     if (!a) return { error: "Нет свободных анекдотов (все уже использованы)" };
     text = a.text;
     title = a.title || undefined;
+    profession = a.profession;
     db.markAnecdoteUsed(uid(req), anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот
   }
   if (!title) title = pickGenericTitle(deck);
@@ -573,7 +577,7 @@ app.post("/api/generate/anecdote", async (req) => {
   previewCounter++;
   const rel = `preview/anek-${Date.now()}-${previewCounter}.png`;
   const out = resolve(process.cwd(), base.outputDir, rel);
-  const r = await renderAnecdote({ title, text, channel: deck.name, bg: body.bg }, out);
+  const r = await renderAnecdote({ title, text, channel: deck.name, bg: body.bg, deck: deck.id, profession }, out);
   return { imageUrl: `/files/${rel}`, title, text, chars: text.length, bg: r.bg, fontPx: r.fontPx };
 });
 
@@ -586,11 +590,13 @@ app.post("/api/generate/anecdote-video", async (req) => {
   const deck = getDeck(body.deck);
   let text = body.text;
   let title = body.title;
+  let profession: string | undefined;
   if (!text) {
     const a = randomAnecdote(deck.id, db.usedAnecdoteKeys(uid(req)));
     if (!a) return { error: "Нет свободных анекдотов (все уже использованы)" };
     text = a.text;
     title = a.title || undefined;
+    profession = a.profession;
     db.markAnecdoteUsed(uid(req), anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот
   }
   if (!title) title = pickGenericTitle(deck);
@@ -617,7 +623,7 @@ app.post("/api/generate/anecdote-video", async (req) => {
   const vidRel = `preview/anek-${stamp}.mp4`;
   const imgOut = resolve(process.cwd(), base.outputDir, imgRel);
   const vidOut = resolve(process.cwd(), base.outputDir, vidRel);
-  const r = await renderAnecdote({ title, text, channel: deck.name, bg: body.bg }, imgOut);
+  const r = await renderAnecdote({ title, text, channel: deck.name, bg: body.bg, deck: deck.id, profession }, imgOut);
   await assembleStillVideo(imgOut, vidOut, { durationSec: 6, audioPath });
   return { videoUrl: `/files/${vidRel}`, imageUrl: `/files/${imgRel}`, title, text, chars: text.length, bg: r.bg, music };
 });

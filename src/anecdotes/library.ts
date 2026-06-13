@@ -8,6 +8,8 @@ export interface PackItem {
   text: string;
   chars: number;
   title: string;
+  /** Tips deck only: profession key → which lifehack background/template to render on. */
+  profession?: string;
 }
 
 const deckDir = (deckId: string): string => resolve(process.cwd(), getDeck(deckId).dir);

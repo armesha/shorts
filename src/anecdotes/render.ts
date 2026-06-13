@@ -8,6 +8,8 @@ import { chromePath } from "../render.ts";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATE = resolve(__dirname, "../../templates/anecdote.html");
 const BG_DIR = resolve(process.cwd(), "assets/backgrounds");
+const LIFEHACK_TEMPLATE = resolve(__dirname, "../../templates/lifehack.html");
+const LIFEHACK_BG_DIR = resolve(process.cwd(), "assets/backgrounds/lifehacks");
 
 const esc = (s: string): string =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -35,28 +37,45 @@ export function backgroundCss(name?: string | null): string {
   return `url('data:${mime};base64,${buf.toString("base64")}') center/cover no-repeat`;
 }
 
+/** Pick a lifehack background by profession key (profession_<key>.jpg); random one if unknown/missing. */
+function lifehackBgFile(profession?: string | null): string | null {
+  if (!existsSync(LIFEHACK_BG_DIR)) return null;
+  const files = readdirSync(LIFEHACK_BG_DIR).filter((f) => /^profession_.*\.(jpe?g|png)$/i.test(f));
+  if (files.length === 0) return null;
+  if (profession) {
+    const key = profession.toLowerCase();
+    const want = files.find((f) => f.toLowerCase().startsWith(`profession_${key}.`));
+    if (want) return want;
+  }
+  return files[Math.floor(Math.random() * files.length)];
+}
+
+/** Resolve a profession to a CSS background (inlined data-URI) + the file name used. */
+function lifehackBgCss(profession?: string | null): { css: string; name: string } {
+  const file = lifehackBgFile(profession);
+  if (!file) return { css: "#ffffff", name: "" };
+  const buf = readFileSync(resolve(LIFEHACK_BG_DIR, file));
+  const mime = /\.png$/i.test(file) ? "image/png" : "image/jpeg";
+  return {
+    css: `url('data:${mime};base64,${buf.toString("base64")}') center/cover no-repeat`,
+    name: file,
+  };
+}
+
 export interface Anecdote {
   title: string;
   text: string;
   channel: string;
   /** Texture name (e.g. "kraft.jpg"); random if omitted. */
   bg?: string;
+  /** Deck id — when "tips", the lifehack layout (profession template) is used instead. */
+  deck?: string;
+  /** Profession key for the lifehack background (tips deck only); random if omitted. */
+  profession?: string;
 }
 
-/** Render one anecdote to a 1080x1920 image. Returns the fitted font size and used bg name. */
-export async function renderAnecdote(
-  a: Anecdote,
-  outPath: string,
-): Promise<{ path: string; fontPx: number; bg: string }> {
-  const bgName = a.bg ?? randomBackgroundName() ?? "";
-  const bgCss = backgroundCss(bgName);
-  let html = await readFile(TEMPLATE, "utf8");
-  html = html
-    .replaceAll("{{TITLE}}", esc(a.title))
-    .replace("{{TEXT}}", esc(a.text))
-    .replaceAll("{{CHANNEL}}", esc(a.channel))
-    .replaceAll("{{BG}}", bgCss);
-
+/** Shared Chrome capture: load HTML, wait for the auto-fit, screenshot a 1080x1920 PNG. */
+async function captureCard(html: string, outPath: string): Promise<number> {
   const browser = await puppeteer.launch({
     executablePath: chromePath(),
     headless: true,
@@ -77,8 +96,41 @@ export async function renderAnecdote(
     await mkdir(dirname(outPath), { recursive: true });
     const buf = await page.screenshot({ type: "png", clip: { x: 0, y: 0, width: 1080, height: 1920 } });
     await writeFile(outPath, buf);
-    return { path: outPath, fontPx, bg: bgName };
+    return fontPx;
   } finally {
     await browser.close();
   }
+}
+
+/** Render one anecdote (or a lifehack, when deck==="tips") to a 1080x1920 image. */
+export async function renderAnecdote(
+  a: Anecdote,
+  outPath: string,
+): Promise<{ path: string; fontPx: number; bg: string }> {
+  if (a.deck === "tips") return renderLifehack(a, outPath);
+  const bgName = a.bg ?? randomBackgroundName() ?? "";
+  const bgCss = backgroundCss(bgName);
+  let html = await readFile(TEMPLATE, "utf8");
+  html = html
+    .replaceAll("{{TITLE}}", esc(a.title))
+    .replace("{{TEXT}}", esc(a.text))
+    .replaceAll("{{CHANNEL}}", esc(a.channel))
+    .replaceAll("{{BG}}", bgCss);
+  const fontPx = await captureCard(html, outPath);
+  return { path: outPath, fontPx, bg: bgName };
+}
+
+/** Render one lifehack/tip onto its profession template (title → red banner, text → the paper). */
+async function renderLifehack(
+  a: Anecdote,
+  outPath: string,
+): Promise<{ path: string; fontPx: number; bg: string }> {
+  const { css, name } = lifehackBgCss(a.profession);
+  let html = await readFile(LIFEHACK_TEMPLATE, "utf8");
+  html = html
+    .replaceAll("{{TITLE}}", esc(a.title))
+    .replace("{{TEXT}}", esc(a.text))
+    .replaceAll("{{BG}}", css);
+  const fontPx = await captureCard(html, outPath);
+  return { path: outPath, fontPx, bg: name || (a.profession ?? "") };
 }

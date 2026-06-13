@@ -28,7 +28,10 @@ export async function produceAnecdoteVideo(
   const stamp = `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
   const imagePath = resolve(outputDir, `out/anek-${stamp}.png`);
   const videoPath = resolve(outputDir, `out/anek-${stamp}.mp4`);
-  const r = await renderAnecdote({ title: a.title, text: a.text, channel: deck.name }, imagePath);
+  const r = await renderAnecdote(
+    { title: a.title, text: a.text, channel: deck.name, deck: deck.id, profession: a.profession },
+    imagePath,
+  );
   await assembleStillVideo(imagePath, videoPath, { durationSec: 6 });
   const meta = ytMeta(deck, a.title, a.text);
   return {

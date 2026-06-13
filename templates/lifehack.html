@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; }
+  .card {
+    position: relative;
+    width: 1080px; height: 1920px;
+    background: var(--bg, #ffffff);
+    background-size: cover;
+    background-position: center;
+  }
+
+  /* Title — white, sits inside the red brush banner near the top */
+  .title {
+    position: absolute;
+    left: 11%; top: 7.2%;
+    width: 60%; height: 12.6%;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    font-family: 'Oswald', 'PT Serif', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    line-height: 1.04;
+    font-size: 60px;
+    text-shadow: 0 2px 7px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+  }
+
+  /* Body — dark text on the white "paper", wraps around the person (bottom-right) */
+  .body {
+    position: absolute;
+    left: 11%; top: 25%;
+    width: 73%; height: 64%;
+    overflow: hidden;
+    color: #1d1b18;
+    font-family: 'PT Serif', Georgia, 'DejaVu Serif', serif;
+  }
+  /* Invisible float over the person: text flows full-width on top, then only to its LEFT
+     in the bottom portion. Exclusion starts at 55% so most text stays full-width. */
+  .cut {
+    float: right;
+    width: 38%;
+    height: 100%;
+    shape-outside: polygon(0% 55%, 100% 55%, 100% 100%, 0% 100%);
+  }
+  .text {
+    font-size: 50px;
+    line-height: 1.42;
+    text-align: left;
+    white-space: pre-wrap;
+    overflow-wrap: break-word; /* safety net: never clip a long word, wrap it instead */
+    hyphens: none;
+  }
+</style>
+</head>
+<body>
+  <div class="card" style="--bg: {{BG}};">
+    <div class="title">{{TITLE}}</div>
+    <div class="body">
+      <div class="cut"></div>
+      <div class="text">{{TEXT}}</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      function fit() {
+        var body = document.querySelector('.body');
+        var text = document.querySelector('.text');
+        var title = document.querySelector('.title');
+
+        // Title: largest size (<=80) that stays on one banner row, no overflow.
+        var tmin = 26, tmax = 80, tbest = tmin;
+        while (tmin <= tmax) {
+          var tm = (tmin + tmax) >> 1;
+          title.style.fontSize = tm + 'px';
+          if (title.scrollWidth <= title.clientWidth && title.scrollHeight <= title.clientHeight) {
+            tbest = tm; tmin = tm + 1;
+          } else { tmax = tm - 1; }
+        }
+        title.style.fontSize = tbest + 'px';
+
+        // Body: largest font (<=64) that fits height AND width (no horizontal overflow).
+        // No line-spacing "grow" here: with the shape-outside wrap it pushes text
+        // non-linearly into the narrow column and overflows. Fixed line-height instead.
+        var BASE_LH = 1.42;
+        text.style.lineHeight = String(BASE_LH);
+        var min = 22, max = 64, best = min;
+        while (min <= max) {
+          var mid = (min + max) >> 1;
+          text.style.fontSize = mid + 'px';
+          var fitsV = text.scrollHeight <= body.clientHeight;
+          var fitsH = text.scrollWidth <= body.clientWidth + 2;
+          if (fitsV && fitsH) { best = mid; min = mid + 1; }
+          else { max = mid - 1; }
+        }
+        text.style.fontSize = best + 'px';
+
+        window.__fitFontPx = best;
+        window.__fitted = true;
+      }
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+      else fit();
+      setTimeout(function () { if (!window.__fitted) fit(); }, 1500);
+    })();
+  </script>
+</body>
+</html>

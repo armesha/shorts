@@ -48,7 +48,7 @@ unattended, managed from a web dashboard. Spec: `ТЗ.pdf`. Architecture & resea
 - Verify the UI headlessly: `npm run server` + `npm run web`, then `tsx src/scripts/screenshot-url.ts <url> <out.png>`.
 
 ## Notes for myself (keep updated)
-- **Subagent/workflow MODEL policy (user rule):** anecdote formatting & titling → use **Claude Haiku** (bulk, cheap/fast). For ALL other subagents/workflows → inherit the **main session model** (don't override `model`).
+- **Subagent/workflow MODEL policy (user rule):** anecdote formatting & titling, AND **lifehacks/tips generation** → use **Claude Haiku** (bulk, cheap/fast). For ALL other subagents/workflows → inherit the **main session model** (don't override `model`).
 - Frontend uses DaisyUI v5 + Tailwind v4 (`@plugin "daisyui"` in `web/src/index.css`); theme forced light via `data-theme="light"` on `<html>`.
 - `lucide-react` has no `Chrome` icon — use `MonitorPlay`/`Globe` instead.
 - Pencil templates live in `untitled.pen`; never use Read/Grep on `.pen` files (encrypted) — only the `pencil` MCP tools.
@@ -59,5 +59,13 @@ unattended, managed from a web dashboard. Spec: `ТЗ.pdf`. Architecture & resea
 - Anecdote render: `templates/anecdote.html` + `src/anecdotes/render.ts` — binary-search auto-fit fills the frame and checks BOTH vertical AND horizontal overflow (long words must never clip — that's a hard user requirement). Random light bg from `BACKGROUNDS`.
 - Studio: `POST /api/generate/anecdote {text?,title?}` → preview PNG served at `/files/...`; frontend `web/src/pages/Studio.tsx`. Anecdote title one-line limit ≈ 28 Cyrillic chars.
 - E2E: `node --import tsx src/scripts/e2e.ts` (Playwright via `channel:'chrome'`) drives the live site; needs `npm run server` + `npm run web` up.
+- **Лайфхаки (дека `tips`):** 979 русских советов по 10 профессиям, сгенерированы Haiku-воркфлоу
+  (60 партий → `corpora/tips-gen/<prof>-<n>.json` → `src/anecdotes/build-tips.ts` → `data/tips/titled.json` + `index.json`).
+  Свой рендер: `templates/lifehack.html` + `renderLifehack()` в `render.ts` (диспетч при `deck==="tips"`);
+  фон = `assets/backgrounds/lifehacks/profession_<key>.jpg`, заголовок в красную плашку, текст Г-образно
+  обтекает фигуру через `shape-outside` (без «растягивания» межстрочного — оно ломало низ). `item.profession`
+  лежит в titled.json и протянут через `pipeline.ts` + 4 точки `server/index.ts`. Фронт деко-агностичен
+  (язык `tips` в `LANGS`, генераторы из `/api/generators`). Перегенерация — повторный Haiku-воркфлоу
+  (правило: лайфхаки → Haiku). Тесты: `src/scripts/render-lifehack-test.ts`, `src/scripts/tips-e2e.ts`.
 - TODO requested: editable Google client-secret path in Settings UI (hardcoded default stays for now). AI/subagent titling of anecdotes (currently generic titles).
 - **Auth (Этап 1 готов):** вход в панель обязателен. `server/auth.ts` = scrypt-хэш + токены сессий + политика блокировки; таблицы `users`/`sessions` в `server/db.ts`; гейт всего `/api/*` + роуты `/api/auth/{login,logout,me}` в `server/index.ts`. Юзеры сидятся из `.env`: `ADMIN_USERNAME`/`ADMIN_PASSWORD` (admin) + `SEED_USERS="name:pass,…"` (user), идемпотентно (создаёт, если нет — пароль не перезатирает). Сессия = httpOnly-кука `sid`; блокировка после `AUTH_MAX_ATTEMPTS`(10) на `AUTH_LOCK_MINUTES`(15) мин. Фронт: `web/src/lib/auth.tsx` (AuthProvider/useAuth), `web/src/pages/Login.tsx`, гейт в `App.tsx`, выход в `Layout.tsx`. **Этап 2 TODO:** `user_id` у каналов (изоляция — свои каналы/ключ видит только владелец), свой Google client-secret на юзера, общий пул анекдотов, учёт «использованных» per-user, UI создания юзеров вместо `.env`.
