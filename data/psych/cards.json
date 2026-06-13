@@ -7860,50 +7860,44 @@
     "outro": "Dein Nein ist nicht grausam — es ist das Anfang deiner Selbstliebe."
   },
   {
-    "pattern": "numbered_tight",
+    "pattern": "bullet",
     "title_lines": [
-      "6 Anzeichen von",
-      "verstecktem Perfektionismus"
+      "Toxischer",
+      "Perfektionismus"
     ],
     "items": [
       {
-        "lead": "Du weißt, dass du unperfekt bist und hasst dich dafür.",
-        "text": "Nicht, um besser zu werden — aus Selbstverachtung."
+        "text": "Perfektionismus ist Depression, die hart arbeitet"
       },
       {
-        "lead": "Gute Dinge fühlen sich nicht gut an.",
-        "text": "Du siehst sofort, was falsch ist, nicht was gelang."
+        "text": "Du startest nichts, weil du weißt, dass es fehlerhaft wird"
       },
       {
-        "lead": "Du aufschieben klassische Aufgaben.",
-        "text": "Weil perfekt oder nichts — und perfekt ist unmöglich."
+        "text": "Erfolg bringt keine Freude — nur Angst vor dem nächsten Versagen"
       },
       {
-        "lead": "Du deckst deine Grenzen in Überarbeit.",
-        "text": "Wenn du stillstehst, musst du dich ansehen."
+        "text": "Kritik fühlt sich an wie ein Beweis, dass du versagst"
       },
       {
-        "lead": "Feedback verletzt dich übermäßig.",
-        "text": "Weil jeder Fehler ein Zeichen deines Wertes ist."
+        "text": "Du vergibst dir keine Fehler — und anderen auch nicht"
       },
       {
-        "lead": "Du vergleichst dein Inneres mit ihrem Äußeren.",
-        "text": "Du siehst ihre Trophäen, nicht ihre Kämpfe."
+        "text": "Arbeit ist nie 'fertig', immer 'noch nicht gut genug'"
       },
       {
-        "lead": "Es ist nicht Ehrgeiz, es ist Angst.",
-        "text": "Angst, unzureichend zu sein, zu dumm, zu faul."
+        "text": "Du hilfst allen, sagst aber nie Nein für deine Grenzen"
       },
       {
-        "lead": "Du wünschst dir, es einfach zu können.",
-        "text": "Ohne den inneren Kritiker zu schlagen."
+        "text": "Einsamkeit wird zur Strafe für Unvollkommenheit"
       },
       {
-        "lead": "Das ist nicht deine Schuld, es ist frühe Botschaft.",
-        "text": "Aber jetzt kannst du andere Botschaften schreiben."
+        "text": "Angst und Schlaflosigkeit folgen fast automatisch"
+      },
+      {
+        "text": "Gute Menschen machen Fehler — das ist menschlich"
       }
     ],
-    "outro": "Perfektionismus ist Angst in Anzug — lerne, dich fehlerhaft zu lieben."
+    "outro": "Perfektionismus ist kein Ehrgeiz — es ist Angst im Anzug."
   },
   {
     "pattern": "numbered_tight",
