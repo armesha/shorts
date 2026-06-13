@@ -84,23 +84,57 @@ export interface VideoItem {
   createdAt: string;
 }
 
+export interface AuthUser {
+  id: number;
+  username: string;
+  role: string;
+}
+
+/** Error carrying the HTTP status + the server's `{error}` message (for lockout/attempt UI). */
+export class ApiError extends Error {
+  status: number;
+  constructor(status: number, message: string) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
+async function handle<T>(r: Response, path: string): Promise<T> {
+  if (r.ok) return (await r.json()) as T;
+  let message = `${r.status} ${r.statusText}`;
+  try {
+    const data = (await r.json()) as { error?: string };
+    if (data?.error) message = data.error;
+  } catch {
+    /* non-JSON error body — keep the status text */
+  }
+  // Session expired/invalid mid-use → let the app fall back to the login screen.
+  if (r.status === 401 && !path.startsWith("/auth/")) {
+    window.dispatchEvent(new CustomEvent("auth:unauthorized"));
+  }
+  throw new ApiError(r.status, message);
+}
+
 async function get<T>(path: string): Promise<T> {
-  const r = await fetch(`/api${path}`);
-  if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
-  return (await r.json()) as T;
+  return handle<T>(await fetch(`/api${path}`, { credentials: "include" }), path);
 }
 
 async function send<T>(path: string, method: string, body?: unknown): Promise<T> {
   const r = await fetch(`/api${path}`, {
     method,
+    credentials: "include",
     headers: body ? { "Content-Type": "application/json" } : undefined,
     body: body ? JSON.stringify(body) : undefined,
   });
-  if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
-  return (await r.json()) as T;
+  return handle<T>(r, path);
 }
 
 export const apiClient = {
+  me: () => get<AuthUser>("/auth/me"),
+  login: (username: string, password: string) =>
+    send<AuthUser>("/auth/login", "POST", { username, password }),
+  logout: () => send<{ ok: boolean }>("/auth/logout", "POST", {}),
   status: () => get<AppStatus>("/config"),
   settings: () => get<AppSettings>("/settings"),
   updateSettings: (googleClientSecretFile: string) =>

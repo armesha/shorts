@@ -42,6 +42,16 @@ export interface Video {
   createdAt: string;
 }
 
+export interface UserAuth {
+  id: number;
+  username: string;
+  passHash: string;
+  role: string;
+  failedAttempts: number;
+  lockedUntil: string | null;
+  createdAt: string;
+}
+
 type Row = Record<string, any>;
 
 const rowToAccount = (r: Row): Account => ({
@@ -72,6 +82,16 @@ const rowToVideo = (r: Row): Video => ({
   imageRel: r.image_rel ?? null,
   postCount: r.post_count,
   lastPostedAt: r.last_posted_at ?? null,
+  createdAt: r.created_at,
+});
+
+const rowToUserAuth = (r: Row): UserAuth => ({
+  id: r.id,
+  username: r.username,
+  passHash: r.pass_hash,
+  role: r.role,
+  failedAttempts: Number(r.failed_attempts) || 0,
+  lockedUntil: r.locked_until ?? null,
   createdAt: r.created_at,
 });
 
@@ -124,6 +144,21 @@ export function openDb(path: string) {
     CREATE TABLE IF NOT EXISTS used_anecdotes (
       key TEXT PRIMARY KEY,
       used_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT NOT NULL UNIQUE,
+      pass_hash TEXT NOT NULL,
+      role TEXT NOT NULL DEFAULT 'user',
+      failed_attempts INTEGER NOT NULL DEFAULT 0,
+      locked_until TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE TABLE IF NOT EXISTS sessions (
+      token TEXT PRIMARY KEY,
+      user_id INTEGER NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      expires_at TEXT NOT NULL
     );
   `);
 
@@ -293,6 +328,52 @@ export function openDb(path: string) {
     usedAnecdoteCount(): number {
       const r = db.prepare("SELECT COUNT(*) AS n FROM used_anecdotes").get() as Row;
       return Number(r.n) || 0;
+    },
+    // ---- Auth: users & sessions ----
+    countUsers(): number {
+      const r = db.prepare("SELECT COUNT(*) AS n FROM users").get() as Row;
+      return Number(r.n) || 0;
+    },
+    createUser(u: { username: string; passHash: string; role?: string }): UserAuth {
+      const info = db
+        .prepare("INSERT INTO users (username, pass_hash, role) VALUES (?,?,?)")
+        .run(u.username, u.passHash, u.role ?? "user");
+      return this.getUserById(Number(info.lastInsertRowid))!;
+    },
+    getUserById(id: number): UserAuth | null {
+      const r = db.prepare("SELECT * FROM users WHERE id = ?").get(id) as Row | undefined;
+      return r ? rowToUserAuth(r) : null;
+    },
+    getUserByUsername(username: string): UserAuth | null {
+      const r = db.prepare("SELECT * FROM users WHERE username = ?").get(username) as Row | undefined;
+      return r ? rowToUserAuth(r) : null;
+    },
+    incFailedAttempts(id: number): number {
+      db.prepare("UPDATE users SET failed_attempts = failed_attempts + 1 WHERE id = ?").run(id);
+      const r = db.prepare("SELECT failed_attempts AS n FROM users WHERE id = ?").get(id) as Row;
+      return Number(r.n) || 0;
+    },
+    lockUser(id: number, untilIso: string): void {
+      db.prepare("UPDATE users SET locked_until = ? WHERE id = ?").run(untilIso, id);
+    },
+    clearLock(id: number): void {
+      db.prepare("UPDATE users SET failed_attempts = 0, locked_until = NULL WHERE id = ?").run(id);
+    },
+    createSession(token: string, userId: number, expiresAtIso: string): void {
+      db.prepare("INSERT INTO sessions (token, user_id, expires_at) VALUES (?,?,?)").run(
+        token,
+        userId,
+        expiresAtIso,
+      );
+    },
+    getSession(token: string): { userId: number; expiresAt: string } | null {
+      const r = db.prepare("SELECT user_id, expires_at FROM sessions WHERE token = ?").get(token) as
+        | Row
+        | undefined;
+      return r ? { userId: r.user_id as number, expiresAt: r.expires_at as string } : null;
+    },
+    deleteSession(token: string): void {
+      db.prepare("DELETE FROM sessions WHERE token = ?").run(token);
     },
     getSetting(key: string): string | null {
       const r = db.prepare("SELECT value FROM settings WHERE key = ?").get(key) as Row | undefined;

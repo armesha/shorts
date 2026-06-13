@@ -16,6 +16,14 @@ import { renderAnecdote, listBackgrounds } from "../src/anecdotes/render.ts";
 import { assembleStillVideo, listAudio, audioPathFor } from "../src/video.ts";
 import { buildAuthUrl, exchangeAndGetChannel, uploadShort } from "./youtube.ts";
 import { startScheduler } from "./scheduler.ts";
+import {
+  hashPassword,
+  verifyPassword,
+  newSessionToken,
+  MAX_FAILED_ATTEMPTS,
+  LOCK_MINUTES,
+  SESSION_TTL_DAYS,
+} from "./auth.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -26,6 +34,25 @@ const db = openDb(base.dbPath);
 for (const acc of db.listAccounts()) {
   for (const v of db.listVideos(acc.id)) db.markAnecdoteUsed(anecdoteKey(v.text));
 }
+
+// Ensure seed users exist (idempotent — creates each only if missing, never clobbers a password).
+// Admin-creates-users model; a proper UI lands in Phase 2. Creds live in .env (gitignored).
+function ensureUser(username: string, password: string, role: string) {
+  const u = username.trim();
+  if (!u || !password) return;
+  if (db.getUserByUsername(u)) return; // already exists — leave its stored password untouched
+  db.createUser({ username: u, passHash: hashPassword(password), role });
+  console.log(`[auth] Seeded ${role} "${u}".`);
+}
+ensureUser(process.env.ADMIN_USERNAME ?? "", process.env.ADMIN_PASSWORD ?? "", "admin");
+// Extra non-admin users: SEED_USERS="name:pass,name2:pass2" (passwords must not contain ',' or ':').
+for (const entry of (process.env.SEED_USERS ?? "").split(",")) {
+  const t = entry.trim();
+  const idx = t.indexOf(":");
+  if (idx > 0) ensureUser(t.slice(0, idx), t.slice(idx + 1), "user");
+}
+if (db.countUsers() === 0)
+  console.warn("[auth] No users seeded — set ADMIN_USERNAME/ADMIN_PASSWORD in .env, then restart.");
 
 const credsPath = (): string => resolveClientSecretFile(db.getSetting("googleClientSecretFile"));
 const REDIRECT_URI =
@@ -44,6 +71,108 @@ const app = Fastify({ logger: true });
 await app.register(cors, { origin: true });
 await app.register(fastifyStatic, { root: resolve(process.cwd(), base.outputDir), prefix: "/files/" });
 await app.register(fastifyStatic, { root: resolve(process.cwd(), "assets/audio"), prefix: "/audio/", decorateReply: false });
+
+// ---- Auth: session cookie + login throttling ------------------------------------------------
+const SESSION_COOKIE = "sid";
+const COOKIE_SECURE = process.env.SESSION_COOKIE_SECURE === "1"; // enable when served over HTTPS
+const DAY_MS = 86_400_000;
+
+function getCookie(req: { headers: { cookie?: string } }, name: string): string | null {
+  const raw = req.headers.cookie;
+  if (!raw) return null;
+  for (const part of raw.split(";")) {
+    const i = part.indexOf("=");
+    if (i === -1) continue;
+    if (part.slice(0, i).trim() === name) return decodeURIComponent(part.slice(i + 1).trim());
+  }
+  return null;
+}
+function setSessionCookie(reply: { header: (k: string, v: string) => unknown }, token: string) {
+  const attrs = [
+    `${SESSION_COOKIE}=${token}`,
+    "HttpOnly",
+    "SameSite=Lax",
+    "Path=/",
+    `Max-Age=${SESSION_TTL_DAYS * 86_400}`,
+  ];
+  if (COOKIE_SECURE) attrs.push("Secure");
+  reply.header("Set-Cookie", attrs.join("; "));
+}
+function clearSessionCookie(reply: { header: (k: string, v: string) => unknown }) {
+  const attrs = [`${SESSION_COOKIE}=`, "HttpOnly", "SameSite=Lax", "Path=/", "Max-Age=0"];
+  if (COOKIE_SECURE) attrs.push("Secure");
+  reply.header("Set-Cookie", attrs.join("; "));
+}
+
+// Gate the whole API behind a session. Exceptions: health, the login endpoint, and the YouTube
+// OAuth callback (Google redirects the browser there). Static /files & /audio are not under /api/.
+const PUBLIC_API = new Set(["/api/health", "/api/auth/login"]);
+app.addHook("onRequest", async (req, reply) => {
+  const path = req.url.split("?")[0];
+  if (!path.startsWith("/api/")) return;
+  if (PUBLIC_API.has(path) || path === "/api/youtube/callback") return;
+  const token = getCookie(req, SESSION_COOKIE);
+  const sess = token ? db.getSession(token) : null;
+  if (!sess || new Date(sess.expiresAt).getTime() < Date.now()) {
+    if (token) db.deleteSession(token); // drop stale/expired token
+    return reply.code(401).send({ error: "Не авторизован" });
+  }
+  (req as { userId?: number }).userId = sess.userId;
+});
+
+app.post("/api/auth/login", async (req, reply) => {
+  const body = (req.body as { username?: string; password?: string }) ?? {};
+  const username = (body.username ?? "").trim();
+  const password = body.password ?? "";
+  if (!username || !password) return reply.code(400).send({ error: "Введите логин и пароль" });
+
+  const user = db.getUserByUsername(username);
+  // Generic message so an attacker can't probe which usernames exist.
+  if (!user) return reply.code(401).send({ error: "Неверный логин или пароль" });
+
+  // Lockout: refuse even a correct password while the account is locked.
+  if (user.lockedUntil && new Date(user.lockedUntil).getTime() > Date.now()) {
+    const mins = Math.max(1, Math.ceil((new Date(user.lockedUntil).getTime() - Date.now()) / 60_000));
+    return reply.code(423).send({
+      error: `Аккаунт заблокирован после ${MAX_FAILED_ATTEMPTS} неудачных попыток. Подождите ~${mins} мин.`,
+    });
+  }
+
+  if (!verifyPassword(password, user.passHash)) {
+    const attempts = db.incFailedAttempts(user.id);
+    if (attempts >= MAX_FAILED_ATTEMPTS) {
+      const until = new Date(Date.now() + LOCK_MINUTES * 60_000).toISOString();
+      db.lockUser(user.id, until);
+      return reply.code(423).send({
+        error: `Слишком много попыток. Аккаунт заблокирован на ${LOCK_MINUTES} мин.`,
+      });
+    }
+    return reply.code(401).send({
+      error: `Неверный логин или пароль. Осталось попыток: ${MAX_FAILED_ATTEMPTS - attempts}`,
+    });
+  }
+
+  // Success → reset the counter and issue a session.
+  db.clearLock(user.id);
+  const token = newSessionToken();
+  db.createSession(token, user.id, new Date(Date.now() + SESSION_TTL_DAYS * DAY_MS).toISOString());
+  setSessionCookie(reply, token);
+  return { id: user.id, username: user.username, role: user.role };
+});
+
+app.post("/api/auth/logout", async (req, reply) => {
+  const token = getCookie(req, SESSION_COOKIE);
+  if (token) db.deleteSession(token);
+  clearSessionCookie(reply);
+  return { ok: true };
+});
+
+app.get("/api/auth/me", async (req, reply) => {
+  const uid = (req as { userId?: number }).userId;
+  const user = uid ? db.getUserById(uid) : null;
+  if (!user) return reply.code(401).send({ error: "Не авторизован" });
+  return { id: user.id, username: user.username, role: user.role };
+});
 
 app.get("/api/health", async () => ({ ok: true, time: new Date().toISOString() }));
 

@@ -5,8 +5,18 @@ import Accounts from "./pages/Accounts";
 import AccountDetail from "./pages/AccountDetail";
 import History from "./pages/History";
 import Settings from "./pages/Settings";
+import Login from "./pages/Login";
+import { AuthProvider, useAuth } from "./lib/auth";
 
-export default function App() {
+function Gate() {
+  const { user, loading } = useAuth();
+  if (loading)
+    return (
+      <div className="min-h-screen grid place-items-center bg-base-200">
+        <span className="loading loading-spinner loading-lg text-primary" />
+      </div>
+    );
+  if (!user) return <Login />;
   return (
     <Layout>
       <Routes>
@@ -19,5 +29,13 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <Gate />
+    </AuthProvider>
   );
 }

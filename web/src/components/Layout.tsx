@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
-import { Tv, History, Settings, Clapperboard, Sparkles } from "lucide-react";
+import { Tv, History, Settings, Clapperboard, Sparkles, LogOut } from "lucide-react";
+import { useAuth } from "../lib/auth";
 
 const NAV = [
   { to: "/", label: "Каналы", icon: Tv, end: true },
@@ -10,6 +11,7 @@ const NAV = [
 ];
 
 export default function Layout({ children }: { children: ReactNode }) {
+  const { user, logout } = useAuth();
   return (
     <div className="min-h-screen flex bg-base-200 text-base-content">
       <aside className="w-64 shrink-0 bg-base-100 border-r border-base-300 flex flex-col">
@@ -33,8 +35,21 @@ export default function Layout({ children }: { children: ReactNode }) {
             ))}
           </ul>
         </nav>
-        <div className="px-5 py-4 text-xs text-base-content/50 border-t border-base-300">
-          v0.1 · автоматический режим
+        <div className="px-3 py-3 border-t border-base-300">
+          {user && (
+            <div className="flex items-center justify-between gap-2 px-2 mb-2">
+              <div className="min-w-0">
+                <div className="text-sm font-medium truncate">{user.username}</div>
+                <div className="text-xs text-base-content/50">
+                  {user.role === "admin" ? "администратор" : "пользователь"}
+                </div>
+              </div>
+              <button className="btn btn-ghost btn-sm" onClick={logout} title="Выйти">
+                <LogOut size={16} />
+              </button>
+            </div>
+          )}
+          <div className="px-2 text-xs text-base-content/40">v0.1 · авто-режим</div>
         </div>
       </aside>
       <main className="flex-1 min-w-0">
