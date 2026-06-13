@@ -7,7 +7,6 @@ import { getDeck } from "./decks.ts";
 // (NDJSON). Source: huggingface.co/datasets/mrinaldi/UsenetArchiveIT. Needs sig/quote stripping,
 // mojibake repair, NSFW filtering — Usenet is unmoderated.
 const deck = getDeck("it");
-const SRC = resolve(process.cwd(), deck.source); // corpora/it-barzellette.jsonl
 const OUT_DIR = resolve(process.cwd(), deck.dir); // data/anecdotes-it
 
 // Italian NSFW / slur blocklist (roots). Advertiser-safety first.
@@ -53,11 +52,15 @@ interface Post {
 }
 
 /** Parse NDJSON → strip sig/quotes → fix mojibake → normalize → dedupe → drop NSFW/broken. */
-export function loadCleanBarzellette(src = SRC): string[] {
-  const raw = readFileSync(src, "utf8");
+export function loadCleanBarzellette(): string[] {
+  const SRCS = ["corpora/it-barzellette.jsonl", "corpora/it-umorismo.jsonl"]
+    .map((p) => resolve(process.cwd(), p))
+    .filter((p) => existsSync(p));
   const out: string[] = [];
   const seen = new Set<string>();
-  for (const line of raw.split("\n")) {
+  for (const src of SRCS) {
+    const raw = readFileSync(src, "utf8");
+    for (const line of raw.split("\n")) {
     if (!line.trim()) continue;
     let obj: Post;
     try {
@@ -77,13 +80,14 @@ export function loadCleanBarzellette(src = SRC): string[] {
     seen.add(key);
     out.push(t);
   }
+  }
   return out;
 }
 
 function main() {
   const MIN = Number(process.env.ANEK_MIN ?? 120);
   const MAX = Number(process.env.ANEK_MAX ?? 400);
-  const CAP = Number(process.env.ANEK_CAP ?? 10000);
+  const CAP = Number(process.env.ANEK_CAP ?? 6000);
   const BUILD = process.argv.includes("--build");
   const clean = loadCleanBarzellette();
   const lens = clean.map((a) => a.length).sort((x, y) => x - y);
