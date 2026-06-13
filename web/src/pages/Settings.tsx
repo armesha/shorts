@@ -115,6 +115,8 @@ export default function Settings() {
         </div>
       </section>
 
+      <ChangePassword />
+
       {isAdmin && <AdminUsers />}
 
       <Row icon={<Bot />} title="Движок генерации" value="Claude Code (headless)" ok />
@@ -229,6 +231,100 @@ function AdminUsers() {
             </div>
           )}
         </div>
+      </div>
+    </section>
+  );
+}
+
+// Self-service password change — any logged-in user changes their OWN password.
+function ChangePassword() {
+  const [cur, setCur] = useState("");
+  const [next, setNext] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const valid = cur.length > 0 && next.length >= 6 && next === confirm;
+
+  async function submit() {
+    setMsg(null);
+    if (next !== confirm) return setMsg({ ok: false, text: "Новый пароль и подтверждение не совпадают" });
+    if (next.length < 6) return setMsg({ ok: false, text: "Новый пароль — минимум 6 символов" });
+    setBusy(true);
+    try {
+      const r = await fetch("/api/auth/change-password", {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ currentPassword: cur, newPassword: next }),
+      });
+      const data = (await r.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+      if (!r.ok || data?.error) {
+        setMsg({ ok: false, text: data?.error || "Не удалось сменить пароль" });
+        return;
+      }
+      setMsg({ ok: true, text: "Пароль изменён. Теперь его знаешь только ты — администратору он неизвестен." });
+      setCur("");
+      setNext("");
+      setConfirm("");
+    } catch {
+      setMsg({ ok: false, text: "Ошибка сети" });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section className="card bg-base-100 border border-base-300">
+      <div className="card-body gap-3">
+        <div className="flex items-center gap-2">
+          <Lock className="text-primary" size={18} />
+          <h2 className="card-title text-base">Смена пароля</h2>
+        </div>
+        <p className="text-sm text-base-content/70">
+          Поменяй пароль, который выдал администратор, на свой — знать его будешь только ты.
+        </p>
+        <div className="flex flex-wrap items-end gap-2">
+          <div>
+            <span className="label-text">Текущий пароль</span>
+            <input
+              type="password"
+              className="input input-bordered input-sm w-44 mt-1 block"
+              value={cur}
+              onChange={(e) => setCur(e.target.value)}
+              autoComplete="current-password"
+            />
+          </div>
+          <div>
+            <span className="label-text">Новый (≥6)</span>
+            <input
+              type="password"
+              className="input input-bordered input-sm w-44 mt-1 block"
+              value={next}
+              onChange={(e) => setNext(e.target.value)}
+              autoComplete="new-password"
+            />
+          </div>
+          <div>
+            <span className="label-text">Повтори новый</span>
+            <input
+              type="password"
+              className="input input-bordered input-sm w-44 mt-1 block"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              autoComplete="new-password"
+            />
+          </div>
+          <button className="btn btn-primary btn-sm gap-1" onClick={submit} disabled={busy || !valid}>
+            {busy ? <span className="loading loading-spinner loading-sm" /> : <KeyRound size={14} />}
+            Сменить пароль
+          </button>
+        </div>
+        {msg && (
+          <div className={`text-sm flex items-center gap-1 ${msg.ok ? "text-success" : "text-error"}`}>
+            {msg.ok ? <Check size={14} /> : <AlertTriangle size={14} />} {msg.text}
+          </div>
+        )}
       </div>
     </section>
   );

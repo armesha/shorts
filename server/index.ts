@@ -25,6 +25,7 @@ import {
   LOCK_MINUTES,
   SESSION_TTL_DAYS,
 } from "./auth.ts";
+import { registerPasswordRoutes } from "./password-routes.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -166,6 +167,9 @@ app.addHook("onRequest", async (req, reply) => {
   }
   (req as { userId?: number }).userId = sess.userId;
 });
+
+// Self-service password change (logic in a separate file → minimal footprint in this shared module).
+registerPasswordRoutes(app, db, base.dbPath);
 
 app.post("/api/auth/login", async (req, reply) => {
   const body = (req.body as { username?: string; password?: string }) ?? {};
