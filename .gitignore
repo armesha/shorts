@@ -14,6 +14,7 @@ data/anecdotes/_*.json
 data/anecdotes-de/_*.json
 data/anecdotes-it/_*.json
 data/anecdotes-fr/_*.json
+data/tips/_*.json
 
 # huge source corpora — not needed at runtime (packs are pre-built & shipped)
 Русские анекдоты/

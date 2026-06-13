@@ -52,6 +52,16 @@ export const DECKS: Deck[] = [
     tags: ["blagues", "humour", "drôle", "rire", "blague", "comédie", "shorts"],
     genericTitles: ["Blague", "Blague du jour", "Pour rire", "Tu connais celle-là ?", "Écoute ça", "Drôle"],
   },
+  {
+    id: "tips",
+    name: "Народные лайфхаки",
+    dir: "data/tips",
+    source: "corpora/tips.json",
+    emoji: "💡",
+    hashtags: "#лайфхаки #советы #полезное #лайфхак #shorts",
+    tags: ["лайфхаки", "советы", "полезное", "лайфхак", "быт", "хитрости", "shorts"],
+    genericTitles: ["Лайфхак", "Полезный совет", "На заметку", "Хитрость", "Совет дня", "Запомни"],
+  },
 ];
 
 export const DEFAULT_DECK = "ru";

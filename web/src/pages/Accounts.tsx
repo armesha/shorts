@@ -8,10 +8,22 @@ export default function Accounts() {
   const [status, setStatus] = useState<AppStatus | null>(null);
   const [error, setError] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [queue, setQueue] = useState<Record<number, number>>({});
   const navigate = useNavigate();
 
   useEffect(() => {
-    apiClient.accounts().then(setAccounts).catch(() => setError(true));
+    apiClient
+      .accounts()
+      .then((a) => {
+        setAccounts(a);
+        a.forEach((acc) =>
+          apiClient
+            .videos(acc.id)
+            .then((v) => setQueue((q) => ({ ...q, [acc.id]: v.length })))
+            .catch(() => {}),
+        );
+      })
+      .catch(() => setError(true));
     apiClient.status().then(setStatus).catch(() => setError(true));
   }, []);
 
@@ -117,6 +129,7 @@ export default function Accounts() {
                   Расписание:{" "}
                   <span className="font-medium text-base-content">{a.schedule.join(", ")}</span>
                 </div>
+                <QueueInfo count={queue[a.id]} schedule={a.schedule} enabled={a.enabled} />
                 {a.ytChannelId && (
                   <button
                     onClick={(e) => {
@@ -134,6 +147,32 @@ export default function Accounts() {
             </Link>
           ))}
         </div>
+      )}
+    </div>
+  );
+}
+
+// Per-channel queue size + runway (how many days the library lasts at its posting rate).
+function QueueInfo({ count, schedule, enabled }: { count?: number; schedule: string[]; enabled: boolean }) {
+  if (count == null) return <div className="mt-2 text-xs text-base-content/40">очередь…</div>;
+  const perDay = enabled ? schedule.length : 0;
+  return (
+    <div className="mt-2 text-sm flex items-center gap-3 flex-wrap">
+      <span>
+        🎬 В очереди: <b>{count}</b> видео
+      </span>
+      {perDay === 0 ? (
+        <span className="text-base-content/50">расписание не задано</span>
+      ) : (
+        (() => {
+          const days = Math.ceil(count / perDay);
+          const cls = days <= 0 ? "text-error" : days < 3 ? "text-warning" : "text-success";
+          return (
+            <span className={cls}>
+              ⏳ хватит на ~{days} дн. ({perDay}/день){days < 3 ? " — пора пополнить!" : ""}
+            </span>
+          );
+        })()
       )}
     </div>
   );

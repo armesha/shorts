@@ -9,6 +9,7 @@ const LANGS: [string, string][] = [
   ["it", "Итальянский"],
   ["fr", "Французский"],
   ["en", "Английский"],
+  ["tips", "Народные лайфхаки"],
 ];
 
 // Evenly distribute N uploads across the day (e.g. 4 → 00:00, 06:00, 12:00, 18:00).
