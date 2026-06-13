@@ -1,31 +1,71 @@
-import { readFileSync, writeFileSync, readdirSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 
-// Applies generated titles (_titles-*.json) into the packs, then rebuilds titled.json
-// (the pool of READY anecdotes the generator may use). Titles are capped to 22 chars.
-const DIR = resolve(process.cwd(), "data/anecdotes");
+// Applies the Haiku _titles-*.json (written per pack by the haiku-titles workflow) into each
+// deck's titled.json: sets the title and, for Italian, drops items flagged keep=false (chatter).
+// Russian (data/anecdotes) is intentionally NOT touched here.
+const DIRS: Record<string, string> = {
+  de: "data/anecdotes-de",
+  fr: "data/anecdotes-fr",
+  it: "data/anecdotes-it",
+};
 
-const titleMap = new Map<number, string>();
-for (const tf of readdirSync(DIR).filter((f) => f.startsWith("_titles-") && f.endsWith(".json"))) {
-  const arr = JSON.parse(readFileSync(resolve(DIR, tf), "utf8")) as { id: number; title: string }[];
-  for (const t of arr) titleMap.set(t.id, (t.title || "").trim().slice(0, 22));
+interface PackItem {
+  id: number;
+  pack: number;
+  text: string;
+  chars: number;
+  title: string;
+}
+interface TitleRow {
+  id: number;
+  title?: string;
+  keep?: boolean;
 }
 
-const packs = readdirSync(DIR).filter((f) => f.startsWith("pack-") && f.endsWith(".json")).sort();
-const titled: unknown[] = [];
-let applied = 0;
-for (const pf of packs) {
-  const items = JSON.parse(readFileSync(resolve(DIR, pf), "utf8")) as { id: number; title: string }[];
-  let changed = false;
-  for (const it of items) {
-    if (titleMap.has(it.id)) {
-      it.title = titleMap.get(it.id)!;
-      changed = true;
-      applied++;
-    }
-    if (it.title) titled.push(it);
+for (const [deckId, dir] of Object.entries(DIRS)) {
+  const full = resolve(process.cwd(), dir);
+  if (!existsSync(full)) {
+    console.log(`${deckId}: dir missing — skip`);
+    continue;
   }
-  if (changed) writeFileSync(resolve(DIR, pf), JSON.stringify(items, null, 1));
+  const packs = readdirSync(full).filter((f) => /^pack-\d+\.json$/.test(f)).sort();
+  const titled: PackItem[] = [];
+  let dropped = 0;
+  let untitledPacks = 0;
+  for (const pf of packs) {
+    const items = JSON.parse(readFileSync(resolve(full, pf), "utf8")) as PackItem[];
+    const tpath = resolve(full, pf.replace(/^pack-/, "_titles-"));
+    if (!existsSync(tpath)) {
+      untitledPacks++;
+      continue; // pack not titled yet → stays out of titled.json (unused)
+    }
+    let titles: TitleRow[];
+    try {
+      titles = JSON.parse(readFileSync(tpath, "utf8")) as TitleRow[];
+    } catch {
+      untitledPacks++;
+      continue;
+    }
+    const byId = new Map(titles.map((t) => [t.id, t]));
+    for (const it of items) {
+      const t = byId.get(it.id);
+      if (!t) continue;
+      if (t.keep === false) {
+        dropped++;
+        continue;
+      }
+      const title = (t.title || "").trim().slice(0, 40);
+      if (!title) continue;
+      titled.push({ ...it, title });
+    }
+  }
+  if (titled.length) {
+    writeFileSync(resolve(full, "titled.json"), JSON.stringify(titled, null, 1));
+    console.log(
+      `${deckId}: titled.json = ${titled.length} (dropped ${dropped}, packs without titles: ${untitledPacks})`,
+    );
+  } else {
+    console.log(`${deckId}: no titles to apply (untitled packs: ${untitledPacks})`);
+  }
 }
-writeFileSync(resolve(DIR, "titled.json"), JSON.stringify(titled, null, 1));
-console.log(`Applied ${applied} titles. Ready (titled) pool: ${titled.length} anecdotes.`);
