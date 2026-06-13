@@ -31,7 +31,10 @@ export default function Statistics() {
     apiClient
       .stats(scope)
       .then(setRows)
-      .catch(() => setError("Не удалось загрузить статистику"))
+      .catch((e) => {
+        console.error("[Статистика] запрос /stats упал:", e);
+        setError("Не удалось загрузить статистику (подробности в консоли F12)");
+      })
       .finally(() => setLoading(false));
   }, [scope]);
 
@@ -39,9 +42,17 @@ export default function Statistics() {
     setRefreshing(true);
     setError(null);
     try {
-      setRows(await apiClient.refreshStats(scope));
-    } catch {
-      setError("Не удалось обновить данные");
+      const r = await apiClient.refreshStats(scope);
+      setRows(r);
+      const failed = r.filter((x) => x.error);
+      if (failed.length)
+        console.error(
+          `[Статистика] ошибки обновления у ${failed.length} канал(ов):`,
+          failed.map((x) => ({ канал: x.ytChannelTitle || x.channelName, ошибка: x.error })),
+        );
+    } catch (e) {
+      console.error("[Статистика] запрос /stats/refresh упал:", e);
+      setError("Не удалось обновить данные (подробности в консоли F12)");
     } finally {
       setRefreshing(false);
     }
@@ -138,7 +149,10 @@ function ChannelCard({ row, isAdmin }: { row: StatRow; isAdmin: boolean }) {
       apiClient
         .statsHistory(row.accountId)
         .then(setPoints)
-        .catch(() => setPoints([]));
+        .catch((e) => {
+          console.error(`[Статистика] история канала #${row.accountId}:`, e);
+          setPoints([]);
+        });
     }
   }, [open, points, row.accountId]);
 
@@ -186,6 +200,12 @@ function ChannelCard({ row, isAdmin }: { row: StatRow; isAdmin: boolean }) {
             )
           )}
         </div>
+
+        {row.error && (
+          <div className="alert alert-error py-2 text-xs">
+            <span>⚠ {row.error}</span>
+          </div>
+        )}
 
         <div className="grid grid-cols-3 gap-3">
           <Metric label="Подписчики" value={row.latest?.subscribers} delta={delta(row, "subscribers")} />

@@ -363,6 +363,21 @@ function statRow(a: Account, error?: string | null) {
   };
 }
 
+// Turn a googleapis/OAuth failure into a short Russian hint; raw reason stays in () for the F12 console.
+function ytErrorMessage(err: unknown): string {
+  const e = err as { response?: { data?: { error_description?: string; error?: string } }; message?: string };
+  const raw = e?.response?.data?.error_description || e?.response?.data?.error || e?.message || String(err);
+  const s = String(raw);
+  if (/unauthorized_client|invalid_client/i.test(s))
+    return `Токен канала не принят (${s}) — переподключите канал в «Каналы».`;
+  if (/invalid_grant/i.test(s)) return `Доступ отозван или истёк (${s}) — переподключите канал.`;
+  if (/insufficient|scope|forbidden/i.test(s))
+    return `Недостаточно прав токена (${s}) — переподключите канал заново.`;
+  if (/quota|rateLimit|userRateLimitExceeded/i.test(s))
+    return `Квота YouTube API исчерпана (${s}) — попробуйте позже.`;
+  return `Ошибка YouTube: ${s}`;
+}
+
 app.get("/api/stats", async (req) => {
   const scope = (req.query as { scope?: string }).scope;
   return visibleAccounts(req, scope).map((a) => statRow(a));
@@ -392,7 +407,7 @@ app.post("/api/stats/refresh", async (req) => {
         db.addChannelSnapshot({ accountId: a.id, subscribers: s.subscribers, views: s.views, videos: s.videos });
       } catch (err) {
         app.log.error({ err: String(err), accountId: a.id }, "stats refresh failed");
-        errors.set(a.id, "Не удалось получить данные из YouTube");
+        errors.set(a.id, ytErrorMessage(err));
       }
     }),
   );

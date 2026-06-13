@@ -344,7 +344,7 @@ export default function AccountDetail() {
               <span className="text-base-content/40">(по языку канала)</span>
             </span>
             <span className="text-sm text-base-content/70 ml-1">Сделать сразу:</span>
-            {(user?.role === "admin" ? [5, 10] : [1, 5]).map((n) => (
+            {(user?.role === "admin" ? [5, 10, 20] : [1, 5]).map((n) => (
               <button
                 key={n}
                 className="btn btn-sm btn-outline gap-1"
