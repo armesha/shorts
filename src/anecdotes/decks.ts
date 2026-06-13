@@ -9,6 +9,8 @@ export interface Deck {
   hashtags: string; // appended to the YouTube description
   tags: string[]; // YouTube tags
   genericTitles: string[]; // fallback headings when an anecdote has no title yet
+  /** When true, render via the lifehack (profession) layout instead of the anecdote card. */
+  lifehack?: boolean;
 }
 
 export const DECKS: Deck[] = [
@@ -61,6 +63,18 @@ export const DECKS: Deck[] = [
     hashtags: "#лайфхаки #советы #полезное #лайфхак #shorts",
     tags: ["лайфхаки", "советы", "полезное", "лайфхак", "быт", "хитрости", "shorts"],
     genericTitles: ["Лайфхак", "Полезный совет", "На заметку", "Хитрость", "Совет дня", "Запомни"],
+    lifehack: true,
+  },
+  {
+    id: "tips-de",
+    name: "Deutsche Lifehacks",
+    dir: "data/tips-de",
+    source: "corpora/tips-de.json",
+    emoji: "💡",
+    hashtags: "#lifehacks #tipps #alltag #lifehack #shorts",
+    tags: ["lifehacks", "tipps", "alltagstipps", "lifehack", "haushalt", "tricks", "shorts"],
+    genericTitles: ["Lifehack", "Nützlicher Tipp", "Gut zu wissen", "Profi-Trick", "Tipp des Tages", "Merk dir das"],
+    lifehack: true,
   },
 ];
 

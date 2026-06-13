@@ -4,6 +4,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import puppeteer from "puppeteer-core";
 import { chromePath } from "../render.ts";
+import { getDeck } from "./decks.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATE = resolve(__dirname, "../../templates/anecdote.html");
@@ -68,7 +69,7 @@ export interface Anecdote {
   channel: string;
   /** Texture name (e.g. "kraft.jpg"); random if omitted. */
   bg?: string;
-  /** Deck id — when "tips", the lifehack layout (profession template) is used instead. */
+  /** Deck id — for lifehack decks (tips, tips-de) the profession layout is used instead. */
   deck?: string;
   /** Profession key for the lifehack background (tips deck only); random if omitted. */
   profession?: string;
@@ -102,12 +103,12 @@ async function captureCard(html: string, outPath: string): Promise<number> {
   }
 }
 
-/** Render one anecdote (or a lifehack, when deck==="tips") to a 1080x1920 image. */
+/** Render one anecdote (or a lifehack, for lifehack decks) to a 1080x1920 image. */
 export async function renderAnecdote(
   a: Anecdote,
   outPath: string,
 ): Promise<{ path: string; fontPx: number; bg: string }> {
-  if (a.deck === "tips") return renderLifehack(a, outPath);
+  if (getDeck(a.deck).lifehack) return renderLifehack(a, outPath);
   const bgName = a.bg ?? randomBackgroundName() ?? "";
   const bgCss = backgroundCss(bgName);
   let html = await readFile(TEMPLATE, "utf8");
