@@ -53,6 +53,16 @@ export interface UserAuth {
   createdAt: string;
 }
 
+/** One snapshot of a channel's YouTube totals (subscribers/views/videos) at a point in time. */
+export interface ChannelSnapshot {
+  id: number;
+  accountId: number;
+  subscribers: number;
+  views: number;
+  videos: number;
+  takenAt: string;
+}
+
 type Row = Record<string, any>;
 
 const rowToAccount = (r: Row): Account => ({
@@ -95,6 +105,15 @@ const rowToUserAuth = (r: Row): UserAuth => ({
   failedAttempts: Number(r.failed_attempts) || 0,
   lockedUntil: r.locked_until ?? null,
   createdAt: r.created_at,
+});
+
+const rowToSnapshot = (r: Row): ChannelSnapshot => ({
+  id: r.id,
+  accountId: r.account_id,
+  subscribers: Number(r.subscribers) || 0,
+  views: Number(r.views) || 0,
+  videos: Number(r.videos) || 0,
+  takenAt: r.taken_at,
 });
 
 export function openDb(path: string) {
@@ -167,6 +186,14 @@ export function openDb(path: string) {
       key TEXT NOT NULL,
       used_at TEXT NOT NULL DEFAULT (datetime('now')),
       PRIMARY KEY (user_id, key)
+    );
+    CREATE TABLE IF NOT EXISTS channel_stats (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      account_id INTEGER NOT NULL,
+      subscribers INTEGER NOT NULL DEFAULT 0,
+      views INTEGER NOT NULL DEFAULT 0,
+      videos INTEGER NOT NULL DEFAULT 0,
+      taken_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
   `);
 
@@ -455,6 +482,46 @@ export function openDb(path: string) {
       db.prepare(
         "INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
       ).run(key, value);
+    },
+    // ---- Channel stats snapshots (YouTube totals over time) ----
+    // Append a fresh snapshot; returns the stored row (with id + taken_at).
+    addChannelSnapshot(s: {
+      accountId: number;
+      subscribers: number;
+      views: number;
+      videos: number;
+    }): ChannelSnapshot {
+      const info = db
+        .prepare(
+          "INSERT INTO channel_stats (account_id, subscribers, views, videos) VALUES (?,?,?,?)",
+        )
+        .run(s.accountId, s.subscribers, s.views, s.videos);
+      const r = db
+        .prepare("SELECT * FROM channel_stats WHERE id = ?")
+        .get(Number(info.lastInsertRowid)) as Row;
+      return rowToSnapshot(r);
+    },
+    // Two most recent snapshots → latest + previous, for the +/- delta on the card.
+    twoLatestSnapshots(accountId: number): {
+      latest: ChannelSnapshot | null;
+      prev: ChannelSnapshot | null;
+    } {
+      const rows = db
+        .prepare("SELECT * FROM channel_stats WHERE account_id = ? ORDER BY id DESC LIMIT 2")
+        .all(accountId) as Row[];
+      return {
+        latest: rows[0] ? rowToSnapshot(rows[0]) : null,
+        prev: rows[1] ? rowToSnapshot(rows[1]) : null,
+      };
+    },
+    // Snapshots in chronological order (oldest→newest), capped, for the chart.
+    listChannelSnapshots(accountId: number, limit = 200): ChannelSnapshot[] {
+      const rows = db
+        .prepare(
+          "SELECT * FROM (SELECT * FROM channel_stats WHERE account_id = ? ORDER BY id DESC LIMIT ?) ORDER BY id ASC",
+        )
+        .all(accountId, limit) as Row[];
+      return rows.map(rowToSnapshot);
     },
   };
 }

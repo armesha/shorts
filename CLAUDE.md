@@ -22,6 +22,11 @@ unattended, managed from a web dashboard. Spec: `ТЗ.pdf`. Architecture & resea
 - NEVER commit secrets — `client_secret_*.json`, `.env`, tokens, `corpora/`, `data/output`, DBs are gitignored. Verify staging before committing.
 - Cross-platform: code must run on Windows + macOS + Linux. One-command start = `npm start`.
 - End commit messages with: `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`.
+- **Параллельные агенты (MANDATORY):** если над ОБЩИМ файлом (`server/index.ts`, `server/db.ts`,
+  `web/src/lib/api.ts`, `web/src/App.tsx`, `Layout.tsx`, `CHANGELOG.md`, `CLAUDE.md` и т.п.) в это же
+  время работает другой агент — **НЕ изолируй свой коммит через `git stash` / частичный стейджинг**.
+  Коммить только СВОИ отдельные/новые файлы; общий файл пусть закоммитит тот агент, который его ведёт
+  (или дождись его). Свои правки в общий файл просто оставь в рабочем дереве — они уедут с его коммитом.
 
 ## LLM
 - Generation uses **Claude Code headless** (`claude -p`) ONLY — no fallback. Paid Claude subscription.
@@ -67,5 +72,15 @@ unattended, managed from a web dashboard. Spec: `ТЗ.pdf`. Architecture & resea
   лежит в titled.json и протянут через `pipeline.ts` + 4 точки `server/index.ts`. Фронт деко-агностичен
   (язык `tips` в `LANGS`, генераторы из `/api/generators`). Перегенерация — повторный Haiku-воркфлоу
   (правило: лайфхаки → Haiku). Тесты: `src/scripts/render-lifehack-test.ts`, `src/scripts/tips-e2e.ts`.
+- **Статистика каналов (вкладка `/statistics`, видна ВСЕМ юзерам):** снимки YouTube-метрик во времени.
+  Таблица `channel_stats` (account_id, subscribers, views, videos, taken_at) + хелперы в `db.ts`
+  (`addChannelSnapshot`/`twoLatestSnapshots`/`listChannelSnapshots`). `server/stats.ts` =
+  `fetchChannelStats()` через `channels.list(part=statistics)` — **тот же scope `youtube.readonly`,
+  переподключать каналы НЕ нужно**, стороннего сервиса нет. Роуты в `index.ts`:
+  `GET /api/stats?scope=mine|all`, `POST /api/stats/refresh` (опрос YouTube ключом ВЛАДЕЛЬЦА канала
+  + снимок + дельты), `GET /api/stats/:id/history`. Дельта = latest−prev снимок. Каждый юзер видит
+  свои каналы; админ + `scope=all` → все каналы всех. Фронт `web/src/pages/Statistics.tsx` (Recharts,
+  кнопка «Обновить данные» = снять снимок; график строится из ≥2 снимков). `taken_at` из SQLite — UTC
+  без зоны, на фронте парсится как UTC (`parseUtc`).
 - TODO requested: editable Google client-secret path in Settings UI (hardcoded default stays for now). AI/subagent titling of anecdotes (currently generic titles).
 - **Auth (Этап 1 готов):** вход в панель обязателен. `server/auth.ts` = scrypt-хэш + токены сессий + политика блокировки; таблицы `users`/`sessions` в `server/db.ts`; гейт всего `/api/*` + роуты `/api/auth/{login,logout,me}` в `server/index.ts`. Юзеры сидятся из `.env`: `ADMIN_USERNAME`/`ADMIN_PASSWORD` (admin) + `SEED_USERS="name:pass,…"` (user), идемпотентно (создаёт, если нет — пароль не перезатирает). Сессия = httpOnly-кука `sid`; блокировка после `AUTH_MAX_ATTEMPTS`(10) на `AUTH_LOCK_MINUTES`(15) мин. Фронт: `web/src/lib/auth.tsx` (AuthProvider/useAuth), `web/src/pages/Login.tsx`, гейт в `App.tsx`, выход в `Layout.tsx`. **Этап 2 TODO:** `user_id` у каналов (изоляция — свои каналы/ключ видит только владелец), свой Google client-secret на юзера, общий пул анекдотов, учёт «использованных» per-user, UI создания юзеров вместо `.env`.

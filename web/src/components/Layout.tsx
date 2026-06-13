@@ -1,12 +1,13 @@
 import type { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
-import { Tv, History, Settings, Clapperboard, Sparkles, LogOut } from "lucide-react";
+import { Tv, History, Settings, Clapperboard, Sparkles, BarChart3, LogOut } from "lucide-react";
 import { useAuth } from "../lib/auth";
 
 const NAV = [
   { to: "/", label: "Каналы", icon: Tv, end: true },
   { to: "/studio", label: "Студия", icon: Sparkles, end: false },
   { to: "/history", label: "История", icon: History, end: false },
+  { to: "/statistics", label: "Статистика", icon: BarChart3, end: false },
   { to: "/settings", label: "Настройки", icon: Settings, end: false },
 ];
 

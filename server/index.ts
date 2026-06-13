@@ -17,6 +17,7 @@ import {
   type ClientCreds,
 } from "./youtube.ts";
 import { startScheduler } from "./scheduler.ts";
+import { fetchChannelStats } from "./stats.ts";
 import {
   hashPassword,
   verifyPassword,
@@ -329,6 +330,80 @@ app.delete("/api/accounts/:id", async (req, reply) => {
 });
 
 app.get("/api/history", async (req) => db.listHistoryByUser(uid(req)));
+
+// ---- Channel stats: subscribers/views/videos snapshots + deltas ----
+// Available to EVERY user for their own channels. Admins may pass ?scope=all to also see
+// everyone's channels. Reads use the SAME OAuth as uploads (youtube.readonly) — no re-auth.
+function visibleAccounts(req: unknown, scope?: string): Account[] {
+  const u = db.getUserById(uid(req));
+  if (u?.role === "admin" && scope === "all") return db.listAccounts();
+  return db.listAccountsByUser(uid(req));
+}
+// A channel the current user may view: their own, or any channel if they're an admin.
+function visibleAccount(req: unknown, id: number): Account | null {
+  const a = db.getAccount(id);
+  if (!a) return null;
+  const u = db.getUserById(uid(req));
+  return a.userId === uid(req) || u?.role === "admin" ? a : null;
+}
+// One row for the stats table: current totals + the previous snapshot (frontend computes +/-).
+function statRow(a: Account, error?: string | null) {
+  const { latest, prev } = db.twoLatestSnapshots(a.id);
+  const owner = a.userId != null ? db.getUserById(a.userId) : null;
+  return {
+    accountId: a.id,
+    channelName: a.channelName,
+    ytChannelTitle: a.ytChannelTitle,
+    ytChannelId: a.ytChannelId,
+    ownerUsername: owner?.username ?? null,
+    connected: a.status === "connected",
+    latest,
+    prev,
+    error: error ?? null,
+  };
+}
+
+app.get("/api/stats", async (req) => {
+  const scope = (req.query as { scope?: string }).scope;
+  return visibleAccounts(req, scope).map((a) => statRow(a));
+});
+
+// Poll YouTube for each visible+connected channel, store a fresh snapshot, return rows with deltas.
+// Each channel is queried with ITS OWNER's Google key (per-user isolation), all in parallel.
+app.post("/api/stats/refresh", async (req) => {
+  const scope = (req.query as { scope?: string }).scope;
+  const accounts = visibleAccounts(req, scope);
+  const errors = new Map<number, string>();
+  await Promise.all(
+    accounts.map(async (a) => {
+      if (a.status !== "connected") return;
+      const creds = a.userId != null ? userCreds(a.userId) : null;
+      const token = db.getRefreshToken(a.id);
+      if (!creds) {
+        errors.set(a.id, "Нет Google-ключа у владельца канала");
+        return;
+      }
+      if (!token) {
+        errors.set(a.id, "Канал не подключён к YouTube");
+        return;
+      }
+      try {
+        const s = await fetchChannelStats(creds, REDIRECT_URI, token);
+        db.addChannelSnapshot({ accountId: a.id, subscribers: s.subscribers, views: s.views, videos: s.videos });
+      } catch (err) {
+        app.log.error({ err: String(err), accountId: a.id }, "stats refresh failed");
+        errors.set(a.id, "Не удалось получить данные из YouTube");
+      }
+    }),
+  );
+  return accounts.map((a) => statRow(a, errors.get(a.id)));
+});
+
+app.get("/api/stats/:id/history", async (req, reply) => {
+  const a = visibleAccount(req, Number((req.params as { id: string }).id));
+  if (!a) return reply.code(404).send({ error: "Канал не найден" });
+  return db.listChannelSnapshots(a.id);
+});
 
 // ---- YouTube OAuth (connect a channel — uses the current user's key) ----
 app.get("/api/youtube/auth-url", async (req, reply) => {

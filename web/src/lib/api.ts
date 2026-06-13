@@ -96,6 +96,37 @@ export interface AuthUser {
   role: string;
 }
 
+/** A channel's totals at one moment (used for latest/prev on a stats row). */
+export interface StatSnapshot {
+  subscribers: number;
+  views: number;
+  videos: number;
+  takenAt: string;
+}
+
+/** One row on the Statistics page: a channel + its latest totals and the previous snapshot. */
+export interface StatRow {
+  accountId: number;
+  channelName: string;
+  ytChannelTitle: string | null;
+  ytChannelId: string | null;
+  ownerUsername: string | null;
+  connected: boolean;
+  latest: StatSnapshot | null;
+  prev: StatSnapshot | null;
+  error: string | null;
+}
+
+/** A stored snapshot point for the history chart. */
+export interface StatPoint {
+  id: number;
+  accountId: number;
+  subscribers: number;
+  views: number;
+  videos: number;
+  takenAt: string;
+}
+
 /** Error carrying the HTTP status + the server's `{error}` message (for lockout/attempt UI). */
 export class ApiError extends Error {
   status: number;
@@ -184,4 +215,10 @@ export const apiClient = {
       "POST",
       { publishAt },
     ),
+  // Statistics: every user sees their own channels; admins may pass scope="all" for all channels.
+  stats: (scope?: "mine" | "all") =>
+    get<StatRow[]>(`/stats${scope === "all" ? "?scope=all" : ""}`),
+  refreshStats: (scope?: "mine" | "all") =>
+    send<StatRow[]>(`/stats/refresh${scope === "all" ? "?scope=all" : ""}`, "POST", {}),
+  statsHistory: (accountId: number | string) => get<StatPoint[]>(`/stats/${accountId}/history`),
 };
