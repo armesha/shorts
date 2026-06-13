@@ -1,9 +1,9 @@
 {
-  "total": 6000,
-  "packs": 60,
-  "packSize": 100,
+  "total": 629,
+  "packs": 1,
+  "packSize": 1000,
   "range": [
-    120,
-    400
+    240,
+    640
   ]
 }

@@ -80,10 +80,20 @@
       function fit() {
         var body = document.querySelector('.body');
         var text = document.querySelector('.text');
+        // Title: shrink to fit one line (down to a floor) instead of mid-word "…" truncation.
+        var titleEl = document.querySelector('.title');
+        if (titleEl) {
+          var ts = 68;
+          titleEl.style.fontSize = ts + 'px';
+          while (ts > 38 && titleEl.scrollWidth > titleEl.clientWidth + 1) {
+            ts -= 2;
+            titleEl.style.fontSize = ts + 'px';
+          }
+        }
         var BASE_LH = 1.5;
         text.style.lineHeight = String(BASE_LH);
-        // 1) largest font (<=56) that fits both width and height at the base line-height
-        var min = 24, max = 56, best = min;
+        // 1) largest font (<=72) that fits both width and height at the base line-height
+        var min = 24, max = 72, best = min;
         while (min <= max) {
           var mid = (min + max) >> 1;
           text.style.fontSize = mid + 'px';
@@ -93,12 +103,13 @@
           else { max = mid - 1; }
         }
         text.style.fontSize = best + 'px';
-        // 2) expand line spacing so the text fills the frame evenly (no big empty gaps)
+        // 2) expand line spacing a little so text fills the frame — but cap it low so dense
+        //    content stays tight (no cartoonish gaps); short posts just center with small margins.
         text.style.lineHeight = String(BASE_LH);
         var natural = text.scrollHeight;
         var target = body.clientHeight;
         if (natural > 0 && natural < target) {
-          text.style.lineHeight = String(Math.min(2.6, BASE_LH * (target / natural)));
+          text.style.lineHeight = String(Math.min(1.9, BASE_LH * (target / natural)));
         }
         window.__fitFontPx = best;
         window.__fitted = true;
