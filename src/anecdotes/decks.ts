@@ -111,9 +111,31 @@ export function ytMeta(
   title: string,
   text: string,
 ): { title: string; description: string; tags: string[] } {
+  // Psychology cards store the whole card as JSON in `text` — render a readable description instead.
+  const body = deck.psych ? psychDescription(text) : text;
   return {
     title: `${title} ${deck.emoji} #shorts`,
-    description: `${text}\n\n${deck.hashtags}`,
+    description: `${body}\n\n${deck.hashtags}`,
     tags: deck.tags,
   };
+}
+
+/** Turn a psychology card (JSON in `text`) into a readable YouTube description (points + CTA). */
+function psychDescription(jsonText: string): string {
+  try {
+    const card = JSON.parse(jsonText) as { items?: Record<string, string>[]; outro?: string };
+    const lines: string[] = [];
+    for (const it of card.items ?? []) {
+      if (it.lead && it.text) lines.push(`• ${it.lead} — ${it.text}`);
+      else if (it.term && it.val) lines.push(`• ${it.term} — ${it.val}`);
+      else if (it.myth && it.real) lines.push(`• ${it.myth} → ${it.real}`);
+      else if (it.quote) lines.push(`„${it.quote}“${it.author ? " — " + it.author : ""}`);
+      else if (it.text) lines.push(`• ${it.text}`);
+    }
+    let desc = lines.join("\n");
+    if (card.outro) desc += `\n\n${card.outro}`;
+    return desc || jsonText;
+  } catch {
+    return jsonText;
+  }
 }
