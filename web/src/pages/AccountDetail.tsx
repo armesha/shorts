@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
-import { ArrowLeft, Save, Trash2, Check, Plus, Upload, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, Save, Trash2, Check, Plus, Upload, Loader2, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { apiClient, type Account, type VideoItem, type Generator } from "../lib/api";
 import { useAuth } from "../lib/auth";
 
@@ -11,6 +11,8 @@ const LANGS: [string, string][] = [
   ["fr", "Французский"],
   ["en", "Английский"],
   ["tips", "Народные лайфхаки"],
+  ["tips-de", "Немецкие лайфхаки"],
+  ["psych", "Психология (DE)"],
 ];
 
 // Evenly distribute N uploads across the day (e.g. 4 → 00:00, 06:00, 12:00, 18:00).
@@ -38,6 +40,7 @@ export default function AccountDetail() {
   const [lastPosted, setLastPosted] = useState<{ title: string; url: string } | null>(null);
   const [preview, setPreview] = useState<VideoItem | null>(null);
   const [batching, setBatching] = useState<number | null>(null);
+  const [clearing, setClearing] = useState(false);
   const [page, setPage] = useState(1);
   const [gens, setGens] = useState<Generator[]>([]);
 
@@ -136,6 +139,21 @@ export default function AccountDetail() {
     if (!confirm(`Удалить ${targets.length} ролик(ов), которые выкладывались больше одного раза?`)) return;
     for (const v of targets) await apiClient.deleteVideo(v.id);
     await reloadVideos();
+  }
+
+  // Очистить ВСЮ библиотеку канала (например, после смены пака — старый контент больше не подходит).
+  async function clearLibrary() {
+    if (videos.length === 0) return;
+    if (!confirm(`Удалить ВСЕ ${videos.length} ролик(ов) из библиотеки? Это необратимо.`)) return;
+    setClearing(true);
+    try {
+      for (const v of [...videos]) await apiClient.deleteVideo(v.id);
+      await reloadVideos();
+    } catch (e) {
+      alert("Не удалось очистить библиотеку: " + String(e));
+    } finally {
+      setClearing(false);
+    }
   }
 
   const sortedVideos = [...videos].sort((a, b) =>
@@ -305,6 +323,13 @@ export default function AccountDetail() {
                   ▶ Открыть на YouTube ↗
                 </a>
               )}
+              <button
+                className="btn btn-ghost btn-xs gap-1"
+                onClick={connect}
+                title="Переподключить через Google — перевыпустить токены (например, после смены client_secret.json)"
+              >
+                <RefreshCw size={13} /> Переподключить
+              </button>
             </div>
           ) : (
             <>
@@ -328,23 +353,59 @@ export default function AccountDetail() {
         <div className="card-body">
           <div className="flex items-center justify-between gap-2 flex-wrap">
             <h2 className="card-title text-base">Библиотека роликов ({videos.length})</h2>
-            <select
-              className="select select-bordered select-sm"
-              value={sort}
-              onChange={(e) => setSort(e.target.value as "date" | "title" | "posts")}
-            >
-              <option value="date">сначала новые</option>
-              <option value="title">по названию</option>
-              <option value="posts">по числу выкладок</option>
-            </select>
+            <div className="flex items-center gap-2">
+              {videos.length > 0 && (
+                <button
+                  className="btn btn-sm btn-error btn-outline gap-1"
+                  onClick={clearLibrary}
+                  disabled={clearing || batching !== null}
+                  title="Удалить все ролики из библиотеки этого канала"
+                >
+                  {clearing ? <Loader2 className="animate-spin" size={14} /> : <Trash2 size={14} />}
+                  Очистить всё
+                </button>
+              )}
+              <select
+                className="select select-bordered select-sm"
+                value={sort}
+                onChange={(e) => setSort(e.target.value as "date" | "title" | "posts")}
+              >
+                <option value="date">сначала новые</option>
+                <option value="title">по названию</option>
+                <option value="posts">по числу выкладок</option>
+              </select>
+            </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-base-300">
-            <span className="text-sm text-base-content/70">
-              Пак: <b>{gens.find((g) => g.id === account.lang)?.name ?? account.lang}</b>{" "}
-              <span className="text-base-content/40">(по языку канала)</span>
-            </span>
+            <span className="text-sm text-base-content/70">Пак (= язык канала):</span>
+            <select
+              className="select select-bordered select-sm"
+              value={lang}
+              onChange={(e) => setLang(e.target.value)}
+              title="Из какого пака генерировать ролики. После выбора нажми «Сохранить пак»."
+            >
+              {LANGS.map(([code, name]) => (
+                <option key={code} value={code}>
+                  {name}
+                </option>
+              ))}
+            </select>
+            {gens.find((g) => g.id === lang) && (
+              <span className="text-xs text-success">
+                {gens.find((g) => g.id === lang)!.available} свободных
+              </span>
+            )}
+            {lang !== account.lang && (
+              <button className="btn btn-sm btn-primary gap-1" onClick={save} disabled={saving}>
+                {saving ? <Loader2 className="animate-spin" size={14} /> : <Save size={14} />}
+                Сохранить пак
+              </button>
+            )}
+            {lang !== account.lang && videos.length > 0 && (
+              <span className="text-xs text-warning">старые ролики другого пака — очисти библиотеку</span>
+            )}
             <span className="text-sm text-base-content/70 ml-1">Сделать сразу:</span>
-            {(user?.role === "admin" ? [5, 10, 20] : [1, 5]).map((n) => (
+            {(user?.role === "admin" ? [5, 10, 20] : [1, 5, 10]).map((n) => (
               <button
                 key={n}
                 className="btn btn-sm btn-outline gap-1"

@@ -78,14 +78,6 @@ export default function Studio() {
     setVideo(null);
     setErr(null);
     try {
-      // Psychology cards are a separate generator (structured card, not anecdote text).
-      if (deck === "psych") {
-        const r = await apiClient.generatePsych();
-        if (r.imageUrl)
-          setPreview({ imageUrl: r.imageUrl, title: r.title ?? "", text: "", chars: 0, bg: "", fontPx: 0 });
-        else setErr(r.error || "Не удалось сгенерировать карточку");
-        return;
-      }
       const body =
         mode === "new"
           ? { bg: preview?.bg, deck } // new anecdote, keep the currently-chosen background
@@ -234,32 +226,34 @@ export default function Studio() {
             </div>
           </div>
 
-          {preview && deck === "psych" && (
-            <div className="alert text-sm">
-              <span>Это превью психо-карточки. Сохранение/сборка видео для карточек пока недоступны — жми «Сгенерировать» для новой.</span>
-            </div>
-          )}
-
-          {preview && deck !== "psych" && (
+          {preview && (
             <div className="card bg-base-100 border border-base-300">
               <div className="card-body gap-3">
-                <div className="flex items-center justify-between">
-                  <span className="label-text">Текст анекдота (можно править)</span>
-                  <span
-                    className={`badge badge-sm ${
-                      (text || "").length >= 250 && (text || "").length <= 480
-                        ? "badge-success"
-                        : "badge-warning"
-                    }`}
-                  >
-                    {(text || "").length} симв.
-                  </span>
-                </div>
-                <textarea
-                  className="textarea textarea-bordered min-h-32 leading-relaxed"
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                />
+                {deck !== "psych" ? (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <span className="label-text">Текст анекдота (можно править)</span>
+                      <span
+                        className={`badge badge-sm ${
+                          (text || "").length >= 250 && (text || "").length <= 480
+                            ? "badge-success"
+                            : "badge-warning"
+                        }`}
+                      >
+                        {(text || "").length} симв.
+                      </span>
+                    </div>
+                    <textarea
+                      className="textarea textarea-bordered min-h-32 leading-relaxed"
+                      value={text}
+                      onChange={(e) => setText(e.target.value)}
+                    />
+                  </>
+                ) : (
+                  <div className="text-sm text-base-content/60">
+                    🧠 Психо-карточка готова. Собери видео или сохрани в канал с языком «Психология (DE)».
+                  </div>
+                )}
                 <div className="flex flex-wrap items-center gap-2">
                   <select
                     className="select select-bordered select-sm"

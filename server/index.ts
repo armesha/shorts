@@ -18,7 +18,6 @@ import {
 } from "./youtube.ts";
 import { startScheduler } from "./scheduler.ts";
 import { fetchChannelStats } from "./stats.ts";
-import { renderPsychCard, listPsychCards } from "../src/psych/render.ts";
 import {
   hashPassword,
   verifyPassword,
@@ -473,21 +472,6 @@ app.delete("/api/errors", async (req, reply) => {
   return { ok: true };
 });
 
-// ---- Psychology cards (DE) — preview only, NOT wired into decks/pipeline ----
-let psychCounter = 0;
-app.post("/api/generate/psych", async (req) => {
-  const body = (req.body as { pattern?: string }) ?? {};
-  const cards = listPsychCards();
-  if (!cards.length) return { error: "Нет психо-карточек (data/psych/cards.json пуст)" };
-  let pool = body.pattern ? cards.filter((c) => c.pattern === body.pattern) : cards;
-  if (!pool.length) pool = cards;
-  const card = pool[Math.floor(Math.random() * pool.length)];
-  psychCounter++;
-  const rel = `preview/psych-${Date.now()}-${psychCounter}.png`;
-  await renderPsychCard(card, resolve(process.cwd(), base.outputDir, rel));
-  return { imageUrl: `/files/${rel}`, pattern: card.pattern, title: (card.title_lines || []).join(" ") };
-});
-
 // ---- YouTube OAuth (connect a channel — uses the current user's key) ----
 app.get("/api/youtube/auth-url", async (req, reply) => {
   const accountId = Number((req.query as { accountId?: string }).accountId ?? 0);
@@ -724,24 +708,6 @@ app.get("/api/generators", async (req) => {
       untitledTotal: s.untitledTotal,
     };
   });
-  // Psychology cards (DE) — standalone generator (preview-only; not a deck-pipeline language).
-  const psychCount = listPsychCards().length;
-  if (psychCount > 0) {
-    base.push({
-      id: "psych",
-      name: "Psychologie (DE)",
-      ai: true,
-      total: psychCount,
-      titled: psychCount,
-      used: 0,
-      available: psychCount,
-      packs: 1,
-      range: [0, 0],
-      readyPacks: [],
-      untitledPacks: 0,
-      untitledTotal: 0,
-    });
-  }
   return base;
 });
 

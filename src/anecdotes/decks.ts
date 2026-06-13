@@ -11,6 +11,8 @@ export interface Deck {
   genericTitles: string[]; // fallback headings when an anecdote has no title yet
   /** When true, render via the lifehack (profession) layout instead of the anecdote card. */
   lifehack?: boolean;
+  /** When true, this deck's items are psychology cards (whole card as JSON in `text`), rendered via templates/psych.html. */
+  psych?: boolean;
   /** Lifehack background style suffix, e.g. "chaplin" → profession_<key>_chaplin.jpg (with moustache).
    *  Omitted → the plain profession_<key>.jpg (no moustache). */
   lifehackVariant?: string;
@@ -79,6 +81,17 @@ export const DECKS: Deck[] = [
     genericTitles: ["Lifehack", "Nützlicher Tipp", "Gut zu wissen", "Profi-Trick", "Tipp des Tages", "Merk dir das"],
     lifehack: true,
     lifehackVariant: "chaplin", // мужчины с усами Чаплина (немецкая дека)
+  },
+  {
+    id: "psych",
+    name: "Psychologie (DE)",
+    dir: "data/psych", // cards.json (structured psychology cards), not pack-*.json
+    source: "",
+    emoji: "🧠",
+    hashtags: "#psychologie #mentalegesundheit #achtsamkeit #selbstliebe #shorts",
+    tags: ["psychologie", "mentale gesundheit", "achtsamkeit", "selbstliebe", "psyche", "mindset", "shorts"],
+    genericTitles: ["Psychologie", "Notiz", "Erkenntnis"],
+    psych: true,
   },
 ];
 

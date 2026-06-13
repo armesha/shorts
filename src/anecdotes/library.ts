@@ -19,8 +19,21 @@ const _titledCache = new Map<string, PackItem[]>();
 function titledItems(deckId: string): PackItem[] {
   const hit = _titledCache.get(deckId);
   if (hit) return hit;
-  const titled = resolve(deckDir(deckId), "titled.json");
-  const items = existsSync(titled) ? (JSON.parse(readFileSync(titled, "utf8")) as PackItem[]) : [];
+  let items: PackItem[];
+  if (getDeck(deckId).psych) {
+    // Psychology deck: data/psych/cards.json holds structured cards; each whole card → JSON in `text`.
+    const file = resolve(deckDir(deckId), "cards.json");
+    const cards = existsSync(file)
+      ? (JSON.parse(readFileSync(file, "utf8")) as { title_lines?: string[] }[])
+      : [];
+    items = cards.map((c, i) => {
+      const title = (c.title_lines ?? []).join(" ").trim();
+      return { id: i, pack: 1, text: JSON.stringify(c), chars: title.length, title };
+    });
+  } else {
+    const titled = resolve(deckDir(deckId), "titled.json");
+    items = existsSync(titled) ? (JSON.parse(readFileSync(titled, "utf8")) as PackItem[]) : [];
+  }
   _titledCache.set(deckId, items);
   return items;
 }

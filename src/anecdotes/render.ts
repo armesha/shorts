@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import puppeteer from "puppeteer-core";
 import { chromePath } from "../render.ts";
 import { getDeck } from "./decks.ts";
+import { buildPsychHtml } from "../psych/render.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATE = resolve(__dirname, "../../templates/anecdote.html");
@@ -121,6 +122,7 @@ export async function renderAnecdote(
   a: Anecdote,
   outPath: string,
 ): Promise<{ path: string; fontPx: number; bg: string }> {
+  if (getDeck(a.deck).psych) return renderPsych(a, outPath);
   if (getDeck(a.deck).lifehack) return renderLifehack(a, outPath);
   const bgName = a.bg ?? randomBackgroundName() ?? "";
   const bgCss = backgroundCss(bgName);
@@ -132,6 +134,23 @@ export async function renderAnecdote(
     .replaceAll("{{BG}}", bgCss);
   const fontPx = await captureCard(html, outPath);
   return { path: outPath, fontPx, bg: bgName };
+}
+
+/** Render one psychology card (the whole card is stored as JSON in a.text) via templates/psych.html. */
+async function renderPsych(
+  a: Anecdote,
+  outPath: string,
+): Promise<{ path: string; fontPx: number; bg: string }> {
+  let card: unknown;
+  try {
+    card = JSON.parse(a.text);
+  } catch {
+    // a.text wasn't a serialized card — wrap as a minimal premium card so render never crashes.
+    card = { pattern: "premium", title_lines: [a.title || "", ""], items: [{ text: a.text }], outro: "" };
+  }
+  const html = buildPsychHtml(card as Parameters<typeof buildPsychHtml>[0]);
+  const fontPx = await captureCard(html, outPath);
+  return { path: outPath, fontPx, bg: "psych" };
 }
 
 /** Render one lifehack/tip onto its profession template (title → red banner, text → the paper). */
