@@ -24,6 +24,14 @@ export default function Statistics() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
+
+  // Auto-dismiss the success/result banner after a few seconds.
+  useEffect(() => {
+    if (!result) return;
+    const t = setTimeout(() => setResult(null), 6000);
+    return () => clearTimeout(t);
+  }, [result]);
 
   useEffect(() => {
     setLoading(true);
@@ -41,18 +49,30 @@ export default function Statistics() {
   async function refresh() {
     setRefreshing(true);
     setError(null);
+    setResult(null);
     try {
       const r = await apiClient.refreshStats(scope);
       setRows(r);
+      const connected = r.filter((x) => x.connected);
       const failed = r.filter((x) => x.error);
-      if (failed.length)
+      if (failed.length) {
         console.error(
           `[Статистика] ошибки обновления у ${failed.length} канал(ов):`,
           failed.map((x) => ({ канал: x.ytChannelTitle || x.channelName, ошибка: x.error })),
         );
+        setResult({
+          ok: false,
+          text: `Обновлено ${connected.length - failed.length} из ${connected.length} · с ошибками: ${failed.length} (детали — в карточках и в консоли F12)`,
+        });
+      } else if (connected.length === 0) {
+        setResult({ ok: false, text: "Нет подключённых каналов для обновления" });
+      } else {
+        setResult({ ok: true, text: `Успешно обновлено каналов: ${connected.length}` });
+      }
     } catch (e) {
       console.error("[Статистика] запрос /stats/refresh упал:", e);
       setError("Не удалось обновить данные (подробности в консоли F12)");
+      setResult({ ok: false, text: "Не удалось обновить — запрос к серверу упал (см. F12)" });
     } finally {
       setRefreshing(false);
     }
@@ -111,6 +131,14 @@ export default function Statistics() {
       </header>
 
       {error && <div className="alert alert-error text-sm py-2">{error}</div>}
+      {result && (
+        <div className={`alert text-sm py-2 ${result.ok ? "alert-success" : "alert-warning"}`}>
+          <span>
+            {result.ok ? "✓ " : "⚠ "}
+            {result.text}
+          </span>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Stat icon={<Users />} label="Подписчиков всего" value={fmt(totals.subscribers)} />
