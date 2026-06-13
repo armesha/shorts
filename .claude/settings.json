@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(/home/davtian/Documents/shorts/client_secret_735991879461-lcvblrn3co3hlrrqi1ljvik2ih68oarp.apps.googleusercontent.com.json)",
+      "Read(./client_secret_735991879461-lcvblrn3co3hlrrqi1ljvik2ih68oarp.apps.googleusercontent.com.json)",
+      "Read(client_secret_*.json)",
+      "Read(**/client_secret_*.json)",
+      "Read(**/*.apps.googleusercontent.com.json)",
+      "Bash(cat *client_secret*)",
+      "Bash(head *client_secret*)",
+      "Bash(tail *client_secret*)",
+      "Bash(less *client_secret*)",
+      "Bash(more *client_secret*)",
+      "Bash(grep *client_secret*)",
+      "Bash(strings *client_secret*)",
+      "Bash(xxd *client_secret*)",
+      "Bash(od *client_secret*)",
+      "Bash(cat *apps.googleusercontent.com.json*)"
+    ]
+  }
+}

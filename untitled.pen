@@ -1,0 +1,3177 @@
+{
+  "version": "2.13",
+  "children": [
+    {
+      "type": "frame",
+      "id": "h7FGn",
+      "x": 6000,
+      "y": 0,
+      "name": "1 · Kraft Paper",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "./images/generated-1781339824929.png",
+        "mode": "fill"
+      },
+      "layout": "vertical",
+      "gap": 34,
+      "padding": [
+        112,
+        86
+      ],
+      "children": [
+        {
+          "type": "frame",
+          "id": "qOMNV",
+          "name": "Title",
+          "layout": "vertical",
+          "gap": 8,
+          "children": [
+            {
+              "type": "frame",
+              "id": "ByxNi",
+              "name": "TitleLine0",
+              "fill": "#F7EFDD",
+              "cornerRadius": 4,
+              "padding": [
+                2,
+                16
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "GlJoW",
+                  "name": "T0",
+                  "fill": "#2C2114",
+                  "content": "6 Psychologische",
+                  "fontFamily": "Lora",
+                  "fontSize": 68,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "S98ev",
+              "name": "TitleLine1",
+              "fill": "#F7EFDD",
+              "cornerRadius": 4,
+              "padding": [
+                2,
+                16
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "JU6EF",
+                  "name": "T1",
+                  "fill": "#2C2114",
+                  "content": "Fakten",
+                  "fontFamily": "Lora",
+                  "fontSize": 68,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "u1LZ8O",
+          "name": "Facts",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 20,
+          "justifyContent": "space_between",
+          "children": [
+            {
+              "type": "frame",
+              "id": "Mh49t",
+              "name": "Fact0",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "a3F2rd",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Da9oq",
+                      "name": "N",
+                      "fill": "#2C2114",
+                      "content": "1.",
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "DdKc4",
+                      "name": "Txt",
+                      "fill": "#2C2114",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Dein Gehirn entscheidet bis zu sieben Sekunden bevor du es bewusst merkst.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "HMKeR",
+              "name": "Fact1",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "AcxqF",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "cVNfr",
+                      "name": "N",
+                      "fill": "#2C2114",
+                      "content": "2.",
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "srJRs",
+                      "name": "Txt",
+                      "fill": "#2C2114",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Menschen erinnern sich an unerledigte Aufgaben besser als an erledigte.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "C2D0G8",
+              "name": "Fact2",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "NK3OK",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "xv1r0",
+                      "name": "N",
+                      "fill": "#2C2114",
+                      "content": "3.",
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Bmfxx",
+                      "name": "Txt",
+                      "fill": "#2C2114",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Wir empfinden den Verlust von Geld doppelt so stark wie einen gleichen Gewinn.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "sYaPY",
+              "name": "Fact3",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "XEBPP",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "VYWYc",
+                      "name": "N",
+                      "fill": "#2C2114",
+                      "content": "4.",
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "mA6mN",
+                      "name": "Txt",
+                      "fill": "#2C2114",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Ein erzwungenes Lächeln kann dein Gehirn täuschen und dich glücklicher machen.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "F67KBh",
+              "name": "Fact4",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "X4ve6I",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "LdACS",
+                      "name": "N",
+                      "fill": "#2C2114",
+                      "content": "5.",
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "OvTRg",
+                      "name": "Txt",
+                      "fill": "#2C2114",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Dein Gehirn pflegt nur rund 150 stabile Beziehungen gleichzeitig.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "eWf34",
+              "name": "Fact5",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "QUXyK",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "GHxLL",
+                      "name": "N",
+                      "fill": "#2C2114",
+                      "content": "6.",
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "KsBlJ",
+                      "name": "Txt",
+                      "fill": "#2C2114",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Wer leicht vergibt, trägt oft den größten Schmerz in sich.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Lf8UH",
+          "name": "Signature",
+          "width": "fill_container",
+          "justifyContent": "end",
+          "children": [
+            {
+              "type": "text",
+              "id": "z5Yk3",
+              "name": "Sig",
+              "fill": "#2C2114",
+              "content": "Liebe mein Leben",
+              "fontFamily": "Caveat",
+              "fontSize": 52,
+              "fontWeight": "700"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "qUSri",
+      "x": 7200,
+      "y": 0,
+      "name": "2 · Slate Card",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "./images/generated-1781339822702.png",
+        "mode": "fill"
+      },
+      "layout": "vertical",
+      "padding": 54,
+      "children": [
+        {
+          "type": "frame",
+          "id": "w0M4eb",
+          "name": "Card",
+          "width": "fill_container",
+          "height": "fill_container",
+          "fill": "#FBF6EAF2",
+          "cornerRadius": 22,
+          "layout": "vertical",
+          "gap": 32,
+          "padding": [
+            88,
+            68
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "HonHG",
+              "name": "Title",
+              "fill": "#3A3F47",
+              "cornerRadius": 10,
+              "padding": [
+                12,
+                26
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "H8LeGm",
+                  "name": "TitleLines",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "uEUoP",
+                      "name": "T0",
+                      "fill": "#FBF6EA",
+                      "content": "6 Psychologische",
+                      "fontFamily": "Spectral",
+                      "fontSize": 62,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Tzk07",
+                      "name": "T1",
+                      "fill": "#FBF6EA",
+                      "content": "Fakten",
+                      "fontFamily": "Spectral",
+                      "fontSize": 62,
+                      "fontWeight": "800"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "I6mocB",
+              "name": "Facts",
+              "width": "fill_container",
+              "height": "fill_container",
+              "layout": "vertical",
+              "gap": 20,
+              "justifyContent": "space_between",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "t73rS",
+                  "name": "Fact0",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "CTdvJ",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ttvdA",
+                          "name": "N",
+                          "fill": "#3A3F47",
+                          "content": "1.",
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "PJ0oY",
+                          "name": "Txt",
+                          "fill": "#23262C",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Dein Gehirn entscheidet bis zu sieben Sekunden bevor du es bewusst merkst.",
+                          "lineHeight": 1.32,
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "h02X9B",
+                  "name": "Fact1",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "UHRNj",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "J31KJ",
+                          "name": "N",
+                          "fill": "#3A3F47",
+                          "content": "2.",
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "W1j7Ey",
+                          "name": "Txt",
+                          "fill": "#23262C",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Menschen erinnern sich an unerledigte Aufgaben besser als an erledigte.",
+                          "lineHeight": 1.32,
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "z7vho",
+                  "name": "Fact2",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "g0DRu6",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "K7M4w",
+                          "name": "N",
+                          "fill": "#3A3F47",
+                          "content": "3.",
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "B6RHK",
+                          "name": "Txt",
+                          "fill": "#23262C",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Wir empfinden den Verlust von Geld doppelt so stark wie einen gleichen Gewinn.",
+                          "lineHeight": 1.32,
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "t6xSe",
+                  "name": "Fact3",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "J6Tk4p",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "pRiEa",
+                          "name": "N",
+                          "fill": "#3A3F47",
+                          "content": "4.",
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "UZBZX",
+                          "name": "Txt",
+                          "fill": "#23262C",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Ein erzwungenes Lächeln kann dein Gehirn täuschen und dich glücklicher machen.",
+                          "lineHeight": 1.32,
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "t5qf2",
+                  "name": "Fact4",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "DYcom",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "jFR4r",
+                          "name": "N",
+                          "fill": "#3A3F47",
+                          "content": "5.",
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "DtOBW",
+                          "name": "Txt",
+                          "fill": "#23262C",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Dein Gehirn pflegt nur rund 150 stabile Beziehungen gleichzeitig.",
+                          "lineHeight": 1.32,
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "nL2b4",
+                  "name": "Fact5",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "gLcP5",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "gsXrE",
+                          "name": "N",
+                          "fill": "#3A3F47",
+                          "content": "6.",
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "SBfda",
+                          "name": "Txt",
+                          "fill": "#23262C",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Wer leicht vergibt, trägt oft den größten Schmerz in sich.",
+                          "lineHeight": 1.32,
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Ifmui",
+              "name": "Signature",
+              "width": "fill_container",
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "GKzx3",
+                  "name": "Sig",
+                  "fill": "#3A3F47",
+                  "content": "Liebe mein Leben",
+                  "fontFamily": "Caveat",
+                  "fontSize": 52,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "By1ho",
+      "x": 8400,
+      "y": 0,
+      "name": "3 · Old Parchment",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "./images/generated-1781339823079.png",
+        "mode": "fill"
+      },
+      "layout": "vertical",
+      "gap": 34,
+      "padding": [
+        112,
+        86
+      ],
+      "children": [
+        {
+          "type": "frame",
+          "id": "YsrBZ",
+          "name": "Title",
+          "layout": "vertical",
+          "gap": 14,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Blxvs",
+              "name": "TitleLines",
+              "layout": "vertical",
+              "gap": 2,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ed4pz",
+                  "name": "T0",
+                  "fill": "#473A24",
+                  "content": "6 Psychologische",
+                  "fontFamily": "EB Garamond",
+                  "fontSize": 72,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "S1Dc0",
+                  "name": "T1",
+                  "fill": "#473A24",
+                  "content": "Fakten",
+                  "fontFamily": "EB Garamond",
+                  "fontSize": 72,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 6,
+              "id": "hfvRU",
+              "name": "Underline",
+              "fill": "#8A5A2B",
+              "width": 520,
+              "height": 12
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "g1v02s",
+          "name": "Facts",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 20,
+          "justifyContent": "space_between",
+          "children": [
+            {
+              "type": "frame",
+              "id": "GFmaH",
+              "name": "Fact0",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "o3MM0",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "UwWwX",
+                      "name": "N",
+                      "fill": "#8A5A2B",
+                      "content": "1.",
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "ZsP2v",
+                      "name": "Txt",
+                      "fill": "#473A24",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Dein Gehirn entscheidet bis zu sieben Sekunden bevor du es bewusst merkst.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "UMoER",
+              "name": "Fact1",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "OC5Kk",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "AJG8G",
+                      "name": "N",
+                      "fill": "#8A5A2B",
+                      "content": "2.",
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "NRa6f",
+                      "name": "Txt",
+                      "fill": "#473A24",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Menschen erinnern sich an unerledigte Aufgaben besser als an erledigte.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "XeCWo",
+              "name": "Fact2",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "n9sfxt",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "z1Yfb",
+                      "name": "N",
+                      "fill": "#8A5A2B",
+                      "content": "3.",
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "lzFYq",
+                      "name": "Txt",
+                      "fill": "#473A24",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Wir empfinden den Verlust von Geld doppelt so stark wie einen gleichen Gewinn.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "wVL8I",
+              "name": "Fact3",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "CHRpX",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "mmkAy",
+                      "name": "N",
+                      "fill": "#8A5A2B",
+                      "content": "4.",
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Cp1kj",
+                      "name": "Txt",
+                      "fill": "#473A24",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Ein erzwungenes Lächeln kann dein Gehirn täuschen und dich glücklicher machen.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "d68sBA",
+              "name": "Fact4",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "kvqtt",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "rbco7",
+                      "name": "N",
+                      "fill": "#8A5A2B",
+                      "content": "5.",
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "iBtjh",
+                      "name": "Txt",
+                      "fill": "#473A24",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Dein Gehirn pflegt nur rund 150 stabile Beziehungen gleichzeitig.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "MQ8V5",
+              "name": "Fact5",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "ATcjl",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "M0GBf",
+                      "name": "N",
+                      "fill": "#8A5A2B",
+                      "content": "6.",
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "z8Rsx",
+                      "name": "Txt",
+                      "fill": "#473A24",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Wer leicht vergibt, trägt oft den größten Schmerz in sich.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Q1xYAT",
+          "name": "Signature",
+          "width": "fill_container",
+          "justifyContent": "end",
+          "children": [
+            {
+              "type": "text",
+              "id": "i4i11g",
+              "name": "Sig",
+              "fill": "#8A5A2B",
+              "content": "Liebe mein Leben",
+              "fontFamily": "Caveat",
+              "fontSize": 52,
+              "fontWeight": "700"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "RgMvq",
+      "x": 9600,
+      "y": 0,
+      "name": "4 · White Marble",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "./images/generated-1781341040770.png",
+        "mode": "fill"
+      },
+      "layout": "vertical",
+      "gap": 34,
+      "padding": [
+        112,
+        86
+      ],
+      "children": [
+        {
+          "type": "frame",
+          "id": "TsJfR",
+          "name": "Title",
+          "layout": "vertical",
+          "gap": 14,
+          "children": [
+            {
+              "type": "frame",
+              "id": "GlhyE",
+              "name": "TitleLines",
+              "layout": "vertical",
+              "gap": 2,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "wuAuy",
+                  "name": "T0",
+                  "fill": "#20202A",
+                  "content": "6 Psychologische",
+                  "fontFamily": "Playfair Display",
+                  "fontSize": 66,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "lYLr0",
+                  "name": "T1",
+                  "fill": "#20202A",
+                  "content": "Fakten",
+                  "fontFamily": "Playfair Display",
+                  "fontSize": 66,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 6,
+              "id": "wdX7z",
+              "name": "Underline",
+              "fill": "#B08D57",
+              "width": 520,
+              "height": 12
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "crlfH",
+          "name": "Facts",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 20,
+          "justifyContent": "space_between",
+          "children": [
+            {
+              "type": "frame",
+              "id": "leiUn",
+              "name": "Fact0",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "y9NFOz",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "RKVfq",
+                      "name": "N",
+                      "fill": "#B08D57",
+                      "content": "1.",
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "W3Ifat",
+                      "name": "Txt",
+                      "fill": "#20202A",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Dein Gehirn entscheidet bis zu sieben Sekunden bevor du es bewusst merkst.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "d23ke",
+              "name": "Fact1",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "poRPh",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "OP3lt",
+                      "name": "N",
+                      "fill": "#B08D57",
+                      "content": "2.",
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "z8auJ",
+                      "name": "Txt",
+                      "fill": "#20202A",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Menschen erinnern sich an unerledigte Aufgaben besser als an erledigte.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "GgxED",
+              "name": "Fact2",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "iohfU",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Kqfxg",
+                      "name": "N",
+                      "fill": "#B08D57",
+                      "content": "3.",
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Xy4Bj",
+                      "name": "Txt",
+                      "fill": "#20202A",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Wir empfinden den Verlust von Geld doppelt so stark wie einen gleichen Gewinn.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "UmbFT",
+              "name": "Fact3",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "dQuqn",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "d7j4uJ",
+                      "name": "N",
+                      "fill": "#B08D57",
+                      "content": "4.",
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "vKABi",
+                      "name": "Txt",
+                      "fill": "#20202A",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Ein erzwungenes Lächeln kann dein Gehirn täuschen und dich glücklicher machen.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "aF5zo",
+              "name": "Fact4",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "pcXgA",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "zCN2z",
+                      "name": "N",
+                      "fill": "#B08D57",
+                      "content": "5.",
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "yMgxa",
+                      "name": "Txt",
+                      "fill": "#20202A",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Dein Gehirn pflegt nur rund 150 stabile Beziehungen gleichzeitig.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "hNnym",
+              "name": "Fact5",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "DNgV8",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "H6wjHp",
+                      "name": "N",
+                      "fill": "#B08D57",
+                      "content": "6.",
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "mBAJb",
+                      "name": "Txt",
+                      "fill": "#20202A",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Wer leicht vergibt, trägt oft den größten Schmerz in sich.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "geiAC",
+          "name": "Signature",
+          "width": "fill_container",
+          "justifyContent": "end",
+          "children": [
+            {
+              "type": "text",
+              "id": "z7ayS",
+              "name": "Sig",
+              "fill": "#7A6A3A",
+              "content": "Liebe mein Leben",
+              "fontFamily": "Caveat",
+              "fontSize": 52,
+              "fontWeight": "700"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "A7sdY",
+      "x": 10800,
+      "y": 0,
+      "name": "5 · Linen Card",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "mode": "fill"
+      },
+      "layout": "vertical",
+      "padding": 54,
+      "children": [
+        {
+          "type": "frame",
+          "id": "wJaVg",
+          "name": "Card",
+          "width": "fill_container",
+          "height": "fill_container",
+          "fill": "#FBF7EDF2",
+          "cornerRadius": 22,
+          "layout": "vertical",
+          "gap": 32,
+          "padding": [
+            88,
+            68
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "M4j5K",
+              "name": "Title",
+              "fill": "#6E5F4E",
+              "cornerRadius": 10,
+              "padding": [
+                12,
+                26
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "IQCfh",
+                  "name": "TitleLines",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "xW1d1",
+                      "name": "T0",
+                      "fill": "#FBF7ED",
+                      "content": "6 Psychologische",
+                      "fontFamily": "Spectral",
+                      "fontSize": 62,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "pthzf",
+                      "name": "T1",
+                      "fill": "#FBF7ED",
+                      "content": "Fakten",
+                      "fontFamily": "Spectral",
+                      "fontSize": 62,
+                      "fontWeight": "800"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "BMWqr",
+              "name": "Facts",
+              "width": "fill_container",
+              "height": "fill_container",
+              "layout": "vertical",
+              "gap": 20,
+              "justifyContent": "space_between",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "DSn7Y",
+                  "name": "Fact0",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "K3iVlE",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "cfEJm",
+                          "name": "N",
+                          "fill": "#6E5F4E",
+                          "content": "1.",
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "sq38l",
+                          "name": "Txt",
+                          "fill": "#2A2620",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Dein Gehirn entscheidet bis zu sieben Sekunden bevor du es bewusst merkst.",
+                          "lineHeight": 1.32,
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "tBov9",
+                  "name": "Fact1",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "KSy3v",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "c7Jds",
+                          "name": "N",
+                          "fill": "#6E5F4E",
+                          "content": "2.",
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "vnXEX",
+                          "name": "Txt",
+                          "fill": "#2A2620",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Menschen erinnern sich an unerledigte Aufgaben besser als an erledigte.",
+                          "lineHeight": 1.32,
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "i99Fks",
+                  "name": "Fact2",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "iCMiC",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Xszlf",
+                          "name": "N",
+                          "fill": "#6E5F4E",
+                          "content": "3.",
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "t3cah",
+                          "name": "Txt",
+                          "fill": "#2A2620",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Wir empfinden den Verlust von Geld doppelt so stark wie einen gleichen Gewinn.",
+                          "lineHeight": 1.32,
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "FsZoG",
+                  "name": "Fact3",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Jfu8k",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "lcSqH",
+                          "name": "N",
+                          "fill": "#6E5F4E",
+                          "content": "4.",
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "gTirV",
+                          "name": "Txt",
+                          "fill": "#2A2620",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Ein erzwungenes Lächeln kann dein Gehirn täuschen und dich glücklicher machen.",
+                          "lineHeight": 1.32,
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "lE1gv",
+                  "name": "Fact4",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "mk7e3",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "gXAbN",
+                          "name": "N",
+                          "fill": "#6E5F4E",
+                          "content": "5.",
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "j34vG2",
+                          "name": "Txt",
+                          "fill": "#2A2620",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Dein Gehirn pflegt nur rund 150 stabile Beziehungen gleichzeitig.",
+                          "lineHeight": 1.32,
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "B6mepx",
+                  "name": "Fact5",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "VAGZd",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Yghtl",
+                          "name": "N",
+                          "fill": "#6E5F4E",
+                          "content": "6.",
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "YDppf",
+                          "name": "Txt",
+                          "fill": "#2A2620",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Wer leicht vergibt, trägt oft den größten Schmerz in sich.",
+                          "lineHeight": 1.32,
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "K6jL1B",
+              "name": "Signature",
+              "width": "fill_container",
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "KicTZ",
+                  "name": "Sig",
+                  "fill": "#6E5F4E",
+                  "content": "Liebe mein Leben",
+                  "fontFamily": "Caveat",
+                  "fontSize": 52,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "HHlEE",
+      "x": 12000,
+      "y": 0,
+      "name": "6 · Concrete",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "./images/generated-1781341041634.png",
+        "mode": "fill"
+      },
+      "layout": "vertical",
+      "gap": 34,
+      "padding": [
+        112,
+        86
+      ],
+      "children": [
+        {
+          "type": "frame",
+          "id": "Sqj1W",
+          "name": "Title",
+          "fill": "#D2613C",
+          "cornerRadius": 8,
+          "padding": [
+            12,
+            26
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "r4RUY7",
+              "name": "TitleLines",
+              "layout": "vertical",
+              "gap": 2,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Op2na",
+                  "name": "T0",
+                  "fill": "#FFFFFF",
+                  "content": "6 Psychologische",
+                  "fontFamily": "Lora",
+                  "fontSize": 64,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "XHdGI",
+                  "name": "T1",
+                  "fill": "#FFFFFF",
+                  "content": "Fakten",
+                  "fontFamily": "Lora",
+                  "fontSize": 64,
+                  "fontWeight": "800"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "RaMrc",
+          "name": "Facts",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 20,
+          "justifyContent": "space_between",
+          "children": [
+            {
+              "type": "frame",
+              "id": "gAbFx",
+              "name": "Fact0",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "vpc1M",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "f8uhII",
+                      "name": "N",
+                      "fill": "#D2613C",
+                      "content": "1.",
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "xZLFO",
+                      "name": "Txt",
+                      "fill": "#222222",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Dein Gehirn entscheidet bis zu sieben Sekunden bevor du es bewusst merkst.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "gi3Mb",
+              "name": "Fact1",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "er9K6",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "olPND",
+                      "name": "N",
+                      "fill": "#D2613C",
+                      "content": "2.",
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "YUlIB",
+                      "name": "Txt",
+                      "fill": "#222222",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Menschen erinnern sich an unerledigte Aufgaben besser als an erledigte.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "j7F37",
+              "name": "Fact2",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "b0Ksr",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "U5DUT",
+                      "name": "N",
+                      "fill": "#D2613C",
+                      "content": "3.",
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "w2VT8T",
+                      "name": "Txt",
+                      "fill": "#222222",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Wir empfinden den Verlust von Geld doppelt so stark wie einen gleichen Gewinn.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "tnDsC",
+              "name": "Fact3",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "BXQcr",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "EWyPM",
+                      "name": "N",
+                      "fill": "#D2613C",
+                      "content": "4.",
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "soBAx",
+                      "name": "Txt",
+                      "fill": "#222222",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Ein erzwungenes Lächeln kann dein Gehirn täuschen und dich glücklicher machen.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Lqor0",
+              "name": "Fact4",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "l11x2K",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "DYd4y",
+                      "name": "N",
+                      "fill": "#D2613C",
+                      "content": "5.",
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "D5zkC",
+                      "name": "Txt",
+                      "fill": "#222222",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Dein Gehirn pflegt nur rund 150 stabile Beziehungen gleichzeitig.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "we81m",
+              "name": "Fact5",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "gIEXf",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "l3eaO",
+                      "name": "N",
+                      "fill": "#D2613C",
+                      "content": "6.",
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "oJUCA",
+                      "name": "Txt",
+                      "fill": "#222222",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Wer leicht vergibt, trägt oft den größten Schmerz in sich.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "Lora",
+                      "fontSize": 40,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "NGh2s",
+          "name": "Signature",
+          "width": "fill_container",
+          "justifyContent": "end",
+          "children": [
+            {
+              "type": "text",
+              "id": "qJFrJ",
+              "name": "Sig",
+              "fill": "#3A3A3A",
+              "content": "Liebe mein Leben",
+              "fontFamily": "Caveat",
+              "fontSize": 52,
+              "fontWeight": "700"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "ikogy",
+      "x": 13200,
+      "y": 0,
+      "name": "7 · Walnut Wood",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "./images/generated-1781341042944.png",
+        "mode": "fill"
+      },
+      "layout": "vertical",
+      "padding": 54,
+      "children": [
+        {
+          "type": "frame",
+          "id": "y5YAnc",
+          "name": "Card",
+          "width": "fill_container",
+          "height": "fill_container",
+          "fill": "#FBF6EAF2",
+          "cornerRadius": 22,
+          "layout": "vertical",
+          "gap": 32,
+          "padding": [
+            88,
+            68
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "aX4aS",
+              "name": "Title",
+              "fill": "#3A2A1C",
+              "cornerRadius": 10,
+              "padding": [
+                12,
+                26
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "bg4z5",
+                  "name": "TitleLines",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "T6iJH",
+                      "name": "T0",
+                      "fill": "#FBF6EA",
+                      "content": "6 Psychologische",
+                      "fontFamily": "Spectral",
+                      "fontSize": 62,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "ToDZ3",
+                      "name": "T1",
+                      "fill": "#FBF6EA",
+                      "content": "Fakten",
+                      "fontFamily": "Spectral",
+                      "fontSize": 62,
+                      "fontWeight": "800"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "BTuGl",
+              "name": "Facts",
+              "width": "fill_container",
+              "height": "fill_container",
+              "layout": "vertical",
+              "gap": 20,
+              "justifyContent": "space_between",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "C3D46e",
+                  "name": "Fact0",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "MFSmN",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "aJ7v1",
+                          "name": "N",
+                          "fill": "#7A5A3A",
+                          "content": "1.",
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "P7xbnz",
+                          "name": "Txt",
+                          "fill": "#2B2620",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Dein Gehirn entscheidet bis zu sieben Sekunden bevor du es bewusst merkst.",
+                          "lineHeight": 1.32,
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "xVmhp",
+                  "name": "Fact1",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "rNyJy",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "K1cvW",
+                          "name": "N",
+                          "fill": "#7A5A3A",
+                          "content": "2.",
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "bdA4E",
+                          "name": "Txt",
+                          "fill": "#2B2620",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Menschen erinnern sich an unerledigte Aufgaben besser als an erledigte.",
+                          "lineHeight": 1.32,
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "qgMfh",
+                  "name": "Fact2",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "E4qbWq",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "TRAmQ",
+                          "name": "N",
+                          "fill": "#7A5A3A",
+                          "content": "3.",
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "S7WfB6",
+                          "name": "Txt",
+                          "fill": "#2B2620",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Wir empfinden den Verlust von Geld doppelt so stark wie einen gleichen Gewinn.",
+                          "lineHeight": 1.32,
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "G0dGt",
+                  "name": "Fact3",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "kEtAq",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ed9xI",
+                          "name": "N",
+                          "fill": "#7A5A3A",
+                          "content": "4.",
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "omcZE",
+                          "name": "Txt",
+                          "fill": "#2B2620",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Ein erzwungenes Lächeln kann dein Gehirn täuschen und dich glücklicher machen.",
+                          "lineHeight": 1.32,
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "CosWC",
+                  "name": "Fact4",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Go9eh",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "aODrO",
+                          "name": "N",
+                          "fill": "#7A5A3A",
+                          "content": "5.",
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "miKXz",
+                          "name": "Txt",
+                          "fill": "#2B2620",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Dein Gehirn pflegt nur rund 150 stabile Beziehungen gleichzeitig.",
+                          "lineHeight": 1.32,
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "eAYfw",
+                  "name": "Fact5",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "uSWLJ",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "bObuB",
+                          "name": "N",
+                          "fill": "#7A5A3A",
+                          "content": "6.",
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "chcDa",
+                          "name": "Txt",
+                          "fill": "#2B2620",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Wer leicht vergibt, trägt oft den größten Schmerz in sich.",
+                          "lineHeight": 1.32,
+                          "fontFamily": "Spectral",
+                          "fontSize": 40,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "FeLb0",
+              "name": "Signature",
+              "width": "fill_container",
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "hrKHK",
+                  "name": "Sig",
+                  "fill": "#5A3F28",
+                  "content": "Liebe mein Leben",
+                  "fontFamily": "Caveat",
+                  "fontSize": 52,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "h4qNZy",
+      "x": 14400,
+      "y": 0,
+      "name": "8 · Aged Newsprint",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "./images/generated-1781341040718.png",
+        "mode": "fill"
+      },
+      "layout": "vertical",
+      "gap": 34,
+      "padding": [
+        112,
+        86
+      ],
+      "children": [
+        {
+          "type": "frame",
+          "id": "lbrq2",
+          "name": "Title",
+          "layout": "vertical",
+          "gap": 14,
+          "children": [
+            {
+              "type": "frame",
+              "id": "yYsGu",
+              "name": "TitleLines",
+              "layout": "vertical",
+              "gap": 2,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "dn9SJ",
+                  "name": "T0",
+                  "fill": "#1C1A17",
+                  "content": "6 Psychologische",
+                  "fontFamily": "EB Garamond",
+                  "fontSize": 72,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "NtlrR",
+                  "name": "T1",
+                  "fill": "#1C1A17",
+                  "content": "Fakten",
+                  "fontFamily": "EB Garamond",
+                  "fontSize": 72,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 6,
+              "id": "x3TGz",
+              "name": "Underline",
+              "fill": "#1A1A1A",
+              "width": 520,
+              "height": 12
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "KVJRo",
+          "name": "Facts",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 20,
+          "justifyContent": "space_between",
+          "children": [
+            {
+              "type": "frame",
+              "id": "N3Zm7",
+              "name": "Fact0",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "AL02P",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Z0Lley",
+                      "name": "N",
+                      "fill": "#1A1A1A",
+                      "content": "1.",
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "cgwLA",
+                      "name": "Txt",
+                      "fill": "#1C1A17",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Dein Gehirn entscheidet bis zu sieben Sekunden bevor du es bewusst merkst.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "aRl72",
+              "name": "Fact1",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "VTzaE",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "i6KMpk",
+                      "name": "N",
+                      "fill": "#1A1A1A",
+                      "content": "2.",
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "CNK9I",
+                      "name": "Txt",
+                      "fill": "#1C1A17",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Menschen erinnern sich an unerledigte Aufgaben besser als an erledigte.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "jInl0",
+              "name": "Fact2",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "TMIZr",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "VWmpV",
+                      "name": "N",
+                      "fill": "#1A1A1A",
+                      "content": "3.",
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "XQZtV",
+                      "name": "Txt",
+                      "fill": "#1C1A17",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Wir empfinden den Verlust von Geld doppelt so stark wie einen gleichen Gewinn.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "FMSpz",
+              "name": "Fact3",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "oLq4f",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "OoRK2",
+                      "name": "N",
+                      "fill": "#1A1A1A",
+                      "content": "4.",
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "srmp6",
+                      "name": "Txt",
+                      "fill": "#1C1A17",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Ein erzwungenes Lächeln kann dein Gehirn täuschen und dich glücklicher machen.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "AZCJ4",
+              "name": "Fact4",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "X50XBc",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "iSEoR",
+                      "name": "N",
+                      "fill": "#1A1A1A",
+                      "content": "5.",
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "XoDFh",
+                      "name": "Txt",
+                      "fill": "#1C1A17",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Dein Gehirn pflegt nur rund 150 stabile Beziehungen gleichzeitig.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "X1ceJ",
+              "name": "Fact5",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "D5X0SH",
+                  "name": "Row",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "i972h7",
+                      "name": "N",
+                      "fill": "#1A1A1A",
+                      "content": "6.",
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "f7qGOW",
+                      "name": "Txt",
+                      "fill": "#1C1A17",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Wer leicht vergibt, trägt oft den größten Schmerz in sich.",
+                      "lineHeight": 1.32,
+                      "fontFamily": "EB Garamond",
+                      "fontSize": 42,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "AVOMc",
+          "name": "Signature",
+          "width": "fill_container",
+          "justifyContent": "end",
+          "children": [
+            {
+              "type": "text",
+              "id": "CdXIj",
+              "name": "Sig",
+              "fill": "#1A1A1A",
+              "content": "Liebe mein Leben",
+              "fontFamily": "Caveat",
+              "fontSize": 52,
+              "fontWeight": "700"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "n21xgq",
+      "x": 15600,
+      "y": 0,
+      "name": "Анекдот · MIN ~200",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "./images/generated-1781344518163.png",
+        "mode": "fill"
+      },
+      "layout": "vertical",
+      "gap": 34,
+      "padding": [
+        150,
+        86,
+        104,
+        86
+      ],
+      "children": [
+        {
+          "type": "frame",
+          "id": "ekJlW",
+          "name": "TitleWrap",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 10,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "biHZy",
+              "name": "Title",
+              "fill": "#1c1a17",
+              "content": "Про официанта",
+              "fontFamily": "PT Serif",
+              "fontSize": 54,
+              "fontWeight": "700"
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "ub2Tz",
+              "name": "Underline",
+              "fill": "#b23b2e",
+              "width": 280,
+              "height": 6
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "W1VT2",
+          "name": "Body",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "I27NL",
+              "name": "Text",
+              "fill": "#1c1a17",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Охранник ресторана — официанту:\n— Давай я выгоню вон того типа в углу, он уже минут сорок лежит пьяный на столике.\n— Не надо! Я его бужу каждые десять минут, он уже четыре раза расплатился по счёту.",
+              "lineHeight": 1.58,
+              "fontFamily": "PT Serif",
+              "fontSize": 84,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Q1y0E",
+          "name": "Footer",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "smQTy",
+              "name": "Emoji",
+              "fill": "#000000",
+              "content": "😂",
+              "fontFamily": "Noto Color Emoji",
+              "fontSize": 84,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "mB20P",
+              "name": "Sign",
+              "fill": "#b23b2e",
+              "content": "Русские анекдоты",
+              "fontFamily": "Marck Script",
+              "fontSize": 50,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "m8P8Ir",
+      "x": 16800,
+      "y": 0,
+      "name": "Анекдот · MAX ~355",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "./images/generated-1781344520568.png",
+        "mode": "fill"
+      },
+      "layout": "vertical",
+      "gap": 34,
+      "padding": [
+        150,
+        86,
+        104,
+        86
+      ],
+      "children": [
+        {
+          "type": "frame",
+          "id": "d3WEGG",
+          "name": "TitleWrap",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 10,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "QQbe7",
+              "name": "Title",
+              "fill": "#1c1a17",
+              "content": "Про священника",
+              "fontFamily": "PT Serif",
+              "fontSize": 54,
+              "fontWeight": "700"
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "Rnpm5",
+              "name": "Underline",
+              "fill": "#b23b2e",
+              "width": 330,
+              "height": 6
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "f6776Y",
+          "name": "Body",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "akHAO",
+              "name": "Text",
+              "fill": "#1c1a17",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Священник поднялся с колен и объявил пастве:\n— Сегодня здесь находится человек, который начал флирт с чужой женой. Если он не положит на блюдо пять долларов, я назову его имя с амвона.\nКогда блюдо обошло молящихся и вернулось к священнику, на нём оказалось девятнадцать пятидолларовых купюр и отдельно два доллара с запиской: «Три доллара я принесу завтра».",
+              "lineHeight": 1.58,
+              "fontFamily": "PT Serif",
+              "fontSize": 56,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "NxbLw",
+          "name": "Footer",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "aQwxb",
+              "name": "Emoji",
+              "fill": "#000000",
+              "content": "😂",
+              "fontFamily": "Noto Color Emoji",
+              "fontSize": 84,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "b8EwA4",
+              "name": "Sign",
+              "fill": "#b23b2e",
+              "content": "Русские анекдоты",
+              "fontFamily": "Marck Script",
+              "fontSize": 50,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "p9mZT",
+      "x": 6000,
+      "y": 2120,
+      "name": "tex/kraft",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "mode": "fill"
+      }
+    },
+    {
+      "type": "frame",
+      "id": "jfzO2",
+      "x": 7160,
+      "y": 2120,
+      "name": "tex/parchment",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "./images/generated-1781345361958.png",
+        "mode": "fill"
+      }
+    },
+    {
+      "type": "frame",
+      "id": "ZL48M",
+      "x": 8320,
+      "y": 2120,
+      "name": "tex/marble",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "./images/generated-1781345360628.png",
+        "mode": "fill"
+      }
+    },
+    {
+      "type": "frame",
+      "id": "LrgZy",
+      "x": 9480,
+      "y": 2120,
+      "name": "tex/linen",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "./images/generated-1781345366592.png",
+        "mode": "fill"
+      }
+    },
+    {
+      "type": "frame",
+      "id": "a76Fo4",
+      "x": 10640,
+      "y": 2120,
+      "name": "tex/concrete",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "./images/generated-1781345362116.png",
+        "mode": "fill"
+      }
+    },
+    {
+      "type": "frame",
+      "id": "O6YjH",
+      "x": 11800,
+      "y": 2120,
+      "name": "tex/paper",
+      "clip": true,
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "mode": "fill"
+      }
+    }
+  ]
+}

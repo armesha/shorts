@@ -1,0 +1,702 @@
+[
+ {
+  "id": 101,
+  "pack": 2,
+  "text": "Oh, Léon ! Ton prénom à l'envers donne Noël !\n\nHe oui, tout le monde n'a pas cette chance mon cher Luc...",
+  "chars": 105,
+  "title": ""
+ },
+ {
+  "id": 102,
+  "pack": 2,
+  "text": "On m'a dit que pour faire ses courses pendant le confinement, il suffisait de porter un masque et des gants...\n\nC'était un mensonge, tous les autres étaient habillés !",
+  "chars": 167,
+  "title": ""
+ },
+ {
+  "id": 103,
+  "pack": 2,
+  "text": "Ce matin, en voulant m'habiller, le bouton de ma chemise m'est resté dans les mains. En voulant mettre mes chaussures, mon lacet m'est resté dans les mains.\n\nJe me suis dit \"Vaut mieux pas que j'aille pisser\"",
+  "chars": 208,
+  "title": ""
+ },
+ {
+  "id": 104,
+  "pack": 2,
+  "text": "Qui se débrouille le mieux au karaté ?\n\nL'électricité, car elle connaît beaucoup de prises.",
+  "chars": 91,
+  "title": ""
+ },
+ {
+  "id": 105,
+  "pack": 2,
+  "text": "Que dit un pistolet à une mitraillette ?\n\nÇa fait longtemps que tu bégayes ?",
+  "chars": 76,
+  "title": ""
+ },
+ {
+  "id": 106,
+  "pack": 2,
+  "text": "Un clown arrive chez le docteur.\n\nDocteur, vite, je me sens tout drôle...",
+  "chars": 73,
+  "title": ""
+ },
+ {
+  "id": 107,
+  "pack": 2,
+  "text": "Qu'est-ce qui est rouge et qui attend ?\n\nMon compte en banque.",
+  "chars": 62,
+  "title": ""
+ },
+ {
+  "id": 108,
+  "pack": 2,
+  "text": "Comment appelle-t-on une personne agréable à Paris ?\n\nUn touriste.",
+  "chars": 66,
+  "title": ""
+ },
+ {
+  "id": 109,
+  "pack": 2,
+  "text": "Qu'est-ce qui est noir et blanc et qui rebondit ?\n\nUn pingouin sur un trampoline.",
+  "chars": 81,
+  "title": ""
+ },
+ {
+  "id": 110,
+  "pack": 2,
+  "text": "Comment reconnaître un ministre qui ment ?\n\nSes lèvres bougent.",
+  "chars": 63,
+  "title": ""
+ },
+ {
+  "id": 111,
+  "pack": 2,
+  "text": "Comment appelle-t-on une fleur très occupée ?\n\nUne fleur over-bookée.",
+  "chars": 69,
+  "title": ""
+ },
+ {
+  "id": 112,
+  "pack": 2,
+  "text": "Pourquoi tu vends ton perroquet ?\n\nParce qu'hier, ce bâtard a essayé de me vendre !",
+  "chars": 83,
+  "title": ""
+ },
+ {
+  "id": 113,
+  "pack": 2,
+  "text": "Un jour, Dieu demanda à David de guetter...\n\n... et David guetta.",
+  "chars": 65,
+  "title": ""
+ },
+ {
+  "id": 114,
+  "pack": 2,
+  "text": "Que font 2 brosses à dents le 14 juillet ?\n\nUn feu dentifrice !",
+  "chars": 63,
+  "title": ""
+ },
+ {
+  "id": 115,
+  "pack": 2,
+  "text": "Qu'est-ce qu'un petit cheval dans une piscine ?\n\nUn poney de bain.",
+  "chars": 66,
+  "title": ""
+ },
+ {
+  "id": 116,
+  "pack": 2,
+  "text": "Pourquoi le ciel est si haut ?\n\nPour que les oiseaux ne se cognent pas la tête.",
+  "chars": 79,
+  "title": ""
+ },
+ {
+  "id": 117,
+  "pack": 2,
+  "text": "Qui s'occupe de la décoration à l'Élysée ?\n\nLe ministère de l'Intérieur",
+  "chars": 71,
+  "title": ""
+ },
+ {
+  "id": 118,
+  "pack": 2,
+  "text": "Pourquoi les Indiens mettent-ils leur argent en bourse ?\n\nCar ça rapporte des sioux.",
+  "chars": 84,
+  "title": ""
+ },
+ {
+  "id": 119,
+  "pack": 2,
+  "text": "Quel est le comble pour un dentiste ?\n\nC'est d'habiter dans un palais.",
+  "chars": 70,
+  "title": ""
+ },
+ {
+  "id": 120,
+  "pack": 2,
+  "text": "Qu'est-ce qu'un euro dans un avion qui décolle ?\n\nUne pièce montée",
+  "chars": 66,
+  "title": ""
+ },
+ {
+  "id": 121,
+  "pack": 2,
+  "text": "Quel est le comble de Buzz ?\n\nD'aller plus vite que l'éclair.",
+  "chars": 61,
+  "title": ""
+ },
+ {
+  "id": 122,
+  "pack": 2,
+  "text": "Pourquoi les bots ne parlent pas avec les humains ?\n\nPar peur de leur ressembler.",
+  "chars": 81,
+  "title": ""
+ },
+ {
+  "id": 123,
+  "pack": 2,
+  "text": "Est-ce que je suis une mauvaise mère, Léo ?\n\nJe m'appelle Arthur.",
+  "chars": 65,
+  "title": ""
+ },
+ {
+  "id": 124,
+  "pack": 2,
+  "text": "Les parents sont deux êtres qui t'apprennent à marcher et à parler...\n\nPour ensuite te dire de t'asseoir et de fermer ta gueule.",
+  "chars": 128,
+  "title": ""
+ },
+ {
+  "id": 125,
+  "pack": 2,
+  "text": "L'autobus est une invention géniale !\n\nIl roule deux fois plus vite quand tu cours après que quand t'es assis dedans.",
+  "chars": 117,
+  "title": ""
+ },
+ {
+  "id": 126,
+  "pack": 2,
+  "text": "Qu'est-ce que le Gospel ?\n\nC'est quand ton gamin a pris un coup de soleil.",
+  "chars": 74,
+  "title": ""
+ },
+ {
+  "id": 127,
+  "pack": 2,
+  "text": "Quand est-ce que les chiens aboient ?\n\nLorsqu'ils ont un chat dans la gorge.",
+  "chars": 76,
+  "title": ""
+ },
+ {
+  "id": 128,
+  "pack": 2,
+  "text": "Comment un développeur tente-t-il de réparer sa voiture lorsqu'elle a un problème ?\n\nIl sort de la voiture, ferme toutes les fenêtres, retourne dans la voiture, et essaie de redémarrer.",
+  "chars": 185,
+  "title": ""
+ },
+ {
+  "id": 129,
+  "pack": 2,
+  "text": "Qu'est-ce que deux fous avec des mitraillettes ?\n\nUne fousillade.",
+  "chars": 65,
+  "title": ""
+ },
+ {
+  "id": 130,
+  "pack": 2,
+  "text": "Quel est le comble pour un plombier ?\n\nQue ses clients prennent la fuite !",
+  "chars": 74,
+  "title": ""
+ },
+ {
+  "id": 131,
+  "pack": 2,
+  "text": "Quand 2 poissons s'énervent...\n\nEst-ce qu'on peut dire que le thon monte ?",
+  "chars": 74,
+  "title": ""
+ },
+ {
+  "id": 132,
+  "pack": 2,
+  "text": "Qu'est-ce qui commence par un E, finit par un E et qui ne contient qu'une lettre ?\n\nUne enveloppe !",
+  "chars": 99,
+  "title": ""
+ },
+ {
+  "id": 133,
+  "pack": 2,
+  "text": "Babi et Baba sont sur un bateau Baba tombe à l'eau. Que se passe-t-il ?\n\nBabi bêle et Baba coule.",
+  "chars": 97,
+  "title": ""
+ },
+ {
+  "id": 134,
+  "pack": 2,
+  "text": "Que s'est-il passé en 1769 ? Napoléon est né ! Et que s'est-il passé en 1789 ?\n\nIl a eu 20 ans !",
+  "chars": 96,
+  "title": ""
+ },
+ {
+  "id": 135,
+  "pack": 2,
+  "text": "Attention au chien !\n\nIl est si petit que vous pourriez marcher dessus.",
+  "chars": 71,
+  "title": ""
+ },
+ {
+  "id": 136,
+  "pack": 2,
+  "text": "Merci de ne pas frapper\n\nEt soyez gentil, de ne pas sonner non plus",
+  "chars": 67,
+  "title": ""
+ },
+ {
+  "id": 137,
+  "pack": 2,
+  "text": "N'hésitez pas à demander si la maison fait crédit !\n\nNous avons une façon absolument délicieuse de refuser.",
+  "chars": 107,
+  "title": ""
+ },
+ {
+  "id": 138,
+  "pack": 2,
+  "text": "Sur ce serveur le 12 mai 2020.\n\nIl ne se passa strictement rien.",
+  "chars": 64,
+  "title": ""
+ },
+ {
+  "id": 139,
+  "pack": 2,
+  "text": "Pourquoi la girafe se fait arrêter par la police ?\n\nParce que c'est un cou-monté !",
+  "chars": 82,
+  "title": ""
+ },
+ {
+  "id": 140,
+  "pack": 2,
+  "text": "Pourquoi les coccinelles n'aiment-elles pas courir ?\n\nParce qu'elles ont toujours des points de côté !",
+  "chars": 102,
+  "title": ""
+ },
+ {
+  "id": 141,
+  "pack": 2,
+  "text": "Pourquoi Toto veut se marier avec la mère de son père ?\n\nBen, son père s'est bien marié avec la sienne...",
+  "chars": 105,
+  "title": ""
+ },
+ {
+  "id": 142,
+  "pack": 2,
+  "text": "Que demande un chat dans une pharmacie ?\n\nAvez-vous du sirop pour ma toux ?",
+  "chars": 75,
+  "title": ""
+ },
+ {
+  "id": 143,
+  "pack": 2,
+  "text": "Que faisaient les dinosaures quand ils n'arrivaient pas à se décider ?\n\nDes tirageosaures.",
+  "chars": 90,
+  "title": ""
+ },
+ {
+  "id": 144,
+  "pack": 2,
+  "text": "Pourquoi est-ce qu'on met tous les crocos en prison ?\n\nParce que les crocos dealent.",
+  "chars": 84,
+  "title": ""
+ },
+ {
+  "id": 145,
+  "pack": 2,
+  "text": "Quel est le jambon que tout le monde déteste ?\n\nLe sale ami.",
+  "chars": 60,
+  "title": ""
+ },
+ {
+  "id": 146,
+  "pack": 2,
+  "text": "Quelle est la différence entre toi et un sapin ?\n\nUn sapin, c'est un conifère et toi t'es con et on ne peut rien y faire.",
+  "chars": 121,
+  "title": ""
+ },
+ {
+  "id": 147,
+  "pack": 2,
+  "text": "Quelle est l'émission TV préférée des jardiniers constipés ?\n\nSilence ça pousse.",
+  "chars": 80,
+  "title": ""
+ },
+ {
+  "id": 148,
+  "pack": 2,
+  "text": "Que dit un coronavirus quand il braque une banque ?\n\nDonnez-moi l'argent, sinon je fais toussoter !",
+  "chars": 99,
+  "title": ""
+ },
+ {
+  "id": 149,
+  "pack": 2,
+  "text": "Peux-tu me dire si le clignotant fonctionne ?\n\nOui, non, oui, non, oui, non.",
+  "chars": 76,
+  "title": ""
+ },
+ {
+  "id": 150,
+  "pack": 2,
+  "text": "Deux pommes de terre traversent la route, l'une d'elles se fait écraser\n\nL’autre dit : « Oh purée ! »",
+  "chars": 101,
+  "title": ""
+ },
+ {
+  "id": 151,
+  "pack": 2,
+  "text": "C'est en forgeant qu'on devient forgeron.\n\nEt c'est en sciant que Léonard devint scie !",
+  "chars": 87,
+  "title": ""
+ },
+ {
+  "id": 152,
+  "pack": 2,
+  "text": "Jésus a marché sur l'eau. Une courgette est composée à 98 % d'eau. J'ai marché sur une courgette.\n\nJe suis à 98 % Jésus.",
+  "chars": 120,
+  "title": ""
+ },
+ {
+  "id": 153,
+  "pack": 2,
+  "text": "Quel oiseau est attiré par le miel ?\n\nL'autruche, car à côté, il y a une aut'ruche.",
+  "chars": 83,
+  "title": ""
+ },
+ {
+  "id": 154,
+  "pack": 2,
+  "text": "Qu'est-ce qu'un tennisman adore faire ?\n\nRendre des services !",
+  "chars": 62,
+  "title": ""
+ },
+ {
+  "id": 155,
+  "pack": 2,
+  "text": "Quelle est la différence entre un marin et un boucher ?\n\nLe boucher voit le porc avant les côtes.",
+  "chars": 97,
+  "title": ""
+ },
+ {
+  "id": 156,
+  "pack": 2,
+  "text": "Comment appelle-t-on un chat dans l'espace ?\n\nUn chatellite.",
+  "chars": 60,
+  "title": ""
+ },
+ {
+  "id": 157,
+  "pack": 2,
+  "text": "Quel est le comble pour un porte-charge ?\n\nC'est de mal se porter.",
+  "chars": 66,
+  "title": ""
+ },
+ {
+  "id": 158,
+  "pack": 2,
+  "text": "Pourquoi méprises-tu les canards ?\n\nParce qu'à chaque fois que je vais au coin, ils se moquent de moi.",
+  "chars": 102,
+  "title": ""
+ },
+ {
+  "id": 159,
+  "pack": 2,
+  "text": "Mr et madame Sop ont un fils, comment s'appelle-t-il ?\n\nAlain",
+  "chars": 61,
+  "title": ""
+ },
+ {
+  "id": 160,
+  "pack": 2,
+  "text": "Dieu créa la France, un trop beau pays, de belles formes, la mer, l'océan, les montagnes...\n\nAlors pour compenser, il a créé le français.",
+  "chars": 137,
+  "title": ""
+ },
+ {
+  "id": 161,
+  "pack": 2,
+  "text": "Je suis Tintin, mais je ne suis pas Tintin. Qui suis-je ?\n\nMilou.",
+  "chars": 65,
+  "title": ""
+ },
+ {
+  "id": 162,
+  "pack": 2,
+  "text": "Que disent deux mouettes lorsqu'elles veulent partager quelque chose ?\n\n\"On fait mouette-mouette ?\"",
+  "chars": 99,
+  "title": ""
+ },
+ {
+  "id": 163,
+  "pack": 2,
+  "text": "Quelle est l'insulte la plus utilisée en 1940 après le traité de Vichy ?\n\nPétain",
+  "chars": 80,
+  "title": ""
+ },
+ {
+  "id": 164,
+  "pack": 2,
+  "text": "Tu n'as aucune référence...\n\nPeut-être, car je suis pas à vendre !",
+  "chars": 66,
+  "title": ""
+ },
+ {
+  "id": 165,
+  "pack": 2,
+  "text": "Monsieur et madame Cale ont un fils, comment s'appelle-t-il ?\n\nMedhi",
+  "chars": 68,
+  "title": ""
+ },
+ {
+  "id": 166,
+  "pack": 2,
+  "text": "Mon plus grand défaut est l'honnêteté... Vous pensez le contraire ?\n\nJ'en ai rien à foutre de ce que vous pensez.",
+  "chars": 113,
+  "title": ""
+ },
+ {
+  "id": 167,
+  "pack": 2,
+  "text": "De quelle couleur est le cheval blanc d'Henri IV ?\n\nJaune, car il s'est pissé dessus.",
+  "chars": 85,
+  "title": ""
+ },
+ {
+  "id": 168,
+  "pack": 2,
+  "text": "J'ai lu un livre de Victor Hugo.\n\nIl ne devait pas boire que du Fanta à l'apéro celui-là...",
+  "chars": 91,
+  "title": ""
+ },
+ {
+  "id": 169,
+  "pack": 2,
+  "text": "Quelle est la résolution d'un informaticien pour la nouvelle année ?\n\nUn 19\" pouces.",
+  "chars": 84,
+  "title": ""
+ },
+ {
+  "id": 170,
+  "pack": 2,
+  "text": "Ce matin, je me suis levé avec l'envie de tout changer.\n\nDu coup, j'ai changé d'avis et je me suis rendormi.",
+  "chars": 108,
+  "title": ""
+ },
+ {
+  "id": 171,
+  "pack": 2,
+  "text": "Quelle est la marque de biscuit préférée de Brigitte Macron ?\n\nLes petits écoliers.",
+  "chars": 83,
+  "title": ""
+ },
+ {
+  "id": 172,
+  "pack": 2,
+  "text": "On m'a toujours dit que Mozart était mort.\n\nPourtant, à chaque fois que j'ouvre mon frigo, Mozart est là...",
+  "chars": 107,
+  "title": ""
+ },
+ {
+  "id": 173,
+  "pack": 2,
+  "text": "J'ai 36 têtes, 28 bras et 12 jambes, qui suis-je ?\n\nUn mythomane.",
+  "chars": 65,
+  "title": ""
+ },
+ {
+  "id": 174,
+  "pack": 2,
+  "text": "Comment Nintendo a fait leurs consoles ?\n\nIls ont demandé à une déesse, puis à deux, puis à trois...",
+  "chars": 100,
+  "title": ""
+ },
+ {
+  "id": 175,
+  "pack": 2,
+  "text": "Que fait un cendrier devant un ascenseur ?\n\nIl veut des cendres.",
+  "chars": 64,
+  "title": ""
+ },
+ {
+  "id": 176,
+  "pack": 2,
+  "text": "Que dit une noisette quand elle tombe à l'eau ?\n\nJe me noix !",
+  "chars": 61,
+  "title": ""
+ },
+ {
+  "id": 177,
+  "pack": 2,
+  "text": "Il y a 10 types de gens dans le monde.\n\nCeux qui parlent binaire, et les autres.",
+  "chars": 80,
+  "title": ""
+ },
+ {
+  "id": 178,
+  "pack": 2,
+  "text": "Que fait un développeur s'il veut se marier ?\n\nUne fille en C",
+  "chars": 61,
+  "title": ""
+ },
+ {
+  "id": 179,
+  "pack": 2,
+  "text": "Quel est le comble pour un chauve ?\n\nC'est d'avoir un cheveu sur la langue !",
+  "chars": 76,
+  "title": ""
+ },
+ {
+  "id": 180,
+  "pack": 2,
+  "text": "À quoi sert Internet Explorer ?\n\nÀ télécharger Google Chrome.",
+  "chars": 61,
+  "title": ""
+ },
+ {
+  "id": 181,
+  "pack": 2,
+  "text": "Tu sais pourquoi l'iPhone 6 se plie ?\n\nParce que l'Apple Store.",
+  "chars": 63,
+  "title": ""
+ },
+ {
+  "id": 182,
+  "pack": 2,
+  "text": "Comment on appelle un mec qui répare des tablettes Microsoft ?\n\nUn technicien de surface.",
+  "chars": 89,
+  "title": ""
+ },
+ {
+  "id": 183,
+  "pack": 2,
+  "text": "Pourquoi dit-on que les poissons travaillent illégalement ?\n\nParce qu'ils n'ont pas de FISH de paie.",
+  "chars": 100,
+  "title": ""
+ },
+ {
+  "id": 184,
+  "pack": 2,
+  "text": "Pourquoi est-ce que les vêtements sont toujours fatigués quand ils sortent de la machine ?\n\nParce qu'ils sont lessivés.",
+  "chars": 119,
+  "title": ""
+ },
+ {
+  "id": 185,
+  "pack": 2,
+  "text": "Pourquoi est-ce que les livres ont-ils toujours chaud ?\n\nParce qu'ils ont une couverture.",
+  "chars": 89,
+  "title": ""
+ },
+ {
+  "id": 186,
+  "pack": 2,
+  "text": "Quelle est la différence entre un cendrier et une théière ?\n\nLe cendrier, c'est pour des cendres, la théière, c'est pour mon thé.",
+  "chars": 129,
+  "title": ""
+ },
+ {
+  "id": 187,
+  "pack": 2,
+  "text": "Monsieur et madame China ont un fils, comment s'appelle-t-il ?\n\nMedhi",
+  "chars": 69,
+  "title": ""
+ },
+ {
+  "id": 188,
+  "pack": 2,
+  "text": "Mr et Mme Bombeurre ont un fils, comment s'appelle-t-il ?\n\nJean",
+  "chars": 63,
+  "title": ""
+ },
+ {
+  "id": 189,
+  "pack": 2,
+  "text": "Comment appelle-t-on un crime qui a été commis dans la neige ?\n\nUn ice cream !",
+  "chars": 78,
+  "title": ""
+ },
+ {
+  "id": 190,
+  "pack": 2,
+  "text": "J'ai suivi deux régimes en même temps...\n\nJe ne mangeais pas assez avec un seul !",
+  "chars": 81,
+  "title": ""
+ },
+ {
+  "id": 191,
+  "pack": 2,
+  "text": "Toto si je te donne 50 gâteaux et tu en manges 48, tu as donc ?\n\nMal au ventre !",
+  "chars": 80,
+  "title": ""
+ },
+ {
+  "id": 192,
+  "pack": 2,
+  "text": "Un enfant cannibale reste toujours dans son coin. La maîtresse lui demande : \"Pourquoi ne joues-tu pas avec les autres enfants ?\"\n\nParce que mon père m'a dit de ne pas jouer avec la nourriture.",
+  "chars": 193,
+  "title": ""
+ },
+ {
+  "id": 193,
+  "pack": 2,
+  "text": "Pourquoi Hulk, a-t-il un beau jardin ?\n\nParce qu'il a la main verte.",
+  "chars": 68,
+  "title": ""
+ },
+ {
+  "id": 194,
+  "pack": 2,
+  "text": "Un avaleur de sabres entre dans une mercerie : \"Bonjour, je voudrais des aiguilles.\", à cela, elle répond : \"Ah, vous faites de la couture ?\"\n\nNon, je fais un régime !",
+  "chars": 167,
+  "title": ""
+ },
+ {
+  "id": 195,
+  "pack": 2,
+  "text": "Pourquoi rejoindre le côté obscur de la force ?\n\nParce qu'ils ont des masques et des respirateurs artificiels.",
+  "chars": 110,
+  "title": ""
+ },
+ {
+  "id": 196,
+  "pack": 2,
+  "text": "Pourquoi est-ce que les fainéants n'ont pas de raison de ne rien faire ?\n\nIls ont la flemme d'en trouver.",
+  "chars": 105,
+  "title": ""
+ },
+ {
+  "id": 197,
+  "pack": 2,
+  "text": "Pourquoi trouve-t-on beaucoup de célibataires à Dijon ?\n\nParce que l'amour tarde.",
+  "chars": 81,
+  "title": ""
+ },
+ {
+  "id": 198,
+  "pack": 2,
+  "text": "Que donne un mouton et un cochon qui s'accouplent ?\n\nDe la Porcelaine.",
+  "chars": 70,
+  "title": ""
+ },
+ {
+  "id": 199,
+  "pack": 2,
+  "text": "Quelle est la saison préférée d'un grimpeur ?\n\nL'hiver, car il pleut des cordes.",
+  "chars": 80,
+  "title": ""
+ },
+ {
+  "id": 200,
+  "pack": 2,
+  "text": "Pourquoi certain pigeons ne savent pas nager ?\n\nParce que les pigeons roucoulent.",
+  "chars": 81,
+  "title": ""
+ }
+]

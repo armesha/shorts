@@ -1,0 +1,520 @@
+[
+ {
+  "id": 1001,
+  "pack": 11,
+  "text": "Qu'est ce qu'un pirateur fait le mieux ?\n\nCe qui lui tient hackeur (à cœur) !",
+  "chars": 77,
+  "title": ""
+ },
+ {
+  "id": 1002,
+  "pack": 11,
+  "text": "Qu'est-ce qu'un pirate informatique fait le mieux ?\n\nCe qui lui tient hackeur !",
+  "chars": 79,
+  "title": ""
+ },
+ {
+  "id": 1003,
+  "pack": 11,
+  "text": "Monsieur, arrêtez de dire \"ils croivent\", le verbe croiver n'existe pas, et cela m'énerve lorsque les gens parlent mal français.\n\nAh, vous ne le sachiez pas? Autant pour moi.",
+  "chars": 174,
+  "title": ""
+ },
+ {
+  "id": 1004,
+  "pack": 11,
+  "text": "Pourquoi un vegan ne voyage pas dans un autre pays ?\n\nCar ils ont besoin d'un passe-porc.",
+  "chars": 89,
+  "title": ""
+ },
+ {
+  "id": 1005,
+  "pack": 11,
+  "text": "Comment appelle-t-on un bug sur une plateforme musicale ?\n\nUne Spoti-faille.",
+  "chars": 76,
+  "title": ""
+ },
+ {
+  "id": 1006,
+  "pack": 11,
+  "text": "L'essence est un combustible fossile qui vient d'animaux décomposé.\n\nLes vegan ne peuvent pas conduire.",
+  "chars": 103,
+  "title": ""
+ },
+ {
+  "id": 1007,
+  "pack": 11,
+  "text": "Pourquoi vaut il mieux être software que hardware ?\n\nCar c’est le hardware qui prend des coups quand le software plante",
+  "chars": 119,
+  "title": ""
+ },
+ {
+  "id": 1008,
+  "pack": 11,
+  "text": "Mes parents m'ont acheté un nouveau lit alors que j'avais demandé un PC gamer et...\n\n... Ils m'ont dit \"C'est pour que tu continues de rêver\".",
+  "chars": 142,
+  "title": ""
+ },
+ {
+  "id": 1009,
+  "pack": 11,
+  "text": "C'est l'histoire d'un cochon transexuel. Il a commencé Henri...\n\n...et a terminé en rillettes.",
+  "chars": 94,
+  "title": ""
+ },
+ {
+  "id": 1010,
+  "pack": 11,
+  "text": "Qu'est-ce qu'un yaourt qui court dans les bois ?\n\nUn yaourt nature !",
+  "chars": 68,
+  "title": ""
+ },
+ {
+  "id": 1011,
+  "pack": 11,
+  "text": "Que dit un footballeur lorsque il est énervé ?\n\nTu te foot du monde !",
+  "chars": 69,
+  "title": ""
+ },
+ {
+  "id": 1012,
+  "pack": 11,
+  "text": "Que dit-on d'une voyante qui lit dans le sucre ?\n\nQu'elle est extra-glucide !",
+  "chars": 77,
+  "title": ""
+ },
+ {
+  "id": 1013,
+  "pack": 11,
+  "text": "Quel est l'animé préférée des pompiers ?\n\nHunter extincteur.",
+  "chars": 60,
+  "title": ""
+ },
+ {
+  "id": 1014,
+  "pack": 11,
+  "text": "Quelle est la différence entre un rat et un porc ?\n\nAucun rapport !",
+  "chars": 67,
+  "title": ""
+ },
+ {
+  "id": 1015,
+  "pack": 11,
+  "text": "Quelles sont les îles les plus instables au monde ?\n\nCe sont les Îles Canaries.",
+  "chars": 79,
+  "title": ""
+ },
+ {
+  "id": 1016,
+  "pack": 11,
+  "text": "Pourquoi les japonais sont-ils stressés ?\n\nParce qu'ils se font trop de sushis !",
+  "chars": 80,
+  "title": ""
+ },
+ {
+  "id": 1017,
+  "pack": 11,
+  "text": "Maman, la maîtresse veut qu'on ramène du scotch à l'école.\n\nElle ne peut pas boire de la bière ou du vin comme tout le monde ?",
+  "chars": 126,
+  "title": ""
+ },
+ {
+  "id": 1018,
+  "pack": 11,
+  "text": "Qu’est-ce qui est jaune et qui attend ?\n\nUn bus scolaire dans un embouteillage.",
+  "chars": 79,
+  "title": ""
+ },
+ {
+  "id": 1019,
+  "pack": 11,
+  "text": "Quel est le métier où l'on travaille le plus d'arrache-pied ?\n\nDémineur",
+  "chars": 71,
+  "title": ""
+ },
+ {
+  "id": 1020,
+  "pack": 11,
+  "text": "$ npm find LaFemmeDeMaVie\n\nError: Unable to find package ‘LaFemmeDeMaVie’",
+  "chars": 73,
+  "title": ""
+ },
+ {
+  "id": 1021,
+  "pack": 11,
+  "text": "Sonic et Flash font la course dans un stade. Qui est le plus rapide ?\n\nLe caméraman",
+  "chars": 83,
+  "title": ""
+ },
+ {
+  "id": 1022,
+  "pack": 11,
+  "text": "Si un gay m'attaque dans la rue...\n\nOn peut dire que c'est un guet-apens ?",
+  "chars": 74,
+  "title": ""
+ },
+ {
+  "id": 1023,
+  "pack": 11,
+  "text": "Que dit un français après une blague nulle ?\n\nC'est Paris Golo",
+  "chars": 62,
+  "title": ""
+ },
+ {
+  "id": 1024,
+  "pack": 11,
+  "text": "Quelle est la différence entre une poule et un chapon ?\n\nUne poule cha pond mais un chapon cha pond pas.",
+  "chars": 104,
+  "title": ""
+ },
+ {
+  "id": 1025,
+  "pack": 11,
+  "text": "J’ai tellement de sommeil en retard…\n\n… que dans mes rêves je paie en Francs",
+  "chars": 76,
+  "title": ""
+ },
+ {
+  "id": 1026,
+  "pack": 11,
+  "text": "Le voleur vole, mais l'oiseau vole aussi.\n\nLa seule différence est que l'oiseau fait son nid alors que le voleur nie son fait.",
+  "chars": 126,
+  "title": ""
+ },
+ {
+  "id": 1027,
+  "pack": 11,
+  "text": "Qu'est ce que du ciment dans un pot ?\n\nDe la confiture de mur.",
+  "chars": 62,
+  "title": ""
+ },
+ {
+  "id": 1028,
+  "pack": 11,
+  "text": "Un jour j'irai vivre en Théorie...\n\nParce qu'en Théorie tout va bien.",
+  "chars": 69,
+  "title": ""
+ },
+ {
+  "id": 1029,
+  "pack": 11,
+  "text": "Un écrivain qui se livre…\n\nC’est comme un canard qui se confie.",
+  "chars": 63,
+  "title": ""
+ },
+ {
+  "id": 1030,
+  "pack": 11,
+  "text": "Le protocole RIP...\n\nEst-ce qu'on peut dire qu'il est mort ?",
+  "chars": 60,
+  "title": ""
+ },
+ {
+  "id": 1031,
+  "pack": 11,
+  "text": "Pourquoi les films Star Wars sont sortis dans l'ordre 4, 5, 6, 1, 2, 3 ?\n\nDe la production, j'étais en charge. Yoda",
+  "chars": 115,
+  "title": ""
+ },
+ {
+  "id": 1032,
+  "pack": 11,
+  "text": "Quelle différence y-a-t-il entre Gabriel Attal et Emmanuel Macron ?\n\nL'un a sauté une classe et l'autre a sauté la prof.",
+  "chars": 120,
+  "title": ""
+ },
+ {
+  "id": 1033,
+  "pack": 11,
+  "text": "Que disait Pythagore lorsqu’il voulait promener son chien ?\n\nOn va se promener, va chercher Thalès.",
+  "chars": 99,
+  "title": ""
+ },
+ {
+  "id": 1034,
+  "pack": 11,
+  "text": "Un pneu va chez son médecin…\n\n« Docteur, je me sens crevé… »",
+  "chars": 60,
+  "title": ""
+ },
+ {
+  "id": 1035,
+  "pack": 11,
+  "text": "Qu'est-ce qu'un western ?\n\nUn film à deux balles où le méchant s'en prend une.",
+  "chars": 78,
+  "title": ""
+ },
+ {
+  "id": 1036,
+  "pack": 11,
+  "text": "Comment appelle-t-on un crime sans représailles ?\n\nUn suicide.",
+  "chars": 62,
+  "title": ""
+ },
+ {
+  "id": 1037,
+  "pack": 11,
+  "text": "Que dit-on de Vladimir Poutine en visite d'État en Égypte ?\n\nQue c'est un papyrus.",
+  "chars": 82,
+  "title": ""
+ },
+ {
+  "id": 1038,
+  "pack": 11,
+  "text": "Les tampons, c'est comme la magie.\n\nSi on voit la ficelle, c'est foutu.",
+  "chars": 71,
+  "title": ""
+ },
+ {
+  "id": 1039,
+  "pack": 11,
+  "text": "Qu'est ce que la ménopause ?\n\nUne poursuite du jeu sans règles.",
+  "chars": 63,
+  "title": ""
+ },
+ {
+  "id": 1040,
+  "pack": 11,
+  "text": "Si tu rentres chez quelqu'un et qu'il a un drapeau de l'URSS accroché au mur,\n\nC'est un énorme Red Flag.",
+  "chars": 104,
+  "title": ""
+ },
+ {
+  "id": 1041,
+  "pack": 11,
+  "text": "Pourquoi y-a-t-il plus de baptêmes que de mariages en Italie ?\n\nEn Italie on aime plus les parrains que les témoins.",
+  "chars": 116,
+  "title": ""
+ },
+ {
+  "id": 1042,
+  "pack": 11,
+  "text": "Que dit un mexicain quand il fait la vaisselle ?\n\nC'est salsa",
+  "chars": 61,
+  "title": ""
+ },
+ {
+  "id": 1043,
+  "pack": 11,
+  "text": "Dans Star Wars on ne dit plus \"Que la force soit avec toi\".\n\nOn dit \"Que Chuck Norris soit avec toi\".",
+  "chars": 101,
+  "title": ""
+ },
+ {
+  "id": 1044,
+  "pack": 11,
+  "text": "Un jour, un cheval a dit qu'il pouvait encaisser un uppercut de Chuck Norris.\n\nC'était le jour où les girafes ont été créés.",
+  "chars": 124,
+  "title": ""
+ },
+ {
+  "id": 1045,
+  "pack": 11,
+  "text": "Les monstres sous ton lit ne sont pas là pour te faire peur.\n\nIls se cachent de Chuck Norris...",
+  "chars": 95,
+  "title": ""
+ },
+ {
+  "id": 1046,
+  "pack": 11,
+  "text": "Quand Chuck Norris lis un livre...\n\nc'est le livre qui s'instruit.",
+  "chars": 66,
+  "title": ""
+ },
+ {
+  "id": 1047,
+  "pack": 11,
+  "text": "Un développeur non-binaire qui code, ça ferait quoi ?\n\nÇa causerait des bugs.",
+  "chars": 77,
+  "title": ""
+ },
+ {
+  "id": 1048,
+  "pack": 11,
+  "text": "Quand Chuck Norris frotte une lampe et qu'un génie en sort...\n\nLe génie a droit à 3 voeux.",
+  "chars": 90,
+  "title": ""
+ },
+ {
+  "id": 1049,
+  "pack": 11,
+  "text": "Quand Chuck Norris s’aperçoit qu’il a sauté de l’avion sans parachute...\n\nil remonte le chercher.",
+  "chars": 97,
+  "title": ""
+ },
+ {
+  "id": 1050,
+  "pack": 11,
+  "text": "Si Chuck Norris dort la lumière allumée...\n\nc’est parce que le noir a peur de lui.",
+  "chars": 82,
+  "title": ""
+ },
+ {
+  "id": 1051,
+  "pack": 11,
+  "text": "Que dit un coq à une poule pour tenter de l'aborder ?\n\n\"T'as de beaux oeufs, tu sais ?\"",
+  "chars": 87,
+  "title": ""
+ },
+ {
+  "id": 1052,
+  "pack": 11,
+  "text": "Qu'est-ce qui est pareil entre une bière congelée, une pizza carbonisées et une femme enceinte ?\n\nUn gars la sortie trop tard.",
+  "chars": 126,
+  "title": ""
+ },
+ {
+  "id": 1053,
+  "pack": 11,
+  "text": "Qu'est-ce qu'un lombric qui voit de près comme de loin ?\n\nC'est un ver progressif !",
+  "chars": 83,
+  "title": ""
+ },
+ {
+  "id": 1054,
+  "pack": 11,
+  "text": "Pourquoi quand tu es carnivore t'as tout ?\n\nParce que quand t'es végé t'as rien.",
+  "chars": 80,
+  "title": ""
+ },
+ {
+  "id": 1055,
+  "pack": 11,
+  "text": "Mon humour est tellement noir...\n\n... que son code hexadécimal est #000000.",
+  "chars": 75,
+  "title": ""
+ },
+ {
+  "id": 1056,
+  "pack": 11,
+  "text": "Pourquoi les plongeurs ne font jamais de blagues sous l’eau ?\n\nParce qu’elles sont trop profondes !",
+  "chars": 99,
+  "title": ""
+ },
+ {
+  "id": 1057,
+  "pack": 11,
+  "text": "Je veux devenir un psychologue pour coquillettes et macaronis.\n\nJe veux devenir un psy qu’aux pâtes.",
+  "chars": 100,
+  "title": ""
+ },
+ {
+  "id": 1058,
+  "pack": 11,
+  "text": "Pourquoi les squelettes ne se battent jamais entre eux ?\n\nParce qu’ils n’ont pas les tripes !",
+  "chars": 93,
+  "title": ""
+ },
+ {
+  "id": 1059,
+  "pack": 11,
+  "text": "Ou les coqs vont-il draguer ?\n\nA Liverpool ! Là-bas les poules sont fraîches",
+  "chars": 76,
+  "title": ""
+ },
+ {
+  "id": 1060,
+  "pack": 11,
+  "text": "Pourquoi se débarrasse-t-on de l’eau ?\n\nCar l’oxy et l’hydro gênent.",
+  "chars": 68,
+  "title": ""
+ },
+ {
+  "id": 1061,
+  "pack": 11,
+  "text": "D’après ma voyante, si j’aperçois un grand canard blanc dans un lac…\n\nC’est peut-être un signe.",
+  "chars": 95,
+  "title": ""
+ },
+ {
+  "id": 1062,
+  "pack": 11,
+  "text": "La légende raconte que si tu fais une queue de poisson à une voiture de police…\n\nTu entendras le chant des sirènes.",
+  "chars": 115,
+  "title": ""
+ },
+ {
+  "id": 1063,
+  "pack": 11,
+  "text": "Dans la vie, il y a trois types de personnes :\n\nCeux qui savent compter, et ceux qui ne savent pas.",
+  "chars": 99,
+  "title": ""
+ },
+ {
+  "id": 1064,
+  "pack": 11,
+  "text": "Jouer à cache-cache avec un banquier est une très mauvaise idée.\n\nVous finirez toujours par être découvert.",
+  "chars": 107,
+  "title": ""
+ },
+ {
+  "id": 1065,
+  "pack": 11,
+  "text": "Si tu entends une voix qui te dit ce que tu dois faire, surtout ne t'affole pas.\n\nTu n'es pas schizophrène, juste en couple.",
+  "chars": 124,
+  "title": ""
+ },
+ {
+  "id": 1066,
+  "pack": 11,
+  "text": "Gilbert Montagné pratique habituellement le tutoiement.\n\nIl ne vouvoie pas.",
+  "chars": 75,
+  "title": ""
+ },
+ {
+  "id": 1067,
+  "pack": 11,
+  "text": "Je viens de croiser un agent SNCF en train de courir.\n\nIl est peut-être en retard pour faire grève.",
+  "chars": 99,
+  "title": ""
+ },
+ {
+  "id": 1068,
+  "pack": 11,
+  "text": "Que fait un démon pour montrer l’étendue de ses pouvoirs ?\n\nUne démonstration.",
+  "chars": 78,
+  "title": ""
+ },
+ {
+  "id": 1069,
+  "pack": 11,
+  "text": "Je pleure quand on me tourne la tête, qui suis-je ?\n\nUn robinet !",
+  "chars": 65,
+  "title": ""
+ },
+ {
+  "id": 1070,
+  "pack": 11,
+  "text": "Quel est le comble pour un policier ?\n\nArrêter les oiseaux parce qu'ils volent !",
+  "chars": 80,
+  "title": ""
+ },
+ {
+  "id": 1071,
+  "pack": 11,
+  "text": "Quelle est la nourriture préférée d'un cannibal ?\n\nLe croque-monsieur.",
+  "chars": 70,
+  "title": ""
+ },
+ {
+  "id": 1072,
+  "pack": 11,
+  "text": "Quand Chuck Norris se retrouve face à un null pointer exception...\n\nIl change la variable sans modifier le code.",
+  "chars": 112,
+  "title": ""
+ },
+ {
+  "id": 1073,
+  "pack": 11,
+  "text": "Quel est le comble pour un collectionneur de cartes Pokemon ?\n\nD'avoir plus d'EX dans la vraie vie qu'en carte.",
+  "chars": 111,
+  "title": ""
+ },
+ {
+  "id": 1074,
+  "pack": 11,
+  "text": "Toto, à quoi sert un fusil ? À fusilier ! À quoi sert une mitraillette ? À mitrailler ! Et à quoi sert un tank ?\n\nÀ tankuler !",
+  "chars": 126,
+  "title": ""
+ }
+]

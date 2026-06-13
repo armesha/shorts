@@ -1,0 +1,702 @@
+[
+ {
+  "id": 201,
+  "pack": 3,
+  "text": "Comment un développeur se met-il à jour ?\n\nIl se met à l'apache.",
+  "chars": 64,
+  "title": ""
+ },
+ {
+  "id": 202,
+  "pack": 3,
+  "text": "Une requête NoSQL entre dans un bar, qu'est-ce qu'elle fait ?\n\nElle repart, car il n'y a pas de table.",
+  "chars": 102,
+  "title": ""
+ },
+ {
+  "id": 203,
+  "pack": 3,
+  "text": "Pourquoi des poissons n'arrivent pas à tenir leur entreprise ?\n\nParce qu'ils coulent.",
+  "chars": 85,
+  "title": ""
+ },
+ {
+  "id": 204,
+  "pack": 3,
+  "text": "Que fait une biscotte tous les soirs ?\n\nElle va en biscothèque.",
+  "chars": 63,
+  "title": ""
+ },
+ {
+  "id": 205,
+  "pack": 3,
+  "text": "Que mettent les souris pour aller danser ?\n\nElles mettent du masque à rat.",
+  "chars": 74,
+  "title": ""
+ },
+ {
+  "id": 206,
+  "pack": 3,
+  "text": "\"J'apprends mes devoirs\", c'est à quel temps, Toto ?\n\nDu temps perdu Madame.",
+  "chars": 76,
+  "title": ""
+ },
+ {
+  "id": 207,
+  "pack": 3,
+  "text": "Avant, j'étais schizophrène...\n\nMaintenant, nous allons mieux !",
+  "chars": 63,
+  "title": ""
+ },
+ {
+  "id": 208,
+  "pack": 3,
+  "text": "Qu'est-ce qu'un oiseau migrateur ?\n\nUn oiseau qui ne se gratte que d'un côté.",
+  "chars": 77,
+  "title": ""
+ },
+ {
+  "id": 209,
+  "pack": 3,
+  "text": "Quel est le comble pour un sous-marin ?\n\nUne journée porte ouverte.",
+  "chars": 67,
+  "title": ""
+ },
+ {
+  "id": 210,
+  "pack": 3,
+  "text": "Pourquoi ceux qui votent Trump ne font pas de programmation ?\n\nCar une erreur \"403: Forbidden\" arrive vite.",
+  "chars": 107,
+  "title": ""
+ },
+ {
+  "id": 211,
+  "pack": 3,
+  "text": "Pourquoi dit-on que les Bretons sont tous frères et sœurs ?\n\nParce qu'ils n'ont pas Quimper.",
+  "chars": 92,
+  "title": ""
+ },
+ {
+  "id": 212,
+  "pack": 3,
+  "text": "Que se passe-t-il lorsque deux poissons se disputent ?\n\nLe thon monte.",
+  "chars": 70,
+  "title": ""
+ },
+ {
+  "id": 213,
+  "pack": 3,
+  "text": "Qu'est-ce qui est bleu et qui descend ?\n\nL'OM dans le classement.",
+  "chars": 65,
+  "title": ""
+ },
+ {
+  "id": 214,
+  "pack": 3,
+  "text": "Qu'est-ce qui est vert et qui pousse au fond du jardin ?\n\nUn extraterrestre qui fait caca !",
+  "chars": 91,
+  "title": ""
+ },
+ {
+  "id": 215,
+  "pack": 3,
+  "text": "Quel est le réseau social où tout le monde se prend la tête ?\n\nDiscord",
+  "chars": 70,
+  "title": ""
+ },
+ {
+  "id": 216,
+  "pack": 3,
+  "text": "J'avais une blague sur les Portugais.\n\nMais ce n'était pas très constructif.",
+  "chars": 76,
+  "title": ""
+ },
+ {
+  "id": 217,
+  "pack": 3,
+  "text": "Pourquoi les orphelins aiment les boomerangs ?\n\nParce qu'eux, au moins, ils reviennent.",
+  "chars": 87,
+  "title": ""
+ },
+ {
+  "id": 218,
+  "pack": 3,
+  "text": "Quel est l'iPhone que les orphelins détestent le plus ?\n\nL'iPhone X, le bouton home a été supprimé.",
+  "chars": 99,
+  "title": ""
+ },
+ {
+  "id": 219,
+  "pack": 3,
+  "text": "C'est l'histoire d'une carotte qui veut se suicider. Elle n'y arrive pas et dit :\n\nOh, zut ! C'est rapé !",
+  "chars": 105,
+  "title": ""
+ },
+ {
+  "id": 220,
+  "pack": 3,
+  "text": "Comment s'appelle la fille de monsieur et madame Orak ?\n\nElle s'appelle Anne Orak.",
+  "chars": 82,
+  "title": ""
+ },
+ {
+  "id": 221,
+  "pack": 3,
+  "text": "Comment s'appelle la fille de monsieur et madame Télavion ?\n\nElle s'appelle Tara Télavion.",
+  "chars": 90,
+  "title": ""
+ },
+ {
+  "id": 222,
+  "pack": 3,
+  "text": "Comment s'appelle le fils de Monsieur et Madame Dipleu ?\n\nIl s'appelle Homer Dipleu.",
+  "chars": 84,
+  "title": ""
+ },
+ {
+  "id": 223,
+  "pack": 3,
+  "text": "Je pense qu'il faut désinstaller et réinstaller 2020.\n\nJe pense qu'il y a un virus.",
+  "chars": 83,
+  "title": ""
+ },
+ {
+  "id": 224,
+  "pack": 3,
+  "text": "Que dit une mère à son fils geek quand le dîner est servi ?\n\nAlt + Tab",
+  "chars": 70,
+  "title": ""
+ },
+ {
+  "id": 225,
+  "pack": 3,
+  "text": "Quel est le logiciel qui fait le plus crash Windows ?\n\nWindows Update",
+  "chars": 69,
+  "title": ""
+ },
+ {
+  "id": 226,
+  "pack": 3,
+  "text": "Quel est le nombre préféré des vampires ?\n\n109, car sang neuf.",
+  "chars": 62,
+  "title": ""
+ },
+ {
+  "id": 227,
+  "pack": 3,
+  "text": "Pourquoi les développeurs n'aiment-ils pas 2020 ?\n\nCar il y a la co vide.",
+  "chars": 73,
+  "title": ""
+ },
+ {
+  "id": 228,
+  "pack": 3,
+  "text": "Qu'obtient-on lorsqu'un chou se fait mal et que son sang sèche ?\n\nUne choucroute !",
+  "chars": 82,
+  "title": ""
+ },
+ {
+  "id": 229,
+  "pack": 3,
+  "text": "C'est l'histoire du client qui achète un tableau au peintre.\n\nLe peintre lui dit : Cette affaire, j'y ai consacré dix ans de ma vie ! 2 jours pour la peindre et le reste pour la vendre !",
+  "chars": 186,
+  "title": ""
+ },
+ {
+  "id": 230,
+  "pack": 3,
+  "text": "Qu'est-ce qui a 2 branches, mais pas de feuilles ?\n\nDes lunettes.",
+  "chars": 65,
+  "title": ""
+ },
+ {
+  "id": 231,
+  "pack": 3,
+  "text": "À quel moment l'acné devient-elle critique ?\n\nQuand les aveugles commencent à lire sur ton visage.",
+  "chars": 98,
+  "title": ""
+ },
+ {
+  "id": 232,
+  "pack": 3,
+  "text": "Comment appelle-t-on les chiens saucisses en Chine ?\n\nDes hot-dogs.",
+  "chars": 67,
+  "title": ""
+ },
+ {
+  "id": 233,
+  "pack": 3,
+  "text": "Quel est le gâteau préféré de Brigitte Macron ?\n\nLe petit écolier.",
+  "chars": 66,
+  "title": ""
+ },
+ {
+  "id": 234,
+  "pack": 3,
+  "text": "Quel est le fromage préféré d'Emmanuel Macron ?\n\nLe président.",
+  "chars": 62,
+  "title": ""
+ },
+ {
+  "id": 235,
+  "pack": 3,
+  "text": "Que dit une vache lors d'un braquage ?\n\n- Que personne ne bouse !",
+  "chars": 65,
+  "title": ""
+ },
+ {
+  "id": 236,
+  "pack": 3,
+  "text": "La Corse, c'est comme une orange\n\nC'est mieux sans l'écorce.",
+  "chars": 60,
+  "title": ""
+ },
+ {
+  "id": 237,
+  "pack": 3,
+  "text": "Quelle est la pile la plus compliquée à vendre ?\n\nUne pile Duracell.",
+  "chars": 68,
+  "title": ""
+ },
+ {
+  "id": 238,
+  "pack": 3,
+  "text": "Une notice me disait : Nécessite Windows XP ou mieux.\n\nJ'ai donc installé Linux.",
+  "chars": 80,
+  "title": ""
+ },
+ {
+  "id": 239,
+  "pack": 3,
+  "text": "Un homme dans la rue m'a demandé si j'avais une pièce pour manger.\n\nJe lui ai répondu que oui et que ça s'appelait une salle à manger.",
+  "chars": 134,
+  "title": ""
+ },
+ {
+  "id": 240,
+  "pack": 3,
+  "text": "Méfiez-vous de l'oiseau sur le lac :\n\nC'est peut-être un mauvais cygne !",
+  "chars": 72,
+  "title": ""
+ },
+ {
+  "id": 241,
+  "pack": 3,
+  "text": "Pourquoi les parachutistes sont-ils célibataires ?\n\nParce qu'ils se font larguer !",
+  "chars": 82,
+  "title": ""
+ },
+ {
+  "id": 242,
+  "pack": 3,
+  "text": "La connerie se cultive.\n\nJ'en connais plein qui ont la main verte.",
+  "chars": 66,
+  "title": ""
+ },
+ {
+  "id": 243,
+  "pack": 3,
+  "text": "J'ai vu un hibou se blesser une patte.\n\nMaintenant hibouette.",
+  "chars": 61,
+  "title": ""
+ },
+ {
+  "id": 244,
+  "pack": 3,
+  "text": "Que fait un développeur quand il est triste ?\n\nIl se console.",
+  "chars": 61,
+  "title": ""
+ },
+ {
+  "id": 245,
+  "pack": 3,
+  "text": "Comment appelle-t-on un duel entre une carotte et un petit-pois ?\n\nUn Bonduelle.",
+  "chars": 80,
+  "title": ""
+ },
+ {
+  "id": 246,
+  "pack": 3,
+  "text": "Quel est le style musical préféré des chimistes ?\n\nLe blouse.",
+  "chars": 61,
+  "title": ""
+ },
+ {
+  "id": 247,
+  "pack": 3,
+  "text": "Quel est le chanteur préféré des développeurs ?\n\nMichael Json",
+  "chars": 61,
+  "title": ""
+ },
+ {
+  "id": 248,
+  "pack": 3,
+  "text": "Quel est l'endroit le moins vu de stackoverflow ?\n\nLa page d'accueil.",
+  "chars": 69,
+  "title": ""
+ },
+ {
+  "id": 249,
+  "pack": 3,
+  "text": "Pourquoi tu vas toujours aux toilettes avec du pain ?\n\nC'est pour donner à manger à Canard W-C.",
+  "chars": 95,
+  "title": ""
+ },
+ {
+  "id": 250,
+  "pack": 3,
+  "text": "C'est l'histoire d'un têtard. Il croyait qu'il était tôt.\n\nAlors qu'il est têtard.",
+  "chars": 82,
+  "title": ""
+ },
+ {
+  "id": 251,
+  "pack": 3,
+  "text": "Comment appelle-t-on un lapin sourd ?\n\nLAAAAAAPIIIIIIIINNNNNNN !!!!!!",
+  "chars": 69,
+  "title": ""
+ },
+ {
+  "id": 252,
+  "pack": 3,
+  "text": "Quel est le point commun entre les voitures et les ordinateurs ?\n\nLes mauvais pilotes sont problématiques.",
+  "chars": 106,
+  "title": ""
+ },
+ {
+  "id": 253,
+  "pack": 3,
+  "text": "J'ai essayé d'apprendre à coder à mon neveu de 8 ans...\n\nIl a compris le truc, 2 minutes plus tard, il était déjà en train de crier et de frapper le clavier !",
+  "chars": 158,
+  "title": ""
+ },
+ {
+  "id": 254,
+  "pack": 3,
+  "text": "Ma copine m'a larguée après avoir donné son nom à une classe.\n\nElle avait l'impression que je la traitais comme un objet.",
+  "chars": 121,
+  "title": ""
+ },
+ {
+  "id": 255,
+  "pack": 3,
+  "text": "Comment les développeurs se débarrassent des fantômes ?\n\nEn effectuant un XOR-cisme.",
+  "chars": 84,
+  "title": ""
+ },
+ {
+  "id": 256,
+  "pack": 3,
+  "text": "Si JavaScript avait un fils, comment s'appellerait-il ?\n\nJson",
+  "chars": 61,
+  "title": ""
+ },
+ {
+  "id": 257,
+  "pack": 3,
+  "text": "Un gars tente de draguer une fille, en boîte : On échange nos numéros ?\n\nNon, j'aime beaucoup le mien, merci !",
+  "chars": 110,
+  "title": ""
+ },
+ {
+  "id": 258,
+  "pack": 3,
+  "text": "Purée fait chi#r, j'ai un problème avec mon téléphone.\n\nIl manque juste ton numéro.",
+  "chars": 83,
+  "title": ""
+ },
+ {
+  "id": 259,
+  "pack": 3,
+  "text": "Qu'est-ce qu'un homme intelligent, beau et sensible ?\n\nUne rumeur",
+  "chars": 65,
+  "title": ""
+ },
+ {
+  "id": 260,
+  "pack": 3,
+  "text": "Comment appelle-t-on un lion qui se rebelle ?\n\nUne rébellion",
+  "chars": 60,
+  "title": ""
+ },
+ {
+  "id": 261,
+  "pack": 3,
+  "text": "Que disent des arbres quand ils vont en boîte de nuit ?\n\nLaquelle je vais brancher ce soir ?",
+  "chars": 92,
+  "title": ""
+ },
+ {
+  "id": 262,
+  "pack": 3,
+  "text": "L'autre jour, j'ai raconté une blague à mes vêtements.\n\nIls étaient pliés.",
+  "chars": 74,
+  "title": ""
+ },
+ {
+  "id": 263,
+  "pack": 3,
+  "text": "Quels sont les animaux qu'on retrouve en grand nombre dans la montagne ?\n\nLes chats laids.",
+  "chars": 90,
+  "title": ""
+ },
+ {
+  "id": 264,
+  "pack": 3,
+  "text": "Quel composant a un classement correct dans la société ?\n\nLa carte maire",
+  "chars": 72,
+  "title": ""
+ },
+ {
+  "id": 265,
+  "pack": 3,
+  "text": "Qui a inventé le sous-marin ?\n\nLes Belges en essayant de construire un bateau !",
+  "chars": 79,
+  "title": ""
+ },
+ {
+  "id": 266,
+  "pack": 3,
+  "text": "Quelle est la différence entre une échelle et un pistolet ?\n\nL'échelle sert à monter et le pistolet sert à descendre.",
+  "chars": 117,
+  "title": ""
+ },
+ {
+  "id": 267,
+  "pack": 3,
+  "text": "À quoi sert le dégivrage arrière d'une voiture ?\n\nÀ ne pas se geler les mains quand on la pousse !",
+  "chars": 98,
+  "title": ""
+ },
+ {
+  "id": 268,
+  "pack": 3,
+  "text": "Quel est l'animal le plus chanceux ?\n\nLe hibou puisque sa femme est chouette.",
+  "chars": 77,
+  "title": ""
+ },
+ {
+  "id": 269,
+  "pack": 3,
+  "text": "Pourquoi Hulk ne peut pas avoir d'enfant ?\n\nParce qu'il deviendrait un père vert",
+  "chars": 80,
+  "title": ""
+ },
+ {
+  "id": 270,
+  "pack": 3,
+  "text": "Qu'est-ce qui est vert et qui se déplace sous l'eau ?\n\nUn chou marin.",
+  "chars": 69,
+  "title": ""
+ },
+ {
+  "id": 271,
+  "pack": 3,
+  "text": "Quel est le point commun entre l'intelligence et un parachute ?\n\nQuand on n'en a pas, on s'écrase.",
+  "chars": 98,
+  "title": ""
+ },
+ {
+  "id": 272,
+  "pack": 3,
+  "text": "Qu'est-ce qui est long et dur et que les femmes n'ont pas ?\n\nLe service militaire.",
+  "chars": 82,
+  "title": ""
+ },
+ {
+  "id": 273,
+  "pack": 3,
+  "text": "Pourquoi met-on une selle sur un cheval ?\n\nParce que si on la met dessous, elle tombe.",
+  "chars": 86,
+  "title": ""
+ },
+ {
+  "id": 274,
+  "pack": 3,
+  "text": "Vous savez pourquoi les pets puent ?\n\nPour que les sourds en profitent !",
+  "chars": 72,
+  "title": ""
+ },
+ {
+  "id": 275,
+  "pack": 3,
+  "text": "Deux chèvres Babi et Baba sont dans une barque. Baba tombe à l'eau. Que se passe-t-il ?\n\nBabybel",
+  "chars": 96,
+  "title": ""
+ },
+ {
+  "id": 276,
+  "pack": 3,
+  "text": "Que demande un footballeur à son coiffeur ?\n\nLa coupe du monde.",
+  "chars": 63,
+  "title": ""
+ },
+ {
+  "id": 277,
+  "pack": 3,
+  "text": "Où part un homme invisible en vacances ?\n\nChez ses transparents.",
+  "chars": 64,
+  "title": ""
+ },
+ {
+  "id": 278,
+  "pack": 3,
+  "text": "Pourquoi certains poissons vivent dans l'eau salée ?\n\nParce que l'eau poivrée les fait éternuer.",
+  "chars": 96,
+  "title": ""
+ },
+ {
+  "id": 279,
+  "pack": 3,
+  "text": "Un sous-marin se heurte à un poisson rouge qui venait de sa gauche. Qui est en tort ?\n\nLe sous-marin, parce qu'il n'avait rien à faire dans un bocal de poisson rouge !",
+  "chars": 167,
+  "title": ""
+ },
+ {
+  "id": 280,
+  "pack": 3,
+  "text": "Tu veux que je te raconte une blague à l'envers ?\n\nAlors commence par rire.",
+  "chars": 75,
+  "title": ""
+ },
+ {
+  "id": 281,
+  "pack": 3,
+  "text": "2 mouches discutent sur un caca de chien : J'ai une de ces envies de péter moi.\n\nGrosse dégueulasse, on est à table !",
+  "chars": 117,
+  "title": ""
+ },
+ {
+  "id": 282,
+  "pack": 3,
+  "text": "Deux lions discutent : Allez, avoue que tu es amoureux !\n\nArrête, tu vas me faire rugir !",
+  "chars": 89,
+  "title": ""
+ },
+ {
+  "id": 283,
+  "pack": 3,
+  "text": "Que dit une banane malade à ses camarades qui ont aussi chopé le virus ?\n\nOn va tous mûrir !",
+  "chars": 92,
+  "title": ""
+ },
+ {
+  "id": 284,
+  "pack": 3,
+  "text": "Qu'est-ce qu'un Nordiste sans frères et sœurs ?\n\nUn malheureux",
+  "chars": 62,
+  "title": ""
+ },
+ {
+  "id": 285,
+  "pack": 3,
+  "text": "Qu'est-ce qu'une jambe sur un trottoir ?\n\nUn lépreux qui a marché sur un chewing-gum.",
+  "chars": 85,
+  "title": ""
+ },
+ {
+  "id": 286,
+  "pack": 3,
+  "text": "Qu'est-ce que la chevalerie ?\n\nC'est pas là où on range les chevaux ?",
+  "chars": 69,
+  "title": ""
+ },
+ {
+  "id": 287,
+  "pack": 3,
+  "text": "Que dit un chihuahua japonais pour dire bonjour ?\n\nKonichihuahua",
+  "chars": 64,
+  "title": ""
+ },
+ {
+  "id": 288,
+  "pack": 3,
+  "text": "Comment appelle-t-on une fleur qui prend sa graine à moitié ?\n\nUne migraine.",
+  "chars": 76,
+  "title": ""
+ },
+ {
+  "id": 289,
+  "pack": 3,
+  "text": "Pourquoi ne faut-il jamais raconter d'histoires drôles à un ballon ?\n\nParce qu'il pourrait éclater de rire !",
+  "chars": 108,
+  "title": ""
+ },
+ {
+  "id": 290,
+  "pack": 3,
+  "text": "A combien rouliez-vous ? Demande le gendarme.\n\nA deux seulement, mais si vous voulez monter, il reste de la place !",
+  "chars": 115,
+  "title": ""
+ },
+ {
+  "id": 291,
+  "pack": 3,
+  "text": "Qui faudrait-il appeler pour déblayer les trottoirs ?\n\nLa reine déneige.",
+  "chars": 72,
+  "title": ""
+ },
+ {
+  "id": 292,
+  "pack": 3,
+  "text": "Comment appelle-t-on le vent le plus apprécié en été ?\n\nLe vent Tilo.",
+  "chars": 69,
+  "title": ""
+ },
+ {
+  "id": 293,
+  "pack": 3,
+  "text": "Pourquoi le football, c'est rigolo ?\n\nParce que Thierry en rit.",
+  "chars": 63,
+  "title": ""
+ },
+ {
+  "id": 294,
+  "pack": 3,
+  "text": "Quel est le sport le plus fruité ?\n\nLa boxe, car quand tu te prends une pêche en pleine poire, tu ne ramènes pas ta fraise pour des prunes ou tu te prends une châtaigne.",
+  "chars": 169,
+  "title": ""
+ },
+ {
+  "id": 295,
+  "pack": 3,
+  "text": "Qu'est-ce que les enfants usent le plus à l'école ?\n\nLe professeur !",
+  "chars": 68,
+  "title": ""
+ },
+ {
+  "id": 296,
+  "pack": 3,
+  "text": "Sur quel métier les chiens peuvent-ils exercer ?\n\nElectrichien !",
+  "chars": 64,
+  "title": ""
+ },
+ {
+  "id": 297,
+  "pack": 3,
+  "text": "Quel est le point commun entre un pêcheur et un mannequin ?\n\nIls surveillent leur ligne !",
+  "chars": 89,
+  "title": ""
+ },
+ {
+  "id": 298,
+  "pack": 3,
+  "text": "Quels sont les animaux qui sont souvent fatigués ?\n\nLe dodo et le paresseux !",
+  "chars": 77,
+  "title": ""
+ },
+ {
+  "id": 299,
+  "pack": 3,
+  "text": "Qu'est-ce qu'une carotte au milieu d'une flaque d'eau ?\n\nUn bonhomme de neige au printemps... !",
+  "chars": 95,
+  "title": ""
+ },
+ {
+  "id": 300,
+  "pack": 3,
+  "text": "Pourquoi faut-il se méfier des sirènes au volant ?\n\nParce qu'elles font des queues de poisson !",
+  "chars": 95,
+  "title": ""
+ }
+]

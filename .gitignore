@@ -1,0 +1,32 @@
+# deps & build
+node_modules/
+dist/
+*.log
+
+# stale Python experiments (this is a Node/TS project — kept out of the repo)
+process_anecdotes*.py
+
+# runtime data (db, rendered images/videos). The anecdote PACKS are shipped on purpose.
+data/output/
+data/*.db
+data/*.db-*
+data/anecdotes/_*.json
+data/anecdotes-de/_*.json
+data/anecdotes-it/_*.json
+data/anecdotes-fr/_*.json
+
+# huge source corpora — not needed at runtime (packs are pre-built & shipped)
+Русские анекдоты/
+corpora/
+
+# stray generated preview images (not source)
+images/
+
+# env & secrets — NEVER commit
+.env
+.env.local
+.env.*.local
+
+# Google OAuth client secret — NEVER commit, NEVER read
+client_secret_*.json
+*.apps.googleusercontent.com.json

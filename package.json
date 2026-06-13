@@ -1,0 +1,45 @@
+{
+  "name": "shorts-factory",
+  "version": "0.1.0",
+  "description": "Automated YouTube Shorts generation & upload pipeline (HTML template -> image -> video -> scheduled upload). LLM via Claude Code headless.",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "concurrently -k -n api,web -c blue,green \"npm run server\" \"npm run web\"",
+    "setup": "npm install",
+    "postinstall": "cd web && npm install --ignore-scripts",
+    "server": "node --import tsx --experimental-sqlite server/index.ts",
+    "server:dev": "node --import tsx --experimental-sqlite --watch server/index.ts",
+    "web": "npm --prefix web run dev",
+    "render:preview": "tsx src/scripts/render-preview.ts",
+    "gen:preview": "tsx src/scripts/generate-preview.ts",
+    "test": "node --import tsx --test 'src/**/*.test.ts'"
+  },
+  "keywords": [
+    "youtube",
+    "shorts",
+    "automation",
+    "puppeteer",
+    "ffmpeg"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@fastify/cors": "^11.2.0",
+    "@fastify/static": "^9.1.3",
+    "@types/node": "^25.9.3",
+    "fastify": "^5.8.5",
+    "ffmpeg-static": "^5.3.0",
+    "googleapis": "^173.0.0",
+    "node-cron": "^4.2.1",
+    "puppeteer-core": "^25.1.0",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node-cron": "^3.0.11",
+    "concurrently": "^10.0.3",
+    "playwright": "^1.60.0"
+  }
+}

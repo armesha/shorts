@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Marck+Script&family=Noto+Color+Emoji&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: {{BG}};
+    --ink: #1c1a17;
+    --accent: #b23b2e;
+    --title-size: 68px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; }
+  .card {
+    width: 1080px; height: 1920px;
+    background: var(--bg);
+    padding: 150px 86px 104px;
+    display: flex; flex-direction: column;
+    font-family: 'PT Serif', Georgia, 'DejaVu Serif', serif;
+    color: var(--ink);
+  }
+
+  /* Title: single line at the top */
+  .title-wrap { flex: 0 0 auto; text-align: center; }
+  .title {
+    display: inline-block;
+    max-width: 100%;
+    font-weight: 700;
+    font-size: var(--title-size);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-bottom: 6px solid var(--accent);
+    padding-bottom: 10px;
+  }
+
+  /* Body: auto-fits to fill the frame evenly, never clipped */
+  .body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    overflow: hidden;
+    padding: 36px 0 8px;
+  }
+  .text {
+    width: 100%;
+    text-align: left;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    font-size: 64px;
+  }
+
+  /* Footer: laughing emoji (left) + channel signature (right) */
+  .footer { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; }
+  .emoji { font-family: 'Noto Color Emoji', sans-serif; font-size: 96px; line-height: 1; }
+  .signature {
+    font-family: 'Marck Script', 'Caveat', cursive;
+    font-size: 56px; color: var(--accent);
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="title-wrap"><span class="title">{{TITLE}}</span></div>
+    <div class="body"><div class="text">{{TEXT}}</div></div>
+    <div class="footer">
+      <span class="emoji" id="emoji">😂</span>
+      <span class="signature">{{CHANNEL}}</span>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      function fit() {
+        var body = document.querySelector('.body');
+        var text = document.querySelector('.text');
+        var BASE_LH = 1.5;
+        text.style.lineHeight = String(BASE_LH);
+        // 1) largest font (<=56) that fits both width and height at the base line-height
+        var min = 24, max = 56, best = min;
+        while (min <= max) {
+          var mid = (min + max) >> 1;
+          text.style.fontSize = mid + 'px';
+          var fitsV = text.scrollHeight <= body.clientHeight;
+          var fitsH = text.scrollWidth <= text.clientWidth + 2;
+          if (fitsV && fitsH) { best = mid; min = mid + 1; }
+          else { max = mid - 1; }
+        }
+        text.style.fontSize = best + 'px';
+        // 2) expand line spacing so the text fills the frame evenly (no big empty gaps)
+        text.style.lineHeight = String(BASE_LH);
+        var natural = text.scrollHeight;
+        var target = body.clientHeight;
+        if (natural > 0 && natural < target) {
+          text.style.lineHeight = String(Math.min(2.6, BASE_LH * (target / natural)));
+        }
+        window.__fitFontPx = best;
+        window.__fitted = true;
+      }
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+      else fit();
+      setTimeout(function () { if (!window.__fitted) fit(); }, 1500);
+    })();
+  </script>
+</body>
+</html>

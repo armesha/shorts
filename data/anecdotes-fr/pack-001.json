@@ -1,0 +1,702 @@
+[
+ {
+  "id": 1,
+  "pack": 1,
+  "text": "Les filles, c'est comme les noms de domaine.\n\nCelles que j'aime sont déjà prises.",
+  "chars": 81,
+  "title": ""
+ },
+ {
+  "id": 2,
+  "pack": 1,
+  "text": "Quelle est la meilleure heure pour écouter de la musique ?\n\nDeezer",
+  "chars": 66,
+  "title": ""
+ },
+ {
+  "id": 3,
+  "pack": 1,
+  "text": "Pourquoi les développeurs doivent-ils suivre une formation incendie ?\n\nÀ cause des pare-feu",
+  "chars": 91,
+  "title": ""
+ },
+ {
+  "id": 4,
+  "pack": 1,
+  "text": "Pourquoi Napoléon n'a jamais déménagé ?\n\nParce qu'il avait un Bonaparte.",
+  "chars": 72,
+  "title": ""
+ },
+ {
+  "id": 5,
+  "pack": 1,
+  "text": "Quel super-héros donne le plus vite l'heure ?\n\nSpeed heure man",
+  "chars": 62,
+  "title": ""
+ },
+ {
+  "id": 6,
+  "pack": 1,
+  "text": "Pourquoi il n'y a pas de ballon à question pour un champion ?\n\nParce que Julien Lepers.",
+  "chars": 87,
+  "title": ""
+ },
+ {
+  "id": 7,
+  "pack": 1,
+  "text": "Pourquoi les canards sont-ils toujours à l'heure ?\n\nParce qu'ils sont dans l'étang.",
+  "chars": 83,
+  "title": ""
+ },
+ {
+  "id": 8,
+  "pack": 1,
+  "text": "Tu as 4 poussins et tu n'en veux que 3, comment faire ?\n\nTu en pousses un.",
+  "chars": 74,
+  "title": ""
+ },
+ {
+  "id": 9,
+  "pack": 1,
+  "text": "Quel est le comble pour un jardinier ?\n\nSe mettre à poil devant ses tomates pour les faire rougir.",
+  "chars": 98,
+  "title": ""
+ },
+ {
+  "id": 10,
+  "pack": 1,
+  "text": "Quelle est la mamie qui fait peur aux voleurs ?\n\nMamie Traillette",
+  "chars": 65,
+  "title": ""
+ },
+ {
+  "id": 11,
+  "pack": 1,
+  "text": "Comment appelle-t-on un chien qui a des lunettes ?\n\nUn optichien",
+  "chars": 64,
+  "title": ""
+ },
+ {
+  "id": 12,
+  "pack": 1,
+  "text": "Quel est le comble pour un électricien ?\n\nNe pas être au courant",
+  "chars": 64,
+  "title": ""
+ },
+ {
+  "id": 13,
+  "pack": 1,
+  "text": "Quel est le comble pour une orange ?\n\nÊtre toujours pressée.",
+  "chars": 60,
+  "title": ""
+ },
+ {
+  "id": 14,
+  "pack": 1,
+  "text": "Que dit un canard quand il va aux toilettes ?\n\nJe vais au petit coin.",
+  "chars": 69,
+  "title": ""
+ },
+ {
+  "id": 15,
+  "pack": 1,
+  "text": "Qu'est-ce qui est transparent et qui court dans les champs ?\n\nUn troupeau de vitres",
+  "chars": 83,
+  "title": ""
+ },
+ {
+  "id": 16,
+  "pack": 1,
+  "text": "Pourquoi les gorilles ont-ils des gros trous de nez ?\n\nCar ils ont de gros doigts.",
+  "chars": 82,
+  "title": ""
+ },
+ {
+  "id": 17,
+  "pack": 1,
+  "text": "Comment appelle-t-on un squelette qui parle ?\n\nUn os parleur",
+  "chars": 60,
+  "title": ""
+ },
+ {
+  "id": 18,
+  "pack": 1,
+  "text": "C'est l'histoire d'un pingouin qui respirait par les fesses.\n\nUn jour, il s'est assis et il est mort.",
+  "chars": 101,
+  "title": ""
+ },
+ {
+  "id": 19,
+  "pack": 1,
+  "text": "Un œuf attend un autre œuf.\n\n- Si dans 5 minutes, il n'est pas là, j'me casse !",
+  "chars": 79,
+  "title": ""
+ },
+ {
+  "id": 20,
+  "pack": 1,
+  "text": "C'est l'histoire d'un schtroumpf qui court, tombe...\n\n... et se fait un bleu.",
+  "chars": 77,
+  "title": ""
+ },
+ {
+  "id": 21,
+  "pack": 1,
+  "text": "Quelle est la plus intelligente : la blonde, la rousse ou la brune ?\n\nLa rousse, parce que c'est un dictionnaire.",
+  "chars": 113,
+  "title": ""
+ },
+ {
+  "id": 22,
+  "pack": 1,
+  "text": "Qu'est-ce qu'un éléphant dit à un homme tout nu ?\n\nEt tu arrives à attraper des cacahuètes avec ça ?",
+  "chars": 100,
+  "title": ""
+ },
+ {
+  "id": 23,
+  "pack": 1,
+  "text": "Qu'est-ce qui est transparent et qui sent la banane ?\n\nUn pet de singe",
+  "chars": 70,
+  "title": ""
+ },
+ {
+  "id": 24,
+  "pack": 1,
+  "text": "Comment appelle-t-on un nain qui travaille à la Poste ?\n\nUn nain posteur",
+  "chars": 72,
+  "title": ""
+ },
+ {
+  "id": 25,
+  "pack": 1,
+  "text": "Que dit un citron quand il braque une banque ?\n\nPas un zeste !",
+  "chars": 62,
+  "title": ""
+ },
+ {
+  "id": 26,
+  "pack": 1,
+  "text": "Quel animal sent toujours bon ?\n\nLe mouton, car il a l'haleine fraîche.",
+  "chars": 71,
+  "title": ""
+ },
+ {
+  "id": 27,
+  "pack": 1,
+  "text": "Qu'est-ce que les abeilles aiment le plus dans le mariage ?\n\nLa lune de miel",
+  "chars": 76,
+  "title": ""
+ },
+ {
+  "id": 28,
+  "pack": 1,
+  "text": "Connaissez-vous l'histoire du lit escamotable ?\n\nC'est une histoire à faire dormir debout.",
+  "chars": 90,
+  "title": ""
+ },
+ {
+  "id": 29,
+  "pack": 1,
+  "text": "Qu'est-ce qu'un lampadaire ?\n\nUne lampe avec une seule brosse",
+  "chars": 61,
+  "title": ""
+ },
+ {
+  "id": 30,
+  "pack": 1,
+  "text": "Quelle est la différence entre un chewing-gum et un avion ?\n\nLe chewing-gum colle et l'avion décolle.",
+  "chars": 101,
+  "title": ""
+ },
+ {
+  "id": 31,
+  "pack": 1,
+  "text": "Pourquoi les imprimantes n'aiment pas aller à la piscine ?\n\nParce qu'elles n'ont papier.",
+  "chars": 88,
+  "title": ""
+ },
+ {
+  "id": 32,
+  "pack": 1,
+  "text": "Quel est le point commun entre un déménageur et un arbitre de football ?\n\nIls aiment tous les deux sortir des cartons.",
+  "chars": 118,
+  "title": ""
+ },
+ {
+  "id": 33,
+  "pack": 1,
+  "text": "Donald Duck et Daffy Duck se bagarrent. Qu'est-ce que ça fait ?\n\nUn conflit de canard",
+  "chars": 85,
+  "title": ""
+ },
+ {
+  "id": 34,
+  "pack": 1,
+  "text": "Quel est le comble du comble ?\n\nQu'un muet dise à un sourd qu'un aveugle les regarde.",
+  "chars": 85,
+  "title": ""
+ },
+ {
+  "id": 35,
+  "pack": 1,
+  "text": "Quelles sont les deux sœurs qui ont la meilleure vue ?\n\nLes sœurs jumelles",
+  "chars": 74,
+  "title": ""
+ },
+ {
+  "id": 36,
+  "pack": 1,
+  "text": "L'école et l'alcool riment, vous savez pourquoi ?\n\nCar les deux saoulent.",
+  "chars": 73,
+  "title": ""
+ },
+ {
+  "id": 37,
+  "pack": 1,
+  "text": "Il y a un boucher qui mesure 1 mètre 80, mais combien pèse-t-il ?\n\n500g de boudin noir",
+  "chars": 86,
+  "title": ""
+ },
+ {
+  "id": 38,
+  "pack": 1,
+  "text": "Pourquoi un chasseur emmène-t-il son fusil aux toilettes ?\n\nPour tirer la chasse",
+  "chars": 80,
+  "title": ""
+ },
+ {
+  "id": 39,
+  "pack": 1,
+  "text": "Vous connaissez l'histoire de l'armoire ?\n\nElle n'est pas commode.",
+  "chars": 66,
+  "title": ""
+ },
+ {
+  "id": 40,
+  "pack": 1,
+  "text": "Pourquoi les Martiens ne renversent-ils jamais de café sur la table ?\n\nParce qu'ils ont des soucoupes.",
+  "chars": 102,
+  "title": ""
+ },
+ {
+  "id": 41,
+  "pack": 1,
+  "text": "C'est l'histoire du petit déjeuner, vous la connaissez ?\n\nNon ? Pas de bol.",
+  "chars": 75,
+  "title": ""
+ },
+ {
+  "id": 42,
+  "pack": 1,
+  "text": "Dans la phrase \"Le voleur a volé une télévision.\", où est le sujet ?\n\nEn prison",
+  "chars": 79,
+  "title": ""
+ },
+ {
+  "id": 43,
+  "pack": 1,
+  "text": "C'est l'histoire d'un poil. Avant, il était bien.\n\nMaintenant, il est pubien.",
+  "chars": 77,
+  "title": ""
+ },
+ {
+  "id": 44,
+  "pack": 1,
+  "text": "Que fait une vache quand elle a les yeux fermés ?\n\nElle fabrique du lait concentré.",
+  "chars": 83,
+  "title": ""
+ },
+ {
+  "id": 45,
+  "pack": 1,
+  "text": "C'est une femme qui prend son bain, son chien pète, elle se noie. Pourquoi ?\n\nParce que son chien est un Pékinois.",
+  "chars": 114,
+  "title": ""
+ },
+ {
+  "id": 46,
+  "pack": 1,
+  "text": "Savez-vous pourquoi le père Noël rit tout le temps ?\n\nParce que ce n'est pas lui qui paye les cadeaux.",
+  "chars": 102,
+  "title": ""
+ },
+ {
+  "id": 47,
+  "pack": 1,
+  "text": "Tu connais la blague du photographe ?\n\nElle n'est pas encore développée.",
+  "chars": 72,
+  "title": ""
+ },
+ {
+  "id": 48,
+  "pack": 1,
+  "text": "Qu'est-ce qui est jaune et qui court vite ?\n\nUn citron pressé",
+  "chars": 61,
+  "title": ""
+ },
+ {
+  "id": 49,
+  "pack": 1,
+  "text": "Qu'est-ce que ça fait quand tu lances une gousse d'ail contre un mur ?\n\nLe retour du jet d'ail",
+  "chars": 94,
+  "title": ""
+ },
+ {
+  "id": 50,
+  "pack": 1,
+  "text": "Comment fait-on pour allumer un barbecue breton ?\n\nOn utilise des Breizh.",
+  "chars": 73,
+  "title": ""
+ },
+ {
+  "id": 51,
+  "pack": 1,
+  "text": "Quels desserts portent des sous-vêtements ?\n\nLes bananes à slips",
+  "chars": 64,
+  "title": ""
+ },
+ {
+  "id": 52,
+  "pack": 1,
+  "text": "Qu'est-ce qui est bleu, blanc et rouge ?\n\nUn schtroumf qui saigne du nez.",
+  "chars": 73,
+  "title": ""
+ },
+ {
+  "id": 53,
+  "pack": 1,
+  "text": "Robinson Crusoé habitait-t-il une île déserte ?\n\nNon, puisqu'il y habitait.",
+  "chars": 75,
+  "title": ""
+ },
+ {
+  "id": 54,
+  "pack": 1,
+  "text": "Pourquoi les sorcières utilisent des balais pour voler ?\n\nCar un aspirateur est trop lourd.",
+  "chars": 91,
+  "title": ""
+ },
+ {
+  "id": 55,
+  "pack": 1,
+  "text": "Connaissez-vous la blague sur les magasins ?\n\nEn-tout-cas, elle a supermarché.",
+  "chars": 78,
+  "title": ""
+ },
+ {
+  "id": 56,
+  "pack": 1,
+  "text": "Pourquoi les développeurs vont en boîte de nuit ?\n\nPour faire la java.",
+  "chars": 70,
+  "title": ""
+ },
+ {
+  "id": 57,
+  "pack": 1,
+  "text": "Que dit un informaticien quand il s'ennuie ?\n\nJe me fichier.",
+  "chars": 60,
+  "title": ""
+ },
+ {
+  "id": 58,
+  "pack": 1,
+  "text": "Pourquoi Winnie l'ourson veut absolument se marier ?\n\nPour partir en lune de miel.",
+  "chars": 82,
+  "title": ""
+ },
+ {
+  "id": 59,
+  "pack": 1,
+  "text": "Que dit un Italien pour dire au revoir ?\n\nPasta la vista, baby !",
+  "chars": 64,
+  "title": ""
+ },
+ {
+  "id": 60,
+  "pack": 1,
+  "text": "Pourquoi est-ce difficile de conduire dans le Nord ?\n\nParce que les voitures n'arrêtent pas de caler.",
+  "chars": 101,
+  "title": ""
+ },
+ {
+  "id": 61,
+  "pack": 1,
+  "text": "Quel est le meilleur magazine pour développeurs ?\n\nPomme d'api",
+  "chars": 62,
+  "title": ""
+ },
+ {
+  "id": 62,
+  "pack": 1,
+  "text": "Pourquoi les développeurs ne portent-ils pas de chaussures à lacets ?\n\nCar ils préfèrent les scratch.",
+  "chars": 101,
+  "title": ""
+ },
+ {
+  "id": 63,
+  "pack": 1,
+  "text": "Pourquoi le patinage artistique est pénible ?\n\nCar le patin agace.",
+  "chars": 66,
+  "title": ""
+ },
+ {
+  "id": 64,
+  "pack": 1,
+  "text": "Que faire pour sauver la vie d'une mouche qui se noie ?\n\nDu mouche à mouche.",
+  "chars": 76,
+  "title": ""
+ },
+ {
+  "id": 65,
+  "pack": 1,
+  "text": "Les enfants, c'est comme les pets.\n\nOn ne supporte que les siens.",
+  "chars": 65,
+  "title": ""
+ },
+ {
+  "id": 66,
+  "pack": 1,
+  "text": "Comment se nomme la Barbie la plus poilue ?\n\nLa Barbie chette !",
+  "chars": 63,
+  "title": ""
+ },
+ {
+  "id": 67,
+  "pack": 1,
+  "text": "T'es tombé ?\n\nNon, je fais un câlin au plancher, il avait l'air triste.",
+  "chars": 71,
+  "title": ""
+ },
+ {
+  "id": 68,
+  "pack": 1,
+  "text": "Pourquoi les policiers n'ont pas d'acné ?\n\nCar ils ont la peau lisse !",
+  "chars": 70,
+  "title": ""
+ },
+ {
+  "id": 69,
+  "pack": 1,
+  "text": "Que fait un développeur avant d'aller faire les courses ?\n\nIl fait sa lisp.",
+  "chars": 75,
+  "title": ""
+ },
+ {
+  "id": 70,
+  "pack": 1,
+  "text": "Que prend un développeur avant d'écrire ?\n\nIl prend de la MD.",
+  "chars": 61,
+  "title": ""
+ },
+ {
+  "id": 71,
+  "pack": 1,
+  "text": "Quelle est la maladie la plus répandue chez les développeurs Rust ?\n\nLe tétanos.",
+  "chars": 80,
+  "title": ""
+ },
+ {
+  "id": 72,
+  "pack": 1,
+  "text": "Que dit une antenne TV à un paratonnerre ?\n\nTu y crois, toi, au coup de foudre ?",
+  "chars": 80,
+  "title": ""
+ },
+ {
+  "id": 73,
+  "pack": 1,
+  "text": "Pourquoi une feuille se noie quand on la met dans l'eau ?\n\nParce qu'elle n'a pas pied.",
+  "chars": 86,
+  "title": ""
+ },
+ {
+  "id": 74,
+  "pack": 1,
+  "text": "Quelle est la chanteuse préférée des serruriers ?\n\nAlicia Keys.",
+  "chars": 63,
+  "title": ""
+ },
+ {
+  "id": 75,
+  "pack": 1,
+  "text": "Qu'est-ce qu'une baguette avec une boussole ?\n\nDu pain perdu.",
+  "chars": 61,
+  "title": ""
+ },
+ {
+  "id": 76,
+  "pack": 1,
+  "text": "Le prof dit à son élève : Ton devoir était mauvais.\n\nQUOI ? Vous l'avez mangé ?",
+  "chars": 79,
+  "title": ""
+ },
+ {
+  "id": 77,
+  "pack": 1,
+  "text": "Pourquoi il n'y a plus de Mammouth ?\n\nParce qu'il n'y a plus de Papouth.",
+  "chars": 72,
+  "title": ""
+ },
+ {
+  "id": 78,
+  "pack": 1,
+  "text": "Entre un aviateur et un marin, lequel écrit le moins ?\n\nLe marin, parce qu'il a jeté l'encre.",
+  "chars": 93,
+  "title": ""
+ },
+ {
+  "id": 79,
+  "pack": 1,
+  "text": "Quel est le comble pour un électricien ?\n\nD'avoir des ampoules aux pieds.",
+  "chars": 73,
+  "title": ""
+ },
+ {
+  "id": 80,
+  "pack": 1,
+  "text": "Qu'est-ce qu'une manifestation d'aveugles ?\n\nLe festival de Cannes.",
+  "chars": 67,
+  "title": ""
+ },
+ {
+  "id": 81,
+  "pack": 1,
+  "text": "Comment appelle-t-on un ascenseur en Amérique ?\n\nEn appuyant sur le bouton.",
+  "chars": 75,
+  "title": ""
+ },
+ {
+  "id": 82,
+  "pack": 1,
+  "text": "C'est l'histoire d'une fleur qui pense avoir réussi son contrôle de maths...\n\n...mais qui s'est plantée.",
+  "chars": 104,
+  "title": ""
+ },
+ {
+  "id": 83,
+  "pack": 1,
+  "text": "Comment appelle-t-on une fracture du crâne ?\n\nUn dégât des os.",
+  "chars": 62,
+  "title": ""
+ },
+ {
+  "id": 84,
+  "pack": 1,
+  "text": "Qu'est-ce qui est transparent et qui sent la carotte ?\n\nUn pet de lapin.",
+  "chars": 72,
+  "title": ""
+ },
+ {
+  "id": 85,
+  "pack": 1,
+  "text": "Comment appelle-t-on un covoiturage au Sénégal ?\n\nUn Babacar.",
+  "chars": 61,
+  "title": ""
+ },
+ {
+  "id": 86,
+  "pack": 1,
+  "text": "Un jour, Dieu demanda au coca de coller...\n\n... et le Coca-Cola.",
+  "chars": 64,
+  "title": ""
+ },
+ {
+  "id": 87,
+  "pack": 1,
+  "text": "Quel est le seul animal qui nourrit sa propre voiture ?\n\nLa chèvre, car elle nourrit son cabri au lait !",
+  "chars": 104,
+  "title": ""
+ },
+ {
+  "id": 88,
+  "pack": 1,
+  "text": "Pourquoi est-ce que les anges sont sourds ?\n\nParce que Jésus-Christ.",
+  "chars": 68,
+  "title": ""
+ },
+ {
+  "id": 89,
+  "pack": 1,
+  "text": "Qu'est-ce qui fait nioc-nioc ?\n\nUn canard qui essaye de parler le verlan.",
+  "chars": 73,
+  "title": ""
+ },
+ {
+  "id": 90,
+  "pack": 1,
+  "text": "Quels sont les fruits que nous trouvons dans toutes les maisons ?\n\nLes coins et les mûres.",
+  "chars": 90,
+  "title": ""
+ },
+ {
+  "id": 91,
+  "pack": 1,
+  "text": "Quelle est la devise des chats diaboliques ?\n\nSatan est par minou.",
+  "chars": 66,
+  "title": ""
+ },
+ {
+  "id": 92,
+  "pack": 1,
+  "text": "Quels sont les deux animaux les plus intelligents ?\n\nLe Cerf et le Veau.",
+  "chars": 72,
+  "title": ""
+ },
+ {
+  "id": 93,
+  "pack": 1,
+  "text": "Pourquoi on met une selle sur un cheval ?\n\nParce qu'en dessous, elle tomberait.",
+  "chars": 79,
+  "title": ""
+ },
+ {
+  "id": 94,
+  "pack": 1,
+  "text": "De quel pays viennent les cochons ?\n\nDes quatre groins du monde.",
+  "chars": 64,
+  "title": ""
+ },
+ {
+  "id": 95,
+  "pack": 1,
+  "text": "Que prend un éléphant quand il va au restaurant ?\n\nDe la place",
+  "chars": 62,
+  "title": ""
+ },
+ {
+  "id": 96,
+  "pack": 1,
+  "text": "Quel est le comble pour un cycliste ?\n\nDe faire un régime sans sel.",
+  "chars": 67,
+  "title": ""
+ },
+ {
+  "id": 97,
+  "pack": 1,
+  "text": "Pourquoi une brioche ne va jamais aux sports d'hiver ?\n\nParce qu'elle sait Pasquier !",
+  "chars": 85,
+  "title": ""
+ },
+ {
+  "id": 98,
+  "pack": 1,
+  "text": "Pourquoi les mamies sont-elles très efficaces pour faire le ménage ?\n\nParce qu'elles ont 80 balais.",
+  "chars": 99,
+  "title": ""
+ },
+ {
+  "id": 99,
+  "pack": 1,
+  "text": "Quelle est la différence entre une machine et du ketchup ?\n\nAucune, ils sont tous les deux au-tomate.",
+  "chars": 101,
+  "title": ""
+ },
+ {
+  "id": 100,
+  "pack": 1,
+  "text": "Que se passe-t-il quand on secoue une clef USB ?\n\nLes fichiers se mélangent.",
+  "chars": 76,
+  "title": ""
+ }
+]
