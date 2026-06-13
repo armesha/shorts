@@ -11,6 +11,9 @@
     "server": "node --import tsx --experimental-sqlite server/index.ts",
     "server:dev": "node --import tsx --experimental-sqlite --watch server/index.ts",
     "web": "npm --prefix web run dev",
+    "web:build": "npm --prefix web run build",
+    "tunnel": "node scripts/tunnel.mjs",
+    "share": "npm run web:build && concurrently -k -n app,tunnel -c blue,magenta \"npm run server\" \"npm run tunnel\"",
     "render:preview": "tsx src/scripts/render-preview.ts",
     "gen:preview": "tsx src/scripts/generate-preview.ts",
     "test": "node --import tsx --test 'src/**/*.test.ts'"
