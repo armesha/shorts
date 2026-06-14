@@ -76,6 +76,7 @@ function defaultKillbox() {
     align: "center", valign: "center",
     font: { family: "Inter", size: 72, weight: 700, color: "#111111", lineHeight: 1.1 },
     fitMin: 28, fitMax: 110,
+    minChars: 0,            // нижняя граница для валидации карточек пака (0 = без минимума)
     maxChars: 0,            // 0 = авто-лимит (estimateCapacity по геометрии и fitMin)
     highlight: "", underline: false, bullet: false, // маркер-фон / подчёркивание / список-буллеты
     placeholder: "Killbox · title",
@@ -353,8 +354,8 @@ function renderProps(force) {
 
     // --- лимит текста: пол шрифта (fitMin) + потолок символов, чтобы текст не мельчал и не обрезался ---
     root.appendChild(section("Лимит текста"));
-    root.appendChild(row("Лимит, симв.", "number", el.maxChars || 0, v => { el.maxChars = Math.max(0, Math.round(+v) || 0); render(); autosave(); }, 0));
-    root.appendChild(hint(`0 = авто. Вместимость при fitMin (${el.fitMin || 24}px): ≈ ${estimateCapacity(el)} симв. Текст сверх лимита обрежется «…», шрифт ниже fitMin не опустится.`));
+    root.appendChild(rowPair("Мин / Макс симв.", "number", el.minChars || 0, el.maxChars || 0, (a, b) => { el.minChars = Math.max(0, Math.round(a) || 0); el.maxChars = Math.max(0, Math.round(b) || 0); render(); autosave(); }, 0));
+    root.appendChild(hint(`Макс 0 = авто (вместимость при fitMin ${el.fitMin || 24}px ≈ ${estimateCapacity(el)} симв.). Мин — нижняя граница карточки пака (0 = без минимума). Сверх макс — обрезка «…», шрифт ниже fitMin не падает.`));
 
     root.appendChild(section("Оформление"));
     root.appendChild(rowCheck("Маркер (фон)", !!el.highlight, on => { el.highlight = on ? (el.highlight || "#aaff00") : ""; renderCanvas(); autosave(); }));
