@@ -12,6 +12,11 @@ unattended, managed from a web dashboard. Spec: `ТЗ.pdf`. Architecture & resea
 - **НЕ используй `<input type="time">` / `type="datetime-local">`:** нативный виджет Chrome показывает AM/PM в 12-часовой локали браузера, и атрибут `lang` это НЕ переопределяет. Для ввода времени — обычный текстовый инпут «ЧЧ:ММ» с валидацией `^([01]\d|2[0-3]):[0-5]\d$` (образец — расписание в `web/src/pages/AccountDetail.tsx`).
 - **Для дат/времени ВСЕГДА передавай локаль `"ru-RU"`** (для времени при необходимости ещё `hour12: false`). НИКОГДА не вызывай `toLocaleString()/toLocaleTimeString()/toLocaleDateString()` без аргумента локали — на машине зрителя с локалью en-US это даёт AM/PM и формат M/D/Y.
 
+## 🔁 Перезапуск сервера (MANDATORY — сообщай в конце задания)
+- **В конце КАЖДОГО задания одной строкой пиши, нужен ли перезапуск сервера** (и сделал ли ты его уже).
+- Правило: правки backend (`server/**` и `src/**` — всё, что импортит работающий `server/index.ts`) → **перезапуск НУЖЕН** (`npm run server`; tsx читает TS при старте, на лету не подхватывает). Только фронт (`web/src/**`) → **НЕ нужен**, достаточно `npm run web:build` + Ctrl+F5 (сервер отдаёт `web/dist` статикой). Данные (`data/**`) — обычно не нужен (есть `resetDeckCache`); сомневаешься — перезапусти.
+- Если перезапуск нужен — **делай его сам** (убей старый процесс + `npm run server`, проверь `/api/health` = 200) и в ответе укажи, что уже перезапустил.
+
 ## 🔒 Security rules (MANDATORY)
 - **NEVER read, cat, open, print, grep, or otherwise access** the Google OAuth client-secret file:
   `/home/davtian/Documents/shorts/client_secret_735991879461-lcvblrn3co3hlrrqi1ljvik2ih68oarp.apps.googleusercontent.com.json`
