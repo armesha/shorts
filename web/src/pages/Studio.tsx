@@ -366,22 +366,13 @@ export default function Studio() {
                         <button className="btn btn-sm btn-outline btn-error gap-1" onClick={q.cancel}>
                           <Square size={13} /> Стоп
                         </button>
-                        <span className="text-xs text-base-content/70 flex items-center gap-1">
+                        <span className="text-xs text-base-content/60 flex items-center gap-1">
                           <Loader2 className="animate-spin" size={12} />
-                          {q.position > 0
-                            ? `В очереди: впереди ${q.ahead} роликов, потом ваши ${q.total}`
-                            : `${q.done} из ${q.total}…`}
+                          в фоне — прогресс в правом нижнем углу
                         </span>
                       </>
                     )}
-                    {q.msg && !q.running && <span className="text-xs text-success">{q.msg}</span>}
                   </div>
-                  {q.running && q.position <= 0 && (
-                    <progress className="progress progress-primary w-full" value={q.done} max={q.total} />
-                  )}
-                  {q.running && q.position > 0 && (
-                    <progress className="progress progress-primary w-full" />
-                  )}
                 </div>
               </div>
             </div>

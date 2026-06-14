@@ -15,6 +15,7 @@ import Users from "./pages/Users";
 import TemplateEditor from "./pages/TemplateEditor";
 import Login from "./pages/Login";
 import { AuthProvider, useAuth } from "./lib/auth";
+import { GenQueueProvider } from "./lib/genQueue";
 
 function Gate() {
   const { user, loading } = useAuth();
@@ -26,8 +27,9 @@ function Gate() {
     );
   if (!user) return <Login />;
   return (
-    <Layout>
-      <Routes>
+    <GenQueueProvider>
+      <Layout>
+        <Routes>
         <Route path="/" element={<Accounts />} />
         <Route path="/studio" element={<Studio />} />
         <Route path="/cards" element={<Cards />} />
@@ -43,8 +45,9 @@ function Gate() {
         <Route path="/editor" element={<TemplateEditor />} />
         <Route path="/users" element={<Users />} />
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Layout>
+        </Routes>
+      </Layout>
+    </GenQueueProvider>
   );
 }
 

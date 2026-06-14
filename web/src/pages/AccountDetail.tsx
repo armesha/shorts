@@ -68,7 +68,7 @@ export default function AccountDetail() {
   const [preview, setPreview] = useState<VideoItem | null>(null);
   const maxBatch = user?.role === "admin" ? 100 : 20;
   const [batchN, setBatchN] = useState(5);
-  const q = useGenQueue(() => reloadVideos());
+  const q = useGenQueue();
   const [clearing, setClearing] = useState(false);
   const [page, setPage] = useState(1);
   const [gens, setGens] = useState<Generator[]>([]);
@@ -114,6 +114,12 @@ export default function AccountDetail() {
       })
       .catch(() => {});
   }, [id]);
+
+  // Когда фоновая генерация (глобальная очередь) завершилась для ЭТОГО канала — обновить библиотеку.
+  useEffect(() => {
+    if (q.completions && q.accountId === Number(id)) reloadVideos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [q.completions]);
 
   // Авто-скрытие всплывающего уведомления.
   useEffect(() => {
@@ -588,20 +594,11 @@ export default function AccountDetail() {
             )}
           </div>
           {q.running && (
-            <div className="mt-1 space-y-1">
-              <div className="text-xs text-base-content/60 flex items-center gap-1">
-                <Loader2 className="animate-spin" size={12} />
-                {q.position > 0
-                  ? `В очереди: впереди ${q.ahead} роликов, потом ваши ${q.total}`
-                  : `Генерирую ${q.done} из ${q.total}…`}
-              </div>
-              <progress
-                className="progress progress-primary w-full"
-                {...(q.position > 0 ? {} : { value: q.done, max: q.total })}
-              />
+            <div className="mt-1 text-xs text-base-content/60 flex items-center gap-1">
+              <Loader2 className="animate-spin" size={12} />
+              Идёт генерация в фоне — прогресс в правом нижнем углу, можно уходить на другие страницы.
             </div>
           )}
-          {q.msg && !q.running && <div className="text-xs text-success mt-1">{q.msg}</div>}
           {lastPosted && (
             <div className="alert alert-success py-2 text-sm mt-2">
               <span>
