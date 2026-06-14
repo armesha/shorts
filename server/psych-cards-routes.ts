@@ -3,7 +3,7 @@
 // Kept in its own file so server/index.ts only needs a 1-line import + 1-line call.
 import type { FastifyInstance } from "fastify";
 import { psychSchema } from "../src/psych/schema.ts";
-import { validateBatch, appendCards, listCards } from "../src/psych/cards-store.ts";
+import { validateBatch, appendCards, listCards, deleteCard } from "../src/psych/cards-store.ts";
 
 export function registerPsychCardsRoutes(app: FastifyInstance) {
   // The format standard (patterns + limits) — drives the on-page instruction panel.
@@ -43,5 +43,23 @@ export function registerPsychCardsRoutes(app: FastifyInstance) {
     }
     const { added, total } = appendCards(result.cards);
     return { added, total };
+  });
+
+  // Delete ONE uploaded card by index (?addedAt= guards against a shifted list). Seed cards are protected.
+  app.delete("/api/psych/cards/:index", async (req, reply) => {
+    const index = Number((req.params as { index: string }).index);
+    const addedAt = (req.query as Record<string, string>)?.addedAt;
+    const r = deleteCard(index, addedAt);
+    if (!r.deleted) {
+      const code = r.reason === "stale" ? 409 : r.reason === "protected" ? 403 : 404;
+      const error =
+        r.reason === "protected"
+          ? "Эту карточку нельзя удалить (она из базового набора)"
+          : r.reason === "stale"
+            ? "Список изменился — обнови и попробуй снова"
+            : "Карточка не найдена";
+      return reply.code(code).send({ error });
+    }
+    return { deleted: true, total: r.total };
   });
 }

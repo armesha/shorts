@@ -6,6 +6,7 @@ import {
   Check,
   AlertTriangle,
   Eye,
+  Trash2,
   Copy,
   ChevronLeft,
   ChevronRight,
@@ -78,6 +79,7 @@ export default function Cards() {
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewing, setPreviewing] = useState<number | null>(null);
+  const [deleting, setDeleting] = useState<number | null>(null);
 
   const loadList = useCallback(
     async (p: number) => {
@@ -161,6 +163,24 @@ export default function Cards() {
       setErrMsg(e instanceof Error ? e.message : "Ошибка превью");
     } finally {
       setPreviewing(null);
+    }
+  }
+
+  async function remove(index: number, card: PsychCard) {
+    if (!window.confirm("Удалить эту карточку из деки? Действие необратимо.")) return;
+    setDeleting(index);
+    setErrMsg(null);
+    setOkMsg(null);
+    try {
+      const r = await apiClient.deletePsychCard(index, card.addedAt);
+      setOkMsg(`Карточка удалена. Всего в деке: ${r.total}.`);
+      // если удалили последнюю на странице — шагнём назад
+      const nextPage = list && list.items.length === 1 && page > 1 ? page - 1 : page;
+      await loadList(nextPage);
+    } catch (e) {
+      setErrMsg(e instanceof ApiError ? e.message : "Не удалось удалить");
+    } finally {
+      setDeleting(null);
     }
   }
 
@@ -369,14 +389,25 @@ export default function Cards() {
                     <li className="text-base-content/40">…ещё {(card.items || []).length - 4}</li>
                   )}
                 </ul>
-                <button
-                  className="btn btn-xs btn-outline gap-1"
-                  onClick={() => preview(index, card)}
-                  disabled={previewing !== null}
-                >
-                  {previewing === index ? <Loader2 className="animate-spin" size={13} /> : <Eye size={13} />}
-                  Предпросмотр
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    className="btn btn-xs btn-outline gap-1"
+                    onClick={() => preview(index, card)}
+                    disabled={previewing !== null || deleting !== null}
+                  >
+                    {previewing === index ? <Loader2 className="animate-spin" size={13} /> : <Eye size={13} />}
+                    Предпросмотр
+                  </button>
+                  <button
+                    className="btn btn-xs btn-ghost gap-1 text-error"
+                    onClick={() => remove(index, card)}
+                    disabled={deleting !== null || previewing !== null}
+                    title="Удалить карточку из деки"
+                  >
+                    {deleting === index ? <Loader2 className="animate-spin" size={13} /> : <Trash2 size={13} />}
+                    Удалить
+                  </button>
+                </div>
               </div>
             ))}
           </div>

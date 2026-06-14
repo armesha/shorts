@@ -394,6 +394,11 @@ export const apiClient = {
     get<PsychCardList>(`/psych/cards?page=${page}&pageSize=${pageSize}&onlyUploaded=${onlyUploaded}`),
   uploadPsychCards: (cards: unknown) =>
     send<{ added: number; total: number }>("/psych/cards", "POST", { cards }),
+  deletePsychCard: (index: number, addedAt?: string) =>
+    send<{ deleted: boolean; total: number }>(
+      `/psych/cards/${index}${addedAt ? `?addedAt=${encodeURIComponent(addedAt)}` : ""}`,
+      "DELETE",
+    ),
   generateAnecdote: (body?: { text?: string; title?: string; bg?: string; deck?: string }) =>
     send<GeneratedPreview>("/generate/anecdote", "POST", body ?? {}),
   generateAnecdoteVideo: (body?: { text?: string; title?: string; bg?: string; music?: string; deck?: string }) =>

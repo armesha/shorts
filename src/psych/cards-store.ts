@@ -167,6 +167,32 @@ export function appendCards(
   return { added: stamped.length, total: all.length };
 }
 
+/**
+ * Delete ONE uploaded card by its array index (the same index listCards returns).
+ * Safety: only `source==="upload"` cards are deletable (seed deck is protected); if `expectedAddedAt`
+ * is given and doesn't match the card at that index, refuse (the list shifted — caller should refresh).
+ * Atomic write + cache bust, mirroring appendCards.
+ */
+export function deleteCard(
+  index: number,
+  expectedAddedAt?: string,
+  file: string = CARDS_FILE,
+): { deleted: boolean; total: number; reason?: "not_found" | "protected" | "stale" } {
+  const all = readAllCards(file);
+  if (!Number.isInteger(index) || index < 0 || index >= all.length)
+    return { deleted: false, total: all.length, reason: "not_found" };
+  const card = all[index];
+  if (card.source !== "upload") return { deleted: false, total: all.length, reason: "protected" };
+  if (expectedAddedAt && card.addedAt !== expectedAddedAt)
+    return { deleted: false, total: all.length, reason: "stale" };
+  all.splice(index, 1);
+  const tmp = `${file}.tmp`;
+  writeFileSync(tmp, JSON.stringify(all, null, 2));
+  renameSync(tmp, file);
+  resetDeckCache("psych");
+  return { deleted: true, total: all.length };
+}
+
 export interface ListResult {
   items: { index: number; card: StoredPsychCard }[];
   total: number; // total cards matching the filter
