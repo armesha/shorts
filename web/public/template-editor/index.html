@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Template Editor</title>
+<!-- Google Fonts для превью шрифтов в редакторе (см. список FONTS в editor.js). Только для редактора;
+     основной рендер-пайплайн использует свои локальные шрифты. css2: семейства строго по алфавиту. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bitter:wght@400;700&family=Caveat:wght@400;700&family=Comfortaa:wght@400;700&family=Cormorant+Garamond:wght@400;700&family=Dancing+Script:wght@400;700&family=EB+Garamond:wght@400;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&family=Kolker+Brush&family=Lato:wght@400;700&family=Libre+Baskerville:wght@400;700&family=Linden+Hill&family=Lobster&family=Lora:wght@400;700&family=Merriweather:wght@400;700&family=Montserrat:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700;800&family=Open+Sans:wght@400;700&family=Oswald:wght@400;700&family=Pacifico&family=Playfair+Display:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=PT+Serif:wght@400;700&family=Raleway:wght@400;500;600;700;800&family=Roboto:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;700&family=Source+Serif+4:wght@400;700&family=Work+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="editor.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Template Editor</div>
+
+    <div class="group">
+      <button data-action="add-killbox" title="Добавить килбокс">＋ Killbox</button>
+      <button data-action="add-text"    title="Добавить текст">＋ Text</button>
+      <label class="file-btn" title="Загрузить картинку (SVG/PNG/JPEG)">
+        ＋ Image
+        <input type="file" id="imageInput" accept=".svg,.png,.jpg,.jpeg,image/*" hidden>
+      </label>
+    </div>
+
+    <div class="group">
+      <label class="chk"><input type="checkbox" id="snapToggle" checked> Привязка к сетке</label>
+      <label class="chk"><input type="checkbox" id="guidesToggle" checked> Показывать килбоксы</label>
+    </div>
+
+    <div class="group zoom-group">
+      <button data-action="zoom-out" title="Уменьшить (Ctrl -)">−</button>
+      <button data-action="zoom-pct" id="zoomBtn" title="Сбросить к 100%">100%</button>
+      <button data-action="zoom-in" title="Увеличить (Ctrl +)">＋</button>
+      <button data-action="zoom-fit" title="Вписать (Ctrl 0)">Fit</button>
+    </div>
+
+    <div class="group right">
+      <input id="tplName" class="tpl-name" placeholder="имя шаблона" value="untitled">
+      <button data-action="new"     title="Новый чистый шаблон">Новый</button>
+      <button data-action="import"  title="Загрузить JSON">Импорт</button>
+      <button data-action="export" class="primary" title="Скачать JSON">Экспорт</button>
+      <input type="file" id="importInput" accept=".json,application/json" hidden>
+    </div>
+  </header>
+
+  <main class="workspace">
+
+    <!-- ЛЕВАЯ ПАНЕЛЬ: СЛОИ -->
+    <aside class="panel layers">
+      <div class="panel-head">Слои</div>
+      <ul id="layers"></ul>
+      <div class="panel-foot small">Перетащи в списке — изменит z-index.<br>Сверху = на переднем плане.</div>
+    </aside>
+
+    <!-- ЦЕНТР: ХОЛСТ -->
+    <section class="stage-wrap" id="stageWrap">
+      <div class="stage-sizer" id="stageSizer">
+        <div class="stage" id="stage">
+          <div class="canvas" id="canvas">
+            <!-- сюда монтируются элементы -->
+          </div>
+        </div>
+      </div>
+      <div class="stage-info">
+        <span id="canvasInfo">1080 × 1920</span>
+        <span class="dot">·</span>
+        <span>zoom: <span id="zoomVal">—</span></span>
+      </div>
+    </section>
+
+    <!-- ПРАВАЯ ПАНЕЛЬ: СВОЙСТВА -->
+    <aside class="panel props">
+      <div class="panel-head">Свойства</div>
+      <div id="props" class="props-body">
+        <div class="empty">Ничего не выбрано.<br><br>Подсказки:<br>• drag — перетащить<br>• ручки — изменить размер<br>• Delete — удалить<br>• стрелки — нудж 1px (Shift = 10)<br>• Esc — снять выделение</div>
+      </div>
+    </aside>
+
+  </main>
+
+  <script src="editor.js"></script>
+</body>
+</html>

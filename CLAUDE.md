@@ -79,6 +79,14 @@ unattended, managed from a web dashboard. Spec: `ТЗ.pdf`. Architecture & resea
 - Backend DB = `node:sqlite` → run with `--experimental-sqlite` (already in `npm run server`). DB file `data/app.db` (gitignored via `data/`). Schema/helpers in `server/db.ts`.
 - Templates: 8 textured ones in Pencil (1 Kraft, 2 Slate, 3 Parchment, 4 Marble, 5 Linen, 6 Concrete, 7 Walnut, 8 Newsprint); the first 5 flat ones were deleted. TODO: convert the chosen template(s) into the real HTML render template (`src/render.ts` currently has no template file — `templates/` was removed).
 - Each account stores a chosen `template` (UI dropdown on the account page).
+- **Редактор шаблонов (эксперимент, виден всем):** vanilla-конструктор карточек в `web/public/template-editor/`
+  (`index.html`+`editor.js`+`editor.css`+`renderer.js`, без зависимостей), показывается через `<iframe>` на
+  React-странице `web/src/pages/TemplateEditor.tsx` (роут `/editor`, пункт меню в `Layout.tsx` — без `adminOnly`).
+  Формат — JSON `{canvas, elements:[killbox|text|image]}` (см. вдохновение `/home/davtian/Downloads/new-feature`).
+  Лимит текста на killbox: `fitMin`/`fitMax` (пол/потолок шрифта при авто-подгоне) + `maxChars` (0 = авто-оценка
+  `estimateCapacity()` по геометрии и `fitMin`); `renderer.js` обрезает контент сверх лимита «…», шрифт не падает
+  ниже `fitMin`. Полностью изолировано от пайплайна; **серверу правок не нужно** — статику отдаёт Vite (dev) и
+  `@fastify/static` с prefix `/` (prod). Сборка фронта обязательна: `npm run web:build` (Vite копирует `public/` → `dist/`).
 - First generator = **Русские анекдоты (no AI)**: `src/anecdotes/build.ts` parses `Русские анекдоты/anek_djvu.txt` (split on `<|startoftext|>`; drop mat/@-censored/dupes) → packs of 1000 in `data/anecdotes/` (currently 54,954 in range 100–350 chars). Runtime picks random via `src/anecdotes/library.ts`.
 - Anecdote render: `templates/anecdote.html` + `src/anecdotes/render.ts` — binary-search auto-fit fills the frame and checks BOTH vertical AND horizontal overflow (long words must never clip — that's a hard user requirement). Random light bg from `BACKGROUNDS`. Font ≤72px, line-height grow capped ≤1.9 (no big gaps), title auto-shrinks to one line.
 - **IT-дека — плотная (переделка через Haiku):** `src/anecdotes/it-mine.ts` (добыча длинных 330–620 из `corpora/it-*.jsonl`, источник ~152k) → Haiku-воркфлоу чистки (акценты `e'→è`, юзнет-мусор, mojibake, не-шутки) → `src/anecdotes/build-it-dense.ts` (NSFW-фильтр + дедуп + паки) → 1169 плотных (медиана 424), 2 прохода Haiku (`IT_OFFSET` берёт непересекающиеся кандидаты). Ещё ~3k в полосе не использовано.
