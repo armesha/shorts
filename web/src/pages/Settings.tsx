@@ -26,7 +26,10 @@ export default function Settings() {
 
   useEffect(() => {
     apiClient.status().then(setStatus).catch(() => {});
-    apiClient.settings().then(setSettings).catch(() => {});
+    apiClient
+      .settings()
+      .then(setSettings)
+      .catch((err) => setError(err instanceof ApiError ? err.message : "Не удалось загрузить настройки"));
   }, []);
 
   async function onFile(e: ChangeEvent<HTMLInputElement>) {
@@ -48,10 +51,13 @@ export default function Settings() {
 
   async function removeKey() {
     if (!confirm("Удалить свой Google-ключ? Каналы перестанут постить, пока не загрузишь новый.")) return;
+    setError("");
     setBusy(true);
     try {
       setSettings(await apiClient.removeGoogleKey());
       apiClient.status().then(setStatus).catch(() => {});
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Не удалось удалить ключ");
     } finally {
       setBusy(false);
     }
@@ -77,19 +83,49 @@ export default function Settings() {
               ))}
           </div>
 
-          <p className="text-sm text-base-content/70">
-            Чтобы постить на свои YouTube-каналы, нужен твой собственный OAuth-ключ. В{" "}
-            <a
-              className="link link-primary"
-              href="https://console.cloud.google.com/apis/credentials"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Google Cloud Console
-            </a>{" "}
-            включи <b>YouTube Data API v3</b>, создай OAuth-клиент типа «Веб-приложение», добавь в нём
-            этот redirect URI и скачай <code>client_secret.json</code>:
-          </p>
+          <div className="text-sm text-base-content/70 space-y-2">
+            <p>Чтобы постить на свои YouTube-каналы, нужен твой OAuth-ключ Google. По шагам:</p>
+            <ol className="list-decimal list-inside space-y-1 text-base-content/80 marker:text-primary marker:font-semibold">
+              <li>
+                Открой{" "}
+                <a
+                  className="link link-primary"
+                  href="https://console.cloud.google.com/apis/library/youtube.googleapis.com"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  YouTube Data API v3
+                </a>{" "}
+                → нажми <b>Enable</b>.
+              </li>
+              <li>
+                Перейди в{" "}
+                <a
+                  className="link link-primary"
+                  href="https://console.cloud.google.com/apis/credentials"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Credentials
+                </a>{" "}
+                → <b>Create credentials → OAuth client ID</b>.
+              </li>
+              <li>
+                <b>Application type → Web application</b> (именно Web, <u>не Desktop</u> — иначе адрес ниже
+                не примется).
+              </li>
+              <li>
+                Раздел <b>Authorized redirect URIs</b> → <b>+ ADD URI</b> → вставь адрес ниже 👇
+              </li>
+              <li>
+                <b>Create</b> → <b>Download JSON</b> → загрузи его кнопкой ниже.
+              </li>
+            </ol>
+            <p className="text-xs text-base-content/50">
+              Если приложение в режиме «Testing» — добавь свою почту в <b>OAuth consent screen → Test
+              users</b>, иначе Google не пустит. После загрузки нового ключа переподключи каналы заново.
+            </p>
+          </div>
           <code className="block bg-base-200 rounded p-2 text-xs break-all">{redirectUrl}</code>
 
           <div className="flex items-center gap-2 flex-wrap">
@@ -181,36 +217,36 @@ function AdminUsers() {
             Создать аккаунт для друга. Он войдёт по логину/паролю и загрузит свой Google-ключ.
           </p>
           <div className="flex flex-wrap items-end gap-2">
-            <div>
+            <label className="form-control w-40">
               <span className="label-text">Логин</span>
               <input
-                className="input input-bordered input-sm w-40 mt-1 block"
+                className="input input-bordered input-sm"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 autoComplete="off"
               />
-            </div>
-            <div>
+            </label>
+            <label className="form-control w-44">
               <span className="label-text">Пароль (≥6)</span>
               <input
-                type="text"
-                className="input input-bordered input-sm w-44 mt-1 block font-mono"
+                type="password"
+                className="input input-bordered input-sm font-mono"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="off"
               />
-            </div>
-            <div>
+            </label>
+            <label className="form-control w-40">
               <span className="label-text">Роль</span>
               <select
-                className="select select-bordered select-sm mt-1 block"
+                className="select select-bordered select-sm"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
               >
                 <option value="user">пользователь</option>
                 <option value="admin">админ</option>
               </select>
-            </div>
+            </label>
             <button
               className="btn btn-primary btn-sm gap-1"
               onClick={add}
@@ -285,36 +321,36 @@ function ChangePassword() {
           Поменяй пароль, который выдал администратор, на свой — знать его будешь только ты.
         </p>
         <div className="flex flex-wrap items-end gap-2">
-          <div>
+          <label className="form-control w-44">
             <span className="label-text">Текущий пароль</span>
             <input
               type="password"
-              className="input input-bordered input-sm w-44 mt-1 block"
+              className="input input-bordered input-sm"
               value={cur}
               onChange={(e) => setCur(e.target.value)}
               autoComplete="current-password"
             />
-          </div>
-          <div>
+          </label>
+          <label className="form-control w-44">
             <span className="label-text">Новый (≥6)</span>
             <input
               type="password"
-              className="input input-bordered input-sm w-44 mt-1 block"
+              className="input input-bordered input-sm"
               value={next}
               onChange={(e) => setNext(e.target.value)}
               autoComplete="new-password"
             />
-          </div>
-          <div>
+          </label>
+          <label className="form-control w-44">
             <span className="label-text">Повтори новый</span>
             <input
               type="password"
-              className="input input-bordered input-sm w-44 mt-1 block"
+              className="input input-bordered input-sm"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               autoComplete="new-password"
             />
-          </div>
+          </label>
           <button className="btn btn-primary btn-sm gap-1" onClick={submit} disabled={busy || !valid}>
             {busy ? <span className="loading loading-spinner loading-sm" /> : <KeyRound size={14} />}
             Сменить пароль
