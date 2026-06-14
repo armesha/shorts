@@ -17,8 +17,8 @@ export default function UsersPage() {
   return (
     <div className="space-y-6 max-w-5xl">
       <header>
-        <h1 className="text-2xl font-bold">Пользователи и паки</h1>
-        <p className="text-base-content/60">Аккаунты друзей и доступ к колодам</p>
+        <h1 className="text-2xl font-bold">Админка</h1>
+        <p className="text-base-content/60">Пользователи, доступ к пакам, лимиты и нагрузка</p>
       </header>
       <AdminUsers />
     </div>
@@ -242,6 +242,7 @@ function AdminUsers() {
                           );
                         const visible = !row.hidden.includes(d.id);
                         const used = row.used.includes(d.id);
+                        const st = row.deckStats?.[d.id];
                         return (
                           <td key={d.id} className="text-center align-middle">
                             <label className="inline-flex flex-col items-center gap-0.5 cursor-pointer">
@@ -252,11 +253,19 @@ function AdminUsers() {
                                 disabled={savingCell === `${row.userId}:${d.id}`}
                                 onChange={(e) => toggle(row, d.id, e.target.checked)}
                               />
-                              {used && (
-                                <span className="text-[10px] leading-none text-success" title="пак уже используется">
-                                  исп.
-                                </span>
-                              )}
+                              {used &&
+                                (st ? (
+                                  <span
+                                    className={`text-[10px] leading-none ${st.available < 50 ? "text-error font-semibold" : "text-base-content/60"}`}
+                                    title={`осталось ${st.available} из ${st.total} · выложено ${st.posted} · использовано ${st.used}`}
+                                  >
+                                    {st.available}
+                                  </span>
+                                ) : (
+                                  <span className="text-[10px] leading-none text-success" title="используется">
+                                    исп.
+                                  </span>
+                                ))}
                             </label>
                           </td>
                         );
@@ -267,8 +276,8 @@ function AdminUsers() {
               </table>
             </div>
             <p className="text-xs text-base-content/50 mt-1">
-              Галочка = пак виден пользователю. «исп.» = у пользователя уже есть канал/ролики на этом паке.
-              Админ всегда видит все паки.
+              Галочка = пак виден пользователю. Число под галочкой = сколько свободных карточек у него осталось
+              в паке (красное — мало; наведи курсор: осталось / всего / выложено). Админ видит все паки.
             </p>
           </div>
         )}

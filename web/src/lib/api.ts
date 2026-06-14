@@ -85,6 +85,8 @@ export interface UserDeckRow {
   used: string[];
   scheduled: number; // posts/day planned across all the user's channels
   library: number; // videos queued in the user's libraries
+  // Per-deck remaining/used/total/posted for the decks the user uses (admin "when does a pack run out").
+  deckStats?: Record<string, { used: number; available: number; total: number; posted: number }>;
 }
 
 export interface GeneratedPreview {

@@ -12,7 +12,7 @@ const NAV: NavItem[] = [
   { to: "/statistics", label: "Статистика", icon: BarChart3, end: false },
   { to: "/changelog", label: "Обновления", icon: Rocket, end: false },
   { to: "/settings", label: "Настройки", icon: Settings, end: false },
-  { to: "/users", label: "Пользователи и паки", icon: Users, end: false, adminOnly: true },
+  { to: "/users", label: "Админка", icon: Users, end: false, adminOnly: true },
   { to: "/errors", label: "Ошибки", icon: Bug, end: false, adminOnly: true },
   { to: "/system", label: "Сервер", icon: Server, end: false },
 ];

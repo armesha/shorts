@@ -639,6 +639,21 @@ export function openDb(path: string) {
         .get(userId) as { n: number };
       return r.n;
     },
+    // Posted (uploaded to YouTube) count per user per deck (by the channel's current language).
+    postedByUserDeck(): Record<number, Record<string, number>> {
+      const out: Record<number, Record<string, number>> = {};
+      const rows = db
+        .prepare(
+          "SELECT a.user_id AS uid, a.lang AS deck, COUNT(*) AS n FROM history h JOIN accounts a ON a.id = h.account_id " +
+            "WHERE a.user_id IS NOT NULL AND h.youtube_id IS NOT NULL AND h.youtube_id <> '' GROUP BY a.user_id, a.lang",
+        )
+        .all() as Row[];
+      for (const r of rows) {
+        const uid = r.uid as number;
+        (out[uid] ??= {})[r.deck as string] = r.n as number;
+      }
+      return out;
+    },
     // Per-user Google client_secret JSON (uploaded in Settings). Never sent back to the frontend.
     getUserClientSecret(userId: number): string | null {
       const r = db.prepare("SELECT client_secret_json FROM users WHERE id = ?").get(userId) as Row | undefined;

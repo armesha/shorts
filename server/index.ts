@@ -359,15 +359,27 @@ app.get("/api/admin/user-decks", async (req, reply) => {
   if (!requireAdmin(req, reply)) return;
   const hidden = db.hiddenDecksByUser();
   const used = db.usedDecksByUser();
-  return db.listUsers().map((u) => ({
-    userId: u.id,
-    username: u.username,
-    role: u.role,
-    hidden: hidden[u.id] ?? [],
-    used: used[u.id] ?? [],
-    scheduled: db.scheduleSlotsForUser(u.id), // posts/day planned across all their channels
-    library: db.countVideosByUser(u.id), // videos queued in their libraries
-  }));
+  const posted = db.postedByUserDeck();
+  return db.listUsers().map((u) => {
+    // Per-deck remaining/used/posted for the decks this user actually uses (so admin sees when a pack runs out).
+    const usedKeys = new Set(db.usedAnecdoteKeys(u.id));
+    const deckStats: Record<string, { used: number; available: number; total: number; posted: number }> = {};
+    for (const deckId of used[u.id] ?? []) {
+      if (!DECKS.some((d) => d.id === deckId)) continue; // skip non-deck langs (e.g. "en")
+      const s = libraryStats(deckId, usedKeys);
+      deckStats[deckId] = { used: s.used, available: s.available, total: s.total, posted: posted[u.id]?.[deckId] ?? 0 };
+    }
+    return {
+      userId: u.id,
+      username: u.username,
+      role: u.role,
+      hidden: hidden[u.id] ?? [],
+      used: used[u.id] ?? [],
+      scheduled: db.scheduleSlotsForUser(u.id), // posts/day planned across all their channels
+      library: db.countVideosByUser(u.id), // videos queued in their libraries
+      deckStats,
+    };
+  });
 });
 // Replace a user's hidden-pack set (body.hidden = pack ids to hide). Admins can't be restricted.
 app.put("/api/admin/users/:id/decks", async (req, reply) => {
