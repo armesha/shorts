@@ -37,12 +37,13 @@ function cardTitleAndText(values: CardValues, rules: RoleRule[]): { title: strin
 }
 
 export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof openDb>) {
-  // Мои паки (сводки, новейшие сверху).
-  app.get("/api/packs", async (req) => listPacks(uid(req)));
+  const adminReq = (req: unknown): boolean => db.getUserById(uid(req))?.role === "admin";
+  // Видимые мне паки (владелец / админ / выдан грант).
+  app.get("/api/packs", async (req) => listPacks(uid(req), adminReq(req)));
 
   // Один пак + выведенные из шаблона правила (роли, min/max, списки) — для формы добавления.
   app.get("/api/packs/:id", async (req, reply) => {
-    const p = getPack((req.params as { id: string }).id, uid(req));
+    const p = getPack((req.params as { id: string }).id, uid(req), adminReq(req));
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
     return { ...p, rules: p.templates[0] ? deriveRules(p.templates[0]) : [] };
   });
@@ -103,7 +104,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
 
   // Превью карточки #i — рендер шаблоном (шаблоны чередуются по карточкам для разнообразия) → PNG в /files.
   app.get("/api/packs/:id/preview", async (req, reply) => {
-    const p = getPack((req.params as { id: string }).id, uid(req));
+    const p = getPack((req.params as { id: string }).id, uid(req), adminReq(req));
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
     const i = Math.max(0, Math.floor(Number((req.query as Record<string, string>)?.i) || 0));
     const card = p.cards[i];
@@ -125,7 +126,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const { id, i } = req.params as { id: string; i: string };
     const body = (req.body as { accountId?: number; music?: string }) ?? {};
     const userId = uid(req);
-    const p = getPack(id, userId);
+    const p = getPack(id, userId, adminReq(req));
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
     const idx = Math.max(0, Math.floor(Number(i) || 0));
     const card = p.cards[idx];

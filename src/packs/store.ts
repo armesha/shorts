@@ -40,20 +40,24 @@ export interface StoredCard {
 }
 export interface Pack {
   id: string;
-  userId: number;
+  userId: number; // владелец
   name: string;
   lang: string;
   templates: PackTemplate[];
   cards: StoredCard[];
   createdAt: string;
+  /** userId'ы, которым админ выдал доступ (opt-in). По умолчанию []: видит только владелец/админ. */
+  grants?: number[];
 }
 export interface PackSummary {
   id: string;
+  userId: number; // владелец
   name: string;
   lang: string;
   templates: number;
   cards: number;
   createdAt: string;
+  grants: number[];
 }
 /** Правило для одной роли, выведенное из шаблона. */
 export interface RoleRule {
@@ -192,29 +196,61 @@ export function createPack(
     templates: opts.templates?.length ? opts.templates : [],
     cards: [],
     createdAt: now,
+    grants: [], // по умолчанию доступ только у владельца/админа; админ раздаёт через матрицу
   };
   writeAtomic(packFile(id), pack);
   return pack;
 }
 
-/** Список паков пользователя (сводки), новейшие сверху. */
-export function listPacks(userId: number): PackSummary[] {
+/** Доступ к паку: админ ИЛИ владелец ИЛИ выдан грант. По умолчанию — только владелец/админ. */
+export function canAccess(pack: Pack, userId: number, isAdmin: boolean): boolean {
+  return isAdmin || pack.userId === userId || (pack.grants ?? []).includes(userId);
+}
+
+/** Все паки (любой владелец) — для матрицы Админки (колонки + кто гранчен). */
+export function listAllPacks(): PackSummary[] {
   if (!existsSync(PACKS_DIR)) return [];
   const out: PackSummary[] = [];
   for (const f of readdirSync(PACKS_DIR)) {
     if (!f.endsWith(".json") || f.endsWith(".tmp")) continue;
     const p = readPackFile(f.replace(/\.json$/, ""));
-    if (!p || p.userId !== userId) continue;
-    out.push({ id: p.id, name: p.name, lang: p.lang, templates: p.templates.length, cards: p.cards.length, createdAt: p.createdAt });
+    if (!p) continue;
+    out.push({ id: p.id, userId: p.userId, name: p.name, lang: p.lang, templates: p.templates.length, cards: p.cards.length, createdAt: p.createdAt, grants: p.grants ?? [] });
   }
   out.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
   return out;
 }
 
-/** Полный пак — только владельцу. */
-export function getPack(id: string, userId: number): Pack | null {
+/** Выдать/снять доступ юзеру к паку (грант). Владельца не трогаем. */
+export function setGrant(packId: string, userId: number, on: boolean): boolean {
+  const p = readPackFile(packId);
+  if (!p) return false;
+  const grants = new Set(p.grants ?? []);
+  if (on) grants.add(userId);
+  else grants.delete(userId);
+  p.grants = [...grants];
+  writeAtomic(packFile(packId), p);
+  return true;
+}
+
+/** Список паков пользователя (сводки), новейшие сверху. */
+export function listPacks(userId: number, isAdmin = false): PackSummary[] {
+  if (!existsSync(PACKS_DIR)) return [];
+  const out: PackSummary[] = [];
+  for (const f of readdirSync(PACKS_DIR)) {
+    if (!f.endsWith(".json") || f.endsWith(".tmp")) continue;
+    const p = readPackFile(f.replace(/\.json$/, ""));
+    if (!p || !canAccess(p, userId, isAdmin)) continue;
+    out.push({ id: p.id, userId: p.userId, name: p.name, lang: p.lang, templates: p.templates.length, cards: p.cards.length, createdAt: p.createdAt, grants: p.grants ?? [] });
+  }
+  out.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+  return out;
+}
+
+/** Полный пак — владельцу/админу/гранченному. */
+export function getPack(id: string, userId: number, isAdmin = false): Pack | null {
   const p = readPackFile(id);
-  if (!p || p.userId !== userId) return null;
+  if (!p || !canAccess(p, userId, isAdmin)) return null;
   return p;
 }
 
