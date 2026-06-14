@@ -139,6 +139,38 @@ export interface ErrorLogItem {
   createdAt: string;
 }
 
+/** Live server-health snapshot for the admin «Сервер» page (in-memory history, no DB). */
+export interface SystemStatus {
+  now: {
+    uptimeSec: number;
+    cpuPct: number;
+    loadavg: number[]; // [1m,5m,15m] — [0,0,0] on Windows
+    cpuCount: number;
+    rssMb: number;
+    heapMb: number;
+    memUsedMb: number;
+    memTotalMb: number;
+    memPct: number;
+    diskFreeMb: number;
+    diskTotalMb: number;
+    diskPct: number;
+    platform: string;
+    nodeVersion: string;
+    sampleSec: number;
+  };
+  active: { render: number; upload: number };
+  scheduler: { lastTickAt: number | null; lastPostAt: number | null };
+  history: { t: number; cpu: number; memPct: number; rssMb: number; diskPct: number }[];
+  domain: {
+    videosQueued: number;
+    accountsTotal: number;
+    accountsEnabled: number;
+    accountsConnected: number;
+    errors24h: number;
+    errorsTotal: number;
+  };
+}
+
 /** Error carrying the HTTP status + the server's `{error}` message (for lockout/attempt UI). */
 export class ApiError extends Error {
   status: number;
@@ -237,6 +269,8 @@ export const apiClient = {
   // Error log: admin views/clears; any page can report a client-side error (fire-and-forget).
   errors: () => get<ErrorLogItem[]>("/errors"),
   clearErrors: () => send<{ ok: boolean }>("/errors", "DELETE"),
+  // Server health (admin-only): live CPU/RAM/disk + in-memory history + pipeline activity.
+  system: () => get<SystemStatus>("/system"),
   reportClientError: (message: string, detail?: string, context?: string) =>
     send<{ ok: boolean }>("/client-error", "POST", { message, detail, context }).catch(() => ({
       ok: false,

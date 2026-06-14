@@ -378,6 +378,11 @@ export function openDb(path: string) {
     deleteVideo(id: number): void {
       db.prepare("DELETE FROM videos WHERE id = ?").run(id);
     },
+    // Total rendered videos waiting in the library across all channels (server-health "очередь").
+    totalVideoCount(): number {
+      const r = db.prepare("SELECT COUNT(*) AS n FROM videos").get() as Row;
+      return Number(r.n) || 0;
+    },
     incrementPost(id: number): void {
       db.prepare("UPDATE videos SET post_count = post_count + 1, last_posted_at = ? WHERE id = ?").run(
         new Date().toISOString(),
@@ -600,6 +605,13 @@ export function openDb(path: string) {
     },
     errorCount(): number {
       const r = db.prepare("SELECT COUNT(*) AS n FROM error_log").get() as Row;
+      return Number(r.n) || 0;
+    },
+    // Errors logged within the last N hours (for the server-health page's "ошибок за 24ч").
+    recentErrorCount(hours = 24): number {
+      const r = db
+        .prepare("SELECT COUNT(*) AS n FROM error_log WHERE created_at >= datetime('now', ?)")
+        .get(`-${Math.max(1, Math.floor(hours))} hours`) as Row;
       return Number(r.n) || 0;
     },
     clearErrors(): void {

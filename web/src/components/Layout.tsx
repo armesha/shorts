@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
-import { Tv, History, Settings, Clapperboard, Sparkles, BarChart3, Bug, Rocket, LogOut, Menu, type LucideIcon } from "lucide-react";
+import { Tv, History, Settings, Clapperboard, Sparkles, BarChart3, Bug, Rocket, Server, LogOut, Menu, type LucideIcon } from "lucide-react";
 import { useAuth } from "../lib/auth";
 
 type NavItem = { to: string; label: string; icon: LucideIcon; end: boolean; adminOnly?: boolean };
@@ -12,6 +12,7 @@ const NAV: NavItem[] = [
   { to: "/changelog", label: "Обновления", icon: Rocket, end: false },
   { to: "/settings", label: "Настройки", icon: Settings, end: false },
   { to: "/errors", label: "Ошибки", icon: Bug, end: false, adminOnly: true },
+  { to: "/system", label: "Сервер", icon: Server, end: false, adminOnly: true },
 ];
 
 const DRAWER_ID = "main-drawer";

@@ -17,6 +17,7 @@ import {
   type ClientCreds,
 } from "./youtube.ts";
 import { startScheduler } from "./scheduler.ts";
+import * as metrics from "./metrics.ts";
 import { fetchChannelStats } from "./stats.ts";
 import {
   hashPassword,
@@ -479,6 +480,24 @@ app.delete("/api/errors", async (req, reply) => {
   return { ok: true };
 });
 
+// ---- Server health (admin-only): live CPU/RAM/disk + in-memory history + pipeline activity ----
+// All values are cheap in-process reads; history is an in-memory ring (no DB, no disk growth).
+app.get("/api/system", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+  const accs = db.listAccounts();
+  return {
+    ...metrics.snapshot(),
+    domain: {
+      videosQueued: db.totalVideoCount(),
+      accountsTotal: accs.length,
+      accountsEnabled: accs.filter((a) => a.enabled).length,
+      accountsConnected: accs.filter((a) => a.status === "connected").length,
+      errors24h: db.recentErrorCount(24),
+      errorsTotal: db.errorCount(),
+    },
+  };
+});
+
 // ---- YouTube OAuth (connect a channel — uses the current user's key) ----
 app.get("/api/youtube/auth-url", async (req, reply) => {
   const accountId = Number((req.query as { accountId?: string }).accountId ?? 0);
@@ -546,15 +565,18 @@ async function buildLibraryVideo(input: {
   const stamp = `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
   const imgRel = `library/vid-${stamp}.png`;
   const vidRel = `library/vid-${stamp}.mp4`;
-  const r = await renderAnecdote(
-    { title, text: input.text, channel: deck.name, bg: input.bg, deck: deck.id, profession: input.profession },
-    resolve(process.cwd(), base.outputDir, imgRel),
-  );
-  await assembleStillVideo(
-    resolve(process.cwd(), base.outputDir, imgRel),
-    resolve(process.cwd(), base.outputDir, vidRel),
-    { durationSec: 6, audioPath },
-  );
+  const r = await metrics.track("render", async () => {
+    const rr = await renderAnecdote(
+      { title, text: input.text, channel: deck.name, bg: input.bg, deck: deck.id, profession: input.profession },
+      resolve(process.cwd(), base.outputDir, imgRel),
+    );
+    await assembleStillVideo(
+      resolve(process.cwd(), base.outputDir, imgRel),
+      resolve(process.cwd(), base.outputDir, vidRel),
+      { durationSec: 6, audioPath },
+    );
+    return rr;
+  });
   const v = db.createVideo({
     accountId: input.accountId,
     title,
@@ -647,13 +669,15 @@ app.post("/api/videos/:id/post-now", async (req, reply) => {
   const publishAt = ((req.body as { publishAt?: string })?.publishAt || "").trim() || null;
   try {
     const meta = ytMeta(getDeck(v.deck), v.title, v.text);
-    const youtubeId = await uploadShort(creds, REDIRECT_URI, token, {
-      videoPath: resolve(process.cwd(), base.outputDir, v.videoRel),
-      title: meta.title,
-      description: meta.description,
-      tags: meta.tags,
-      publishAt,
-    });
+    const youtubeId = await metrics.track("upload", () =>
+      uploadShort(creds, REDIRECT_URI, token, {
+        videoPath: resolve(process.cwd(), base.outputDir, v.videoRel),
+        title: meta.title,
+        description: meta.description,
+        tags: meta.tags,
+        publishAt,
+      }),
+    );
     db.addHistory({
       accountId: v.accountId,
       title: v.title,
@@ -738,7 +762,9 @@ app.post("/api/generate/anecdote", async (req) => {
   previewCounter++;
   const rel = `preview/anek-${Date.now()}-${previewCounter}.png`;
   const out = resolve(process.cwd(), base.outputDir, rel);
-  const r = await renderAnecdote({ title, text, channel: deck.name, bg: body.bg, deck: deck.id, profession }, out);
+  const r = await metrics.track("render", () =>
+    renderAnecdote({ title, text, channel: deck.name, bg: body.bg, deck: deck.id, profession }, out),
+  );
   return { imageUrl: `/files/${rel}`, title, text, chars: text.length, bg: r.bg, fontPx: r.fontPx };
 });
 
@@ -784,8 +810,11 @@ app.post("/api/generate/anecdote-video", async (req) => {
   const vidRel = `preview/anek-${stamp}.mp4`;
   const imgOut = resolve(process.cwd(), base.outputDir, imgRel);
   const vidOut = resolve(process.cwd(), base.outputDir, vidRel);
-  const r = await renderAnecdote({ title, text, channel: deck.name, bg: body.bg, deck: deck.id, profession }, imgOut);
-  await assembleStillVideo(imgOut, vidOut, { durationSec: 6, audioPath });
+  const r = await metrics.track("render", async () => {
+    const rr = await renderAnecdote({ title, text, channel: deck.name, bg: body.bg, deck: deck.id, profession }, imgOut);
+    await assembleStillVideo(imgOut, vidOut, { durationSec: 6, audioPath });
+    return rr;
+  });
   return { videoUrl: `/files/${vidRel}`, imageUrl: `/files/${imgRel}`, title, text, chars: text.length, bg: r.bg, music };
 });
 
@@ -800,6 +829,7 @@ app
       redirectUri: REDIRECT_URI,
       log: (m) => app.log.info(m),
     });
+    metrics.startSampler(resolve(process.cwd(), base.outputDir));
   })
   .catch((err) => {
     app.log.error(err);

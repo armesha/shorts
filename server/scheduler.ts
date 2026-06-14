@@ -4,6 +4,7 @@ import cron from "node-cron";
 import type { Db, Video } from "./db.ts";
 import { DECKS, ytMeta } from "../src/anecdotes/decks.ts";
 import { uploadShort, type ClientCreds } from "./youtube.ts";
+import * as metrics from "./metrics.ts";
 
 /** Delete a posted video's rendered files (best-effort). */
 function removeVideoFiles(outputDir: string, v: Video): void {
@@ -36,6 +37,7 @@ export function startScheduler(opts: SchedulerOpts) {
   const fired = new Set<string>(); // accountId|HH:MM|YYYY-MM-DD — prevents double-firing
 
   cron.schedule("* * * * *", async () => {
+    metrics.noteSchedulerTick(); // heartbeat: proves the per-minute cron is alive
     const now = new Date();
     const hhmm = now.toTimeString().slice(0, 5);
     const day = now.toISOString().slice(0, 10);
@@ -77,12 +79,14 @@ export function startScheduler(opts: SchedulerOpts) {
           continue;
         }
         const meta = ytMeta(channelDeck, lib.title, lib.text);
-        const videoId = await uploadShort(creds, opts.redirectUri, token, {
-          videoPath: resolve(opts.outputDir, lib.videoRel),
-          title: meta.title,
-          description: meta.description,
-          tags: meta.tags,
-        });
+        const videoId = await metrics.track("upload", () =>
+          uploadShort(creds, opts.redirectUri, token, {
+            videoPath: resolve(opts.outputDir, lib.videoRel),
+            title: meta.title,
+            description: meta.description,
+            tags: meta.tags,
+          }),
+        );
         opts.db.addHistory({
           accountId: acc.id,
           title: meta.title,
@@ -92,6 +96,7 @@ export function startScheduler(opts: SchedulerOpts) {
           publishedAt: new Date().toISOString(),
         });
         if (videoId) {
+          metrics.notePost(); // last successful auto-post timestamp
           // posted once → remove from the library so it never reposts
           removeVideoFiles(opts.outputDir, lib);
           opts.db.deleteVideo(lib.id);

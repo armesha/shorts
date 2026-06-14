@@ -7,6 +7,7 @@ import History from "./pages/History";
 import Statistics from "./pages/Statistics";
 import Changelog from "./pages/Changelog";
 import Errors from "./pages/Errors";
+import System from "./pages/System";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import { AuthProvider, useAuth } from "./lib/auth";
@@ -31,6 +32,7 @@ function Gate() {
         <Route path="/statistics" element={<Statistics />} />
         <Route path="/changelog" element={<Changelog />} />
         <Route path="/errors" element={<Errors />} />
+        <Route path="/system" element={<System />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
