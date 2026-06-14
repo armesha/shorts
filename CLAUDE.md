@@ -15,6 +15,15 @@ unattended, managed from a web dashboard. Spec: `ТЗ.pdf`. Architecture & resea
   A hard deny rule is set in `.claude/settings.json`.
 - These files are git-ignored. Never commit secrets. The user always passes the full path to this file.
 
+## Сервер / процессы (MANDATORY)
+- **НЕ перезапускай, не останавливай и не «убивай»** backend-сервер (`npm run server`, процесс на
+  порту :8080) — как и другие общие долгоживущие dev-процессы (Vite `npm run web` на :5173) —
+  **без явного разрешения пользователя**. Сервер ОБЩИЙ: над проектом параллельно работают другие
+  агенты, которым он нужен; рестарт оборвёт их и текущие генерации/выкладки.
+- После правок бэкенда изменения вступают в силу только после перезапуска (`tsx` не перечитывает код
+  на лету). Если перезапуск нужен — **сначала спроси разрешение и объясни зачем**, сам не перезапускай.
+  Фронт в dev/при пересборке подхватывается без рестарта сервера.
+
 ## Git workflow (MANDATORY)
 - Remote `origin` = `https://github.com/armesha/shorts.git`, default branch `main`.
 - **After finishing each feature/fix: commit AND push** (`git add -A && git commit -m "…" && git push`). Don't leave work uncommitted.
