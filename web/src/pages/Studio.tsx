@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Sparkles, Dices, RefreshCw, Wand2, Loader2, Film, Save, Check, Plus, Square } from "lucide-react";
 import {
   apiClient,
@@ -9,6 +9,7 @@ import {
 } from "../lib/api";
 import { useDeck } from "../lib/deck";
 import { useAuth } from "../lib/auth";
+import { useGenQueue } from "../lib/genQueue";
 
 const bgLabel = (f: string) => f.replace(/\.(jpe?g|png)$/i, "");
 const musicLabel = (f: string) => f.split("/").pop()!.replace(/\.\w+$/, "");
@@ -42,13 +43,9 @@ export default function Studio() {
   const [deck, setDeck] = useDeck();
   const [err, setErr] = useState<string | null>(null);
   const { user } = useAuth();
-  const maxBatch = user?.role === "admin" ? 25 : 10;
+  const maxBatch = user?.role === "admin" ? 100 : 20;
   const [batchN, setBatchN] = useState(5);
-  const [batchDone, setBatchDone] = useState(0);
-  const [batchTotal, setBatchTotal] = useState(0);
-  const [batchRunning, setBatchRunning] = useState(false);
-  const [batchMsg, setBatchMsg] = useState<string | null>(null);
-  const stopRef = useRef(false);
+  const q = useGenQueue();
 
   useEffect(() => {
     apiClient.generators().then(setGens).catch(() => {});
@@ -83,51 +80,6 @@ export default function Studio() {
       setErr(e instanceof Error ? e.message : "Не удалось сохранить в библиотеку");
     } finally {
       setSaving(false);
-    }
-  }
-
-  // Сгенерировать N роликов ПОСЛЕДОВАТЕЛЬНО (по одному за раз — сервер не нагружается),
-  // с прогрессом и мягкой остановкой: «Стоп» прерывает после текущего, без ошибки —
-  // что успело сгенерироваться, остаётся в библиотеке. Лимит: админ 25, обычный 10.
-  function stopBatch() {
-    stopRef.current = true;
-  }
-  async function runBatch() {
-    if (!channelId || batchRunning) return;
-    const total = Math.max(1, Math.min(maxBatch, Math.round(batchN) || 1));
-    stopRef.current = false;
-    setBatchRunning(true);
-    setErr(null);
-    setBatchMsg(null);
-    setBatchTotal(total);
-    setBatchDone(0);
-    let made = 0;
-    let exhausted = false;
-    try {
-      for (let i = 0; i < total; i++) {
-        if (stopRef.current) break; // мягкая остановка — следующий не запускаем
-        const r = await apiClient.batchVideos(Number(channelId), 1, deck);
-        made += r.made ?? 0;
-        setBatchDone(made);
-        if (r.exhausted || (r.made ?? 0) === 0) {
-          exhausted = true;
-          break;
-        }
-      }
-      const stopped = stopRef.current;
-      setBatchMsg(
-        exhausted
-          ? `Свободные карточки закончились — добавлено ${made} из ${total}.`
-          : stopped
-            ? `Остановлено — добавлено ${made} из ${total}.`
-            : `Готово: добавлено ${made} ролик(ов) в библиотеку канала.`,
-      );
-    } catch {
-      // Без ошибки на экране — просто прекращаем; что успело, уже в библиотеке.
-      setBatchMsg(`Остановлено — добавлено ${made} из ${total}.`);
-    } finally {
-      setBatchRunning(false);
-      stopRef.current = false;
     }
   }
 
@@ -392,40 +344,40 @@ export default function Studio() {
                       max={maxBatch}
                       className="input input-bordered input-sm w-20"
                       value={batchN}
-                      disabled={batchRunning}
+                      disabled={q.running}
                       onChange={(e) => setBatchN(Math.max(1, Math.min(maxBatch, Number(e.target.value) || 1)))}
                       aria-label="Сколько роликов сгенерировать"
                     />
                     <span className="text-xs text-base-content/50">1–{maxBatch} за раз</span>
-                    {!batchRunning ? (
+                    {!q.running ? (
                       <button
                         className="btn btn-sm btn-outline gap-1"
-                        onClick={runBatch}
+                        onClick={() => q.run(channelId, batchN)}
                         disabled={!channelId}
-                        title="Сгенерировать выбранное число роликов в библиотеку канала"
+                        title="Поставить в очередь генерацию роликов в библиотеку канала"
                       >
                         <Plus size={14} /> Сгенерировать
                       </button>
                     ) : (
                       <>
-                        <button className="btn btn-sm btn-outline btn-error gap-1" onClick={stopBatch}>
+                        <button className="btn btn-sm btn-outline btn-error gap-1" onClick={q.cancel}>
                           <Square size={13} /> Стоп
                         </button>
                         <span className="text-xs text-base-content/70 flex items-center gap-1">
-                          <Loader2 className="animate-spin" size={12} /> {batchDone} из {batchTotal}…
+                          <Loader2 className="animate-spin" size={12} />
+                          {q.position > 0
+                            ? `В очереди: впереди ${q.ahead} роликов, потом ваши ${q.total}`
+                            : `${q.done} из ${q.total}…`}
                         </span>
                       </>
                     )}
-                    {batchMsg && !batchRunning && (
-                      <span className="text-xs text-success">{batchMsg}</span>
-                    )}
+                    {q.msg && !q.running && <span className="text-xs text-success">{q.msg}</span>}
                   </div>
-                  {batchRunning && (
-                    <progress
-                      className="progress progress-primary w-full"
-                      value={batchDone}
-                      max={batchTotal}
-                    />
+                  {q.running && q.position <= 0 && (
+                    <progress className="progress progress-primary w-full" value={q.done} max={q.total} />
+                  )}
+                  {q.running && q.position > 0 && (
+                    <progress className="progress progress-primary w-full" />
                   )}
                 </div>
               </div>

@@ -3,6 +3,7 @@ import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom"
 import { ArrowLeft, Save, Trash2, Check, Plus, Upload, Loader2, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { apiClient, type Account, type VideoItem, type Generator } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { useGenQueue } from "../lib/genQueue";
 
 const LANGS: [string, string][] = [
   ["de", "Немецкий"],
@@ -40,7 +41,9 @@ export default function AccountDetail() {
   const [slotVideos, setSlotVideos] = useState<Record<string, number>>({});
   const [lastPosted, setLastPosted] = useState<{ title: string; url: string } | null>(null);
   const [preview, setPreview] = useState<VideoItem | null>(null);
-  const [batching, setBatching] = useState<number | null>(null);
+  const maxBatch = user?.role === "admin" ? 100 : 20;
+  const [batchN, setBatchN] = useState(5);
+  const q = useGenQueue(() => reloadVideos());
   const [clearing, setClearing] = useState(false);
   const [page, setPage] = useState(1);
   const [gens, setGens] = useState<Generator[]>([]);
@@ -124,20 +127,6 @@ export default function AccountDetail() {
     }
   }
 
-  // Сгенерировать сразу N роликов (случайные неиспользованные анекдоты) в этот канал.
-  async function makeBatch(n: number) {
-    setBatching(n);
-    try {
-      const r = await apiClient.batchVideos(Number(id), n);
-      await reloadVideos();
-      if (r.exhausted)
-        alert(`Сделано ${r.made} из ${n} — свободные (неиспользованные) анекдоты закончились.`);
-    } catch (e) {
-      alert("Не удалось сгенерировать: " + String(e));
-    } finally {
-      setBatching(null);
-    }
-  }
 
   async function removeVid(vid: number) {
     if (!confirm("Удалить ролик из библиотеки?")) return;
@@ -378,7 +367,7 @@ export default function AccountDetail() {
                 <button
                   className="btn btn-sm btn-error btn-outline gap-1"
                   onClick={clearLibrary}
-                  disabled={clearing || batching !== null}
+                  disabled={clearing || q.running}
                   title="Удалить все ролики из библиотеки этого канала"
                 >
                   {clearing ? <Loader2 className="animate-spin" size={14} /> : <Trash2 size={14} />}
@@ -425,35 +414,56 @@ export default function AccountDetail() {
               <span className="text-xs text-warning">старые ролики другого пака — очисти библиотеку</span>
             )}
             <span className="text-sm text-base-content/70 ml-1">Сделать сразу:</span>
-            {(user?.role === "admin" ? [5, 10, 20] : [1, 5, 10]).map((n) => (
+            <input
+              type="number"
+              min={1}
+              max={maxBatch}
+              className="input input-bordered input-sm w-20"
+              value={batchN}
+              disabled={q.running}
+              onChange={(e) => setBatchN(Math.max(1, Math.min(maxBatch, Number(e.target.value) || 1)))}
+              aria-label="Сколько роликов сгенерировать"
+            />
+            <span className="text-xs text-base-content/50">1–{maxBatch}</span>
+            {!q.running ? (
               <button
-                key={n}
                 className="btn btn-sm btn-outline gap-1"
-                onClick={() => makeBatch(n)}
-                disabled={batching !== null}
-                title={`Сгенерировать ${n} случайных роликов в библиотеку`}
+                onClick={() => q.run(id!, batchN)}
+                title="Поставить в очередь генерацию роликов в библиотеку"
               >
-                {batching === n ? <Loader2 className="animate-spin" size={14} /> : <Plus size={14} />}
-                {n}
+                <Plus size={14} /> Сгенерировать
               </button>
-            ))}
+            ) : (
+              <button className="btn btn-sm btn-outline btn-error gap-1" onClick={q.cancel}>
+                <Loader2 className="animate-spin" size={14} /> Стоп
+              </button>
+            )}
             {postedTwicePlus > 0 && (
               <button
                 className="btn btn-sm btn-ghost text-error gap-1 ml-auto"
                 onClick={removePosted}
-                disabled={batching !== null}
+                disabled={q.running}
                 title="Удалить ролики, которые выкладывались больше одного раза"
               >
                 <Trash2 size={14} /> вылож. ≥2× ({postedTwicePlus})
               </button>
             )}
           </div>
-          {batching !== null && (
-            <div className="text-xs text-base-content/60 mt-1 flex items-center gap-1">
-              <Loader2 className="animate-spin" size={12} /> Генерирую {batching} роликов… (~
-              {batching * 6} сек)
+          {q.running && (
+            <div className="mt-1 space-y-1">
+              <div className="text-xs text-base-content/60 flex items-center gap-1">
+                <Loader2 className="animate-spin" size={12} />
+                {q.position > 0
+                  ? `В очереди: впереди ${q.ahead} роликов, потом ваши ${q.total}`
+                  : `Генерирую ${q.done} из ${q.total}…`}
+              </div>
+              <progress
+                className="progress progress-primary w-full"
+                {...(q.position > 0 ? {} : { value: q.done, max: q.total })}
+              />
             </div>
           )}
+          {q.msg && !q.running && <div className="text-xs text-success mt-1">{q.msg}</div>}
           {lastPosted && (
             <div className="alert alert-success py-2 text-sm mt-2">
               <span>

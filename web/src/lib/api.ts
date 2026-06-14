@@ -282,6 +282,17 @@ async function send<T>(path: string, method: string, body?: unknown): Promise<T>
   return handle<T>(r, path);
 }
 
+/** One generation-queue job's live status (one video at a time across all users). */
+export interface GenJobStatus {
+  id: string;
+  total: number;
+  done: number;
+  state: "queued" | "running" | "done" | "exhausted" | "canceled" | "error";
+  ahead: number; // videos remaining ahead before this job starts (0 once running)
+  position: number; // 0 = running/next, >0 = waiting, -1 = finished
+  error: string | null;
+}
+
 export const apiClient = {
   me: () => get<AuthUser>("/auth/me"),
   login: (username: string, password: string) =>
@@ -350,6 +361,11 @@ export const apiClient = {
       "POST",
       { accountId: Number(accountId), count, deck },
     ),
+  // Generation queue: one video at a time across all users. Enqueue → poll status → optional cancel.
+  enqueueGen: (accountId: number | string, count: number) =>
+    send<{ jobId: string; total: number }>("/gen-queue", "POST", { accountId: Number(accountId), count }),
+  genStatus: (jobId: string) => get<GenJobStatus>(`/gen-queue/${jobId}`),
+  cancelGen: (jobId: string) => send<{ ok: boolean }>(`/gen-queue/${jobId}/cancel`, "POST", {}),
   postVideoNow: (id: number | string, publishAt?: string) =>
     send<{ ok: boolean; youtubeId?: string; url?: string; scheduled?: boolean; removed?: boolean }>(
       `/videos/${id}/post-now`,

@@ -29,6 +29,7 @@ import {
 } from "./auth.ts";
 import { registerPasswordRoutes } from "./password-routes.ts";
 import { registerPsychCardsRoutes } from "./psych-cards-routes.ts";
+import { initGenQueue, enqueue as genEnqueue, jobStatus as genJobStatus, cancelJob as genCancelJob } from "./gen-queue.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -671,6 +672,62 @@ app.post("/api/videos/batch", async (req, reply) => {
     );
   }
   return { created, requested, made: created.length, exhausted: created.length < requested };
+});
+
+// ---- Global generation queue: ONE video at a time across ALL users → bounds server load ----
+// Worker = make ONE random unused video for the job's channel (a single batch step).
+initGenQueue(async (job) => {
+  const acc = db.getAccount(job.accountId);
+  if (!acc) throw new Error("Канал не найден");
+  const channelDeck = DECKS.find((d) => d.id === acc.lang);
+  if (!channelDeck) throw new Error(`У канала язык «${acc.lang}» без пака`);
+  const seen = new Set<string>(db.usedAnecdoteKeys(job.userId)); // skip this user's already-used cards
+  const a = randomAnecdote(channelDeck.id, seen);
+  if (!a) return "exhausted"; // deck has no unused cards left
+  await buildLibraryVideo({
+    userId: job.userId,
+    accountId: job.accountId,
+    text: a.text,
+    title: a.title,
+    deck: channelDeck.id,
+    profession: a.profession,
+  });
+  return "made";
+});
+
+// Enqueue a batch (1–20 for regular users; admins up to 100). Returns the job id to poll.
+app.post("/api/gen-queue", async (req, reply) => {
+  const body = (req.body as { accountId?: number; count?: number }) ?? {};
+  if (!body.accountId) return reply.code(400).send({ error: "accountId обязателен" });
+  const acc = ownAccount(req, reply, body.accountId);
+  if (!acc) return;
+  const channelDeck = DECKS.find((d) => d.id === acc.lang);
+  if (!channelDeck)
+    return reply.code(400).send({ error: `У канала язык «${acc.lang}» без пака — смените язык канала.` });
+  const cap = db.getUserById(uid(req))?.role === "admin" ? 100 : 20;
+  const total = Math.max(1, Math.min(cap, Number(body.count) || 1));
+  const job = genEnqueue(uid(req), body.accountId, total);
+  return { jobId: job.id, total: job.total };
+});
+
+// Poll one job's progress + position in the queue.
+app.get("/api/gen-queue/:id", async (req, reply) => {
+  const st = genJobStatus((req.params as { id: string }).id);
+  if (!st || st.userId !== uid(req)) return reply.code(404).send({ error: "Задача не найдена" });
+  return {
+    id: st.id,
+    total: st.total,
+    done: st.done,
+    state: st.state,
+    ahead: st.ahead,
+    position: st.position,
+    error: st.error ?? null,
+  };
+});
+
+// Cancel a job: soft-stops after the current video; already-made videos stay in the library.
+app.post("/api/gen-queue/:id/cancel", async (req) => {
+  return { ok: genCancelJob((req.params as { id: string }).id, uid(req)) };
 });
 
 app.delete("/api/videos/:id", async (req, reply) => {
