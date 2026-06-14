@@ -9,9 +9,12 @@ export default function Accounts() {
   const [loadError, setLoadError] = useState(false);
   const [creating, setCreating] = useState(false);
   const [queue, setQueue] = useState<Record<number, number>>({});
-  // Filter by remaining-video runway; remembered between visits (like the Statistics filters).
+  // Filter + sort by remaining-video runway; remembered between visits (like the Statistics filters).
   const [runwayFilter, setRunwayFilter] = useState<string>(
     () => localStorage.getItem("channelsRunwayFilter") || "all",
+  );
+  const [sortMode, setSortMode] = useState<string>(
+    () => localStorage.getItem("channelsRunwaySort") || "none",
   );
   // Which «low runway» alert the user already dismissed (by the exact set of low channels) — no spam.
   const [dismissedSig, setDismissedSig] = useState<string>(
@@ -22,10 +25,11 @@ export default function Accounts() {
   useEffect(() => {
     try {
       localStorage.setItem("channelsRunwayFilter", runwayFilter);
+      localStorage.setItem("channelsRunwaySort", sortMode);
     } catch {
       /* private mode */
     }
-  }, [runwayFilter]);
+  }, [runwayFilter, sortMode]);
 
   useEffect(() => {
     apiClient
@@ -123,6 +127,16 @@ export default function Accounts() {
     return true;
   };
   const shownAccounts = accounts.filter(matchesRunway);
+  if (sortMode !== "none") {
+    shownAccounts.sort((a, b) => {
+      const ra = runwayDays(a);
+      const rb = runwayDays(b);
+      if (ra == null && rb == null) return 0;
+      if (ra == null) return 1; // no schedule / still loading → always at the end
+      if (rb == null) return -1;
+      return sortMode === "asc" ? ra - rb : rb - ra;
+    });
+  }
 
   return (
     <div className="space-y-6">
@@ -196,7 +210,6 @@ export default function Accounts() {
         <div className="space-y-4">
           <div className="flex items-center gap-2 flex-wrap">
             <Filter size={16} className="text-base-content/50" />
-            <span className="text-sm text-base-content/60">Остаток роликов:</span>
             <select
               className="select select-bordered select-sm"
               value={runwayFilter}
@@ -208,9 +221,16 @@ export default function Accounts() {
               <option value="lt3">Мало: меньше 3 дней</option>
               <option value="nosched">Без расписания</option>
             </select>
-            <span className="text-xs text-base-content/50">
-              Показано {shownAccounts.length} из {accounts.length}
-            </span>
+            <select
+              className="select select-bordered select-sm"
+              value={sortMode}
+              onChange={(e) => setSortMode(e.target.value)}
+              aria-label="Сортировка по запасу дней"
+            >
+              <option value="none">Без сортировки</option>
+              <option value="asc">Дней: меньше → больше</option>
+              <option value="desc">Дней: больше → меньше</option>
+            </select>
           </div>
 
           {shownAccounts.length === 0 ? (
