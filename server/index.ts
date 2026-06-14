@@ -394,6 +394,25 @@ app.put("/api/admin/users/:id/decks", async (req, reply) => {
   return { ok: true, hidden: finalHidden };
 });
 
+// Pack overview for the «Паки» tab (any logged-in user): their VISIBLE packs with total/used/remaining/posted.
+// Admins may pass ?userId=<id> to view another user's packs.
+app.get("/api/my-decks", async (req, reply) => {
+  const me = db.getUserById(uid(req));
+  const isAdmin = me?.role === "admin";
+  const q = (req.query as { userId?: string }) ?? {};
+  const targetId = isAdmin && q.userId ? Number(q.userId) : uid(req);
+  const target = db.getUserById(targetId);
+  if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
+  const hidden = new Set(target.role === "admin" ? [] : db.hiddenDecksFor(targetId));
+  const usedKeys = new Set(db.usedAnecdoteKeys(targetId));
+  const posted = db.postedByUserDeck()[targetId] ?? {};
+  const decks = DECKS.filter((d) => !hidden.has(d.id)).map((d) => {
+    const s = libraryStats(d.id, usedKeys);
+    return { id: d.id, name: d.name, total: s.total, used: s.used, available: s.available, posted: posted[d.id] ?? 0 };
+  });
+  return { userId: targetId, username: target.username, decks };
+});
+
 // ---- Accounts (scoped to the current user) ----
 // Own channels; admins may pass ?scope=all to list every user's channels (for the history filter).
 app.get("/api/accounts", async (req) => visibleAccounts(req, (req.query as { scope?: string })?.scope));

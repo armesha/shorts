@@ -89,6 +89,22 @@ export interface UserDeckRow {
   deckStats?: Record<string, { used: number; available: number; total: number; posted: number }>;
 }
 
+/** One pack's stats for the «Паки» tab: total cards / used / remaining / posted. */
+export interface MyDeckStat {
+  id: string;
+  name: string;
+  total: number;
+  used: number;
+  available: number;
+  posted: number;
+}
+/** A user's pack overview (their visible packs with stats). */
+export interface MyDecks {
+  userId: number;
+  username: string;
+  decks: MyDeckStat[];
+}
+
 export interface GeneratedPreview {
   imageUrl: string;
   title: string;
@@ -331,6 +347,7 @@ export const apiClient = {
   adminUserDecks: () => get<UserDeckRow[]>("/admin/user-decks"),
   setUserDecks: (userId: number, hidden: string[]) =>
     send<{ ok: boolean; hidden: string[] }>(`/admin/users/${userId}/decks`, "PUT", { hidden }),
+  myDecks: (userId?: number) => get<MyDecks>(`/my-decks${userId != null ? `?userId=${userId}` : ""}`),
   accounts: (scope?: "all") => get<Account[]>(`/accounts${scope === "all" ? "?scope=all" : ""}`),
   account: (id: number | string) => get<Account>(`/accounts/${id}`),
   createAccount: () => send<Account>("/accounts", "POST", {}),
