@@ -84,9 +84,21 @@ export default function Errors() {
                       <tr
                         className={`hover ${e.detail ? "cursor-pointer" : ""}`}
                         onClick={() => e.detail && setExpanded(expanded === e.id ? null : e.id)}
+                        onKeyDown={(ev) => {
+                          if (e.detail && (ev.key === "Enter" || ev.key === " ")) {
+                            ev.preventDefault();
+                            setExpanded(expanded === e.id ? null : e.id);
+                          }
+                        }}
+                        role={e.detail ? "button" : undefined}
+                        tabIndex={e.detail ? 0 : undefined}
+                        aria-expanded={e.detail ? expanded === e.id : undefined}
                         title={e.detail ? "Нажми, чтобы показать детали" : ""}
                       >
                         <td className="whitespace-nowrap text-base-content/60 text-xs">
+                          {e.detail && (
+                            <span className="mr-1 inline-block w-3">{expanded === e.id ? "▾" : "▸"}</span>
+                          )}
                           {fmtTime(e.createdAt)}
                         </td>
                         <td>

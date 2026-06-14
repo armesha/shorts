@@ -67,6 +67,16 @@ export default function AccountDetail() {
     setPage(1);
   }, [sort]);
 
+  // Escape закрывает модалку превью (клавиатурная доступность).
+  useEffect(() => {
+    if (!preview) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setPreview(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [preview]);
+
   async function save() {
     setSaving(true);
     setSaved(false);

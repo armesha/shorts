@@ -6,7 +6,7 @@ import { apiClient, type Account, type AppStatus } from "../lib/api";
 export default function Accounts() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [status, setStatus] = useState<AppStatus | null>(null);
-  const [error, setError] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   const [creating, setCreating] = useState(false);
   const [queue, setQueue] = useState<Record<number, number>>({});
   const navigate = useNavigate();
@@ -23,8 +23,8 @@ export default function Accounts() {
             .catch(() => {}),
         );
       })
-      .catch(() => setError(true));
-    apiClient.status().then(setStatus).catch(() => setError(true));
+      .catch(() => setLoadError(true));
+    apiClient.status().then(setStatus).catch(() => setLoadError(true));
   }, []);
 
   async function addAccount() {
@@ -72,7 +72,7 @@ export default function Accounts() {
           <p className="text-base-content/60">Обзор и YouTube-каналы — в одном месте</p>
         </div>
         <div className="flex items-center gap-2">
-          <StatusBadge status={status} error={error} />
+          <StatusBadge status={status} loadError={loadError} />
           <button className="btn btn-primary gap-2" onClick={addAccount} disabled={creating}>
             {creating ? <span className="loading loading-spinner loading-sm" /> : <Plus size={18} />}
             Добавить канал
@@ -194,15 +194,23 @@ function Stat({ icon, label, value }: { icon: ReactNode; label: string; value: R
   );
 }
 
-function StatusBadge({ status, error }: { status: AppStatus | null; error: boolean }) {
-  if (error || (status && !status.credsConfigured)) {
+function StatusBadge({ status, loadError }: { status: AppStatus | null; loadError: boolean }) {
+  if (status && !status.credsConfigured) {
     return (
       <div className="badge badge-error gap-1 badge-lg">
         <AlertTriangle size={14} /> Нет ключа Google
       </div>
     );
   }
-  if (!status) return <div className="badge badge-ghost badge-lg">…</div>;
+  if (!status) {
+    return loadError ? (
+      <div className="badge badge-warning gap-1 badge-lg">
+        <AlertTriangle size={14} /> Не удалось загрузить
+      </div>
+    ) : (
+      <div className="badge badge-ghost badge-lg">…</div>
+    );
+  }
   return (
     <div className="badge badge-success gap-1 badge-lg">
       <CheckCircle2 size={14} /> Google подключён
