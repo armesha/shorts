@@ -71,6 +71,20 @@ export interface AdminUser {
   createdAt: string;
 }
 
+/** A pack (deck) for the admin visibility matrix. */
+export interface DeckInfo {
+  id: string;
+  name: string;
+}
+/** One row of the admin pack-visibility matrix: a user + which packs are hidden / actually used. */
+export interface UserDeckRow {
+  userId: number;
+  username: string;
+  role: string;
+  hidden: string[];
+  used: string[];
+}
+
 export interface GeneratedPreview {
   imageUrl: string;
   title: string;
@@ -304,12 +318,17 @@ export const apiClient = {
   uploadGoogleKey: (json: string) => send<AppSettings>("/settings/google-key", "PUT", { json }),
   removeGoogleKey: () => send<AppSettings>("/settings/google-key", "DELETE"),
   adminUsers: () => get<AdminUser[]>("/admin/users"),
-  createUser: (username: string, password: string, role?: string) =>
+  createUser: (username: string, password: string, role?: string, hidden?: string[]) =>
     send<{ id: number; username: string; role: string }>("/admin/users", "POST", {
       username,
       password,
       role,
+      hidden,
     }),
+  adminDecks: () => get<DeckInfo[]>("/admin/decks"),
+  adminUserDecks: () => get<UserDeckRow[]>("/admin/user-decks"),
+  setUserDecks: (userId: number, hidden: string[]) =>
+    send<{ ok: boolean; hidden: string[] }>(`/admin/users/${userId}/decks`, "PUT", { hidden }),
   accounts: (scope?: "all") => get<Account[]>(`/accounts${scope === "all" ? "?scope=all" : ""}`),
   account: (id: number | string) => get<Account>(`/accounts/${id}`),
   createAccount: () => send<Account>("/accounts", "POST", {}),

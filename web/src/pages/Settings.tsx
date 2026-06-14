@@ -11,7 +11,15 @@ import {
   Plus,
   Lock,
 } from "lucide-react";
-import { apiClient, ApiError, type AppStatus, type AppSettings, type AdminUser } from "../lib/api";
+import {
+  apiClient,
+  ApiError,
+  type AppStatus,
+  type AppSettings,
+  type AdminUser,
+  type DeckInfo,
+  type UserDeckRow,
+} from "../lib/api";
 import { useAuth } from "../lib/auth";
 
 export default function Settings() {
@@ -163,16 +171,23 @@ export default function Settings() {
 
 function AdminUsers() {
   const [users, setUsers] = useState<AdminUser[]>([]);
+  const [decks, setDecks] = useState<DeckInfo[]>([]);
+  const [rows, setRows] = useState<UserDeckRow[]>([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("user");
+  const [newHidden, setNewHidden] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [created, setCreated] = useState("");
+  const [savingCell, setSavingCell] = useState<string | null>(null);
 
-  const load = () => apiClient.adminUsers().then(setUsers).catch(() => {});
+  const loadUsers = () => apiClient.adminUsers().then(setUsers).catch(() => {});
+  const loadMatrix = () => apiClient.adminUserDecks().then(setRows).catch(() => {});
   useEffect(() => {
-    load();
+    loadUsers();
+    loadMatrix();
+    apiClient.adminDecks().then(setDecks).catch(() => {});
   }, []);
 
   async function add() {
@@ -180,16 +195,36 @@ function AdminUsers() {
     setCreated("");
     setBusy(true);
     try {
-      const u = await apiClient.createUser(username.trim(), password, role);
+      const hidden = role === "admin" ? [] : decks.filter((d) => newHidden.has(d.id)).map((d) => d.id);
+      const u = await apiClient.createUser(username.trim(), password, role, hidden);
       setCreated(`Создан «${u.username}» (${u.role === "admin" ? "админ" : "пользователь"})`);
       setUsername("");
       setPassword("");
       setRole("user");
-      load();
+      setNewHidden(new Set());
+      loadUsers();
+      loadMatrix();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Не удалось создать пользователя");
     } finally {
       setBusy(false);
+    }
+  }
+
+  // Toggle one pack's visibility for a user (checked = visible). Optimistic; reverts on failure.
+  async function toggle(row: UserDeckRow, deckId: string, visible: boolean) {
+    if (row.role === "admin") return;
+    const nextHidden = visible
+      ? row.hidden.filter((d) => d !== deckId)
+      : [...new Set([...row.hidden, deckId])];
+    setSavingCell(`${row.userId}:${deckId}`);
+    setRows((rs) => rs.map((r) => (r.userId === row.userId ? { ...r, hidden: nextHidden } : r)));
+    try {
+      await apiClient.setUserDecks(row.userId, nextHidden);
+    } catch {
+      loadMatrix();
+    } finally {
+      setSavingCell(null);
     }
   }
 
@@ -198,21 +233,12 @@ function AdminUsers() {
       <div className="card-body gap-4">
         <div className="flex items-center gap-2">
           <Users className="text-primary" size={18} />
-          <h2 className="card-title text-base">Пользователи</h2>
+          <h2 className="card-title text-base">Пользователи и паки</h2>
           <span className="badge badge-ghost badge-sm">{users.length}</span>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          {users.map((u) => (
-            <span key={u.id} className="badge badge-lg gap-1 py-3">
-              {u.role === "admin" && <span className="text-primary text-xs font-bold">★</span>}
-              {u.username}
-              {u.locked && <Lock size={12} className="text-warning" />}
-            </span>
-          ))}
-        </div>
-
-        <div className="border-t border-base-300 pt-3">
+        {/* Create a user (optionally pre-hiding some packs) */}
+        <div>
           <p className="text-sm text-base-content/70 mb-2">
             Создать аккаунт для друга. Он войдёт по логину/паролю и загрузит свой Google-ключ.
           </p>
@@ -256,6 +282,37 @@ function AdminUsers() {
               Создать
             </button>
           </div>
+
+          {role !== "admin" && decks.length > 0 && (
+            <div className="mt-2">
+              <span className="text-xs text-base-content/60">
+                Доступные паки (по умолчанию все; сними отметку — скрыть у нового пользователя):
+              </span>
+              <div className="flex flex-wrap gap-1.5 mt-1">
+                {decks.map((d) => {
+                  const visible = !newHidden.has(d.id);
+                  return (
+                    <button
+                      key={d.id}
+                      type="button"
+                      className={`btn btn-xs gap-1 ${visible ? "btn-primary" : "btn-outline"}`}
+                      onClick={() =>
+                        setNewHidden((s) => {
+                          const n = new Set(s);
+                          if (visible) n.add(d.id);
+                          else n.delete(d.id);
+                          return n;
+                        })
+                      }
+                    >
+                      {visible && <Check size={11} />} {d.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {created && (
             <div className="text-success text-sm flex items-center gap-1 mt-2">
               <Check size={14} /> {created}
@@ -267,6 +324,69 @@ function AdminUsers() {
             </div>
           )}
         </div>
+
+        {/* Visibility matrix: users × packs (checkbox = visible; «исп.» = already used) */}
+        {rows.length > 0 && decks.length > 0 && (
+          <div className="border-t border-base-300 pt-3">
+            <p className="text-sm font-medium mb-2">Кто какие паки видит</p>
+            <div className="overflow-x-auto">
+              <table className="table table-xs">
+                <thead>
+                  <tr>
+                    <th>Пользователь</th>
+                    {decks.map((d) => (
+                      <th key={d.id} className="text-center whitespace-nowrap font-normal">
+                        {d.name}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((row) => (
+                    <tr key={row.userId}>
+                      <td className="font-medium whitespace-nowrap">
+                        {row.role === "admin" && <span className="text-primary">★ </span>}
+                        {row.username}
+                      </td>
+                      {decks.map((d) => {
+                        if (row.role === "admin")
+                          return (
+                            <td key={d.id} className="text-center text-base-content/40">
+                              все
+                            </td>
+                          );
+                        const visible = !row.hidden.includes(d.id);
+                        const used = row.used.includes(d.id);
+                        return (
+                          <td key={d.id} className="text-center align-middle">
+                            <label className="inline-flex flex-col items-center gap-0.5 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                className="checkbox checkbox-sm checkbox-primary"
+                                checked={visible}
+                                disabled={savingCell === `${row.userId}:${d.id}`}
+                                onChange={(e) => toggle(row, d.id, e.target.checked)}
+                              />
+                              {used && (
+                                <span className="text-[10px] leading-none text-success" title="пак уже используется">
+                                  исп.
+                                </span>
+                              )}
+                            </label>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-xs text-base-content/50 mt-1">
+              Галочка = пак виден пользователю. «исп.» = у пользователя уже есть канал/ролики на этом паке.
+              Админ всегда видит все паки.
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );

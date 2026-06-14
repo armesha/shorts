@@ -272,6 +272,12 @@ function ownAccount(req: unknown, reply: Replyish, id: number): Account | null {
   return a;
 }
 
+// True if the user may use a deck (pack): admins always; others unless the deck is hidden for them.
+function deckAllowed(req: unknown, deckId: string): boolean {
+  if (db.getUserById(uid(req))?.role === "admin") return true;
+  return !db.isDeckHiddenFor(uid(req), deckId);
+}
+
 app.get("/api/health", async () => ({ ok: true, time: new Date().toISOString() }));
 
 // Project changelog (CHANGELOG.md) surfaced on the site — read live so it always reflects the file.
@@ -326,7 +332,7 @@ app.get("/api/admin/users", async (req, reply) => {
 
 app.post("/api/admin/users", async (req, reply) => {
   if (!requireAdmin(req, reply)) return;
-  const body = (req.body as { username?: string; password?: string; role?: string }) ?? {};
+  const body = (req.body as { username?: string; password?: string; role?: string; hidden?: string[] }) ?? {};
   const username = (body.username ?? "").trim();
   const password = body.password ?? "";
   const role = body.role === "admin" ? "admin" : "user";
@@ -334,7 +340,44 @@ app.post("/api/admin/users", async (req, reply) => {
     return reply.code(400).send({ error: "Логин обязателен, пароль ≥ 6 символов" });
   if (db.getUserByUsername(username)) return reply.code(409).send({ error: "Такой логин уже есть" });
   const u = db.createUser({ username, passHash: hashPassword(password), role });
+  // Optionally hide some packs for the new user from the start (admins are never restricted).
+  if (role !== "admin" && Array.isArray(body.hidden)) {
+    const valid = body.hidden.filter((id) => DECKS.some((d) => d.id === id));
+    if (valid.length) db.setHiddenDecks(u.id, valid);
+  }
   return { id: u.id, username: u.username, role: u.role };
+});
+
+// ---- Admin: per-user pack (deck) visibility ----
+// All packs (matrix columns).
+app.get("/api/admin/decks", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+  return DECKS.map((d) => ({ id: d.id, name: d.name }));
+});
+// Matrix data: per user — which packs are hidden + which packs they actually use.
+app.get("/api/admin/user-decks", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+  const hidden = db.hiddenDecksByUser();
+  const used = db.usedDecksByUser();
+  return db.listUsers().map((u) => ({
+    userId: u.id,
+    username: u.username,
+    role: u.role,
+    hidden: hidden[u.id] ?? [],
+    used: used[u.id] ?? [],
+  }));
+});
+// Replace a user's hidden-pack set (body.hidden = pack ids to hide). Admins can't be restricted.
+app.put("/api/admin/users/:id/decks", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+  const id = Number((req.params as { id: string }).id);
+  const target = db.getUserById(id);
+  if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
+  const body = (req.body as { hidden?: string[] }) ?? {};
+  const valid = Array.isArray(body.hidden) ? body.hidden.filter((d) => DECKS.some((x) => x.id === d)) : [];
+  const finalHidden = target.role === "admin" ? [] : valid;
+  db.setHiddenDecks(id, finalHidden);
+  return { ok: true, hidden: finalHidden };
 });
 
 // ---- Accounts (scoped to the current user) ----
@@ -351,7 +394,10 @@ app.post("/api/accounts", async (req) =>
 app.put("/api/accounts/:id", async (req, reply) => {
   const id = Number((req.params as { id: string }).id);
   if (!ownAccount(req, reply, id)) return;
-  const a = db.updateAccount(id, (req.body as Partial<Account>) ?? {});
+  const body = (req.body as Partial<Account>) ?? {};
+  if (body.lang && DECKS.some((d) => d.id === body.lang) && !deckAllowed(req, body.lang))
+    return reply.code(403).send({ error: "Этот пак вам недоступен — нельзя поставить его языком канала." });
+  const a = db.updateAccount(id, body);
   if (!a) return reply.code(404).send({ error: "not found" });
   return a;
 });
@@ -568,6 +614,9 @@ async function buildLibraryVideo(input: {
   profession?: string;
 }) {
   const deck = getDeck(input.deck);
+  // Backstop (covers save, batch, and the gen-queue worker): never build a deck hidden for this user.
+  if (db.getUserById(input.userId)?.role !== "admin" && db.isDeckHiddenFor(input.userId, deck.id))
+    throw new Error("Этот пак вам недоступен");
   const title = input.title || pickGenericTitle(deck);
   let music = input.music;
   let audioPath: string | null | undefined;
@@ -628,6 +677,8 @@ app.post("/api/videos", async (req, reply) => {
   const channelDeck = DECKS.find((d) => d.id === acc.lang);
   if (!channelDeck)
     return reply.code(400).send({ error: `У канала язык «${acc.lang}» без пака — смените язык канала.` });
+  if (!deckAllowed(req, channelDeck.id))
+    return reply.code(403).send({ error: "Этот пак вам недоступен." });
   if ((body.deck || channelDeck.id) !== channelDeck.id)
     return reply.code(400).send({ error: `Язык ролика не совпадает с языком канала (${channelDeck.name}) — не сохранено.` });
   return buildLibraryVideo({
@@ -650,6 +701,8 @@ app.post("/api/videos/batch", async (req, reply) => {
   const channelDeck = DECKS.find((d) => d.id === acc.lang);
   if (!channelDeck)
     return reply.code(400).send({ error: `У канала язык «${acc.lang}» без пака — смените язык канала.` });
+  if (!deckAllowed(req, channelDeck.id))
+    return reply.code(403).send({ error: "Этот пак вам недоступен." });
   const deckId = channelDeck.id; // FORCE the channel's language — no cross-language mixing
   const requested = Math.max(1, Math.min(20, Number(body.count) || 5));
   const seen = new Set<string>(db.usedAnecdoteKeys(uid(req))); // exclude this user's used + dedupe batch
@@ -704,6 +757,8 @@ app.post("/api/gen-queue", async (req, reply) => {
   const channelDeck = DECKS.find((d) => d.id === acc.lang);
   if (!channelDeck)
     return reply.code(400).send({ error: `У канала язык «${acc.lang}» без пака — смените язык канала.` });
+  if (!deckAllowed(req, channelDeck.id))
+    return reply.code(403).send({ error: "Этот пак вам недоступен." });
   const cap = db.getUserById(uid(req))?.role === "admin" ? 100 : 20;
   const total = Math.max(1, Math.min(cap, Number(body.count) || 1));
   const job = genEnqueue(uid(req), body.accountId, total);
@@ -807,7 +862,10 @@ app.post("/api/videos/:id/post-now", async (req, reply) => {
 // ---- Generators / Studio (per-user used counter) ----
 app.get("/api/generators", async (req) => {
   const used = db.usedAnecdoteKeys(uid(req));
-  const base = DECKS.map((d) => {
+  // Hide packs the admin has turned off for this user (admins always see all).
+  const isAdmin = db.getUserById(uid(req))?.role === "admin";
+  const hidden = isAdmin ? new Set<string>() : new Set(db.hiddenDecksFor(uid(req)));
+  const base = DECKS.filter((d) => !hidden.has(d.id)).map((d) => {
     const s = libraryStats(d.id, used);
     return {
       id: d.id,
@@ -828,9 +886,10 @@ app.get("/api/generators", async (req) => {
 });
 
 let previewCounter = 0;
-app.post("/api/generate/anecdote", async (req) => {
+app.post("/api/generate/anecdote", async (req, reply) => {
   const body = (req.body as { text?: string; title?: string; bg?: string; deck?: string }) ?? {};
   const deck = getDeck(body.deck);
+  if (!deckAllowed(req, deck.id)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
   let text = body.text;
   let title = body.title;
   let profession: string | undefined;
@@ -857,9 +916,10 @@ app.get("/api/backgrounds", async () => listBackgrounds());
 app.get("/api/music", async () => listAudio());
 
 let videoCounter = 0;
-app.post("/api/generate/anecdote-video", async (req) => {
+app.post("/api/generate/anecdote-video", async (req, reply) => {
   const body = (req.body as { text?: string; title?: string; bg?: string; music?: string; deck?: string }) ?? {};
   const deck = getDeck(body.deck);
+  if (!deckAllowed(req, deck.id)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
   let text = body.text;
   let title = body.title;
   let profession: string | undefined;

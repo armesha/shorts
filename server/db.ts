@@ -233,6 +233,11 @@ export function openDb(path: string) {
       user_id INTEGER,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+    CREATE TABLE IF NOT EXISTS user_hidden_decks (
+      user_id INTEGER NOT NULL,
+      deck_id TEXT NOT NULL,
+      PRIMARY KEY (user_id, deck_id)
+    );
   `);
 
   for (const col of ["yt_refresh_token", "yt_channel_id", "yt_channel_title"]) {
@@ -569,6 +574,48 @@ export function openDb(path: string) {
     },
     listUsers(): UserAuth[] {
       return (db.prepare("SELECT * FROM users ORDER BY id").all() as Row[]).map(rowToUserAuth);
+    },
+    // ---- Per-user pack (deck) visibility. Rows = HIDDEN decks; NO rows = user sees ALL (default). ----
+    hiddenDecksFor(userId: number): string[] {
+      return (db.prepare("SELECT deck_id FROM user_hidden_decks WHERE user_id = ?").all(userId) as Row[]).map(
+        (r) => r.deck_id as string,
+      );
+    },
+    isDeckHiddenFor(userId: number, deckId: string): boolean {
+      return !!db.prepare("SELECT 1 FROM user_hidden_decks WHERE user_id = ? AND deck_id = ?").get(userId, deckId);
+    },
+    // Replace the user's hidden-deck set with exactly `deckIds`.
+    setHiddenDecks(userId: number, deckIds: string[]): void {
+      db.prepare("DELETE FROM user_hidden_decks WHERE user_id = ?").run(userId);
+      const ins = db.prepare("INSERT OR IGNORE INTO user_hidden_decks (user_id, deck_id) VALUES (?, ?)");
+      for (const id of [...new Set(deckIds)]) if (id) ins.run(userId, id);
+    },
+    // All hidden decks across users → { userId: [deckId,…] } (for the admin matrix).
+    hiddenDecksByUser(): Record<number, string[]> {
+      const out: Record<number, string[]> = {};
+      for (const r of db.prepare("SELECT user_id, deck_id FROM user_hidden_decks").all() as Row[]) {
+        (out[r.user_id as number] ??= []).push(r.deck_id as string);
+      }
+      return out;
+    },
+    // Decks each user actually USES = languages of their channels + decks of their library videos.
+    usedDecksByUser(): Record<number, string[]> {
+      const sets: Record<number, Set<string>> = {};
+      const add = (u: number, d: string) => {
+        if (u == null || !d) return;
+        (sets[u] ??= new Set<string>()).add(d);
+      };
+      for (const r of db.prepare("SELECT user_id, lang FROM accounts WHERE user_id IS NOT NULL").all() as Row[])
+        add(r.user_id as number, r.lang as string);
+      for (const r of db
+        .prepare(
+          "SELECT a.user_id AS uid, v.deck FROM videos v JOIN accounts a ON a.id = v.account_id WHERE a.user_id IS NOT NULL",
+        )
+        .all() as Row[])
+        add(r.uid as number, r.deck as string);
+      const out: Record<number, string[]> = {};
+      for (const k of Object.keys(sets)) out[Number(k)] = [...sets[Number(k)]];
+      return out;
     },
     // Per-user Google client_secret JSON (uploaded in Settings). Never sent back to the frontend.
     getUserClientSecret(userId: number): string | null {

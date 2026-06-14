@@ -172,6 +172,12 @@ export default function AccountDetail() {
   const pageVideos = sortedVideos.slice((clampedPage - 1) * PAGE_SIZE, clampedPage * PAGE_SIZE);
   const postedTwicePlus = videos.filter((v) => v.postCount > 1).length;
 
+  // Only offer packs (languages) the user is allowed to see — generators are filtered server-side.
+  // While generators load, show all to avoid an empty dropdown; always keep the channel's current value.
+  const gensIds = new Set(gens.map((g) => g.id));
+  const visibleLangs =
+    gens.length === 0 ? LANGS : LANGS.filter(([code]) => gensIds.has(code) || code === lang);
+
   if (!account) return <div className="text-base-content/60">Загрузка…</div>;
 
   return (
@@ -220,7 +226,7 @@ export default function AccountDetail() {
               value={lang}
               onChange={(e) => setLang(e.target.value)}
             >
-              {LANGS.map(([code, name]) => (
+              {visibleLangs.map(([code, name]) => (
                 <option key={code} value={code}>
                   {name}
                 </option>
@@ -393,7 +399,7 @@ export default function AccountDetail() {
               onChange={(e) => setLang(e.target.value)}
               title="Из какого пака генерировать ролики. После выбора нажми «Сохранить пак»."
             >
-              {LANGS.map(([code, name]) => (
+              {visibleLangs.map(([code, name]) => (
                 <option key={code} value={code}>
                   {name}
                 </option>
