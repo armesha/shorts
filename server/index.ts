@@ -28,6 +28,7 @@ import {
   SESSION_TTL_DAYS,
 } from "./auth.ts";
 import { registerPasswordRoutes } from "./password-routes.ts";
+import { registerPsychCardsRoutes } from "./psych-cards-routes.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -193,6 +194,7 @@ app.setErrorHandler((err, req, reply) => {
 
 // Self-service password change (logic in a separate file → minimal footprint in this shared module).
 registerPasswordRoutes(app, db, base.dbPath);
+registerPsychCardsRoutes(app);
 
 app.post("/api/auth/login", async (req, reply) => {
   const body = (req.body as { username?: string; password?: string }) ?? {};
@@ -335,7 +337,8 @@ app.post("/api/admin/users", async (req, reply) => {
 });
 
 // ---- Accounts (scoped to the current user) ----
-app.get("/api/accounts", async (req) => db.listAccountsByUser(uid(req)));
+// Own channels; admins may pass ?scope=all to list every user's channels (for the history filter).
+app.get("/api/accounts", async (req) => visibleAccounts(req, (req.query as { scope?: string })?.scope));
 app.get("/api/accounts/:id", async (req, reply) => {
   const a = ownAccount(req, reply, Number((req.params as { id: string }).id));
   if (!a) return;
@@ -358,7 +361,24 @@ app.delete("/api/accounts/:id", async (req, reply) => {
   return { ok: true };
 });
 
-app.get("/api/history", async (req) => db.listHistoryByUser(uid(req)));
+// History list (paginated). Regular users see ONLY their own channels. Admins may pass
+// scope=all (every user), or narrow with userId / accountId. Returns { items, total, page, pageSize }.
+app.get("/api/history", async (req) => {
+  const q =
+    (req.query as { scope?: string; userId?: string; accountId?: string; page?: string; pageSize?: string }) ?? {};
+  const isAdmin = db.getUserById(uid(req))?.role === "admin";
+  let filter: { ownerId?: number; accountId?: number };
+  if (!isAdmin) filter = { ownerId: uid(req) }; // non-admin: locked to own channels
+  else if (q.accountId) filter = { accountId: Number(q.accountId) };
+  else if (q.userId) filter = { ownerId: Number(q.userId) };
+  else if (q.scope === "all") filter = {}; // every user's channels
+  else filter = { ownerId: uid(req) }; // admin's own (default)
+  const page = Math.max(1, Number(q.page) || 1);
+  const pageSize = Math.min(100, Math.max(5, Number(q.pageSize) || 25));
+  const total = db.countHistoryFiltered(filter);
+  const items = db.listHistoryFiltered({ ...filter, limit: pageSize, offset: (page - 1) * pageSize });
+  return { items, total, page, pageSize };
+});
 
 // ---- Channel stats: subscribers/views/videos snapshots + deltas ----
 // Available to EVERY user for their own channels. Admins may pass ?scope=all to also see

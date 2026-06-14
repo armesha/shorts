@@ -1,5 +1,6 @@
 export interface Account {
   id: number;
+  userId?: number | null; // owner (present on admin scope=all listings)
   channelName: string;
   theme: string;
   lang: string;
@@ -21,6 +22,19 @@ export interface HistoryItem {
   status: string;
   publishedAt: string | null;
   createdAt: string;
+  // Enriched (admin "all users" view): channel name, owner login, and a watch link.
+  channelName?: string;
+  ownerUsername?: string | null;
+  youtubeId?: string | null;
+  videoRel?: string | null;
+}
+
+/** One page of history rows. */
+export interface HistoryPage {
+  items: HistoryItem[];
+  total: number;
+  page: number;
+  pageSize: number;
 }
 
 export interface AppStatus {
@@ -171,9 +185,62 @@ export interface SystemStatus {
   };
 }
 
+// ---- German-psychology card uploader (the "Карточки" page) ----
+export interface PsychPatternField {
+  key: string;
+  label: string;
+  max: number;
+  required: boolean;
+}
+export interface PsychPattern {
+  id: string;
+  label: string;
+  desc: string;
+  itemFields: PsychPatternField[];
+  exampleItem: Record<string, string>;
+}
+export interface PsychLimits {
+  titleLines: { min: number; max: number; maxLineChars: number };
+  items: { min: number; max: number };
+  outroMax: number;
+  themeMax: number;
+}
+export interface PsychSchema {
+  patterns: PsychPattern[];
+  limits: PsychLimits;
+}
+export interface PsychCard {
+  pattern: string;
+  title_lines: string[];
+  items: Record<string, string>[];
+  outro?: string;
+  theme?: string;
+  addedAt?: string;
+  source?: string;
+}
+export interface PsychCardRow {
+  index: number;
+  card: PsychCard;
+}
+export interface PsychCardList {
+  items: PsychCardRow[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+/** Per-card validation error from a rejected upload (carried on ApiError.body). */
+export interface PsychUploadErrorBody {
+  error: string;
+  errors: { index: number; messages: string[] }[];
+  parsed: number;
+  valid: number;
+}
+
 /** Error carrying the HTTP status + the server's `{error}` message (for lockout/attempt UI). */
 export class ApiError extends Error {
   status: number;
+  /** Parsed JSON error body when present (e.g. per-card upload validation errors). */
+  body?: unknown;
   constructor(status: number, message: string) {
     super(message);
     this.name = "ApiError";
@@ -184,8 +251,10 @@ export class ApiError extends Error {
 async function handle<T>(r: Response, path: string): Promise<T> {
   if (r.ok) return (await r.json()) as T;
   let message = `${r.status} ${r.statusText}`;
+  let body: unknown;
   try {
-    const data = (await r.json()) as { error?: string };
+    body = await r.json();
+    const data = body as { error?: string };
     if (data?.error) message = data.error;
   } catch {
     /* non-JSON error body — keep the status text */
@@ -194,7 +263,9 @@ async function handle<T>(r: Response, path: string): Promise<T> {
   if (r.status === 401 && !path.startsWith("/auth/")) {
     window.dispatchEvent(new CustomEvent("auth:unauthorized"));
   }
-  throw new ApiError(r.status, message);
+  const err = new ApiError(r.status, message);
+  err.body = body;
+  throw err;
 }
 
 async function get<T>(path: string): Promise<T> {
@@ -228,7 +299,7 @@ export const apiClient = {
       password,
       role,
     }),
-  accounts: () => get<Account[]>("/accounts"),
+  accounts: (scope?: "all") => get<Account[]>(`/accounts${scope === "all" ? "?scope=all" : ""}`),
   account: (id: number | string) => get<Account>(`/accounts/${id}`),
   createAccount: () => send<Account>("/accounts", "POST", {}),
   updateAccount: (id: number | string, data: Partial<Account>) =>
@@ -236,10 +307,35 @@ export const apiClient = {
   deleteAccount: (id: number | string) => send<{ ok: boolean }>(`/accounts/${id}`, "DELETE"),
   youtubeAuthUrl: (accountId: number | string) =>
     get<{ url: string }>(`/youtube/auth-url?accountId=${accountId}`),
-  history: () => get<HistoryItem[]>("/history"),
+  history: (params?: {
+    scope?: "mine" | "all";
+    userId?: number;
+    accountId?: number;
+    page?: number;
+    pageSize?: number;
+  }) => {
+    const p = params ?? {};
+    const qs = new URLSearchParams();
+    if (p.scope === "all") qs.set("scope", "all");
+    if (p.userId != null) qs.set("userId", String(p.userId));
+    if (p.accountId != null) qs.set("accountId", String(p.accountId));
+    if (p.page != null) qs.set("page", String(p.page));
+    if (p.pageSize != null) qs.set("pageSize", String(p.pageSize));
+    const s = qs.toString();
+    return get<HistoryPage>(`/history${s ? "?" + s : ""}`);
+  },
   generators: () => get<Generator[]>("/generators"),
   backgrounds: () => get<string[]>("/backgrounds"),
   music: () => get<string[]>("/music"),
+  // German-psychology card uploader
+  psychSchema: () => get<PsychSchema>("/psych/cards/schema"),
+  psychCards: (page = 1, pageSize = 12, onlyUploaded = true, theme?: string) =>
+    get<PsychCardList>(
+      `/psych/cards?page=${page}&pageSize=${pageSize}&onlyUploaded=${onlyUploaded}` +
+        (theme ? `&theme=${encodeURIComponent(theme)}` : ""),
+    ),
+  uploadPsychCards: (cards: unknown, theme?: string) =>
+    send<{ added: number; total: number }>("/psych/cards", "POST", { cards, theme }),
   generateAnecdote: (body?: { text?: string; title?: string; bg?: string; deck?: string }) =>
     send<GeneratedPreview>("/generate/anecdote", "POST", body ?? {}),
   generateAnecdoteVideo: (body?: { text?: string; title?: string; bg?: string; music?: string; deck?: string }) =>

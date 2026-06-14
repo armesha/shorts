@@ -26,6 +26,11 @@ export interface HistoryItem {
   status: string;
   publishedAt: string | null;
   createdAt: string;
+  // Enriched fields (filled by listHistoryFiltered; used by the admin "all users" history view).
+  channelName?: string;
+  ownerUsername?: string | null;
+  youtubeId?: string | null;
+  videoRel?: string | null;
 }
 
 export interface Video {
@@ -438,6 +443,54 @@ export function openDb(path: string) {
         publishedAt: r.published_at,
         createdAt: r.created_at,
       }));
+    },
+    // Enriched + filterable history for the admin "all users" view (and the own view).
+    // ownerId/accountId narrow the rows; neither → all channels. Newest first; paginate via limit/offset.
+    listHistoryFiltered(opts: { ownerId?: number; accountId?: number; limit?: number; offset?: number } = {}): HistoryItem[] {
+      const where: string[] = [];
+      const args: unknown[] = [];
+      if (opts.accountId != null) {
+        where.push("h.account_id = ?");
+        args.push(opts.accountId);
+      } else if (opts.ownerId != null) {
+        where.push("a.user_id = ?");
+        args.push(opts.ownerId);
+      }
+      const limit = Math.min(200, Math.max(1, opts.limit ?? 100));
+      const offset = Math.max(0, opts.offset ?? 0);
+      const sql =
+        "SELECT h.*, a.channel_name, a.yt_channel_title, a.user_id AS owner_id, u.username AS owner_username " +
+        "FROM history h JOIN accounts a ON a.id = h.account_id LEFT JOIN users u ON u.id = a.user_id " +
+        (where.length ? "WHERE " + where.join(" AND ") + " " : "") +
+        "ORDER BY h.id DESC LIMIT ? OFFSET ?";
+      return (db.prepare(sql).all(...args, limit, offset) as Row[]).map((r) => ({
+        id: r.id,
+        accountId: r.account_id,
+        title: r.title,
+        status: r.status,
+        publishedAt: r.published_at,
+        createdAt: r.created_at,
+        channelName: r.yt_channel_title || r.channel_name,
+        ownerUsername: r.owner_username ?? null,
+        youtubeId: r.youtube_id ?? null,
+        videoRel: r.video_path ?? null,
+      }));
+    },
+    // Row count for the same filter (pagination total).
+    countHistoryFiltered(opts: { ownerId?: number; accountId?: number } = {}): number {
+      const where: string[] = [];
+      const args: unknown[] = [];
+      if (opts.accountId != null) {
+        where.push("h.account_id = ?");
+        args.push(opts.accountId);
+      } else if (opts.ownerId != null) {
+        where.push("a.user_id = ?");
+        args.push(opts.ownerId);
+      }
+      const sql =
+        "SELECT COUNT(*) AS n FROM history h JOIN accounts a ON a.id = h.account_id " +
+        (where.length ? "WHERE " + where.join(" AND ") + " " : "");
+      return (db.prepare(sql).get(...args) as { n: number }).n;
     },
     // Used anecdotes: once an anecdote becomes a saved/auto-posted video, its key lands here
     // so randomAnecdote() never picks it again (per-install state — not shipped content).
