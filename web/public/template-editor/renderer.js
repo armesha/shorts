@@ -124,17 +124,36 @@ function mountElement(el, content, showKillboxOutline) {
   return node;
 }
 
+// Текст с опц. «маркером» (подсветка как хайлайтером, box-decoration-break:clone — отдельная плашка
+// на каждой строке) и подчёркиванием. el.highlight = цвет плашки, el.underline = bool.
+function styledText(text, el) {
+  if (el.highlight) {
+    const s = document.createElement("span");
+    s.textContent = text;
+    s.style.cssText =
+      `background:${el.highlight};box-decoration-break:clone;-webkit-box-decoration-break:clone;` +
+      `padding:.05em .22em;border-radius:2px;` +
+      (el.underline ? "text-decoration:underline;text-decoration-thickness:.06em;text-underline-offset:.1em;" : "");
+    return s;
+  }
+  const t = document.createTextNode(text);
+  return t;
+}
+
 function killboxContent(val, el) {
   const max = effectiveMaxChars(el);  // потолок символов: текст сверх него обрезаем «…»
-  // массив → нумерованный/маркированный список (минимальный, без паттернов — патт-CSS остаётся на стороне сайта)
+  // массив → список (el.bullet=true → видимые круглые маркеры)
   if (Array.isArray(val)) {
     const items = clampList(val, max);
     const ul = document.createElement("ul");
-    ul.style.cssText = `list-style:none;margin:0;padding:0;width:100%;`;
+    ul.style.cssText = el.bullet
+      ? `list-style:disc;margin:0;padding:0 0 0 1.05em;width:100%;box-sizing:border-box;`
+      : `list-style:none;margin:0;padding:0;width:100%;box-sizing:border-box;`;
+    if (el.underline && !el.highlight) ul.style.textDecoration = "underline";
     items.forEach(item => {
       const li = document.createElement("li");
       li.style.cssText = `margin-bottom:.4em;`;
-      li.textContent = item;
+      li.appendChild(styledText(item, el));
       ul.appendChild(li);
     });
     const wrap = document.createElement("div");
@@ -146,7 +165,8 @@ function killboxContent(val, el) {
   if (typeof val === "string") {
     const div = document.createElement("div");
     div.style.width = "100%";
-    div.textContent = clampStr(val, max);
+    if (el.underline && !el.highlight) div.style.textDecoration = "underline";
+    div.appendChild(styledText(clampStr(val, max), el));
     return div;
   }
   // HTML/DOM узел — позволяем сайту передавать готовое содержимое

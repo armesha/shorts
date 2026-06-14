@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "name": "psychology-mgs-yellow",
+  "canvas": {
+    "w": 1080,
+    "h": 1920,
+    "bg": "#fffdf0"
+  },
+  "elements": [
+    {
+      "id": "pin",
+      "type": "text",
+      "x": 70,
+      "y": 140,
+      "w": 130,
+      "h": 130,
+      "rot": 0,
+      "text": "📌",
+      "align": "left",
+      "font": {
+        "family": "Inter",
+        "size": 104,
+        "weight": 400,
+        "color": "#16140a",
+        "lineHeight": 1
+      }
+    },
+    {
+      "id": "title",
+      "type": "killbox",
+      "x": 70,
+      "y": 290,
+      "w": 940,
+      "h": 340,
+      "rot": 0,
+      "role": "title",
+      "padX": 4,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 96,
+        "weight": 800,
+        "color": "#141414",
+        "lineHeight": 1.5
+      },
+      "fitMin": 54,
+      "fitMax": 108,
+      "maxChars": 52,
+      "highlight": "#ffe000",
+      "underline": true,
+      "placeholder": "Заголовок"
+    },
+    {
+      "id": "body",
+      "type": "killbox",
+      "x": 84,
+      "y": 690,
+      "w": 912,
+      "h": 1150,
+      "rot": 0,
+      "role": "text",
+      "padX": 6,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 52,
+        "weight": 500,
+        "color": "#16140a",
+        "lineHeight": 1.5
+      },
+      "fitMin": 32,
+      "fitMax": 60,
+      "maxChars": 640,
+      "bullet": true,
+      "placeholder": "Список"
+    }
+  ]
+}

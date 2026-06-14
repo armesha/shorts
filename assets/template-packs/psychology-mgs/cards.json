@@ -1,0 +1,194 @@
+[
+  {
+    "id": 1,
+    "theme": "lime",
+    "title": "Anzeichen versteckter Erschöpfung",
+    "text": [
+      "Ständige Gereiztheit",
+      "Kleinigkeiten überfordern dich",
+      "Schlaf erholt dich nicht mehr",
+      "Freude fühlt sich gedämpft an",
+      "Du sagst Treffen immer öfter ab",
+      "Konzentration fällt dir schwer",
+      "Du vergisst alltägliche Dinge",
+      "Dein Körper fühlt sich schwer an",
+      "Du funktionierst nur noch",
+      "Eine innere Leere bleibt",
+      "Lärm überfordert dich schnell",
+      "Selbst Hobbys strengen dich an",
+      "Du hast kaum Geduld mit dir"
+    ]
+  },
+  {
+    "id": 2,
+    "theme": "yellow",
+    "title": "Stille Zeichen von innerem Stress",
+    "text": [
+      "Verspannte Schultern und Kiefer",
+      "Flache, schnelle Atmung",
+      "Du grübelst nachts stundenlang",
+      "Ständiges Gefühl von Eile",
+      "Dein Appetit verändert sich",
+      "Du kannst schlecht abschalten",
+      "Kleine Geräusche nerven dich",
+      "Dir fehlt die innere Ruhe",
+      "Du vergisst zu essen und trinken",
+      "Aufschieben trotz Zeitdruck",
+      "Häufige Kopfschmerzen",
+      "Entspannung fühlt sich falsch an"
+    ]
+  },
+  {
+    "id": 3,
+    "theme": "pink",
+    "title": "Gewohnheiten, die Angst verstärken",
+    "text": [
+      "Ständig Nachrichten checken",
+      "Zu wenig Schlaf",
+      "Alles im Kopf durchspielen",
+      "Koffein am späten Nachmittag",
+      "Gefühle ständig unterdrücken",
+      "Sich mit anderen vergleichen",
+      "Perfektionismus bei allem",
+      "Hilfe nie annehmen",
+      "Pausen als Faulheit sehen",
+      "Probleme nur allein lösen",
+      "Negatives immer wiederholen",
+      "Bewegung komplett meiden",
+      "Die Zukunft schwarzmalen"
+    ]
+  },
+  {
+    "id": 4,
+    "theme": "cyan",
+    "title": "Anzeichen emotionaler Reife",
+    "text": [
+      "Du übernimmst Verantwortung",
+      "Du entschuldigst dich ehrlich",
+      "Kritik wirft dich nicht um",
+      "Du setzt klare Grenzen",
+      "Du hörst wirklich zu",
+      "Gefühle benennen statt verdrängen",
+      "Du musst nicht recht haben",
+      "Geduld mit anderen",
+      "Du reagierst, statt zu explodieren",
+      "Du gönnst anderen Erfolg",
+      "Fehler sind für dich normal",
+      "Du bittest um Hilfe"
+    ]
+  },
+  {
+    "id": 5,
+    "theme": "orange",
+    "title": "Fehler, die Selbstwert zerstören",
+    "text": [
+      "Dich ständig vergleichen",
+      "Auf jedem Fehler herumreiten",
+      "Lob nicht annehmen können",
+      "Dich nur über Leistung definieren",
+      "Dauernd „Ja\" sagen",
+      "Eigene Bedürfnisse ignorieren",
+      "Toxische Menschen behalten",
+      "Ein harter innerer Kritiker",
+      "Erfolge sofort kleinreden",
+      "Auf Bestätigung warten",
+      "Alte Fehler nicht loslassen",
+      "Dich für Gefühle schämen"
+    ]
+  },
+  {
+    "id": 6,
+    "theme": "violet",
+    "title": "Zeichen, dass du eine Pause brauchst",
+    "text": [
+      "Du bist ständig müde",
+      "Nichts macht mehr Freude",
+      "Du wirst schnell zynisch",
+      "Einfache Aufgaben überfordern",
+      "Du bist oft gereizt",
+      "Schlaf hilft nicht mehr",
+      "Du fühlst dich abgestumpft",
+      "Konzentration bricht weg",
+      "Dein Körper schmerzt",
+      "Du zweifelst an allem",
+      "Selbst Erholung stresst dich",
+      "Du zählst nur bis Feierabend"
+    ]
+  },
+  {
+    "id": 7,
+    "theme": "mint",
+    "title": "Toxische Denkmuster",
+    "text": [
+      "„Alles oder nichts\"",
+      "Gedanken lesen wollen",
+      "Immer das Schlimmste annehmen",
+      "Dich für alles verantwortlich fühlen",
+      "Gefühle als Fakten sehen",
+      "„Ich muss perfekt sein\"",
+      "Positives ausblenden",
+      "Ständige Vergleiche",
+      "Dich selbst beschimpfen",
+      "„Ich schaffe das nie\"",
+      "Komplimente abwerten",
+      "In Endlosschleifen grübeln"
+    ]
+  },
+  {
+    "id": 8,
+    "theme": "sky",
+    "title": "Anzeichen emotionaler Intelligenz",
+    "text": [
+      "Du erkennst deine Gefühle",
+      "Du benennst sie genau",
+      "Empathie für andere",
+      "Du hörst aktiv zu",
+      "Pause vor der Reaktion",
+      "Du nimmst Kritik an",
+      "Grenzen ohne Schuldgefühl",
+      "Du liest Stimmungen im Raum",
+      "Konflikte ruhig lösen",
+      "Du fragst nach, statt zu urteilen",
+      "Eigene Auslöser kennen",
+      "Mitgefühl mit dir selbst"
+    ]
+  },
+  {
+    "id": 9,
+    "theme": "coral",
+    "title": "Zeichen innerer Stärke",
+    "text": [
+      "Du bittest um Hilfe",
+      "Du sagst „Nein\" ohne Schuld",
+      "Ruhe im Sturm bewahren",
+      "Du gibst Fehler zu",
+      "Geduld mit dem Prozess",
+      "Du hältst Unsicherheit aus",
+      "Du lebst deine Werte",
+      "Du brauchst keine Bestätigung",
+      "Nach Rückschlägen weitermachen",
+      "Gefühle zulassen",
+      "Allein sein können",
+      "Du schützt deine Energie"
+    ]
+  },
+  {
+    "id": 10,
+    "theme": "dark",
+    "title": "Anzeichen, dass du zu viel denkst",
+    "text": [
+      "Du zerdenkst jede Entscheidung",
+      "Einfache Fragen werden riesig",
+      "Du planst Gespräche vorab",
+      "„Was, wenn\" hört nie auf",
+      "Du liest in alles etwas hinein",
+      "Entscheidungen lähmen dich",
+      "Du suchst versteckte Bedeutungen",
+      "Schlaf durch Gedankenkreisen",
+      "Du bereust Gesagtes lange",
+      "Du suchst die perfekte Lösung",
+      "Du analysierst jede Reaktion",
+      "Du vertraust deinem Bauch nicht"
+    ]
+  }
+]
