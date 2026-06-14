@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Sparkles, Dices, RefreshCw, Wand2, Loader2, Film, Save, Check, Plus } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Sparkles, Dices, RefreshCw, Wand2, Loader2, Film, Save, Check, Plus, Square } from "lucide-react";
 import {
   apiClient,
   type Generator,
@@ -42,8 +42,13 @@ export default function Studio() {
   const [deck, setDeck] = useDeck();
   const [err, setErr] = useState<string | null>(null);
   const { user } = useAuth();
-  const [batching, setBatching] = useState<number | null>(null);
+  const maxBatch = user?.role === "admin" ? 25 : 10;
+  const [batchN, setBatchN] = useState(5);
+  const [batchDone, setBatchDone] = useState(0);
+  const [batchTotal, setBatchTotal] = useState(0);
+  const [batchRunning, setBatchRunning] = useState(false);
   const [batchMsg, setBatchMsg] = useState<string | null>(null);
+  const stopRef = useRef(false);
 
   useEffect(() => {
     apiClient.generators().then(setGens).catch(() => {});
@@ -81,24 +86,48 @@ export default function Studio() {
     }
   }
 
-  // Сгенерировать сразу N роликов (случайные неиспользованные карточки) в выбранный канал —
-  // как на странице канала. Лимиты: админ 5/10/20, обычный пользователь 1/5/10.
-  async function makeBatch(n: number) {
-    if (!channelId) return;
-    setBatching(n);
+  // Сгенерировать N роликов ПОСЛЕДОВАТЕЛЬНО (по одному за раз — сервер не нагружается),
+  // с прогрессом и мягкой остановкой: «Стоп» прерывает после текущего, без ошибки —
+  // что успело сгенерироваться, остаётся в библиотеке. Лимит: админ 25, обычный 10.
+  function stopBatch() {
+    stopRef.current = true;
+  }
+  async function runBatch() {
+    if (!channelId || batchRunning) return;
+    const total = Math.max(1, Math.min(maxBatch, Math.round(batchN) || 1));
+    stopRef.current = false;
+    setBatchRunning(true);
     setErr(null);
     setBatchMsg(null);
+    setBatchTotal(total);
+    setBatchDone(0);
+    let made = 0;
+    let exhausted = false;
     try {
-      const r = await apiClient.batchVideos(Number(channelId), n, deck);
+      for (let i = 0; i < total; i++) {
+        if (stopRef.current) break; // мягкая остановка — следующий не запускаем
+        const r = await apiClient.batchVideos(Number(channelId), 1, deck);
+        made += r.made ?? 0;
+        setBatchDone(made);
+        if (r.exhausted || (r.made ?? 0) === 0) {
+          exhausted = true;
+          break;
+        }
+      }
+      const stopped = stopRef.current;
       setBatchMsg(
-        r.exhausted
-          ? `Сделано ${r.made} из ${n} — свободные карточки закончились.`
-          : `Готово: ${r.made} ролик(ов) добавлено в библиотеку канала.`,
+        exhausted
+          ? `Свободные карточки закончились — добавлено ${made} из ${total}.`
+          : stopped
+            ? `Остановлено — добавлено ${made} из ${total}.`
+            : `Готово: добавлено ${made} ролик(ов) в библиотеку канала.`,
       );
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Не удалось сгенерировать пакет");
+    } catch {
+      // Без ошибки на экране — просто прекращаем; что успело, уже в библиотеке.
+      setBatchMsg(`Остановлено — добавлено ${made} из ${total}.`);
     } finally {
-      setBatching(null);
+      setBatchRunning(false);
+      stopRef.current = false;
     }
   }
 
@@ -354,27 +383,49 @@ export default function Studio() {
                   </button>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 border-t border-base-300 pt-3">
-                  <span className="text-sm text-base-content/60">Сразу несколько в канал:</span>
-                  {(user?.role === "admin" ? [5, 10, 20] : [1, 5, 10]).map((n) => (
-                    <button
-                      key={n}
-                      className="btn btn-sm btn-outline gap-1"
-                      onClick={() => makeBatch(n)}
-                      disabled={batching !== null || !channelId}
-                      title={`Сгенерировать ${n} случайных роликов в библиотеку канала`}
-                    >
-                      {batching === n ? <Loader2 className="animate-spin" size={14} /> : <Plus size={14} />}
-                      {n}
-                    </button>
-                  ))}
-                  {batching !== null && (
-                    <span className="text-xs text-base-content/60 flex items-center gap-1">
-                      <Loader2 className="animate-spin" size={12} /> Генерирую {batching}… (~{batching * 6}с)
-                    </span>
-                  )}
-                  {batchMsg && batching === null && (
-                    <span className="text-xs text-success">{batchMsg}</span>
+                <div className="border-t border-base-300 pt-3 space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm text-base-content/60">Сразу несколько в канал:</span>
+                    <input
+                      type="number"
+                      min={1}
+                      max={maxBatch}
+                      className="input input-bordered input-sm w-20"
+                      value={batchN}
+                      disabled={batchRunning}
+                      onChange={(e) => setBatchN(Math.max(1, Math.min(maxBatch, Number(e.target.value) || 1)))}
+                      aria-label="Сколько роликов сгенерировать"
+                    />
+                    <span className="text-xs text-base-content/50">1–{maxBatch} за раз</span>
+                    {!batchRunning ? (
+                      <button
+                        className="btn btn-sm btn-outline gap-1"
+                        onClick={runBatch}
+                        disabled={!channelId}
+                        title="Сгенерировать выбранное число роликов в библиотеку канала"
+                      >
+                        <Plus size={14} /> Сгенерировать
+                      </button>
+                    ) : (
+                      <>
+                        <button className="btn btn-sm btn-outline btn-error gap-1" onClick={stopBatch}>
+                          <Square size={13} /> Стоп
+                        </button>
+                        <span className="text-xs text-base-content/70 flex items-center gap-1">
+                          <Loader2 className="animate-spin" size={12} /> {batchDone} из {batchTotal}…
+                        </span>
+                      </>
+                    )}
+                    {batchMsg && !batchRunning && (
+                      <span className="text-xs text-success">{batchMsg}</span>
+                    )}
+                  </div>
+                  {batchRunning && (
+                    <progress
+                      className="progress progress-primary w-full"
+                      value={batchDone}
+                      max={batchTotal}
+                    />
                   )}
                 </div>
               </div>
