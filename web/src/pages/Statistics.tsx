@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { BarChart3, Users, Eye, Film, RefreshCw, TrendingUp, TrendingDown, ChevronDown } from "lucide-react";
+import { BarChart3, Users, Eye, Film, RefreshCw, TrendingUp, TrendingDown, ChevronDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -15,6 +15,8 @@ import { useAuth } from "../lib/auth";
 
 type Scope = "mine" | "all";
 type MetricKey = "subscribers" | "views" | "videos";
+type SortKey = "name" | "subscribers" | "views" | "videos" | "delta";
+const PAGE_SIZE = 10;
 
 export default function Statistics() {
   const { user } = useAuth();
@@ -25,6 +27,13 @@ export default function Statistics() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
+  // Controls: search, sort, owner filter, only-connected, pagination.
+  const [search, setSearch] = useState("");
+  const [sortKey, setSortKey] = useState<SortKey>("subscribers");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [ownerFilter, setOwnerFilter] = useState("");
+  const [onlyConnected, setOnlyConnected] = useState(false);
+  const [page, setPage] = useState(1);
 
   // Auto-dismiss the success/result banner after a few seconds.
   useEffect(() => {
@@ -45,6 +54,11 @@ export default function Statistics() {
       })
       .finally(() => setLoading(false));
   }, [scope]);
+
+  // Any filter/sort/scope change → back to page 1.
+  useEffect(() => {
+    setPage(1);
+  }, [search, sortKey, sortDir, ownerFilter, onlyConnected, scope]);
 
   async function refresh() {
     setRefreshing(true);
@@ -78,9 +92,40 @@ export default function Statistics() {
     }
   }
 
+  const owners = useMemo(
+    () => [...new Set(rows.map((r) => r.ownerUsername).filter((x): x is string => !!x))].sort(),
+    [rows],
+  );
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return rows.filter((r) => {
+      if (onlyConnected && !r.connected) return false;
+      if (ownerFilter && r.ownerUsername !== ownerFilter) return false;
+      if (q && !`${r.ytChannelTitle || r.channelName} ${r.ownerUsername || ""}`.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [rows, search, ownerFilter, onlyConnected]);
+  const sorted = useMemo(() => {
+    const dir = sortDir === "asc" ? 1 : -1;
+    const val = (r: StatRow): number | string => {
+      if (sortKey === "name") return (r.ytChannelTitle || r.channelName || "").toLowerCase();
+      if (sortKey === "delta") return r.latest && r.prev ? r.latest.subscribers - r.prev.subscribers : -Infinity;
+      return r.latest ? r.latest[sortKey] : -Infinity;
+    };
+    return [...filtered].sort((a, b) => {
+      const va = val(a);
+      const vb = val(b);
+      if (typeof va === "string" || typeof vb === "string") return String(va).localeCompare(String(vb)) * dir;
+      return (va - vb) * dir;
+    });
+  }, [filtered, sortKey, sortDir]);
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+  const clampedPage = Math.min(page, totalPages);
+  const paged = sorted.slice((clampedPage - 1) * PAGE_SIZE, clampedPage * PAGE_SIZE);
+
   const totals = useMemo(
     () =>
-      rows.reduce(
+      filtered.reduce(
         (acc, r) => {
           if (r.latest) {
             acc.subscribers += r.latest.subscribers;
@@ -90,9 +135,9 @@ export default function Statistics() {
         },
         { subscribers: 0, views: 0 },
       ),
-    [rows],
+    [filtered],
   );
-  const connectedCount = rows.filter((r) => r.connected).length;
+  const connectedCount = filtered.filter((r) => r.connected).length;
   const anyData = rows.some((r) => r.latest);
 
   return (
@@ -143,7 +188,7 @@ export default function Statistics() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Stat icon={<Users />} label="Подписчиков всего" value={fmt(totals.subscribers)} />
         <Stat icon={<Eye />} label="Просмотров всего" value={fmt(totals.views)} />
-        <Stat icon={<Film />} label="Каналов подключено" value={`${connectedCount} / ${rows.length}`} />
+        <Stat icon={<Film />} label="Каналов подключено" value={`${connectedCount} / ${filtered.length}`} />
       </div>
 
       {loading ? (
@@ -158,11 +203,99 @@ export default function Statistics() {
           text="Данных пока нет. Нажмите «Обновить данные» — мы сделаем первый снимок статистики каналов. Повторяйте периодически, и накопится динамика для графика."
         />
       ) : (
-        <div className="space-y-4">
-          {rows.map((r) => (
-            <ChannelCard key={r.accountId} row={r} isAdmin={!!isAdmin} />
-          ))}
-        </div>
+        <>
+          {/* Controls: search / sort / direction / owner filter / only-connected */}
+          <div className="card bg-base-100 border border-base-300">
+            <div className="card-body py-3 flex-row flex-wrap items-center gap-2">
+              <input
+                className="input input-bordered input-sm w-full sm:w-56"
+                placeholder="Поиск по каналу…"
+                aria-label="Поиск по каналу"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <select
+                className="select select-bordered select-sm"
+                aria-label="Сортировать по"
+                value={sortKey}
+                onChange={(e) => setSortKey(e.target.value as SortKey)}
+              >
+                <option value="subscribers">Подписчики</option>
+                <option value="views">Просмотры</option>
+                <option value="videos">Видео</option>
+                <option value="delta">Прирост подписчиков</option>
+                <option value="name">Название</option>
+              </select>
+              <button
+                className="btn btn-sm btn-ghost gap-1"
+                onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
+                title="Направление сортировки"
+              >
+                {sortDir === "asc" ? <ArrowUp size={15} /> : <ArrowDown size={15} />}
+                {sortDir === "asc" ? "по возр." : "по убыв."}
+              </button>
+              {isAdmin && scope === "all" && owners.length > 1 && (
+                <select
+                  className="select select-bordered select-sm"
+                  aria-label="Владелец"
+                  value={ownerFilter}
+                  onChange={(e) => setOwnerFilter(e.target.value)}
+                >
+                  <option value="">Все владельцы</option>
+                  {owners.map((o) => (
+                    <option key={o} value={o}>
+                      @{o}
+                    </option>
+                  ))}
+                </select>
+              )}
+              <label className="label cursor-pointer gap-2 text-sm py-0">
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-sm"
+                  checked={onlyConnected}
+                  onChange={(e) => setOnlyConnected(e.target.checked)}
+                />
+                Только подключённые
+              </label>
+              <span className="text-xs text-base-content/50 ml-auto">{sorted.length} канал(ов)</span>
+            </div>
+          </div>
+
+          {sorted.length === 0 ? (
+            <Empty text="Ничего не найдено по фильтру. Измените поиск или фильтры." />
+          ) : (
+            <div className="space-y-4">
+              {paged.map((r) => (
+                <ChannelCard key={r.accountId} row={r} isAdmin={!!isAdmin} />
+              ))}
+            </div>
+          )}
+
+          {sorted.length > PAGE_SIZE && (
+            <div className="flex items-center justify-center gap-2 pt-1">
+              <button
+                className="btn btn-sm btn-ghost btn-square"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={clampedPage <= 1}
+                aria-label="Назад"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <span className="text-sm text-base-content/60">
+                стр. {clampedPage} из {totalPages}
+              </span>
+              <button
+                className="btn btn-sm btn-ghost btn-square"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={clampedPage >= totalPages}
+                aria-label="Вперёд"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
