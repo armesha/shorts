@@ -4,6 +4,7 @@
 import type { FastifyInstance } from "fastify";
 import { resolve } from "node:path";
 import { loadBaseConfig } from "./config.ts";
+import { openDb } from "./db.ts";
 import {
   listPacks,
   getPack,
@@ -13,13 +14,29 @@ import {
   deletePack,
   deriveRules,
   type PackTemplate,
+  type CardValues,
+  type RoleRule,
 } from "../src/packs/store.ts";
 import { renderTemplateCard } from "../src/template/render.ts";
+import { assembleStillVideo, listAudio, audioPathFor } from "../src/video.ts";
 
 const OUTPUT_DIR = loadBaseConfig().outputDir;
 const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
 
-export function registerPacksRoutes(app: FastifyInstance) {
+// Заголовок + читаемый текст карточки (для имени видео и YouTube-описания).
+function cardTitleAndText(values: CardValues, rules: RoleRule[]): { title: string; text: string } {
+  let title = "";
+  const parts: string[] = [];
+  for (const r of rules) {
+    const v = values[r.role];
+    if (v == null) continue;
+    if (!r.list && typeof v === "string" && !title) title = v;
+    parts.push(Array.isArray(v) ? v.map((x) => `• ${x}`).join("\n") : String(v));
+  }
+  return { title: (title || "Карточка").slice(0, 100), text: parts.join("\n\n") };
+}
+
+export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof openDb>) {
   // Мои паки (сводки, новейшие сверху).
   app.get("/api/packs", async (req) => listPacks(uid(req)));
 
@@ -100,5 +117,64 @@ export function registerPacksRoutes(app: FastifyInstance) {
       return reply.code(500).send({ error: "Не удалось отрисовать: " + String(e).slice(0, 120) });
     }
     return { imageUrl: `/files/${rel}` };
+  });
+
+  // Собрать видео из карточки #i (рендер мостом + assembleStillVideo). Если передан accountId —
+  // сохранить в библиотеку канала (deck="pack:<id>"; метаданные через синтетическую деку в getDeck).
+  app.post("/api/packs/:id/cards/:i/video", async (req, reply) => {
+    const { id, i } = req.params as { id: string; i: string };
+    const body = (req.body as { accountId?: number; music?: string }) ?? {};
+    const userId = uid(req);
+    const p = getPack(id, userId);
+    if (!p) return reply.code(404).send({ error: "Пак не найден" });
+    const idx = Math.max(0, Math.floor(Number(i) || 0));
+    const card = p.cards[idx];
+    if (!card) return reply.code(404).send({ error: "Нет такой карточки" });
+    if (!p.templates.length) return reply.code(400).send({ error: "У пака нет шаблона" });
+    const tpl = p.templates[idx % p.templates.length];
+    // владелец целевого канала (если сохраняем)
+    if (body.accountId != null) {
+      const acc = db.getAccount(Number(body.accountId));
+      if (!acc || acc.userId !== userId) return reply.code(403).send({ error: "Канал не ваш" });
+    }
+    // музыка: явная / случайная / без
+    let music = body.music;
+    let audioPath: string | null | undefined;
+    if (music === "none") audioPath = null;
+    else if (music) audioPath = audioPathFor(music);
+    else {
+      const t = listAudio();
+      if (t.length) { music = t[Math.floor(Math.random() * t.length)]; audioPath = audioPathFor(music); }
+      else { music = "none"; audioPath = null; }
+    }
+    const stamp = `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+    const imgRel = `library/pack-${stamp}.png`;
+    const vidRel = `library/pack-${stamp}.mp4`;
+    try {
+      await renderTemplateCard(tpl, card.values, resolve(process.cwd(), OUTPUT_DIR, imgRel));
+      await assembleStillVideo(
+        resolve(process.cwd(), OUTPUT_DIR, imgRel),
+        resolve(process.cwd(), OUTPUT_DIR, vidRel),
+        { durationSec: 6, audioPath },
+      );
+    } catch (e) {
+      return reply.code(500).send({ error: "Сборка не удалась: " + String(e).slice(0, 140) });
+    }
+    let saved = false;
+    if (body.accountId != null) {
+      const { title, text } = cardTitleAndText(card.values, deriveRules(p.templates[0]));
+      db.createVideo({
+        accountId: Number(body.accountId),
+        title,
+        text,
+        bg: "",
+        music: music ?? "",
+        deck: `pack:${p.id}`,
+        videoRel: vidRel,
+        imageRel: imgRel,
+      });
+      saved = true;
+    }
+    return { videoUrl: `/files/${vidRel}`, music: music ?? "none", saved };
   });
 }

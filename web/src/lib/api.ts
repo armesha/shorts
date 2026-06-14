@@ -442,6 +442,8 @@ export const apiClient = {
     ),
   deletePack: (id: string) => send<{ deleted: boolean }>(`/packs/${id}`, "DELETE"),
   packPreview: (id: string, i: number) => get<{ imageUrl: string }>(`/packs/${id}/preview?i=${i}`),
+  packBuildVideo: (id: string, i: number, opts?: { accountId?: number; music?: string }) =>
+    send<{ videoUrl: string; music: string; saved: boolean }>(`/packs/${id}/cards/${i}/video`, "POST", opts ?? {}),
   generateAnecdote: (body?: { text?: string; title?: string; bg?: string; deck?: string }) =>
     send<GeneratedPreview>("/generate/anecdote", "POST", body ?? {}),
   generateAnecdoteVideo: (body?: { text?: string; title?: string; bg?: string; music?: string; deck?: string }) =>

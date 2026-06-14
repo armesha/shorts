@@ -126,7 +126,27 @@ export const DECKS: Deck[] = [
 
 export const DEFAULT_DECK = "ru";
 
+// Кастомные («ручные») паки не входят в статический реестр DECKS — их id вида "pack:<packId>".
+// Для них синтезируем минимальную деку (без файлового IO), чтобы видео паков в библиотеке/истории/
+// выкладке имели вменяемые метаданные и НЕ ломали существующих потребителей getDeck/ytMeta.
+export function isPackDeckId(id?: string | null): boolean {
+  return !!id && id.startsWith("pack:");
+}
+function synthPackDeck(id: string): Deck {
+  return {
+    id,
+    name: "Свой пак",
+    dir: "",
+    source: "",
+    emoji: "✨",
+    hashtags: "#shorts",
+    tags: ["shorts"],
+    genericTitles: ["Карточка"],
+  };
+}
+
 export function getDeck(id?: string | null): Deck {
+  if (isPackDeckId(id)) return synthPackDeck(id as string);
   return DECKS.find((d) => d.id === id) ?? DECKS.find((d) => d.id === DEFAULT_DECK)!;
 }
 

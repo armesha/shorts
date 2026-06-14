@@ -90,6 +90,20 @@ unattended, managed from a web dashboard. Spec: `ТЗ.pdf`. Architecture & resea
   `estimateCapacity()` по геометрии и `fitMin`); `renderer.js` обрезает контент сверх лимита «…», шрифт не падает
   ниже `fitMin`. Полностью изолировано от пайплайна; **серверу правок не нужно** — статику отдаёт Vite (dev) и
   `@fastify/static` с prefix `/` (prod). Сборка фронта обязательна: `npm run web:build` (Vite копирует `public/` → `dist/`).
+- **Кастомные («ручные») паки (хаб «Паки и карточки» = `/cards`, для всех юзеров):** пак =
+  `{id,userId,name,lang,templates[],cards[]}` в `data/packs/<id>.json` (gitignored, изоляция по userId).
+  Хранилище+валидация — `src/packs/store.ts`: правила добавления карточек (роли + min/max символов +
+  список) **выводятся из шаблона** (`deriveRules`), карточки = `{role→значение}` (то же ест
+  `renderTemplateCard`). Роуты — `server/packs-routes.ts` (`registerPacksRoutes(app, db)`): `/api/packs`
+  CRUD, `/api/packs/:id/preview?i=` (рендер мостом), `/api/packs/:id/cards/:i/video` (сборка
+  `assembleStillVideo` + опц. сохранение в библиотеку канала). UI: `web/src/components/CustomPacks.tsx`
+  (создание пака из JSON-шаблона редактора, добавление JSON-карточек, превью, удаление) + Студия
+  (`Studio.tsx`: deck=`pack:<id>` → превью/сборка/сохранение через pack-эндпоинты, любой канал).
+  `getDeck("pack:*")` → синтетическая дека (`decks.ts`, `isPackDeckId`) — вменяемые метаданные для
+  библиотеки/истории/выкладки, ядро (`randomAnecdote/renderAnecdote`) НЕ трогаем. Сид «психология mgs»:
+  `src/scripts/seed-psychology-mgs.ts`. **Старые паки read-only, psych-загрузка (`/cards`) цела.**
+  TODO: привязка шаблона к паку прямо из /editor (сейчас вставкой JSON); расписание-автопостинг паков
+  идёт через сохранение видео в библиотеку (синтет-дека → generic YouTube-метаданные).
 - First generator = **Русские анекдоты (no AI)**: `src/anecdotes/build.ts` parses `Русские анекдоты/anek_djvu.txt` (split on `<|startoftext|>`; drop mat/@-censored/dupes) → packs of 1000 in `data/anecdotes/` (currently 54,954 in range 100–350 chars). Runtime picks random via `src/anecdotes/library.ts`.
 - Anecdote render: `templates/anecdote.html` + `src/anecdotes/render.ts` — binary-search auto-fit fills the frame and checks BOTH vertical AND horizontal overflow (long words must never clip — that's a hard user requirement). Random light bg from `BACKGROUNDS`. Font ≤72px, line-height grow capped ≤1.9 (no big gaps), title auto-shrinks to one line.
 - **IT-дека — плотная (переделка через Haiku):** `src/anecdotes/it-mine.ts` (добыча длинных 330–620 из `corpora/it-*.jsonl`, источник ~152k) → Haiku-воркфлоу чистки (акценты `e'→è`, юзнет-мусор, mojibake, не-шутки) → `src/anecdotes/build-it-dense.ts` (NSFW-фильтр + дедуп + паки) → 1169 плотных (медиана 424), 2 прохода Haiku (`IT_OFFSET` берёт непересекающиеся кандидаты). Ещё ~3k в полосе не использовано.

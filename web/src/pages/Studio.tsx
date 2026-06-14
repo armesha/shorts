@@ -6,6 +6,7 @@ import {
   type GeneratedPreview,
   type GeneratedVideo,
   type Account,
+  type PackSummary,
 } from "../lib/api";
 import { useDeck } from "../lib/deck";
 import { useAuth } from "../lib/auth";
@@ -29,6 +30,8 @@ const deckLabel = (id: string, name: string) => (DECK_RU[id] ? `${name} (${DECK_
 
 export default function Studio() {
   const [gens, setGens] = useState<Generator[]>([]);
+  const [packs, setPacks] = useState<PackSummary[]>([]);
+  const [packIdx, setPackIdx] = useState(0);
   const [bgs, setBgs] = useState<string[]>([]);
   const [preview, setPreview] = useState<GeneratedPreview | null>(null);
   const [video, setVideo] = useState<GeneratedVideo | null>(null);
@@ -48,8 +51,16 @@ export default function Studio() {
   const [batchN, setBatchN] = useState(5);
   const q = useGenQueue();
 
+  // Кастомный пак выбран в дропдауне (deck = "pack:<id>") — параллельный путь превью/сборки.
+  const isPack = deck.startsWith("pack:");
+  const packId = isPack ? deck.slice(5) : "";
+  const curPack = packs.find((p) => `pack:${p.id}` === deck);
+  // для пака сохранять можно в любой канал (язык пака не совпадает с lang каналов)
+  const saveAccounts = isPack ? accounts : accounts.filter((a) => a.lang === deck);
+
   useEffect(() => {
     apiClient.generators().then(setGens).catch(() => {});
+    apiClient.packs().then(setPacks).catch(() => {});
     apiClient.backgrounds().then(setBgs).catch(() => {});
     apiClient.music().then(setMusicList).catch(() => {});
     apiClient.accounts().then(setAccounts).catch(() => {});
@@ -67,6 +78,12 @@ export default function Studio() {
     setSaved(false);
     setErr(null);
     try {
+      if (isPack) {
+        await apiClient.packBuildVideo(packId, packIdx, { accountId: Number(channelId), music });
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2500);
+        return;
+      }
       await apiClient.saveVideo({
         accountId: Number(channelId),
         text: preview.text,
@@ -89,6 +106,15 @@ export default function Studio() {
     setVideo(null);
     setErr(null);
     try {
+      if (isPack) {
+        const n = curPack?.cards ?? 0;
+        if (!n) { setErr("В паке нет карточек — добавь на странице «Паки и карточки»"); return; }
+        const idx = Math.floor(Math.random() * n);
+        setPackIdx(idx);
+        const r = await apiClient.packPreview(packId, idx);
+        setPreview({ imageUrl: r.imageUrl, text: "", title: "", bg: "", fontPx: 0 } as GeneratedPreview);
+        return;
+      }
       const body =
         mode === "new"
           ? { bg: preview?.bg, deck } // new anecdote, keep the currently-chosen background
@@ -115,6 +141,11 @@ export default function Studio() {
     setBuilding(true);
     setErr(null);
     try {
+      if (isPack) {
+        const v = await apiClient.packBuildVideo(packId, packIdx, { music });
+        setVideo({ videoUrl: v.videoUrl, bg: "", music: v.music } as GeneratedVideo);
+        return;
+      }
       const v = await apiClient.generateAnecdoteVideo({
         text: preview.text,
         title: preview.title,
@@ -171,13 +202,29 @@ export default function Studio() {
                         {deckLabel(x.id, x.name)}
                       </option>
                     ))}
+                    {packs.length > 0 && (
+                      <optgroup label="Мои паки">
+                        {packs.map((p) => (
+                          <option key={p.id} value={`pack:${p.id}`}>
+                            {p.name} (пак)
+                          </option>
+                        ))}
+                      </optgroup>
+                    )}
                   </select>
-                  {g && (
+                  {isPack ? (
                     <div className="text-sm text-base-content/60 mt-1">
-                      <span className="text-success font-medium">{g.available} свободных</span>
-                      {g.used > 0 && <> · {g.used} использовано</>} ·{" "}
-                      <span className="badge badge-ghost badge-sm">без ИИ</span>
+                      <span className="text-success font-medium">{curPack?.cards ?? 0} карточек</span> ·{" "}
+                      <span className="badge badge-ghost badge-sm">пак · {curPack?.templates ?? 0} шаблон.</span>
                     </div>
+                  ) : (
+                    g && (
+                      <div className="text-sm text-base-content/60 mt-1">
+                        <span className="text-success font-medium">{g.available} свободных</span>
+                        {g.used > 0 && <> · {g.used} использовано</>} ·{" "}
+                        <span className="badge badge-ghost badge-sm">без ИИ</span>
+                      </div>
+                    )
                   )}
                 </div>
                 <button className="btn btn-primary gap-2" onClick={() => gen("new")} disabled={loading}>
@@ -221,7 +268,7 @@ export default function Studio() {
                 )}
               </div>
 
-              {g && (
+              {!isPack && g && (
                 <div className="border-t border-base-300 pt-3 flex flex-wrap gap-2 items-center">
                   {g.readyPacks.map((p) => (
                     <span key={p.n} className="badge badge-success badge-sm gap-1">
@@ -241,7 +288,7 @@ export default function Studio() {
           {preview && (
             <div className="card bg-base-100 border border-base-300">
               <div className="card-body gap-3">
-                {deck !== "psych" && deck !== "islamic" && deck !== "christian" ? (
+                {deck !== "psych" && deck !== "islamic" && deck !== "christian" && !isPack ? (
                   <>
                     <div className="flex items-center justify-between">
                       <span className="label-text">Текст анекдота (можно править)</span>
@@ -267,7 +314,9 @@ export default function Studio() {
                   </>
                 ) : (
                   <div className="text-sm text-base-content/60">
-                    {deck === "islamic"
+                    {isPack
+                      ? "✨ Карточка из пака готова. «Сгенерировать» — другая случайная; собери видео или сохрани в канал."
+                      : deck === "islamic"
                       ? "🕌 Карточка (аят / хадис / дуа) готова. Собери видео или сохрани в канал с языком «Ислам»."
                       : deck === "christian"
                         ? "✝️ Карточка (стих из Библии, KJV) готова. Собери видео или сохрани в канал с языком «Holy Bible · KJV»."
@@ -313,10 +362,10 @@ export default function Studio() {
                       setSaved(false);
                     }}
                   >
-                    {accounts.filter((a) => a.lang === deck).length === 0 && (
-                      <option value="">нет каналов на этом языке</option>
+                    {saveAccounts.length === 0 && (
+                      <option value="">{isPack ? "нет каналов" : "нет каналов на этом языке"}</option>
                     )}
-                    {accounts.filter((a) => a.lang === deck).map((a) => (
+                    {saveAccounts.map((a) => (
                       <option key={a.id} value={a.id}>
                         {a.channelName}
                       </option>
@@ -413,7 +462,7 @@ export default function Studio() {
             </a>
           ) : preview ? (
             <div className="text-xs text-base-content/50 text-center">
-              шрифт {preview.fontPx}px · фон {bgLabel(preview.bg)}
+              {isPack ? `пак · карточка #${packIdx + 1}` : `шрифт ${preview.fontPx}px · фон ${bgLabel(preview.bg)}`}
             </div>
           ) : null}
         </div>
