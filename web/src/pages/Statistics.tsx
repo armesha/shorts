@@ -18,21 +18,40 @@ type MetricKey = "subscribers" | "views" | "videos";
 type SortKey = "name" | "subscribers" | "views" | "videos" | "delta";
 const PAGE_SIZE = 10;
 
+// Persisted filters — restore the last-used filter/sort on the next visit.
+const STORE_KEY = "statsFilters.v1";
+type SavedFilters = {
+  search?: string;
+  sortKey?: SortKey;
+  sortDir?: "asc" | "desc";
+  ownerFilter?: string;
+  onlyConnected?: boolean;
+  scope?: Scope;
+};
+function loadFilters(): SavedFilters {
+  try {
+    return JSON.parse(localStorage.getItem(STORE_KEY) || "{}") as SavedFilters;
+  } catch {
+    return {};
+  }
+}
+
 export default function Statistics() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
+  const [saved] = useState(loadFilters); // last-used filters (localStorage), restored on mount
   const [rows, setRows] = useState<StatRow[]>([]);
-  const [scope, setScope] = useState<Scope>("mine");
+  const [scope, setScope] = useState<Scope>(saved.scope ?? "mine");
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
-  // Controls: search, sort, owner filter, only-connected, pagination.
-  const [search, setSearch] = useState("");
-  const [sortKey, setSortKey] = useState<SortKey>("subscribers");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
-  const [ownerFilter, setOwnerFilter] = useState("");
-  const [onlyConnected, setOnlyConnected] = useState(false);
+  // Controls (persisted): search, sort, owner filter, only-connected (default ON), pagination.
+  const [search, setSearch] = useState(saved.search ?? "");
+  const [sortKey, setSortKey] = useState<SortKey>(saved.sortKey ?? "subscribers");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">(saved.sortDir ?? "desc");
+  const [ownerFilter, setOwnerFilter] = useState(saved.ownerFilter ?? "");
+  const [onlyConnected, setOnlyConnected] = useState(saved.onlyConnected ?? true);
   const [page, setPage] = useState(1);
 
   // Auto-dismiss the success/result banner after a few seconds.
@@ -58,6 +77,18 @@ export default function Statistics() {
   // Any filter/sort/scope change → back to page 1.
   useEffect(() => {
     setPage(1);
+  }, [search, sortKey, sortDir, ownerFilter, onlyConnected, scope]);
+
+  // Persist the active filters so the next visit/reload restores them.
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        STORE_KEY,
+        JSON.stringify({ search, sortKey, sortDir, ownerFilter, onlyConnected, scope }),
+      );
+    } catch {
+      /* localStorage unavailable — ignore */
+    }
   }, [search, sortKey, sortDir, ownerFilter, onlyConnected, scope]);
 
   async function refresh() {
