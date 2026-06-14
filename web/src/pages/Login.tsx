@@ -35,39 +35,46 @@ export default function Login() {
     <div className="min-h-screen grid place-items-center bg-base-200 px-4">
       <div className="card w-full max-w-sm bg-base-100 border border-base-300 shadow-sm">
         <form className="card-body gap-4" onSubmit={submit}>
-          <div className="flex items-center gap-2 justify-center">
-            <Clapperboard className="text-primary" size={28} />
-            <span className="font-bold text-xl tracking-tight">Shorts Factory</span>
+          <div className="text-center">
+            <div className="flex items-center gap-2 justify-center">
+              <Clapperboard className="text-primary" size={28} />
+              <span className="font-bold text-xl tracking-tight">Shorts Factory</span>
+            </div>
+            <p className="text-sm text-base-content/60 mt-1">Вход в панель управления</p>
           </div>
-          <p className="text-center text-sm text-base-content/60 -mt-3">Вход в панель управления</p>
 
-          <div>
+          <label className="form-control">
             <span className="label-text">Логин</span>
             <input
-              className="input input-bordered w-full mt-1"
+              id="login-username"
+              name="username"
+              className="input input-bordered w-full"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              disabled={busy}
               autoFocus
               autoComplete="username"
             />
-          </div>
+          </label>
 
-          <div>
+          <label className="form-control">
             <span className="label-text">Пароль</span>
             <input
+              id="login-password"
+              name="password"
               type="password"
-              className="input input-bordered w-full mt-1"
+              className="input input-bordered w-full"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={busy}
               autoComplete="current-password"
             />
-          </div>
+          </label>
 
           {error && (
-            <div
-              className={`text-sm flex items-center gap-1 ${locked ? "text-warning" : "text-error"}`}
-            >
-              {locked ? <Lock size={14} /> : <AlertTriangle size={14} />} {error}
+            <div className={`alert ${locked ? "alert-warning" : "alert-error"} py-2 text-sm`}>
+              {locked ? <Lock size={16} /> : <AlertTriangle size={16} />}
+              <span>{error}</span>
             </div>
           )}
 

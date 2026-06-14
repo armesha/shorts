@@ -32,6 +32,8 @@ export default function Accounts() {
     try {
       const a = await apiClient.createAccount();
       navigate(`/accounts/${a.id}`);
+    } catch (e) {
+      alert("Не удалось создать канал: " + String(e));
     } finally {
       setCreating(false);
     }

@@ -81,6 +81,8 @@ export default function AccountDetail() {
       setAccount(updated);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
+    } catch (e) {
+      alert("Не удалось сохранить настройки канала: " + String(e));
     } finally {
       setSaving(false);
     }
@@ -262,11 +264,8 @@ export default function AccountDetail() {
 
             <div className="flex gap-2 items-center">
               <input
-                type="text"
-                inputMode="numeric"
-                placeholder="14:30"
-                maxLength={5}
-                className="input input-bordered input-sm w-24 text-center"
+                type="time"
+                className="input input-bordered input-sm w-32"
                 value={newTime}
                 onChange={(e) => setNewTime(e.target.value)}
               />

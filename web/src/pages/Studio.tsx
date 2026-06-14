@@ -57,6 +57,7 @@ export default function Studio() {
     if (!preview || !channelId) return;
     setSaving(true);
     setSaved(false);
+    setErr(null);
     try {
       await apiClient.saveVideo({
         accountId: Number(channelId),
@@ -68,6 +69,8 @@ export default function Studio() {
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Не удалось сохранить в библиотеку");
     } finally {
       setSaving(false);
     }
@@ -193,6 +196,7 @@ export default function Studio() {
                 {bgs.length > 0 && (
                   <select
                     className="select select-bordered select-sm"
+                    aria-label="Фон"
                     value={preview?.bg ?? ""}
                     onChange={(e) => gen("bg", e.target.value)}
                     disabled={loading || !preview}
@@ -245,8 +249,12 @@ export default function Studio() {
                     </div>
                     <textarea
                       className="textarea textarea-bordered min-h-32 leading-relaxed"
+                      aria-label="Текст анекдота"
                       value={text}
-                      onChange={(e) => setText(e.target.value)}
+                      onChange={(e) => {
+                        setText(e.target.value);
+                        setSaved(false);
+                      }}
                     />
                   </>
                 ) : (
@@ -257,6 +265,7 @@ export default function Studio() {
                 <div className="flex flex-wrap items-center gap-2">
                   <select
                     className="select select-bordered select-sm"
+                    aria-label="Музыка"
                     value={music}
                     onChange={(e) => setMusic(e.target.value)}
                   >
@@ -269,7 +278,7 @@ export default function Studio() {
                     ))}
                   </select>
                   {music && music !== "none" && (
-                    <audio controls src={`/audio/${music}`} className="h-8" style={{ maxWidth: 200 }} />
+                    <audio controls src={`/audio/${music}`} className="max-w-[200px]" />
                   )}
                   <button
                     className="btn btn-secondary gap-2 ml-auto"
@@ -285,8 +294,12 @@ export default function Studio() {
                   <span className="text-sm text-base-content/60">Сохранить в канал:</span>
                   <select
                     className="select select-bordered select-sm"
+                    aria-label="Канал для сохранения"
                     value={channelId}
-                    onChange={(e) => setChannelId(e.target.value)}
+                    onChange={(e) => {
+                      setChannelId(e.target.value);
+                      setSaved(false);
+                    }}
                   >
                     {accounts.filter((a) => a.lang === deck).length === 0 && (
                       <option value="">нет каналов на этом языке</option>

@@ -41,8 +41,8 @@ export default function Errors() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button className="btn btn-ghost btn-sm gap-1" onClick={load}>
-            <RefreshCw size={16} /> Обновить
+          <button className="btn btn-ghost btn-sm gap-1" onClick={load} disabled={loading}>
+            <RefreshCw size={16} className={loading ? "animate-spin" : ""} /> Обновить
           </button>
           <button
             className="btn btn-ghost btn-sm text-error gap-1"
@@ -100,11 +100,11 @@ export default function Errors() {
                             </span>
                           )}
                         </td>
-                        <td className="font-medium max-w-md truncate" title={e.message}>
-                          {e.message}
+                        <td className="font-medium">
+                          <div className="max-w-md truncate" title={e.message}>{e.message}</div>
                         </td>
-                        <td className="text-xs text-base-content/60 max-w-[16rem] truncate" title={e.context ?? ""}>
-                          {e.context}
+                        <td className="text-xs text-base-content/60">
+                          <div className="max-w-[16rem] truncate" title={e.context ?? ""}>{e.context}</div>
                         </td>
                       </tr>
                       {expanded === e.id && e.detail && (
