@@ -20,7 +20,7 @@ const DECK_RU: Record<string, string> = {
   en: "Английские анекдоты",
   "tips-de": "Немецкие лайфхаки",
   psych: "Психология",
-  islamic: "Ислам · Коран и хадисы",
+  islamic: "Ислам · арабский",
 };
 const deckLabel = (id: string, name: string) => (DECK_RU[id] ? `${name} (${DECK_RU[id]})` : name);
 

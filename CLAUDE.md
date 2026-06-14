@@ -115,7 +115,11 @@ unattended, managed from a web dashboard. Spec: `ТЗ.pdf`. Architecture & resea
   `direction:rtl` на самих текстовых элементах (bidi и так разворачивает арабский). Шрифт — **системный
   `Noto Naskh Arabic`** (веб-Amiri/Scheherazade тоже не рисуются). И НЕ добавляй `--disable-gpu` — в этом
   Chrome он тоже гасит текст; дефолтные флаги `captureCard` работают.
-- **TODO (просьба юзера):** для исламских видео — НЕ инструментальная музыка; нужен короткий (5–7с)
-  бесплатный не-инструментальный звук (нашид-вокал / эмбиент), отдельно от общего музыкального пула.
+- **Музыка исламской деки (сделано):** НЕ инструментальная — природный эмбиент (ветер/дождь),
+  сгенерирован `src/scripts/islamic-gen-audio.mjs` (ffmpeg-static, синтез из шума → 100% свободно, без
+  атрибуции) → `assets/audio/islamic/*.mp3`. `pickIslamicAudio()` в `src/video.ts`; `listAudio()`
+  исключает `islamic/` из общего (инструментального) пула; в обоих местах сборки `server/index.ts`
+  (`buildLibraryVideo` + `/api/generate/anecdote-video`) для `deck.islamic` форсится эмбиент
+  (явный «none» = тишина уважается). Викисклад давал только CC BY (атрибуция) — поэтому сгенерировали.
 - TODO requested: editable Google client-secret path in Settings UI (hardcoded default stays for now). AI/subagent titling of anecdotes (currently generic titles).
 - **Auth (Этап 1 готов):** вход в панель обязателен. `server/auth.ts` = scrypt-хэш + токены сессий + политика блокировки; таблицы `users`/`sessions` в `server/db.ts`; гейт всего `/api/*` + роуты `/api/auth/{login,logout,me}` в `server/index.ts`. Юзеры сидятся из `.env`: `ADMIN_USERNAME`/`ADMIN_PASSWORD` (admin) + `SEED_USERS="name:pass,…"` (user), идемпотентно (создаёт, если нет — пароль не перезатирает). Сессия = httpOnly-кука `sid`; блокировка после `AUTH_MAX_ATTEMPTS`(10) на `AUTH_LOCK_MINUTES`(15) мин. Фронт: `web/src/lib/auth.tsx` (AuthProvider/useAuth), `web/src/pages/Login.tsx`, гейт в `App.tsx`, выход в `Layout.tsx`. **Этап 2 TODO:** `user_id` у каналов (изоляция — свои каналы/ключ видит только владелец), свой Google client-secret на юзера, общий пул анекдотов, учёт «использованных» per-user, UI создания юзеров вместо `.env`.

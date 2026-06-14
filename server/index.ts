@@ -8,7 +8,7 @@ import { openDb, type Account } from "./db.ts";
 import { randomAnecdote, libraryStats, anecdoteKey } from "../src/anecdotes/library.ts";
 import { DECKS, getDeck, ytMeta, pickGenericTitle } from "../src/anecdotes/decks.ts";
 import { renderAnecdote, listBackgrounds } from "../src/anecdotes/render.ts";
-import { assembleStillVideo, listAudio, audioPathFor } from "../src/video.ts";
+import { assembleStillVideo, listAudio, audioPathFor, pickIslamicAudio } from "../src/video.ts";
 import {
   buildAuthUrl,
   exchangeAndGetChannel,
@@ -480,10 +480,10 @@ app.delete("/api/errors", async (req, reply) => {
   return { ok: true };
 });
 
-// ---- Server health (admin-only): live CPU/RAM/disk + in-memory history + pipeline activity ----
+// ---- Server health (any logged-in user, per owner request): live CPU/RAM/disk + history + activity ----
 // All values are cheap in-process reads; history is an in-memory ring (no DB, no disk growth).
-app.get("/api/system", async (req, reply) => {
-  if (!requireAdmin(req, reply)) return;
+// Behind the session gate (not public) but no longer admin-only — every user sees the load graph.
+app.get("/api/system", async () => {
   const accs = db.listAccounts();
   return {
     ...metrics.snapshot(),
@@ -560,6 +560,14 @@ async function buildLibraryVideo(input: {
     } else {
       music = "none";
       audioPath = null;
+    }
+  }
+  // Islamic deck → nature ambient (never instrumental music); explicit "none" still means silent.
+  if (deck.islamic && music !== "none") {
+    const amb = pickIslamicAudio();
+    if (amb) {
+      music = amb;
+      audioPath = audioPathFor(amb);
     }
   }
   const stamp = `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
@@ -801,6 +809,15 @@ app.post("/api/generate/anecdote-video", async (req) => {
     } else {
       music = "none";
       audioPath = null;
+    }
+  }
+
+  // Islamic deck → nature ambient (never instrumental music); explicit "none" still means silent.
+  if (deck.islamic && music !== "none") {
+    const amb = pickIslamicAudio();
+    if (amb) {
+      music = amb;
+      audioPath = audioPathFor(amb);
     }
   }
 

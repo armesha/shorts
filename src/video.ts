@@ -9,6 +9,10 @@ const pexec = promisify(execFile);
 const FFMPEG = ffmpegPath as unknown as string;
 const AUDIO_DIR = resolve(process.cwd(), "assets/audio");
 const AUDIO_EXT = new Set([".mp3", ".m4a", ".aac", ".wav", ".ogg", ".opus"]);
+// Reserved deck-specific audio subfolder kept OUT of the general (instrumental) pool.
+// Islamic videos use a nature-ambient track instead of instrumental music (no instruments).
+const ISLAMIC_SUBDIR = "islamic";
+const isIslamicTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(ISLAMIC_SUBDIR + "/");
 
 /** Pick a random royalty-free track from assets/audio, or null if the folder is empty. */
 /** List available audio tracks (relative names under assets/audio). */
@@ -16,8 +20,17 @@ export function listAudio(): string[] {
   if (!existsSync(AUDIO_DIR)) return [];
   return readdirSync(AUDIO_DIR, { recursive: true })
     .map((f) => f.toString())
-    .filter((f) => AUDIO_EXT.has(extname(f).toLowerCase()))
+    .filter((f) => AUDIO_EXT.has(extname(f).toLowerCase()) && !isIslamicTrack(f))
     .sort();
+}
+
+/** Pick a random nature-ambient track for the Islamic deck (relative name under assets/audio), or null. */
+export function pickIslamicAudio(): string | null {
+  const dir = resolve(AUDIO_DIR, ISLAMIC_SUBDIR);
+  if (!existsSync(dir)) return null;
+  const files = readdirSync(dir).filter((f) => AUDIO_EXT.has(extname(f).toLowerCase()));
+  if (files.length === 0) return null;
+  return `${ISLAMIC_SUBDIR}/${files[Math.floor(Math.random() * files.length)]}`;
 }
 
 /** Resolve a relative track name (from listAudio) to an absolute path. */
@@ -30,7 +43,7 @@ export async function pickAudio(): Promise<string | null> {
   const all = await readdir(AUDIO_DIR, { recursive: true });
   const files = all
     .map((f) => f.toString())
-    .filter((f) => AUDIO_EXT.has(extname(f).toLowerCase()));
+    .filter((f) => AUDIO_EXT.has(extname(f).toLowerCase()) && !isIslamicTrack(f));
   if (files.length === 0) return null;
   return resolve(AUDIO_DIR, files[Math.floor(Math.random() * files.length)]);
 }
