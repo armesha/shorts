@@ -53,12 +53,18 @@ function renderTemplate(container, tpl, content, opts) {
     stage.appendChild(node);
   });
 
-  // авто-подгон шрифта килбоксов — после монтирования (нужны реальные размеры)
-  requestAnimationFrame(() => {
+  // авто-подгон шрифта килбоксов — после монтирования (нужны реальные размеры).
+  // Повторяем после загрузки веб-шрифтов: их метрики шире/выше fallback — иначе подгон
+  // посчитан по системному шрифту, а реальный текст потом переполняет бокс (и обрезается).
+  function fitAllKillboxes() {
     tpl.elements.forEach(el => {
       if (el.type === "killbox") fitKillbox(el, stage);
     });
-  });
+  }
+  requestAnimationFrame(fitAllKillboxes);
+  if (typeof document !== "undefined" && document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => requestAnimationFrame(fitAllKillboxes));
+  }
 }
 
 function mountElement(el, content, showKillboxOutline) {
