@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Tv, Clapperboard, Clock, CheckCircle2, AlertTriangle, Send } from "lucide-react";
+import { Plus, Tv, Clapperboard, Clock, CheckCircle2, AlertTriangle, Send, Filter, X } from "lucide-react";
 import { apiClient, type Account, type AppStatus } from "../lib/api";
 
 export default function Accounts() {
@@ -9,7 +9,23 @@ export default function Accounts() {
   const [loadError, setLoadError] = useState(false);
   const [creating, setCreating] = useState(false);
   const [queue, setQueue] = useState<Record<number, number>>({});
+  // Filter by remaining-video runway; remembered between visits (like the Statistics filters).
+  const [runwayFilter, setRunwayFilter] = useState<string>(
+    () => localStorage.getItem("channelsRunwayFilter") || "all",
+  );
+  // Which «low runway» alert the user already dismissed (by the exact set of low channels) — no spam.
+  const [dismissedSig, setDismissedSig] = useState<string>(
+    () => sessionStorage.getItem("lowRunwayDismissed") || "",
+  );
   const navigate = useNavigate();
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("channelsRunwayFilter", runwayFilter);
+    } catch {
+      /* private mode */
+    }
+  }, [runwayFilter]);
 
   useEffect(() => {
     apiClient
@@ -66,6 +82,48 @@ export default function Accounts() {
     };
   })();
 
+  // Days of video left = count / posts-per-day (continuous; <1 → runs dry within a day).
+  // null = not applicable (no schedule, or counts still loading) → never flagged as low.
+  const runwayDays = (a: Account): number | null => {
+    const slots = a.enabled ? a.schedule.length : 0;
+    const count = queue[a.id];
+    if (slots === 0 || count == null) return null;
+    return count / slots;
+  };
+
+  // Channels about to run dry (< 1 day) — drives the alert and the «< 1 дня» filter.
+  const lowChannels = accounts.filter((a) => {
+    const r = runwayDays(a);
+    return r != null && r < 1;
+  });
+  // Alert is state-derived (auto-disappears when nothing is low) and dismiss is keyed by the EXACT
+  // set of low channels → dismissing hides it, but a NEW channel dropping low brings it back. No spam.
+  const lowSig = lowChannels
+    .map((a) => a.id)
+    .sort((x, y) => x - y)
+    .join(",");
+  const showLowAlert = lowChannels.length > 0 && lowSig !== dismissedSig;
+  const dismissLowAlert = () => {
+    setDismissedSig(lowSig);
+    try {
+      sessionStorage.setItem("lowRunwayDismissed", lowSig);
+    } catch {
+      /* private mode */
+    }
+  };
+
+  const matchesRunway = (a: Account): boolean => {
+    if (runwayFilter === "all") return true;
+    const slots = a.enabled ? a.schedule.length : 0;
+    if (runwayFilter === "nosched") return slots === 0;
+    const r = runwayDays(a);
+    if (r == null) return false; // loading or no schedule → not in a runway bucket
+    if (runwayFilter === "lt1") return r < 1;
+    if (runwayFilter === "lt3") return r < 3;
+    return true;
+  };
+  const shownAccounts = accounts.filter(matchesRunway);
+
   return (
     <div className="space-y-6">
       <header className="flex items-start justify-between gap-2 flex-wrap">
@@ -81,6 +139,35 @@ export default function Accounts() {
           </button>
         </div>
       </header>
+
+      {showLowAlert && (
+        <div className="alert alert-warning shadow-sm flex items-start gap-2">
+          <AlertTriangle size={18} className="mt-0.5 shrink-0" />
+          <div className="flex-1 text-sm">
+            <span className="font-semibold">Скоро закончатся ролики</span> — меньше чем на день у:{" "}
+            {lowChannels.map((a, i) => (
+              <span key={a.id}>
+                {i > 0 && ", "}
+                <Link to={`/accounts/${a.id}`} className="link font-medium">
+                  {a.channelName}
+                </Link>{" "}
+                <span className="text-base-content/60">
+                  ({queue[a.id] === 0 ? "нет видео" : `${queue[a.id]} в очереди`})
+                </span>
+              </span>
+            ))}
+            . Сгенерируй ещё, чтобы канал не простаивал.
+          </div>
+          <button
+            className="btn btn-ghost btn-xs btn-square"
+            onClick={dismissLowAlert}
+            aria-label="Скрыть"
+            title="Скрыть. Вернётся, если в зоне риска окажется другой канал."
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Stat icon={<Tv />} label="Каналов" value={accounts.length} />
@@ -106,8 +193,35 @@ export default function Accounts() {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {accounts.map((a) => (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Filter size={16} className="text-base-content/50" />
+            <span className="text-sm text-base-content/60">Остаток роликов:</span>
+            <select
+              className="select select-bordered select-sm"
+              value={runwayFilter}
+              onChange={(e) => setRunwayFilter(e.target.value)}
+              aria-label="Фильтр по остатку видео"
+            >
+              <option value="all">Все каналы</option>
+              <option value="lt1">Заканчиваются: меньше 1 дня</option>
+              <option value="lt3">Мало: меньше 3 дней</option>
+              <option value="nosched">Без расписания</option>
+            </select>
+            <span className="text-xs text-base-content/50">
+              Показано {shownAccounts.length} из {accounts.length}
+            </span>
+          </div>
+
+          {shownAccounts.length === 0 ? (
+            <div className="card bg-base-100 border border-base-300 border-dashed">
+              <div className="card-body items-center text-center py-10 text-base-content/60 text-sm">
+                Под выбранный фильтр каналов нет.
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {shownAccounts.map((a) => (
             <Link
               key={a.id}
               to={`/accounts/${a.id}`}
@@ -150,7 +264,9 @@ export default function Accounts() {
                 )}
               </div>
             </Link>
-          ))}
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
