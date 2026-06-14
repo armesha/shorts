@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { Layers } from "lucide-react";
-import { apiClient, type MyDecks, type AdminUser } from "../lib/api";
+import { Layers, AlertTriangle } from "lucide-react";
+import { apiClient, type MyDecks, type AdminUser, type LowDeckRow } from "../lib/api";
 import { useAuth } from "../lib/auth";
 
 const fmt = (n: number) => n.toLocaleString("ru-RU");
@@ -14,9 +14,12 @@ export default function Packs() {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [viewUser, setViewUser] = useState<number | "">(""); // admin: whose packs to view ("" = self)
+  const [lowDecks, setLowDecks] = useState<LowDeckRow[]>([]);
 
   useEffect(() => {
-    if (isAdmin) apiClient.adminUsers().then(setUsers).catch(() => {});
+    if (!isAdmin) return;
+    apiClient.adminUsers().then(setUsers).catch(() => {});
+    apiClient.adminLowDecks().then(setLowDecks).catch(() => {});
   }, [isAdmin]);
 
   useEffect(() => {
@@ -124,6 +127,54 @@ export default function Packs() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Admin: cross-user "running low" report — packs with remaining < 100, across everyone (incl. admin). */}
+      {isAdmin && (
+        <div className="card bg-base-100 border border-base-300">
+          <div className="card-body gap-2">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="text-warning" size={18} />
+              <h2 className="card-title text-base">Скоро закончится (по всем, включая тебя)</h2>
+              <span className="badge badge-ghost badge-sm">{lowDecks.length}</span>
+            </div>
+            <p className="text-xs text-base-content/50">
+              Паки, где у пользователя осталось меньше 100 свободных карточек — кто близок к концу.
+            </p>
+            {lowDecks.length === 0 ? (
+              <div className="text-sm text-base-content/50 py-2">Пока ни у кого пак не близок к концу 👍</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Пользователь</th>
+                      <th>Пак</th>
+                      <th className="text-right">Осталось</th>
+                      <th className="text-right">Выложено</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {lowDecks.map((r) => (
+                      <tr key={`${r.userId}:${r.deckId}`}>
+                        <td className="whitespace-nowrap font-medium">
+                          {r.username}
+                          {r.userId === user?.id ? " (ты)" : ""}
+                        </td>
+                        <td className="whitespace-nowrap">{r.deckName}</td>
+                        <td className={`text-right font-semibold ${r.available < 30 ? "text-error" : "text-warning"}`}>
+                          {fmt(r.available)}{" "}
+                          <span className="text-xs font-normal text-base-content/40">из {fmt(r.total)}</span>
+                        </td>
+                        <td className="text-right text-base-content/60">{fmt(r.posted)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

@@ -104,6 +104,17 @@ export interface MyDecks {
   username: string;
   decks: MyDeckStat[];
 }
+/** One row of the admin "running low" report: a user's pack with remaining below the threshold. */
+export interface LowDeckRow {
+  userId: number;
+  username: string;
+  deckId: string;
+  deckName: string;
+  available: number;
+  total: number;
+  used: number;
+  posted: number;
+}
 
 export interface GeneratedPreview {
   imageUrl: string;
@@ -348,6 +359,7 @@ export const apiClient = {
   setUserDecks: (userId: number, hidden: string[]) =>
     send<{ ok: boolean; hidden: string[] }>(`/admin/users/${userId}/decks`, "PUT", { hidden }),
   myDecks: (userId?: number) => get<MyDecks>(`/my-decks${userId != null ? `?userId=${userId}` : ""}`),
+  adminLowDecks: () => get<LowDeckRow[]>("/admin/low-decks"),
   accounts: (scope?: "all") => get<Account[]>(`/accounts${scope === "all" ? "?scope=all" : ""}`),
   account: (id: number | string) => get<Account>(`/accounts/${id}`),
   createAccount: () => send<Account>("/accounts", "POST", {}),
