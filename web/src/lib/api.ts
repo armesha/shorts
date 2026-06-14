@@ -217,7 +217,6 @@ export interface PsychLimits {
   titleLines: { min: number; max: number; maxLineChars: number };
   items: { min: number; max: number };
   outroMax: number;
-  themeMax: number;
 }
 export interface PsychSchema {
   patterns: PsychPattern[];
@@ -228,7 +227,6 @@ export interface PsychCard {
   title_lines: string[];
   items: Record<string, string>[];
   outro?: string;
-  theme?: string;
   addedAt?: string;
   source?: string;
 }
@@ -359,13 +357,10 @@ export const apiClient = {
   music: () => get<string[]>("/music"),
   // German-psychology card uploader
   psychSchema: () => get<PsychSchema>("/psych/cards/schema"),
-  psychCards: (page = 1, pageSize = 12, onlyUploaded = true, theme?: string) =>
-    get<PsychCardList>(
-      `/psych/cards?page=${page}&pageSize=${pageSize}&onlyUploaded=${onlyUploaded}` +
-        (theme ? `&theme=${encodeURIComponent(theme)}` : ""),
-    ),
-  uploadPsychCards: (cards: unknown, theme?: string) =>
-    send<{ added: number; total: number }>("/psych/cards", "POST", { cards, theme }),
+  psychCards: (page = 1, pageSize = 12, onlyUploaded = true) =>
+    get<PsychCardList>(`/psych/cards?page=${page}&pageSize=${pageSize}&onlyUploaded=${onlyUploaded}`),
+  uploadPsychCards: (cards: unknown) =>
+    send<{ added: number; total: number }>("/psych/cards", "POST", { cards }),
   generateAnecdote: (body?: { text?: string; title?: string; bg?: string; deck?: string }) =>
     send<GeneratedPreview>("/generate/anecdote", "POST", body ?? {}),
   generateAnecdoteVideo: (body?: { text?: string; title?: string; bg?: string; music?: string; deck?: string }) =>

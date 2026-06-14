@@ -1,6 +1,6 @@
 // Validate + append + browse for user-uploaded German-psychology cards.
 // Cards live in data/psych/cards.json (git-tracked, pretty-printed 2-space). Uploads are stamped
-// with theme/addedAt/source and appended atomically, then the library cache is busted so the new
+// with addedAt/source and appended atomically, then the library cache is busted so the new
 // cards go live WITHOUT a server restart. Validation enforces src/psych/schema.ts so anything that
 // passes also renders cleanly via templates/psych.html.
 import { readFileSync, writeFileSync, renameSync, existsSync } from "node:fs";
@@ -18,8 +18,6 @@ export interface PsychCardInput {
 }
 
 export interface StoredPsychCard extends PsychCardInput {
-  /** Topic tag (from the upload form or the card itself). */
-  theme?: string;
   /** ISO timestamp set on upload (absent on the original seed cards). */
   addedAt?: string;
   /** "upload" for user-added cards; absent on the seed cards. */
@@ -118,12 +116,6 @@ function validateOne(raw: unknown, index: number): { card?: StoredPsychCard; mes
     else outro = c.outro;
   }
 
-  // theme — optional, carried from the card if present (form theme is applied later)
-  let theme: string | undefined;
-  if (isStr(c.theme) && c.theme.trim()) {
-    theme = c.theme.trim().slice(0, PSYCH_LIMITS.themeMax);
-  }
-
   if (m.length) return { messages: m };
   const card: StoredPsychCard = {
     pattern: pattern as string,
@@ -131,7 +123,6 @@ function validateOne(raw: unknown, index: number): { card?: StoredPsychCard; mes
     items: cleanItems,
   };
   if (outro) card.outro = outro;
-  if (theme) card.theme = theme;
   return { card, messages: [] };
 }
 
@@ -159,21 +150,14 @@ export function validateBatch(input: unknown): ValidationResult {
   return { cards, errors, parsed: entries.length };
 }
 
-/** Append validated cards (stamped with theme/addedAt/source) atomically; bust the library cache. */
+/** Append validated cards (stamped with addedAt/source) atomically; bust the library cache. */
 export function appendCards(
   cards: StoredPsychCard[],
-  theme: string | undefined,
   file: string = CARDS_FILE,
   now: string = new Date().toISOString(),
 ): { added: number; total: number } {
   const all = readAllCards(file);
-  const t = theme?.trim().slice(0, PSYCH_LIMITS.themeMax) || undefined;
-  const stamped = cards.map((c) => {
-    const card: StoredPsychCard = { ...c, addedAt: now, source: "upload" };
-    const th = c.theme || t;
-    if (th) card.theme = th;
-    return card;
-  });
+  const stamped = cards.map((c) => ({ ...c, addedAt: now, source: "upload" }));
   all.push(...stamped);
   // Atomic write: temp + rename so a crash can't truncate the tracked deck file.
   const tmp = `${file}.tmp`;
@@ -195,16 +179,14 @@ export interface ListResult {
  * sorted by addedAt desc; otherwise shows the whole deck with uploaded cards on top.
  */
 export function listCards(
-  opts: { page?: number; pageSize?: number; onlyUploaded?: boolean; theme?: string },
+  opts: { page?: number; pageSize?: number; onlyUploaded?: boolean },
   file: string = CARDS_FILE,
 ): ListResult {
   const all = readAllCards(file);
   const onlyUploaded = opts.onlyUploaded !== false;
-  const themeFilter = opts.theme?.trim().toLowerCase();
   // Keep the original index so the UI can render/preview the exact card.
   let rows = all.map((card, index) => ({ index, card }));
   if (onlyUploaded) rows = rows.filter((r) => r.card.source === "upload");
-  if (themeFilter) rows = rows.filter((r) => (r.card.theme ?? "").toLowerCase().includes(themeFilter));
   // Newest first: by addedAt desc (undated seed cards last), tie-break by index desc.
   rows.sort((a, b) => {
     const ta = a.card.addedAt ?? "";

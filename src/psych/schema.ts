@@ -118,8 +118,6 @@ export const PSYCH_LIMITS = {
   items: { min: 3, max: 10 },
   /** Optional closing call-to-action under a divider. */
   outroMax: 150,
-  /** Optional theme tag stored on each uploaded card. */
-  themeMax: 60,
 } as const;
 
 /** Compact machine description of the format (returned by the schema route for the UI panel). */

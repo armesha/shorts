@@ -16,14 +16,12 @@ export function registerPsychCardsRoutes(app: FastifyInstance) {
       page: Number(q.page) || 1,
       pageSize: Number(q.pageSize) || 12,
       onlyUploaded: q.onlyUploaded !== "false",
-      theme: q.theme,
     });
   });
 
   // Validate + append a batch. All-or-nothing: any invalid card → 400 with per-card errors, nothing saved.
   app.post("/api/psych/cards", async (req, reply) => {
-    const body = (req.body as { cards?: unknown; raw?: string; theme?: string }) ?? {};
-    const theme = typeof body.theme === "string" ? body.theme : undefined;
+    const body = (req.body as { cards?: unknown; raw?: string }) ?? {};
     const input = body.cards ?? body.raw ?? null;
     if (input == null || (typeof body.raw === "string" && !body.raw.trim())) {
       return reply.code(400).send({ error: "Пусто: вставь JSON карточек" });
@@ -43,7 +41,7 @@ export function registerPsychCardsRoutes(app: FastifyInstance) {
         valid: result.cards.length,
       });
     }
-    const { added, total } = appendCards(result.cards, theme);
+    const { added, total } = appendCards(result.cards);
     return { added, total };
   });
 }

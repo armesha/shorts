@@ -49,19 +49,15 @@ ok(
 );
 
 // --- append + list on the temp file ---
-const r1 = appendCards(gv.cards, "Testthema", TMP, "2026-06-14T10:00:00.000Z");
+const r1 = appendCards(gv.cards, TMP, "2026-06-14T10:00:00.000Z");
 ok(r1.added === good.length && r1.total === good.length, `дозаписано ${r1.added}, всего ${r1.total}`);
-const r2 = appendCards([gv.cards[0]], "Anderes", TMP, "2026-06-14T11:00:00.000Z");
+const r2 = appendCards([gv.cards[0]], TMP, "2026-06-14T11:00:00.000Z");
 ok(r2.total === good.length + 1, `после второй загрузки всего ${r2.total}`);
 
 const list = listCards({ page: 1, pageSize: 5, onlyUploaded: true }, TMP);
 ok(list.total === good.length + 1, `в ленте ${list.total} загруженных`);
 ok(list.items.length === 5, `на странице ${list.items.length} (pageSize=5)`);
 ok(list.items[0].card.addedAt === "2026-06-14T11:00:00.000Z", "сортировка: новейшая карточка сверху");
-ok(list.items[0].card.theme === "Anderes", "тема проставлена на загруженной карточке");
-
-const filtered = listCards({ onlyUploaded: true, theme: "testthema" }, TMP);
-ok(filtered.total === good.length, `фильтр по теме «Testthema» → ${filtered.total}`);
 
 rmSync(TMP, { force: true });
 console.log(fails === 0 ? "\n🎉 Все проверки прошли" : `\n💥 Провалов: ${fails}`);
