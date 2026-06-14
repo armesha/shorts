@@ -181,6 +181,7 @@ function AdminUsers() {
   const [error, setError] = useState("");
   const [created, setCreated] = useState("");
   const [savingCell, setSavingCell] = useState<string | null>(null);
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   const loadUsers = () => apiClient.adminUsers().then(setUsers).catch(() => {});
   const loadMatrix = () => apiClient.adminUserDecks().then(setRows).catch(() => {});
@@ -218,10 +219,14 @@ function AdminUsers() {
       ? row.hidden.filter((d) => d !== deckId)
       : [...new Set([...row.hidden, deckId])];
     setSavingCell(`${row.userId}:${deckId}`);
+    setSaveState("saving");
     setRows((rs) => rs.map((r) => (r.userId === row.userId ? { ...r, hidden: nextHidden } : r)));
     try {
       await apiClient.setUserDecks(row.userId, nextHidden);
+      setSaveState("saved");
+      window.setTimeout(() => setSaveState((s) => (s === "saved" ? "idle" : s)), 1800);
     } catch {
+      setSaveState("error");
       loadMatrix();
     } finally {
       setSavingCell(null);
@@ -328,7 +333,24 @@ function AdminUsers() {
         {/* Visibility matrix: users × packs (checkbox = visible; «исп.» = already used) */}
         {rows.length > 0 && decks.length > 0 && (
           <div className="border-t border-base-300 pt-3">
-            <p className="text-sm font-medium mb-2">Кто какие паки видит</p>
+            <p className="text-sm font-medium mb-2 flex items-center gap-2">
+              Кто какие паки видит
+              {saveState === "saving" && (
+                <span className="text-xs font-normal text-base-content/50 inline-flex items-center gap-1">
+                  <span className="loading loading-spinner loading-xs" /> сохранение…
+                </span>
+              )}
+              {saveState === "saved" && (
+                <span className="text-xs font-normal text-success inline-flex items-center gap-1">
+                  <Check size={12} /> сохранено
+                </span>
+              )}
+              {saveState === "error" && (
+                <span className="text-xs font-normal text-error inline-flex items-center gap-1">
+                  <AlertTriangle size={12} /> не сохранилось
+                </span>
+              )}
+            </p>
             <div className="overflow-x-auto">
               <table className="table table-xs">
                 <thead>
