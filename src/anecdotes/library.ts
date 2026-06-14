@@ -43,6 +43,19 @@ function titledItems(deckId: string): PackItem[] {
       chars: (c.arabic ?? "").length,
       title: c.ref ?? "",
     }));
+  } else if (getDeck(deckId).christian) {
+    // Christian deck: data/christian/cards.json holds structured cards (text + ref); whole card → JSON in `text`.
+    const file = resolve(deckDir(deckId), "cards.json");
+    const cards = existsSync(file)
+      ? (JSON.parse(readFileSync(file, "utf8")) as { text?: string; ref?: string }[])
+      : [];
+    items = cards.map((c, i) => ({
+      id: i,
+      pack: 1,
+      text: JSON.stringify(c),
+      chars: (c.text ?? "").length,
+      title: c.ref ?? "",
+    }));
   } else {
     const titled = resolve(deckDir(deckId), "titled.json");
     items = existsSync(titled) ? (JSON.parse(readFileSync(titled, "utf8")) as PackItem[]) : [];

@@ -23,6 +23,7 @@ const DECK_RU: Record<string, string> = {
   "tips-de": "Немецкие лайфхаки",
   psych: "Психология",
   islamic: "Ислам · арабский",
+  christian: "Библия · англ.",
 };
 const deckLabel = (id: string, name: string) => (DECK_RU[id] ? `${name} (${DECK_RU[id]})` : name);
 
@@ -240,7 +241,7 @@ export default function Studio() {
           {preview && (
             <div className="card bg-base-100 border border-base-300">
               <div className="card-body gap-3">
-                {deck !== "psych" && deck !== "islamic" ? (
+                {deck !== "psych" && deck !== "islamic" && deck !== "christian" ? (
                   <>
                     <div className="flex items-center justify-between">
                       <span className="label-text">Текст анекдота (можно править)</span>
@@ -268,7 +269,9 @@ export default function Studio() {
                   <div className="text-sm text-base-content/60">
                     {deck === "islamic"
                       ? "🕌 Карточка (аят / хадис / дуа) готова. Собери видео или сохрани в канал с языком «Ислам»."
-                      : "🧠 Психо-карточка готова. Собери видео или сохрани в канал с языком «Психология (DE)»."}
+                      : deck === "christian"
+                        ? "✝️ Карточка (стих из Библии, KJV) готова. Собери видео или сохрани в канал с языком «Holy Bible · KJV»."
+                        : "🧠 Психо-карточка готова. Собери видео или сохрани в канал с языком «Психология (DE)»."}
                   </div>
                 )}
                 <div className="flex flex-wrap items-center gap-2">

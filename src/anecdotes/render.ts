@@ -7,6 +7,7 @@ import { chromePath } from "../render.ts";
 import { getDeck } from "./decks.ts";
 import { buildPsychHtml } from "../psych/render.ts";
 import { buildIslamicHtml, pickIslamicBg } from "../islamic/render.ts";
+import { buildChristianHtml, pickChristianBg } from "../christian/render.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATE = resolve(__dirname, "../../templates/anecdote.html");
@@ -124,6 +125,7 @@ export async function renderAnecdote(
   outPath: string,
 ): Promise<{ path: string; fontPx: number; bg: string }> {
   if (getDeck(a.deck).islamic) return renderIslamic(a, outPath);
+  if (getDeck(a.deck).christian) return renderChristian(a, outPath);
   if (getDeck(a.deck).psych) return renderPsych(a, outPath);
   if (getDeck(a.deck).lifehack) return renderLifehack(a, outPath);
   const bgName = a.bg ?? randomBackgroundName() ?? "";
@@ -168,6 +170,23 @@ async function renderIslamic(
   }
   const bg = pickIslamicBg(a.bg);
   const html = buildIslamicHtml(card as Parameters<typeof buildIslamicHtml>[0], bg);
+  const fontPx = await captureCard(html, outPath);
+  return { path: outPath, fontPx, bg: bg.file };
+}
+
+/** Render one Christian card (English KJV passage; whole card stored as JSON in a.text) via templates/christian.html. */
+async function renderChristian(
+  a: Anecdote,
+  outPath: string,
+): Promise<{ path: string; fontPx: number; bg: string }> {
+  let card: { type?: string; text?: string; ref?: string };
+  try {
+    card = JSON.parse(a.text);
+  } catch {
+    card = { type: "verse", text: a.text, ref: a.title || "" };
+  }
+  const bg = pickChristianBg(a.bg);
+  const html = buildChristianHtml(card as Parameters<typeof buildChristianHtml>[0], bg);
   const fontPx = await captureCard(html, outPath);
   return { path: outPath, fontPx, bg: bg.file };
 }

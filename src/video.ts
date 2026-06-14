@@ -9,10 +9,14 @@ const pexec = promisify(execFile);
 const FFMPEG = ffmpegPath as unknown as string;
 const AUDIO_DIR = resolve(process.cwd(), "assets/audio");
 const AUDIO_EXT = new Set([".mp3", ".m4a", ".aac", ".wav", ".ogg", ".opus"]);
-// Reserved deck-specific audio subfolder kept OUT of the general (instrumental) pool.
-// Islamic videos use a nature-ambient track instead of instrumental music (no instruments).
+// Reserved deck-specific audio subfolders kept OUT of the general (instrumental) pool.
+// Islamic videos use a nature-ambient track; Christian videos use a sacred organ/choir pad —
+// each its own bed, never the shared instrumental music.
 const ISLAMIC_SUBDIR = "islamic";
+const CHRISTIAN_SUBDIR = "christian";
 const isIslamicTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(ISLAMIC_SUBDIR + "/");
+const isChristianTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(CHRISTIAN_SUBDIR + "/");
+const isReservedTrack = (f: string) => isIslamicTrack(f) || isChristianTrack(f);
 
 /** Pick a random royalty-free track from assets/audio, or null if the folder is empty. */
 /** List available audio tracks (relative names under assets/audio). */
@@ -20,7 +24,7 @@ export function listAudio(): string[] {
   if (!existsSync(AUDIO_DIR)) return [];
   return readdirSync(AUDIO_DIR, { recursive: true })
     .map((f) => f.toString())
-    .filter((f) => AUDIO_EXT.has(extname(f).toLowerCase()) && !isIslamicTrack(f))
+    .filter((f) => AUDIO_EXT.has(extname(f).toLowerCase()) && !isReservedTrack(f))
     .sort();
 }
 
@@ -33,6 +37,15 @@ export function pickIslamicAudio(): string | null {
   return `${ISLAMIC_SUBDIR}/${files[Math.floor(Math.random() * files.length)]}`;
 }
 
+/** Pick a random sacred organ/choir pad for the Christian deck (relative name under assets/audio), or null. */
+export function pickChristianAudio(): string | null {
+  const dir = resolve(AUDIO_DIR, CHRISTIAN_SUBDIR);
+  if (!existsSync(dir)) return null;
+  const files = readdirSync(dir).filter((f) => AUDIO_EXT.has(extname(f).toLowerCase()));
+  if (files.length === 0) return null;
+  return `${CHRISTIAN_SUBDIR}/${files[Math.floor(Math.random() * files.length)]}`;
+}
+
 /** Resolve a relative track name (from listAudio) to an absolute path. */
 export function audioPathFor(name: string): string {
   return resolve(AUDIO_DIR, name);
@@ -43,7 +56,7 @@ export async function pickAudio(): Promise<string | null> {
   const all = await readdir(AUDIO_DIR, { recursive: true });
   const files = all
     .map((f) => f.toString())
-    .filter((f) => AUDIO_EXT.has(extname(f).toLowerCase()) && !isIslamicTrack(f));
+    .filter((f) => AUDIO_EXT.has(extname(f).toLowerCase()) && !isReservedTrack(f));
   if (files.length === 0) return null;
   return resolve(AUDIO_DIR, files[Math.floor(Math.random() * files.length)]);
 }

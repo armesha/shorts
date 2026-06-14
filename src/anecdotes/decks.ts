@@ -15,6 +15,10 @@ export interface Deck {
   psych?: boolean;
   /** When true, this deck's items are Islamic cards (Quran/hadith/dua; whole card as JSON in `text`), rendered via templates/islamic.html. */
   islamic?: boolean;
+  /** When true, this deck's items are Christian (English KJV Bible) cards (whole card as JSON in `text`), rendered via templates/christian.html. */
+  christian?: boolean;
+  /** When true, this deck is visible & usable ONLY by admins — hidden from every non-admin regardless of per-user deck settings. */
+  adminOnly?: boolean;
   /** Lifehack background style suffix, e.g. "chaplin" → profession_<key>_chaplin.jpg (with moustache).
    *  Omitted → the plain profession_<key>.jpg (no moustache). */
   lifehackVariant?: string;
@@ -106,6 +110,18 @@ export const DECKS: Deck[] = [
     genericTitles: ["آية", "حديث", "دعاء", "ذكر"],
     islamic: true,
   },
+  {
+    id: "christian",
+    name: "Holy Bible · KJV",
+    dir: "data/christian", // cards.json (English KJV Bible passages, exact text), not pack-*.json
+    source: "",
+    emoji: "✝️",
+    hashtags: "#bible #jesus #faith #scripture #god #christian #kjv #shorts",
+    tags: ["bible", "scripture", "jesus", "faith", "god", "christian", "kjv", "bible verse", "daily verse", "shorts"],
+    genericTitles: ["Holy Bible", "Scripture", "Bible Verse", "Word of God"],
+    christian: true,
+    adminOnly: true, // new packs are admin-only by default
+  },
 ];
 
 export const DEFAULT_DECK = "ru";
@@ -140,6 +156,23 @@ export function ytMeta(
     return {
       title: `${ref} ${deck.emoji} #shorts`,
       description: `${ar}\n\n${ref}${refEn}\n\n${deck.hashtags}`,
+      tags: deck.tags,
+    };
+  }
+  // Christian cards: title = the reference, body = the exact KJV passage (+ reference).
+  if (deck.christian) {
+    let body = text,
+      ref = title;
+    try {
+      const c = JSON.parse(text) as { text?: string; ref?: string };
+      body = c.text ?? text;
+      ref = c.ref ?? title;
+    } catch {
+      /* not JSON — use raw text */
+    }
+    return {
+      title: `${ref} ${deck.emoji} #shorts`,
+      description: `${body}\n\n${ref} (KJV)\n\n${deck.hashtags}`,
       tags: deck.tags,
     };
   }

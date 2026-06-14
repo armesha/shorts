@@ -8,7 +8,7 @@ import { openDb, type Account } from "./db.ts";
 import { randomAnecdote, libraryStats, anecdoteKey } from "../src/anecdotes/library.ts";
 import { DECKS, getDeck, ytMeta, pickGenericTitle } from "../src/anecdotes/decks.ts";
 import { renderAnecdote, listBackgrounds } from "../src/anecdotes/render.ts";
-import { assembleStillVideo, listAudio, audioPathFor, pickIslamicAudio } from "../src/video.ts";
+import { assembleStillVideo, listAudio, audioPathFor, pickIslamicAudio, pickChristianAudio } from "../src/video.ts";
 import {
   buildAuthUrl,
   exchangeAndGetChannel,
@@ -273,9 +273,11 @@ function ownAccount(req: unknown, reply: Replyish, id: number): Account | null {
   return a;
 }
 
-// True if the user may use a deck (pack): admins always; others unless the deck is hidden for them.
+// True if the user may use a deck (pack): admins always; admin-only packs never for non-admins;
+// otherwise unless the deck is hidden for them.
 function deckAllowed(req: unknown, deckId: string): boolean {
   if (db.getUserById(uid(req))?.role === "admin") return true;
+  if (getDeck(deckId).adminOnly) return false;
   return !db.isDeckHiddenFor(uid(req), deckId);
 }
 
@@ -397,6 +399,14 @@ app.put("/api/admin/users/:id/decks", async (req, reply) => {
 
 // Pack overview for the «Паки» tab (any logged-in user): their VISIBLE packs with total/used/remaining/posted.
 // Admins may pass ?userId=<id> to view another user's packs.
+// Decks a user may see/use: per-user not hidden AND (admin OR not an admin-only deck).
+function visibleDecksForUser(userId: number) {
+  const u = db.getUserById(userId);
+  const isAdminUser = u?.role === "admin";
+  const hidden = isAdminUser ? new Set<string>() : new Set(db.hiddenDecksFor(userId));
+  return DECKS.filter((d) => (isAdminUser || !d.adminOnly) && !hidden.has(d.id));
+}
+
 app.get("/api/my-decks", async (req, reply) => {
   const me = db.getUserById(uid(req));
   const isAdmin = me?.role === "admin";
@@ -404,14 +414,51 @@ app.get("/api/my-decks", async (req, reply) => {
   const targetId = isAdmin && q.userId ? Number(q.userId) : uid(req);
   const target = db.getUserById(targetId);
   if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
-  const hidden = new Set(target.role === "admin" ? [] : db.hiddenDecksFor(targetId));
   const usedKeys = new Set(db.usedAnecdoteKeys(targetId));
   const posted = db.postedByUserDeck()[targetId] ?? {};
-  const decks = DECKS.filter((d) => !hidden.has(d.id)).map((d) => {
+  const decks = visibleDecksForUser(targetId).map((d) => {
     const s = libraryStats(d.id, usedKeys);
     return { id: d.id, name: d.name, total: s.total, used: s.used, available: s.available, posted: posted[d.id] ?? 0 };
   });
   return { userId: targetId, username: target.username, decks };
+});
+
+// Admin: every (user, pack) where the user's remaining cards in that pack is below the threshold (100).
+// Across ALL users (admin included) so the admin sees who is about to run out. Lowest remaining first.
+app.get("/api/admin/low-decks", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+  const THRESHOLD = 100;
+  const posted = db.postedByUserDeck();
+  const out: {
+    userId: number;
+    username: string;
+    deckId: string;
+    deckName: string;
+    available: number;
+    total: number;
+    used: number;
+    posted: number;
+  }[] = [];
+  for (const u of db.listUsers()) {
+    const usedKeys = new Set(db.usedAnecdoteKeys(u.id));
+    for (const d of visibleDecksForUser(u.id)) {
+      const s = libraryStats(d.id, usedKeys);
+      if (s.available < THRESHOLD) {
+        out.push({
+          userId: u.id,
+          username: u.username,
+          deckId: d.id,
+          deckName: d.name,
+          available: s.available,
+          total: s.total,
+          used: s.used,
+          posted: posted[u.id]?.[d.id] ?? 0,
+        });
+      }
+    }
+  }
+  out.sort((a, b) => a.available - b.available);
+  return out;
 });
 
 // ---- Accounts (scoped to the current user) ----
@@ -675,8 +722,11 @@ async function buildLibraryVideo(input: {
   profession?: string;
 }) {
   const deck = getDeck(input.deck);
-  // Backstop (covers save, batch, and the gen-queue worker): never build a deck hidden for this user.
-  if (db.getUserById(input.userId)?.role !== "admin" && db.isDeckHiddenFor(input.userId, deck.id))
+  // Backstop (covers save, batch, and the gen-queue worker): never build an admin-only or hidden deck.
+  if (
+    db.getUserById(input.userId)?.role !== "admin" &&
+    (deck.adminOnly || db.isDeckHiddenFor(input.userId, deck.id))
+  )
     throw new Error("Этот пак вам недоступен");
   const title = input.title || pickGenericTitle(deck);
   let music = input.music;
@@ -699,6 +749,14 @@ async function buildLibraryVideo(input: {
     if (amb) {
       music = amb;
       audioPath = audioPathFor(amb);
+    }
+  }
+  // Christian deck → sacred organ/choir pad (never instrumental music); explicit "none" still means silent.
+  if (deck.christian && music !== "none") {
+    const pad = pickChristianAudio();
+    if (pad) {
+      music = pad;
+      audioPath = audioPathFor(pad);
     }
   }
   const stamp = `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
@@ -926,7 +984,8 @@ app.get("/api/generators", async (req) => {
   // Hide packs the admin has turned off for this user (admins always see all).
   const isAdmin = db.getUserById(uid(req))?.role === "admin";
   const hidden = isAdmin ? new Set<string>() : new Set(db.hiddenDecksFor(uid(req)));
-  const base = DECKS.filter((d) => !hidden.has(d.id)).map((d) => {
+  // Admin-only packs (e.g. new decks) are never exposed to non-admins.
+  const base = DECKS.filter((d) => !hidden.has(d.id) && (isAdmin || !d.adminOnly)).map((d) => {
     const s = libraryStats(d.id, used);
     return {
       id: d.id,
@@ -1016,6 +1075,14 @@ app.post("/api/generate/anecdote-video", async (req, reply) => {
     if (amb) {
       music = amb;
       audioPath = audioPathFor(amb);
+    }
+  }
+  // Christian deck → sacred organ/choir pad (never instrumental music); explicit "none" still means silent.
+  if (deck.christian && music !== "none") {
+    const pad = pickChristianAudio();
+    if (pad) {
+      music = pad;
+      audioPath = audioPathFor(pad);
     }
   }
 

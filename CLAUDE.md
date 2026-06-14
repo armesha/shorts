@@ -131,5 +131,26 @@ unattended, managed from a web dashboard. Spec: `ТЗ.pdf`. Architecture & resea
   исключает `islamic/` из общего (инструментального) пула; в обоих местах сборки `server/index.ts`
   (`buildLibraryVideo` + `/api/generate/anecdote-video`) для `deck.islamic` форсится эмбиент
   (явный «none» = тишина уважается). Викисклад давал только CC BY (атрибуция) — поэтому сгенерировали.
+- **Христианская дека (`christian`, «Holy Bible · KJV», admin-only):** 1000 карточек на английском —
+  точные стихи **KJV** (public domain), отрывки по 2–3 стиха ~350–400 симв. Пайплайн добычи (всё в
+  `corpora/christian/`, gitignored): `christian-fetch-corpus.mjs` (полный KJV из `aruljohn/Bible-kjv`
+  через jsDelivr → `pool.json`/`verses.jsonl`) → `christian-build-candidates.mjs` (окна стихов внутри
+  главы, банд 320–450, дроп генеалогий/списков; тайлит «богатые» книги + FAMOUS-ссылки из остальных →
+  `cand-pool.json` + слайсы + `manifest.json`) → **Sonnet-воркфлоу** (правило-исключение: тут Sonnet,
+  как у ислама; 63 агента читают слайсы с диска, выбирают лучшие id+theme) → `selection.json` →
+  `christian-assemble.mjs` (дедуп по id+overlap, топ-ап до 1000 из остатка по «хорошим» книгам, баланс,
+  каноничный порядок) → `data/christian/cards.json` (+ index.json). Карточка = `{type,text,ref,theme,
+  book,testament}` (весь объект JSON в `text`, как islamic/psych). Рендер: `templates/christian.html` +
+  `src/christian/render.ts`, диспетч по флагу `christian:true` в `decks.ts`; LTR сериф (Liberation Serif),
+  кремовый текст на тёмном, скрим, авто-подгон; фоны `assets/backgrounds/christian_protestant_templates/`
+  (15 шт.), у каждого своя safe-зона (карта `SAFE` в render.ts — выверена по 15 рендер-сэмплам). `ytMeta`
+  christian = читаемый стих + ссылка + (KJV); title = ссылка `ref`. Музыка: **сакральный синт-пад
+  орган/хор**, `christian-gen-audio.mjs` (ffmpeg, синтез сумм синусов+ревёрб → 100% свободно) →
+  `assets/audio/christian/*.mp3`; `pickChristianAudio()` в `video.ts`; `listAudio()` исключает `christian/`;
+  форсится в обоих местах сборки `server/index.ts` для `deck.christian`.
+- **Admin-only паки (новое):** флаг `adminOnly?: boolean` у деки (`decks.ts`). `deckAllowed()` →
+  `false` для не-админа на adminOnly-деке; `/api/generators` фильтрует их у не-админов; backstop в
+  `buildLibraryVideo` тоже. Фронт деко-агностичен: язык в `LANGS` (AccountDetail) и метка в `DECK_RU`
+  (Studio) есть, но дропдаун строится из `/api/generators` → не-админ их просто не видит.
 - TODO requested: editable Google client-secret path in Settings UI (hardcoded default stays for now). AI/subagent titling of anecdotes (currently generic titles).
 - **Auth (Этап 1 готов):** вход в панель обязателен. `server/auth.ts` = scrypt-хэш + токены сессий + политика блокировки; таблицы `users`/`sessions` в `server/db.ts`; гейт всего `/api/*` + роуты `/api/auth/{login,logout,me}` в `server/index.ts`. Юзеры сидятся из `.env`: `ADMIN_USERNAME`/`ADMIN_PASSWORD` (admin) + `SEED_USERS="name:pass,…"` (user), идемпотентно (создаёт, если нет — пароль не перезатирает). Сессия = httpOnly-кука `sid`; блокировка после `AUTH_MAX_ATTEMPTS`(10) на `AUTH_LOCK_MINUTES`(15) мин. Фронт: `web/src/lib/auth.tsx` (AuthProvider/useAuth), `web/src/pages/Login.tsx`, гейт в `App.tsx`, выход в `Layout.tsx`. **Этап 2 TODO:** `user_id` у каналов (изоляция — свои каналы/ключ видит только владелец), свой Google client-secret на юзера, общий пул анекдотов, учёт «использованных» per-user, UI создания юзеров вместо `.env`.
