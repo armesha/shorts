@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Sparkles, Dices, RefreshCw, Wand2, Loader2, Film, Save, Check } from "lucide-react";
+import { Sparkles, Dices, RefreshCw, Wand2, Loader2, Film, Save, Check, Plus } from "lucide-react";
 import {
   apiClient,
   type Generator,
@@ -8,6 +8,7 @@ import {
   type Account,
 } from "../lib/api";
 import { useDeck } from "../lib/deck";
+import { useAuth } from "../lib/auth";
 
 const bgLabel = (f: string) => f.replace(/\.(jpe?g|png)$/i, "");
 const musicLabel = (f: string) => f.split("/").pop()!.replace(/\.\w+$/, "");
@@ -40,6 +41,9 @@ export default function Studio() {
   const [saved, setSaved] = useState(false);
   const [deck, setDeck] = useDeck();
   const [err, setErr] = useState<string | null>(null);
+  const { user } = useAuth();
+  const [batching, setBatching] = useState<number | null>(null);
+  const [batchMsg, setBatchMsg] = useState<string | null>(null);
 
   useEffect(() => {
     apiClient.generators().then(setGens).catch(() => {});
@@ -74,6 +78,27 @@ export default function Studio() {
       setErr(e instanceof Error ? e.message : "Не удалось сохранить в библиотеку");
     } finally {
       setSaving(false);
+    }
+  }
+
+  // Сгенерировать сразу N роликов (случайные неиспользованные карточки) в выбранный канал —
+  // как на странице канала. Лимиты: админ 5/10/20, обычный пользователь 1/5/10.
+  async function makeBatch(n: number) {
+    if (!channelId) return;
+    setBatching(n);
+    setErr(null);
+    setBatchMsg(null);
+    try {
+      const r = await apiClient.batchVideos(Number(channelId), n, deck);
+      setBatchMsg(
+        r.exhausted
+          ? `Сделано ${r.made} из ${n} — свободные карточки закончились.`
+          : `Готово: ${r.made} ролик(ов) добавлено в библиотеку канала.`,
+      );
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Не удалось сгенерировать пакет");
+    } finally {
+      setBatching(null);
     }
   }
 
@@ -327,6 +352,30 @@ export default function Studio() {
                     )}
                     {saved ? "Сохранено в библиотеку" : "Сохранить в библиотеку"}
                   </button>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 border-t border-base-300 pt-3">
+                  <span className="text-sm text-base-content/60">Сразу несколько в канал:</span>
+                  {(user?.role === "admin" ? [5, 10, 20] : [1, 5, 10]).map((n) => (
+                    <button
+                      key={n}
+                      className="btn btn-sm btn-outline gap-1"
+                      onClick={() => makeBatch(n)}
+                      disabled={batching !== null || !channelId}
+                      title={`Сгенерировать ${n} случайных роликов в библиотеку канала`}
+                    >
+                      {batching === n ? <Loader2 className="animate-spin" size={14} /> : <Plus size={14} />}
+                      {n}
+                    </button>
+                  ))}
+                  {batching !== null && (
+                    <span className="text-xs text-base-content/60 flex items-center gap-1">
+                      <Loader2 className="animate-spin" size={12} /> Генерирую {batching}… (~{batching * 6}с)
+                    </span>
+                  )}
+                  {batchMsg && batching === null && (
+                    <span className="text-xs text-success">{batchMsg}</span>
+                  )}
                 </div>
               </div>
             </div>
