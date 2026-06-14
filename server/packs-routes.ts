@@ -97,8 +97,8 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
 
   // Удалить пак целиком.
   app.delete("/api/packs/:id", async (req, reply) => {
-    const ok = deletePack((req.params as { id: string }).id, uid(req));
-    if (!ok) return reply.code(404).send({ error: "Пак не найден" });
+    const ok = deletePack((req.params as { id: string }).id, uid(req), adminReq(req));
+    if (!ok) return reply.code(404).send({ error: "Пак не найден или нет прав на удаление" });
     return { deleted: true };
   });
 

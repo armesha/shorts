@@ -295,10 +295,11 @@ export function deleteCard(
   return { deleted: true, total: p.cards.length };
 }
 
-/** Удалить пак целиком (только владельцу). */
-export function deletePack(id: string, userId: number): boolean {
-  const p = getPack(id, userId);
+/** Удалить пак целиком: админ — любой пак, остальные — только СВОЙ (созданный лично, грант не считается). */
+export function deletePack(id: string, userId: number, isAdmin = false): boolean {
+  const p = readPackFile(id);
   if (!p) return false;
+  if (!isAdmin && p.userId !== userId) return false; // не админ → только владелец (не грантополучатель)
   unlinkSync(packFile(id));
   return true;
 }

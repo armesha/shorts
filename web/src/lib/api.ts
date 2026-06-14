@@ -285,6 +285,7 @@ export interface PsychUploadErrorBody {
 // ---- Кастомные паки (хаб «Паки и карточки») ----
 export interface PackSummary {
   id: string;
+  userId: number; // владелец пака (для «удалять только свои»)
   name: string;
   lang: string;
   templates: number;

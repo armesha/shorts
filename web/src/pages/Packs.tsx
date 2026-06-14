@@ -1,6 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
-import { Layers, AlertTriangle } from "lucide-react";
-import { apiClient, type MyDecks, type AdminUser, type LowDeckRow, type UserDeckRow, type Generator } from "../lib/api";
+import { Link } from "react-router-dom";
+import { Layers, AlertTriangle, Trash2, Loader2 } from "lucide-react";
+import {
+  apiClient,
+  type MyDecks,
+  type AdminUser,
+  type LowDeckRow,
+  type UserDeckRow,
+  type Generator,
+  type PackSummary,
+} from "../lib/api";
 import { useAuth } from "../lib/auth";
 
 const fmt = (n: number) => n.toLocaleString("ru-RU");
@@ -19,6 +28,27 @@ export default function Packs() {
   const [threshold, setThreshold] = useState<number>(
     () => Number(localStorage.getItem("lowDeckThreshold")) || 300,
   );
+  const [customPacks, setCustomPacks] = useState<PackSummary[]>([]); // кастомные паки, видимые мне
+  const [deletingPack, setDeletingPack] = useState<string | null>(null);
+
+  // Кастомные паки грузим для всех (юзер видит свои/гранченные, админ — все).
+  useEffect(() => {
+    apiClient.packs().then(setCustomPacks).catch(() => {});
+  }, []);
+
+  // Удаление пака: админ — любой, обычный юзер — только свой (кнопка показывается по тем же правилам).
+  const removePack = async (p: PackSummary) => {
+    if (!window.confirm(`Удалить пак «${p.name}» со всеми карточками? Это необратимо.`)) return;
+    setDeletingPack(p.id);
+    try {
+      await apiClient.deletePack(p.id);
+      setCustomPacks((cur) => cur.filter((x) => x.id !== p.id));
+    } catch (e) {
+      alert("Не удалось удалить пак: " + (e instanceof Error ? e.message : String(e)));
+    } finally {
+      setDeletingPack(null);
+    }
+  };
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -167,6 +197,55 @@ export default function Packs() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Кастомные («свои») паки из /cards — показываем в собственном представлении (не при просмотре чужих). */}
+      {viewUser === "" && customPacks.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-bold">Свои паки</h2>
+            <span className="badge badge-ghost badge-sm">{customPacks.length}</span>
+            <Link to="/cards" className="link link-primary text-sm ml-auto">
+              Управлять в «Карточках» →
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {customPacks.map((p) => {
+              const canDelete = isAdmin || p.userId === user?.id;
+              const foreign = isAdmin && p.userId !== user?.id;
+              return (
+                <div key={p.id} className="card bg-base-100 border border-base-300">
+                  <div className="card-body gap-1 p-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="font-semibold truncate" title={p.name}>
+                        {p.name}
+                      </div>
+                      {canDelete && (
+                        <button
+                          className="btn btn-ghost btn-xs btn-square text-error shrink-0"
+                          onClick={() => removePack(p)}
+                          disabled={deletingPack === p.id}
+                          title={foreign ? "Удалить чужой пак (админ)" : "Удалить мой пак"}
+                          aria-label="Удалить пак"
+                        >
+                          {deletingPack === p.id ? (
+                            <Loader2 className="animate-spin" size={14} />
+                          ) : (
+                            <Trash2 size={14} />
+                          )}
+                        </button>
+                      )}
+                    </div>
+                    <div className="text-2xl font-bold leading-none">{fmt(p.cards)}</div>
+                    <div className="text-xs text-base-content/50">
+                      карточек{p.templates ? ` · ${p.templates} шабл.` : ""} · {p.lang.toUpperCase()}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
