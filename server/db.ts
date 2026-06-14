@@ -617,6 +617,28 @@ export function openDb(path: string) {
       for (const k of Object.keys(sets)) out[Number(k)] = [...sets[Number(k)]];
       return out;
     },
+    // Total daily schedule slots (= posts/day) across a user's channels, optionally excluding one account.
+    // Used to cap a user at ≤100 scheduled posts per 24h.
+    scheduleSlotsForUser(userId: number, excludeAccountId?: number): number {
+      const rows = db.prepare("SELECT id, schedule FROM accounts WHERE user_id = ?").all(userId) as Row[];
+      let n = 0;
+      for (const r of rows) {
+        if (excludeAccountId != null && (r.id as number) === excludeAccountId) continue;
+        try {
+          n += (JSON.parse((r.schedule as string) || "[]") as unknown[]).length;
+        } catch {
+          /* malformed schedule → count as 0 */
+        }
+      }
+      return n;
+    },
+    // Total library videos (queued, not yet posted) across a user's channels.
+    countVideosByUser(userId: number): number {
+      const r = db
+        .prepare("SELECT COUNT(*) AS n FROM videos v JOIN accounts a ON a.id = v.account_id WHERE a.user_id = ?")
+        .get(userId) as { n: number };
+      return r.n;
+    },
     // Per-user Google client_secret JSON (uploaded in Settings). Never sent back to the frontend.
     getUserClientSecret(userId: number): string | null {
       const r = db.prepare("SELECT client_secret_json FROM users WHERE id = ?").get(userId) as Row | undefined;

@@ -223,8 +223,15 @@ function AdminUsers() {
                   {rows.map((row) => (
                     <tr key={row.userId}>
                       <td className="font-medium whitespace-nowrap">
-                        {row.role === "admin" && <span className="text-primary">★ </span>}
-                        {row.username}
+                        <div>
+                          {row.role === "admin" && <span className="text-primary">★ </span>}
+                          {row.username}
+                        </div>
+                        <div className="text-[11px] font-normal text-base-content/50">
+                          запланировано {row.scheduled}
+                          {row.role !== "admin" ? "/100" : ""} в сутки
+                          {row.library > 0 ? ` · ${row.library} в библ.` : ""}
+                        </div>
                       </td>
                       {decks.map((d) => {
                         if (row.role === "admin")

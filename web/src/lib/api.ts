@@ -83,6 +83,8 @@ export interface UserDeckRow {
   role: string;
   hidden: string[];
   used: string[];
+  scheduled: number; // posts/day planned across all the user's channels
+  library: number; // videos queued in the user's libraries
 }
 
 export interface GeneratedPreview {

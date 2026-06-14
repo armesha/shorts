@@ -365,6 +365,8 @@ app.get("/api/admin/user-decks", async (req, reply) => {
     role: u.role,
     hidden: hidden[u.id] ?? [],
     used: used[u.id] ?? [],
+    scheduled: db.scheduleSlotsForUser(u.id), // posts/day planned across all their channels
+    library: db.countVideosByUser(u.id), // videos queued in their libraries
   }));
 });
 // Replace a user's hidden-pack set (body.hidden = pack ids to hide). Admins can't be restricted.
@@ -397,6 +399,14 @@ app.put("/api/accounts/:id", async (req, reply) => {
   const body = (req.body as Partial<Account>) ?? {};
   if (body.lang && DECKS.some((d) => d.id === body.lang) && !deckAllowed(req, body.lang))
     return reply.code(403).send({ error: "Этот пак вам недоступен — нельзя поставить его языком канала." });
+  // Cap: ≤ 100 scheduled posts per day per user (sum of schedule slots across all their channels). Admins exempt.
+  if (Array.isArray(body.schedule) && db.getUserById(uid(req))?.role !== "admin") {
+    const others = db.scheduleSlotsForUser(uid(req), id);
+    if (others + body.schedule.length > 100)
+      return reply.code(400).send({
+        error: `Лимит 100 публикаций в сутки на пользователя. На остальных каналах уже ${others}, этому каналу доступно ${Math.max(0, 100 - others)}.`,
+      });
+  }
   const a = db.updateAccount(id, body);
   if (!a) return reply.code(404).send({ error: "not found" });
   return a;
@@ -572,24 +582,43 @@ app.get("/api/youtube/auth-url", async (req, reply) => {
   if (!ownAccount(req, reply, accountId)) return;
   const creds = userCreds(uid(req));
   if (!creds) return reply.code(400).send({ error: "Сначала загрузите свой Google-ключ в Настройках" });
+  app.log.info({ accountId, user: uid(req), redirect: REDIRECT_URI }, "[oauth] auth-url issued");
   return { url: buildAuthUrl(creds, REDIRECT_URI, String(accountId)) };
 });
 
 app.get("/api/youtube/callback", async (req, reply) => {
-  const { code, state } = req.query as { code?: string; state?: string };
-  if (!code || !state) return reply.code(400).send("Missing code/state");
+  const { code, state, error: gError } = req.query as { code?: string; state?: string; error?: string };
+  app.log.info({ state, hasCode: !!code, gError, webOrigin: WEB_ORIGIN }, "[oauth] callback received");
+  const fail = (where: string, msg: string, detail: string | null = null) => {
+    app.log.error({ state, where, msg }, "[oauth] callback failed");
+    db.addError({
+      source: "server",
+      message: "Привязка YouTube: " + msg,
+      detail,
+      context: `youtube/callback ${where} state=${state}`,
+    });
+    return reply.redirect(`${WEB_ORIGIN}/accounts/${state ?? ""}?error=${encodeURIComponent(msg)}`);
+  };
+  if (gError) return fail("google", `Google отклонил доступ (${gError})`);
+  if (!code || !state) return fail("params", "Google вернул запрос без code/state");
   // No session here (Google redirects the browser) — derive the owner's key from the account.
   const acc = db.getAccount(Number(state));
-  if (!acc || acc.userId == null) return reply.redirect(`${WEB_ORIGIN}/?error=1`);
+  if (!acc || acc.userId == null) return fail("account", `Канал #${state} не найден или без владельца`);
   const creds = userCreds(acc.userId);
-  if (!creds) return reply.redirect(`${WEB_ORIGIN}/accounts/${state}?error=1`);
+  if (!creds) return fail("creds", "У владельца канала нет Google-ключа (загрузите его в Настройках)");
   try {
+    app.log.info({ state, owner: acc.userId }, "[oauth] exchanging code for tokens…");
     const r = await exchangeAndGetChannel(creds, REDIRECT_URI, code);
     db.setYouTube(Number(state), r);
+    app.log.info(
+      { state, channelId: r.channelId, channelTitle: r.channelTitle, hasRefresh: !!r.refreshToken },
+      "[oauth] connected ✓",
+    );
+    if (!r.refreshToken)
+      app.log.warn({ state }, "[oauth] no refresh_token — re-consent likely needed (prompt=consent)");
     return reply.redirect(`${WEB_ORIGIN}/accounts/${state}?connected=1`);
   } catch (err) {
-    app.log.error(err);
-    return reply.redirect(`${WEB_ORIGIN}/accounts/${state}?error=1`);
+    return fail("exchange", ytErrorMessage(err), (err as Error)?.stack ?? null);
   }
 });
 

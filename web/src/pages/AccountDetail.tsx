@@ -27,6 +27,7 @@ export default function AccountDetail() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const justConnected = params.get("connected") === "1";
+  const connectError = params.get("error");
   const [account, setAccount] = useState<Account | null>(null);
   const [channelName, setChannelName] = useState("");
   const [theme, setTheme] = useState("");
@@ -47,6 +48,12 @@ export default function AccountDetail() {
   const [clearing, setClearing] = useState(false);
   const [page, setPage] = useState(1);
   const [gens, setGens] = useState<Generator[]>([]);
+  const [otherSlots, setOtherSlots] = useState(0); // schedule slots on the user's OTHER channels (100/day cap)
+  const [notice, setNotice] = useState<{ text: string; kind: "info" | "success" | "error" } | null>(null);
+  const notify = (text: string, kind: "info" | "success" | "error" = "info") => {
+    setNotice({ text, kind });
+    (kind === "error" ? console.error : console.log)("[привязка]", text);
+  };
 
   const reloadVideos = () => apiClient.videos(id!).then(setVideos).catch(() => {});
 
@@ -60,11 +67,40 @@ export default function AccountDetail() {
         setLang(a.lang);
         setTimes(a.schedule);
         setSlotVideos(a.slotVideos || {});
+        console.log("[привязка] канал загружен:", {
+          id: a.id,
+          status: a.status,
+          ytChannelId: a.ytChannelId,
+          ytChannelTitle: a.ytChannelTitle,
+        });
       })
       .catch(() => {});
     reloadVideos();
     apiClient.generators().then(setGens).catch(() => {});
+    // Sum of schedule slots on the user's OTHER channels — for the «≤100 posts/day» cap counter.
+    apiClient
+      .accounts()
+      .then((accs) =>
+        setOtherSlots(
+          accs.filter((a) => a.id !== Number(id)).reduce((s, a) => s + (a.schedule?.length ?? 0), 0),
+        ),
+      )
+      .catch(() => {});
   }, [id]);
+
+  // Авто-скрытие всплывающего уведомления.
+  useEffect(() => {
+    if (!notice) return;
+    const t = setTimeout(() => setNotice(null), 6000);
+    return () => clearTimeout(t);
+  }, [notice]);
+
+  // Результат привязки (возврат из Google OAuth) → тост + лог в консоль (F12).
+  useEffect(() => {
+    if (justConnected) notify("Канал успешно подключён к YouTube ✓", "success");
+    else if (connectError) notify("Не удалось подключить канал: " + connectError, "error");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Сброс на первую страницу при смене сортировки.
   useEffect(() => {
@@ -109,8 +145,16 @@ export default function AccountDetail() {
   }
 
   async function connect() {
-    const { url } = await apiClient.youtubeAuthUrl(id!);
-    window.location.href = url;
+    console.log("[привязка] старт: запрашиваю ссылку авторизации Google", { accountId: id });
+    notify("Открываю авторизацию Google…", "info");
+    try {
+      const { url } = await apiClient.youtubeAuthUrl(id!);
+      console.log("[привязка] получена ссылка авторизации, перенаправляю на Google:", url);
+      window.location.href = url;
+    } catch (e) {
+      console.error("[привязка] не удалось получить ссылку авторизации:", e);
+      notify(e instanceof Error ? e.message : "Не удалось начать привязку канала", "error");
+    }
   }
 
   async function postNow(vid: number) {
@@ -178,10 +222,30 @@ export default function AccountDetail() {
   const visibleLangs =
     gens.length === 0 ? LANGS : LANGS.filter(([code]) => gensIds.has(code) || code === lang);
 
+  // Per-user cap: ≤ 100 scheduled posts/day across ALL channels (admins exempt).
+  const isAdmin = user?.role === "admin";
+  const dayUsed = otherSlots + times.length; // posts/day across all the user's channels
+  const scheduleRemaining = Math.max(0, 100 - otherSlots); // max slots this channel may hold
+
   if (!account) return <div className="text-base-content/60">Загрузка…</div>;
 
   return (
     <div className="space-y-6 max-w-3xl">
+      {notice && (
+        <div className="toast toast-top toast-end z-50">
+          <div
+            className={`alert shadow-lg ${
+              notice.kind === "error"
+                ? "alert-error"
+                : notice.kind === "success"
+                  ? "alert-success"
+                  : "alert-info"
+            }`}
+          >
+            <span>{notice.text}</span>
+          </div>
+        </div>
+      )}
       <Link to="/accounts" className="btn btn-ghost btn-sm gap-2">
         <ArrowLeft size={16} /> Назад к каналам
       </Link>
@@ -235,7 +299,14 @@ export default function AccountDetail() {
           </label>
 
           <div className="form-control">
-            <span className="label-text mb-2">Расписание загрузки (по серверному времени)</span>
+            <div className="flex items-center justify-between mb-2 gap-2">
+              <span className="label-text">Расписание загрузки (по серверному времени)</span>
+              {!isAdmin && (
+                <span className={`text-xs ${dayUsed > 100 ? "text-error font-medium" : "text-base-content/50"}`}>
+                  В сутки по всем каналам: {dayUsed} / 100
+                </span>
+              )}
+            </div>
 
             <div className="flex flex-wrap gap-2 mb-3 items-center">
               <span className="text-sm text-base-content/60">Быстро:</span>
@@ -243,6 +314,7 @@ export default function AccountDetail() {
                 <button
                   key={n}
                   className="btn btn-xs btn-outline"
+                  disabled={!isAdmin && otherSlots + n > 100}
                   onClick={() => setTimes(evenTimes(n))}
                 >
                   {n}× в день
@@ -287,10 +359,15 @@ export default function AccountDetail() {
               />
               <button
                 className="btn btn-sm btn-outline gap-1"
+                disabled={!isAdmin && times.length >= scheduleRemaining}
                 onClick={() => {
                   const t = newTime.trim();
                   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(t)) {
                     alert("Введите время в 24-часовом формате — например 09:00 или 14:30");
+                    return;
+                  }
+                  if (!isAdmin && times.length >= scheduleRemaining) {
+                    alert(`Лимит 100 публикаций в сутки на пользователя. На остальных каналах уже ${otherSlots}.`);
                     return;
                   }
                   if (!times.includes(t)) setTimes([...times, t]);
