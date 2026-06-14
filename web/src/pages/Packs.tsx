@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Layers, AlertTriangle } from "lucide-react";
-import { apiClient, type MyDecks, type AdminUser, type LowDeckRow } from "../lib/api";
+import { apiClient, type MyDecks, type AdminUser, type LowDeckRow, type UserDeckRow, type Generator } from "../lib/api";
 import { useAuth } from "../lib/auth";
 
 const fmt = (n: number) => n.toLocaleString("ru-RU");
@@ -14,13 +14,53 @@ export default function Packs() {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [viewUser, setViewUser] = useState<number | "">(""); // admin: whose packs to view ("" = self)
-  const [lowDecks, setLowDecks] = useState<LowDeckRow[]>([]);
+  const [userDecks, setUserDecks] = useState<UserDeckRow[]>([]); // per-user deck stats (admin)
+  const [deckNames, setDeckNames] = useState<Record<string, string>>({}); // deckId → human name
+  const [threshold, setThreshold] = useState<number>(
+    () => Number(localStorage.getItem("lowDeckThreshold")) || 300,
+  );
 
   useEffect(() => {
     if (!isAdmin) return;
     apiClient.adminUsers().then(setUsers).catch(() => {});
-    apiClient.adminLowDecks().then(setLowDecks).catch(() => {});
+    apiClient.adminUserDecks().then(setUserDecks).catch(() => {});
+    apiClient
+      .generators()
+      .then((gs: Generator[]) => setDeckNames(Object.fromEntries(gs.map((g) => [g.id, g.name]))))
+      .catch(() => {});
   }, [isAdmin]);
+
+  // Remember the chosen threshold between visits.
+  useEffect(() => {
+    try {
+      localStorage.setItem("lowDeckThreshold", String(threshold));
+    } catch {
+      /* private mode */
+    }
+  }, [threshold]);
+
+  // «Кто близок к концу» — computed client-side from the per-user deck stats, so the threshold is
+  // instantly adjustable (no server round-trip). Covers the decks each user is actually using.
+  const lowDecks = useMemo<LowDeckRow[]>(() => {
+    const rows: LowDeckRow[] = [];
+    for (const u of userDecks) {
+      for (const [deckId, s] of Object.entries(u.deckStats ?? {})) {
+        if (s.available < threshold) {
+          rows.push({
+            userId: u.userId,
+            username: u.username,
+            deckId,
+            deckName: deckNames[deckId] ?? deckId,
+            available: s.available,
+            total: s.total,
+            used: s.used,
+            posted: s.posted,
+          });
+        }
+      }
+    }
+    return rows.sort((a, b) => a.available - b.available);
+  }, [userDecks, threshold, deckNames]);
 
   useEffect(() => {
     setLoading(true);
@@ -134,13 +174,29 @@ export default function Packs() {
       {isAdmin && (
         <div className="card bg-base-100 border border-base-300">
           <div className="card-body gap-2">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <AlertTriangle className="text-warning" size={18} />
               <h2 className="card-title text-base">Скоро закончится (по всем, включая тебя)</h2>
               <span className="badge badge-ghost badge-sm">{lowDecks.length}</span>
+              <label className="ml-auto flex items-center gap-2 text-xs text-base-content/60">
+                Порог
+                <input
+                  type="number"
+                  min={1}
+                  max={100000}
+                  step={50}
+                  className="input input-bordered input-xs w-24"
+                  value={threshold}
+                  onChange={(e) =>
+                    setThreshold(Math.max(1, Math.min(100000, Number(e.target.value) || 0)))
+                  }
+                  aria-label="Порог: меньше скольких свободных карточек считать «близко к концу»"
+                />
+                своб.
+              </label>
             </div>
             <p className="text-xs text-base-content/50">
-              Паки, где у пользователя осталось меньше 100 свободных карточек — кто близок к концу.
+              Паки, где у пользователя осталось меньше {fmt(threshold)} свободных карточек — кто близок к концу.
             </p>
             {lowDecks.length === 0 ? (
               <div className="text-sm text-base-content/50 py-2">Пока ни у кого пак не близок к концу 👍</div>
