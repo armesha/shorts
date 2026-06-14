@@ -54,7 +54,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           </div>
           <nav className="p-3 flex-1">
             <ul className="menu gap-1 w-full">
-              {NAV.filter((n) => !n.adminOnly || user?.role === "admin").map(({ to, label, icon: Icon, end }) => (
+              {NAV.filter((n) => !n.adminOnly || user?.role === "admin").map(({ to, label, icon: Icon, end, adminOnly }) => (
                 <li key={to}>
                   <NavLink
                     to={to}
@@ -64,6 +64,12 @@ export default function Layout({ children }: { children: ReactNode }) {
                   >
                     <Icon size={18} />
                     {label}
+                    {/* Admin-only tab → small red «adm» tag (auto for any adminOnly item, now & future). */}
+                    {adminOnly && (
+                      <span className="badge badge-error badge-xs ml-auto" title="видно только администратору">
+                        adm
+                      </span>
+                    )}
                   </NavLink>
                 </li>
               ))}

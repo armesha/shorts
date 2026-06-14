@@ -32,7 +32,7 @@ function AdminUsers() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("user");
-  const [newHidden, setNewHidden] = useState<Set<string>>(new Set());
+  const [newVisible, setNewVisible] = useState<Set<string>>(new Set()); // packs GRANTED to the new user (default: none)
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [created, setCreated] = useState("");
@@ -52,13 +52,13 @@ function AdminUsers() {
     setCreated("");
     setBusy(true);
     try {
-      const hidden = role === "admin" ? [] : decks.filter((d) => newHidden.has(d.id)).map((d) => d.id);
+      const hidden = role === "admin" ? [] : decks.filter((d) => !newVisible.has(d.id)).map((d) => d.id);
       const u = await apiClient.createUser(username.trim(), password, role, hidden);
       setCreated(`Создан «${u.username}» (${u.role === "admin" ? "админ" : "пользователь"})`);
       setUsername("");
       setPassword("");
       setRole("user");
-      setNewHidden(new Set());
+      setNewVisible(new Set());
       loadUsers();
       loadMatrix();
     } catch (err) {
@@ -147,29 +147,29 @@ function AdminUsers() {
           {role !== "admin" && decks.length > 0 && (
             <div className="mt-2">
               <span className="text-xs text-base-content/60">
-                Доступные паки <b>нового</b> пользователя (по умолчанию все). Эти отметки применятся при
-                нажатии «Создать» — отдельной кнопки сохранения тут нет. Уже созданным паки меняй в таблице
-                ниже ↓ (там клик по галочке сохраняется сразу).
+                Паки <b>нового</b> пользователя (по умолчанию <b>ничего не отмечено</b> — отметь те, что дать).
+                Применятся при нажатии «Создать» — отдельной кнопки сохранения тут нет. Уже созданным паки меняй
+                в таблице ниже ↓ (там клик по галочке сохраняется сразу).
               </span>
               <div className="flex flex-wrap gap-1.5 mt-1">
                 {decks.map((d) => {
-                  const visible = !newHidden.has(d.id);
+                  const granted = newVisible.has(d.id);
                   return (
                     <button
                       key={d.id}
                       type="button"
-                      title={visible ? "виден новому юзеру — клик, чтобы скрыть" : "скрыт у нового юзера — клик, чтобы показать"}
-                      className={`btn btn-xs gap-1 ${visible ? "btn-primary" : "btn-ghost border border-base-300 line-through opacity-60"}`}
+                      title={granted ? "виден новому юзеру — клик, чтобы скрыть" : "скрыт у нового юзера — клик, чтобы дать"}
+                      className={`btn btn-xs gap-1 ${granted ? "btn-primary" : "btn-ghost border border-base-300 line-through opacity-60"}`}
                       onClick={() =>
-                        setNewHidden((s) => {
+                        setNewVisible((s) => {
                           const n = new Set(s);
-                          if (visible) n.add(d.id);
-                          else n.delete(d.id);
+                          if (granted) n.delete(d.id);
+                          else n.add(d.id);
                           return n;
                         })
                       }
                     >
-                      {visible ? <Check size={11} /> : null} {d.name}
+                      {granted ? <Check size={11} /> : null} {d.name}
                     </button>
                   );
                 })}
