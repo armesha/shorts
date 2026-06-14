@@ -29,7 +29,8 @@ import {
 } from "./auth.ts";
 import { registerPasswordRoutes } from "./password-routes.ts";
 import { registerPsychCardsRoutes } from "./psych-cards-routes.ts";
-import { initGenQueue, enqueue as genEnqueue, jobStatus as genJobStatus, cancelJob as genCancelJob } from "./gen-queue.ts";
+import { initGenQueue, enqueue as genEnqueue, jobStatus as genJobStatus, cancelJob as genCancelJob, drainQueue as genDrainQueue } from "./gen-queue.ts";
+import { gracefulShutdown } from "./shutdown.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -1036,7 +1037,7 @@ app
   .listen({ port: base.port, host: "0.0.0.0" })
   .then(() => {
     app.log.info(`Shorts Factory API on :${base.port}`);
-    startScheduler({
+    const scheduler = startScheduler({
       db,
       outputDir: resolve(process.cwd(), base.outputDir),
       credsForUser: userCreds,
@@ -1044,6 +1045,36 @@ app
       log: (m) => app.log.info(m),
     });
     metrics.startSampler(resolve(process.cwd(), base.outputDir));
+
+    // ---- Graceful shutdown: drain in-flight render/upload, then close cleanly (SIGTERM/SIGINT) ----
+    // So a restart never interrupts a render mid-flight (no orphan temp files / no double-post).
+    let shuttingDown = false;
+    const onSignal = async (sig: string) => {
+      if (shuttingDown) return;
+      shuttingDown = true;
+      app.log.info(`[shutdown] получен ${sig}`);
+      try {
+        await gracefulShutdown({
+          log: (m) => app.log.info("[shutdown] " + m),
+          stopScheduler: () => scheduler.stop(),
+          drainQueue: () => genDrainQueue(),
+          activeCounts: () => metrics.activeCounts(),
+          closeServer: () => app.close(),
+          closeDb: () => {
+            try {
+              db.db.close();
+            } catch {
+              /* already closed */
+            }
+          },
+        });
+      } catch (e) {
+        app.log.error(e, "[shutdown] ошибка при остановке");
+      }
+      process.exit(0);
+    };
+    process.on("SIGTERM", () => void onSignal("SIGTERM"));
+    process.on("SIGINT", () => void onSignal("SIGINT"));
   })
   .catch((err) => {
     app.log.error(err);

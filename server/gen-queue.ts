@@ -2,6 +2,9 @@
 // This bounds server load no matter how many people generate at once — there is never more than
 // one render+encode running. Each job = N videos for one channel; jobs run head-to-tail.
 // Lost on restart (in-flight jobs abandoned; already-saved videos stay) — acceptable for this scale.
+//
+// Written as a factory (createGenQueue) so it can be unit-tested with a fresh instance and a mock
+// worker; a process-wide singleton is exported for the server to use.
 
 export type JobState = "queued" | "running" | "done" | "exhausted" | "canceled" | "error";
 
@@ -19,96 +22,133 @@ export interface Job {
 
 /** Generate ONE random video for the job's channel. Resolve "made", or "exhausted" when the
  *  deck has no unused cards left. Throw on a real failure (the job is marked error and skipped). */
-type Worker = (job: Job) => Promise<"made" | "exhausted">;
-
-const jobs = new Map<string, Job>(); // every job (incl. finished, kept briefly so clients read final state)
-let pending: string[] = []; // FIFO of not-yet-finished job ids; index 0 = the running/next one
-let running = false;
-let seq = 0;
-let worker: Worker | null = null;
-const KEEP_FINISHED_MS = 120_000;
-
-export function initGenQueue(w: Worker): void {
-  worker = w;
-}
-
-function prune(): void {
-  const now = Date.now();
-  for (const [id, j] of jobs) if (j.endedAt && now - j.endedAt > KEEP_FINISHED_MS) jobs.delete(id);
-}
-
-export function enqueue(userId: number, accountId: number, total: number): Job {
-  prune();
-  const id = `g${++seq}-${Date.now().toString(36)}`;
-  const job: Job = { id, userId, accountId, total, done: 0, state: "queued", createdAt: Date.now() };
-  jobs.set(id, job);
-  pending.push(id);
-  void pump();
-  return job;
-}
-
-export function cancelJob(id: string, userId: number): boolean {
-  const job = jobs.get(id);
-  if (!job || job.userId !== userId) return false;
-  if (job.state !== "queued" && job.state !== "running") return false;
-  job.state = "canceled";
-  job.endedAt = Date.now();
-  // Running job (head) is left for the pump loop to drop after the current video; a still-queued
-  // job is removed right away so it never starts.
-  if (pending[0] !== id) pending = pending.filter((x) => x !== id);
-  return true;
-}
+export type GenWorker = (job: Job) => Promise<"made" | "exhausted">;
 
 export interface JobStatus extends Job {
   ahead: number; // videos remaining AHEAD of this job before it starts (0 once running)
   position: number; // 0 = running/next, >0 = waiting, -1 = finished
 }
 
-export function jobStatus(id: string): JobStatus | null {
-  const job = jobs.get(id);
-  if (!job) return null;
-  const position = pending.indexOf(id);
-  let ahead = 0;
-  for (let i = 0; i < position; i++) {
-    const j = jobs.get(pending[i]);
-    if (j) ahead += Math.max(0, j.total - j.done);
-  }
-  return { ...job, ahead, position };
+export interface GenQueue {
+  initWorker(w: GenWorker): void;
+  enqueue(userId: number, accountId: number, total: number): Job;
+  cancelJob(id: string, userId: number): boolean;
+  jobStatus(id: string): JobStatus | null;
+  /** Stop taking NEW videos/jobs; the in-flight video is allowed to finish. For graceful shutdown. */
+  drain(): void;
+  isDraining(): boolean;
+  isRunning(): boolean;
 }
 
-async function pump(): Promise<void> {
-  if (running || !worker) return;
-  running = true;
-  try {
-    while (pending.length) {
-      const job = jobs.get(pending[0])!;
-      if (job.state === "canceled") {
-        job.endedAt ??= Date.now();
-        pending.shift();
-        continue;
-      }
-      job.state = "running";
-      while (job.done < job.total) {
-        if (job.state === "canceled") break; // soft stop AFTER the current video
-        let res: "made" | "exhausted";
-        try {
-          res = await worker(job);
-        } catch (e) {
-          job.state = "error";
-          job.error = (e as Error)?.message ?? "ошибка генерации";
-          break;
-        }
-        if (res === "exhausted") {
-          job.state = "exhausted";
-          break;
-        }
-        job.done++;
-      }
-      if (job.state === "running") job.state = "done";
-      job.endedAt = Date.now();
-      pending.shift();
-    }
-  } finally {
-    running = false;
+const KEEP_FINISHED_MS = 120_000;
+
+export function createGenQueue(): GenQueue {
+  const jobs = new Map<string, Job>(); // every job (incl. finished, kept briefly for status reads)
+  let pending: string[] = []; // FIFO of not-yet-finished job ids; index 0 = the running/next one
+  let running = false;
+  let draining = false;
+  let seq = 0;
+  let worker: GenWorker | null = null;
+
+  function prune(): void {
+    const now = Date.now();
+    for (const [id, j] of jobs) if (j.endedAt && now - j.endedAt > KEEP_FINISHED_MS) jobs.delete(id);
   }
+
+  async function pump(): Promise<void> {
+    if (running || !worker) return;
+    running = true;
+    try {
+      while (pending.length) {
+        if (draining) break; // shutdown: don't start a new job
+        const job = jobs.get(pending[0])!;
+        if (job.state === "canceled") {
+          job.endedAt ??= Date.now();
+          pending.shift();
+          continue;
+        }
+        job.state = "running";
+        while (job.done < job.total) {
+          if (job.state === "canceled" || draining) break; // soft stop AFTER the current video
+          let res: "made" | "exhausted";
+          try {
+            res = await worker(job);
+          } catch (e) {
+            job.state = "error";
+            job.error = (e as Error)?.message ?? "ошибка генерации";
+            break;
+          }
+          if (res === "exhausted") {
+            job.state = "exhausted";
+            break;
+          }
+          job.done++;
+        }
+        if (draining) {
+          // Interrupted by shutdown — leave the job unfinished (not falsely "done"); stop the queue.
+          if (job.state === "running") job.state = "queued";
+          break;
+        }
+        if (job.state === "running") job.state = "done";
+        job.endedAt = Date.now();
+        pending.shift();
+      }
+    } finally {
+      running = false;
+    }
+  }
+
+  return {
+    initWorker(w) {
+      worker = w;
+    },
+    enqueue(userId, accountId, total) {
+      prune();
+      const id = `g${++seq}-${Date.now().toString(36)}`;
+      const job: Job = { id, userId, accountId, total, done: 0, state: "queued", createdAt: Date.now() };
+      jobs.set(id, job);
+      pending.push(id);
+      void pump();
+      return job;
+    },
+    cancelJob(id, userId) {
+      const job = jobs.get(id);
+      if (!job || job.userId !== userId) return false;
+      if (job.state !== "queued" && job.state !== "running") return false;
+      job.state = "canceled";
+      job.endedAt = Date.now();
+      // A still-queued job is removed right away; the running head is dropped by pump after its video.
+      if (pending[0] !== id) pending = pending.filter((x) => x !== id);
+      return true;
+    },
+    jobStatus(id) {
+      const job = jobs.get(id);
+      if (!job) return null;
+      const position = pending.indexOf(id);
+      let ahead = 0;
+      for (let i = 0; i < position; i++) {
+        const j = jobs.get(pending[i]);
+        if (j) ahead += Math.max(0, j.total - j.done);
+      }
+      return { ...job, ahead, position };
+    },
+    drain() {
+      draining = true;
+    },
+    isDraining() {
+      return draining;
+    },
+    isRunning() {
+      return running;
+    },
+  };
 }
+
+// ---- process-wide singleton used by the server ----
+const _queue = createGenQueue();
+export const initGenQueue = (w: GenWorker): void => _queue.initWorker(w);
+export const enqueue = (userId: number, accountId: number, total: number): Job =>
+  _queue.enqueue(userId, accountId, total);
+export const cancelJob = (id: string, userId: number): boolean => _queue.cancelJob(id, userId);
+export const jobStatus = (id: string): JobStatus | null => _queue.jobStatus(id);
+export const drainQueue = (): void => _queue.drain();

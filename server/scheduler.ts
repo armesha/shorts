@@ -36,7 +36,7 @@ export interface SchedulerOpts {
 export function startScheduler(opts: SchedulerOpts) {
   const fired = new Set<string>(); // accountId|HH:MM|YYYY-MM-DD — prevents double-firing
 
-  cron.schedule("* * * * *", async () => {
+  const task = cron.schedule("* * * * *", async () => {
     metrics.noteSchedulerTick(); // heartbeat: proves the per-minute cron is alive
     const now = new Date();
     const hhmm = now.toTimeString().slice(0, 5);
@@ -112,4 +112,6 @@ export function startScheduler(opts: SchedulerOpts) {
   });
 
   opts.log("[sched] scheduler started — checking every minute");
+  // Returned so graceful shutdown can stop firing new posts before draining.
+  return { stop: () => task.stop() };
 }
