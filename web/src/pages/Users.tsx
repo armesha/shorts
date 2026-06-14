@@ -147,7 +147,9 @@ function AdminUsers() {
           {role !== "admin" && decks.length > 0 && (
             <div className="mt-2">
               <span className="text-xs text-base-content/60">
-                Доступные паки (по умолчанию все; сними отметку — скрыть у нового пользователя):
+                Доступные паки <b>нового</b> пользователя (по умолчанию все). Эти отметки применятся при
+                нажатии «Создать» — отдельной кнопки сохранения тут нет. Уже созданным паки меняй в таблице
+                ниже ↓ (там клик по галочке сохраняется сразу).
               </span>
               <div className="flex flex-wrap gap-1.5 mt-1">
                 {decks.map((d) => {
@@ -156,7 +158,8 @@ function AdminUsers() {
                     <button
                       key={d.id}
                       type="button"
-                      className={`btn btn-xs gap-1 ${visible ? "btn-primary" : "btn-outline"}`}
+                      title={visible ? "виден новому юзеру — клик, чтобы скрыть" : "скрыт у нового юзера — клик, чтобы показать"}
+                      className={`btn btn-xs gap-1 ${visible ? "btn-primary" : "btn-ghost border border-base-300 line-through opacity-60"}`}
                       onClick={() =>
                         setNewHidden((s) => {
                           const n = new Set(s);
@@ -166,7 +169,7 @@ function AdminUsers() {
                         })
                       }
                     >
-                      {visible && <Check size={11} />} {d.name}
+                      {visible ? <Check size={11} /> : null} {d.name}
                     </button>
                   );
                 })}
