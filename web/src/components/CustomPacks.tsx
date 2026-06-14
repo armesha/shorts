@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Layers, Loader2, Eye, Trash2, Upload, AlertTriangle, Check, X } from "lucide-react";
+import { Layers, Loader2, Eye, Trash2, Upload, AlertTriangle, Check, X, Plus, ExternalLink } from "lucide-react";
 import { apiClient, ApiError, type PackSummary, type PackFull, type PackRoleRule } from "../lib/api";
 
 // Хаб «Мои паки»: список кастомных паков пользователя → выбор → карточки (превью/удаление) +
@@ -24,6 +24,11 @@ export default function CustomPacks() {
   const [previewing, setPreviewing] = useState<number | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<number | null>(null);
+  // создание пака
+  const [nName, setNName] = useState("");
+  const [nLang, setNLang] = useState("de");
+  const [nTpl, setNTpl] = useState("");
+  const [creating, setCreating] = useState(false);
 
   const loadPacks = () => apiClient.packs().then(setPacks).catch(() => setPacks([]));
   useEffect(() => { loadPacks(); }, []);
@@ -74,6 +79,25 @@ export default function CustomPacks() {
     finally { setDeleting(null); }
   }
 
+  async function createPack() {
+    setOk(null); setErr(null); setErrList([]);
+    if (!nName.trim()) { setErr("Введи имя пака"); return; }
+    let templates: unknown[] = [];
+    if (nTpl.trim()) {
+      try { const p = JSON.parse(nTpl); templates = Array.isArray(p) ? p : [p]; }
+      catch (e) { setErr("Шаблон: неверный JSON — " + (e instanceof Error ? e.message : String(e))); return; }
+    }
+    setCreating(true);
+    try {
+      const p = await apiClient.createPack(nName.trim(), nLang.trim() || "ru", templates);
+      setNName(""); setNTpl("");
+      await loadPacks();
+      setSel(p.id);
+      setOk(`Пак «${p.name}» создан${templates.length ? "" : " (без шаблона — привяжи позже)"}.`);
+    } catch (e) { setErr(e instanceof ApiError ? e.message : "Не удалось создать пак"); }
+    finally { setCreating(false); }
+  }
+
   const rules = pack?.rules ?? [];
 
   return (
@@ -84,6 +108,48 @@ export default function CustomPacks() {
           <h2 className="font-semibold">Мои паки</h2>
           <span className="badge badge-ghost badge-sm">{packs?.length ?? 0}</span>
         </div>
+
+        {/* создание пака из шаблона редактора */}
+        <details className="border border-base-300 rounded-lg">
+          <summary className="cursor-pointer px-3 py-2 text-sm font-medium flex items-center gap-2">
+            <Plus size={15} className="text-primary" /> Создать пак
+          </summary>
+          <div className="p-3 pt-1 space-y-2">
+            <div className="flex flex-wrap gap-2">
+              <input
+                className="input input-bordered input-sm flex-1 min-w-40"
+                placeholder="Имя пака"
+                value={nName}
+                onChange={(e) => setNName(e.target.value)}
+              />
+              <input
+                className="input input-bordered input-sm w-24"
+                placeholder="язык"
+                value={nLang}
+                onChange={(e) => setNLang(e.target.value)}
+                title="язык пака (de, ru, en…)"
+              />
+            </div>
+            <label className="form-control">
+              <span className="label-text text-xs mb-1 flex items-center gap-2">
+                Шаблон(ы) — JSON из редактора
+                <a href="/editor" target="_blank" rel="noreferrer" className="link link-primary inline-flex items-center gap-1">
+                  <ExternalLink size={12} /> открыть редактор
+                </a>
+              </span>
+              <textarea
+                className="textarea textarea-bordered min-h-24 font-mono text-xs"
+                placeholder='Нарисуй шаблон в /editor → Экспорт → вставь сюда JSON (один объект или массив для нескольких цветовых вариантов)'
+                value={nTpl}
+                onChange={(e) => setNTpl(e.target.value)}
+              />
+            </label>
+            <button className="btn btn-primary btn-sm gap-2" onClick={createPack} disabled={creating}>
+              {creating ? <Loader2 className="animate-spin" size={15} /> : <Plus size={15} />}
+              Создать пак
+            </button>
+          </div>
+        </details>
 
         {packs && packs.length === 0 && (
           <div className="text-sm text-base-content/50">
