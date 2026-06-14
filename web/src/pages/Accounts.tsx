@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Tv, Clapperboard, Clock, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Plus, Tv, Clapperboard, Clock, CheckCircle2, AlertTriangle, Send } from "lucide-react";
 import { apiClient, type Account, type AppStatus } from "../lib/api";
 
 export default function Accounts() {
@@ -40,6 +40,8 @@ export default function Accounts() {
   }
 
   const uploadsToday = accounts.reduce((s, a) => s + a.uploadsToday, 0);
+  // Posts per day (00:00–24:00) = sum of schedule slots across the user's ENABLED channels.
+  const perDay = accounts.filter((a) => a.enabled).reduce((s, a) => s + a.schedule.length, 0);
   const nextRun = (() => {
     const now = new Date();
     const cur = now.getHours() * 60 + now.getMinutes();
@@ -80,8 +82,9 @@ export default function Accounts() {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Stat icon={<Tv />} label="Каналов" value={accounts.length} />
+        <Stat icon={<Send />} label="Видео в сутки" value={perDay} />
         <Stat icon={<Clapperboard />} label="Загружено сегодня" value={uploadsToday} />
         <Stat
           icon={<Clock />}
