@@ -77,6 +77,7 @@ function defaultKillbox() {
     font: { family: "Inter", size: 72, weight: 700, color: "#111111", lineHeight: 1.1 },
     fitMin: 28, fitMax: 110,
     maxChars: 0,            // 0 = авто-лимит (estimateCapacity по геометрии и fitMin)
+    highlight: "", underline: false, bullet: false, // маркер-фон / подчёркивание / список-буллеты
     placeholder: "Killbox · title",
   };
 }
@@ -219,7 +220,15 @@ function renderElement(el) {
       color:${el.font.color};line-height:${el.font.lineHeight};
       text-align:${el.align || "left"};font-style:normal;opacity:.55;
     `;
-    ph.textContent = el.placeholder || el.role || "killbox";
+    const phText = el.placeholder || el.role || "killbox";
+    if (el.bullet) {
+      const ul = document.createElement("ul");
+      ul.style.cssText = "list-style:disc;margin:0;padding:0 0 0 1.05em;width:100%;box-sizing:border-box;";
+      phText.split("\n").forEach(line => { const li = document.createElement("li"); li.style.marginBottom = ".4em"; appendStyledPreview(li, line, el); ul.appendChild(li); });
+      ph.appendChild(ul);
+    } else {
+      appendStyledPreview(ph, phText, el);
+    }
     content.appendChild(ph);
     node.appendChild(content);
   } else if (el.type === "text") {
@@ -346,6 +355,12 @@ function renderProps(force) {
     root.appendChild(section("Лимит текста"));
     root.appendChild(row("Лимит, симв.", "number", el.maxChars || 0, v => { el.maxChars = Math.max(0, Math.round(+v) || 0); render(); autosave(); }, 0));
     root.appendChild(hint(`0 = авто. Вместимость при fitMin (${el.fitMin || 24}px): ≈ ${estimateCapacity(el)} симв. Текст сверх лимита обрежется «…», шрифт ниже fitMin не опустится.`));
+
+    root.appendChild(section("Оформление"));
+    root.appendChild(rowCheck("Маркер (фон)", !!el.highlight, on => { el.highlight = on ? (el.highlight || "#aaff00") : ""; renderCanvas(); autosave(); }));
+    root.appendChild(rowColor("Цвет маркера", el.highlight || "#aaff00", v => { el.highlight = v; renderCanvas(); autosave(); }));
+    root.appendChild(rowCheck("Подчёркивание", !!el.underline, on => { el.underline = on; renderCanvas(); autosave(); }));
+    root.appendChild(rowCheck("Буллеты (список)", !!el.bullet, on => { el.bullet = on; renderCanvas(); autosave(); }));
   }
 
   if (el.type === "text") {
@@ -389,6 +404,25 @@ function rowPair(label, type, vA, vB, onChange, min){
   const fire=()=>onChange(type==="number"? +a.value : a.value, type==="number"? +b.value : b.value);
   a.addEventListener("change", fire); b.addEventListener("change", fire);
   wrap.append(a,b); r.append(l,wrap); return r;
+}
+function rowCheck(label, checked, onChange){
+  const r=document.createElement("div"); r.className="row";
+  const l=document.createElement("label"); l.textContent=label;
+  const i=document.createElement("input"); i.type="checkbox"; i.checked=!!checked;
+  i.addEventListener("change", () => onChange(i.checked));
+  r.append(l,i); return r;
+}
+// превью текста килбокса с маркером/подчёркиванием — как styledText в renderer.js
+function appendStyledPreview(parent, text, el){
+  if (el.highlight){
+    const s=document.createElement("span");
+    s.textContent=text;
+    s.style.cssText=`background:${el.highlight};box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:.05em .22em;border-radius:2px;`+(el.underline?"text-decoration:underline;":"");
+    parent.appendChild(s);
+  } else {
+    parent.appendChild(document.createTextNode(text));
+    if (el.underline) parent.style.textDecoration="underline";
+  }
 }
 function rowSelect(label, val, opts, onChange){
   const r=document.createElement("div"); r.className="row";
