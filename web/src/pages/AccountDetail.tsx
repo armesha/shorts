@@ -18,9 +18,32 @@ const LANGS: [string, string][] = [
   ["christian", "Христианство · Библия (англ., KJV)"],
 ];
 
-// Evenly distribute N uploads across the day (e.g. 4 → 00:00, 06:00, 12:00, 18:00).
-const evenTimes = (n: number) =>
-  Array.from({ length: n }, (_, i) => `${String(Math.round((i * 24) / n) % 24).padStart(2, "0")}:00`);
+// N posts/day spread ~evenly across 24h, but with a small RANDOM per-channel offset + jitter,
+// so two channels with the same N never all fire at the same minute. `avoid` = minutes already
+// used elsewhere (the user's other channels) — collisions are nudged forward a minute.
+const toMin = (t: string) => {
+  const [h, m] = t.split(":").map(Number);
+  return h * 60 + m;
+};
+const randomDayTimes = (n: number, avoid: Set<number> = new Set()): string[] => {
+  if (n <= 0) return [];
+  const interval = 1440 / n;
+  const phase = Math.random() * interval; // per-channel random start within the first slot
+  const jitter = Math.min(interval * 0.35, 20); // small → intervals stay roughly equal
+  const used = new Set<number>();
+  const mins: number[] = [];
+  for (let i = 0; i < n; i++) {
+    let m = Math.round(phase + i * interval + (Math.random() * 2 - 1) * jitter);
+    m = ((m % 1440) + 1440) % 1440;
+    let guard = 0;
+    while ((used.has(m) || avoid.has(m)) && guard++ < 120) m = (m + 1) % 1440;
+    used.add(m);
+    mins.push(m);
+  }
+  return mins
+    .sort((a, b) => a - b)
+    .map((m) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`);
+};
 
 export default function AccountDetail() {
   const { id } = useParams();
@@ -50,6 +73,8 @@ export default function AccountDetail() {
   const [page, setPage] = useState(1);
   const [gens, setGens] = useState<Generator[]>([]);
   const [otherSlots, setOtherSlots] = useState(0); // schedule slots on the user's OTHER channels (100/day cap)
+  const [otherTimes, setOtherTimes] = useState<string[]>([]); // their actual times — avoid colliding minute-for-minute
+  const [perDayInput, setPerDayInput] = useState(4); // "сколько раз в день" for the generator
   const [notice, setNotice] = useState<{ text: string; kind: "info" | "success" | "error" } | null>(null);
   const notify = (text: string, kind: "info" | "success" | "error" = "info") => {
     setNotice({ text, kind });
@@ -78,14 +103,15 @@ export default function AccountDetail() {
       .catch(() => {});
     reloadVideos();
     apiClient.generators().then(setGens).catch(() => {});
-    // Sum of schedule slots on the user's OTHER channels — for the «≤100 posts/day» cap counter.
+    // Schedule of the user's OTHER channels — for the «≤100 posts/day» cap counter AND so the
+    // time generator can avoid minutes already taken by other channels.
     apiClient
       .accounts()
-      .then((accs) =>
-        setOtherSlots(
-          accs.filter((a) => a.id !== Number(id)).reduce((s, a) => s + (a.schedule?.length ?? 0), 0),
-        ),
-      )
+      .then((accs) => {
+        const others = accs.filter((a) => a.id !== Number(id));
+        setOtherSlots(others.reduce((s, a) => s + (a.schedule?.length ?? 0), 0));
+        setOtherTimes(others.flatMap((a) => a.schedule ?? []));
+      })
       .catch(() => {});
   }, [id]);
 
@@ -227,6 +253,8 @@ export default function AccountDetail() {
   const isAdmin = user?.role === "admin";
   const dayUsed = otherSlots + times.length; // posts/day across all the user's channels
   const scheduleRemaining = Math.max(0, 100 - otherSlots); // max slots this channel may hold
+  const takenMinutes = new Set(otherTimes.map(toMin)); // minutes busy on other channels → generator avoids them
+  const perDayMax = isAdmin ? 100 : Math.max(1, scheduleRemaining); // cap for the «раз в день» generator
 
   if (!account) return <div className="text-base-content/60">Загрузка…</div>;
 
@@ -309,19 +337,45 @@ export default function AccountDetail() {
               )}
             </div>
 
-            <div className="flex flex-wrap gap-2 mb-3 items-center">
-              <span className="text-sm text-base-content/60">Быстро:</span>
+            <div className="flex flex-wrap gap-2 mb-1 items-center">
+              <span className="text-sm text-base-content/60">Раз в день:</span>
               {[1, 2, 3, 4, 6].map((n) => (
                 <button
                   key={n}
                   className="btn btn-xs btn-outline"
                   disabled={!isAdmin && otherSlots + n > 100}
-                  onClick={() => setTimes(evenTimes(n))}
+                  onClick={() => setTimes(randomDayTimes(n, takenMinutes))}
+                  title={`${n} публикаций в сутки, равномерно со случайным сдвигом`}
                 >
-                  {n}× в день
+                  {n}×
                 </button>
               ))}
+              <span className="mx-1 text-base-content/30">|</span>
+              <span className="text-sm text-base-content/60">своё:</span>
+              <input
+                type="number"
+                min={1}
+                max={perDayMax}
+                className="input input-bordered input-xs w-16"
+                value={perDayInput}
+                onChange={(e) =>
+                  setPerDayInput(Math.max(1, Math.min(perDayMax, Number(e.target.value) || 1)))
+                }
+                aria-label="Сколько раз в день"
+              />
+              <button
+                className="btn btn-xs btn-primary gap-1"
+                disabled={perDayMax < 1 || (!isAdmin && otherSlots + perDayInput > 100)}
+                onClick={() => setTimes(randomDayTimes(Math.min(perDayInput, perDayMax), takenMinutes))}
+                title="Расставить это число публикаций по суткам"
+              >
+                <RefreshCw size={12} /> Сгенерировать
+              </button>
             </div>
+            <p className="text-xs text-base-content/50 mb-3 leading-snug">
+              Время раскидывается равномерно по суткам, но с небольшим случайным сдвигом — у каждого канала
+              свои минуты, чтобы каналы не публиковали всё в одно и то же время. Можно поправить вручную ниже.
+            </p>
 
             <div className="flex flex-wrap gap-2 mb-3 min-h-8 items-center">
               {[...times].sort().map((t) => (
