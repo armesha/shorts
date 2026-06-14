@@ -104,6 +104,20 @@ function poolItems(deckId: string): PackItem[] {
   return all;
 }
 
+/**
+ * Drop the in-memory caches for a deck (or all decks) so freshly written cards.json/titled.json
+ * is re-read on the next pick — lets uploads go live WITHOUT restarting the server.
+ */
+export function resetDeckCache(deckId?: string): void {
+  if (deckId) {
+    _titledCache.delete(deckId);
+    _poolCache.delete(deckId);
+  } else {
+    _titledCache.clear();
+    _poolCache.clear();
+  }
+}
+
 export function libraryStats(deckId: string, used?: ReadonlySet<string>) {
   const indexFile = resolve(deckDir(deckId), "index.json");
   const idx = existsSync(indexFile)
