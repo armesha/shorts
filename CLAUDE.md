@@ -38,6 +38,9 @@ unattended, managed from a web dashboard. Spec: `ТЗ.pdf`. Architecture & resea
 - Remote `origin` = `https://github.com/armesha/shorts.git`, default branch `main`.
 - **After finishing each feature/fix: commit AND push** (`git add -A && git commit -m "…" && git push`). Don't leave work uncommitted.
 - Веди **CHANGELOG.md** (Добавлено/Изменено/Убрано/Исправлено) — обновляй его перед коммитом каждой фичи.
+  **КРАТКО (MANDATORY):** каждый пункт — ОДНА короткая строка (≈до 12–15 слов), как заголовок: что появилось, без
+  абзацев, без перечисления всех деталей/механики. Подробное описание — лишнее, оно засоряет страницу «Обновления».
+  Образец — текущий `CHANGELOG.md` (одна строка на фичу). Не разворачивай старые пункты обратно в абзацы.
 - NEVER commit secrets — `client_secret_*.json`, `.env`, tokens, `corpora/`, `data/output`, DBs are gitignored. Verify staging before committing.
 - Cross-platform: code must run on Windows + macOS + Linux. One-command start = `npm start`.
 - End commit messages with: `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`.
