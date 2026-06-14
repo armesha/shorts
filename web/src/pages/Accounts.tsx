@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Tv, Clapperboard, Clock, CheckCircle2, AlertTriangle, Send, Filter, X } from "lucide-react";
+import { Plus, Tv, Clapperboard, Clock, CheckCircle2, AlertTriangle, Send, ArrowUp, ArrowDown, X } from "lucide-react";
 import { apiClient, type Account, type AppStatus } from "../lib/api";
 
 export default function Accounts() {
@@ -9,12 +9,9 @@ export default function Accounts() {
   const [loadError, setLoadError] = useState(false);
   const [creating, setCreating] = useState(false);
   const [queue, setQueue] = useState<Record<number, number>>({});
-  // Filter + sort by remaining-video runway; remembered between visits (like the Statistics filters).
-  const [runwayFilter, setRunwayFilter] = useState<string>(
-    () => localStorage.getItem("channelsRunwayFilter") || "all",
-  );
-  const [sortMode, setSortMode] = useState<string>(
-    () => localStorage.getItem("channelsRunwaySort") || "none",
+  // Sort channels by remaining-video runway (days left); direction remembered between visits.
+  const [sortDir, setSortDir] = useState<"asc" | "desc">(() =>
+    localStorage.getItem("channelsRunwaySort") === "desc" ? "desc" : "asc",
   );
   // Which «low runway» alert the user already dismissed (by the exact set of low channels) — no spam.
   const [dismissedSig, setDismissedSig] = useState<string>(
@@ -24,12 +21,11 @@ export default function Accounts() {
 
   useEffect(() => {
     try {
-      localStorage.setItem("channelsRunwayFilter", runwayFilter);
-      localStorage.setItem("channelsRunwaySort", sortMode);
+      localStorage.setItem("channelsRunwaySort", sortDir);
     } catch {
       /* private mode */
     }
-  }, [runwayFilter, sortMode]);
+  }, [sortDir]);
 
   useEffect(() => {
     apiClient
@@ -116,27 +112,15 @@ export default function Accounts() {
     }
   };
 
-  const matchesRunway = (a: Account): boolean => {
-    if (runwayFilter === "all") return true;
-    const slots = a.enabled ? a.schedule.length : 0;
-    if (runwayFilter === "nosched") return slots === 0;
-    const r = runwayDays(a);
-    if (r == null) return false; // loading or no schedule → not in a runway bucket
-    if (runwayFilter === "lt1") return r < 1;
-    if (runwayFilter === "lt3") return r < 3;
-    return true;
-  };
-  const shownAccounts = accounts.filter(matchesRunway);
-  if (sortMode !== "none") {
-    shownAccounts.sort((a, b) => {
-      const ra = runwayDays(a);
-      const rb = runwayDays(b);
-      if (ra == null && rb == null) return 0;
-      if (ra == null) return 1; // no schedule / still loading → always at the end
-      if (rb == null) return -1;
-      return sortMode === "asc" ? ra - rb : rb - ra;
-    });
-  }
+  // Always sorted by days-of-video-left; the arrow button flips direction. No-schedule/loading last.
+  const shownAccounts = [...accounts].sort((a, b) => {
+    const ra = runwayDays(a);
+    const rb = runwayDays(b);
+    if (ra == null && rb == null) return 0;
+    if (ra == null) return 1;
+    if (rb == null) return -1;
+    return sortDir === "asc" ? ra - rb : rb - ra;
+  });
 
   return (
     <div className="space-y-6">
@@ -209,39 +193,23 @@ export default function Accounts() {
       ) : (
         <div className="space-y-4">
           <div className="flex items-center gap-2 flex-wrap">
-            <Filter size={16} className="text-base-content/50" />
-            <select
-              className="select select-bordered select-sm"
-              value={runwayFilter}
-              onChange={(e) => setRunwayFilter(e.target.value)}
-              aria-label="Фильтр по остатку видео"
+            <span className="text-sm text-base-content/60">Сортировка по запасу дней</span>
+            <button
+              className="btn btn-sm btn-outline btn-square"
+              onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
+              aria-label="Перевернуть сортировку по остатку дней"
+              title={
+                sortDir === "asc"
+                  ? "Сейчас: заканчивающиеся сверху. Нажми — наоборот."
+                  : "Сейчас: с запасом сверху. Нажми — наоборот."
+              }
             >
-              <option value="all">Все каналы</option>
-              <option value="lt1">Заканчиваются: меньше 1 дня</option>
-              <option value="lt3">Мало: меньше 3 дней</option>
-              <option value="nosched">Без расписания</option>
-            </select>
-            <select
-              className="select select-bordered select-sm"
-              value={sortMode}
-              onChange={(e) => setSortMode(e.target.value)}
-              aria-label="Сортировка по запасу дней"
-            >
-              <option value="none">Без сортировки</option>
-              <option value="asc">Дней: меньше → больше</option>
-              <option value="desc">Дней: больше → меньше</option>
-            </select>
+              {sortDir === "asc" ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
+            </button>
           </div>
 
-          {shownAccounts.length === 0 ? (
-            <div className="card bg-base-100 border border-base-300 border-dashed">
-              <div className="card-body items-center text-center py-10 text-base-content/60 text-sm">
-                Под выбранный фильтр каналов нет.
-              </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {shownAccounts.map((a) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {shownAccounts.map((a) => (
             <Link
               key={a.id}
               to={`/accounts/${a.id}`}
@@ -284,9 +252,8 @@ export default function Accounts() {
                 )}
               </div>
             </Link>
-              ))}
-            </div>
-          )}
+            ))}
+          </div>
         </div>
       )}
     </div>
