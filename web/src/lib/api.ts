@@ -279,6 +279,35 @@ export interface PsychUploadErrorBody {
   valid: number;
 }
 
+// ---- Кастомные паки (хаб «Паки и карточки») ----
+export interface PackSummary {
+  id: string;
+  name: string;
+  lang: string;
+  templates: number;
+  cards: number;
+  createdAt: string;
+}
+export interface PackRoleRule {
+  role: string;
+  list: boolean;
+  min: number;
+  max: number;
+}
+export interface PackCardRow {
+  values: Record<string, string | string[]>;
+  addedAt: string;
+}
+export interface PackFull {
+  id: string;
+  name: string;
+  lang: string;
+  createdAt: string;
+  templates: unknown[];
+  cards: PackCardRow[];
+  rules: PackRoleRule[];
+}
+
 /** Error carrying the HTTP status + the server's `{error}` message (for lockout/attempt UI). */
 export class ApiError extends Error {
   status: number;
@@ -399,6 +428,20 @@ export const apiClient = {
       `/psych/cards/${index}${addedAt ? `?addedAt=${encodeURIComponent(addedAt)}` : ""}`,
       "DELETE",
     ),
+  // Кастомные паки
+  packs: () => get<PackSummary[]>("/packs"),
+  pack: (id: string) => get<PackFull>(`/packs/${id}`),
+  createPack: (name: string, lang: string, templates: unknown[]) =>
+    send<PackSummary>("/packs", "POST", { name, lang, templates }),
+  addPackCards: (id: string, cards: unknown) =>
+    send<{ added: number; total: number }>(`/packs/${id}/cards`, "POST", { cards }),
+  deletePackCard: (id: string, index: number, addedAt?: string) =>
+    send<{ deleted: boolean; total: number }>(
+      `/packs/${id}/cards/${index}${addedAt ? `?addedAt=${encodeURIComponent(addedAt)}` : ""}`,
+      "DELETE",
+    ),
+  deletePack: (id: string) => send<{ deleted: boolean }>(`/packs/${id}`, "DELETE"),
+  packPreview: (id: string, i: number) => get<{ imageUrl: string }>(`/packs/${id}/preview?i=${i}`),
   generateAnecdote: (body?: { text?: string; title?: string; bg?: string; deck?: string }) =>
     send<GeneratedPreview>("/generate/anecdote", "POST", body ?? {}),
   generateAnecdoteVideo: (body?: { text?: string; title?: string; bg?: string; music?: string; deck?: string }) =>

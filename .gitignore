@@ -8,6 +8,7 @@ process_anecdotes*.py
 
 # runtime data (db, rendered images/videos). The anecdote PACKS are shipped on purpose.
 data/output/
+data/packs/
 data/*.db
 data/*.db-*
 data/anecdotes/_*.json

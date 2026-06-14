@@ -22,6 +22,7 @@ import {
   type PsychCard,
   type PsychUploadErrorBody,
 } from "../lib/api";
+import CustomPacks from "../components/CustomPacks";
 
 // A valid 1-card sample (matches the standard) for the «вставить пример» button.
 const SAMPLE: PsychCard[] = [
@@ -202,10 +203,17 @@ export default function Cards() {
       <header className="flex items-center gap-2">
         <LayoutTemplate className="text-primary" />
         <div>
-          <h1 className="text-2xl font-bold">Карточки</h1>
-          <p className="text-base-content/60">Добавление контента в деку «Психология (DE)»</p>
+          <h1 className="text-2xl font-bold">Паки и карточки</h1>
+          <p className="text-base-content/60">
+            Свои паки из шаблонов редактора + встроенная психо-дека (DE)
+          </p>
         </div>
       </header>
+
+      {/* Кастомные паки (хаб): список, выбор, карточки, добавление JSON, превью */}
+      <CustomPacks />
+
+      <div className="divider text-sm text-base-content/40">Встроенная дека: Психология (DE)</div>
 
       {backendDown && (
         <div className="alert alert-warning text-sm">
