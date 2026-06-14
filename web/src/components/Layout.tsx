@@ -12,7 +12,7 @@ const NAV: NavItem[] = [
   { to: "/changelog", label: "Обновления", icon: Rocket, end: false },
   { to: "/settings", label: "Настройки", icon: Settings, end: false },
   { to: "/errors", label: "Ошибки", icon: Bug, end: false, adminOnly: true },
-  { to: "/system", label: "Сервер", icon: Server, end: false, adminOnly: true },
+  { to: "/system", label: "Сервер", icon: Server, end: false },
 ];
 
 const DRAWER_ID = "main-drawer";
