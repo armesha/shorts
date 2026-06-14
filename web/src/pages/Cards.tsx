@@ -13,6 +13,7 @@ import {
   RefreshCw,
   FileText,
   X,
+  Plus,
 } from "lucide-react";
 import {
   apiClient,
@@ -21,8 +22,10 @@ import {
   type PsychCardList,
   type PsychCard,
   type PsychUploadErrorBody,
+  type PackSummary,
 } from "../lib/api";
-import CustomPacks from "../components/CustomPacks";
+import PackDetail from "../components/PackDetail";
+import CreatePackForm from "../components/CreatePackForm";
 
 // A valid 1-card sample (matches the standard) for the «вставить пример» button.
 const SAMPLE: PsychCard[] = [
@@ -64,6 +67,11 @@ const itemLine = (it: Record<string, string>) => Object.values(it).filter(Boolea
 export default function Cards() {
   const [schema, setSchema] = useState<PsychSchema | null>(null);
   const [backendDown, setBackendDown] = useState(false);
+
+  // Навигация по пакам: "psych" (встроенная) | "pack:<id>" (кастомный) | "new" (создать)
+  const [packs, setPacks] = useState<PackSummary[]>([]);
+  const [sel, setSel] = useState<string>("psych");
+  const reloadPacks = useCallback(() => apiClient.packs().then(setPacks).catch(() => {}), []);
 
   const [raw, setRaw] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -111,6 +119,10 @@ export default function Cards() {
   useEffect(() => {
     loadList(1);
   }, [loadList]);
+
+  useEffect(() => {
+    reloadPacks();
+  }, [reloadPacks]);
 
   async function submit() {
     setOkMsg(null);
@@ -210,11 +222,55 @@ export default function Cards() {
         </div>
       </header>
 
-      {/* Кастомные паки (хаб): список, выбор, карточки, добавление JSON, превью */}
-      <CustomPacks />
+      {/* Навигация по пакам: встроенная Психология (DE) + кастомные паки + создать */}
+      <div className="flex flex-wrap gap-2">
+        <button
+          className={`btn btn-sm ${sel === "psych" ? "btn-primary" : "btn-ghost border border-base-300"}`}
+          onClick={() => setSel("psych")}
+        >
+          🧠 Психология (DE)
+        </button>
+        {packs.map((p) => (
+          <button
+            key={p.id}
+            className={`btn btn-sm ${sel === `pack:${p.id}` ? "btn-primary" : "btn-ghost border border-base-300"}`}
+            onClick={() => setSel(`pack:${p.id}`)}
+          >
+            {p.name} <span className="badge badge-ghost badge-xs ml-1">{p.cards}</span>
+          </button>
+        ))}
+        <button
+          className={`btn btn-sm gap-1 ${sel === "new" ? "btn-primary" : "btn-ghost border border-dashed border-base-300"}`}
+          onClick={() => setSel("new")}
+        >
+          <Plus size={14} /> Создать пак
+        </button>
+      </div>
 
-      <div className="divider text-sm text-base-content/40">Встроенная дека: Психология (DE)</div>
+      {/* Контент выбранного кастомного пака */}
+      {sel.startsWith("pack:") && (
+        <div className="card bg-base-100 border border-base-300">
+          <div className="card-body">
+            <PackDetail packId={sel.slice(5)} onChanged={reloadPacks} />
+          </div>
+        </div>
+      )}
+      {sel === "new" && (
+        <div className="card bg-base-100 border border-base-300">
+          <div className="card-body">
+            <CreatePackForm
+              onCreated={(p) => {
+                reloadPacks();
+                setSel(`pack:${p.id}`);
+              }}
+            />
+          </div>
+        </div>
+      )}
 
+      {/* Встроенная психо-дека (DE) */}
+      {sel === "psych" && (
+        <>
       {backendDown && (
         <div className="alert alert-warning text-sm">
           <AlertTriangle size={18} />
@@ -481,6 +537,8 @@ export default function Cards() {
             }}
           />
         </div>
+      )}
+        </>
       )}
     </div>
   );
