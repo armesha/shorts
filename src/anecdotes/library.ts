@@ -30,6 +30,19 @@ function titledItems(deckId: string): PackItem[] {
       const title = (c.title_lines ?? []).join(" ").trim();
       return { id: i, pack: 1, text: JSON.stringify(c), chars: title.length, title };
     });
+  } else if (getDeck(deckId).islamic) {
+    // Islamic deck: data/islamic/cards.json holds structured cards (arabic + ref); whole card → JSON in `text`.
+    const file = resolve(deckDir(deckId), "cards.json");
+    const cards = existsSync(file)
+      ? (JSON.parse(readFileSync(file, "utf8")) as { arabic?: string; ref?: string }[])
+      : [];
+    items = cards.map((c, i) => ({
+      id: i,
+      pack: 1,
+      text: JSON.stringify(c),
+      chars: (c.arabic ?? "").length,
+      title: c.ref ?? "",
+    }));
   } else {
     const titled = resolve(deckDir(deckId), "titled.json");
     items = existsSync(titled) ? (JSON.parse(readFileSync(titled, "utf8")) as PackItem[]) : [];

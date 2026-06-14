@@ -98,5 +98,24 @@ unattended, managed from a web dashboard. Spec: `ТЗ.pdf`. Architecture & resea
   свои каналы; админ + `scope=all` → все каналы всех. Фронт `web/src/pages/Statistics.tsx` (Recharts,
   кнопка «Обновить данные» = снять снимок; график строится из ≥2 снимков). `taken_at` из SQLite — UTC
   без зоны, на фронте парсится как UTC (`parseUtc`).
+- **Исламская дека (`islamic`, «آيات وأذكار» / Ислам · Коран и хадисы):** 500 карточек на арабском
+  (аяты Корана + хадисы ан-Навави/кудси + дуа Хиснуль-Муслим), **точный** текст. Пайплайн добычи:
+  `src/scripts/islamic-fetch-corpus.mjs` (тянет точный арабский из `api.alquran.cloud`,
+  `cdn.jsdelivr.net/gh/fawazahmed0/hadith-api`, `hisnmuslim.com` → `corpora/islamic/*` — gitignored) →
+  `islamic-split.mjs` (слайсы) → **ultracode-воркфлоу, агенты на Sonnet** (правило-исключение по просьбе
+  юзера: тут Sonnet, не Haiku/Opus) выбирают важные id из локальных файлов (не из гугла) →
+  `islamic-assemble.mjs` подставляет точный арабский по id из `corpora/islamic/pool.json` →
+  `data/islamic/cards.json` (+ index.json). Карточка = `{type,arabic,ref,ref_en,theme}` (как psych —
+  весь объект JSON в `text`). Рендер: `templates/islamic.html` + `src/islamic/render.ts`, диспетч по
+  флагу `islamic:true` в `decks.ts`; фоны `assets/backgrounds/islamic_templates/` (10 тёмно-золотых),
+  у каждого своя safe-зона (карта `SAFE` в render.ts) + авто-подгон шрифта. `ytMeta` для islamic =
+  читаемый арабский + ссылка (не JSON). Заголовок видео (title) = арабская ссылка `ref`.
+- **⚠️ GOTCHA рендера арабского (headless Chrome 149):** НИКОГДА не ставь `dir="rtl"` на `<html>` —
+  это гасит **весь** текст в скриншоте (чёрный кадр, даже латиница/кириллица). RTL делай через CSS
+  `direction:rtl` на самих текстовых элементах (bidi и так разворачивает арабский). Шрифт — **системный
+  `Noto Naskh Arabic`** (веб-Amiri/Scheherazade тоже не рисуются). И НЕ добавляй `--disable-gpu` — в этом
+  Chrome он тоже гасит текст; дефолтные флаги `captureCard` работают.
+- **TODO (просьба юзера):** для исламских видео — НЕ инструментальная музыка; нужен короткий (5–7с)
+  бесплатный не-инструментальный звук (нашид-вокал / эмбиент), отдельно от общего музыкального пула.
 - TODO requested: editable Google client-secret path in Settings UI (hardcoded default stays for now). AI/subagent titling of anecdotes (currently generic titles).
 - **Auth (Этап 1 готов):** вход в панель обязателен. `server/auth.ts` = scrypt-хэш + токены сессий + политика блокировки; таблицы `users`/`sessions` в `server/db.ts`; гейт всего `/api/*` + роуты `/api/auth/{login,logout,me}` в `server/index.ts`. Юзеры сидятся из `.env`: `ADMIN_USERNAME`/`ADMIN_PASSWORD` (admin) + `SEED_USERS="name:pass,…"` (user), идемпотентно (создаёт, если нет — пароль не перезатирает). Сессия = httpOnly-кука `sid`; блокировка после `AUTH_MAX_ATTEMPTS`(10) на `AUTH_LOCK_MINUTES`(15) мин. Фронт: `web/src/lib/auth.tsx` (AuthProvider/useAuth), `web/src/pages/Login.tsx`, гейт в `App.tsx`, выход в `Layout.tsx`. **Этап 2 TODO:** `user_id` у каналов (изоляция — свои каналы/ключ видит только владелец), свой Google client-secret на юзера, общий пул анекдотов, учёт «использованных» per-user, UI создания юзеров вместо `.env`.

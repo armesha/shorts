@@ -13,6 +13,7 @@ const LANGS: [string, string][] = [
   ["tips", "Народные лайфхаки"],
   ["tips-de", "Немецкие лайфхаки"],
   ["psych", "Психология (DE)"],
+  ["islamic", "Ислам (Коран и хадисы)"],
 ];
 
 // Evenly distribute N uploads across the day (e.g. 4 → 00:00, 06:00, 12:00, 18:00).
