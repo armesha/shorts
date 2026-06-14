@@ -20,11 +20,41 @@ import { chromePath } from "../render.ts";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 // тот же runtime-рендерер, что и в редакторе
 const RENDERER_JS = resolve(__dirname, "../../web/public/template-editor/renderer.js");
-// тот же набор Google Fonts, что подключён в редакторе (web/public/template-editor/index.html).
-// css2: семейства строго по алфавиту. ВНИМАНИЕ: это сетевой источник — для офлайн/VPS нужен
-// шаг «шрифты локально» (положить .woff2 и грузить с диска). Здесь — чтобы проверить мост целиком.
-const FONTS_HREF =
-  "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bitter:wght@400;700&family=Caveat:wght@400;700&family=Comfortaa:wght@400;700&family=Cormorant+Garamond:wght@400;700&family=Dancing+Script:wght@400;700&family=EB+Garamond:wght@400;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&family=Kolker+Brush&family=Lato:wght@400;700&family=Libre+Baskerville:wght@400;700&family=Linden+Hill&family=Lobster&family=Lora:wght@400;700&family=Merriweather:wght@400;700&family=Montserrat:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700;800&family=Open+Sans:wght@400;700&family=Oswald:wght@400;700&family=Pacifico&family=Playfair+Display:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=PT+Serif:wght@400;700&family=Raleway:wght@400;500;600;700;800&family=Roboto:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;700&family=Source+Serif+4:wght@400;700&family=Work+Sans:wght@400;500;600;700;800&display=swap";
+// Локальные шрифты (см. src/scripts/fetch-template-fonts.mjs) — рендер не зависит от Google Fonts CDN
+// и работает офлайн/на VPS. Манифест family→woff2; в страницу встраиваем base64 ТОЛЬКО нужных семейств.
+const FONTS_DIR = resolve(__dirname, "../../web/public/template-editor/fonts");
+const MANIFEST_PATH = resolve(__dirname, "../../web/public/template-editor/fonts.json");
+
+interface FontEntry {
+  family: string;
+  weight: number;
+  style: string;
+  subset: string;
+  file: string;
+  range: string;
+}
+let _manifest: FontEntry[] | null = null;
+async function loadManifest(): Promise<FontEntry[]> {
+  if (!_manifest) _manifest = JSON.parse(await readFile(MANIFEST_PATH, "utf8")) as FontEntry[];
+  return _manifest;
+}
+
+// @font-face с локальными woff2 (base64) только для семейств, используемых в шаблоне → страница
+// самодостаточна, без сети. Неизвестные семейства (системные Arial и т.п.) просто пропускаются.
+async function fontFaceCssFor(families: string[]): Promise<string> {
+  const want = new Set(families.map((f) => f.toLowerCase()));
+  const manifest = await loadManifest();
+  const rules: string[] = [];
+  for (const e of manifest) {
+    if (!want.has(e.family.toLowerCase())) continue;
+    const b64 = (await readFile(resolve(FONTS_DIR, e.file))).toString("base64");
+    rules.push(
+      `@font-face{font-family:'${e.family}';font-style:${e.style};font-weight:${e.weight};` +
+        `font-display:swap;src:url(data:font/woff2;base64,${b64}) format('woff2');unicode-range:${e.range};}`,
+    );
+  }
+  return rules.join("\n");
+}
 
 export interface TemplateElement {
   id: string;
@@ -48,7 +78,7 @@ export interface TemplateDoc {
 export type TemplateContent = Record<string, string | string[]>;
 
 /** Самодостаточная HTML-страница: инлайн renderer.js + вызов renderTemplate с предзагрузкой шрифтов. */
-function buildHtml(rendererSrc: string, tpl: TemplateDoc, content: TemplateContent): string {
+function buildHtml(rendererSrc: string, tpl: TemplateDoc, content: TemplateContent, fontCss: string): string {
   const w = tpl.canvas?.w || 1080;
   const h = tpl.canvas?.h || 1920;
   // renderer.js содержит «</script>» в комментариях-примерах — при инлайне это закрыло бы <script>
@@ -58,9 +88,7 @@ function buildHtml(rendererSrc: string, tpl: TemplateDoc, content: TemplateConte
   const tplJson = JSON.stringify(tpl).replace(/</g, "\\u003c");
   const contentJson = JSON.stringify(content).replace(/</g, "\\u003c");
   return `<!doctype html><html lang="ru"><head><meta charset="utf-8">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="${FONTS_HREF}">
+<style>${fontCss}</style>
 <style>html,body{margin:0;padding:0}#card{width:${w}px;height:${h}px;overflow:hidden;background:${tpl.canvas?.bg || "#fff"}}</style>
 </head><body>
 <div id="card"></div>
@@ -123,7 +151,11 @@ export async function renderTemplateCard(
     const page = await b.newPage();
     await page.setViewport({ width: w, height: h, deviceScaleFactor: 1 });
     const rendererSrc = await readFile(RENDERER_JS, "utf8");
-    await page.setContent(buildHtml(rendererSrc, tpl, content), {
+    const families = Array.from(
+      new Set((tpl.elements || []).filter((e) => e.font?.family).map((e) => e.font!.family)),
+    );
+    const fontCss = await fontFaceCssFor(families);
+    await page.setContent(buildHtml(rendererSrc, tpl, content, fontCss), {
       waitUntil: "networkidle0",
       timeout: 30_000,
     });
