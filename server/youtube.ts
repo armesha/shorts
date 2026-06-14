@@ -62,6 +62,52 @@ export async function exchangeAndGetChannel(
   };
 }
 
+/**
+ * Short human reason (RU) for a googleapis/OAuth failure — stored on the failed history row so the
+ * user can see WHY an auto-upload failed (quota, revoked token, no channel, API disabled, …).
+ * Token endpoint → error/error_description are STRINGS; YouTube Data API → `error` is an OBJECT
+ * { code, message, errors:[{reason,message}] } — extracting .message avoids "[object Object]".
+ */
+export function ytErrorReason(err: unknown): string {
+  const e = err as {
+    code?: number | string;
+    response?: { status?: number; data?: { error_description?: string; error?: unknown } };
+    errors?: { message?: string; reason?: string }[];
+    message?: string;
+  };
+  const data = e?.response?.data;
+  const status = e?.response?.status ?? (typeof e?.code === "number" ? e.code : undefined);
+  const apiErr =
+    data?.error && typeof data.error === "object"
+      ? (data.error as { message?: string; errors?: { reason?: string; message?: string }[] })
+      : null;
+  const reason = apiErr?.errors?.[0]?.reason ?? e?.errors?.[0]?.reason ?? "";
+  const errCode = typeof data?.error === "string" ? data.error : ""; // OAuth token endpoint: "invalid_grant" etc.
+  const raw =
+    data?.error_description ||
+    (typeof data?.error === "string" ? data.error : apiErr?.message) ||
+    apiErr?.errors?.[0]?.message ||
+    e?.errors?.[0]?.message ||
+    e?.message ||
+    String(err);
+  // Include the error code + reason in the matched string so /invalid_grant/ etc. fire even when the
+  // human-readable text is in error_description.
+  const s = `${String(raw)} ${errCode} ${reason}`.trim();
+  if (/quota|rateLimit|userRateLimitExceeded|uploadLimitExceeded/i.test(s))
+    return `Превышена квота/лимит загрузок YouTube — попробуйте позже${reason ? ` (${reason})` : ""}.`;
+  if (/youtubeSignupRequired|channelNotFound/i.test(s))
+    return `У Google-аккаунта канала нет YouTube-канала — переподключите канал.`;
+  if (/SERVICE_DISABLED|accessNotConfigured|has not been used in project/i.test(s))
+    return `В проекте Google-ключа не включён YouTube Data API v3.`;
+  if (/invalid_grant/i.test(s)) return `Доступ канала отозван или истёк — переподключите канал.`;
+  if (/unauthorized_client|invalid_client/i.test(s)) return `Токен канала не принят — переподключите канал.`;
+  if (status === 401 || /\bunauthorized\b|authorizationRequired/i.test(s))
+    return `YouTube не принял авторизацию (401) — переподключите канал.`;
+  if (/insufficient|scope|forbidden/i.test(s)) return `Недостаточно прав токена — переподключите канал.`;
+  const short = s.replace(/\s+/g, " ").trim().slice(0, 300);
+  return short || "неизвестная ошибка";
+}
+
 export interface UploadOptions {
   videoPath: string;
   title: string;

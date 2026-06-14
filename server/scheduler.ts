@@ -3,7 +3,7 @@ import { unlinkSync } from "node:fs";
 import cron from "node-cron";
 import type { Db, Video } from "./db.ts";
 import { DECKS, ytMeta } from "../src/anecdotes/decks.ts";
-import { uploadShort, type ClientCreds } from "./youtube.ts";
+import { uploadShort, ytErrorReason, type ClientCreds } from "./youtube.ts";
 import * as metrics from "./metrics.ts";
 
 /** Delete a posted video's rendered files (best-effort). */
@@ -94,6 +94,7 @@ export function startScheduler(opts: SchedulerOpts) {
           youtubeId: videoId,
           videoPath: lib.videoRel,
           publishedAt: new Date().toISOString(),
+          error: videoId ? null : "YouTube не вернул id ролика — загрузка не удалась.",
         });
         if (videoId) {
           metrics.notePost(); // last successful auto-post timestamp
@@ -105,7 +106,12 @@ export function startScheduler(opts: SchedulerOpts) {
           opts.log(`[sched] account ${acc.id}: upload returned no id, keeping video`);
         }
       } catch (err) {
-        opts.db.addHistory({ accountId: acc.id, title: "ошибка автозагрузки", status: "failed" });
+        opts.db.addHistory({
+          accountId: acc.id,
+          title: "ошибка автозагрузки",
+          status: "failed",
+          error: ytErrorReason(err),
+        });
         opts.log(`[sched] account ${acc.id} FAILED: ${String(err)}`);
       }
     }

@@ -208,6 +208,14 @@ export default function History() {
                           </td>
                           <td>
                             <span className={`badge badge-sm ${statusClass(h.status)}`}>{h.status}</span>
+                            {h.error && (
+                              <div
+                                className="text-xs text-error/80 mt-1 max-w-[22rem] whitespace-pre-wrap break-words"
+                                title={h.error}
+                              >
+                                {h.error}
+                              </div>
+                            )}
                           </td>
                           <td>
                             {url ? (

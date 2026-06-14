@@ -26,6 +26,7 @@ export interface HistoryItem {
   status: string;
   publishedAt: string | null;
   createdAt: string;
+  error?: string | null; // failure reason for `status: "failed"` rows (e.g. auto-upload errors)
   // Enriched fields (filled by listHistoryFiltered; used by the admin "all users" history view).
   channelName?: string;
   ownerUsername?: string | null;
@@ -170,6 +171,7 @@ export function openDb(path: string) {
       youtube_id TEXT,
       status TEXT NOT NULL DEFAULT 'pending',
       published_at TEXT,
+      error TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
     CREATE TABLE IF NOT EXISTS settings (
@@ -267,6 +269,11 @@ export function openDb(path: string) {
   } catch {
     /* column already exists (or fresh users table) */
   }
+  try {
+    db.exec("ALTER TABLE history ADD COLUMN error TEXT");
+  } catch {
+    /* column already exists */
+  }
 
   // "Uploaded today" per channel — count of published history rows dated today (UTC).
   const countUploadsToday = (accountId: number): number => {
@@ -354,10 +361,19 @@ export function openDb(path: string) {
       youtubeId?: string | null;
       videoPath?: string | null;
       publishedAt?: string | null;
+      error?: string | null;
     }): void {
       db.prepare(
-        "INSERT INTO history (account_id, title, status, youtube_id, video_path, published_at) VALUES (?,?,?,?,?,?)",
-      ).run(h.accountId, h.title, h.status, h.youtubeId ?? null, h.videoPath ?? null, h.publishedAt ?? null);
+        "INSERT INTO history (account_id, title, status, youtube_id, video_path, published_at, error) VALUES (?,?,?,?,?,?,?)",
+      ).run(
+        h.accountId,
+        h.title,
+        h.status,
+        h.youtubeId ?? null,
+        h.videoPath ?? null,
+        h.publishedAt ?? null,
+        h.error ?? null,
+      );
     },
     createVideo(v: {
       accountId: number;
@@ -429,6 +445,7 @@ export function openDb(path: string) {
           status: r.status,
           publishedAt: r.published_at,
           createdAt: r.created_at,
+          error: r.error ?? null,
         }),
       );
     },
@@ -447,6 +464,7 @@ export function openDb(path: string) {
         status: r.status,
         publishedAt: r.published_at,
         createdAt: r.created_at,
+        error: r.error ?? null,
       }));
     },
     // Enriched + filterable history for the admin "all users" view (and the own view).
@@ -475,6 +493,7 @@ export function openDb(path: string) {
         status: r.status,
         publishedAt: r.published_at,
         createdAt: r.created_at,
+        error: r.error ?? null,
         channelName: r.yt_channel_title || r.channel_name,
         ownerUsername: r.owner_username ?? null,
         youtubeId: r.youtube_id ?? null,

@@ -22,6 +22,7 @@ export interface HistoryItem {
   status: string;
   publishedAt: string | null;
   createdAt: string;
+  error?: string | null; // why a `failed` row failed (e.g. auto-upload error reason)
   // Enriched (admin "all users" view): channel name, owner login, and a watch link.
   channelName?: string;
   ownerUsername?: string | null;
