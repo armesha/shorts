@@ -7,6 +7,11 @@ unattended, managed from a web dashboard. Spec: `ТЗ.pdf`. Architecture & resea
 ## Язык общения (MANDATORY)
 - Отвечай пользователю **ТОЛЬКО на русском** (always reply to the user in Russian), независимо от языка кода, логов и т.п.
 
+## 🕒 Время — ТОЛЬКО 24 часа (MANDATORY)
+- **ВСЁ отображаемое время — строго 24-часовой формат. НИКОГДА AM/PM.** (Агенты уже не раз возвращали AM/PM — это баг, не делай так.)
+- **НЕ используй `<input type="time">` / `type="datetime-local">`:** нативный виджет Chrome показывает AM/PM в 12-часовой локали браузера, и атрибут `lang` это НЕ переопределяет. Для ввода времени — обычный текстовый инпут «ЧЧ:ММ» с валидацией `^([01]\d|2[0-3]):[0-5]\d$` (образец — расписание в `web/src/pages/AccountDetail.tsx`).
+- **Для дат/времени ВСЕГДА передавай локаль `"ru-RU"`** (для времени при необходимости ещё `hour12: false`). НИКОГДА не вызывай `toLocaleString()/toLocaleTimeString()/toLocaleDateString()` без аргумента локали — на машине зрителя с локалью en-US это даёт AM/PM и формат M/D/Y.
+
 ## 🔒 Security rules (MANDATORY)
 - **NEVER read, cat, open, print, grep, or otherwise access** the Google OAuth client-secret file:
   `/home/davtian/Documents/shorts/client_secret_735991879461-lcvblrn3co3hlrrqi1ljvik2ih68oarp.apps.googleusercontent.com.json`

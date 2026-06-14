@@ -274,11 +274,21 @@ export default function AccountDetail() {
             </div>
 
             <div className="flex gap-2 items-center">
+              {/* Plain text input on purpose: native <input type="time"> shows AM/PM in 12-hour
+                  browser locales (and lang= does NOT override it in Chrome). 24-hour only. */}
               <input
-                type="time"
+                type="text"
+                inputMode="numeric"
+                placeholder="14:30"
+                maxLength={5}
+                aria-label="Время в 24-часовом формате (ЧЧ:ММ)"
                 className="input input-bordered input-sm w-32"
                 value={newTime}
-                onChange={(e) => setNewTime(e.target.value)}
+                onChange={(e) => {
+                  let s = e.target.value.replace(/[^\d:]/g, "").slice(0, 5);
+                  if (!s.includes(":") && s.length >= 3) s = s.slice(0, 2) + ":" + s.slice(2); // 1430 → 14:30
+                  setNewTime(s);
+                }}
               />
               <button
                 className="btn btn-sm btn-outline gap-1"
@@ -479,7 +489,7 @@ export default function AccountDetail() {
                           ) : (
                             <span className="badge badge-ghost badge-sm">не выкладывался</span>
                           )}
-                          {v.lastPostedAt && <span>· {new Date(v.lastPostedAt).toLocaleDateString()}</span>}
+                          {v.lastPostedAt && <span>· {new Date(v.lastPostedAt).toLocaleDateString("ru-RU")}</span>}
                         </div>
                       </div>
                     </div>
