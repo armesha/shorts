@@ -10,6 +10,7 @@ import Changelog from "./pages/Changelog";
 import Errors from "./pages/Errors";
 import System from "./pages/System";
 import Settings from "./pages/Settings";
+import Users from "./pages/Users";
 import Login from "./pages/Login";
 import { AuthProvider, useAuth } from "./lib/auth";
 
@@ -36,6 +37,7 @@ function Gate() {
         <Route path="/errors" element={<Errors />} />
         <Route path="/system" element={<System />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/users" element={<Users />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>
