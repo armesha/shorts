@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
-import { Tv, History, Settings, Clapperboard, Sparkles, BarChart3, Bug, LogOut, type LucideIcon } from "lucide-react";
+import { Tv, History, Settings, Clapperboard, Sparkles, BarChart3, Bug, Rocket, LogOut, type LucideIcon } from "lucide-react";
 import { useAuth } from "../lib/auth";
 
 type NavItem = { to: string; label: string; icon: LucideIcon; end: boolean; adminOnly?: boolean };
@@ -9,6 +9,7 @@ const NAV: NavItem[] = [
   { to: "/studio", label: "Студия", icon: Sparkles, end: false },
   { to: "/history", label: "История", icon: History, end: false },
   { to: "/statistics", label: "Статистика", icon: BarChart3, end: false },
+  { to: "/changelog", label: "Обновления", icon: Rocket, end: false },
   { to: "/settings", label: "Настройки", icon: Settings, end: false },
   { to: "/errors", label: "Ошибки", icon: Bug, end: false, adminOnly: true },
 ];
@@ -47,7 +48,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                   {user.role === "admin" ? "администратор" : "пользователь"}
                 </div>
               </div>
-              <button className="btn btn-ghost btn-sm" onClick={logout} title="Выйти">
+              <button className="btn btn-ghost btn-sm" onClick={logout} title="Выйти" aria-label="Выйти">
                 <LogOut size={16} />
               </button>
             </div>

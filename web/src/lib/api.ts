@@ -185,6 +185,7 @@ export const apiClient = {
     send<AuthUser>("/auth/login", "POST", { username, password }),
   logout: () => send<{ ok: boolean }>("/auth/logout", "POST", {}),
   status: () => get<AppStatus>("/config"),
+  changelog: () => get<{ raw: string }>("/changelog"),
   settings: () => get<AppSettings>("/settings"),
   uploadGoogleKey: (json: string) => send<AppSettings>("/settings/google-key", "PUT", { json }),
   removeGoogleKey: () => send<AppSettings>("/settings/google-key", "DELETE"),

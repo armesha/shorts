@@ -270,6 +270,13 @@ function ownAccount(req: unknown, reply: Replyish, id: number): Account | null {
 
 app.get("/api/health", async () => ({ ok: true, time: new Date().toISOString() }));
 
+// Project changelog (CHANGELOG.md) surfaced on the site — read live so it always reflects the file.
+app.get("/api/changelog", async () => {
+  const file = resolve(process.cwd(), "CHANGELOG.md");
+  const raw = existsSync(file) ? readFileSync(file, "utf8") : "";
+  return { raw };
+});
+
 app.get("/api/config", async (req) => {
   const hasGoogleKey = !!userCreds(uid(req));
   return {
