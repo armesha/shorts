@@ -49,7 +49,7 @@ export default function Studio() {
   const [deck, setDeck] = useDeck();
   const [err, setErr] = useState<string | null>(null);
   const { user } = useAuth();
-  const maxBatch = user?.role === "admin" ? 100 : 20;
+  const maxBatch = user?.role === "admin" ? 100 : 25;
   const [batchN, setBatchN] = useState(5);
   const q = useGenQueue();
 

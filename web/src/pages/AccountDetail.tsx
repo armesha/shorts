@@ -89,7 +89,7 @@ export default function AccountDetail() {
   const [avatarOpen, setAvatarOpen] = useState(false);
   const [avatarList, setAvatarList] = useState<string[]>([]);
   const [avatarBusy, setAvatarBusy] = useState(false);
-  const maxBatch = user?.role === "admin" ? 100 : 20;
+  const maxBatch = user?.role === "admin" ? 100 : 25;
   const [batchN, setBatchN] = useState(5);
   const q = useGenQueue();
   const [clearing, setClearing] = useState(false);

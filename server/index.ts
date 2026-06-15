@@ -975,7 +975,7 @@ app.post("/api/videos/batch", async (req, reply) => {
   if (!body.accountId) return reply.code(400).send({ error: "accountId обязателен" });
   const acc = ownAccount(req, reply, body.accountId);
   if (!acc) return;
-  const requested = Math.max(1, Math.min(20, Number(body.count) || 5));
+  const requested = Math.max(1, Math.min(25, Number(body.count) || 5));
   const seen = new Set<string>(db.usedAnecdoteKeys(uid(req))); // exclude this user's used + dedupe batch
   const created: unknown[] = [];
   // Пак-канал (язык = "pack:<id>"): случайные неиспользованные карточки пака → рендер мостом.
@@ -1073,7 +1073,7 @@ app.post("/api/gen-queue", async (req, reply) => {
     if (!deckAllowed(req, channelDeck.id))
       return reply.code(403).send({ error: "Этот пак вам недоступен." });
   }
-  const cap = db.getUserById(uid(req))?.role === "admin" ? 100 : 20;
+  const cap = db.getUserById(uid(req))?.role === "admin" ? 100 : 25;
   const total = Math.max(1, Math.min(cap, Number(body.count) || 1));
   const job = genEnqueue(uid(req), body.accountId, total);
   return { jobId: job.id, total: job.total };

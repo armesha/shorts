@@ -2,7 +2,7 @@
 
 Automated YouTube Shorts pipeline: LLM generates "N facts" content → fills a template →
 1080×1920 image → 5–6s vertical video → scheduled upload to multiple YouTube channels,
-unattended, managed from a web dashboard. Spec: `ТЗ.pdf`. Architecture & research: `docs/STACK.md`.
+unattended, managed from a web dashboard. Architecture & research: `docs/STACK.md`.
 
 ## Язык общения (MANDATORY)
 - Отвечай пользователю **ТОЛЬКО на русском** (always reply to the user in Russian), независимо от языка кода, логов и т.п.
