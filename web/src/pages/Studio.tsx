@@ -215,7 +215,7 @@ export default function Studio() {
                     {gens.length === 0 && <option value={deck}>Загрузка…</option>}
                     {gens.filter((x) => x.total > 0).map((x) => (
                       <option key={x.id} value={x.id}>
-                        {deckLabel(x.id, x.name)}
+                        {deckLabel(x.id, x.name)}{x.preFact ? " · 🎬 видео-пак" : ""}
                       </option>
                     ))}
                     {packs.length > 0 && (
@@ -238,7 +238,7 @@ export default function Studio() {
                       <div className="text-sm text-base-content/60 mt-1">
                         <span className="text-success font-medium">{g.available} свободных</span>
                         {g.used > 0 && <> · {g.used} использовано</>} ·{" "}
-                        <span className="badge badge-ghost badge-sm">без ИИ</span>
+                        <span className="badge badge-ghost badge-sm">{g.preFact ? "🎬 видео-пак" : "без ИИ"}</span>
                       </div>
                     )
                   )}

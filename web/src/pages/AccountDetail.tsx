@@ -297,6 +297,7 @@ export default function AccountDetail() {
             <option key={code} value={code}>
               {/* полное имя пака (как в Студии: «Русские анекдоты» и т.п.), а не язык */}
               {gens.find((g) => g.id === code)?.name || name} · {tagOf(DECK_LANG[code] || code)}
+              {gens.find((g) => g.id === code)?.preFact ? " · 🎬 видео-пак" : ""}
             </option>
           ))}
         </optgroup>
