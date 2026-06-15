@@ -237,11 +237,18 @@ function AdminUsers() {
                   {rows.map((row) => (
                     <tr key={row.userId}>
                       <td className="font-medium whitespace-nowrap">
-                        <div>
+                        <div className="flex items-center gap-1.5">
                           {row.role === "admin" && <span className="text-primary">★ </span>}
                           {row.username}
+                          {users.find((u) => u.id === row.userId)?.locked && (
+                            <span className="badge badge-error badge-xs">заблокирован</span>
+                          )}
                         </div>
                         <div className="text-[11px] font-normal text-base-content/50">
+                          {(() => {
+                            const au = users.find((u) => u.id === row.userId);
+                            return au?.createdAt ? `с ${new Date(au.createdAt).toLocaleDateString("ru-RU")} · ` : "";
+                          })()}
                           запланировано {row.scheduled}
                           {row.role !== "admin" ? "/100" : ""} в сутки
                           {row.library > 0 ? ` · ${row.library} в библ.` : ""}

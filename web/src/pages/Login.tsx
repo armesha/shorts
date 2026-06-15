@@ -107,7 +107,7 @@ function LoginForm({ onRecover }: { onRecover: () => void }) {
       </label>
 
       {error && (
-        <div className={`alert ${locked ? "alert-warning" : "alert-error"} py-2 text-sm`}>
+        <div className={`alert ${locked ? "alert-warning" : "alert-error"} py-2 text-sm`} role="alert">
           {locked ? <Lock size={16} /> : <AlertTriangle size={16} />}
           <span>{error}</span>
         </div>

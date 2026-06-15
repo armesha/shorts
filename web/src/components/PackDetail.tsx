@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2, Eye, Trash2, Upload, AlertTriangle, Check, X } from "lucide-react";
 import { apiClient, ApiError, type PackFull, type PackRoleRule } from "../lib/api";
 
@@ -20,6 +20,7 @@ export default function PackDetail({ packId, onChanged }: { packId: string; onCh
   const [previewing, setPreviewing] = useState<number | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<number | null>(null);
+  const previewReq = useRef(0); // invalidates an in-flight preview if the modal is closed mid-load
 
   const reload = () => apiClient.pack(packId).then(setPack).catch(() => setPack(null));
   useEffect(() => { setPack(null); setOk(null); setErr(null); setErrList([]); reload(); /* eslint-disable-next-line */ }, [packId]);
@@ -47,10 +48,11 @@ export default function PackDetail({ packId, onChanged }: { packId: string; onCh
   }
 
   async function preview(i: number) {
+    const my = ++previewReq.current;
     setPreviewing(i); setPreviewUrl(null);
-    try { setPreviewUrl((await apiClient.packPreview(packId, i)).imageUrl); }
-    catch (e) { setErr(e instanceof ApiError ? e.message : "Не удалось отрисовать"); }
-    finally { setPreviewing(null); }
+    try { const r = await apiClient.packPreview(packId, i); if (previewReq.current === my) setPreviewUrl(r.imageUrl); }
+    catch (e) { if (previewReq.current === my) setErr(e instanceof ApiError ? e.message : "Не удалось отрисовать"); }
+    finally { if (previewReq.current === my) setPreviewing(null); }
   }
 
   async function delCard(i: number, addedAt: string) {
@@ -128,12 +130,12 @@ export default function PackDetail({ packId, onChanged }: { packId: string; onCh
       {(previewUrl || previewing !== null) && (
         <div className="modal modal-open" role="dialog">
           <div className="modal-box max-w-sm flex flex-col items-center gap-3">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={() => { setPreviewUrl(null); setPreviewing(null); }} aria-label="Закрыть"><X size={16} /></button>
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={() => { previewReq.current++; setPreviewUrl(null); setPreviewing(null); }} aria-label="Закрыть"><X size={16} /></button>
             <div className="rounded-xl overflow-hidden border border-base-300 bg-base-200" style={{ width: 270, height: 480 }}>
               {previewUrl ? <img src={previewUrl} alt="preview" width={270} height={480} className="block" /> : <div className="w-full h-full flex items-center justify-center"><Loader2 className="animate-spin text-primary" size={32} /></div>}
             </div>
           </div>
-          <div className="modal-backdrop" onClick={() => { setPreviewUrl(null); setPreviewing(null); }} />
+          <div className="modal-backdrop" onClick={() => { previewReq.current++; setPreviewUrl(null); setPreviewing(null); }} />
         </div>
       )}
     </div>

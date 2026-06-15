@@ -8,6 +8,7 @@ export default function Accounts() {
   const [status, setStatus] = useState<AppStatus | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [actionErr, setActionErr] = useState("");
   const [queue, setQueue] = useState<Record<number, number>>({});
   // Sort channels by remaining-video runway (days left); direction remembered between visits.
   const [sortDir, setSortDir] = useState<"asc" | "desc">(() =>
@@ -49,7 +50,7 @@ export default function Accounts() {
       const a = await apiClient.createAccount();
       navigate(`/accounts/${a.id}`);
     } catch (e) {
-      alert("Не удалось создать канал: " + String(e));
+      setActionErr("Не удалось создать канал: " + String(e));
     } finally {
       setCreating(false);
     }
@@ -137,6 +138,16 @@ export default function Accounts() {
           </button>
         </div>
       </header>
+
+      {actionErr && (
+        <div className="alert alert-error text-sm" role="alert">
+          <AlertTriangle size={18} className="shrink-0" />
+          <span className="flex-1">{actionErr}</span>
+          <button className="btn btn-ghost btn-xs" onClick={() => setActionErr("")} aria-label="Скрыть">
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       {showLowAlert && (
         <div className="alert alert-warning shadow-sm flex items-start gap-2">

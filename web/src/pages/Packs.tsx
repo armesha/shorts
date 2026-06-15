@@ -19,6 +19,7 @@ const fmt = (n: number) => n.toLocaleString("ru-RU");
 export default function Packs() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
+  const [actionErr, setActionErr] = useState("");
   const [data, setData] = useState<MyDecks | null>(null);
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -40,7 +41,7 @@ export default function Packs() {
       await apiClient.setPackLang(p.id, lang);
       setCustomPacks((cur) => cur.map((x) => (x.id === p.id ? { ...x, lang } : x)));
     } catch (e) {
-      alert("Не удалось сменить язык пака: " + (e instanceof Error ? e.message : String(e)));
+      setActionErr("Не удалось сменить язык пака: " + (e instanceof Error ? e.message : String(e)));
     } finally {
       setSavingLang(null);
     }
@@ -63,7 +64,7 @@ export default function Packs() {
       await apiClient.deletePack(p.id);
       setCustomPacks((cur) => cur.filter((x) => x.id !== p.id));
     } catch (e) {
-      alert("Не удалось удалить пак: " + (e instanceof Error ? e.message : String(e)));
+      setActionErr("Не удалось удалить пак: " + (e instanceof Error ? e.message : String(e)));
     } finally {
       setDeletingPack(null);
     }
@@ -163,6 +164,16 @@ export default function Packs() {
           </select>
         )}
       </header>
+
+      {actionErr && (
+        <div className="alert alert-error text-sm" role="alert">
+          <AlertTriangle size={18} className="shrink-0" />
+          <span className="flex-1">{actionErr}</span>
+          <button className="btn btn-ghost btn-xs" onClick={() => setActionErr("")} aria-label="Скрыть">
+            ✕
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Stat label="Встроенных паков" value={fmt(decks.length)} />
