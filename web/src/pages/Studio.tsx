@@ -462,6 +462,11 @@ export default function Studio() {
                 loop
                 muted
               />
+            ) : loading || building ? (
+              <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-base-content/50">
+                <Loader2 className="animate-spin text-primary" size={32} />
+                <span className="text-sm">{building ? "Собираю видео…" : "Генерирую…"}</span>
+              </div>
             ) : preview ? (
               <img src={preview.imageUrl} alt="preview" width={288} height={512} className="block" />
             ) : (

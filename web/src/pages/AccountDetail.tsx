@@ -780,7 +780,15 @@ export default function AccountDetail() {
                 <div key={v.id} className="group">
                   <div className="relative aspect-[9/16] rounded-lg overflow-hidden border border-base-300 bg-base-200">
                     <div
+                      role="button"
+                      tabIndex={0}
                       onClick={() => setPreview(v)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setPreview(v);
+                        }
+                      }}
                       title="Открыть и посмотреть"
                       className="absolute inset-0 cursor-pointer"
                     >

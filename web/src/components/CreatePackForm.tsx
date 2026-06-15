@@ -35,7 +35,14 @@ export default function CreatePackForm({ onCreated }: { onCreated: (p: PackSumma
       </p>
       <div className="flex flex-wrap gap-2">
         <input className="input input-bordered input-sm flex-1 min-w-48" placeholder="Имя пака" value={name} onChange={(e) => setName(e.target.value)} />
-        <input className="input input-bordered input-sm w-24" placeholder="язык" value={lang} onChange={(e) => setLang(e.target.value)} title="язык пака (de, ru, en…)" />
+        <select className="select select-bordered select-sm w-40" value={lang} onChange={(e) => setLang(e.target.value)} aria-label="Язык пака" title="язык пака — должен совпадать с языком канала">
+          <option value="ru">Русский</option>
+          <option value="de">Немецкий</option>
+          <option value="it">Итальянский</option>
+          <option value="fr">Французский</option>
+          <option value="en">Английский</option>
+          <option value="ar">Арабский</option>
+        </select>
       </div>
       <label className="form-control">
         <span className="label-text text-xs mb-1 flex items-center gap-2">
@@ -51,8 +58,8 @@ export default function CreatePackForm({ onCreated }: { onCreated: (p: PackSumma
           onChange={(e) => setTpl(e.target.value)}
         />
       </label>
-      {err && <div className="alert alert-error text-sm"><AlertTriangle size={16} /><span>{err}</span></div>}
-      <button className="btn btn-primary btn-sm gap-2" onClick={create} disabled={busy}>
+      {err && <div className="alert alert-error text-sm" role="alert"><AlertTriangle size={16} /><span>{err}</span></div>}
+      <button className="btn btn-primary btn-sm gap-2" onClick={create} disabled={busy || !name.trim()}>
         {busy ? <Loader2 className="animate-spin" size={15} /> : <Plus size={15} />}
         Создать пак
       </button>
