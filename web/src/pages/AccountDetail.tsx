@@ -3,6 +3,7 @@ import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom"
 import { ArrowLeft, Save, Trash2, Check, Plus, Upload, Loader2, ChevronLeft, ChevronRight, RefreshCw, Play, Download, X } from "lucide-react";
 import { apiClient, type Account, type VideoItem, type Generator, type PackSummary } from "../lib/api";
 import VideoPlayer from "../components/VideoPlayer";
+import { confirmDialog } from "../lib/confirm";
 import { useAuth } from "../lib/auth";
 import { useGenQueue } from "../lib/genQueue";
 
@@ -239,7 +240,7 @@ export default function AccountDetail() {
   }
 
   async function remove() {
-    if (!confirm("Удалить этот канал?")) return;
+    if (!(await confirmDialog("Удалить этот канал? Действие необратимо.", { title: "Удалить канал", confirmText: "Удалить", danger: true }))) return;
     await apiClient.deleteAccount(id!);
     navigate("/accounts");
   }
@@ -273,7 +274,7 @@ export default function AccountDetail() {
 
 
   async function removeVid(vid: number) {
-    if (!confirm("Удалить ролик из библиотеки?")) return;
+    if (!(await confirmDialog("Удалить ролик из библиотеки?", { confirmText: "Удалить", danger: true }))) return;
     await apiClient.deleteVideo(vid);
     await reloadVideos();
   }
@@ -282,7 +283,7 @@ export default function AccountDetail() {
   async function removePosted() {
     const targets = videos.filter((v) => v.postCount > 1);
     if (targets.length === 0) return;
-    if (!confirm(`Удалить ${targets.length} ролик(ов), которые выкладывались больше одного раза?`)) return;
+    if (!(await confirmDialog(`Удалить ${targets.length} ролик(ов), которые выкладывались больше одного раза?`, { confirmText: "Удалить", danger: true }))) return;
     for (const v of targets) await apiClient.deleteVideo(v.id);
     await reloadVideos();
   }
@@ -290,7 +291,7 @@ export default function AccountDetail() {
   // Очистить ВСЮ библиотеку канала (например, после смены пака — старый контент больше не подходит).
   async function clearLibrary() {
     if (videos.length === 0) return;
-    if (!confirm(`Удалить ВСЕ ${videos.length} ролик(ов) из библиотеки? Это необратимо.`)) return;
+    if (!(await confirmDialog(`Удалить ВСЕ ${videos.length} ролик(ов) из библиотеки? Это необратимо.`, { title: "Очистить библиотеку", confirmText: "Удалить всё", danger: true }))) return;
     setClearing(true);
     try {
       for (const v of [...videos]) await apiClient.deleteVideo(v.id);
@@ -337,8 +338,8 @@ export default function AccountDetail() {
           {visibleLangs.map(([code, name]) => (
             <option key={code} value={code}>
               {/* полное имя пака (как в Студии: «Русские анекдоты» и т.п.), а не язык */}
+              {gens.find((g) => g.id === code)?.preFact ? "🎬 " : ""}
               {gens.find((g) => g.id === code)?.name || name} · {tagOf(DECK_LANG[code] || code)}
-              {gens.find((g) => g.id === code)?.preFact ? " · 🎬 видео-пак" : ""}
             </option>
           ))}
         </optgroup>

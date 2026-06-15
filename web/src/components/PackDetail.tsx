@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Loader2, Eye, Trash2, Upload, AlertTriangle, Check, X } from "lucide-react";
 import { apiClient, ApiError, type PackFull, type PackRoleRule } from "../lib/api";
+import { confirmDialog } from "../lib/confirm";
 
 // Вид одного кастомного пака: правила (из шаблона), добавление JSON-карточек, лента карточек с превью/удалением.
 const valStr = (v: string | string[]) => (Array.isArray(v) ? v.join(" · ") : v);
@@ -57,7 +58,7 @@ export default function PackDetail({ packId, onChanged }: { packId: string; onCh
   }
 
   async function delCard(i: number, addedAt: string) {
-    if (!window.confirm("Удалить карточку из пака?")) return;
+    if (!(await confirmDialog("Удалить карточку из пака?", { confirmText: "Удалить", danger: true }))) return;
     setDeleting(i); setErr(null);
     try { await apiClient.deletePackCard(packId, i, addedAt); await reload(); onChanged?.(); }
     catch (e) { setErr(e instanceof ApiError ? e.message : "Не удалось удалить"); }

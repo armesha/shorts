@@ -215,7 +215,7 @@ export default function Studio() {
                     {gens.length === 0 && <option value={deck}>Загрузка…</option>}
                     {gens.filter((x) => x.total > 0).map((x) => (
                       <option key={x.id} value={x.id}>
-                        {deckLabel(x.id, x.name)}{x.preFact ? " · 🎬 видео-пак" : ""}
+                        {x.preFact ? "🎬 " : ""}{deckLabel(x.id, x.name)}
                       </option>
                     ))}
                     {packs.length > 0 && (

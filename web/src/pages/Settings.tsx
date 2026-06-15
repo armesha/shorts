@@ -2,6 +2,7 @@ import { useEffect, useState, type ChangeEvent } from "react";
 import { KeyRound, Check, AlertTriangle, Upload, Trash2, Lock, Send } from "lucide-react";
 import { apiClient, ApiError, type AppSettings } from "../lib/api";
 import TelegramConnect from "../components/TelegramConnect";
+import { confirmDialog } from "../lib/confirm";
 
 export default function Settings() {
   const [settings, setSettings] = useState<AppSettings | null>(null);
@@ -34,7 +35,7 @@ export default function Settings() {
   }
 
   async function removeKey() {
-    if (!confirm("Удалить свой Google-ключ? Каналы перестанут постить, пока не загрузите новый.")) return;
+    if (!(await confirmDialog("Удалить свой Google-ключ? Каналы перестанут постить, пока не загрузите новый.", { title: "Удалить ключ", confirmText: "Удалить ключ", danger: true }))) return;
     setError("");
     setBusy(true);
     try {
@@ -162,7 +163,7 @@ function TelegramLink() {
   }, []);
 
   async function unbind() {
-    if (!confirm("Отвязать Telegram? Вход и восстановление пароля через Telegram перестанут работать.")) return;
+    if (!(await confirmDialog("Отвязать Telegram? Вход и восстановление пароля через Telegram перестанут работать.", { title: "Отвязать Telegram", confirmText: "Отвязать", danger: true }))) return;
     setBusy(true);
     setMsg(null);
     try {

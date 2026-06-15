@@ -59,6 +59,14 @@ try {
   ok(`Длительность считана (${isFinite(dur) ? dur.toFixed(1) : "?"}с)`, isFinite(dur) && dur > 0);
   await ctx.screenshot({ path: "data/output/_e2e_player_modal.png" });
 
+  // custom confirm dialog (no native window.confirm): click «Удалить» → expect in-app alertdialog → cancel
+  await modal.getByRole("button", { name: "Удалить" }).click();
+  const cdlg = ctx.locator('[role="alertdialog"]');
+  await cdlg.waitFor({ timeout: 5000 });
+  ok("Кастомная модалка подтверждения (не нативная)", await cdlg.isVisible());
+  await cdlg.getByRole("button", { name: "Отмена" }).click(); // отмена — НЕ удаляем
+  ok("Подтверждение закрылось по «Отмена»", !(await cdlg.isVisible().catch(() => true)));
+
   console.log(out.join("\n"));
   console.log(process.exitCode ? "\nE2E: FAIL" : "\nE2E: PASS");
 } catch (e) {

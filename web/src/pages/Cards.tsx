@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { confirmDialog } from "../lib/confirm";
 import {
   LayoutTemplate,
   Upload,
@@ -180,7 +181,7 @@ export default function Cards() {
   }
 
   async function remove(index: number, card: PsychCard) {
-    if (!window.confirm("Удалить эту карточку из пака? Действие необратимо.")) return;
+    if (!(await confirmDialog("Удалить эту карточку из пака? Действие необратимо.", { confirmText: "Удалить", danger: true }))) return;
     setDeleting(index);
     setErrMsg(null);
     setOkMsg(null);

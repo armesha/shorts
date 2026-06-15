@@ -17,6 +17,7 @@ import TemplateEditor from "./pages/TemplateEditor";
 import Login from "./pages/Login";
 import { AuthProvider, useAuth } from "./lib/auth";
 import { GenQueueProvider } from "./lib/genQueue";
+import { ConfirmHost } from "./lib/confirm";
 
 function Gate() {
   const { user, loading } = useAuth();
@@ -57,6 +58,7 @@ export default function App() {
   return (
     <AuthProvider>
       <Gate />
+      <ConfirmHost />
     </AuthProvider>
   );
 }

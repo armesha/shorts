@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import { AlertTriangle, RefreshCw, Trash2, Server, Monitor } from "lucide-react";
 import { apiClient, type ErrorLogItem } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { confirmDialog } from "../lib/confirm";
 
 export default function Errors() {
   const { user } = useAuth();
@@ -26,7 +27,7 @@ export default function Errors() {
   if (user && user.role !== "admin") return <Navigate to="/" replace />;
 
   async function clear() {
-    if (!confirm("Очистить весь журнал ошибок?")) return;
+    if (!(await confirmDialog("Очистить весь журнал ошибок?", { title: "Очистить журнал", confirmText: "Очистить", danger: true }))) return;
     await apiClient.clearErrors();
     load();
   }
