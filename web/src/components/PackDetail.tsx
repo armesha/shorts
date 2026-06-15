@@ -21,9 +21,10 @@ export default function PackDetail({ packId, onChanged }: { packId: string; onCh
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<number | null>(null);
   const previewReq = useRef(0); // invalidates an in-flight preview if the modal is closed mid-load
+  const [page, setPage] = useState(1); // client-side pagination of the cards grid (packs can be large)
 
   const reload = () => apiClient.pack(packId).then(setPack).catch(() => setPack(null));
-  useEffect(() => { setPack(null); setOk(null); setErr(null); setErrList([]); reload(); /* eslint-disable-next-line */ }, [packId]);
+  useEffect(() => { setPack(null); setOk(null); setErr(null); setErrList([]); setPage(1); reload(); /* eslint-disable-next-line */ }, [packId]);
 
   async function addCards() {
     setOk(null); setErr(null); setErrList([]);
@@ -65,6 +66,11 @@ export default function PackDetail({ packId, onChanged }: { packId: string; onCh
 
   if (!pack) return <div className="text-sm text-base-content/50 py-6 text-center"><Loader2 className="animate-spin inline" size={16} /> загрузка пака…</div>;
   const rules = pack.rules ?? [];
+  const PER_PAGE = 24;
+  const totalPages = Math.max(1, Math.ceil(pack.cards.length / PER_PAGE));
+  const pg = Math.min(page, totalPages);
+  const start = (pg - 1) * PER_PAGE;
+  const shown = pack.cards.slice(start, start + PER_PAGE);
 
   return (
     <div className="space-y-4">
@@ -106,7 +112,9 @@ export default function PackDetail({ packId, onChanged }: { packId: string; onCh
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {pack.cards.map((c, i) => (
+        {shown.map((c, j) => {
+          const i = start + j; // исходный индекс в pack.cards — нужен для preview/delete
+          return (
           <div key={i} className="border border-base-300 rounded-xl p-3 space-y-2">
             {rules.map((r) => (
               <div key={r.role} className="text-sm">
@@ -123,9 +131,17 @@ export default function PackDetail({ packId, onChanged }: { packId: string; onCh
               </button>
             </div>
           </div>
-        ))}
+          );
+        })}
         {pack.cards.length === 0 && <div className="text-sm text-base-content/50">В паке пока нет карточек.</div>}
       </div>
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-3 pt-1">
+          <button className="btn btn-xs btn-outline" disabled={pg <= 1} onClick={() => setPage(pg - 1)}>← Назад</button>
+          <span className="text-sm text-base-content/60">Стр. {pg} из {totalPages} · всего {pack.cards.length}</span>
+          <button className="btn btn-xs btn-outline" disabled={pg >= totalPages} onClick={() => setPage(pg + 1)}>Вперёд →</button>
+        </div>
+      )}
 
       {(previewUrl || previewing !== null) && (
         <div className="modal modal-open" role="dialog">
