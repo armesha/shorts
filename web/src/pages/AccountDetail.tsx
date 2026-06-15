@@ -777,41 +777,52 @@ export default function AccountDetail() {
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
               {pageVideos.map((v) => (
-                <div key={v.id} className="group relative">
-                  <button
-                    type="button"
-                    onClick={() => setPreview(v)}
-                    title="Открыть и посмотреть"
-                    className="block w-full aspect-[9/16] rounded-lg overflow-hidden border border-base-300 bg-base-200 relative"
-                  >
-                    {v.imageRel ? (
-                      <img src={`/files/${v.imageRel}`} alt="" className="w-full h-full object-cover" loading="lazy" />
-                    ) : (
-                      <span className="absolute inset-0 flex items-center justify-center text-base-content/30">
-                        <Play size={28} />
+                <div key={v.id} className="group">
+                  <div className="relative aspect-[9/16] rounded-lg overflow-hidden border border-base-300 bg-base-200">
+                    <div
+                      onClick={() => setPreview(v)}
+                      title="Открыть и посмотреть"
+                      className="absolute inset-0 cursor-pointer"
+                    >
+                      {v.imageRel ? (
+                        <img src={`/files/${v.imageRel}`} alt="" className="w-full h-full object-cover" loading="lazy" />
+                      ) : (
+                        <span className="absolute inset-0 flex items-center justify-center text-base-content/30">
+                          <Play size={28} />
+                        </span>
+                      )}
+                      <span className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/30 transition">
+                        <Play
+                          size={34}
+                          fill="currentColor"
+                          className="text-white opacity-0 group-hover:opacity-100 drop-shadow-lg transition"
+                        />
                       </span>
-                    )}
-                    <span className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/35 transition">
-                      <Play
-                        size={34}
-                        fill="currentColor"
-                        className="text-white opacity-0 group-hover:opacity-100 drop-shadow-lg transition"
-                      />
-                    </span>
-                    {v.postCount > 0 ? (
-                      <span className="absolute top-1 left-1 badge badge-success badge-sm">×{v.postCount}</span>
-                    ) : (
-                      <span className="absolute top-1 left-1 badge badge-ghost badge-sm">new</span>
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => removeVid(v.id)}
-                    title="Удалить из библиотеки"
-                    className="absolute top-1 right-1 btn btn-xs btn-circle btn-error opacity-0 group-hover:opacity-100 transition"
-                  >
-                    <Trash2 size={12} />
-                  </button>
+                      {v.postCount > 0 ? (
+                        <span className="absolute top-1 left-1 badge badge-success badge-sm">×{v.postCount}</span>
+                      ) : (
+                        <span className="absolute top-1 left-1 badge badge-ghost badge-sm">new</span>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeVid(v.id)}
+                      title="Удалить из библиотеки"
+                      className="absolute top-1 right-1 z-10 btn btn-xs btn-circle btn-error opacity-0 group-hover:opacity-100 transition"
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => postNow(v.id)}
+                      disabled={posting === v.id || account.status !== "connected"}
+                      title={account.status !== "connected" ? "Сначала подключи канал" : "Выложить сейчас"}
+                      className="absolute bottom-1.5 inset-x-1.5 z-10 btn btn-xs btn-primary gap-1 opacity-0 group-hover:opacity-100 transition"
+                    >
+                      {posting === v.id ? <Loader2 className="animate-spin" size={12} /> : <Upload size={12} />}
+                      Выложить
+                    </button>
+                  </div>
                   <div className="mt-1 text-xs font-medium leading-tight line-clamp-2" title={v.title}>
                     {v.title}
                   </div>
@@ -845,59 +856,66 @@ export default function AccountDetail() {
 
       {preview && (
         <div className="modal modal-open" onClick={() => setPreview(null)}>
-          <div className="modal-box max-w-sm p-0 overflow-hidden relative" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-box max-w-2xl p-0 overflow-hidden relative" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
               onClick={() => setPreview(null)}
               aria-label="Закрыть"
-              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-10 bg-base-100/70 hover:bg-base-100"
+              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-20 bg-base-100/70 hover:bg-base-100"
             >
               <X size={16} />
             </button>
-            <VideoPlayer
-              src={`/files/${preview.videoRel}`}
-              poster={preview.imageRel ? `/files/${preview.imageRel}` : undefined}
-              className="w-full aspect-[9/16] max-h-[68vh]"
-            />
-            <div className="p-4 space-y-2">
-              <h3 className="font-bold text-base leading-snug">{preview.title}</h3>
-              {preview.text && (
-                <p className="text-sm whitespace-pre-wrap leading-relaxed max-h-28 overflow-auto text-base-content/80">
-                  {preview.text}
-                </p>
-              )}
-              <div className="text-xs text-base-content/50">
-                {preview.text.length} симв.
-                {preview.lastPostedAt && ` · выложен ${new Date(preview.lastPostedAt).toLocaleDateString("ru-RU")}`}
-                {preview.music && preview.music !== "none"
-                  ? ` · 🎵 ${preview.music.split("/").pop()?.replace(/\.\w+$/, "")}`
-                  : " · 🔇 без музыки"}
+            <div className="flex flex-col sm:flex-row">
+              {/* видео — само по себе, справа */}
+              <div className="bg-black shrink-0 sm:order-2 sm:w-[300px]">
+                <VideoPlayer
+                  src={`/files/${preview.videoRel}`}
+                  poster={preview.imageRel ? `/files/${preview.imageRel}` : undefined}
+                  className="w-full aspect-[9/16] max-h-[75vh]"
+                />
               </div>
-              <div className="flex flex-wrap items-center gap-2 pt-1">
-                <a href={`/files/${preview.videoRel}`} download className="btn btn-sm btn-ghost gap-1">
-                  <Download size={14} /> MP4
-                </a>
-                <button
-                  className="btn btn-sm btn-ghost text-error gap-1"
-                  onClick={() => {
-                    const pid = preview.id;
-                    setPreview(null);
-                    removeVid(pid);
-                  }}
-                >
-                  <Trash2 size={14} /> Удалить
-                </button>
-                <button
-                  className="btn btn-sm btn-primary gap-1 ml-auto"
-                  disabled={account.status !== "connected" || posting === preview.id}
-                  onClick={() => {
-                    const pid = preview.id;
-                    setPreview(null);
-                    postNow(pid);
-                  }}
-                >
-                  <Upload size={14} /> Выложить
-                </button>
+              {/* описание + характеристики + действия — слева */}
+              <div className="flex-1 min-w-0 p-4 flex flex-col gap-2 sm:order-1">
+                <h3 className="font-bold text-base leading-snug">{preview.title}</h3>
+                {preview.text && (
+                  <p className="text-sm whitespace-pre-wrap leading-relaxed overflow-auto max-h-[40vh] text-base-content/80">
+                    {preview.text}
+                  </p>
+                )}
+                <div className="text-xs text-base-content/50">
+                  {preview.text.length} симв.
+                  {preview.postCount > 0 ? ` · выложен ×${preview.postCount}` : " · не выкладывался"}
+                  {preview.lastPostedAt && ` · ${new Date(preview.lastPostedAt).toLocaleDateString("ru-RU")}`}
+                  {preview.music && preview.music !== "none"
+                    ? ` · 🎵 ${preview.music.split("/").pop()?.replace(/\.\w+$/, "")}`
+                    : " · 🔇 без музыки"}
+                </div>
+                <div className="flex flex-wrap items-center gap-2 pt-2 mt-auto">
+                  <a href={`/files/${preview.videoRel}`} download className="btn btn-sm btn-ghost gap-1">
+                    <Download size={14} /> MP4
+                  </a>
+                  <button
+                    className="btn btn-sm btn-ghost text-error gap-1"
+                    onClick={() => {
+                      const pid = preview.id;
+                      setPreview(null);
+                      removeVid(pid);
+                    }}
+                  >
+                    <Trash2 size={14} /> Удалить
+                  </button>
+                  <button
+                    className="btn btn-sm btn-primary gap-1 ml-auto"
+                    disabled={account.status !== "connected" || posting === preview.id}
+                    onClick={() => {
+                      const pid = preview.id;
+                      setPreview(null);
+                      postNow(pid);
+                    }}
+                  >
+                    <Upload size={14} /> Выложить
+                  </button>
+                </div>
               </div>
             </div>
           </div>

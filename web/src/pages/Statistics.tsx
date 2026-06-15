@@ -46,6 +46,7 @@ export default function Statistics() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
+  const [avatarMap, setAvatarMap] = useState<Record<number, string | null | undefined>>({});
   // Controls (persisted): search, sort, owner filter, only-connected (default ON), pagination.
   const [search, setSearch] = useState(saved.search ?? "");
   const [sortKey, setSortKey] = useState<SortKey>(saved.sortKey ?? "subscribers");
@@ -72,6 +73,14 @@ export default function Statistics() {
         setError("Не удалось загрузить статистику (подробности в консоли F12)");
       })
       .finally(() => setLoading(false));
+  }, [scope]);
+
+  // Channel avatars by accountId (for the cards).
+  useEffect(() => {
+    apiClient
+      .accounts(scope === "all" ? "all" : undefined)
+      .then((a) => setAvatarMap(Object.fromEntries(a.map((x) => [x.id, x.avatar]))))
+      .catch(() => {});
   }, [scope]);
 
   // Any filter/sort/scope change → back to page 1.
@@ -298,7 +307,7 @@ export default function Statistics() {
           ) : (
             <div className="space-y-4">
               {paged.map((r) => (
-                <ChannelCard key={r.accountId} row={r} isAdmin={!!isAdmin} />
+                <ChannelCard key={r.accountId} row={r} isAdmin={!!isAdmin} avatar={avatarMap[r.accountId]} />
               ))}
             </div>
           )}
@@ -332,7 +341,7 @@ export default function Statistics() {
   );
 }
 
-function ChannelCard({ row, isAdmin }: { row: StatRow; isAdmin: boolean }) {
+function ChannelCard({ row, isAdmin, avatar }: { row: StatRow; isAdmin: boolean; avatar?: string | null }) {
   const [open, setOpen] = useState(false);
   const [points, setPoints] = useState<StatPoint[] | null>(null);
 
@@ -359,9 +368,17 @@ function ChannelCard({ row, isAdmin }: { row: StatRow; isAdmin: boolean }) {
     <div className="card bg-base-100 border border-base-300">
       <div className="card-body gap-4">
         <div className="flex items-center gap-3 flex-wrap">
-          <div className="bg-primary/10 text-primary rounded-full w-11 h-11 flex items-center justify-center shrink-0">
-            <BarChart3 size={20} />
-          </div>
+          {avatar ? (
+            <img
+              src={avatar}
+              alt=""
+              className="w-11 h-11 rounded-full object-cover border border-base-300 bg-base-200 shrink-0"
+            />
+          ) : (
+            <div className="bg-primary/10 text-primary rounded-full w-11 h-11 flex items-center justify-center shrink-0">
+              <BarChart3 size={20} />
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <div className="font-semibold truncate">{title}</div>
             <div className="text-sm text-base-content/60 truncate">

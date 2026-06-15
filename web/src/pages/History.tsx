@@ -44,12 +44,15 @@ export default function History() {
     return m;
   }, [users]);
 
-  // Load filter sources once (admins only).
+  // Accounts (for channel avatars + admin channel filter) + admin user list.
   useEffect(() => {
-    if (!isAdmin) return;
-    apiClient.adminUsers().then(setUsers).catch(() => {});
-    apiClient.accounts("all").then(setAllAccounts).catch(() => {});
+    apiClient.accounts(isAdmin ? "all" : undefined).then(setAllAccounts).catch(() => {});
+    if (isAdmin) apiClient.adminUsers().then(setUsers).catch(() => {});
   }, [isAdmin]);
+  const avatarMap = useMemo(
+    () => Object.fromEntries(allAccounts.map((a) => [a.id, a.avatar])) as Record<number, string | null | undefined>,
+    [allAccounts],
+  );
 
   const load = useCallback(
     (p: number) => {
@@ -199,7 +202,18 @@ export default function History() {
                       return (
                         <tr key={h.id}>
                           <td className="font-medium">{h.title}</td>
-                          <td>{h.channelName || `#${h.accountId}`}</td>
+                          <td>
+                            <span className="flex items-center gap-2">
+                              {avatarMap[h.accountId] && (
+                                <img
+                                  src={avatarMap[h.accountId] as string}
+                                  alt=""
+                                  className="w-6 h-6 rounded-full object-cover bg-base-200 shrink-0"
+                                />
+                              )}
+                              <span className="truncate">{h.channelName || `#${h.accountId}`}</span>
+                            </span>
+                          </td>
                           {showOwner && (
                             <td className="text-base-content/70">{h.ownerUsername || "—"}</td>
                           )}

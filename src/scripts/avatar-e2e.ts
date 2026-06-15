@@ -41,6 +41,21 @@ try {
   ok("Есть кнопка «Случайная»", await modal.getByText("Случайная").isVisible());
   await page.screenshot({ path: "data/output/_e2e_avatar_picker.png" });
 
+  // History page — avatar next to each channel
+  await page.goto(`${BASE}/history`, { waitUntil: "networkidle" });
+  await page.waitForTimeout(1200);
+  const histRows = await page.locator("table tbody tr").count();
+  const histAv = await page.locator('table img[src*="/avatars/"], table img[src*="/files/avatars/"]').count();
+  ok(`История: строк ${histRows}, аватарок ${histAv}`, histRows === 0 || histAv > 0);
+  await page.screenshot({ path: "data/output/_e2e_history.png" });
+
+  // Statistics page — avatar on each channel card
+  await page.goto(`${BASE}/statistics`, { waitUntil: "networkidle" });
+  await page.waitForTimeout(1500);
+  const statAv = await page.locator('img[src*="/avatars/"], img[src*="/files/avatars/"]').count();
+  ok(`Статистика: аватарок ${statAv} (>0)`, statAv > 0);
+  await page.screenshot({ path: "data/output/_e2e_statistics.png" });
+
   console.log(out.join("\n"));
   console.log(process.exitCode ? "\nAVATAR E2E: FAIL" : "\nAVATAR E2E: PASS");
 } catch (e) {

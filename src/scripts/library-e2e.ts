@@ -33,7 +33,7 @@ try {
   ok("Заголовок «Библиотека роликов» виден", await lib.isVisible());
   ok("Не выкинуло на логин", !(await ctx.getByRole("button", { name: "Войти" }).isVisible().catch(() => false)));
 
-  const cards = ctx.locator('button[title="Открыть и посмотреть"]');
+  const cards = ctx.locator('[title="Открыть и посмотреть"]');
   const n = await cards.count();
   ok(`Карточек-постеров в сетке: ${n} (>0)`, n > 0);
   await ctx.screenshot({ path: "data/output/_e2e_library_grid.png" });
