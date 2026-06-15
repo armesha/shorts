@@ -108,6 +108,17 @@ export function ytErrorReason(err: unknown): string {
   return short || "неизвестная ошибка";
 }
 
+/**
+ * YouTube rejects `<` and `>` anywhere in a video title/description with
+ * `invalidTitle`/`invalidDescription` (the API treats them as forbidden markup chars).
+ * Some source decks legitimately contain them (code snippets like `<KEY_ID>`, UI paths
+ * like `DevTools > Network`), so swap to look-alike single guillemets at the upload
+ * boundary — the one choke point every upload passes through. Keeps meaning readable.
+ */
+function sanitizeYtText(s: string): string {
+  return s.replace(/</g, "‹").replace(/>/g, "›");
+}
+
 export interface UploadOptions {
   videoPath: string;
   title: string;
@@ -131,8 +142,8 @@ export async function uploadShort(
     part: ["snippet", "status"],
     requestBody: {
       snippet: {
-        title: o.title.slice(0, 100),
-        description: o.description.slice(0, 4900),
+        title: sanitizeYtText(o.title).slice(0, 100),
+        description: sanitizeYtText(o.description).slice(0, 4900),
         tags: o.tags,
         categoryId: "23", // Comedy
       },
