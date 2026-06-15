@@ -218,7 +218,7 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
           <div className="alert alert-info py-2 text-xs">
             <ShieldCheck size={16} />
             <span>
-              Если Telegram привязан — код отправлен в бота. Не пришёл? Открой бота, нажми Start и
+              Если Telegram привязан — код отправлен в бота. Не пришёл? Откройте бота, нажмите Start и
               запроси код снова.
             </span>
           </div>

@@ -202,7 +202,7 @@ export default function Packs() {
             <p className="text-base-content/60 max-w-md">
               {isAdmin && viewUser !== ""
                 ? "У этого пользователя нет доступных паков."
-                : "Тебе пока не открыт ни один пак. Обратись к администратору."}
+                : "Вам пока не открыт ни один пак. Обратитесь к администратору."}
             </p>
           </div>
         </div>
@@ -318,7 +318,7 @@ export default function Packs() {
           <div className="card-body gap-2">
             <div className="flex items-center gap-2 flex-wrap">
               <AlertTriangle className="text-warning" size={18} />
-              <h2 className="card-title text-base">Скоро закончится (по всем, включая тебя)</h2>
+              <h2 className="card-title text-base">Скоро закончится (по всем, включая вас)</h2>
               <span className="badge badge-ghost badge-sm">{lowDecks.length}</span>
               <label className="ml-auto flex items-center gap-2 text-xs text-base-content/60">
                 Порог
@@ -358,7 +358,7 @@ export default function Packs() {
                       <tr key={`${r.userId}:${r.deckId}`}>
                         <td className="whitespace-nowrap font-medium">
                           {r.username}
-                          {r.userId === user?.id ? " (ты)" : ""}
+                          {r.userId === user?.id ? " (вы)" : ""}
                         </td>
                         <td className="whitespace-nowrap">{r.deckName}</td>
                         <td className={`text-right font-semibold ${r.available < 30 ? "text-error" : "text-warning"}`}>

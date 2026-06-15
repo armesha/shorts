@@ -34,7 +34,7 @@ export default function Settings() {
   }
 
   async function removeKey() {
-    if (!confirm("Удалить свой Google-ключ? Каналы перестанут постить, пока не загрузишь новый.")) return;
+    if (!confirm("Удалить свой Google-ключ? Каналы перестанут постить, пока не загрузите новый.")) return;
     setError("");
     setBusy(true);
     try {
@@ -50,7 +50,7 @@ export default function Settings() {
     <div className="space-y-6 max-w-3xl">
       <header>
         <h1 className="text-2xl font-bold">Настройки</h1>
-        <p className="text-base-content/60">Твой Google-ключ, Telegram и пароль</p>
+        <p className="text-base-content/60">Ваш Google-ключ, Telegram и пароль</p>
       </header>
 
       <section className="card bg-base-100 border border-base-300">
@@ -67,10 +67,10 @@ export default function Settings() {
           </div>
 
           <div className="text-sm text-base-content/70 space-y-2">
-            <p>Чтобы постить на свои YouTube-каналы, нужен твой OAuth-ключ Google. По шагам:</p>
+            <p>Чтобы постить на свои YouTube-каналы, нужен ваш OAuth-ключ Google. По шагам:</p>
             <ol className="list-decimal list-inside space-y-1 text-base-content/80 marker:text-primary marker:font-semibold">
               <li>
-                Открой{" "}
+                Откройте{" "}
                 <a
                   className="link link-primary"
                   href="https://console.cloud.google.com/apis/library/youtube.googleapis.com"
@@ -79,7 +79,7 @@ export default function Settings() {
                 >
                   YouTube Data API v3
                 </a>{" "}
-                → нажми <b>Enable</b>.
+                → нажмите <b>Enable</b>.
               </li>
               <li>
                 Перейди в{" "}
@@ -98,14 +98,14 @@ export default function Settings() {
                 не примется).
               </li>
               <li>
-                Раздел <b>Authorized redirect URIs</b> → <b>+ ADD URI</b> → вставь адрес ниже 👇
+                Раздел <b>Authorized redirect URIs</b> → <b>+ ADD URI</b> → вставьте адрес ниже 👇
               </li>
               <li>
-                <b>Create</b> → <b>Download JSON</b> → загрузи его кнопкой ниже.
+                <b>Create</b> → <b>Download JSON</b> → загрузите его кнопкой ниже.
               </li>
             </ol>
             <p className="text-xs text-base-content/50">
-              Если приложение в режиме «Testing» — добавь свою почту в <b>OAuth consent screen → Test
+              Если приложение в режиме «Testing» — добавьте свою почту в <b>OAuth consent screen → Test
               users</b>, иначе Google не пустит. После загрузки нового ключа переподключи каналы заново.
             </p>
           </div>
@@ -129,7 +129,7 @@ export default function Settings() {
             </div>
           )}
           <p className="text-xs text-base-content/50">
-            Ключ хранится на сервере под твоим аккаунтом и другим не виден. Файл наружу не отдаётся.
+            Ключ хранится на сервере под вашим аккаунтом и другим не виден. Файл наружу не отдаётся.
           </p>
         </div>
       </section>
@@ -211,8 +211,8 @@ function TelegramLink() {
         ) : (
           <>
             <p className="text-sm text-base-content/70">
-              Привяжи свой Telegram{st.bot ? <> (бот <b>@{st.bot}</b>)</> : null}: нажми кнопку, открой
-              бота и нажми <b>Start</b> — аккаунт привяжется сам, и бот сможет присылать коды для сброса
+              Привяжите свой Telegram{st.bot ? <> (бот <b>@{st.bot}</b>)</> : null}: нажмите кнопку, откройте
+              бота и нажмите <b>Start</b> — аккаунт привяжется сам, и бот сможет присылать коды для сброса
               пароля.
             </p>
             <TelegramConnect mode="bind" onDone={() => load()} />
@@ -262,7 +262,7 @@ function ChangePassword() {
         setMsg({ ok: false, text: data?.error || "Не удалось сменить пароль" });
         return;
       }
-      setMsg({ ok: true, text: "Пароль изменён. Теперь его знаешь только ты — администратору он неизвестен." });
+      setMsg({ ok: true, text: "Пароль изменён. Теперь его знаете только вы — администратору он неизвестен." });
       setCur("");
       setNext("");
       setConfirm("");
@@ -281,7 +281,7 @@ function ChangePassword() {
           <h2 className="card-title text-base">Смена пароля</h2>
         </div>
         <p className="text-sm text-base-content/70">
-          Поменяй пароль, который выдал администратор, на свой — знать его будешь только ты.
+          Поменяйте пароль, который выдал администратор, на свой — знать его будете только вы.
         </p>
         <form
           className="flex flex-wrap items-end gap-2"

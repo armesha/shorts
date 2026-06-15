@@ -130,7 +130,7 @@ export default function Cards() {
     setErrList([]);
     const txt = raw.trim();
     if (!txt) {
-      setErrMsg("Вставь JSON карточек");
+      setErrMsg("Вставьте JSON карточек");
       return;
     }
     let parsed: unknown;

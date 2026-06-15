@@ -124,7 +124,7 @@ export default function Studio() {
       }
       if (isPack) {
         const n = curPack?.cards ?? 0;
-        if (!n) { setErr("В паке нет карточек — добавь на странице «Паки и карточки»"); return; }
+        if (!n) { setErr("В паке нет карточек — добавьте на странице «Паки и карточки»"); return; }
         const idx = Math.floor(Math.random() * n);
         setPackIdx(idx);
         const r = await apiClient.packPreview(packId, idx);
@@ -331,12 +331,12 @@ export default function Studio() {
                 ) : (
                   <div className="text-sm text-base-content/60">
                     {isPack
-                      ? "✨ Карточка из пака готова. «Сгенерировать» — другая случайная; собери видео или сохрани в канал."
+                      ? "✨ Карточка из пака готова. «Сгенерировать» — другая случайная; соберите видео или сохраните в канал."
                       : deck === "islamic"
-                      ? "🕌 Карточка (аят / хадис / дуа) готова. Собери видео или сохрани в канал с языком «Ислам»."
+                      ? "🕌 Карточка (аят / хадис / дуа) готова. Соберите видео или сохраните в канал с языком «Ислам»."
                       : deck === "christian"
-                        ? "✝️ Карточка (стих из Библии, KJV) готова. Собери видео или сохрани в канал с языком «Holy Bible · KJV»."
-                        : "🧠 Психо-карточка готова. Собери видео или сохрани в канал с языком «Психология (DE)»."}
+                        ? "✝️ Карточка (стих из Библии, KJV) готова. Соберите видео или сохраните в канал с языком «Holy Bible · KJV»."
+                        : "🧠 Психо-карточка готова. Соберите видео или сохраните в канал с языком «Психология (DE)»."}
                   </div>
                 )}
                 <div className="flex flex-wrap items-center gap-2">
@@ -379,7 +379,7 @@ export default function Studio() {
                     }}
                   >
                     {saveAccounts.length === 0 && (
-                      <option value="">{isPack ? "нет каналов с этим паком (выбери пак источником канала)" : "нет каналов на этом языке"}</option>
+                      <option value="">{isPack ? "нет каналов с этим паком (выберите пак источником канала)" : "нет каналов на этом языке"}</option>
                     )}
                     {saveAccounts.map((a) => (
                       <option key={a.id} value={a.id}>
@@ -472,7 +472,7 @@ export default function Studio() {
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center text-center text-base-content/40 gap-2 p-6">
                 <Sparkles size={32} />
-                <span>Нажми «Сгенерировать» — здесь появится превью ролика</span>
+                <span>Нажмите «Сгенерировать» — здесь появится превью ролика</span>
               </div>
             )}
           </div>

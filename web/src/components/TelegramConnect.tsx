@@ -84,7 +84,7 @@ export default function TelegramConnect({ mode, onDone }: Props) {
           <ExternalLink size={16} /> Открыть {bot ? `@${bot}` : "бота"} и нажать Start
         </a>
         <div className="text-sm text-base-content/60 flex items-center gap-2">
-          <span className="loading loading-spinner loading-xs" /> Жду, пока ты нажмёшь Start в боте…
+          <span className="loading loading-spinner loading-xs" /> Жду, пока вы нажмёте Start в боте…
         </div>
         <button
           className="btn btn-ghost btn-xs"
@@ -107,7 +107,7 @@ export default function TelegramConnect({ mode, onDone }: Props) {
 
   const text =
     phase === "nomatch"
-      ? "Этот Telegram не привязан ни к одному аккаунту. Войди паролем и привяжи его в Настройках."
+      ? "Этот Telegram не привязан ни к одному аккаунту. Войди паролем и привяжите его в Настройках."
       : phase === "conflict"
         ? "Этот Telegram уже привязан к другому аккаунту."
         : phase === "expired"

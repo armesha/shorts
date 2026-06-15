@@ -12,7 +12,7 @@ export default function CreatePackForm({ onCreated }: { onCreated: (p: PackSumma
 
   async function create() {
     setErr(null);
-    if (!name.trim()) { setErr("Введи имя пака"); return; }
+    if (!name.trim()) { setErr("Введите имя пака"); return; }
     let templates: unknown[] = [];
     if (tpl.trim()) {
       try { const p = JSON.parse(tpl); templates = Array.isArray(p) ? p : [p]; }
@@ -30,8 +30,8 @@ export default function CreatePackForm({ onCreated }: { onCreated: (p: PackSumma
   return (
     <div className="space-y-3">
       <p className="text-sm text-base-content/70">
-        Новый ручной пак. Шаблон рисуешь в редакторе, экспортируешь JSON и вставляешь сюда.
-        По умолчанию пак виден только тебе (админу) — доступ другим выдаёшь в матрице Админки.
+        Новый ручной пак. Шаблон рисуете в редакторе, экспортируете JSON и вставляете сюда.
+        По умолчанию пак виден только вам (админу) — доступ другим выдаёте в матрице Админки.
       </p>
       <div className="flex flex-wrap gap-2">
         <input className="input input-bordered input-sm flex-1 min-w-48" placeholder="Имя пака" value={name} onChange={(e) => setName(e.target.value)} />
@@ -53,7 +53,7 @@ export default function CreatePackForm({ onCreated }: { onCreated: (p: PackSumma
         </span>
         <textarea
           className="textarea textarea-bordered min-h-28 font-mono text-xs"
-          placeholder="Нарисуй шаблон в /editor → Экспорт → вставь JSON (один объект или массив для нескольких цветовых вариантов)"
+          placeholder="Нарисуйте шаблон в /editor → Экспорт → вставьте JSON (один объект или массив для нескольких цветовых вариантов)"
           value={tpl}
           onChange={(e) => setTpl(e.target.value)}
         />

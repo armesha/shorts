@@ -93,7 +93,7 @@ export default function Errors() {
                         role={e.detail ? "button" : undefined}
                         tabIndex={e.detail ? 0 : undefined}
                         aria-expanded={e.detail ? expanded === e.id : undefined}
-                        title={e.detail ? "Нажми, чтобы показать детали" : ""}
+                        title={e.detail ? "Нажмите, чтобы показать детали" : ""}
                       >
                         <td className="whitespace-nowrap text-base-content/60 text-xs">
                           {e.detail && (

@@ -28,7 +28,7 @@ export default function PackDetail({ packId, onChanged }: { packId: string; onCh
   async function addCards() {
     setOk(null); setErr(null); setErrList([]);
     const txt = raw.trim();
-    if (!txt) { setErr("Вставь JSON карточек"); return; }
+    if (!txt) { setErr("Вставьте JSON карточек"); return; }
     let parsed: unknown;
     try { parsed = JSON.parse(txt); } catch (e) { setErr("Неверный JSON: " + (e instanceof Error ? e.message : String(e))); return; }
     setBusy(true);

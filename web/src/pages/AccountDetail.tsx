@@ -126,7 +126,7 @@ export default function AccountDetail() {
   }
   async function onUploadAvatar(file: File) {
     if (!file) return;
-    if (file.size > 3_000_000) return notify("Файл больше 3 МБ — выбери поменьше", "error");
+    if (file.size > 3_000_000) return notify("Файл больше 3 МБ — выберите поменьше", "error");
     setAvatarBusy(true);
     try {
       const dataUrl: string = await new Promise((res, rej) => {
@@ -617,7 +617,7 @@ export default function AccountDetail() {
                 Чтобы ролики загружались автоматически, авторизуй канал через Google — один раз.
               </p>
               {justConnected && (
-                <p className="text-success text-sm">Канал подключён ✓ — обнови страницу.</p>
+                <p className="text-success text-sm">Канал подключён ✓ — обновите страницу.</p>
               )}
               <div>
                 <button className="btn btn-primary btn-sm" onClick={connect}>
@@ -664,7 +664,7 @@ export default function AccountDetail() {
                 className="select select-bordered select-sm min-w-[10rem] max-w-[16rem]"
                 value={lang}
                 onChange={(e) => setLang(e.target.value)}
-                title="Из какого пака генерировать ролики. После выбора нажми «Сохранить пак»."
+                title="Из какого пака генерировать ролики. После выбора нажмите «Сохранить пак»."
               >
                 {deckOptions()}
               </select>
@@ -735,7 +735,7 @@ export default function AccountDetail() {
             {/* Предупреждения и доп-действия — отдельными строками, тулбар не ломают */}
             {langMismatch && (
               <span className="basis-full text-xs text-error font-medium">
-                ⚠ контент {tagOf(curContentLang)} ≠ язык канала {tagOf(channelLang)} — смени язык канала или выбери {tagOf(channelLang)}-пак
+                ⚠ контент {tagOf(curContentLang)} ≠ язык канала {tagOf(channelLang)} — смените язык канала или выберите {tagOf(channelLang)}-пак
               </span>
             )}
             {lang !== account.lang && videos.length > 0 && (
@@ -772,7 +772,7 @@ export default function AccountDetail() {
           )}
           {videos.length === 0 ? (
             <div className="text-sm text-base-content/50 py-6 text-center">
-              Пусто. Сгенерируй ролик в «Студии» и сохрани в этот канал.
+              Пусто. Сгенерируйте ролик в «Студии» и сохраните в этот канал.
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
@@ -824,7 +824,7 @@ export default function AccountDetail() {
                       type="button"
                       onClick={() => postNow(v.id)}
                       disabled={posting === v.id || account.status !== "connected"}
-                      title={account.status !== "connected" ? "Сначала подключи канал" : "Выложить сейчас"}
+                      title={account.status !== "connected" ? "Сначала подключите канал" : "Выложить сейчас"}
                       className="absolute bottom-1.5 inset-x-1.5 z-10 btn btn-xs btn-primary gap-1 opacity-0 group-hover:opacity-100 transition"
                     >
                       {posting === v.id ? <Loader2 className="animate-spin" size={12} /> : <Upload size={12} />}
@@ -966,7 +966,7 @@ export default function AccountDetail() {
                 <RefreshCw size={14} /> Случайная
               </button>
               {avatarBusy && <Loader2 className="animate-spin self-center" size={16} />}
-              <span className="text-xs text-base-content/50 ml-auto">или выбери из набора ↓</span>
+              <span className="text-xs text-base-content/50 ml-auto">или выберите из набора ↓</span>
             </div>
             <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 max-h-[50vh] overflow-auto p-1">
               {avatarList.map((u) => (
