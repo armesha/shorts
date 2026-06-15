@@ -1488,7 +1488,7 @@
                       "id": "xW1d1",
                       "name": "T0",
                       "fill": "#FBF7ED",
-                      "content": "6 Psychologische",
+                      "content": "ВВЫФВФЫВЫФЫВ\nЫВФФЫ\nВЫФ\nФЫ\nЫФЫФ\nВФЫВФЫ\t",
                       "fontFamily": "Spectral",
                       "fontSize": 62,
                       "fontWeight": "800"
@@ -1498,7 +1498,7 @@
                       "id": "pthzf",
                       "name": "T1",
                       "fill": "#FBF7ED",
-                      "content": "Fakten",
+                      "content": "уцуцу",
                       "fontFamily": "Spectral",
                       "fontSize": 62,
                       "fontWeight": "800"
@@ -2871,7 +2871,7 @@
       "fill": {
         "type": "image",
         "enabled": true,
-        "url": "./images/generated-1781344518163.png",
+        "url": "assets/backgrounds/kraft.jpg",
         "mode": "fill"
       },
       "layout": "vertical",
@@ -2981,7 +2981,7 @@
       "fill": {
         "type": "image",
         "enabled": true,
-        "url": "./images/generated-1781344520568.png",
+        "url": "assets/backgrounds/marble.jpg",
         "mode": "fill"
       },
       "layout": "vertical",
@@ -3081,95 +3081,113 @@
     },
     {
       "type": "frame",
-      "id": "p9mZT",
+      "id": "L0NC45",
       "x": 6000,
-      "y": 2120,
-      "name": "tex/kraft",
+      "y": 2140,
+      "name": "bg/kraft",
       "clip": true,
-      "width": 1080,
-      "height": 1920,
+      "width": 560,
+      "height": 996,
       "fill": {
         "type": "image",
         "enabled": true,
+        "url": "assets/backgrounds/kraft.jpg",
         "mode": "fill"
       }
     },
     {
       "type": "frame",
-      "id": "jfzO2",
-      "x": 7160,
-      "y": 2120,
-      "name": "tex/parchment",
+      "id": "W9hET",
+      "x": 6640,
+      "y": 2140,
+      "name": "bg/parchment",
       "clip": true,
-      "width": 1080,
-      "height": 1920,
+      "width": 560,
+      "height": 996,
       "fill": {
         "type": "image",
         "enabled": true,
-        "url": "./images/generated-1781345361958.png",
+        "url": "assets/backgrounds/parchment.jpg",
         "mode": "fill"
       }
     },
     {
       "type": "frame",
-      "id": "ZL48M",
-      "x": 8320,
-      "y": 2120,
-      "name": "tex/marble",
+      "id": "ldgP5",
+      "x": 7280,
+      "y": 2140,
+      "name": "bg/marble",
       "clip": true,
-      "width": 1080,
-      "height": 1920,
+      "width": 560,
+      "height": 996,
       "fill": {
         "type": "image",
         "enabled": true,
-        "url": "./images/generated-1781345360628.png",
+        "url": "assets/backgrounds/marble.jpg",
         "mode": "fill"
       }
     },
     {
       "type": "frame",
-      "id": "LrgZy",
-      "x": 9480,
-      "y": 2120,
-      "name": "tex/linen",
+      "id": "k0H5JJ",
+      "x": 7920,
+      "y": 2140,
+      "name": "bg/linen",
       "clip": true,
-      "width": 1080,
-      "height": 1920,
+      "width": 560,
+      "height": 996,
       "fill": {
         "type": "image",
         "enabled": true,
-        "url": "./images/generated-1781345366592.png",
+        "url": "assets/backgrounds/linen.jpg",
         "mode": "fill"
       }
     },
     {
       "type": "frame",
-      "id": "a76Fo4",
-      "x": 10640,
-      "y": 2120,
-      "name": "tex/concrete",
+      "id": "i4XMIf",
+      "x": 8560,
+      "y": 2140,
+      "name": "bg/concrete",
       "clip": true,
-      "width": 1080,
-      "height": 1920,
+      "width": 560,
+      "height": 996,
       "fill": {
         "type": "image",
         "enabled": true,
-        "url": "./images/generated-1781345362116.png",
+        "url": "assets/backgrounds/concrete.jpg",
         "mode": "fill"
       }
     },
     {
       "type": "frame",
-      "id": "O6YjH",
-      "x": 11800,
-      "y": 2120,
-      "name": "tex/paper",
+      "id": "whtGh",
+      "x": 9200,
+      "y": 2140,
+      "name": "bg/newsprint",
       "clip": true,
-      "width": 1080,
-      "height": 1920,
+      "width": 560,
+      "height": 996,
       "fill": {
         "type": "image",
         "enabled": true,
+        "url": "assets/backgrounds/newsprint.jpg",
+        "mode": "fill"
+      }
+    },
+    {
+      "type": "frame",
+      "id": "zqTgc",
+      "x": 9840,
+      "y": 2140,
+      "name": "bg/sandstone",
+      "clip": true,
+      "width": 560,
+      "height": 996,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "assets/backgrounds/sandstone.jpg",
         "mode": "fill"
       }
     }

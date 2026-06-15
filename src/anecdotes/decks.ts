@@ -22,6 +22,9 @@ export interface Deck {
   /** Lifehack background style suffix, e.g. "chaplin" → profession_<key>_chaplin.jpg (with moustache).
    *  Omitted → the plain profession_<key>.jpg (no moustache). */
   lifehackVariant?: string;
+  /** When true, render anecdotes on the themed russian_jokes/* scenes (text in each bg's paper
+   *  safe-zone) via templates/anecdote-russian.html instead of the flat textured card. */
+  russianBg?: boolean;
 }
 
 export const DECKS: Deck[] = [
@@ -34,6 +37,7 @@ export const DECKS: Deck[] = [
     hashtags: "#анекдоты #юмор #приколы #смех #shorts",
     tags: ["анекдоты", "юмор", "приколы", "смешное", "смех", "анекдот", "ржака", "shorts"],
     genericTitles: ["Анекдот", "Свежий анекдот", "Посмеёмся?", "Из жизни", "Народное", "Анекдот дня"],
+    russianBg: true, // рендер на тематических сценах russian_jokes/* (лист на кухне/в бане/в поезде…)
   },
   {
     id: "de",

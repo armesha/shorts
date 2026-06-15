@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<!-- RU-дека на фонах russian_jokes/* (сцены со встроенным светлым «листом»: кухня, баня, поезд…).
+     Тот же тёмный PT Serif + заголовок с красным акцентом + подпись и авто-подгон, что и в
+     anecdote.html, но текст лежит в SAFE-зоне «листа» (padding = отступы фона). Лист светлый →
+     тёмные чернила без скрима. Текст течёт с реальными переносами (white-space:pre-wrap) — две
+     склеенные шутки разделяются пустой строкой + тонким разделителем. -->
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Marck+Script&family=Noto+Color+Emoji&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: {{BG}};
+    --safe-top: {{SAFE_TOP}}px; --safe-right: {{SAFE_RIGHT}}px; --safe-bottom: {{SAFE_BOTTOM}}px; --safe-left: {{SAFE_LEFT}}px;
+    --ink: #20160f;
+    --accent: #b23b2e;
+    --title-size: 56px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; }
+  .card {
+    width: 1080px; height: 1920px;
+    background: var(--bg);
+    padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+    display: flex; flex-direction: column;
+    font-family: 'PT Serif', Georgia, 'DejaVu Serif', serif;
+    color: var(--ink);
+  }
+
+  /* Заголовок: одна строка сверху, красное подчёркивание */
+  .title-wrap { flex: 0 0 auto; text-align: center; }
+  .title {
+    display: inline-block; max-width: 100%;
+    font-weight: 700; font-size: var(--title-size); line-height: 1.2;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    border-bottom: 5px solid var(--accent); padding-bottom: 8px;
+    text-shadow: 0 0 6px rgba(255,255,252,.92), 0 1px 2px rgba(255,255,252,.7);
+  }
+
+  /* Тело: авто-вписывание, заполняет лист, не обрезается */
+  .body {
+    flex: 1 1 auto; display: flex; flex-direction: column;
+    align-items: stretch; justify-content: center; overflow: hidden;
+    padding: 28px 0 6px;
+  }
+  .text {
+    width: 100%; text-align: left; line-height: 1.5; white-space: pre-wrap;
+    font-size: 52px; word-wrap: break-word; overflow-wrap: break-word;
+    /* лёгкий светлый ореол: текст читается, даже если край листа граничит с тёмным предметом */
+    text-shadow: 0 0 5px rgba(255,255,252,.92), 0 1px 2px rgba(255,255,252,.72);
+  }
+  /* Тонкий разделитель между двумя склеенными анекдотами (если в тексте есть строка «— — —») */
+
+  /* Подпись: смайл (слева) + рукописная подпись канала (справа) */
+  .footer { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; }
+  .emoji { font-family: 'Noto Color Emoji', sans-serif; font-size: 60px; line-height: 1; }
+  .signature { font-family: 'Marck Script', 'Caveat', cursive; font-size: 44px; color: var(--accent); }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="title-wrap"><span class="title">{{TITLE}}</span></div>
+    <div class="body"><div class="text">{{TEXT}}</div></div>
+    <div class="footer">
+      <span class="emoji">😂</span>
+      <span class="signature">{{CHANNEL}}</span>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      function fit() {
+        var body = document.querySelector('.body');
+        var text = document.querySelector('.text');
+        var titleEl = document.querySelector('.title');
+        if (titleEl) {
+          var ts = 56;
+          titleEl.style.fontSize = ts + 'px';
+          while (ts > 30 && titleEl.scrollWidth > titleEl.clientWidth + 1) {
+            ts -= 2; titleEl.style.fontSize = ts + 'px';
+          }
+        }
+        var BASE_LH = 1.42;
+        text.style.lineHeight = String(BASE_LH);
+        var min = 22, max = 62, best = min;
+        while (min <= max) {
+          var mid = (min + max) >> 1;
+          text.style.fontSize = mid + 'px';
+          var fitsV = text.scrollHeight <= body.clientHeight;
+          var fitsH = text.scrollWidth <= text.clientWidth + 2;
+          if (fitsV && fitsH) { best = mid; min = mid + 1; }
+          else { max = mid - 1; }
+        }
+        text.style.fontSize = best + 'px';
+        text.style.lineHeight = String(BASE_LH);
+        var natural = text.scrollHeight;
+        var target = body.clientHeight;
+        if (natural > 0 && natural < target) {
+          text.style.lineHeight = String(Math.min(1.55, BASE_LH * (target / natural)));
+        }
+        window.__fitFontPx = best;
+        window.__fitted = true;
+      }
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+      else fit();
+      setTimeout(function () { if (!window.__fitted) fit(); }, 1500);
+    })();
+  </script>
+</body>
+</html>

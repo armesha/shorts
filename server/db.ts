@@ -7,7 +7,8 @@ export interface Account {
   userId: number | null;
   channelName: string;
   theme: string;
-  lang: string;
+  lang: string; // выбор КОНТЕНТА канала: встроенная дека (ru/de/…) или пак ("pack:<id>")
+  channelLang: string; // ЯЗЫК канала (ru/de/it/fr/en/ar) — стабилен; пак должен совпадать по языку
   schedule: string[];
   template: string;
   status: string;
@@ -91,6 +92,7 @@ const rowToAccount = (r: Row): Account => ({
   channelName: r.channel_name,
   theme: r.theme,
   lang: r.lang,
+  channelLang: r.channel_lang ?? "",
   schedule: JSON.parse(r.schedule),
   template: r.template,
   status: r.yt_refresh_token ? "connected" : r.status || "needs_auth",
@@ -266,6 +268,11 @@ export function openDb(path: string) {
     /* column already exists */
   }
   try {
+    db.exec("ALTER TABLE accounts ADD COLUMN channel_lang TEXT DEFAULT ''");
+  } catch {
+    /* column already exists */
+  }
+  try {
     db.exec("ALTER TABLE videos ADD COLUMN deck TEXT NOT NULL DEFAULT 'ru'");
   } catch {
     /* column already exists */
@@ -334,13 +341,14 @@ export function openDb(path: string) {
     createAccount(input: Partial<Account>): Account {
       const info = db
         .prepare(
-          "INSERT INTO accounts (user_id, channel_name, theme, lang, schedule, template, status) VALUES (?,?,?,?,?,?,?)",
+          "INSERT INTO accounts (user_id, channel_name, theme, lang, channel_lang, schedule, template, status) VALUES (?,?,?,?,?,?,?,?)",
         )
         .run(
           input.userId ?? null,
           input.channelName ?? "Новый канал",
           input.theme ?? "",
           input.lang ?? "de",
+          input.channelLang ?? input.lang ?? "de",
           JSON.stringify(input.schedule ?? ["12:00"]),
           input.template ?? "1 · Kraft Paper",
           input.status ?? "needs_auth",
@@ -351,11 +359,12 @@ export function openDb(path: string) {
       const cur = this.getAccount(id);
       if (!cur) return null;
       db.prepare(
-        "UPDATE accounts SET channel_name=?, theme=?, lang=?, schedule=?, template=?, enabled=?, slot_videos=? WHERE id=?",
+        "UPDATE accounts SET channel_name=?, theme=?, lang=?, channel_lang=?, schedule=?, template=?, enabled=?, slot_videos=? WHERE id=?",
       ).run(
         input.channelName ?? cur.channelName,
         input.theme ?? cur.theme,
         input.lang ?? cur.lang,
+        input.channelLang ?? cur.channelLang,
         JSON.stringify(input.schedule ?? cur.schedule),
         input.template ?? cur.template,
         (input.enabled ?? cur.enabled) ? 1 : 0,

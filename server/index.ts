@@ -6,7 +6,9 @@ import { unlinkSync, readFileSync, existsSync } from "node:fs";
 import { loadBaseConfig, resolveClientSecretFile, credsFileExists } from "./config.ts";
 import { openDb, type Account } from "./db.ts";
 import { randomAnecdote, libraryStats, anecdoteKey } from "../src/anecdotes/library.ts";
-import { DECKS, getDeck, ytMeta, pickGenericTitle } from "../src/anecdotes/decks.ts";
+import { DECKS, getDeck, ytMeta, pickGenericTitle, isPackDeckId } from "../src/anecdotes/decks.ts";
+import { listAllPacks, setGrant, getPack } from "../src/packs/store.ts";
+import { pickUnusedPackCard, buildPackLibraryVideo } from "./pack-gen.ts";
 import { renderAnecdote, listBackgrounds } from "../src/anecdotes/render.ts";
 import { assembleStillVideo, listAudio, audioPathFor, pickIslamicAudio, pickChristianAudio } from "../src/video.ts";
 import {
@@ -28,7 +30,9 @@ import {
   SESSION_TTL_DAYS,
 } from "./auth.ts";
 import { registerPasswordRoutes } from "./password-routes.ts";
+import { registerTelegramRoutes } from "./telegram-routes.ts";
 import { registerPsychCardsRoutes } from "./psych-cards-routes.ts";
+import { registerPacksRoutes } from "./packs-routes.ts";
 import { initGenQueue, enqueue as genEnqueue, jobStatus as genJobStatus, cancelJob as genCancelJob, drainQueue as genDrainQueue } from "./gen-queue.ts";
 import { gracefulShutdown } from "./shutdown.ts";
 
@@ -75,6 +79,22 @@ if (firstAdmin) {
 for (const acc of db.listAccounts()) {
   if (acc.userId == null) continue;
   for (const v of db.listVideos(acc.id)) db.markAnecdoteUsed(acc.userId, anecdoteKey(v.text));
+}
+
+// Backfill channel language for existing channels (new channel_lang column): built-in deck → its
+// language; custom pack → the pack's own lang. Lets the «язык пака ≠ язык канала» guard work for
+// channels created before this field existed. Runs once (only fills empty channel_lang).
+{
+  const DECK_LANG: Record<string, string> = {
+    ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
+    tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en",
+  };
+  for (const acc of db.listAccounts()) {
+    if (acc.channelLang) continue;
+    let lng = DECK_LANG[acc.lang] || "";
+    if (!lng && isPackDeckId(acc.lang)) lng = getPack(acc.lang.slice(5), acc.userId ?? 0, true)?.lang || "";
+    if (lng) db.updateAccount(acc.id, { channelLang: lng });
+  }
 }
 
 const REDIRECT_URI =
@@ -159,7 +179,14 @@ function clearSessionCookie(reply: { header: (k: string, v: string) => unknown }
 
 // Gate the whole API behind a session. Exceptions: health, the login endpoint, and the YouTube
 // OAuth callback (Google redirects the browser there). Static /files & /audio are not under /api/.
-const PUBLIC_API = new Set(["/api/health", "/api/auth/login"]);
+const PUBLIC_API = new Set([
+  "/api/health",
+  "/api/auth/login",
+  "/api/auth/telegram", // Login with Telegram (verifies the widget signature itself)
+  "/api/auth/telegram/info", // pre-login: is Telegram offered here + bot @username
+  "/api/auth/recover/start", // password recovery: ask the bot to DM a code
+  "/api/auth/recover/complete", // password recovery: submit code + new password
+]);
 app.addHook("onRequest", async (req, reply) => {
   const path = req.url.split("?")[0];
   if (!path.startsWith("/api/")) return;
@@ -197,6 +224,9 @@ app.setErrorHandler((err, req, reply) => {
 // Self-service password change (logic in a separate file → minimal footprint in this shared module).
 registerPasswordRoutes(app, db, base.dbPath);
 registerPsychCardsRoutes(app);
+registerPacksRoutes(app, db);
+// Telegram login + account binding + bot-delivered password recovery (public routes whitelisted above).
+registerTelegramRoutes(app, db, { setSessionCookie });
 
 app.post("/api/auth/login", async (req, reply) => {
   const body = (req.body as { username?: string; password?: string }) ?? {};
@@ -277,6 +307,8 @@ function ownAccount(req: unknown, reply: Replyish, id: number): Account | null {
 // otherwise unless the deck is hidden for them.
 function deckAllowed(req: unknown, deckId: string): boolean {
   if (db.getUserById(uid(req))?.role === "admin") return true;
+  // Кастомные паки: доступ по владению/гранту (getPack применяет canAccess), а не по hidden.
+  if (isPackDeckId(deckId)) return getPack(deckId.slice(5), uid(req), false) !== null;
   if (getDeck(deckId).adminOnly) return false;
   return !db.isDeckHiddenFor(uid(req), deckId);
 }
@@ -355,7 +387,11 @@ app.post("/api/admin/users", async (req, reply) => {
 // All packs (matrix columns).
 app.get("/api/admin/decks", async (req, reply) => {
   if (!requireAdmin(req, reply)) return;
-  return DECKS.map((d) => ({ id: d.id, name: d.name }));
+  // встроенные деки + кастомные паки (всегда показываем паки колонками; id = "pack:<id>")
+  return [
+    ...DECKS.map((d) => ({ id: d.id, name: d.name, pack: false })),
+    ...listAllPacks().map((p) => ({ id: `pack:${p.id}`, name: p.name, pack: true })),
+  ];
 });
 // Matrix data: per user — which packs are hidden + which packs they actually use.
 app.get("/api/admin/user-decks", async (req, reply) => {
@@ -363,6 +399,7 @@ app.get("/api/admin/user-decks", async (req, reply) => {
   const hidden = db.hiddenDecksByUser();
   const used = db.usedDecksByUser();
   const posted = db.postedByUserDeck();
+  const allPacks = listAllPacks();
   return db.listUsers().map((u) => {
     // Per-deck remaining/used/posted for the decks this user actually uses (so admin sees when a pack runs out).
     const usedKeys = new Set(db.usedAnecdoteKeys(u.id));
@@ -377,6 +414,9 @@ app.get("/api/admin/user-decks", async (req, reply) => {
       username: u.username,
       role: u.role,
       hidden: hidden[u.id] ?? [],
+      grantedPacks: allPacks
+        .filter((p) => u.role === "admin" || p.userId === u.id || p.grants.includes(u.id))
+        .map((p) => `pack:${p.id}`),
       used: used[u.id] ?? [],
       scheduled: db.scheduleSlotsForUser(u.id), // posts/day planned across all their channels
       library: db.countVideosByUser(u.id), // videos queued in their libraries
@@ -390,10 +430,19 @@ app.put("/api/admin/users/:id/decks", async (req, reply) => {
   const id = Number((req.params as { id: string }).id);
   const target = db.getUserById(id);
   if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
-  const body = (req.body as { hidden?: string[] }) ?? {};
+  const body = (req.body as { hidden?: string[]; grants?: string[] }) ?? {};
   const valid = Array.isArray(body.hidden) ? body.hidden.filter((d) => DECKS.some((x) => x.id === d)) : [];
   const finalHidden = target.role === "admin" ? [] : valid;
   db.setHiddenDecks(id, finalHidden);
+  // Кастомные паки (opt-in): выдать/снять доступ этому юзеру по body.grants (id вида "pack:<id>").
+  // Владельца не трогаем; админ и так видит всё.
+  if (target.role !== "admin") {
+    const want = new Set((Array.isArray(body.grants) ? body.grants : []).map((g) => g.replace(/^pack:/, "")));
+    for (const p of listAllPacks()) {
+      if (p.userId === id) continue;
+      setGrant(p.id, id, want.has(p.id));
+    }
+  }
   return { ok: true, hidden: finalHidden };
 });
 
@@ -476,8 +525,12 @@ app.put("/api/accounts/:id", async (req, reply) => {
   const id = Number((req.params as { id: string }).id);
   if (!ownAccount(req, reply, id)) return;
   const body = (req.body as Partial<Account>) ?? {};
-  if (body.lang && DECKS.some((d) => d.id === body.lang) && !deckAllowed(req, body.lang))
-    return reply.code(403).send({ error: "Этот пак вам недоступен — нельзя поставить его языком канала." });
+  if (body.lang) {
+    const known = DECKS.some((d) => d.id === body.lang) || isPackDeckId(body.lang);
+    if (!known) return reply.code(400).send({ error: `Неизвестный язык канала «${body.lang}».` });
+    if (!deckAllowed(req, body.lang))
+      return reply.code(403).send({ error: "Этот пак вам недоступен — нельзя поставить его языком канала." });
+  }
   // Cap: ≤ 100 scheduled posts per day per user (sum of schedule slots across all their channels). Admins exempt.
   if (Array.isArray(body.schedule) && db.getUserById(uid(req))?.role !== "admin") {
     const others = db.scheduleSlotsForUser(uid(req), id);
@@ -550,17 +603,43 @@ function statRow(a: Account, error?: string | null) {
 
 // Turn a googleapis/OAuth failure into a short Russian hint; raw reason stays in () for the F12 console.
 function ytErrorMessage(err: unknown): string {
-  const e = err as { response?: { data?: { error_description?: string; error?: string } }; message?: string };
-  const raw = e?.response?.data?.error_description || e?.response?.data?.error || e?.message || String(err);
-  const s = String(raw);
+  const e = err as {
+    code?: number | string;
+    response?: { status?: number; data?: { error_description?: string; error?: unknown } };
+    errors?: { message?: string; reason?: string }[];
+    message?: string;
+  };
+  const data = e?.response?.data;
+  const status = e?.response?.status ?? (typeof e?.code === "number" ? e.code : undefined);
+  // Token endpoint → error/error_description are STRINGS; YouTube Data API → `error` is an OBJECT
+  // { code, message, errors:[{reason,message}] }. Extracting .message avoids "[object Object]".
+  const apiErr =
+    data?.error && typeof data.error === "object"
+      ? (data.error as { message?: string; errors?: { reason?: string; message?: string }[] })
+      : null;
+  const reason = apiErr?.errors?.[0]?.reason ?? e?.errors?.[0]?.reason ?? "";
+  const raw =
+    data?.error_description ||
+    (typeof data?.error === "string" ? data.error : apiErr?.message) ||
+    apiErr?.errors?.[0]?.message ||
+    e?.errors?.[0]?.message ||
+    e?.message ||
+    String(err);
+  const s = `${String(raw)} ${reason}`.trim();
+  if (/youtubeSignupRequired|channelNotFound/i.test(s))
+    return `У выбранного Google-аккаунта нет YouTube-канала — создайте канал на youtube.com и переподключите.`;
+  if (/SERVICE_DISABLED|accessNotConfigured|has not been used in project/i.test(s))
+    return `В проекте этого Google-ключа не включён YouTube Data API v3 — включите его в Google Cloud и переподключите.`;
   if (/unauthorized_client|invalid_client/i.test(s))
     return `Токен канала не принят (${s}) — переподключите канал в «Каналы».`;
   if (/invalid_grant/i.test(s)) return `Доступ отозван или истёк (${s}) — переподключите канал.`;
+  if (status === 401 || /\bunauthorized\b|authorizationRequired/i.test(s))
+    return `YouTube не принял авторизацию (401${reason ? " · " + reason : ""}). Обычно причина: у выбранного Google-аккаунта нет YouTube-канала, либо на экране согласия не отмечены галочки доступа к YouTube, либо в проекте ключа не включён YouTube Data API v3.`;
   if (/insufficient|scope|forbidden/i.test(s))
-    return `Недостаточно прав токена (${s}) — переподключите канал заново.`;
+    return `Недостаточно прав токена (${s}) — переподключите канал и отметьте все доступы.`;
   if (/quota|rateLimit|userRateLimitExceeded/i.test(s))
     return `Квота YouTube API исчерпана (${s}) — попробуйте позже.`;
-  return `Ошибка YouTube: ${s}`;
+  return `Ошибка YouTube: ${s || "неизвестно"}${status ? ` (HTTP ${status})` : ""}`;
 }
 
 app.get("/api/stats", async (req) => {
@@ -793,6 +872,8 @@ app.post("/api/videos", async (req, reply) => {
   if (!body.accountId || !body.text) return reply.code(400).send({ error: "accountId и text обязательны" });
   const acc = ownAccount(req, reply, body.accountId);
   if (!acc) return;
+  if (isPackDeckId(acc.lang))
+    return reply.code(400).send({ error: "Это пак-канал — добавляйте ролики кнопкой «Сгенерировать» или через Студию." });
   const channelDeck = DECKS.find((d) => d.id === acc.lang);
   if (!channelDeck)
     return reply.code(400).send({ error: `У канала язык «${acc.lang}» без пака — смените язык канала.` });
@@ -817,15 +898,29 @@ app.post("/api/videos/batch", async (req, reply) => {
   if (!body.accountId) return reply.code(400).send({ error: "accountId обязателен" });
   const acc = ownAccount(req, reply, body.accountId);
   if (!acc) return;
+  const requested = Math.max(1, Math.min(20, Number(body.count) || 5));
+  const seen = new Set<string>(db.usedAnecdoteKeys(uid(req))); // exclude this user's used + dedupe batch
+  const created: unknown[] = [];
+  // Пак-канал (язык = "pack:<id>"): случайные неиспользованные карточки пака → рендер мостом.
+  if (isPackDeckId(acc.lang)) {
+    if (!deckAllowed(req, acc.lang)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
+    const pack = getPack(acc.lang.slice(5), uid(req), db.getUserById(uid(req))?.role === "admin");
+    if (!pack) return reply.code(404).send({ error: "Пак не найден." });
+    if (!pack.templates.length) return reply.code(400).send({ error: "У пака нет шаблона." });
+    for (let i = 0; i < requested; i++) {
+      const picked = pickUnusedPackCard(pack, seen);
+      if (!picked) break;
+      seen.add(picked.key);
+      created.push(await buildPackLibraryVideo({ db, userId: uid(req), accountId: body.accountId, pack, picked, music: body.music || undefined }));
+    }
+    return { created, requested, made: created.length, exhausted: created.length < requested };
+  }
   const channelDeck = DECKS.find((d) => d.id === acc.lang);
   if (!channelDeck)
     return reply.code(400).send({ error: `У канала язык «${acc.lang}» без пака — смените язык канала.` });
   if (!deckAllowed(req, channelDeck.id))
     return reply.code(403).send({ error: "Этот пак вам недоступен." });
   const deckId = channelDeck.id; // FORCE the channel's language — no cross-language mixing
-  const requested = Math.max(1, Math.min(20, Number(body.count) || 5));
-  const seen = new Set<string>(db.usedAnecdoteKeys(uid(req))); // exclude this user's used + dedupe batch
-  const created: unknown[] = [];
   for (let i = 0; i < requested; i++) {
     const a = randomAnecdote(deckId, seen);
     if (!a) break; // no unused anecdotes left
@@ -851,9 +946,18 @@ app.post("/api/videos/batch", async (req, reply) => {
 initGenQueue(async (job) => {
   const acc = db.getAccount(job.accountId);
   if (!acc) throw new Error("Канал не найден");
+  const seen = new Set<string>(db.usedAnecdoteKeys(job.userId)); // skip this user's already-used cards
+  // Пак-канал: одна случайная неиспользованная карточка пака → видео в библиотеку.
+  if (isPackDeckId(acc.lang)) {
+    const pack = getPack(acc.lang.slice(5), job.userId, db.getUserById(job.userId)?.role === "admin");
+    if (!pack || !pack.templates.length) throw new Error(`Пак «${acc.lang}» не найден или без шаблона`);
+    const picked = pickUnusedPackCard(pack, seen);
+    if (!picked) return "exhausted";
+    await buildPackLibraryVideo({ db, userId: job.userId, accountId: job.accountId, pack, picked });
+    return "made";
+  }
   const channelDeck = DECKS.find((d) => d.id === acc.lang);
   if (!channelDeck) throw new Error(`У канала язык «${acc.lang}» без пака`);
-  const seen = new Set<string>(db.usedAnecdoteKeys(job.userId)); // skip this user's already-used cards
   const a = randomAnecdote(channelDeck.id, seen);
   if (!a) return "exhausted"; // deck has no unused cards left
   await buildLibraryVideo({
@@ -873,11 +977,16 @@ app.post("/api/gen-queue", async (req, reply) => {
   if (!body.accountId) return reply.code(400).send({ error: "accountId обязателен" });
   const acc = ownAccount(req, reply, body.accountId);
   if (!acc) return;
-  const channelDeck = DECKS.find((d) => d.id === acc.lang);
-  if (!channelDeck)
-    return reply.code(400).send({ error: `У канала язык «${acc.lang}» без пака — смените язык канала.` });
-  if (!deckAllowed(req, channelDeck.id))
-    return reply.code(403).send({ error: "Этот пак вам недоступен." });
+  // Пак-канал тоже можно ставить в очередь (воркер сгенерит карточки пака); иначе — встроенная дека.
+  if (isPackDeckId(acc.lang)) {
+    if (!deckAllowed(req, acc.lang)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
+  } else {
+    const channelDeck = DECKS.find((d) => d.id === acc.lang);
+    if (!channelDeck)
+      return reply.code(400).send({ error: `У канала язык «${acc.lang}» без пака — смените язык канала.` });
+    if (!deckAllowed(req, channelDeck.id))
+      return reply.code(403).send({ error: "Этот пак вам недоступен." });
+  }
   const cap = db.getUserById(uid(req))?.role === "admin" ? 100 : 20;
   const total = Math.max(1, Math.min(cap, Number(body.count) || 1));
   const job = genEnqueue(uid(req), body.accountId, total);

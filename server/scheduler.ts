@@ -2,7 +2,7 @@ import { resolve } from "node:path";
 import { unlinkSync } from "node:fs";
 import cron from "node-cron";
 import type { Db, Video } from "./db.ts";
-import { DECKS, ytMeta } from "../src/anecdotes/decks.ts";
+import { DECKS, getDeck, ytMeta, isPackDeckId } from "../src/anecdotes/decks.ts";
 import { uploadShort, ytErrorReason, type ClientCreds } from "./youtube.ts";
 import * as metrics from "./metrics.ts";
 
@@ -55,12 +55,13 @@ export function startScheduler(opts: SchedulerOpts) {
       try {
         opts.log(`[sched] account ${acc.id} (${acc.channelName}) firing at ${hhmm}`);
 
-        // HARD language guard: a channel only ever posts videos in its OWN content language.
-        const channelDeck = DECKS.find((d) => d.id === acc.lang);
-        if (!channelDeck) {
+        // HARD language guard: a channel only ever posts videos in its OWN content language
+        // (built-in deck OR a custom pack "pack:<id>" → synthetic deck via getDeck).
+        if (!DECKS.some((d) => d.id === acc.lang) && !isPackDeckId(acc.lang)) {
           opts.log(`[sched] account ${acc.id}: язык «${acc.lang}» без пака — пропуск`);
           continue;
         }
+        const channelDeck = getDeck(acc.lang);
         // Post-once queue: a pinned video (if present, unposted & same language), else the next
         // unposted video IN THE CHANNEL'S LANGUAGE. Each posts ONCE then is removed.
         const pinnedId = acc.slotVideos?.[hhmm];

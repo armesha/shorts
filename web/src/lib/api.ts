@@ -3,7 +3,8 @@ export interface Account {
   userId?: number | null; // owner (present on admin scope=all listings)
   channelName: string;
   theme: string;
-  lang: string;
+  lang: string; // выбор контента: встроенная дека (ru/de/…) или пак ("pack:<id>")
+  channelLang?: string; // язык канала (ru/de/it/fr/en/ar) — пак должен совпадать по языку
   schedule: string[];
   template: string;
   status: "connected" | "needs_auth" | string;

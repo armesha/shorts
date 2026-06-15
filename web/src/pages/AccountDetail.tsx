@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
 import { ArrowLeft, Save, Trash2, Check, Plus, Upload, Loader2, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
-import { apiClient, type Account, type VideoItem, type Generator } from "../lib/api";
+import { apiClient, type Account, type VideoItem, type Generator, type PackSummary } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useGenQueue } from "../lib/genQueue";
 
@@ -17,6 +17,23 @@ const LANGS: [string, string][] = [
   ["islamic", "Ислам · арабский (Коран и хадисы)"],
   ["christian", "Христианство · Библия (англ., KJV)"],
 ];
+
+// «Язык канала» — стабильный язык (отдельно от выбора контента). Пак должен совпадать по языку.
+const LANG_LABELS: [string, string][] = [
+  ["ru", "Русский"],
+  ["de", "Немецкий"],
+  ["it", "Итальянский"],
+  ["fr", "Французский"],
+  ["en", "Английский"],
+  ["ar", "Арабский"],
+];
+// Язык встроенной деки (для тега и проверки совпадения). Паки несут свой lang.
+const DECK_LANG: Record<string, string> = {
+  ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
+  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en",
+};
+const LANG_TAG: Record<string, string> = { ru: "RU", de: "DE", it: "IT", fr: "FR", en: "EN", ar: "AR" };
+const tagOf = (code: string) => LANG_TAG[code] || (code || "").toUpperCase();
 
 // N posts/day spread ~evenly across 24h, but with a small RANDOM per-channel offset + jitter,
 // so two channels with the same N never all fire at the same minute. `avoid` = minutes already
@@ -72,6 +89,8 @@ export default function AccountDetail() {
   const [clearing, setClearing] = useState(false);
   const [page, setPage] = useState(1);
   const [gens, setGens] = useState<Generator[]>([]);
+  const [packs, setPacks] = useState<PackSummary[]>([]); // кастомные паки, доступные юзеру (для дропдауна канала)
+  const [channelLang, setChannelLang] = useState("ru"); // язык канала (стабилен) — пак должен совпадать по языку
   const [otherSlots, setOtherSlots] = useState(0); // schedule slots on the user's OTHER channels (100/day cap)
   const [otherTimes, setOtherTimes] = useState<string[]>([]); // their actual times — avoid colliding minute-for-minute
   const [perDayInput, setPerDayInput] = useState(4); // "сколько раз в день" for the generator
@@ -91,6 +110,7 @@ export default function AccountDetail() {
         setChannelName(a.channelName);
         setTheme(a.theme);
         setLang(a.lang);
+        setChannelLang(a.channelLang || DECK_LANG[a.lang] || "ru");
         setTimes(a.schedule);
         setSlotVideos(a.slotVideos || {});
         console.log("[привязка] канал загружен:", {
@@ -103,6 +123,7 @@ export default function AccountDetail() {
       .catch(() => {});
     reloadVideos();
     apiClient.generators().then(setGens).catch(() => {});
+    apiClient.packs().then(setPacks).catch(() => {}); // доступные паки → в дропдаун канала (по имени)
     // Schedule of the user's OTHER channels — for the «≤100 posts/day» cap counter AND so the
     // time generator can avoid minutes already taken by other channels.
     apiClient
@@ -158,6 +179,7 @@ export default function AccountDetail() {
         channelName,
         theme,
         lang,
+        channelLang,
         schedule: times,
         slotVideos,
       });
@@ -255,6 +277,36 @@ export default function AccountDetail() {
   const visibleLangs =
     gens.length === 0 ? LANGS : LANGS.filter(([code]) => gensIds.has(code) || code === lang);
 
+  // Опции дропдаунов «язык канала»: встроенные деки + группа «Мои паки» (кастомные паки по имени) —
+  // тот же набор, что в Студии, чтобы пак можно было назначить каналу и генерить из него.
+  const packIds = new Set(packs.map((p) => `pack:${p.id}`));
+  // язык выбранного контента (встроенная дека или пак) — для тега и проверки совпадения с языком канала
+  const contentLang = (id: string): string =>
+    id.startsWith("pack:") ? packs.find((p) => `pack:${p.id}` === id)?.lang || "" : DECK_LANG[id] || id;
+  const curContentLang = contentLang(lang);
+  const langMismatch = !!channelLang && !!curContentLang && curContentLang !== channelLang;
+  const deckOptions = () => (
+    <>
+      {visibleLangs.map(([code, name]) => (
+        <option key={code} value={code}>
+          {name} · {tagOf(DECK_LANG[code] || code)}
+        </option>
+      ))}
+      {(packs.length > 0 || (lang.startsWith("pack:") && !packIds.has(lang))) && (
+        <optgroup label="Мои паки">
+          {packs.map((p) => (
+            <option key={p.id} value={`pack:${p.id}`}>
+              {p.name} · {tagOf(p.lang)}
+            </option>
+          ))}
+          {lang.startsWith("pack:") && !packIds.has(lang) && (
+            <option value={lang}>{lang.slice(5)} (нет доступа)</option>
+          )}
+        </optgroup>
+      )}
+    </>
+  );
+
   // Per-user cap: ≤ 100 scheduled posts/day across ALL channels (admins exempt).
   const isAdmin = user?.role === "admin";
   const dayUsed = otherSlots + times.length; // posts/day across all the user's channels
@@ -319,18 +371,19 @@ export default function AccountDetail() {
           </label>
 
           <label className="form-control max-w-xs">
-            <span className="label-text mb-1">Язык контента</span>
+            <span className="label-text mb-1">Язык канала</span>
             <select
               className="select select-bordered"
-              value={lang}
-              onChange={(e) => setLang(e.target.value)}
+              value={channelLang}
+              onChange={(e) => setChannelLang(e.target.value)}
             >
-              {visibleLangs.map(([code, name]) => (
-                <option key={code} value={code}>
-                  {name}
+              {LANG_LABELS.map(([c, n]) => (
+                <option key={c} value={c}>
+                  {n}
                 </option>
               ))}
             </select>
+            <span className="label-text-alt mt-1 text-base-content/50">Пак/дека ниже должны быть этого языка</span>
           </label>
 
           <div className="form-control">
@@ -530,26 +583,32 @@ export default function AccountDetail() {
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-base-300">
-            <span className="text-sm text-base-content/70">Пак (= язык канала):</span>
+            <span className="text-sm text-base-content/70">Контент (дека/пак):</span>
             <select
               className="select select-bordered select-sm"
               value={lang}
               onChange={(e) => setLang(e.target.value)}
               title="Из какого пака генерировать ролики. После выбора нажми «Сохранить пак»."
             >
-              {visibleLangs.map(([code, name]) => (
-                <option key={code} value={code}>
-                  {name}
-                </option>
-              ))}
+              {deckOptions()}
             </select>
-            {gens.find((g) => g.id === lang) && (
-              <span className="text-xs text-success">
-                {gens.find((g) => g.id === lang)!.available} свободных
+            {lang.startsWith("pack:")
+              ? (() => {
+                  const p = packs.find((x) => `pack:${x.id}` === lang);
+                  return p ? <span className="text-xs text-success">{p.cards} карточек</span> : null;
+                })()
+              : gens.find((g) => g.id === lang) && (
+                  <span className="text-xs text-success">
+                    {gens.find((g) => g.id === lang)!.available} свободных
+                  </span>
+                )}
+            {langMismatch && (
+              <span className="text-xs text-error font-medium">
+                ⚠ контент {tagOf(curContentLang)} ≠ язык канала {tagOf(channelLang)} — смени язык канала или выбери {tagOf(channelLang)}-пак
               </span>
             )}
             {lang !== account.lang && (
-              <button className="btn btn-sm btn-primary gap-1" onClick={save} disabled={saving}>
+              <button className="btn btn-sm btn-primary gap-1" onClick={save} disabled={saving || langMismatch}>
                 {saving ? <Loader2 className="animate-spin" size={14} /> : <Save size={14} />}
                 Сохранить пак
               </button>
@@ -573,7 +632,8 @@ export default function AccountDetail() {
               <button
                 className="btn btn-sm btn-outline gap-1"
                 onClick={() => q.run(id!, batchN)}
-                title="Поставить в очередь генерацию роликов в библиотеку"
+                disabled={langMismatch}
+                title={langMismatch ? "Язык контента не совпадает с языком канала" : "Поставить в очередь генерацию роликов в библиотеку"}
               >
                 <Plus size={14} /> Сгенерировать
               </button>

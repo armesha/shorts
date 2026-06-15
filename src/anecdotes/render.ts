@@ -8,6 +8,7 @@ import { getDeck } from "./decks.ts";
 import { buildPsychHtml } from "../psych/render.ts";
 import { buildIslamicHtml, pickIslamicBg } from "../islamic/render.ts";
 import { buildChristianHtml, pickChristianBg } from "../christian/render.ts";
+import { buildRussianHtml, pickRussianBg } from "./russian-bg.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATE = resolve(__dirname, "../../templates/anecdote.html");
@@ -128,6 +129,7 @@ export async function renderAnecdote(
   if (getDeck(a.deck).christian) return renderChristian(a, outPath);
   if (getDeck(a.deck).psych) return renderPsych(a, outPath);
   if (getDeck(a.deck).lifehack) return renderLifehack(a, outPath);
+  if (getDeck(a.deck).russianBg) return renderRussian(a, outPath);
   const bgName = a.bg ?? randomBackgroundName() ?? "";
   const bgCss = backgroundCss(bgName);
   let html = await readFile(TEMPLATE, "utf8");
@@ -187,6 +189,17 @@ async function renderChristian(
   }
   const bg = pickChristianBg(a.bg);
   const html = buildChristianHtml(card as Parameters<typeof buildChristianHtml>[0], bg);
+  const fontPx = await captureCard(html, outPath);
+  return { path: outPath, fontPx, bg: bg.file };
+}
+
+/** Render one RU anecdote on a themed russian_jokes scene — text in the paper safe-zone of the bg. */
+async function renderRussian(
+  a: Anecdote,
+  outPath: string,
+): Promise<{ path: string; fontPx: number; bg: string }> {
+  const bg = pickRussianBg(a.bg, (a.text || "").length);
+  const html = buildRussianHtml({ title: a.title, text: a.text, channel: a.channel }, bg);
   const fontPx = await captureCard(html, outPath);
   return { path: outPath, fontPx, bg: bg.file };
 }

@@ -44,11 +44,11 @@ unattended, managed from a web dashboard. Spec: `ТЗ.pdf`. Architecture & resea
 - NEVER commit secrets — `client_secret_*.json`, `.env`, tokens, `corpora/`, `data/output`, DBs are gitignored. Verify staging before committing.
 - Cross-platform: code must run on Windows + macOS + Linux. One-command start = `npm start`.
 - End commit messages with: `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`.
-- **Параллельные агенты (MANDATORY):** если над ОБЩИМ файлом (`server/index.ts`, `server/db.ts`,
-  `web/src/lib/api.ts`, `web/src/App.tsx`, `Layout.tsx`, `CHANGELOG.md`, `CLAUDE.md` и т.п.) в это же
-  время работает другой агент — **НЕ изолируй свой коммит через `git stash` / частичный стейджинг**.
-  Коммить только СВОИ отдельные/новые файлы; общий файл пусть закоммитит тот агент, который его ведёт
-  (или дождись его). Свои правки в общий файл просто оставь в рабочем дереве — они уедут с его коммитом.
+- **Параллельные агенты (MANDATORY):** коммитить можно файлы **целиком** — даже общие
+  (`server/index.ts`, `server/db.ts`, `web/src/lib/api.ts`, `App.tsx`, `Layout.tsx`, `CHANGELOG.md` и т.п.),
+  которые правил и другой агент. Это нормально — просто **в теле коммита в скобках укажи, что это
+  совместная работа** (напр. «(включает завершённую работу другого агента: Telegram-вход)»). НЕ изолируй
+  через `git stash` / частичный стейджинг. В `CHANGELOG.md` добавляй свои строки, чужие не трогай.
 
 ## LLM
 - Generation uses **Claude Code headless** (`claude -p`) ONLY — no fallback. Paid Claude subscription.
