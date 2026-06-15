@@ -142,6 +142,18 @@ export const DECKS: Deck[] = [
     adminOnly: true, // pre-built video pack — admin-only
     preFact: true,
   },
+  {
+    id: "quotes-de",
+    name: "Politiker-Zitate (DE)",
+    dir: "data/quotes-de", // videos.json = [{file,title,text,author}]; pre-built mp4s shared in assets/fact-videos/
+    source: "",
+    emoji: "🇩🇪",
+    hashtags: "#zitate #politik #geschichte #deutschland #staatsmänner #shorts",
+    tags: ["zitate", "politik", "geschichte", "deutschland", "staatsmänner", "zitat", "shorts"],
+    genericTitles: ["Zitat", "Berühmtes Zitat", "Politiker-Zitat", "Worte der Geschichte"],
+    adminOnly: true, // pre-built video pack — admin-only
+    preFact: true,
+  },
 ];
 
 export const DEFAULT_DECK = "ru";
@@ -155,7 +167,7 @@ export function isPackDeckId(id?: string | null): boolean {
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
-  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en",
+  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de": "de",
 };
 export function deckLang(id: string): string {
   return DECK_LANG[id] || "";

@@ -26,6 +26,7 @@ const DECK_RU: Record<string, string> = {
   islamic: "Ислам · арабский",
   christian: "Библия · англ.",
   "fact-en": "Интересные факты · видео",
+  "quotes-de": "Цитаты политиков · нем.",
 };
 const deckLabel = (id: string, name: string) => (DECK_RU[id] ? `${name} (${DECK_RU[id]})` : name);
 

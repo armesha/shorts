@@ -21,9 +21,10 @@ data/tips/_*.json
 Русские анекдоты/
 corpora/
 
-# pre-built fact VIDEOS pack (deck "fact-en") — big mp4 pool + generated manifests, kept local
+# pre-built video packs (decks "fact-en", "quotes-de") — big mp4 pool + generated manifests, kept local
 assets/fact-videos/
 data/fact-videos/
+data/quotes-de/
 
 # stray generated preview images (not source)
 images/
