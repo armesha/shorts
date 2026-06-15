@@ -105,3 +105,27 @@ export async function getBotUsername(botToken: string): Promise<string | null> {
   }
   return cachedUsername ?? null;
 }
+
+/** Register the bot webhook so Telegram POSTs updates (e.g. /start) to our server. */
+export async function setBotWebhook(
+  botToken: string,
+  url: string,
+  secret: string,
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const r = await fetch(`https://api.telegram.org/bot${botToken}/setWebhook`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ url, secret_token: secret, allowed_updates: ["message"] }),
+    });
+    const j = (await r.json().catch(() => ({}))) as { ok?: boolean; description?: string };
+    return j.ok ? { ok: true } : { ok: false, error: j.description || `HTTP ${r.status}` };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+}
+
+/** Deep link that opens the bot and pre-fills /start <token>. */
+export function botStartLink(botUsername: string, token: string): string {
+  return `https://t.me/${botUsername}?start=${token}`;
+}

@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { apiClient, ApiError } from "../lib/api";
 import { useAuth } from "../lib/auth";
-import TelegramLoginButton from "../components/TelegramLoginButton";
+import TelegramConnect from "../components/TelegramConnect";
 
 export default function Login() {
   const [mode, setMode] = useState<"login" | "recover">("login");
@@ -47,13 +47,13 @@ function LoginForm({ onRecover }: { onRecover: () => void }) {
   const [error, setError] = useState("");
   const [locked, setLocked] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [tgBot, setTgBot] = useState<string | null>(null);
+  const [tgEnabled, setTgEnabled] = useState(false);
 
   useEffect(() => {
     apiClient
       .telegramInfo()
-      .then((i) => setTgBot(i.enabled ? i.bot : null))
-      .catch(() => setTgBot(null));
+      .then((i) => setTgEnabled(i.enabled))
+      .catch(() => setTgEnabled(false));
   }, []);
 
   async function submit(e: FormEvent) {
@@ -73,16 +73,6 @@ function LoginForm({ onRecover }: { onRecover: () => void }) {
       }
     } finally {
       setBusy(false);
-    }
-  }
-
-  async function onTelegram(user: Record<string, unknown>) {
-    setError("");
-    setLocked(false);
-    try {
-      setUser(await apiClient.telegramLogin(user));
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Не удалось войти через Telegram");
     }
   }
 
@@ -136,11 +126,11 @@ function LoginForm({ onRecover }: { onRecover: () => void }) {
         Забыли пароль?
       </button>
 
-      {tgBot && (
+      {tgEnabled && (
         <>
           <div className="divider text-xs text-base-content/40 my-0">или</div>
           <div className="flex justify-center">
-            <TelegramLoginButton bot={tgBot} onAuth={onTelegram} />
+            <TelegramConnect mode="login" onDone={(u) => u && setUser(u)} />
           </div>
         </>
       )}
@@ -228,8 +218,8 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
           <div className="alert alert-info py-2 text-xs">
             <ShieldCheck size={16} />
             <span>
-              Если Telegram привязан — код отправлен в бота. Не пришёл? Откройте бота, нажмите Start и
-              запросите код снова.
+              Если Telegram привязан — код отправлен в бота. Не пришёл? Открой бота, нажми Start и
+              запроси код снова.
             </span>
           </div>
           <label className="form-control">
@@ -291,11 +281,7 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
       </button>
 
       <div className="flex justify-between">
-        <button
-          type="button"
-          className="btn btn-ghost btn-sm text-base-content/60"
-          onClick={onBack}
-        >
+        <button type="button" className="btn btn-ghost btn-sm text-base-content/60" onClick={onBack}>
           <ArrowLeft size={14} /> К входу
         </button>
         {step === "verify" && (

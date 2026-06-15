@@ -1,28 +1,58 @@
-// Telegram login (Login Widget) + account binding + password recovery via the bot.
-// Mounted from server/index.ts. The PUBLIC routes below are whitelisted in PUBLIC_API there;
-// /bind, /unbind and /me stay behind the global session gate (req.userId is set for those).
-import { createHash, randomInt, timingSafeEqual } from "node:crypto";
+// Telegram via the BOT (no Login Widget): bind/login by pressing Start in @bot, plus password
+// recovery codes. The bot is event-driven — Telegram PUSHES /start to /api/telegram/webhook; the
+// browser only polls a tiny status endpoint while the user is on the "waiting" screen (bounded).
+// Public routes here are whitelisted in PUBLIC_API in index.ts; bind/* + me + unbind stay gated.
+import { createHash, randomBytes, randomInt, timingSafeEqual } from "node:crypto";
 import type { FastifyInstance } from "fastify";
 import type { Db } from "./db.ts";
 import { hashPassword, newSessionToken, SESSION_TTL_DAYS } from "./auth.ts";
-import { verifyTelegramAuth, sendBotMessage, getBotUsername } from "./telegram.ts";
+import { sendBotMessage, getBotUsername, setBotWebhook, botStartLink } from "./telegram.ts";
 
 const DAY_MS = 86_400_000;
-const RESET_TTL_MIN = 10; // a recovery code is valid for 10 minutes
-const RESET_MAX_ATTEMPTS = 5; // wrong tries before the code is burned
-const RESET_RESEND_SEC = 60; // min seconds between code requests for one account
+const LINK_TTL_MIN = 10; // a bot-handshake token is valid 10 min
+const RESET_TTL_MIN = 10; // a recovery code is valid 10 min
+const RESET_MAX_ATTEMPTS = 5;
+const RESET_RESEND_SEC = 60;
 
 interface Deps {
-  // Reuse index.ts's cookie writer so session-cookie attributes stay defined in one place.
+  // Reuse index.ts's cookie writer so session-cookie attributes live in one place.
   setSessionCookie: (reply: { header(k: string, v: string): unknown }, token: string) => void;
 }
 
-const hashCode = (code: string, userId: number): string =>
+interface TgUpdate {
+  message?: {
+    text?: string;
+    from?: { id?: number; username?: string; first_name?: string; last_name?: string };
+    chat?: { id?: number };
+  };
+}
+
+const hashCode = (code: string, userId: number) =>
   createHash("sha256").update(`${userId}:${code}`).digest("hex");
+// SQLite datetime('now') is "YYYY-MM-DD HH:MM:SS" UTC → age in seconds.
+const ageSec = (createdAt: string) =>
+  (Date.now() - new Date(createdAt.replace(" ", "T") + "Z").getTime()) / 1000;
+const tgLabel = (f?: TgUpdate["message"]["from"]) =>
+  f?.username ? `@${f.username}` : [f?.first_name, f?.last_name].filter(Boolean).join(" ") || String(f?.id ?? "");
 
 export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps) {
   const botToken = () => (process.env.TELEGRAM_BOT_TOKEN || "").trim();
   const enabled = () => !!botToken();
+  const webhookSecret = () => createHash("sha256").update(botToken() + ":webhook").digest("hex").slice(0, 40);
+
+  // Register the webhook on boot so Telegram pushes /start to us (needs a public HTTPS URL).
+  void (async () => {
+    if (!enabled()) return;
+    const base = (process.env.PUBLIC_BASE_URL || "").trim().replace(/\/+$/, "");
+    if (!base) {
+      app.log.warn("[telegram] PUBLIC_BASE_URL not set — bot webhook NOT registered (bot login/bind won't work; password recovery still does)");
+      return;
+    }
+    const url = `${base}/api/telegram/webhook`;
+    const r = await setBotWebhook(botToken(), url, webhookSecret());
+    if (r.ok) app.log.info(`[telegram] webhook set → ${url}`);
+    else app.log.error(`[telegram] setWebhook failed: ${r.error}`);
+  })();
 
   function issueSession(reply: { header(k: string, v: string): unknown }, userId: number) {
     const token = newSessionToken();
@@ -30,54 +60,13 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
     deps.setSessionCookie(reply, token);
   }
 
-  // ---- Public: is Telegram login offered here, and under which bot @username? ----
+  // ---- Public: is Telegram offered here + bot @username ----
   app.get("/api/auth/telegram/info", async () => {
     if (!enabled()) return { enabled: false, bot: null };
     return { enabled: true, bot: await getBotUsername(botToken()) };
   });
 
-  // ---- Public: log in with a Telegram Login Widget payload ----
-  app.post("/api/auth/telegram", async (req, reply) => {
-    if (!enabled()) return reply.code(404).send({ error: "Telegram-вход не настроен" });
-    const v = verifyTelegramAuth((req.body as Record<string, unknown>) ?? {}, botToken());
-    if (!v.ok) return reply.code(401).send({ error: v.reason });
-    const user = db.getUserByTelegramId(v.user.id);
-    if (!user)
-      return reply.code(403).send({
-        error: "Этот Telegram ни к кому не привязан. Войдите паролем и привяжите его в Настройках.",
-      });
-    db.clearLock(user.id); // a valid Telegram auth also lifts a password-bruteforce lockout
-    issueSession(reply, user.id);
-    return { id: user.id, username: user.username, role: user.role };
-  });
-
-  // ---- Gated: bind the CURRENT account to a Telegram (widget payload, write access requested) ----
-  app.post("/api/auth/telegram/bind", async (req, reply) => {
-    const userId = (req as { userId?: number }).userId;
-    if (!userId) return reply.code(401).send({ error: "Не авторизован" });
-    if (!enabled()) return reply.code(404).send({ error: "Telegram-вход не настроен" });
-    const v = verifyTelegramAuth((req.body as Record<string, unknown>) ?? {}, botToken());
-    if (!v.ok) return reply.code(401).send({ error: v.reason });
-    const existing = db.getUserByTelegramId(v.user.id);
-    if (existing && existing.id !== userId)
-      return reply.code(409).send({ error: "Этот Telegram уже привязан к другому аккаунту" });
-    const label =
-      (v.user.username && `@${v.user.username}`) ||
-      [v.user.first_name, v.user.last_name].filter(Boolean).join(" ") ||
-      v.user.id;
-    db.setUserTelegram(userId, v.user.id, label);
-    return { ok: true, username: label };
-  });
-
-  // ---- Gated: unbind the current account's Telegram ----
-  app.post("/api/auth/telegram/unbind", async (req, reply) => {
-    const userId = (req as { userId?: number }).userId;
-    if (!userId) return reply.code(401).send({ error: "Не авторизован" });
-    db.setUserTelegram(userId, null, null);
-    return { ok: true };
-  });
-
-  // ---- Gated: is the current account linked? (powers the Settings UI) ----
+  // ---- Gated: current account's link status (powers Settings) ----
   app.get("/api/auth/telegram/me", async (req, reply) => {
     const userId = (req as { userId?: number }).userId;
     if (!userId) return reply.code(401).send({ error: "Не авторизован" });
@@ -90,7 +79,131 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
     };
   });
 
-  // ---- Public: start recovery — the bot DMs a one-time code (answers generically, no enumeration) ----
+  // ---- Gated: start binding via the bot → returns a t.me deep link to press Start ----
+  app.post("/api/auth/telegram/bind/start", async (req, reply) => {
+    const userId = (req as { userId?: number }).userId;
+    if (!userId) return reply.code(401).send({ error: "Не авторизован" });
+    if (!enabled()) return reply.code(404).send({ error: "Telegram не настроен" });
+    const bot = await getBotUsername(botToken());
+    if (!bot) return reply.code(500).send({ error: "Не удалось определить бота" });
+    const token = randomBytes(24).toString("hex");
+    db.createTelegramLink(token, "bind", userId);
+    return { token, url: botStartLink(bot, token), bot };
+  });
+
+  // ---- Gated: poll binding status ----
+  app.get("/api/auth/telegram/bind/status", async (req, reply) => {
+    const userId = (req as { userId?: number }).userId;
+    if (!userId) return reply.code(401).send({ error: "Не авторизован" });
+    const token = String((req.query as { token?: string })?.token ?? "");
+    const link = token ? db.getTelegramLink(token) : null;
+    if (!link || link.userId !== userId || link.purpose !== "bind") return { status: "notfound" };
+    if (link.status === "consumed") return { status: "linked", username: link.telegramUsername };
+    if (link.status === "conflict") return { status: "conflict" };
+    if (ageSec(link.createdAt) > LINK_TTL_MIN * 60) return { status: "expired" };
+    return { status: "pending" };
+  });
+
+  // ---- Gated: unbind ----
+  app.post("/api/auth/telegram/unbind", async (req, reply) => {
+    const userId = (req as { userId?: number }).userId;
+    if (!userId) return reply.code(401).send({ error: "Не авторизован" });
+    db.setUserTelegram(userId, null, null);
+    return { ok: true };
+  });
+
+  // ---- Public: start login via the bot ----
+  app.post("/api/auth/telegram/login/start", async (req, reply) => {
+    if (!enabled()) return reply.code(404).send({ error: "Telegram не настроен" });
+    const bot = await getBotUsername(botToken());
+    if (!bot) return reply.code(500).send({ error: "Не удалось определить бота" });
+    const token = randomBytes(24).toString("hex");
+    db.createTelegramLink(token, "login", null);
+    return { token, url: botStartLink(bot, token), bot };
+  });
+
+  // ---- Public: poll login status; on success issue the session cookie ----
+  app.get("/api/auth/telegram/login/status", async (req, reply) => {
+    const token = String((req.query as { token?: string })?.token ?? "");
+    const link = token ? db.getTelegramLink(token) : null;
+    if (!link || link.purpose !== "login") return { status: "notfound" };
+    if (link.status === "nomatch") return { status: "nomatch" };
+    if (link.status === "ready" && link.userId) {
+      const user = db.getUserById(link.userId);
+      db.deleteTelegramLink(token); // single use
+      if (!user) return { status: "nomatch" };
+      db.clearLock(user.id);
+      issueSession(reply, user.id);
+      return { status: "ok", user: { id: user.id, username: user.username, role: user.role } };
+    }
+    if (ageSec(link.createdAt) > LINK_TTL_MIN * 60) return { status: "expired" };
+    return { status: "pending" };
+  });
+
+  // ---- Public: Telegram webhook — receives /start <token> (verified by secret header) ----
+  app.post("/api/telegram/webhook", async (req, reply) => {
+    if (!enabled()) return reply.code(404).send({ ok: false });
+    const secret = (req.headers["x-telegram-bot-api-secret-token"] as string) || "";
+    // constant-time compare of the secret
+    const a = Buffer.from(secret);
+    const b = Buffer.from(webhookSecret());
+    if (a.length !== b.length || !timingSafeEqual(a, b)) return reply.code(401).send({ ok: false });
+    try {
+      await handleStart(req.body as TgUpdate);
+    } catch (e) {
+      app.log.error(e);
+    }
+    return { ok: true }; // always 200 so Telegram doesn't retry-storm
+  });
+
+  async function handleStart(update: TgUpdate) {
+    const msg = update?.message;
+    const text = msg?.text ?? "";
+    if (!msg || !text.startsWith("/start")) return;
+    const chatId = msg.chat?.id;
+    const tgId = msg.from?.id != null ? String(msg.from.id) : "";
+    const label = tgLabel(msg.from);
+    const token = text.slice("/start".length).trim();
+    const dm = (t: string) => (chatId != null ? sendBotMessage(botToken(), chatId, t) : Promise.resolve({ ok: false }));
+
+    if (!token) {
+      await dm("Привет! Чтобы войти или привязать аккаунт, откройте сайт и нажмите кнопку «через Telegram» — там будет персональная ссылка.");
+      return;
+    }
+    const link = db.getTelegramLink(token);
+    if (!link || !tgId || link.status === "consumed" || ageSec(link.createdAt) > LINK_TTL_MIN * 60) {
+      await dm("Ссылка устарела или недействительна. Вернитесь на сайт и начните заново.");
+      return;
+    }
+
+    if (link.purpose === "bind") {
+      if (link.userId == null) return;
+      const existing = db.getUserByTelegramId(tgId);
+      if (existing && existing.id !== link.userId) {
+        db.updateTelegramLink(token, { telegramId: tgId, telegramUsername: label, chatId: String(chatId ?? ""), status: "conflict" });
+        await dm("Этот Telegram уже привязан к другому аккаунту.");
+        return;
+      }
+      db.setUserTelegram(link.userId, tgId, label);
+      db.updateTelegramLink(token, { telegramId: tgId, telegramUsername: label, chatId: String(chatId ?? ""), status: "consumed" });
+      await dm("✅ Telegram привязан. Теперь можно входить через Telegram и получать здесь коды для сброса пароля.");
+      return;
+    }
+
+    if (link.purpose === "login") {
+      const user = db.getUserByTelegramId(tgId);
+      if (!user) {
+        db.updateTelegramLink(token, { telegramId: tgId, telegramUsername: label, chatId: String(chatId ?? ""), status: "nomatch" });
+        await dm("Этот Telegram не привязан ни к одному аккаунту. Войдите паролем и привяжите его в Настройках.");
+        return;
+      }
+      db.updateTelegramLink(token, { telegramId: tgId, telegramUsername: label, chatId: String(chatId ?? ""), status: "ready", userId: user.id });
+      await dm("✅ Вход подтверждён. Вернитесь на сайт — вы уже авторизованы.");
+      return;
+    }
+  }
+
+  // ---- Public: start password recovery — the bot DMs a one-time code (generic response) ----
   app.post("/api/auth/recover/start", async (req) => {
     const generic = { ok: true };
     const username = String((req.body as { username?: string })?.username ?? "").trim();
@@ -98,13 +211,8 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
     const user = db.getUserByUsername(username);
     if (!user || !user.telegramId) return generic;
 
-    // Resend cooldown: don't spam a new code if one was just issued.
     const existing = db.getPasswordReset(user.id);
-    if (existing) {
-      // SQLite datetime('now') is "YYYY-MM-DD HH:MM:SS" in UTC — normalise to a parseable ISO instant.
-      const issuedMs = new Date(existing.createdAt.replace(" ", "T") + "Z").getTime();
-      if ((Date.now() - issuedMs) / 1000 < RESET_RESEND_SEC) return generic;
-    }
+    if (existing && ageSec(existing.createdAt) < RESET_RESEND_SEC) return generic; // resend cooldown
 
     const code = String(randomInt(0, 1_000_000)).padStart(6, "0");
     db.upsertPasswordReset(
@@ -112,14 +220,15 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
       hashCode(code, user.id),
       new Date(Date.now() + RESET_TTL_MIN * 60_000).toISOString(),
     );
-    const text =
-      `🔐 Сброс пароля Shorts Factory\n\nКод: ${code}\nДействует ${RESET_TTL_MIN} минут.\n\n` +
-      `Если вы не запрашивали сброс — просто проигнорируйте это сообщение.`;
-    await sendBotMessage(botToken(), user.telegramId, text); // failure is swallowed → stay generic
+    await sendBotMessage(
+      botToken(),
+      user.telegramId,
+      `🔐 Сброс пароля Shorts Factory\n\nКод: ${code}\nДействует ${RESET_TTL_MIN} минут.\n\nЕсли вы не запрашивали сброс — просто проигнорируйте это сообщение.`,
+    );
     return generic;
   });
 
-  // ---- Public: complete recovery — verify the code, set a new password ----
+  // ---- Public: complete recovery — verify code, set new password ----
   app.post("/api/auth/recover/complete", async (req, reply) => {
     const b = (req.body as { username?: string; code?: string; newPassword?: string }) ?? {};
     const username = String(b.username ?? "").trim();
@@ -145,7 +254,7 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
       const left = RESET_MAX_ATTEMPTS - db.bumpPasswordResetAttempts(user.id);
       return reply.code(400).send({ error: `Неверный код. Осталось попыток: ${Math.max(0, left)}` });
     }
-    db.setUserPassword(user.id, hashPassword(next)); // also clears any lockout
+    db.setUserPassword(user.id, hashPassword(next));
     db.deletePasswordReset(user.id);
     return { ok: true };
   });

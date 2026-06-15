@@ -182,8 +182,10 @@ function clearSessionCookie(reply: { header: (k: string, v: string) => unknown }
 const PUBLIC_API = new Set([
   "/api/health",
   "/api/auth/login",
-  "/api/auth/telegram", // Login with Telegram (verifies the widget signature itself)
   "/api/auth/telegram/info", // pre-login: is Telegram offered here + bot @username
+  "/api/auth/telegram/login/start", // login via bot: mint a /start deep-link token
+  "/api/auth/telegram/login/status", // login via bot: poll until the user pressed Start
+  "/api/telegram/webhook", // Telegram pushes bot updates (/start) here
   "/api/auth/recover/start", // password recovery: ask the bot to DM a code
   "/api/auth/recover/complete", // password recovery: submit code + new password
 ]);

@@ -289,11 +289,16 @@ export default function AccountDetail() {
   const langMismatch = !!channelLang && !!curContentLang && curContentLang !== channelLang;
   const deckOptions = () => (
     <>
-      {visibleLangs.map(([code, name]) => (
-        <option key={code} value={code}>
-          {name} · {tagOf(DECK_LANG[code] || code)}
-        </option>
-      ))}
+      {visibleLangs.length > 0 && (
+        <optgroup label="Встроенные деки">
+          {visibleLangs.map(([code, name]) => (
+            <option key={code} value={code}>
+              {/* полное имя деки (как в Студии: «Русские анекдоты» и т.п.), а не язык */}
+              {gens.find((g) => g.id === code)?.name || name} · {tagOf(DECK_LANG[code] || code)}
+            </option>
+          ))}
+        </optgroup>
+      )}
       {(packs.length > 0 || (lang.startsWith("pack:") && !packIds.has(lang))) && (
         <optgroup label="Мои паки">
           {packs.map((p) => (

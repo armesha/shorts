@@ -1,7 +1,7 @@
 import { useEffect, useState, type ChangeEvent } from "react";
 import { KeyRound, Check, AlertTriangle, Upload, Trash2, Lock, Send } from "lucide-react";
 import { apiClient, ApiError, type AppSettings } from "../lib/api";
-import TelegramLoginButton from "../components/TelegramLoginButton";
+import TelegramConnect from "../components/TelegramConnect";
 
 export default function Settings() {
   const [settings, setSettings] = useState<AppSettings | null>(null);
@@ -161,20 +161,6 @@ function TelegramLink() {
     load();
   }, []);
 
-  async function onAuth(user: Record<string, unknown>) {
-    setMsg(null);
-    setBusy(true);
-    try {
-      const r = await apiClient.telegramBind(user);
-      setMsg({ ok: true, text: `Telegram привязан: ${r.username}` });
-      await load();
-    } catch (err) {
-      setMsg({ ok: false, text: err instanceof ApiError ? err.message : "Не удалось привязать Telegram" });
-    } finally {
-      setBusy(false);
-    }
-  }
-
   async function unbind() {
     if (!confirm("Отвязать Telegram? Вход и восстановление пароля через Telegram перестанут работать.")) return;
     setBusy(true);
@@ -225,16 +211,11 @@ function TelegramLink() {
         ) : (
           <>
             <p className="text-sm text-base-content/70">
-              Привяжи свой Telegram{st.bot ? <> (бот <b>@{st.bot}</b>)</> : null}, чтобы входить в один
-              клик и восстанавливать пароль через бота. Нажми кнопку и разреши боту доступ к сообщениям.
+              Привяжи свой Telegram{st.bot ? <> (бот <b>@{st.bot}</b>)</> : null}: нажми кнопку, открой
+              бота и нажми <b>Start</b> — аккаунт привяжется сам, и бот сможет присылать коды для сброса
+              пароля.
             </p>
-            {st.bot ? (
-              <TelegramLoginButton bot={st.bot} onAuth={onAuth} requestAccess />
-            ) : (
-              <p className="text-xs text-error">
-                Бот не определён — проверь переменную TELEGRAM_BOT_USERNAME на сервере.
-              </p>
-            )}
+            <TelegramConnect mode="bind" onDone={() => load()} />
           </>
         )}
 

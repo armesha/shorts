@@ -253,6 +253,16 @@ export function openDb(path: string) {
       attempts INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+    CREATE TABLE IF NOT EXISTS telegram_links (
+      token TEXT PRIMARY KEY,
+      purpose TEXT NOT NULL,            -- 'bind' | 'login'
+      user_id INTEGER,                 -- bind: the logged-in user; login: matched user (set on /start)
+      telegram_id TEXT,
+      telegram_username TEXT,
+      chat_id TEXT,
+      status TEXT NOT NULL DEFAULT 'pending', -- pending|ready|consumed|nomatch|conflict
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 
   for (const col of ["yt_refresh_token", "yt_channel_id", "yt_channel_title"]) {
@@ -677,6 +687,58 @@ export function openDb(path: string) {
     },
     deletePasswordReset(userId: number): void {
       db.prepare("DELETE FROM password_resets WHERE user_id = ?").run(userId);
+    },
+    // ---- Telegram bot deep-link handshake (bind/login via /start, not the widget) ----
+    createTelegramLink(token: string, purpose: string, userId: number | null): void {
+      // GC: drop stale handshakes so this table never grows (no cron needed).
+      db.prepare("DELETE FROM telegram_links WHERE created_at < datetime('now','-1 hour')").run();
+      db.prepare("INSERT INTO telegram_links (token, purpose, user_id) VALUES (?,?,?)").run(
+        token,
+        purpose,
+        userId,
+      );
+    },
+    getTelegramLink(token: string): {
+      token: string;
+      purpose: string;
+      userId: number | null;
+      telegramId: string | null;
+      telegramUsername: string | null;
+      chatId: string | null;
+      status: string;
+      createdAt: string;
+    } | null {
+      const r = db.prepare("SELECT * FROM telegram_links WHERE token = ?").get(token) as Row | undefined;
+      return r
+        ? {
+            token: r.token as string,
+            purpose: r.purpose as string,
+            userId: (r.user_id as number) ?? null,
+            telegramId: (r.telegram_id as string) ?? null,
+            telegramUsername: (r.telegram_username as string) ?? null,
+            chatId: (r.chat_id as string) ?? null,
+            status: r.status as string,
+            createdAt: r.created_at as string,
+          }
+        : null;
+    },
+    updateTelegramLink(
+      token: string,
+      f: { telegramId?: string; telegramUsername?: string | null; chatId?: string; status?: string; userId?: number },
+    ): void {
+      const sets: string[] = [];
+      const vals: (string | number | null)[] = [];
+      if (f.telegramId !== undefined) (sets.push("telegram_id = ?"), vals.push(f.telegramId));
+      if (f.telegramUsername !== undefined) (sets.push("telegram_username = ?"), vals.push(f.telegramUsername));
+      if (f.chatId !== undefined) (sets.push("chat_id = ?"), vals.push(f.chatId));
+      if (f.status !== undefined) (sets.push("status = ?"), vals.push(f.status));
+      if (f.userId !== undefined) (sets.push("user_id = ?"), vals.push(f.userId));
+      if (!sets.length) return;
+      vals.push(token);
+      db.prepare(`UPDATE telegram_links SET ${sets.join(", ")} WHERE token = ?`).run(...vals);
+    },
+    deleteTelegramLink(token: string): void {
+      db.prepare("DELETE FROM telegram_links WHERE token = ?").run(token);
     },
     // ---- Per-user pack (deck) visibility. Rows = HIDDEN decks; NO rows = user sees ALL (default). ----
     hiddenDecksFor(userId: number): string[] {
