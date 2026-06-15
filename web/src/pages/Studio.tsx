@@ -55,8 +55,9 @@ export default function Studio() {
   const isPack = deck.startsWith("pack:");
   const packId = isPack ? deck.slice(5) : "";
   const curPack = packs.find((p) => `pack:${p.id}` === deck);
-  // для пака сохранять можно в любой канал (язык пака не совпадает с lang каналов)
-  const saveAccounts = isPack ? accounts : accounts.filter((a) => a.lang === deck);
+  // Сохранять ролик можно ТОЛЬКО в канал, у которого этот контент (дека/пак) выбран источником —
+  // иначе планировщик его не выложит (постит по точной деке канала) и язык бы не совпал.
+  const saveAccounts = accounts.filter((a) => a.lang === deck);
 
   useEffect(() => {
     apiClient.generators().then(setGens).catch(() => {});
@@ -363,7 +364,7 @@ export default function Studio() {
                     }}
                   >
                     {saveAccounts.length === 0 && (
-                      <option value="">{isPack ? "нет каналов" : "нет каналов на этом языке"}</option>
+                      <option value="">{isPack ? "нет каналов с этим паком (выбери пак источником канала)" : "нет каналов на этом языке"}</option>
                     )}
                     {saveAccounts.map((a) => (
                       <option key={a.id} value={a.id}>

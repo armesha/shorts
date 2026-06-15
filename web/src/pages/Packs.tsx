@@ -30,6 +30,20 @@ export default function Packs() {
   );
   const [customPacks, setCustomPacks] = useState<PackSummary[]>([]); // кастомные паки, видимые мне
   const [deletingPack, setDeletingPack] = useState<string | null>(null);
+  const [savingLang, setSavingLang] = useState<string | null>(null);
+
+  // Сменить язык (тег) пака — доступно админу прямо здесь.
+  const changePackLang = async (p: PackSummary, lang: string) => {
+    setSavingLang(p.id);
+    try {
+      await apiClient.setPackLang(p.id, lang);
+      setCustomPacks((cur) => cur.map((x) => (x.id === p.id ? { ...x, lang } : x)));
+    } catch (e) {
+      alert("Не удалось сменить язык пака: " + (e instanceof Error ? e.message : String(e)));
+    } finally {
+      setSavingLang(null);
+    }
+  };
 
   // Кастомные паки грузим для всех (юзер видит свои/гранченные, админ — все).
   useEffect(() => {
@@ -238,8 +252,25 @@ export default function Packs() {
                       )}
                     </div>
                     <div className="text-2xl font-bold leading-none">{fmt(p.cards)}</div>
-                    <div className="text-xs text-base-content/50">
-                      карточек{p.templates ? ` · ${p.templates} шабл.` : ""} · {p.lang.toUpperCase()}
+                    <div className="text-xs text-base-content/50 flex items-center gap-1 flex-wrap">
+                      <span>карточек{p.templates ? ` · ${p.templates} шабл.` : ""} ·</span>
+                      {isAdmin ? (
+                        <select
+                          className="select select-xs select-bordered h-6 min-h-0 py-0"
+                          value={p.lang}
+                          disabled={savingLang === p.id}
+                          onChange={(e) => changePackLang(p, e.target.value)}
+                          title="Язык пака (тег) — влияет на проверку «язык пака = язык канала»"
+                        >
+                          {["ru", "de", "it", "fr", "en", "ar"].map((c) => (
+                            <option key={c} value={c}>
+                              {c.toUpperCase()}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <span>{p.lang.toUpperCase()}</span>
+                      )}
                     </div>
                   </div>
                 </div>

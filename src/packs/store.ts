@@ -233,6 +233,15 @@ export function setGrant(packId: string, userId: number, on: boolean): boolean {
   return true;
 }
 
+/** Сменить язык пака (тег языка). Админ/владелец — проверка прав на уровне роута. */
+export function setPackLang(packId: string, lang: string): boolean {
+  const p = readPackFile(packId);
+  if (!p) return false;
+  p.lang = (lang || "ru").trim().toLowerCase();
+  writeAtomic(packFile(packId), p);
+  return true;
+}
+
 /** Список паков пользователя (сводки), новейшие сверху. */
 export function listPacks(userId: number, isAdmin = false): PackSummary[] {
   if (!existsSync(PACKS_DIR)) return [];

@@ -6,7 +6,7 @@ import { unlinkSync, readFileSync, existsSync } from "node:fs";
 import { loadBaseConfig, resolveClientSecretFile, credsFileExists } from "./config.ts";
 import { openDb, type Account } from "./db.ts";
 import { randomAnecdote, libraryStats, anecdoteKey } from "../src/anecdotes/library.ts";
-import { DECKS, getDeck, ytMeta, pickGenericTitle, isPackDeckId } from "../src/anecdotes/decks.ts";
+import { DECKS, getDeck, ytMeta, pickGenericTitle, isPackDeckId, deckLang } from "../src/anecdotes/decks.ts";
 import { listAllPacks, setGrant, getPack } from "../src/packs/store.ts";
 import { pickUnusedPackCard, buildPackLibraryVideo } from "./pack-gen.ts";
 import { renderAnecdote, listBackgrounds } from "../src/anecdotes/render.ts";
@@ -530,6 +530,21 @@ app.put("/api/accounts/:id", async (req, reply) => {
     if (!known) return reply.code(400).send({ error: `Неизвестный язык канала «${body.lang}».` });
     if (!deckAllowed(req, body.lang))
       return reply.code(403).send({ error: "Этот пак вам недоступен — нельзя поставить его языком канала." });
+  }
+  // Бэкстоп языка: язык выбранного контента (деки/пака) обязан совпадать с языком канала.
+  {
+    const cur0 = db.getAccount(id);
+    const newLang = body.lang ?? cur0?.lang ?? "";
+    const newChannelLang = (body.channelLang ?? cur0?.channelLang ?? "") as string;
+    if (newChannelLang) {
+      const cl = isPackDeckId(newLang)
+        ? getPack(newLang.slice(5), uid(req), db.getUserById(uid(req))?.role === "admin")?.lang || ""
+        : deckLang(newLang);
+      if (cl && cl !== newChannelLang)
+        return reply
+          .code(400)
+          .send({ error: `Язык контента (${cl.toUpperCase()}) ≠ язык канала (${newChannelLang.toUpperCase()}) — выровняй их.` });
+    }
   }
   // Cap: ≤ 100 scheduled posts per day per user (sum of schedule slots across all their channels). Admins exempt.
   if (Array.isArray(body.schedule) && db.getUserById(uid(req))?.role !== "admin") {

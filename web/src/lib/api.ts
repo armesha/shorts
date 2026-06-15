@@ -459,6 +459,7 @@ export const apiClient = {
       "DELETE",
     ),
   deletePack: (id: string) => send<{ deleted: boolean }>(`/packs/${id}`, "DELETE"),
+  setPackLang: (id: string, lang: string) => send<{ ok: boolean; lang: string }>(`/packs/${id}/lang`, "POST", { lang }),
   packPreview: (id: string, i: number) => get<{ imageUrl: string }>(`/packs/${id}/preview?i=${i}`),
   packBuildVideo: (id: string, i: number, opts?: { accountId?: number; music?: string }) =>
     send<{ videoUrl: string; music: string; saved: boolean }>(`/packs/${id}/cards/${i}/video`, "POST", opts ?? {}),

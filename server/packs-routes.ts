@@ -12,6 +12,7 @@ import {
   addCards,
   deleteCard,
   deletePack,
+  setPackLang,
   deriveRules,
   type PackTemplate,
   type CardValues,
@@ -102,6 +103,17 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     return { deleted: true };
   });
 
+  // Сменить язык (тег) пака — владелец или админ. Используется на странице «Паки».
+  app.post("/api/packs/:id/lang", async (req, reply) => {
+    const id = (req.params as { id: string }).id;
+    const lang = String((req.body as { lang?: string })?.lang || "").trim().toLowerCase();
+    if (!/^[a-z]{2}$/.test(lang)) return reply.code(400).send({ error: "Неверный код языка (2 буквы, напр. ru/de/en)" });
+    const p = getPack(id, uid(req), adminReq(req));
+    if (!p) return reply.code(404).send({ error: "Пак не найден" });
+    setPackLang(id, lang);
+    return { ok: true, lang };
+  });
+
   // Превью карточки #i — рендер шаблоном (шаблоны чередуются по карточкам для разнообразия) → PNG в /files.
   app.get("/api/packs/:id/preview", async (req, reply) => {
     const p = getPack((req.params as { id: string }).id, uid(req), adminReq(req));
@@ -137,6 +149,10 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     if (body.accountId != null) {
       const acc = db.getAccount(Number(body.accountId));
       if (!acc || acc.userId !== userId) return reply.code(403).send({ error: "Канал не ваш" });
+      // Бэкстоп: ролик из пака можно класть только в канал, у которого ЭТОТ пак выбран источником
+      // (иначе планировщик его не выложит — он постит по точной деке канала; и язык не тот).
+      if (acc.lang !== `pack:${p.id}`)
+        return reply.code(400).send({ error: "Канал не использует этот пак — сначала выбери пак источником канала." });
     }
     // музыка: явная / случайная / без
     let music = body.music;
