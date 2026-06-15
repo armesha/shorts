@@ -16,6 +16,7 @@ const LANGS: [string, string][] = [
   ["psych", "Психология (DE)"],
   ["islamic", "Ислам · арабский (Коран и хадисы)"],
   ["christian", "Христианство · Библия (англ., KJV)"],
+  ["fact-en", "Интересные факты (видео, EN)"],
 ];
 
 // «Язык канала» — стабильный язык (отдельно от выбора контента). Пак должен совпадать по языку.
@@ -30,7 +31,7 @@ const LANG_LABELS: [string, string][] = [
 // Язык встроенного пака (для тега и проверки совпадения). Свои паки несут свой lang.
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
-  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en",
+  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en",
 };
 const LANG_TAG: Record<string, string> = { ru: "RU", de: "DE", it: "IT", fr: "FR", en: "EN", ar: "AR" };
 const tagOf = (code: string) => LANG_TAG[code] || (code || "").toUpperCase();

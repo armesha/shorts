@@ -10,6 +10,8 @@ export interface PackItem {
   title: string;
   /** Tips deck only: profession key → which lifehack background/template to render on. */
   profession?: string;
+  /** preFact deck only: relative filename of the pre-built mp4 in assets/fact-videos/. */
+  videoFile?: string;
 }
 
 const deckDir = (deckId: string): string => resolve(process.cwd(), getDeck(deckId).dir);
@@ -17,6 +19,22 @@ const deckDir = (deckId: string): string => resolve(process.cwd(), getDeck(deckI
 // titled.json per deck = the pool of READY (titled) anecdotes — the only ones generation may use.
 const _titledCache = new Map<string, PackItem[]>();
 function titledItems(deckId: string): PackItem[] {
+  // preFact decks read videos.json FRESH every time (no cache) so the mp4 pool can keep
+  // accumulating (re-run populate) and appear immediately WITHOUT a server restart.
+  if (getDeck(deckId).preFact) {
+    const file = resolve(deckDir(deckId), "videos.json");
+    const arr = existsSync(file)
+      ? (JSON.parse(readFileSync(file, "utf8")) as { file: string; title?: string; text?: string }[])
+      : [];
+    return arr.map((c, i) => ({
+      id: i,
+      pack: 1,
+      text: c.text ?? "",
+      chars: (c.text ?? "").length,
+      title: c.title ?? "",
+      videoFile: c.file,
+    }));
+  }
   const hit = _titledCache.get(deckId);
   if (hit) return hit;
   let items: PackItem[];

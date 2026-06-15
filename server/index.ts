@@ -9,6 +9,7 @@ import { randomAnecdote, libraryStats, anecdoteKey } from "../src/anecdotes/libr
 import { DECKS, getDeck, ytMeta, pickGenericTitle, isPackDeckId, deckLang } from "../src/anecdotes/decks.ts";
 import { listAllPacks, setGrant, getPack } from "../src/packs/store.ts";
 import { pickUnusedPackCard, buildPackLibraryVideo } from "./pack-gen.ts";
+import { buildFactLibraryVideo } from "./fact-gen.ts";
 import { renderAnecdote, listBackgrounds } from "../src/anecdotes/render.ts";
 import { assembleStillVideo, listAudio, audioPathFor, pickIslamicAudio, pickChristianAudio } from "../src/video.ts";
 import {
@@ -894,6 +895,8 @@ app.post("/api/videos", async (req, reply) => {
   const channelDeck = DECKS.find((d) => d.id === acc.lang);
   if (!channelDeck)
     return reply.code(400).send({ error: `У канала язык «${acc.lang}» без пака — смените язык канала.` });
+  if (channelDeck.preFact)
+    return reply.code(400).send({ error: "Это видео-пак — добавляйте ролики кнопкой «Сгенерировать»." });
   if (!deckAllowed(req, channelDeck.id))
     return reply.code(403).send({ error: "Этот пак вам недоступен." });
   if ((body.deck || channelDeck.id) !== channelDeck.id)
@@ -942,6 +945,11 @@ app.post("/api/videos/batch", async (req, reply) => {
     const a = randomAnecdote(deckId, seen);
     if (!a) break; // no unused anecdotes left
     seen.add(anecdoteKey(a.text));
+    if (channelDeck.preFact) {
+      // Pre-built fact videos: copy the chosen mp4 into the library (no rendering).
+      created.push(await buildFactLibraryVideo({ db, userId: uid(req), accountId: body.accountId, deckId, picked: a }));
+      continue;
+    }
     created.push(
       await buildLibraryVideo({
         userId: uid(req),
@@ -977,6 +985,10 @@ initGenQueue(async (job) => {
   if (!channelDeck) throw new Error(`У канала язык «${acc.lang}» без пака`);
   const a = randomAnecdote(channelDeck.id, seen);
   if (!a) return "exhausted"; // deck has no unused cards left
+  if (channelDeck.preFact) {
+    await buildFactLibraryVideo({ db, userId: job.userId, accountId: job.accountId, deckId: channelDeck.id, picked: a });
+    return "made";
+  }
   await buildLibraryVideo({
     userId: job.userId,
     accountId: job.accountId,

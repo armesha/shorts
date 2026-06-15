@@ -25,6 +25,10 @@ export interface Deck {
   /** When true, render anecdotes on the themed russian_jokes/* scenes (text in each bg's paper
    *  safe-zone) via templates/anecdote-russian.html instead of the flat textured card. */
   russianBg?: boolean;
+  /** When true, this deck is NOT rendered from text — its items are PRE-BUILT mp4 videos
+   *  (voiceover + stock footage + subtitles) listed in <dir>/videos.json, files in assets/fact-videos/.
+   *  Generation copies the chosen mp4 into the library instead of rendering a card (see server/fact-gen.ts). */
+  preFact?: boolean;
 }
 
 export const DECKS: Deck[] = [
@@ -126,6 +130,18 @@ export const DECKS: Deck[] = [
     christian: true,
     adminOnly: true, // new packs are admin-only by default
   },
+  {
+    id: "fact-en",
+    name: "Interesting Facts",
+    dir: "data/fact-videos", // videos.json = [{file,title,text,series}] of pre-built mp4s in assets/fact-videos/
+    source: "",
+    emoji: "🤯",
+    hashtags: "#facts #didyouknow #interestingfacts #amazingfacts #shorts",
+    tags: ["facts", "interesting facts", "did you know", "amazing facts", "fun facts", "science", "shorts"],
+    genericTitles: ["Did You Know?", "Mind-Blowing Fact", "Interesting Fact", "You Won't Believe This"],
+    adminOnly: true, // pre-built video pack — admin-only
+    preFact: true,
+  },
 ];
 
 export const DEFAULT_DECK = "ru";
@@ -139,7 +155,7 @@ export function isPackDeckId(id?: string | null): boolean {
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
-  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en",
+  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en",
 };
 export function deckLang(id: string): string {
   return DECK_LANG[id] || "";
