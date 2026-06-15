@@ -231,7 +231,7 @@ export default function AccountDetail() {
       setTimeout(() => setSaved(false), 2000);
       return true;
     } catch (e) {
-      alert("Не удалось сохранить настройки канала: " + String(e));
+      notify("Не удалось сохранить настройки канала: " + String(e), "error");
       return false;
     } finally {
       setSaving(false);
@@ -265,7 +265,7 @@ export default function AccountDetail() {
       if (r.url) setLastPosted({ title: v?.title ?? "Ролик", url: r.url });
       await reloadVideos(); // posted video is removed server-side → disappears from the list
     } catch (e) {
-      alert("Не удалось выложить: " + String(e));
+      notify("Не удалось выложить: " + String(e), "error");
     } finally {
       setPosting(null);
     }
@@ -296,7 +296,7 @@ export default function AccountDetail() {
       for (const v of [...videos]) await apiClient.deleteVideo(v.id);
       await reloadVideos();
     } catch (e) {
-      alert("Не удалось очистить библиотеку: " + String(e));
+      notify("Не удалось очистить библиотеку: " + String(e), "error");
     } finally {
       setClearing(false);
     }
@@ -551,11 +551,11 @@ export default function AccountDetail() {
                 onClick={() => {
                   const t = newTime.trim();
                   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(t)) {
-                    alert("Введите время в 24-часовом формате — например 09:00 или 14:30");
+                    notify("Введите время в 24-часовом формате — например 09:00 или 14:30", "error");
                     return;
                   }
                   if (!isAdmin && times.length >= scheduleRemaining) {
-                    alert(`Лимит 100 публикаций в сутки на пользователя. На остальных каналах уже ${otherSlots}.`);
+                    notify(`Лимит 100 публикаций в сутки на пользователя. На остальных каналах уже ${otherSlots}.`, "error");
                     return;
                   }
                   if (!times.includes(t)) setTimes([...times, t]);
