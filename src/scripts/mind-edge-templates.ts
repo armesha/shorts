@@ -18,8 +18,21 @@ function bgDataUrl(file: string): string {
   return `url(data:image/jpeg;base64,${b64}) center/cover no-repeat, #05070d`;
 }
 
+// Низ текстовой зоны (y) для КАЖДОГО фона — чуть выше его графики/лого, чтобы тело тянулось вниз и
+// заполняло пустоту, но не наезжало на декор. Выверено рендером (mind-edge-fill-calib.ts).
+const BODY_Y = 560;
+const BODY_BOTTOM: Record<string, number> = {
+  "01-eye.jpg": 1250, // глаз ~y1290
+  "02-constellation.jpg": 1210, // сеть созвездия начинается выше всех (~y1245)
+  "03-grid.jpg": 1340, // горизонт-сетка низко (~y1380) → тела больше всего
+  "04-circles.jpg": 1245, // «цветок» кругов ~y1275
+  "05-frame.jpg": 1310, // разделитель рамки ~y1357
+  "06-glow.jpg": 1345, // только мягкое свечение, жёсткой графики нет
+};
+
 function makeTemplate(file: string): PackTemplate {
   const name = "mind-edge-" + file.replace(/\.jpg$/, "");
+  const bodyH = (BODY_BOTTOM[file] ?? 1230) - BODY_Y;
   return {
     version: 1,
     name,
@@ -48,20 +61,20 @@ function makeTemplate(file: string): PackTemplate {
         id: "body",
         type: "killbox",
         x: 90,
-        y: 600,
+        y: BODY_Y,
         w: 900,
-        h: 560,
+        h: bodyH, // высота под каждый фон (BODY_BOTTOM) — тело заполняет пустоту до графики
         rot: 0,
         role: "text",
         padX: 6,
         padY: 0,
         align: "left",
         valign: "top",
-        font: { family: "Inter", size: 54, weight: 500, color: BODY, lineHeight: 1.45 },
-        fitMin: 36,
-        fitMax: 60,
-        minChars: 320, // тело генерим 350–450 (выверено рендером); буфер вниз, чтоб валидация не резала край
-        maxChars: 470, // потолок-обрезка «…» (расч. ёмкость при 36px ≈470 — 450 ложится с зазором до декора)
+        font: { family: "Inter", size: 64, weight: 500, color: BODY, lineHeight: 1.42 },
+        fitMin: 38,
+        fitMax: 80, // авто-подгон РАСТЁТ под высоту бокса → тот же текст крупнее и заполняет место
+        minChars: 320,
+        maxChars: 470, // потолок-обрезка «…»; 460 влезает даже в самый низкий бокс при fitMin
         placeholder: "Body",
       },
     ],

@@ -171,7 +171,7 @@ export default function AccountDetail() {
     return () => window.removeEventListener("keydown", onKey);
   }, [preview]);
 
-  async function save() {
+  async function save(): Promise<boolean> {
     setSaving(true);
     setSaved(false);
     try {
@@ -186,8 +186,10 @@ export default function AccountDetail() {
       setAccount(updated);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
+      return true;
     } catch (e) {
       alert("Не удалось сохранить настройки канала: " + String(e));
+      return false;
     } finally {
       setSaving(false);
     }
@@ -631,11 +633,22 @@ export default function AccountDetail() {
             {!q.running ? (
               <button
                 className="btn btn-sm btn-outline gap-1"
-                onClick={() => q.run(id!, batchN)}
-                disabled={langMismatch}
-                title={langMismatch ? "Язык контента не совпадает с языком канала" : "Поставить в очередь генерацию роликов в библиотеку"}
+                onClick={async () => {
+                  // «Сгенерировать» = сохранить выбранный пак/деку (если поменяли) + поставить генерацию.
+                  // Иначе генерилось бы из ПРЕЖНЕГО сохранённого контента канала.
+                  if (lang !== account.lang && !(await save())) return;
+                  q.run(id!, batchN);
+                }}
+                disabled={langMismatch || saving}
+                title={
+                  langMismatch
+                    ? "Язык контента не совпадает с языком канала"
+                    : lang !== account.lang
+                      ? "Сохранит выбранный контент и сгенерирует из него"
+                      : "Поставить в очередь генерацию роликов в библиотеку"
+                }
               >
-                <Plus size={14} /> Сгенерировать
+                <Plus size={14} /> {lang !== account.lang ? "Сохранить и сгенерировать" : "Сгенерировать"}
               </button>
             ) : (
               <button className="btn btn-sm btn-outline btn-error gap-1" onClick={q.cancel}>
