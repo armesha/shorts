@@ -50,6 +50,7 @@ export interface Generator {
   id: string;
   name: string;
   ai: boolean;
+  preFact?: boolean; // pre-built video pack — Studio shows a random video instead of a text card
   total: number;
   titled: number;
   used: number;
@@ -442,6 +443,11 @@ export const apiClient = {
     return get<HistoryPage>(`/history${s ? "?" + s : ""}`);
   },
   generators: () => get<Generator[]>("/generators"),
+  // Random pre-built fact video (preFact deck) for the Studio preview player.
+  factRandom: (deck: string) =>
+    get<{ videoUrl?: string; title?: string; text?: string; error?: string }>(
+      `/fact/random?deck=${encodeURIComponent(deck)}`,
+    ),
   backgrounds: () => get<string[]>("/backgrounds"),
   music: () => get<string[]>("/music"),
   // German-psychology card uploader

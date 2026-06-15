@@ -126,6 +126,8 @@ const app = Fastify({ logger: true });
 await app.register(cors, { origin: true });
 await app.register(fastifyStatic, { root: resolve(process.cwd(), base.outputDir), prefix: "/files/" });
 await app.register(fastifyStatic, { root: resolve(process.cwd(), "assets/audio"), prefix: "/audio/", decorateReply: false });
+// Pre-built fact videos (preFact deck) — served for the Studio random-preview player.
+await app.register(fastifyStatic, { root: resolve(process.cwd(), "assets/fact-videos"), prefix: "/fact-videos/", decorateReply: false });
 
 // ---- Production: serve the built web app so ONE origin/port serves the whole site (easy to tunnel).
 // Falls back to index.html for client-side routes. Skipped in dev (no web/dist → use `npm run web`).
@@ -137,7 +139,8 @@ if (existsSync(resolve(WEB_DIST, "index.html"))) {
       req.method === "GET" &&
       !req.url.startsWith("/api/") &&
       !req.url.startsWith("/files/") &&
-      !req.url.startsWith("/audio/")
+      !req.url.startsWith("/audio/") &&
+      !req.url.startsWith("/fact-videos/")
     ) {
       return reply.sendFile("index.html", WEB_DIST); // SPA fallback (e.g. /accounts/1, /login)
     }
@@ -1129,6 +1132,7 @@ app.get("/api/generators", async (req) => {
       id: d.id,
       name: d.name,
       ai: false,
+      preFact: !!d.preFact, // pre-built video pack (no text render) — Studio shows a random video
       total: s.total,
       titled: s.titled,
       used: s.used,
@@ -1141,6 +1145,17 @@ app.get("/api/generators", async (req) => {
     };
   });
   return base;
+});
+
+// Random PRE-BUILT fact video (preFact deck) for the Studio preview player — no rendering, no "used" filter.
+app.get("/api/fact/random", async (req, reply) => {
+  const deckId = (req.query as { deck?: string })?.deck || "fact-en";
+  const deck = getDeck(deckId);
+  if (!deck.preFact) return reply.code(400).send({ error: "Это не видео-пак." });
+  if (!deckAllowed(req, deck.id)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
+  const a = randomAnecdote(deck.id); // preview may repeat — don't exclude used
+  if (!a?.videoFile) return { error: "В этом паке пока нет видео." };
+  return { videoUrl: `/fact-videos/${a.videoFile}`, title: a.title, text: a.text };
 });
 
 let previewCounter = 0;

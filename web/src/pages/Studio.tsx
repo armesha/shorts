@@ -25,6 +25,7 @@ const DECK_RU: Record<string, string> = {
   psych: "Психология",
   islamic: "Ислам · арабский",
   christian: "Библия · англ.",
+  "fact-en": "Интересные факты · видео",
 };
 const deckLabel = (id: string, name: string) => (DECK_RU[id] ? `${name} (${DECK_RU[id]})` : name);
 
@@ -107,6 +108,19 @@ export default function Studio() {
     setVideo(null);
     setErr(null);
     try {
+      // preFact deck (e.g. fact-en): not rendered from text — just play a random PRE-BUILT video.
+      const cur = gens.find((x) => x.id === deck);
+      if (cur?.preFact) {
+        const r = await apiClient.factRandom(deck);
+        if (r?.error || !r?.videoUrl) {
+          setErr(r?.error || "В этом паке пока нет видео");
+          return;
+        }
+        setPreview(null);
+        setText("");
+        setVideo({ videoUrl: r.videoUrl, bg: "", music: "" } as GeneratedVideo);
+        return;
+      }
       if (isPack) {
         const n = curPack?.cards ?? 0;
         if (!n) { setErr("В паке нет карточек — добавь на странице «Паки и карточки»"); return; }
