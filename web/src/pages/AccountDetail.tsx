@@ -290,7 +290,7 @@ export default function AccountDetail() {
   const deckOptions = () => (
     <>
       {visibleLangs.length > 0 && (
-        <optgroup label="Встроенные деки">
+        <optgroup label="Встроенные паки">
           {visibleLangs.map(([code, name]) => (
             <option key={code} value={code}>
               {/* полное имя деки (как в Студии: «Русские анекдоты» и т.п.), а не язык */}
@@ -300,7 +300,7 @@ export default function AccountDetail() {
         </optgroup>
       )}
       {(packs.length > 0 || (lang.startsWith("pack:") && !packIds.has(lang))) && (
-        <optgroup label="Мои паки">
+        <optgroup label={isAdmin ? "Кастомные паки" : "Мои паки"}>
           {packs.map((p) => (
             <option key={p.id} value={`pack:${p.id}`}>
               {p.name} · {tagOf(p.lang)}
@@ -390,7 +390,7 @@ export default function AccountDetail() {
                 </option>
               ))}
             </select>
-            <span className="label-text-alt mt-1 text-base-content/50">Пак/дека ниже должны быть этого языка</span>
+            <span className="label-text-alt mt-1 text-base-content/50">Пак ниже должен быть этого языка</span>
           </label>
 
           <div className="form-control">
@@ -590,7 +590,7 @@ export default function AccountDetail() {
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-base-300">
-            <span className="text-sm text-base-content/70">Контент (дека/пак):</span>
+            <span className="text-sm text-base-content/70">Пак канала:</span>
             <select
               className="select select-bordered select-sm"
               value={lang}

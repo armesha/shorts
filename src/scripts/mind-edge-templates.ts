@@ -20,7 +20,7 @@ function bgDataUrl(file: string): string {
 
 // Низ текстовой зоны (y) для КАЖДОГО фона — чуть выше его графики/лого, чтобы тело тянулось вниз и
 // заполняло пустоту, но не наезжало на декор. Выверено рендером (mind-edge-fill-calib.ts).
-const BODY_Y = 600; // зазор от блока заголовка (заголовок-бокс кончается на 560) — чтобы не «прилипал»
+const BODY_Y = 645; // ниже + больше зазор от заголовка (заголовок-бокс кончается на 560 → зазор 85)
 const BODY_BOTTOM: Record<string, number> = {
   "01-eye.jpg": 1272, // глаз ~y1290
   "02-constellation.jpg": 1218, // сеть созвездия начинается выше всех (~y1245) — запас мал
@@ -60,9 +60,9 @@ function makeTemplate(file: string): PackTemplate {
       {
         id: "body",
         type: "killbox",
-        x: 90,
+        x: 60,
         y: BODY_Y,
-        w: 900,
+        w: 960, // шире бокс → меньше строк → шрифт крупнее (без расхода высоты)
         h: bodyH, // высота под каждый фон (BODY_BOTTOM) — тело заполняет пустоту до графики
         rot: 0,
         role: "text",
@@ -70,7 +70,7 @@ function makeTemplate(file: string): PackTemplate {
         padY: 0,
         align: "left",
         valign: "top",
-        font: { family: "Inter", size: 64, weight: 500, color: BODY, lineHeight: 1.34 }, // плотнее → шрифт крупнее
+        font: { family: "Inter", size: 64, weight: 500, color: BODY, lineHeight: 1.22 }, // плотнее → шрифт крупнее
         fitMin: 38,
         fitMax: 80, // авто-подгон РАСТЁТ под высоту бокса → тот же текст крупнее и заполняет место
         minChars: 320,

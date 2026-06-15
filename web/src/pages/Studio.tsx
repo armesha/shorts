@@ -204,7 +204,7 @@ export default function Studio() {
                       </option>
                     ))}
                     {packs.length > 0 && (
-                      <optgroup label="Мои паки">
+                      <optgroup label={user?.role === "admin" ? "Кастомные паки" : "Мои паки"}>
                         {packs.map((p) => (
                           <option key={p.id} value={`pack:${p.id}`}>
                             {p.name} (пак)

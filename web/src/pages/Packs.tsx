@@ -165,17 +165,17 @@ export default function Packs() {
       </header>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Stat label="Встроенных дек" value={fmt(decks.length)} />
+        <Stat label="Встроенных паков" value={fmt(decks.length)} />
         <Stat label="Осталось карточек" value={fmt(totals.available)} />
         <Stat label="Потрачено карточек" value={fmt(totals.used)} />
       </div>
 
       {!loading && decks.length > 0 && (
         <div className="flex items-center gap-2 flex-wrap">
-          <h2 className="text-lg font-bold">Встроенные деки</h2>
+          <h2 className="text-lg font-bold">Встроенные паки</h2>
           <span className="badge badge-ghost badge-sm">{decks.length}</span>
           <span className="text-xs text-base-content/50 ml-1">
-            готовый контент системы — язык у дек фиксирован, не редактируется
+            готовый контент системы — язык у них фиксирован, не редактируется
           </span>
         </div>
       )}
@@ -233,7 +233,7 @@ export default function Packs() {
       {viewUser === "" && customPacks.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold">Кастомные паки</h2>
+            <h2 className="text-lg font-bold">{isAdmin ? "Кастомные паки" : "Мои паки"}</h2>
             <span className="badge badge-ghost badge-sm">{customPacks.length}</span>
             <span className="text-xs text-base-content/50 ml-1">свои наборы — язык-тег можно менять</span>
             <Link to="/cards" className="link link-primary text-sm ml-auto">
