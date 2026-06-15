@@ -31,6 +31,7 @@ export default function Packs() {
   const [customPacks, setCustomPacks] = useState<PackSummary[]>([]); // кастомные паки, видимые мне
   const [deletingPack, setDeletingPack] = useState<string | null>(null);
   const [savingLang, setSavingLang] = useState<string | null>(null);
+  const [confirmPack, setConfirmPack] = useState<PackSummary | null>(null); // пак, ожидающий подтверждения удаления
 
   // Сменить язык (тег) пака — доступно админу прямо здесь.
   const changePackLang = async (p: PackSummary, lang: string) => {
@@ -50,9 +51,13 @@ export default function Packs() {
     apiClient.packs().then(setCustomPacks).catch(() => {});
   }, []);
 
-  // Удаление пака: админ — любой, обычный юзер — только свой (кнопка показывается по тем же правилам).
-  const removePack = async (p: PackSummary) => {
-    if (!window.confirm(`Удалить пак «${p.name}» со всеми карточками? Это необратимо.`)) return;
+  // Удаление пака (админ — любой, юзер — свой): клик открывает модалку-подтверждение (всегда видна,
+  // браузер её не подавляет), а реально удаляет doRemovePack после «Удалить».
+  const removePack = (p: PackSummary) => setConfirmPack(p);
+  const doRemovePack = async () => {
+    const p = confirmPack;
+    if (!p) return;
+    setConfirmPack(null);
     setDeletingPack(p.id);
     try {
       await apiClient.deletePack(p.id);
@@ -251,9 +256,9 @@ export default function Packs() {
                         </button>
                       )}
                     </div>
-                    {foreign && (
-                      <div className="text-[11px] text-warning/90 -mt-0.5">
-                        чужой пак · владелец {users.find((u) => u.id === p.userId)?.username || `#${p.userId}`}
+                    {isAdmin && (
+                      <div className={`text-[11px] -mt-0.5 ${foreign ? "text-warning/90" : "text-base-content/40"}`}>
+                        {foreign ? "чужой" : "ваш"} пак · владелец {users.find((u) => u.id === p.userId)?.username || `#${p.userId}`}
                       </div>
                     )}
                     <div className="text-2xl font-bold leading-none">{fmt(p.cards)}</div>
@@ -346,6 +351,28 @@ export default function Packs() {
               </div>
             )}
           </div>
+        </div>
+      )}
+      {confirmPack && (
+        <div className="modal modal-open" role="dialog">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg flex items-center gap-2">
+              <Trash2 className="text-error" size={18} /> Удалить пак?
+            </h3>
+            <p className="py-3 text-sm">
+              Пак <b>«{confirmPack.name}»</b> и все его карточки ({fmt(confirmPack.cards)}) будут удалены
+              без возможности восстановить.
+            </p>
+            <div className="modal-action">
+              <button className="btn btn-ghost btn-sm" onClick={() => setConfirmPack(null)}>
+                Отмена
+              </button>
+              <button className="btn btn-error btn-sm gap-1" onClick={doRemovePack}>
+                <Trash2 size={15} /> Удалить пак
+              </button>
+            </div>
+          </div>
+          <div className="modal-backdrop" onClick={() => setConfirmPack(null)} />
         </div>
       )}
     </div>
