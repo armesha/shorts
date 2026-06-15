@@ -179,3 +179,17 @@ unattended, managed from a web dashboard. Spec: `ТЗ.pdf`. Architecture & resea
   (Studio) есть, но дропдаун строится из `/api/generators` → не-админ их просто не видит.
 - TODO requested: editable Google client-secret path in Settings UI (hardcoded default stays for now). AI/subagent titling of anecdotes (currently generic titles).
 - **Auth (Этап 1 готов):** вход в панель обязателен. `server/auth.ts` = scrypt-хэш + токены сессий + политика блокировки; таблицы `users`/`sessions` в `server/db.ts`; гейт всего `/api/*` + роуты `/api/auth/{login,logout,me}` в `server/index.ts`. Юзеры сидятся из `.env`: `ADMIN_USERNAME`/`ADMIN_PASSWORD` (admin) + `SEED_USERS="name:pass,…"` (user), идемпотентно (создаёт, если нет — пароль не перезатирает). Сессия = httpOnly-кука `sid`; блокировка после `AUTH_MAX_ATTEMPTS`(10) на `AUTH_LOCK_MINUTES`(15) мин. Фронт: `web/src/lib/auth.tsx` (AuthProvider/useAuth), `web/src/pages/Login.tsx`, гейт в `App.tsx`, выход в `Layout.tsx`. **Этап 2 TODO:** `user_id` у каналов (изоляция — свои каналы/ключ видит только владелец), свой Google client-secret на юзера, общий пул анекдотов, учёт «использованных» per-user, UI создания юзеров вместо `.env`.
+- **Telegram-вход + восстановление пароля (готово, 2026-06-15):** бот **@shotsrecoverybot**, секрет в
+  `.env` (`TELEGRAM_BOT_TOKEN` + `TELEGRAM_BOT_USERNAME`; пусто → бэкенд узнаёт @username через `getMe`).
+  `server/telegram.ts` = проверка подписи Login Widget (`HMAC_SHA256(data_check_string, SHA256(token))` +
+  свежесть `auth_date`) + `getMe`/`sendMessage`. `server/telegram-routes.ts` = роуты
+  `/api/auth/telegram` (логин), `/telegram/{info,bind,unbind,me}`, `/recover/{start,complete}` —
+  публичные перечислены в `PUBLIC_API` в `index.ts`, `/bind|/unbind|/me` за сессионным гейтом. БД:
+  колонки `users.telegram_id/telegram_username` (+ уникальный partial-индекс) и таблица `password_resets`
+  в `db.ts`. UI: кнопка-виджет на `Login.tsx` (+ «Забыли пароль?» → одноразовый код из бота, 6 цифр,
+  TTL 10 мин, ответ generic — без перечисления юзеров), `web/src/components/TelegramLoginButton.tsx`,
+  привязка в `Settings.tsx`. **Виджет требует `/setdomain` у @BotFather → публичный домен
+  (`shareboard.live`) и НЕ рисуется на localhost.** Регистрации нет → Telegram = доп-ключ к
+  существующему аккаунту (сначала привязка в Настройках с write-доступом, чтобы бот мог слать коды).
+  Тест крипты офлайн: `tsx src/scripts/telegram-verify-test.ts`. Заодно «Движок генерации»/«Рендерер»
+  переехали из Настроек на `/system` (видит только админ).
