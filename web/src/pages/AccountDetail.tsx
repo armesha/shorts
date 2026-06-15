@@ -86,6 +86,9 @@ export default function AccountDetail() {
   const [slotVideos, setSlotVideos] = useState<Record<string, number>>({});
   const [lastPosted, setLastPosted] = useState<{ title: string; url: string } | null>(null);
   const [preview, setPreview] = useState<VideoItem | null>(null);
+  const [avatarOpen, setAvatarOpen] = useState(false);
+  const [avatarList, setAvatarList] = useState<string[]>([]);
+  const [avatarBusy, setAvatarBusy] = useState(false);
   const maxBatch = user?.role === "admin" ? 100 : 20;
   const [batchN, setBatchN] = useState(5);
   const q = useGenQueue();
@@ -104,6 +107,43 @@ export default function AccountDetail() {
   };
 
   const reloadVideos = () => apiClient.videos(id!).then(setVideos).catch(() => {});
+
+  useEffect(() => {
+    if (avatarOpen && avatarList.length === 0) apiClient.avatars().then(setAvatarList).catch(() => {});
+  }, [avatarOpen, avatarList.length]);
+
+  async function setAvatar(url: string) {
+    setAvatarBusy(true);
+    try {
+      const a = await apiClient.updateAccount(id!, { avatar: url });
+      setAccount(a);
+      setAvatarOpen(false);
+    } catch (e) {
+      notify(e instanceof Error ? e.message : "Не удалось сменить аватар", "error");
+    } finally {
+      setAvatarBusy(false);
+    }
+  }
+  async function onUploadAvatar(file: File) {
+    if (!file) return;
+    if (file.size > 3_000_000) return notify("Файл больше 3 МБ — выбери поменьше", "error");
+    setAvatarBusy(true);
+    try {
+      const dataUrl: string = await new Promise((res, rej) => {
+        const fr = new FileReader();
+        fr.onload = () => res(String(fr.result));
+        fr.onerror = () => rej(new Error("read error"));
+        fr.readAsDataURL(file);
+      });
+      const a = await apiClient.uploadAvatar(id!, dataUrl);
+      setAccount(a);
+      setAvatarOpen(false);
+    } catch (e) {
+      notify(e instanceof Error ? e.message : "Не удалось загрузить фото", "error");
+    } finally {
+      setAvatarBusy(false);
+    }
+  }
 
   useEffect(() => {
     apiClient
@@ -349,9 +389,32 @@ export default function AccountDetail() {
       </Link>
 
       <header className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">{channelName || "Канал"}</h1>
-          <p className="text-base-content/60">Настройки генерации и расписания</p>
+        <div className="flex items-center gap-3 min-w-0">
+          <button
+            type="button"
+            onClick={() => setAvatarOpen(true)}
+            title="Сменить аватар канала"
+            className="relative group shrink-0 rounded-full"
+          >
+            {account.avatar ? (
+              <img
+                src={account.avatar}
+                alt=""
+                className="w-14 h-14 rounded-full object-cover border border-base-300 bg-base-200"
+              />
+            ) : (
+              <div className="w-14 h-14 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xl font-bold">
+                {(channelName || "?").trim()[0] || "?"}
+              </div>
+            )}
+            <span className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/45 flex items-center justify-center text-white text-[10px] font-medium opacity-0 group-hover:opacity-100 transition">
+              сменить
+            </span>
+          </button>
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold truncate">{channelName || "Канал"}</h1>
+            <p className="text-base-content/60">Настройки генерации и расписания</p>
+          </div>
         </div>
         {account.status === "connected" ? (
           <span className="badge badge-success">подключён</span>
@@ -836,6 +899,64 @@ export default function AccountDetail() {
                   <Upload size={14} /> Выложить
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {avatarOpen && (
+        <div className="modal modal-open" onClick={() => !avatarBusy && setAvatarOpen(false)}>
+          <div className="modal-box max-w-lg" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-bold text-lg">Аватар канала</h3>
+              <button
+                className="btn btn-sm btn-circle btn-ghost"
+                onClick={() => setAvatarOpen(false)}
+                disabled={avatarBusy}
+                aria-label="Закрыть"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <label className={`btn btn-sm btn-primary gap-1 ${avatarBusy ? "btn-disabled" : ""}`}>
+                <Upload size={14} /> Загрузить своё фото
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) onUploadAvatar(f);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+              <button
+                className="btn btn-sm btn-ghost gap-1"
+                disabled={avatarBusy || avatarList.length === 0}
+                onClick={() => setAvatar(avatarList[Math.floor(Math.random() * avatarList.length)])}
+              >
+                <RefreshCw size={14} /> Случайная
+              </button>
+              {avatarBusy && <Loader2 className="animate-spin self-center" size={16} />}
+              <span className="text-xs text-base-content/50 ml-auto">или выбери из набора ↓</span>
+            </div>
+            <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 max-h-[50vh] overflow-auto p-1">
+              {avatarList.map((u) => (
+                <button
+                  key={u}
+                  type="button"
+                  onClick={() => setAvatar(u)}
+                  disabled={avatarBusy}
+                  title="Выбрать"
+                  className={`rounded-full overflow-hidden border-2 transition ${
+                    account.avatar === u ? "border-primary" : "border-transparent hover:border-base-300"
+                  }`}
+                >
+                  <img src={u} alt="" className="w-full aspect-square object-cover bg-base-200" loading="lazy" />
+                </button>
+              ))}
             </div>
           </div>
         </div>

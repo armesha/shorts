@@ -217,11 +217,19 @@ export default function Accounts() {
             >
               <div className="card-body">
                 <div className="flex items-center gap-3">
-                  <div className="bg-primary/10 text-primary rounded-full w-12 h-12 flex items-center justify-center">
-                    <Tv size={22} />
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-semibold">{a.channelName}</div>
+                  {a.avatar ? (
+                    <img
+                      src={a.avatar}
+                      alt=""
+                      className="w-12 h-12 rounded-full object-cover border border-base-300 shrink-0 bg-base-200"
+                    />
+                  ) : (
+                    <div className="bg-primary/10 text-primary rounded-full w-12 h-12 flex items-center justify-center shrink-0">
+                      <Tv size={22} />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold truncate">{a.channelName}</div>
                     <div className="text-sm text-base-content/60">
                       {a.theme || "тема не задана"} · {a.lang.toUpperCase()}
                     </div>
