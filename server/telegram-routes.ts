@@ -19,12 +19,19 @@ interface Deps {
   setSessionCookie: (reply: { header(k: string, v: string): unknown }, token: string) => void;
 }
 
+interface TgFrom {
+  id?: number;
+  username?: string;
+  first_name?: string;
+  last_name?: string;
+}
+interface TgMessage {
+  text?: string;
+  from?: TgFrom;
+  chat?: { id?: number };
+}
 interface TgUpdate {
-  message?: {
-    text?: string;
-    from?: { id?: number; username?: string; first_name?: string; last_name?: string };
-    chat?: { id?: number };
-  };
+  message?: TgMessage;
 }
 
 const hashCode = (code: string, userId: number) =>
@@ -32,7 +39,7 @@ const hashCode = (code: string, userId: number) =>
 // SQLite datetime('now') is "YYYY-MM-DD HH:MM:SS" UTC → age in seconds.
 const ageSec = (createdAt: string) =>
   (Date.now() - new Date(createdAt.replace(" ", "T") + "Z").getTime()) / 1000;
-const tgLabel = (f?: TgUpdate["message"]["from"]) =>
+const tgLabel = (f?: TgFrom) =>
   f?.username ? `@${f.username}` : [f?.first_name, f?.last_name].filter(Boolean).join(" ") || String(f?.id ?? "");
 
 export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps) {
