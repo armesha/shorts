@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
-import { ArrowLeft, Save, Trash2, Check, Plus, Upload, Loader2, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import { ArrowLeft, Save, Trash2, Check, Plus, Upload, Loader2, ChevronLeft, ChevronRight, RefreshCw, Play, Download, X } from "lucide-react";
 import { apiClient, type Account, type VideoItem, type Generator, type PackSummary } from "../lib/api";
+import VideoPlayer from "../components/VideoPlayer";
 import { useAuth } from "../lib/auth";
 import { useGenQueue } from "../lib/genQueue";
 
@@ -711,49 +712,45 @@ export default function AccountDetail() {
               Пусто. Сгенерируй ролик в «Студии» и сохрани в этот канал.
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
               {pageVideos.map((v) => (
-                <div key={v.id} className="border border-base-300 rounded-lg p-2 flex flex-col gap-2">
-                  <div className="flex gap-3 items-center">
-                    <div
-                      className="flex gap-3 items-center flex-1 min-w-0 cursor-pointer hover:opacity-80"
-                      onClick={() => setPreview(v)}
-                      title="Открыть превью"
-                    >
-                      {v.imageRel && (
-                        <img src={`/files/${v.imageRel}`} alt="" className="w-11 h-20 object-cover rounded shrink-0" />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium truncate">{v.title}</div>
-                        <div className="text-xs text-base-content/60 mt-1 flex items-center gap-1 flex-wrap">
-                          {v.postCount > 0 ? (
-                            <span className="badge badge-success badge-sm">x{v.postCount}</span>
-                          ) : (
-                            <span className="badge badge-ghost badge-sm">не выкладывался</span>
-                          )}
-                          {v.lastPostedAt && <span>· {new Date(v.lastPostedAt).toLocaleDateString("ru-RU")}</span>}
-                        </div>
-                      </div>
-                    </div>
-                    <button
-                      className="btn btn-xs btn-ghost text-error"
-                      onClick={() => removeVid(v.id)}
-                      title="Удалить из библиотеки"
-                    >
-                      <Trash2 size={12} />
-                    </button>
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-2">
-                    <button
-                      className="btn btn-xs btn-primary gap-1"
-                      onClick={() => postNow(v.id)}
-                      disabled={posting === v.id || account.status !== "connected"}
-                      title={account.status !== "connected" ? "Сначала подключи канал" : "Выложить сейчас"}
-                    >
-                      {posting === v.id ? <Loader2 className="animate-spin" size={12} /> : <Upload size={12} />}
-                      Выложить сейчас
-                    </button>
+                <div key={v.id} className="group relative">
+                  <button
+                    type="button"
+                    onClick={() => setPreview(v)}
+                    title="Открыть и посмотреть"
+                    className="block w-full aspect-[9/16] rounded-lg overflow-hidden border border-base-300 bg-base-200 relative"
+                  >
+                    {v.imageRel ? (
+                      <img src={`/files/${v.imageRel}`} alt="" className="w-full h-full object-cover" loading="lazy" />
+                    ) : (
+                      <span className="absolute inset-0 flex items-center justify-center text-base-content/30">
+                        <Play size={28} />
+                      </span>
+                    )}
+                    <span className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/35 transition">
+                      <Play
+                        size={34}
+                        fill="currentColor"
+                        className="text-white opacity-0 group-hover:opacity-100 drop-shadow-lg transition"
+                      />
+                    </span>
+                    {v.postCount > 0 ? (
+                      <span className="absolute top-1 left-1 badge badge-success badge-sm">×{v.postCount}</span>
+                    ) : (
+                      <span className="absolute top-1 left-1 badge badge-ghost badge-sm">new</span>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeVid(v.id)}
+                    title="Удалить из библиотеки"
+                    className="absolute top-1 right-1 btn btn-xs btn-circle btn-error opacity-0 group-hover:opacity-100 transition"
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                  <div className="mt-1 text-xs font-medium leading-tight line-clamp-2" title={v.title}>
+                    {v.title}
                   </div>
                 </div>
               ))}
@@ -785,45 +782,60 @@ export default function AccountDetail() {
 
       {preview && (
         <div className="modal modal-open" onClick={() => setPreview(null)}>
-          <div className="modal-box max-w-lg" onClick={(e) => e.stopPropagation()}>
-            <h3 className="font-bold text-lg mb-3">{preview.title}</h3>
-            <div className="flex gap-4">
-              <video
-                src={`/files/${preview.videoRel}`}
-                className="w-40 rounded-lg border border-base-300 shrink-0"
-                controls
-                autoPlay
-                loop
-                muted
-              />
-              <div className="flex-1 min-w-0 text-sm space-y-2">
-                <p className="whitespace-pre-wrap leading-relaxed">{preview.text}</p>
-                <div className="text-xs text-base-content/50">
-                  {preview.text.length} симв. · фон {preview.bg || "—"}
-                  {preview.music && preview.music !== "none"
-                    ? ` · 🎵 ${preview.music.split("/").pop()?.replace(/\.\w+$/, "")}`
-                    : " · 🔇 без музыки"}
-                </div>
+          <div className="modal-box max-w-sm p-0 overflow-hidden relative" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={() => setPreview(null)}
+              aria-label="Закрыть"
+              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-10 bg-base-100/70 hover:bg-base-100"
+            >
+              <X size={16} />
+            </button>
+            <VideoPlayer
+              src={`/files/${preview.videoRel}`}
+              poster={preview.imageRel ? `/files/${preview.imageRel}` : undefined}
+              className="w-full aspect-[9/16] max-h-[68vh]"
+            />
+            <div className="p-4 space-y-2">
+              <h3 className="font-bold text-base leading-snug">{preview.title}</h3>
+              {preview.text && (
+                <p className="text-sm whitespace-pre-wrap leading-relaxed max-h-28 overflow-auto text-base-content/80">
+                  {preview.text}
+                </p>
+              )}
+              <div className="text-xs text-base-content/50">
+                {preview.text.length} симв.
+                {preview.lastPostedAt && ` · выложен ${new Date(preview.lastPostedAt).toLocaleDateString("ru-RU")}`}
+                {preview.music && preview.music !== "none"
+                  ? ` · 🎵 ${preview.music.split("/").pop()?.replace(/\.\w+$/, "")}`
+                  : " · 🔇 без музыки"}
               </div>
-            </div>
-            <div className="modal-action">
-              <a href={`/files/${preview.videoRel}`} download className="btn btn-sm btn-ghost">
-                Скачать MP4
-              </a>
-              <button className="btn btn-sm" onClick={() => setPreview(null)}>
-                Закрыть
-              </button>
-              <button
-                className="btn btn-sm btn-primary gap-1"
-                disabled={account.status !== "connected" || posting === preview.id}
-                onClick={() => {
-                  const pid = preview.id;
-                  setPreview(null);
-                  postNow(pid);
-                }}
-              >
-                <Upload size={14} /> Выложить сейчас
-              </button>
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                <a href={`/files/${preview.videoRel}`} download className="btn btn-sm btn-ghost gap-1">
+                  <Download size={14} /> MP4
+                </a>
+                <button
+                  className="btn btn-sm btn-ghost text-error gap-1"
+                  onClick={() => {
+                    const pid = preview.id;
+                    setPreview(null);
+                    removeVid(pid);
+                  }}
+                >
+                  <Trash2 size={14} /> Удалить
+                </button>
+                <button
+                  className="btn btn-sm btn-primary gap-1 ml-auto"
+                  disabled={account.status !== "connected" || posting === preview.id}
+                  onClick={() => {
+                    const pid = preview.id;
+                    setPreview(null);
+                    postNow(pid);
+                  }}
+                >
+                  <Upload size={14} /> Выложить
+                </button>
+              </div>
             </div>
           </div>
         </div>
