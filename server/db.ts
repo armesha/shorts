@@ -56,6 +56,8 @@ export interface UserAuth {
   role: string;
   failedAttempts: number;
   lockedUntil: string | null;
+  telegramId: string | null; // linked Telegram user id (for "Login with Telegram" + recovery)
+  telegramUsername: string | null; // @username (or display name) shown in Settings
   createdAt: string;
 }
 
@@ -122,6 +124,8 @@ const rowToUserAuth = (r: Row): UserAuth => ({
   role: r.role,
   failedAttempts: Number(r.failed_attempts) || 0,
   lockedUntil: r.locked_until ?? null,
+  telegramId: r.telegram_id ?? null,
+  telegramUsername: r.telegram_username ?? null,
   createdAt: r.created_at,
 });
 
@@ -240,6 +244,13 @@ export function openDb(path: string) {
       deck_id TEXT NOT NULL,
       PRIMARY KEY (user_id, deck_id)
     );
+    CREATE TABLE IF NOT EXISTS password_resets (
+      user_id INTEGER PRIMARY KEY,
+      code_hash TEXT NOT NULL,
+      expires_at TEXT NOT NULL,
+      attempts INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 
   for (const col of ["yt_refresh_token", "yt_channel_id", "yt_channel_title"]) {
@@ -273,6 +284,20 @@ export function openDb(path: string) {
     db.exec("ALTER TABLE history ADD COLUMN error TEXT");
   } catch {
     /* column already exists */
+  }
+  for (const col of ["telegram_id", "telegram_username"]) {
+    try {
+      db.exec(`ALTER TABLE users ADD COLUMN ${col} TEXT`);
+    } catch {
+      /* column already exists */
+    }
+  }
+  try {
+    db.exec(
+      "CREATE UNIQUE INDEX IF NOT EXISTS idx_users_telegram_id ON users(telegram_id) WHERE telegram_id IS NOT NULL",
+    );
+  } catch {
+    /* older SQLite without partial indexes — binding still works, uniqueness just not DB-enforced */
   }
 
   // "Uploaded today" per channel — count of published history rows dated today (UTC).
@@ -593,6 +618,56 @@ export function openDb(path: string) {
     },
     listUsers(): UserAuth[] {
       return (db.prepare("SELECT * FROM users ORDER BY id").all() as Row[]).map(rowToUserAuth);
+    },
+    // ---- Telegram linking (Login with Telegram + password recovery) ----
+    getUserByTelegramId(telegramId: string): UserAuth | null {
+      const r = db.prepare("SELECT * FROM users WHERE telegram_id = ?").get(telegramId) as Row | undefined;
+      return r ? rowToUserAuth(r) : null;
+    },
+    setUserTelegram(userId: number, telegramId: string | null, username: string | null): void {
+      db.prepare("UPDATE users SET telegram_id = ?, telegram_username = ? WHERE id = ?").run(
+        telegramId,
+        username,
+        userId,
+      );
+    },
+    // Set a new password hash directly (used by Telegram-based recovery); also lifts any lockout.
+    setUserPassword(userId: number, passHash: string): void {
+      db.prepare(
+        "UPDATE users SET pass_hash = ?, failed_attempts = 0, locked_until = NULL WHERE id = ?",
+      ).run(passHash, userId);
+    },
+    // ---- One-time password-reset codes (delivered via the Telegram bot) ----
+    upsertPasswordReset(userId: number, codeHash: string, expiresAtIso: string): void {
+      db.prepare(
+        "INSERT INTO password_resets (user_id, code_hash, expires_at, attempts, created_at) " +
+          "VALUES (?,?,?,0,datetime('now')) " +
+          "ON CONFLICT(user_id) DO UPDATE SET code_hash=excluded.code_hash, " +
+          "expires_at=excluded.expires_at, attempts=0, created_at=datetime('now')",
+      ).run(userId, codeHash, expiresAtIso);
+    },
+    getPasswordReset(
+      userId: number,
+    ): { codeHash: string; expiresAt: string; attempts: number; createdAt: string } | null {
+      const r = db
+        .prepare("SELECT code_hash, expires_at, attempts, created_at FROM password_resets WHERE user_id = ?")
+        .get(userId) as Row | undefined;
+      return r
+        ? {
+            codeHash: r.code_hash as string,
+            expiresAt: r.expires_at as string,
+            attempts: Number(r.attempts) || 0,
+            createdAt: r.created_at as string,
+          }
+        : null;
+    },
+    bumpPasswordResetAttempts(userId: number): number {
+      db.prepare("UPDATE password_resets SET attempts = attempts + 1 WHERE user_id = ?").run(userId);
+      const r = db.prepare("SELECT attempts AS n FROM password_resets WHERE user_id = ?").get(userId) as Row;
+      return Number(r?.n) || 0;
+    },
+    deletePasswordReset(userId: number): void {
+      db.prepare("DELETE FROM password_resets WHERE user_id = ?").run(userId);
     },
     // ---- Per-user pack (deck) visibility. Rows = HIDDEN decks; NO rows = user sees ALL (default). ----
     hiddenDecksFor(userId: number): string[] {

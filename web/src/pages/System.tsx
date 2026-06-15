@@ -10,6 +10,8 @@ import {
   Tv,
   Rocket,
   Server,
+  Bot,
+  MonitorPlay,
 } from "lucide-react";
 import {
   LineChart,
@@ -21,14 +23,17 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
-import { apiClient, type SystemStatus } from "../lib/api";
+import { apiClient, type SystemStatus, type AppStatus } from "../lib/api";
+import { useAuth } from "../lib/auth";
 
 // The page polls every 5s, and pauses polling whenever the tab is hidden — so when nobody is
 // looking, the server does zero monitoring work (the answer to "это не нагрузит сервер?").
 const POLL_MS = 5000;
 
 export default function System() {
+  const { user } = useAuth();
   const [data, setData] = useState<SystemStatus | null>(null);
+  const [status, setStatus] = useState<AppStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [updatedAt, setUpdatedAt] = useState<number | null>(null);
   const timer = useRef<number | undefined>(undefined);
@@ -69,6 +74,11 @@ export default function System() {
       stop();
       document.removeEventListener("visibilitychange", onVis);
     };
+  }, []);
+
+  // Engine/renderer config (admin-only card below) — one cheap fetch, no polling.
+  useEffect(() => {
+    apiClient.status().then(setStatus).catch(() => {});
   }, []);
 
   const now = data?.now;
@@ -202,6 +212,25 @@ export default function System() {
             </div>
           </div>
 
+          {/* Engine / renderer config — admin only (moved here from Настройки) */}
+          {user?.role === "admin" && (
+            <div className="card bg-base-100 border border-base-300">
+              <div className="card-body gap-3">
+                <div className="font-semibold">Конфигурация</div>
+                <ConfigRow
+                  icon={<Bot size={18} />}
+                  title="Движок генерации"
+                  value={status?.llm || "Claude Code (headless)"}
+                />
+                <ConfigRow
+                  icon={<MonitorPlay size={18} />}
+                  title="Рендерер"
+                  value={status?.chromePath ?? "—"}
+                />
+              </div>
+            </div>
+          )}
+
           {/* History chart (in-memory ring, ~24h) */}
           <HistoryChart history={data.history} />
         </>
@@ -314,6 +343,19 @@ function Stat({
         <div className={`text-3xl font-bold leading-none ${danger ? "text-error" : ""}`}>{value}</div>
         {hint && <div className="text-xs text-base-content/50">{hint}</div>}
       </div>
+    </div>
+  );
+}
+
+function ConfigRow({ icon, title, value }: { icon: ReactNode; title: string; value: string }) {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="text-primary shrink-0">{icon}</span>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm text-base-content/60">{title}</div>
+        <div className="font-medium break-all">{value}</div>
+      </div>
+      <span className="badge badge-success badge-sm">OK</span>
     </div>
   );
 }

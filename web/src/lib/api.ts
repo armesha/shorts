@@ -374,6 +374,19 @@ export const apiClient = {
   login: (username: string, password: string) =>
     send<AuthUser>("/auth/login", "POST", { username, password }),
   logout: () => send<{ ok: boolean }>("/auth/logout", "POST", {}),
+  // Telegram: login widget / account binding / bot-delivered password recovery.
+  telegramInfo: () => get<{ enabled: boolean; bot: string | null }>("/auth/telegram/info"),
+  telegramStatus: () =>
+    get<{ enabled: boolean; bot: string | null; linked: boolean; username: string | null }>(
+      "/auth/telegram/me",
+    ),
+  telegramLogin: (user: Record<string, unknown>) => send<AuthUser>("/auth/telegram", "POST", user),
+  telegramBind: (user: Record<string, unknown>) =>
+    send<{ ok: boolean; username: string }>("/auth/telegram/bind", "POST", user),
+  telegramUnbind: () => send<{ ok: boolean }>("/auth/telegram/unbind", "POST", {}),
+  recoverStart: (username: string) => send<{ ok: boolean }>("/auth/recover/start", "POST", { username }),
+  recoverComplete: (username: string, code: string, newPassword: string) =>
+    send<{ ok: boolean }>("/auth/recover/complete", "POST", { username, code, newPassword }),
   status: () => get<AppStatus>("/config"),
   changelog: () => get<{ raw: string }>("/changelog"),
   settings: () => get<AppSettings>("/settings"),

@@ -1,9 +1,9 @@
-import { useEffect, useState, type ChangeEvent, type ReactNode } from "react";
-import { Bot, KeyRound, MonitorPlay, Check, AlertTriangle, Upload, Trash2, Lock } from "lucide-react";
-import { apiClient, ApiError, type AppStatus, type AppSettings } from "../lib/api";
+import { useEffect, useState, type ChangeEvent } from "react";
+import { KeyRound, Check, AlertTriangle, Upload, Trash2, Lock, Send } from "lucide-react";
+import { apiClient, ApiError, type AppSettings } from "../lib/api";
+import TelegramLoginButton from "../components/TelegramLoginButton";
 
 export default function Settings() {
-  const [status, setStatus] = useState<AppStatus | null>(null);
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -11,7 +11,6 @@ export default function Settings() {
   const redirectUrl = `${window.location.origin}/api/youtube/callback`;
 
   useEffect(() => {
-    apiClient.status().then(setStatus).catch(() => {});
     apiClient
       .settings()
       .then(setSettings)
@@ -26,7 +25,6 @@ export default function Settings() {
     try {
       const text = await f.text();
       setSettings(await apiClient.uploadGoogleKey(text));
-      apiClient.status().then(setStatus).catch(() => {});
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Не удалось загрузить ключ");
     } finally {
@@ -41,7 +39,6 @@ export default function Settings() {
     setBusy(true);
     try {
       setSettings(await apiClient.removeGoogleKey());
-      apiClient.status().then(setStatus).catch(() => {});
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Не удалось удалить ключ");
     } finally {
@@ -53,7 +50,7 @@ export default function Settings() {
     <div className="space-y-6 max-w-3xl">
       <header>
         <h1 className="text-2xl font-bold">Настройки</h1>
-        <p className="text-base-content/60">Твой Google-ключ и система</p>
+        <p className="text-base-content/60">Твой Google-ключ, Telegram и пароль</p>
       </header>
 
       <section className="card bg-base-100 border border-base-300">
@@ -137,11 +134,123 @@ export default function Settings() {
         </div>
       </section>
 
-      <ChangePassword />
+      <TelegramLink />
 
-      <Row icon={<Bot />} title="Движок генерации" value="Claude Code (headless)" ok />
-      <Row icon={<MonitorPlay />} title="Рендерер" value={status?.chromePath ?? "—"} ok />
+      <ChangePassword />
     </div>
+  );
+}
+
+// Link a Telegram account → enables one-click "Login with Telegram" and bot-delivered password recovery.
+function TelegramLink() {
+  const [st, setSt] = useState<{
+    enabled: boolean;
+    bot: string | null;
+    linked: boolean;
+    username: string | null;
+  } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const load = () =>
+    apiClient
+      .telegramStatus()
+      .then(setSt)
+      .catch(() => setSt({ enabled: false, bot: null, linked: false, username: null }));
+  useEffect(() => {
+    load();
+  }, []);
+
+  async function onAuth(user: Record<string, unknown>) {
+    setMsg(null);
+    setBusy(true);
+    try {
+      const r = await apiClient.telegramBind(user);
+      setMsg({ ok: true, text: `Telegram привязан: ${r.username}` });
+      await load();
+    } catch (err) {
+      setMsg({ ok: false, text: err instanceof ApiError ? err.message : "Не удалось привязать Telegram" });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function unbind() {
+    if (!confirm("Отвязать Telegram? Вход и восстановление пароля через Telegram перестанут работать.")) return;
+    setBusy(true);
+    setMsg(null);
+    try {
+      await apiClient.telegramUnbind();
+      setMsg({ ok: true, text: "Telegram отвязан" });
+      await load();
+    } catch (err) {
+      setMsg({ ok: false, text: err instanceof ApiError ? err.message : "Не удалось отвязать" });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!st) return null; // still loading
+
+  return (
+    <section className="card bg-base-100 border border-base-300">
+      <div className="card-body gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Send className="text-primary" size={18} />
+          <h2 className="card-title text-base">Telegram — вход и восстановление</h2>
+          {st.enabled &&
+            (st.linked ? (
+              <span className="badge badge-success badge-sm">привязан</span>
+            ) : (
+              <span className="badge badge-ghost badge-sm">не привязан</span>
+            ))}
+        </div>
+
+        {!st.enabled ? (
+          <p className="text-sm text-base-content/60">
+            Вход через Telegram пока не настроен на сервере (нет токена бота).
+          </p>
+        ) : st.linked ? (
+          <>
+            <p className="text-sm text-base-content/70">
+              Привязан аккаунт <b>{st.username}</b>. Теперь можно входить через Telegram в один клик и
+              получать код для сброса пароля прямо в бота.
+            </p>
+            <div>
+              <button className="btn btn-ghost btn-sm text-error gap-1" onClick={unbind} disabled={busy}>
+                <Trash2 size={14} /> Отвязать Telegram
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="text-sm text-base-content/70">
+              Привяжи свой Telegram{st.bot ? <> (бот <b>@{st.bot}</b>)</> : null}, чтобы входить в один
+              клик и восстанавливать пароль через бота. Нажми кнопку и разреши боту доступ к сообщениям.
+            </p>
+            {st.bot ? (
+              <TelegramLoginButton bot={st.bot} onAuth={onAuth} requestAccess />
+            ) : (
+              <p className="text-xs text-error">
+                Бот не определён — проверь переменную TELEGRAM_BOT_USERNAME на сервере.
+              </p>
+            )}
+          </>
+        )}
+
+        {msg && (
+          <div className={`text-sm flex items-center gap-1 ${msg.ok ? "text-success" : "text-error"}`}>
+            {msg.ok ? <Check size={14} /> : <AlertTriangle size={14} />} {msg.text}
+          </div>
+        )}
+        {st.enabled && (
+          <p className="text-xs text-base-content/50">
+            Кнопка Telegram работает на основном домене сайта (где у бота настроен домен). На localhost
+            она может не появиться — это нормально.
+          </p>
+        )}
+      </div>
+    </section>
   );
 }
 
@@ -236,20 +345,5 @@ function ChangePassword() {
         )}
       </div>
     </section>
-  );
-}
-
-function Row({ icon, title, value, ok }: { icon: ReactNode; title: string; value: string; ok?: boolean }) {
-  return (
-    <div className="card bg-base-100 border border-base-300">
-      <div className="card-body flex-row items-center gap-4 py-4">
-        <div className="text-primary">{icon}</div>
-        <div className="flex-1">
-          <div className="font-medium">{title}</div>
-          <div className="text-sm text-base-content/60 break-all">{value}</div>
-        </div>
-        <span className={`badge ${ok ? "badge-success" : "badge-error"} badge-sm`}>{ok ? "OK" : "—"}</span>
-      </div>
-    </div>
   );
 }
