@@ -589,86 +589,102 @@ export default function AccountDetail() {
               </select>
             </div>
           </div>
-          <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-base-300">
-            <span className="text-sm text-base-content/70">Пак канала:</span>
-            <select
-              className="select select-bordered select-sm"
-              value={lang}
-              onChange={(e) => setLang(e.target.value)}
-              title="Из какого пака генерировать ролики. После выбора нажми «Сохранить пак»."
-            >
-              {deckOptions()}
-            </select>
-            {lang.startsWith("pack:")
-              ? (() => {
-                  const p = packs.find((x) => `pack:${x.id}` === lang);
-                  return p ? <span className="text-xs text-success">{p.cards} карточек</span> : null;
-                })()
-              : gens.find((g) => g.id === lang) && (
-                  <span className="text-xs text-success">
-                    {gens.find((g) => g.id === lang)!.available} свободных
-                  </span>
-                )}
+          <div className="mt-3 pt-3 border-t border-base-300 flex flex-wrap items-center gap-x-4 gap-y-2">
+            {/* Слева — выбор пака (mr-auto толкает блок генерации вправо; на десктопе одна строка, ниже sm бейдж уходит вниз) */}
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 mr-auto">
+              <span className="text-sm text-base-content/70 shrink-0">Пак канала:</span>
+              <select
+                className="select select-bordered select-sm min-w-[10rem] max-w-[16rem]"
+                value={lang}
+                onChange={(e) => setLang(e.target.value)}
+                title="Из какого пака генерировать ролики. После выбора нажми «Сохранить пак»."
+              >
+                {deckOptions()}
+              </select>
+              {lang.startsWith("pack:")
+                ? (() => {
+                    const p = packs.find((x) => `pack:${x.id}` === lang);
+                    return p ? <span className="text-xs text-success shrink-0">{p.cards} карточек</span> : null;
+                  })()
+                : gens.find((g) => g.id === lang) && (
+                    <span className="text-xs text-success shrink-0">
+                      {gens.find((g) => g.id === lang)!.available} свободных
+                    </span>
+                  )}
+              {lang !== account.lang && (
+                <button
+                  className="btn btn-sm btn-primary gap-1 shrink-0"
+                  onClick={save}
+                  disabled={saving || langMismatch}
+                >
+                  {saving ? <Loader2 className="animate-spin" size={14} /> : <Save size={14} />}
+                  Сохранить пак
+                </button>
+              )}
+            </div>
+
+            {/* Справа — «сколько» + кнопка генерации: на десктопе цельный блок (кнопка у поля),
+                ниже sm — своя строка, кнопка во всю ширину (без горизонтального переполнения) */}
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 basis-full sm:basis-auto sm:shrink-0">
+              <span className="text-sm text-base-content/70 shrink-0">Сделать сразу:</span>
+              <input
+                type="number"
+                min={1}
+                max={maxBatch}
+                className="input input-bordered input-sm w-16"
+                value={batchN}
+                disabled={q.running}
+                onChange={(e) => setBatchN(Math.max(1, Math.min(maxBatch, Number(e.target.value) || 1)))}
+                aria-label="Сколько роликов сгенерировать"
+              />
+              <span className="text-xs text-base-content/50 shrink-0">1–{maxBatch}</span>
+              {!q.running ? (
+                <button
+                  className="btn btn-sm btn-primary gap-1 w-full sm:w-auto"
+                  onClick={async () => {
+                    // «Сгенерировать» = сохранить выбранный пак (если поменяли) + поставить генерацию.
+                    // Иначе генерилось бы из ПРЕЖНЕГО сохранённого контента канала.
+                    if (lang !== account.lang && !(await save())) return;
+                    q.run(id!, batchN);
+                  }}
+                  disabled={langMismatch || saving}
+                  title={
+                    langMismatch
+                      ? "Язык контента не совпадает с языком канала"
+                      : lang !== account.lang
+                        ? "Сохранит выбранный контент и сгенерирует из него"
+                        : "Поставить в очередь генерацию роликов в библиотеку"
+                  }
+                >
+                  <Plus size={14} /> {lang !== account.lang ? "Сохранить и сгенерировать" : "Сгенерировать"}
+                </button>
+              ) : (
+                <button className="btn btn-sm btn-outline btn-error gap-1 w-full sm:w-auto" onClick={q.cancel}>
+                  <Loader2 className="animate-spin" size={14} /> Стоп
+                </button>
+              )}
+            </div>
+
+            {/* Предупреждения и доп-действия — отдельными строками, тулбар не ломают */}
             {langMismatch && (
-              <span className="text-xs text-error font-medium">
+              <span className="basis-full text-xs text-error font-medium">
                 ⚠ контент {tagOf(curContentLang)} ≠ язык канала {tagOf(channelLang)} — смени язык канала или выбери {tagOf(channelLang)}-пак
               </span>
             )}
-            {lang !== account.lang && (
-              <button className="btn btn-sm btn-primary gap-1" onClick={save} disabled={saving || langMismatch}>
-                {saving ? <Loader2 className="animate-spin" size={14} /> : <Save size={14} />}
-                Сохранить пак
-              </button>
-            )}
             {lang !== account.lang && videos.length > 0 && (
-              <span className="text-xs text-warning">старые ролики другого пака — очисти библиотеку</span>
-            )}
-            <span className="text-sm text-base-content/70 ml-1">Сделать сразу:</span>
-            <input
-              type="number"
-              min={1}
-              max={maxBatch}
-              className="input input-bordered input-sm w-20"
-              value={batchN}
-              disabled={q.running}
-              onChange={(e) => setBatchN(Math.max(1, Math.min(maxBatch, Number(e.target.value) || 1)))}
-              aria-label="Сколько роликов сгенерировать"
-            />
-            <span className="text-xs text-base-content/50">1–{maxBatch}</span>
-            {!q.running ? (
-              <button
-                className="btn btn-sm btn-outline gap-1"
-                onClick={async () => {
-                  // «Сгенерировать» = сохранить выбранный пак (если поменяли) + поставить генерацию.
-                  // Иначе генерилось бы из ПРЕЖНЕГО сохранённого контента канала.
-                  if (lang !== account.lang && !(await save())) return;
-                  q.run(id!, batchN);
-                }}
-                disabled={langMismatch || saving}
-                title={
-                  langMismatch
-                    ? "Язык контента не совпадает с языком канала"
-                    : lang !== account.lang
-                      ? "Сохранит выбранный контент и сгенерирует из него"
-                      : "Поставить в очередь генерацию роликов в библиотеку"
-                }
-              >
-                <Plus size={14} /> {lang !== account.lang ? "Сохранить и сгенерировать" : "Сгенерировать"}
-              </button>
-            ) : (
-              <button className="btn btn-sm btn-outline btn-error gap-1" onClick={q.cancel}>
-                <Loader2 className="animate-spin" size={14} /> Стоп
-              </button>
+              <span className="basis-full text-xs text-warning">старые ролики другого пака — очисти библиотеку</span>
             )}
             {postedTwicePlus > 0 && (
-              <button
-                className="btn btn-sm btn-ghost text-error gap-1 ml-auto"
-                onClick={removePosted}
-                disabled={q.running}
-                title="Удалить ролики, которые выкладывались больше одного раза"
-              >
-                <Trash2 size={14} /> вылож. ≥2× ({postedTwicePlus})
-              </button>
+              <div className="basis-full flex justify-end">
+                <button
+                  className="btn btn-sm btn-ghost text-error gap-1"
+                  onClick={removePosted}
+                  disabled={q.running}
+                  title="Удалить ролики, которые выкладывались больше одного раза"
+                >
+                  <Trash2 size={14} /> вылож. ≥2× ({postedTwicePlus})
+                </button>
+              </div>
             )}
           </div>
           {q.running && (
