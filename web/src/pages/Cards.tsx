@@ -143,7 +143,7 @@ export default function Cards() {
     setUploading(true);
     try {
       const r = await apiClient.uploadPsychCards(parsed);
-      setOkMsg(`Добавлено карточек: ${r.added}. Всего в деке: ${r.total}.`);
+      setOkMsg(`Добавлено карточек: ${r.added}. Всего в паке: ${r.total}.`);
       setRaw("");
       setOnlyUploaded(true);
       await loadList(1);
@@ -180,13 +180,13 @@ export default function Cards() {
   }
 
   async function remove(index: number, card: PsychCard) {
-    if (!window.confirm("Удалить эту карточку из деки? Действие необратимо.")) return;
+    if (!window.confirm("Удалить эту карточку из пака? Действие необратимо.")) return;
     setDeleting(index);
     setErrMsg(null);
     setOkMsg(null);
     try {
       const r = await apiClient.deletePsychCard(index, card.addedAt);
-      setOkMsg(`Карточка удалена. Всего в деке: ${r.total}.`);
+      setOkMsg(`Карточка удалена. Всего в паке: ${r.total}.`);
       // если удалили последнюю на странице — шагнём назад
       const nextPage = list && list.items.length === 1 && page > 1 ? page - 1 : page;
       await loadList(nextPage);
@@ -217,7 +217,7 @@ export default function Cards() {
         <div>
           <h1 className="text-2xl font-bold">Паки и карточки</h1>
           <p className="text-base-content/60">
-            Свои паки из шаблонов редактора + встроенная психо-дека (DE)
+            Свои паки из шаблонов редактора + встроенный психо-пак (DE)
           </p>
         </div>
       </header>
@@ -268,7 +268,7 @@ export default function Cards() {
         </div>
       )}
 
-      {/* Встроенная психо-дека (DE) */}
+      {/* Встроенный психо-пак (DE) */}
       {sel === "psych" && (
         <>
       {backendDown && (
@@ -302,7 +302,7 @@ export default function Cards() {
                 {schema.limits.titleLines.maxLineChars} символов), <b>{schema.limits.items.min}–
                 {schema.limits.items.max} пунктов</b>, необязательный <code>outro</code> (≤{" "}
                 {schema.limits.outroMax}). Поле <code>items</code> зависит от <code>pattern</code>. Загружай
-                массив таких объектов — сервер проверит формат и допишет в деку.
+                массив таких объектов — сервер проверит формат и допишет в пак.
               </p>
 
               <div className="overflow-x-auto">
@@ -359,7 +359,7 @@ export default function Cards() {
       <div className="card bg-base-100 border border-base-300">
         <div className="card-body gap-4">
           <label className="form-control">
-            <span className="label-text mb-1">Язык / дека</span>
+            <span className="label-text mb-1">Язык / пак</span>
             <select className="select select-bordered select-sm w-64" value="psych" disabled>
               <option value="psych">Психология (DE) — Psychologie</option>
             </select>
@@ -466,7 +466,7 @@ export default function Cards() {
                     className="btn btn-xs btn-ghost gap-1 text-error"
                     onClick={() => remove(index, card)}
                     disabled={deleting !== null || previewing !== null}
-                    title="Удалить карточку из деки"
+                    title="Удалить карточку из пака"
                   >
                     {deleting === index ? <Loader2 className="animate-spin" size={13} /> : <Trash2 size={13} />}
                     Удалить

@@ -52,7 +52,7 @@ function AdminUsers() {
     setCreated("");
     setBusy(true);
     try {
-      // встроенные деки — opt-out (скрываем неотмеченные); кастомные паки — opt-in (грантим отмеченные)
+      // встроенные паки — opt-out (скрываем неотмеченные); кастомные паки — opt-in (грантим отмеченные)
       const hidden = role === "admin" ? [] : decks.filter((d) => !d.pack && !newVisible.has(d.id)).map((d) => d.id);
       const grants = role === "admin" ? [] : decks.filter((d) => d.pack && newVisible.has(d.id)).map((d) => d.id);
       const u = await apiClient.createUser(username.trim(), password, role, hidden);

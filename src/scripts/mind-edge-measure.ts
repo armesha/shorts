@@ -35,7 +35,8 @@ const main = async () => {
   const fontCss = await interFaceCss();
   const rdr = (await readFile(RENDERER_JS, "utf8")).replace(/<\/script/gi, "<\\/script");
   const browser = await puppeteer.launch({ executablePath: chromePath(), headless: true, args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--font-render-hinting=none", "--hide-scrollbars"] });
-  const cases: [string, number][] = [["03-grid", 376], ["03-grid", 455], ["02-constellation", 420], ["02-constellation", 455]];
+  const bgs = ["01-eye", "02-constellation", "03-grid", "04-circles", "05-frame", "06-glow"];
+  const cases: [string, number][] = bgs.flatMap((b) => [[b, 348], [b, 455]] as [string, number][]);
   for (const [bg, len] of cases) {
     const tpl = pick(bg);
     const content = { title: "How to buy time without seeming weak", text: clip(len) };

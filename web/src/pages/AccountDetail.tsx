@@ -27,7 +27,7 @@ const LANG_LABELS: [string, string][] = [
   ["en", "Английский"],
   ["ar", "Арабский"],
 ];
-// Язык встроенной деки (для тега и проверки совпадения). Паки несут свой lang.
+// Язык встроенного пака (для тега и проверки совпадения). Свои паки несут свой lang.
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
   tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en",
@@ -279,10 +279,10 @@ export default function AccountDetail() {
   const visibleLangs =
     gens.length === 0 ? LANGS : LANGS.filter(([code]) => gensIds.has(code) || code === lang);
 
-  // Опции дропдаунов «язык канала»: встроенные деки + группа «Мои паки» (кастомные паки по имени) —
+  // Опции дропдаунов контента канала: встроенные паки + группа «Кастомные паки» (свои паки по имени) —
   // тот же набор, что в Студии, чтобы пак можно было назначить каналу и генерить из него.
   const packIds = new Set(packs.map((p) => `pack:${p.id}`));
-  // язык выбранного контента (встроенная дека или пак) — для тега и проверки совпадения с языком канала
+  // язык выбранного контента (встроенный или свой пак) — для тега и проверки совпадения с языком канала
   const contentLang = (id: string): string =>
     id.startsWith("pack:") ? packs.find((p) => `pack:${p.id}` === id)?.lang || "" : DECK_LANG[id] || id;
   const curContentLang = contentLang(lang);
@@ -293,7 +293,7 @@ export default function AccountDetail() {
         <optgroup label="Встроенные паки">
           {visibleLangs.map(([code, name]) => (
             <option key={code} value={code}>
-              {/* полное имя деки (как в Студии: «Русские анекдоты» и т.п.), а не язык */}
+              {/* полное имя пака (как в Студии: «Русские анекдоты» и т.п.), а не язык */}
               {gens.find((g) => g.id === code)?.name || name} · {tagOf(DECK_LANG[code] || code)}
             </option>
           ))}
@@ -639,7 +639,7 @@ export default function AccountDetail() {
               <button
                 className="btn btn-sm btn-outline gap-1"
                 onClick={async () => {
-                  // «Сгенерировать» = сохранить выбранный пак/деку (если поменяли) + поставить генерацию.
+                  // «Сгенерировать» = сохранить выбранный пак (если поменяли) + поставить генерацию.
                   // Иначе генерилось бы из ПРЕЖНЕГО сохранённого контента канала.
                   if (lang !== account.lang && !(await save())) return;
                   q.run(id!, batchN);
