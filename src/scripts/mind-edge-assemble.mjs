@@ -11,7 +11,7 @@ const OUT_DIR = resolve(process.cwd(), "assets/template-packs/the-mind-edge");
 const OUT_FILE = resolve(OUT_DIR, "cards.json");
 const TARGET = 1000;
 
-const BODY_MIN = 350, BODY_MAX = 450; // выверено рендером
+const BODY_MIN = 350, BODY_MAX = 460; // выверено рендером (верх 460 ≈ 450, в пределах потолка-обрезки 470)
 const TITLE_MIN = 16, TITLE_MAX = 80;
 
 const collapse = (s) => String(s ?? "").replace(/\s+/g, " ").trim();

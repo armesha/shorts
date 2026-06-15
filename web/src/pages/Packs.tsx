@@ -218,7 +218,7 @@ export default function Packs() {
       {viewUser === "" && customPacks.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold">Свои паки</h2>
+            <h2 className="text-lg font-bold">{isAdmin ? "Все паки" : "Свои паки"}</h2>
             <span className="badge badge-ghost badge-sm">{customPacks.length}</span>
             <Link to="/cards" className="link link-primary text-sm ml-auto">
               Управлять в «Карточках» →
@@ -251,6 +251,11 @@ export default function Packs() {
                         </button>
                       )}
                     </div>
+                    {foreign && (
+                      <div className="text-[11px] text-warning/90 -mt-0.5">
+                        чужой пак · владелец {users.find((u) => u.id === p.userId)?.username || `#${p.userId}`}
+                      </div>
+                    )}
                     <div className="text-2xl font-bold leading-none">{fmt(p.cards)}</div>
                     <div className="text-xs text-base-content/50 flex items-center gap-1 flex-wrap">
                       <span>карточек{p.templates ? ` · ${p.templates} шабл.` : ""} ·</span>

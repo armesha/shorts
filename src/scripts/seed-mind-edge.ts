@@ -8,7 +8,7 @@ import { resolve } from "node:path";
 import { createPack, addCards, listPacks } from "../packs/store.ts";
 import { buildTemplates } from "./mind-edge-templates.ts";
 
-const PACK_NAME = "тёмная психология (английский)";
+const PACK_NAME = "Тёмная психология"; // язык показывает тег «· EN» (новая система имя+тег)
 const CARDS_FILE = resolve(process.cwd(), "assets/template-packs/the-mind-edge/cards.json");
 const DB = resolve(process.cwd(), "data/app.db");
 
