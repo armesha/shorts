@@ -22,12 +22,12 @@ function bgDataUrl(file: string): string {
 // заполняло пустоту, но не наезжало на декор. Выверено рендером (mind-edge-fill-calib.ts).
 const BODY_Y = 600; // зазор от блока заголовка (заголовок-бокс кончается на 560) — чтобы не «прилипал»
 const BODY_BOTTOM: Record<string, number> = {
-  "01-eye.jpg": 1250, // глаз ~y1290
-  "02-constellation.jpg": 1210, // сеть созвездия начинается выше всех (~y1245)
-  "03-grid.jpg": 1340, // горизонт-сетка низко (~y1380) → тела больше всего
-  "04-circles.jpg": 1245, // «цветок» кругов ~y1275
-  "05-frame.jpg": 1310, // разделитель рамки ~y1357
-  "06-glow.jpg": 1345, // только мягкое свечение, жёсткой графики нет
+  "01-eye.jpg": 1272, // глаз ~y1290
+  "02-constellation.jpg": 1218, // сеть созвездия начинается выше всех (~y1245) — запас мал
+  "03-grid.jpg": 1362, // горизонт-сетка низко (~y1380) → тела больше всего
+  "04-circles.jpg": 1266, // «цветок» кругов ~y1275
+  "05-frame.jpg": 1332, // разделитель рамки ~y1357
+  "06-glow.jpg": 1366, // только мягкое свечение, жёсткой графики нет
 };
 
 function makeTemplate(file: string): PackTemplate {
@@ -49,7 +49,7 @@ function makeTemplate(file: string): PackTemplate {
         role: "title",
         padX: 4,
         padY: 0,
-        align: "left",
+        align: "center", // заголовок по центру (тело остаётся по левому краю)
         valign: "top",
         font: { family: "Inter", size: 96, weight: 800, color: CYAN, lineHeight: 1.12 },
         fitMin: 58,
@@ -70,7 +70,7 @@ function makeTemplate(file: string): PackTemplate {
         padY: 0,
         align: "left",
         valign: "top",
-        font: { family: "Inter", size: 64, weight: 500, color: BODY, lineHeight: 1.42 },
+        font: { family: "Inter", size: 64, weight: 500, color: BODY, lineHeight: 1.34 }, // плотнее → шрифт крупнее
         fitMin: 38,
         fitMax: 80, // авто-подгон РАСТЁТ под высоту бокса → тот же текст крупнее и заполняет место
         minChars: 320,

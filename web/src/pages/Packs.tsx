@@ -165,10 +165,20 @@ export default function Packs() {
       </header>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Stat label="Паков доступно" value={fmt(decks.length)} />
+        <Stat label="Встроенных дек" value={fmt(decks.length)} />
         <Stat label="Осталось карточек" value={fmt(totals.available)} />
         <Stat label="Потрачено карточек" value={fmt(totals.used)} />
       </div>
+
+      {!loading && decks.length > 0 && (
+        <div className="flex items-center gap-2 flex-wrap">
+          <h2 className="text-lg font-bold">Встроенные деки</h2>
+          <span className="badge badge-ghost badge-sm">{decks.length}</span>
+          <span className="text-xs text-base-content/50 ml-1">
+            готовый контент системы — язык у дек фиксирован, не редактируется
+          </span>
+        </div>
+      )}
 
       {loading ? (
         <div className="py-16 text-center">
@@ -223,8 +233,9 @@ export default function Packs() {
       {viewUser === "" && customPacks.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold">{isAdmin ? "Все паки" : "Свои паки"}</h2>
+            <h2 className="text-lg font-bold">Кастомные паки</h2>
             <span className="badge badge-ghost badge-sm">{customPacks.length}</span>
+            <span className="text-xs text-base-content/50 ml-1">свои наборы — язык-тег можно менять</span>
             <Link to="/cards" className="link link-primary text-sm ml-auto">
               Управлять в «Карточках» →
             </Link>
