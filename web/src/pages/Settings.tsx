@@ -283,7 +283,13 @@ function ChangePassword() {
         <p className="text-sm text-base-content/70">
           Поменяй пароль, который выдал администратор, на свой — знать его будешь только ты.
         </p>
-        <div className="flex flex-wrap items-end gap-2">
+        <form
+          className="flex flex-wrap items-end gap-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!busy && valid) submit();
+          }}
+        >
           <label className="form-control w-44">
             <span className="label-text">Текущий пароль</span>
             <input
@@ -314,11 +320,11 @@ function ChangePassword() {
               autoComplete="new-password"
             />
           </label>
-          <button className="btn btn-primary btn-sm gap-1" onClick={submit} disabled={busy || !valid}>
+          <button type="submit" className="btn btn-primary btn-sm gap-1" disabled={busy || !valid}>
             {busy ? <span className="loading loading-spinner loading-sm" /> : <KeyRound size={14} />}
             Сменить пароль
           </button>
-        </div>
+        </form>
         {msg && (
           <div className={`text-sm flex items-center gap-1 ${msg.ok ? "text-success" : "text-error"}`}>
             {msg.ok ? <Check size={14} /> : <AlertTriangle size={14} />} {msg.text}

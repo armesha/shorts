@@ -174,12 +174,12 @@ export default function History() {
           <AlertTriangle size={18} />
           <span>{error}</span>
         </div>
-      ) : loading ? (
+      ) : loading && !items.length ? (
         <div className="py-16 text-center">
           <span className="loading loading-spinner loading-lg text-primary" />
         </div>
       ) : (
-        <div className="card bg-base-100 border border-base-300">
+        <div className={`card bg-base-100 border border-base-300 ${loading ? "opacity-60 transition" : ""}`}>
           <div className="card-body">
             {items.length === 0 ? (
               <div className="text-center text-base-content/50 py-12">Пока нет загруженных роликов</div>

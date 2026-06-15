@@ -12,7 +12,7 @@ export default function TemplateEditor() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Shapes className="text-primary" size={22} />
-          <h1 className="text-xl font-bold tracking-tight">Редактор шаблонов</h1>
+          <h1 className="text-2xl font-bold">Редактор шаблонов</h1>
           <span className="badge badge-warning badge-sm" title="экспериментальная функция">
             тест
           </span>

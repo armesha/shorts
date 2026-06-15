@@ -293,7 +293,7 @@ export default function Studio() {
                   ))}
                   {g.untitledPacks > 0 && (
                     <span className="badge badge-ghost badge-sm">
-                      +{g.untitledPacks} паков ({g.untitledTotal.toLocaleString()}) без названия — не используются
+                      +{g.untitledPacks} паков ({g.untitledTotal.toLocaleString("ru-RU")}) без названия — не используются
                     </span>
                   )}
                 </div>

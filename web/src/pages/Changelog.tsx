@@ -111,12 +111,13 @@ function inline(text: string, key: string): ReactNode[] {
 export default function Changelog() {
   const [releases, setReleases] = useState<Release[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     apiClient
       .changelog()
       .then((r) => setReleases(parseChangelog(r.raw)))
-      .catch(() => {})
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, []);
 
@@ -134,6 +135,10 @@ export default function Changelog() {
         <div className="grid place-items-center py-16">
           <span className="loading loading-spinner loading-lg text-primary" />
         </div>
+      ) : error ? (
+        <div className="alert alert-warning">
+          <span>Не удалось загрузить список изменений. Обновите страницу.</span>
+        </div>
       ) : releases.length === 0 ? (
         <div className="card bg-base-100 border border-base-300">
           <div className="card-body text-center text-base-content/50 py-12">
@@ -145,7 +150,9 @@ export default function Changelog() {
           <div key={ri} className="card bg-base-100 border border-base-300">
             <div className="card-body gap-5">
               <div className="flex items-center gap-3 flex-wrap border-b border-base-300 pb-3">
-                <h2 className="text-lg font-bold">{rel.heading || "Изменения"}</h2>
+                <h2 className="text-lg font-bold">
+                  {(rel.heading || "Изменения").replace(/(\d{4})-(\d{2})-(\d{2})/, "$3.$2.$1")}
+                </h2>
                 {rel.unreleased && <span className="badge badge-primary badge-sm">текущая</span>}
               </div>
 

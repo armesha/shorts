@@ -128,12 +128,12 @@ export default function PackDetail({ packId, onChanged }: { packId: string; onCh
       {(previewUrl || previewing !== null) && (
         <div className="modal modal-open" role="dialog">
           <div className="modal-box max-w-sm flex flex-col items-center gap-3">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={() => setPreviewUrl(null)} aria-label="Закрыть"><X size={16} /></button>
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={() => { setPreviewUrl(null); setPreviewing(null); }} aria-label="Закрыть"><X size={16} /></button>
             <div className="rounded-xl overflow-hidden border border-base-300 bg-base-200" style={{ width: 270, height: 480 }}>
               {previewUrl ? <img src={previewUrl} alt="preview" width={270} height={480} className="block" /> : <div className="w-full h-full flex items-center justify-center"><Loader2 className="animate-spin text-primary" size={32} /></div>}
             </div>
           </div>
-          <div className="modal-backdrop" onClick={() => setPreviewUrl(null)} />
+          <div className="modal-backdrop" onClick={() => { setPreviewUrl(null); setPreviewing(null); }} />
         </div>
       )}
     </div>

@@ -35,3 +35,30 @@ body {
 .form-control > .textarea {
   width: 100%;
 }
+
+/* Quality floor — visible keyboard focus on every interactive element (was missing app-wide).
+   Unlayered, so it beats Tailwind's layered utilities (e.g. .outline-none) on keyboard focus. */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+label:focus-within,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-primary, #605dff);
+  outline-offset: 2px;
+}
+
+/* Respect users who prefer reduced motion — near-disable animations/transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

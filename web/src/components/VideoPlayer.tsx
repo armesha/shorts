@@ -125,7 +125,7 @@ export default function VideoPlayer({
           className="range range-xs range-primary w-full mb-1.5"
         />
         <div className="flex items-center gap-3 text-white">
-          <button type="button" onClick={toggle} aria-label={playing ? "Пауза" : "Play"} className="hover:text-primary">
+          <button type="button" onClick={toggle} aria-label={playing ? "Пауза" : "Воспроизвести"} className="hover:text-primary">
             {playing ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
           </button>
           <span className="text-xs tabular-nums opacity-90">

@@ -182,7 +182,7 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
   if (step === "done") {
     return (
       <div className="flex flex-col gap-4">
-        <div className="alert alert-success py-2 text-sm">
+        <div className="alert alert-success py-2 text-sm" role="alert">
           <Check size={16} />
           <span>Пароль изменён. Теперь войдите с новым паролем.</span>
         </div>
@@ -260,7 +260,7 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
       )}
 
       {error && (
-        <div className="alert alert-error py-2 text-sm">
+        <div className="alert alert-error py-2 text-sm" role="alert">
           <AlertTriangle size={16} />
           <span>{error}</span>
         </div>
