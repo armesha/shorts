@@ -14,6 +14,7 @@ export interface Account {
   ytChannelTitle: string | null;
   ytChannelId: string | null;
   slotVideos: Record<string, number>;
+  avatar?: string | null; // channel avatar URL (built-in /avatars/… or uploaded /files/avatars/…)
 }
 
 export interface HistoryItem {
@@ -189,6 +190,94 @@ export interface StatPoint {
   views: number;
   videos: number;
   takenAt: string;
+}
+
+export interface AdminAnalytics {
+  range: { from: string; to: string };
+  updatedAt: string;
+  summary: {
+    published: number;
+    scheduled: number;
+    failed: number;
+    historyTotal: number;
+    queuedVideos: number;
+    accountsTotal: number;
+    accountsEnabled: number;
+    accountsConnected: number;
+    usersTotal: number;
+    errors: number;
+    subscribers: number;
+    views: number;
+    youtubeVideos: number;
+    subscriberDelta: number;
+    viewsDelta: number;
+    youtubeVideosDelta: number;
+  };
+  daily: { date: string; published: number; scheduled: number; failed: number }[];
+  youtubeSeries: { date: string; subscribers: number; views: number; videos: number }[];
+  topChannels: {
+    accountId: number;
+    channelName: string;
+    ownerUsername: string | null;
+    published: number;
+    scheduled: number;
+    failed: number;
+    latestPublishedAt: string | null;
+    queued: number;
+    postsPerDay: number;
+    runwayDays: number | null;
+    subscribers: number;
+    views: number;
+  }[];
+  topUsers: {
+    userId: number;
+    username: string;
+    published: number;
+    scheduled: number;
+    failed: number;
+    channels: number;
+    queued: number;
+    postsPerDay: number;
+  }[];
+  runway: {
+    accountId: number;
+    channelName: string;
+    ownerUsername: string | null;
+    queued: number;
+    postsPerDay: number;
+    runwayDays: number | null;
+    enabled: boolean;
+    connected: boolean;
+  }[];
+  youtubeGrowth: {
+    accountId: number;
+    channelName: string;
+    ownerUsername: string | null;
+    subscribers: number;
+    views: number;
+    videos: number;
+    subscriberDelta: number;
+    viewsDelta: number;
+    videoDelta: number;
+  }[];
+  failures: {
+    id: number;
+    accountId: number;
+    title: string;
+    channelName: string;
+    ownerUsername: string | null;
+    error: string | null;
+    createdAt: string;
+    publishedAt: string | null;
+  }[];
+  recentErrors: {
+    id: number;
+    source: string;
+    level: string;
+    message: string;
+    context: string | null;
+    createdAt: string;
+  }[];
 }
 
 /** One logged error row for the admin Errors page. */
@@ -423,6 +512,9 @@ export const apiClient = {
   updateAccount: (id: number | string, data: Partial<Account>) =>
     send<Account>(`/accounts/${id}`, "PUT", data),
   deleteAccount: (id: number | string) => send<{ ok: boolean }>(`/accounts/${id}`, "DELETE"),
+  avatars: () => get<string[]>("/avatars"),
+  uploadAvatar: (id: number | string, dataUrl: string) =>
+    send<Account>(`/accounts/${id}/avatar`, "POST", { dataUrl }),
   youtubeAuthUrl: (accountId: number | string) =>
     get<{ url: string }>(`/youtube/auth-url?accountId=${accountId}`),
   history: (params?: {
@@ -509,6 +601,13 @@ export const apiClient = {
   refreshStats: (scope?: "mine" | "all") =>
     send<StatRow[]>(`/stats/refresh${scope === "all" ? "?scope=all" : ""}`, "POST", {}),
   statsHistory: (accountId: number | string) => get<StatPoint[]>(`/stats/${accountId}/history`),
+  adminAnalytics: (from?: string, to?: string) => {
+    const qs = new URLSearchParams();
+    if (from) qs.set("from", from);
+    if (to) qs.set("to", to);
+    const s = qs.toString();
+    return get<AdminAnalytics>(`/admin/analytics${s ? "?" + s : ""}`);
+  },
   // Error log: admin views/clears; any page can report a client-side error (fire-and-forget).
   errors: () => get<ErrorLogItem[]>("/errors"),
   clearErrors: () => send<{ ok: boolean }>("/errors", "DELETE"),

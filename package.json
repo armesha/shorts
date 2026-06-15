@@ -16,7 +16,7 @@
     "share": "npm run web:build && concurrently -k -n app,tunnel -c blue,magenta \"npm run server\" \"npm run tunnel\"",
     "render:preview": "tsx src/scripts/render-preview.ts",
     "gen:preview": "tsx src/scripts/generate-preview.ts",
-    "test": "node --import tsx --test 'src/**/*.test.ts'"
+    "test": "node --import tsx --experimental-sqlite --test 'src/**/*.test.ts' 'server/**/*.test.ts'"
   },
   "keywords": [
     "youtube",

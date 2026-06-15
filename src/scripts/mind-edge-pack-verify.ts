@@ -21,7 +21,7 @@ const pack = JSON.parse(readFileSync(file, "utf8")) as {
 };
 console.log(`пак: ${pack.name} | lang=${pack.lang} | шаблонов=${pack.templates.length} | карточек=${pack.cards.length}`);
 
-const idxs = [0, 250, 500, 999].filter((i) => i < pack.cards.length);
+const idxs = [803, 804, 805].filter((i) => i < pack.cards.length);
 const main = async () => {
   for (const i of idxs) {
     const c = pack.cards[i].values;

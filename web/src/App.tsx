@@ -7,6 +7,7 @@ import Accounts from "./pages/Accounts";
 import AccountDetail from "./pages/AccountDetail";
 import History from "./pages/History";
 import Statistics from "./pages/Statistics";
+import AdminAnalytics from "./pages/AdminAnalytics";
 import Changelog from "./pages/Changelog";
 import Errors from "./pages/Errors";
 import System from "./pages/System";
@@ -38,6 +39,7 @@ function Gate() {
         <Route path="/accounts/:id" element={<AccountDetail />} />
         <Route path="/history" element={<History />} />
         <Route path="/statistics" element={<Statistics />} />
+        <Route path="/admin/analytics" element={<AdminAnalytics />} />
         <Route path="/changelog" element={<Changelog />} />
         <Route path="/errors" element={<Errors />} />
         <Route path="/system" element={<System />} />

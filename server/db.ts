@@ -18,6 +18,7 @@ export interface Account {
   ytChannelTitle: string | null;
   ytChannelId: string | null;
   slotVideos: Record<string, number>;
+  avatar: string | null; // channel avatar URL (built-in "/avatars/av-XXX.png" or custom "/files/avatars/..."); null = none
 }
 
 export interface HistoryItem {
@@ -102,6 +103,7 @@ const rowToAccount = (r: Row): Account => ({
   ytChannelTitle: r.yt_channel_title ?? null,
   ytChannelId: r.yt_channel_id ?? null,
   slotVideos: JSON.parse(r.slot_videos || "{}"),
+  avatar: r.avatar ?? null,
 });
 
 const rowToVideo = (r: Row): Video => ({
@@ -283,6 +285,11 @@ export function openDb(path: string) {
     /* column already exists */
   }
   try {
+    db.exec("ALTER TABLE accounts ADD COLUMN avatar TEXT");
+  } catch {
+    /* column already exists */
+  }
+  try {
     db.exec("ALTER TABLE videos ADD COLUMN deck TEXT NOT NULL DEFAULT 'ru'");
   } catch {
     /* column already exists */
@@ -316,6 +323,14 @@ export function openDb(path: string) {
   } catch {
     /* older SQLite without partial indexes — binding still works, uniqueness just not DB-enforced */
   }
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_history_account_published ON history(account_id, published_at);
+    CREATE INDEX IF NOT EXISTS idx_history_status_published ON history(status, published_at);
+    CREATE INDEX IF NOT EXISTS idx_history_created ON history(created_at);
+    CREATE INDEX IF NOT EXISTS idx_videos_account ON videos(account_id);
+    CREATE INDEX IF NOT EXISTS idx_channel_stats_account_taken ON channel_stats(account_id, taken_at);
+    CREATE INDEX IF NOT EXISTS idx_error_log_created ON error_log(created_at);
+  `);
 
   // "Uploaded today" per channel — count of published history rows dated today (UTC).
   const countUploadsToday = (accountId: number): number => {
@@ -351,7 +366,7 @@ export function openDb(path: string) {
     createAccount(input: Partial<Account>): Account {
       const info = db
         .prepare(
-          "INSERT INTO accounts (user_id, channel_name, theme, lang, channel_lang, schedule, template, status) VALUES (?,?,?,?,?,?,?,?)",
+          "INSERT INTO accounts (user_id, channel_name, theme, lang, channel_lang, schedule, template, status, avatar) VALUES (?,?,?,?,?,?,?,?,?)",
         )
         .run(
           input.userId ?? null,
@@ -362,6 +377,7 @@ export function openDb(path: string) {
           JSON.stringify(input.schedule ?? ["12:00"]),
           input.template ?? "1 · Kraft Paper",
           input.status ?? "needs_auth",
+          input.avatar ?? null,
         );
       return this.getAccount(Number(info.lastInsertRowid))!;
     },
@@ -369,7 +385,7 @@ export function openDb(path: string) {
       const cur = this.getAccount(id);
       if (!cur) return null;
       db.prepare(
-        "UPDATE accounts SET channel_name=?, theme=?, lang=?, channel_lang=?, schedule=?, template=?, enabled=?, slot_videos=? WHERE id=?",
+        "UPDATE accounts SET channel_name=?, theme=?, lang=?, channel_lang=?, schedule=?, template=?, enabled=?, slot_videos=?, avatar=? WHERE id=?",
       ).run(
         input.channelName ?? cur.channelName,
         input.theme ?? cur.theme,
@@ -379,6 +395,7 @@ export function openDb(path: string) {
         input.template ?? cur.template,
         (input.enabled ?? cur.enabled) ? 1 : 0,
         JSON.stringify(input.slotVideos ?? cur.slotVideos),
+        input.avatar ?? cur.avatar,
         id,
       );
       return this.getAccount(id);

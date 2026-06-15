@@ -129,7 +129,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     } catch (e) {
       return reply.code(500).send({ error: "Не удалось отрисовать: " + String(e).slice(0, 120) });
     }
-    return { imageUrl: `/files/${rel}` };
+    return { imageUrl: `/files/${rel}?v=${Date.now()}` };
   });
 
   // Собрать видео из карточки #i (рендер мостом + assembleStillVideo). Если передан accountId —

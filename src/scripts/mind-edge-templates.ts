@@ -1,6 +1,7 @@
 // Общий билдер шаблонов кастомного пака «The Mind Edge» (тёмная психология, EN-аудитория).
 // 6 тёмных фонов (assets/backgrounds/the-mind-edge), графика/лого — в нижней трети, поэтому
-// текстовая safe-зона = верхние ~60% холста (y≈220..1160). Каждый шаблон вшивает свой фон в
+// текстовая safe-зона = верхняя часть холста с индивидуальным нижним краем под каждый фон.
+// Каждый шаблон вшивает свой фон в
 // canvas.bg как CSS background-shorthand с data-URL (работает и в редакторе, и в мосте рендера,
 // см. src/template/render.ts — setContent без base URL, поэтому только data-URL надёжен).
 //
@@ -18,19 +19,20 @@ function bgDataUrl(file: string): string {
   return `url(data:image/jpeg;base64,${b64}) center/cover no-repeat, #05070d`;
 }
 
-// Низ текстовой зоны (y) для КАЖДОГО фона — чуть выше его графики/лого, чтобы тело тянулось вниз и
-// заполняло пустоту, но не наезжало на декор. Выверено рендером (mind-edge-fill-calib.ts).
-const BODY_Y = 645; // ниже + больше зазор от заголовка (заголовок-бокс кончается на 560 → зазор 85)
-// Низ тела выровнен так, чтобы боксы были близкой высоты (≈шрифт у всех) И с запасом до декора.
-// Тесные по декору (созвездие/глаз/круги) задают потолок ровности; просторные (grid/glow/рамка)
-// НЕ растягиваем в пол, а держим близко к ним — иначе шрифт скачет.
+// Единая левая колонка делает заголовок и тело одной композицией. Раньше заголовок был огромным
+// и центрированным, а тело начиналось слишком низко; из-за этого большой фон выглядел пустым.
+const COL_X = 74;
+const COL_W = 932;
+const BODY_Y = 552;
+// Нижний край тела для каждого фона: держим запас до графики, но даём тексту достаточно высоты,
+// чтобы авто-fit не ужимал плотные карточки до мелкого размера.
 const BODY_BOTTOM: Record<string, number> = {
-  "01-eye.jpg": 1262, // иконка глаза ~y1290 → зазор ~28
-  "02-constellation.jpg": 1220, // сеть начинается выше всех (~y1245) — самый низкий бокс (потолок ровности)
-  "03-grid.jpg": 1300, // горизонт ~y1380 (запас большой, но держим ровно с остальными)
-  "04-circles.jpg": 1258, // «цветок» ~y1280 → зазор ~22
-  "05-frame.jpg": 1300, // разделитель ~y1357 → зазор ~57
-  "06-glow.jpg": 1305, // жёсткой графики нет — держим ровно с остальными
+  "01-eye.jpg": 1260,
+  "02-constellation.jpg": 1340,
+  "03-grid.jpg": 1370,
+  "04-circles.jpg": 1268,
+  "05-frame.jpg": 1360,
+  "06-glow.jpg": 1560,
 };
 
 function makeTemplate(file: string): PackTemplate {
@@ -44,38 +46,38 @@ function makeTemplate(file: string): PackTemplate {
       {
         id: "title",
         type: "killbox",
-        x: 90,
-        y: 230,
-        w: 900,
-        h: 330,
+        x: COL_X,
+        y: 212,
+        w: COL_W,
+        h: 278,
         rot: 0,
         role: "title",
         padX: 4,
         padY: 0,
-        align: "center", // заголовок по центру (тело остаётся по левому краю)
+        align: "center",
         valign: "top",
-        font: { family: "Inter", size: 96, weight: 800, color: CYAN, lineHeight: 1.12 },
-        fitMin: 58,
-        fitMax: 112,
+        font: { family: "Inter", size: 86, weight: 800, color: CYAN, lineHeight: 1.06 },
+        fitMin: 48,
+        fitMax: 92,
         maxChars: 90,
         placeholder: "Hook",
       },
       {
         id: "body",
         type: "killbox",
-        x: 60,
+        x: COL_X,
         y: BODY_Y,
-        w: 960, // шире бокс → меньше строк → шрифт крупнее (без расхода высоты)
+        w: COL_W,
         h: bodyH, // высота под каждый фон (BODY_BOTTOM) — тело заполняет пустоту до графики
         rot: 0,
         role: "text",
-        padX: 6,
+        padX: 4,
         padY: 0,
         align: "left",
         valign: "top",
-        font: { family: "Inter", size: 64, weight: 500, color: BODY, lineHeight: 1.22 }, // плотнее → шрифт крупнее
-        fitMin: 38,
-        fitMax: 80, // авто-подгон РАСТЁТ под высоту бокса → тот же текст крупнее и заполняет место
+        font: { family: "Inter", size: 64, weight: 500, color: BODY, lineHeight: 1.18 },
+        fitMin: 44,
+        fitMax: 72,
         minChars: 320,
         maxChars: 470, // потолок-обрезка «…»; 460 влезает даже в самый низкий бокс при fitMin
         placeholder: "Body",

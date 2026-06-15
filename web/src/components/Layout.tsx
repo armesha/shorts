@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
-import { Tv, History, Settings, Clapperboard, Sparkles, BarChart3, Bug, Rocket, Server, LogOut, Menu, LayoutTemplate, Users, Layers, type LucideIcon } from "lucide-react";
+import { Tv, History, Settings, Clapperboard, Sparkles, BarChart3, Bug, Rocket, Server, LogOut, Menu, LayoutTemplate, Users, Layers, TrendingUp, type LucideIcon } from "lucide-react";
 import { useAuth } from "../lib/auth";
 
 type NavItem = { to: string; label: string; icon: LucideIcon; end: boolean; adminOnly?: boolean };
@@ -11,6 +11,7 @@ const NAV: NavItem[] = [
   { to: "/packs", label: "Паки", icon: Layers, end: false },
   { to: "/history", label: "История", icon: History, end: false },
   { to: "/statistics", label: "Статистика", icon: BarChart3, end: false },
+  { to: "/admin/analytics", label: "Аналитика", icon: TrendingUp, end: false, adminOnly: true },
   { to: "/changelog", label: "Обновления", icon: Rocket, end: false },
   { to: "/settings", label: "Настройки", icon: Settings, end: false },
   { to: "/users", label: "Админка", icon: Users, end: false, adminOnly: true },

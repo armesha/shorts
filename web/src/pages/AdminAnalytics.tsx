@@ -1,0 +1,741 @@
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { Link } from "react-router-dom";
+import {
+  Activity,
+  AlertTriangle,
+  BarChart3,
+  Bug,
+  Eye,
+  Film,
+  RefreshCw,
+  TrendingDown,
+  TrendingUp,
+  Tv,
+  Users,
+} from "lucide-react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { apiClient, type AdminAnalytics as AdminAnalyticsData } from "../lib/api";
+import { useAuth } from "../lib/auth";
+
+type Range = { from: string; to: string };
+
+const CHART_COLORS = {
+  published: "#2563eb",
+  scheduled: "#f97316",
+  failed: "#dc2626",
+};
+
+function localDate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function presetRange(days: number): Range {
+  const to = new Date();
+  const from = new Date(to);
+  from.setDate(to.getDate() - days + 1);
+  return { from: localDate(from), to: localDate(to) };
+}
+
+export default function AdminAnalytics() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
+  const initial = useMemo(() => presetRange(30), []);
+  const [range, setRange] = useState<Range>(initial);
+  const [draft, setDraft] = useState<Range>(initial);
+  const [activePreset, setActivePreset] = useState<7 | 30 | 90 | null>(30);
+  const [data, setData] = useState<AdminAnalyticsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    let stopped = false;
+    apiClient
+      .adminAnalytics(range.from, range.to)
+      .then((r) => {
+        if (!stopped) setData(r);
+      })
+      .catch((e) => {
+        console.error("[Аналитика] запрос /admin/analytics упал:", e);
+        if (!stopped) setError("Не удалось загрузить аналитику");
+      })
+      .finally(() => {
+        if (!stopped) setLoading(false);
+      });
+    return () => {
+      stopped = true;
+    };
+  }, [isAdmin, range.from, range.to]);
+
+  const applyPreset = (days: 7 | 30 | 90) => {
+    const next = presetRange(days);
+    setActivePreset(days);
+    setDraft(next);
+    setLoading(true);
+    setError(null);
+    setRange(next);
+    setNotice(null);
+  };
+
+  const applyDates = () => {
+    if (!draft.from || !draft.to) return;
+    const next = draft.from <= draft.to ? draft : { from: draft.to, to: draft.from };
+    setActivePreset(null);
+    setDraft(next);
+    setLoading(true);
+    setError(null);
+    setRange(next);
+    setNotice(null);
+  };
+
+  const refreshYoutube = async () => {
+    setRefreshing(true);
+    setError(null);
+    setNotice(null);
+    try {
+      const rows = await apiClient.refreshStats("all");
+      const failed = rows.filter((r) => r.error).length;
+      const connected = rows.filter((r) => r.connected).length;
+      const fresh = await apiClient.adminAnalytics(range.from, range.to);
+      setData(fresh);
+      setNotice(
+        failed
+          ? `YouTube обновлён частично: ${Math.max(0, connected - failed)} из ${connected}, ошибок ${failed}`
+          : `YouTube обновлён: каналов ${connected}`,
+      );
+    } catch (e) {
+      console.error("[Аналитика] ручное обновление YouTube упало:", e);
+      setError("Не удалось обновить YouTube-цифры");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  if (!isAdmin) {
+    return (
+      <div className="alert alert-warning">
+        <AlertTriangle size={18} />
+        <span>Эта вкладка доступна только администратору.</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <header className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-bold">Аналитика</h1>
+          <p className="text-base-content/60">Операции, рост и риски по всем каналам</p>
+        </div>
+        <button className="btn btn-primary gap-2" onClick={refreshYoutube} disabled={refreshing || loading}>
+          {refreshing ? <span className="loading loading-spinner loading-sm" /> : <RefreshCw size={18} />}
+          Обновить YouTube-цифры
+        </button>
+      </header>
+
+      <div className="card bg-base-100 border border-base-300">
+        <div className="card-body py-3 flex-row flex-wrap items-center gap-2">
+          <div className="join">
+            {[7, 30, 90].map((days) => (
+              <button
+                key={days}
+                className={`btn btn-sm join-item ${activePreset === days ? "btn-primary" : "btn-ghost"}`}
+                onClick={() => applyPreset(days as 7 | 30 | 90)}
+              >
+                {days} дней
+              </button>
+            ))}
+          </div>
+          <input
+            type="date"
+            className="input input-bordered input-sm"
+            value={draft.from}
+            onChange={(e) => setDraft((r) => ({ ...r, from: e.target.value }))}
+            aria-label="Начало периода"
+          />
+          <span className="text-base-content/40">—</span>
+          <input
+            type="date"
+            className="input input-bordered input-sm"
+            value={draft.to}
+            onChange={(e) => setDraft((r) => ({ ...r, to: e.target.value }))}
+            aria-label="Конец периода"
+          />
+          <button className="btn btn-sm btn-outline" onClick={applyDates} disabled={!draft.from || !draft.to}>
+            Применить
+          </button>
+          {data && (
+            <span className="text-xs text-base-content/50 ml-auto">
+              обновлено {new Date(data.updatedAt).toLocaleString("ru-RU")}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {notice && <div className="alert alert-success text-sm py-2">{notice}</div>}
+      {error && <div className="alert alert-error text-sm py-2">{error}</div>}
+
+      {loading ? (
+        <div className="py-16 text-center">
+          <span className="loading loading-spinner loading-lg text-primary" />
+        </div>
+      ) : data ? (
+        <>
+          <KpiGrid data={data} />
+
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <DailyChart data={data.daily} />
+            <YoutubeChart data={data.youtubeSeries} />
+          </div>
+
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <TopChannels rows={data.topChannels} />
+            <Runway rows={data.runway} />
+          </div>
+
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <TopUsers rows={data.topUsers} />
+            <Problems failures={data.failures} recentErrors={data.recentErrors} />
+          </div>
+        </>
+      ) : (
+        !error && <Empty text="Нет данных для отображения." />
+      )}
+    </div>
+  );
+}
+
+function KpiGrid({ data }: { data: AdminAnalyticsData }) {
+  const s = data.summary;
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+      <Kpi
+        icon={<Film />}
+        label="Выложено за период"
+        value={fmt(s.published)}
+        hint={`${fmt(s.scheduled)} отложено · ${fmt(s.failed)} ошибок`}
+        danger={s.failed > 0}
+      />
+      <Kpi
+        icon={<Activity />}
+        label="Видео в библиотеке"
+        value={fmt(s.queuedVideos)}
+        hint={`${fmt(s.accountsEnabled)} активных каналов`}
+      />
+      <Kpi
+        icon={<Tv />}
+        label="Каналы подключены"
+        value={`${fmt(s.accountsConnected)} / ${fmt(s.accountsTotal)}`}
+        hint="YouTube OAuth по всем владельцам"
+      />
+      <Kpi
+        icon={<Users />}
+        label="Пользователи"
+        value={fmt(s.usersTotal)}
+        hint={`${fmt(s.historyTotal)} записей истории в периоде`}
+      />
+      <Kpi
+        icon={<Eye />}
+        label="Просмотры YouTube"
+        value={fmt(s.views)}
+        delta={s.viewsDelta}
+        hint={`${fmt(s.youtubeVideos)} видео на каналах`}
+      />
+      <Kpi
+        icon={<TrendingUp />}
+        label="Подписчики"
+        value={fmt(s.subscribers)}
+        delta={s.subscriberDelta}
+        hint={`видео ${signed(s.youtubeVideosDelta)}`}
+      />
+    </div>
+  );
+}
+
+function DailyChart({ data }: { data: AdminAnalyticsData["daily"] }) {
+  const chart = data.map((p) => ({
+    date: shortDate(p.date),
+    Выложено: p.published,
+    Отложено: p.scheduled,
+    Ошибки: p.failed,
+  }));
+  return (
+    <section className="card bg-base-100 border border-base-300">
+      <div className="card-body gap-3">
+        <div className="flex items-center gap-2 font-semibold">
+          <BarChart3 size={18} className="text-primary" />
+          Публикации по дням
+        </div>
+        <div className="h-72 w-full min-w-0">
+          <ResponsiveContainer
+            width="100%"
+            height="100%"
+            minWidth={0}
+            minHeight={288}
+            initialDimension={{ width: 320, height: 288 }}
+          >
+            <BarChart data={chart} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="date" fontSize={12} tickMargin={6} minTickGap={24} />
+              <YAxis fontSize={12} width={32} allowDecimals={false} />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="Выложено" fill={CHART_COLORS.published} radius={[3, 3, 0, 0]} />
+              <Bar dataKey="Отложено" fill={CHART_COLORS.scheduled} radius={[3, 3, 0, 0]} />
+              <Bar dataKey="Ошибки" fill={CHART_COLORS.failed} radius={[3, 3, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function YoutubeChart({ data }: { data: AdminAnalyticsData["youtubeSeries"] }) {
+  if (data.length < 2) {
+    return (
+      <section className="card bg-base-100 border border-base-300 border-dashed">
+        <div className="card-body items-center text-center py-12">
+          <TrendingUp className="text-base-content/30" size={36} />
+          <p className="text-base-content/60 max-w-md">
+            Для графика YouTube нужны хотя бы два сохранённых снимка статистики.
+          </p>
+        </div>
+      </section>
+    );
+  }
+  const chart = data.map((p) => ({
+    date: shortDate(p.date),
+    Подписчики: p.subscribers,
+    Просмотры: p.views,
+  }));
+  return (
+    <section className="card bg-base-100 border border-base-300">
+      <div className="card-body gap-3">
+        <div className="flex items-center gap-2 font-semibold">
+          <TrendingUp size={18} className="text-primary" />
+          YouTube-динамика по снимкам
+        </div>
+        <div className="h-72 w-full min-w-0">
+          <ResponsiveContainer
+            width="100%"
+            height="100%"
+            minWidth={0}
+            minHeight={288}
+            initialDimension={{ width: 320, height: 288 }}
+          >
+            <LineChart data={chart} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="date" fontSize={12} tickMargin={6} minTickGap={24} />
+              <YAxis yAxisId="left" fontSize={12} width={44} />
+              <YAxis yAxisId="right" orientation="right" fontSize={12} width={54} />
+              <Tooltip />
+              <Legend />
+              <Line yAxisId="left" type="monotone" dataKey="Подписчики" stroke="#2563eb" strokeWidth={2} dot={false} />
+              <Line yAxisId="right" type="monotone" dataKey="Просмотры" stroke="#0f766e" strokeWidth={2} dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TopChannels({ rows }: { rows: AdminAnalyticsData["topChannels"] }) {
+  return (
+    <section className="card bg-base-100 border border-base-300">
+      <div className="card-body gap-3">
+        <div className="font-semibold">Топ каналов</div>
+        {rows.length === 0 ? (
+          <Empty text="За период нет публикаций." compact />
+        ) : (
+          <>
+            <div className="sm:hidden space-y-3">
+              {rows.map((r) => (
+                <div key={r.accountId} className="rounded-lg bg-base-200/70 p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <Link to={`/accounts/${r.accountId}`} className="link link-hover font-medium">
+                        {r.channelName}
+                      </Link>
+                      {r.ownerUsername && <div className="text-xs text-base-content/50">@{r.ownerUsername}</div>}
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className="text-lg font-bold leading-none">{fmt(r.published)}</div>
+                      <div className="text-xs text-base-content/50">выложено</div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 mt-3 text-sm">
+                    <div>
+                      <div className="text-base-content/50">Очередь</div>
+                      <div className="font-medium">{fmt(r.queued)}</div>
+                      <div className="text-xs text-base-content/50">{runwayText(r.runwayDays)}</div>
+                    </div>
+                    <div>
+                      <div className="text-base-content/50">Просмотры</div>
+                      <div className="font-medium">{fmt(r.views)}</div>
+                      {(r.scheduled > 0 || r.failed > 0) && (
+                        <div className="text-xs text-base-content/50">
+                          {fmt(r.scheduled)} отл. · {fmt(r.failed)} ош.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Канал</th>
+                    <th>Выложено</th>
+                    <th>Очередь</th>
+                    <th>Просмотры</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => (
+                    <tr key={r.accountId}>
+                      <td>
+                        <Link to={`/accounts/${r.accountId}`} className="link link-hover font-medium">
+                          {r.channelName}
+                        </Link>
+                        {r.ownerUsername && <div className="text-xs text-base-content/50">@{r.ownerUsername}</div>}
+                      </td>
+                      <td>
+                        <span className="font-semibold">{fmt(r.published)}</span>
+                        {(r.scheduled > 0 || r.failed > 0) && (
+                          <div className="text-xs text-base-content/50">
+                            {fmt(r.scheduled)} отл. · {fmt(r.failed)} ош.
+                          </div>
+                        )}
+                      </td>
+                      <td>
+                        {fmt(r.queued)}
+                        <div className="text-xs text-base-content/50">{runwayText(r.runwayDays)}</div>
+                      </td>
+                      <td>{fmt(r.views)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function Runway({ rows }: { rows: AdminAnalyticsData["runway"] }) {
+  return (
+    <section className="card bg-base-100 border border-base-300">
+      <div className="card-body gap-3">
+        <div className="font-semibold">Запас роликов</div>
+        {rows.length === 0 ? (
+          <Empty text="Каналов пока нет." compact />
+        ) : (
+          <>
+            <div className="sm:hidden space-y-3">
+              {rows.map((r) => (
+                <div key={r.accountId} className="rounded-lg bg-base-200/70 p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <Link to={`/accounts/${r.accountId}`} className="link link-hover font-medium">
+                        {r.channelName}
+                      </Link>
+                      {r.ownerUsername && <div className="text-xs text-base-content/50">@{r.ownerUsername}</div>}
+                    </div>
+                    <span className={`badge badge-sm ${runwayClass(r.runwayDays)}`}>{runwayText(r.runwayDays)}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 mt-3 text-sm">
+                    <div>
+                      <div className="text-base-content/50">Очередь</div>
+                      <div className="font-medium">{fmt(r.queued)}</div>
+                    </div>
+                    <div>
+                      <div className="text-base-content/50">Постов/день</div>
+                      <div className="font-medium">{fmt(r.postsPerDay)}</div>
+                    </div>
+                  </div>
+                  {!r.connected && <div className="text-xs text-warning mt-2">не подключён</div>}
+                  {!r.enabled && <div className="text-xs text-base-content/50 mt-1">выключен</div>}
+                </div>
+              ))}
+            </div>
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Канал</th>
+                    <th>Очередь</th>
+                    <th>Постов/день</th>
+                    <th>Статус</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => (
+                    <tr key={r.accountId}>
+                      <td>
+                        <Link to={`/accounts/${r.accountId}`} className="link link-hover font-medium">
+                          {r.channelName}
+                        </Link>
+                        {r.ownerUsername && <div className="text-xs text-base-content/50">@{r.ownerUsername}</div>}
+                      </td>
+                      <td>{fmt(r.queued)}</td>
+                      <td>{fmt(r.postsPerDay)}</td>
+                      <td>
+                      <span className={`badge badge-sm ${runwayClass(r.runwayDays)}`}>{runwayText(r.runwayDays)}</span>
+                      {!r.connected && <div className="text-xs text-warning mt-1">не подключён</div>}
+                      {!r.enabled && <div className="text-xs text-base-content/50 mt-1">выключен</div>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function TopUsers({ rows }: { rows: AdminAnalyticsData["topUsers"] }) {
+  return (
+    <section className="card bg-base-100 border border-base-300">
+      <div className="card-body gap-3">
+        <div className="font-semibold">Пользователи</div>
+        {rows.length === 0 ? (
+          <Empty text="За период нет активности." compact />
+        ) : (
+          <>
+            <div className="sm:hidden space-y-3">
+              {rows.map((r) => (
+                <div key={r.userId} className="rounded-lg bg-base-200/70 p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="font-medium">@{r.username}</div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold leading-none">{fmt(r.published)}</div>
+                      <div className="text-xs text-base-content/50">выложено</div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 mt-3 text-sm">
+                    <div>
+                      <div className="text-base-content/50">Каналы</div>
+                      <div className="font-medium">{fmt(r.channels)}</div>
+                    </div>
+                    <div>
+                      <div className="text-base-content/50">Очередь</div>
+                      <div className="font-medium">{fmt(r.queued)}</div>
+                      <div className="text-xs text-base-content/50">{fmt(r.postsPerDay)} пост/день</div>
+                    </div>
+                  </div>
+                  {(r.scheduled > 0 || r.failed > 0) && (
+                    <div className="text-xs text-base-content/50 mt-2">
+                      {fmt(r.scheduled)} отл. · {fmt(r.failed)} ош.
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Пользователь</th>
+                    <th>Выложено</th>
+                    <th>Каналы</th>
+                    <th>Очередь</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => (
+                    <tr key={r.userId}>
+                      <td className="font-medium">@{r.username}</td>
+                      <td>
+                        {fmt(r.published)}
+                      {(r.scheduled > 0 || r.failed > 0) && (
+                        <div className="text-xs text-base-content/50">
+                          {fmt(r.scheduled)} отл. · {fmt(r.failed)} ош.
+                        </div>
+                      )}
+                      </td>
+                      <td>{fmt(r.channels)}</td>
+                      <td>
+                        {fmt(r.queued)}
+                        <div className="text-xs text-base-content/50">{fmt(r.postsPerDay)} пост/день</div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function Problems({
+  failures,
+  recentErrors,
+}: {
+  failures: AdminAnalyticsData["failures"];
+  recentErrors: AdminAnalyticsData["recentErrors"];
+}) {
+  const empty = failures.length === 0 && recentErrors.length === 0;
+  return (
+    <section className="card bg-base-100 border border-base-300">
+      <div className="card-body gap-3">
+        <div className="flex items-center gap-2 font-semibold">
+          <Bug size={18} className={empty ? "text-success" : "text-error"} />
+          Проблемы
+        </div>
+        {empty ? (
+          <Empty text="За период нет ошибок." compact />
+        ) : (
+          <div className="space-y-4">
+            {failures.length > 0 && (
+              <div className="overflow-x-auto">
+                <table className="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Публикация</th>
+                      <th>Канал</th>
+                      <th>Ошибка</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {failures.map((f) => (
+                      <tr key={f.id}>
+                        <td>
+                          <div className="font-medium">{f.title}</div>
+                          <div className="text-xs text-base-content/50">{formatDateTime(f.publishedAt || f.createdAt)}</div>
+                        </td>
+                        <td>{f.channelName}</td>
+                        <td className="max-w-[18rem] whitespace-pre-wrap break-words text-error/80">
+                          {f.error || "без описания"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {recentErrors.length > 0 && (
+              <div className="space-y-2">
+                {recentErrors.map((e) => (
+                  <div key={e.id} className="rounded-lg bg-base-200/70 p-3 text-sm">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className={`badge badge-xs ${e.level === "error" ? "badge-error" : "badge-warning"}`}>
+                        {e.source}
+                      </span>
+                      <span className="text-xs text-base-content/50">{formatDateTime(e.createdAt)}</span>
+                    </div>
+                    <div className="font-medium mt-1 break-words">{e.message}</div>
+                    {e.context && <div className="text-xs text-base-content/50 mt-1 break-words">{e.context}</div>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function Kpi({
+  icon,
+  label,
+  value,
+  hint,
+  delta,
+  danger,
+}: {
+  icon: ReactNode;
+  label: string;
+  value: ReactNode;
+  hint?: string;
+  delta?: number;
+  danger?: boolean;
+}) {
+  return (
+    <div className={`card bg-base-100 border ${danger ? "border-error/30" : "border-base-300"}`}>
+      <div className="card-body py-5 gap-2">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-sm text-base-content/60">{label}</span>
+          <span className={danger ? "text-error" : "text-primary"}>{icon}</span>
+        </div>
+        <div className="text-3xl font-bold leading-none">{value}</div>
+        {delta != null ? (
+          <div className={`text-xs flex items-center gap-1 ${delta >= 0 ? "text-success" : "text-error"}`}>
+            {delta >= 0 ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
+            {signed(delta)}
+          </div>
+        ) : hint ? (
+          <div className="text-xs text-base-content/50">{hint}</div>
+        ) : null}
+        {delta != null && hint && <div className="text-xs text-base-content/50">{hint}</div>}
+      </div>
+    </div>
+  );
+}
+
+function Empty({ text, compact }: { text: string; compact?: boolean }) {
+  return (
+    <div className={`text-center text-base-content/50 ${compact ? "py-6" : "py-12"}`}>
+      {text}
+    </div>
+  );
+}
+
+function fmt(n: number): string {
+  return n.toLocaleString("ru-RU");
+}
+
+function signed(n: number): string {
+  const sign = n > 0 ? "+" : n < 0 ? "-" : "";
+  return `${sign}${fmt(Math.abs(n))}`;
+}
+
+function shortDate(s: string): string {
+  return new Date(`${s}T00:00:00`).toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" });
+}
+
+function formatDateTime(s: string): string {
+  return new Date(s.includes("T") ? s : s.replace(" ", "T") + "Z").toLocaleString("ru-RU");
+}
+
+function runwayText(days: number | null): string {
+  if (days == null) return "нет расписания";
+  if (days === 0) return "0 дней";
+  if (days < 1) return "< 1 дня";
+  return `${days.toFixed(days < 10 ? 1 : 0)} дн`;
+}
+
+function runwayClass(days: number | null): string {
+  if (days == null) return "badge-ghost";
+  if (days < 1) return "badge-error";
+  if (days < 3) return "badge-warning";
+  return "badge-success";
+}

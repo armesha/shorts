@@ -2,7 +2,7 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import fastifyStatic from "@fastify/static";
 import { resolve } from "node:path";
-import { unlinkSync, readFileSync, existsSync } from "node:fs";
+import { unlinkSync, readFileSync, existsSync, readdirSync, writeFileSync, mkdirSync } from "node:fs";
 import { loadBaseConfig, resolveClientSecretFile, credsFileExists } from "./config.ts";
 import { openDb, type Account } from "./db.ts";
 import { randomAnecdote, libraryStats, anecdoteKey } from "../src/anecdotes/library.ts";
@@ -36,6 +36,7 @@ import { registerPsychCardsRoutes } from "./psych-cards-routes.ts";
 import { registerPacksRoutes } from "./packs-routes.ts";
 import { initGenQueue, enqueue as genEnqueue, jobStatus as genJobStatus, cancelJob as genCancelJob, drainQueue as genDrainQueue } from "./gen-queue.ts";
 import { gracefulShutdown } from "./shutdown.ts";
+import { buildAdminAnalytics } from "./admin-analytics.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -98,6 +99,27 @@ for (const acc of db.listAccounts()) {
   }
 }
 
+// ---- Channel avatars: built-in CC0 set in assets/avatars; random by default, custom upload allowed ----
+const AVATAR_DIR = resolve(process.cwd(), "assets/avatars");
+function listAvatarFiles(): string[] {
+  try {
+    return readdirSync(AVATAR_DIR).filter((f) => /\.(png|jpe?g|webp|svg)$/i.test(f)).sort();
+  } catch {
+    return [];
+  }
+}
+function randomAvatar(): string | null {
+  const all = listAvatarFiles();
+  return all.length ? `/avatars/${all[Math.floor(Math.random() * all.length)]}` : null;
+}
+// Backfill: existing channels with no avatar get a random one (only fills empty).
+for (const acc of db.listAccounts()) {
+  if (!acc.avatar) {
+    const av = randomAvatar();
+    if (av) db.updateAccount(acc.id, { avatar: av });
+  }
+}
+
 const REDIRECT_URI =
   process.env.GOOGLE_OAUTH_REDIRECT ?? `http://localhost:${process.env.PORT ?? 8080}/api/youtube/callback`;
 const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:5173";
@@ -128,6 +150,8 @@ await app.register(fastifyStatic, { root: resolve(process.cwd(), base.outputDir)
 await app.register(fastifyStatic, { root: resolve(process.cwd(), "assets/audio"), prefix: "/audio/", decorateReply: false });
 // Pre-built fact videos (preFact deck) — served for the Studio random-preview player.
 await app.register(fastifyStatic, { root: resolve(process.cwd(), "assets/fact-videos"), prefix: "/fact-videos/", decorateReply: false });
+// Channel avatars (built-in CC0 set) — served for the channel grid + picker.
+await app.register(fastifyStatic, { root: resolve(process.cwd(), "assets/avatars"), prefix: "/avatars/", decorateReply: false });
 
 // ---- Production: serve the built web app so ONE origin/port serves the whole site (easy to tunnel).
 // Falls back to index.html for client-side routes. Skipped in dev (no web/dist → use `npm run web`).
@@ -140,7 +164,8 @@ if (existsSync(resolve(WEB_DIST, "index.html"))) {
       !req.url.startsWith("/api/") &&
       !req.url.startsWith("/files/") &&
       !req.url.startsWith("/audio/") &&
-      !req.url.startsWith("/fact-videos/")
+      !req.url.startsWith("/fact-videos/") &&
+      !req.url.startsWith("/avatars/")
     ) {
       return reply.sendFile("index.html", WEB_DIST); // SPA fallback (e.g. /accounts/1, /login)
     }
@@ -395,7 +420,9 @@ app.get("/api/admin/decks", async (req, reply) => {
   if (!requireAdmin(req, reply)) return;
   // встроенные деки + кастомные паки (всегда показываем паки колонками; id = "pack:<id>")
   return [
-    ...DECKS.map((d) => ({ id: d.id, name: d.name, pack: false })),
+    // adminOnly built-in decks (e.g. fact-en, quotes-de, christian) are NOT user-grantable —
+    // the adminOnly flag hard-hides them from non-admins, so they don't belong in the per-user matrix.
+    ...DECKS.filter((d) => !d.adminOnly).map((d) => ({ id: d.id, name: d.name, pack: false })),
     ...listAllPacks().map((p) => ({ id: `pack:${p.id}`, name: p.name, pack: true })),
   ];
 });
@@ -524,13 +551,32 @@ app.get("/api/accounts/:id", async (req, reply) => {
   if (!a) return;
   return a;
 });
-app.post("/api/accounts", async (req) =>
-  db.createAccount({ ...((req.body as Partial<Account>) ?? {}), userId: uid(req) }),
-);
+app.post("/api/accounts", async (req) => {
+  const body = (req.body as Partial<Account>) ?? {};
+  return db.createAccount({ ...body, userId: uid(req), avatar: body.avatar ?? randomAvatar() });
+});
+// Built-in avatar set (CC0) for the channel avatar picker.
+app.get("/api/avatars", async () => listAvatarFiles().map((f) => `/avatars/${f}`));
+// Upload a custom channel avatar (JSON { dataUrl }); stored under data/output/avatars, served via /files/.
+app.post("/api/accounts/:id/avatar", async (req, reply) => {
+  const id = Number((req.params as { id: string }).id);
+  if (!ownAccount(req, reply, id)) return;
+  const { dataUrl } = (req.body as { dataUrl?: string }) ?? {};
+  const m = /^data:image\/(png|jpe?g|webp);base64,([A-Za-z0-9+/=]+)$/.exec(dataUrl ?? "");
+  if (!m) return reply.code(400).send({ error: "Нужен PNG / JPEG / WEBP (data URL)." });
+  const buf = Buffer.from(m[2], "base64");
+  if (buf.length > 3_000_000) return reply.code(400).send({ error: "Слишком большой файл (макс 3 МБ)." });
+  const rel = `avatars/acc-${id}-${Date.now()}.${m[1] === "jpeg" ? "jpg" : m[1]}`;
+  mkdirSync(resolve(process.cwd(), base.outputDir, "avatars"), { recursive: true });
+  writeFileSync(resolve(process.cwd(), base.outputDir, rel), buf);
+  return db.updateAccount(id, { avatar: `/files/${rel}` });
+});
 app.put("/api/accounts/:id", async (req, reply) => {
   const id = Number((req.params as { id: string }).id);
   if (!ownAccount(req, reply, id)) return;
   const body = (req.body as Partial<Account>) ?? {};
+  // avatar can only be one of our served paths (built-in /avatars/ or uploaded /files/avatars/)
+  if (body.avatar != null && !/^\/(avatars|files)\//.test(body.avatar)) delete body.avatar;
   if (body.lang) {
     const known = DECKS.some((d) => d.id === body.lang) || isPackDeckId(body.lang);
     if (!known) return reply.code(400).send({ error: `Неизвестный язык канала «${body.lang}».` });
@@ -588,6 +634,14 @@ app.get("/api/history", async (req) => {
   const total = db.countHistoryFiltered(filter);
   const items = db.listHistoryFiltered({ ...filter, limit: pageSize, offset: (page - 1) * pageSize });
   return { items, total, page, pageSize };
+});
+
+// Admin analytics: one read-only aggregated snapshot per requested period. No polling and no
+// YouTube calls here; it uses stored channel_stats snapshots so opening the tab is cheap.
+app.get("/api/admin/analytics", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+  const q = (req.query as { from?: string; to?: string }) ?? {};
+  return buildAdminAnalytics(db, { from: q.from, to: q.to });
 });
 
 // ---- Channel stats: subscribers/views/videos snapshots + deltas ----
