@@ -810,7 +810,7 @@ export default function AccountDetail() {
                       {v.postCount > 0 ? (
                         <span className="absolute top-1 left-1 badge badge-success badge-sm">×{v.postCount}</span>
                       ) : (
-                        <span className="absolute top-1 left-1 badge badge-ghost badge-sm">new</span>
+                        <span className="absolute top-1 left-1 badge badge-ghost badge-sm">новое</span>
                       )}
                     </div>
                     <button
