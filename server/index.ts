@@ -37,6 +37,7 @@ import { registerPacksRoutes } from "./packs-routes.ts";
 import { initGenQueue, enqueue as genEnqueue, jobStatus as genJobStatus, cancelJob as genCancelJob, drainQueue as genDrainQueue } from "./gen-queue.ts";
 import { gracefulShutdown } from "./shutdown.ts";
 import { buildAdminAnalytics } from "./admin-analytics.ts";
+import { buildUserAnalytics } from "./user-analytics.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -642,6 +643,12 @@ app.get("/api/admin/analytics", async (req, reply) => {
   if (!requireAdmin(req, reply)) return;
   const q = (req.query as { from?: string; to?: string }) ?? {};
   return buildAdminAnalytics(db, { from: q.from, to: q.to });
+});
+
+// Per-user analytics — any signed-in user, HARD-scoped to their OWN channels only.
+app.get("/api/analytics", async (req) => {
+  const q = (req.query as { from?: string; to?: string }) ?? {};
+  return buildUserAnalytics(db, uid(req), { from: q.from, to: q.to });
 });
 
 // ---- Channel stats: subscribers/views/videos snapshots + deltas ----

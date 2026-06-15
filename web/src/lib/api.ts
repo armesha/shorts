@@ -192,6 +192,24 @@ export interface StatPoint {
   takenAt: string;
 }
 
+export interface UserAnalytics {
+  range: { from: string; to: string };
+  summary: {
+    published: number;
+    scheduled: number;
+    failed: number;
+    queuedVideos: number;
+    channels: number;
+    connected: number;
+    subscribers: number;
+    views: number;
+    youtubeVideos: number;
+    subscriberDelta: number;
+    viewsDelta: number;
+  };
+  daily: { date: string; published: number; scheduled: number; failed: number }[];
+}
+
 export interface AdminAnalytics {
   range: { from: string; to: string };
   updatedAt: string;
@@ -607,6 +625,14 @@ export const apiClient = {
     if (to) qs.set("to", to);
     const s = qs.toString();
     return get<AdminAnalytics>(`/admin/analytics${s ? "?" + s : ""}`);
+  },
+  // Per-user analytics (own channels only) for the Statistics page.
+  analytics: (from?: string, to?: string) => {
+    const qs = new URLSearchParams();
+    if (from) qs.set("from", from);
+    if (to) qs.set("to", to);
+    const s = qs.toString();
+    return get<UserAnalytics>(`/analytics${s ? "?" + s : ""}`);
   },
   // Error log: admin views/clears; any page can report a client-side error (fire-and-forget).
   errors: () => get<ErrorLogItem[]>("/errors"),

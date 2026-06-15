@@ -54,6 +54,8 @@ try {
   await page.waitForTimeout(1500);
   const statAv = await page.locator('img[src*="/avatars/"], img[src*="/files/avatars/"]').count();
   ok(`Статистика: аватарок ${statAv} (>0)`, statAv > 0);
+  const actSection = page.getByRole("heading", { name: /Активность публикаций/ });
+  ok("Секция аналитики «Активность публикаций» (свои данные)", await actSection.isVisible().catch(() => false));
   await page.screenshot({ path: "data/output/_e2e_statistics.png" });
 
   console.log(out.join("\n"));

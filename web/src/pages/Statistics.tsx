@@ -10,7 +10,7 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
-import { apiClient, type StatRow, type StatPoint } from "../lib/api";
+import { apiClient, type StatRow, type StatPoint, type UserAnalytics } from "../lib/api";
 import { useAuth } from "../lib/auth";
 
 type Scope = "mine" | "all";
@@ -41,6 +41,7 @@ export default function Statistics() {
   const isAdmin = user?.role === "admin";
   const [saved] = useState(loadFilters); // last-used filters (localStorage), restored on mount
   const [rows, setRows] = useState<StatRow[]>([]);
+  const [analytics, setAnalytics] = useState<UserAnalytics | null>(null); // own publishing activity
   const [scope, setScope] = useState<Scope>(saved.scope ?? "mine");
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -82,6 +83,11 @@ export default function Statistics() {
       .then((a) => setAvatarMap(Object.fromEntries(a.map((x) => [x.id, x.avatar]))))
       .catch(() => {});
   }, [scope]);
+
+  // Own publishing analytics (always the user's OWN channels, independent of the admin scope toggle).
+  useEffect(() => {
+    apiClient.analytics().then(setAnalytics).catch(() => {});
+  }, []);
 
   // Any filter/sort/scope change → back to page 1.
   useEffect(() => {
@@ -230,6 +236,51 @@ export default function Statistics() {
         <Stat icon={<Eye />} label="Просмотров всего" value={fmt(totals.views)} />
         <Stat icon={<Film />} label="Каналов подключено" value={`${connectedCount} / ${filtered.length}`} />
       </div>
+
+      {analytics &&
+        analytics.summary.published + analytics.summary.scheduled + analytics.summary.failed + analytics.summary.queuedVideos > 0 && (
+          <section className="card bg-base-100 border border-base-300">
+            <div className="card-body gap-4">
+              <h2 className="card-title text-base">Активность публикаций · мои каналы</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-xl border border-base-300 p-3">
+                  <div className="text-xs text-base-content/60">Опубликовано</div>
+                  <div className="text-2xl font-bold text-success">{fmt(analytics.summary.published)}</div>
+                </div>
+                <div className="rounded-xl border border-base-300 p-3">
+                  <div className="text-xs text-base-content/60">Запланировано</div>
+                  <div className="text-2xl font-bold">{fmt(analytics.summary.scheduled)}</div>
+                </div>
+                <div className="rounded-xl border border-base-300 p-3">
+                  <div className="text-xs text-base-content/60">Ошибки</div>
+                  <div className={`text-2xl font-bold ${analytics.summary.failed > 0 ? "text-error" : ""}`}>
+                    {fmt(analytics.summary.failed)}
+                  </div>
+                </div>
+                <div className="rounded-xl border border-base-300 p-3">
+                  <div className="text-xs text-base-content/60">В очереди</div>
+                  <div className="text-2xl font-bold">{fmt(analytics.summary.queuedVideos)}</div>
+                </div>
+              </div>
+              {analytics.daily.length > 1 && (
+                <div style={{ height: 220 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={analytics.daily} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" fontSize={11} />
+                      <YAxis allowDecimals={false} fontSize={11} />
+                      <Tooltip />
+                      <Legend />
+                      <Line type="monotone" dataKey="published" name="Опубликовано" stroke="#16a34a" dot={false} strokeWidth={2} />
+                      <Line type="monotone" dataKey="scheduled" name="Запланировано" stroke="#605dff" dot={false} strokeWidth={2} />
+                      <Line type="monotone" dataKey="failed" name="Ошибки" stroke="#dc2626" dot={false} strokeWidth={2} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
 
       {loading ? (
         <div className="py-16 text-center">
