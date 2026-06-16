@@ -10,6 +10,7 @@ import { DECKS, getDeck, ytMeta, pickGenericTitle, isPackDeckId, deckLang } from
 import { listAllPacks, setGrant, setPackOwners, getPack } from "../src/packs/store.ts";
 import { pickUnusedPackCard, buildPackLibraryVideo } from "./pack-gen.ts";
 import { buildFactLibraryVideo } from "./fact-gen.ts";
+import { importClipToLibrary } from "./clip-import.ts";
 import { renderAnecdote, listBackgrounds } from "../src/anecdotes/render.ts";
 import { assembleStillVideo, listAudio, resolveAudio } from "../src/video.ts";
 import { buildStillVideoFiles } from "./media.ts";
@@ -23,6 +24,7 @@ import {
 import { startScheduler } from "./scheduler.ts";
 import * as metrics from "./metrics.ts";
 import { fetchChannelStats } from "./stats.ts";
+import { fetchChannelAnalyticsBundle, ytAnalyticsErrorMessage } from "./youtube-analytics.ts";
 import {
   hashPassword,
   verifyPassword,
@@ -118,6 +120,8 @@ for (const acc of db.listAccounts()) {
 const REDIRECT_URI =
   process.env.GOOGLE_OAUTH_REDIRECT ?? `http://localhost:${process.env.PORT ?? 8080}/api/youtube/callback`;
 const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:5173";
+const CHANNEL_TOTALS_TTL_MS = 15 * 60 * 1000;
+const YT_ANALYTICS_TTL_MS = 6 * 60 * 60 * 1000;
 
 // Multi-user: no global key required to boot — each user uploads their own in Settings.
 if (!credsFileExists(credsPath())) {
@@ -682,6 +686,131 @@ function visibleAccount(req: unknown, id: number): Account | null {
   const u = db.getUserById(uid(req));
   return a.userId === uid(req) || u?.role === "admin" ? a : null;
 }
+
+function parseUtcMs(s: string | null | undefined): number {
+  if (!s) return 0;
+  return new Date(s.includes("T") ? s : s.replace(" ", "T") + "Z").getTime();
+}
+
+function freshEnough(takenAt: string | null | undefined, ttlMs: number): boolean {
+  const t = parseUtcMs(takenAt);
+  return t > 0 && Date.now() - t < ttlMs;
+}
+
+function isoDate(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
+function addDays(date: string, days: number): string {
+  const d = new Date(`${date}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return isoDate(d);
+}
+
+function youtubeAnalyticsRange(now = new Date()): { from: string; to: string } {
+  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  end.setUTCDate(end.getUTCDate() - 2);
+  const to = isoDate(end);
+  return { from: addDays(to, -29), to };
+}
+
+function asArray(v: unknown): unknown[] {
+  return Array.isArray(v) ? v : [];
+}
+
+function accountAnalyticsPayload(accountId: number) {
+  const latest = db.latestSnapshot(accountId);
+  const range = youtubeAnalyticsRange();
+  const daily = db.listDailyAnalytics([accountId], range.from, range.to);
+  const summary = daily.reduce(
+    (acc, r) => {
+      acc.views += r.views;
+      acc.engagedViews += r.engagedViews;
+      acc.watchMinutes += r.watchMinutes;
+      acc.likes += r.likes;
+      acc.comments += r.comments;
+      acc.shares += r.shares;
+      acc.subscribersGained += r.subscribersGained;
+      acc.subscribersLost += r.subscribersLost;
+      if (r.views > 0) {
+        acc._durationWeighted += r.avgViewDuration * r.views;
+        acc._percentageWeighted += r.avgViewPercentage * r.views;
+      }
+      return acc;
+    },
+    {
+      views: 0,
+      engagedViews: 0,
+      watchMinutes: 0,
+      avgViewDuration: 0,
+      avgViewPercentage: 0,
+      likes: 0,
+      comments: 0,
+      shares: 0,
+      subscribersGained: 0,
+      subscribersLost: 0,
+      _durationWeighted: 0,
+      _percentageWeighted: 0,
+    },
+  );
+  if (summary.views > 0) {
+    summary.avgViewDuration = summary._durationWeighted / summary.views;
+    summary.avgViewPercentage = summary._percentageWeighted / summary.views;
+  }
+  const { _durationWeighted, _percentageWeighted, ...cleanSummary } = summary;
+  return {
+    range,
+    status: latest?.analyticsStatus ?? null,
+    error: latest?.analyticsError ?? null,
+    dataThrough: latest?.dataThrough ?? db.latestDailyAnalyticsDate(accountId),
+    takenAt: latest?.analyticsTakenAt ?? null,
+    summary: cleanSummary,
+    daily,
+    topVideos: asArray(db.latestReportCache(accountId, "topVideos")?.payload),
+    trafficSources: asArray(db.latestReportCache(accountId, "trafficSources")?.payload),
+    devices: asArray(db.latestReportCache(accountId, "devices")?.payload),
+    countries: asArray(db.latestReportCache(accountId, "countries")?.payload),
+    subscribedStatus: asArray(db.latestReportCache(accountId, "subscribedStatus")?.payload),
+    retention: asArray(db.latestReportCache(accountId, "retention")?.payload),
+  };
+}
+
+function summarizeStoredAnalytics(accountId: number, from: string, to: string) {
+  const rows = db.listDailyAnalytics([accountId], from, to);
+  const summary = rows.reduce(
+    (acc, r) => {
+      acc.watchMinutes += r.watchMinutes;
+      acc.engagedViews += r.engagedViews;
+      acc.avgViewDuration += r.avgViewDuration * r.views;
+      acc.avgViewPercentage += r.avgViewPercentage * r.views;
+      acc.likes += r.likes;
+      acc.comments += r.comments;
+      acc.shares += r.shares;
+      acc.subscribersGained += r.subscribersGained;
+      acc.subscribersLost += r.subscribersLost;
+      acc.views += r.views;
+      return acc;
+    },
+    {
+      views: 0,
+      watchMinutes: 0,
+      engagedViews: 0,
+      avgViewDuration: 0,
+      avgViewPercentage: 0,
+      likes: 0,
+      comments: 0,
+      shares: 0,
+      subscribersGained: 0,
+      subscribersLost: 0,
+    },
+  );
+  if (summary.views > 0) {
+    summary.avgViewDuration /= summary.views;
+    summary.avgViewPercentage /= summary.views;
+  }
+  return summary;
+}
+
 // One row for the stats table: current totals + the previous snapshot (frontend computes +/-).
 function statRow(a: Account, error?: string | null) {
   const { latest, prev } = db.twoLatestSnapshots(a.id);
@@ -695,6 +824,7 @@ function statRow(a: Account, error?: string | null) {
     connected: a.status === "connected",
     latest,
     prev,
+    analytics: accountAnalyticsPayload(a.id),
     error: error ?? null,
   };
 }
@@ -751,6 +881,7 @@ app.post("/api/stats/refresh", async (req) => {
   const scope = (req.query as { scope?: string }).scope;
   const accounts = visibleAccounts(req, scope);
   const errors = new Map<number, string>();
+  const analyticsRange = youtubeAnalyticsRange();
   await Promise.all(
     accounts.map(async (a) => {
       if (a.status !== "connected") return;
@@ -765,8 +896,85 @@ app.post("/api/stats/refresh", async (req) => {
         return;
       }
       try {
-        const s = await fetchChannelStats(creds, REDIRECT_URI, token);
-        db.addChannelSnapshot({ accountId: a.id, subscribers: s.subscribers, views: s.views, videos: s.videos });
+        const latest = db.latestSnapshot(a.id);
+        let totals = latest && freshEnough(latest.takenAt, CHANNEL_TOTALS_TTL_MS)
+          ? { subscribers: latest.subscribers, views: latest.views, videos: latest.videos }
+          : null;
+        let wroteSnapshot = false;
+        if (!totals) {
+          totals = await fetchChannelStats(creds, REDIRECT_URI, token);
+        }
+
+        const cachedTopVideos = db.getReportCache(a.id, "topVideos", analyticsRange.from, analyticsRange.to);
+        let analyticsStatus = latest?.analyticsStatus ?? null;
+        let analyticsError: string | null = null;
+        let dataThrough = latest?.dataThrough ?? db.latestDailyAnalyticsDate(a.id);
+        let analyticsTakenAt = latest?.analyticsTakenAt ?? null;
+        let analyticsSummary = summarizeStoredAnalytics(a.id, analyticsRange.from, analyticsRange.to);
+        let analyticsTouched = false;
+
+        if (cachedTopVideos && freshEnough(cachedTopVideos.takenAt, YT_ANALYTICS_TTL_MS)) {
+          analyticsStatus = "cached";
+          analyticsTakenAt = cachedTopVideos.takenAt;
+        } else {
+          try {
+            const bundle = await fetchChannelAnalyticsBundle(creds, REDIRECT_URI, token, a.id, analyticsRange);
+            db.upsertDailyAnalytics(bundle.daily);
+            db.setReportCache(a.id, "topVideos", analyticsRange.from, analyticsRange.to, bundle.topVideos);
+            db.setReportCache(a.id, "trafficSources", analyticsRange.from, analyticsRange.to, bundle.trafficSources);
+            db.setReportCache(a.id, "devices", analyticsRange.from, analyticsRange.to, bundle.devices);
+            db.setReportCache(a.id, "countries", analyticsRange.from, analyticsRange.to, bundle.countries);
+            db.setReportCache(a.id, "subscribedStatus", analyticsRange.from, analyticsRange.to, bundle.subscribedStatus);
+            db.setReportCache(a.id, "retention", analyticsRange.from, analyticsRange.to, bundle.retention);
+            analyticsStatus = "ok";
+            analyticsSummary = bundle.summary;
+            dataThrough = bundle.dataThrough;
+            analyticsTakenAt = new Date().toISOString();
+            analyticsTouched = true;
+          } catch (err) {
+            analyticsStatus = "error";
+            analyticsError = ytAnalyticsErrorMessage(err);
+            analyticsTouched = true;
+            errors.set(a.id, analyticsError);
+            app.log.error({ err: String(err), accountId: a.id }, "youtube analytics refresh failed");
+            db.addError({
+              source: "server",
+              message: "YouTube Analytics: " + analyticsError,
+              detail: (err as Error)?.stack ?? null,
+              context: `analytics refresh account=${a.id}`,
+            });
+          }
+        }
+
+        if (
+          !latest ||
+          !freshEnough(latest.takenAt, CHANNEL_TOTALS_TTL_MS) ||
+          analyticsTouched ||
+          analyticsStatus !== latest.analyticsStatus ||
+          analyticsError
+        ) {
+          db.addChannelSnapshot({
+            accountId: a.id,
+            subscribers: totals.subscribers,
+            views: totals.views,
+            videos: totals.videos,
+            analyticsStatus,
+            analyticsError,
+            dataThrough,
+            watchMinutes: analyticsSummary.watchMinutes,
+            engagedViews: analyticsSummary.engagedViews,
+            avgViewDuration: analyticsSummary.avgViewDuration,
+            avgViewPercentage: analyticsSummary.avgViewPercentage,
+            likes: analyticsSummary.likes,
+            comments: analyticsSummary.comments,
+            shares: analyticsSummary.shares,
+            subscribersGained: analyticsSummary.subscribersGained,
+            subscribersLost: analyticsSummary.subscribersLost,
+            analyticsTakenAt,
+          });
+          wroteSnapshot = true;
+        }
+        if (!wroteSnapshot && analyticsError) errors.set(a.id, analyticsError);
       } catch (err) {
         app.log.error({ err: String(err), accountId: a.id }, "stats refresh failed");
         db.addError({
@@ -956,6 +1164,24 @@ app.post("/api/videos", async (req, reply) => {
     music: body.music,
     deck: channelDeck.id, // forced to the channel's language
   });
+});
+
+// Save a finished montage from the admin "Нарезки" gallery into a channel's library (scheduler auto-posts it).
+app.post("/api/clip-demos/save", async (req, reply) => {
+  if (db.getUserById(uid(req))?.role !== "admin") return reply.code(403).send({ error: "Только администратор." });
+  const body = (req.body as { accountId?: number; clipId?: string; title?: string; description?: string }) ?? {};
+  if (!body.accountId || !body.clipId) return reply.code(400).send({ error: "accountId и clipId обязательны" });
+  const acc = ownAccount(req, reply, body.accountId);
+  if (!acc) return;
+  if (isPackDeckId(acc.lang)) return reply.code(400).send({ error: "Это пак-канал — выберите обычный канал." });
+  const channelDeck = DECKS.find((d) => d.id === acc.lang);
+  if (!channelDeck) return reply.code(400).send({ error: `У канала язык «${acc.lang}» без пака.` });
+  if (channelDeck.preFact) return reply.code(400).send({ error: "Это видео-пак — выберите обычный канал." });
+  const v = await importClipToLibrary({
+    db, accountId: acc.id, clipId: body.clipId,
+    title: body.title || body.clipId, description: body.description || "", deck: channelDeck.id,
+  });
+  return { ok: true, video: v };
 });
 
 // Batch: generate N random UNUSED anecdotes straight into a channel's library.

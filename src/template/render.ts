@@ -11,8 +11,8 @@
 // Изолировано: ничего из работающего пайплайна/сервера не импортит этот модуль (кроме chromePath).
 
 import { readFile, mkdir, writeFile } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { dirname, extname, resolve } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import type { Browser } from "puppeteer-core";
 import puppeteer from "puppeteer-core";
 import { chromePath } from "../render.ts";
@@ -77,10 +77,35 @@ export interface TemplateDoc {
 /** Карта role → значение (строка = одно поле, массив строк = список-буллеты). */
 export type TemplateContent = Record<string, string | string[]>;
 
+function imageMime(file: string): string {
+  const ext = extname(file).toLowerCase();
+  if (ext === ".jpg" || ext === ".jpeg") return "image/jpeg";
+  if (ext === ".webp") return "image/webp";
+  if (ext === ".svg") return "image/svg+xml";
+  return "image/png";
+}
+
+async function inlineLocalImages(tpl: TemplateDoc): Promise<TemplateDoc> {
+  const copy = JSON.parse(JSON.stringify(tpl)) as TemplateDoc;
+  for (const el of copy.elements || []) {
+    if (el.type !== "image" || typeof el.src !== "string") continue;
+    if (/^(data:|https?:|file:|\/\/|\/)/i.test(el.src)) continue;
+    try {
+      const file = resolve(process.cwd(), el.src);
+      const b64 = (await readFile(file)).toString("base64");
+      el.src = `data:${imageMime(file)};base64,${b64}`;
+    } catch {
+      // Keep the original src; renderer will show the normal broken-image signal if the asset is missing.
+    }
+  }
+  return copy;
+}
+
 /** Самодостаточная HTML-страница: инлайн renderer.js + вызов renderTemplate с предзагрузкой шрифтов. */
 function buildHtml(rendererSrc: string, tpl: TemplateDoc, content: TemplateContent, fontCss: string): string {
   const w = tpl.canvas?.w || 1080;
   const h = tpl.canvas?.h || 1920;
+  const baseHref = pathToFileURL(`${process.cwd()}/`).href;
   // renderer.js содержит «</script>» в комментариях-примерах — при инлайне это закрыло бы <script>
   // раньше времени. Экранируем закрывающий тег; в JS «<\/script>» эквивалентно «</script>».
   const rdr = rendererSrc.replace(/<\/script/gi, "<\\/script");
@@ -88,6 +113,7 @@ function buildHtml(rendererSrc: string, tpl: TemplateDoc, content: TemplateConte
   const tplJson = JSON.stringify(tpl).replace(/</g, "\\u003c");
   const contentJson = JSON.stringify(content).replace(/</g, "\\u003c");
   return `<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<base href="${baseHref}">
 <style>${fontCss}</style>
 <style>html,body{margin:0;padding:0}#card{width:${w}px;height:${h}px;overflow:hidden;background:${tpl.canvas?.bg || "#fff"}}</style>
 </head><body>
@@ -151,11 +177,12 @@ export async function renderTemplateCard(
     const page = await b.newPage();
     await page.setViewport({ width: w, height: h, deviceScaleFactor: 1 });
     const rendererSrc = await readFile(RENDERER_JS, "utf8");
+    const finalTpl = await inlineLocalImages(tpl);
     const families = Array.from(
-      new Set((tpl.elements || []).filter((e) => e.font?.family).map((e) => e.font!.family)),
+      new Set((finalTpl.elements || []).filter((e) => e.font?.family).map((e) => e.font!.family)),
     );
     const fontCss = await fontFaceCssFor(families);
-    await page.setContent(buildHtml(rendererSrc, tpl, content, fontCss), {
+    await page.setContent(buildHtml(rendererSrc, finalTpl, content, fontCss), {
       // networkidle0 waits for fonts/images; valid at runtime — puppeteer-core@25's setContent type omits it.
       waitUntil: "networkidle0" as "load",
       timeout: 30_000,

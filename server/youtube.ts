@@ -30,6 +30,7 @@ function client(creds: ClientCreds, redirectUri: string) {
 const SCOPES = [
   "https://www.googleapis.com/auth/youtube.upload",
   "https://www.googleapis.com/auth/youtube.readonly",
+  "https://www.googleapis.com/auth/yt-analytics.readonly",
 ];
 
 /** Build the Google consent URL to connect one channel (state carries the account id). */

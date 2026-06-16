@@ -1,0 +1,121 @@
+{
+  "version": 1,
+  "name": "psychology-mgs-note-amber",
+  "canvas": {
+    "w": 1080,
+    "h": 1920,
+    "bg": "#fff8e6"
+  },
+  "elements": [
+    {
+      "id": "label",
+      "type": "text",
+      "x": 74,
+      "y": 104,
+      "w": 520,
+      "h": 64,
+      "rot": 0,
+      "text": "ALLTAG",
+      "align": "left",
+      "font": {
+        "family": "Inter",
+        "size": 32,
+        "weight": 800,
+        "color": "#e2a020",
+        "lineHeight": 1.1
+      }
+    },
+    {
+      "id": "rule",
+      "type": "text",
+      "x": 74,
+      "y": 170,
+      "w": 360,
+      "h": 38,
+      "rot": 0,
+      "text": "━━━━",
+      "align": "left",
+      "font": {
+        "family": "Inter",
+        "size": 28,
+        "weight": 800,
+        "color": "#e2a020",
+        "lineHeight": 1.1
+      }
+    },
+    {
+      "id": "title",
+      "type": "killbox",
+      "x": 74,
+      "y": 238,
+      "w": 910,
+      "h": 330,
+      "rot": 0,
+      "role": "title",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Montserrat",
+        "size": 82,
+        "weight": 800,
+        "color": "#271b05",
+        "lineHeight": 1.12
+      },
+      "fitMin": 44,
+      "fitMax": 88,
+      "maxChars": 68,
+      "bullet": false,
+      "placeholder": "Titel"
+    },
+    {
+      "id": "body",
+      "type": "killbox",
+      "x": 92,
+      "y": 650,
+      "w": 880,
+      "h": 1010,
+      "rot": 0,
+      "role": "text",
+      "padX": 34,
+      "padY": 36,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 45,
+        "weight": 600,
+        "color": "#271b05",
+        "lineHeight": 1.5
+      },
+      "fitMin": 28,
+      "fitMax": 52,
+      "maxChars": 760,
+      "bullet": true,
+      "placeholder": "Text",
+      "bg": "#ffffffb8",
+      "border": "2px solid #e2a02055",
+      "radius": 28,
+      "shadow": "0 24px 60px rgba(0,0,0,.10)"
+    },
+    {
+      "id": "footer",
+      "type": "text",
+      "x": 92,
+      "y": 1732,
+      "w": 880,
+      "h": 44,
+      "rot": 0,
+      "text": "deine gedanken sind daten, keine beweise",
+      "align": "center",
+      "font": {
+        "family": "Inter",
+        "size": 26,
+        "weight": 600,
+        "color": "#856b2a",
+        "lineHeight": 1.1
+      }
+    }
+  ]
+}

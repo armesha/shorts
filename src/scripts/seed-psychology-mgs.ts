@@ -1,4 +1,4 @@
-// Сид: заливает пак «психология mgs» (10 шаблонов + 10 карточек из assets/template-packs/) в стор
+// Сид: заливает пак «психология mgs» (шаблоны + карточки из assets/template-packs/) в стор
 // как живой пользовательский пак, владелец — администратор. Идемпотентно (повторно не дублирует).
 // Запуск: node --import tsx --experimental-sqlite src/scripts/seed-psychology-mgs.ts
 import { DatabaseSync } from "node:sqlite";
@@ -27,7 +27,7 @@ if (listPacks(owner.id).some((p) => p.name === PACK_NAME)) {
   process.exit(0);
 }
 
-// шаблоны (10 цветов) + карточки
+// шаблоны + карточки
 const templates: PackTemplate[] = readdirSync(resolve(PACK_DIR, "templates"))
   .filter((f) => f.endsWith(".json"))
   .sort()

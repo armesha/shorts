@@ -27,6 +27,7 @@ import {
 } from "recharts";
 import { apiClient, type AdminAnalytics as AdminAnalyticsData } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { compactNumber } from "../lib/format";
 import { useT } from "../lib/i18n";
 
 type T = (key: string, vars?: Record<string, string | number>) => string;
@@ -229,7 +230,7 @@ function KpiGrid({ data }: { data: AdminAnalyticsData }) {
   const { t } = useT();
   const s = data.summary;
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
       <Kpi
         icon={<Film />}
         label={t("analytics.kpiPublished")}
@@ -260,14 +261,26 @@ function KpiGrid({ data }: { data: AdminAnalyticsData }) {
         label={t("analytics.kpiViews")}
         value={fmt(s.views)}
         delta={s.viewsDelta}
-        hint={t("analytics.kpiViewsHint", { n: fmt(s.youtubeVideos) })}
+        hint={s.dataThrough ? t("analytics.kpiDataThrough", { date: s.dataThrough }) : t("analytics.kpiViewsHint", { n: fmt(s.youtubeVideos) })}
+      />
+      <Kpi
+        icon={<Activity />}
+        label={t("analytics.kpiWatchTime")}
+        value={formatWatchMinutes(s.watchMinutes)}
+        hint={t("analytics.kpiAvgDuration", { value: formatSeconds(s.avgViewDuration) })}
+      />
+      <Kpi
+        icon={<TrendingUp />}
+        label={t("analytics.kpiEngagedViews")}
+        value={fmt(s.engagedViews)}
+        hint={t("analytics.kpiEngagements", { likes: fmt(s.likes), shares: fmt(s.shares) })}
       />
       <Kpi
         icon={<TrendingUp />}
         label={t("analytics.kpiSubscribers")}
         value={fmt(s.subscribers)}
         delta={s.subscriberDelta}
-        hint={t("analytics.kpiSubscribersHint", { delta: signed(s.youtubeVideosDelta) })}
+        hint={t("analytics.kpiSubscribersHint", { delta: signed(s.subscribersGained - s.subscribersLost) })}
       />
     </div>
   );
@@ -302,8 +315,8 @@ function DailyChart({ data }: { data: AdminAnalyticsData["daily"] }) {
             <BarChart data={chart} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis dataKey="date" fontSize={12} tickMargin={6} minTickGap={24} />
-              <YAxis fontSize={12} width={32} allowDecimals={false} />
-              <Tooltip />
+              <YAxis fontSize={12} width={40} allowDecimals={false} tickFormatter={(value) => compactNumber(Number(value))} />
+              <Tooltip formatter={(value) => compactNumber(Number(value))} />
               <Legend />
               <Bar dataKey={kPublished} fill={CHART_COLORS.published} radius={[3, 3, 0, 0]} />
               <Bar dataKey={kScheduled} fill={CHART_COLORS.scheduled} radius={[3, 3, 0, 0]} />
@@ -330,12 +343,12 @@ function YoutubeChart({ data }: { data: AdminAnalyticsData["youtubeSeries"] }) {
       </section>
     );
   }
-  const kSubscribers = t("analytics.seriesSubscribers");
   const kViews = t("analytics.seriesViews");
+  const kWatch = t("analytics.seriesWatchHours");
   const chart = data.map((p) => ({
     date: shortDate(p.date),
-    [kSubscribers]: p.subscribers,
     [kViews]: p.views,
+    [kWatch]: Math.round((p.watchMinutes / 60) * 10) / 10,
   }));
   return (
     <section className="card bg-base-100 border border-base-300">
@@ -355,12 +368,12 @@ function YoutubeChart({ data }: { data: AdminAnalyticsData["youtubeSeries"] }) {
             <LineChart data={chart} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis dataKey="date" fontSize={12} tickMargin={6} minTickGap={24} />
-              <YAxis yAxisId="left" fontSize={12} width={44} />
-              <YAxis yAxisId="right" orientation="right" fontSize={12} width={54} />
-              <Tooltip />
+              <YAxis yAxisId="left" fontSize={12} width={44} tickFormatter={(value) => compactNumber(Number(value))} />
+              <YAxis yAxisId="right" orientation="right" fontSize={12} width={44} tickFormatter={(value) => compactNumber(Number(value))} />
+              <Tooltip formatter={(value) => compactNumber(Number(value))} />
               <Legend />
-              <Line yAxisId="left" type="monotone" dataKey={kSubscribers} stroke="#2563eb" strokeWidth={2} dot={false} />
-              <Line yAxisId="right" type="monotone" dataKey={kViews} stroke="#0f766e" strokeWidth={2} dot={false} />
+              <Line yAxisId="left" type="monotone" dataKey={kViews} stroke="#0f766e" strokeWidth={2} dot={false} />
+              <Line yAxisId="right" type="monotone" dataKey={kWatch} stroke="#7c3aed" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -403,6 +416,9 @@ function TopChannels({ rows }: { rows: AdminAnalyticsData["topChannels"] }) {
                     <div>
                       <div className="text-base-content/50">{t("analytics.colViews")}</div>
                       <div className="font-medium">{fmt(r.views)}</div>
+                      <div className="text-xs text-base-content/50">
+                        {formatWatchMinutes(r.watchMinutes)} · {formatSeconds(r.avgViewDuration)}
+                      </div>
                       {(r.scheduled > 0 || r.failed > 0) && (
                         <div className="text-xs text-base-content/50">
                           {t("analytics.schedFailShort", { sched: fmt(r.scheduled), failed: fmt(r.failed) })}
@@ -421,6 +437,7 @@ function TopChannels({ rows }: { rows: AdminAnalyticsData["topChannels"] }) {
                     <th>{t("analytics.colPublished")}</th>
                     <th>{t("analytics.colQueue")}</th>
                     <th>{t("analytics.colViews")}</th>
+                    <th>{t("analytics.colWatchTime")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -445,6 +462,10 @@ function TopChannels({ rows }: { rows: AdminAnalyticsData["topChannels"] }) {
                         <div className="text-xs text-base-content/50">{runwayText(r.runwayDays, t)}</div>
                       </td>
                       <td>{fmt(r.views)}</td>
+                      <td>
+                        {formatWatchMinutes(r.watchMinutes)}
+                        <div className="text-xs text-base-content/50">{formatSeconds(r.avgViewDuration)}</div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -726,7 +747,20 @@ function Empty({ text, compact }: { text: string; compact?: boolean }) {
 }
 
 function fmt(n: number): string {
-  return n.toLocaleString("ru-RU");
+  return compactNumber(n);
+}
+
+function formatWatchMinutes(n: number): string {
+  if (n >= 6000) return `${compactNumber(Math.round(n / 60))} h`;
+  if (n >= 60) return `${compactNumber(Math.round((n / 60) * 10) / 10)} h`;
+  return `${Math.round(n).toLocaleString("ru-RU")} m`;
+}
+
+function formatSeconds(n: number): string {
+  const sec = Math.max(0, Math.round(n));
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return m ? `${m}:${String(s).padStart(2, "0")}` : `${s}s`;
 }
 
 function signed(n: number): string {

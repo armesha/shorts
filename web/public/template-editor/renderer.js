@@ -73,6 +73,7 @@ function mountElement(el, content, showKillboxOutline) {
     position:absolute;left:0;top:0;width:${el.w}px;height:${el.h}px;
     transform:translate(${el.x}px,${el.y}px) rotate(${el.rot || 0}deg);
   `;
+  applyBoxStyle(node, el);
   node.dataset.id = el.id;
   node.dataset.type = el.type;
   if (el.role) node.dataset.role = el.role;
@@ -122,6 +123,15 @@ function mountElement(el, content, showKillboxOutline) {
     node.appendChild(img);
   }
   return node;
+}
+
+function applyBoxStyle(node, el) {
+  if (el.bg) node.style.background = el.bg;
+  if (el.border) node.style.border = el.border;
+  if (el.radius != null) node.style.borderRadius = typeof el.radius === "number" ? el.radius + "px" : String(el.radius);
+  if (el.shadow) node.style.boxShadow = el.shadow;
+  if (el.opacity != null && el.type !== "image") node.style.opacity = el.opacity;
+  if (el.clip) node.style.overflow = "hidden";
 }
 
 // Текст с опц. «маркером» (подсветка как хайлайтером, box-decoration-break:clone — отдельная плашка

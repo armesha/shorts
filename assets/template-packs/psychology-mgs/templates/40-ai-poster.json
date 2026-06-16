@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "name": "psychology-mgs-ai-poster",
+  "canvas": {
+    "w": 1080,
+    "h": 1920,
+    "bg": "#fbfbf5"
+  },
+  "elements": [
+    {
+      "id": "bg-image",
+      "type": "image",
+      "x": 0,
+      "y": 0,
+      "w": 1080,
+      "h": 1920,
+      "rot": 0,
+      "src": "assets/template-packs/psychology-mgs/backgrounds/ai-bg-04.jpg",
+      "fit": "cover"
+    },
+    {
+      "id": "wash",
+      "type": "text",
+      "x": 64,
+      "y": 94,
+      "w": 952,
+      "h": 1540,
+      "rot": 0,
+      "text": "",
+      "align": "left",
+      "bg": "rgba(255,255,255,.76)",
+      "radius": 34,
+      "shadow": "0 28px 80px rgba(0,0,0,.18)",
+      "font": {
+        "family": "Inter",
+        "size": 1,
+        "weight": 400,
+        "color": "#0d0f16",
+        "lineHeight": 1
+      }
+    },
+    {
+      "id": "label",
+      "type": "text",
+      "x": 108,
+      "y": 140,
+      "w": 780,
+      "h": 56,
+      "rot": 0,
+      "text": "PSYCHOLOGIE",
+      "align": "left",
+      "font": {
+        "family": "Inter",
+        "size": 29,
+        "weight": 900,
+        "color": "#1b45ff",
+        "lineHeight": 1.1
+      }
+    },
+    {
+      "id": "title",
+      "type": "killbox",
+      "x": 108,
+      "y": 230,
+      "w": 840,
+      "h": 340,
+      "rot": 0,
+      "role": "title",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 84,
+        "weight": 800,
+        "color": "#0d0f16",
+        "lineHeight": 1.1
+      },
+      "fitMin": 44,
+      "fitMax": 90,
+      "maxChars": 68,
+      "bullet": false,
+      "placeholder": "Titel"
+    },
+    {
+      "id": "body",
+      "type": "killbox",
+      "x": 118,
+      "y": 650,
+      "w": 820,
+      "h": 875,
+      "rot": 0,
+      "role": "text",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 46,
+        "weight": 650,
+        "color": "#0d0f16",
+        "lineHeight": 1.48
+      },
+      "fitMin": 28,
+      "fitMax": 54,
+      "maxChars": 760,
+      "bullet": true,
+      "placeholder": "Text"
+    },
+    {
+      "id": "footer",
+      "type": "text",
+      "x": 118,
+      "y": 1586,
+      "w": 820,
+      "h": 48,
+      "rot": 0,
+      "text": "psychologie im alltag",
+      "align": "center",
+      "font": {
+        "family": "Inter",
+        "size": 27,
+        "weight": 800,
+        "color": "#565b67",
+        "lineHeight": 1.1
+      }
+    }
+  ]
+}

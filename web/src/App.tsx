@@ -13,6 +13,7 @@ import Errors from "./pages/Errors";
 import System from "./pages/System";
 import Settings from "./pages/Settings";
 import Users from "./pages/Users";
+import ClipDemos from "./pages/ClipDemos";
 import TemplateEditor from "./pages/TemplateEditor";
 import Login from "./pages/Login";
 import { AuthProvider, useAuth } from "./lib/auth";
@@ -42,6 +43,7 @@ function Gate() {
         <Route path="/history" element={<History />} />
         <Route path="/statistics" element={<Statistics />} />
         <Route path="/admin/analytics" element={<AdminAnalytics />} />
+        <Route path="/clip-demos" element={<ClipDemos />} />
         <Route path="/changelog" element={<Changelog />} />
         <Route path="/errors" element={<Errors />} />
         <Route path="/system" element={<System />} />

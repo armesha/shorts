@@ -21,8 +21,28 @@ export interface UserAnalytics {
     youtubeVideos: number;
     subscriberDelta: number;
     viewsDelta: number;
+    watchMinutes: number;
+    engagedViews: number;
+    avgViewDuration: number;
+    avgViewPercentage: number;
+    likes: number;
+    comments: number;
+    shares: number;
+    subscribersGained: number;
+    subscribersLost: number;
+    dataThrough: string | null;
   };
   daily: { date: string; published: number; scheduled: number; failed: number }[];
+  youtubeDaily: {
+    date: string;
+    views: number;
+    engagedViews: number;
+    watchMinutes: number;
+    avgViewDuration: number;
+    avgViewPercentage: number;
+    subscribersGained: number;
+    subscribersLost: number;
+  }[];
 }
 
 export function buildUserAnalytics(dbh: Db, userId: number, input: AnalyticsRange): UserAnalytics {
@@ -32,8 +52,31 @@ export function buildUserAnalytics(dbh: Db, userId: number, input: AnalyticsRang
 
   const blank: UserAnalytics = {
     range,
-    summary: { published: 0, scheduled: 0, failed: 0, queuedVideos: 0, channels: ids.length, connected: 0, subscribers: 0, views: 0, youtubeVideos: 0, subscriberDelta: 0, viewsDelta: 0 },
+    summary: {
+      published: 0,
+      scheduled: 0,
+      failed: 0,
+      queuedVideos: 0,
+      channels: ids.length,
+      connected: 0,
+      subscribers: 0,
+      views: 0,
+      youtubeVideos: 0,
+      subscriberDelta: 0,
+      viewsDelta: 0,
+      watchMinutes: 0,
+      engagedViews: 0,
+      avgViewDuration: 0,
+      avgViewPercentage: 0,
+      likes: 0,
+      comments: 0,
+      shares: 0,
+      subscribersGained: 0,
+      subscribersLost: 0,
+      dataThrough: null,
+    },
     daily: [],
+    youtubeDaily: [],
   };
   if (ids.length === 0) return blank;
 
@@ -86,6 +129,59 @@ export function buildUserAnalytics(dbh: Db, userId: number, input: AnalyticsRang
     (sql.prepare("SELECT COUNT(*) AS n FROM accounts WHERE user_id = ? AND yt_refresh_token IS NOT NULL AND yt_refresh_token <> ''").get(userId) as Row).n,
   );
 
+  const ytRows = sql
+    .prepare(
+      `SELECT date,
+              SUM(views) AS views,
+              SUM(engaged_views) AS engagedViews,
+              SUM(watch_minutes) AS watchMinutes,
+              SUM(avg_view_duration * views) AS durationWeighted,
+              SUM(avg_view_percentage * views) AS percentageWeighted,
+              SUM(likes) AS likes,
+              SUM(comments) AS comments,
+              SUM(shares) AS shares,
+              SUM(subscribers_gained) AS subscribersGained,
+              SUM(subscribers_lost) AS subscribersLost
+       FROM channel_analytics_daily
+       WHERE account_id IN (${ph}) AND date BETWEEN ? AND ?
+       GROUP BY date ORDER BY date`,
+    )
+    .all(...ids, range.from, range.to) as Row[];
+  const youtubeDaily = ytRows.map((r) => {
+    const views = num(r.views);
+    return {
+      date: String(r.date),
+      views,
+      engagedViews: num(r.engagedViews),
+      watchMinutes: num(r.watchMinutes),
+      avgViewDuration: views > 0 ? num(r.durationWeighted) / views : 0,
+      avgViewPercentage: views > 0 ? num(r.percentageWeighted) / views : 0,
+      subscribersGained: num(r.subscribersGained),
+      subscribersLost: num(r.subscribersLost),
+    };
+  });
+  const ytSummary = (
+    sql
+      .prepare(
+        `SELECT
+          SUM(views) AS views,
+          SUM(engaged_views) AS engagedViews,
+          SUM(watch_minutes) AS watchMinutes,
+          SUM(avg_view_duration * views) AS durationWeighted,
+          SUM(avg_view_percentage * views) AS percentageWeighted,
+          SUM(likes) AS likes,
+          SUM(comments) AS comments,
+          SUM(shares) AS shares,
+          SUM(subscribers_gained) AS subscribersGained,
+          SUM(subscribers_lost) AS subscribersLost,
+          MAX(date) AS dataThrough
+         FROM channel_analytics_daily
+         WHERE account_id IN (${ph}) AND date BETWEEN ? AND ?`,
+      )
+      .get(...ids, range.from, range.to) as Row
+  );
+  const ytViews = num(ytSummary.views);
+
   return {
     range,
     summary: {
@@ -96,11 +192,22 @@ export function buildUserAnalytics(dbh: Db, userId: number, input: AnalyticsRang
       channels: ids.length,
       connected,
       subscribers: num(latest?.subscribers),
-      views: num(latest?.views),
+      views: ytViews || num(latest?.views),
       youtubeVideos: num(latest?.videos),
       subscriberDelta: num(growth?.subDelta),
-      viewsDelta: num(growth?.viewsDelta),
+      viewsDelta: ytViews || num(growth?.viewsDelta),
+      watchMinutes: num(ytSummary.watchMinutes),
+      engagedViews: num(ytSummary.engagedViews),
+      avgViewDuration: ytViews > 0 ? num(ytSummary.durationWeighted) / ytViews : 0,
+      avgViewPercentage: ytViews > 0 ? num(ytSummary.percentageWeighted) / ytViews : 0,
+      likes: num(ytSummary.likes),
+      comments: num(ytSummary.comments),
+      shares: num(ytSummary.shares),
+      subscribersGained: num(ytSummary.subscribersGained),
+      subscribersLost: num(ytSummary.subscribersLost),
+      dataThrough: ytSummary.dataThrough ? String(ytSummary.dataThrough) : null,
     },
     daily,
+    youtubeDaily,
   };
 }

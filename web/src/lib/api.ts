@@ -166,7 +166,100 @@ export interface StatSnapshot {
   subscribers: number;
   views: number;
   videos: number;
+  analyticsStatus: string | null;
+  analyticsError: string | null;
+  dataThrough: string | null;
+  watchMinutes: number;
+  engagedViews: number;
+  avgViewDuration: number;
+  avgViewPercentage: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  subscribersGained: number;
+  subscribersLost: number;
+  analyticsTakenAt: string | null;
   takenAt: string;
+}
+
+export interface YoutubeDailyPoint {
+  accountId?: number;
+  date: string;
+  views: number;
+  engagedViews: number;
+  watchMinutes: number;
+  avgViewDuration: number;
+  avgViewPercentage: number;
+  likes?: number;
+  comments?: number;
+  shares?: number;
+  subscribersGained: number;
+  subscribersLost: number;
+}
+
+export interface YoutubeBreakdownRow {
+  key: string;
+  views: number;
+  engagedViews: number;
+  watchMinutes: number;
+  avgViewDuration?: number;
+}
+
+export interface YoutubeTopVideo {
+  videoId: string;
+  title: string;
+  publishedAt: string | null;
+  thumbnailUrl: string | null;
+  views: number;
+  engagedViews: number;
+  watchMinutes: number;
+  avgViewDuration: number;
+  avgViewPercentage: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  subscribersGained: number;
+  subscribersLost: number;
+}
+
+export interface YoutubeRetention {
+  videoId: string;
+  title: string;
+  points: {
+    elapsedRatio: number;
+    audienceWatchRatio: number;
+    relativeRetentionPerformance: number;
+    startedWatching: number;
+    stoppedWatching: number;
+    totalSegmentImpressions: number;
+  }[];
+}
+
+export interface YoutubeAnalyticsPayload {
+  range: { from: string; to: string };
+  status: string | null;
+  error: string | null;
+  dataThrough: string | null;
+  takenAt: string | null;
+  summary: {
+    views: number;
+    engagedViews: number;
+    watchMinutes: number;
+    avgViewDuration: number;
+    avgViewPercentage: number;
+    likes: number;
+    comments: number;
+    shares: number;
+    subscribersGained: number;
+    subscribersLost: number;
+  };
+  daily: YoutubeDailyPoint[];
+  topVideos: YoutubeTopVideo[];
+  trafficSources: YoutubeBreakdownRow[];
+  devices: YoutubeBreakdownRow[];
+  countries: YoutubeBreakdownRow[];
+  subscribedStatus: YoutubeBreakdownRow[];
+  retention: YoutubeRetention[];
 }
 
 /** One row on the Statistics page: a channel + its latest totals and the previous snapshot. */
@@ -179,6 +272,7 @@ export interface StatRow {
   connected: boolean;
   latest: StatSnapshot | null;
   prev: StatSnapshot | null;
+  analytics: YoutubeAnalyticsPayload;
   error: string | null;
 }
 
@@ -206,8 +300,19 @@ export interface UserAnalytics {
     youtubeVideos: number;
     subscriberDelta: number;
     viewsDelta: number;
+    watchMinutes: number;
+    engagedViews: number;
+    avgViewDuration: number;
+    avgViewPercentage: number;
+    likes: number;
+    comments: number;
+    shares: number;
+    subscribersGained: number;
+    subscribersLost: number;
+    dataThrough: string | null;
   };
   daily: { date: string; published: number; scheduled: number; failed: number }[];
+  youtubeDaily: YoutubeDailyPoint[];
 }
 
 export interface AdminAnalytics {
@@ -230,9 +335,30 @@ export interface AdminAnalytics {
     subscriberDelta: number;
     viewsDelta: number;
     youtubeVideosDelta: number;
+    watchMinutes: number;
+    engagedViews: number;
+    avgViewDuration: number;
+    avgViewPercentage: number;
+    likes: number;
+    comments: number;
+    shares: number;
+    subscribersGained: number;
+    subscribersLost: number;
+    dataThrough: string | null;
   };
   daily: { date: string; published: number; scheduled: number; failed: number }[];
-  youtubeSeries: { date: string; subscribers: number; views: number; videos: number }[];
+  youtubeSeries: {
+    date: string;
+    subscribers: number;
+    views: number;
+    videos: number;
+    watchMinutes: number;
+    engagedViews: number;
+    avgViewDuration: number;
+    avgViewPercentage: number;
+    subscribersGained: number;
+    subscribersLost: number;
+  }[];
   topChannels: {
     accountId: number;
     channelName: string;
@@ -246,6 +372,8 @@ export interface AdminAnalytics {
     runwayDays: number | null;
     subscribers: number;
     views: number;
+    watchMinutes: number;
+    avgViewDuration: number;
   }[];
   topUsers: {
     userId: number;
@@ -277,6 +405,10 @@ export interface AdminAnalytics {
     subscriberDelta: number;
     viewsDelta: number;
     videoDelta: number;
+    watchMinutes: number;
+    avgViewDuration: number;
+    subscribersGained: number;
+    subscribersLost: number;
   }[];
   failures: {
     id: number;

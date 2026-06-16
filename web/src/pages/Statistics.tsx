@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { BarChart3, Users, Eye, Film, RefreshCw, TrendingUp, TrendingDown, ChevronDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { BarChart3, Users, Eye, Film, RefreshCw, TrendingUp, TrendingDown, ChevronDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight, ExternalLink, X } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -10,14 +10,78 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
-import { apiClient, type StatRow, type StatPoint, type UserAnalytics } from "../lib/api";
+import {
+  apiClient,
+  type StatRow,
+  type StatPoint,
+  type UserAnalytics,
+  type YoutubeAnalyticsPayload,
+  type YoutubeBreakdownRow,
+  type YoutubeTopVideo,
+} from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { compactNumber } from "../lib/format";
 import { useT } from "../lib/i18n";
 
 type Scope = "mine" | "all";
 type MetricKey = "subscribers" | "views" | "videos";
-type SortKey = "name" | "subscribers" | "views" | "videos" | "delta";
+type SortKey = "name" | "subscribers" | "views" | "videos" | "delta" | "analyticsViews" | "watchMinutes";
+type OverviewMetric = "views" | "watch" | "engaged" | "subscribers";
 const PAGE_SIZE = 10;
+
+interface OverviewDailyPoint {
+  date: string;
+  views: number;
+  watchMinutes: number;
+  engagedViews: number;
+  subscribersGained: number;
+  subscribersLost: number;
+}
+
+interface OverviewTopVideo extends YoutubeTopVideo {
+  accountId: number;
+  channelTitle: string;
+  ownerUsername: string | null;
+}
+
+interface OverviewTopChannel {
+  accountId: number;
+  channelTitle: string;
+  ytChannelId: string | null;
+  ownerUsername: string | null;
+  subscribers: number;
+  publicViews: number;
+  analyticsViews: number;
+  watchMinutes: number;
+  avgViewDuration: number;
+  subscribersNet: number;
+}
+
+interface StatsOverviewData {
+  channels: number;
+  connected: number;
+  subscribers: number;
+  publicViews: number;
+  videos: number;
+  analyticsChannels: number;
+  analyticsViews: number;
+  watchMinutes: number;
+  engagedViews: number;
+  avgViewDuration: number;
+  avgViewPercentage: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  subscribersGained: number;
+  subscribersLost: number;
+  dataThrough: string | null;
+  daily: OverviewDailyPoint[];
+  topVideos: OverviewTopVideo[];
+  topChannels: OverviewTopChannel[];
+  trafficSources: YoutubeBreakdownRow[];
+  devices: YoutubeBreakdownRow[];
+  countries: YoutubeBreakdownRow[];
+}
 
 // Persisted filters — restore the last-used filter/sort on the next visit.
 const STORE_KEY = "statsFilters.v1";
@@ -57,10 +121,11 @@ export default function Statistics() {
   const [ownerFilter, setOwnerFilter] = useState(saved.ownerFilter ?? "");
   const [onlyConnected, setOnlyConnected] = useState(saved.onlyConnected ?? true);
   const [page, setPage] = useState(1);
+  const [overviewMetric, setOverviewMetric] = useState<OverviewMetric>("views");
 
-  // Auto-dismiss the success/result banner after a few seconds.
+  // Auto-dismiss only successful refreshes. Warnings stay until the user closes them.
   useEffect(() => {
-    if (!result) return;
+    if (!result?.ok) return;
     const t = setTimeout(() => setResult(null), 6000);
     return () => clearTimeout(t);
   }, [result]);
@@ -153,11 +218,14 @@ export default function Statistics() {
       return true;
     });
   }, [rows, search, ownerFilter, onlyConnected]);
+  const overview = useMemo(() => buildOverview(filtered), [filtered]);
   const sorted = useMemo(() => {
     const dir = sortDir === "asc" ? 1 : -1;
     const val = (r: StatRow): number | string => {
       if (sortKey === "name") return (r.ytChannelTitle || r.channelName || "").toLowerCase();
       if (sortKey === "delta") return r.latest && r.prev ? r.latest.subscribers - r.prev.subscribers : -Infinity;
+      if (sortKey === "analyticsViews") return r.analytics.summary.views;
+      if (sortKey === "watchMinutes") return r.analytics.summary.watchMinutes;
       return r.latest ? r.latest[sortKey] : -Infinity;
     };
     return [...filtered].sort((a, b) => {
@@ -171,21 +239,6 @@ export default function Statistics() {
   const clampedPage = Math.min(page, totalPages);
   const paged = sorted.slice((clampedPage - 1) * PAGE_SIZE, clampedPage * PAGE_SIZE);
 
-  const totals = useMemo(
-    () =>
-      filtered.reduce(
-        (acc, r) => {
-          if (r.latest) {
-            acc.subscribers += r.latest.subscribers;
-            acc.views += r.latest.views;
-          }
-          return acc;
-        },
-        { subscribers: 0, views: 0 },
-      ),
-    [filtered],
-  );
-  const connectedCount = filtered.filter((r) => r.connected).length;
   const anyData = rows.some((r) => r.latest);
 
   return (
@@ -225,18 +278,26 @@ export default function Statistics() {
 
       {error && <div className="alert alert-error text-sm py-2">{error}</div>}
       {result && (
-        <div className={`alert text-sm py-2 ${result.ok ? "alert-success" : "alert-warning"}`}>
-          <span>
-            {result.ok ? "✓ " : "⚠ "}
-            {result.text}
-          </span>
+        <div className={`alert text-sm py-2 items-start ${result.ok ? "alert-success" : "alert-warning"}`}>
+          <span className="pt-0.5">{result.ok ? "✓" : "⚠"}</span>
+          <span className="whitespace-pre-line flex-1">{result.text}</span>
+          <button
+            className="btn btn-ghost btn-xs btn-square"
+            onClick={() => setResult(null)}
+            aria-label={t("common.close")}
+            title={t("common.close")}
+          >
+            <X size={14} />
+          </button>
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Stat icon={<Users />} label={t("stats.totalSubscribers")} value={fmt(totals.subscribers)} />
-        <Stat icon={<Eye />} label={t("stats.totalViews")} value={fmt(totals.views)} />
-        <Stat icon={<Film />} label={t("stats.channelsConnected")} value={`${connectedCount} / ${filtered.length}`} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+        <Stat icon={<Users />} label={t("stats.totalSubscribers")} value={fmt(overview.subscribers)} />
+        <Stat icon={<Eye />} label={t("stats.totalViews")} value={fmt(overview.publicViews)} />
+        <Stat icon={<BarChart3 />} label={t("stats.analyticsViews")} value={fmt(overview.analyticsViews)} />
+        <Stat icon={<TrendingUp />} label={t("stats.watchTime")} value={formatWatchMinutes(overview.watchMinutes)} />
+        <Stat icon={<Film />} label={t("stats.channelsConnected")} value={`${overview.connected} / ${overview.channels}`} />
       </div>
 
       {analytics &&
@@ -270,8 +331,8 @@ export default function Statistics() {
                     <LineChart data={analytics.daily} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="date" fontSize={11} />
-                      <YAxis allowDecimals={false} fontSize={11} />
-                      <Tooltip />
+                      <YAxis allowDecimals={false} fontSize={11} width={40} tickFormatter={(value) => compactNumber(Number(value))} />
+                      <Tooltip formatter={(value) => compactNumber(Number(value))} />
                       <Legend />
                       <Line type="monotone" dataKey="published" name={t("stats.published")} stroke="#16a34a" dot={false} strokeWidth={2} />
                       <Line type="monotone" dataKey="scheduled" name={t("stats.scheduled")} stroke="#605dff" dot={false} strokeWidth={2} />
@@ -315,6 +376,8 @@ export default function Statistics() {
               >
                 <option value="subscribers">{t("stats.subscribers")}</option>
                 <option value="views">{t("stats.views")}</option>
+                <option value="analyticsViews">{t("stats.sortPeriodViews")}</option>
+                <option value="watchMinutes">{t("stats.sortWatchTime")}</option>
                 <option value="videos">{t("stats.videos")}</option>
                 <option value="delta">{t("stats.subscribersGrowth")}</option>
                 <option value="name">{t("stats.name")}</option>
@@ -355,6 +418,8 @@ export default function Statistics() {
             </div>
           </div>
 
+          <StatsOverview overview={overview} metric={overviewMetric} onMetric={setOverviewMetric} />
+
           {sorted.length === 0 ? (
             <Empty text={t("stats.emptyNoMatch")} />
           ) : (
@@ -388,8 +453,307 @@ export default function Statistics() {
               </button>
             </div>
           )}
+
+          <AnalyticsFootnote rows={sorted} />
         </>
       )}
+    </div>
+  );
+}
+
+function StatsOverview({
+  overview,
+  metric,
+  onMetric,
+}: {
+  overview: StatsOverviewData;
+  metric: OverviewMetric;
+  onMetric: (metric: OverviewMetric) => void;
+}) {
+  const { t } = useT();
+  if (overview.channels === 0) return null;
+
+  const metricLabels: Record<OverviewMetric, string> = {
+    views: t("stats.analyticsViews"),
+    watch: t("stats.watchHours"),
+    engaged: t("stats.engagedViews"),
+    subscribers: t("stats.netSubscribers"),
+  };
+  const chart = overview.daily.map((p) => {
+    const value =
+      metric === "watch"
+        ? Math.round((p.watchMinutes / 60) * 10) / 10
+        : metric === "engaged"
+          ? p.engagedViews
+          : metric === "subscribers"
+            ? p.subscribersGained - p.subscribersLost
+            : p.views;
+    return { date: shortDate(p.date), value };
+  });
+  const hasBreakdowns = overview.trafficSources.length > 0 || overview.devices.length > 0 || overview.countries.length > 0;
+
+  return (
+    <section className="card bg-base-100 border border-base-300">
+      <div className="card-body gap-5">
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div>
+            <div className="font-semibold">{t("stats.overviewTitle")}</div>
+            <div className="text-xs text-base-content/50 mt-1">
+              {t("stats.overviewSubtitle", {
+                channels: overview.channels,
+                ready: overview.analyticsChannels,
+              })}
+              {overview.dataThrough ? ` · ${t("stats.analyticsDataThrough", { date: overview.dataThrough })}` : ""}
+            </div>
+          </div>
+          <div className="join">
+            {(["views", "watch", "engaged", "subscribers"] as OverviewMetric[]).map((key) => (
+              <button
+                key={key}
+                className={`btn btn-xs join-item ${metric === key ? "btn-primary" : "btn-ghost"}`}
+                onClick={() => onMetric(key)}
+              >
+                {metricLabels[key]}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          <MiniStat label={t("stats.analyticsViews")} value={fmt(overview.analyticsViews)} />
+          <MiniStat label={t("stats.watchTime")} value={formatWatchMinutes(overview.watchMinutes)} />
+          <MiniStat label={t("stats.engagedViews")} value={fmt(overview.engagedViews)} />
+          <MiniStat label={t("stats.avgDuration")} value={formatSeconds(overview.avgViewDuration)} />
+          <MiniStat label={t("stats.netSubscribers")} value={signed(overview.subscribersGained - overview.subscribersLost)} />
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.9fr)] gap-4">
+          <div className="rounded-lg bg-base-200/50 p-3 min-w-0">
+            <div className="flex items-center justify-between gap-3 mb-2">
+              <div className="text-sm font-semibold">{t("stats.overviewChart")}</div>
+              <div className="text-xs text-base-content/50">{metricLabels[metric]}</div>
+            </div>
+            {chart.length > 1 ? (
+              <div className="h-72 w-full min-w-0">
+                <ResponsiveContainer
+                  width="100%"
+                  height="100%"
+                  minWidth={0}
+                  minHeight={288}
+                  initialDimension={{ width: 320, height: 288 }}
+                >
+                  <LineChart data={chart} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis dataKey="date" fontSize={12} tickMargin={6} minTickGap={24} />
+                    <YAxis fontSize={12} width={46} allowDecimals={metric === "watch"} tickFormatter={(value) => compactNumber(Number(value))} />
+                    <Tooltip formatter={(value) => compactNumber(Number(value))} />
+                    <Line type="monotone" dataKey="value" name={metricLabels[metric]} stroke="#0f766e" strokeWidth={2.5} dot={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="h-72 flex items-center justify-center text-sm text-base-content/45 text-center px-4">
+                {t("stats.noAnalyticsChart")}
+              </div>
+            )}
+          </div>
+
+          <TopVideosPanel videos={overview.topVideos} />
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_22rem] gap-4 items-start">
+          {hasBreakdowns ? (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+              <Breakdown title={t("stats.trafficSources")} rows={overview.trafficSources} />
+              <Breakdown title={t("stats.devices")} rows={overview.devices} />
+              <Breakdown title={t("stats.countries")} rows={overview.countries} />
+            </div>
+          ) : (
+            <div className="rounded-lg bg-base-200/50 p-3 min-h-32 flex items-center justify-center text-center text-sm text-base-content/45">
+              {t("stats.noBreakdowns")}
+            </div>
+          )}
+          <TopChannelsPanel rows={overview.topChannels} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MiniStat({ label, value }: { label: string; value: ReactNode }) {
+  return (
+    <div className="rounded-lg bg-base-200/60 p-3">
+      <div className="text-xs text-base-content/55">{label}</div>
+      <div className="text-lg font-bold leading-tight mt-1">{value}</div>
+    </div>
+  );
+}
+
+function TopVideosPanel({ videos }: { videos: OverviewTopVideo[] }) {
+  const { t } = useT();
+  return (
+    <div className="rounded-lg bg-base-200/50 p-3 min-w-0">
+      <div className="text-sm font-semibold mb-3">{t("stats.topVideosAll")}</div>
+      {videos.length === 0 ? (
+        <div className="h-72 flex items-center justify-center text-sm text-base-content/45 text-center px-4">
+          {t("stats.noTopVideos")}
+        </div>
+      ) : (
+        <div className="space-y-2 max-h-72 overflow-auto pr-1">
+          {videos.slice(0, 10).map((v, index) => (
+            <a
+              key={`${v.accountId}:${v.videoId}`}
+              href={`https://www.youtube.com/watch?v=${v.videoId}`}
+              target="_blank"
+              rel="noreferrer"
+              className="grid grid-cols-[1.5rem_minmax(0,1fr)_auto] items-center gap-3 rounded-lg bg-base-100/70 p-2 hover:bg-base-100"
+            >
+              <div className="text-xs text-base-content/45 text-right shrink-0">{index + 1}</div>
+              <div className="min-w-0">
+                <div className="font-medium text-sm truncate">{v.title}</div>
+                <div className="text-xs text-base-content/50 truncate">{v.channelTitle}</div>
+              </div>
+              <div className="text-right shrink-0">
+                <div className="text-sm font-semibold tabular-nums">{fmt(v.views)}</div>
+                <div className="text-[11px] text-base-content/45">
+                  {t("stats.views").toLowerCase()} · {formatWatchMinutes(v.watchMinutes)}
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TopChannelsPanel({ rows }: { rows: OverviewTopChannel[] }) {
+  const { t } = useT();
+  const ranked = rows.slice(0, 8).map((r) => ({
+    ...r,
+    mainViews: r.analyticsViews || r.publicViews,
+    hasAnalytics: r.analyticsViews > 0,
+  }));
+  const maxViews = Math.max(1, ...ranked.map((r) => r.mainViews));
+  return (
+    <aside className="card bg-base-100 border border-base-300">
+      <div className="card-body p-4 gap-3">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="text-sm font-semibold">{t("stats.topChannels")}</div>
+            <div className="text-xs text-base-content/45">{t("stats.topChannelsHint")}</div>
+          </div>
+          {ranked.some((r) => !r.hasAnalytics) && (
+            <span className="badge badge-ghost badge-sm shrink-0">{t("stats.totalFallbackShort")}</span>
+          )}
+        </div>
+      {rows.length === 0 ? (
+        <div className="text-sm text-base-content/45 py-6 text-center">{t("stats.noTopChannels")}</div>
+      ) : (
+        <div className="space-y-2">
+          {ranked.map((r, index) => {
+            const pct = Math.max(3, Math.round((r.mainViews / maxViews) * 100));
+            return (
+              <div
+                key={r.accountId}
+                className={`rounded-lg border px-3 py-2.5 ${
+                  r.hasAnalytics ? "bg-base-200/45 border-base-300" : "bg-base-200/20 border-base-300/70"
+                }`}
+              >
+                <div className="grid grid-cols-[1.5rem_minmax(0,1fr)_auto] items-center gap-2.5">
+                  <div className="text-xs font-semibold text-base-content/45 tabular-nums">
+                    {index + 1}
+                  </div>
+                  <div className="min-w-0">
+                    {r.ytChannelId ? (
+                      <a
+                        href={`https://www.youtube.com/channel/${r.ytChannelId}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-medium truncate block link-hover"
+                        title={t("stats.openOnYoutube")}
+                      >
+                        {r.channelTitle}
+                      </a>
+                    ) : (
+                      <div className="font-medium truncate">{r.channelTitle}</div>
+                    )}
+                    <div className="flex items-center gap-2 text-xs text-base-content/45 min-w-0">
+                      {r.ownerUsername && <span className="truncate">@{r.ownerUsername}</span>}
+                      {!r.hasAnalytics && <span className="badge badge-ghost badge-xs">{t("stats.noPeriodAnalyticsShort")}</span>}
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <div className="text-xl font-bold leading-none tabular-nums">{fmt(r.mainViews)}</div>
+                    <div className="text-[11px] uppercase tracking-wide text-base-content/45">
+                      {r.hasAnalytics ? t("stats.periodShort") : t("stats.totalShort")}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="h-1 rounded-full bg-base-300/70 overflow-hidden mt-2.5">
+                  <div
+                    className={`h-full rounded-full ${r.hasAnalytics ? "bg-primary" : "bg-base-content/25"}`}
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+
+                <div className="mt-2 flex items-center justify-between gap-2 text-xs">
+                  {r.hasAnalytics ? (
+                    <div className="min-w-0 text-base-content/55 truncate">
+                      {formatWatchMinutes(r.watchMinutes)} · {formatSeconds(r.avgViewDuration)} ·{" "}
+                      <span className={r.subscribersNet > 0 ? "text-success" : r.subscribersNet < 0 ? "text-error" : ""}>
+                        {signed(r.subscribersNet)}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="min-w-0 text-base-content/45 truncate">{t("stats.totalFallbackShort")}</div>
+                  )}
+                  {r.ytChannelId && (
+                    <a
+                      href={`https://www.youtube.com/channel/${r.ytChannelId}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="btn btn-ghost btn-xs btn-square shrink-0"
+                      title={t("stats.openOnYoutube")}
+                      aria-label={t("stats.openOnYoutube")}
+                    >
+                      <ExternalLink size={14} />
+                    </a>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      </div>
+    </aside>
+  );
+}
+
+function AnalyticsFootnote({ rows }: { rows: StatRow[] }) {
+  const { t } = useT();
+  const pending = rows.filter(
+    (r) => r.connected && !r.analytics.error && r.analytics.summary.views <= 0 && r.analytics.topVideos.length === 0,
+  );
+  if (pending.length === 0) return null;
+  return (
+    <div className="rounded-lg border border-base-300 bg-base-100/50 px-4 py-3 text-xs text-base-content/45">
+      <div>{t("stats.analyticsPendingFootnote", { n: pending.length })}</div>
+      <details className="mt-1">
+        <summary className="cursor-pointer select-none hover:text-base-content/70">
+          {t("stats.analyticsPendingChannels")}
+        </summary>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {pending.slice(0, 20).map((r) => (
+            <span key={r.accountId} className="badge badge-ghost badge-sm">
+              {r.ytChannelTitle || r.channelName}
+            </span>
+          ))}
+          {pending.length > 20 && <span className="text-base-content/35">+{pending.length - 20}</span>}
+        </div>
+      </details>
     </div>
   );
 }
@@ -476,6 +840,15 @@ function ChannelCard({ row, isAdmin, avatar }: { row: StatRow; isAdmin: boolean;
           <Metric label={t("stats.videos")} value={row.latest?.videos} delta={delta(row, "videos")} t={t} />
         </div>
 
+        {row.analytics.summary.views > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <Metric label={t("stats.analyticsViews")} value={row.analytics.summary.views} delta={null} t={t} />
+            <Metric label={t("stats.watchTime")} value={formatWatchMinutes(row.analytics.summary.watchMinutes)} delta={null} t={t} />
+            <Metric label={t("stats.engagedViews")} value={row.analytics.summary.engagedViews} delta={null} t={t} />
+            <Metric label={t("stats.avgDuration")} value={formatSeconds(row.analytics.summary.avgViewDuration)} delta={null} t={t} />
+          </div>
+        )}
+
         <button
           className="btn btn-ghost btn-sm gap-1 w-fit"
           onClick={() => setOpen((v) => !v)}
@@ -486,7 +859,90 @@ function ChannelCard({ row, isAdmin, avatar }: { row: StatRow; isAdmin: boolean;
           <ChevronDown size={15} className={open ? "rotate-180 transition-transform" : "transition-transform"} />
         </button>
 
-        {open && <ChannelChart points={points} />}
+        {open && (
+          <div className="space-y-4">
+            <ChannelChart points={points} />
+            <ChannelAnalytics analytics={row.analytics} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ChannelAnalytics({ analytics }: { analytics: YoutubeAnalyticsPayload }) {
+  const { t } = useT();
+  if (analytics.error) {
+    return (
+      <div className="alert alert-warning py-2 text-xs">
+        <span>{analytics.error}</span>
+      </div>
+    );
+  }
+  if (analytics.summary.views <= 0 && analytics.topVideos.length === 0) {
+    return null;
+  }
+  return (
+    <div className="space-y-4">
+      {analytics.dataThrough && (
+        <div className="text-xs text-base-content/50">
+          {t("stats.analyticsDataThrough", { date: analytics.dataThrough })}
+        </div>
+      )}
+      {analytics.topVideos.length > 0 && (
+        <div>
+          <div className="font-semibold text-sm mb-2">{t("stats.topVideos")}</div>
+          <div className="space-y-2">
+            {analytics.topVideos.slice(0, 5).map((v) => (
+              <a
+                key={v.videoId}
+                href={`https://www.youtube.com/watch?v=${v.videoId}`}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-3 rounded-lg bg-base-200/60 p-2 hover:bg-base-200"
+              >
+                {v.thumbnailUrl && <img src={v.thumbnailUrl} alt="" className="w-16 h-9 object-cover rounded bg-base-300" />}
+                <div className="min-w-0 flex-1">
+                  <div className="font-medium text-sm truncate">{v.title}</div>
+                  <div className="text-xs text-base-content/50">
+                    {fmt(v.views)} {t("stats.views").toLowerCase()} · {formatWatchMinutes(v.watchMinutes)} · {formatSeconds(v.avgViewDuration)}
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <Breakdown title={t("stats.trafficSources")} rows={analytics.trafficSources} />
+        <Breakdown title={t("stats.devices")} rows={analytics.devices} />
+        <Breakdown title={t("stats.countries")} rows={analytics.countries} />
+      </div>
+    </div>
+  );
+}
+
+function Breakdown({ title, rows }: { title: string; rows: YoutubeBreakdownRow[] }) {
+  if (!rows.length) return null;
+  const total = rows.reduce((sum, r) => sum + r.views, 0);
+  return (
+    <div className="rounded-lg bg-base-200/60 p-3">
+      <div className="font-semibold text-sm mb-2">{title}</div>
+      <div className="space-y-2">
+        {rows.slice(0, 5).map((r) => {
+          const pct = total > 0 ? Math.round((r.views / total) * 100) : 0;
+          return (
+            <div key={r.key}>
+              <div className="flex items-center justify-between gap-2 text-xs">
+                <span className="truncate">{labelValue(r.key)}</span>
+                <span className="text-base-content/60">{fmt(r.views)}</span>
+              </div>
+              <div className="h-1.5 rounded bg-base-300 overflow-hidden mt-1">
+                <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -522,9 +978,9 @@ function ChannelChart({ points }: { points: StatPoint[] | null }) {
         <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis dataKey="t" fontSize={12} tickMargin={6} />
-          <YAxis yAxisId="left" fontSize={12} width={48} />
-          <YAxis yAxisId="right" orientation="right" fontSize={12} width={48} />
-          <Tooltip />
+          <YAxis yAxisId="left" fontSize={12} width={44} tickFormatter={(value) => compactNumber(Number(value))} />
+          <YAxis yAxisId="right" orientation="right" fontSize={12} width={44} tickFormatter={(value) => compactNumber(Number(value))} />
+          <Tooltip formatter={(value) => compactNumber(Number(value))} />
           <Legend />
           <Line yAxisId="left" type="monotone" dataKey="subscribers" name={t("stats.subscribers")} stroke="#6419e6" strokeWidth={2} dot={false} />
           <Line yAxisId="right" type="monotone" dataKey="views" name={t("stats.views")} stroke="#0ea5e9" strokeWidth={2} dot={false} />
@@ -534,11 +990,11 @@ function ChannelChart({ points }: { points: StatPoint[] | null }) {
   );
 }
 
-function Metric({ label, value, delta, t }: { label: string; value?: number; delta: number | null; t: (key: string, vars?: Record<string, string | number>) => string }) {
+function Metric({ label, value, delta, t }: { label: string; value?: ReactNode; delta: number | null; t: (key: string, vars?: Record<string, string | number>) => string }) {
   return (
     <div className="rounded-lg bg-base-200/60 p-3">
       <div className="text-xs text-base-content/60">{label}</div>
-      <div className="text-xl font-bold leading-tight">{value == null ? "—" : fmt(value)}</div>
+      <div className="text-xl font-bold leading-tight">{value == null ? "—" : typeof value === "number" ? fmt(value) : value}</div>
       <DeltaBadge delta={delta} t={t} />
     </div>
   );
@@ -582,13 +1038,196 @@ function Empty({ text, icon }: { text: string; icon?: boolean }) {
   );
 }
 
+function buildOverview(rows: StatRow[]): StatsOverviewData {
+  const daily = new Map<string, OverviewDailyPoint>();
+  const topVideos: OverviewTopVideo[] = [];
+  const topChannels: OverviewTopChannel[] = [];
+  const trafficSources: YoutubeBreakdownRow[] = [];
+  const devices: YoutubeBreakdownRow[] = [];
+  const countries: YoutubeBreakdownRow[] = [];
+  const overview: StatsOverviewData = {
+    channels: rows.length,
+    connected: 0,
+    subscribers: 0,
+    publicViews: 0,
+    videos: 0,
+    analyticsChannels: 0,
+    analyticsViews: 0,
+    watchMinutes: 0,
+    engagedViews: 0,
+    avgViewDuration: 0,
+    avgViewPercentage: 0,
+    likes: 0,
+    comments: 0,
+    shares: 0,
+    subscribersGained: 0,
+    subscribersLost: 0,
+    dataThrough: null,
+    daily: [],
+    topVideos,
+    topChannels,
+    trafficSources: [],
+    devices: [],
+    countries: [],
+  };
+  let durationWeighted = 0;
+  let percentageWeighted = 0;
+
+  for (const row of rows) {
+    if (row.connected) overview.connected += 1;
+    if (row.latest) {
+      overview.subscribers += row.latest.subscribers;
+      overview.publicViews += row.latest.views;
+      overview.videos += row.latest.videos;
+    }
+
+    const analytics = row.analytics;
+    const summary = analytics.summary;
+    const hasAnalytics = summary.views > 0 || analytics.daily.length > 0 || analytics.topVideos.length > 0;
+    if (hasAnalytics) overview.analyticsChannels += 1;
+    if (analytics.dataThrough && (!overview.dataThrough || analytics.dataThrough > overview.dataThrough)) {
+      overview.dataThrough = analytics.dataThrough;
+    }
+
+    overview.analyticsViews += summary.views;
+    overview.watchMinutes += summary.watchMinutes;
+    overview.engagedViews += summary.engagedViews;
+    overview.likes += summary.likes;
+    overview.comments += summary.comments;
+    overview.shares += summary.shares;
+    overview.subscribersGained += summary.subscribersGained;
+    overview.subscribersLost += summary.subscribersLost;
+    if (summary.views > 0) {
+      durationWeighted += summary.avgViewDuration * summary.views;
+      percentageWeighted += summary.avgViewPercentage * summary.views;
+    }
+
+    for (const point of analytics.daily) {
+      const current =
+        daily.get(point.date) ??
+        {
+          date: point.date,
+          views: 0,
+          watchMinutes: 0,
+          engagedViews: 0,
+          subscribersGained: 0,
+          subscribersLost: 0,
+        };
+      current.views += point.views;
+      current.watchMinutes += point.watchMinutes;
+      current.engagedViews += point.engagedViews;
+      current.subscribersGained += point.subscribersGained;
+      current.subscribersLost += point.subscribersLost;
+      daily.set(point.date, current);
+    }
+
+    const channelTitle = row.ytChannelTitle || row.channelName;
+    for (const video of analytics.topVideos) {
+      topVideos.push({
+        ...video,
+        accountId: row.accountId,
+        channelTitle,
+        ownerUsername: row.ownerUsername,
+      });
+    }
+    topChannels.push({
+      accountId: row.accountId,
+      channelTitle,
+      ytChannelId: row.ytChannelId,
+      ownerUsername: row.ownerUsername,
+      subscribers: row.latest?.subscribers ?? 0,
+      publicViews: row.latest?.views ?? 0,
+      analyticsViews: summary.views,
+      watchMinutes: summary.watchMinutes,
+      avgViewDuration: summary.avgViewDuration,
+      subscribersNet: summary.subscribersGained - summary.subscribersLost,
+    });
+    trafficSources.push(...analytics.trafficSources);
+    devices.push(...analytics.devices);
+    countries.push(...analytics.countries);
+  }
+
+  if (overview.analyticsViews > 0) {
+    overview.avgViewDuration = durationWeighted / overview.analyticsViews;
+    overview.avgViewPercentage = percentageWeighted / overview.analyticsViews;
+  }
+
+  overview.daily = [...daily.values()].sort((a, b) => a.date.localeCompare(b.date));
+  overview.topVideos = topVideos.sort((a, b) => b.views - a.views).slice(0, 10);
+  overview.topChannels = topChannels
+    .sort((a, b) => (b.analyticsViews || b.publicViews) - (a.analyticsViews || a.publicViews))
+    .slice(0, 8);
+  overview.trafficSources = mergeBreakdowns(trafficSources);
+  overview.devices = mergeBreakdowns(devices);
+  overview.countries = mergeBreakdowns(countries);
+  return overview;
+}
+
+function mergeBreakdowns(rows: YoutubeBreakdownRow[]): YoutubeBreakdownRow[] {
+  const byKey = new Map<string, YoutubeBreakdownRow & { _durationWeighted: number }>();
+  for (const row of rows) {
+    const key = row.key || "unknown";
+    const current =
+      byKey.get(key) ??
+      {
+        key,
+        views: 0,
+        engagedViews: 0,
+        watchMinutes: 0,
+        avgViewDuration: 0,
+        _durationWeighted: 0,
+      };
+    current.views += row.views;
+    current.engagedViews += row.engagedViews;
+    current.watchMinutes += row.watchMinutes;
+    if (row.avgViewDuration && row.views > 0) current._durationWeighted += row.avgViewDuration * row.views;
+    byKey.set(key, current);
+  }
+  return [...byKey.values()]
+    .map(({ _durationWeighted, ...row }) => ({
+      ...row,
+      avgViewDuration: row.views > 0 ? _durationWeighted / row.views : 0,
+    }))
+    .sort((a, b) => b.views - a.views);
+}
+
 function delta(row: StatRow, key: MetricKey): number | null {
   if (!row.latest || !row.prev) return null;
   return row.latest[key] - row.prev[key];
 }
 
 function fmt(n: number): string {
-  return n.toLocaleString("ru-RU");
+  return compactNumber(n);
+}
+
+function signed(n: number): string {
+  const sign = n > 0 ? "+" : n < 0 ? "-" : "";
+  return `${sign}${fmt(Math.abs(n))}`;
+}
+
+function shortDate(s: string): string {
+  return new Date(`${s}T00:00:00`).toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" });
+}
+
+function formatWatchMinutes(n: number): string {
+  if (n >= 6000) return `${compactNumber(Math.round(n / 60))} h`;
+  if (n >= 60) return `${compactNumber(Math.round((n / 60) * 10) / 10)} h`;
+  return `${Math.round(n).toLocaleString("ru-RU")} m`;
+}
+
+function formatSeconds(n: number): string {
+  const sec = Math.max(0, Math.round(n));
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return m ? `${m}:${String(s).padStart(2, "0")}` : `${s}s`;
+}
+
+function labelValue(v: string): string {
+  return v
+    .replace(/^YT_/, "")
+    .replace(/_/g, " ")
+    .toLowerCase()
+    .replace(/^\w/, (c) => c.toUpperCase());
 }
 
 // SQLite datetime('now') → "YYYY-MM-DD HH:MM:SS" in UTC with no zone marker; parse it as UTC.

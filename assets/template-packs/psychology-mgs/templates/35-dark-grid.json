@@ -1,0 +1,121 @@
+{
+  "version": 1,
+  "name": "psychology-mgs-dark-grid",
+  "canvas": {
+    "w": 1080,
+    "h": 1920,
+    "bg": "#101216"
+  },
+  "elements": [
+    {
+      "id": "label",
+      "type": "text",
+      "x": 74,
+      "y": 108,
+      "w": 500,
+      "h": 58,
+      "rot": 0,
+      "text": "KOPFSACHE",
+      "align": "left",
+      "font": {
+        "family": "Inter",
+        "size": 30,
+        "weight": 900,
+        "color": "#b7ff35",
+        "lineHeight": 1.1
+      }
+    },
+    {
+      "id": "grid",
+      "type": "text",
+      "x": 640,
+      "y": 110,
+      "w": 360,
+      "h": 80,
+      "rot": 0,
+      "text": "╱╲╱╲╱╲",
+      "align": "right",
+      "font": {
+        "family": "Inter",
+        "size": 54,
+        "weight": 600,
+        "color": "#b7ff35",
+        "lineHeight": 1.1
+      },
+      "opacity": 0.25
+    },
+    {
+      "id": "title",
+      "type": "killbox",
+      "x": 74,
+      "y": 250,
+      "w": 930,
+      "h": 320,
+      "rot": 0,
+      "role": "title",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 90,
+        "weight": 800,
+        "color": "#f4f7ee",
+        "lineHeight": 1.04
+      },
+      "fitMin": 46,
+      "fitMax": 96,
+      "maxChars": 68,
+      "bullet": false,
+      "placeholder": "Titel"
+    },
+    {
+      "id": "body",
+      "type": "killbox",
+      "x": 86,
+      "y": 650,
+      "w": 908,
+      "h": 920,
+      "rot": 0,
+      "role": "text",
+      "padX": 34,
+      "padY": 34,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 47,
+        "weight": 600,
+        "color": "#f4f7ee",
+        "lineHeight": 1.48
+      },
+      "fitMin": 29,
+      "fitMax": 54,
+      "maxChars": 760,
+      "bullet": true,
+      "placeholder": "Text",
+      "bg": "rgba(255,255,255,.08)",
+      "border": "1px solid #b7ff3566",
+      "radius": 24
+    },
+    {
+      "id": "footer",
+      "type": "text",
+      "x": 86,
+      "y": 1688,
+      "w": 908,
+      "h": 54,
+      "rot": 0,
+      "text": "beobachten statt bewerten",
+      "align": "center",
+      "font": {
+        "family": "Inter",
+        "size": 30,
+        "weight": 800,
+        "color": "#b7ff35",
+        "lineHeight": 1.1
+      }
+    }
+  ]
+}

@@ -1,6 +1,18 @@
 import type { Db } from "./db.ts";
 
 type Row = Record<string, any>;
+type YtMetrics = {
+  views: number;
+  engagedViews: number;
+  watchMinutes: number;
+  avgViewDuration: number;
+  avgViewPercentage: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  subscribersGained: number;
+  subscribersLost: number;
+};
 
 export interface AnalyticsRange {
   from?: string;
@@ -27,6 +39,16 @@ export interface AdminAnalytics {
     subscriberDelta: number;
     viewsDelta: number;
     youtubeVideosDelta: number;
+    watchMinutes: number;
+    engagedViews: number;
+    avgViewDuration: number;
+    avgViewPercentage: number;
+    likes: number;
+    comments: number;
+    shares: number;
+    subscribersGained: number;
+    subscribersLost: number;
+    dataThrough: string | null;
   };
   daily: {
     date: string;
@@ -39,6 +61,12 @@ export interface AdminAnalytics {
     subscribers: number;
     views: number;
     videos: number;
+    watchMinutes: number;
+    engagedViews: number;
+    avgViewDuration: number;
+    avgViewPercentage: number;
+    subscribersGained: number;
+    subscribersLost: number;
   }[];
   topChannels: {
     accountId: number;
@@ -53,6 +81,8 @@ export interface AdminAnalytics {
     runwayDays: number | null;
     subscribers: number;
     views: number;
+    watchMinutes: number;
+    avgViewDuration: number;
   }[];
   topUsers: {
     userId: number;
@@ -84,6 +114,10 @@ export interface AdminAnalytics {
     subscriberDelta: number;
     viewsDelta: number;
     videoDelta: number;
+    watchMinutes: number;
+    avgViewDuration: number;
+    subscribersGained: number;
+    subscribersLost: number;
   }[];
   failures: {
     id: number;
@@ -166,6 +200,44 @@ function fillDaily(from: string, to: string, rows: Row[]): AdminAnalytics["daily
     out.push(byDate.get(d) ?? { date: d, published: 0, scheduled: 0, failed: 0 });
   }
   return out;
+}
+
+function emptyYtMetrics(): YtMetrics {
+  return {
+    views: 0,
+    engagedViews: 0,
+    watchMinutes: 0,
+    avgViewDuration: 0,
+    avgViewPercentage: 0,
+    likes: 0,
+    comments: 0,
+    shares: 0,
+    subscribersGained: 0,
+    subscribersLost: 0,
+  };
+}
+
+function addYtMetrics(acc: YtMetrics, r: Row): YtMetrics {
+  const views = num(r.views);
+  acc.views += views;
+  acc.engagedViews += num(r.engaged_views);
+  acc.watchMinutes += num(r.watch_minutes);
+  acc.avgViewDuration += num(r.avg_view_duration) * views;
+  acc.avgViewPercentage += num(r.avg_view_percentage) * views;
+  acc.likes += num(r.likes);
+  acc.comments += num(r.comments);
+  acc.shares += num(r.shares);
+  acc.subscribersGained += num(r.subscribers_gained);
+  acc.subscribersLost += num(r.subscribers_lost);
+  return acc;
+}
+
+function finishYtMetrics<T extends ReturnType<typeof emptyYtMetrics>>(acc: T): T {
+  if (acc.views > 0) {
+    acc.avgViewDuration /= acc.views;
+    acc.avgViewPercentage /= acc.views;
+  }
+  return acc;
 }
 
 export function buildAdminAnalytics(dbh: Db, input: AnalyticsRange): AdminAnalytics {
@@ -253,6 +325,29 @@ export function buildAdminAnalytics(dbh: Db, input: AnalyticsRange): AdminAnalyt
     ]),
   );
 
+  const ytRows = sql
+    .prepare(
+      `SELECT account_id AS accountId, date, views, engaged_views, watch_minutes, avg_view_duration,
+              avg_view_percentage, likes, comments, shares, subscribers_gained, subscribers_lost
+       FROM channel_analytics_daily
+       WHERE date BETWEEN ? AND ?
+       ORDER BY date, account_id`,
+    )
+    .all(range.from, range.to) as Row[];
+  const hasYtAnalytics = ytRows.length > 0;
+  const ytTotals = finishYtMetrics(ytRows.reduce<YtMetrics>((acc, r) => addYtMetrics(acc, r), emptyYtMetrics()));
+  const ytByAccount = new Map<number, YtMetrics>();
+  const ytByDate = new Map<string, YtMetrics>();
+  for (const r of ytRows) {
+    const accountId = num(r.accountId);
+    const date = String(r.date);
+    ytByAccount.set(accountId, addYtMetrics(ytByAccount.get(accountId) ?? emptyYtMetrics(), r));
+    ytByDate.set(date, addYtMetrics(ytByDate.get(date) ?? emptyYtMetrics(), r));
+  }
+  for (const [id, m] of ytByAccount) ytByAccount.set(id, finishYtMetrics(m));
+  for (const [date, m] of ytByDate) ytByDate.set(date, finishYtMetrics(m));
+  const dataThrough = ytRows.length ? String(ytRows.at(-1)?.date ?? "") : null;
+
   const topChannels = (
     sql
       .prepare(
@@ -276,6 +371,7 @@ export function buildAdminAnalytics(dbh: Db, input: AnalyticsRange): AdminAnalyt
   ).map((r) => {
     const account = accountById.get(num(r.accountId));
     const stat = latestStats.get(num(r.accountId));
+    const yt = ytByAccount.get(num(r.accountId));
     return {
       accountId: num(r.accountId),
       channelName: String(r.channelName || `#${r.accountId}`),
@@ -288,7 +384,9 @@ export function buildAdminAnalytics(dbh: Db, input: AnalyticsRange): AdminAnalyt
       postsPerDay: account?.postsPerDay ?? 0,
       runwayDays: account?.runwayDays ?? null,
       subscribers: stat?.subscribers ?? 0,
-      views: stat?.views ?? 0,
+      views: hasYtAnalytics ? yt?.views ?? 0 : stat?.views ?? 0,
+      watchMinutes: yt?.watchMinutes ?? 0,
+      avgViewDuration: yt?.avgViewDuration ?? 0,
     };
   });
 
@@ -333,7 +431,7 @@ export function buildAdminAnalytics(dbh: Db, input: AnalyticsRange): AdminAnalyt
     };
   });
 
-  const youtubeSeries = (
+  const snapshotSeries = (
     sql
       .prepare(
         `WITH last_ids AS (
@@ -357,7 +455,30 @@ export function buildAdminAnalytics(dbh: Db, input: AnalyticsRange): AdminAnalyt
     subscribers: num(r.subscribers),
     views: num(r.views),
     videos: num(r.videos),
+    watchMinutes: 0,
+    engagedViews: 0,
+    avgViewDuration: 0,
+    avgViewPercentage: 0,
+    subscribersGained: 0,
+    subscribersLost: 0,
   }));
+  const snapshotByDate = new Map(snapshotSeries.map((r) => [r.date, r]));
+  const youtubeSeries = hasYtAnalytics
+    ? [...ytByDate.entries()]
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([date, yt]) => ({
+          date,
+          subscribers: snapshotByDate.get(date)?.subscribers ?? 0,
+          views: yt.views,
+          videos: snapshotByDate.get(date)?.videos ?? 0,
+          watchMinutes: yt.watchMinutes,
+          engagedViews: yt.engagedViews,
+          avgViewDuration: yt.avgViewDuration,
+          avgViewPercentage: yt.avgViewPercentage,
+          subscribersGained: yt.subscribersGained,
+          subscribersLost: yt.subscribersLost,
+        }))
+    : snapshotSeries;
 
   const youtubeGrowthAll = (
     sql
@@ -402,7 +523,32 @@ export function buildAdminAnalytics(dbh: Db, input: AnalyticsRange): AdminAnalyt
     subscriberDelta: num(r.subscribers) - num(r.firstSubscribers),
     viewsDelta: num(r.views) - num(r.firstViews),
     videoDelta: num(r.videos) - num(r.firstVideos),
+    watchMinutes: 0,
+    avgViewDuration: 0,
+    subscribersGained: 0,
+    subscribersLost: 0,
   }));
+  const youtubeGrowthRows = hasYtAnalytics
+    ? [...ytByAccount.entries()].map(([accountId, yt]) => {
+        const account = accountById.get(accountId);
+        const stat = latestStats.get(accountId);
+        return {
+          accountId,
+          channelName: account?.channelName ?? `#${accountId}`,
+          ownerUsername: account?.ownerUsername ?? null,
+          subscribers: stat?.subscribers ?? 0,
+          views: yt.views,
+          videos: stat?.videos ?? 0,
+          subscriberDelta: yt.subscribersGained - yt.subscribersLost,
+          viewsDelta: yt.views,
+          videoDelta: 0,
+          watchMinutes: yt.watchMinutes,
+          avgViewDuration: yt.avgViewDuration,
+          subscribersGained: yt.subscribersGained,
+          subscribersLost: yt.subscribersLost,
+        };
+      })
+    : youtubeGrowthAll;
 
   const failures = (
     sql
@@ -458,7 +604,7 @@ export function buildAdminAnalytics(dbh: Db, input: AnalyticsRange): AdminAnalyt
     .prepare("SELECT COUNT(*) AS n FROM error_log WHERE date(created_at) BETWEEN ? AND ?")
     .get(range.from, range.to) as Row;
 
-  const youtubeGrowthSorted = [...youtubeGrowthAll].sort(
+  const youtubeGrowthSorted = [...youtubeGrowthRows].sort(
     (a, b) => b.viewsDelta - a.viewsDelta || b.subscriberDelta - a.subscriberDelta,
   );
   const latestTotals = latestStatsRows.reduce(
@@ -470,7 +616,7 @@ export function buildAdminAnalytics(dbh: Db, input: AnalyticsRange): AdminAnalyt
     },
     { subscribers: 0, views: 0, videos: 0 },
   );
-  const growthTotals = youtubeGrowthAll.reduce(
+  const growthTotals = youtubeGrowthRows.reduce(
     (acc, r) => {
       acc.subscriberDelta += r.subscriberDelta;
       acc.viewsDelta += r.viewsDelta;
@@ -495,9 +641,19 @@ export function buildAdminAnalytics(dbh: Db, input: AnalyticsRange): AdminAnalyt
       usersTotal: num((sql.prepare("SELECT COUNT(*) AS n FROM users").get() as Row).n),
       errors: num(errors.n),
       subscribers: latestTotals.subscribers,
-      views: latestTotals.views,
+      views: hasYtAnalytics ? ytTotals.views : latestTotals.views,
       youtubeVideos: latestTotals.videos,
       ...growthTotals,
+      watchMinutes: ytTotals.watchMinutes,
+      engagedViews: ytTotals.engagedViews,
+      avgViewDuration: ytTotals.avgViewDuration,
+      avgViewPercentage: ytTotals.avgViewPercentage,
+      likes: ytTotals.likes,
+      comments: ytTotals.comments,
+      shares: ytTotals.shares,
+      subscribersGained: ytTotals.subscribersGained,
+      subscribersLost: ytTotals.subscribersLost,
+      dataThrough,
     },
     daily: fillDaily(range.from, range.to, dailyRows),
     youtubeSeries,

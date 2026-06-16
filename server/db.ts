@@ -70,6 +70,43 @@ export interface ChannelSnapshot {
   subscribers: number;
   views: number;
   videos: number;
+  analyticsStatus: string | null;
+  analyticsError: string | null;
+  dataThrough: string | null;
+  watchMinutes: number;
+  engagedViews: number;
+  avgViewDuration: number;
+  avgViewPercentage: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  subscribersGained: number;
+  subscribersLost: number;
+  analyticsTakenAt: string | null;
+  takenAt: string;
+}
+
+export interface ChannelDailyAnalytics {
+  accountId: number;
+  date: string;
+  views: number;
+  engagedViews: number;
+  watchMinutes: number;
+  avgViewDuration: number;
+  avgViewPercentage: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  subscribersGained: number;
+  subscribersLost: number;
+}
+
+export interface YoutubeReportCache {
+  accountId: number;
+  reportKey: string;
+  rangeFrom: string;
+  rangeTo: string;
+  payload: unknown;
   takenAt: string;
 }
 
@@ -139,8 +176,53 @@ const rowToSnapshot = (r: Row): ChannelSnapshot => ({
   subscribers: Number(r.subscribers) || 0,
   views: Number(r.views) || 0,
   videos: Number(r.videos) || 0,
+  analyticsStatus: r.analytics_status ?? null,
+  analyticsError: r.analytics_error ?? null,
+  dataThrough: r.data_through ?? null,
+  watchMinutes: Number(r.watch_minutes) || 0,
+  engagedViews: Number(r.engaged_views) || 0,
+  avgViewDuration: Number(r.avg_view_duration) || 0,
+  avgViewPercentage: Number(r.avg_view_percentage) || 0,
+  likes: Number(r.likes) || 0,
+  comments: Number(r.comments) || 0,
+  shares: Number(r.shares) || 0,
+  subscribersGained: Number(r.subscribers_gained) || 0,
+  subscribersLost: Number(r.subscribers_lost) || 0,
+  analyticsTakenAt: r.analytics_taken_at ?? null,
   takenAt: r.taken_at,
 });
+
+const rowToDailyAnalytics = (r: Row): ChannelDailyAnalytics => ({
+  accountId: r.account_id,
+  date: r.date,
+  views: Number(r.views) || 0,
+  engagedViews: Number(r.engaged_views) || 0,
+  watchMinutes: Number(r.watch_minutes) || 0,
+  avgViewDuration: Number(r.avg_view_duration) || 0,
+  avgViewPercentage: Number(r.avg_view_percentage) || 0,
+  likes: Number(r.likes) || 0,
+  comments: Number(r.comments) || 0,
+  shares: Number(r.shares) || 0,
+  subscribersGained: Number(r.subscribers_gained) || 0,
+  subscribersLost: Number(r.subscribers_lost) || 0,
+});
+
+const rowToReportCache = (r: Row): YoutubeReportCache => {
+  let payload: unknown = null;
+  try {
+    payload = JSON.parse(String(r.payload_json ?? "null"));
+  } catch {
+    payload = null;
+  }
+  return {
+    accountId: r.account_id,
+    reportKey: r.report_key,
+    rangeFrom: r.range_from,
+    rangeTo: r.range_to,
+    payload,
+    takenAt: r.taken_at,
+  };
+};
 
 const rowToError = (r: Row): ErrorLogItem => ({
   id: r.id,
@@ -245,7 +327,45 @@ export function openDb(path: string) {
       subscribers INTEGER NOT NULL DEFAULT 0,
       views INTEGER NOT NULL DEFAULT 0,
       videos INTEGER NOT NULL DEFAULT 0,
+      analytics_status TEXT,
+      analytics_error TEXT,
+      data_through TEXT,
+      watch_minutes REAL NOT NULL DEFAULT 0,
+      engaged_views INTEGER NOT NULL DEFAULT 0,
+      avg_view_duration REAL NOT NULL DEFAULT 0,
+      avg_view_percentage REAL NOT NULL DEFAULT 0,
+      likes INTEGER NOT NULL DEFAULT 0,
+      comments INTEGER NOT NULL DEFAULT 0,
+      shares INTEGER NOT NULL DEFAULT 0,
+      subscribers_gained INTEGER NOT NULL DEFAULT 0,
+      subscribers_lost INTEGER NOT NULL DEFAULT 0,
+      analytics_taken_at TEXT,
       taken_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE TABLE IF NOT EXISTS channel_analytics_daily (
+      account_id INTEGER NOT NULL,
+      date TEXT NOT NULL,
+      views INTEGER NOT NULL DEFAULT 0,
+      engaged_views INTEGER NOT NULL DEFAULT 0,
+      watch_minutes REAL NOT NULL DEFAULT 0,
+      avg_view_duration REAL NOT NULL DEFAULT 0,
+      avg_view_percentage REAL NOT NULL DEFAULT 0,
+      likes INTEGER NOT NULL DEFAULT 0,
+      comments INTEGER NOT NULL DEFAULT 0,
+      shares INTEGER NOT NULL DEFAULT 0,
+      subscribers_gained INTEGER NOT NULL DEFAULT 0,
+      subscribers_lost INTEGER NOT NULL DEFAULT 0,
+      updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+      PRIMARY KEY (account_id, date)
+    );
+    CREATE TABLE IF NOT EXISTS youtube_report_cache (
+      account_id INTEGER NOT NULL,
+      report_key TEXT NOT NULL,
+      range_from TEXT NOT NULL,
+      range_to TEXT NOT NULL,
+      payload_json TEXT NOT NULL,
+      taken_at TEXT NOT NULL DEFAULT (datetime('now')),
+      PRIMARY KEY (account_id, report_key, range_from, range_to)
     );
     CREATE TABLE IF NOT EXISTS error_log (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -299,6 +419,19 @@ export function openDb(path: string) {
   addColumn("accounts", "user_id INTEGER");
   addColumn("users", "client_secret_json TEXT");
   addColumn("history", "error TEXT");
+  addColumn("channel_stats", "analytics_status TEXT");
+  addColumn("channel_stats", "analytics_error TEXT");
+  addColumn("channel_stats", "data_through TEXT");
+  addColumn("channel_stats", "watch_minutes REAL NOT NULL DEFAULT 0");
+  addColumn("channel_stats", "engaged_views INTEGER NOT NULL DEFAULT 0");
+  addColumn("channel_stats", "avg_view_duration REAL NOT NULL DEFAULT 0");
+  addColumn("channel_stats", "avg_view_percentage REAL NOT NULL DEFAULT 0");
+  addColumn("channel_stats", "likes INTEGER NOT NULL DEFAULT 0");
+  addColumn("channel_stats", "comments INTEGER NOT NULL DEFAULT 0");
+  addColumn("channel_stats", "shares INTEGER NOT NULL DEFAULT 0");
+  addColumn("channel_stats", "subscribers_gained INTEGER NOT NULL DEFAULT 0");
+  addColumn("channel_stats", "subscribers_lost INTEGER NOT NULL DEFAULT 0");
+  addColumn("channel_stats", "analytics_taken_at TEXT");
   for (const col of ["telegram_id", "telegram_username"]) addColumn("users", `${col} TEXT`);
   try {
     db.exec(
@@ -313,6 +446,8 @@ export function openDb(path: string) {
     CREATE INDEX IF NOT EXISTS idx_history_created ON history(created_at);
     CREATE INDEX IF NOT EXISTS idx_videos_account ON videos(account_id);
     CREATE INDEX IF NOT EXISTS idx_channel_stats_account_taken ON channel_stats(account_id, taken_at);
+    CREATE INDEX IF NOT EXISTS idx_channel_analytics_daily_date ON channel_analytics_daily(date);
+    CREATE INDEX IF NOT EXISTS idx_report_cache_account_key_taken ON youtube_report_cache(account_id, report_key, taken_at);
     CREATE INDEX IF NOT EXISTS idx_error_log_created ON error_log(created_at);
   `);
 
@@ -841,16 +976,57 @@ export function openDb(path: string) {
       subscribers: number;
       views: number;
       videos: number;
+      analyticsStatus?: string | null;
+      analyticsError?: string | null;
+      dataThrough?: string | null;
+      watchMinutes?: number;
+      engagedViews?: number;
+      avgViewDuration?: number;
+      avgViewPercentage?: number;
+      likes?: number;
+      comments?: number;
+      shares?: number;
+      subscribersGained?: number;
+      subscribersLost?: number;
+      analyticsTakenAt?: string | null;
     }): ChannelSnapshot {
       const info = db
         .prepare(
-          "INSERT INTO channel_stats (account_id, subscribers, views, videos) VALUES (?,?,?,?)",
+          `INSERT INTO channel_stats
+            (account_id, subscribers, views, videos, analytics_status, analytics_error, data_through,
+             watch_minutes, engaged_views, avg_view_duration, avg_view_percentage, likes, comments, shares,
+             subscribers_gained, subscribers_lost, analytics_taken_at)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         )
-        .run(s.accountId, s.subscribers, s.views, s.videos);
+        .run(
+          s.accountId,
+          s.subscribers,
+          s.views,
+          s.videos,
+          s.analyticsStatus ?? null,
+          s.analyticsError ?? null,
+          s.dataThrough ?? null,
+          s.watchMinutes ?? 0,
+          s.engagedViews ?? 0,
+          s.avgViewDuration ?? 0,
+          s.avgViewPercentage ?? 0,
+          s.likes ?? 0,
+          s.comments ?? 0,
+          s.shares ?? 0,
+          s.subscribersGained ?? 0,
+          s.subscribersLost ?? 0,
+          s.analyticsTakenAt ?? null,
+        );
       const r = db
         .prepare("SELECT * FROM channel_stats WHERE id = ?")
         .get(Number(info.lastInsertRowid)) as Row;
       return rowToSnapshot(r);
+    },
+    latestSnapshot(accountId: number): ChannelSnapshot | null {
+      const r = db
+        .prepare("SELECT * FROM channel_stats WHERE account_id = ? ORDER BY id DESC LIMIT 1")
+        .get(accountId) as Row | undefined;
+      return r ? rowToSnapshot(r) : null;
     },
     // Two most recent snapshots → latest + previous, for the +/- delta on the card.
     twoLatestSnapshots(accountId: number): {
@@ -873,6 +1049,90 @@ export function openDb(path: string) {
         )
         .all(accountId, limit) as Row[];
       return rows.map(rowToSnapshot);
+    },
+    upsertDailyAnalytics(rows: ChannelDailyAnalytics[]): void {
+      if (!rows.length) return;
+      const stmt = db.prepare(
+        `INSERT INTO channel_analytics_daily
+          (account_id, date, views, engaged_views, watch_minutes, avg_view_duration, avg_view_percentage,
+           likes, comments, shares, subscribers_gained, subscribers_lost, updated_at)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,datetime('now'))
+         ON CONFLICT(account_id, date) DO UPDATE SET
+           views=excluded.views,
+           engaged_views=excluded.engaged_views,
+           watch_minutes=excluded.watch_minutes,
+           avg_view_duration=excluded.avg_view_duration,
+           avg_view_percentage=excluded.avg_view_percentage,
+           likes=excluded.likes,
+           comments=excluded.comments,
+           shares=excluded.shares,
+           subscribers_gained=excluded.subscribers_gained,
+           subscribers_lost=excluded.subscribers_lost,
+           updated_at=datetime('now')`,
+      );
+      for (const r of rows) {
+        stmt.run(
+          r.accountId,
+          r.date,
+          r.views,
+          r.engagedViews,
+          r.watchMinutes,
+          r.avgViewDuration,
+          r.avgViewPercentage,
+          r.likes,
+          r.comments,
+          r.shares,
+          r.subscribersGained,
+          r.subscribersLost,
+        );
+      }
+    },
+    listDailyAnalytics(accountIds: number[], from: string, to: string): ChannelDailyAnalytics[] {
+      const ids = [...new Set(accountIds.filter((id) => Number.isFinite(id)))];
+      if (!ids.length) return [];
+      const ph = ids.map(() => "?").join(",");
+      const rows = db
+        .prepare(
+          `SELECT * FROM channel_analytics_daily
+           WHERE account_id IN (${ph}) AND date BETWEEN ? AND ?
+           ORDER BY date, account_id`,
+        )
+        .all(...ids, from, to) as Row[];
+      return rows.map(rowToDailyAnalytics);
+    },
+    latestDailyAnalyticsDate(accountId: number): string | null {
+      const r = db
+        .prepare("SELECT MAX(date) AS date FROM channel_analytics_daily WHERE account_id = ?")
+        .get(accountId) as Row | undefined;
+      return r?.date ? String(r.date) : null;
+    },
+    setReportCache(accountId: number, reportKey: string, rangeFrom: string, rangeTo: string, payload: unknown): void {
+      db.prepare(
+        `INSERT INTO youtube_report_cache (account_id, report_key, range_from, range_to, payload_json, taken_at)
+         VALUES (?,?,?,?,?,datetime('now'))
+         ON CONFLICT(account_id, report_key, range_from, range_to) DO UPDATE SET
+           payload_json=excluded.payload_json,
+           taken_at=datetime('now')`,
+      ).run(accountId, reportKey, rangeFrom, rangeTo, JSON.stringify(payload ?? null));
+    },
+    getReportCache(accountId: number, reportKey: string, rangeFrom: string, rangeTo: string): YoutubeReportCache | null {
+      const r = db
+        .prepare(
+          `SELECT * FROM youtube_report_cache
+           WHERE account_id = ? AND report_key = ? AND range_from = ? AND range_to = ?`,
+        )
+        .get(accountId, reportKey, rangeFrom, rangeTo) as Row | undefined;
+      return r ? rowToReportCache(r) : null;
+    },
+    latestReportCache(accountId: number, reportKey: string): YoutubeReportCache | null {
+      const r = db
+        .prepare(
+          `SELECT * FROM youtube_report_cache
+           WHERE account_id = ? AND report_key = ?
+           ORDER BY taken_at DESC LIMIT 1`,
+        )
+        .get(accountId, reportKey) as Row | undefined;
+      return r ? rowToReportCache(r) : null;
     },
     // ---- Error log (self-cleaning: keeps last 7 days, capped at 1000 rows) ----
     addError(e: {

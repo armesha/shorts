@@ -22,7 +22,7 @@
         "size": 104,
         "weight": 400,
         "color": "#141414",
-        "lineHeight": 1
+        "lineHeight": 1.1
       }
     },
     {
@@ -47,10 +47,11 @@
       },
       "fitMin": 54,
       "fitMax": 108,
-      "maxChars": 52,
+      "maxChars": 68,
+      "bullet": false,
+      "placeholder": "Titel",
       "highlight": "#aaff00",
-      "underline": true,
-      "placeholder": "Заголовок"
+      "underline": true
     },
     {
       "id": "body",
@@ -72,11 +73,11 @@
         "color": "#141414",
         "lineHeight": 1.5
       },
-      "fitMin": 32,
+      "fitMin": 30,
       "fitMax": 60,
-      "maxChars": 640,
+      "maxChars": 760,
       "bullet": true,
-      "placeholder": "Список"
+      "placeholder": "Text"
     }
   ]
 }

@@ -154,6 +154,18 @@ export const DECKS: Deck[] = [
     adminOnly: true, // pre-built video pack — admin-only
     preFact: true,
   },
+  {
+    id: "space",
+    name: "Space",
+    dir: "data/space", // videos.json = [{file,title,text}] of pre-built montage mp4s in assets/fact-videos/space/
+    source: "",
+    emoji: "🚀",
+    hashtags: "#space #nasa #astronomy #universe #cosmos #shorts",
+    tags: ["space", "nasa", "astronomy", "universe", "cosmos", "science", "shorts"],
+    genericTitles: ["Space", "The Universe", "Cosmos", "Deep Space"],
+    adminOnly: true, // pre-built montage pack — admin-only
+    preFact: true,
+  },
 ];
 
 export const DEFAULT_DECK = "ru";
@@ -167,7 +179,7 @@ export function isPackDeckId(id?: string | null): boolean {
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
-  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de": "de",
+  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de": "de", space: "en",
 };
 export function deckLang(id: string): string {
   return DECK_LANG[id] || "";

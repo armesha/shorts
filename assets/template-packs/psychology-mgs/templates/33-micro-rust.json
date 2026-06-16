@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "name": "psychology-mgs-micro-rust",
+  "canvas": {
+    "w": 1080,
+    "h": 1920,
+    "bg": "#fff1e9"
+  },
+  "elements": [
+    {
+      "id": "top",
+      "type": "text",
+      "x": 72,
+      "y": 105,
+      "w": 460,
+      "h": 54,
+      "rot": 0,
+      "text": "HEUTE",
+      "align": "left",
+      "font": {
+        "family": "Inter",
+        "size": 28,
+        "weight": 800,
+        "color": "#8b6452",
+        "lineHeight": 1.1
+      }
+    },
+    {
+      "id": "number",
+      "type": "text",
+      "x": 760,
+      "y": 92,
+      "w": 240,
+      "h": 140,
+      "rot": 0,
+      "text": "01",
+      "align": "right",
+      "font": {
+        "family": "Inter",
+        "size": 116,
+        "weight": 900,
+        "color": "#c24d2c",
+        "lineHeight": 1.1
+      },
+      "opacity": 0.88
+    },
+    {
+      "id": "title",
+      "type": "killbox",
+      "x": 70,
+      "y": 250,
+      "w": 940,
+      "h": 330,
+      "rot": 0,
+      "role": "title",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Montserrat",
+        "size": 82,
+        "weight": 800,
+        "color": "#2d1208",
+        "lineHeight": 1.08
+      },
+      "fitMin": 42,
+      "fitMax": 88,
+      "maxChars": 68,
+      "bullet": false,
+      "placeholder": "Titel"
+    },
+    {
+      "id": "body",
+      "type": "killbox",
+      "x": 88,
+      "y": 675,
+      "w": 904,
+      "h": 920,
+      "rot": 0,
+      "role": "text",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 47,
+        "weight": 700,
+        "color": "#2d1208",
+        "lineHeight": 1.5
+      },
+      "fitMin": 29,
+      "fitMax": 54,
+      "maxChars": 760,
+      "bullet": true,
+      "placeholder": "Text",
+      "bg": "#ffffff00"
+    },
+    {
+      "id": "bar",
+      "type": "text",
+      "x": 88,
+      "y": 1640,
+      "w": 904,
+      "h": 44,
+      "rot": 0,
+      "text": "━━━━━━━━━━━━━━━━━━━━",
+      "align": "center",
+      "font": {
+        "family": "Inter",
+        "size": 28,
+        "weight": 900,
+        "color": "#c24d2c",
+        "lineHeight": 1.1
+      }
+    },
+    {
+      "id": "footer",
+      "type": "text",
+      "x": 88,
+      "y": 1704,
+      "w": 904,
+      "h": 46,
+      "rot": 0,
+      "text": "klein genug, um heute zu starten",
+      "align": "center",
+      "font": {
+        "family": "Inter",
+        "size": 28,
+        "weight": 700,
+        "color": "#8b6452",
+        "lineHeight": 1.1
+      }
+    }
+  ]
+}

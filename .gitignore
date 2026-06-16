@@ -21,16 +21,18 @@ data/tips/_*.json
 Русские анекдоты/
 corpora/
 
-# pre-built video packs (decks "fact-en", "quotes-de") — big mp4 pool + generated manifests, kept local
+# pre-built video packs (decks "fact-en", "quotes-de", "space") — big mp4 pool + generated manifests, kept local
 assets/fact-videos/
 data/fact-videos/
 data/quotes-de/
+data/space/
 
 # stray generated preview images (not source)
 images/
 
 # scratch / temp working dir — not source
 temp/
+.playwright-mcp/
 
 # env & secrets — NEVER commit
 .env

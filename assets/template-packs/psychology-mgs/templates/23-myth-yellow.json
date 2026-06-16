@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "name": "psychology-mgs-myth-yellow",
+  "canvas": {
+    "w": 1080,
+    "h": 1920,
+    "bg": "#171713"
+  },
+  "elements": [
+    {
+      "id": "label",
+      "type": "text",
+      "x": 76,
+      "y": 104,
+      "w": 540,
+      "h": 60,
+      "rot": 0,
+      "text": "MYTHOS / FAKT",
+      "align": "left",
+      "font": {
+        "family": "Inter",
+        "size": 30,
+        "weight": 900,
+        "color": "#ffe357",
+        "lineHeight": 1.1
+      }
+    },
+    {
+      "id": "title",
+      "type": "killbox",
+      "x": 76,
+      "y": 218,
+      "w": 928,
+      "h": 300,
+      "rot": 0,
+      "role": "title",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 82,
+        "weight": 800,
+        "color": "#f9f4dc",
+        "lineHeight": 1.12
+      },
+      "fitMin": 44,
+      "fitMax": 88,
+      "maxChars": 68,
+      "bullet": false,
+      "placeholder": "Titel"
+    },
+    {
+      "id": "body",
+      "type": "killbox",
+      "x": 86,
+      "y": 610,
+      "w": 908,
+      "h": 990,
+      "rot": 0,
+      "role": "text",
+      "padX": 32,
+      "padY": 30,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 42,
+        "weight": 650,
+        "color": "#f9f4dc",
+        "lineHeight": 1.36
+      },
+      "fitMin": 24,
+      "fitMax": 44,
+      "maxChars": 690,
+      "bullet": false,
+      "placeholder": "Text",
+      "bg": "rgba(255,255,255,.07)",
+      "border": "1px solid #ffe35755",
+      "radius": 24
+    },
+    {
+      "id": "footer",
+      "type": "text",
+      "x": 86,
+      "y": 1690,
+      "w": 908,
+      "h": 44,
+      "rot": 0,
+      "text": "ein anderer rahmen verändert die reaktion",
+      "align": "center",
+      "font": {
+        "family": "Inter",
+        "size": 27,
+        "weight": 700,
+        "color": "#c7bd83",
+        "lineHeight": 1.1
+      }
+    }
+  ]
+}
