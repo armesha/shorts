@@ -21,7 +21,7 @@ function sampleJson(rules: PackRoleRule[]): string {
   return JSON.stringify([obj], null, 2);
 }
 
-export default function PackDetail({ packId, onChanged }: { packId: string; onChanged?: () => void }) {
+export default function PackDetail({ packId, onChanged, onDeleted }: { packId: string; onChanged?: () => void; onDeleted?: () => void }) {
   const { user } = useAuth();
   const [pack, setPack] = useState<PackFull | null>(null);
   const [raw, setRaw] = useState("");
@@ -38,6 +38,7 @@ export default function PackDetail({ packId, onChanged }: { packId: string; onCh
   const [lang, setLang] = useState("ru"); // редактируемый язык-тег (владелец/админ)
   const [metaBusy, setMetaBusy] = useState(false);
   const [metaMsg, setMetaMsg] = useState<string | null>(null);
+  const [removing, setRemoving] = useState(false); // удаление пака целиком (владелец/админ)
 
   const reload = () =>
     apiClient
@@ -104,10 +105,22 @@ export default function PackDetail({ packId, onChanged }: { packId: string; onCh
     finally { setDeleting(null); }
   }
 
+  // Удалить пак целиком. Право (владелец/админ) совпадает с canEdit; бэкенд гейтит повторно.
+  async function removePack() {
+    if (!pack) return;
+    const msg = pack.cards.length
+      ? `Удалить пак «${pack.name}» целиком? Все ${pack.cards.length} карточек будут потеряны. Действие необратимо.`
+      : `Удалить пак «${pack.name}»? Действие необратимо.`;
+    if (!(await confirmDialog(msg, { confirmText: "Удалить пак", danger: true }))) return;
+    setRemoving(true); setErr(null);
+    try { await apiClient.deletePack(packId); onDeleted?.(); }
+    catch (e) { setErr(e instanceof ApiError ? e.message : "Не удалось удалить пак"); setRemoving(false); }
+  }
+
   if (!pack) return <div className="text-sm text-base-content/50 py-6 text-center"><Loader2 className="animate-spin inline" size={16} /> загрузка пака…</div>;
   const rules = pack.rules ?? [];
   // Редактировать пак (имя/язык/карточки) может только владелец или админ. Грант → только использование.
-  const canEdit = !!user && (user.role === "admin" || pack.userId === user.id);
+  const canEdit = !!user && (user.role === "admin" || pack.owners.includes(user.id));
   const metaDirty = name.trim() !== pack.name || lang !== pack.lang;
   const PER_PAGE = 24;
   const totalPages = Math.max(1, Math.ceil(pack.cards.length / PER_PAGE));
@@ -148,9 +161,19 @@ export default function PackDetail({ packId, onChanged }: { packId: string; onCh
           {metaMsg && (
             <span className="text-success text-xs inline-flex items-center gap-1"><Check size={13} /> {metaMsg}</span>
           )}
-          {user?.role === "admin" && pack.userId !== user.id && (
-            <span className="text-[11px] text-warning/90 self-center ml-auto">правите как админ</span>
-          )}
+          <div className="ml-auto flex items-center gap-2 self-center">
+            {user?.role === "admin" && !pack.owners.includes(user.id) && (
+              <span className="text-[11px] text-warning/90">правите как админ</span>
+            )}
+            <button
+              className="btn btn-error btn-outline btn-sm gap-1"
+              onClick={removePack}
+              disabled={removing || metaBusy}
+              title="Удалить этот пак целиком"
+            >
+              {removing ? <Loader2 className="animate-spin" size={15} /> : <Trash2 size={15} />} Удалить пак
+            </button>
+          </div>
         </div>
       ) : (
         <div className="text-xs text-base-content/60 flex items-center gap-1.5 bg-base-200/50 rounded-lg px-3 py-2 border border-base-300">

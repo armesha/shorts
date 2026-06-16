@@ -253,8 +253,9 @@ export default function Packs() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {customPacks.map((p) => {
-              const canDelete = isAdmin || p.userId === user?.id;
-              const foreign = isAdmin && p.userId !== user?.id;
+              const owned = !!user && p.owners.includes(user.id);
+              const canDelete = isAdmin || owned;
+              const foreign = isAdmin && !owned; // админ не владелец — пак чужой/ничей
               return (
                 <div key={p.id} className="card bg-base-100 border border-base-300">
                   <div className="card-body gap-1 p-4">
@@ -279,8 +280,11 @@ export default function Packs() {
                       )}
                     </div>
                     {isAdmin && (
-                      <div className={`text-[11px] -mt-0.5 ${foreign ? "text-warning/90" : "text-base-content/40"}`}>
-                        {foreign ? "чужой" : "ваш"} пак · владелец {users.find((u) => u.id === p.userId)?.username || `#${p.userId}`}
+                      <div className="text-[11px] -mt-0.5 text-base-content/40">
+                        {(() => {
+                          const names = p.owners.map((id) => users.find((u) => u.id === id)?.username || `#${id}`);
+                          return names.length ? `владельц${names.length > 1 ? "ы" : "ец"}: ${names.join(", ")}` : "без владельца";
+                        })()}
                       </div>
                     )}
                     <div className="text-2xl font-bold leading-none">{fmt(p.cards)}</div>

@@ -40,18 +40,21 @@ export interface StoredCard {
 }
 export interface Pack {
   id: string;
-  userId: number; // владелец
+  /** Владельцы пака (могут редактировать/удалять). Пусто = владельца нет. Каноника. */
+  owners: number[];
+  /** @deprecated одиночный владелец из старых файлов — нормализуется в owners при чтении. */
+  userId?: number;
   name: string;
   lang: string;
   templates: PackTemplate[];
   cards: StoredCard[];
   createdAt: string;
-  /** userId'ы, которым админ выдал доступ (opt-in). По умолчанию []: видит только владелец/админ. */
+  /** userId'ы, которым админ выдал доступ (opt-in). По умолчанию []: видят только владельцы/админ. */
   grants?: number[];
 }
 export interface PackSummary {
   id: string;
-  userId: number; // владелец
+  owners: number[]; // владельцы (может быть пусто)
   name: string;
   lang: string;
   templates: number;
@@ -175,7 +178,10 @@ function readPackFile(id: string): Pack | null {
   const file = packFile(id);
   if (!existsSync(file)) return null;
   try {
-    return JSON.parse(readFileSync(file, "utf8")) as Pack;
+    const p = JSON.parse(readFileSync(file, "utf8")) as Pack;
+    // Нормализация: старые паки хранили одиночный userId → приводим к owners[]. Каноника — owners.
+    if (!Array.isArray(p.owners)) p.owners = p.userId != null ? [p.userId] : [];
+    return p;
   } catch {
     return null;
   }
@@ -190,7 +196,7 @@ export function createPack(
   const id = `${slug(opts.name)}-${Date.now().toString(36)}`;
   const pack: Pack = {
     id,
-    userId,
+    owners: [userId], // создатель = первый владелец
     name: opts.name.trim() || "Пак",
     lang: opts.lang || "ru",
     templates: opts.templates?.length ? opts.templates : [],
@@ -204,13 +210,13 @@ export function createPack(
 
 /** Доступ к паку (чтение/использование: список, превью, сборка видео): админ ИЛИ владелец ИЛИ грант. */
 export function canAccess(pack: Pack, userId: number, isAdmin: boolean): boolean {
-  return isAdmin || pack.userId === userId || (pack.grants ?? []).includes(userId);
+  return isAdmin || pack.owners.includes(userId) || (pack.grants ?? []).includes(userId);
 }
 
-/** Право РЕДАКТИРОВАТЬ пак (имя, язык, карточки, удаление): только админ ИЛИ владелец.
+/** Право РЕДАКТИРОВАТЬ пак (имя, язык, карточки, удаление): админ ИЛИ один из владельцев.
  *  Грант даёт лишь чтение/использование — гранчёный юзер пак НЕ редактирует. */
 export function canEdit(pack: Pack, userId: number, isAdmin: boolean): boolean {
-  return isAdmin || pack.userId === userId;
+  return isAdmin || pack.owners.includes(userId);
 }
 
 /** Все паки (любой владелец) — для матрицы Админки (колонки + кто гранчен). */
@@ -221,7 +227,7 @@ export function listAllPacks(): PackSummary[] {
     if (!f.endsWith(".json") || f.endsWith(".tmp")) continue;
     const p = readPackFile(f.replace(/\.json$/, ""));
     if (!p) continue;
-    out.push({ id: p.id, userId: p.userId, name: p.name, lang: p.lang, templates: p.templates.length, cards: p.cards.length, createdAt: p.createdAt, grants: p.grants ?? [] });
+    out.push({ id: p.id, owners: p.owners, name: p.name, lang: p.lang, templates: p.templates.length, cards: p.cards.length, createdAt: p.createdAt, grants: p.grants ?? [] });
   }
   out.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
   return out;
@@ -259,12 +265,15 @@ export function setPackName(packId: string, name: string): boolean {
   return true;
 }
 
-/** Сменить владельца пака (только админ — проверка на уровне роута). Новый владелец из грантов убирается. */
-export function setPackOwner(packId: string, newOwnerId: number): boolean {
+/** Задать список владельцев пака (0+; только админ — проверка на уровне роута). Пусто = без владельца.
+ *  Владельцы убираются из грантов (владельцу грант не нужен). Legacy-поле userId стирается. */
+export function setPackOwners(packId: string, ownerIds: number[]): boolean {
   const p = readPackFile(packId);
   if (!p) return false;
-  p.userId = newOwnerId;
-  if (p.grants) p.grants = p.grants.filter((g) => g !== newOwnerId); // владельцу грант не нужен
+  const owners = [...new Set(ownerIds.filter((n) => Number.isInteger(n) && n > 0))];
+  p.owners = owners;
+  if (p.grants) p.grants = p.grants.filter((g) => !owners.includes(g));
+  delete p.userId; // каноника теперь owners[]
   writeAtomic(packFile(packId), p);
   return true;
 }
@@ -277,7 +286,7 @@ export function listPacks(userId: number, isAdmin = false): PackSummary[] {
     if (!f.endsWith(".json") || f.endsWith(".tmp")) continue;
     const p = readPackFile(f.replace(/\.json$/, ""));
     if (!p || !canAccess(p, userId, isAdmin)) continue;
-    out.push({ id: p.id, userId: p.userId, name: p.name, lang: p.lang, templates: p.templates.length, cards: p.cards.length, createdAt: p.createdAt, grants: p.grants ?? [] });
+    out.push({ id: p.id, owners: p.owners, name: p.name, lang: p.lang, templates: p.templates.length, cards: p.cards.length, createdAt: p.createdAt, grants: p.grants ?? [] });
   }
   out.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
   return out;
@@ -334,11 +343,11 @@ export function deleteCard(
   return { deleted: true, total: p.cards.length };
 }
 
-/** Удалить пак целиком: админ — любой пак, остальные — только СВОЙ (созданный лично, грант не считается). */
+/** Удалить пак целиком: админ — любой пак, остальные — только если они владелец (грант не считается). */
 export function deletePack(id: string, userId: number, isAdmin = false): boolean {
   const p = readPackFile(id);
   if (!p) return false;
-  if (!isAdmin && p.userId !== userId) return false; // не админ → только владелец (не грантополучатель)
+  if (!isAdmin && !p.owners.includes(userId)) return false; // не админ → только владелец (не грантополучатель)
   unlinkSync(packFile(id));
   return true;
 }

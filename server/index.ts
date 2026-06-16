@@ -7,7 +7,7 @@ import { loadBaseConfig, resolveClientSecretFile, credsFileExists } from "./conf
 import { openDb, type Account } from "./db.ts";
 import { randomAnecdote, libraryStats, anecdoteKey } from "../src/anecdotes/library.ts";
 import { DECKS, getDeck, ytMeta, pickGenericTitle, isPackDeckId, deckLang } from "../src/anecdotes/decks.ts";
-import { listAllPacks, setGrant, setPackOwner, getPack } from "../src/packs/store.ts";
+import { listAllPacks, setGrant, setPackOwners, getPack } from "../src/packs/store.ts";
 import { pickUnusedPackCard, buildPackLibraryVideo } from "./pack-gen.ts";
 import { buildFactLibraryVideo } from "./fact-gen.ts";
 import { renderAnecdote, listBackgrounds } from "../src/anecdotes/render.ts";
@@ -449,7 +449,7 @@ app.get("/api/admin/user-decks", async (req, reply) => {
       role: u.role,
       hidden: hidden[u.id] ?? [],
       grantedPacks: allPacks
-        .filter((p) => u.role === "admin" || p.userId === u.id || p.grants.includes(u.id))
+        .filter((p) => u.role === "admin" || p.owners.includes(u.id) || p.grants.includes(u.id))
         .map((p) => `pack:${p.id}`),
       used: used[u.id] ?? [],
       scheduled: db.scheduleSlotsForUser(u.id), // posts/day planned across all their channels
@@ -473,21 +473,29 @@ app.put("/api/admin/users/:id/decks", async (req, reply) => {
   if (target.role !== "admin") {
     const want = new Set((Array.isArray(body.grants) ? body.grants : []).map((g) => g.replace(/^pack:/, "")));
     for (const p of listAllPacks()) {
-      if (p.userId === id) continue;
+      if (p.owners.includes(id)) continue; // владельцу грант не нужен
       setGrant(p.id, id, want.has(p.id));
     }
   }
   return { ok: true, hidden: finalHidden };
 });
 
-// Admin: reassign a custom pack's owner. Owner = who may edit the pack (name/lang/cards) on /cards.
-app.put("/api/admin/packs/:id/owner", async (req, reply) => {
+// Admin: set a custom pack's owners (0+ users). Owners may edit the pack (name/lang/cards) on /cards.
+// Админов во владельцы НЕ пишем — админ и так редактирует любой пак; пустой список = у пака нет владельца.
+app.put("/api/admin/packs/:id/owners", async (req, reply) => {
   if (!requireAdmin(req, reply)) return;
   const id = (req.params as { id: string }).id.replace(/^pack:/, "");
-  const ownerId = Number((req.body as { ownerId?: number })?.ownerId);
-  if (!db.getUserById(ownerId)) return reply.code(404).send({ error: "Пользователь не найден" });
-  if (!setPackOwner(id, ownerId)) return reply.code(404).send({ error: "Пак не найден" });
-  return { ok: true, ownerId };
+  const raw = (req.body as { owners?: unknown })?.owners;
+  const ids = Array.isArray(raw) ? [...new Set(raw.map(Number))].filter((n) => Number.isInteger(n) && n > 0) : [];
+  const owners: number[] = [];
+  for (const oid of ids) {
+    const u = db.getUserById(oid);
+    if (!u) return reply.code(404).send({ error: "Пользователь не найден" });
+    if (u.role === "admin") continue; // админ владельцем не становится — у него и так полный доступ
+    owners.push(oid);
+  }
+  if (!setPackOwners(id, owners)) return reply.code(404).send({ error: "Пак не найден" });
+  return { ok: true, owners };
 });
 
 // Pack overview for the «Паки» tab (any logged-in user): their VISIBLE packs with total/used/remaining/posted.

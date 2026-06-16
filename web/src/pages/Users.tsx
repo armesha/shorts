@@ -40,6 +40,7 @@ function AdminUsers() {
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [packs, setPacks] = useState<PackSummary[]>([]); // все кастомные паки (админ видит все) — для назначения владельцев
   const [savingOwner, setSavingOwner] = useState<string | null>(null);
+  const [ownerErr, setOwnerErr] = useState<string | null>(null);
 
   const loadUsers = () => apiClient.adminUsers().then(setUsers).catch(() => {});
   const loadMatrix = () => apiClient.adminUserDecks().then(setRows).catch(() => {});
@@ -51,15 +52,22 @@ function AdminUsers() {
     apiClient.adminDecks().then(setDecks).catch(() => {});
   }, []);
 
-  // Сменить владельца пака (только админ). Владелец = кто может редактировать пак на /cards.
-  async function changeOwner(p: PackSummary, ownerId: number) {
-    if (ownerId === p.userId) return;
+  // Добавить/убрать владельца пака (только админ). Шлём ВЕСЬ массив владельцев; пусто = без владельца.
+  // Оптимистично + ВИДИМАЯ ошибка с откатом (без «тихого возврата» — частая жалоба).
+  async function toggleOwner(p: PackSummary, userId: number) {
+    const next = p.owners.includes(userId)
+      ? p.owners.filter((x) => x !== userId)
+      : [...p.owners, userId];
     setSavingOwner(p.id);
-    setPacks((cur) => cur.map((x) => (x.id === p.id ? { ...x, userId: ownerId } : x)));
+    setOwnerErr(null);
+    setPacks((cur) => cur.map((x) => (x.id === p.id ? { ...x, owners: next } : x)));
     try {
-      await apiClient.setPackOwner(p.id, ownerId);
-      loadMatrix(); // смена владельца влияет на колонку грантов в матрице
-    } catch {
+      const r = await apiClient.setPackOwners(p.id, next);
+      // Сервер возвращает канон (админы отброшены) — синхронизируем локально.
+      setPacks((cur) => cur.map((x) => (x.id === p.id ? { ...x, owners: r.owners } : x)));
+      loadMatrix(); // владелец влияет на колонку грантов в матрице
+    } catch (e) {
+      setOwnerErr(e instanceof ApiError ? e.message : "Не удалось сохранить владельцев");
       loadPacks(); // откат к серверному состоянию
     } finally {
       setSavingOwner(null);
@@ -322,23 +330,30 @@ function AdminUsers() {
           </div>
         )}
 
-        {/* Владельцы паков: у каждого кастомного пака один владелец — он редактирует пак (имя/язык/карточки) на /cards. */}
+        {/* Владельцы паков: у пака 0+ владельцев — они редактируют пак (имя/язык/карточки) на /cards. Админ во владельцы не пишется. */}
         {packs.length > 0 && (
           <div className="border-t border-base-300 pt-3">
             <p className="text-sm font-medium mb-1 flex items-center gap-2">
               <Crown size={15} className="text-primary" /> Владельцы паков
             </p>
             <p className="text-xs text-base-content/50 mb-2">
-              Владелец редактирует пак (имя, язык, карточки) на странице «Карточки». Доступ остальным выдаётся
-              галочками в таблице выше — это право на использование, без правки.
+              Владельцы редактируют пак (имя, язык, карточки) на странице «Карточки» — можно указать несколько
+              или никого. Админ редактирует любой пак и так, поэтому во владельцы не добавляется. Доступ
+              остальным выдаётся галочками в таблице выше — это право на использование, без правки.
             </p>
+            {ownerErr && (
+              <div className="alert alert-error text-sm mb-2 py-2">
+                <AlertTriangle size={16} />
+                <span>{ownerErr}</span>
+              </div>
+            )}
             <div className="overflow-x-auto rounded-lg border border-base-300">
               <table className="table table-xs">
                 <thead>
                   <tr>
                     <th className="sticky left-0 z-20 bg-base-100 border-r border-base-300">Пак</th>
                     <th>Язык</th>
-                    <th>Владелец</th>
+                    <th>Владельцы</th>
                     <th className="text-right">Карточек</th>
                   </tr>
                 </thead>
@@ -350,20 +365,25 @@ function AdminUsers() {
                       </td>
                       <td className="uppercase text-base-content/70">{p.lang}</td>
                       <td>
-                        <div className="flex items-center gap-1.5">
-                          <select
-                            className="select select-bordered select-xs"
-                            value={String(p.userId)}
-                            disabled={savingOwner === p.id}
-                            onChange={(e) => changeOwner(p, Number(e.target.value))}
-                            aria-label={`Владелец пака ${p.name}`}
-                          >
-                            {users.map((u) => (
-                              <option key={u.id} value={String(u.id)}>
-                                {u.username}{u.role === "admin" ? " (админ)" : ""}
-                              </option>
-                            ))}
-                          </select>
+                        <div className="flex flex-wrap items-center gap-1">
+                          {users.filter((u) => u.role !== "admin").map((u) => {
+                            const on = p.owners.includes(u.id);
+                            return (
+                              <button
+                                key={u.id}
+                                type="button"
+                                className={`btn btn-xs ${on ? "btn-primary" : "btn-ghost border border-base-300 opacity-70"}`}
+                                disabled={savingOwner === p.id}
+                                onClick={() => toggleOwner(p, u.id)}
+                                title={on ? "владелец — клик, чтобы убрать" : "клик, чтобы сделать владельцем"}
+                              >
+                                {on ? <Check size={11} /> : null} {u.username}
+                              </button>
+                            );
+                          })}
+                          {!p.owners.some((id) => users.some((u) => u.id === id && u.role !== "admin")) && (
+                            <span className="text-base-content/40 text-xs italic">нет владельца</span>
+                          )}
                           {savingOwner === p.id && <span className="loading loading-spinner loading-xs" />}
                         </div>
                       </td>

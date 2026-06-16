@@ -394,7 +394,7 @@ export interface PsychUploadErrorBody {
 // ---- Кастомные паки (хаб «Паки и карточки») ----
 export interface PackSummary {
   id: string;
-  userId: number; // владелец пака (для «удалять только свои»)
+  owners: number[]; // владельцы пака (могут редактировать/удалять; пусто = без владельца)
   name: string;
   lang: string;
   templates: number;
@@ -413,7 +413,7 @@ export interface PackCardRow {
 }
 export interface PackFull {
   id: string;
-  userId: number; // владелец пака (может редактировать имя/язык/карточки)
+  owners: number[]; // владельцы пака (могут редактировать имя/язык/карточки)
   name: string;
   lang: string;
   createdAt: string;
@@ -587,9 +587,9 @@ export const apiClient = {
   deletePack: (id: string) => send<{ deleted: boolean }>(`/packs/${id}`, "DELETE"),
   setPackLang: (id: string, lang: string) => send<{ ok: boolean; lang: string }>(`/packs/${id}/lang`, "POST", { lang }),
   setPackName: (id: string, name: string) => send<{ ok: boolean; name: string }>(`/packs/${id}/name`, "POST", { name }),
-  // Admin: reassign a pack's owner (owner edits the pack on /cards).
-  setPackOwner: (id: string, ownerId: number) =>
-    send<{ ok: boolean; ownerId: number }>(`/admin/packs/${id}/owner`, "PUT", { ownerId }),
+  // Admin: set a pack's owners (0+; owners edit the pack on /cards). Пусто = без владельца.
+  setPackOwners: (id: string, owners: number[]) =>
+    send<{ ok: boolean; owners: number[] }>(`/admin/packs/${id}/owners`, "PUT", { owners }),
   packPreview: (id: string, i: number) => get<{ imageUrl: string }>(`/packs/${id}/preview?i=${i}`),
   packBuildVideo: (id: string, i: number, opts?: { accountId?: number; music?: string }) =>
     send<{ videoUrl: string; music: string; saved: boolean }>(`/packs/${id}/cards/${i}/video`, "POST", opts ?? {}),
