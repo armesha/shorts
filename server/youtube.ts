@@ -93,8 +93,15 @@ export function ytErrorReason(err: unknown): string {
   // Include the error code + reason in the matched string so /invalid_grant/ etc. fire even when the
   // human-readable text is in error_description.
   const s = `${String(raw)} ${errCode} ${reason}`.trim();
-  if (/quota|rateLimit|userRateLimitExceeded|uploadLimitExceeded/i.test(s))
-    return `Превышена квота/лимит загрузок YouTube — попробуйте позже${reason ? ` (${reason})` : ""}.`;
+  // Три РАЗНЫХ лимита YouTube (403), которые постоянно путают — держим их раздельно, чтобы в истории
+  // было видно, какая стена и что её снимает. uploadLimitExceeded = суточный потолок ЗАГРУЗОК самого
+  // канала (НЕ квота API); quotaExceeded = дневной бюджет API проекта; rateLimit = слишком частые запросы.
+  if (/uploadLimitExceeded/i.test(s))
+    return `Достигнут суточный лимит загрузок самого YouTube-канала (ограничение YouTube, не квота API) — обычно снимается примерно через 24 часа; поднять потолок помогает верификация канала по номеру телефона (uploadLimitExceeded).`;
+  if (/quotaExceeded|dailyLimitExceeded|quota/i.test(s))
+    return `Исчерпана суточная квота YouTube Data API проекта (хватает примерно на 6 загрузок в сутки) — сбрасывается в полночь по тихоокеанскому времени (quotaExceeded).`;
+  if (/userRateLimitExceeded|rateLimitExceeded|rateLimit/i.test(s))
+    return `Слишком много запросов к YouTube за короткое время — подождите минуту и повторите${reason ? ` (${reason})` : ""}.`;
   if (/youtubeSignupRequired|channelNotFound/i.test(s))
     return `У Google-аккаунта канала нет YouTube-канала — переподключите канал.`;
   if (/SERVICE_DISABLED|accessNotConfigured|has not been used in project/i.test(s))
