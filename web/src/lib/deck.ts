@@ -31,6 +31,7 @@ export const DECK_GLOSS_RU: Record<string, string> = {
   christian: "Библия · англ.",
   "fact-en": "Интересные факты · видео",
   "quotes-de": "Цитаты политиков · нем.",
+  space: "Космос · видео",
 };
 
 /** Deck name + Russian gloss in parentheses (when the name is foreign). */
@@ -40,7 +41,7 @@ export const deckLabel = (id: string, name: string): string =>
 /** Content language of each built-in deck (deck id → 2-letter lang). Custom packs carry their own lang. */
 export const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
-  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de": "de",
+  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de": "de", space: "en",
 };
 
 /** Uppercase 2-letter tag for a language code. */
@@ -71,4 +72,5 @@ export const BUILTIN_DECKS: { id: string; label: string }[] = [
   { id: "christian", label: "Христианство · Библия (англ., KJV)" },
   { id: "fact-en", label: "Интересные факты (видео, EN)" },
   { id: "quotes-de", label: "Цитаты политиков (видео, DE)" },
+  { id: "space", label: "Космос (видео, EN)" },
 ];
