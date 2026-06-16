@@ -4,9 +4,11 @@ import { AlertTriangle, RefreshCw, Trash2, Server, Monitor } from "lucide-react"
 import { apiClient, type ErrorLogItem } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { confirmDialog } from "../lib/confirm";
+import { useT } from "../lib/i18n";
 
 export default function Errors() {
   const { user } = useAuth();
+  const { t } = useT();
   const [items, setItems] = useState<ErrorLogItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<number | null>(null);
@@ -27,7 +29,7 @@ export default function Errors() {
   if (user && user.role !== "admin") return <Navigate to="/" replace />;
 
   async function clear() {
-    if (!(await confirmDialog("Очистить весь журнал ошибок?", { title: "Очистить журнал", confirmText: "Очистить", danger: true }))) return;
+    if (!(await confirmDialog(t("errors.clearConfirm"), { title: t("errors.clearTitle"), confirmText: t("errors.clear"), danger: true }))) return;
     await apiClient.clearErrors();
     load();
   }
@@ -36,21 +38,19 @@ export default function Errors() {
     <div className="space-y-6">
       <header className="flex items-start justify-between gap-2 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold">Ошибки</h1>
-          <p className="text-base-content/60">
-            Журнал ошибок сервера и фронтенда · хранится 7 дней, чистится автоматически (до 1000 записей)
-          </p>
+          <h1 className="text-2xl font-bold">{t("errors.title")}</h1>
+          <p className="text-base-content/60">{t("errors.subtitle")}</p>
         </div>
         <div className="flex items-center gap-2">
           <button className="btn btn-ghost btn-sm gap-1" onClick={load} disabled={loading}>
-            <RefreshCw size={16} className={loading ? "animate-spin" : ""} /> Обновить
+            <RefreshCw size={16} className={loading ? "animate-spin" : ""} /> {t("common.refresh")}
           </button>
           <button
             className="btn btn-ghost btn-sm text-error gap-1"
             onClick={clear}
             disabled={!items.length}
           >
-            <Trash2 size={16} /> Очистить
+            <Trash2 size={16} /> {t("errors.clear")}
           </button>
         </div>
       </header>
@@ -63,7 +63,7 @@ export default function Errors() {
         <div className="card bg-base-100 border border-base-300 border-dashed">
           <div className="card-body items-center text-center py-16">
             <AlertTriangle className="text-base-content/30" size={40} />
-            <p className="text-base-content/60">Ошибок нет — чисто 🎉</p>
+            <p className="text-base-content/60">{t("errors.empty")}</p>
           </div>
         </div>
       ) : (
@@ -73,10 +73,10 @@ export default function Errors() {
               <table className="table table-sm">
                 <thead>
                   <tr>
-                    <th>Время</th>
-                    <th>Откуда</th>
-                    <th>Сообщение</th>
-                    <th>Контекст</th>
+                    <th>{t("errors.colTime")}</th>
+                    <th>{t("errors.colSource")}</th>
+                    <th>{t("errors.colMessage")}</th>
+                    <th>{t("errors.colContext")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -94,7 +94,7 @@ export default function Errors() {
                         role={e.detail ? "button" : undefined}
                         tabIndex={e.detail ? 0 : undefined}
                         aria-expanded={e.detail ? expanded === e.id : undefined}
-                        title={e.detail ? "Нажмите, чтобы показать детали" : ""}
+                        title={e.detail ? t("errors.expandHint") : ""}
                       >
                         <td className="whitespace-nowrap text-base-content/60 text-xs">
                           {e.detail && (
@@ -105,11 +105,11 @@ export default function Errors() {
                         <td>
                           {e.source === "client" ? (
                             <span className="badge badge-sm badge-warning gap-1">
-                              <Monitor size={11} /> фронт
+                              <Monitor size={11} /> {t("errors.srcClient")}
                             </span>
                           ) : (
                             <span className="badge badge-sm badge-error gap-1">
-                              <Server size={11} /> сервер
+                              <Server size={11} /> {t("errors.srcServer")}
                             </span>
                           )}
                         </td>

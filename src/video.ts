@@ -51,6 +51,58 @@ export function audioPathFor(name: string): string {
   return resolve(AUDIO_DIR, name);
 }
 
+/** Minimal deck shape needed to pick deck-specific audio (avoids coupling video.ts to decks.ts). */
+export interface AudioDeckHint {
+  islamic?: boolean;
+  christian?: boolean;
+}
+
+/**
+ * Resolve which audio a video should use, from the user's `music` choice + (optionally) its deck.
+ * Single source of truth — previously copy-pasted into buildLibraryVideo, the anecdote-video handler,
+ * pack-gen and packs-routes (and the islamic/christian override was duplicated verbatim in two of them).
+ *  - music === "none"        → silent (audioPath null)
+ *  - music === explicit name → that track
+ *  - music empty/undefined   → a random instrumental track (or silent if the pool is empty)
+ * Deck overrides (skipped when music is explicitly "none"): islamic → nature ambient, christian → sacred pad.
+ * Returns the resolved track name (to store on the videos row) + absolute audio path (null = silent).
+ */
+export function resolveAudio(
+  music: string | undefined,
+  deck?: AudioDeckHint,
+): { music: string; audioPath: string | null } {
+  let m = music;
+  let audioPath: string | null;
+  if (m === "none") audioPath = null;
+  else if (m) audioPath = audioPathFor(m);
+  else {
+    const tracks = listAudio();
+    if (tracks.length) {
+      m = tracks[Math.floor(Math.random() * tracks.length)];
+      audioPath = audioPathFor(m);
+    } else {
+      m = "none";
+      audioPath = null;
+    }
+  }
+  // Islamic deck → nature ambient; Christian deck → sacred organ/choir pad. Explicit "none" stays silent.
+  if (deck?.islamic && m !== "none") {
+    const amb = pickIslamicAudio();
+    if (amb) {
+      m = amb;
+      audioPath = audioPathFor(amb);
+    }
+  }
+  if (deck?.christian && m !== "none") {
+    const pad = pickChristianAudio();
+    if (pad) {
+      m = pad;
+      audioPath = audioPathFor(pad);
+    }
+  }
+  return { music: m ?? "none", audioPath };
+}
+
 export async function pickAudio(): Promise<string | null> {
   if (!existsSync(AUDIO_DIR)) return null;
   const all = await readdir(AUDIO_DIR, { recursive: true });

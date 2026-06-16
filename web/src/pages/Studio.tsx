@@ -8,29 +8,16 @@ import {
   type Account,
   type PackSummary,
 } from "../lib/api";
-import { useDeck } from "../lib/deck";
+import { useDeck, deckLabel } from "../lib/deck";
 import { useAuth } from "../lib/auth";
 import { useGenQueue } from "../lib/genQueue";
+import { useT } from "../lib/i18n";
 
 const bgLabel = (f: string) => f.replace(/\.(jpe?g|png)$/i, "");
 const musicLabel = (f: string) => f.split("/").pop()!.replace(/\.\w+$/, "");
 
-// Russian gloss for foreign deck names, shown in parentheses in the dropdown.
-const DECK_RU: Record<string, string> = {
-  de: "Немецкие анекдоты",
-  it: "Итальянские анекдоты",
-  fr: "Французские анекдоты",
-  en: "Английские анекдоты",
-  "tips-de": "Немецкие лайфхаки",
-  psych: "Психология",
-  islamic: "Ислам · арабский",
-  christian: "Библия · англ.",
-  "fact-en": "Интересные факты · видео",
-  "quotes-de": "Цитаты политиков · нем.",
-};
-const deckLabel = (id: string, name: string) => (DECK_RU[id] ? `${name} (${DECK_RU[id]})` : name);
-
 export default function Studio() {
+  const { t } = useT();
   const [gens, setGens] = useState<Generator[]>([]);
   const [packs, setPacks] = useState<PackSummary[]>([]);
   const [packIdx, setPackIdx] = useState(0);
@@ -107,7 +94,7 @@ export default function Studio() {
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Не удалось сохранить в библиотеку");
+      setErr(e instanceof Error ? e.message : t("studio.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -123,7 +110,7 @@ export default function Studio() {
       if (cur?.preFact) {
         const r = await apiClient.factRandom(deck);
         if (r?.error || !r?.videoUrl) {
-          setErr(r?.error || "В этом паке пока нет видео");
+          setErr(r?.error || t("studio.noVideosInPack"));
           return;
         }
         setPreview(null);
@@ -133,7 +120,7 @@ export default function Studio() {
       }
       if (isPack) {
         const n = curPack?.cards ?? 0;
-        if (!n) { setErr("В паке нет карточек — добавьте на странице «Паки и карточки»"); return; }
+        if (!n) { setErr(t("studio.noCardsInPack")); return; }
         const idx = Math.floor(Math.random() * n);
         setPackIdx(idx);
         const r = await apiClient.packPreview(packId, idx);
@@ -142,20 +129,20 @@ export default function Studio() {
       }
       const body =
         mode === "new"
-          ? { bg: preview?.bg, deck } // new anecdote, keep the currently-chosen background
+          ? { deck, avoidBg: preview?.bg } // new anecdote + a fresh random background
           : mode === "bg"
-            ? { text: preview?.text, title: preview?.title, bg: bgName, deck }
+            ? { text: preview?.text, title: preview?.title, bg: bgName, avoidBg: bgName ? undefined : preview?.bg, deck }
             : { text, title: preview?.title, bg: preview?.bg, deck };
       const p = await apiClient.generateAnecdote(body);
       // Server returns { error } with HTTP 200 when the pack is exhausted — handle it, never crash.
       if ((p as { error?: string })?.error || !p?.text) {
-        setErr((p as { error?: string })?.error || "Не удалось сгенерировать ролик");
+        setErr((p as { error?: string })?.error || t("studio.genFailed"));
         return;
       }
       setPreview(p);
       setText(p.text);
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Ошибка генерации");
+      setErr(e instanceof Error ? e.message : t("studio.genError"));
     } finally {
       setLoading(false);
     }
@@ -179,12 +166,12 @@ export default function Studio() {
         deck,
       });
       if ((v as { error?: string })?.error || !v?.videoUrl) {
-        setErr((v as { error?: string })?.error || "Не удалось собрать видео");
+        setErr((v as { error?: string })?.error || t("studio.buildFailed"));
         return;
       }
       setVideo(v);
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Ошибка сборки видео");
+      setErr(e instanceof Error ? e.message : t("studio.buildError"));
     } finally {
       setBuilding(false);
     }
@@ -195,8 +182,8 @@ export default function Studio() {
       <header className="flex items-center gap-2">
         <Sparkles className="text-primary" />
         <div>
-          <h1 className="text-2xl font-bold">Студия</h1>
-          <p className="text-base-content/60">Генерация и предпросмотр ролика</p>
+          <h1 className="text-2xl font-bold">{t("studio.title")}</h1>
+          <p className="text-base-content/60">{t("studio.subtitle")}</p>
         </div>
       </header>
 
@@ -217,19 +204,19 @@ export default function Studio() {
                     className="select select-bordered select-sm font-semibold"
                     value={deck}
                     onChange={(e) => setDeck(e.target.value)}
-                    title="Пак анекдотов"
+                    title={t("studio.deckSelectTitle")}
                   >
-                    {gens.length === 0 && <option value={deck}>Загрузка…</option>}
+                    {gens.length === 0 && <option value={deck}>{t("common.loading")}</option>}
                     {gens.filter((x) => x.total > 0).map((x) => (
                       <option key={x.id} value={x.id}>
                         {x.preFact ? "🎬 " : ""}{deckLabel(x.id, x.name)}
                       </option>
                     ))}
                     {packs.length > 0 && (
-                      <optgroup label={user?.role === "admin" ? "Кастомные паки" : "Мои паки"}>
+                      <optgroup label={user?.role === "admin" ? t("studio.customPacks") : t("studio.myPacks")}>
                         {packs.map((p) => (
                           <option key={p.id} value={`pack:${p.id}`}>
-                            {p.name} (пак)
+                            {p.name} ({t("studio.packSuffix")})
                           </option>
                         ))}
                       </optgroup>
@@ -237,22 +224,22 @@ export default function Studio() {
                   </select>
                   {isPack ? (
                     <div className="text-sm text-base-content/60 mt-1">
-                      <span className="text-success font-medium">{curPack?.cards ?? 0} карточек</span> ·{" "}
-                      <span className="badge badge-ghost badge-sm">пак · {curPack?.templates ?? 0} шаблон.</span>
+                      <span className="text-success font-medium">{t("studio.cardsCount", { n: curPack?.cards ?? 0 })}</span> ·{" "}
+                      <span className="badge badge-ghost badge-sm">{t("studio.packTemplates", { n: curPack?.templates ?? 0 })}</span>
                     </div>
                   ) : (
                     g && (
                       <div className="text-sm text-base-content/60 mt-1">
-                        <span className="text-success font-medium">{g.available} свободных</span>
-                        {g.used > 0 && <> · {g.used} использовано</>} ·{" "}
-                        <span className="badge badge-ghost badge-sm">{g.preFact ? "🎬 видео-пак" : "без ИИ"}</span>
+                        <span className="text-success font-medium">{t("studio.availableCount", { n: g.available })}</span>
+                        {g.used > 0 && <> · {t("studio.usedCount", { n: g.used })}</>} ·{" "}
+                        <span className="badge badge-ghost badge-sm">{g.preFact ? t("studio.videoPack") : t("studio.noAI")}</span>
                       </div>
                     )
                   )}
                 </div>
                 <button className="btn btn-primary gap-2" onClick={() => gen("new")} disabled={loading}>
                   {loading ? <Loader2 className="animate-spin" size={18} /> : <Wand2 size={18} />}
-                  Сгенерировать
+                  {t("common.generate")}
                 </button>
               </div>
 
@@ -262,25 +249,25 @@ export default function Studio() {
                   onClick={() => gen("bg")}
                   disabled={loading || !preview}
                 >
-                  <Dices size={16} /> Случайный фон
+                  <Dices size={16} /> {t("studio.randomBg")}
                 </button>
                 <button
                   className="btn btn-outline btn-sm gap-2"
                   onClick={() => gen("edit")}
                   disabled={loading || !preview}
                 >
-                  <RefreshCw size={16} /> Обновить с текстом
+                  <RefreshCw size={16} /> {t("studio.refreshWithText")}
                 </button>
                 {bgs.length > 0 && (
                   <select
                     className="select select-bordered select-sm"
-                    aria-label="Фон"
+                    aria-label={t("studio.bgLabel")}
                     value={preview?.bg ?? ""}
                     onChange={(e) => gen("bg", e.target.value)}
                     disabled={loading || !preview}
                   >
                     <option value="" disabled>
-                      Фон…
+                      {t("studio.bgPlaceholder")}
                     </option>
                     {bgs.map((b) => (
                       <option key={b} value={b}>
@@ -300,7 +287,7 @@ export default function Studio() {
                   ))}
                   {g.untitledPacks > 0 && (
                     <span className="badge badge-ghost badge-sm">
-                      +{g.untitledPacks} паков ({g.untitledTotal.toLocaleString("ru-RU")}) без названия — не используются
+                      {t("studio.untitledPacks", { n: g.untitledPacks, total: g.untitledTotal.toLocaleString("ru-RU") })}
                     </span>
                   )}
                 </div>
@@ -314,7 +301,7 @@ export default function Studio() {
                 {deck !== "psych" && deck !== "islamic" && deck !== "christian" && !isPack ? (
                   <>
                     <div className="flex items-center justify-between">
-                      <span className="label-text">Текст анекдота (можно править)</span>
+                      <span className="label-text">{t("studio.anecdoteTextEditable")}</span>
                       <span
                         className={`badge badge-sm ${
                           (text || "").length >= 250 && (text || "").length <= 480
@@ -322,12 +309,12 @@ export default function Studio() {
                             : "badge-warning"
                         }`}
                       >
-                        {(text || "").length} симв.
+                        {t("studio.charsCount", { n: (text || "").length })}
                       </span>
                     </div>
                     <textarea
                       className="textarea textarea-bordered min-h-32 leading-relaxed"
-                      aria-label="Текст анекдота"
+                      aria-label={t("studio.anecdoteText")}
                       value={text}
                       onChange={(e) => {
                         setText(e.target.value);
@@ -338,23 +325,23 @@ export default function Studio() {
                 ) : (
                   <div className="text-sm text-base-content/60">
                     {isPack
-                      ? "✨ Карточка из пака готова. «Сгенерировать» — другая случайная; соберите видео или сохраните в канал."
+                      ? t("studio.hintPack")
                       : deck === "islamic"
-                      ? "🕌 Карточка (аят / хадис / дуа) готова. Соберите видео или сохраните в канал с языком «Ислам»."
+                      ? t("studio.hintIslamic")
                       : deck === "christian"
-                        ? "✝️ Карточка (стих из Библии, KJV) готова. Соберите видео или сохраните в канал с языком «Holy Bible · KJV»."
-                        : "🧠 Психо-карточка готова. Соберите видео или сохраните в канал с языком «Психология (DE)»."}
+                        ? t("studio.hintChristian")
+                        : t("studio.hintPsych")}
                   </div>
                 )}
                 <div className="flex flex-wrap items-center gap-2">
                   <select
                     className="select select-bordered select-sm"
-                    aria-label="Музыка"
+                    aria-label={t("studio.musicLabel")}
                     value={music}
                     onChange={(e) => setMusic(e.target.value)}
                   >
-                    <option value="">🎲 Музыка: случайная</option>
-                    <option value="none">🔇 Без музыки</option>
+                    <option value="">{t("studio.musicRandom")}</option>
+                    <option value="none">{t("studio.musicNone")}</option>
                     {musicList.map((m) => (
                       <option key={m} value={m}>
                         🎵 {musicLabel(m)}
@@ -370,15 +357,15 @@ export default function Studio() {
                     disabled={building}
                   >
                     {building ? <Loader2 className="animate-spin" size={18} /> : <Film size={18} />}
-                    Собрать видео (5–6с)
+                    {t("studio.buildVideo")}
                   </button>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2 border-t border-base-300 pt-3">
-                  <span className="text-sm text-base-content/60">Сохранить в канал:</span>
+                  <span className="text-sm text-base-content/60">{t("studio.saveToChannel")}</span>
                   <select
                     className="select select-bordered select-sm"
-                    aria-label="Канал для сохранения"
+                    aria-label={t("studio.channelToSave")}
                     value={channelId}
                     onChange={(e) => {
                       setChannelId(e.target.value);
@@ -386,7 +373,7 @@ export default function Studio() {
                     }}
                   >
                     {saveAccounts.length === 0 && (
-                      <option value="">{isPack ? "нет каналов с этим паком (выберите пак источником канала)" : "нет каналов на этом языке"}</option>
+                      <option value="">{isPack ? t("studio.noChannelsWithPack") : t("studio.noChannelsForLang")}</option>
                     )}
                     {saveAccounts.map((a) => (
                       <option key={a.id} value={a.id}>
@@ -406,13 +393,13 @@ export default function Studio() {
                     ) : (
                       <Save size={16} />
                     )}
-                    {saved ? "Сохранено в библиотеку" : "Сохранить в библиотеку"}
+                    {saved ? t("studio.savedToLibrary") : t("studio.saveToLibrary")}
                   </button>
                 </div>
 
                 <div className="border-t border-base-300 pt-3 space-y-2">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm text-base-content/60">Сразу несколько в канал:</span>
+                    <span className="text-sm text-base-content/60">{t("studio.batchToChannel")}</span>
                     <input
                       type="number"
                       min={1}
@@ -421,28 +408,28 @@ export default function Studio() {
                       value={batchN}
                       disabled={q.running || maxBatch < 1}
                       onChange={(e) => setBatchN(Math.max(1, Math.min(maxBatch, Number(e.target.value) || 1)))}
-                      aria-label="Сколько роликов сгенерировать"
+                      aria-label={t("studio.batchCountLabel")}
                     />
                     <span className="text-xs text-base-content/50">
-                      {maxBatch < 1 ? "нет свободных карточек" : `1–${maxBatch} за раз`}
+                      {maxBatch < 1 ? t("studio.noFreeCards") : t("studio.batchRange", { n: maxBatch })}
                     </span>
                     {!q.running ? (
                       <button
                         className="btn btn-sm btn-outline gap-1"
                         onClick={() => q.run(channelId, Math.min(batchN, maxBatch))}
                         disabled={!channelId || maxBatch < 1}
-                        title="Поставить в очередь генерацию роликов в библиотеку канала"
+                        title={t("studio.batchQueueTitle")}
                       >
-                        <Plus size={14} /> Сгенерировать
+                        <Plus size={14} /> {t("common.generate")}
                       </button>
                     ) : (
                       <>
                         <button className="btn btn-sm btn-outline btn-error gap-1" onClick={q.cancel}>
-                          <Square size={13} /> Стоп
+                          <Square size={13} /> {t("studio.stop")}
                         </button>
                         <span className="text-xs text-base-content/60 flex items-center gap-1">
                           <Loader2 className="animate-spin" size={12} />
-                          в фоне — прогресс в правом нижнем углу
+                          {t("studio.runningInBackground")}
                         </span>
                       </>
                     )}
@@ -455,7 +442,7 @@ export default function Studio() {
 
         {/* Preview */}
         <div className="flex flex-col items-center gap-3">
-          <div className="text-sm text-base-content/50">Превью 9:16</div>
+          <div className="text-sm text-base-content/50">{t("studio.preview916")}</div>
           <div
             className="rounded-2xl overflow-hidden border border-base-300 shadow-lg bg-base-100"
             style={{ width: 288, height: 512 }}
@@ -474,25 +461,29 @@ export default function Studio() {
             ) : loading || building ? (
               <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-base-content/50">
                 <Loader2 className="animate-spin text-primary" size={32} />
-                <span className="text-sm">{building ? "Собираю видео…" : "Генерирую…"}</span>
+                <span className="text-sm">{building ? t("studio.buildingVideo") : t("studio.generating")}</span>
               </div>
             ) : preview ? (
-              <img src={preview.imageUrl} alt="preview" width={288} height={512} className="block" />
+              <img src={preview.imageUrl} alt={t("studio.preview")} width={288} height={512} className="block" />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center text-center text-base-content/40 gap-2 p-6">
                 <Sparkles size={32} />
-                <span>Нажмите «Сгенерировать» — здесь появится превью ролика</span>
+                <span>{t("studio.emptyState")}</span>
               </div>
             )}
           </div>
           {video ? (
             <a href={video.videoUrl} download className="text-xs link link-primary">
-              скачать MP4 · фон {bgLabel(video.bg)} · 🎵{" "}
-              {video.music === "none" ? "нет" : musicLabel(video.music)}
+              {t("studio.downloadMp4", {
+                bg: bgLabel(video.bg),
+                music: video.music === "none" ? t("studio.musicNoneShort") : musicLabel(video.music),
+              })}
             </a>
           ) : preview ? (
             <div className="text-xs text-base-content/50 text-center">
-              {isPack ? `пак · карточка #${packIdx + 1}` : `шрифт ${preview.fontPx}px · фон ${bgLabel(preview.bg)}`}
+              {isPack
+                ? t("studio.packCardMeta", { n: packIdx + 1 })
+                : t("studio.fontBgMeta", { font: preview.fontPx, bg: bgLabel(preview.bg) })}
             </div>
           ) : null}
         </div>

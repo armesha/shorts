@@ -12,10 +12,13 @@
     "server:dev": "node --import tsx --experimental-sqlite --watch server/index.ts",
     "web": "npm --prefix web run dev",
     "web:build": "npm --prefix web run build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "tunnel": "node scripts/tunnel.mjs",
     "share": "npm run web:build && concurrently -k -n app,tunnel -c blue,magenta \"npm run server\" \"npm run tunnel\"",
     "render:preview": "tsx src/scripts/render-preview.ts",
     "gen:preview": "tsx src/scripts/generate-preview.ts",
+    "ru:audit": "tsx src/scripts/ru-render-audit.ts",
+    "ru:rerender": "node --experimental-sqlite --import tsx src/scripts/ru-rerender-broken.ts",
     "test": "node --import tsx --experimental-sqlite --test 'src/**/*.test.ts' 'server/**/*.test.ts'"
   },
   "keywords": [

@@ -156,7 +156,8 @@ export async function renderTemplateCard(
     );
     const fontCss = await fontFaceCssFor(families);
     await page.setContent(buildHtml(rendererSrc, tpl, content, fontCss), {
-      waitUntil: "networkidle0",
+      // networkidle0 waits for fonts/images; valid at runtime — puppeteer-core@25's setContent type omits it.
+      waitUntil: "networkidle0" as "load",
       timeout: 30_000,
     });
     await page.waitForFunction("window.__fitted === true", { timeout: 8_000 }).catch(() => {});

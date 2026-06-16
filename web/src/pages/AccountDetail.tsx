@@ -6,38 +6,8 @@ import VideoPlayer from "../components/VideoPlayer";
 import { confirmDialog } from "../lib/confirm";
 import { useAuth } from "../lib/auth";
 import { useGenQueue } from "../lib/genQueue";
-
-const LANGS: [string, string][] = [
-  ["de", "Немецкий"],
-  ["ru", "Русский"],
-  ["it", "Итальянский"],
-  ["fr", "Французский"],
-  ["en", "Английский"],
-  ["tips", "Народные лайфхаки"],
-  ["tips-de", "Немецкие лайфхаки"],
-  ["psych", "Психология (DE)"],
-  ["islamic", "Ислам · арабский (Коран и хадисы)"],
-  ["christian", "Христианство · Библия (англ., KJV)"],
-  ["fact-en", "Интересные факты (видео, EN)"],
-  ["quotes-de", "Цитаты политиков (видео, DE)"],
-];
-
-// «Язык канала» — стабильный язык (отдельно от выбора контента). Пак должен совпадать по языку.
-const LANG_LABELS: [string, string][] = [
-  ["ru", "Русский"],
-  ["de", "Немецкий"],
-  ["it", "Итальянский"],
-  ["fr", "Французский"],
-  ["en", "Английский"],
-  ["ar", "Арабский"],
-];
-// Язык встроенного пака (для тега и проверки совпадения). Свои паки несут свой lang.
-const DECK_LANG: Record<string, string> = {
-  ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
-  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de": "de",
-};
-const LANG_TAG: Record<string, string> = { ru: "RU", de: "DE", it: "IT", fr: "FR", en: "EN", ar: "AR" };
-const tagOf = (code: string) => LANG_TAG[code] || (code || "").toUpperCase();
+import { useT } from "../lib/i18n";
+import { BUILTIN_DECKS, CONTENT_LANGS, DECK_LANG, langTag } from "../lib/deck";
 
 // N posts/day spread ~evenly across 24h, but with a small RANDOM per-channel offset + jitter,
 // so two channels with the same N never all fire at the same minute. `avoid` = minutes already
@@ -67,6 +37,7 @@ const randomDayTimes = (n: number, avoid: Set<number> = new Set()): string[] => 
 };
 
 export default function AccountDetail() {
+  const { t } = useT();
   const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -131,14 +102,14 @@ export default function AccountDetail() {
       setAccount(a);
       setAvatarOpen(false);
     } catch (e) {
-      notify(e instanceof Error ? e.message : "Не удалось сменить аватар", "error");
+      notify(e instanceof Error ? e.message : t("account.avatarChangeFailed"), "error");
     } finally {
       setAvatarBusy(false);
     }
   }
   async function onUploadAvatar(file: File) {
     if (!file) return;
-    if (file.size > 3_000_000) return notify("Файл больше 3 МБ — выберите поменьше", "error");
+    if (file.size > 3_000_000) return notify(t("account.fileTooBig"), "error");
     setAvatarBusy(true);
     try {
       const dataUrl: string = await new Promise((res, rej) => {
@@ -151,7 +122,7 @@ export default function AccountDetail() {
       setAccount(a);
       setAvatarOpen(false);
     } catch (e) {
-      notify(e instanceof Error ? e.message : "Не удалось загрузить фото", "error");
+      notify(e instanceof Error ? e.message : t("account.avatarUploadFailed"), "error");
     } finally {
       setAvatarBusy(false);
     }
@@ -206,8 +177,8 @@ export default function AccountDetail() {
 
   // Результат привязки (возврат из Google OAuth) → тост + лог в консоль (F12).
   useEffect(() => {
-    if (justConnected) notify("Канал успешно подключён к YouTube ✓", "success");
-    else if (connectError) notify("Не удалось подключить канал: " + connectError, "error");
+    if (justConnected) notify(t("account.connectSuccess"), "success");
+    else if (connectError) notify(t("account.connectFailed") + " " + connectError, "error");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -243,7 +214,7 @@ export default function AccountDetail() {
       setTimeout(() => setSaved(false), 2000);
       return true;
     } catch (e) {
-      notify("Не удалось сохранить настройки канала: " + String(e), "error");
+      notify(t("account.saveSettingsFailed") + " " + String(e), "error");
       return false;
     } finally {
       setSaving(false);
@@ -251,21 +222,21 @@ export default function AccountDetail() {
   }
 
   async function remove() {
-    if (!(await confirmDialog("Удалить этот канал? Действие необратимо.", { title: "Удалить канал", confirmText: "Удалить", danger: true }))) return;
+    if (!(await confirmDialog(t("account.deleteChannelConfirm"), { title: t("account.deleteChannelTitle"), confirmText: t("common.delete"), danger: true }))) return;
     await apiClient.deleteAccount(id!);
     navigate("/accounts");
   }
 
   async function connect() {
     console.log("[привязка] старт: запрашиваю ссылку авторизации Google", { accountId: id });
-    notify("Открываю авторизацию Google…", "info");
+    notify(t("account.openingGoogleAuth"), "info");
     try {
       const { url } = await apiClient.youtubeAuthUrl(id!);
       console.log("[привязка] получена ссылка авторизации, перенаправляю на Google:", url);
       window.location.href = url;
     } catch (e) {
       console.error("[привязка] не удалось получить ссылку авторизации:", e);
-      notify(e instanceof Error ? e.message : "Не удалось начать привязку канала", "error");
+      notify(e instanceof Error ? e.message : t("account.connectStartFailed"), "error");
     }
   }
 
@@ -274,10 +245,10 @@ export default function AccountDetail() {
     try {
       const v = videos.find((x) => x.id === vid);
       const r = await apiClient.postVideoNow(vid);
-      if (r.url) setLastPosted({ title: v?.title ?? "Ролик", url: r.url });
+      if (r.url) setLastPosted({ title: v?.title ?? t("account.videoFallbackTitle"), url: r.url });
       await reloadVideos(); // posted video is removed server-side → disappears from the list
     } catch (e) {
-      notify("Не удалось выложить: " + String(e), "error");
+      notify(t("account.postFailed") + " " + String(e), "error");
     } finally {
       setPosting(null);
     }
@@ -285,7 +256,7 @@ export default function AccountDetail() {
 
 
   async function removeVid(vid: number) {
-    if (!(await confirmDialog("Удалить ролик из библиотеки?", { confirmText: "Удалить", danger: true }))) return;
+    if (!(await confirmDialog(t("account.deleteVideoConfirm"), { confirmText: t("common.delete"), danger: true }))) return;
     await apiClient.deleteVideo(vid);
     await reloadVideos();
   }
@@ -294,7 +265,7 @@ export default function AccountDetail() {
   async function removePosted() {
     const targets = videos.filter((v) => v.postCount > 1);
     if (targets.length === 0) return;
-    if (!(await confirmDialog(`Удалить ${targets.length} ролик(ов), которые выкладывались больше одного раза?`, { confirmText: "Удалить", danger: true }))) return;
+    if (!(await confirmDialog(t("account.deletePostedConfirm", { n: targets.length }), { confirmText: t("common.delete"), danger: true }))) return;
     for (const v of targets) await apiClient.deleteVideo(v.id);
     await reloadVideos();
   }
@@ -302,13 +273,13 @@ export default function AccountDetail() {
   // Очистить ВСЮ библиотеку канала (например, после смены пака — старый контент больше не подходит).
   async function clearLibrary() {
     if (videos.length === 0) return;
-    if (!(await confirmDialog(`Удалить ВСЕ ${videos.length} ролик(ов) из библиотеки? Это необратимо.`, { title: "Очистить библиотеку", confirmText: "Удалить всё", danger: true }))) return;
+    if (!(await confirmDialog(t("account.clearLibraryConfirm", { n: videos.length }), { title: t("account.clearLibraryTitle"), confirmText: t("account.deleteAll"), danger: true }))) return;
     setClearing(true);
     try {
       for (const v of [...videos]) await apiClient.deleteVideo(v.id);
       await reloadVideos();
     } catch (e) {
-      notify("Не удалось очистить библиотеку: " + String(e), "error");
+      notify(t("account.clearLibraryFailed") + " " + String(e), "error");
     } finally {
       setClearing(false);
     }
@@ -332,7 +303,7 @@ export default function AccountDetail() {
   // While generators load, show all to avoid an empty dropdown; always keep the channel's current value.
   const gensIds = new Set(gens.map((g) => g.id));
   const visibleLangs =
-    gens.length === 0 ? LANGS : LANGS.filter(([code]) => gensIds.has(code) || code === lang);
+    gens.length === 0 ? BUILTIN_DECKS : BUILTIN_DECKS.filter(({ id }) => gensIds.has(id) || id === lang);
 
   // Опции дропдаунов контента канала: встроенные паки + группа «Кастомные паки» (свои паки по имени) —
   // тот же набор, что в Студии, чтобы пак можно было назначить каналу и генерить из него.
@@ -345,25 +316,25 @@ export default function AccountDetail() {
   const deckOptions = () => (
     <>
       {visibleLangs.length > 0 && (
-        <optgroup label="Встроенные паки">
-          {visibleLangs.map(([code, name]) => (
+        <optgroup label={t("account.builtinPacks")}>
+          {visibleLangs.map(({ id: code, label }) => (
             <option key={code} value={code}>
               {/* полное имя пака (как в Студии: «Русские анекдоты» и т.п.), а не язык */}
               {gens.find((g) => g.id === code)?.preFact ? "🎬 " : ""}
-              {gens.find((g) => g.id === code)?.name || name} · {tagOf(DECK_LANG[code] || code)}
+              {gens.find((g) => g.id === code)?.name || label} · {langTag(DECK_LANG[code] || code)}
             </option>
           ))}
         </optgroup>
       )}
       {(packs.length > 0 || (lang.startsWith("pack:") && !packIds.has(lang))) && (
-        <optgroup label={isAdmin ? "Кастомные паки" : "Мои паки"}>
+        <optgroup label={isAdmin ? t("account.customPacks") : t("account.myPacks")}>
           {packs.map((p) => (
             <option key={p.id} value={`pack:${p.id}`}>
-              {p.name} · {tagOf(p.lang)}
+              {p.name} · {langTag(p.lang)}
             </option>
           ))}
           {lang.startsWith("pack:") && !packIds.has(lang) && (
-            <option value={lang}>{lang.slice(5)} (нет доступа)</option>
+            <option value={lang}>{lang.slice(5)} {t("account.noAccess")}</option>
           )}
         </optgroup>
       )}
@@ -377,7 +348,7 @@ export default function AccountDetail() {
   const takenMinutes = new Set(otherTimes.map(toMin)); // minutes busy on other channels → generator avoids them
   const perDayMax = isAdmin ? 100 : Math.max(1, scheduleRemaining); // cap for the «раз в день» generator
 
-  if (!account) return <div className="text-base-content/60">Загрузка…</div>;
+  if (!account) return <div className="text-base-content/60">{t("common.loading")}</div>;
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -397,7 +368,7 @@ export default function AccountDetail() {
         </div>
       )}
       <Link to="/accounts" className="btn btn-ghost btn-sm gap-2">
-        <ArrowLeft size={16} /> Назад к каналам
+        <ArrowLeft size={16} /> {t("account.backToChannels")}
       </Link>
 
       <header className="flex items-start justify-between">
@@ -405,7 +376,7 @@ export default function AccountDetail() {
           <button
             type="button"
             onClick={() => setAvatarOpen(true)}
-            title="Сменить аватар канала"
+            title={t("account.changeAvatarTitle")}
             className="relative group shrink-0 rounded-full"
           >
             {account.avatar ? (
@@ -420,25 +391,25 @@ export default function AccountDetail() {
               </div>
             )}
             <span className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/45 flex items-center justify-center text-white text-[10px] font-medium opacity-0 group-hover:opacity-100 transition">
-              сменить
+              {t("account.changeAvatarOverlay")}
             </span>
           </button>
           <div className="min-w-0">
-            <h1 className="text-2xl font-bold truncate">{channelName || "Канал"}</h1>
-            <p className="text-base-content/60">Настройки генерации и расписания</p>
+            <h1 className="text-2xl font-bold truncate">{channelName || t("account.channelFallback")}</h1>
+            <p className="text-base-content/60">{t("account.headerSubtitle")}</p>
           </div>
         </div>
         {account.status === "connected" ? (
-          <span className="badge badge-success">подключён</span>
+          <span className="badge badge-success">{t("account.connected")}</span>
         ) : (
-          <span className="badge badge-warning">нужна авторизация</span>
+          <span className="badge badge-warning">{t("account.needsAuth")}</span>
         )}
       </header>
 
       <section className="card bg-base-100 border border-base-300">
         <div className="card-body gap-5">
           <label className="form-control">
-            <span className="label-text mb-1">Название канала</span>
+            <span className="label-text mb-1">{t("account.channelName")}</span>
             <input
               className="input input-bordered"
               value={channelName}
@@ -447,56 +418,56 @@ export default function AccountDetail() {
           </label>
 
           <label className="form-control">
-            <span className="label-text mb-1">Общая тема канала</span>
+            <span className="label-text mb-1">{t("account.channelTheme")}</span>
             <input
               className="input input-bordered"
               value={theme}
               onChange={(e) => setTheme(e.target.value)}
-              placeholder="напр. Русские анекдоты"
+              placeholder={t("account.channelThemePlaceholder")}
             />
           </label>
 
           <label className="form-control max-w-xs">
-            <span className="label-text mb-1">Язык канала</span>
+            <span className="label-text mb-1">{t("account.channelLang")}</span>
             <select
               className="select select-bordered"
               value={channelLang}
               onChange={(e) => setChannelLang(e.target.value)}
             >
-              {LANG_LABELS.map(([c, n]) => (
-                <option key={c} value={c}>
-                  {n}
+              {CONTENT_LANGS.map(({ code, label }) => (
+                <option key={code} value={code}>
+                  {label}
                 </option>
               ))}
             </select>
-            <span className="label-text-alt mt-1 text-base-content/50">Пак ниже должен быть этого языка</span>
+            <span className="label-text-alt mt-1 text-base-content/50">{t("account.channelLangHint")}</span>
           </label>
 
           <div className="form-control">
             <div className="flex items-center justify-between mb-2 gap-2">
-              <span className="label-text">Расписание загрузки (по серверному времени)</span>
+              <span className="label-text">{t("account.scheduleLabel")}</span>
               {!isAdmin && (
                 <span className={`text-xs ${dayUsed > 100 ? "text-error font-medium" : "text-base-content/50"}`}>
-                  В сутки по всем каналам: {dayUsed} / 100
+                  {t("account.perDayAllChannels", { n: dayUsed })}
                 </span>
               )}
             </div>
 
             <div className="flex flex-wrap gap-2 mb-1 items-center">
-              <span className="text-sm text-base-content/60">Раз в день:</span>
+              <span className="text-sm text-base-content/60">{t("account.timesPerDay")}</span>
               {[1, 2, 3, 4, 6].map((n) => (
                 <button
                   key={n}
                   className="btn btn-xs btn-outline"
                   disabled={!isAdmin && otherSlots + n > 100}
                   onClick={() => setTimes(randomDayTimes(n, takenMinutes))}
-                  title={`${n} публикаций в сутки, равномерно со случайным сдвигом`}
+                  title={t("account.perDayBtnTitle", { n })}
                 >
                   {n}×
                 </button>
               ))}
               <span className="mx-1 text-base-content/30">|</span>
-              <span className="text-sm text-base-content/60">своё:</span>
+              <span className="text-sm text-base-content/60">{t("account.custom")}</span>
               <input
                 type="number"
                 min={1}
@@ -506,37 +477,36 @@ export default function AccountDetail() {
                 onChange={(e) =>
                   setPerDayInput(Math.max(1, Math.min(perDayMax, Number(e.target.value) || 1)))
                 }
-                aria-label="Сколько раз в день"
+                aria-label={t("account.timesPerDayAria")}
               />
               <button
                 className="btn btn-xs btn-primary gap-1"
                 disabled={perDayMax < 1 || (!isAdmin && otherSlots + perDayInput > 100)}
                 onClick={() => setTimes(randomDayTimes(Math.min(perDayInput, perDayMax), takenMinutes))}
-                title="Расставить это число публикаций по суткам"
+                title={t("account.spreadTitle")}
               >
-                <RefreshCw size={12} /> Сгенерировать
+                <RefreshCw size={12} /> {t("common.generate")}
               </button>
             </div>
             <p className="text-xs text-base-content/50 mb-3 leading-snug">
-              Время раскидывается равномерно по суткам, но с небольшим случайным сдвигом — у каждого канала
-              свои минуты, чтобы каналы не публиковали всё в одно и то же время. Можно поправить вручную ниже.
+              {t("account.scheduleHint")}
             </p>
 
             <div className="flex flex-wrap gap-2 mb-3 min-h-8 items-center">
-              {[...times].sort().map((t) => (
-                <span key={t} className="badge badge-primary badge-lg gap-2 py-3">
-                  {t}
+              {[...times].sort().map((time) => (
+                <span key={time} className="badge badge-primary badge-lg gap-2 py-3">
+                  {time}
                   <button
                     className="font-bold hover:text-error"
-                    onClick={() => setTimes(times.filter((x) => x !== t))}
-                    title="убрать"
+                    onClick={() => setTimes(times.filter((x) => x !== time))}
+                    title={t("account.removeTime")}
                   >
                     ✕
                   </button>
                 </span>
               ))}
               {times.length === 0 && (
-                <span className="text-sm text-base-content/50">Время не выбрано</span>
+                <span className="text-sm text-base-content/50">{t("account.noTimes")}</span>
               )}
             </div>
 
@@ -548,7 +518,7 @@ export default function AccountDetail() {
                 inputMode="numeric"
                 placeholder="14:30"
                 maxLength={5}
-                aria-label="Время в 24-часовом формате (ЧЧ:ММ)"
+                aria-label={t("account.timeInputAria")}
                 className="input input-bordered input-sm w-32"
                 value={newTime}
                 onChange={(e) => {
@@ -561,26 +531,26 @@ export default function AccountDetail() {
                 className="btn btn-sm btn-outline gap-1"
                 disabled={!isAdmin && times.length >= scheduleRemaining}
                 onClick={() => {
-                  const t = newTime.trim();
-                  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(t)) {
-                    notify("Введите время в 24-часовом формате — например 09:00 или 14:30", "error");
+                  const v = newTime.trim();
+                  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(v)) {
+                    notify(t("account.invalidTime"), "error");
                     return;
                   }
                   if (!isAdmin && times.length >= scheduleRemaining) {
-                    notify(`Лимит 100 публикаций в сутки на пользователя. На остальных каналах уже ${otherSlots}.`, "error");
+                    notify(t("account.dayLimitReached", { n: otherSlots }), "error");
                     return;
                   }
-                  if (!times.includes(t)) setTimes([...times, t]);
+                  if (!times.includes(v)) setTimes([...times, v]);
                 }}
               >
-                <Plus size={14} /> Добавить время
+                <Plus size={14} /> {t("account.addTime")}
               </button>
             </div>
           </div>
 
           <div className="flex justify-between items-center pt-1">
             <button className="btn btn-ghost btn-sm text-error gap-2" onClick={remove}>
-              <Trash2 size={16} /> Удалить
+              <Trash2 size={16} /> {t("common.delete")}
             </button>
             <button className="btn btn-primary gap-2" onClick={save} disabled={saving}>
               {saving ? (
@@ -590,7 +560,7 @@ export default function AccountDetail() {
               ) : (
                 <Save size={16} />
               )}
-              {saved ? "Сохранено" : "Сохранить"}
+              {saved ? t("common.saved") : t("common.save")}
             </button>
           </div>
         </div>
@@ -598,12 +568,12 @@ export default function AccountDetail() {
 
       <section className="card bg-base-100 border border-base-300">
         <div className="card-body">
-          <h2 className="card-title text-base">Подключение к YouTube</h2>
+          <h2 className="card-title text-base">{t("account.youtubeConnection")}</h2>
           {account.ytChannelTitle ? (
             <div className="flex items-center gap-2 text-sm flex-wrap">
-              <span className="badge badge-success">подключён</span>
+              <span className="badge badge-success">{t("account.connected")}</span>
               <span>
-                Канал: <b>{account.ytChannelTitle}</b>
+                {t("account.channelColon")} <b>{account.ytChannelTitle}</b>
               </span>
               {account.ytChannelId && (
                 <a
@@ -612,28 +582,28 @@ export default function AccountDetail() {
                   rel="noreferrer"
                   className="link link-primary inline-flex items-center gap-1"
                 >
-                  ▶ Открыть на YouTube ↗
+                  ▶ {t("account.openOnYouTube")} ↗
                 </a>
               )}
               <button
                 className="btn btn-ghost btn-xs gap-1"
                 onClick={connect}
-                title="Переподключить через Google — перевыпустить токены (например, после смены client_secret.json)"
+                title={t("account.reconnectTitle")}
               >
-                <RefreshCw size={13} /> Переподключить
+                <RefreshCw size={13} /> {t("account.reconnect")}
               </button>
             </div>
           ) : (
             <>
               <p className="text-sm text-base-content/60">
-                Чтобы ролики загружались автоматически, авторизуй канал через Google — один раз.
+                {t("account.connectIntro")}
               </p>
               {justConnected && (
-                <p className="text-success text-sm">Канал подключён ✓ — обновите страницу.</p>
+                <p className="text-success text-sm">{t("account.connectedRefresh")}</p>
               )}
               <div>
                 <button className="btn btn-primary btn-sm" onClick={connect}>
-                  Подключить канал
+                  {t("account.connectChannel")}
                 </button>
               </div>
             </>
@@ -644,17 +614,17 @@ export default function AccountDetail() {
       <section className="card bg-base-100 border border-base-300">
         <div className="card-body">
           <div className="flex items-center justify-between gap-2 flex-wrap">
-            <h2 className="card-title text-base">Библиотека роликов ({videos.length})</h2>
+            <h2 className="card-title text-base">{t("account.libraryTitle", { n: videos.length })}</h2>
             <div className="flex items-center gap-2">
               {videos.length > 0 && (
                 <button
                   className="btn btn-sm btn-error btn-outline gap-1"
                   onClick={clearLibrary}
                   disabled={clearing || q.running}
-                  title="Удалить все ролики из библиотеки этого канала"
+                  title={t("account.clearAllTitle")}
                 >
                   {clearing ? <Loader2 className="animate-spin" size={14} /> : <Trash2 size={14} />}
-                  Очистить всё
+                  {t("account.clearAll")}
                 </button>
               )}
               <select
@@ -662,32 +632,32 @@ export default function AccountDetail() {
                 value={sort}
                 onChange={(e) => setSort(e.target.value as "date" | "title" | "posts")}
               >
-                <option value="date">сначала новые</option>
-                <option value="title">по названию</option>
-                <option value="posts">по числу выкладок</option>
+                <option value="date">{t("account.sortNewest")}</option>
+                <option value="title">{t("account.sortByTitle")}</option>
+                <option value="posts">{t("account.sortByPosts")}</option>
               </select>
             </div>
           </div>
           <div className="mt-3 pt-3 border-t border-base-300 flex flex-wrap items-center gap-x-4 gap-y-2">
             {/* Слева — выбор пака (mr-auto толкает блок генерации вправо; на десктопе одна строка, ниже sm бейдж уходит вниз) */}
             <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 mr-auto">
-              <span className="text-sm text-base-content/70 shrink-0">Пак канала:</span>
+              <span className="text-sm text-base-content/70 shrink-0">{t("account.channelPack")}</span>
               <select
                 className="select select-bordered select-sm min-w-[10rem] max-w-[16rem]"
                 value={lang}
                 onChange={(e) => setLang(e.target.value)}
-                title="Из какого пака генерировать ролики. После выбора нажмите «Сохранить пак»."
+                title={t("account.channelPackTitle")}
               >
                 {deckOptions()}
               </select>
               {lang.startsWith("pack:")
                 ? (() => {
                     const p = packs.find((x) => `pack:${x.id}` === lang);
-                    return p ? <span className="text-xs text-success shrink-0">{p.cards} карточек</span> : null;
+                    return p ? <span className="text-xs text-success shrink-0">{t("account.cardsCount", { n: p.cards })}</span> : null;
                   })()
                 : gens.find((g) => g.id === lang) && (
                     <span className="text-xs text-success shrink-0">
-                      {gens.find((g) => g.id === lang)!.available} свободных
+                      {t("account.availableCount", { n: gens.find((g) => g.id === lang)!.available })}
                     </span>
                   )}
               {lang !== account.lang && (
@@ -697,7 +667,7 @@ export default function AccountDetail() {
                   disabled={saving || langMismatch}
                 >
                   {saving ? <Loader2 className="animate-spin" size={14} /> : <Save size={14} />}
-                  Сохранить пак
+                  {t("account.savePack")}
                 </button>
               )}
             </div>
@@ -705,7 +675,7 @@ export default function AccountDetail() {
             {/* Справа — «сколько» + кнопка генерации: на десктопе цельный блок (кнопка у поля),
                 ниже sm — своя строка, кнопка во всю ширину (без горизонтального переполнения) */}
             <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 basis-full sm:basis-auto sm:shrink-0">
-              <span className="text-sm text-base-content/70 shrink-0">Сделать сразу:</span>
+              <span className="text-sm text-base-content/70 shrink-0">{t("account.makeNow")}</span>
               <input
                 type="number"
                 min={1}
@@ -714,10 +684,10 @@ export default function AccountDetail() {
                 value={batchN}
                 disabled={q.running || maxBatch < 1}
                 onChange={(e) => setBatchN(Math.max(1, Math.min(maxBatch, Number(e.target.value) || 1)))}
-                aria-label="Сколько роликов сгенерировать"
+                aria-label={t("account.howManyVideosAria")}
               />
               <span className="text-xs text-base-content/50 shrink-0">
-                {maxBatch < 1 ? "нет карточек" : `1–${maxBatch}`}
+                {maxBatch < 1 ? t("account.noCards") : `1–${maxBatch}`}
               </span>
               {!q.running ? (
                 <button
@@ -731,17 +701,17 @@ export default function AccountDetail() {
                   disabled={langMismatch || saving || maxBatch < 1}
                   title={
                     langMismatch
-                      ? "Язык контента не совпадает с языком канала"
+                      ? t("account.genTitleMismatch")
                       : lang !== account.lang
-                        ? "Сохранит выбранный контент и сгенерирует из него"
-                        : "Поставить в очередь генерацию роликов в библиотеку"
+                        ? t("account.genTitleSaveAndGen")
+                        : t("account.genTitleQueue")
                   }
                 >
-                  <Plus size={14} /> {lang !== account.lang ? "Сохранить и сгенерировать" : "Сгенерировать"}
+                  <Plus size={14} /> {lang !== account.lang ? t("account.saveAndGenerate") : t("common.generate")}
                 </button>
               ) : (
                 <button className="btn btn-sm btn-outline btn-error gap-1 w-full sm:w-auto" onClick={q.cancel}>
-                  <Loader2 className="animate-spin" size={14} /> Стоп
+                  <Loader2 className="animate-spin" size={14} /> {t("account.stop")}
                 </button>
               )}
             </div>
@@ -749,11 +719,11 @@ export default function AccountDetail() {
             {/* Предупреждения и доп-действия — отдельными строками, тулбар не ломают */}
             {langMismatch && (
               <span className="basis-full text-xs text-error font-medium">
-                ⚠ контент {tagOf(curContentLang)} ≠ язык канала {tagOf(channelLang)} — смените язык канала или выберите {tagOf(channelLang)}-пак
+                {t("account.langMismatchWarn", { content: langTag(curContentLang), channel: langTag(channelLang) })}
               </span>
             )}
             {lang !== account.lang && videos.length > 0 && (
-              <span className="basis-full text-xs text-warning">старые ролики другого пака — очисти библиотеку</span>
+              <span className="basis-full text-xs text-warning">{t("account.oldVideosWarn")}</span>
             )}
             {postedTwicePlus > 0 && (
               <div className="basis-full flex justify-end">
@@ -761,9 +731,9 @@ export default function AccountDetail() {
                   className="btn btn-sm btn-ghost text-error gap-1"
                   onClick={removePosted}
                   disabled={q.running}
-                  title="Удалить ролики, которые выкладывались больше одного раза"
+                  title={t("account.removePostedTitle")}
                 >
-                  <Trash2 size={14} /> вылож. ≥2× ({postedTwicePlus})
+                  <Trash2 size={14} /> {t("account.postedTwicePlus", { n: postedTwicePlus })}
                 </button>
               </div>
             )}
@@ -771,13 +741,13 @@ export default function AccountDetail() {
           {q.running && (
             <div className="mt-1 text-xs text-base-content/60 flex items-center gap-1">
               <Loader2 className="animate-spin" size={12} />
-              Идёт генерация в фоне — прогресс в правом нижнем углу, можно уходить на другие страницы.
+              {t("account.genInBackground")}
             </div>
           )}
           {lastPosted && (
             <div className="alert alert-success py-2 text-sm mt-2">
               <span>
-                ✓ Выложено: <b>{lastPosted.title}</b> —{" "}
+                {t("account.postedPrefix")} <b>{lastPosted.title}</b> —{" "}
                 <a href={lastPosted.url} target="_blank" rel="noreferrer" className="link font-medium">
                   {lastPosted.url}
                 </a>
@@ -786,7 +756,7 @@ export default function AccountDetail() {
           )}
           {videos.length === 0 ? (
             <div className="text-sm text-base-content/50 py-6 text-center">
-              Пусто. Сгенерируйте ролик в «Студии» и сохраните в этот канал.
+              {t("account.libraryEmpty")}
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
@@ -803,7 +773,7 @@ export default function AccountDetail() {
                           setPreview(v);
                         }
                       }}
-                      title="Открыть и посмотреть"
+                      title={t("account.openAndWatch")}
                       className="absolute inset-0 cursor-pointer"
                     >
                       {v.imageRel ? (
@@ -823,13 +793,13 @@ export default function AccountDetail() {
                       {v.postCount > 0 ? (
                         <span className="absolute top-1 left-1 badge badge-success badge-sm">×{v.postCount}</span>
                       ) : (
-                        <span className="absolute top-1 left-1 badge badge-ghost badge-sm">новое</span>
+                        <span className="absolute top-1 left-1 badge badge-ghost badge-sm">{t("account.newBadge")}</span>
                       )}
                     </div>
                     <button
                       type="button"
                       onClick={() => removeVid(v.id)}
-                      title="Удалить из библиотеки"
+                      title={t("account.removeFromLibrary")}
                       className="absolute top-1 right-1 z-10 btn btn-xs btn-circle btn-error opacity-0 group-hover:opacity-100 transition"
                     >
                       <Trash2 size={12} />
@@ -838,11 +808,11 @@ export default function AccountDetail() {
                       type="button"
                       onClick={() => postNow(v.id)}
                       disabled={posting === v.id || account.status !== "connected"}
-                      title={account.status !== "connected" ? "Сначала подключите канал" : "Выложить сейчас"}
+                      title={account.status !== "connected" ? t("account.connectFirst") : t("account.postNowTitle")}
                       className="absolute bottom-1.5 inset-x-1.5 z-10 btn btn-xs btn-primary gap-1 opacity-0 group-hover:opacity-100 transition"
                     >
                       {posting === v.id ? <Loader2 className="animate-spin" size={12} /> : <Upload size={12} />}
-                      Выложить
+                      {t("account.post")}
                     </button>
                   </div>
                   <div className="mt-1 text-xs font-medium leading-tight line-clamp-2" title={v.title}>
@@ -859,17 +829,17 @@ export default function AccountDetail() {
                 disabled={clampedPage <= 1}
                 onClick={() => setPage(clampedPage - 1)}
               >
-                <ChevronLeft size={14} /> Назад
+                <ChevronLeft size={14} /> {t("common.back")}
               </button>
               <span className="text-sm text-base-content/60">
-                Стр. {clampedPage} из {pageCount}
+                {t("common.page")} {clampedPage} {t("common.of")} {pageCount}
               </span>
               <button
                 className="btn btn-xs btn-outline gap-1"
                 disabled={clampedPage >= pageCount}
                 onClick={() => setPage(clampedPage + 1)}
               >
-                Вперёд <ChevronRight size={14} />
+                {t("common.forward")} <ChevronRight size={14} />
               </button>
             </div>
           )}
@@ -882,7 +852,7 @@ export default function AccountDetail() {
             <button
               type="button"
               onClick={() => setPreview(null)}
-              aria-label="Закрыть"
+              aria-label={t("common.close")}
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-20 bg-base-100/70 hover:bg-base-100"
             >
               <X size={16} />
@@ -905,12 +875,12 @@ export default function AccountDetail() {
                   </p>
                 )}
                 <div className="text-xs text-base-content/50">
-                  {preview.text.length} симв.
-                  {preview.postCount > 0 ? ` · выложен ×${preview.postCount}` : " · не выкладывался"}
+                  {t("account.charCount", { n: preview.text.length })}
+                  {preview.postCount > 0 ? ` · ${t("account.postedTimes", { n: preview.postCount })}` : ` · ${t("account.notPosted")}`}
                   {preview.lastPostedAt && ` · ${new Date(preview.lastPostedAt).toLocaleDateString("ru-RU")}`}
                   {preview.music && preview.music !== "none"
                     ? ` · 🎵 ${preview.music.split("/").pop()?.replace(/\.\w+$/, "")}`
-                    : " · 🔇 без музыки"}
+                    : ` · 🔇 ${t("account.noMusic")}`}
                 </div>
                 <div className="flex flex-wrap items-center gap-2 pt-2 mt-auto">
                   <a href={`/files/${preview.videoRel}`} download className="btn btn-sm btn-ghost gap-1">
@@ -924,7 +894,7 @@ export default function AccountDetail() {
                       removeVid(pid);
                     }}
                   >
-                    <Trash2 size={14} /> Удалить
+                    <Trash2 size={14} /> {t("common.delete")}
                   </button>
                   <button
                     className="btn btn-sm btn-primary gap-1 ml-auto"
@@ -935,7 +905,7 @@ export default function AccountDetail() {
                       postNow(pid);
                     }}
                   >
-                    <Upload size={14} /> Выложить
+                    <Upload size={14} /> {t("account.post")}
                   </button>
                 </div>
               </div>
@@ -948,19 +918,19 @@ export default function AccountDetail() {
         <div className="modal modal-open" onClick={() => !avatarBusy && setAvatarOpen(false)}>
           <div className="modal-box max-w-lg" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-bold text-lg">Аватар канала</h3>
+              <h3 className="font-bold text-lg">{t("account.avatarModalTitle")}</h3>
               <button
                 className="btn btn-sm btn-circle btn-ghost"
                 onClick={() => setAvatarOpen(false)}
                 disabled={avatarBusy}
-                aria-label="Закрыть"
+                aria-label={t("common.close")}
               >
                 <X size={16} />
               </button>
             </div>
             <div className="flex flex-wrap items-center gap-2 mb-3">
               <label className={`btn btn-sm btn-primary gap-1 ${avatarBusy ? "btn-disabled" : ""}`}>
-                <Upload size={14} /> Загрузить своё фото
+                <Upload size={14} /> {t("account.uploadOwnPhoto")}
                 <input
                   type="file"
                   accept="image/png,image/jpeg,image/webp"
@@ -977,10 +947,10 @@ export default function AccountDetail() {
                 disabled={avatarBusy || avatarList.length === 0}
                 onClick={() => setAvatar(avatarList[Math.floor(Math.random() * avatarList.length)])}
               >
-                <RefreshCw size={14} /> Случайная
+                <RefreshCw size={14} /> {t("account.randomAvatar")}
               </button>
               {avatarBusy && <Loader2 className="animate-spin self-center" size={16} />}
-              <span className="text-xs text-base-content/50 ml-auto">или выберите из набора ↓</span>
+              <span className="text-xs text-base-content/50 ml-auto">{t("account.orPickFromSet")}</span>
             </div>
             <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 max-h-[50vh] overflow-auto p-1">
               {avatarList.map((u) => (
@@ -989,7 +959,7 @@ export default function AccountDetail() {
                   type="button"
                   onClick={() => setAvatar(u)}
                   disabled={avatarBusy}
-                  title="Выбрать"
+                  title={t("account.pickAvatar")}
                   className={`rounded-full overflow-hidden border-2 transition ${
                     account.avatar === u ? "border-primary" : "border-transparent hover:border-base-300"
                   }`}
@@ -1005,28 +975,28 @@ export default function AccountDetail() {
       {times.length > 0 && videos.length > 0 && (
         <section className="card bg-base-100 border border-base-300">
           <div className="card-body">
-            <h2 className="card-title text-base">Ролик на каждый слот</h2>
+            <h2 className="card-title text-base">{t("account.slotVideoTitle")}</h2>
             <p className="text-sm text-base-content/60">
-              По умолчанию — авто (наименее выкладываемый). Можно закрепить конкретный ролик за временем.
+              {t("account.slotVideoHint")}
             </p>
             <div className="space-y-2 mt-2">
-              {[...times].sort().map((t) => (
-                <div key={t} className="flex items-center gap-2">
-                  <span className="badge badge-primary badge-lg w-20 justify-center">{t}</span>
+              {[...times].sort().map((time) => (
+                <div key={time} className="flex items-center gap-2">
+                  <span className="badge badge-primary badge-lg w-20 justify-center">{time}</span>
                   <select
                     className="select select-bordered select-sm flex-1"
-                    value={slotVideos[t] ?? 0}
+                    value={slotVideos[time] ?? 0}
                     onChange={(e) => {
                       const v = Number(e.target.value);
                       setSlotVideos((prev) => {
                         const n = { ...prev };
-                        if (v) n[t] = v;
-                        else delete n[t];
+                        if (v) n[time] = v;
+                        else delete n[time];
                         return n;
                       });
                     }}
                   >
-                    <option value={0}>Авто (наименее выложенный)</option>
+                    <option value={0}>{t("account.slotAuto")}</option>
                     {videos.map((v) => (
                       <option key={v.id} value={v.id}>
                         {v.title} (x{v.postCount})
@@ -1036,7 +1006,7 @@ export default function AccountDetail() {
                 </div>
               ))}
             </div>
-            <p className="text-xs text-base-content/50 mt-1">Не забудь «Сохранить» в настройках выше.</p>
+            <p className="text-xs text-base-content/50 mt-1">{t("account.slotSaveReminder")}</p>
           </div>
         </section>
       )}

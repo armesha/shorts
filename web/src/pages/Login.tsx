@@ -11,9 +11,11 @@ import {
 } from "lucide-react";
 import { apiClient, ApiError } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { useT } from "../lib/i18n";
 import TelegramConnect from "../components/TelegramConnect";
 
 export default function Login() {
+  const { t } = useT();
   const [mode, setMode] = useState<"login" | "recover">("login");
 
   return (
@@ -26,7 +28,7 @@ export default function Login() {
               <span className="font-bold text-xl tracking-tight">Shorts Factory</span>
             </div>
             <p className="text-sm text-base-content/60 mt-1">
-              {mode === "login" ? "Вход в панель управления" : "Восстановление пароля"}
+              {mode === "login" ? t("login.subtitleLogin") : t("login.subtitleRecover")}
             </p>
           </div>
           {mode === "login" ? (
@@ -42,6 +44,7 @@ export default function Login() {
 
 function LoginForm({ onRecover }: { onRecover: () => void }) {
   const { setUser } = useAuth();
+  const { t } = useT();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -69,7 +72,7 @@ function LoginForm({ onRecover }: { onRecover: () => void }) {
         setError(err.message);
         if (err.status === 423) setLocked(true); // account locked after too many tries
       } else {
-        setError("Не удалось войти — сервер недоступен?");
+        setError(t("login.errServerDown"));
       }
     } finally {
       setBusy(false);
@@ -79,7 +82,7 @@ function LoginForm({ onRecover }: { onRecover: () => void }) {
   return (
     <form className="flex flex-col gap-4" onSubmit={submit}>
       <label className="form-control">
-        <span className="label-text">Логин</span>
+        <span className="label-text">{t("login.username")}</span>
         <input
           id="login-username"
           name="username"
@@ -93,7 +96,7 @@ function LoginForm({ onRecover }: { onRecover: () => void }) {
       </label>
 
       <label className="form-control">
-        <span className="label-text">Пароль</span>
+        <span className="label-text">{t("login.password")}</span>
         <input
           id="login-password"
           name="password"
@@ -115,7 +118,7 @@ function LoginForm({ onRecover }: { onRecover: () => void }) {
 
       <button className="btn btn-primary w-full" disabled={busy || !username || !password}>
         {busy ? <span className="loading loading-spinner loading-sm" /> : <LogIn size={16} />}
-        Войти
+        {t("login.signIn")}
       </button>
 
       <button
@@ -123,12 +126,12 @@ function LoginForm({ onRecover }: { onRecover: () => void }) {
         className="btn btn-ghost btn-sm self-center text-base-content/60"
         onClick={onRecover}
       >
-        Забыли пароль?
+        {t("login.forgotPassword")}
       </button>
 
       {tgEnabled && (
         <>
-          <div className="divider text-xs text-base-content/40 my-0">или</div>
+          <div className="divider text-xs text-base-content/40 my-0">{t("login.or")}</div>
           <div className="flex justify-center">
             <TelegramConnect mode="login" onDone={(u) => u && setUser(u)} />
           </div>
@@ -140,6 +143,7 @@ function LoginForm({ onRecover }: { onRecover: () => void }) {
 
 // Password recovery via the Telegram bot: enter login → bot DMs a code → enter code + new password.
 function RecoverForm({ onBack }: { onBack: () => void }) {
+  const { t } = useT();
   const [step, setStep] = useState<"request" | "verify" | "done">("request");
   const [username, setUsername] = useState("");
   const [code, setCode] = useState("");
@@ -157,7 +161,7 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
       await apiClient.recoverStart(username.trim());
       setStep("verify"); // always advance — the response is intentionally generic (no enumeration)
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Ошибка сети");
+      setError(err instanceof ApiError ? err.message : t("login.errNetwork"));
     } finally {
       setBusy(false);
     }
@@ -166,14 +170,14 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
   async function complete(e: FormEvent) {
     e.preventDefault();
     setError("");
-    if (pw.length < 6) return setError("Новый пароль — минимум 6 символов");
-    if (pw !== pw2) return setError("Пароли не совпадают");
+    if (pw.length < 6) return setError(t("login.errPwTooShort"));
+    if (pw !== pw2) return setError(t("login.errPwMismatch"));
     setBusy(true);
     try {
       await apiClient.recoverComplete(username.trim(), code.trim(), pw);
       setStep("done");
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Ошибка сети");
+      setError(err instanceof ApiError ? err.message : t("login.errNetwork"));
     } finally {
       setBusy(false);
     }
@@ -184,10 +188,10 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
       <div className="flex flex-col gap-4">
         <div className="alert alert-success py-2 text-sm" role="alert">
           <Check size={16} />
-          <span>Пароль изменён. Теперь войдите с новым паролем.</span>
+          <span>{t("login.pwChanged")}</span>
         </div>
         <button className="btn btn-primary w-full" onClick={onBack}>
-          <ArrowLeft size={16} /> К входу
+          <ArrowLeft size={16} /> {t("login.backToLogin")}
         </button>
       </div>
     );
@@ -197,12 +201,9 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
     <form className="flex flex-col gap-4" onSubmit={step === "request" ? request : complete}>
       {step === "request" ? (
         <>
-          <p className="text-sm text-base-content/70">
-            Введите логин. Если к аккаунту привязан Telegram, бот пришлёт одноразовый код для сброса
-            пароля.
-          </p>
+          <p className="text-sm text-base-content/70">{t("login.recoverHint")}</p>
           <label className="form-control">
-            <span className="label-text">Логин</span>
+            <span className="label-text">{t("login.username")}</span>
             <input
               className="input input-bordered w-full"
               value={username}
@@ -217,13 +218,10 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
         <>
           <div className="alert alert-info py-2 text-xs">
             <ShieldCheck size={16} />
-            <span>
-              Если Telegram привязан — код отправлен в бота. Не пришёл? Откройте бота, нажмите Start и
-              запроси код снова.
-            </span>
+            <span>{t("login.codeSentHint")}</span>
           </div>
           <label className="form-control">
-            <span className="label-text">Код из Telegram</span>
+            <span className="label-text">{t("login.codeFromTelegram")}</span>
             <input
               className="input input-bordered w-full tracking-[0.4em] text-center"
               value={code}
@@ -235,7 +233,7 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
             />
           </label>
           <label className="form-control">
-            <span className="label-text">Новый пароль (≥6)</span>
+            <span className="label-text">{t("login.newPassword")}</span>
             <input
               type="password"
               className="input input-bordered w-full"
@@ -246,7 +244,7 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
             />
           </label>
           <label className="form-control">
-            <span className="label-text">Повторите пароль</span>
+            <span className="label-text">{t("login.repeatPassword")}</span>
             <input
               type="password"
               className="input input-bordered w-full"
@@ -277,12 +275,12 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
         ) : (
           <Check size={16} />
         )}
-        {step === "request" ? "Получить код" : "Сменить пароль"}
+        {step === "request" ? t("login.getCode") : t("login.changePassword")}
       </button>
 
       <div className="flex justify-between">
         <button type="button" className="btn btn-ghost btn-sm text-base-content/60" onClick={onBack}>
-          <ArrowLeft size={14} /> К входу
+          <ArrowLeft size={14} /> {t("login.backToLogin")}
         </button>
         {step === "verify" && (
           <button
@@ -290,7 +288,7 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
             className="btn btn-ghost btn-sm text-base-content/60"
             onClick={() => setStep("request")}
           >
-            Запросить код снова
+            {t("login.requestCodeAgain")}
           </button>
         )}
       </div>

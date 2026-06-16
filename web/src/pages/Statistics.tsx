@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import { apiClient, type StatRow, type StatPoint, type UserAnalytics } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { useT } from "../lib/i18n";
 
 type Scope = "mine" | "all";
 type MetricKey = "subscribers" | "views" | "videos";
@@ -37,6 +38,7 @@ function loadFilters(): SavedFilters {
 }
 
 export default function Statistics() {
+  const { t } = useT();
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const [saved] = useState(loadFilters); // last-used filters (localStorage), restored on mount
@@ -71,7 +73,7 @@ export default function Statistics() {
       .then(setRows)
       .catch((e) => {
         console.error("[Статистика] запрос /stats упал:", e);
-        setError("Не удалось загрузить статистику (подробности в консоли F12)");
+        setError(t("stats.loadError"));
       })
       .finally(() => setLoading(false));
   }, [scope]);
@@ -122,17 +124,17 @@ export default function Statistics() {
         );
         setResult({
           ok: false,
-          text: `Обновлено ${connected.length - failed.length} из ${connected.length} · с ошибками: ${failed.length} (детали — в карточках и в консоли F12)`,
+          text: t("stats.refreshPartial", { ok: connected.length - failed.length, total: connected.length, failed: failed.length }),
         });
       } else if (connected.length === 0) {
-        setResult({ ok: false, text: "Нет подключённых каналов для обновления" });
+        setResult({ ok: false, text: t("stats.refreshNoneConnected") });
       } else {
-        setResult({ ok: true, text: `Успешно обновлено каналов: ${connected.length}` });
+        setResult({ ok: true, text: t("stats.refreshOk", { n: connected.length }) });
       }
     } catch (e) {
       console.error("[Статистика] запрос /stats/refresh упал:", e);
-      setError("Не удалось обновить данные (подробности в консоли F12)");
-      setResult({ ok: false, text: "Не удалось обновить — запрос к серверу упал (см. F12)" });
+      setError(t("stats.refreshError"));
+      setResult({ ok: false, text: t("stats.refreshErrorBanner") });
     } finally {
       setRefreshing(false);
     }
@@ -190,8 +192,8 @@ export default function Statistics() {
     <div className="space-y-6">
       <header className="flex items-start justify-between gap-2 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold">Статистика</h1>
-          <p className="text-base-content/60">Подписчики и просмотры каналов · изменения и динамика</p>
+          <h1 className="text-2xl font-bold">{t("nav.statistics")}</h1>
+          <p className="text-base-content/60">{t("stats.subtitle")}</p>
         </div>
         <div className="flex items-center gap-2">
           {isAdmin && (
@@ -200,13 +202,13 @@ export default function Statistics() {
                 className={`btn btn-sm join-item ${scope === "mine" ? "btn-primary" : "btn-ghost"}`}
                 onClick={() => setScope("mine")}
               >
-                Мои
+                {t("stats.scopeMine")}
               </button>
               <button
                 className={`btn btn-sm join-item ${scope === "all" ? "btn-primary" : "btn-ghost"}`}
                 onClick={() => setScope("all")}
               >
-                Все каналы
+                {t("stats.scopeAll")}
               </button>
             </div>
           )}
@@ -216,7 +218,7 @@ export default function Statistics() {
             ) : (
               <RefreshCw size={18} />
             )}
-            Обновить данные
+            {t("stats.refreshData")}
           </button>
         </div>
       </header>
@@ -232,33 +234,33 @@ export default function Statistics() {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Stat icon={<Users />} label="Подписчиков всего" value={fmt(totals.subscribers)} />
-        <Stat icon={<Eye />} label="Просмотров всего" value={fmt(totals.views)} />
-        <Stat icon={<Film />} label="Каналов подключено" value={`${connectedCount} / ${filtered.length}`} />
+        <Stat icon={<Users />} label={t("stats.totalSubscribers")} value={fmt(totals.subscribers)} />
+        <Stat icon={<Eye />} label={t("stats.totalViews")} value={fmt(totals.views)} />
+        <Stat icon={<Film />} label={t("stats.channelsConnected")} value={`${connectedCount} / ${filtered.length}`} />
       </div>
 
       {analytics &&
         analytics.summary.published + analytics.summary.scheduled + analytics.summary.failed + analytics.summary.queuedVideos > 0 && (
           <section className="card bg-base-100 border border-base-300">
             <div className="card-body gap-4">
-              <h2 className="card-title text-base">Активность публикаций · мои каналы</h2>
+              <h2 className="card-title text-base">{t("stats.publishActivity")}</h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="rounded-xl border border-base-300 p-3">
-                  <div className="text-xs text-base-content/60">Опубликовано</div>
+                  <div className="text-xs text-base-content/60">{t("stats.published")}</div>
                   <div className="text-2xl font-bold text-success">{fmt(analytics.summary.published)}</div>
                 </div>
                 <div className="rounded-xl border border-base-300 p-3">
-                  <div className="text-xs text-base-content/60">Запланировано</div>
+                  <div className="text-xs text-base-content/60">{t("stats.scheduled")}</div>
                   <div className="text-2xl font-bold">{fmt(analytics.summary.scheduled)}</div>
                 </div>
                 <div className="rounded-xl border border-base-300 p-3">
-                  <div className="text-xs text-base-content/60">Ошибки</div>
+                  <div className="text-xs text-base-content/60">{t("stats.failed")}</div>
                   <div className={`text-2xl font-bold ${analytics.summary.failed > 0 ? "text-error" : ""}`}>
                     {fmt(analytics.summary.failed)}
                   </div>
                 </div>
                 <div className="rounded-xl border border-base-300 p-3">
-                  <div className="text-xs text-base-content/60">В очереди</div>
+                  <div className="text-xs text-base-content/60">{t("stats.queued")}</div>
                   <div className="text-2xl font-bold">{fmt(analytics.summary.queuedVideos)}</div>
                 </div>
               </div>
@@ -271,9 +273,9 @@ export default function Statistics() {
                       <YAxis allowDecimals={false} fontSize={11} />
                       <Tooltip />
                       <Legend />
-                      <Line type="monotone" dataKey="published" name="Опубликовано" stroke="#16a34a" dot={false} strokeWidth={2} />
-                      <Line type="monotone" dataKey="scheduled" name="Запланировано" stroke="#605dff" dot={false} strokeWidth={2} />
-                      <Line type="monotone" dataKey="failed" name="Ошибки" stroke="#dc2626" dot={false} strokeWidth={2} />
+                      <Line type="monotone" dataKey="published" name={t("stats.published")} stroke="#16a34a" dot={false} strokeWidth={2} />
+                      <Line type="monotone" dataKey="scheduled" name={t("stats.scheduled")} stroke="#605dff" dot={false} strokeWidth={2} />
+                      <Line type="monotone" dataKey="failed" name={t("stats.failed")} stroke="#dc2626" dot={false} strokeWidth={2} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -287,11 +289,11 @@ export default function Statistics() {
           <span className="loading loading-spinner loading-lg text-primary" />
         </div>
       ) : rows.length === 0 ? (
-        <Empty text="Нет каналов для показа. Подключите канал на странице «Каналы»." />
+        <Empty text={t("stats.emptyNoChannels")} />
       ) : !anyData ? (
         <Empty
           icon
-          text="Данных пока нет. Нажмите «Обновить данные» — мы сделаем первый снимок статистики каналов. Повторяйте периодически, и накопится динамика для графика."
+          text={t("stats.emptyNoData")}
         />
       ) : (
         <>
@@ -300,39 +302,39 @@ export default function Statistics() {
             <div className="card-body py-3 flex-row flex-wrap items-center gap-2">
               <input
                 className="input input-bordered input-sm w-full sm:w-56"
-                placeholder="Поиск по каналу…"
-                aria-label="Поиск по каналу"
+                placeholder={t("stats.searchPlaceholder")}
+                aria-label={t("stats.searchAria")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
               <select
                 className="select select-bordered select-sm"
-                aria-label="Сортировать по"
+                aria-label={t("stats.sortBy")}
                 value={sortKey}
                 onChange={(e) => setSortKey(e.target.value as SortKey)}
               >
-                <option value="subscribers">Подписчики</option>
-                <option value="views">Просмотры</option>
-                <option value="videos">Видео</option>
-                <option value="delta">Прирост подписчиков</option>
-                <option value="name">Название</option>
+                <option value="subscribers">{t("stats.subscribers")}</option>
+                <option value="views">{t("stats.views")}</option>
+                <option value="videos">{t("stats.videos")}</option>
+                <option value="delta">{t("stats.subscribersGrowth")}</option>
+                <option value="name">{t("stats.name")}</option>
               </select>
               <button
                 className="btn btn-sm btn-ghost gap-1"
                 onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
-                title="Направление сортировки"
+                title={t("stats.sortDirection")}
               >
                 {sortDir === "asc" ? <ArrowUp size={15} /> : <ArrowDown size={15} />}
-                {sortDir === "asc" ? "по возр." : "по убыв."}
+                {sortDir === "asc" ? t("stats.ascending") : t("stats.descending")}
               </button>
               {isAdmin && scope === "all" && owners.length > 1 && (
                 <select
                   className="select select-bordered select-sm"
-                  aria-label="Владелец"
+                  aria-label={t("stats.owner")}
                   value={ownerFilter}
                   onChange={(e) => setOwnerFilter(e.target.value)}
                 >
-                  <option value="">Все владельцы</option>
+                  <option value="">{t("stats.allOwners")}</option>
                   {owners.map((o) => (
                     <option key={o} value={o}>
                       @{o}
@@ -347,14 +349,14 @@ export default function Statistics() {
                   checked={onlyConnected}
                   onChange={(e) => setOnlyConnected(e.target.checked)}
                 />
-                Только подключённые
+                {t("stats.onlyConnected")}
               </label>
-              <span className="text-xs text-base-content/50 ml-auto">{sorted.length} канал(ов)</span>
+              <span className="text-xs text-base-content/50 ml-auto">{t("stats.channelCount", { n: sorted.length })}</span>
             </div>
           </div>
 
           {sorted.length === 0 ? (
-            <Empty text="Ничего не найдено по фильтру. Измените поиск или фильтры." />
+            <Empty text={t("stats.emptyNoMatch")} />
           ) : (
             <div className="space-y-4">
               {paged.map((r) => (
@@ -369,18 +371,18 @@ export default function Statistics() {
                 className="btn btn-sm btn-ghost btn-square"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={clampedPage <= 1}
-                aria-label="Назад"
+                aria-label={t("common.back")}
               >
                 <ChevronLeft size={16} />
               </button>
               <span className="text-sm text-base-content/60">
-                стр. {clampedPage} из {totalPages}
+                {t("common.page")} {clampedPage} {t("common.of")} {totalPages}
               </span>
               <button
                 className="btn btn-sm btn-ghost btn-square"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={clampedPage >= totalPages}
-                aria-label="Вперёд"
+                aria-label={t("common.forward")}
               >
                 <ChevronRight size={16} />
               </button>
@@ -393,6 +395,7 @@ export default function Statistics() {
 }
 
 function ChannelCard({ row, isAdmin, avatar }: { row: StatRow; isAdmin: boolean; avatar?: string | null }) {
+  const { t } = useT();
   const [open, setOpen] = useState(false);
   const [points, setPoints] = useState<StatPoint[] | null>(null);
 
@@ -410,10 +413,10 @@ function ChannelCard({ row, isAdmin, avatar }: { row: StatRow; isAdmin: boolean;
 
   const title = row.ytChannelTitle || row.channelName;
   const subtitle = !row.connected
-    ? "не подключён к YouTube"
+    ? t("stats.notConnectedYt")
     : row.latest
-      ? `обновлено ${timeAgo(row.latest.takenAt)}`
-      : "нет снимков — нажмите «Обновить данные»";
+      ? t("stats.updatedAgo", { ago: timeAgo(row.latest.takenAt, t) })
+      : t("stats.noSnapshots");
 
   return (
     <div className="card bg-base-100 border border-base-300">
@@ -442,10 +445,10 @@ function ChannelCard({ row, isAdmin, avatar }: { row: StatRow; isAdmin: boolean;
           </div>
           {row.error ? (
             <span className="badge badge-error badge-sm" title={row.error}>
-              ошибка
+              {t("stats.badgeError")}
             </span>
           ) : !row.connected ? (
-            <span className="badge badge-warning badge-sm">нет подключения</span>
+            <span className="badge badge-warning badge-sm">{t("stats.badgeNotConnected")}</span>
           ) : (
             row.ytChannelId && (
               <a
@@ -453,7 +456,7 @@ function ChannelCard({ row, isAdmin, avatar }: { row: StatRow; isAdmin: boolean;
                 target="_blank"
                 rel="noreferrer"
                 className="btn btn-ghost btn-xs text-error"
-                title="Открыть канал на YouTube"
+                title={t("stats.openOnYoutube")}
               >
                 ↗ YouTube
               </a>
@@ -468,9 +471,9 @@ function ChannelCard({ row, isAdmin, avatar }: { row: StatRow; isAdmin: boolean;
         )}
 
         <div className="grid grid-cols-3 gap-3">
-          <Metric label="Подписчики" value={row.latest?.subscribers} delta={delta(row, "subscribers")} />
-          <Metric label="Просмотры" value={row.latest?.views} delta={delta(row, "views")} />
-          <Metric label="Видео" value={row.latest?.videos} delta={delta(row, "videos")} />
+          <Metric label={t("stats.subscribers")} value={row.latest?.subscribers} delta={delta(row, "subscribers")} t={t} />
+          <Metric label={t("stats.views")} value={row.latest?.views} delta={delta(row, "views")} t={t} />
+          <Metric label={t("stats.videos")} value={row.latest?.videos} delta={delta(row, "videos")} t={t} />
         </div>
 
         <button
@@ -479,7 +482,7 @@ function ChannelCard({ row, isAdmin, avatar }: { row: StatRow; isAdmin: boolean;
           disabled={!row.latest}
         >
           <TrendingUp size={15} />
-          {open ? "Скрыть график" : "График динамики"}
+          {open ? t("stats.hideChart") : t("stats.showChart")}
           <ChevronDown size={15} className={open ? "rotate-180 transition-transform" : "transition-transform"} />
         </button>
 
@@ -490,6 +493,7 @@ function ChannelCard({ row, isAdmin, avatar }: { row: StatRow; isAdmin: boolean;
 }
 
 function ChannelChart({ points }: { points: StatPoint[] | null }) {
+  const { t } = useT();
   if (points == null) {
     return (
       <div className="py-8 text-center">
@@ -500,7 +504,7 @@ function ChannelChart({ points }: { points: StatPoint[] | null }) {
   if (points.length < 2) {
     return (
       <div className="text-sm text-base-content/50 py-4">
-        Нужно минимум 2 снимка для графика. Жмите «Обновить данные» периодически — динамика накопится.
+        {t("stats.needTwoSnapshots")}
       </div>
     );
   }
@@ -509,8 +513,8 @@ function ChannelChart({ points }: { points: StatPoint[] | null }) {
       day: "2-digit",
       month: "2-digit",
     }),
-    Подписчики: p.subscribers,
-    Просмотры: p.views,
+    subscribers: p.subscribers,
+    views: p.views,
   }));
   return (
     <div className="h-64 w-full">
@@ -522,27 +526,27 @@ function ChannelChart({ points }: { points: StatPoint[] | null }) {
           <YAxis yAxisId="right" orientation="right" fontSize={12} width={48} />
           <Tooltip />
           <Legend />
-          <Line yAxisId="left" type="monotone" dataKey="Подписчики" stroke="#6419e6" strokeWidth={2} dot={false} />
-          <Line yAxisId="right" type="monotone" dataKey="Просмотры" stroke="#0ea5e9" strokeWidth={2} dot={false} />
+          <Line yAxisId="left" type="monotone" dataKey="subscribers" name={t("stats.subscribers")} stroke="#6419e6" strokeWidth={2} dot={false} />
+          <Line yAxisId="right" type="monotone" dataKey="views" name={t("stats.views")} stroke="#0ea5e9" strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>
     </div>
   );
 }
 
-function Metric({ label, value, delta }: { label: string; value?: number; delta: number | null }) {
+function Metric({ label, value, delta, t }: { label: string; value?: number; delta: number | null; t: (key: string, vars?: Record<string, string | number>) => string }) {
   return (
     <div className="rounded-lg bg-base-200/60 p-3">
       <div className="text-xs text-base-content/60">{label}</div>
       <div className="text-xl font-bold leading-tight">{value == null ? "—" : fmt(value)}</div>
-      <DeltaBadge delta={delta} />
+      <DeltaBadge delta={delta} t={t} />
     </div>
   );
 }
 
-function DeltaBadge({ delta }: { delta: number | null }) {
-  if (delta == null) return <div className="text-xs text-base-content/40 mt-0.5">первый снимок</div>;
-  if (delta === 0) return <div className="text-xs text-base-content/40 mt-0.5">без изменений</div>;
+function DeltaBadge({ delta, t }: { delta: number | null; t: (key: string, vars?: Record<string, string | number>) => string }) {
+  if (delta == null) return <div className="text-xs text-base-content/40 mt-0.5">{t("stats.firstSnapshot")}</div>;
+  if (delta === 0) return <div className="text-xs text-base-content/40 mt-0.5">{t("stats.noChange")}</div>;
   const up = delta > 0;
   return (
     <div className={`text-xs mt-0.5 flex items-center gap-0.5 ${up ? "text-success" : "text-error"}`}>
@@ -592,13 +596,13 @@ function parseUtc(s: string): string {
   return s.includes("T") ? s : s.replace(" ", "T") + "Z";
 }
 
-function timeAgo(iso: string): string {
+function timeAgo(iso: string, t: (key: string, vars?: Record<string, string | number>) => string): string {
   const then = new Date(parseUtc(iso)).getTime();
   const sec = Math.max(0, Math.floor((Date.now() - then) / 1000));
-  if (sec < 60) return "только что";
+  if (sec < 60) return t("stats.justNow");
   const min = Math.floor(sec / 60);
-  if (min < 60) return `${min} мин назад`;
+  if (min < 60) return t("stats.minutesAgo", { n: min });
   const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr} ч назад`;
-  return `${Math.floor(hr / 24)} дн назад`;
+  if (hr < 24) return t("stats.hoursAgo", { n: hr });
+  return t("stats.daysAgo", { n: Math.floor(hr / 24) });
 }

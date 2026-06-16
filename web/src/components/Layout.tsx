@@ -1,22 +1,23 @@
 import type { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
-import { Tv, History, Settings, Clapperboard, Sparkles, BarChart3, Bug, Rocket, Server, LogOut, Menu, LayoutTemplate, Users, Layers, TrendingUp, type LucideIcon } from "lucide-react";
+import { Tv, History, Settings, Clapperboard, Sparkles, BarChart3, Bug, Rocket, Server, LogOut, Menu, LayoutTemplate, Users, Layers, TrendingUp, Globe, type LucideIcon } from "lucide-react";
 import { useAuth } from "../lib/auth";
+import { useT, LANGS, type Lang } from "../lib/i18n";
 
-type NavItem = { to: string; label: string; icon: LucideIcon; end: boolean; adminOnly?: boolean };
+type NavItem = { to: string; labelKey: string; icon: LucideIcon; end: boolean; adminOnly?: boolean };
 const NAV: NavItem[] = [
-  { to: "/", label: "Каналы", icon: Tv, end: true },
-  { to: "/studio", label: "Студия", icon: Sparkles, end: false },
-  { to: "/cards", label: "Карточки", icon: LayoutTemplate, end: false },
-  { to: "/packs", label: "Паки", icon: Layers, end: false },
-  { to: "/history", label: "История", icon: History, end: false },
-  { to: "/statistics", label: "Статистика", icon: BarChart3, end: false },
-  { to: "/admin/analytics", label: "Аналитика", icon: TrendingUp, end: false, adminOnly: true },
-  { to: "/changelog", label: "Обновления", icon: Rocket, end: false },
-  { to: "/settings", label: "Настройки", icon: Settings, end: false },
-  { to: "/users", label: "Админка", icon: Users, end: false, adminOnly: true },
-  { to: "/errors", label: "Ошибки", icon: Bug, end: false, adminOnly: true },
-  { to: "/system", label: "Сервер", icon: Server, end: false },
+  { to: "/", labelKey: "nav.channels", icon: Tv, end: true },
+  { to: "/studio", labelKey: "nav.studio", icon: Sparkles, end: false },
+  { to: "/cards", labelKey: "nav.cards", icon: LayoutTemplate, end: false },
+  { to: "/packs", labelKey: "nav.packs", icon: Layers, end: false },
+  { to: "/history", labelKey: "nav.history", icon: History, end: false },
+  { to: "/statistics", labelKey: "nav.statistics", icon: BarChart3, end: false },
+  { to: "/admin/analytics", labelKey: "nav.analytics", icon: TrendingUp, end: false, adminOnly: true },
+  { to: "/changelog", labelKey: "nav.changelog", icon: Rocket, end: false },
+  { to: "/settings", labelKey: "nav.settings", icon: Settings, end: false },
+  { to: "/users", labelKey: "nav.users", icon: Users, end: false, adminOnly: true },
+  { to: "/errors", labelKey: "nav.errors", icon: Bug, end: false, adminOnly: true },
+  { to: "/system", labelKey: "nav.server", icon: Server, end: false },
 ];
 
 const DRAWER_ID = "main-drawer";
@@ -28,6 +29,7 @@ function closeDrawer() {
 
 export default function Layout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
+  const { t, lang, setLang } = useT();
   return (
     <div className="drawer lg:drawer-open min-h-screen bg-base-200 text-base-content">
       <input id={DRAWER_ID} type="checkbox" className="drawer-toggle" />
@@ -35,11 +37,11 @@ export default function Layout({ children }: { children: ReactNode }) {
       <div className="drawer-content flex flex-col min-w-0">
         {/* Mobile top bar with hamburger; on lg+ the sidebar is always visible instead. */}
         <div className="lg:hidden sticky top-0 z-20 flex items-center gap-2 bg-base-100 border-b border-base-300 px-3 h-14">
-          <label htmlFor={DRAWER_ID} className="btn btn-ghost btn-sm btn-square" aria-label="Открыть меню">
+          <label htmlFor={DRAWER_ID} className="btn btn-ghost btn-sm btn-square" aria-label={t("layout.openMenu")}>
             <Menu size={20} />
           </label>
           <Clapperboard className="text-primary" size={22} />
-          <span className="font-bold tracking-tight">Shorts Factory</span>
+          <span className="font-bold tracking-tight">{t("layout.brand")}</span>
         </div>
 
         <main className="flex-1 min-w-0">
@@ -48,15 +50,15 @@ export default function Layout({ children }: { children: ReactNode }) {
       </div>
 
       <div className="drawer-side z-40">
-        <label htmlFor={DRAWER_ID} className="drawer-overlay" aria-label="Закрыть меню"></label>
+        <label htmlFor={DRAWER_ID} className="drawer-overlay" aria-label={t("layout.closeMenu")}></label>
         <aside className="w-64 min-h-screen bg-base-100 border-r border-base-300 flex flex-col">
           <div className="px-5 h-16 flex items-center gap-2 border-b border-base-300">
             <Clapperboard className="text-primary" size={26} />
-            <span className="font-bold text-lg tracking-tight">Shorts Factory</span>
+            <span className="font-bold text-lg tracking-tight">{t("layout.brand")}</span>
           </div>
           <nav className="p-3 flex-1">
             <ul className="menu gap-1 w-full">
-              {NAV.filter((n) => !n.adminOnly || user?.role === "admin").map(({ to, label, icon: Icon, end, adminOnly }) => (
+              {NAV.filter((n) => !n.adminOnly || user?.role === "admin").map(({ to, labelKey, icon: Icon, end, adminOnly }) => (
                 <li key={to}>
                   <NavLink
                     to={to}
@@ -65,10 +67,10 @@ export default function Layout({ children }: { children: ReactNode }) {
                     className={({ isActive }) => (isActive ? "active font-medium" : "")}
                   >
                     <Icon size={18} />
-                    {label}
+                    {t(labelKey)}
                     {/* Admin-only tab → small red «adm» tag (auto for any adminOnly item, now & future). */}
                     {adminOnly && (
-                      <span className="badge badge-error badge-xs ml-auto" title="видно только администратору">
+                      <span className="badge badge-error badge-xs ml-auto" title={t("layout.adminBadge")}>
                         adm
                       </span>
                     )}
@@ -83,15 +85,31 @@ export default function Layout({ children }: { children: ReactNode }) {
                 <div className="min-w-0">
                   <div className="text-sm font-medium truncate">{user.username}</div>
                   <div className="text-xs text-base-content/50">
-                    {user.role === "admin" ? "администратор" : "пользователь"}
+                    {user.role === "admin" ? t("common.admin") : t("common.user")}
                   </div>
                 </div>
-                <button className="btn btn-ghost btn-sm" onClick={logout} title="Выйти" aria-label="Выйти">
+                <button className="btn btn-ghost btn-sm" onClick={logout} title={t("layout.logout")} aria-label={t("layout.logout")}>
                   <LogOut size={16} />
                 </button>
               </div>
             )}
-            <div className="px-2 text-xs text-base-content/40">v0.1 · авто-режим</div>
+            {/* UI language switcher — dashboard language only (separate from a channel's content lang). */}
+            <label className="flex items-center gap-2 px-2 mb-2" title={t("layout.uiLanguage")}>
+              <Globe size={14} className="text-base-content/40 shrink-0" />
+              <select
+                className="select select-bordered select-xs flex-1"
+                value={lang}
+                onChange={(e) => setLang(e.target.value as Lang)}
+                aria-label={t("layout.uiLanguage")}
+              >
+                {LANGS.map((l) => (
+                  <option key={l.code} value={l.code}>
+                    {l.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="px-2 text-xs text-base-content/40">{t("layout.tagline")}</div>
           </div>
         </aside>
       </div>

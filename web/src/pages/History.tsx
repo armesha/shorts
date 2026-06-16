@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { apiClient, type HistoryItem, type AdminUser, type Account } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { useT } from "../lib/i18n";
 
 const PAGE_SIZE = 25;
 
@@ -21,6 +22,7 @@ function watchUrl(h: HistoryItem): string | null {
 }
 
 export default function History() {
+  const { t } = useT();
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
 
@@ -77,10 +79,10 @@ export default function History() {
           setTotal(r.total);
           setPage(r.page);
         })
-        .catch(() => setError("Не удалось загрузить историю"))
+        .catch(() => setError(t("history.loadFailed")))
         .finally(() => setLoading(false));
     },
-    [isAdmin, scopeAll, userId, accountId],
+    [isAdmin, scopeAll, userId, accountId, t],
   );
 
   // Reload from page 1 whenever the filter changes.
@@ -100,10 +102,10 @@ export default function History() {
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">История</h1>
-          <p className="text-base-content/60">Сгенерированные и загруженные ролики</p>
+          <h1 className="text-2xl font-bold">{t("history.title")}</h1>
+          <p className="text-base-content/60">{t("history.subtitle")}</p>
         </div>
-        {!loading && <span className="text-sm text-base-content/50">Всего: {total}</span>}
+        {!loading && <span className="text-sm text-base-content/50">{t("history.total", { n: total })}</span>}
       </header>
 
       {/* Admin filter bar */}
@@ -119,13 +121,13 @@ export default function History() {
                   setAccountId("");
                 }}
               >
-                Мои
+                {t("history.scopeMine")}
               </button>
               <button
                 className={`btn btn-sm join-item ${scopeAll ? "btn-primary" : "btn-ghost"}`}
                 onClick={() => setScopeAll(true)}
               >
-                Все
+                {t("common.all")}
               </button>
             </div>
 
@@ -133,29 +135,29 @@ export default function History() {
               <>
                 <select
                   className="select select-bordered select-sm"
-                  aria-label="Пользователь"
+                  aria-label={t("history.user")}
                   value={userId === "" ? "" : String(userId)}
                   onChange={(e) => {
                     setUserId(e.target.value === "" ? "" : Number(e.target.value));
                     setAccountId("");
                   }}
                 >
-                  <option value="">Все пользователи</option>
+                  <option value="">{t("history.allUsers")}</option>
                   {users.map((u) => (
                     <option key={u.id} value={u.id}>
                       {u.username}
-                      {u.role === "admin" ? " (админ)" : ""}
+                      {u.role === "admin" ? ` (${t("common.admin")})` : ""}
                     </option>
                   ))}
                 </select>
 
                 <select
                   className="select select-bordered select-sm"
-                  aria-label="Канал"
+                  aria-label={t("history.channel")}
                   value={accountId === "" ? "" : String(accountId)}
                   onChange={(e) => setAccountId(e.target.value === "" ? "" : Number(e.target.value))}
                 >
-                  <option value="">Все каналы</option>
+                  <option value="">{t("history.allChannels")}</option>
                   {channelOptions.map((a) => (
                     <option key={a.id} value={a.id}>
                       {a.ytChannelTitle || a.channelName}
@@ -182,18 +184,18 @@ export default function History() {
         <div className={`card bg-base-100 border border-base-300 ${loading ? "opacity-60 transition" : ""}`}>
           <div className="card-body">
             {items.length === 0 ? (
-              <div className="text-center text-base-content/50 py-12">Пока нет загруженных роликов</div>
+              <div className="text-center text-base-content/50 py-12">{t("history.empty")}</div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="table">
                   <thead>
                     <tr>
-                      <th>Заголовок</th>
-                      <th>Канал</th>
-                      {showOwner && <th>Владелец</th>}
-                      <th>Опубликовано</th>
-                      <th>Статус</th>
-                      <th>Видео</th>
+                      <th>{t("history.colTitle")}</th>
+                      <th>{t("history.channel")}</th>
+                      {showOwner && <th>{t("history.colOwner")}</th>}
+                      <th>{t("history.colPublished")}</th>
+                      <th>{t("history.colStatus")}</th>
+                      <th>{t("history.colVideo")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -239,7 +241,7 @@ export default function History() {
                                 rel="noreferrer"
                                 className="link link-primary inline-flex items-center gap-1 whitespace-nowrap"
                               >
-                                <ExternalLink size={14} /> Посмотреть
+                                <ExternalLink size={14} /> {t("history.watch")}
                               </a>
                             ) : (
                               <span className="text-base-content/40">—</span>
@@ -259,18 +261,18 @@ export default function History() {
                   className="btn btn-sm btn-ghost btn-square"
                   onClick={() => load(page - 1)}
                   disabled={page <= 1 || loading}
-                  aria-label="Назад"
+                  aria-label={t("common.back")}
                 >
                   <ChevronLeft size={16} />
                 </button>
                 <span className="text-sm text-base-content/60">
-                  стр. {page} из {totalPages}
+                  {t("history.pageOf", { page, total: totalPages })}
                 </span>
                 <button
                   className="btn btn-sm btn-ghost btn-square"
                   onClick={() => load(page + 1)}
                   disabled={page >= totalPages || loading}
-                  aria-label="Вперёд"
+                  aria-label={t("common.forward")}
                 >
                   <ChevronRight size={16} />
                 </button>

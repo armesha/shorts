@@ -13,7 +13,6 @@ import {
   ChevronRight,
   RefreshCw,
   FileText,
-  X,
   Plus,
 } from "lucide-react";
 import {
@@ -27,6 +26,8 @@ import {
 } from "../lib/api";
 import PackDetail from "../components/PackDetail";
 import CreatePackForm from "../components/CreatePackForm";
+import { PreviewModal, usePreview } from "../components/PreviewModal";
+import { useT } from "../lib/i18n";
 
 // A valid 1-card sample (matches the standard) for the «вставить пример» button.
 const SAMPLE: PsychCard[] = [
@@ -66,6 +67,8 @@ const fmtDate = (iso?: string) => (iso ? new Date(iso).toLocaleString("ru-RU") :
 const itemLine = (it: Record<string, string>) => Object.values(it).filter(Boolean).join(" — ");
 
 export default function Cards() {
+  const { t } = useT();
+  const preview = usePreview();
   const [schema, setSchema] = useState<PsychSchema | null>(null);
   const [backendDown, setBackendDown] = useState(false);
 
@@ -87,8 +90,6 @@ export default function Cards() {
   const [onlyUploaded, setOnlyUploaded] = useState(true);
   const [loadingList, setLoadingList] = useState(false);
 
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [previewing, setPreviewing] = useState<number | null>(null);
   const [deleting, setDeleting] = useState<number | null>(null);
 
   const loadList = useCallback(
@@ -131,20 +132,20 @@ export default function Cards() {
     setErrList([]);
     const txt = raw.trim();
     if (!txt) {
-      setErrMsg("Вставьте JSON карточек");
+      setErrMsg(t("cards.errPasteJson"));
       return;
     }
     let parsed: unknown;
     try {
       parsed = JSON.parse(txt);
     } catch (e) {
-      setErrMsg("Неверный JSON: " + (e instanceof Error ? e.message : String(e)));
+      setErrMsg(t("cards.errInvalidJson") + " " + (e instanceof Error ? e.message : String(e)));
       return;
     }
     setUploading(true);
     try {
       const r = await apiClient.uploadPsychCards(parsed);
-      setOkMsg(`Добавлено карточек: ${r.added}. Всего в паке: ${r.total}.`);
+      setOkMsg(t("cards.uploadOk", { added: r.added, total: r.total }));
       setRaw("");
       setOnlyUploaded(true);
       await loadList(1);
@@ -156,43 +157,36 @@ export default function Cards() {
           setErrList(body.errors.flatMap((x) => x.messages).slice(0, 40));
         }
       } else {
-        setErrMsg("Не удалось загрузить");
+        setErrMsg(t("cards.errUploadFailed"));
       }
     } finally {
       setUploading(false);
     }
   }
 
-  async function preview(index: number, card: PsychCard) {
-    setPreviewing(index);
-    setPreviewUrl(null);
-    try {
+  function showPreview(index: number, card: PsychCard) {
+    preview.show(index, async () => {
       const p = await apiClient.generateAnecdote({ deck: "psych", text: JSON.stringify(card) });
       if ((p as { error?: string })?.error || !p?.imageUrl) {
-        setErrMsg((p as { error?: string })?.error || "Не удалось отрисовать превью");
-        return;
+        throw new Error((p as { error?: string })?.error || t("cards.errRenderPreview"));
       }
-      setPreviewUrl(p.imageUrl);
-    } catch (e) {
-      setErrMsg(e instanceof Error ? e.message : "Ошибка превью");
-    } finally {
-      setPreviewing(null);
-    }
+      return p.imageUrl;
+    });
   }
 
   async function remove(index: number, card: PsychCard) {
-    if (!(await confirmDialog("Удалить эту карточку из пака? Действие необратимо.", { confirmText: "Удалить", danger: true }))) return;
+    if (!(await confirmDialog(t("cards.confirmDelete"), { confirmText: t("common.delete"), danger: true }))) return;
     setDeleting(index);
     setErrMsg(null);
     setOkMsg(null);
     try {
       const r = await apiClient.deletePsychCard(index, card.addedAt);
-      setOkMsg(`Карточка удалена. Всего в паке: ${r.total}.`);
+      setOkMsg(t("cards.deleteOk", { total: r.total }));
       // если удалили последнюю на странице — шагнём назад
       const nextPage = list && list.items.length === 1 && page > 1 ? page - 1 : page;
       await loadList(nextPage);
     } catch (e) {
-      setErrMsg(e instanceof ApiError ? e.message : "Не удалось удалить");
+      setErrMsg(e instanceof ApiError ? e.message : t("cards.errDeleteFailed"));
     } finally {
       setDeleting(null);
     }
@@ -216,10 +210,8 @@ export default function Cards() {
       <header className="flex items-center gap-2">
         <LayoutTemplate className="text-primary" />
         <div>
-          <h1 className="text-2xl font-bold">Паки и карточки</h1>
-          <p className="text-base-content/60">
-            Свои паки из шаблонов редактора + встроенный психо-пак (DE)
-          </p>
+          <h1 className="text-2xl font-bold">{t("cards.title")}</h1>
+          <p className="text-base-content/60">{t("cards.subtitle")}</p>
         </div>
       </header>
 
@@ -244,7 +236,7 @@ export default function Cards() {
           className={`btn btn-sm gap-1 ${sel === "new" ? "btn-primary" : "btn-ghost border border-dashed border-base-300"}`}
           onClick={() => setSel("new")}
         >
-          <Plus size={14} /> Создать пак
+          <Plus size={14} /> {t("cards.createPack")}
         </button>
       </div>
 
@@ -282,10 +274,7 @@ export default function Cards() {
       {backendDown && (
         <div className="alert alert-warning text-sm">
           <AlertTriangle size={18} />
-          <span>
-            Бэкенд ещё не знает про этот раздел — нужен перезапуск сервера (новые роуты не подхватываются на
-            лету). Форма и инструкция работают, но загрузка/список заработают после рестарта.
-          </span>
+          <span>{t("cards.backendDown")}</span>
         </div>
       )}
 
@@ -297,20 +286,22 @@ export default function Cards() {
             onClick={() => setShowHelp((v) => !v)}
           >
             <FileText size={18} className="text-primary" />
-            Как готовить карточки (стандарт формата)
+            {t("cards.helpTitle")}
             <span className="text-base-content/40 text-sm font-normal ml-auto">
-              {showHelp ? "свернуть" : "развернуть"}
+              {showHelp ? t("common.collapse") : t("common.expand")}
             </span>
           </button>
 
           {showHelp && schema && (
             <div className="space-y-3 text-sm">
               <p className="text-base-content/70">
-                Карточка = JSON-объект. <b>Заголовок ровно {schema.limits.titleLines.max} строки</b> (по ≤{" "}
-                {schema.limits.titleLines.maxLineChars} символов), <b>{schema.limits.items.min}–
-                {schema.limits.items.max} пунктов</b>, необязательный <code>outro</code> (≤{" "}
-                {schema.limits.outroMax}). Поле <code>items</code> зависит от <code>pattern</code>. Загружай
-                массив таких объектов — сервер проверит формат и допишет в пак.
+                {t("cards.helpIntroStart")}{" "}
+                <b>{t("cards.helpTitleLines", { n: schema.limits.titleLines.max })}</b>{" "}
+                {t("cards.helpPerLine", { n: schema.limits.titleLines.maxLineChars })},{" "}
+                <b>{t("cards.helpItems", { min: schema.limits.items.min, max: schema.limits.items.max })}</b>,{" "}
+                {t("cards.helpOptional")} <code>outro</code> (≤ {schema.limits.outroMax}).{" "}
+                {t("cards.helpItemsField1")} <code>items</code> {t("cards.helpItemsField2")} <code>pattern</code>.{" "}
+                {t("cards.helpUploadArray")}
               </p>
 
               <div className="overflow-x-auto">
@@ -318,8 +309,8 @@ export default function Cards() {
                   <thead>
                     <tr>
                       <th>pattern</th>
-                      <th>назначение</th>
-                      <th>поля пункта</th>
+                      <th>{t("cards.colPurpose")}</th>
+                      <th>{t("cards.colItemFields")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -349,13 +340,13 @@ export default function Cards() {
               <div className="flex flex-wrap gap-2">
                 <button className="btn btn-sm btn-outline gap-2" onClick={copyPrompt}>
                   {copied ? <Check size={15} /> : <Copy size={15} />}
-                  {copied ? "Промпт скопирован" : "Скопировать промпт для LLM"}
+                  {copied ? t("cards.promptCopied") : t("cards.copyPrompt")}
                 </button>
                 <button
                   className="btn btn-sm btn-ghost gap-2"
                   onClick={() => setRaw(JSON.stringify(SAMPLE, null, 2))}
                 >
-                  Вставить пример в форму
+                  {t("cards.insertSample")}
                 </button>
               </div>
             </div>
@@ -367,14 +358,14 @@ export default function Cards() {
       <div className="card bg-base-100 border border-base-300">
         <div className="card-body gap-4">
           <label className="form-control">
-            <span className="label-text mb-1">Язык / пак</span>
+            <span className="label-text mb-1">{t("cards.langPackLabel")}</span>
             <select className="select select-bordered select-sm w-64" value="psych" disabled>
               <option value="psych">Психология (DE) — Psychologie</option>
             </select>
           </label>
 
           <label className="form-control">
-            <span className="label-text mb-1">JSON карточек (одна или массив)</span>
+            <span className="label-text mb-1">{t("cards.jsonLabel")}</span>
             <textarea
               className="textarea textarea-bordered min-h-48 font-mono text-xs leading-relaxed"
               placeholder='[ { "pattern": "numbered", "title_lines": ["…","…"], "items": [ … ], "outro": "…" } ]'
@@ -408,11 +399,9 @@ export default function Cards() {
           <div className="flex items-center gap-2">
             <button className="btn btn-primary gap-2" onClick={submit} disabled={uploading}>
               {uploading ? <Loader2 className="animate-spin" size={18} /> : <Upload size={18} />}
-              Проверить и загрузить
+              {t("cards.validateUpload")}
             </button>
-            <span className="text-xs text-base-content/50">
-              Любая ошибка формата → ничего не загружается, покажем что починить.
-            </span>
+            <span className="text-xs text-base-content/50">{t("cards.uploadHint")}</span>
           </div>
         </div>
       </div>
@@ -421,10 +410,10 @@ export default function Cards() {
       <div className="card bg-base-100 border border-base-300">
         <div className="card-body gap-4">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="font-semibold">Недавно загруженные</h2>
+            <h2 className="font-semibold">{t("cards.recentTitle")}</h2>
             <span className="badge badge-ghost badge-sm">{list?.total ?? 0}</span>
             <label className="label cursor-pointer gap-2 ml-auto">
-              <span className="label-text text-xs">только загруженные</span>
+              <span className="label-text text-xs">{t("cards.onlyUploaded")}</span>
               <input
                 type="checkbox"
                 className="toggle toggle-sm"
@@ -432,14 +421,14 @@ export default function Cards() {
                 onChange={(e) => setOnlyUploaded(e.target.checked)}
               />
             </label>
-            <button className="btn btn-ghost btn-sm btn-square" onClick={() => loadList(page)} aria-label="Обновить">
+            <button className="btn btn-ghost btn-sm btn-square" onClick={() => loadList(page)} aria-label={t("common.refresh")}>
               <RefreshCw size={16} className={loadingList ? "animate-spin" : ""} />
             </button>
           </div>
 
           {list && list.items.length === 0 && (
             <div className="text-sm text-base-content/50 py-6 text-center">
-              {onlyUploaded ? "Пока ничего не загружено через эту форму." : "Карточек нет."}
+              {onlyUploaded ? t("cards.emptyUploaded") : t("cards.emptyAll")}
             </div>
           )}
 
@@ -458,26 +447,26 @@ export default function Cards() {
                     </li>
                   ))}
                   {(card.items || []).length > 4 && (
-                    <li className="text-base-content/40">…ещё {(card.items || []).length - 4}</li>
+                    <li className="text-base-content/40">{t("cards.moreItems", { n: (card.items || []).length - 4 })}</li>
                   )}
                 </ul>
                 <div className="flex flex-wrap gap-2">
                   <button
                     className="btn btn-xs btn-outline gap-1"
-                    onClick={() => preview(index, card)}
-                    disabled={previewing !== null || deleting !== null}
+                    onClick={() => showPreview(index, card)}
+                    disabled={preview.index !== null || deleting !== null}
                   >
-                    {previewing === index ? <Loader2 className="animate-spin" size={13} /> : <Eye size={13} />}
-                    Предпросмотр
+                    {preview.index === index ? <Loader2 className="animate-spin" size={13} /> : <Eye size={13} />}
+                    {t("common.preview")}
                   </button>
                   <button
                     className="btn btn-xs btn-ghost gap-1 text-error"
                     onClick={() => remove(index, card)}
-                    disabled={deleting !== null || previewing !== null}
-                    title="Удалить карточку из пака"
+                    disabled={deleting !== null || preview.index !== null}
+                    title={t("cards.deleteCardTitle")}
                   >
                     {deleting === index ? <Loader2 className="animate-spin" size={13} /> : <Trash2 size={13} />}
-                    Удалить
+                    {t("common.delete")}
                   </button>
                 </div>
               </div>
@@ -490,18 +479,18 @@ export default function Cards() {
                 className="btn btn-sm btn-ghost btn-square"
                 onClick={() => loadList(page - 1)}
                 disabled={page <= 1 || loadingList}
-                aria-label="Назад"
+                aria-label={t("common.back")}
               >
                 <ChevronLeft size={16} />
               </button>
               <span className="text-sm text-base-content/60">
-                стр. {page} из {totalPages}
+                {t("common.page")} {page} {t("common.of")} {totalPages}
               </span>
               <button
                 className="btn btn-sm btn-ghost btn-square"
                 onClick={() => loadList(page + 1)}
                 disabled={page >= totalPages || loadingList}
-                aria-label="Вперёд"
+                aria-label={t("common.forward")}
               >
                 <ChevronRight size={16} />
               </button>
@@ -511,41 +500,7 @@ export default function Cards() {
       </div>
 
       {/* Модалка превью */}
-      {(previewUrl || previewing !== null) && (
-        <div className="modal modal-open" role="dialog">
-          <div className="modal-box max-w-sm flex flex-col items-center gap-3">
-            <button
-              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-              onClick={() => {
-                setPreviewUrl(null);
-                setPreviewing(null);
-              }}
-              aria-label="Закрыть"
-            >
-              <X size={16} />
-            </button>
-            <div
-              className="rounded-xl overflow-hidden border border-base-300 bg-base-200"
-              style={{ width: 270, height: 480 }}
-            >
-              {previewUrl ? (
-                <img src={previewUrl} alt="preview" width={270} height={480} className="block" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <Loader2 className="animate-spin text-primary" size={32} />
-                </div>
-              )}
-            </div>
-          </div>
-          <div
-            className="modal-backdrop"
-            onClick={() => {
-              setPreviewUrl(null);
-              setPreviewing(null);
-            }}
-          />
-        </div>
-      )}
+      <PreviewModal open={preview.open} url={preview.url} error={preview.error} onClose={preview.close} />
         </>
       )}
     </div>

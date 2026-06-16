@@ -1,20 +1,15 @@
-import { useEffect, useRef, useState } from "react";
-import { Loader2, Eye, Trash2, Upload, AlertTriangle, Check, X, Lock, Save } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Loader2, Eye, Trash2, Upload, AlertTriangle, Check, Lock, Save } from "lucide-react";
 import { apiClient, ApiError, type PackFull, type PackRoleRule } from "../lib/api";
 import { confirmDialog } from "../lib/confirm";
 import { useAuth } from "../lib/auth";
+import { useT } from "../lib/i18n";
+import { CONTENT_LANGS } from "../lib/deck";
+import { PreviewModal, usePreview } from "./PreviewModal";
 
 // Вид одного кастомного пака: правила (из шаблона), добавление JSON-карточек, лента карточек с превью/удалением.
 // Редактировать (имя/язык/карточки) может только владелец пака или админ; гранчёному пак выдан лишь для использования.
 const valStr = (v: string | string[]) => (Array.isArray(v) ? v.join(" · ") : v);
-const LANG_OPTS: { code: string; label: string }[] = [
-  { code: "ru", label: "Русский" },
-  { code: "de", label: "Немецкий" },
-  { code: "it", label: "Итальянский" },
-  { code: "fr", label: "Французский" },
-  { code: "en", label: "Английский" },
-  { code: "ar", label: "Арабский" },
-];
 function sampleJson(rules: PackRoleRule[]): string {
   const obj: Record<string, unknown> = {};
   for (const r of rules) obj[r.role] = r.list ? ["пункт 1", "пункт 2", "пункт 3"] : "Заголовок";
@@ -22,6 +17,7 @@ function sampleJson(rules: PackRoleRule[]): string {
 }
 
 export default function PackDetail({ packId, onChanged, onDeleted }: { packId: string; onChanged?: () => void; onDeleted?: () => void }) {
+  const { t } = useT();
   const { user } = useAuth();
   const [pack, setPack] = useState<PackFull | null>(null);
   const [raw, setRaw] = useState("");
@@ -29,10 +25,8 @@ export default function PackDetail({ packId, onChanged, onDeleted }: { packId: s
   const [ok, setOk] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [errList, setErrList] = useState<string[]>([]);
-  const [previewing, setPreviewing] = useState<number | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const preview = usePreview();
   const [deleting, setDeleting] = useState<number | null>(null);
-  const previewReq = useRef(0); // invalidates an in-flight preview if the modal is closed mid-load
   const [page, setPage] = useState(1); // client-side pagination of the cards grid (packs can be large)
   const [name, setName] = useState(""); // редактируемое имя (владелец/админ)
   const [lang, setLang] = useState("ru"); // редактируемый язык-тег (владелец/админ)
@@ -51,17 +45,17 @@ export default function PackDetail({ packId, onChanged, onDeleted }: { packId: s
   async function saveMeta() {
     if (!pack) return;
     const nm = name.trim();
-    if (!nm) { setErr("Имя пака не может быть пустым"); return; }
+    if (!nm) { setErr(t("packDetail.nameEmpty")); return; }
     setMetaBusy(true); setErr(null); setMetaMsg(null);
     try {
       if (nm !== pack.name) await apiClient.setPackName(packId, nm);
       if (lang !== pack.lang) await apiClient.setPackLang(packId, lang);
-      setMetaMsg("Сохранено");
+      setMetaMsg(t("common.saved"));
       setTimeout(() => setMetaMsg(null), 1800);
       await reload();
       onChanged?.();
     } catch (e) {
-      setErr(e instanceof ApiError ? e.message : "Не удалось сохранить");
+      setErr(e instanceof ApiError ? e.message : t("packDetail.saveFailed"));
     } finally {
       setMetaBusy(false);
     }
@@ -70,13 +64,13 @@ export default function PackDetail({ packId, onChanged, onDeleted }: { packId: s
   async function addCards() {
     setOk(null); setErr(null); setErrList([]);
     const txt = raw.trim();
-    if (!txt) { setErr("Вставьте JSON карточек"); return; }
+    if (!txt) { setErr(t("packDetail.pasteJson")); return; }
     let parsed: unknown;
-    try { parsed = JSON.parse(txt); } catch (e) { setErr("Неверный JSON: " + (e instanceof Error ? e.message : String(e))); return; }
+    try { parsed = JSON.parse(txt); } catch (e) { setErr(t("packDetail.invalidJson") + " " + (e instanceof Error ? e.message : String(e))); return; }
     setBusy(true);
     try {
       const r = await apiClient.addPackCards(packId, parsed);
-      setOk(`Добавлено карточек: ${r.added}. Всего: ${r.total}.`);
+      setOk(t("packDetail.addedResult", { added: r.added, total: r.total }));
       setRaw("");
       await reload();
       onChanged?.();
@@ -85,23 +79,15 @@ export default function PackDetail({ packId, onChanged, onDeleted }: { packId: s
         setErr(e.message);
         const body = e.body as { errors?: { messages: string[] }[] } | undefined;
         if (body?.errors?.length) setErrList(body.errors.flatMap((x) => x.messages).slice(0, 30));
-      } else setErr("Не удалось добавить");
+      } else setErr(t("packDetail.addFailed"));
     } finally { setBusy(false); }
   }
 
-  async function preview(i: number) {
-    const my = ++previewReq.current;
-    setPreviewing(i); setPreviewUrl(null);
-    try { const r = await apiClient.packPreview(packId, i); if (previewReq.current === my) setPreviewUrl(r.imageUrl); }
-    catch (e) { if (previewReq.current === my) setErr(e instanceof ApiError ? e.message : "Не удалось отрисовать"); }
-    finally { if (previewReq.current === my) setPreviewing(null); }
-  }
-
   async function delCard(i: number, addedAt: string) {
-    if (!(await confirmDialog("Удалить карточку из пака?", { confirmText: "Удалить", danger: true }))) return;
+    if (!(await confirmDialog(t("packDetail.confirmDeleteCard"), { confirmText: t("common.delete"), danger: true }))) return;
     setDeleting(i); setErr(null);
     try { await apiClient.deletePackCard(packId, i, addedAt); await reload(); onChanged?.(); }
-    catch (e) { setErr(e instanceof ApiError ? e.message : "Не удалось удалить"); }
+    catch (e) { setErr(e instanceof ApiError ? e.message : t("packDetail.deleteFailed")); }
     finally { setDeleting(null); }
   }
 
@@ -109,15 +95,15 @@ export default function PackDetail({ packId, onChanged, onDeleted }: { packId: s
   async function removePack() {
     if (!pack) return;
     const msg = pack.cards.length
-      ? `Удалить пак «${pack.name}» целиком? Все ${pack.cards.length} карточек будут потеряны. Действие необратимо.`
-      : `Удалить пак «${pack.name}»? Действие необратимо.`;
-    if (!(await confirmDialog(msg, { confirmText: "Удалить пак", danger: true }))) return;
+      ? t("packDetail.confirmDeletePackCards", { name: pack.name, n: pack.cards.length })
+      : t("packDetail.confirmDeletePack", { name: pack.name });
+    if (!(await confirmDialog(msg, { confirmText: t("packDetail.deletePack"), danger: true }))) return;
     setRemoving(true); setErr(null);
     try { await apiClient.deletePack(packId); onDeleted?.(); }
-    catch (e) { setErr(e instanceof ApiError ? e.message : "Не удалось удалить пак"); setRemoving(false); }
+    catch (e) { setErr(e instanceof ApiError ? e.message : t("packDetail.deletePackFailed")); setRemoving(false); }
   }
 
-  if (!pack) return <div className="text-sm text-base-content/50 py-6 text-center"><Loader2 className="animate-spin inline" size={16} /> загрузка пака…</div>;
+  if (!pack) return <div className="text-sm text-base-content/50 py-6 text-center"><Loader2 className="animate-spin inline" size={16} /> {t("packDetail.loadingPack")}</div>;
   const rules = pack.rules ?? [];
   // Редактировать пак (имя/язык/карточки) может только владелец или админ. Грант → только использование.
   const canEdit = !!user && (user.role === "admin" || pack.owners.includes(user.id));
@@ -134,7 +120,7 @@ export default function PackDetail({ packId, onChanged, onDeleted }: { packId: s
       {canEdit ? (
         <div className="flex flex-wrap items-end gap-2 bg-base-200/40 rounded-lg p-3 border border-base-300">
           <label className="form-control">
-            <span className="label-text text-xs mb-1">Название пака</span>
+            <span className="label-text text-xs mb-1">{t("packDetail.packName")}</span>
             <input
               className="input input-bordered input-sm w-56"
               value={name}
@@ -143,49 +129,49 @@ export default function PackDetail({ packId, onChanged, onDeleted }: { packId: s
             />
           </label>
           <label className="form-control">
-            <span className="label-text text-xs mb-1">Язык</span>
+            <span className="label-text text-xs mb-1">{t("packDetail.lang")}</span>
             <select
               className="select select-bordered select-sm w-44"
               value={lang}
               onChange={(e) => setLang(e.target.value)}
-              title="язык пака — должен совпадать с языком канала"
+              title={t("packDetail.langHint")}
             >
-              {LANG_OPTS.map((o) => (
+              {CONTENT_LANGS.map((o) => (
                 <option key={o.code} value={o.code}>{o.label} ({o.code.toUpperCase()})</option>
               ))}
             </select>
           </label>
           <button className="btn btn-primary btn-sm gap-1" onClick={saveMeta} disabled={metaBusy || !metaDirty || !name.trim()}>
-            {metaBusy ? <Loader2 className="animate-spin" size={15} /> : <Save size={15} />} Сохранить
+            {metaBusy ? <Loader2 className="animate-spin" size={15} /> : <Save size={15} />} {t("common.save")}
           </button>
           {metaMsg && (
             <span className="text-success text-xs inline-flex items-center gap-1"><Check size={13} /> {metaMsg}</span>
           )}
           <div className="ml-auto flex items-center gap-2 self-center">
             {user?.role === "admin" && !pack.owners.includes(user.id) && (
-              <span className="text-[11px] text-warning/90">правите как админ</span>
+              <span className="text-[11px] text-warning/90">{t("packDetail.editingAsAdmin")}</span>
             )}
             <button
               className="btn btn-error btn-outline btn-sm gap-1"
               onClick={removePack}
               disabled={removing || metaBusy}
-              title="Удалить этот пак целиком"
+              title={t("packDetail.deletePackHint")}
             >
-              {removing ? <Loader2 className="animate-spin" size={15} /> : <Trash2 size={15} />} Удалить пак
+              {removing ? <Loader2 className="animate-spin" size={15} /> : <Trash2 size={15} />} {t("packDetail.deletePack")}
             </button>
           </div>
         </div>
       ) : (
         <div className="text-xs text-base-content/60 flex items-center gap-1.5 bg-base-200/50 rounded-lg px-3 py-2 border border-base-300">
-          <Lock size={13} className="shrink-0" /> Пак выдан вам только для использования — редактировать его (имя, язык, карточки) может владелец.
+          <Lock size={13} className="shrink-0" /> {t("packDetail.useOnlyNotice")}
         </div>
       )}
 
       <div className="text-xs text-base-content/70">
-        Язык: <b>{pack.lang}</b> · карточек: <b>{pack.cards.length}</b> · шаблонов: <b>{pack.templates.length}</b> · формат:{" "}
+        {t("packDetail.lang")}: <b>{pack.lang}</b> · {t("packDetail.cardsLabel")}: <b>{pack.cards.length}</b> · {t("packDetail.templatesLabel")}: <b>{pack.templates.length}</b> · {t("packDetail.formatLabel")}:{" "}
         {rules.map((r) => (
           <span key={r.role} className="badge badge-ghost badge-sm mr-1">
-            {r.role}{r.list ? " (список)" : ""} {r.min}–{r.max}
+            {r.role}{r.list ? ` ${t("packDetail.listSuffix")}` : ""} {r.min}–{r.max}
           </span>
         ))}
       </div>
@@ -193,7 +179,7 @@ export default function PackDetail({ packId, onChanged, onDeleted }: { packId: s
       {canEdit && (
         <>
           <label className="form-control">
-            <span className="label-text mb-1">Добавить карточки (JSON-массив)</span>
+            <span className="label-text mb-1">{t("packDetail.addCardsLabel")}</span>
             <textarea
               className="textarea textarea-bordered min-h-32 font-mono text-xs leading-relaxed"
               placeholder={sampleJson(rules)}
@@ -204,10 +190,10 @@ export default function PackDetail({ packId, onChanged, onDeleted }: { packId: s
           <div className="flex flex-wrap gap-2 items-center">
             <button className="btn btn-primary btn-sm gap-2" onClick={addCards} disabled={busy}>
               {busy ? <Loader2 className="animate-spin" size={16} /> : <Upload size={16} />}
-              Проверить и добавить
+              {t("packDetail.checkAndAdd")}
             </button>
-            <button className="btn btn-ghost btn-sm" onClick={() => setRaw(sampleJson(rules))}>Вставить пример</button>
-            <span className="text-xs text-base-content/50">Ошибка формата → ничего не добавится.</span>
+            <button className="btn btn-ghost btn-sm" onClick={() => setRaw(sampleJson(rules))}>{t("packDetail.insertExample")}</button>
+            <span className="text-xs text-base-content/50">{t("packDetail.formatErrorNote")}</span>
           </div>
         </>
       )}
@@ -234,39 +220,33 @@ export default function PackDetail({ packId, onChanged, onDeleted }: { packId: s
               </div>
             ))}
             <div className="flex flex-wrap gap-2 pt-1">
-              <button className="btn btn-xs btn-outline gap-1" onClick={() => preview(i)} disabled={previewing !== null || deleting !== null}>
-                {previewing === i ? <Loader2 className="animate-spin" size={13} /> : <Eye size={13} />} Превью
+              <button
+                className="btn btn-xs btn-outline gap-1"
+                onClick={() => preview.show(i, async () => (await apiClient.packPreview(packId, i)).imageUrl)}
+                disabled={preview.index !== null || deleting !== null}
+              >
+                {preview.index === i ? <Loader2 className="animate-spin" size={13} /> : <Eye size={13} />} {t("common.preview")}
               </button>
               {canEdit && (
-                <button className="btn btn-xs btn-ghost text-error gap-1" onClick={() => delCard(i, c.addedAt)} disabled={deleting !== null || previewing !== null}>
-                  {deleting === i ? <Loader2 className="animate-spin" size={13} /> : <Trash2 size={13} />} Удалить
+                <button className="btn btn-xs btn-ghost text-error gap-1" onClick={() => delCard(i, c.addedAt)} disabled={deleting !== null || preview.index !== null}>
+                  {deleting === i ? <Loader2 className="animate-spin" size={13} /> : <Trash2 size={13} />} {t("common.delete")}
                 </button>
               )}
             </div>
           </div>
           );
         })}
-        {pack.cards.length === 0 && <div className="text-sm text-base-content/50">В паке пока нет карточек.</div>}
+        {pack.cards.length === 0 && <div className="text-sm text-base-content/50">{t("packDetail.noCards")}</div>}
       </div>
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-3 pt-1">
-          <button className="btn btn-xs btn-outline" disabled={pg <= 1} onClick={() => setPage(pg - 1)}>← Назад</button>
-          <span className="text-sm text-base-content/60">Стр. {pg} из {totalPages} · всего {pack.cards.length}</span>
-          <button className="btn btn-xs btn-outline" disabled={pg >= totalPages} onClick={() => setPage(pg + 1)}>Вперёд →</button>
+          <button className="btn btn-xs btn-outline" disabled={pg <= 1} onClick={() => setPage(pg - 1)}>← {t("common.back")}</button>
+          <span className="text-sm text-base-content/60">{t("common.page")} {pg} {t("common.of")} {totalPages} · {t("packDetail.totalLabel", { n: pack.cards.length })}</span>
+          <button className="btn btn-xs btn-outline" disabled={pg >= totalPages} onClick={() => setPage(pg + 1)}>{t("common.forward")} →</button>
         </div>
       )}
 
-      {(previewUrl || previewing !== null) && (
-        <div className="modal modal-open" role="dialog">
-          <div className="modal-box max-w-sm flex flex-col items-center gap-3">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={() => { previewReq.current++; setPreviewUrl(null); setPreviewing(null); }} aria-label="Закрыть"><X size={16} /></button>
-            <div className="rounded-xl overflow-hidden border border-base-300 bg-base-200" style={{ width: 270, height: 480 }}>
-              {previewUrl ? <img src={previewUrl} alt="preview" width={270} height={480} className="block" /> : <div className="w-full h-full flex items-center justify-center"><Loader2 className="animate-spin text-primary" size={32} /></div>}
-            </div>
-          </div>
-          <div className="modal-backdrop" onClick={() => { previewReq.current++; setPreviewUrl(null); setPreviewing(null); }} />
-        </div>
-      )}
+      <PreviewModal open={preview.open} url={preview.url} error={preview.error} onClose={preview.close} />
     </div>
   );
 }

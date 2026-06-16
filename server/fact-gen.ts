@@ -10,6 +10,7 @@ import ffmpegPath from "ffmpeg-static";
 import type { Db } from "./db.ts";
 import { loadBaseConfig } from "./config.ts";
 import { anecdoteKey, type PackItem } from "../src/anecdotes/library.ts";
+import * as metrics from "./metrics.ts";
 
 const pexec = promisify(execFile);
 const FFMPEG = ffmpegPath as unknown as string;
@@ -34,14 +35,17 @@ export async function buildFactLibraryVideo(input: {
   const imgRel = `library/fact-${stamp}.png`;
   const vidAbs = resolve(process.cwd(), OUTPUT_DIR, vidRel);
   const imgAbs = resolve(process.cwd(), OUTPUT_DIR, imgRel);
-  mkdirSync(dirname(vidAbs), { recursive: true });
-  copyFileSync(src, vidAbs);
-  // Постер-кадр для миниатюры в библиотеке (best-effort — без него видео всё равно валидно).
-  try {
-    await pexec(FFMPEG, ["-y", "-loglevel", "error", "-ss", "1", "-i", src, "-frames:v", "1", imgAbs]);
-  } catch {
-    /* thumbnail optional */
-  }
+  // Counted as a "render" task so the graceful-shutdown drain waits for it (like buildLibraryVideo).
+  await metrics.track("render", async () => {
+    mkdirSync(dirname(vidAbs), { recursive: true });
+    copyFileSync(src, vidAbs);
+    // Постер-кадр для миниатюры в библиотеке (best-effort — без него видео всё равно валидно).
+    try {
+      await pexec(FFMPEG, ["-y", "-loglevel", "error", "-ss", "1", "-i", src, "-frames:v", "1", imgAbs]);
+    } catch {
+      /* thumbnail optional */
+    }
+  });
   const v = db.createVideo({
     accountId,
     title: picked.title || "Interesting Fact",

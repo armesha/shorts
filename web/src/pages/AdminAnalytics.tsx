@@ -27,6 +27,9 @@ import {
 } from "recharts";
 import { apiClient, type AdminAnalytics as AdminAnalyticsData } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { useT } from "../lib/i18n";
+
+type T = (key: string, vars?: Record<string, string | number>) => string;
 
 type Range = { from: string; to: string };
 
@@ -52,6 +55,7 @@ function presetRange(days: number): Range {
 
 export default function AdminAnalytics() {
   const { user } = useAuth();
+  const { t } = useT();
   const isAdmin = user?.role === "admin";
   const initial = useMemo(() => presetRange(30), []);
   const [range, setRange] = useState<Range>(initial);
@@ -73,7 +77,7 @@ export default function AdminAnalytics() {
       })
       .catch((e) => {
         console.error("[Аналитика] запрос /admin/analytics упал:", e);
-        if (!stopped) setError("Не удалось загрузить аналитику");
+        if (!stopped) setError(t("analytics.loadFailed"));
       })
       .finally(() => {
         if (!stopped) setLoading(false);
@@ -81,7 +85,7 @@ export default function AdminAnalytics() {
     return () => {
       stopped = true;
     };
-  }, [isAdmin, range.from, range.to]);
+  }, [isAdmin, range.from, range.to, t]);
 
   const applyPreset = (days: 7 | 30 | 90) => {
     const next = presetRange(days);
@@ -116,12 +120,12 @@ export default function AdminAnalytics() {
       setData(fresh);
       setNotice(
         failed
-          ? `YouTube обновлён частично: ${Math.max(0, connected - failed)} из ${connected}, ошибок ${failed}`
-          : `YouTube обновлён: каналов ${connected}`,
+          ? t("analytics.ytPartial", { ok: Math.max(0, connected - failed), total: connected, failed })
+          : t("analytics.ytUpdated", { n: connected }),
       );
     } catch (e) {
       console.error("[Аналитика] ручное обновление YouTube упало:", e);
-      setError("Не удалось обновить YouTube-цифры");
+      setError(t("analytics.ytRefreshFailed"));
     } finally {
       setRefreshing(false);
     }
@@ -131,7 +135,7 @@ export default function AdminAnalytics() {
     return (
       <div className="alert alert-warning">
         <AlertTriangle size={18} />
-        <span>Эта вкладка доступна только администратору.</span>
+        <span>{t("analytics.adminOnly")}</span>
       </div>
     );
   }
@@ -140,12 +144,12 @@ export default function AdminAnalytics() {
     <div className="space-y-6">
       <header className="flex items-start justify-between gap-3 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold">Аналитика</h1>
-          <p className="text-base-content/60">Операции, рост и риски по всем каналам</p>
+          <h1 className="text-2xl font-bold">{t("analytics.title")}</h1>
+          <p className="text-base-content/60">{t("analytics.subtitle")}</p>
         </div>
         <button className="btn btn-primary gap-2" onClick={refreshYoutube} disabled={refreshing || loading}>
           {refreshing ? <span className="loading loading-spinner loading-sm" /> : <RefreshCw size={18} />}
-          Обновить YouTube-цифры
+          {t("analytics.refreshYoutube")}
         </button>
       </header>
 
@@ -158,7 +162,7 @@ export default function AdminAnalytics() {
                 className={`btn btn-sm join-item ${activePreset === days ? "btn-primary" : "btn-ghost"}`}
                 onClick={() => applyPreset(days as 7 | 30 | 90)}
               >
-                {days} дней
+                {t("analytics.days", { n: days })}
               </button>
             ))}
           </div>
@@ -167,7 +171,7 @@ export default function AdminAnalytics() {
             className="input input-bordered input-sm"
             value={draft.from}
             onChange={(e) => setDraft((r) => ({ ...r, from: e.target.value }))}
-            aria-label="Начало периода"
+            aria-label={t("analytics.periodStart")}
           />
           <span className="text-base-content/40">—</span>
           <input
@@ -175,14 +179,14 @@ export default function AdminAnalytics() {
             className="input input-bordered input-sm"
             value={draft.to}
             onChange={(e) => setDraft((r) => ({ ...r, to: e.target.value }))}
-            aria-label="Конец периода"
+            aria-label={t("analytics.periodEnd")}
           />
           <button className="btn btn-sm btn-outline" onClick={applyDates} disabled={!draft.from || !draft.to}>
-            Применить
+            {t("analytics.apply")}
           </button>
           {data && (
             <span className="text-xs text-base-content/50 ml-auto">
-              обновлено {new Date(data.updatedAt).toLocaleString("ru-RU")}
+              {t("analytics.updatedAt", { time: new Date(data.updatedAt).toLocaleString("ru-RU") })}
             </span>
           )}
         </div>
@@ -215,72 +219,77 @@ export default function AdminAnalytics() {
           </div>
         </>
       ) : (
-        !error && <Empty text="Нет данных для отображения." />
+        !error && <Empty text={t("analytics.noData")} />
       )}
     </div>
   );
 }
 
 function KpiGrid({ data }: { data: AdminAnalyticsData }) {
+  const { t } = useT();
   const s = data.summary;
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
       <Kpi
         icon={<Film />}
-        label="Выложено за период"
+        label={t("analytics.kpiPublished")}
         value={fmt(s.published)}
-        hint={`${fmt(s.scheduled)} отложено · ${fmt(s.failed)} ошибок`}
+        hint={t("analytics.kpiPublishedHint", { scheduled: fmt(s.scheduled), failed: fmt(s.failed) })}
         danger={s.failed > 0}
       />
       <Kpi
         icon={<Activity />}
-        label="Видео в библиотеке"
+        label={t("analytics.kpiLibrary")}
         value={fmt(s.queuedVideos)}
-        hint={`${fmt(s.accountsEnabled)} активных каналов`}
+        hint={t("analytics.kpiLibraryHint", { n: fmt(s.accountsEnabled) })}
       />
       <Kpi
         icon={<Tv />}
-        label="Каналы подключены"
+        label={t("analytics.kpiChannelsConnected")}
         value={`${fmt(s.accountsConnected)} / ${fmt(s.accountsTotal)}`}
-        hint="YouTube OAuth по всем владельцам"
+        hint={t("analytics.kpiChannelsHint")}
       />
       <Kpi
         icon={<Users />}
-        label="Пользователи"
+        label={t("analytics.kpiUsers")}
         value={fmt(s.usersTotal)}
-        hint={`${fmt(s.historyTotal)} записей истории в периоде`}
+        hint={t("analytics.kpiUsersHint", { n: fmt(s.historyTotal) })}
       />
       <Kpi
         icon={<Eye />}
-        label="Просмотры YouTube"
+        label={t("analytics.kpiViews")}
         value={fmt(s.views)}
         delta={s.viewsDelta}
-        hint={`${fmt(s.youtubeVideos)} видео на каналах`}
+        hint={t("analytics.kpiViewsHint", { n: fmt(s.youtubeVideos) })}
       />
       <Kpi
         icon={<TrendingUp />}
-        label="Подписчики"
+        label={t("analytics.kpiSubscribers")}
         value={fmt(s.subscribers)}
         delta={s.subscriberDelta}
-        hint={`видео ${signed(s.youtubeVideosDelta)}`}
+        hint={t("analytics.kpiSubscribersHint", { delta: signed(s.youtubeVideosDelta) })}
       />
     </div>
   );
 }
 
 function DailyChart({ data }: { data: AdminAnalyticsData["daily"] }) {
+  const { t } = useT();
+  const kPublished = t("analytics.seriesPublished");
+  const kScheduled = t("analytics.seriesScheduled");
+  const kFailed = t("analytics.seriesFailed");
   const chart = data.map((p) => ({
     date: shortDate(p.date),
-    Выложено: p.published,
-    Отложено: p.scheduled,
-    Ошибки: p.failed,
+    [kPublished]: p.published,
+    [kScheduled]: p.scheduled,
+    [kFailed]: p.failed,
   }));
   return (
     <section className="card bg-base-100 border border-base-300">
       <div className="card-body gap-3">
         <div className="flex items-center gap-2 font-semibold">
           <BarChart3 size={18} className="text-primary" />
-          Публикации по дням
+          {t("analytics.dailyTitle")}
         </div>
         <div className="h-72 w-full min-w-0">
           <ResponsiveContainer
@@ -296,9 +305,9 @@ function DailyChart({ data }: { data: AdminAnalyticsData["daily"] }) {
               <YAxis fontSize={12} width={32} allowDecimals={false} />
               <Tooltip />
               <Legend />
-              <Bar dataKey="Выложено" fill={CHART_COLORS.published} radius={[3, 3, 0, 0]} />
-              <Bar dataKey="Отложено" fill={CHART_COLORS.scheduled} radius={[3, 3, 0, 0]} />
-              <Bar dataKey="Ошибки" fill={CHART_COLORS.failed} radius={[3, 3, 0, 0]} />
+              <Bar dataKey={kPublished} fill={CHART_COLORS.published} radius={[3, 3, 0, 0]} />
+              <Bar dataKey={kScheduled} fill={CHART_COLORS.scheduled} radius={[3, 3, 0, 0]} />
+              <Bar dataKey={kFailed} fill={CHART_COLORS.failed} radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -308,29 +317,32 @@ function DailyChart({ data }: { data: AdminAnalyticsData["daily"] }) {
 }
 
 function YoutubeChart({ data }: { data: AdminAnalyticsData["youtubeSeries"] }) {
+  const { t } = useT();
   if (data.length < 2) {
     return (
       <section className="card bg-base-100 border border-base-300 border-dashed">
         <div className="card-body items-center text-center py-12">
           <TrendingUp className="text-base-content/30" size={36} />
           <p className="text-base-content/60 max-w-md">
-            Для графика YouTube нужны хотя бы два сохранённых снимка статистики.
+            {t("analytics.ytChartEmpty")}
           </p>
         </div>
       </section>
     );
   }
+  const kSubscribers = t("analytics.seriesSubscribers");
+  const kViews = t("analytics.seriesViews");
   const chart = data.map((p) => ({
     date: shortDate(p.date),
-    Подписчики: p.subscribers,
-    Просмотры: p.views,
+    [kSubscribers]: p.subscribers,
+    [kViews]: p.views,
   }));
   return (
     <section className="card bg-base-100 border border-base-300">
       <div className="card-body gap-3">
         <div className="flex items-center gap-2 font-semibold">
           <TrendingUp size={18} className="text-primary" />
-          YouTube-динамика по снимкам
+          {t("analytics.ytChartTitle")}
         </div>
         <div className="h-72 w-full min-w-0">
           <ResponsiveContainer
@@ -347,8 +359,8 @@ function YoutubeChart({ data }: { data: AdminAnalyticsData["youtubeSeries"] }) {
               <YAxis yAxisId="right" orientation="right" fontSize={12} width={54} />
               <Tooltip />
               <Legend />
-              <Line yAxisId="left" type="monotone" dataKey="Подписчики" stroke="#2563eb" strokeWidth={2} dot={false} />
-              <Line yAxisId="right" type="monotone" dataKey="Просмотры" stroke="#0f766e" strokeWidth={2} dot={false} />
+              <Line yAxisId="left" type="monotone" dataKey={kSubscribers} stroke="#2563eb" strokeWidth={2} dot={false} />
+              <Line yAxisId="right" type="monotone" dataKey={kViews} stroke="#0f766e" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -358,12 +370,13 @@ function YoutubeChart({ data }: { data: AdminAnalyticsData["youtubeSeries"] }) {
 }
 
 function TopChannels({ rows }: { rows: AdminAnalyticsData["topChannels"] }) {
+  const { t } = useT();
   return (
     <section className="card bg-base-100 border border-base-300">
       <div className="card-body gap-3">
-        <div className="font-semibold">Топ каналов</div>
+        <div className="font-semibold">{t("analytics.topChannels")}</div>
         {rows.length === 0 ? (
-          <Empty text="За период нет публикаций." compact />
+          <Empty text={t("analytics.noPublicationsPeriod")} compact />
         ) : (
           <>
             <div className="sm:hidden space-y-3">
@@ -378,21 +391,21 @@ function TopChannels({ rows }: { rows: AdminAnalyticsData["topChannels"] }) {
                     </div>
                     <div className="text-right shrink-0">
                       <div className="text-lg font-bold leading-none">{fmt(r.published)}</div>
-                      <div className="text-xs text-base-content/50">выложено</div>
+                      <div className="text-xs text-base-content/50">{t("analytics.colPublished")}</div>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3 mt-3 text-sm">
                     <div>
-                      <div className="text-base-content/50">Очередь</div>
+                      <div className="text-base-content/50">{t("analytics.colQueue")}</div>
                       <div className="font-medium">{fmt(r.queued)}</div>
-                      <div className="text-xs text-base-content/50">{runwayText(r.runwayDays)}</div>
+                      <div className="text-xs text-base-content/50">{runwayText(r.runwayDays, t)}</div>
                     </div>
                     <div>
-                      <div className="text-base-content/50">Просмотры</div>
+                      <div className="text-base-content/50">{t("analytics.colViews")}</div>
                       <div className="font-medium">{fmt(r.views)}</div>
                       {(r.scheduled > 0 || r.failed > 0) && (
                         <div className="text-xs text-base-content/50">
-                          {fmt(r.scheduled)} отл. · {fmt(r.failed)} ош.
+                          {t("analytics.schedFailShort", { sched: fmt(r.scheduled), failed: fmt(r.failed) })}
                         </div>
                       )}
                     </div>
@@ -404,10 +417,10 @@ function TopChannels({ rows }: { rows: AdminAnalyticsData["topChannels"] }) {
               <table className="table table-sm">
                 <thead>
                   <tr>
-                    <th>Канал</th>
-                    <th>Выложено</th>
-                    <th>Очередь</th>
-                    <th>Просмотры</th>
+                    <th>{t("analytics.colChannel")}</th>
+                    <th>{t("analytics.colPublished")}</th>
+                    <th>{t("analytics.colQueue")}</th>
+                    <th>{t("analytics.colViews")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -423,13 +436,13 @@ function TopChannels({ rows }: { rows: AdminAnalyticsData["topChannels"] }) {
                         <span className="font-semibold">{fmt(r.published)}</span>
                         {(r.scheduled > 0 || r.failed > 0) && (
                           <div className="text-xs text-base-content/50">
-                            {fmt(r.scheduled)} отл. · {fmt(r.failed)} ош.
+                            {t("analytics.schedFailShort", { sched: fmt(r.scheduled), failed: fmt(r.failed) })}
                           </div>
                         )}
                       </td>
                       <td>
                         {fmt(r.queued)}
-                        <div className="text-xs text-base-content/50">{runwayText(r.runwayDays)}</div>
+                        <div className="text-xs text-base-content/50">{runwayText(r.runwayDays, t)}</div>
                       </td>
                       <td>{fmt(r.views)}</td>
                     </tr>
@@ -445,12 +458,13 @@ function TopChannels({ rows }: { rows: AdminAnalyticsData["topChannels"] }) {
 }
 
 function Runway({ rows }: { rows: AdminAnalyticsData["runway"] }) {
+  const { t } = useT();
   return (
     <section className="card bg-base-100 border border-base-300">
       <div className="card-body gap-3">
-        <div className="font-semibold">Запас роликов</div>
+        <div className="font-semibold">{t("analytics.runwayTitle")}</div>
         {rows.length === 0 ? (
-          <Empty text="Каналов пока нет." compact />
+          <Empty text={t("analytics.noChannels")} compact />
         ) : (
           <>
             <div className="sm:hidden space-y-3">
@@ -463,20 +477,20 @@ function Runway({ rows }: { rows: AdminAnalyticsData["runway"] }) {
                       </Link>
                       {r.ownerUsername && <div className="text-xs text-base-content/50">@{r.ownerUsername}</div>}
                     </div>
-                    <span className={`badge badge-sm ${runwayClass(r.runwayDays)}`}>{runwayText(r.runwayDays)}</span>
+                    <span className={`badge badge-sm ${runwayClass(r.runwayDays)}`}>{runwayText(r.runwayDays, t)}</span>
                   </div>
                   <div className="grid grid-cols-2 gap-3 mt-3 text-sm">
                     <div>
-                      <div className="text-base-content/50">Очередь</div>
+                      <div className="text-base-content/50">{t("analytics.colQueue")}</div>
                       <div className="font-medium">{fmt(r.queued)}</div>
                     </div>
                     <div>
-                      <div className="text-base-content/50">Постов/день</div>
+                      <div className="text-base-content/50">{t("analytics.colPostsPerDay")}</div>
                       <div className="font-medium">{fmt(r.postsPerDay)}</div>
                     </div>
                   </div>
-                  {!r.connected && <div className="text-xs text-warning mt-2">не подключён</div>}
-                  {!r.enabled && <div className="text-xs text-base-content/50 mt-1">выключен</div>}
+                  {!r.connected && <div className="text-xs text-warning mt-2">{t("analytics.notConnected")}</div>}
+                  {!r.enabled && <div className="text-xs text-base-content/50 mt-1">{t("analytics.disabledChannel")}</div>}
                 </div>
               ))}
             </div>
@@ -484,10 +498,10 @@ function Runway({ rows }: { rows: AdminAnalyticsData["runway"] }) {
               <table className="table table-sm">
                 <thead>
                   <tr>
-                    <th>Канал</th>
-                    <th>Очередь</th>
-                    <th>Постов/день</th>
-                    <th>Статус</th>
+                    <th>{t("analytics.colChannel")}</th>
+                    <th>{t("analytics.colQueue")}</th>
+                    <th>{t("analytics.colPostsPerDay")}</th>
+                    <th>{t("analytics.colStatus")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -502,9 +516,9 @@ function Runway({ rows }: { rows: AdminAnalyticsData["runway"] }) {
                       <td>{fmt(r.queued)}</td>
                       <td>{fmt(r.postsPerDay)}</td>
                       <td>
-                      <span className={`badge badge-sm ${runwayClass(r.runwayDays)}`}>{runwayText(r.runwayDays)}</span>
-                      {!r.connected && <div className="text-xs text-warning mt-1">не подключён</div>}
-                      {!r.enabled && <div className="text-xs text-base-content/50 mt-1">выключен</div>}
+                      <span className={`badge badge-sm ${runwayClass(r.runwayDays)}`}>{runwayText(r.runwayDays, t)}</span>
+                      {!r.connected && <div className="text-xs text-warning mt-1">{t("analytics.notConnected")}</div>}
+                      {!r.enabled && <div className="text-xs text-base-content/50 mt-1">{t("analytics.disabledChannel")}</div>}
                       </td>
                     </tr>
                   ))}
@@ -519,12 +533,13 @@ function Runway({ rows }: { rows: AdminAnalyticsData["runway"] }) {
 }
 
 function TopUsers({ rows }: { rows: AdminAnalyticsData["topUsers"] }) {
+  const { t } = useT();
   return (
     <section className="card bg-base-100 border border-base-300">
       <div className="card-body gap-3">
-        <div className="font-semibold">Пользователи</div>
+        <div className="font-semibold">{t("analytics.usersTitle")}</div>
         {rows.length === 0 ? (
-          <Empty text="За период нет активности." compact />
+          <Empty text={t("analytics.noActivityPeriod")} compact />
         ) : (
           <>
             <div className="sm:hidden space-y-3">
@@ -534,23 +549,23 @@ function TopUsers({ rows }: { rows: AdminAnalyticsData["topUsers"] }) {
                     <div className="font-medium">@{r.username}</div>
                     <div className="text-right">
                       <div className="text-lg font-bold leading-none">{fmt(r.published)}</div>
-                      <div className="text-xs text-base-content/50">выложено</div>
+                      <div className="text-xs text-base-content/50">{t("analytics.colPublished")}</div>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3 mt-3 text-sm">
                     <div>
-                      <div className="text-base-content/50">Каналы</div>
+                      <div className="text-base-content/50">{t("analytics.colChannels")}</div>
                       <div className="font-medium">{fmt(r.channels)}</div>
                     </div>
                     <div>
-                      <div className="text-base-content/50">Очередь</div>
+                      <div className="text-base-content/50">{t("analytics.colQueue")}</div>
                       <div className="font-medium">{fmt(r.queued)}</div>
-                      <div className="text-xs text-base-content/50">{fmt(r.postsPerDay)} пост/день</div>
+                      <div className="text-xs text-base-content/50">{t("analytics.postsPerDayUnit", { n: fmt(r.postsPerDay) })}</div>
                     </div>
                   </div>
                   {(r.scheduled > 0 || r.failed > 0) && (
                     <div className="text-xs text-base-content/50 mt-2">
-                      {fmt(r.scheduled)} отл. · {fmt(r.failed)} ош.
+                      {t("analytics.schedFailShort", { sched: fmt(r.scheduled), failed: fmt(r.failed) })}
                     </div>
                   )}
                 </div>
@@ -560,10 +575,10 @@ function TopUsers({ rows }: { rows: AdminAnalyticsData["topUsers"] }) {
               <table className="table table-sm">
                 <thead>
                   <tr>
-                    <th>Пользователь</th>
-                    <th>Выложено</th>
-                    <th>Каналы</th>
-                    <th>Очередь</th>
+                    <th>{t("analytics.colUser")}</th>
+                    <th>{t("analytics.colPublished")}</th>
+                    <th>{t("analytics.colChannels")}</th>
+                    <th>{t("analytics.colQueue")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -574,14 +589,14 @@ function TopUsers({ rows }: { rows: AdminAnalyticsData["topUsers"] }) {
                         {fmt(r.published)}
                       {(r.scheduled > 0 || r.failed > 0) && (
                         <div className="text-xs text-base-content/50">
-                          {fmt(r.scheduled)} отл. · {fmt(r.failed)} ош.
+                          {t("analytics.schedFailShort", { sched: fmt(r.scheduled), failed: fmt(r.failed) })}
                         </div>
                       )}
                       </td>
                       <td>{fmt(r.channels)}</td>
                       <td>
                         {fmt(r.queued)}
-                        <div className="text-xs text-base-content/50">{fmt(r.postsPerDay)} пост/день</div>
+                        <div className="text-xs text-base-content/50">{t("analytics.postsPerDayUnit", { n: fmt(r.postsPerDay) })}</div>
                       </td>
                     </tr>
                   ))}
@@ -602,16 +617,17 @@ function Problems({
   failures: AdminAnalyticsData["failures"];
   recentErrors: AdminAnalyticsData["recentErrors"];
 }) {
+  const { t } = useT();
   const empty = failures.length === 0 && recentErrors.length === 0;
   return (
     <section className="card bg-base-100 border border-base-300">
       <div className="card-body gap-3">
         <div className="flex items-center gap-2 font-semibold">
           <Bug size={18} className={empty ? "text-success" : "text-error"} />
-          Проблемы
+          {t("analytics.problemsTitle")}
         </div>
         {empty ? (
-          <Empty text="За период нет ошибок." compact />
+          <Empty text={t("analytics.noErrorsPeriod")} compact />
         ) : (
           <div className="space-y-4">
             {failures.length > 0 && (
@@ -619,9 +635,9 @@ function Problems({
                 <table className="table table-sm">
                   <thead>
                     <tr>
-                      <th>Публикация</th>
-                      <th>Канал</th>
-                      <th>Ошибка</th>
+                      <th>{t("analytics.colPublication")}</th>
+                      <th>{t("analytics.colChannel")}</th>
+                      <th>{t("analytics.colError")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -633,7 +649,7 @@ function Problems({
                         </td>
                         <td>{f.channelName}</td>
                         <td className="max-w-[18rem] whitespace-pre-wrap break-words text-error/80">
-                          {f.error || "без описания"}
+                          {f.error || t("analytics.noDescription")}
                         </td>
                       </tr>
                     ))}
@@ -726,11 +742,11 @@ function formatDateTime(s: string): string {
   return new Date(s.includes("T") ? s : s.replace(" ", "T") + "Z").toLocaleString("ru-RU");
 }
 
-function runwayText(days: number | null): string {
-  if (days == null) return "нет расписания";
-  if (days === 0) return "0 дней";
-  if (days < 1) return "< 1 дня";
-  return `${days.toFixed(days < 10 ? 1 : 0)} дн`;
+function runwayText(days: number | null, t: T): string {
+  if (days == null) return t("analytics.runwayNone");
+  if (days === 0) return t("analytics.runwayZero");
+  if (days < 1) return t("analytics.runwayLessDay");
+  return t("analytics.runwayDays", { n: days.toFixed(days < 10 ? 1 : 0) });
 }
 
 function runwayClass(days: number | null): string {

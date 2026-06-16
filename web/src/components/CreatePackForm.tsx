@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Loader2, Plus, ExternalLink, AlertTriangle } from "lucide-react";
 import { apiClient, ApiError, type PackSummary } from "../lib/api";
+import { useT } from "../lib/i18n";
+import { CONTENT_LANGS } from "../lib/deck";
 
 // Создание кастомного пака: имя + язык + JSON шаблона из редактора (/editor → Экспорт → вставить).
 export default function CreatePackForm({ onCreated }: { onCreated: (p: PackSummary) => void }) {
+  const { t } = useT();
   const [name, setName] = useState("");
   const [lang, setLang] = useState("de");
   const [tpl, setTpl] = useState("");
@@ -12,48 +15,44 @@ export default function CreatePackForm({ onCreated }: { onCreated: (p: PackSumma
 
   async function create() {
     setErr(null);
-    if (!name.trim()) { setErr("Введите имя пака"); return; }
+    if (!name.trim()) { setErr(t("createPack.errName")); return; }
     let templates: unknown[] = [];
     if (tpl.trim()) {
       try { const p = JSON.parse(tpl); templates = Array.isArray(p) ? p : [p]; }
-      catch (e) { setErr("Шаблон: неверный JSON — " + (e instanceof Error ? e.message : String(e))); return; }
+      catch (e) { setErr(t("createPack.errJson") + " — " + (e instanceof Error ? e.message : String(e))); return; }
     }
     setBusy(true);
     try {
       const p = await apiClient.createPack(name.trim(), lang.trim() || "ru", templates);
       setName(""); setTpl("");
       onCreated(p);
-    } catch (e) { setErr(e instanceof ApiError ? e.message : "Не удалось создать пак"); }
+    } catch (e) { setErr(e instanceof ApiError ? e.message : t("createPack.errCreate")); }
     finally { setBusy(false); }
   }
 
   return (
     <div className="space-y-3">
       <p className="text-sm text-base-content/70">
-        Новый ручной пак. Шаблон рисуете в редакторе, экспортируете JSON и вставляете сюда.
-        По умолчанию пак виден только вам (админу) — доступ другим выдаёте в матрице Админки.
+        {t("createPack.intro")}
       </p>
       <div className="flex flex-wrap gap-2">
-        <input className="input input-bordered input-sm flex-1 min-w-48" placeholder="Имя пака" value={name} onChange={(e) => setName(e.target.value)} />
-        <select className="select select-bordered select-sm w-40" value={lang} onChange={(e) => setLang(e.target.value)} aria-label="Язык пака" title="язык пака — должен совпадать с языком канала">
-          <option value="ru">Русский</option>
-          <option value="de">Немецкий</option>
-          <option value="it">Итальянский</option>
-          <option value="fr">Французский</option>
-          <option value="en">Английский</option>
-          <option value="ar">Арабский</option>
+        <input className="input input-bordered input-sm flex-1 min-w-48" placeholder={t("createPack.namePlaceholder")} value={name} onChange={(e) => setName(e.target.value)} />
+        <select className="select select-bordered select-sm w-40" value={lang} onChange={(e) => setLang(e.target.value)} aria-label={t("createPack.langLabel")} title={t("createPack.langTitle")}>
+          {CONTENT_LANGS.map((l) => (
+            <option key={l.code} value={l.code}>{l.label}</option>
+          ))}
         </select>
       </div>
       <label className="form-control">
         <span className="label-text text-xs mb-1 flex items-center gap-2">
-          Шаблон(ы) — JSON из редактора
+          {t("createPack.tplLabel")}
           <a href="/editor" target="_blank" rel="noreferrer" className="link link-primary inline-flex items-center gap-1">
-            <ExternalLink size={12} /> открыть редактор
+            <ExternalLink size={12} /> {t("createPack.openEditor")}
           </a>
         </span>
         <textarea
           className="textarea textarea-bordered min-h-28 font-mono text-xs"
-          placeholder="Нарисуйте шаблон в /editor → Экспорт → вставьте JSON (один объект или массив для нескольких цветовых вариантов)"
+          placeholder={t("createPack.tplPlaceholder")}
           value={tpl}
           onChange={(e) => setTpl(e.target.value)}
         />
@@ -61,7 +60,7 @@ export default function CreatePackForm({ onCreated }: { onCreated: (p: PackSumma
       {err && <div className="alert alert-error text-sm" role="alert"><AlertTriangle size={16} /><span>{err}</span></div>}
       <button className="btn btn-primary btn-sm gap-2" onClick={create} disabled={busy || !name.trim()}>
         {busy ? <Loader2 className="animate-spin" size={15} /> : <Plus size={15} />}
-        Создать пак
+        {t("createPack.submit")}
       </button>
     </div>
   );

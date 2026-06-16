@@ -31,4 +31,4 @@ export function newSessionToken(): string {
 // ---- Brute-force / session policy (env-overridable) ----
 export const MAX_FAILED_ATTEMPTS = Math.max(1, Number(process.env.AUTH_MAX_ATTEMPTS ?? 10));
 export const LOCK_MINUTES = Math.max(1, Number(process.env.AUTH_LOCK_MINUTES ?? 15));
-export const SESSION_TTL_DAYS = Math.max(1, Number(process.env.SESSION_TTL_DAYS ?? 5));
+export const SESSION_TTL_DAYS = Math.max(1, Number(process.env.SESSION_TTL_DAYS ?? 30));

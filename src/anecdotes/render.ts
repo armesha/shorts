@@ -32,6 +32,13 @@ export function randomBackgroundName(): string | null {
   return files.length ? files[Math.floor(Math.random() * files.length)] : null;
 }
 
+function randomDifferent(files: string[], avoid?: string | null): string | null {
+  if (files.length === 0) return null;
+  const pool = avoid && files.length > 1 ? files.filter((f) => f !== avoid) : files;
+  const finalPool = pool.length ? pool : files;
+  return finalPool[Math.floor(Math.random() * finalPool.length)];
+}
+
 /** Resolve a texture name to a CSS background value (inlined data-URI), or a solid fallback. */
 export function backgroundCss(name?: string | null): string {
   const files = listBackgrounds();
@@ -86,6 +93,8 @@ export interface Anecdote {
   channel: string;
   /** Texture name (e.g. "kraft.jpg"); random if omitted. */
   bg?: string;
+  /** Best-effort exclusion for random background selection. */
+  avoidBg?: string;
   /** Deck id — for lifehack decks (tips, tips-de) the profession layout is used instead. */
   deck?: string;
   /** Profession key for the lifehack background (tips deck only); random if omitted. */
@@ -108,7 +117,8 @@ async function captureCard(html: string, outPath: string): Promise<number> {
   try {
     const page = await browser.newPage();
     await page.setViewport({ width: 1080, height: 1920, deviceScaleFactor: 1 });
-    await page.setContent(html, { waitUntil: "networkidle0", timeout: 30_000 });
+    // networkidle0 waits for fonts/images; valid at runtime — puppeteer-core@25's setContent type omits it.
+    await page.setContent(html, { waitUntil: "networkidle0" as "load", timeout: 30_000 });
     await page.waitForFunction("window.__fitted === true", { timeout: 5_000 }).catch(() => {});
     const fontPx = (await page.evaluate("window.__fitFontPx").catch(() => 0)) as number;
     await mkdir(dirname(outPath), { recursive: true });
@@ -130,7 +140,7 @@ export async function renderAnecdote(
   if (getDeck(a.deck).psych) return renderPsych(a, outPath);
   if (getDeck(a.deck).lifehack) return renderLifehack(a, outPath);
   if (getDeck(a.deck).russianBg) return renderRussian(a, outPath);
-  const bgName = a.bg ?? randomBackgroundName() ?? "";
+  const bgName = a.bg ?? randomDifferent(listBackgrounds(), a.avoidBg) ?? "";
   const bgCss = backgroundCss(bgName);
   let html = await readFile(TEMPLATE, "utf8");
   html = html
@@ -170,7 +180,7 @@ async function renderIslamic(
   } catch {
     card = { type: "ayah", arabic: a.text, ref: a.title || "" };
   }
-  const bg = pickIslamicBg(a.bg);
+  const bg = pickIslamicBg(a.bg, a.avoidBg);
   const html = buildIslamicHtml(card as Parameters<typeof buildIslamicHtml>[0], bg);
   const fontPx = await captureCard(html, outPath);
   return { path: outPath, fontPx, bg: bg.file };
@@ -187,7 +197,7 @@ async function renderChristian(
   } catch {
     card = { type: "verse", text: a.text, ref: a.title || "" };
   }
-  const bg = pickChristianBg(a.bg);
+  const bg = pickChristianBg(a.bg, a.avoidBg);
   const html = buildChristianHtml(card as Parameters<typeof buildChristianHtml>[0], bg);
   const fontPx = await captureCard(html, outPath);
   return { path: outPath, fontPx, bg: bg.file };
@@ -198,7 +208,7 @@ async function renderRussian(
   a: Anecdote,
   outPath: string,
 ): Promise<{ path: string; fontPx: number; bg: string }> {
-  const bg = pickRussianBg(a.bg, (a.text || "").length);
+  const bg = pickRussianBg(a.bg, (a.text || "").length, a.avoidBg);
   const html = buildRussianHtml({ title: a.title, text: a.text, channel: a.channel }, bg);
   const fontPx = await captureCard(html, outPath);
   return { path: outPath, fontPx, bg: bg.file };

@@ -593,7 +593,7 @@ export const apiClient = {
   packPreview: (id: string, i: number) => get<{ imageUrl: string }>(`/packs/${id}/preview?i=${i}`),
   packBuildVideo: (id: string, i: number, opts?: { accountId?: number; music?: string }) =>
     send<{ videoUrl: string; music: string; saved: boolean }>(`/packs/${id}/cards/${i}/video`, "POST", opts ?? {}),
-  generateAnecdote: (body?: { text?: string; title?: string; bg?: string; deck?: string }) =>
+  generateAnecdote: (body?: { text?: string; title?: string; bg?: string; avoidBg?: string; deck?: string }) =>
     send<GeneratedPreview>("/generate/anecdote", "POST", body ?? {}),
   generateAnecdoteVideo: (body?: { text?: string; title?: string; bg?: string; music?: string; deck?: string }) =>
     send<GeneratedVideo>("/generate/anecdote-video", "POST", body ?? {}),

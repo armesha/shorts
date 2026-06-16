@@ -3,8 +3,10 @@ import { KeyRound, Check, AlertTriangle, Upload, Trash2, Lock, Send } from "luci
 import { apiClient, ApiError, type AppSettings } from "../lib/api";
 import TelegramConnect from "../components/TelegramConnect";
 import { confirmDialog } from "../lib/confirm";
+import { useT } from "../lib/i18n";
 
 export default function Settings() {
+  const { t } = useT();
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -15,8 +17,8 @@ export default function Settings() {
     apiClient
       .settings()
       .then(setSettings)
-      .catch((err) => setError(err instanceof ApiError ? err.message : "Не удалось загрузить настройки"));
-  }, []);
+      .catch((err) => setError(err instanceof ApiError ? err.message : t("settings.errLoad")));
+  }, [t]);
 
   async function onFile(e: ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
@@ -27,7 +29,7 @@ export default function Settings() {
       const text = await f.text();
       setSettings(await apiClient.uploadGoogleKey(text));
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Не удалось загрузить ключ");
+      setError(err instanceof ApiError ? err.message : t("settings.errUpload"));
     } finally {
       setBusy(false);
       e.target.value = "";
@@ -35,13 +37,13 @@ export default function Settings() {
   }
 
   async function removeKey() {
-    if (!(await confirmDialog("Удалить свой Google-ключ? Каналы перестанут постить, пока не загрузите новый.", { title: "Удалить ключ", confirmText: "Удалить ключ", danger: true }))) return;
+    if (!(await confirmDialog(t("settings.removeKeyConfirm"), { title: t("settings.removeKeyTitle"), confirmText: t("settings.removeKey"), danger: true }))) return;
     setError("");
     setBusy(true);
     try {
       setSettings(await apiClient.removeGoogleKey());
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Не удалось удалить ключ");
+      setError(err instanceof ApiError ? err.message : t("settings.errRemove"));
     } finally {
       setBusy(false);
     }
@@ -50,28 +52,28 @@ export default function Settings() {
   return (
     <div className="space-y-6 max-w-3xl">
       <header>
-        <h1 className="text-2xl font-bold">Настройки</h1>
-        <p className="text-base-content/60">Ваш Google-ключ, Telegram и пароль</p>
+        <h1 className="text-2xl font-bold">{t("settings.title")}</h1>
+        <p className="text-base-content/60">{t("settings.subtitle")}</p>
       </header>
 
       <section className="card bg-base-100 border border-base-300">
         <div className="card-body gap-3">
           <div className="flex items-center gap-2 flex-wrap">
             <KeyRound className="text-primary" size={18} />
-            <h2 className="card-title text-base">Мой ключ Google (client_secret.json)</h2>
+            <h2 className="card-title text-base">{t("settings.googleKeyTitle")}</h2>
             {settings &&
               (settings.hasGoogleKey ? (
-                <span className="badge badge-success badge-sm">загружен</span>
+                <span className="badge badge-success badge-sm">{t("settings.badgeLoaded")}</span>
               ) : (
-                <span className="badge badge-warning badge-sm">не загружен</span>
+                <span className="badge badge-warning badge-sm">{t("settings.badgeNotLoaded")}</span>
               ))}
           </div>
 
           <div className="text-sm text-base-content/70 space-y-2">
-            <p>Чтобы постить на свои YouTube-каналы, нужен ваш OAuth-ключ Google. По шагам:</p>
+            <p>{t("settings.googleIntro")}</p>
             <ol className="list-decimal list-inside space-y-1 text-base-content/80 marker:text-primary marker:font-semibold">
               <li>
-                Откройте{" "}
+                {t("settings.step1Open")}{" "}
                 <a
                   className="link link-primary"
                   href="https://console.cloud.google.com/apis/library/youtube.googleapis.com"
@@ -80,10 +82,10 @@ export default function Settings() {
                 >
                   YouTube Data API v3
                 </a>{" "}
-                → нажмите <b>Enable</b>.
+                {t("settings.step1Tail")} <b>Enable</b>.
               </li>
               <li>
-                Перейди в{" "}
+                {t("settings.step2Open")}{" "}
                 <a
                   className="link link-primary"
                   href="https://console.cloud.google.com/apis/credentials"
@@ -95,19 +97,18 @@ export default function Settings() {
                 → <b>Create credentials → OAuth client ID</b>.
               </li>
               <li>
-                <b>Application type → Web application</b> (именно Web, <u>не Desktop</u> — иначе адрес ниже
-                не примется).
+                <b>Application type → Web application</b> {t("settings.step3Pre")}<u>{t("settings.step3NotDesktop")}</u>{t("settings.step3Post")}
               </li>
               <li>
-                Раздел <b>Authorized redirect URIs</b> → <b>+ ADD URI</b> → вставьте адрес ниже 👇
+                {t("settings.step4Section")} <b>Authorized redirect URIs</b> → <b>+ ADD URI</b> → {t("settings.step4Tail")} 👇
               </li>
               <li>
-                <b>Create</b> → <b>Download JSON</b> → загрузите его кнопкой ниже.
+                <b>Create</b> → <b>Download JSON</b> → {t("settings.step5Tail")}
               </li>
             </ol>
             <p className="text-xs text-base-content/50">
-              Если приложение в режиме «Testing» — добавьте свою почту в <b>OAuth consent screen → Test
-              users</b>, иначе Google не пустит. После загрузки нового ключа переподключи каналы заново.
+              {t("settings.testingNote1")} <b>OAuth consent screen → Test
+              users</b>{t("settings.testingNote2")}
             </p>
           </div>
           <code className="block bg-base-200 rounded p-2 text-xs break-all">{redirectUrl}</code>
@@ -115,12 +116,12 @@ export default function Settings() {
           <div className="flex items-center gap-2 flex-wrap">
             <label className="btn btn-primary btn-sm gap-2">
               {busy ? <span className="loading loading-spinner loading-sm" /> : <Upload size={16} />}
-              {settings?.hasGoogleKey ? "Заменить ключ" : "Загрузить client_secret.json"}
+              {settings?.hasGoogleKey ? t("settings.replaceKey") : t("settings.uploadKey")}
               <input type="file" accept=".json,application/json" className="hidden" onChange={onFile} disabled={busy} />
             </label>
             {settings?.hasGoogleKey && (
               <button className="btn btn-ghost btn-sm text-error gap-1" onClick={removeKey} disabled={busy}>
-                <Trash2 size={14} /> Удалить ключ
+                <Trash2 size={14} /> {t("settings.removeKey")}
               </button>
             )}
           </div>
@@ -130,7 +131,7 @@ export default function Settings() {
             </div>
           )}
           <p className="text-xs text-base-content/50">
-            Ключ хранится на сервере под вашим аккаунтом и другим не виден. Файл наружу не отдаётся.
+            {t("settings.keyPrivacy")}
           </p>
         </div>
       </section>
@@ -144,6 +145,7 @@ export default function Settings() {
 
 // Link a Telegram account → enables one-click "Login with Telegram" and bot-delivered password recovery.
 function TelegramLink() {
+  const { t } = useT();
   const [st, setSt] = useState<{
     enabled: boolean;
     bot: string | null;
@@ -163,15 +165,15 @@ function TelegramLink() {
   }, []);
 
   async function unbind() {
-    if (!(await confirmDialog("Отвязать Telegram? Вход и восстановление пароля через Telegram перестанут работать.", { title: "Отвязать Telegram", confirmText: "Отвязать", danger: true }))) return;
+    if (!(await confirmDialog(t("settings.tgUnbindConfirm"), { title: t("settings.tgUnbindTitle"), confirmText: t("settings.tgUnbind"), danger: true }))) return;
     setBusy(true);
     setMsg(null);
     try {
       await apiClient.telegramUnbind();
-      setMsg({ ok: true, text: "Telegram отвязан" });
+      setMsg({ ok: true, text: t("settings.tgUnbound") });
       await load();
     } catch (err) {
-      setMsg({ ok: false, text: err instanceof ApiError ? err.message : "Не удалось отвязать" });
+      setMsg({ ok: false, text: err instanceof ApiError ? err.message : t("settings.tgUnbindErr") });
     } finally {
       setBusy(false);
     }
@@ -184,37 +186,34 @@ function TelegramLink() {
       <div className="card-body gap-3">
         <div className="flex items-center gap-2 flex-wrap">
           <Send className="text-primary" size={18} />
-          <h2 className="card-title text-base">Telegram — вход и восстановление</h2>
+          <h2 className="card-title text-base">{t("settings.tgTitle")}</h2>
           {st.enabled &&
             (st.linked ? (
-              <span className="badge badge-success badge-sm">привязан</span>
+              <span className="badge badge-success badge-sm">{t("settings.tgLinked")}</span>
             ) : (
-              <span className="badge badge-ghost badge-sm">не привязан</span>
+              <span className="badge badge-ghost badge-sm">{t("settings.tgNotLinked")}</span>
             ))}
         </div>
 
         {!st.enabled ? (
           <p className="text-sm text-base-content/60">
-            Вход через Telegram пока не настроен на сервере (нет токена бота).
+            {t("settings.tgNotConfigured")}
           </p>
         ) : st.linked ? (
           <>
             <p className="text-sm text-base-content/70">
-              Привязан аккаунт <b>{st.username}</b>. Теперь можно входить через Telegram в один клик и
-              получать код для сброса пароля прямо в бота.
+              {t("settings.tgLinkedPre")} <b>{st.username}</b>. {t("settings.tgLinkedPost")}
             </p>
             <div>
               <button className="btn btn-ghost btn-sm text-error gap-1" onClick={unbind} disabled={busy}>
-                <Trash2 size={14} /> Отвязать Telegram
+                <Trash2 size={14} /> {t("settings.tgUnbind")}
               </button>
             </div>
           </>
         ) : (
           <>
             <p className="text-sm text-base-content/70">
-              Привяжите свой Telegram{st.bot ? <> (бот <b>@{st.bot}</b>)</> : null}: нажмите кнопку, откройте
-              бота и нажмите <b>Start</b> — аккаунт привяжется сам, и бот сможет присылать коды для сброса
-              пароля.
+              {t("settings.tgBindPre")}{st.bot ? <> ({t("settings.tgBot")} <b>@{st.bot}</b>)</> : null}{t("settings.tgBindMid")} <b>Start</b> {t("settings.tgBindPost")}
             </p>
             <TelegramConnect mode="bind" onDone={() => load()} />
           </>
@@ -227,8 +226,7 @@ function TelegramLink() {
         )}
         {st.enabled && (
           <p className="text-xs text-base-content/50">
-            Кнопка Telegram работает на основном домене сайта (где у бота настроен домен). На localhost
-            она может не появиться — это нормально.
+            {t("settings.tgDomainNote")}
           </p>
         )}
       </div>
@@ -238,6 +236,7 @@ function TelegramLink() {
 
 // Self-service password change — any logged-in user changes their OWN password.
 function ChangePassword() {
+  const { t } = useT();
   const [cur, setCur] = useState("");
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -248,8 +247,8 @@ function ChangePassword() {
 
   async function submit() {
     setMsg(null);
-    if (next !== confirm) return setMsg({ ok: false, text: "Новый пароль и подтверждение не совпадают" });
-    if (next.length < 6) return setMsg({ ok: false, text: "Новый пароль — минимум 6 символов" });
+    if (next !== confirm) return setMsg({ ok: false, text: t("settings.pwMismatch") });
+    if (next.length < 6) return setMsg({ ok: false, text: t("settings.pwTooShort") });
     setBusy(true);
     try {
       const r = await fetch("/api/auth/change-password", {
@@ -260,15 +259,15 @@ function ChangePassword() {
       });
       const data = (await r.json().catch(() => ({}))) as { ok?: boolean; error?: string };
       if (!r.ok || data?.error) {
-        setMsg({ ok: false, text: data?.error || "Не удалось сменить пароль" });
+        setMsg({ ok: false, text: data?.error || t("settings.pwChangeErr") });
         return;
       }
-      setMsg({ ok: true, text: "Пароль изменён. Теперь его знаете только вы — администратору он неизвестен." });
+      setMsg({ ok: true, text: t("settings.pwChanged") });
       setCur("");
       setNext("");
       setConfirm("");
     } catch {
-      setMsg({ ok: false, text: "Ошибка сети" });
+      setMsg({ ok: false, text: t("settings.netError") });
     } finally {
       setBusy(false);
     }
@@ -279,10 +278,10 @@ function ChangePassword() {
       <div className="card-body gap-3">
         <div className="flex items-center gap-2">
           <Lock className="text-primary" size={18} />
-          <h2 className="card-title text-base">Смена пароля</h2>
+          <h2 className="card-title text-base">{t("settings.pwTitle")}</h2>
         </div>
         <p className="text-sm text-base-content/70">
-          Поменяйте пароль, который выдал администратор, на свой — знать его будете только вы.
+          {t("settings.pwIntro")}
         </p>
         <form
           className="flex flex-wrap items-end gap-2"
@@ -292,7 +291,7 @@ function ChangePassword() {
           }}
         >
           <label className="form-control w-44">
-            <span className="label-text">Текущий пароль</span>
+            <span className="label-text">{t("settings.pwCurrent")}</span>
             <input
               type="password"
               className="input input-bordered input-sm"
@@ -302,7 +301,7 @@ function ChangePassword() {
             />
           </label>
           <label className="form-control w-44">
-            <span className="label-text">Новый (≥6)</span>
+            <span className="label-text">{t("settings.pwNew")}</span>
             <input
               type="password"
               className="input input-bordered input-sm"
@@ -312,7 +311,7 @@ function ChangePassword() {
             />
           </label>
           <label className="form-control w-44">
-            <span className="label-text">Повтори новый</span>
+            <span className="label-text">{t("settings.pwRepeat")}</span>
             <input
               type="password"
               className="input input-bordered input-sm"
@@ -323,7 +322,7 @@ function ChangePassword() {
           </label>
           <button type="submit" className="btn btn-primary btn-sm gap-1" disabled={busy || !valid}>
             {busy ? <span className="loading loading-spinner loading-sm" /> : <KeyRound size={14} />}
-            Сменить пароль
+            {t("settings.pwSubmit")}
           </button>
         </form>
         {msg && (

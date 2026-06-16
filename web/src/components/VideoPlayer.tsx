@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { Play, Pause, Volume2, VolumeX, Maximize, Repeat } from "lucide-react";
+import { useT } from "../lib/i18n";
 
 function fmt(s: number): string {
   if (!isFinite(s) || s < 0) s = 0;
@@ -20,6 +21,7 @@ export default function VideoPlayer({
   className?: string;
   autoPlay?: boolean;
 }) {
+  const { t } = useT();
   const vref = useRef<HTMLVideoElement>(null);
   const wrap = useRef<HTMLDivElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -103,7 +105,7 @@ export default function VideoPlayer({
         <button
           type="button"
           onClick={toggle}
-          aria-label="Воспроизвести"
+          aria-label={t("video.play")}
           className="absolute inset-0 flex items-center justify-center"
         >
           <span className="bg-black/55 backdrop-blur-sm rounded-full p-5 transition-transform hover:scale-110">
@@ -121,24 +123,24 @@ export default function VideoPlayer({
           step={0.05}
           value={Math.min(cur, dur || 0)}
           onChange={(e) => seek(Number(e.target.value))}
-          aria-label="Перемотка"
+          aria-label={t("video.seek")}
           className="range range-xs range-primary w-full mb-1.5"
         />
         <div className="flex items-center gap-3 text-white">
-          <button type="button" onClick={toggle} aria-label={playing ? "Пауза" : "Воспроизвести"} className="hover:text-primary">
+          <button type="button" onClick={toggle} aria-label={playing ? t("video.pause") : t("video.play")} className="hover:text-primary">
             {playing ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
           </button>
           <span className="text-xs tabular-nums opacity-90">
             {fmt(cur)} / {fmt(dur)}
           </span>
-          <button type="button" onClick={() => setMuted((m) => !m)} aria-label="Звук" className="hover:text-primary">
+          <button type="button" onClick={() => setMuted((m) => !m)} aria-label={t("video.sound")} className="hover:text-primary">
             {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
           </button>
           <button
             type="button"
             onClick={() => setLoop((l) => !l)}
-            aria-label="Повтор"
-            title="Зациклить"
+            aria-label={t("video.repeat")}
+            title={t("video.loop")}
             className={loop ? "text-primary" : "hover:text-primary opacity-70"}
           >
             <Repeat size={17} />
@@ -146,7 +148,7 @@ export default function VideoPlayer({
           <button
             type="button"
             onClick={fullscreen}
-            aria-label="На весь экран"
+            aria-label={t("video.fullscreen")}
             className="ml-auto hover:text-primary"
           >
             <Maximize size={18} />

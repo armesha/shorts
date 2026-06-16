@@ -2,23 +2,25 @@ import { useEffect, useState } from "react";
 import { Users, Plus, Check, AlertTriangle, Crown } from "lucide-react";
 import { apiClient, ApiError, type AdminUser, type DeckInfo, type UserDeckRow, type PackSummary } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { useT } from "../lib/i18n";
 
 // Admin-only section: create accounts + control which packs each user sees.
 export default function UsersPage() {
   const { user } = useAuth();
+  const { t } = useT();
   if (user?.role !== "admin") {
     return (
       <div className="alert alert-warning max-w-xl">
         <AlertTriangle size={18} />
-        <span>Раздел доступен только администратору.</span>
+        <span>{t("users.adminOnly")}</span>
       </div>
     );
   }
   return (
     <div className="space-y-6 max-w-5xl">
       <header>
-        <h1 className="text-2xl font-bold">Админка</h1>
-        <p className="text-base-content/60">Пользователи, доступ к пакам, лимиты и нагрузка</p>
+        <h1 className="text-2xl font-bold">{t("users.title")}</h1>
+        <p className="text-base-content/60">{t("users.subtitle")}</p>
       </header>
       <AdminUsers />
     </div>
@@ -26,6 +28,7 @@ export default function UsersPage() {
 }
 
 function AdminUsers() {
+  const { t } = useT();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [decks, setDecks] = useState<DeckInfo[]>([]);
   const [rows, setRows] = useState<UserDeckRow[]>([]);
@@ -67,7 +70,7 @@ function AdminUsers() {
       setPacks((cur) => cur.map((x) => (x.id === p.id ? { ...x, owners: r.owners } : x)));
       loadMatrix(); // владелец влияет на колонку грантов в матрице
     } catch (e) {
-      setOwnerErr(e instanceof ApiError ? e.message : "Не удалось сохранить владельцев");
+      setOwnerErr(e instanceof ApiError ? e.message : t("users.ownerSaveFailed"));
       loadPacks(); // откат к серверному состоянию
     } finally {
       setSavingOwner(null);
@@ -84,7 +87,7 @@ function AdminUsers() {
       const grants = role === "admin" ? [] : decks.filter((d) => d.pack && newVisible.has(d.id)).map((d) => d.id);
       const u = await apiClient.createUser(username.trim(), password, role, hidden);
       if (grants.length) await apiClient.setUserDecks(u.id, hidden, grants);
-      setCreated(`Создан «${u.username}» (${u.role === "admin" ? "админ" : "пользователь"})`);
+      setCreated(t("users.created", { name: u.username, role: u.role === "admin" ? t("users.roleAdmin") : t("users.roleUser") }));
       setUsername("");
       setPassword("");
       setRole("user");
@@ -92,7 +95,7 @@ function AdminUsers() {
       loadUsers();
       loadMatrix();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Не удалось создать пользователя");
+      setError(err instanceof ApiError ? err.message : t("users.createFailed"));
     } finally {
       setBusy(false);
     }
@@ -132,18 +135,18 @@ function AdminUsers() {
       <div className="card-body gap-4">
         <div className="flex items-center gap-2">
           <Users className="text-primary" size={18} />
-          <h2 className="card-title text-base">Пользователи</h2>
+          <h2 className="card-title text-base">{t("users.usersHeading")}</h2>
           <span className="badge badge-ghost badge-sm">{users.length}</span>
         </div>
 
         {/* Create a user (optionally pre-hiding some packs) */}
         <div>
           <p className="text-sm text-base-content/70 mb-2">
-            Создать аккаунт для друга. Он войдёт по логину/паролю и загрузит свой Google-ключ.
+            {t("users.createHint")}
           </p>
           <div className="flex flex-wrap items-end gap-2">
             <label className="form-control w-40">
-              <span className="label-text">Логин</span>
+              <span className="label-text">{t("users.loginLabel")}</span>
               <input
                 className="input input-bordered input-sm"
                 value={username}
@@ -152,7 +155,7 @@ function AdminUsers() {
               />
             </label>
             <label className="form-control w-44">
-              <span className="label-text">Пароль (≥6)</span>
+              <span className="label-text">{t("users.passwordLabel")}</span>
               <input
                 type="password"
                 className="input input-bordered input-sm font-mono"
@@ -162,14 +165,14 @@ function AdminUsers() {
               />
             </label>
             <label className="form-control w-40">
-              <span className="label-text">Роль</span>
+              <span className="label-text">{t("users.roleLabel")}</span>
               <select
                 className="select select-bordered select-sm"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
               >
-                <option value="user">пользователь</option>
-                <option value="admin">админ</option>
+                <option value="user">{t("users.roleUser")}</option>
+                <option value="admin">{t("users.roleAdmin")}</option>
               </select>
             </label>
             <button
@@ -178,16 +181,15 @@ function AdminUsers() {
               disabled={busy || !username.trim() || password.length < 6}
             >
               {busy ? <span className="loading loading-spinner loading-sm" /> : <Plus size={14} />}
-              Создать
+              {t("common.create")}
             </button>
           </div>
 
           {role !== "admin" && decks.length > 0 && (
             <div className="mt-2">
               <span className="text-xs text-base-content/60">
-                Паки <b>нового</b> пользователя (по умолчанию <b>ничего не отмечено</b> — отметь те, что дать).
-                Применятся при нажатии «Создать» — отдельной кнопки сохранения тут нет. Уже созданным паки меняйте
-                в таблице ниже ↓ (там клик по галочке сохраняется сразу).
+                {t("users.newUserPacksHint1")} <b>{t("users.newUserPacksHintNew")}</b> {t("users.newUserPacksHint2")}{" "}
+                <b>{t("users.newUserPacksHintNothing")}</b> {t("users.newUserPacksHint3")}
               </span>
               <div className="flex flex-wrap gap-1.5 mt-1">
                 {decks.map((d) => {
@@ -196,7 +198,7 @@ function AdminUsers() {
                     <button
                       key={d.id}
                       type="button"
-                      title={granted ? "виден новому юзеру — клик, чтобы скрыть" : "скрыт у нового юзера — клик, чтобы дать"}
+                      title={granted ? t("users.newPackVisibleTitle") : t("users.newPackHiddenTitle")}
                       className={`btn btn-xs gap-1 ${granted ? "btn-primary" : "btn-ghost border border-base-300 line-through opacity-60"}`}
                       onClick={() =>
                         setNewVisible((s) => {
@@ -231,20 +233,20 @@ function AdminUsers() {
         {rows.length > 0 && decks.length > 0 && (
           <div className="border-t border-base-300 pt-3">
             <p className="text-sm font-medium mb-2 flex items-center gap-2">
-              Кто какие паки видит
+              {t("users.matrixHeading")}
               {saveState === "saving" && (
                 <span className="text-xs font-normal text-base-content/50 inline-flex items-center gap-1">
-                  <span className="loading loading-spinner loading-xs" /> сохранение…
+                  <span className="loading loading-spinner loading-xs" /> {t("users.saving")}
                 </span>
               )}
               {saveState === "saved" && (
                 <span className="text-xs font-normal text-success inline-flex items-center gap-1">
-                  <Check size={12} /> сохранено
+                  <Check size={12} /> {t("common.saved")}
                 </span>
               )}
               {saveState === "error" && (
                 <span className="text-xs font-normal text-error inline-flex items-center gap-1">
-                  <AlertTriangle size={12} /> не сохранилось
+                  <AlertTriangle size={12} /> {t("users.saveFailedShort")}
                 </span>
               )}
             </p>
@@ -252,7 +254,7 @@ function AdminUsers() {
               <table className="table table-xs">
                 <thead>
                   <tr>
-                    <th className="sticky left-0 z-20 bg-base-100 border-r border-base-300">Пользователь</th>
+                    <th className="sticky left-0 z-20 bg-base-100 border-r border-base-300">{t("users.colUser")}</th>
                     {decks.map((d) => (
                       <th key={d.id} className="text-center whitespace-nowrap font-normal">
                         {d.name}
@@ -268,24 +270,25 @@ function AdminUsers() {
                           {row.role === "admin" && <span className="text-primary">★ </span>}
                           {row.username}
                           {users.find((u) => u.id === row.userId)?.locked && (
-                            <span className="badge badge-error badge-xs">заблокирован</span>
+                            <span className="badge badge-error badge-xs">{t("users.locked")}</span>
                           )}
                         </div>
                         <div className="text-[11px] font-normal text-base-content/50">
                           {(() => {
                             const au = users.find((u) => u.id === row.userId);
-                            return au?.createdAt ? `с ${new Date(au.createdAt).toLocaleDateString("ru-RU")} · ` : "";
+                            return au?.createdAt
+                              ? t("users.sinceDate", { date: new Date(au.createdAt).toLocaleDateString("ru-RU") }) + " · "
+                              : "";
                           })()}
-                          запланировано {row.scheduled}
-                          {row.role !== "admin" ? "/100" : ""} в сутки
-                          {row.library > 0 ? ` · ${row.library} в библ.` : ""}
+                          {t("users.scheduledPerDay", { n: row.scheduled, limit: row.role !== "admin" ? "/100" : "" })}
+                          {row.library > 0 ? " · " + t("users.inLibrary", { n: row.library }) : ""}
                         </div>
                       </td>
                       {decks.map((d) => {
                         if (row.role === "admin")
                           return (
                             <td key={d.id} className="text-center text-base-content/40">
-                              все
+                              {t("users.cellAll")}
                             </td>
                           );
                         const visible = d.pack ? row.grantedPacks.includes(d.id) : !row.hidden.includes(d.id);
@@ -305,13 +308,13 @@ function AdminUsers() {
                                 (st ? (
                                   <span
                                     className={`text-[10px] leading-none ${st.available < 50 ? "text-error font-semibold" : "text-base-content/60"}`}
-                                    title={`осталось ${st.available} из ${st.total} · выложено ${st.posted} · использовано ${st.used}`}
+                                    title={t("users.statTooltip", { available: st.available, total: st.total, posted: st.posted, used: st.used })}
                                   >
                                     {st.available}
                                   </span>
                                 ) : (
-                                  <span className="text-[10px] leading-none text-success" title="используется">
-                                    исп.
+                                  <span className="text-[10px] leading-none text-success" title={t("users.inUse")}>
+                                    {t("users.usedShort")}
                                   </span>
                                 ))}
                             </label>
@@ -324,8 +327,7 @@ function AdminUsers() {
               </table>
             </div>
             <p className="text-xs text-base-content/50 mt-1">
-              Галочка = пак виден пользователю. Число под галочкой = сколько свободных карточек у него осталось
-              в паке (красное — мало; наведи курсор: осталось / всего / выложено). Админ видит все паки.
+              {t("users.matrixFooter")}
             </p>
           </div>
         )}
@@ -334,12 +336,10 @@ function AdminUsers() {
         {packs.length > 0 && (
           <div className="border-t border-base-300 pt-3">
             <p className="text-sm font-medium mb-1 flex items-center gap-2">
-              <Crown size={15} className="text-primary" /> Владельцы паков
+              <Crown size={15} className="text-primary" /> {t("users.ownersHeading")}
             </p>
             <p className="text-xs text-base-content/50 mb-2">
-              Владельцы редактируют пак (имя, язык, карточки) на странице «Карточки» — можно указать несколько
-              или никого. Админ редактирует любой пак и так, поэтому во владельцы не добавляется. Доступ
-              остальным выдаётся галочками в таблице выше — это право на использование, без правки.
+              {t("users.ownersHint")}
             </p>
             {ownerErr && (
               <div className="alert alert-error text-sm mb-2 py-2">
@@ -351,10 +351,10 @@ function AdminUsers() {
               <table className="table table-xs">
                 <thead>
                   <tr>
-                    <th className="sticky left-0 z-20 bg-base-100 border-r border-base-300">Пак</th>
-                    <th>Язык</th>
-                    <th>Владельцы</th>
-                    <th className="text-right">Карточек</th>
+                    <th className="sticky left-0 z-20 bg-base-100 border-r border-base-300">{t("users.colPack")}</th>
+                    <th>{t("users.colLang")}</th>
+                    <th>{t("users.colOwners")}</th>
+                    <th className="text-right">{t("users.colCards")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -375,14 +375,14 @@ function AdminUsers() {
                                 className={`btn btn-xs ${on ? "btn-primary" : "btn-ghost border border-base-300 opacity-70"}`}
                                 disabled={savingOwner === p.id}
                                 onClick={() => toggleOwner(p, u.id)}
-                                title={on ? "владелец — клик, чтобы убрать" : "клик, чтобы сделать владельцем"}
+                                title={on ? t("users.ownerOnTitle") : t("users.ownerOffTitle")}
                               >
                                 {on ? <Check size={11} /> : null} {u.username}
                               </button>
                             );
                           })}
                           {!p.owners.some((id) => users.some((u) => u.id === id && u.role !== "admin")) && (
-                            <span className="text-base-content/40 text-xs italic">нет владельца</span>
+                            <span className="text-base-content/40 text-xs italic">{t("users.noOwner")}</span>
                           )}
                           {savingOwner === p.id && <span className="loading loading-spinner loading-xs" />}
                         </div>

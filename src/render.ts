@@ -119,7 +119,8 @@ export async function renderToImage(
     const page = await browser.newPage();
     await page.setViewport({ width: 1080, height: 1920, deviceScaleFactor: 1 });
     const html = await fillTemplate(content);
-    await page.setContent(html, { waitUntil: "networkidle0", timeout: 30_000 });
+    // networkidle0 waits for fonts/images; valid at runtime — puppeteer-core@25's setContent type omits it.
+    await page.setContent(html, { waitUntil: "networkidle0" as "load", timeout: 30_000 });
     // Wait for the shrink-to-fit pass (and fonts) to finish.
     await page
       .waitForFunction("window.__fitted === true", { timeout: 5_000 })

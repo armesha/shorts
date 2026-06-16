@@ -17,27 +17,13 @@ import {
   canEdit,
   deriveRules,
   type PackTemplate,
-  type CardValues,
-  type RoleRule,
 } from "../src/packs/store.ts";
-import { renderTemplateCard } from "../src/template/render.ts";
-import { assembleStillVideo, listAudio, audioPathFor } from "../src/video.ts";
+import { renderTemplateCard, type TemplateDoc } from "../src/template/render.ts";
+import { resolveAudio } from "../src/video.ts";
+import { buildStillVideoFiles, cardReadable } from "./media.ts";
 
 const OUTPUT_DIR = loadBaseConfig().outputDir;
 const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
-
-// Заголовок + читаемый текст карточки (для имени видео и YouTube-описания).
-function cardTitleAndText(values: CardValues, rules: RoleRule[]): { title: string; text: string } {
-  let title = "";
-  const parts: string[] = [];
-  for (const r of rules) {
-    const v = values[r.role];
-    if (v == null) continue;
-    if (!r.list && typeof v === "string" && !title) title = v;
-    parts.push(Array.isArray(v) ? v.map((x) => `• ${x}`).join("\n") : String(v));
-  }
-  return { title: (title || "Карточка").slice(0, 100), text: parts.join("\n\n") };
-}
 
 export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof openDb>) {
   const adminReq = (req: unknown): boolean => db.getUserById(uid(req))?.role === "admin";
@@ -140,7 +126,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const tpl = p.templates[i % p.templates.length];
     const rel = `packs/${p.id}-${i}.png`;
     try {
-      await renderTemplateCard(tpl, card.values, resolve(process.cwd(), OUTPUT_DIR, rel));
+      await renderTemplateCard(tpl as TemplateDoc, card.values, resolve(process.cwd(), OUTPUT_DIR, rel));
     } catch (e) {
       return reply.code(500).send({ error: "Не удалось отрисовать: " + String(e).slice(0, 120) });
     }
@@ -169,44 +155,35 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
       if (acc.lang !== `pack:${p.id}`)
         return reply.code(400).send({ error: "Канал не использует этот пак — сначала выбери пак источником канала." });
     }
-    // музыка: явная / случайная / без
-    let music = body.music;
-    let audioPath: string | null | undefined;
-    if (music === "none") audioPath = null;
-    else if (music) audioPath = audioPathFor(music);
-    else {
-      const t = listAudio();
-      if (t.length) { music = t[Math.floor(Math.random() * t.length)]; audioPath = audioPathFor(music); }
-      else { music = "none"; audioPath = null; }
-    }
-    const stamp = `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
-    const imgRel = `library/pack-${stamp}.png`;
-    const vidRel = `library/pack-${stamp}.mp4`;
+    // музыка: явная / случайная / без (паки не islamic/christian → без оверрайда деки)
+    const { music, audioPath } = resolveAudio(body.music);
+    let imgRel: string;
+    let vidRel: string;
     try {
-      await renderTemplateCard(tpl, card.values, resolve(process.cwd(), OUTPUT_DIR, imgRel));
-      await assembleStillVideo(
-        resolve(process.cwd(), OUTPUT_DIR, imgRel),
-        resolve(process.cwd(), OUTPUT_DIR, vidRel),
-        { durationSec: 6, audioPath },
-      );
+      ({ imgRel, vidRel } = await buildStillVideoFiles({
+        prefix: "pack",
+        outputDir: OUTPUT_DIR,
+        audioPath,
+        render: (imgAbs) => renderTemplateCard(tpl as TemplateDoc, card.values, imgAbs),
+      }));
     } catch (e) {
       return reply.code(500).send({ error: "Сборка не удалась: " + String(e).slice(0, 140) });
     }
     let saved = false;
     if (body.accountId != null) {
-      const { title, text } = cardTitleAndText(card.values, deriveRules(p.templates[0]));
+      const { title, text } = cardReadable(card.values, deriveRules(p.templates[0]));
       db.createVideo({
         accountId: Number(body.accountId),
         title,
         text,
         bg: "",
-        music: music ?? "",
+        music,
         deck: `pack:${p.id}`,
         videoRel: vidRel,
         imageRel: imgRel,
       });
       saved = true;
     }
-    return { videoUrl: `/files/${vidRel}`, music: music ?? "none", saved };
+    return { videoUrl: `/files/${vidRel}`, music, saved };
   });
 }

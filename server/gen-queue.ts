@@ -69,7 +69,9 @@ export function createGenQueue(): GenQueue {
         }
         job.state = "running";
         while (job.done < job.total) {
-          if (job.state === "canceled" || draining) break; // soft stop AFTER the current video
+          // cast: worker() can be canceled by another request mid-await, which TS's flow analysis
+          // can't see (it narrows job.state to "running" from the assignment above).
+          if ((job.state as string) === "canceled" || draining) break; // soft stop AFTER the current video
           let res: "made" | "exhausted";
           try {
             res = await worker(job);

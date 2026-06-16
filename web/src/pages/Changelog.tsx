@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Rocket } from "lucide-react";
 import { apiClient } from "../lib/api";
+import { useT } from "../lib/i18n";
 
 type Category = { name: string; items: string[] };
 type Release = { heading: string; unreleased: boolean; categories: Category[] };
@@ -109,6 +110,7 @@ function inline(text: string, key: string): ReactNode[] {
 }
 
 export default function Changelog() {
+  const { t } = useT();
   const [releases, setReleases] = useState<Release[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -126,9 +128,9 @@ export default function Changelog() {
       <header>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <Rocket className="text-primary" size={24} />
-          Обновления
+          {t("changelog.title")}
         </h1>
-        <p className="text-base-content/60">Последние изменения проекта</p>
+        <p className="text-base-content/60">{t("changelog.subtitle")}</p>
       </header>
 
       {loading ? (
@@ -137,12 +139,12 @@ export default function Changelog() {
         </div>
       ) : error ? (
         <div className="alert alert-warning">
-          <span>Не удалось загрузить список изменений. Обновите страницу.</span>
+          <span>{t("changelog.loadError")}</span>
         </div>
       ) : releases.length === 0 ? (
         <div className="card bg-base-100 border border-base-300">
           <div className="card-body text-center text-base-content/50 py-12">
-            Список изменений пока пуст
+            {t("changelog.empty")}
           </div>
         </div>
       ) : (
@@ -151,9 +153,11 @@ export default function Changelog() {
             <div className="card-body gap-5">
               <div className="flex items-center gap-3 flex-wrap border-b border-base-300 pb-3">
                 <h2 className="text-lg font-bold">
-                  {(rel.heading || "Изменения").replace(/(\d{4})-(\d{2})-(\d{2})/, "$3.$2.$1")}
+                  {(rel.heading || t("changelog.changes")).replace(/(\d{4})-(\d{2})-(\d{2})/, "$3.$2.$1")}
                 </h2>
-                {rel.unreleased && <span className="badge badge-primary badge-sm">текущая</span>}
+                {rel.unreleased && (
+                  <span className="badge badge-primary badge-sm">{t("changelog.current")}</span>
+                )}
               </div>
 
               {rel.categories.map((cat, ci) => (

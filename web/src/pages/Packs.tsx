@@ -11,12 +11,15 @@ import {
   type PackSummary,
 } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { useT } from "../lib/i18n";
+import { CONTENT_LANGS, langTag } from "../lib/deck";
 
 const fmt = (n: number) => n.toLocaleString("ru-RU");
 
 // «Паки» — pack overview for everyone: how many cards are left in each pack.
 // Regular user sees their own; admin can switch to any user.
 export default function Packs() {
+  const { t } = useT();
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const [actionErr, setActionErr] = useState("");
@@ -41,7 +44,7 @@ export default function Packs() {
       await apiClient.setPackLang(p.id, lang);
       setCustomPacks((cur) => cur.map((x) => (x.id === p.id ? { ...x, lang } : x)));
     } catch (e) {
-      setActionErr("Не удалось сменить язык пака: " + (e instanceof Error ? e.message : String(e)));
+      setActionErr(t("packs.errChangeLang") + (e instanceof Error ? e.message : String(e)));
     } finally {
       setSavingLang(null);
     }
@@ -64,7 +67,7 @@ export default function Packs() {
       await apiClient.deletePack(p.id);
       setCustomPacks((cur) => cur.filter((x) => x.id !== p.id));
     } catch (e) {
-      setActionErr("Не удалось удалить пак: " + (e instanceof Error ? e.message : String(e)));
+      setActionErr(t("packs.errDelete") + (e instanceof Error ? e.message : String(e)));
     } finally {
       setDeletingPack(null);
     }
@@ -141,24 +144,24 @@ export default function Packs() {
         <div className="flex items-center gap-2">
           <Layers className="text-primary" />
           <div>
-            <h1 className="text-2xl font-bold">Паки</h1>
-            <p className="text-base-content/60">Сколько карточек осталось в каждом паке</p>
+            <h1 className="text-2xl font-bold">{t("packs.title")}</h1>
+            <p className="text-base-content/60">{t("packs.subtitle")}</p>
           </div>
         </div>
         {isAdmin && (
           <select
             className="select select-bordered select-sm"
-            aria-label="Чьи паки смотреть"
+            aria-label={t("packs.whoseAria")}
             value={viewUser === "" ? "" : String(viewUser)}
             onChange={(e) => setViewUser(e.target.value === "" ? "" : Number(e.target.value))}
           >
-            <option value="">Мои паки{user?.username ? ` (${user.username})` : ""}</option>
+            <option value="">{t("packs.myPacks")}{user?.username ? ` (${user.username})` : ""}</option>
             {users
               .filter((u) => u.id !== user?.id)
               .map((u) => (
                 <option key={u.id} value={u.id}>
                   {u.username}
-                  {u.role === "admin" ? " (админ)" : ""}
+                  {u.role === "admin" ? ` ${t("packs.adminSuffix")}` : ""}
                 </option>
               ))}
           </select>
@@ -169,24 +172,24 @@ export default function Packs() {
         <div className="alert alert-error text-sm" role="alert">
           <AlertTriangle size={18} className="shrink-0" />
           <span className="flex-1">{actionErr}</span>
-          <button className="btn btn-ghost btn-xs" onClick={() => setActionErr("")} aria-label="Скрыть">
+          <button className="btn btn-ghost btn-xs" onClick={() => setActionErr("")} aria-label={t("packs.hide")}>
             ✕
           </button>
         </div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Stat label="Встроенных паков" value={fmt(decks.length)} />
-        <Stat label="Осталось карточек" value={fmt(totals.available)} />
-        <Stat label="Потрачено карточек" value={fmt(totals.used)} />
+        <Stat label={t("packs.statBuiltin")} value={fmt(decks.length)} />
+        <Stat label={t("packs.statRemaining")} value={fmt(totals.available)} />
+        <Stat label={t("packs.statSpent")} value={fmt(totals.used)} />
       </div>
 
       {!loading && decks.length > 0 && (
         <div className="flex items-center gap-2 flex-wrap">
-          <h2 className="text-lg font-bold">Встроенные паки</h2>
+          <h2 className="text-lg font-bold">{t("packs.builtinHeading")}</h2>
           <span className="badge badge-ghost badge-sm">{decks.length}</span>
           <span className="text-xs text-base-content/50 ml-1">
-            готовый контент системы — язык у них фиксирован, не редактируется
+            {t("packs.builtinHint")}
           </span>
         </div>
       )}
@@ -201,8 +204,8 @@ export default function Packs() {
             <Layers className="text-base-content/30" size={40} />
             <p className="text-base-content/60 max-w-md">
               {isAdmin && viewUser !== ""
-                ? "У этого пользователя нет доступных паков."
-                : "Вам пока не открыт ни один пак. Обратитесь к администратору."}
+                ? t("packs.emptyForUser")
+                : t("packs.emptyForSelf")}
             </p>
           </div>
         </div>
@@ -221,11 +224,11 @@ export default function Packs() {
                       <div className={`text-2xl font-bold leading-none ${low ? "text-error" : ""}`}>
                         {fmt(d.available)}
                       </div>
-                      <div className="text-xs text-base-content/50">осталось из {fmt(d.total)}</div>
+                      <div className="text-xs text-base-content/50">{t("packs.remainingOf", { n: fmt(d.total) })}</div>
                     </div>
                     <div className="text-right text-xs text-base-content/60 leading-snug">
-                      <div>потрачено {fmt(d.used)}</div>
-                      <div>выложено {fmt(d.posted)}</div>
+                      <div>{t("packs.spentN", { n: fmt(d.used) })}</div>
+                      <div>{t("packs.postedN", { n: fmt(d.posted) })}</div>
                     </div>
                   </div>
                   <progress
@@ -244,11 +247,11 @@ export default function Packs() {
       {viewUser === "" && customPacks.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold">{isAdmin ? "Кастомные паки" : "Мои паки"}</h2>
+            <h2 className="text-lg font-bold">{isAdmin ? t("packs.customHeading") : t("packs.myHeading")}</h2>
             <span className="badge badge-ghost badge-sm">{customPacks.length}</span>
-            <span className="text-xs text-base-content/50 ml-1">свои наборы — язык-тег можно менять</span>
+            <span className="text-xs text-base-content/50 ml-1">{t("packs.customHint")}</span>
             <Link to="/cards" className="link link-primary text-sm ml-auto">
-              Управлять в «Карточках» →
+              {t("packs.manageInCards")}
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -268,8 +271,8 @@ export default function Packs() {
                           className="btn btn-ghost btn-xs btn-square text-error shrink-0"
                           onClick={() => removePack(p)}
                           disabled={deletingPack === p.id}
-                          title={foreign ? "Удалить чужой пак (админ)" : "Удалить мой пак"}
-                          aria-label="Удалить пак"
+                          title={foreign ? t("packs.deleteForeignTitle") : t("packs.deleteMineTitle")}
+                          aria-label={t("packs.deletePackAria")}
                         >
                           {deletingPack === p.id ? (
                             <Loader2 className="animate-spin" size={14} />
@@ -283,29 +286,30 @@ export default function Packs() {
                       <div className="text-[11px] -mt-0.5 text-base-content/40">
                         {(() => {
                           const names = p.owners.map((id) => users.find((u) => u.id === id)?.username || `#${id}`);
-                          return names.length ? `владельц${names.length > 1 ? "ы" : "ец"}: ${names.join(", ")}` : "без владельца";
+                          if (!names.length) return t("packs.noOwner");
+                          return t(names.length > 1 ? "packs.ownersN" : "packs.ownerOne", { names: names.join(", ") });
                         })()}
                       </div>
                     )}
                     <div className="text-2xl font-bold leading-none">{fmt(p.cards)}</div>
                     <div className="text-xs text-base-content/50 flex items-center gap-1 flex-wrap">
-                      <span>карточек{p.templates ? ` · ${p.templates} шабл.` : ""} ·</span>
+                      <span>{t("packs.cardsWord")}{p.templates ? ` · ${t("packs.templatesN", { n: p.templates })}` : ""} ·</span>
                       {isAdmin ? (
                         <select
                           className="select select-xs select-bordered h-6 min-h-0 py-0"
                           value={p.lang}
                           disabled={savingLang === p.id}
                           onChange={(e) => changePackLang(p, e.target.value)}
-                          title="Язык пака (тег) — влияет на проверку «язык пака = язык канала»"
+                          title={t("packs.langTagTitle")}
                         >
-                          {["ru", "de", "it", "fr", "en", "ar"].map((c) => (
-                            <option key={c} value={c}>
-                              {c.toUpperCase()}
+                          {CONTENT_LANGS.map((c) => (
+                            <option key={c.code} value={c.code}>
+                              {langTag(c.code)}
                             </option>
                           ))}
                         </select>
                       ) : (
-                        <span>{p.lang.toUpperCase()}</span>
+                        <span>{langTag(p.lang)}</span>
                       )}
                     </div>
                   </div>
@@ -322,10 +326,10 @@ export default function Packs() {
           <div className="card-body gap-2">
             <div className="flex items-center gap-2 flex-wrap">
               <AlertTriangle className="text-warning" size={18} />
-              <h2 className="card-title text-base">Скоро закончится (по всем, включая вас)</h2>
+              <h2 className="card-title text-base">{t("packs.lowTitle")}</h2>
               <span className="badge badge-ghost badge-sm">{lowDecks.length}</span>
               <label className="ml-auto flex items-center gap-2 text-xs text-base-content/60">
-                Порог
+                {t("packs.thresholdLabel")}
                 <input
                   type="number"
                   min={1}
@@ -336,25 +340,25 @@ export default function Packs() {
                   onChange={(e) =>
                     setThreshold(Math.max(1, Math.min(100000, Number(e.target.value) || 0)))
                   }
-                  aria-label="Порог: меньше скольких свободных карточек считать «близко к концу»"
+                  aria-label={t("packs.thresholdAria")}
                 />
-                своб.
+                {t("packs.freeShort")}
               </label>
             </div>
             <p className="text-xs text-base-content/50">
-              Паки, где у пользователя осталось меньше {fmt(threshold)} свободных карточек — кто близок к концу.
+              {t("packs.lowDesc", { n: fmt(threshold) })}
             </p>
             {lowDecks.length === 0 ? (
-              <div className="text-sm text-base-content/50 py-2">Пока ни у кого пак не близок к концу 👍</div>
+              <div className="text-sm text-base-content/50 py-2">{t("packs.lowEmpty")}</div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="table table-sm">
                   <thead>
                     <tr>
-                      <th>Пользователь</th>
-                      <th>Пак</th>
-                      <th className="text-right">Осталось</th>
-                      <th className="text-right">Выложено</th>
+                      <th>{t("packs.thUser")}</th>
+                      <th>{t("packs.thPack")}</th>
+                      <th className="text-right">{t("packs.thRemaining")}</th>
+                      <th className="text-right">{t("packs.thPosted")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -362,12 +366,12 @@ export default function Packs() {
                       <tr key={`${r.userId}:${r.deckId}`}>
                         <td className="whitespace-nowrap font-medium">
                           {r.username}
-                          {r.userId === user?.id ? " (вы)" : ""}
+                          {r.userId === user?.id ? ` ${t("packs.youSuffix")}` : ""}
                         </td>
                         <td className="whitespace-nowrap">{r.deckName}</td>
                         <td className={`text-right font-semibold ${r.available < 30 ? "text-error" : "text-warning"}`}>
                           {fmt(r.available)}{" "}
-                          <span className="text-xs font-normal text-base-content/40">из {fmt(r.total)}</span>
+                          <span className="text-xs font-normal text-base-content/40">{t("packs.ofN", { n: fmt(r.total) })}</span>
                         </td>
                         <td className="text-right text-base-content/60">{fmt(r.posted)}</td>
                       </tr>
@@ -383,18 +387,18 @@ export default function Packs() {
         <div className="modal modal-open" role="dialog">
           <div className="modal-box">
             <h3 className="font-bold text-lg flex items-center gap-2">
-              <Trash2 className="text-error" size={18} /> Удалить пак?
+              <Trash2 className="text-error" size={18} /> {t("packs.deleteConfirmTitle")}
             </h3>
             <p className="py-3 text-sm">
-              Пак <b>«{confirmPack.name}»</b> и все его карточки ({fmt(confirmPack.cards)}) будут удалены
-              без возможности восстановить.
+              {t("packs.deleteConfirmPre")} <b>«{confirmPack.name}»</b>{" "}
+              {t("packs.deleteConfirmPost", { n: fmt(confirmPack.cards) })}
             </p>
             <div className="modal-action">
               <button className="btn btn-ghost btn-sm" onClick={() => setConfirmPack(null)}>
-                Отмена
+                {t("common.cancel")}
               </button>
               <button className="btn btn-error btn-sm gap-1" onClick={doRemovePack}>
-                <Trash2 size={15} /> Удалить пак
+                <Trash2 size={15} /> {t("packs.deletePackBtn")}
               </button>
             </div>
           </div>

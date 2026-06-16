@@ -7,16 +7,14 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Marck+Script&family=Noto+Color+Emoji&display=swap" rel="stylesheet" />
+<style>{{FONT_CSS}}</style>
 <style>
   :root {
     --bg: {{BG}};
     --safe-top: {{SAFE_TOP}}px; --safe-right: {{SAFE_RIGHT}}px; --safe-bottom: {{SAFE_BOTTOM}}px; --safe-left: {{SAFE_LEFT}}px;
     --ink: #20160f;
     --accent: #b23b2e;
-    --title-size: 56px;
+    --title-size: 52px;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { width: 1080px; height: 1920px; overflow: hidden; }
@@ -25,28 +23,36 @@
     background: var(--bg);
     padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
     display: flex; flex-direction: column;
-    font-family: 'PT Serif', Georgia, 'DejaVu Serif', serif;
+    font-family: 'RU PT Serif', Georgia, 'DejaVu Serif', serif;
     color: var(--ink);
   }
 
-  /* Заголовок: одна строка сверху, красное подчёркивание */
+  /* Заголовок: одна строка сверху, на бумажной подложке для контраста на тёмных краях сцены */
   .title-wrap { flex: 0 0 auto; text-align: center; }
   .title {
     display: inline-block; max-width: 100%;
-    font-weight: 700; font-size: var(--title-size); line-height: 1.2;
+    font-weight: 700; font-size: var(--title-size); line-height: 1.08;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    border-bottom: 5px solid var(--accent); padding-bottom: 8px;
-    text-shadow: 0 0 6px rgba(255,255,252,.92), 0 1px 2px rgba(255,255,252,.7);
+    color: var(--ink);
+    background: rgba(255, 252, 243, .94);
+    border: 1px solid rgba(99, 72, 43, .18);
+    border-bottom: 5px solid var(--accent);
+    border-radius: 2px;
+    padding: 5px 22px 10px;
+    box-shadow:
+      0 4px 14px rgba(36, 24, 14, .15),
+      0 0 0 1px rgba(255, 255, 255, .5) inset;
+    text-shadow: none;
   }
 
   /* Тело: авто-вписывание, заполняет лист, не обрезается */
   .body {
     flex: 1 1 auto; display: flex; flex-direction: column;
-    align-items: stretch; justify-content: center; overflow: hidden;
-    padding: 28px 0 6px;
+    align-items: stretch; justify-content: flex-start; overflow: hidden;
+    padding: 20px 0 4px;
   }
   .text {
-    width: 100%; text-align: left; line-height: 1.5; white-space: pre-wrap;
+    width: 100%; text-align: left; line-height: 1.34; white-space: pre-wrap;
     font-size: 52px; word-wrap: break-word; overflow-wrap: break-word;
     /* лёгкий светлый ореол: текст читается, даже если край листа граничит с тёмным предметом */
     text-shadow: 0 0 5px rgba(255,255,252,.92), 0 1px 2px rgba(255,255,252,.72);
@@ -55,8 +61,8 @@
 
   /* Подпись: смайл (слева) + рукописная подпись канала (справа) */
   .footer { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; }
-  .emoji { font-family: 'Noto Color Emoji', sans-serif; font-size: 60px; line-height: 1; }
-  .signature { font-family: 'Marck Script', 'Caveat', cursive; font-size: 44px; color: var(--accent); }
+  .emoji { font-family: 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif; font-size: 60px; line-height: 1; }
+  .signature { font-family: 'RU Caveat', 'Caveat', cursive; font-size: 44px; color: var(--accent); }
 </style>
 </head>
 <body>
@@ -76,30 +82,33 @@
         var text = document.querySelector('.text');
         var titleEl = document.querySelector('.title');
         if (titleEl) {
-          var ts = 56;
+          var ts = 52;
           titleEl.style.fontSize = ts + 'px';
           while (ts > 30 && titleEl.scrollWidth > titleEl.clientWidth + 1) {
             ts -= 2; titleEl.style.fontSize = ts + 'px';
           }
         }
-        var BASE_LH = 1.42;
+        var BASE_LH = 1.34;
         text.style.lineHeight = String(BASE_LH);
-        var min = 22, max = 62, best = min;
+        var min = 22, max = 60, best = min;
+        var bodyStyle = getComputedStyle(body);
+        var bodyContentHeight =
+          body.clientHeight -
+          parseFloat(bodyStyle.paddingTop || '0') -
+          parseFloat(bodyStyle.paddingBottom || '0');
         while (min <= max) {
           var mid = (min + max) >> 1;
           text.style.fontSize = mid + 'px';
-          var fitsV = text.scrollHeight <= body.clientHeight;
+          var fitsV = text.scrollHeight <= bodyContentHeight;
           var fitsH = text.scrollWidth <= text.clientWidth + 2;
           if (fitsV && fitsH) { best = mid; min = mid + 1; }
           else { max = mid - 1; }
         }
         text.style.fontSize = best + 'px';
         text.style.lineHeight = String(BASE_LH);
-        var natural = text.scrollHeight;
-        var target = body.clientHeight;
-        if (natural > 0 && natural < target) {
-          text.style.lineHeight = String(Math.min(1.55, BASE_LH * (target / natural)));
-        }
+        window.__fitOverflow =
+          text.scrollHeight > bodyContentHeight + 1 ||
+          text.scrollWidth > text.clientWidth + 2;
         window.__fitFontPx = best;
         window.__fitted = true;
       }

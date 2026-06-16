@@ -11,7 +11,9 @@
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": false
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "server/**/*.ts"],
+  "exclude": ["node_modules", "dist", "src/scripts/**"]
 }

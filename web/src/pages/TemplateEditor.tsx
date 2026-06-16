@@ -1,4 +1,5 @@
 import { Shapes, ExternalLink, Info } from "lucide-react";
+import { useT } from "../lib/i18n";
 
 // Экспериментальный конструктор карточек живёт статикой в web/public/template-editor/
 // (vanilla JS, без зависимостей) и показывается здесь через <iframe>. Так фича полностью
@@ -7,14 +8,15 @@ import { Shapes, ExternalLink, Info } from "lucide-react";
 const EDITOR_URL = "/template-editor/index.html";
 
 export default function TemplateEditor() {
+  const { t } = useT();
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Shapes className="text-primary" size={22} />
-          <h1 className="text-2xl font-bold">Редактор шаблонов</h1>
-          <span className="badge badge-warning badge-sm" title="экспериментальная функция">
-            тест
+          <h1 className="text-2xl font-bold">{t("editor.title")}</h1>
+          <span className="badge badge-warning badge-sm" title={t("editor.experimentalFeature")}>
+            {t("editor.testBadge")}
           </span>
         </div>
         <a
@@ -24,18 +26,16 @@ export default function TemplateEditor() {
           className="btn btn-ghost btn-sm gap-2"
         >
           <ExternalLink size={16} />
-          Открыть на весь экран
+          {t("editor.openFullscreen")}
         </a>
       </div>
 
       <div className="alert alert-info text-sm">
         <Info size={18} className="shrink-0" />
         <span>
-          Экспериментальный Figma-подобный конструктор карточек. На основной пайплайн{" "}
-          <b>не влияет</b> — это отдельный инструмент. Шаблон хранится в браузере (localStorage) и
-          экспортируется в JSON. Текст в килбоксах авто-подгоняется в диапазоне{" "}
-          <b>fitMin…fitMax</b>, а «Лимит, симв.» не даёт тексту переполнить блок и стать нечитаемо
-          мелким: сверх лимита текст обрезается «…», а шрифт не опускается ниже fitMin.
+          {t("editor.infoIntro")} <b>{t("editor.infoNoEffect")}</b> {t("editor.infoStorage")}{" "}
+          <b>fitMin…fitMax</b>
+          {t("editor.infoLimit")}
         </span>
       </div>
 
@@ -43,7 +43,7 @@ export default function TemplateEditor() {
         className="overflow-hidden rounded-box border border-base-300 bg-base-100"
         style={{ height: "calc(100vh - 12rem)", minHeight: 560 }}
       >
-        <iframe src={EDITOR_URL} title="Редактор шаблонов" className="block h-full w-full" />
+        <iframe src={EDITOR_URL} title={t("editor.title")} className="block h-full w-full" />
       </div>
     </div>
   );

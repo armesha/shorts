@@ -60,10 +60,15 @@ export interface IslamicBg {
 }
 
 /** Choose a background (by name, else random) and resolve its CSS + safe-zone. */
-export function pickIslamicBg(name?: string | null): IslamicBg {
+export function pickIslamicBg(name?: string | null, avoidName?: string | null): IslamicBg {
   const files = listIslamicBgs();
   if (files.length === 0) return { file: "", css: "#0a0a0a", safe: DEFAULT_SAFE };
-  const file = name && files.includes(name) ? name : files[Math.floor(Math.random() * files.length)];
+  let pool = files;
+  if (!name && avoidName && files.length > 1) {
+    const withoutPrevious = files.filter((f) => f !== avoidName);
+    if (withoutPrevious.length) pool = withoutPrevious;
+  }
+  const file = name && files.includes(name) ? name : pool[Math.floor(Math.random() * pool.length)];
   return { file, css: bgCss(file), safe: SAFE[file] ?? DEFAULT_SAFE };
 }
 
@@ -106,7 +111,8 @@ export async function renderIslamicCard(
   try {
     const page = await browser.newPage();
     await page.setViewport({ width: 1080, height: 1920, deviceScaleFactor: 1 });
-    await page.setContent(html, { waitUntil: "networkidle0", timeout: 30_000 });
+    // networkidle0 waits for fonts/images; valid at runtime — puppeteer-core@25's setContent type omits it.
+    await page.setContent(html, { waitUntil: "networkidle0" as "load", timeout: 30_000 });
     try {
       await page.evaluateHandle("document.fonts.ready");
     } catch {

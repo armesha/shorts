@@ -18,6 +18,7 @@ import Login from "./pages/Login";
 import { AuthProvider, useAuth } from "./lib/auth";
 import { GenQueueProvider } from "./lib/genQueue";
 import { ConfirmHost } from "./lib/confirm";
+import { I18nProvider } from "./lib/i18n";
 
 function Gate() {
   const { user, loading } = useAuth();
@@ -56,9 +57,11 @@ function Gate() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <Gate />
-      <ConfirmHost />
-    </AuthProvider>
+    <I18nProvider>
+      <AuthProvider>
+        <Gate />
+        <ConfirmHost />
+      </AuthProvider>
+    </I18nProvider>
   );
 }

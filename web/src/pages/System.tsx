@@ -25,16 +25,18 @@ import {
 } from "recharts";
 import { apiClient, type SystemStatus, type AppStatus } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { useT } from "../lib/i18n";
 
 // The page polls every 5s, and pauses polling whenever the tab is hidden — so when nobody is
 // looking, the server does zero monitoring work (the answer to "это не нагрузит сервер?").
 const POLL_MS = 5000;
 
 export default function System() {
+  const { t } = useT();
   const { user } = useAuth();
   const [data, setData] = useState<SystemStatus | null>(null);
   const [status, setStatus] = useState<AppStatus | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<boolean>(false);
   const [updatedAt, setUpdatedAt] = useState<number | null>(null);
   const timer = useRef<number | undefined>(undefined);
 
@@ -45,14 +47,12 @@ export default function System() {
         const d = await apiClient.system();
         if (stopped) return;
         setData(d);
-        setError(null);
+        setError(false);
         setUpdatedAt(Date.now());
       } catch (e) {
         if (stopped) return;
         console.error("[Сервер] запрос /system упал:", e);
-        setError(
-          "Не удалось загрузить состояние сервера. Если вкладка только что добавлена — серверу нужен перезапуск, чтобы появился маршрут /api/system (подробности в консоли F12).",
-        );
+        setError(true);
       }
     };
     const start = () => {
@@ -88,20 +88,20 @@ export default function System() {
     <div className="space-y-6">
       <header className="flex items-start justify-between gap-2 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold">Сервер</h1>
+          <h1 className="text-2xl font-bold">{t("system.title")}</h1>
           <p className="text-base-content/60">
-            Нагрузка и состояние · обновляется каждые {POLL_MS / 1000}с, пока вкладка открыта
+            {t("system.subtitle", { n: POLL_MS / 1000 })}
           </p>
         </div>
         {updatedAt && (
           <div className="text-sm text-base-content/50 flex items-center gap-1.5">
             <span className="inline-block w-2 h-2 rounded-full bg-success animate-pulse" />
-            обновлено {timeAgo(updatedAt)}
+            {t("system.updated", { ago: timeAgo(updatedAt) })}
           </div>
         )}
       </header>
 
-      {error && <div className="alert alert-error text-sm py-2">{error}</div>}
+      {error && <div className="alert alert-error text-sm py-2">{t("system.loadError")}</div>}
 
       {!data ? (
         !error && (
@@ -115,32 +115,36 @@ export default function System() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Gauge
               icon={<Cpu />}
-              label="Процессор"
+              label={t("system.cpu")}
               value={`${now!.cpuPct}%`}
               pct={now!.cpuPct}
               hint={
                 now!.loadavg[0] > 0
-                  ? `load ${now!.loadavg.map((n) => n.toFixed(2)).join(" / ")} · ${now!.cpuCount} ядер`
-                  : `среднее за ~${now!.sampleSec}с · ${now!.cpuCount} ядер`
+                  ? `load ${now!.loadavg.map((n) => n.toFixed(2)).join(" / ")} · ${t("system.cores", { n: now!.cpuCount })}`
+                  : `${t("system.avgOver", { n: now!.sampleSec })} · ${t("system.cores", { n: now!.cpuCount })}`
               }
             />
             <Gauge
               icon={<MemoryStick />}
-              label="Память (система)"
+              label={t("system.memory")}
               value={`${now!.memPct}%`}
               pct={now!.memPct}
-              hint={`${fmtMb(now!.memUsedMb)} из ${fmtMb(now!.memTotalMb)} · процесс ${fmtMb(now!.rssMb)}`}
+              hint={t("system.memoryHint", {
+                used: fmtMb(now!.memUsedMb),
+                total: fmtMb(now!.memTotalMb),
+                proc: fmtMb(now!.rssMb),
+              })}
             />
             <Gauge
               icon={<HardDrive />}
-              label="Диск"
+              label={t("system.disk")}
               value={`${now!.diskPct}%`}
               pct={now!.diskPct}
-              hint={`свободно ${fmtMb(now!.diskFreeMb)} из ${fmtMb(now!.diskTotalMb)}`}
+              hint={t("system.diskHint", { free: fmtMb(now!.diskFreeMb), total: fmtMb(now!.diskTotalMb) })}
             />
             <Stat
               icon={<Clock />}
-              label="Аптайм процесса"
+              label={t("system.uptime")}
               value={fmtUptime(now!.uptimeSec)}
               hint={`${now!.platform} · Node ${now!.nodeVersion}`}
             />
@@ -152,19 +156,19 @@ export default function System() {
               <div className="card-body py-5 gap-2">
                 <div className="flex items-center gap-2 text-base-content/60 text-sm">
                   <Activity size={18} className={idle ? "" : "text-primary"} />
-                  Активность пайплайна
+                  {t("system.pipelineActivity")}
                 </div>
                 {idle ? (
-                  <div className="text-xl font-bold text-base-content/50">простаивает</div>
+                  <div className="text-xl font-bold text-base-content/50">{t("system.idle")}</div>
                 ) : (
                   <div className="flex gap-4">
                     <div>
                       <div className="text-2xl font-bold leading-none">{data.active.render}</div>
-                      <div className="text-xs text-base-content/60 mt-1">рендеров</div>
+                      <div className="text-xs text-base-content/60 mt-1">{t("system.renders")}</div>
                     </div>
                     <div>
                       <div className="text-2xl font-bold leading-none">{data.active.upload}</div>
-                      <div className="text-xs text-base-content/60 mt-1">загрузок</div>
+                      <div className="text-xs text-base-content/60 mt-1">{t("system.uploads")}</div>
                     </div>
                   </div>
                 )}
@@ -172,21 +176,21 @@ export default function System() {
             </div>
             <Stat
               icon={<Film />}
-              label="Очередь видео"
+              label={t("system.videoQueue")}
               value={fmt(data.domain.videosQueued)}
-              hint="готовы к постингу (во всех каналах)"
+              hint={t("system.videoQueueHint")}
             />
             <Stat
               icon={<Tv />}
-              label="Каналы"
+              label={t("system.channels")}
               value={`${data.domain.accountsConnected} / ${data.domain.accountsTotal}`}
-              hint={`подключено · включено ${data.domain.accountsEnabled}`}
+              hint={t("system.channelsHint", { n: data.domain.accountsEnabled })}
             />
             <Stat
               icon={<Bug />}
-              label="Ошибки за 24ч"
+              label={t("system.errors24h")}
               value={fmt(data.domain.errors24h)}
-              hint={`всего в журнале: ${fmt(data.domain.errorsTotal)}`}
+              hint={t("system.errorsTotalHint", { n: fmt(data.domain.errorsTotal) })}
               danger={data.domain.errors24h > 0}
             />
           </div>
@@ -198,14 +202,14 @@ export default function System() {
                 <Rocket size={20} />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-semibold">Автопостинг (scheduler)</div>
+                <div className="font-semibold">{t("system.autopost")}</div>
                 <div className="text-sm text-base-content/60">
                   {data.scheduler.lastTickAt
-                    ? `последняя проверка ${timeAgo(data.scheduler.lastTickAt)}`
-                    : "ещё не тикал (проверка раз в минуту)"}
+                    ? t("system.lastCheck", { ago: timeAgo(data.scheduler.lastTickAt) })
+                    : t("system.neverTicked")}
                   {data.scheduler.lastPostAt
-                    ? ` · последняя выкладка ${timeAgo(data.scheduler.lastPostAt)}`
-                    : " · выкладок ещё не было"}
+                    ? ` · ${t("system.lastPost", { ago: timeAgo(data.scheduler.lastPostAt) })}`
+                    : ` · ${t("system.noPostsYet")}`}
                 </div>
               </div>
               <SchedulerBadge lastTickAt={data.scheduler.lastTickAt} />
@@ -216,15 +220,15 @@ export default function System() {
           {user?.role === "admin" && (
             <div className="card bg-base-100 border border-base-300">
               <div className="card-body gap-3">
-                <div className="font-semibold">Конфигурация</div>
+                <div className="font-semibold">{t("system.config")}</div>
                 <ConfigRow
                   icon={<Bot size={18} />}
-                  title="Движок генерации"
+                  title={t("system.engine")}
                   value={status?.llm || "Claude Code (headless)"}
                 />
                 <ConfigRow
                   icon={<MonitorPlay size={18} />}
-                  title="Рендерер"
+                  title={t("system.renderer")}
                   value={status?.chromePath ?? "—"}
                 />
               </div>
@@ -240,15 +244,13 @@ export default function System() {
 }
 
 function HistoryChart({ history }: { history: SystemStatus["history"] }) {
+  const { t } = useT();
   if (history.length < 2) {
     return (
       <div className="card bg-base-100 border border-base-300 border-dashed">
         <div className="card-body items-center text-center py-12">
           <Server className="text-base-content/30" size={36} />
-          <p className="text-base-content/60 max-w-md">
-            История копится в памяти сервера (точка раз в ~30с, до 24ч). Скоро здесь будет график CPU и
-            памяти. При перезапуске сервера история обнуляется — это нормально.
-          </p>
+          <p className="text-base-content/60 max-w-md">{t("system.historyEmpty")}</p>
         </div>
       </div>
     );
@@ -261,7 +263,7 @@ function HistoryChart({ history }: { history: SystemStatus["history"] }) {
   return (
     <div className="card bg-base-100 border border-base-300">
       <div className="card-body gap-3">
-        <div className="font-semibold">Нагрузка во времени (последние ~24ч)</div>
+        <div className="font-semibold">{t("system.loadOverTime")}</div>
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
@@ -281,13 +283,14 @@ function HistoryChart({ history }: { history: SystemStatus["history"] }) {
 }
 
 function SchedulerBadge({ lastTickAt }: { lastTickAt: number | null }) {
+  const { t } = useT();
   // The cron fires every minute; if the last tick is older than ~3 min, something is wrong.
-  if (!lastTickAt) return <span className="badge badge-ghost badge-sm">ожидание</span>;
+  if (!lastTickAt) return <span className="badge badge-ghost badge-sm">{t("system.waiting")}</span>;
   const stale = Date.now() - lastTickAt > 3 * 60_000;
   return stale ? (
-    <span className="badge badge-warning badge-sm">давно не тикал</span>
+    <span className="badge badge-warning badge-sm">{t("system.stale")}</span>
   ) : (
-    <span className="badge badge-success badge-sm">активен</span>
+    <span className="badge badge-success badge-sm">{t("system.active")}</span>
   );
 }
 

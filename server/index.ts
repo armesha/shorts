@@ -11,7 +11,8 @@ import { listAllPacks, setGrant, setPackOwners, getPack } from "../src/packs/sto
 import { pickUnusedPackCard, buildPackLibraryVideo } from "./pack-gen.ts";
 import { buildFactLibraryVideo } from "./fact-gen.ts";
 import { renderAnecdote, listBackgrounds } from "../src/anecdotes/render.ts";
-import { assembleStillVideo, listAudio, audioPathFor, pickIslamicAudio, pickChristianAudio } from "../src/video.ts";
+import { assembleStillVideo, listAudio, resolveAudio } from "../src/video.ts";
+import { buildStillVideoFiles } from "./media.ts";
 import {
   buildAuthUrl,
   exchangeAndGetChannel,
@@ -65,7 +66,6 @@ if (db.countUsers() === 0)
 const firstAdmin = db.listUsers().find((u) => u.role === "admin") ?? db.listUsers()[0] ?? null;
 if (firstAdmin) {
   db.assignOrphanAccounts(firstAdmin.id); // channels with no owner → admin
-  db.migrateGlobalUsedTo(firstAdmin.id); // old global used-marks → admin
   // Seed the admin's Google key from the legacy global client-secret file so already-connected
   // channels keep working (their refresh tokens were minted with that client_id).
   if (!db.getUserClientSecret(firstAdmin.id)) {
@@ -87,17 +87,11 @@ for (const acc of db.listAccounts()) {
 // Backfill channel language for existing channels (new channel_lang column): built-in deck → its
 // language; custom pack → the pack's own lang. Lets the «язык пака ≠ язык канала» guard work for
 // channels created before this field existed. Runs once (only fills empty channel_lang).
-{
-  const DECK_LANG: Record<string, string> = {
-    ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
-    tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en",
-  };
-  for (const acc of db.listAccounts()) {
-    if (acc.channelLang) continue;
-    let lng = DECK_LANG[acc.lang] || "";
-    if (!lng && isPackDeckId(acc.lang)) lng = getPack(acc.lang.slice(5), acc.userId ?? 0, true)?.lang || "";
-    if (lng) db.updateAccount(acc.id, { channelLang: lng });
-  }
+for (const acc of db.listAccounts()) {
+  if (acc.channelLang) continue;
+  let lng = deckLang(acc.lang); // built-in deck → its content language ("" for custom packs)
+  if (!lng && isPackDeckId(acc.lang)) lng = getPack(acc.lang.slice(5), acc.userId ?? 0, true)?.lang || "";
+  if (lng) db.updateAccount(acc.id, { channelLang: lng });
 }
 
 // ---- Channel avatars: built-in CC0 set in assets/avatars; random by default, custom upload allowed ----
@@ -177,7 +171,11 @@ if (existsSync(resolve(WEB_DIST, "index.html"))) {
 
 // ---- Auth: session cookie + login throttling ------------------------------------------------
 const SESSION_COOKIE = "sid";
-const COOKIE_SECURE = process.env.SESSION_COOKIE_SECURE === "1"; // enable when served over HTTPS
+// Secure cookie: ON by default whenever the app is served over HTTPS (PUBLIC_BASE_URL=https://…),
+// which is the prod case (Cloudflare Tunnel). SESSION_COOKIE_SECURE=1/0 forces it on/off for edge cases.
+const COOKIE_SECURE =
+  process.env.SESSION_COOKIE_SECURE === "1" ||
+  (process.env.SESSION_COOKIE_SECURE !== "0" && (process.env.PUBLIC_BASE_URL ?? "").startsWith("https://"));
 const DAY_MS = 86_400_000;
 
 function getCookie(req: { headers: { cookie?: string } }, name: string): string | null {
@@ -254,7 +252,7 @@ app.setErrorHandler((err, req, reply) => {
 });
 
 // Self-service password change (logic in a separate file → minimal footprint in this shared module).
-registerPasswordRoutes(app, db, base.dbPath);
+registerPasswordRoutes(app, db);
 registerPsychCardsRoutes(app);
 registerPacksRoutes(app, db);
 // Telegram login + account binding + bot-delivered password recovery (public routes whitelisted above).
@@ -908,57 +906,23 @@ async function buildLibraryVideo(input: {
   )
     throw new Error("Этот пак вам недоступен");
   const title = input.title || pickGenericTitle(deck);
-  let music = input.music;
-  let audioPath: string | null | undefined;
-  if (music === "none") audioPath = null;
-  else if (music) audioPath = audioPathFor(music);
-  else {
-    const tracks = listAudio();
-    if (tracks.length) {
-      music = tracks[Math.floor(Math.random() * tracks.length)];
-      audioPath = audioPathFor(music);
-    } else {
-      music = "none";
-      audioPath = null;
-    }
-  }
-  // Islamic deck → nature ambient (never instrumental music); explicit "none" still means silent.
-  if (deck.islamic && music !== "none") {
-    const amb = pickIslamicAudio();
-    if (amb) {
-      music = amb;
-      audioPath = audioPathFor(amb);
-    }
-  }
-  // Christian deck → sacred organ/choir pad (never instrumental music); explicit "none" still means silent.
-  if (deck.christian && music !== "none") {
-    const pad = pickChristianAudio();
-    if (pad) {
-      music = pad;
-      audioPath = audioPathFor(pad);
-    }
-  }
-  const stamp = `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
-  const imgRel = `library/vid-${stamp}.png`;
-  const vidRel = `library/vid-${stamp}.mp4`;
-  const r = await metrics.track("render", async () => {
-    const rr = await renderAnecdote(
-      { title, text: input.text, channel: deck.name, bg: input.bg, deck: deck.id, profession: input.profession },
-      resolve(process.cwd(), base.outputDir, imgRel),
-    );
-    await assembleStillVideo(
-      resolve(process.cwd(), base.outputDir, imgRel),
-      resolve(process.cwd(), base.outputDir, vidRel),
-      { durationSec: 6, audioPath },
-    );
-    return rr;
+  const { music, audioPath } = resolveAudio(input.music, deck);
+  const { imgRel, vidRel, render: r } = await buildStillVideoFiles({
+    prefix: "vid",
+    outputDir: base.outputDir,
+    audioPath,
+    render: (imgAbs) =>
+      renderAnecdote(
+        { title, text: input.text, channel: deck.name, bg: input.bg, deck: deck.id, profession: input.profession },
+        imgAbs,
+      ),
   });
   const v = db.createVideo({
     accountId: input.accountId,
     title,
     text: input.text,
     bg: r.bg,
-    music: music ?? "",
+    music,
     deck: deck.id,
     videoRel: vidRel,
     imageRel: imgRel,
@@ -1239,7 +1203,7 @@ app.get("/api/fact/random", async (req, reply) => {
 
 let previewCounter = 0;
 app.post("/api/generate/anecdote", async (req, reply) => {
-  const body = (req.body as { text?: string; title?: string; bg?: string; deck?: string }) ?? {};
+  const body = (req.body as { text?: string; title?: string; bg?: string; avoidBg?: string; deck?: string }) ?? {};
   const deck = getDeck(body.deck);
   if (!deckAllowed(req, deck.id)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
   let text = body.text;
@@ -1259,7 +1223,7 @@ app.post("/api/generate/anecdote", async (req, reply) => {
   const rel = `preview/anek-${Date.now()}-${previewCounter}.png`;
   const out = resolve(process.cwd(), base.outputDir, rel);
   const r = await metrics.track("render", () =>
-    renderAnecdote({ title, text, channel: deck.name, bg: body.bg, deck: deck.id, profession }, out),
+    renderAnecdote({ title, text, channel: deck.name, bg: body.bg, avoidBg: body.avoidBg, deck: deck.id, profession }, out),
   );
   return { imageUrl: `/files/${rel}`, title, text, chars: text.length, bg: r.bg, fontPx: r.fontPx };
 });
@@ -1285,38 +1249,8 @@ app.post("/api/generate/anecdote-video", async (req, reply) => {
   }
   if (!title) title = pickGenericTitle(deck);
 
-  // Music: explicit track name, "none" = silent, empty/undefined = random.
-  let music = body.music;
-  let audioPath: string | null | undefined;
-  if (music === "none") audioPath = null;
-  else if (music) audioPath = audioPathFor(music);
-  else {
-    const tracks = listAudio();
-    if (tracks.length) {
-      music = tracks[Math.floor(Math.random() * tracks.length)];
-      audioPath = audioPathFor(music);
-    } else {
-      music = "none";
-      audioPath = null;
-    }
-  }
-
-  // Islamic deck → nature ambient (never instrumental music); explicit "none" still means silent.
-  if (deck.islamic && music !== "none") {
-    const amb = pickIslamicAudio();
-    if (amb) {
-      music = amb;
-      audioPath = audioPathFor(amb);
-    }
-  }
-  // Christian deck → sacred organ/choir pad (never instrumental music); explicit "none" still means silent.
-  if (deck.christian && music !== "none") {
-    const pad = pickChristianAudio();
-    if (pad) {
-      music = pad;
-      audioPath = audioPathFor(pad);
-    }
-  }
+  // Music: explicit track | "none" = silent | empty = random; islamic/christian get their own ambient bed.
+  const { music, audioPath } = resolveAudio(body.music, deck);
 
   videoCounter++;
   const stamp = `${Date.now()}-${videoCounter}`;

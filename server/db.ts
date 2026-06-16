@@ -1,5 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, chmodSync } from "node:fs";
 import { dirname } from "node:path";
 
 export interface Account {
@@ -156,6 +156,24 @@ const rowToError = (r: Row): ErrorLogItem => ({
 export function openDb(path: string) {
   mkdirSync(dirname(path), { recursive: true });
   const db = new DatabaseSync(path);
+  // Concurrency hardening: WAL lets readers and a writer coexist; busy_timeout makes brief lock
+  // contention (scheduler + live user + short-lived side connections) wait-and-retry instead of
+  // throwing SQLITE_BUSY immediately. synchronous=NORMAL is the safe WAL companion. Best-effort
+  // (e.g. in-memory ":memory:" ignores journal pragmas — fine for tests).
+  try {
+    db.exec("PRAGMA journal_mode = WAL; PRAGMA busy_timeout = 5000; PRAGMA synchronous = NORMAL;");
+  } catch {
+    /* pragmas best-effort */
+  }
+  // The DB file holds YouTube refresh tokens + per-user Google client secrets — keep it owner-only.
+  // chmod is a no-op on Windows and harmless if it fails.
+  if (path !== ":memory:") {
+    try {
+      chmodSync(path, 0o600);
+    } catch {
+      /* best-effort */
+    }
+  }
   db.exec(`
     CREATE TABLE IF NOT EXISTS accounts (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -199,10 +217,6 @@ export function openDb(path: string) {
       post_count INTEGER NOT NULL DEFAULT 0,
       last_posted_at TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-    CREATE TABLE IF NOT EXISTS used_anecdotes (
-      key TEXT PRIMARY KEY,
-      used_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -267,55 +281,25 @@ export function openDb(path: string) {
     );
   `);
 
-  for (const col of ["yt_refresh_token", "yt_channel_id", "yt_channel_title"]) {
+  // Additive schema migrations. ADD COLUMN is idempotent across restarts, but ONLY the expected
+  // "duplicate column name" error means "already applied" — anything else (typo, constraint failure)
+  // must surface loudly instead of being silently swallowed.
+  const addColumn = (table: string, def: string) => {
     try {
-      db.exec(`ALTER TABLE accounts ADD COLUMN ${col} TEXT`);
-    } catch {
-      /* column already exists */
+      db.exec(`ALTER TABLE ${table} ADD COLUMN ${def}`);
+    } catch (e) {
+      if (!/duplicate column name/i.test(String((e as Error)?.message ?? e))) throw e;
     }
-  }
-  try {
-    db.exec("ALTER TABLE accounts ADD COLUMN slot_videos TEXT DEFAULT '{}'");
-  } catch {
-    /* column already exists */
-  }
-  try {
-    db.exec("ALTER TABLE accounts ADD COLUMN channel_lang TEXT DEFAULT ''");
-  } catch {
-    /* column already exists */
-  }
-  try {
-    db.exec("ALTER TABLE accounts ADD COLUMN avatar TEXT");
-  } catch {
-    /* column already exists */
-  }
-  try {
-    db.exec("ALTER TABLE videos ADD COLUMN deck TEXT NOT NULL DEFAULT 'ru'");
-  } catch {
-    /* column already exists */
-  }
-  try {
-    db.exec("ALTER TABLE accounts ADD COLUMN user_id INTEGER");
-  } catch {
-    /* column already exists */
-  }
-  try {
-    db.exec("ALTER TABLE users ADD COLUMN client_secret_json TEXT");
-  } catch {
-    /* column already exists (or fresh users table) */
-  }
-  try {
-    db.exec("ALTER TABLE history ADD COLUMN error TEXT");
-  } catch {
-    /* column already exists */
-  }
-  for (const col of ["telegram_id", "telegram_username"]) {
-    try {
-      db.exec(`ALTER TABLE users ADD COLUMN ${col} TEXT`);
-    } catch {
-      /* column already exists */
-    }
-  }
+  };
+  for (const col of ["yt_refresh_token", "yt_channel_id", "yt_channel_title"]) addColumn("accounts", `${col} TEXT`);
+  addColumn("accounts", "slot_videos TEXT DEFAULT '{}'");
+  addColumn("accounts", "channel_lang TEXT DEFAULT ''");
+  addColumn("accounts", "avatar TEXT");
+  addColumn("videos", "deck TEXT NOT NULL DEFAULT 'ru'");
+  addColumn("accounts", "user_id INTEGER");
+  addColumn("users", "client_secret_json TEXT");
+  addColumn("history", "error TEXT");
+  for (const col of ["telegram_id", "telegram_username"]) addColumn("users", `${col} TEXT`);
   try {
     db.exec(
       "CREATE UNIQUE INDEX IF NOT EXISTS idx_users_telegram_id ON users(telegram_id) WHERE telegram_id IS NOT NULL",
@@ -331,6 +315,13 @@ export function openDb(path: string) {
     CREATE INDEX IF NOT EXISTS idx_channel_stats_account_taken ON channel_stats(account_id, taken_at);
     CREATE INDEX IF NOT EXISTS idx_error_log_created ON error_log(created_at);
   `);
+
+  // Schema version stamp. Everything above is additive & idempotent, so it self-applies on every boot.
+  // For a FUTURE non-additive change (rename/drop/type/constraint), gate it on this version, e.g.:
+  //   if (schemaVersion < 2) { db.exec("BEGIN; <migration>; PRAGMA user_version = 2; COMMIT;"); }
+  const SCHEMA_VERSION = 1;
+  const schemaVersion = (db.prepare("PRAGMA user_version").get() as { user_version?: number })?.user_version ?? 0;
+  if (schemaVersion < SCHEMA_VERSION) db.exec(`PRAGMA user_version = ${SCHEMA_VERSION}`);
 
   // "Uploaded today" per channel — count of published history rows dated today (UTC).
   const countUploadsToday = (accountId: number): number => {
@@ -547,7 +538,7 @@ export function openDb(path: string) {
         "FROM history h JOIN accounts a ON a.id = h.account_id LEFT JOIN users u ON u.id = a.user_id " +
         (where.length ? "WHERE " + where.join(" AND ") + " " : "") +
         "ORDER BY h.id DESC LIMIT ? OFFSET ?";
-      return (db.prepare(sql).all(...args, limit, offset) as Row[]).map((r) => ({
+      return (db.prepare(sql).all(...(args as (string | number)[]), limit, offset) as Row[]).map((r) => ({
         id: r.id,
         accountId: r.account_id,
         title: r.title,
@@ -575,7 +566,7 @@ export function openDb(path: string) {
       const sql =
         "SELECT COUNT(*) AS n FROM history h JOIN accounts a ON a.id = h.account_id " +
         (where.length ? "WHERE " + where.join(" AND ") + " " : "");
-      return (db.prepare(sql).get(...args) as { n: number }).n;
+      return (db.prepare(sql).get(...(args as (string | number)[])) as { n: number }).n;
     },
     // Used anecdotes: once an anecdote becomes a saved/auto-posted video, its key lands here
     // so randomAnecdote() never picks it again (per-install state — not shipped content).
@@ -595,16 +586,6 @@ export function openDb(path: string) {
         .prepare("SELECT COUNT(*) AS n FROM user_used_anecdotes WHERE user_id = ?")
         .get(userId) as Row;
       return Number(r.n) || 0;
-    },
-    // One-time migration: copy the old GLOBAL used-marks into a user's per-user set (admin).
-    migrateGlobalUsedTo(userId: number): void {
-      try {
-        db.prepare(
-          "INSERT OR IGNORE INTO user_used_anecdotes (user_id, key) SELECT ?, key FROM used_anecdotes",
-        ).run(userId);
-      } catch {
-        /* old global table missing — nothing to migrate */
-      }
     },
     // ---- Auth: users & sessions ----
     countUsers(): number {

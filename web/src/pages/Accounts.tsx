@@ -2,8 +2,10 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Plus, Tv, Clapperboard, Clock, CheckCircle2, AlertTriangle, Send, ArrowUp, ArrowDown, X } from "lucide-react";
 import { apiClient, type Account, type AppStatus } from "../lib/api";
+import { useT } from "../lib/i18n";
 
 export default function Accounts() {
+  const { t } = useT();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [status, setStatus] = useState<AppStatus | null>(null);
   const [loadError, setLoadError] = useState(false);
@@ -50,7 +52,7 @@ export default function Accounts() {
       const a = await apiClient.createAccount();
       navigate(`/accounts/${a.id}`);
     } catch (e) {
-      setActionErr("Не удалось создать канал: " + String(e));
+      setActionErr(t("accounts.createFailed") + " " + String(e));
     } finally {
       setCreating(false);
     }
@@ -76,7 +78,13 @@ export default function Accounts() {
     const h = Math.floor(until / 60);
     const m = until % 60;
     const rel =
-      until === 0 ? "сейчас" : h && m ? `через ${h} ч ${m} мин` : h ? `через ${h} ч` : `через ${m} мин`;
+      until === 0
+        ? t("accounts.now")
+        : h && m
+          ? t("accounts.inHM", { h, m })
+          : h
+            ? t("accounts.inH", { h })
+            : t("accounts.inM", { m });
     return {
       time: `${String(Math.floor(n / 60)).padStart(2, "0")}:${String(n % 60).padStart(2, "0")}`,
       rel,
@@ -127,14 +135,14 @@ export default function Accounts() {
     <div className="space-y-6">
       <header className="flex items-start justify-between gap-2 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold">Каналы</h1>
-          <p className="text-base-content/60">Обзор и YouTube-каналы — в одном месте</p>
+          <h1 className="text-2xl font-bold">{t("accounts.title")}</h1>
+          <p className="text-base-content/60">{t("accounts.subtitle")}</p>
         </div>
         <div className="flex items-center gap-2">
           <StatusBadge status={status} loadError={loadError} />
           <button className="btn btn-primary gap-2" onClick={addAccount} disabled={creating}>
             {creating ? <span className="loading loading-spinner loading-sm" /> : <Plus size={18} />}
-            Добавить канал
+            {t("accounts.addChannel")}
           </button>
         </div>
       </header>
@@ -143,7 +151,7 @@ export default function Accounts() {
         <div className="alert alert-error text-sm" role="alert">
           <AlertTriangle size={18} className="shrink-0" />
           <span className="flex-1">{actionErr}</span>
-          <button className="btn btn-ghost btn-xs" onClick={() => setActionErr("")} aria-label="Скрыть">
+          <button className="btn btn-ghost btn-xs" onClick={() => setActionErr("")} aria-label={t("accounts.hide")}>
             <X size={14} />
           </button>
         </div>
@@ -153,7 +161,7 @@ export default function Accounts() {
         <div className="alert alert-warning shadow-sm flex items-start gap-2">
           <AlertTriangle size={18} className="mt-0.5 shrink-0" />
           <div className="flex-1 text-sm">
-            <span className="font-semibold">Скоро закончатся ролики</span> — меньше чем на день у:{" "}
+            <span className="font-semibold">{t("accounts.lowRunwayTitle")}</span> {t("accounts.lowRunwayLead")}{" "}
             {lowChannels.map((a, i) => (
               <span key={a.id}>
                 {i > 0 && ", "}
@@ -161,17 +169,17 @@ export default function Accounts() {
                   {a.channelName}
                 </Link>{" "}
                 <span className="text-base-content/60">
-                  ({queue[a.id] === 0 ? "нет видео" : `${queue[a.id]} в очереди`})
+                  ({queue[a.id] === 0 ? t("accounts.noVideos") : t("accounts.inQueueN", { n: queue[a.id] })})
                 </span>
               </span>
             ))}
-            . Сгенерируйте ещё, чтобы канал не простаивал.
+            . {t("accounts.lowRunwayHint")}
           </div>
           <button
             className="btn btn-ghost btn-xs btn-square"
             onClick={dismissLowAlert}
-            aria-label="Скрыть"
-            title="Скрыть. Вернётся, если в зоне риска окажется другой канал."
+            aria-label={t("accounts.hide")}
+            title={t("accounts.dismissReappearHint")}
           >
             <X size={14} />
           </button>
@@ -179,12 +187,12 @@ export default function Accounts() {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Stat icon={<Tv />} label="Каналов" value={accounts.length} />
-        <Stat icon={<Send />} label="Видео в сутки" value={perDay} />
-        <Stat icon={<Clapperboard />} label="Загружено сегодня" value={uploadsToday} />
+        <Stat icon={<Tv />} label={t("accounts.statChannels")} value={accounts.length} />
+        <Stat icon={<Send />} label={t("accounts.statPerDay")} value={perDay} />
+        <Stat icon={<Clapperboard />} label={t("accounts.statUploadedToday")} value={uploadsToday} />
         <Stat
           icon={<Clock />}
-          label={nextRun.rel ? `Ближайший запуск · ${nextRun.rel}` : "Ближайший запуск"}
+          label={nextRun.rel ? `${t("accounts.statNextRun")} · ${nextRun.rel}` : t("accounts.statNextRun")}
           value={nextRun.time}
         />
       </div>
@@ -194,25 +202,25 @@ export default function Accounts() {
           <div className="card-body items-center text-center py-16">
             <Tv className="text-base-content/30" size={40} />
             <p className="text-base-content/60">
-              Пока нет каналов. Добавьте первый — и настройте тему, язык и расписание.
+              {t("accounts.emptyState")}
             </p>
             <button className="btn btn-primary btn-sm gap-2 mt-2" onClick={addAccount} disabled={creating}>
-              <Plus size={16} /> Добавить канал
+              <Plus size={16} /> {t("accounts.addChannel")}
             </button>
           </div>
         </div>
       ) : (
         <div className="space-y-4">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm text-base-content/60">Сортировка по запасу дней</span>
+            <span className="text-sm text-base-content/60">{t("accounts.sortByRunway")}</span>
             <button
               className="btn btn-sm btn-outline btn-square"
               onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
-              aria-label="Перевернуть сортировку по остатку дней"
+              aria-label={t("accounts.flipSort")}
               title={
                 sortDir === "asc"
-                  ? "Сейчас: заканчивающиеся сверху. Нажмите — наоборот."
-                  : "Сейчас: с запасом сверху. Нажмите — наоборот."
+                  ? t("accounts.sortLowFirst")
+                  : t("accounts.sortHighFirst")
               }
             >
               {sortDir === "asc" ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
@@ -242,17 +250,17 @@ export default function Accounts() {
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold truncate">{a.channelName}</div>
                     <div className="text-sm text-base-content/60">
-                      {a.theme || "тема не задана"} · {a.lang.toUpperCase()}
+                      {a.theme || t("accounts.noTheme")} · {a.lang.toUpperCase()}
                     </div>
                   </div>
                   {a.status === "connected" ? (
-                    <span className="badge badge-success badge-sm">подключён</span>
+                    <span className="badge badge-success badge-sm">{t("accounts.connected")}</span>
                   ) : (
-                    <span className="badge badge-warning badge-sm">нужна авторизация</span>
+                    <span className="badge badge-warning badge-sm">{t("accounts.needsAuth")}</span>
                   )}
                 </div>
                 <div className="mt-3 text-sm text-base-content/70">
-                  Расписание:{" "}
+                  {t("accounts.schedule")}{" "}
                   <span className="font-medium text-base-content">{a.schedule.join(", ")}</span>
                 </div>
                 <QueueInfo count={queue[a.id]} schedule={a.schedule} enabled={a.enabled} />
@@ -264,9 +272,9 @@ export default function Accounts() {
                       window.open(`https://www.youtube.com/channel/${a.ytChannelId}`, "_blank");
                     }}
                     className="btn btn-ghost btn-xs gap-1 mt-2 w-fit text-error"
-                    title="Открыть канал на YouTube"
+                    title={t("accounts.openOnYouTubeTitle")}
                   >
-                    ▶ Открыть на YouTube ↗
+                    ▶ {t("accounts.openOnYouTube")} ↗
                   </button>
                 )}
               </div>
@@ -281,22 +289,24 @@ export default function Accounts() {
 
 // Per-channel queue size + runway (how many days the library lasts at its posting rate).
 function QueueInfo({ count, schedule, enabled }: { count?: number; schedule: string[]; enabled: boolean }) {
-  if (count == null) return <div className="mt-2 text-xs text-base-content/40">очередь…</div>;
+  const { t } = useT();
+  if (count == null) return <div className="mt-2 text-xs text-base-content/40">{t("accounts.queueLoading")}</div>;
   const perDay = enabled ? schedule.length : 0;
   return (
     <div className="mt-2 text-sm flex items-center gap-3 flex-wrap">
       <span>
-        🎬 В очереди: <b>{count}</b> видео
+        🎬 {t("accounts.inQueue")} <b>{count}</b> {t("accounts.videos")}
       </span>
       {perDay === 0 ? (
-        <span className="text-base-content/50">расписание не задано</span>
+        <span className="text-base-content/50">{t("accounts.noSchedule")}</span>
       ) : (
         (() => {
           const days = Math.ceil(count / perDay);
           const cls = days <= 0 ? "text-error" : days < 3 ? "text-warning" : "text-success";
           return (
             <span className={cls}>
-              ⏳ хватит на ~{days} дн. ({perDay}/день){days < 3 ? " — пора пополнить!" : ""}
+              ⏳ {t("accounts.lastsDays", { days, perDay })}
+              {days < 3 ? t("accounts.refillSoon") : ""}
             </span>
           );
         })()
@@ -320,17 +330,18 @@ function Stat({ icon, label, value }: { icon: ReactNode; label: string; value: R
 }
 
 function StatusBadge({ status, loadError }: { status: AppStatus | null; loadError: boolean }) {
+  const { t } = useT();
   if (status && !status.credsConfigured) {
     return (
       <div className="badge badge-error gap-1 badge-lg">
-        <AlertTriangle size={14} /> Нет ключа Google
+        <AlertTriangle size={14} /> {t("accounts.noGoogleKey")}
       </div>
     );
   }
   if (!status) {
     return loadError ? (
       <div className="badge badge-warning gap-1 badge-lg">
-        <AlertTriangle size={14} /> Не удалось загрузить
+        <AlertTriangle size={14} /> {t("accounts.loadFailed")}
       </div>
     ) : (
       <div className="badge badge-ghost badge-lg">…</div>
@@ -338,7 +349,7 @@ function StatusBadge({ status, loadError }: { status: AppStatus | null; loadErro
   }
   return (
     <div className="badge badge-success gap-1 badge-lg">
-      <CheckCircle2 size={14} /> Google подключён
+      <CheckCircle2 size={14} /> {t("accounts.googleConnected")}
     </div>
   );
 }
