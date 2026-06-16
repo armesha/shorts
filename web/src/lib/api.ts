@@ -413,6 +413,7 @@ export interface PackCardRow {
 }
 export interface PackFull {
   id: string;
+  userId: number; // владелец пака (может редактировать имя/язык/карточки)
   name: string;
   lang: string;
   createdAt: string;
@@ -585,6 +586,10 @@ export const apiClient = {
     ),
   deletePack: (id: string) => send<{ deleted: boolean }>(`/packs/${id}`, "DELETE"),
   setPackLang: (id: string, lang: string) => send<{ ok: boolean; lang: string }>(`/packs/${id}/lang`, "POST", { lang }),
+  setPackName: (id: string, name: string) => send<{ ok: boolean; name: string }>(`/packs/${id}/name`, "POST", { name }),
+  // Admin: reassign a pack's owner (owner edits the pack on /cards).
+  setPackOwner: (id: string, ownerId: number) =>
+    send<{ ok: boolean; ownerId: number }>(`/admin/packs/${id}/owner`, "PUT", { ownerId }),
   packPreview: (id: string, i: number) => get<{ imageUrl: string }>(`/packs/${id}/preview?i=${i}`),
   packBuildVideo: (id: string, i: number, opts?: { accountId?: number; music?: string }) =>
     send<{ videoUrl: string; music: string; saved: boolean }>(`/packs/${id}/cards/${i}/video`, "POST", opts ?? {}),

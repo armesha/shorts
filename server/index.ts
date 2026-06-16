@@ -7,7 +7,7 @@ import { loadBaseConfig, resolveClientSecretFile, credsFileExists } from "./conf
 import { openDb, type Account } from "./db.ts";
 import { randomAnecdote, libraryStats, anecdoteKey } from "../src/anecdotes/library.ts";
 import { DECKS, getDeck, ytMeta, pickGenericTitle, isPackDeckId, deckLang } from "../src/anecdotes/decks.ts";
-import { listAllPacks, setGrant, getPack } from "../src/packs/store.ts";
+import { listAllPacks, setGrant, setPackOwner, getPack } from "../src/packs/store.ts";
 import { pickUnusedPackCard, buildPackLibraryVideo } from "./pack-gen.ts";
 import { buildFactLibraryVideo } from "./fact-gen.ts";
 import { renderAnecdote, listBackgrounds } from "../src/anecdotes/render.ts";
@@ -478,6 +478,16 @@ app.put("/api/admin/users/:id/decks", async (req, reply) => {
     }
   }
   return { ok: true, hidden: finalHidden };
+});
+
+// Admin: reassign a custom pack's owner. Owner = who may edit the pack (name/lang/cards) on /cards.
+app.put("/api/admin/packs/:id/owner", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+  const id = (req.params as { id: string }).id.replace(/^pack:/, "");
+  const ownerId = Number((req.body as { ownerId?: number })?.ownerId);
+  if (!db.getUserById(ownerId)) return reply.code(404).send({ error: "Пользователь не найден" });
+  if (!setPackOwner(id, ownerId)) return reply.code(404).send({ error: "Пак не найден" });
+  return { ok: true, ownerId };
 });
 
 // Pack overview for the «Паки» tab (any logged-in user): their VISIBLE packs with total/used/remaining/posted.
@@ -1080,7 +1090,7 @@ app.post("/api/gen-queue", async (req, reply) => {
     if (!deckAllowed(req, channelDeck.id))
       return reply.code(403).send({ error: "Этот пак вам недоступен." });
   }
-  const cap = db.getUserById(uid(req))?.role === "admin" ? 100 : 25;
+  const cap = db.getUserById(uid(req))?.role === "admin" ? 100 : 50;
   const total = Math.max(1, Math.min(cap, Number(body.count) || 1));
   const job = genEnqueue(uid(req), body.accountId, total);
   return { jobId: job.id, total: job.total };

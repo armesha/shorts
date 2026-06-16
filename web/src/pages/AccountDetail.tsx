@@ -90,7 +90,6 @@ export default function AccountDetail() {
   const [avatarOpen, setAvatarOpen] = useState(false);
   const [avatarList, setAvatarList] = useState<string[]>([]);
   const [avatarBusy, setAvatarBusy] = useState(false);
-  const maxBatch = user?.role === "admin" ? 100 : 25;
   const [batchN, setBatchN] = useState(5);
   const q = useGenQueue();
   const [clearing, setClearing] = useState(false);
@@ -108,6 +107,18 @@ export default function AccountDetail() {
   };
 
   const reloadVideos = () => apiClient.videos(id!).then(setVideos).catch(() => {});
+
+  // «Сделать сразу» не больше остатка свободных карточек выбранного контента (дека/пак) — для всех ролей.
+  const roleMax = user?.role === "admin" ? 100 : 50; // потолок: админ 100, обычный юзер 50
+  const selPack = lang.startsWith("pack:") ? packs.find((p) => `pack:${p.id}` === lang) : undefined;
+  const selGen = lang.startsWith("pack:") ? undefined : gens.find((gg) => gg.id === lang);
+  const remaining = lang.startsWith("pack:") ? selPack?.cards ?? 0 : selGen?.available ?? 0;
+  const maxBatch = Math.max(0, Math.min(roleMax, remaining));
+
+  // Сменили контент канала с меньшим остатком — подожмём «сразу» к новому максимуму.
+  useEffect(() => {
+    setBatchN((n) => Math.max(1, Math.min(maxBatch || 1, n)));
+  }, [maxBatch]);
 
   useEffect(() => {
     if (avatarOpen && avatarList.length === 0) apiClient.avatars().then(setAvatarList).catch(() => {});
@@ -698,14 +709,16 @@ export default function AccountDetail() {
               <input
                 type="number"
                 min={1}
-                max={maxBatch}
+                max={Math.max(1, maxBatch)}
                 className="input input-bordered input-sm w-16"
                 value={batchN}
-                disabled={q.running}
+                disabled={q.running || maxBatch < 1}
                 onChange={(e) => setBatchN(Math.max(1, Math.min(maxBatch, Number(e.target.value) || 1)))}
                 aria-label="Сколько роликов сгенерировать"
               />
-              <span className="text-xs text-base-content/50 shrink-0">1–{maxBatch}</span>
+              <span className="text-xs text-base-content/50 shrink-0">
+                {maxBatch < 1 ? "нет карточек" : `1–${maxBatch}`}
+              </span>
               {!q.running ? (
                 <button
                   className="btn btn-sm btn-primary gap-1 w-full sm:w-auto"
@@ -713,9 +726,9 @@ export default function AccountDetail() {
                     // «Сгенерировать» = сохранить выбранный пак (если поменяли) + поставить генерацию.
                     // Иначе генерилось бы из ПРЕЖНЕГО сохранённого контента канала.
                     if (lang !== account.lang && !(await save())) return;
-                    q.run(id!, batchN);
+                    q.run(id!, Math.min(batchN, maxBatch));
                   }}
-                  disabled={langMismatch || saving}
+                  disabled={langMismatch || saving || maxBatch < 1}
                   title={
                     langMismatch
                       ? "Язык контента не совпадает с языком канала"

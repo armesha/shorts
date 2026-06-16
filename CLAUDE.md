@@ -105,6 +105,13 @@ unattended, managed from a web dashboard. Architecture & research: `docs/STACK.m
   `getDeck("pack:*")` → синтетическая дека (`decks.ts`, `isPackDeckId`) — вменяемые метаданные для
   библиотеки/истории/выкладки, ядро (`randomAnecdote/renderAnecdote`) НЕ трогаем. Сид «психология mgs»:
   `src/scripts/seed-psychology-mgs.ts`. **Старые паки read-only, psych-загрузка (`/cards`) цела.**
+  **Доступ vs правка (новое):** `canAccess` (админ/владелец/грант) = читать+генерить; `canEdit` (только
+  админ/владелец) = менять имя/язык/карточки/удаление. Грант даёт лишь использование — гранчёный пак
+  редактировать НЕ может (бэкенд: `addCards`/`deleteCard`/`/lang`/`/name` гейтят `canEdit`; фронт
+  `PackDetail` прячет правки и шлёт read-only пометку). Имя/язык владелец правит на `/cards` (роут
+  `POST /api/packs/:id/name` + существующий `/lang`). Админ назначает владельца: `PUT
+  /api/admin/packs/:id/owner` (`setPackOwner`, новый владелец чистится из grants) → таблица «Владельцы
+  паков» в Админке (`Users.tsx`).
   TODO: привязка шаблона к паку прямо из /editor (сейчас вставкой JSON); расписание-автопостинг паков
   идёт через сохранение видео в библиотеку (синтет-дека → generic YouTube-метаданные).
 - First generator = **Русские анекдоты (no AI)**: `src/anecdotes/build.ts` parses `Русские анекдоты/anek_djvu.txt` (split on `<|startoftext|>`; drop mat/@-censored/dupes) → packs of 1000 in `data/anecdotes/` (currently 54,954 in range 100–350 chars). Runtime picks random via `src/anecdotes/library.ts`.

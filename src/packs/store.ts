@@ -202,9 +202,15 @@ export function createPack(
   return pack;
 }
 
-/** Доступ к паку: админ ИЛИ владелец ИЛИ выдан грант. По умолчанию — только владелец/админ. */
+/** Доступ к паку (чтение/использование: список, превью, сборка видео): админ ИЛИ владелец ИЛИ грант. */
 export function canAccess(pack: Pack, userId: number, isAdmin: boolean): boolean {
   return isAdmin || pack.userId === userId || (pack.grants ?? []).includes(userId);
+}
+
+/** Право РЕДАКТИРОВАТЬ пак (имя, язык, карточки, удаление): только админ ИЛИ владелец.
+ *  Грант даёт лишь чтение/использование — гранчёный юзер пак НЕ редактирует. */
+export function canEdit(pack: Pack, userId: number, isAdmin: boolean): boolean {
+  return isAdmin || pack.userId === userId;
 }
 
 /** Все паки (любой владелец) — для матрицы Админки (колонки + кто гранчен). */
@@ -233,11 +239,32 @@ export function setGrant(packId: string, userId: number, on: boolean): boolean {
   return true;
 }
 
-/** Сменить язык пака (тег языка). Админ/владелец — проверка прав на уровне роута. */
+/** Сменить язык пака (тег языка). Право (владелец/админ) проверяется на уровне роута. */
 export function setPackLang(packId: string, lang: string): boolean {
   const p = readPackFile(packId);
   if (!p) return false;
   p.lang = (lang || "ru").trim().toLowerCase();
+  writeAtomic(packFile(packId), p);
+  return true;
+}
+
+/** Переименовать пак. Право (владелец/админ) проверяется на уровне роута. */
+export function setPackName(packId: string, name: string): boolean {
+  const p = readPackFile(packId);
+  if (!p) return false;
+  const next = name.trim().slice(0, 80);
+  if (!next) return false;
+  p.name = next;
+  writeAtomic(packFile(packId), p);
+  return true;
+}
+
+/** Сменить владельца пака (только админ — проверка на уровне роута). Новый владелец из грантов убирается. */
+export function setPackOwner(packId: string, newOwnerId: number): boolean {
+  const p = readPackFile(packId);
+  if (!p) return false;
+  p.userId = newOwnerId;
+  if (p.grants) p.grants = p.grants.filter((g) => g !== newOwnerId); // владельцу грант не нужен
   writeAtomic(packFile(packId), p);
   return true;
 }
@@ -263,15 +290,17 @@ export function getPack(id: string, userId: number, isAdmin = false): Pack | nul
   return p;
 }
 
-/** Добавить карточки в пак с проверкой по правилам ПЕРВОГО шаблона. All-or-nothing на уровне роута. */
+/** Добавить карточки в пак с проверкой по правилам ПЕРВОГО шаблона. All-or-nothing на уровне роута.
+ *  Редактирование (добавление) — только владелец/админ (canEdit); грант не даёт права менять контент. */
 export function addCards(
   id: string,
   userId: number,
+  isAdmin: boolean,
   input: unknown,
   now: string = new Date().toISOString(),
 ): { ok: true; added: number; total: number } | { ok: false; reason: "not_found" | "no_template" | "invalid"; result?: ValidationResult } {
-  const p = getPack(id, userId);
-  if (!p) return { ok: false, reason: "not_found" };
+  const p = readPackFile(id);
+  if (!p || !canEdit(p, userId, isAdmin)) return { ok: false, reason: "not_found" };
   if (!p.templates.length) return { ok: false, reason: "no_template" };
   const rules = deriveRules(p.templates[0]);
   let result: ValidationResult;
@@ -286,15 +315,16 @@ export function addCards(
   return { ok: true, added: result.cards.length, total: p.cards.length };
 }
 
-/** Удалить одну карточку по индексу (сверка addedAt от гонок). */
+/** Удалить одну карточку по индексу (сверка addedAt от гонок). Только владелец/админ (canEdit). */
 export function deleteCard(
   id: string,
   userId: number,
+  isAdmin: boolean,
   index: number,
   expectedAddedAt?: string,
 ): { deleted: boolean; total: number; reason?: "not_found" | "stale" } {
-  const p = getPack(id, userId);
-  if (!p) return { deleted: false, total: 0, reason: "not_found" };
+  const p = readPackFile(id);
+  if (!p || !canEdit(p, userId, isAdmin)) return { deleted: false, total: 0, reason: "not_found" };
   if (!Number.isInteger(index) || index < 0 || index >= p.cards.length)
     return { deleted: false, total: p.cards.length, reason: "not_found" };
   if (expectedAddedAt && p.cards[index].addedAt !== expectedAddedAt)

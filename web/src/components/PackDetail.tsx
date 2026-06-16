@@ -1,10 +1,20 @@
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Eye, Trash2, Upload, AlertTriangle, Check, X } from "lucide-react";
+import { Loader2, Eye, Trash2, Upload, AlertTriangle, Check, X, Lock, Save } from "lucide-react";
 import { apiClient, ApiError, type PackFull, type PackRoleRule } from "../lib/api";
 import { confirmDialog } from "../lib/confirm";
+import { useAuth } from "../lib/auth";
 
 // Вид одного кастомного пака: правила (из шаблона), добавление JSON-карточек, лента карточек с превью/удалением.
+// Редактировать (имя/язык/карточки) может только владелец пака или админ; гранчёному пак выдан лишь для использования.
 const valStr = (v: string | string[]) => (Array.isArray(v) ? v.join(" · ") : v);
+const LANG_OPTS: { code: string; label: string }[] = [
+  { code: "ru", label: "Русский" },
+  { code: "de", label: "Немецкий" },
+  { code: "it", label: "Итальянский" },
+  { code: "fr", label: "Французский" },
+  { code: "en", label: "Английский" },
+  { code: "ar", label: "Арабский" },
+];
 function sampleJson(rules: PackRoleRule[]): string {
   const obj: Record<string, unknown> = {};
   for (const r of rules) obj[r.role] = r.list ? ["пункт 1", "пункт 2", "пункт 3"] : "Заголовок";
@@ -12,6 +22,7 @@ function sampleJson(rules: PackRoleRule[]): string {
 }
 
 export default function PackDetail({ packId, onChanged }: { packId: string; onChanged?: () => void }) {
+  const { user } = useAuth();
   const [pack, setPack] = useState<PackFull | null>(null);
   const [raw, setRaw] = useState("");
   const [busy, setBusy] = useState(false);
@@ -23,9 +34,37 @@ export default function PackDetail({ packId, onChanged }: { packId: string; onCh
   const [deleting, setDeleting] = useState<number | null>(null);
   const previewReq = useRef(0); // invalidates an in-flight preview if the modal is closed mid-load
   const [page, setPage] = useState(1); // client-side pagination of the cards grid (packs can be large)
+  const [name, setName] = useState(""); // редактируемое имя (владелец/админ)
+  const [lang, setLang] = useState("ru"); // редактируемый язык-тег (владелец/админ)
+  const [metaBusy, setMetaBusy] = useState(false);
+  const [metaMsg, setMetaMsg] = useState<string | null>(null);
 
-  const reload = () => apiClient.pack(packId).then(setPack).catch(() => setPack(null));
-  useEffect(() => { setPack(null); setOk(null); setErr(null); setErrList([]); setPage(1); reload(); /* eslint-disable-next-line */ }, [packId]);
+  const reload = () =>
+    apiClient
+      .pack(packId)
+      .then((p) => { setPack(p); setName(p.name); setLang(p.lang); })
+      .catch(() => setPack(null));
+  useEffect(() => { setPack(null); setOk(null); setErr(null); setErrList([]); setMetaMsg(null); setPage(1); reload(); /* eslint-disable-next-line */ }, [packId]);
+
+  // Сохранить имя/язык — только если поменялись (отдельные роуты). Доступно владельцу/админу.
+  async function saveMeta() {
+    if (!pack) return;
+    const nm = name.trim();
+    if (!nm) { setErr("Имя пака не может быть пустым"); return; }
+    setMetaBusy(true); setErr(null); setMetaMsg(null);
+    try {
+      if (nm !== pack.name) await apiClient.setPackName(packId, nm);
+      if (lang !== pack.lang) await apiClient.setPackLang(packId, lang);
+      setMetaMsg("Сохранено");
+      setTimeout(() => setMetaMsg(null), 1800);
+      await reload();
+      onChanged?.();
+    } catch (e) {
+      setErr(e instanceof ApiError ? e.message : "Не удалось сохранить");
+    } finally {
+      setMetaBusy(false);
+    }
+  }
 
   async function addCards() {
     setOk(null); setErr(null); setErrList([]);
@@ -67,6 +106,9 @@ export default function PackDetail({ packId, onChanged }: { packId: string; onCh
 
   if (!pack) return <div className="text-sm text-base-content/50 py-6 text-center"><Loader2 className="animate-spin inline" size={16} /> загрузка пака…</div>;
   const rules = pack.rules ?? [];
+  // Редактировать пак (имя/язык/карточки) может только владелец или админ. Грант → только использование.
+  const canEdit = !!user && (user.role === "admin" || pack.userId === user.id);
+  const metaDirty = name.trim() !== pack.name || lang !== pack.lang;
   const PER_PAGE = 24;
   const totalPages = Math.max(1, Math.ceil(pack.cards.length / PER_PAGE));
   const pg = Math.min(page, totalPages);
@@ -75,6 +117,47 @@ export default function PackDetail({ packId, onChanged }: { packId: string; onCh
 
   return (
     <div className="space-y-4">
+      {/* Редактирование имени/языка — только владелец/админ. Гранчёному — пометка «только для использования». */}
+      {canEdit ? (
+        <div className="flex flex-wrap items-end gap-2 bg-base-200/40 rounded-lg p-3 border border-base-300">
+          <label className="form-control">
+            <span className="label-text text-xs mb-1">Название пака</span>
+            <input
+              className="input input-bordered input-sm w-56"
+              value={name}
+              maxLength={80}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </label>
+          <label className="form-control">
+            <span className="label-text text-xs mb-1">Язык</span>
+            <select
+              className="select select-bordered select-sm w-44"
+              value={lang}
+              onChange={(e) => setLang(e.target.value)}
+              title="язык пака — должен совпадать с языком канала"
+            >
+              {LANG_OPTS.map((o) => (
+                <option key={o.code} value={o.code}>{o.label} ({o.code.toUpperCase()})</option>
+              ))}
+            </select>
+          </label>
+          <button className="btn btn-primary btn-sm gap-1" onClick={saveMeta} disabled={metaBusy || !metaDirty || !name.trim()}>
+            {metaBusy ? <Loader2 className="animate-spin" size={15} /> : <Save size={15} />} Сохранить
+          </button>
+          {metaMsg && (
+            <span className="text-success text-xs inline-flex items-center gap-1"><Check size={13} /> {metaMsg}</span>
+          )}
+          {user?.role === "admin" && pack.userId !== user.id && (
+            <span className="text-[11px] text-warning/90 self-center ml-auto">правите как админ</span>
+          )}
+        </div>
+      ) : (
+        <div className="text-xs text-base-content/60 flex items-center gap-1.5 bg-base-200/50 rounded-lg px-3 py-2 border border-base-300">
+          <Lock size={13} className="shrink-0" /> Пак выдан вам только для использования — редактировать его (имя, язык, карточки) может владелец.
+        </div>
+      )}
+
       <div className="text-xs text-base-content/70">
         Язык: <b>{pack.lang}</b> · карточек: <b>{pack.cards.length}</b> · шаблонов: <b>{pack.templates.length}</b> · формат:{" "}
         {rules.map((r) => (
@@ -84,23 +167,27 @@ export default function PackDetail({ packId, onChanged }: { packId: string; onCh
         ))}
       </div>
 
-      <label className="form-control">
-        <span className="label-text mb-1">Добавить карточки (JSON-массив)</span>
-        <textarea
-          className="textarea textarea-bordered min-h-32 font-mono text-xs leading-relaxed"
-          placeholder={sampleJson(rules)}
-          value={raw}
-          onChange={(e) => setRaw(e.target.value)}
-        />
-      </label>
-      <div className="flex flex-wrap gap-2 items-center">
-        <button className="btn btn-primary btn-sm gap-2" onClick={addCards} disabled={busy}>
-          {busy ? <Loader2 className="animate-spin" size={16} /> : <Upload size={16} />}
-          Проверить и добавить
-        </button>
-        <button className="btn btn-ghost btn-sm" onClick={() => setRaw(sampleJson(rules))}>Вставить пример</button>
-        <span className="text-xs text-base-content/50">Ошибка формата → ничего не добавится.</span>
-      </div>
+      {canEdit && (
+        <>
+          <label className="form-control">
+            <span className="label-text mb-1">Добавить карточки (JSON-массив)</span>
+            <textarea
+              className="textarea textarea-bordered min-h-32 font-mono text-xs leading-relaxed"
+              placeholder={sampleJson(rules)}
+              value={raw}
+              onChange={(e) => setRaw(e.target.value)}
+            />
+          </label>
+          <div className="flex flex-wrap gap-2 items-center">
+            <button className="btn btn-primary btn-sm gap-2" onClick={addCards} disabled={busy}>
+              {busy ? <Loader2 className="animate-spin" size={16} /> : <Upload size={16} />}
+              Проверить и добавить
+            </button>
+            <button className="btn btn-ghost btn-sm" onClick={() => setRaw(sampleJson(rules))}>Вставить пример</button>
+            <span className="text-xs text-base-content/50">Ошибка формата → ничего не добавится.</span>
+          </div>
+        </>
+      )}
       {ok && <div className="alert alert-success text-sm"><Check size={16} /><span>{ok}</span></div>}
       {err && (
         <div className="alert alert-error text-sm">
@@ -127,9 +214,11 @@ export default function PackDetail({ packId, onChanged }: { packId: string; onCh
               <button className="btn btn-xs btn-outline gap-1" onClick={() => preview(i)} disabled={previewing !== null || deleting !== null}>
                 {previewing === i ? <Loader2 className="animate-spin" size={13} /> : <Eye size={13} />} Превью
               </button>
-              <button className="btn btn-xs btn-ghost text-error gap-1" onClick={() => delCard(i, c.addedAt)} disabled={deleting !== null || previewing !== null}>
-                {deleting === i ? <Loader2 className="animate-spin" size={13} /> : <Trash2 size={13} />} Удалить
-              </button>
+              {canEdit && (
+                <button className="btn btn-xs btn-ghost text-error gap-1" onClick={() => delCard(i, c.addedAt)} disabled={deleting !== null || previewing !== null}>
+                  {deleting === i ? <Loader2 className="animate-spin" size={13} /> : <Trash2 size={13} />} Удалить
+                </button>
+              )}
             </div>
           </div>
           );

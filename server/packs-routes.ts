@@ -13,6 +13,8 @@ import {
   deleteCard,
   deletePack,
   setPackLang,
+  setPackName,
+  canEdit,
   deriveRules,
   type PackTemplate,
   type CardValues,
@@ -67,9 +69,9 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const input = body.cards ?? body.raw ?? null;
     if (input == null || (typeof body.raw === "string" && !body.raw.trim()))
       return reply.code(400).send({ error: "Пусто: вставь JSON карточек" });
-    const r = addCards(id, uid(req), input);
+    const r = addCards(id, uid(req), adminReq(req), input);
     if (!r.ok) {
-      if (r.reason === "not_found") return reply.code(404).send({ error: "Пак не найден" });
+      if (r.reason === "not_found") return reply.code(404).send({ error: "Пак не найден или нет прав на редактирование" });
       if (r.reason === "no_template")
         return reply.code(400).send({ error: "У пака нет шаблона — сначала привяжи шаблон" });
       const errs = r.result?.errors ?? [];
@@ -88,7 +90,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
   app.delete("/api/packs/:id/cards/:index", async (req, reply) => {
     const { id, index } = req.params as { id: string; index: string };
     const addedAt = (req.query as Record<string, string>)?.addedAt;
-    const r = deleteCard(id, uid(req), Number(index), addedAt);
+    const r = deleteCard(id, uid(req), adminReq(req), Number(index), addedAt);
     if (!r.deleted)
       return reply
         .code(r.reason === "stale" ? 409 : 404)
@@ -103,15 +105,28 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     return { deleted: true };
   });
 
-  // Сменить язык (тег) пака — владелец или админ. Используется на странице «Паки».
+  // Сменить язык (тег) пака — только владелец или админ (грант не даёт права редактировать).
   app.post("/api/packs/:id/lang", async (req, reply) => {
     const id = (req.params as { id: string }).id;
     const lang = String((req.body as { lang?: string })?.lang || "").trim().toLowerCase();
     if (!/^[a-z]{2}$/.test(lang)) return reply.code(400).send({ error: "Неверный код языка (2 буквы, напр. ru/de/en)" });
     const p = getPack(id, uid(req), adminReq(req));
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
+    if (!canEdit(p, uid(req), adminReq(req))) return reply.code(403).send({ error: "Менять язык может только владелец пака" });
     setPackLang(id, lang);
     return { ok: true, lang };
+  });
+
+  // Переименовать пак — только владелец или админ. Используется на странице «Карточки».
+  app.post("/api/packs/:id/name", async (req, reply) => {
+    const id = (req.params as { id: string }).id;
+    const name = String((req.body as { name?: string })?.name || "").trim();
+    if (!name) return reply.code(400).send({ error: "Имя не может быть пустым" });
+    const p = getPack(id, uid(req), adminReq(req));
+    if (!p) return reply.code(404).send({ error: "Пак не найден" });
+    if (!canEdit(p, uid(req), adminReq(req))) return reply.code(403).send({ error: "Переименовать может только владелец пака" });
+    setPackName(id, name);
+    return { ok: true, name: name.slice(0, 80) };
   });
 
   // Превью карточки #i — рендер шаблоном (шаблоны чередуются по карточкам для разнообразия) → PNG в /files.

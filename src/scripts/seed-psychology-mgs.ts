@@ -35,6 +35,6 @@ const templates: PackTemplate[] = readdirSync(resolve(PACK_DIR, "templates"))
 const cards = JSON.parse(readFileSync(resolve(PACK_DIR, "cards.json"), "utf8")) as Array<{ title: string; text: string[] }>;
 
 const pack = createPack(owner.id, { name: PACK_NAME, lang: "de", templates });
-const r = addCards(pack.id, owner.id, cards);
+const r = addCards(pack.id, owner.id, true, cards);
 console.log(`создан пак ${pack.id}: шаблонов ${templates.length}`);
 console.log(r.ok ? `карточек добавлено: ${r.added} (всего ${r.total})` : `карточки НЕ добавлены: ${JSON.stringify(r)}`);

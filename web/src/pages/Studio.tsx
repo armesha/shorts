@@ -49,7 +49,7 @@ export default function Studio() {
   const [deck, setDeck] = useDeck();
   const [err, setErr] = useState<string | null>(null);
   const { user } = useAuth();
-  const maxBatch = user?.role === "admin" ? 100 : 25;
+  const roleMax = user?.role === "admin" ? 100 : 50; // потолок «за раз»: админ 100, обычный юзер 50
   const [batchN, setBatchN] = useState(5);
   const q = useGenQueue();
 
@@ -57,6 +57,10 @@ export default function Studio() {
   const isPack = deck.startsWith("pack:");
   const packId = isPack ? deck.slice(5) : "";
   const curPack = packs.find((p) => `pack:${p.id}` === deck);
+  const g = gens.find((x) => x.id === deck) ?? gens[0]; // выбранная встроенная дека (остаток/инфо)
+  // «За раз» не больше, чем осталось свободных карточек в выбранной деке/паке — для всех (и юзеров, и админов).
+  const remaining = isPack ? curPack?.cards ?? 0 : g?.available ?? 0;
+  const maxBatch = Math.max(0, Math.min(roleMax, remaining));
   // Сохранять ролик можно ТОЛЬКО в канал, у которого этот пак (встроенный/свой) выбран источником —
   // иначе планировщик его не выложит (постит по точному паку канала) и язык бы не совпал.
   const saveAccounts = accounts.filter((a) => a.lang === deck);
@@ -68,6 +72,11 @@ export default function Studio() {
     apiClient.music().then(setMusicList).catch(() => {});
     apiClient.accounts().then(setAccounts).catch(() => {});
   }, []);
+
+  // Сменили деку/пак с меньшим остатком — подожмём «за раз» к новому максимуму, чтоб не превысить.
+  useEffect(() => {
+    setBatchN((n) => Math.max(1, Math.min(maxBatch || 1, n)));
+  }, [maxBatch]);
 
   // Keep the save-target channel matching the selected pack's language (hard language guard).
   useEffect(() => {
@@ -180,8 +189,6 @@ export default function Studio() {
       setBuilding(false);
     }
   }
-
-  const g = gens.find((x) => x.id === deck) ?? gens[0];
 
   return (
     <div className="space-y-6">
@@ -409,19 +416,21 @@ export default function Studio() {
                     <input
                       type="number"
                       min={1}
-                      max={maxBatch}
+                      max={Math.max(1, maxBatch)}
                       className="input input-bordered input-sm w-20"
                       value={batchN}
-                      disabled={q.running}
+                      disabled={q.running || maxBatch < 1}
                       onChange={(e) => setBatchN(Math.max(1, Math.min(maxBatch, Number(e.target.value) || 1)))}
                       aria-label="Сколько роликов сгенерировать"
                     />
-                    <span className="text-xs text-base-content/50">1–{maxBatch} за раз</span>
+                    <span className="text-xs text-base-content/50">
+                      {maxBatch < 1 ? "нет свободных карточек" : `1–${maxBatch} за раз`}
+                    </span>
                     {!q.running ? (
                       <button
                         className="btn btn-sm btn-outline gap-1"
-                        onClick={() => q.run(channelId, batchN)}
-                        disabled={!channelId}
+                        onClick={() => q.run(channelId, Math.min(batchN, maxBatch))}
+                        disabled={!channelId || maxBatch < 1}
                         title="Поставить в очередь генерацию роликов в библиотеку канала"
                       >
                         <Plus size={14} /> Сгенерировать

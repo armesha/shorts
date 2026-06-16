@@ -35,7 +35,7 @@ const cards = JSON.parse(readFileSync(CARDS_FILE, "utf8")) as Array<{ title: str
 console.log(`шаблонов: ${templates.length}, карточек в файле: ${cards.length}`);
 
 const pack = createPack(owner.id, { name: PACK_NAME, lang: "en", templates });
-const r = addCards(pack.id, owner.id, cards);
+const r = addCards(pack.id, owner.id, true, cards);
 console.log(`создан пак ${pack.id}`);
 if (r.ok) {
   console.log(`карточек добавлено: ${r.added} (всего ${r.total})`);

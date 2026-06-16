@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Users, Plus, Check, AlertTriangle } from "lucide-react";
-import { apiClient, ApiError, type AdminUser, type DeckInfo, type UserDeckRow } from "../lib/api";
+import { Users, Plus, Check, AlertTriangle, Crown } from "lucide-react";
+import { apiClient, ApiError, type AdminUser, type DeckInfo, type UserDeckRow, type PackSummary } from "../lib/api";
 import { useAuth } from "../lib/auth";
 
 // Admin-only section: create accounts + control which packs each user sees.
@@ -38,14 +38,33 @@ function AdminUsers() {
   const [created, setCreated] = useState("");
   const [savingCell, setSavingCell] = useState<string | null>(null);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [packs, setPacks] = useState<PackSummary[]>([]); // все кастомные паки (админ видит все) — для назначения владельцев
+  const [savingOwner, setSavingOwner] = useState<string | null>(null);
 
   const loadUsers = () => apiClient.adminUsers().then(setUsers).catch(() => {});
   const loadMatrix = () => apiClient.adminUserDecks().then(setRows).catch(() => {});
+  const loadPacks = () => apiClient.packs().then(setPacks).catch(() => {});
   useEffect(() => {
     loadUsers();
     loadMatrix();
+    loadPacks();
     apiClient.adminDecks().then(setDecks).catch(() => {});
   }, []);
+
+  // Сменить владельца пака (только админ). Владелец = кто может редактировать пак на /cards.
+  async function changeOwner(p: PackSummary, ownerId: number) {
+    if (ownerId === p.userId) return;
+    setSavingOwner(p.id);
+    setPacks((cur) => cur.map((x) => (x.id === p.id ? { ...x, userId: ownerId } : x)));
+    try {
+      await apiClient.setPackOwner(p.id, ownerId);
+      loadMatrix(); // смена владельца влияет на колонку грантов в матрице
+    } catch {
+      loadPacks(); // откат к серверному состоянию
+    } finally {
+      setSavingOwner(null);
+    }
+  }
 
   async function add() {
     setError("");
@@ -221,11 +240,11 @@ function AdminUsers() {
                 </span>
               )}
             </p>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-lg border border-base-300">
               <table className="table table-xs">
                 <thead>
                   <tr>
-                    <th>Пользователь</th>
+                    <th className="sticky left-0 z-20 bg-base-100 border-r border-base-300">Пользователь</th>
                     {decks.map((d) => (
                       <th key={d.id} className="text-center whitespace-nowrap font-normal">
                         {d.name}
@@ -236,7 +255,7 @@ function AdminUsers() {
                 <tbody>
                   {rows.map((row) => (
                     <tr key={row.userId}>
-                      <td className="font-medium whitespace-nowrap">
+                      <td className="font-medium whitespace-nowrap sticky left-0 z-10 bg-base-100 border-r border-base-300">
                         <div className="flex items-center gap-1.5">
                           {row.role === "admin" && <span className="text-primary">★ </span>}
                           {row.username}
@@ -300,6 +319,60 @@ function AdminUsers() {
               Галочка = пак виден пользователю. Число под галочкой = сколько свободных карточек у него осталось
               в паке (красное — мало; наведи курсор: осталось / всего / выложено). Админ видит все паки.
             </p>
+          </div>
+        )}
+
+        {/* Владельцы паков: у каждого кастомного пака один владелец — он редактирует пак (имя/язык/карточки) на /cards. */}
+        {packs.length > 0 && (
+          <div className="border-t border-base-300 pt-3">
+            <p className="text-sm font-medium mb-1 flex items-center gap-2">
+              <Crown size={15} className="text-primary" /> Владельцы паков
+            </p>
+            <p className="text-xs text-base-content/50 mb-2">
+              Владелец редактирует пак (имя, язык, карточки) на странице «Карточки». Доступ остальным выдаётся
+              галочками в таблице выше — это право на использование, без правки.
+            </p>
+            <div className="overflow-x-auto rounded-lg border border-base-300">
+              <table className="table table-xs">
+                <thead>
+                  <tr>
+                    <th className="sticky left-0 z-20 bg-base-100 border-r border-base-300">Пак</th>
+                    <th>Язык</th>
+                    <th>Владелец</th>
+                    <th className="text-right">Карточек</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {packs.map((p) => (
+                    <tr key={p.id}>
+                      <td className="font-medium whitespace-nowrap sticky left-0 z-10 bg-base-100 border-r border-base-300">
+                        {p.name}
+                      </td>
+                      <td className="uppercase text-base-content/70">{p.lang}</td>
+                      <td>
+                        <div className="flex items-center gap-1.5">
+                          <select
+                            className="select select-bordered select-xs"
+                            value={String(p.userId)}
+                            disabled={savingOwner === p.id}
+                            onChange={(e) => changeOwner(p, Number(e.target.value))}
+                            aria-label={`Владелец пака ${p.name}`}
+                          >
+                            {users.map((u) => (
+                              <option key={u.id} value={String(u.id)}>
+                                {u.username}{u.role === "admin" ? " (админ)" : ""}
+                              </option>
+                            ))}
+                          </select>
+                          {savingOwner === p.id && <span className="loading loading-spinner loading-xs" />}
+                        </div>
+                      </td>
+                      <td className="text-right">{p.cards}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
