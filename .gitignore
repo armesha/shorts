@@ -29,6 +29,9 @@ data/quotes-de/
 # stray generated preview images (not source)
 images/
 
+# scratch / temp working dir — not source
+temp/
+
 # env & secrets — NEVER commit
 .env
 .env.local
