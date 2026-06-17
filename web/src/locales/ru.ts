@@ -751,6 +751,7 @@ export const ru: Record<string, string> = {
   "stats.refreshErrorBanner": "Не удалось обновить данные. Проверьте подключение и попробуйте ещё раз.",
   "stats.refreshNoneConnected": "Нет подключённых каналов для обновления",
   "stats.refreshOk": "Успешно обновлено каналов: {n}",
+  "stats.refreshOkShort": "Готово · {n}",
   "stats.refreshPartialAdmin": "YouTube обновлён: {ok} из {total}, с ошибкой: {failed}.",
   "stats.refreshPartial": "Обновлено каналов: {ok}/{total}. Не обновилось: {failed}.\n\nСкорее всего ошибка связана с YouTube Analytics:\n1. Откройте Google Cloud Console.\n2. Перейдите в APIs & Services → Library.\n3. Найдите YouTube Analytics API и нажмите Enable.\n4. Вернитесь сюда и нажмите «Обновить данные».",
   "stats.scheduled": "Запланировано",

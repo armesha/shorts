@@ -747,6 +747,7 @@ export const en: Record<string, string> = {
   "stats.refreshErrorBanner": "Failed to refresh data. Check the connection and try again.",
   "stats.refreshNoneConnected": "No connected channels to refresh",
   "stats.refreshOk": "Channels refreshed successfully: {n}",
+  "stats.refreshOkShort": "Done · {n}",
   "stats.refreshPartialAdmin": "YouTube updated: {ok} of {total}, failed: {failed}.",
   "stats.refreshPartial": "Channels refreshed: {ok}/{total}. Failed: {failed}.\n\nMost likely the error is related to YouTube Analytics:\n1. Open Google Cloud Console.\n2. Go to APIs & Services → Library.\n3. Find YouTube Analytics API and click Enable.\n4. Come back here and click Refresh data.",
   "stats.scheduled": "Scheduled",

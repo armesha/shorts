@@ -149,10 +149,10 @@ export default function Statistics() {
   const [page, setPage] = useState(1);
   const [overviewMetric, setOverviewMetric] = useState<OverviewMetric>("views");
 
-  // Auto-dismiss only successful refreshes. Warnings stay until the user closes them.
+  // Successful refreshes should feel like a small confirmation, not a dismissible alert.
   useEffect(() => {
     if (!result?.ok) return;
-    const t = setTimeout(() => setResult(null), 6000);
+    const t = setTimeout(() => setResult(null), 2200);
     return () => clearTimeout(t);
   }, [result]);
 
@@ -233,7 +233,7 @@ export default function Statistics() {
       } else if (connected.length === 0) {
         setResult({ ok: false, text: t("stats.refreshNoneConnected") });
       } else {
-        setResult({ ok: true, text: t("stats.refreshOk", { n: connected.length }) });
+        setResult({ ok: true, text: t("stats.refreshOkShort", { n: connected.length }) });
       }
     } catch (e) {
       console.error("[Статистика] запрос /stats/refresh упал:", e);
@@ -265,7 +265,7 @@ export default function Statistics() {
           }),
         });
       } else {
-        setResult({ ok: true, text: t("stats.refreshDataOnlyOk", { n: connected.length }) });
+        setResult({ ok: true, text: t("stats.refreshOkShort", { n: connected.length }) });
       }
     } catch (e) {
       console.error("[Статистика] запрос /stats/refresh-data-only упал:", e);
@@ -376,10 +376,29 @@ export default function Statistics() {
         <p className="text-xs text-base-content/50 -mt-3">{t("stats.refreshMineHint")}</p>
       )}
 
-      {error && <div className="alert alert-error text-sm py-2">{error}</div>}
-      {result && (
-        <div className={`alert text-sm py-2 items-start ${result.ok ? "alert-success" : "alert-warning"}`}>
-          <AppIcon name={result.ok ? "check" : "warning"} size={17} className="mt-0.5 shrink-0" />
+      {error && (
+        <div className="alert alert-error text-sm py-2 items-start">
+          <AppIcon name="warning" size={17} className="mt-0.5 shrink-0" />
+          <span className="whitespace-pre-line flex-1">{error}</span>
+          <button
+            className="btn btn-ghost btn-xs btn-square"
+            onClick={() => setError(null)}
+            aria-label={t("common.close")}
+            title={t("common.close")}
+          >
+            <AppIcon name="close" size={14} />
+          </button>
+        </div>
+      )}
+      {result?.ok && (
+        <div className="stats-success-chip" role="status" aria-live="polite">
+          <AppIcon name="check" size={14} />
+          <span>{result.text}</span>
+        </div>
+      )}
+      {result && !result.ok && (
+        <div className="alert alert-warning text-sm py-2 items-start">
+          <AppIcon name="warning" size={17} className="mt-0.5 shrink-0" />
           <span className="whitespace-pre-line flex-1">{result.text}</span>
           <button
             className="btn btn-ghost btn-xs btn-square"
