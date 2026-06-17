@@ -5,6 +5,14 @@ import { useAuth } from "../lib/auth";
 import { useT, type Lang } from "../lib/i18n";
 import { AppIcon, type AppIconName } from "./AppIcon";
 import { apiClient, type AuthUser, type NotificationItem } from "../lib/api";
+import {
+  compactNotificationText,
+  formatNotificationTime,
+  groupNotifications,
+  notificationSeverityClass,
+  notificationSeverityText,
+  type NotificationGroup,
+} from "../lib/notificationGroups";
 
 type NavItem = {
   to: string;
@@ -93,21 +101,41 @@ export default function Layout({ children }: { children: ReactNode }) {
   const { user, logout, setUser } = useAuth();
   const { t, lang, setLang } = useT();
   const [notificationUnread, setNotificationUnread] = useState(0);
+  const [notificationBump, setNotificationBump] = useState(false);
+  const unreadRef = useRef(0);
+  const unreadLoadedRef = useRef(false);
 
   useEffect(() => {
     let alive = true;
+    let bumpTimer: number | undefined;
     const load = () =>
       apiClient
-        .notificationCounts()
-        .then((c) => {
-          if (alive) setNotificationUnread(c.unread);
+        .notifications({ scope: "mine", status: "open", limit: 200 })
+        .then((items) => {
+          if (!alive) return;
+          const groupedUnread = groupNotifications(items).filter((group) => group.unread).length;
+          if (unreadLoadedRef.current && groupedUnread > unreadRef.current) {
+            setNotificationBump(true);
+            if (bumpTimer) window.clearTimeout(bumpTimer);
+            bumpTimer = window.setTimeout(() => setNotificationBump(false), 900);
+          }
+          unreadLoadedRef.current = true;
+          unreadRef.current = groupedUnread;
+          setNotificationUnread(groupedUnread);
         })
         .catch(() => {});
     load();
-    const timer = window.setInterval(load, 60_000);
+    const stream =
+      typeof window.EventSource === "function"
+        ? new EventSource("/api/notifications/stream", { withCredentials: true })
+        : null;
+    stream?.addEventListener("notifications", load);
+    const timer = window.setInterval(load, stream ? 60_000 : 20_000);
     window.addEventListener("notifications:changed", load);
     return () => {
       alive = false;
+      if (bumpTimer) window.clearTimeout(bumpTimer);
+      stream?.close();
       window.clearInterval(timer);
       window.removeEventListener("notifications:changed", load);
     };
@@ -133,6 +161,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       setLang={setLang}
       t={t}
       notificationUnread={notificationUnread}
+      notificationBump={notificationBump}
       stopImpersonation={stopImpersonation}
     >
       {children}
@@ -148,6 +177,7 @@ function AdminLayout({
   setLang,
   t,
   notificationUnread,
+  notificationBump,
   stopImpersonation,
 }: {
   children: ReactNode;
@@ -157,6 +187,7 @@ function AdminLayout({
   setLang: (l: Lang) => void;
   t: (key: string, vars?: Record<string, string | number>) => string;
   notificationUnread: number;
+  notificationBump: boolean;
   stopImpersonation: () => Promise<void>;
 }) {
   const location = useLocation();
@@ -229,7 +260,7 @@ function AdminLayout({
 
             <div className="ml-auto flex items-center gap-2">
               <NetworkIndicator t={t} />
-              <NotificationDropdown user={user} unread={notificationUnread} t={t} />
+              <NotificationDropdown user={user} unread={notificationUnread} bump={notificationBump} t={t} />
               <LanguageToggle lang={lang} setLang={setLang} t={t} className="hidden sm:inline-flex" />
               <button className="btn btn-ghost btn-sm btn-square" onClick={logout} title={t("layout.logout")} aria-label={t("layout.logout")}>
                 <AppIcon name="logout" size={16} />
@@ -353,16 +384,19 @@ function AdminLayout({
 function NotificationDropdown({
   user,
   unread,
+  bump,
   t,
 }: {
   user: AuthUser;
   unread: number;
+  bump: boolean;
   t: (key: string, vars?: Record<string, string | number>) => string;
 }) {
   const detailsRef = useRef<HTMLDetailsElement>(null);
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const groups = groupNotifications(items);
 
   function notifyChanged() {
     window.dispatchEvent(new CustomEvent("notifications:changed"));
@@ -372,7 +406,7 @@ function NotificationDropdown({
     setLoading(true);
     setError("");
     try {
-      const next = await apiClient.notifications({ scope: "mine", status: "open", limit: 8 });
+      const next = await apiClient.notifications({ scope: "mine", status: "open", limit: 40 });
       setItems(next);
       const unreadIds = next.filter((n) => !n.readAt).map((n) => n.id);
       if (unreadIds.length) {
@@ -388,9 +422,9 @@ function NotificationDropdown({
     }
   }
 
-  async function deleteItem(id: number) {
-    await apiClient.deleteNotification(id);
-    setItems((cur) => cur.filter((n) => n.id !== id));
+  async function deleteGroup(group: NotificationGroup) {
+    await Promise.all(group.ids.map((id) => apiClient.deleteNotification(id).catch(() => null)));
+    setItems((cur) => cur.filter((n) => !group.ids.includes(n.id)));
     notifyChanged();
   }
 
@@ -408,7 +442,7 @@ function NotificationDropdown({
       }}
     >
       <summary
-        className={`btn btn-sm btn-square relative ${unread > 0 ? "btn-error" : "admin-action-quiet"}`}
+        className={`notification-bell btn btn-sm btn-square relative admin-action-quiet ${unread > 0 ? "has-unread" : ""} ${bump ? "is-bumping" : ""}`}
         role="button"
         aria-haspopup="menu"
         aria-label={t("nav.notifications")}
@@ -450,27 +484,32 @@ function NotificationDropdown({
             <div className="py-8 text-center text-base-content/50">
               <span className="loading loading-spinner loading-sm text-primary" />
             </div>
-          ) : items.length === 0 ? (
+          ) : groups.length === 0 ? (
             <div className="py-9 text-center">
               <AppIcon name="notifications" className="mx-auto mb-2 text-base-content/25" size={28} />
               <div className="text-sm text-base-content/55">{t("notifications.empty")}</div>
             </div>
           ) : (
             <div className="space-y-2">
-              {items.map((n) => (
-                <article key={n.id} className={`notification-mini-card ${!n.readAt ? "is-new" : ""}`}>
+              {groups.map((group) => (
+                <article key={group.key} className={`notification-mini-card ${group.unread ? "is-new" : ""}`}>
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className={`badge badge-xs ${notificationSeverityClass(n.severity)}`}>{notificationSeverityText(n.severity, t)}</span>
-                        {!n.readAt && <span className="badge badge-primary badge-xs">{t("notifications.newBadge")}</span>}
-                        {n.count > 1 && <span className="badge badge-outline badge-xs">x{n.count}</span>}
+                        <span className={`badge badge-xs ${notificationSeverityClass(group.severity)}`}>{notificationSeverityText(group.severity, t)}</span>
+                        {group.unread && <span className="badge badge-primary badge-xs">{t("notifications.newBadge")}</span>}
+                        {group.items.length > 1 && (
+                          <span className="badge badge-outline badge-xs">
+                            {t("notifications.grouped", { n: group.items.length })}
+                          </span>
+                        )}
+                        {group.count > group.items.length && <span className="badge badge-outline badge-xs">x{group.count}</span>}
                       </div>
-                      <div className="mt-1 text-sm font-semibold leading-snug break-words">{n.title}</div>
+                      <div className="mt-1 text-sm font-semibold leading-snug break-words">{group.title}</div>
                     </div>
                     <button
                       className="btn btn-ghost btn-xs btn-square text-error shrink-0"
-                      onClick={() => deleteItem(n.id)}
+                      onClick={() => deleteGroup(group)}
                       title={t("notifications.delete")}
                       aria-label={t("notifications.delete")}
                     >
@@ -479,31 +518,46 @@ function NotificationDropdown({
                   </div>
 
                   <div className="notification-message-preview mt-1 text-xs leading-relaxed text-base-content/70">
-                    {n.message}
+                    {compactNotificationText(group.message)}
                   </div>
 
-                  {n.solution && (
+                  {group.accountLabels.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      {group.accountLabels.slice(0, 5).map((label) => (
+                        <span key={label} className="badge badge-ghost badge-xs max-w-full truncate">
+                          {label}
+                        </span>
+                      ))}
+                      {group.accountLabels.length > 5 && (
+                        <span className="badge badge-outline badge-xs">
+                          {t("notifications.more", { n: group.accountLabels.length - 5 })}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {group.solution && (
                     <div className="mt-2 rounded-md border border-base-300 bg-base-200/60 p-2 text-xs leading-relaxed">
                       <div className="font-semibold">{t("notifications.solution")}</div>
-                      <div className="notification-message-preview">{n.solution}</div>
+                      <div className="notification-message-preview">{compactNotificationText(group.solution, 220)}</div>
                     </div>
                   )}
 
                   <div className="mt-2 flex items-center justify-between gap-2 text-[11px] text-base-content/45">
-                    <span>{fmtNotificationTime(n.lastSeenAt)}</span>
+                    <span>{formatNotificationTime(group.lastSeenAt)}</span>
                     <span className="truncate">
-                      {n.accountId ? (
-                        <Link to={`/accounts/${n.accountId}`} onClick={close} className="link">
-                          {n.accountName || `#${n.accountId}`}
+                      {group.items.length === 1 && group.items[0].accountId ? (
+                        <Link to={`/accounts/${group.items[0].accountId}`} onClick={close} className="link">
+                          {group.accountLabels[0] || `#${group.items[0].accountId}`}
                         </Link>
-                      ) : n.source ? (
-                        n.source
+                      ) : group.sourceLabels.length ? (
+                        group.sourceLabels[0]
                       ) : null}
                     </span>
                   </div>
 
-                  {n.actionUrl && (
-                    <a className="admin-inline-action mt-2 inline-flex text-xs" href={n.actionUrl} target="_blank" rel="noreferrer">
+                  {group.actionUrl && (
+                    <a className="admin-inline-action mt-2 inline-flex text-xs" href={group.actionUrl} target="_blank" rel="noreferrer">
                       {t("notifications.openFix")}
                     </a>
                   )}
@@ -515,28 +569,6 @@ function NotificationDropdown({
       </div>
     </details>
   );
-}
-
-function notificationSeverityClass(severity: string): string {
-  if (severity === "error") return "badge-error";
-  if (severity === "warning") return "badge-warning";
-  return "badge-info";
-}
-
-function notificationSeverityText(severity: string, t: (key: string) => string): string {
-  if (severity === "error") return t("notifications.severityError");
-  if (severity === "warning") return t("notifications.severityWarning");
-  return t("notifications.severityInfo");
-}
-
-function fmtNotificationTime(iso: string): string {
-  return new Date(iso.includes("T") ? iso : iso.replace(" ", "T") + "Z").toLocaleString("ru-RU", {
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
 }
 
 function canSmoothNavigate(event: ReactMouseEvent, anchor: HTMLAnchorElement) {

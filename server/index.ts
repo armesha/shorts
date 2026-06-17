@@ -428,6 +428,31 @@ function notificationVisible(req: unknown, notificationId: number): boolean {
   return !!n && (isAdminReq(req) || n.userId === uid(req));
 }
 
+type NotificationStreamClient = {
+  userId: number;
+  scopeAll: boolean;
+  write: (chunk: string) => void;
+};
+
+const notificationStreams = new Set<NotificationStreamClient>();
+
+function writeNotificationEvent(client: NotificationStreamClient, event: string, data: unknown) {
+  try {
+    client.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+  } catch {
+    notificationStreams.delete(client);
+  }
+}
+
+function emitNotificationChange(userId?: number | null) {
+  const data = { userId: userId ?? null, at: new Date().toISOString() };
+  for (const client of notificationStreams) {
+    if (userId == null || client.scopeAll || client.userId === userId) {
+      writeNotificationEvent(client, "notifications", data);
+    }
+  }
+}
+
 function errorText(err: unknown): string {
   const e = err as { message?: string; stack?: string; response?: { data?: unknown }; errors?: unknown };
   const parts = [e?.message, e?.response?.data, e?.errors, e?.stack]
@@ -467,7 +492,7 @@ function notifyYouTubeAnalyticsIssue(account: Account, err: unknown, analyticsEr
       ? `https://console.developers.google.com/apis/api/youtubeanalytics.googleapis.com/overview?project=${projectId}`
       : null);
   const channelName = account.ytChannelTitle || account.channelName || `#${account.id}`;
-  db.upsertNotification({
+  const notification = db.upsertNotification({
     userId: account.userId,
     accountId: account.id,
     severity: "error",
@@ -484,12 +509,13 @@ function notifyYouTubeAnalyticsIssue(account: Account, err: unknown, analyticsEr
     source: "server",
     context: `analytics refresh account=${account.id}`,
   });
+  emitNotificationChange(notification.userId);
 }
 
 function notifyStatsRefreshIssue(account: Account, err: unknown, message: string) {
   if (account.userId == null) return;
   const channelName = account.ytChannelTitle || account.channelName || `#${account.id}`;
-  db.upsertNotification({
+  const notification = db.upsertNotification({
     userId: account.userId,
     accountId: account.id,
     severity: "error",
@@ -503,6 +529,7 @@ function notifyStatsRefreshIssue(account: Account, err: unknown, message: string
     source: "server",
     context: `stats refresh account=${account.id}`,
   });
+  emitNotificationChange(notification.userId);
 }
 
 app.get("/api/health", async () => ({ ok: true, time: new Date().toISOString() }));
@@ -613,7 +640,7 @@ app.post("/api/admin/users/:id/notifications", async (req, reply) => {
   const title = (body.title ?? "").trim() || "Сообщение от администратора";
   const severity = ["info", "warning", "error"].includes(body.severity ?? "") ? body.severity! : "info";
   const admin = db.getUserById(uid(req))!;
-  return db.upsertNotification({
+  const notification = db.upsertNotification({
     userId: target.id,
     accountId: null,
     severity,
@@ -626,6 +653,8 @@ app.post("/api/admin/users/:id/notifications", async (req, reply) => {
     source: "admin",
     context: `admin notification by ${admin.username}#${admin.id}`,
   });
+  emitNotificationChange(notification.userId);
+  return notification;
 });
 
 // ---- Admin: per-user pack (deck) visibility ----
@@ -1350,6 +1379,42 @@ app.get("/api/notifications", async (req, reply) => {
   });
 });
 
+app.get("/api/notifications/stream", async (req, reply) => {
+  const q = (req.query as { scope?: string }) ?? {};
+  const scopeAll = q.scope === "all";
+  if (scopeAll && !requireAdmin(req, reply)) return;
+
+  reply.hijack();
+  reply.raw.writeHead(200, {
+    "Content-Type": "text/event-stream; charset=utf-8",
+    "Cache-Control": "no-cache, no-transform",
+    Connection: "keep-alive",
+    "X-Accel-Buffering": "no",
+  });
+
+  const client: NotificationStreamClient = {
+    userId: uid(req),
+    scopeAll,
+    write: (chunk) => reply.raw.write(chunk),
+  };
+  notificationStreams.add(client);
+  writeNotificationEvent(client, "ready", { at: new Date().toISOString() });
+
+  const ping = setInterval(() => {
+    try {
+      reply.raw.write(": ping\n\n");
+    } catch {
+      clearInterval(ping);
+      notificationStreams.delete(client);
+    }
+  }, 25_000);
+
+  req.raw.on("close", () => {
+    clearInterval(ping);
+    notificationStreams.delete(client);
+  });
+});
+
 app.get("/api/notifications/counts", async (req, reply) => {
   const q = (req.query as { scope?: string }) ?? {};
   const scopeAll = q.scope === "all";
@@ -1362,25 +1427,32 @@ app.post("/api/notifications/read-all", async (req, reply) => {
   const scopeAll = q.scope === "all";
   if (scopeAll && !requireAdmin(req, reply)) return;
   const changed = db.markAllNotificationsRead(scopeAll ? undefined : uid(req));
+  emitNotificationChange(scopeAll ? null : uid(req));
   return { ok: true, changed };
 });
 
 app.post("/api/notifications/:id/read", async (req, reply) => {
   const id = Number((req.params as { id: string }).id);
   if (!notificationVisible(req, id)) return reply.code(404).send({ error: "Уведомление не найдено" });
-  return db.markNotificationRead(id);
+  const notification = db.markNotificationRead(id);
+  if (notification) emitNotificationChange(notification.userId);
+  return notification;
 });
 
 app.post("/api/notifications/:id/resolve", async (req, reply) => {
   const id = Number((req.params as { id: string }).id);
   if (!notificationVisible(req, id)) return reply.code(404).send({ error: "Уведомление не найдено" });
-  return db.resolveNotification(id);
+  const notification = db.resolveNotification(id);
+  if (notification) emitNotificationChange(notification.userId);
+  return notification;
 });
 
 app.delete("/api/notifications/:id", async (req, reply) => {
   const id = Number((req.params as { id: string }).id);
   if (!notificationVisible(req, id)) return reply.code(404).send({ error: "Уведомление не найдено" });
+  const notification = db.getNotification(id);
   db.deleteNotification(id);
+  if (notification) emitNotificationChange(notification.userId);
   return { ok: true };
 });
 

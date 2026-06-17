@@ -575,7 +575,7 @@ export default function Statistics() {
 function SourceStats({ overview, days, isAdmin }: { overview: StatsOverviewData; days: number; isAdmin: boolean }) {
   const { t } = useT();
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+    <div className={`grid grid-cols-1 gap-4 ${isAdmin ? "xl:grid-cols-2" : ""}`}>
       <section className="card bg-base-100 border border-base-300">
         <div className="card-body gap-3">
           <div className="flex items-start justify-between gap-3">
@@ -593,25 +593,25 @@ function SourceStats({ overview, days, isAdmin }: { overview: StatsOverviewData;
           </div>
         </div>
       </section>
-      <section className="card bg-base-100 border border-base-300">
-        <div className="card-body gap-3">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h2 className="card-title text-base">{t("stats.youtubeDataTitle")}</h2>
-              <p className="text-xs text-base-content/55">
-                {isAdmin ? t("stats.youtubeDataAdminHint") : t("stats.youtubeDataUserHint")}
-              </p>
+      {isAdmin && (
+        <section className="card bg-base-100 border border-base-300">
+          <div className="card-body gap-3">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="card-title text-base">{t("stats.youtubeDataTitle")}</h2>
+                <p className="text-xs text-base-content/55">{t("stats.youtubeDataAdminHint")}</p>
+              </div>
+              <span className="badge badge-outline badge-sm shrink-0 whitespace-nowrap">Data API</span>
             </div>
-            <span className="badge badge-outline badge-sm">Data API</span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <MiniStat label={t("stats.totalSubscribers")} value={fmt(overview.subscribers)} />
+              <MiniStat label={t("stats.totalViews")} value={fmt(overview.publicViews)} />
+              <MiniStat label={t("stats.videos")} value={fmt(overview.videos)} />
+              <MiniStat label={t("stats.channelsConnected")} value={`${overview.connected} / ${overview.channels}`} />
+            </div>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <MiniStat label={t("stats.totalSubscribers")} value={fmt(overview.subscribers)} />
-            <MiniStat label={t("stats.totalViews")} value={fmt(overview.publicViews)} />
-            <MiniStat label={t("stats.videos")} value={fmt(overview.videos)} />
-            <MiniStat label={t("stats.channelsConnected")} value={`${overview.connected} / ${overview.channels}`} />
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }

@@ -5,6 +5,14 @@ import { apiClient, type NotificationItem } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
+import {
+  compactNotificationText,
+  formatNotificationTime,
+  groupNotifications,
+  notificationSeverityClass,
+  notificationSeverityText,
+  type NotificationGroup,
+} from "../lib/notificationGroups";
 
 type Scope = "mine" | "all";
 type Status = "open" | "unread" | "all";
@@ -18,6 +26,7 @@ export default function Notifications() {
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const groups = groupNotifications(items);
 
   const effectiveScope = isAdmin ? scope : "mine";
 
@@ -55,8 +64,8 @@ export default function Notifications() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [effectiveScope, status]);
 
-  async function deleteItem(id: number) {
-    await apiClient.deleteNotification(id);
+  async function deleteGroup(group: NotificationGroup) {
+    await Promise.all(group.ids.map((id) => apiClient.deleteNotification(id).catch(() => null)));
     notifyChanged();
     load();
   }
@@ -115,7 +124,7 @@ export default function Notifications() {
         <div className="py-16 text-center">
           <span className="loading loading-spinner loading-lg text-primary" />
         </div>
-      ) : items.length === 0 ? (
+      ) : groups.length === 0 ? (
         <div className="card bg-base-100 border border-base-300 border-dashed">
           <div className="card-body items-center text-center py-16">
             <AppIcon name="notifications" className="text-base-content/30" size={40} />
@@ -124,59 +133,74 @@ export default function Notifications() {
         </div>
       ) : (
         <div className={`space-y-3 ${loading ? "opacity-60" : ""}`}>
-          {items.map((n) => (
+          {groups.map((group) => (
             <article
-              key={n.id}
-              className={`card bg-base-100 border ${!n.readAt ? "border-primary/60" : "border-base-300"}`}
+              key={group.key}
+              className={`card bg-base-100 border ${group.unread ? "border-primary/60" : "border-base-300"}`}
             >
               <div className="card-body gap-3">
                 <div className="flex items-start justify-between gap-3 flex-wrap">
                   <div className="min-w-0 space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className={`badge badge-sm ${severityClass(n.severity)}`}>{severityText(n.severity, t)}</span>
-                      {!n.readAt ? (
+                      <span className={`badge badge-sm ${notificationSeverityClass(group.severity)}`}>{notificationSeverityText(group.severity, t)}</span>
+                      {group.unread ? (
                         <span className="badge badge-sm badge-primary">{t("notifications.newBadge")}</span>
                       ) : null}
-                      {n.count > 1 && (
-                        <span className="badge badge-sm badge-outline">{t("notifications.count", { n: n.count })}</span>
+                      {group.items.length > 1 && (
+                        <span className="badge badge-sm badge-outline">{t("notifications.grouped", { n: group.items.length })}</span>
+                      )}
+                      {group.count > group.items.length && (
+                        <span className="badge badge-sm badge-outline">{t("notifications.count", { n: group.count })}</span>
                       )}
                     </div>
-                    <h2 className="text-lg font-semibold leading-tight">{n.title}</h2>
+                    <h2 className="text-lg font-semibold leading-tight">{group.title}</h2>
                     <div className="text-xs text-base-content/50 flex items-center gap-2 flex-wrap">
-                      <span>{t("notifications.lastSeen")}: {fmtTime(n.lastSeenAt)}</span>
-                      {n.firstSeenAt !== n.lastSeenAt && (
-                        <span>{t("notifications.firstSeen")}: {fmtTime(n.firstSeenAt)}</span>
+                      <span>{t("notifications.lastSeen")}: {formatNotificationTime(group.lastSeenAt, true)}</span>
+                      {group.firstSeenAt !== group.lastSeenAt && (
+                        <span>{t("notifications.firstSeen")}: {formatNotificationTime(group.firstSeenAt, true)}</span>
                       )}
-                      {effectiveScope === "all" && (
-                        <span>{t("notifications.user")}: {n.username || `#${n.userId}`}</span>
+                      {effectiveScope === "all" && group.userLabels.length > 0 && (
+                        <span>{t("notifications.users")}: {group.userLabels.slice(0, 5).join(", ")}</span>
                       )}
-                      {n.accountId != null && (
-                        <span>
-                          {t("notifications.channel")}:{" "}
-                          <Link to={`/accounts/${n.accountId}`} className="link">
-                            {n.accountName || `#${n.accountId}`}
-                          </Link>
-                        </span>
+                      {group.accountLabels.length > 0 && (
+                        <span>{t("notifications.channels")}: {group.accountLabels.slice(0, 8).join(", ")}</span>
                       )}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button className="btn btn-ghost btn-sm text-error gap-1" onClick={() => deleteItem(n.id)}>
+                    <button className="btn btn-ghost btn-sm text-error gap-1" onClick={() => deleteGroup(group)}>
                       <Trash2 size={14} /> {t("notifications.delete")}
                     </button>
                   </div>
                 </div>
 
-                <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{n.message}</p>
+                <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{compactNotificationText(group.message, 260)}</p>
 
-                {n.solution && (
+                {group.accountLabels.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {group.items.slice(0, 10).map((n) =>
+                      n.accountId != null ? (
+                        <Link key={n.id} to={`/accounts/${n.accountId}`} className="badge badge-ghost badge-sm max-w-full truncate">
+                          {n.accountName || `#${n.accountId}`}
+                        </Link>
+                      ) : null,
+                    )}
+                    {group.accountLabels.length > 10 && (
+                      <span className="badge badge-outline badge-sm">
+                        {t("notifications.more", { n: group.accountLabels.length - 10 })}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {group.solution && (
                   <div className="rounded-md border border-base-300 bg-base-200/50 p-3 text-sm">
                     <div className="font-medium mb-1">{t("notifications.solution")}</div>
-                    <div className="whitespace-pre-wrap break-words">{n.solution}</div>
-                    {n.actionUrl && (
+                    <div className="whitespace-pre-wrap break-words">{group.solution}</div>
+                    {group.actionUrl && (
                       <a
                         className="btn btn-outline btn-sm gap-1 mt-3"
-                        href={n.actionUrl}
+                        href={group.actionUrl}
                         target="_blank"
                         rel="noreferrer"
                       >
@@ -186,9 +210,9 @@ export default function Notifications() {
                   </div>
                 )}
 
-                {n.context && (
+                {group.contextLabels.length > 0 && (
                   <div className="text-xs text-base-content/40">
-                    {t("notifications.context")}: {n.context}
+                    {t("notifications.context")}: {group.contextLabels.slice(0, 3).join(" · ")}
                   </div>
                 )}
               </div>
@@ -198,20 +222,4 @@ export default function Notifications() {
       )}
     </div>
   );
-}
-
-function severityClass(severity: string): string {
-  if (severity === "error") return "badge-error";
-  if (severity === "warning") return "badge-warning";
-  return "badge-info";
-}
-
-function severityText(severity: string, t: (key: string) => string): string {
-  if (severity === "error") return t("notifications.severityError");
-  if (severity === "warning") return t("notifications.severityWarning");
-  return t("notifications.severityInfo");
-}
-
-function fmtTime(iso: string): string {
-  return new Date(iso.includes("T") ? iso : iso.replace(" ", "T") + "Z").toLocaleString("ru-RU");
 }
