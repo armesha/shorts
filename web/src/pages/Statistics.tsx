@@ -130,6 +130,9 @@ export default function Statistics() {
   const scope: Scope = view === "all" ? "all" : "mine";
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  // «Сводка» tab refresh is owned by <SystemOverview/>: the header button bumps a nonce and reads back its state.
+  const [systemRefreshNonce, setSystemRefreshNonce] = useState(0);
+  const [systemRefreshing, setSystemRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
   const [avatarMap, setAvatarMap] = useState<Record<number, string | null | undefined>>({});
@@ -299,21 +302,19 @@ export default function Statistics() {
               </button>
             )}
           </div>
-          {!showSystem && (
-            <button
-              className="btn btn-primary gap-2"
-              onClick={refresh}
-              disabled={refreshing || loading}
-              title={!isAdmin && view === "all" ? t("stats.refreshMineHint") : undefined}
-            >
-              {refreshing ? (
-                <span className="loading loading-spinner loading-sm" />
-              ) : (
-                <AppIcon name="refresh" size={18} />
-              )}
-              {t("stats.refreshData")}
-            </button>
-          )}
+          <button
+            className="btn btn-primary gap-2"
+            onClick={() => (showSystem ? setSystemRefreshNonce((n) => n + 1) : refresh())}
+            disabled={showSystem ? systemRefreshing : refreshing || loading}
+            title={!isAdmin && view === "all" ? t("stats.refreshMineHint") : undefined}
+          >
+            {(showSystem ? systemRefreshing : refreshing) ? (
+              <span className="loading loading-spinner loading-sm" />
+            ) : (
+              <AppIcon name="refresh" size={18} />
+            )}
+            {t("stats.refreshData")}
+          </button>
         </div>
       </header>
 
@@ -338,7 +339,7 @@ export default function Statistics() {
       )}
 
       {showSystem ? (
-        <SystemOverview />
+        <SystemOverview refreshNonce={systemRefreshNonce} onRefreshingChange={setSystemRefreshing} />
       ) : (
       <>
       {summary && <PlatformBand s={summary} />}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import {
   Activity,
@@ -7,7 +7,6 @@ import {
   Bug,
   Eye,
   Film,
-  RefreshCw,
   TrendingDown,
   TrendingUp,
   Tv,
@@ -55,9 +54,15 @@ function presetRange(days: number): Range {
 }
 
 // Operational «Сводка» panel — embedded inside the Statistics page as the admin-only tab.
-// No page header of its own (Statistics provides it); the YouTube-refresh button lives in the
-// period toolbar below.
-export function SystemOverview() {
+// No page header / refresh button of its own: the Statistics page header's «Обновить данные»
+// button drives it via `refreshNonce` (bumped on click) and reads back its `refreshing` state.
+export function SystemOverview({
+  refreshNonce = 0,
+  onRefreshingChange,
+}: {
+  refreshNonce?: number;
+  onRefreshingChange?: (refreshing: boolean) => void;
+} = {}) {
   const { user } = useAuth();
   const { t } = useT();
   const isAdmin = user?.role === "admin";
@@ -135,6 +140,23 @@ export function SystemOverview() {
     }
   };
 
+  // Report the refresh state up so the Statistics page header button can show its spinner.
+  useEffect(() => {
+    onRefreshingChange?.(refreshing);
+  }, [refreshing, onRefreshingChange]);
+
+  // The page header «Обновить данные» button bumps refreshNonce → run a refresh (skip on mount /
+  // re-mount so re-entering the tab never auto-refreshes).
+  const mountedRef = useRef(false);
+  useEffect(() => {
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      return;
+    }
+    refreshYoutube();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshNonce]);
+
   if (!isAdmin) {
     return (
       <div className="alert alert-warning">
@@ -177,16 +199,8 @@ export function SystemOverview() {
           <button className="btn btn-sm btn-outline" onClick={applyDates} disabled={!draft.from || !draft.to}>
             {t("analytics.apply")}
           </button>
-          <button
-            className="btn btn-sm btn-primary gap-2 ml-auto"
-            onClick={refreshYoutube}
-            disabled={refreshing || loading}
-          >
-            {refreshing ? <span className="loading loading-spinner loading-xs" /> : <RefreshCw size={16} />}
-            {t("analytics.refreshYoutube")}
-          </button>
           {data && (
-            <span className="text-xs text-base-content/50">
+            <span className="text-xs text-base-content/50 ml-auto">
               {t("analytics.updatedAt", { time: new Date(data.updatedAt).toLocaleString("ru-RU") })}
             </span>
           )}
