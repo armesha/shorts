@@ -3,6 +3,7 @@ import { AlertTriangle, ChevronLeft, ChevronRight, ExternalLink } from "lucide-r
 import { apiClient, type HistoryItem, type AdminUser, type Account } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
+import { cleanDisplayText } from "../lib/text";
 
 const PAGE_SIZE = 25;
 
@@ -203,7 +204,7 @@ export default function History() {
                       const url = watchUrl(h);
                       return (
                         <tr key={h.id}>
-                          <td className="font-medium">{h.title}</td>
+                          <td className="font-medium">{cleanDisplayText(h.title)}</td>
                           <td>
                             <span className="flex items-center gap-2">
                               {avatarMap[h.accountId] && (

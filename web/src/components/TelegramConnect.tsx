@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Send, ExternalLink, Check, AlertTriangle } from "lucide-react";
 import { apiClient, type AuthUser } from "../lib/api";
 import { useT } from "../lib/i18n";
+import { AppIcon } from "./AppIcon";
 
 type Mode = "bind" | "login";
 type Phase = "idle" | "waiting" | "done" | "nomatch" | "conflict" | "expired" | "error";
@@ -75,7 +75,7 @@ export default function TelegramConnect({ mode, onDone }: Props) {
   if (phase === "idle")
     return (
       <button className="btn btn-primary btn-sm gap-2" onClick={begin}>
-        <Send size={16} /> {mode === "bind" ? t("telegram.bindBtn") : t("telegram.loginBtn")}
+        <AppIcon name="login" size={16} /> {mode === "bind" ? t("telegram.bindBtn") : t("telegram.loginBtn")}
       </button>
     );
 
@@ -83,7 +83,7 @@ export default function TelegramConnect({ mode, onDone }: Props) {
     return (
       <div className="flex flex-col gap-2 items-start">
         <a href={url} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm gap-2">
-          <ExternalLink size={16} /> {t("telegram.openBot", { bot: bot ? `@${bot}` : t("telegram.theBot") })}
+          <AppIcon name="external" size={16} /> {t("telegram.openBot", { bot: bot ? `@${bot}` : t("telegram.theBot") })}
         </a>
         <div className="text-sm text-base-content/60 flex items-center gap-2">
           <span className="loading loading-spinner loading-xs" /> {t("telegram.waiting")}
@@ -103,7 +103,7 @@ export default function TelegramConnect({ mode, onDone }: Props) {
   if (phase === "done")
     return (
       <div className="text-success text-sm flex items-center gap-1">
-        <Check size={16} /> {mode === "bind" ? t("telegram.bound") : t("telegram.loggingIn")}
+        <AppIcon name="check" size={16} /> {mode === "bind" ? t("telegram.bound") : t("telegram.loggingIn")}
       </div>
     );
 
@@ -118,7 +118,7 @@ export default function TelegramConnect({ mode, onDone }: Props) {
   return (
     <div className="flex flex-col gap-2 items-start">
       <div className="text-error text-sm flex items-center gap-1">
-        <AlertTriangle size={16} /> {text}
+        <AppIcon name="warning" size={16} /> {text}
       </div>
       <button className="btn btn-ghost btn-sm" onClick={() => setPhase("idle")}>
         {t("telegram.retry")}

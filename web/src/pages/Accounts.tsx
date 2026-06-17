@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Tv, Clapperboard, Clock, CheckCircle2, AlertTriangle, Send, ArrowUp, ArrowDown, X } from "lucide-react";
 import { apiClient, type Account, type AppStatus } from "../lib/api";
+import { AppIcon } from "../components/AppIcon";
 import { useT } from "../lib/i18n";
 
 export default function Accounts() {
@@ -141,7 +141,7 @@ export default function Accounts() {
         <div className="flex items-center gap-2">
           <StatusBadge status={status} loadError={loadError} />
           <button className="btn btn-primary gap-2" onClick={addAccount} disabled={creating}>
-            {creating ? <span className="loading loading-spinner loading-sm" /> : <Plus size={18} />}
+            {creating ? <span className="loading loading-spinner loading-sm" /> : <AppIcon name="plus" size={18} />}
             {t("accounts.addChannel")}
           </button>
         </div>
@@ -149,18 +149,18 @@ export default function Accounts() {
 
       {actionErr && (
         <div className="alert alert-error text-sm" role="alert">
-          <AlertTriangle size={18} className="shrink-0" />
+          <AppIcon name="warning" size={18} className="shrink-0" />
           <span className="flex-1">{actionErr}</span>
           <button className="btn btn-ghost btn-xs" onClick={() => setActionErr("")} aria-label={t("accounts.hide")}>
-            <X size={14} />
+            <AppIcon name="close" size={14} />
           </button>
         </div>
       )}
 
       {showLowAlert && (
-        <div className="alert alert-warning shadow-sm flex items-start gap-2">
-          <AlertTriangle size={18} className="mt-0.5 shrink-0" />
-          <div className="flex-1 text-sm">
+        <div className="alert alert-warning shadow-sm flex items-center gap-2 py-2.5">
+          <AppIcon name="warning" size={18} className="shrink-0" />
+          <div className="flex-1 text-sm leading-snug">
             <span className="font-semibold">{t("accounts.lowRunwayTitle")}</span> {t("accounts.lowRunwayLead")}{" "}
             {lowChannels.map((a, i) => (
               <span key={a.id}>
@@ -181,17 +181,17 @@ export default function Accounts() {
             aria-label={t("accounts.hide")}
             title={t("accounts.dismissReappearHint")}
           >
-            <X size={14} />
+            <AppIcon name="close" size={14} />
           </button>
         </div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Stat icon={<Tv />} label={t("accounts.statChannels")} value={accounts.length} />
-        <Stat icon={<Send />} label={t("accounts.statPerDay")} value={perDay} />
-        <Stat icon={<Clapperboard />} label={t("accounts.statUploadedToday")} value={uploadsToday} />
+        <Stat icon={<AppIcon name="accounts" />} label={t("accounts.statChannels")} value={accounts.length} />
+        <Stat icon={<AppIcon name="queue" />} label={t("accounts.statPerDay")} value={perDay} />
+        <Stat icon={<AppIcon name="video" />} label={t("accounts.statUploadedToday")} value={uploadsToday} />
         <Stat
-          icon={<Clock />}
+          icon={<AppIcon name="time" />}
           label={nextRun.rel ? `${t("accounts.statNextRun")} · ${nextRun.rel}` : t("accounts.statNextRun")}
           value={nextRun.time}
         />
@@ -200,12 +200,12 @@ export default function Accounts() {
       {accounts.length === 0 ? (
         <div className="card bg-base-100 border border-base-300 border-dashed">
           <div className="card-body items-center text-center py-16">
-            <Tv className="text-base-content/30" size={40} />
+            <AppIcon name="accounts" className="text-base-content/30" size={40} />
             <p className="text-base-content/60">
               {t("accounts.emptyState")}
             </p>
             <button className="btn btn-primary btn-sm gap-2 mt-2" onClick={addAccount} disabled={creating}>
-              <Plus size={16} /> {t("accounts.addChannel")}
+              <AppIcon name="plus" size={16} /> {t("accounts.addChannel")}
             </button>
           </div>
         </div>
@@ -223,7 +223,7 @@ export default function Accounts() {
                   : t("accounts.sortHighFirst")
               }
             >
-              {sortDir === "asc" ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
+              <AppIcon name="chevron-right" size={16} className={sortDir === "asc" ? "-rotate-90" : "rotate-90"} />
             </button>
           </div>
 
@@ -232,7 +232,7 @@ export default function Accounts() {
             <Link
               key={a.id}
               to={`/accounts/${a.id}`}
-              className="card bg-base-100 border border-base-300 hover:border-primary transition-colors"
+              className="card bg-base-100 border border-base-300 hover:border-primary/45 hover:bg-base-100/90 transition-colors"
             >
               <div className="card-body">
                 <div className="flex items-center gap-3">
@@ -244,7 +244,7 @@ export default function Accounts() {
                     />
                   ) : (
                     <div className="bg-primary/10 text-primary rounded-full w-12 h-12 flex items-center justify-center shrink-0">
-                      <Tv size={22} />
+                      <AppIcon name="accounts" size={22} />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
@@ -274,7 +274,9 @@ export default function Accounts() {
                     className="btn btn-ghost btn-xs gap-1 mt-2 w-fit text-error"
                     title={t("accounts.openOnYouTubeTitle")}
                   >
-                    ▶ {t("accounts.openOnYouTube")} ↗
+                    <AppIcon name="youtube" size={14} />
+                    {t("accounts.openOnYouTube")}
+                    <AppIcon name="external" size={13} />
                   </button>
                 )}
               </div>
@@ -294,8 +296,9 @@ function QueueInfo({ count, schedule, enabled }: { count?: number; schedule: str
   const perDay = enabled ? schedule.length : 0;
   return (
     <div className="mt-2 text-sm flex items-center gap-3 flex-wrap">
-      <span>
-        🎬 {t("accounts.inQueue")} <b>{count}</b> {t("accounts.videos")}
+      <span className="inline-flex items-center gap-1.5">
+        <AppIcon name="queue" size={15} className="text-base-content/45" />
+        {t("accounts.inQueue")} <b>{count}</b> {t("accounts.videos")}
       </span>
       {perDay === 0 ? (
         <span className="text-base-content/50">{t("accounts.noSchedule")}</span>
@@ -304,8 +307,9 @@ function QueueInfo({ count, schedule, enabled }: { count?: number; schedule: str
           const days = Math.ceil(count / perDay);
           const cls = days <= 0 ? "text-error" : days < 3 ? "text-warning" : "text-success";
           return (
-            <span className={cls}>
-              ⏳ {t("accounts.lastsDays", { days, perDay })}
+            <span className={`inline-flex items-center gap-1.5 ${cls}`}>
+              <AppIcon name="time" size={15} />
+              {t("accounts.lastsDays", { days, perDay })}
               {days < 3 ? t("accounts.refillSoon") : ""}
             </span>
           );
@@ -334,14 +338,14 @@ function StatusBadge({ status, loadError }: { status: AppStatus | null; loadErro
   if (status && !status.credsConfigured) {
     return (
       <div className="badge badge-error gap-1 badge-lg">
-        <AlertTriangle size={14} /> {t("accounts.noGoogleKey")}
+        <AppIcon name="warning" size={14} /> {t("accounts.noGoogleKey")}
       </div>
     );
   }
   if (!status) {
     return loadError ? (
       <div className="badge badge-warning gap-1 badge-lg">
-        <AlertTriangle size={14} /> {t("accounts.loadFailed")}
+        <AppIcon name="warning" size={14} /> {t("accounts.loadFailed")}
       </div>
     ) : (
       <div className="badge badge-ghost badge-lg">…</div>
@@ -349,7 +353,7 @@ function StatusBadge({ status, loadError }: { status: AppStatus | null; loadErro
   }
   return (
     <div className="badge badge-success gap-1 badge-lg">
-      <CheckCircle2 size={14} /> {t("accounts.googleConnected")}
+      <AppIcon name="check" size={14} /> {t("accounts.googleConnected")}
     </div>
   );
 }

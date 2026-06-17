@@ -273,7 +273,7 @@ function HistoryChart({ history }: { history: SystemStatus["history"] }) {
               <Tooltip />
               <Legend />
               <Line type="monotone" dataKey="CPU %" stroke="#6419e6" strokeWidth={2} dot={false} />
-              <Line type="monotone" dataKey="RAM %" stroke="#0ea5e9" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="RAM %" stroke="#1d4ed8" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>

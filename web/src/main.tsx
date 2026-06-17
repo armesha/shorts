@@ -4,6 +4,9 @@ import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.tsx";
 import { apiClient } from "./lib/api";
+import { applyDesign, getSavedDesign } from "./lib/design";
+
+applyDesign(getSavedDesign());
 
 // Ship uncaught client-side errors to the server log (admin Errors page). Fire-and-forget.
 window.addEventListener("error", (e) => {

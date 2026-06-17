@@ -7,7 +7,9 @@ import { confirmDialog } from "../lib/confirm";
 import { useAuth } from "../lib/auth";
 import { useGenQueue } from "../lib/genQueue";
 import { useT } from "../lib/i18n";
+import { AppIcon } from "../components/AppIcon";
 import { BUILTIN_DECKS, CONTENT_LANGS, DECK_LANG, langTag } from "../lib/deck";
+import { cleanDisplayText } from "../lib/text";
 
 // N posts/day spread ~evenly across 24h, but with a small RANDOM per-channel offset + jitter,
 // so two channels with the same N never all fire at the same minute. `avoid` = minutes already
@@ -35,6 +37,16 @@ const randomDayTimes = (n: number, avoid: Set<number> = new Set()): string[] => 
     .sort((a, b) => a - b)
     .map((m) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`);
 };
+
+function PackKindBadge({ video }: { video: boolean }) {
+  const { t } = useT();
+  return (
+    <span className={`badge badge-sm gap-1 shrink-0 ${video ? "badge-primary" : "badge-ghost"}`}>
+      <AppIcon name={video ? "video" : "cards"} size={12} />
+      {video ? t("packKind.video") : t("packKind.text")}
+    </span>
+  );
+}
 
 export default function AccountDetail() {
   const { t } = useT();
@@ -304,6 +316,11 @@ export default function AccountDetail() {
   const gensIds = new Set(gens.map((g) => g.id));
   const visibleLangs =
     gens.length === 0 ? BUILTIN_DECKS : BUILTIN_DECKS.filter(({ id }) => gensIds.has(id) || id === lang);
+  const genById = (id: string) => gens.find((g) => g.id === id);
+  const hasVideoSources = visibleLangs.some(({ id }) => !!genById(id)?.preFact);
+  const hasTextSources = visibleLangs.some(({ id }) => !genById(id)?.preFact) || packs.length > 0;
+  const showPackKind = hasVideoSources && hasTextSources;
+  const selectedIsVideo = !lang.startsWith("pack:") && !!genById(lang)?.preFact;
 
   // Опции дропдаунов контента канала: встроенные паки + группа «Кастомные паки» (свои паки по имени) —
   // тот же набор, что в Студии, чтобы пак можно было назначить каналу и генерить из него.
@@ -320,8 +337,8 @@ export default function AccountDetail() {
           {visibleLangs.map(({ id: code, label }) => (
             <option key={code} value={code}>
               {/* полное имя пака (как в Студии: «Русские анекдоты» и т.п.), а не язык */}
-              {gens.find((g) => g.id === code)?.preFact ? "🎬 " : ""}
-              {gens.find((g) => g.id === code)?.name || label} · {langTag(DECK_LANG[code] || code)}
+              {showPackKind ? `[${genById(code)?.preFact ? t("packKind.video") : t("packKind.text")}] ` : ""}
+              {genById(code)?.name || label} · {langTag(DECK_LANG[code] || code)}
             </option>
           ))}
         </optgroup>
@@ -330,6 +347,7 @@ export default function AccountDetail() {
         <optgroup label={isAdmin ? t("account.customPacks") : t("account.myPacks")}>
           {packs.map((p) => (
             <option key={p.id} value={`pack:${p.id}`}>
+              {showPackKind ? `[${t("packKind.text")}] ` : ""}
               {p.name} · {langTag(p.lang)}
             </option>
           ))}
@@ -497,11 +515,11 @@ export default function AccountDetail() {
                 <span key={time} className="badge badge-primary badge-lg gap-2 py-3">
                   {time}
                   <button
-                    className="font-bold hover:text-error"
+                    className="hover:text-error"
                     onClick={() => setTimes(times.filter((x) => x !== time))}
                     title={t("account.removeTime")}
                   >
-                    ✕
+                    <AppIcon name="close" size={12} />
                   </button>
                 </span>
               ))}
@@ -582,7 +600,9 @@ export default function AccountDetail() {
                   rel="noreferrer"
                   className="link link-primary inline-flex items-center gap-1"
                 >
-                  ▶ {t("account.openOnYouTube")} ↗
+                  <AppIcon name="youtube" size={14} />
+                  {t("account.openOnYouTube")}
+                  <AppIcon name="external" size={13} />
                 </a>
               )}
               <button
@@ -650,6 +670,7 @@ export default function AccountDetail() {
               >
                 {deckOptions()}
               </select>
+              {showPackKind && <PackKindBadge video={selectedIsVideo} />}
               {lang.startsWith("pack:")
                 ? (() => {
                     const p = packs.find((x) => `pack:${x.id}` === lang);
@@ -747,7 +768,7 @@ export default function AccountDetail() {
           {lastPosted && (
             <div className="alert alert-success py-2 text-sm mt-2">
               <span>
-                {t("account.postedPrefix")} <b>{lastPosted.title}</b> —{" "}
+                {t("account.postedPrefix")} <b>{cleanDisplayText(lastPosted.title)}</b> —{" "}
                 <a href={lastPosted.url} target="_blank" rel="noreferrer" className="link font-medium">
                   {lastPosted.url}
                 </a>
@@ -815,8 +836,8 @@ export default function AccountDetail() {
                       {t("account.post")}
                     </button>
                   </div>
-                  <div className="mt-1 text-xs font-medium leading-tight line-clamp-2" title={v.title}>
-                    {v.title}
+                  <div className="mt-1 text-xs font-medium leading-tight line-clamp-2" title={cleanDisplayText(v.title)}>
+                    {cleanDisplayText(v.title)}
                   </div>
                 </div>
               ))}
@@ -868,7 +889,7 @@ export default function AccountDetail() {
               </div>
               {/* описание + характеристики + действия — слева */}
               <div className="flex-1 min-w-0 p-4 flex flex-col gap-2 sm:order-1">
-                <h3 className="font-bold text-base leading-snug">{preview.title}</h3>
+                <h3 className="font-bold text-base leading-snug">{cleanDisplayText(preview.title)}</h3>
                 {preview.text && (
                   <p className="text-sm whitespace-pre-wrap leading-relaxed overflow-auto max-h-[40vh] text-base-content/80">
                     {preview.text}
@@ -879,8 +900,8 @@ export default function AccountDetail() {
                   {preview.postCount > 0 ? ` · ${t("account.postedTimes", { n: preview.postCount })}` : ` · ${t("account.notPosted")}`}
                   {preview.lastPostedAt && ` · ${new Date(preview.lastPostedAt).toLocaleDateString("ru-RU")}`}
                   {preview.music && preview.music !== "none"
-                    ? ` · 🎵 ${preview.music.split("/").pop()?.replace(/\.\w+$/, "")}`
-                    : ` · 🔇 ${t("account.noMusic")}`}
+                    ? ` · ${t("studio.musicLabel").toLowerCase()} ${preview.music.split("/").pop()?.replace(/\.\w+$/, "")}`
+                    : ` · ${t("account.noMusic")}`}
                 </div>
                 <div className="flex flex-wrap items-center gap-2 pt-2 mt-auto">
                   <a href={`/files/${preview.videoRel}`} download className="btn btn-sm btn-ghost gap-1">
@@ -999,7 +1020,7 @@ export default function AccountDetail() {
                     <option value={0}>{t("account.slotAuto")}</option>
                     {videos.map((v) => (
                       <option key={v.id} value={v.id}>
-                        {v.title} (x{v.postCount})
+                        {cleanDisplayText(v.title)} (x{v.postCount})
                       </option>
                     ))}
                   </select>

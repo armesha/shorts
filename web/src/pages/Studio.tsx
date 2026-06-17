@@ -12,9 +12,20 @@ import { useDeck, deckLabel } from "../lib/deck";
 import { useAuth } from "../lib/auth";
 import { useGenQueue } from "../lib/genQueue";
 import { useT } from "../lib/i18n";
+import { AppIcon } from "../components/AppIcon";
 
 const bgLabel = (f: string) => f.replace(/\.(jpe?g|png)$/i, "");
 const musicLabel = (f: string) => f.split("/").pop()!.replace(/\.\w+$/, "");
+
+function PackKindBadge({ video }: { video: boolean }) {
+  const { t } = useT();
+  return (
+    <span className={`badge badge-sm gap-1 ${video ? "badge-primary" : "badge-ghost"}`}>
+      <AppIcon name={video ? "video" : "cards"} size={12} />
+      {video ? t("packKind.video") : t("packKind.text")}
+    </span>
+  );
+}
 
 export default function Studio() {
   const { t } = useT();
@@ -45,6 +56,10 @@ export default function Studio() {
   const packId = isPack ? deck.slice(5) : "";
   const curPack = packs.find((p) => `pack:${p.id}` === deck);
   const g = gens.find((x) => x.id === deck) ?? gens[0]; // выбранная встроенная дека (остаток/инфо)
+  const hasVideoSources = gens.some((x) => x.total > 0 && x.preFact);
+  const hasTextSources = gens.some((x) => x.total > 0 && !x.preFact) || packs.length > 0;
+  const showPackKind = hasVideoSources && hasTextSources;
+  const selectedIsVideo = !isPack && !!g?.preFact;
   // «За раз» не больше, чем осталось свободных карточек в выбранной деке/паке — для всех (и юзеров, и админов).
   const remaining = isPack ? curPack?.cards ?? 0 : g?.available ?? 0;
   const maxBatch = Math.max(0, Math.min(roleMax, remaining));
@@ -209,13 +224,15 @@ export default function Studio() {
                     {gens.length === 0 && <option value={deck}>{t("common.loading")}</option>}
                     {gens.filter((x) => x.total > 0).map((x) => (
                       <option key={x.id} value={x.id}>
-                        {x.preFact ? "🎬 " : ""}{deckLabel(x.id, x.name)}
+                        {showPackKind ? `[${x.preFact ? t("packKind.video") : t("packKind.text")}] ` : ""}
+                        {deckLabel(x.id, x.name)}
                       </option>
                     ))}
                     {packs.length > 0 && (
                       <optgroup label={user?.role === "admin" ? t("studio.customPacks") : t("studio.myPacks")}>
                         {packs.map((p) => (
                           <option key={p.id} value={`pack:${p.id}`}>
+                            {showPackKind ? `[${t("packKind.text")}] ` : ""}
                             {p.name} ({t("studio.packSuffix")})
                           </option>
                         ))}
@@ -223,16 +240,17 @@ export default function Studio() {
                     )}
                   </select>
                   {isPack ? (
-                    <div className="text-sm text-base-content/60 mt-1">
+                    <div className="text-sm text-base-content/60 mt-1 flex flex-wrap items-center gap-1.5">
+                      {showPackKind && <PackKindBadge video={false} />}
                       <span className="text-success font-medium">{t("studio.cardsCount", { n: curPack?.cards ?? 0 })}</span> ·{" "}
                       <span className="badge badge-ghost badge-sm">{t("studio.packTemplates", { n: curPack?.templates ?? 0 })}</span>
                     </div>
                   ) : (
                     g && (
-                      <div className="text-sm text-base-content/60 mt-1">
+                      <div className="text-sm text-base-content/60 mt-1 flex flex-wrap items-center gap-1.5">
+                        {showPackKind && <PackKindBadge video={selectedIsVideo} />}
                         <span className="text-success font-medium">{t("studio.availableCount", { n: g.available })}</span>
-                        {g.used > 0 && <> · {t("studio.usedCount", { n: g.used })}</>} ·{" "}
-                        <span className="badge badge-ghost badge-sm">{g.preFact ? t("studio.videoPack") : t("studio.noAI")}</span>
+                        {g.used > 0 && <> · {t("studio.usedCount", { n: g.used })}</>}
                       </div>
                     )
                   )}
@@ -282,7 +300,8 @@ export default function Studio() {
                 <div className="border-t border-base-300 pt-3 flex flex-wrap gap-2 items-center">
                   {g.readyPacks.map((p) => (
                     <span key={p.n} className="badge badge-success badge-sm gap-1">
-                      {p.name} ✓ ({p.titled})
+                      <AppIcon name="check" size={12} />
+                      {p.name} ({p.titled})
                     </span>
                   ))}
                   {g.untitledPacks > 0 && (
@@ -344,7 +363,7 @@ export default function Studio() {
                     <option value="none">{t("studio.musicNone")}</option>
                     {musicList.map((m) => (
                       <option key={m} value={m}>
-                        🎵 {musicLabel(m)}
+                        {musicLabel(m)}
                       </option>
                     ))}
                   </select>
@@ -361,28 +380,35 @@ export default function Studio() {
                   </button>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 border-t border-base-300 pt-3">
-                  <span className="text-sm text-base-content/60">{t("studio.saveToChannel")}</span>
-                  <select
-                    className="select select-bordered select-sm"
-                    aria-label={t("studio.channelToSave")}
-                    value={channelId}
-                    onChange={(e) => {
-                      setChannelId(e.target.value);
-                      setSaved(false);
-                    }}
-                  >
-                    {saveAccounts.length === 0 && (
-                      <option value="">{isPack ? t("studio.noChannelsWithPack") : t("studio.noChannelsForLang")}</option>
+                <div className="grid grid-cols-1 sm:grid-cols-[auto_minmax(0,22rem)_auto] items-start gap-2 border-t border-base-300 pt-3">
+                  <span className="text-sm text-base-content/60 leading-8 whitespace-nowrap">{t("studio.saveToChannel")}</span>
+                  <div className="min-w-0 w-full">
+                    <select
+                      className="select select-bordered select-sm w-full min-w-0 truncate"
+                      aria-label={t("studio.channelToSave")}
+                      value={channelId}
+                      onChange={(e) => {
+                        setChannelId(e.target.value);
+                        setSaved(false);
+                      }}
+                    >
+                      {saveAccounts.length === 0 && (
+                        <option value="">{isPack ? t("studio.noChannelsWithPack") : t("studio.noChannelsForLang")}</option>
+                      )}
+                      {saveAccounts.map((a) => (
+                        <option key={a.id} value={a.id}>
+                          {a.channelName}
+                        </option>
+                      ))}
+                    </select>
+                    {saveAccounts.length === 0 && isPack && (
+                      <div className="mt-1 text-xs text-base-content/50 leading-snug">
+                        {t("studio.noChannelsWithPackHint")}
+                      </div>
                     )}
-                    {saveAccounts.map((a) => (
-                      <option key={a.id} value={a.id}>
-                        {a.channelName}
-                      </option>
-                    ))}
-                  </select>
+                  </div>
                   <button
-                    className="btn btn-sm btn-accent gap-2"
+                    className="btn btn-sm btn-accent gap-2 justify-self-start"
                     onClick={saveToLibrary}
                     disabled={saving || !channelId}
                   >

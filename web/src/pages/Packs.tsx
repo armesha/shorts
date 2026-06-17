@@ -13,6 +13,7 @@ import {
 import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
 import { CONTENT_LANGS, langTag } from "../lib/deck";
+import { AppIcon } from "../components/AppIcon";
 
 const fmt = (n: number) => n.toLocaleString("ru-RU");
 
@@ -173,7 +174,7 @@ export default function Packs() {
           <AlertTriangle size={18} className="shrink-0" />
           <span className="flex-1">{actionErr}</span>
           <button className="btn btn-ghost btn-xs" onClick={() => setActionErr("")} aria-label={t("packs.hide")}>
-            ✕
+            <AppIcon name="close" size={14} />
           </button>
         </div>
       )}

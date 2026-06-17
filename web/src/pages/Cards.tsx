@@ -221,7 +221,7 @@ export default function Cards() {
           className={`btn btn-sm ${sel === "psych" ? "btn-primary" : "btn-ghost border border-base-300"}`}
           onClick={() => setSel("psych")}
         >
-          🧠 Психология (DE)
+          Психология (DE)
         </button>
         {packs.map((p) => (
           <button

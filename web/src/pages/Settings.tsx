@@ -3,6 +3,8 @@ import { KeyRound, Check, AlertTriangle, Upload, Trash2, Lock, Send } from "luci
 import { apiClient, ApiError, type AppSettings } from "../lib/api";
 import TelegramConnect from "../components/TelegramConnect";
 import { confirmDialog } from "../lib/confirm";
+import { AppIcon } from "../components/AppIcon";
+import { DEFAULT_DESIGN, DESIGNS, getSavedDesign, saveDesign, type DesignId } from "../lib/design";
 import { useT } from "../lib/i18n";
 
 export default function Settings() {
@@ -56,6 +58,8 @@ export default function Settings() {
         <p className="text-base-content/60">{t("settings.subtitle")}</p>
       </header>
 
+      <DesignSettings />
+
       <section className="card bg-base-100 border border-base-300">
         <div className="card-body gap-3">
           <div className="flex items-center gap-2 flex-wrap">
@@ -100,7 +104,7 @@ export default function Settings() {
                 <b>Application type → Web application</b> {t("settings.step3Pre")}<u>{t("settings.step3NotDesktop")}</u>{t("settings.step3Post")}
               </li>
               <li>
-                {t("settings.step4Section")} <b>Authorized redirect URIs</b> → <b>+ ADD URI</b> → {t("settings.step4Tail")} 👇
+                {t("settings.step4Section")} <b>Authorized redirect URIs</b> → <b>+ ADD URI</b> → {t("settings.step4Tail")}
               </li>
               <li>
                 <b>Create</b> → <b>Download JSON</b> → {t("settings.step5Tail")}
@@ -142,6 +146,152 @@ export default function Settings() {
     </div>
   );
 }
+
+function DesignSettings() {
+  const { t } = useT();
+  const [design, setDesign] = useState<DesignId>(() => getSavedDesign());
+
+  function choose(next: DesignId) {
+    setDesign(next);
+    saveDesign(next);
+  }
+
+  return (
+    <section className="card bg-base-100 border border-base-300">
+      <div className="card-body gap-4">
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div className="flex items-start gap-2">
+            <AppIcon name="settings" className="text-primary mt-0.5" size={18} />
+            <div>
+              <h2 className="card-title text-base">{t("settings.designTitle")}</h2>
+              <p className="text-sm text-base-content/60 mt-1">{t("settings.designIntro")}</p>
+            </div>
+          </div>
+          <button
+            className="btn btn-sm btn-ghost gap-1"
+            onClick={() => choose("classic")}
+            disabled={design === "classic"}
+          >
+            <AppIcon name="refresh" size={14} />
+            {t("settings.designResetClassic")}
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+          {DESIGNS.map((item) => {
+            const active = item.id === design;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className={`text-left rounded-lg border p-2.5 transition-colors ${
+                  active
+                    ? "border-primary bg-primary/5 shadow-[inset_0_0_0_1px_var(--color-primary)]"
+                    : "border-base-300 bg-base-100 hover:border-primary/60"
+                }`}
+                onClick={() => choose(item.id)}
+                aria-pressed={active}
+              >
+                <DesignPreview id={item.id} />
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="font-semibold text-sm">{t(item.labelKey)}</span>
+                  {active && <span className="badge badge-primary badge-xs">{t("settings.designCurrent")}</span>}
+                </div>
+                <div className="text-xs text-base-content/55 mt-1 leading-snug">{t(item.descKey)}</div>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="rounded-lg border border-base-300 bg-base-200/55 px-3 py-2 text-xs text-base-content/60">
+          {t("settings.designStoredLocal")}
+          {design !== DEFAULT_DESIGN && (
+            <>
+              {" "}
+              {t("settings.designDefaultHint", { name: t(DESIGNS.find((d) => d.id === DEFAULT_DESIGN)?.labelKey || "") })}
+            </>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function DesignPreview({ id }: { id: DesignId }) {
+  const p = previewPalette(id);
+  return (
+    <svg viewBox="0 0 260 150" className="block w-full rounded-md border border-base-300 bg-base-200" aria-hidden="true">
+      <rect width="260" height="150" rx="10" fill={p.bg} />
+      <rect x="12" y="12" width="54" height="126" rx="8" fill={p.sidebar} />
+      <rect x="22" y="25" width="30" height="6" rx="3" fill={p.primary} />
+      <rect x="22" y="48" width="34" height="5" rx="2.5" fill={p.muted} />
+      <rect x="22" y="66" width="26" height="5" rx="2.5" fill={p.muted} />
+      <rect x="22" y="84" width="38" height="5" rx="2.5" fill={p.primary} opacity="0.88" />
+      <rect x="80" y="16" width="168" height="30" rx="7" fill={p.card} />
+      <rect x="94" y="27" width="72" height="6" rx="3" fill={p.text} opacity="0.88" />
+      <rect x="196" y="24" width="36" height="12" rx="6" fill={p.secondary} />
+      <rect x="80" y="58" width="76" height="34" rx="8" fill={p.card} />
+      <rect x="94" y="70" width="30" height="6" rx="3" fill={p.primary} />
+      <rect x="94" y="82" width="46" height="5" rx="2.5" fill={p.muted} />
+      <rect x="168" y="58" width="80" height="34" rx="8" fill={p.card} />
+      <rect x="182" y="70" width="32" height="6" rx="3" fill={p.accent} />
+      <rect x="182" y="82" width="50" height="5" rx="2.5" fill={p.muted} />
+      <rect x="80" y="104" width="168" height="34" rx="8" fill={p.card} />
+      <path d="M96 126c18-18 31 4 48-12 18-17 32 9 52-10 10-9 18-8 30 0" stroke={p.primary} strokeWidth="4" fill="none" strokeLinecap="round" />
+      <circle cx="212" cy="121" r="8" fill={p.secondary} />
+    </svg>
+  );
+}
+
+function previewPalette(id: DesignId) {
+  switch (id) {
+    case "harbor":
+      return {
+        bg: "#eef8f8",
+        sidebar: "#dceff0",
+        card: "#ffffff",
+        primary: "#1f6d77",
+        secondary: "#586fb8",
+        accent: "#56a56f",
+        muted: "#9bb7bc",
+        text: "#1a3440",
+      };
+    case "berry":
+      return {
+        bg: "#f8f2f7",
+        sidebar: "#eaddea",
+        card: "#ffffff",
+        primary: "#7a3f68",
+        secondary: "#b45359",
+        accent: "#429c8a",
+        muted: "#bba8b8",
+        text: "#34243a",
+      };
+    case "classic":
+      return {
+        bg: "#f4f2eb",
+        sidebar: "#ffffff",
+        card: "#ffffff",
+        primary: "#08776f",
+        secondary: "#8b5a28",
+        accent: "#6e59a5",
+        muted: "#b9b1a3",
+        text: "#252a35",
+      };
+	    case "atelier":
+	    default:
+	      return {
+	        bg: "#f4f6f8",
+	        sidebar: "#ffffff",
+	        card: "#ffffff",
+	        primary: "#2563eb",
+	        secondary: "#15803d",
+	        accent: "#d97706",
+	        muted: "#aab4c0",
+	        text: "#111827",
+	      };
+	  }
+	}
 
 // Link a Telegram account → enables one-click "Login with Telegram" and bot-delivered password recovery.
 function TelegramLink() {

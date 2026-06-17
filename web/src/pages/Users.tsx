@@ -3,6 +3,7 @@ import { Users, Plus, Check, AlertTriangle, Crown } from "lucide-react";
 import { apiClient, ApiError, type AdminUser, type DeckInfo, type UserDeckRow, type PackSummary } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
+import { AppIcon } from "../components/AppIcon";
 
 // Admin-only section: create accounts + control which packs each user sees.
 export default function UsersPage() {
@@ -267,7 +268,7 @@ function AdminUsers() {
                     <tr key={row.userId}>
                       <td className="font-medium whitespace-nowrap sticky left-0 z-10 bg-base-100 border-r border-base-300">
                         <div className="flex items-center gap-1.5">
-                          {row.role === "admin" && <span className="text-primary">★ </span>}
+                          {row.role === "admin" && <AppIcon name="admin" size={13} className="text-primary" />}
                           {row.username}
                           {users.find((u) => u.id === row.userId)?.locked && (
                             <span className="badge badge-error badge-xs">{t("users.locked")}</span>

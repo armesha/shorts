@@ -1,18 +1,9 @@
 import { useEffect, useState, type FormEvent } from "react";
-import {
-  Clapperboard,
-  LogIn,
-  AlertTriangle,
-  Lock,
-  KeyRound,
-  ArrowLeft,
-  ShieldCheck,
-  Check,
-} from "lucide-react";
 import { apiClient, ApiError } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
 import TelegramConnect from "../components/TelegramConnect";
+import { AppIcon } from "../components/AppIcon";
 
 export default function Login() {
   const { t } = useT();
@@ -24,7 +15,7 @@ export default function Login() {
         <div className="card-body gap-4">
           <div className="text-center">
             <div className="flex items-center gap-2 justify-center">
-              <Clapperboard className="text-primary" size={28} />
+              <AppIcon name="clips" className="text-primary" size={28} />
               <span className="font-bold text-xl tracking-tight">Shorts Factory</span>
             </div>
             <p className="text-sm text-base-content/60 mt-1">
@@ -111,13 +102,13 @@ function LoginForm({ onRecover }: { onRecover: () => void }) {
 
       {error && (
         <div className={`alert ${locked ? "alert-warning" : "alert-error"} py-2 text-sm`} role="alert">
-          {locked ? <Lock size={16} /> : <AlertTriangle size={16} />}
+          <AppIcon name="warning" size={16} />
           <span>{error}</span>
         </div>
       )}
 
       <button className="btn btn-primary w-full" disabled={busy || !username || !password}>
-        {busy ? <span className="loading loading-spinner loading-sm" /> : <LogIn size={16} />}
+        {busy ? <span className="loading loading-spinner loading-sm" /> : <AppIcon name="login" size={16} />}
         {t("login.signIn")}
       </button>
 
@@ -187,11 +178,11 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
     return (
       <div className="flex flex-col gap-4">
         <div className="alert alert-success py-2 text-sm" role="alert">
-          <Check size={16} />
+          <AppIcon name="check" size={16} />
           <span>{t("login.pwChanged")}</span>
         </div>
         <button className="btn btn-primary w-full" onClick={onBack}>
-          <ArrowLeft size={16} /> {t("login.backToLogin")}
+          <AppIcon name="chevron-left" size={16} /> {t("login.backToLogin")}
         </button>
       </div>
     );
@@ -217,7 +208,7 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
       ) : (
         <>
           <div className="alert alert-info py-2 text-xs">
-            <ShieldCheck size={16} />
+            <AppIcon name="check" size={16} />
             <span>{t("login.codeSentHint")}</span>
           </div>
           <label className="form-control">
@@ -259,7 +250,7 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
 
       {error && (
         <div className="alert alert-error py-2 text-sm" role="alert">
-          <AlertTriangle size={16} />
+          <AppIcon name="warning" size={16} />
           <span>{error}</span>
         </div>
       )}
@@ -271,16 +262,16 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
         {busy ? (
           <span className="loading loading-spinner loading-sm" />
         ) : step === "request" ? (
-          <KeyRound size={16} />
+          <AppIcon name="login" size={16} />
         ) : (
-          <Check size={16} />
+          <AppIcon name="check" size={16} />
         )}
         {step === "request" ? t("login.getCode") : t("login.changePassword")}
       </button>
 
       <div className="flex justify-between">
         <button type="button" className="btn btn-ghost btn-sm text-base-content/60" onClick={onBack}>
-          <ArrowLeft size={14} /> {t("login.backToLogin")}
+          <AppIcon name="chevron-left" size={14} /> {t("login.backToLogin")}
         </button>
         {step === "verify" && (
           <button
