@@ -401,7 +401,7 @@ export default function Statistics() {
           </section>
         )}
 
-      {loading ? (
+      {loading && rows.length === 0 ? (
         <div className="py-16 text-center">
           <span className="loading loading-spinner loading-lg text-primary" />
         </div>

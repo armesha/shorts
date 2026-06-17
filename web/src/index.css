@@ -8,12 +8,332 @@ body,
 #root {
   height: 100%;
 }
+/* Always reserve the vertical scrollbar gutter so switching between tall/short views
+   (tabs, period, loading) never shifts the whole page sideways. */
+html {
+  scrollbar-gutter: stable;
+}
 body {
   margin: 0;
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--color-base-200);
+}
+
+:root,
+:root[data-design="atelier"] {
+  --color-primary: #2563eb;
+  --color-primary-content: #ffffff;
+  --color-secondary: #475569;
+  --color-secondary-content: #ffffff;
+  --color-accent: #0f766e;
+  --color-accent-content: #ffffff;
+  --color-base-100: #ffffff;
+  --color-base-200: #f4f6f8;
+  --color-base-300: #d9e0ea;
+  --color-base-content: #111827;
+  --color-info: #2563eb;
+  --color-info-content: #ffffff;
+  --color-success: #15803d;
+  --color-success-content: #ffffff;
+  --color-warning: #b45309;
+  --color-warning-content: #281400;
+  --color-error: #dc2626;
+  --color-error-content: #ffffff;
+  --radius-box: 0.5rem;
+  --radius-field: 0.45rem;
+  --radius-selector: 0.45rem;
+}
+
+:root[data-design="harbor"] {
+  --color-primary: oklch(39% 0.095 190);
+  --color-primary-content: oklch(98% 0.012 190);
+  --color-secondary: oklch(59% 0.12 257);
+  --color-secondary-content: oklch(98% 0.01 257);
+  --color-accent: oklch(67% 0.11 145);
+  --color-accent-content: oklch(20% 0.025 150);
+  --color-base-100: oklch(99% 0.005 205);
+  --color-base-200: oklch(95.5% 0.013 203);
+  --color-base-300: oklch(86.5% 0.026 202);
+  --color-base-content: oklch(20% 0.03 213);
+  --color-info: oklch(56% 0.14 224);
+  --color-success: oklch(51% 0.12 153);
+  --color-warning: oklch(66% 0.14 73);
+  --color-error: oklch(55% 0.18 25);
+}
+
+:root[data-design="berry"] {
+  --color-primary: oklch(43% 0.112 326);
+  --color-primary-content: oklch(98% 0.012 326);
+  --color-secondary: oklch(55% 0.125 18);
+  --color-secondary-content: oklch(98% 0.012 18);
+  --color-accent: oklch(63% 0.11 172);
+  --color-accent-content: oklch(19% 0.025 172);
+  --color-base-100: oklch(99% 0.004 330);
+  --color-base-200: oklch(96% 0.01 330);
+  --color-base-300: oklch(87% 0.022 326);
+  --color-base-content: oklch(22% 0.03 320);
+  --color-info: oklch(55% 0.12 235);
+  --color-success: oklch(51% 0.12 153);
+  --color-warning: oklch(65% 0.14 75);
+  --color-error: oklch(54% 0.18 25);
+}
+
+:root[data-design="classic"] {
+  --color-primary: oklch(44% 0.092 184);
+  --color-primary-content: oklch(98% 0.012 184);
+  --color-secondary: oklch(53% 0.105 54);
+  --color-secondary-content: oklch(98% 0.012 54);
+  --color-accent: oklch(58% 0.105 292);
+  --color-accent-content: oklch(98% 0.012 292);
+  --color-base-100: oklch(99% 0.004 90);
+  --color-base-200: oklch(96.5% 0.008 90);
+  --color-base-300: oklch(88% 0.012 82);
+  --color-base-content: oklch(22% 0.018 248);
+  --color-info: oklch(56% 0.14 224);
+  --color-info-content: oklch(98% 0.012 224);
+  --color-success: oklch(52% 0.12 151);
+  --color-success-content: oklch(98% 0.012 151);
+  --color-warning: oklch(66% 0.14 75);
+  --color-warning-content: oklch(20% 0.035 75);
+  --color-error: oklch(55% 0.18 25);
+  --color-error-content: oklch(98% 0.012 25);
+}
+
+.drawer-side > aside {
+  box-shadow: 1px 0 0 color-mix(in oklch, var(--color-base-content) 7%, transparent);
+}
+
+.menu a {
+  border-radius: 0.45rem;
+  min-height: 2.3rem;
+}
+
+.menu a.active {
+  background: color-mix(in oklch, var(--color-primary) 10%, var(--color-base-100));
+  color: var(--color-base-content);
+  box-shadow: inset 3px 0 0 var(--color-primary);
+}
+
+.card {
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 0 color-mix(in oklch, var(--color-base-content) 4%, transparent);
+}
+
+.card-body {
+  border-radius: inherit;
+}
+
+.btn {
+  min-height: 2.45rem;
+  border-radius: 0.46rem;
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
+  box-shadow:
+    inset 0 -1px 0 color-mix(in oklch, black 14%, transparent),
+    0 1px 1px color-mix(in oklch, black 5%, transparent);
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.btn-sm {
+  min-height: 2rem;
+  height: 2rem;
+  padding-inline: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.btn-xs {
+  min-height: 1.5rem;
+  height: 1.5rem;
+  padding-inline: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.btn-square.btn-sm,
+.btn-circle.btn-sm {
+  width: 2rem;
+  padding-inline: 0;
+}
+
+.btn-square.btn-xs,
+.btn-circle.btn-xs {
+  width: 1.5rem;
+  padding-inline: 0;
+}
+
+.btn:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.btn:disabled,
+.btn[disabled] {
+  background: color-mix(in oklch, var(--color-base-300) 72%, var(--color-base-100));
+  border-color: var(--color-base-300);
+  color: color-mix(in oklch, var(--color-base-content) 52%, transparent);
+  box-shadow: none;
+  opacity: 1;
+  transform: none;
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: inset 0 1px 2px color-mix(in oklch, black 12%, transparent);
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-accent {
+  border-color: color-mix(in oklch, currentColor 14%, transparent);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--color-primary-content);
+}
+
+.btn-secondary {
+  background: var(--color-secondary);
+  color: var(--color-secondary-content);
+}
+
+.btn-success {
+  background: var(--color-success);
+  color: var(--color-success-content, #ffffff);
+}
+
+.btn-warning {
+  background: var(--color-warning);
+  color: var(--color-warning-content, #281400);
+}
+
+.btn-error {
+  background: var(--color-error);
+  color: var(--color-error-content, #ffffff);
+}
+
+.btn-ghost {
+  box-shadow: none;
+}
+
+.btn-outline {
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, currentColor 8%, transparent);
+}
+
+.btn-square,
+.btn-circle {
+  border-radius: 0.45rem;
+}
+
+.badge {
+  border-radius: 0.38rem;
+  font-weight: 650;
+  letter-spacing: 0;
+}
+
+.badge-primary {
+  color: var(--color-primary-content);
+}
+
+.badge-secondary {
+  color: var(--color-secondary-content);
+}
+
+.badge-accent {
+  color: var(--color-accent-content);
+}
+
+.badge-info {
+  background: #dbeafe;
+  color: #1e3a8a;
+  border-color: #93c5fd;
+}
+
+.badge-success {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #86efac;
+}
+
+.badge-warning {
+  background: #fef3c7;
+  color: #78350f;
+  border-color: #f4c56a;
+}
+
+.badge-error {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fca5a5;
+}
+
+.badge-ghost {
+  background: color-mix(in oklch, var(--color-base-content) 7%, var(--color-base-100));
+  color: color-mix(in oklch, var(--color-base-content) 86%, black);
+  border-color: color-mix(in oklch, var(--color-base-content) 12%, transparent);
+}
+
+.badge-outline {
+  background: color-mix(in oklch, var(--color-base-100) 82%, transparent);
+  color: color-mix(in oklch, currentColor 86%, black);
+}
+
+.input,
+.select,
+.textarea {
+  border-radius: 0.45rem;
+  background-color: color-mix(in oklch, var(--color-base-100) 92%, white);
+}
+
+.alert {
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-base-300);
+  background: var(--color-base-100);
+  color: var(--color-base-content);
+  min-height: 0;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  line-height: 1.35;
+  box-shadow: inset 4px 0 0 color-mix(in oklch, currentColor 32%, transparent);
+}
+
+.alert-warning {
+  background: #fffaf0;
+  border-color: #f4d7a1;
+  color: #3f2a12;
+  box-shadow: inset 4px 0 0 #d97706;
+}
+
+.alert-warning .link {
+  color: #7c2d12;
+}
+
+.alert-success {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #052e16;
+  box-shadow: inset 4px 0 0 var(--color-success);
+}
+
+.alert-error {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #450a0a;
+  box-shadow: inset 4px 0 0 var(--color-error);
+}
+
+.alert-info {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #172554;
+  box-shadow: inset 4px 0 0 var(--color-info);
 }
 
 /* DaisyUI v5 removed .form-control / .label-text (this app was written for v4). Restore them so
@@ -41,7 +361,6 @@ body {
 a:focus-visible,
 button:focus-visible,
 summary:focus-visible,
-label:focus-within,
 [role="button"]:focus-visible,
 [tabindex]:focus-visible,
 input:focus-visible,
