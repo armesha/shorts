@@ -1,30 +1,13 @@
 # Shorts Factory
 
-Программа сама делает короткие видео с анекдотами и выкладывает их на YouTube по расписанию.
-Управляешь всем через сайт в браузере.
+## Stack
 
-## Как запустить
-
-**1. Скачай проект.** Открой терминал (Windows: **PowerShell**, Mac: **Терминал**) и вставь по очереди, нажимая Enter:
-```
-git clone https://github.com/armesha/shorts.git
-cd shorts
-npm install
-```
-> Нет команды `git`? На странице проекта нажми зелёную кнопку **Code → Download ZIP**, распакуй, открой терминал внутри папки `shorts` и сразу делай `npm install`.
-
-**2. Положи файл `client_secret_….json` в папку `shorts`.**
-
-**3. Запусти:**
-```
-npm start
-```
-
-**4. Открой в браузере 👉 http://localhost:5173**
-
-Готово. На сайте подключаешь свои YouTube-каналы (кнопка «Подключить канал»), выбираешь язык и расписание — остальное программа делает сама.
-
-Остановить — закрой терминал. Запустить снова — снова `npm start` в папке `shorts`.
-
----
-*Для разработчиков:* архитектура — [`docs/STACK.md`](docs/STACK.md), правила проекта — `CLAUDE.md`.
+- TypeScript
+- Node.js + Fastify
+- SQLite
+- React + Vite
+- Tailwind CSS + daisyUI
+- Playwright/Puppeteer for rendering and browser checks
+- FFmpeg for video assembly
+- Google YouTube Data API + YouTube Analytics API
+- Telegram Bot API

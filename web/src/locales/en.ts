@@ -483,6 +483,7 @@ export const en: Record<string, string> = {
   "notifications.title": "Notifications",
   "notifications.unread": "Unread",
   "notifications.user": "User",
+  "notifications.userFilter": "Filter by user",
   "notifications.users": "Users",
 
   // ── history ──

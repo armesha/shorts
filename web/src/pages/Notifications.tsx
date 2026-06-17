@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AlertTriangle, ExternalLink, RefreshCw, Trash2 } from "lucide-react";
-import { apiClient, type NotificationItem } from "../lib/api";
+import { apiClient, type AdminUser, type NotificationItem } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
@@ -23,6 +23,8 @@ export default function Notifications() {
   const isAdmin = user?.role === "admin";
   const [scope, setScope] = useState<Scope>("all");
   const [status, setStatus] = useState<Status>("open");
+  const [userFilter, setUserFilter] = useState("all");
+  const [users, setUsers] = useState<AdminUser[]>([]);
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -38,7 +40,12 @@ export default function Notifications() {
     setLoading(true);
     setError("");
     apiClient
-      .notifications({ scope: effectiveScope, status, limit: 100 })
+      .notifications({
+        scope: effectiveScope,
+        status,
+        userId: effectiveScope === "all" && userFilter !== "all" ? userFilter : undefined,
+        limit: 100,
+      })
       .then(async (next) => {
         setItems(next);
         const unreadIds = next.filter((n) => !n.readAt).map((n) => n.id);
@@ -60,9 +67,14 @@ export default function Notifications() {
 
   useEffect(() => {
     load();
-    // effectiveScope/status are the real query dimensions; user role only gates the scope selector.
+    // effectiveScope/status/userFilter are the real query dimensions; user role only gates the scope selector.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [effectiveScope, status]);
+  }, [effectiveScope, status, userFilter]);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    apiClient.adminUsers().then(setUsers).catch(() => setUsers([]));
+  }, [isAdmin]);
 
   async function deleteGroup(group: NotificationGroup) {
     await Promise.all(group.ids.map((id) => apiClient.deleteNotification(id).catch(() => null)));
@@ -89,7 +101,10 @@ export default function Notifications() {
           <div className="join">
             <button
               className={`btn btn-sm join-item ${scope === "mine" ? "btn-primary" : "btn-outline"}`}
-              onClick={() => setScope("mine")}
+              onClick={() => {
+                setScope("mine");
+                setUserFilter("all");
+              }}
             >
               {t("notifications.scopeMine")}
             </button>
@@ -111,6 +126,21 @@ export default function Notifications() {
           <option value="unread">{t("notifications.unread")}</option>
           <option value="all">{t("notifications.all")}</option>
         </select>
+        {isAdmin && scope === "all" && (
+          <select
+            className="select select-bordered select-sm min-w-44"
+            value={userFilter}
+            onChange={(e) => setUserFilter(e.target.value)}
+            aria-label={t("notifications.userFilter")}
+          >
+            <option value="all">{t("notifications.scopeAll")}</option>
+            {users.map((u) => (
+              <option key={u.id} value={u.id}>
+                {u.username} · {u.role === "admin" ? t("common.admin") : t("common.user")}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
 
       {error && (

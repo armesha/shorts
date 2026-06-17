@@ -745,12 +745,12 @@ function StatsOverview({
 
 function MiniStat({ label, value, title }: { label: string; value: ReactNode; title?: string }) {
   return (
-    <div className="rounded-lg bg-base-200/60 p-3" title={title}>
-      <div className="text-xs text-base-content/55 flex items-center gap-1">
+    <div className="relative flex min-h-24 flex-col rounded-lg border border-base-300/70 bg-base-100 p-3 shadow-sm" title={title}>
+      <div className="min-h-9 pr-5 text-xs leading-snug text-base-content/55">
         {label}
-        {title && <span className="text-base-content/30 cursor-help">ⓘ</span>}
       </div>
-      <div className="text-lg font-bold leading-tight mt-1">{value}</div>
+      {title && <span className="absolute right-3 top-3 text-base-content/30 cursor-help">ⓘ</span>}
+      <div className="mt-auto pt-2 text-xl font-bold leading-none tracking-normal">{value}</div>
     </div>
   );
 }

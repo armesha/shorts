@@ -856,12 +856,14 @@ export const apiClient = {
   notifications: (params?: {
     scope?: "mine" | "all";
     status?: "open" | "unread" | "all";
+    userId?: number | string;
     limit?: number;
     offset?: number;
   }) => {
     const qs = new URLSearchParams();
     if (params?.scope === "all") qs.set("scope", "all");
     if (params?.status) qs.set("status", params.status);
+    if (params?.userId != null) qs.set("userId", String(params.userId));
     if (params?.limit) qs.set("limit", String(params.limit));
     if (params?.offset) qs.set("offset", String(params.offset));
     const s = qs.toString();

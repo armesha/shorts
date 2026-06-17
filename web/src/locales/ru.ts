@@ -487,6 +487,7 @@ export const ru: Record<string, string> = {
   "notifications.title": "Уведомления",
   "notifications.unread": "Непрочитанные",
   "notifications.user": "Пользователь",
+  "notifications.userFilter": "Фильтр по пользователю",
   "notifications.users": "Пользователи",
 
   // ── history ──

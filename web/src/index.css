@@ -516,6 +516,16 @@ body {
   box-shadow: inset 0 1px 2px color-mix(in oklch, black 12%, transparent);
 }
 
+.admin-shell .join {
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.admin-shell .join > :where(.join-item) {
+  margin-inline-start: 0 !important;
+  border-radius: 0.5rem !important;
+}
+
 .btn-primary,
 .btn-secondary,
 .btn-accent {

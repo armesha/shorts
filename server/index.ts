@@ -1365,12 +1365,14 @@ app.get("/api/stats/:id/history", async (req, reply) => {
 
 // ---- User notifications: user issue inbox; admins may inspect all users' inboxes ----
 app.get("/api/notifications", async (req, reply) => {
-  const q = (req.query as { scope?: string; status?: string; limit?: string; offset?: string }) ?? {};
+  const q = (req.query as { scope?: string; status?: string; userId?: string; limit?: string; offset?: string }) ?? {};
   const scopeAll = q.scope === "all";
   if (scopeAll && !requireAdmin(req, reply)) return;
+  const userId = scopeAll && q.userId ? Number(q.userId) : uid(req);
+  if (!Number.isFinite(userId) || userId <= 0) return reply.code(400).send({ error: "Некорректный пользователь" });
   const status = q.status || "open";
   return db.listNotifications({
-    userId: scopeAll ? undefined : uid(req),
+    userId: scopeAll && !q.userId ? undefined : userId,
     includeResolved: status === "all",
     onlyResolved: status === "resolved",
     onlyUnread: status === "unread",
