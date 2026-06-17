@@ -54,7 +54,10 @@ function presetRange(days: number): Range {
   return { from: localDate(from), to: localDate(to) };
 }
 
-export default function AdminAnalytics() {
+// Operational «Сводка» panel — embedded inside the Statistics page as the admin-only tab.
+// No page header of its own (Statistics provides it); the YouTube-refresh button lives in the
+// period toolbar below.
+export function SystemOverview() {
   const { user } = useAuth();
   const { t } = useT();
   const isAdmin = user?.role === "admin";
@@ -143,17 +146,6 @@ export default function AdminAnalytics() {
 
   return (
     <div className="space-y-6">
-      <header className="flex items-start justify-between gap-3 flex-wrap">
-        <div>
-          <h1 className="text-2xl font-bold">{t("analytics.title")}</h1>
-          <p className="text-base-content/60">{t("analytics.subtitle")}</p>
-        </div>
-        <button className="btn btn-primary gap-2" onClick={refreshYoutube} disabled={refreshing || loading}>
-          {refreshing ? <span className="loading loading-spinner loading-sm" /> : <RefreshCw size={18} />}
-          {t("analytics.refreshYoutube")}
-        </button>
-      </header>
-
       <div className="card bg-base-100 border border-base-300">
         <div className="card-body py-3 flex-row flex-wrap items-center gap-2">
           <div className="join">
@@ -185,8 +177,16 @@ export default function AdminAnalytics() {
           <button className="btn btn-sm btn-outline" onClick={applyDates} disabled={!draft.from || !draft.to}>
             {t("analytics.apply")}
           </button>
+          <button
+            className="btn btn-sm btn-primary gap-2 ml-auto"
+            onClick={refreshYoutube}
+            disabled={refreshing || loading}
+          >
+            {refreshing ? <span className="loading loading-spinner loading-xs" /> : <RefreshCw size={16} />}
+            {t("analytics.refreshYoutube")}
+          </button>
           {data && (
-            <span className="text-xs text-base-content/50 ml-auto">
+            <span className="text-xs text-base-content/50">
               {t("analytics.updatedAt", { time: new Date(data.updatedAt).toLocaleString("ru-RU") })}
             </span>
           )}

@@ -95,6 +95,7 @@ export interface ChannelDailyAnalytics {
   avgViewDuration: number;
   avgViewPercentage: number;
   likes: number;
+  dislikes: number;
   comments: number;
   shares: number;
   subscribersGained: number;
@@ -201,6 +202,7 @@ const rowToDailyAnalytics = (r: Row): ChannelDailyAnalytics => ({
   avgViewDuration: Number(r.avg_view_duration) || 0,
   avgViewPercentage: Number(r.avg_view_percentage) || 0,
   likes: Number(r.likes) || 0,
+  dislikes: Number(r.dislikes) || 0,
   comments: Number(r.comments) || 0,
   shares: Number(r.shares) || 0,
   subscribersGained: Number(r.subscribers_gained) || 0,
@@ -351,6 +353,7 @@ export function openDb(path: string) {
       avg_view_duration REAL NOT NULL DEFAULT 0,
       avg_view_percentage REAL NOT NULL DEFAULT 0,
       likes INTEGER NOT NULL DEFAULT 0,
+      dislikes INTEGER NOT NULL DEFAULT 0,
       comments INTEGER NOT NULL DEFAULT 0,
       shares INTEGER NOT NULL DEFAULT 0,
       subscribers_gained INTEGER NOT NULL DEFAULT 0,
@@ -418,6 +421,7 @@ export function openDb(path: string) {
   addColumn("videos", "deck TEXT NOT NULL DEFAULT 'ru'");
   addColumn("accounts", "user_id INTEGER");
   addColumn("users", "client_secret_json TEXT");
+  addColumn("channel_analytics_daily", "dislikes INTEGER NOT NULL DEFAULT 0");
   addColumn("history", "error TEXT");
   addColumn("channel_stats", "analytics_status TEXT");
   addColumn("channel_stats", "analytics_error TEXT");
@@ -937,6 +941,44 @@ export function openDb(path: string) {
         .get(userId) as { n: number };
       return r.n;
     },
+    // Platform-wide production totals (no per-user / PII) — shown to EVERY user on /statistics.
+    platformSummary(): {
+      queued: number;
+      published: number;
+      scheduled: number;
+      failed: number;
+      channels: number;
+      channelsConnected: number;
+      users: number;
+    } {
+      const v = db.prepare("SELECT COUNT(*) AS n FROM videos").get() as Row;
+      const h = db
+        .prepare(
+          `SELECT
+            SUM(CASE WHEN status='published' AND youtube_id IS NOT NULL AND youtube_id <> '' THEN 1 ELSE 0 END) AS published,
+            SUM(CASE WHEN status='scheduled' THEN 1 ELSE 0 END) AS scheduled,
+            SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) AS failed
+           FROM history`,
+        )
+        .get() as Row;
+      const a = db
+        .prepare(
+          `SELECT COUNT(*) AS total,
+            SUM(CASE WHEN yt_refresh_token IS NOT NULL AND yt_refresh_token <> '' THEN 1 ELSE 0 END) AS connected
+           FROM accounts`,
+        )
+        .get() as Row;
+      const u = db.prepare("SELECT COUNT(*) AS n FROM users").get() as Row;
+      return {
+        queued: Number(v.n) || 0,
+        published: Number(h.published) || 0,
+        scheduled: Number(h.scheduled) || 0,
+        failed: Number(h.failed) || 0,
+        channels: Number(a.total) || 0,
+        channelsConnected: Number(a.connected) || 0,
+        users: Number(u.n) || 0,
+      };
+    },
     // Posted (uploaded to YouTube) count per user per deck (by the channel's current language).
     postedByUserDeck(): Record<number, Record<string, number>> {
       const out: Record<number, Record<string, number>> = {};
@@ -1055,8 +1097,8 @@ export function openDb(path: string) {
       const stmt = db.prepare(
         `INSERT INTO channel_analytics_daily
           (account_id, date, views, engaged_views, watch_minutes, avg_view_duration, avg_view_percentage,
-           likes, comments, shares, subscribers_gained, subscribers_lost, updated_at)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,datetime('now'))
+           likes, dislikes, comments, shares, subscribers_gained, subscribers_lost, updated_at)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,datetime('now'))
          ON CONFLICT(account_id, date) DO UPDATE SET
            views=excluded.views,
            engaged_views=excluded.engaged_views,
@@ -1064,6 +1106,7 @@ export function openDb(path: string) {
            avg_view_duration=excluded.avg_view_duration,
            avg_view_percentage=excluded.avg_view_percentage,
            likes=excluded.likes,
+           dislikes=excluded.dislikes,
            comments=excluded.comments,
            shares=excluded.shares,
            subscribers_gained=excluded.subscribers_gained,
@@ -1080,6 +1123,7 @@ export function openDb(path: string) {
           r.avgViewDuration,
           r.avgViewPercentage,
           r.likes,
+          r.dislikes,
           r.comments,
           r.shares,
           r.subscribersGained,

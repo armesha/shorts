@@ -205,6 +205,17 @@ export interface YoutubeBreakdownRow {
   avgViewDuration?: number;
 }
 
+export interface YoutubeDemographicsRow {
+  ageGroup: string;
+  gender: string;
+  viewerPercentage: number;
+}
+
+export interface YoutubeSharingRow {
+  service: string;
+  shares: number;
+}
+
 export interface YoutubeTopVideo {
   videoId: string;
   title: string;
@@ -237,6 +248,7 @@ export interface YoutubeRetention {
 
 export interface YoutubeAnalyticsPayload {
   range: { from: string; to: string };
+  days: number;
   status: string | null;
   error: string | null;
   dataThrough: string | null;
@@ -248,6 +260,7 @@ export interface YoutubeAnalyticsPayload {
     avgViewDuration: number;
     avgViewPercentage: number;
     likes: number;
+    dislikes: number;
     comments: number;
     shares: number;
     subscribersGained: number;
@@ -259,6 +272,8 @@ export interface YoutubeAnalyticsPayload {
   devices: YoutubeBreakdownRow[];
   countries: YoutubeBreakdownRow[];
   subscribedStatus: YoutubeBreakdownRow[];
+  demographics: YoutubeDemographicsRow[];
+  sharing: YoutubeSharingRow[];
   retention: YoutubeRetention[];
 }
 
@@ -284,6 +299,17 @@ export interface StatPoint {
   views: number;
   videos: number;
   takenAt: string;
+}
+
+// Platform-wide production totals (every signed-in user sees the same aggregate numbers).
+export interface PlatformSummary {
+  queued: number;
+  published: number;
+  scheduled: number;
+  failed: number;
+  channels: number;
+  channelsConnected: number;
+  users: number;
 }
 
 export interface UserAnalytics {
@@ -751,8 +777,16 @@ export const apiClient = {
       { publishAt },
     ),
   // Statistics: every user sees their own channels; admins may pass scope="all" for all channels.
-  stats: (scope?: "mine" | "all") =>
-    get<StatRow[]>(`/stats${scope === "all" ? "?scope=all" : ""}`),
+  // days = analytics window (7/30/90), summarized server-side from stored per-day rows.
+  stats: (scope?: "mine" | "all", days?: number) => {
+    const qs = new URLSearchParams();
+    if (scope === "all") qs.set("scope", "all");
+    if (days && days !== 30) qs.set("days", String(days));
+    const s = qs.toString();
+    return get<StatRow[]>(`/stats${s ? "?" + s : ""}`);
+  },
+  // Platform-wide production totals, shown to every user on /statistics.
+  summary: () => get<PlatformSummary>(`/summary`),
   refreshStats: (scope?: "mine" | "all") =>
     send<StatRow[]>(`/stats/refresh${scope === "all" ? "?scope=all" : ""}`, "POST", {}),
   statsHistory: (accountId: number | string) => get<StatPoint[]>(`/stats/${accountId}/history`),

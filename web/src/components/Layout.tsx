@@ -1,24 +1,23 @@
 import type { ReactNode } from "react";
-import { NavLink } from "react-router-dom";
-import { Tv, History, Settings, Clapperboard, Sparkles, BarChart3, Bug, Rocket, Server, LogOut, Menu, LayoutTemplate, Users, Layers, TrendingUp, Globe, Film, type LucideIcon } from "lucide-react";
+import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../lib/auth";
 import { useT, LANGS, type Lang } from "../lib/i18n";
+import { AppIcon, type AppIconName } from "./AppIcon";
 
-type NavItem = { to: string; labelKey: string; icon: LucideIcon; end: boolean; adminOnly?: boolean };
+type NavItem = { to: string; labelKey: string; icon: AppIconName; end: boolean; adminOnly?: boolean };
 const NAV: NavItem[] = [
-  { to: "/", labelKey: "nav.channels", icon: Tv, end: true },
-  { to: "/studio", labelKey: "nav.studio", icon: Sparkles, end: false },
-  { to: "/cards", labelKey: "nav.cards", icon: LayoutTemplate, end: false },
-  { to: "/packs", labelKey: "nav.packs", icon: Layers, end: false },
-  { to: "/history", labelKey: "nav.history", icon: History, end: false },
-  { to: "/statistics", labelKey: "nav.statistics", icon: BarChart3, end: false },
-  { to: "/admin/analytics", labelKey: "nav.analytics", icon: TrendingUp, end: false, adminOnly: true },
-  { to: "/clip-demos", labelKey: "nav.clipdemos", icon: Film, end: false, adminOnly: true },
-  { to: "/changelog", labelKey: "nav.changelog", icon: Rocket, end: false },
-  { to: "/settings", labelKey: "nav.settings", icon: Settings, end: false },
-  { to: "/users", labelKey: "nav.users", icon: Users, end: false, adminOnly: true },
-  { to: "/errors", labelKey: "nav.errors", icon: Bug, end: false, adminOnly: true },
-  { to: "/system", labelKey: "nav.server", icon: Server, end: false },
+  { to: "/", labelKey: "nav.channels", icon: "accounts", end: true },
+  { to: "/studio", labelKey: "nav.studio", icon: "studio", end: false },
+  { to: "/cards", labelKey: "nav.cards", icon: "cards", end: false },
+  { to: "/packs", labelKey: "nav.packs", icon: "packs", end: false },
+  { to: "/history", labelKey: "nav.history", icon: "history", end: false },
+  { to: "/statistics", labelKey: "nav.statistics", icon: "analytics", end: false },
+  { to: "/clip-demos", labelKey: "nav.clipdemos", icon: "clips", end: false, adminOnly: true },
+  { to: "/changelog", labelKey: "nav.changelog", icon: "updates", end: false },
+  { to: "/settings", labelKey: "nav.settings", icon: "settings", end: false },
+  { to: "/users", labelKey: "nav.users", icon: "users", end: false, adminOnly: true },
+  { to: "/errors", labelKey: "nav.errors", icon: "errors", end: false, adminOnly: true },
+  { to: "/system", labelKey: "nav.server", icon: "system", end: false },
 ];
 
 const DRAWER_ID = "main-drawer";
@@ -39,10 +38,12 @@ export default function Layout({ children }: { children: ReactNode }) {
         {/* Mobile top bar with hamburger; on lg+ the sidebar is always visible instead. */}
         <div className="lg:hidden sticky top-0 z-20 flex items-center gap-2 bg-base-100 border-b border-base-300 px-3 h-14">
           <label htmlFor={DRAWER_ID} className="btn btn-ghost btn-sm btn-square" aria-label={t("layout.openMenu")}>
-            <Menu size={20} />
+            <AppIcon name="menu" size={20} />
           </label>
-          <Clapperboard className="text-primary" size={22} />
-          <span className="font-bold tracking-tight">{t("layout.brand")}</span>
+          <Link to="/" onClick={closeDrawer} className="flex items-center gap-2 rounded-md font-bold tracking-tight">
+            <AppIcon name="clips" className="text-primary" size={22} />
+            <span>{t("layout.brand")}</span>
+          </Link>
         </div>
 
         <main className="flex-1 min-w-0">
@@ -53,13 +54,17 @@ export default function Layout({ children }: { children: ReactNode }) {
       <div className="drawer-side z-40">
         <label htmlFor={DRAWER_ID} className="drawer-overlay" aria-label={t("layout.closeMenu")}></label>
         <aside className="w-64 min-h-screen bg-base-100 border-r border-base-300 flex flex-col">
-          <div className="px-5 h-16 flex items-center gap-2 border-b border-base-300">
-            <Clapperboard className="text-primary" size={26} />
-            <span className="font-bold text-lg tracking-tight">{t("layout.brand")}</span>
-          </div>
+          <Link
+            to="/"
+            onClick={closeDrawer}
+            className="px-5 h-16 flex items-center gap-2 border-b border-base-300 font-bold text-lg tracking-tight hover:bg-base-200/60 transition-colors"
+          >
+            <AppIcon name="clips" className="text-primary" size={26} />
+            <span>{t("layout.brand")}</span>
+          </Link>
           <nav className="p-3 flex-1">
             <ul className="menu gap-1 w-full">
-              {NAV.filter((n) => !n.adminOnly || user?.role === "admin").map(({ to, labelKey, icon: Icon, end, adminOnly }) => (
+              {NAV.filter((n) => !n.adminOnly || user?.role === "admin").map(({ to, labelKey, icon, end, adminOnly }) => (
                 <li key={to}>
                   <NavLink
                     to={to}
@@ -67,7 +72,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                     onClick={closeDrawer}
                     className={({ isActive }) => (isActive ? "active font-medium" : "")}
                   >
-                    <Icon size={18} />
+                    <AppIcon name={icon} size={18} />
                     {t(labelKey)}
                     {/* Admin-only tab → small red «adm» tag (auto for any adminOnly item, now & future). */}
                     {adminOnly && (
@@ -90,13 +95,13 @@ export default function Layout({ children }: { children: ReactNode }) {
                   </div>
                 </div>
                 <button className="btn btn-ghost btn-sm" onClick={logout} title={t("layout.logout")} aria-label={t("layout.logout")}>
-                  <LogOut size={16} />
+                  <AppIcon name="logout" size={16} />
                 </button>
               </div>
             )}
             {/* UI language switcher — dashboard language only (separate from a channel's content lang). */}
             <label className="flex items-center gap-2 px-2 mb-2" title={t("layout.uiLanguage")}>
-              <Globe size={14} className="text-base-content/40 shrink-0" />
+              <AppIcon name="globe" size={14} className="text-base-content/40 shrink-0" />
               <select
                 className="select select-bordered select-xs flex-1"
                 value={lang}

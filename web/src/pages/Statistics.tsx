@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { BarChart3, Users, Eye, Film, RefreshCw, TrendingUp, TrendingDown, ChevronDown, ArrowUp, ArrowDown, ChevronLeft, ChevronRight, ExternalLink, X } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -15,15 +14,23 @@ import {
   type StatRow,
   type StatPoint,
   type UserAnalytics,
+  type PlatformSummary,
   type YoutubeAnalyticsPayload,
   type YoutubeBreakdownRow,
+  type YoutubeDemographicsRow,
+  type YoutubeSharingRow,
   type YoutubeTopVideo,
 } from "../lib/api";
+import { AppIcon } from "../components/AppIcon";
+import { SystemOverview } from "./AdminAnalytics";
 import { useAuth } from "../lib/auth";
 import { compactNumber } from "../lib/format";
 import { useT } from "../lib/i18n";
+import { cleanDisplayText } from "../lib/text";
 
 type Scope = "mine" | "all";
+// Admin gets a third «Сводка» tab (operational system overview); everyone else sees mine/all.
+type View = "mine" | "all" | "system";
 type MetricKey = "subscribers" | "views" | "videos";
 type SortKey = "name" | "subscribers" | "views" | "videos" | "delta" | "analyticsViews" | "watchMinutes";
 type OverviewMetric = "views" | "watch" | "engaged" | "subscribers";
@@ -70,6 +77,7 @@ interface StatsOverviewData {
   avgViewDuration: number;
   avgViewPercentage: number;
   likes: number;
+  dislikes: number;
   comments: number;
   shares: number;
   subscribersGained: number;
@@ -91,8 +99,11 @@ type SavedFilters = {
   sortDir?: "asc" | "desc";
   ownerFilter?: string;
   onlyConnected?: boolean;
-  scope?: Scope;
+  view?: View;
+  days?: number; // analytics window: 7 / 30 / 90
+  scope?: Scope; // legacy (pre-«Сводка» tab) — still honoured when restoring
 };
+const DAYS_OPTIONS = [7, 30, 90] as const;
 function loadFilters(): SavedFilters {
   try {
     return JSON.parse(localStorage.getItem(STORE_KEY) || "{}") as SavedFilters;
@@ -108,7 +119,15 @@ export default function Statistics() {
   const [saved] = useState(loadFilters); // last-used filters (localStorage), restored on mount
   const [rows, setRows] = useState<StatRow[]>([]);
   const [analytics, setAnalytics] = useState<UserAnalytics | null>(null); // own publishing activity
-  const [scope, setScope] = useState<Scope>(saved.scope ?? "mine");
+  const [summary, setSummary] = useState<PlatformSummary | null>(null); // platform-wide totals (all users)
+  const [view, setView] = useState<View>(saved.view ?? saved.scope ?? "mine");
+  const [days, setDays] = useState<number>(() => {
+    const d = saved.days ?? 30;
+    return DAYS_OPTIONS.includes(d as 7 | 30 | 90) ? d : 30;
+  });
+  // «system» is admin-only; for the channel queries it behaves like «mine».
+  const showSystem = view === "system" && isAdmin;
+  const scope: Scope = view === "all" ? "all" : "mine";
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -134,14 +153,14 @@ export default function Statistics() {
     setLoading(true);
     setError(null);
     apiClient
-      .stats(scope)
+      .stats(scope, days)
       .then(setRows)
       .catch((e) => {
         console.error("[Статистика] запрос /stats упал:", e);
         setError(t("stats.loadError"));
       })
       .finally(() => setLoading(false));
-  }, [scope]);
+  }, [scope, days]);
 
   // Channel avatars by accountId (for the cards).
   useEffect(() => {
@@ -156,30 +175,39 @@ export default function Statistics() {
     apiClient.analytics().then(setAnalytics).catch(() => {});
   }, []);
 
-  // Any filter/sort/scope change → back to page 1.
+  // Platform-wide production totals (same numbers for everyone).
+  useEffect(() => {
+    apiClient.summary().then(setSummary).catch(() => {});
+  }, []);
+
+  // Any filter/sort/view change → back to page 1.
   useEffect(() => {
     setPage(1);
-  }, [search, sortKey, sortDir, ownerFilter, onlyConnected, scope]);
+  }, [search, sortKey, sortDir, ownerFilter, onlyConnected, view]);
 
   // Persist the active filters so the next visit/reload restores them.
   useEffect(() => {
     try {
       localStorage.setItem(
         STORE_KEY,
-        JSON.stringify({ search, sortKey, sortDir, ownerFilter, onlyConnected, scope }),
+        JSON.stringify({ search, sortKey, sortDir, ownerFilter, onlyConnected, view, days }),
       );
     } catch {
       /* localStorage unavailable — ignore */
     }
-  }, [search, sortKey, sortDir, ownerFilter, onlyConnected, scope]);
+  }, [search, sortKey, sortDir, ownerFilter, onlyConnected, view, days]);
 
   async function refresh() {
     setRefreshing(true);
     setError(null);
     setResult(null);
     try {
-      const r = await apiClient.refreshStats(scope);
-      setRows(r);
+      // Non-admins always refresh ONLY their own channels (even while viewing «Все каналы»);
+      // admins refresh the current tab (мои → свои, все → каналы всех пользователей).
+      const refreshScope: Scope = isAdmin ? scope : "mine";
+      const r = await apiClient.refreshStats(refreshScope);
+      // Re-read the visible list for the selected tab + period (refresh returns a default window).
+      setRows(await apiClient.stats(scope, days));
       const connected = r.filter((x) => x.connected);
       const failed = r.filter((x) => x.error);
       if (failed.length) {
@@ -246,40 +274,57 @@ export default function Statistics() {
       <header className="flex items-start justify-between gap-2 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold">{t("nav.statistics")}</h1>
-          <p className="text-base-content/60">{t("stats.subtitle")}</p>
+          <p className="text-base-content/60">{showSystem ? t("analytics.subtitle") : t("stats.subtitle")}</p>
         </div>
         <div className="flex items-center gap-2">
-          {isAdmin && (
-            <div className="join">
+          <div className="join">
+            <button
+              className={`btn btn-sm join-item ${view === "mine" ? "btn-primary" : "btn-ghost"}`}
+              onClick={() => setView("mine")}
+            >
+              {t("stats.scopeMine")}
+            </button>
+            <button
+              className={`btn btn-sm join-item ${view === "all" ? "btn-primary" : "btn-ghost"}`}
+              onClick={() => setView("all")}
+            >
+              {t("stats.scopeAll")}
+            </button>
+            {isAdmin && (
               <button
-                className={`btn btn-sm join-item ${scope === "mine" ? "btn-primary" : "btn-ghost"}`}
-                onClick={() => setScope("mine")}
+                className={`btn btn-sm join-item ${view === "system" ? "btn-primary" : "btn-ghost"}`}
+                onClick={() => setView("system")}
               >
-                {t("stats.scopeMine")}
+                {t("stats.scopeSystem")}
               </button>
-              <button
-                className={`btn btn-sm join-item ${scope === "all" ? "btn-primary" : "btn-ghost"}`}
-                onClick={() => setScope("all")}
-              >
-                {t("stats.scopeAll")}
-              </button>
-            </div>
-          )}
-          <button className="btn btn-primary gap-2" onClick={refresh} disabled={refreshing || loading}>
-            {refreshing ? (
-              <span className="loading loading-spinner loading-sm" />
-            ) : (
-              <RefreshCw size={18} />
             )}
-            {t("stats.refreshData")}
-          </button>
+          </div>
+          {!showSystem && (
+            <button
+              className="btn btn-primary gap-2"
+              onClick={refresh}
+              disabled={refreshing || loading}
+              title={!isAdmin && view === "all" ? t("stats.refreshMineHint") : undefined}
+            >
+              {refreshing ? (
+                <span className="loading loading-spinner loading-sm" />
+              ) : (
+                <AppIcon name="refresh" size={18} />
+              )}
+              {t("stats.refreshData")}
+            </button>
+          )}
         </div>
       </header>
+
+      {!isAdmin && view === "all" && (
+        <p className="text-xs text-base-content/50 -mt-3">{t("stats.refreshMineHint")}</p>
+      )}
 
       {error && <div className="alert alert-error text-sm py-2">{error}</div>}
       {result && (
         <div className={`alert text-sm py-2 items-start ${result.ok ? "alert-success" : "alert-warning"}`}>
-          <span className="pt-0.5">{result.ok ? "✓" : "⚠"}</span>
+          <AppIcon name={result.ok ? "check" : "warning"} size={17} className="mt-0.5 shrink-0" />
           <span className="whitespace-pre-line flex-1">{result.text}</span>
           <button
             className="btn btn-ghost btn-xs btn-square"
@@ -287,17 +332,27 @@ export default function Statistics() {
             aria-label={t("common.close")}
             title={t("common.close")}
           >
-            <X size={14} />
+            <AppIcon name="close" size={14} />
           </button>
         </div>
       )}
 
+      {showSystem ? (
+        <SystemOverview />
+      ) : (
+      <>
+      {summary && <PlatformBand s={summary} />}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
-        <Stat icon={<Users />} label={t("stats.totalSubscribers")} value={fmt(overview.subscribers)} />
-        <Stat icon={<Eye />} label={t("stats.totalViews")} value={fmt(overview.publicViews)} />
-        <Stat icon={<BarChart3 />} label={t("stats.analyticsViews")} value={fmt(overview.analyticsViews)} />
-        <Stat icon={<TrendingUp />} label={t("stats.watchTime")} value={formatWatchMinutes(overview.watchMinutes)} />
-        <Stat icon={<Film />} label={t("stats.channelsConnected")} value={`${overview.connected} / ${overview.channels}`} />
+        <Stat icon={<AppIcon name="users" />} label={t("stats.totalSubscribers")} value={fmt(overview.subscribers)} />
+        <Stat icon={<AppIcon name="youtube" />} label={t("stats.totalViews")} value={fmt(overview.publicViews)} />
+        <Stat
+          icon={<AppIcon name="analytics" />}
+          label={t("stats.viewsForDays", { n: days })}
+          value={fmt(overview.analyticsViews)}
+          title={t("stats.periodViewsHint")}
+        />
+        <Stat icon={<AppIcon name="time" />} label={t("stats.watchTime")} value={formatWatchMinutes(overview.watchMinutes)} />
+        <Stat icon={<AppIcon name="accounts" />} label={t("stats.channelsConnected")} value={`${overview.connected} / ${overview.channels}`} />
       </div>
 
       {analytics &&
@@ -334,7 +389,7 @@ export default function Statistics() {
                       <YAxis allowDecimals={false} fontSize={11} width={40} tickFormatter={(value) => compactNumber(Number(value))} />
                       <Tooltip formatter={(value) => compactNumber(Number(value))} />
                       <Legend />
-                      <Line type="monotone" dataKey="published" name={t("stats.published")} stroke="#16a34a" dot={false} strokeWidth={2} />
+                      <Line type="monotone" dataKey="published" name={t("stats.published")} stroke="#166534" dot={false} strokeWidth={2} />
                       <Line type="monotone" dataKey="scheduled" name={t("stats.scheduled")} stroke="#605dff" dot={false} strokeWidth={2} />
                       <Line type="monotone" dataKey="failed" name={t("stats.failed")} stroke="#dc2626" dot={false} strokeWidth={2} />
                     </LineChart>
@@ -361,6 +416,18 @@ export default function Statistics() {
           {/* Controls: search / sort / direction / owner filter / only-connected */}
           <div className="card bg-base-100 border border-base-300">
             <div className="card-body py-3 flex-row flex-wrap items-center gap-2">
+              <div className="join" role="group" aria-label={t("stats.period")}>
+                {DAYS_OPTIONS.map((d) => (
+                  <button
+                    key={d}
+                    className={`btn btn-sm join-item ${days === d ? "btn-primary" : "btn-ghost"}`}
+                    onClick={() => setDays(d)}
+                    title={t("stats.periodDaysTitle", { n: d })}
+                  >
+                    {t("stats.daysShort", { n: d })}
+                  </button>
+                ))}
+              </div>
               <input
                 className="input input-bordered input-sm w-full sm:w-56"
                 placeholder={t("stats.searchPlaceholder")}
@@ -376,7 +443,7 @@ export default function Statistics() {
               >
                 <option value="subscribers">{t("stats.subscribers")}</option>
                 <option value="views">{t("stats.views")}</option>
-                <option value="analyticsViews">{t("stats.sortPeriodViews")}</option>
+                <option value="analyticsViews">{t("stats.viewsForDays", { n: days })}</option>
                 <option value="watchMinutes">{t("stats.sortWatchTime")}</option>
                 <option value="videos">{t("stats.videos")}</option>
                 <option value="delta">{t("stats.subscribersGrowth")}</option>
@@ -387,7 +454,7 @@ export default function Statistics() {
                 onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
                 title={t("stats.sortDirection")}
               >
-                {sortDir === "asc" ? <ArrowUp size={15} /> : <ArrowDown size={15} />}
+                <AppIcon name="chevron-right" size={15} className={sortDir === "asc" ? "-rotate-90" : "rotate-90"} />
                 {sortDir === "asc" ? t("stats.ascending") : t("stats.descending")}
               </button>
               {isAdmin && scope === "all" && owners.length > 1 && (
@@ -418,14 +485,14 @@ export default function Statistics() {
             </div>
           </div>
 
-          <StatsOverview overview={overview} metric={overviewMetric} onMetric={setOverviewMetric} />
+          <StatsOverview overview={overview} metric={overviewMetric} onMetric={setOverviewMetric} days={days} />
 
           {sorted.length === 0 ? (
             <Empty text={t("stats.emptyNoMatch")} />
           ) : (
             <div className="space-y-4">
               {paged.map((r) => (
-                <ChannelCard key={r.accountId} row={r} isAdmin={!!isAdmin} avatar={avatarMap[r.accountId]} />
+                <ChannelCard key={r.accountId} row={r} isAdmin={!!isAdmin} avatar={avatarMap[r.accountId]} days={days} />
               ))}
             </div>
           )}
@@ -438,7 +505,7 @@ export default function Statistics() {
                 disabled={clampedPage <= 1}
                 aria-label={t("common.back")}
               >
-                <ChevronLeft size={16} />
+                <AppIcon name="chevron-left" size={16} />
               </button>
               <span className="text-sm text-base-content/60">
                 {t("common.page")} {clampedPage} {t("common.of")} {totalPages}
@@ -449,13 +516,15 @@ export default function Statistics() {
                 disabled={clampedPage >= totalPages}
                 aria-label={t("common.forward")}
               >
-                <ChevronRight size={16} />
+                <AppIcon name="chevron-right" size={16} />
               </button>
             </div>
           )}
 
           <AnalyticsFootnote rows={sorted} />
         </>
+      )}
+      </>
       )}
     </div>
   );
@@ -465,16 +534,20 @@ function StatsOverview({
   overview,
   metric,
   onMetric,
+  days,
 }: {
   overview: StatsOverviewData;
   metric: OverviewMetric;
   onMetric: (metric: OverviewMetric) => void;
+  days: number;
 }) {
   const { t } = useT();
   if (overview.channels === 0) return null;
+  const hookRate = overview.analyticsViews > 0 ? (overview.engagedViews / overview.analyticsViews) * 100 : null;
+  const likeRatio = overview.likes + overview.dislikes > 0 ? (overview.likes / (overview.likes + overview.dislikes)) * 100 : null;
 
   const metricLabels: Record<OverviewMetric, string> = {
-    views: t("stats.analyticsViews"),
+    views: t("stats.metricViews"),
     watch: t("stats.watchHours"),
     engaged: t("stats.engagedViews"),
     subscribers: t("stats.netSubscribers"),
@@ -519,11 +592,13 @@ function StatsOverview({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-          <MiniStat label={t("stats.analyticsViews")} value={fmt(overview.analyticsViews)} />
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+          <MiniStat label={t("stats.viewsForDays", { n: days })} value={fmt(overview.analyticsViews)} />
           <MiniStat label={t("stats.watchTime")} value={formatWatchMinutes(overview.watchMinutes)} />
+          <MiniStat label={t("stats.hookRate")} value={hookRate == null ? "—" : `${hookRate.toFixed(0)}%`} title={t("stats.hookRateHint")} />
           <MiniStat label={t("stats.engagedViews")} value={fmt(overview.engagedViews)} />
           <MiniStat label={t("stats.avgDuration")} value={formatSeconds(overview.avgViewDuration)} />
+          <MiniStat label={t("stats.likeRatio")} value={likeRatio == null ? "—" : `${likeRatio.toFixed(0)}%`} title={t("stats.likeRatioHint", { likes: fmt(overview.likes), dislikes: fmt(overview.dislikes) })} />
           <MiniStat label={t("stats.netSubscribers")} value={signed(overview.subscribersGained - overview.subscribersLost)} />
         </div>
 
@@ -563,7 +638,7 @@ function StatsOverview({
 
         <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_22rem] gap-4 items-start">
           {hasBreakdowns ? (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 gap-3">
               <Breakdown title={t("stats.trafficSources")} rows={overview.trafficSources} />
               <Breakdown title={t("stats.devices")} rows={overview.devices} />
               <Breakdown title={t("stats.countries")} rows={overview.countries} />
@@ -580,10 +655,13 @@ function StatsOverview({
   );
 }
 
-function MiniStat({ label, value }: { label: string; value: ReactNode }) {
+function MiniStat({ label, value, title }: { label: string; value: ReactNode; title?: string }) {
   return (
-    <div className="rounded-lg bg-base-200/60 p-3">
-      <div className="text-xs text-base-content/55">{label}</div>
+    <div className="rounded-lg bg-base-200/60 p-3" title={title}>
+      <div className="text-xs text-base-content/55 flex items-center gap-1">
+        {label}
+        {title && <span className="text-base-content/30 cursor-help">ⓘ</span>}
+      </div>
       <div className="text-lg font-bold leading-tight mt-1">{value}</div>
     </div>
   );
@@ -610,7 +688,7 @@ function TopVideosPanel({ videos }: { videos: OverviewTopVideo[] }) {
             >
               <div className="text-xs text-base-content/45 text-right shrink-0">{index + 1}</div>
               <div className="min-w-0">
-                <div className="font-medium text-sm truncate">{v.title}</div>
+                <div className="font-medium text-sm truncate">{cleanDisplayText(v.title)}</div>
                 <div className="text-xs text-base-content/50 truncate">{v.channelTitle}</div>
               </div>
               <div className="text-right shrink-0">
@@ -718,7 +796,7 @@ function TopChannelsPanel({ rows }: { rows: OverviewTopChannel[] }) {
                       title={t("stats.openOnYoutube")}
                       aria-label={t("stats.openOnYoutube")}
                     >
-                      <ExternalLink size={14} />
+                      <AppIcon name="external" size={14} />
                     </a>
                   )}
                 </div>
@@ -758,7 +836,7 @@ function AnalyticsFootnote({ rows }: { rows: StatRow[] }) {
   );
 }
 
-function ChannelCard({ row, isAdmin, avatar }: { row: StatRow; isAdmin: boolean; avatar?: string | null }) {
+function ChannelCard({ row, isAdmin, avatar, days }: { row: StatRow; isAdmin: boolean; avatar?: string | null; days: number }) {
   const { t } = useT();
   const [open, setOpen] = useState(false);
   const [points, setPoints] = useState<StatPoint[] | null>(null);
@@ -794,7 +872,7 @@ function ChannelCard({ row, isAdmin, avatar }: { row: StatRow; isAdmin: boolean;
             />
           ) : (
             <div className="bg-primary/10 text-primary rounded-full w-11 h-11 flex items-center justify-center shrink-0">
-              <BarChart3 size={20} />
+              <AppIcon name="analytics" size={20} />
             </div>
           )}
           <div className="flex-1 min-w-0">
@@ -822,7 +900,8 @@ function ChannelCard({ row, isAdmin, avatar }: { row: StatRow; isAdmin: boolean;
                 className="btn btn-ghost btn-xs text-error"
                 title={t("stats.openOnYoutube")}
               >
-                ↗ YouTube
+                <AppIcon name="youtube" size={14} />
+                YouTube
               </a>
             )
           )}
@@ -830,7 +909,8 @@ function ChannelCard({ row, isAdmin, avatar }: { row: StatRow; isAdmin: boolean;
 
         {row.error && (
           <div className="alert alert-error py-2 text-xs">
-            <span>⚠ {row.error}</span>
+            <AppIcon name="warning" size={15} className="shrink-0" />
+            <span>{row.error}</span>
           </div>
         )}
 
@@ -841,8 +921,14 @@ function ChannelCard({ row, isAdmin, avatar }: { row: StatRow; isAdmin: boolean;
         </div>
 
         {row.analytics.summary.views > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <Metric label={t("stats.analyticsViews")} value={row.analytics.summary.views} delta={null} t={t} />
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            <Metric label={t("stats.viewsForDays", { n: days })} value={row.analytics.summary.views} delta={null} t={t} />
+            <Metric
+              label={t("stats.hookRate")}
+              value={`${((row.analytics.summary.engagedViews / row.analytics.summary.views) * 100).toFixed(0)}%`}
+              delta={null}
+              t={t}
+            />
             <Metric label={t("stats.watchTime")} value={formatWatchMinutes(row.analytics.summary.watchMinutes)} delta={null} t={t} />
             <Metric label={t("stats.engagedViews")} value={row.analytics.summary.engagedViews} delta={null} t={t} />
             <Metric label={t("stats.avgDuration")} value={formatSeconds(row.analytics.summary.avgViewDuration)} delta={null} t={t} />
@@ -854,9 +940,9 @@ function ChannelCard({ row, isAdmin, avatar }: { row: StatRow; isAdmin: boolean;
           onClick={() => setOpen((v) => !v)}
           disabled={!row.latest}
         >
-          <TrendingUp size={15} />
+          <AppIcon name="analytics" size={15} />
           {open ? t("stats.hideChart") : t("stats.showChart")}
-          <ChevronDown size={15} className={open ? "rotate-180 transition-transform" : "transition-transform"} />
+          <AppIcon name="chevron-right" size={15} className={open ? "rotate-90 transition-transform" : "transition-transform"} />
         </button>
 
         {open && (
@@ -903,7 +989,7 @@ function ChannelAnalytics({ analytics }: { analytics: YoutubeAnalyticsPayload })
               >
                 {v.thumbnailUrl && <img src={v.thumbnailUrl} alt="" className="w-16 h-9 object-cover rounded bg-base-300" />}
                 <div className="min-w-0 flex-1">
-                  <div className="font-medium text-sm truncate">{v.title}</div>
+                  <div className="font-medium text-sm truncate">{cleanDisplayText(v.title)}</div>
                   <div className="text-xs text-base-content/50">
                     {fmt(v.views)} {t("stats.views").toLowerCase()} · {formatWatchMinutes(v.watchMinutes)} · {formatSeconds(v.avgViewDuration)}
                   </div>
@@ -913,10 +999,71 @@ function ChannelAnalytics({ analytics }: { analytics: YoutubeAnalyticsPayload })
           </div>
         </div>
       )}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-3">
         <Breakdown title={t("stats.trafficSources")} rows={analytics.trafficSources} />
         <Breakdown title={t("stats.devices")} rows={analytics.devices} />
         <Breakdown title={t("stats.countries")} rows={analytics.countries} />
+        <Demographics rows={analytics.demographics} />
+        <Sharing rows={analytics.sharing} />
+      </div>
+    </div>
+  );
+}
+
+// Audience demographics — the API returns only viewerPercentage (logged-in viewers), age×gender.
+function Demographics({ rows }: { rows: YoutubeDemographicsRow[] }) {
+  const { t } = useT();
+  if (!rows.length) return null;
+  const top = [...rows].sort((a, b) => b.viewerPercentage - a.viewerPercentage).slice(0, 8);
+  const max = Math.max(1, ...top.map((r) => r.viewerPercentage));
+  return (
+    <div className="rounded-lg bg-base-200/60 p-3">
+      <div className="font-semibold text-sm mb-2">{t("stats.demographics")}</div>
+      <div className="space-y-2">
+        {top.map((r) => (
+          <div key={`${r.ageGroup}:${r.gender}`} className="rounded-md border border-base-300/70 bg-base-100/65 px-3 py-2">
+            <div className="flex items-center justify-between gap-3">
+              <span className="min-w-0 truncate text-sm">
+                {r.ageGroup.replace(/^age/, "")} · {genderLabel(r.gender, t)}
+              </span>
+              <span className="shrink-0 text-right text-sm font-semibold tabular-nums">{r.viewerPercentage.toFixed(1)}%</span>
+            </div>
+            <div className="mt-1 h-1.5 rounded bg-base-300 overflow-hidden">
+              <div className="h-full bg-primary" style={{ width: `${Math.round((r.viewerPercentage / max) * 100)}%` }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Where viewers shared the video (share counts per service).
+function Sharing({ rows }: { rows: YoutubeSharingRow[] }) {
+  const { t } = useT();
+  if (!rows.length) return null;
+  const total = rows.reduce((sum, r) => sum + r.shares, 0);
+  return (
+    <div className="rounded-lg bg-base-200/60 p-3">
+      <div className="font-semibold text-sm mb-2">{t("stats.sharing")}</div>
+      <div className="space-y-2">
+        {rows.slice(0, 6).map((r) => {
+          const pct = total > 0 ? Math.round((r.shares / total) * 100) : 0;
+          return (
+            <div key={r.service} className="rounded-md border border-base-300/70 bg-base-100/65 px-3 py-2">
+              <div className="flex items-center justify-between gap-3">
+                <span className="min-w-0 truncate text-sm">{sharingLabel(r.service)}</span>
+                <span className="shrink-0 text-right text-sm font-semibold tabular-nums">{fmt(r.shares)}</span>
+              </div>
+              <div className="mt-1 flex items-center gap-2">
+                <div className="h-1.5 flex-1 rounded bg-base-300 overflow-hidden">
+                  <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
+                </div>
+                <span className="w-8 shrink-0 text-right text-[11px] text-base-content/45 tabular-nums">{pct}%</span>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -932,13 +1079,16 @@ function Breakdown({ title, rows }: { title: string; rows: YoutubeBreakdownRow[]
         {rows.slice(0, 5).map((r) => {
           const pct = total > 0 ? Math.round((r.views / total) * 100) : 0;
           return (
-            <div key={r.key}>
-              <div className="flex items-center justify-between gap-2 text-xs">
-                <span className="truncate">{labelValue(r.key)}</span>
-                <span className="text-base-content/60">{fmt(r.views)}</span>
+            <div key={r.key} className="rounded-md border border-base-300/70 bg-base-100/65 px-3 py-2">
+              <div className="flex items-center justify-between gap-3">
+                <span className="min-w-0 truncate text-sm">{labelValue(r.key)}</span>
+                <span className="shrink-0 text-right text-sm font-semibold tabular-nums">{fmt(r.views)}</span>
               </div>
-              <div className="h-1.5 rounded bg-base-300 overflow-hidden mt-1">
-                <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
+              <div className="mt-1 flex items-center gap-2">
+                <div className="h-1.5 flex-1 rounded bg-base-300 overflow-hidden">
+                  <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
+                </div>
+                <span className="w-8 shrink-0 text-right text-[11px] text-base-content/45 tabular-nums">{pct}%</span>
               </div>
             </div>
           );
@@ -983,7 +1133,7 @@ function ChannelChart({ points }: { points: StatPoint[] | null }) {
           <Tooltip formatter={(value) => compactNumber(Number(value))} />
           <Legend />
           <Line yAxisId="left" type="monotone" dataKey="subscribers" name={t("stats.subscribers")} stroke="#6419e6" strokeWidth={2} dot={false} />
-          <Line yAxisId="right" type="monotone" dataKey="views" name={t("stats.views")} stroke="#0ea5e9" strokeWidth={2} dot={false} />
+          <Line yAxisId="right" type="monotone" dataKey="views" name={t("stats.views")} stroke="#1d4ed8" strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -1006,21 +1156,53 @@ function DeltaBadge({ delta, t }: { delta: number | null; t: (key: string, vars?
   const up = delta > 0;
   return (
     <div className={`text-xs mt-0.5 flex items-center gap-0.5 ${up ? "text-success" : "text-error"}`}>
-      {up ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
       {up ? "+" : "−"}
       {fmt(Math.abs(delta))}
     </div>
   );
 }
 
-function Stat({ icon, label, value }: { icon: ReactNode; label: string; value: ReactNode }) {
+// Platform-wide production totals — one compact strip, the same numbers for every user.
+function PlatformBand({ s }: { s: PlatformSummary }) {
+  const { t } = useT();
+  const items: { label: string; value: ReactNode }[] = [
+    { label: t("stats.platQueued"), value: fmt(s.queued) },
+    { label: t("stats.platUploaded"), value: fmt(s.published) },
+    { label: t("stats.platScheduled"), value: fmt(s.scheduled) },
+    { label: t("stats.platChannels"), value: `${fmt(s.channelsConnected)} / ${fmt(s.channels)}` },
+  ];
   return (
     <div className="card bg-base-100 border border-base-300">
+      <div className="card-body py-3 flex-row flex-wrap items-center gap-x-7 gap-y-2">
+        <div className="flex items-center gap-2 text-sm font-semibold text-base-content/70">
+          <AppIcon name="youtube" size={16} className="text-primary" />
+          {t("stats.platTitle")}
+        </div>
+        <div className="flex flex-wrap items-center gap-x-7 gap-y-2">
+          {items.map((it) => (
+            <div key={it.label} className="flex items-baseline gap-1.5">
+              <span className="text-lg font-bold tabular-nums leading-none">{it.value}</span>
+              <span className="text-xs text-base-content/55">{it.label}</span>
+            </div>
+          ))}
+        </div>
+        <span className="text-xs text-base-content/40 ml-auto">{t("stats.platHint")}</span>
+      </div>
+    </div>
+  );
+}
+
+function Stat({ icon, label, value, title }: { icon: ReactNode; label: string; value: ReactNode; title?: string }) {
+  return (
+    <div className="card bg-base-100 border border-base-300" title={title}>
       <div className="card-body flex-row items-center gap-4 py-5">
         <div className="text-primary">{icon}</div>
-        <div>
+        <div className="min-w-0">
           <div className="text-2xl font-bold leading-none">{value}</div>
-          <div className="text-sm text-base-content/60 mt-1">{label}</div>
+          <div className="text-sm text-base-content/60 mt-1 flex items-center gap-1">
+            {label}
+            {title && <span className="text-base-content/30 cursor-help">ⓘ</span>}
+          </div>
         </div>
       </div>
     </div>
@@ -1031,7 +1213,7 @@ function Empty({ text, icon }: { text: string; icon?: boolean }) {
   return (
     <div className="card bg-base-100 border border-base-300 border-dashed">
       <div className="card-body items-center text-center py-16">
-        {icon && <BarChart3 className="text-base-content/30" size={40} />}
+        {icon && <AppIcon name="analytics" className="text-base-content/30" size={40} />}
         <p className="text-base-content/60 max-w-md">{text}</p>
       </div>
     </div>
@@ -1058,6 +1240,7 @@ function buildOverview(rows: StatRow[]): StatsOverviewData {
     avgViewDuration: 0,
     avgViewPercentage: 0,
     likes: 0,
+    dislikes: 0,
     comments: 0,
     shares: 0,
     subscribersGained: 0,
@@ -1093,6 +1276,7 @@ function buildOverview(rows: StatRow[]): StatsOverviewData {
     overview.watchMinutes += summary.watchMinutes;
     overview.engagedViews += summary.engagedViews;
     overview.likes += summary.likes;
+    overview.dislikes += summary.dislikes;
     overview.comments += summary.comments;
     overview.shares += summary.shares;
     overview.subscribersGained += summary.subscribersGained;
@@ -1228,6 +1412,36 @@ function labelValue(v: string): string {
     .replace(/_/g, " ")
     .toLowerCase()
     .replace(/^\w/, (c) => c.toUpperCase());
+}
+
+function genderLabel(g: string, t: (key: string, vars?: Record<string, string | number>) => string): string {
+  const key = g.toLowerCase();
+  if (key.includes("female")) return t("stats.genderFemale");
+  if (key.includes("male")) return t("stats.genderMale");
+  return t("stats.genderOther");
+}
+
+// Friendly names for YouTube sharingService values (proper nouns left untranslated).
+const SHARING_NAMES: Record<string, string> = {
+  WHATS_APP: "WhatsApp",
+  TELEGRAM: "Telegram",
+  FACEBOOK: "Facebook",
+  FACEBOOK_MESSENGER: "Messenger",
+  TWITTER: "X (Twitter)",
+  REDDIT: "Reddit",
+  PINTEREST: "Pinterest",
+  TUMBLR: "Tumblr",
+  KAKAO: "KakaoTalk",
+  LINE: "LINE",
+  VKONTAKTE: "VK",
+  COPY_PASTE: "Copy link",
+  EMAIL: "Email",
+  TEXT_MESSAGE: "Messages",
+  ANDROID_MESSAGES: "Messages",
+  EMBED: "Embed",
+};
+function sharingLabel(s: string): string {
+  return SHARING_NAMES[s] ?? labelValue(s);
 }
 
 // SQLite datetime('now') → "YYYY-MM-DD HH:MM:SS" in UTC with no zone marker; parse it as UTC.

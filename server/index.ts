@@ -10,7 +10,6 @@ import { DECKS, getDeck, ytMeta, pickGenericTitle, isPackDeckId, deckLang } from
 import { listAllPacks, setGrant, setPackOwners, getPack } from "../src/packs/store.ts";
 import { pickUnusedPackCard, buildPackLibraryVideo } from "./pack-gen.ts";
 import { buildFactLibraryVideo } from "./fact-gen.ts";
-import { importClipToLibrary } from "./clip-import.ts";
 import { renderAnecdote, listBackgrounds } from "../src/anecdotes/render.ts";
 import { assembleStillVideo, listAudio, resolveAudio } from "../src/video.ts";
 import { buildStillVideoFiles } from "./media.ts";
@@ -672,17 +671,21 @@ app.get("/api/analytics", async (req) => {
 });
 
 // ---- Channel stats: subscribers/views/videos snapshots + deltas ----
-// Available to EVERY user for their own channels. Admins may pass ?scope=all to also see
-// everyone's channels. Reads use the SAME OAuth as uploads (youtube.readonly) — no re-auth.
-function visibleAccounts(req: unknown, scope?: string): Account[] {
+// Reads (`readonly`): ANY signed-in user may view every channel's stats (?scope=all).
+// Writes/refresh (default): ?scope=all targets every channel ONLY for admins — a regular
+// user always gets just their own channels, so the «Обновить» button can't touch others'.
+// Reads use the SAME OAuth as uploads (youtube.readonly) — no re-auth.
+function visibleAccounts(req: unknown, scope?: string, readonly = false): Account[] {
   const u = db.getUserById(uid(req));
-  if (u?.role === "admin" && scope === "all") return db.listAccounts();
+  if (scope === "all" && (readonly || u?.role === "admin")) return db.listAccounts();
   return db.listAccountsByUser(uid(req));
 }
-// A channel the current user may view: their own, or any channel if they're an admin.
-function visibleAccount(req: unknown, id: number): Account | null {
+// A channel the current user may view: read-only stat history is visible to everyone; for
+// anything else only the owner (or an admin) may see it.
+function visibleAccount(req: unknown, id: number, readonly = false): Account | null {
   const a = db.getAccount(id);
   if (!a) return null;
+  if (readonly) return a;
   const u = db.getUserById(uid(req));
   return a.userId === uid(req) || u?.role === "admin" ? a : null;
 }
@@ -707,20 +710,28 @@ function addDays(date: string, days: number): string {
   return isoDate(d);
 }
 
-function youtubeAnalyticsRange(now = new Date()): { from: string; to: string } {
+// Refresh always pulls a WIDE 90-day window of per-day rows; the read endpoint then summarizes any
+// 7/30/90-day sub-range from the stored daily rows (no extra YouTube calls per period switch).
+const ANALYTICS_FETCH_DAYS = 90;
+const ALLOWED_STAT_DAYS = [7, 30, 90] as const;
+function youtubeAnalyticsRange(now = new Date(), days = ANALYTICS_FETCH_DAYS): { from: string; to: string } {
   const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
   end.setUTCDate(end.getUTCDate() - 2);
   const to = isoDate(end);
-  return { from: addDays(to, -29), to };
+  return { from: addDays(to, -(days - 1)), to };
+}
+function clampStatDays(v: string | undefined): number {
+  const n = Number(v);
+  return (ALLOWED_STAT_DAYS as readonly number[]).includes(n) ? n : 30;
 }
 
 function asArray(v: unknown): unknown[] {
   return Array.isArray(v) ? v : [];
 }
 
-function accountAnalyticsPayload(accountId: number) {
+function accountAnalyticsPayload(accountId: number, days = 30) {
   const latest = db.latestSnapshot(accountId);
-  const range = youtubeAnalyticsRange();
+  const range = youtubeAnalyticsRange(new Date(), days);
   const daily = db.listDailyAnalytics([accountId], range.from, range.to);
   const summary = daily.reduce(
     (acc, r) => {
@@ -728,6 +739,7 @@ function accountAnalyticsPayload(accountId: number) {
       acc.engagedViews += r.engagedViews;
       acc.watchMinutes += r.watchMinutes;
       acc.likes += r.likes;
+      acc.dislikes += r.dislikes;
       acc.comments += r.comments;
       acc.shares += r.shares;
       acc.subscribersGained += r.subscribersGained;
@@ -745,6 +757,7 @@ function accountAnalyticsPayload(accountId: number) {
       avgViewDuration: 0,
       avgViewPercentage: 0,
       likes: 0,
+      dislikes: 0,
       comments: 0,
       shares: 0,
       subscribersGained: 0,
@@ -760,6 +773,7 @@ function accountAnalyticsPayload(accountId: number) {
   const { _durationWeighted, _percentageWeighted, ...cleanSummary } = summary;
   return {
     range,
+    days,
     status: latest?.analyticsStatus ?? null,
     error: latest?.analyticsError ?? null,
     dataThrough: latest?.dataThrough ?? db.latestDailyAnalyticsDate(accountId),
@@ -771,6 +785,8 @@ function accountAnalyticsPayload(accountId: number) {
     devices: asArray(db.latestReportCache(accountId, "devices")?.payload),
     countries: asArray(db.latestReportCache(accountId, "countries")?.payload),
     subscribedStatus: asArray(db.latestReportCache(accountId, "subscribedStatus")?.payload),
+    demographics: asArray(db.latestReportCache(accountId, "demographics")?.payload),
+    sharing: asArray(db.latestReportCache(accountId, "sharing")?.payload),
     retention: asArray(db.latestReportCache(accountId, "retention")?.payload),
   };
 }
@@ -812,7 +828,7 @@ function summarizeStoredAnalytics(accountId: number, from: string, to: string) {
 }
 
 // One row for the stats table: current totals + the previous snapshot (frontend computes +/-).
-function statRow(a: Account, error?: string | null) {
+function statRow(a: Account, error?: string | null, days = 30) {
   const { latest, prev } = db.twoLatestSnapshots(a.id);
   const owner = a.userId != null ? db.getUserById(a.userId) : null;
   return {
@@ -824,7 +840,7 @@ function statRow(a: Account, error?: string | null) {
     connected: a.status === "connected",
     latest,
     prev,
-    analytics: accountAnalyticsPayload(a.id),
+    analytics: accountAnalyticsPayload(a.id, days),
     error: error ?? null,
   };
 }
@@ -871,9 +887,21 @@ function ytErrorMessage(err: unknown): string {
 }
 
 app.get("/api/stats", async (req) => {
-  const scope = (req.query as { scope?: string }).scope;
-  return visibleAccounts(req, scope).map((a) => statRow(a));
+  const q = req.query as { scope?: string; days?: string };
+  const days = clampStatDays(q.days);
+  const me = uid(req);
+  const isAdmin = db.getUserById(me)?.role === "admin";
+  // Everyone may view all channels' stats; the owner's identity is hidden from non-admins.
+  return visibleAccounts(req, q.scope, true).map((a) => {
+    const row = statRow(a, null, days);
+    if (!isAdmin && a.userId !== me) row.ownerUsername = null;
+    return row;
+  });
 });
+
+// Platform-wide production totals (queue / uploaded / scheduled / channels) — visible to every
+// signed-in user. No per-user breakdown or PII; just the aggregate counters.
+app.get("/api/summary", async () => db.platformSummary());
 
 // Poll YouTube for each visible+connected channel, store a fresh snapshot, return rows with deltas.
 // Each channel is queried with ITS OWNER's Google key (per-user isolation), all in parallel.
@@ -925,6 +953,8 @@ app.post("/api/stats/refresh", async (req) => {
             db.setReportCache(a.id, "devices", analyticsRange.from, analyticsRange.to, bundle.devices);
             db.setReportCache(a.id, "countries", analyticsRange.from, analyticsRange.to, bundle.countries);
             db.setReportCache(a.id, "subscribedStatus", analyticsRange.from, analyticsRange.to, bundle.subscribedStatus);
+            db.setReportCache(a.id, "demographics", analyticsRange.from, analyticsRange.to, bundle.demographics);
+            db.setReportCache(a.id, "sharing", analyticsRange.from, analyticsRange.to, bundle.sharing);
             db.setReportCache(a.id, "retention", analyticsRange.from, analyticsRange.to, bundle.retention);
             analyticsStatus = "ok";
             analyticsSummary = bundle.summary;
@@ -991,7 +1021,9 @@ app.post("/api/stats/refresh", async (req) => {
 });
 
 app.get("/api/stats/:id/history", async (req, reply) => {
-  const a = visibleAccount(req, Number((req.params as { id: string }).id));
+  // Read-only snapshot history of any channel — visible to every signed-in user (matches the
+  // «Все каналы» stats view; same harmless subscribers/views series already shown on the card).
+  const a = visibleAccount(req, Number((req.params as { id: string }).id), true);
   if (!a) return reply.code(404).send({ error: "Канал не найден" });
   return db.listChannelSnapshots(a.id);
 });
@@ -1164,24 +1196,6 @@ app.post("/api/videos", async (req, reply) => {
     music: body.music,
     deck: channelDeck.id, // forced to the channel's language
   });
-});
-
-// Save a finished montage from the admin "Нарезки" gallery into a channel's library (scheduler auto-posts it).
-app.post("/api/clip-demos/save", async (req, reply) => {
-  if (db.getUserById(uid(req))?.role !== "admin") return reply.code(403).send({ error: "Только администратор." });
-  const body = (req.body as { accountId?: number; clipId?: string; title?: string; description?: string }) ?? {};
-  if (!body.accountId || !body.clipId) return reply.code(400).send({ error: "accountId и clipId обязательны" });
-  const acc = ownAccount(req, reply, body.accountId);
-  if (!acc) return;
-  if (isPackDeckId(acc.lang)) return reply.code(400).send({ error: "Это пак-канал — выберите обычный канал." });
-  const channelDeck = DECKS.find((d) => d.id === acc.lang);
-  if (!channelDeck) return reply.code(400).send({ error: `У канала язык «${acc.lang}» без пака.` });
-  if (channelDeck.preFact) return reply.code(400).send({ error: "Это видео-пак — выберите обычный канал." });
-  const v = await importClipToLibrary({
-    db, accountId: acc.id, clipId: body.clipId,
-    title: body.title || body.clipId, description: body.description || "", deck: channelDeck.id,
-  });
-  return { ok: true, video: v };
 });
 
 // Batch: generate N random UNUSED anecdotes straight into a channel's library.

@@ -10,6 +10,19 @@ export interface AnalyticsBreakdownRow {
   avgViewDuration?: number;
 }
 
+// Demographics: the API returns ONLY viewerPercentage (no views/watch-time), for logged-in viewers.
+export interface AnalyticsDemographicsRow {
+  ageGroup: string;
+  gender: string;
+  viewerPercentage: number;
+}
+
+// Where viewers shared the video (WhatsApp / Telegram / Copy to clipboard / …).
+export interface AnalyticsSharingRow {
+  service: string;
+  shares: number;
+}
+
 export interface AnalyticsTopVideo {
   videoId: string;
   title: string;
@@ -53,6 +66,8 @@ export interface ChannelAnalyticsBundle {
   devices: AnalyticsBreakdownRow[];
   countries: AnalyticsBreakdownRow[];
   subscribedStatus: AnalyticsBreakdownRow[];
+  demographics: AnalyticsDemographicsRow[];
+  sharing: AnalyticsSharingRow[];
   retention: AnalyticsVideoRetention[];
 }
 
@@ -65,6 +80,7 @@ const DAILY_METRICS = [
   "averageViewDuration",
   "averageViewPercentage",
   "likes",
+  "dislikes",
   "comments",
   "shares",
   "subscribersGained",
@@ -98,6 +114,7 @@ function dailyFromRows(accountId: number, rows: QueryRow[]): ChannelDailyAnalyti
       avgViewDuration: num(r.averageViewDuration),
       avgViewPercentage: num(r.averageViewPercentage),
       likes: num(r.likes),
+      dislikes: num(r.dislikes),
       comments: num(r.comments),
       shares: num(r.shares),
       subscribersGained: num(r.subscribersGained),
@@ -112,6 +129,7 @@ function summarizeDaily(rows: ChannelDailyAnalytics[]): ChannelAnalyticsBundle["
       acc.engagedViews += r.engagedViews;
       acc.watchMinutes += r.watchMinutes;
       acc.likes += r.likes;
+      acc.dislikes += r.dislikes;
       acc.comments += r.comments;
       acc.shares += r.shares;
       acc.subscribersGained += r.subscribersGained;
@@ -125,6 +143,7 @@ function summarizeDaily(rows: ChannelDailyAnalytics[]): ChannelAnalyticsBundle["
       avgViewDuration: 0,
       avgViewPercentage: 0,
       likes: 0,
+      dislikes: 0,
       comments: 0,
       shares: 0,
       subscribersGained: 0,
@@ -274,6 +293,32 @@ export async function fetchChannelAnalyticsBundle(
     }).then((rows) => breakdownRows(rows, "subscribedStatus")),
   ]);
 
+  // Demographics (ageGroup×gender → viewerPercentage only) and share destinations.
+  // optionalQuery swallows errors so an unsupported combo never breaks the whole refresh.
+  const [demographics, sharing] = await Promise.all([
+    optionalQuery({
+      dimensions: "ageGroup,gender",
+      metrics: "viewerPercentage",
+      sort: "-viewerPercentage",
+    }).then((rows) =>
+      rows.map((r) => ({
+        ageGroup: String(r.ageGroup ?? ""),
+        gender: String(r.gender ?? ""),
+        viewerPercentage: num(r.viewerPercentage),
+      })),
+    ),
+    optionalQuery({
+      dimensions: "sharingService",
+      metrics: "shares",
+      sort: "-shares",
+      maxResults: 25,
+    }).then((rows) =>
+      rows
+        .map((r) => ({ service: String(r.sharingService ?? ""), shares: num(r.shares) }))
+        .filter((r) => r.shares > 0),
+    ),
+  ]);
+
   const retention: AnalyticsVideoRetention[] = [];
   for (const v of topVideos.slice(0, 3)) {
     try {
@@ -303,6 +348,8 @@ export async function fetchChannelAnalyticsBundle(
     devices,
     countries,
     subscribedStatus,
+    demographics,
+    sharing,
     retention,
   };
 }
