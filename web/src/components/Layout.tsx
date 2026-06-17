@@ -4,7 +4,7 @@ import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../lib/auth";
 import { useT, type Lang } from "../lib/i18n";
 import { AppIcon, type AppIconName } from "./AppIcon";
-import { apiClient, type AuthUser } from "../lib/api";
+import { apiClient, type AuthUser, type NotificationItem } from "../lib/api";
 
 type NavItem = {
   to: string;
@@ -39,7 +39,7 @@ const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
     labelKey: "layout.groupControl",
     items: [
       { to: "/statistics", labelKey: "nav.statistics", icon: "analytics", end: false },
-      { to: "/notifications", labelKey: "nav.notifications", icon: "notifications", end: false },
+      { to: "/notifications", labelKey: "nav.notifications", icon: "notifications", end: false, adminOnly: true, adminBadge: true },
       { to: "/errors", labelKey: "nav.errors", icon: "errors", end: false, adminOnly: true, adminBadge: true },
     ],
   },
@@ -229,19 +229,7 @@ function AdminLayout({
 
             <div className="ml-auto flex items-center gap-2">
               <NetworkIndicator t={t} />
-              <Link
-                to="/notifications"
-                className={`btn btn-sm btn-square ${notificationUnread > 0 ? "btn-error" : "admin-action-quiet"}`}
-                aria-label={t("nav.notifications")}
-                title={t("nav.notifications")}
-              >
-                <AppIcon name="notifications" size={17} />
-                {notificationUnread > 0 && (
-                  <span className="absolute -top-1 -right-1 badge badge-xs badge-primary border-base-100">
-                    {notificationUnread > 99 ? "99+" : notificationUnread}
-                  </span>
-                )}
-              </Link>
+              <NotificationDropdown user={user} unread={notificationUnread} t={t} />
               <LanguageToggle lang={lang} setLang={setLang} t={t} className="hidden sm:inline-flex" />
               <button className="btn btn-ghost btn-sm btn-square" onClick={logout} title={t("layout.logout")} aria-label={t("layout.logout")}>
                 <AppIcon name="logout" size={16} />
@@ -360,6 +348,195 @@ function AdminLayout({
       </div>
     </div>
   );
+}
+
+function NotificationDropdown({
+  user,
+  unread,
+  t,
+}: {
+  user: AuthUser;
+  unread: number;
+  t: (key: string, vars?: Record<string, string | number>) => string;
+}) {
+  const detailsRef = useRef<HTMLDetailsElement>(null);
+  const [items, setItems] = useState<NotificationItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  function notifyChanged() {
+    window.dispatchEvent(new CustomEvent("notifications:changed"));
+  }
+
+  async function load() {
+    setLoading(true);
+    setError("");
+    try {
+      const next = await apiClient.notifications({ scope: "mine", status: "open", limit: 8 });
+      setItems(next);
+      const unreadIds = next.filter((n) => !n.readAt).map((n) => n.id);
+      if (unreadIds.length) {
+        await Promise.all(unreadIds.map((id) => apiClient.readNotification(id).catch(() => null)));
+        notifyChanged();
+        const readAt = new Date().toISOString();
+        setItems((cur) => cur.map((n) => (unreadIds.includes(n.id) ? { ...n, readAt } : n)));
+      }
+    } catch {
+      setError(t("notifications.loadFailed"));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function deleteItem(id: number) {
+    await apiClient.deleteNotification(id);
+    setItems((cur) => cur.filter((n) => n.id !== id));
+    notifyChanged();
+  }
+
+  function close() {
+    if (detailsRef.current) detailsRef.current.open = false;
+  }
+
+  return (
+    <details
+      ref={detailsRef}
+      className="notification-dropdown dropdown dropdown-end"
+      data-no-route-transition
+      onToggle={(e) => {
+        if (e.currentTarget.open) load();
+      }}
+    >
+      <summary
+        className={`btn btn-sm btn-square relative ${unread > 0 ? "btn-error" : "admin-action-quiet"}`}
+        role="button"
+        aria-haspopup="menu"
+        aria-label={t("nav.notifications")}
+        title={t("nav.notifications")}
+      >
+        <AppIcon name="notifications" size={17} />
+        {unread > 0 && (
+          <span className="absolute -top-1 -right-1 badge badge-xs badge-primary border-base-100">
+            {unread > 99 ? "99+" : unread}
+          </span>
+        )}
+      </summary>
+
+      <div className="notification-dropdown-panel dropdown-content mt-2">
+        <div className="flex items-start justify-between gap-3 border-b border-base-300 px-3 py-2.5">
+          <div>
+            <div className="text-sm font-bold">{t("notifications.title")}</div>
+            <div className="text-xs text-base-content/50">{t("notifications.dropdownSubtitle")}</div>
+          </div>
+          <button className="btn btn-ghost btn-xs btn-square" onClick={load} disabled={loading} aria-label={t("common.refresh")}>
+            <AppIcon name="refresh" size={14} className={loading ? "animate-spin" : ""} />
+          </button>
+        </div>
+
+        {user.role === "admin" && (
+          <Link to="/notifications" onClick={close} className="admin-inline-action mx-3 mt-2 inline-flex">
+            {t("notifications.adminCenter")}
+          </Link>
+        )}
+
+        <div className="max-h-[min(70vh,34rem)] overflow-y-auto px-2 py-2">
+          {error && (
+            <div className="alert alert-error py-2 text-xs">
+              <AppIcon name="warning" size={14} />
+              <span>{error}</span>
+            </div>
+          )}
+          {loading && items.length === 0 ? (
+            <div className="py-8 text-center text-base-content/50">
+              <span className="loading loading-spinner loading-sm text-primary" />
+            </div>
+          ) : items.length === 0 ? (
+            <div className="py-9 text-center">
+              <AppIcon name="notifications" className="mx-auto mb-2 text-base-content/25" size={28} />
+              <div className="text-sm text-base-content/55">{t("notifications.empty")}</div>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {items.map((n) => (
+                <article key={n.id} className={`notification-mini-card ${!n.readAt ? "is-new" : ""}`}>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className={`badge badge-xs ${notificationSeverityClass(n.severity)}`}>{notificationSeverityText(n.severity, t)}</span>
+                        {!n.readAt && <span className="badge badge-primary badge-xs">{t("notifications.newBadge")}</span>}
+                        {n.count > 1 && <span className="badge badge-outline badge-xs">x{n.count}</span>}
+                      </div>
+                      <div className="mt-1 text-sm font-semibold leading-snug break-words">{n.title}</div>
+                    </div>
+                    <button
+                      className="btn btn-ghost btn-xs btn-square text-error shrink-0"
+                      onClick={() => deleteItem(n.id)}
+                      title={t("notifications.delete")}
+                      aria-label={t("notifications.delete")}
+                    >
+                      <AppIcon name="trash" size={13} />
+                    </button>
+                  </div>
+
+                  <div className="notification-message-preview mt-1 text-xs leading-relaxed text-base-content/70">
+                    {n.message}
+                  </div>
+
+                  {n.solution && (
+                    <div className="mt-2 rounded-md border border-base-300 bg-base-200/60 p-2 text-xs leading-relaxed">
+                      <div className="font-semibold">{t("notifications.solution")}</div>
+                      <div className="notification-message-preview">{n.solution}</div>
+                    </div>
+                  )}
+
+                  <div className="mt-2 flex items-center justify-between gap-2 text-[11px] text-base-content/45">
+                    <span>{fmtNotificationTime(n.lastSeenAt)}</span>
+                    <span className="truncate">
+                      {n.accountId ? (
+                        <Link to={`/accounts/${n.accountId}`} onClick={close} className="link">
+                          {n.accountName || `#${n.accountId}`}
+                        </Link>
+                      ) : n.source ? (
+                        n.source
+                      ) : null}
+                    </span>
+                  </div>
+
+                  {n.actionUrl && (
+                    <a className="admin-inline-action mt-2 inline-flex text-xs" href={n.actionUrl} target="_blank" rel="noreferrer">
+                      {t("notifications.openFix")}
+                    </a>
+                  )}
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </details>
+  );
+}
+
+function notificationSeverityClass(severity: string): string {
+  if (severity === "error") return "badge-error";
+  if (severity === "warning") return "badge-warning";
+  return "badge-info";
+}
+
+function notificationSeverityText(severity: string, t: (key: string) => string): string {
+  if (severity === "error") return t("notifications.severityError");
+  if (severity === "warning") return t("notifications.severityWarning");
+  return t("notifications.severityInfo");
+}
+
+function fmtNotificationTime(iso: string): string {
+  return new Date(iso.includes("T") ? iso : iso.replace(" ", "T") + "Z").toLocaleString("ru-RU", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
 }
 
 function canSmoothNavigate(event: ReactMouseEvent, anchor: HTMLAnchorElement) {

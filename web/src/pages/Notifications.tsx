@@ -13,7 +13,7 @@ export default function Notifications() {
   const { user } = useAuth();
   const { t } = useT();
   const isAdmin = user?.role === "admin";
-  const [scope, setScope] = useState<Scope>("mine");
+  const [scope, setScope] = useState<Scope>("all");
   const [status, setStatus] = useState<Status>("open");
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);

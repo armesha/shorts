@@ -28,6 +28,7 @@ import {
   Settings2,
   ShieldCheck,
   SquareLibrary,
+  Trash2,
   UserCog,
   Users,
   Video,
@@ -67,6 +68,7 @@ export type AppIconName =
   | "studio"
   | "system"
   | "time"
+  | "trash"
   | "updates"
   | "users"
   | "video"
@@ -109,6 +111,7 @@ const ICONS: Record<AppIconName, LucideIcon> = {
   studio: Languages,
   system: UserCog,
   time: Clock3,
+  trash: Trash2,
   updates: FileText,
   users: Users,
   video: Video,

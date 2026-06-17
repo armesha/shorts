@@ -23,15 +23,13 @@ import {
 } from "../lib/api";
 import { AppIcon } from "../components/AppIcon";
 import { BrandIcon } from "../components/BrandIcon";
-import { SystemOverview } from "./AdminAnalytics";
 import { useAuth } from "../lib/auth";
 import { compactNumber } from "../lib/format";
 import { useT } from "../lib/i18n";
 import { cleanDisplayText } from "../lib/text";
 
 type Scope = "mine" | "all";
-// Admin gets a third «Сводка» tab (operational system overview); everyone else sees mine/all.
-type View = "mine" | "all" | "system";
+type View = "mine" | "all";
 type MetricKey = "subscribers" | "views" | "videos";
 type SortKey = "name" | "subscribers" | "views" | "videos" | "delta" | "analyticsViews" | "watchMinutes";
 type OverviewMetric = "views" | "watch" | "engaged" | "subscribers";
@@ -126,17 +124,10 @@ export default function Statistics() {
     const d = saved.days ?? 30;
     return DAYS_OPTIONS.includes(d as 7 | 30 | 90) ? d : 30;
   });
-  // «system» is admin-only; for the channel queries it behaves like «mine».
-  const showSystem = view === "system" && isAdmin;
   const scope: Scope = view === "all" ? "all" : "mine";
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [dataOnlyRefreshing, setDataOnlyRefreshing] = useState(false);
-  // «Сводка» tab refresh is owned by <SystemOverview/>: the header button bumps a nonce and reads back its state.
-  const [systemRefreshNonce, setSystemRefreshNonce] = useState(0);
-  const [systemDataOnlyRefreshNonce, setSystemDataOnlyRefreshNonce] = useState(0);
-  const [systemRefreshing, setSystemRefreshing] = useState(false);
-  const [systemDataOnlyRefreshing, setSystemDataOnlyRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
   const [avatarMap, setAvatarMap] = useState<Record<number, string | null | undefined>>({});
@@ -316,7 +307,7 @@ export default function Statistics() {
       <header className="flex items-start justify-between gap-2 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold">{t("nav.statistics")}</h1>
-          <p className="text-base-content/60">{showSystem ? t("analytics.subtitle") : t("stats.subtitle")}</p>
+          <p className="text-base-content/60">{t("stats.subtitle")}</p>
         </div>
         <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
           <div className="join">
@@ -332,22 +323,14 @@ export default function Statistics() {
             >
               {t("stats.scopeAll")}
             </button>
-            {isAdmin && (
-              <button
-                className={`btn btn-sm join-item ${view === "system" ? "btn-primary" : "btn-ghost"}`}
-                onClick={() => setView("system")}
-              >
-                {t("stats.scopeSystem")}
-              </button>
-            )}
           </div>
           <button
             className="btn btn-sm btn-primary gap-2"
-            onClick={() => (showSystem ? setSystemRefreshNonce((n) => n + 1) : refresh())}
-            disabled={showSystem ? systemRefreshing : refreshing || loading}
+            onClick={refresh}
+            disabled={refreshing || loading}
             title={!isAdmin && view === "all" ? t("stats.refreshMineHint") : undefined}
           >
-            {(showSystem ? systemRefreshing : refreshing) ? (
+            {refreshing ? (
               <span className="loading loading-spinner loading-sm" />
             ) : (
               <AppIcon name="refresh" size={18} />
@@ -357,11 +340,11 @@ export default function Statistics() {
           {isAdmin && (
             <button
               className="btn btn-sm btn-outline gap-2"
-              onClick={() => (showSystem ? setSystemDataOnlyRefreshNonce((n) => n + 1) : refreshDataOnly())}
-              disabled={showSystem ? systemDataOnlyRefreshing : dataOnlyRefreshing || loading}
+              onClick={refreshDataOnly}
+              disabled={dataOnlyRefreshing || loading}
               title={t("stats.refreshDataOnlyTitle")}
             >
-              {(showSystem ? systemDataOnlyRefreshing : dataOnlyRefreshing) ? (
+              {dataOnlyRefreshing ? (
                 <span className="loading loading-spinner loading-sm" />
               ) : (
                 <BrandIcon name="youtube" size={18} />
@@ -411,28 +394,9 @@ export default function Statistics() {
         </div>
       )}
 
-      {showSystem ? (
-        <SystemOverview
-          refreshNonce={systemRefreshNonce}
-          dataOnlyRefreshNonce={systemDataOnlyRefreshNonce}
-          onRefreshingChange={setSystemRefreshing}
-          onDataOnlyRefreshingChange={setSystemDataOnlyRefreshing}
-        />
-      ) : (
       <>
       {summary && <PlatformBand s={summary} />}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
-        <Stat icon={<AppIcon name="users" />} label={t("stats.totalSubscribers")} value={fmt(overview.subscribers)} />
-        <Stat icon={<BrandIcon name="youtube" />} label={t("stats.totalViews")} value={fmt(overview.publicViews)} />
-        <Stat
-          icon={<AppIcon name="analytics" />}
-          label={t("stats.viewsForDays", { n: days })}
-          value={fmt(overview.analyticsViews)}
-          title={t("stats.periodViewsHint")}
-        />
-        <Stat icon={<AppIcon name="time" />} label={t("stats.watchTime")} value={formatWatchMinutes(overview.watchMinutes)} />
-        <Stat icon={<AppIcon name="accounts" />} label={t("stats.channelsConnected")} value={`${overview.connected} / ${overview.channels}`} />
-      </div>
+      <SourceStats overview={overview} days={days} isAdmin={!!isAdmin} />
 
       {analytics &&
         analytics.summary.published + analytics.summary.scheduled + analytics.summary.failed + analytics.summary.queuedVideos > 0 && (
@@ -604,7 +568,50 @@ export default function Statistics() {
         </>
       )}
       </>
-      )}
+    </div>
+  );
+}
+
+function SourceStats({ overview, days, isAdmin }: { overview: StatsOverviewData; days: number; isAdmin: boolean }) {
+  const { t } = useT();
+  return (
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+      <section className="card bg-base-100 border border-base-300">
+        <div className="card-body gap-3">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="card-title text-base">{t("stats.youtubeAnalyticsTitle")}</h2>
+              <p className="text-xs text-base-content/55">{t("stats.youtubeAnalyticsHint")}</p>
+            </div>
+            <span className="badge badge-info badge-sm">Analytics</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <MiniStat label={t("stats.viewsForDays", { n: days })} value={fmt(overview.analyticsViews)} title={t("stats.periodViewsHint")} />
+            <MiniStat label={t("stats.watchTime")} value={formatWatchMinutes(overview.watchMinutes)} />
+            <MiniStat label={t("stats.engagedViews")} value={fmt(overview.engagedViews)} />
+            <MiniStat label={t("stats.avgDuration")} value={formatSeconds(overview.avgViewDuration)} />
+          </div>
+        </div>
+      </section>
+      <section className="card bg-base-100 border border-base-300">
+        <div className="card-body gap-3">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="card-title text-base">{t("stats.youtubeDataTitle")}</h2>
+              <p className="text-xs text-base-content/55">
+                {isAdmin ? t("stats.youtubeDataAdminHint") : t("stats.youtubeDataUserHint")}
+              </p>
+            </div>
+            <span className="badge badge-outline badge-sm">Data API</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <MiniStat label={t("stats.totalSubscribers")} value={fmt(overview.subscribers)} />
+            <MiniStat label={t("stats.totalViews")} value={fmt(overview.publicViews)} />
+            <MiniStat label={t("stats.videos")} value={fmt(overview.videos)} />
+            <MiniStat label={t("stats.channelsConnected")} value={`${overview.connected} / ${overview.channels}`} />
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
@@ -1268,23 +1275,6 @@ function PlatformBand({ s }: { s: PlatformSummary }) {
           ))}
         </div>
         <span className="text-xs text-base-content/40 ml-auto">{t("stats.platHint")}</span>
-      </div>
-    </div>
-  );
-}
-
-function Stat({ icon, label, value, title }: { icon: ReactNode; label: string; value: ReactNode; title?: string }) {
-  return (
-    <div className="card bg-base-100 border border-base-300" title={title}>
-      <div className="card-body flex-row items-center gap-4 py-5">
-        <div className="text-primary">{icon}</div>
-        <div className="min-w-0">
-          <div className="text-2xl font-bold leading-none">{value}</div>
-          <div className="text-sm text-base-content/60 mt-1 flex items-center gap-1">
-            {label}
-            {title && <span className="text-base-content/30 cursor-help">ⓘ</span>}
-          </div>
-        </div>
       </div>
     </div>
   );

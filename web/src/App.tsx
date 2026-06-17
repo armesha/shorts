@@ -35,7 +35,7 @@ function Gate() {
         <Route path="/studio" element={<Studio />} />
         <Route path="/cards" element={<Cards />} />
         <Route path="/packs" element={<Packs />} />
-        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/notifications" element={user.role === "admin" ? <Notifications /> : <Navigate to="/" replace />} />
         <Route path="/accounts" element={<Navigate to={user.role === "admin" ? "/channels" : "/"} replace />} />
         <Route path="/accounts/:id" element={<AccountDetail />} />
         <Route path="/history" element={<History />} />
