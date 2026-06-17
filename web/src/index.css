@@ -187,9 +187,138 @@ body {
   box-shadow: inset 3px 0 0 #0066cc;
 }
 
+.admin-shell .admin-nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.65rem;
+  height: 1rem;
+  padding: 0 0.3rem;
+  border: 1px solid color-mix(in srgb, #0066cc 24%, #ffffff);
+  border-radius: 999px;
+  background: color-mix(in srgb, #0066cc 9%, #ffffff);
+  color: #0054a6;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.admin-shell .admin-nav-badge-mobile {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.35rem;
+  min-width: 1.45rem;
+  height: 0.85rem;
+  font-size: 0.55rem;
+  padding-inline: 0.22rem;
+}
+
 .admin-shell .drawer-side > aside,
 .admin-shell > .drawer-content > header {
   background: color-mix(in srgb, #ffffff 94%, #f5f5f7);
+}
+
+.admin-shell .route-page {
+  min-height: calc(100dvh - 7rem);
+}
+
+.admin-shell .route-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+.admin-shell .route-progress::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 42%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, #0066cc 22%, #007a5a 78%, transparent);
+  transform: translateX(-105%);
+}
+
+.admin-shell .route-progress.is-visible {
+  opacity: 1;
+}
+
+.admin-shell .route-progress.is-visible::before {
+  animation: route-progress-slide 720ms ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .admin-shell .route-page {
+    animation: route-page-enter 180ms cubic-bezier(0.2, 0, 0.2, 1) both;
+  }
+}
+
+@supports (view-transition-name: route-page) {
+  html[data-route-transition="native"] {
+    view-transition-name: none;
+  }
+
+  html[data-route-transition="native"] .admin-shell .route-page {
+    animation: none;
+    view-transition-name: route-page;
+  }
+
+  ::view-transition-old(route-page) {
+    animation: route-view-out 120ms cubic-bezier(0.4, 0, 1, 1) both;
+  }
+
+  ::view-transition-new(route-page) {
+    animation: route-view-in 180ms cubic-bezier(0.2, 0, 0.2, 1) both;
+  }
+}
+
+@keyframes route-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes route-view-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes route-view-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes route-progress-slide {
+  0% {
+    transform: translateX(-105%);
+  }
+  55%,
+  100% {
+    transform: translateX(250%);
+  }
 }
 
 .admin-shell main header h1 + p {

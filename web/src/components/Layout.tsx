@@ -1,5 +1,6 @@
-import { useEffect, useState, type ReactNode } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
+import { flushSync } from "react-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../lib/auth";
 import { useT, type Lang } from "../lib/i18n";
 import { AppIcon, type AppIconName } from "./AppIcon";
@@ -11,18 +12,19 @@ type NavItem = {
   icon: AppIconName;
   end: boolean;
   adminOnly?: boolean;
+  adminBadge?: boolean;
   userOnly?: boolean;
 };
 const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
   {
     labelKey: "layout.groupWork",
     items: [
-      { to: "/", labelKey: "nav.overview", icon: "home", end: true, adminOnly: true },
+      { to: "/", labelKey: "nav.overview", icon: "home", end: true, adminOnly: true, adminBadge: true },
       { to: "/", labelKey: "nav.channels", icon: "accounts", end: true, userOnly: true },
       { to: "/channels", labelKey: "nav.channels", icon: "accounts", end: false, adminOnly: true },
       { to: "/studio", labelKey: "nav.studio", icon: "studio", end: false },
       { to: "/history", labelKey: "nav.history", icon: "history", end: false },
-      { to: "/clip-demos", labelKey: "nav.clipdemos", icon: "clips", end: false, adminOnly: true },
+      { to: "/clip-demos", labelKey: "nav.clipdemos", icon: "clips", end: false, adminOnly: true, adminBadge: true },
     ],
   },
   {
@@ -30,7 +32,7 @@ const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
     items: [
       { to: "/packs", labelKey: "nav.packs", icon: "packs", end: false },
       { to: "/cards", labelKey: "nav.cards", icon: "cards", end: false },
-      { to: "/editor", labelKey: "nav.templates", icon: "library", end: false, adminOnly: true },
+      { to: "/editor", labelKey: "nav.templates", icon: "library", end: false, adminOnly: true, adminBadge: true },
     ],
   },
   {
@@ -38,13 +40,13 @@ const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
     items: [
       { to: "/statistics", labelKey: "nav.statistics", icon: "analytics", end: false },
       { to: "/notifications", labelKey: "nav.notifications", icon: "notifications", end: false },
-      { to: "/errors", labelKey: "nav.errors", icon: "errors", end: false, adminOnly: true },
+      { to: "/errors", labelKey: "nav.errors", icon: "errors", end: false, adminOnly: true, adminBadge: true },
     ],
   },
   {
     labelKey: "layout.groupAdmin",
     items: [
-      { to: "/users", labelKey: "nav.users", icon: "users", end: false, adminOnly: true },
+      { to: "/users", labelKey: "nav.users", icon: "users", end: false, adminOnly: true, adminBadge: true },
       { to: "/system", labelKey: "nav.server", icon: "system", end: false },
       { to: "/settings", labelKey: "nav.settings", icon: "settings", end: false },
       { to: "/changelog", labelKey: "nav.changelog", icon: "updates", end: false },
@@ -52,10 +54,10 @@ const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
   },
 ];
 const ADMIN_BOTTOM_NAV: NavItem[] = [
-  { to: "/", labelKey: "nav.overview", icon: "home", end: true },
+  { to: "/", labelKey: "nav.overview", icon: "home", end: true, adminBadge: true },
   { to: "/channels", labelKey: "nav.channels", icon: "accounts", end: false },
   { to: "/studio", labelKey: "nav.studio", icon: "studio", end: false },
-  { to: "/clip-demos", labelKey: "nav.clipdemos", icon: "clips", end: false },
+  { to: "/clip-demos", labelKey: "nav.clipdemos", icon: "clips", end: false, adminBadge: true },
   { to: "/statistics", labelKey: "nav.statistics", icon: "analytics", end: false },
 ];
 const USER_BOTTOM_NAV: NavItem[] = [
@@ -67,6 +69,14 @@ const USER_BOTTOM_NAV: NavItem[] = [
 ];
 
 const DRAWER_ID = "main-drawer";
+type ViewTransitionHandle = {
+  finished: Promise<void>;
+  skipTransition?: () => void;
+};
+type ViewTransitionDocument = Document & {
+  startViewTransition?: (updateCallback: () => void) => ViewTransitionHandle;
+};
+
 // Close the off-canvas drawer (mobile) after navigating — pure-CSS DaisyUI drawer keeps it open otherwise.
 function closeDrawer() {
   const el = document.getElementById(DRAWER_ID) as HTMLInputElement | null;
@@ -149,9 +159,61 @@ function AdminLayout({
   notificationUnread: number;
   stopImpersonation: () => Promise<void>;
 }) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const firstRoute = useRef(true);
+  const [routeSettling, setRouteSettling] = useState(false);
   const bottomNav = user.role === "admin" ? ADMIN_BOTTOM_NAV : USER_BOTTOM_NAV;
+
+  useEffect(() => {
+    if (firstRoute.current) {
+      firstRoute.current = false;
+      return;
+    }
+    setRouteSettling(true);
+    const timer = window.setTimeout(() => setRouteSettling(false), 320);
+    return () => window.clearTimeout(timer);
+  }, [location.pathname, location.search]);
+
+  function handleRouteClick(event: ReactMouseEvent<HTMLDivElement>) {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const anchor = target.closest<HTMLAnchorElement>("a[href]");
+    if (!anchor || !canSmoothNavigate(event, anchor)) return;
+
+    const url = new URL(anchor.href);
+    const nextPath = `${url.pathname}${url.search}${url.hash}`;
+    const currentPath = `${location.pathname}${location.search}${location.hash}`;
+    if (nextPath === currentPath) {
+      closeDrawer();
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const go = () => {
+      closeDrawer();
+      navigate(nextPath);
+    };
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const doc = document as ViewTransitionDocument;
+    if (!reduceMotion && doc.startViewTransition) {
+      document.documentElement.dataset.routeTransition = "native";
+      const transition = doc.startViewTransition(() => {
+        flushSync(go);
+      });
+      transition.finished.finally(() => {
+        delete document.documentElement.dataset.routeTransition;
+      });
+      return;
+    }
+
+    go();
+  }
+
   return (
-    <div className="admin-shell drawer lg:drawer-open min-h-screen bg-base-200 text-base-content">
+    <div className="admin-shell drawer lg:drawer-open min-h-screen bg-base-200 text-base-content" onClickCapture={handleRouteClick}>
       <input id={DRAWER_ID} type="checkbox" className="drawer-toggle" />
 
       <div className="drawer-content flex min-w-0 flex-col pb-16 lg:pb-0">
@@ -186,6 +248,7 @@ function AdminLayout({
               </button>
             </div>
           </div>
+          <div className={`route-progress ${routeSettling ? "is-visible" : ""}`} aria-hidden="true" />
         </header>
 
         {user.impersonator && (
@@ -202,7 +265,11 @@ function AdminLayout({
         )}
 
         <main className="flex-1 min-w-0">
-          <div className="max-w-[1320px] mx-auto px-4 sm:px-6 py-5 sm:py-6">{children}</div>
+          <div className="max-w-[1320px] mx-auto px-4 sm:px-6 py-5 sm:py-6">
+            <div key={`${location.pathname}${location.search}`} className="route-page">
+              {children}
+            </div>
+          </div>
         </main>
 
         <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 border-t border-base-300 bg-base-100/95 backdrop-blur">
@@ -213,11 +280,12 @@ function AdminLayout({
                 to={item.to}
                 end={item.end}
                 className={({ isActive }) =>
-                  `min-h-14 px-1 py-1.5 flex flex-col items-center justify-center gap-0.5 text-[11px] ${
+                  `relative min-h-14 px-1 py-1.5 flex flex-col items-center justify-center gap-0.5 text-[11px] ${
                     isActive ? "text-primary font-semibold" : "text-base-content/60"
                   }`
                 }
               >
+                {item.adminBadge && <span className="admin-nav-badge admin-nav-badge-mobile">adm</span>}
                 <AppIcon name={item.icon} size={18} />
                 <span className="truncate max-w-full">{t(item.labelKey)}</span>
               </NavLink>
@@ -249,7 +317,7 @@ function AdminLayout({
                     {t(group.labelKey)}
                   </div>
                   <ul className="menu gap-1 w-full p-0">
-                    {items.map(({ to, labelKey, icon, end }) => (
+                    {items.map(({ to, labelKey, icon, end, adminBadge }) => (
                       <li key={to}>
                         <NavLink
                           to={to}
@@ -259,6 +327,7 @@ function AdminLayout({
                         >
                           <AppIcon name={icon} size={18} />
                           {t(labelKey)}
+                          {adminBadge && <span className="admin-nav-badge ml-auto">adm</span>}
                           {to === "/notifications" && notificationUnread > 0 && (
                             <span className="badge badge-error badge-sm ml-auto">{notificationUnread > 99 ? "99+" : notificationUnread}</span>
                           )}
@@ -291,6 +360,22 @@ function AdminLayout({
       </div>
     </div>
   );
+}
+
+function canSmoothNavigate(event: ReactMouseEvent, anchor: HTMLAnchorElement) {
+  if (event.defaultPrevented || event.button !== 0) return false;
+  if (event.metaKey || event.altKey || event.ctrlKey || event.shiftKey) return false;
+  if (anchor.target && anchor.target !== "_self") return false;
+  if (anchor.hasAttribute("download") || anchor.closest("[data-no-route-transition]")) return false;
+
+  const url = new URL(anchor.href);
+  if (url.origin !== window.location.origin) return false;
+  if (url.pathname.startsWith("/api/")) return false;
+  if (url.pathname.startsWith("/files/")) return false;
+  if (url.pathname.startsWith("/fact-videos/")) return false;
+  if (url.pathname.startsWith("/admin-demos/")) return false;
+  if (url.pathname.includes(".") && !url.pathname.endsWith(".html")) return false;
+  return true;
 }
 
 function NetworkIndicator({ t }: { t: (key: string, vars?: Record<string, string | number>) => string }) {
