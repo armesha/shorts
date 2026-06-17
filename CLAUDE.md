@@ -78,7 +78,8 @@ unattended, managed from a web dashboard. Architecture & research: `docs/STACK.m
 - Verify the UI headlessly: `npm run server` + `npm run web`, then `tsx src/scripts/screenshot-url.ts <url> <out.png>`.
 
 ## Notes for myself (keep updated)
-- **Subagent/workflow MODEL policy (user rule):** anecdote formatting & titling, AND **lifehacks/tips generation** → use **Claude Haiku** (bulk, cheap/fast). For ALL other subagents/workflows → inherit the **main session model** (don't override `model`).
+- **Subagent/workflow MODEL policy (user rule):** before launching ANY LLM/subagent/workflow that generates, cleans, ranks, formats, or titles pack content, ask the user which model to use. Do not hardcode Haiku/Sonnet/Opus and do not inherit silently when the workflow model choice affects cost/quality. Local parsers/builders/checks can run without asking.
+- **Pack generation docs:** detailed source/generation/replenishment instructions for every built-in deck and template-pack live in `docs/pack-generation.md`. Read it before touching `data/anecdotes*`, `data/tips*`, `data/islamic`, `data/christian`, `data/*/videos.json`, `assets/template-packs/*`, or `data/packs/*`.
 - Frontend uses DaisyUI v5 + Tailwind v4 (`@plugin "daisyui"` in `web/src/index.css`); theme forced light via `data-theme="light"` on `<html>`.
 - `lucide-react` has no `Chrome` icon — use `MonitorPlay`/`Globe` instead.
 - Pencil templates live in `untitled.pen`; never use Read/Grep on `.pen` files (encrypted) — only the `pencil` MCP tools.
@@ -114,19 +115,19 @@ unattended, managed from a web dashboard. Architecture & research: `docs/STACK.m
   паков» в Админке (`Users.tsx`).
   TODO: привязка шаблона к паку прямо из /editor (сейчас вставкой JSON); расписание-автопостинг паков
   идёт через сохранение видео в библиотеку (синтет-дека → generic YouTube-метаданные).
-- First generator = **Русские анекдоты (no AI)**: `src/anecdotes/build.ts` parses `Русские анекдоты/anek_djvu.txt` (split on `<|startoftext|>`; drop mat/@-censored/dupes) → packs of 1000 in `data/anecdotes/` (currently 54,954 in range 100–350 chars). Runtime picks random via `src/anecdotes/library.ts`.
+- First generator = **Русские анекдоты (base no-AI parser + current paired pipeline)**: `src/anecdotes/build.ts` parses `Русские анекдоты/anek_djvu.txt` (split on `<|startoftext|>`; drop mat/@-censored/dupes) for baseline analysis/builds. Current dense RU deck also uses `src/scripts/ru-mine.ts` → LLM-workflow keep/theme files in `corpora/ru-gen` (ask user which model first) → `ru-partition.ts` → `ru-pairs-build.ts`, which writes `data/anecdotes/` and one live `data/packs/...` pack. Details: `docs/pack-generation.md`. Runtime picks random via `src/anecdotes/library.ts`.
 - Anecdote render: `templates/anecdote.html` + `src/anecdotes/render.ts` — binary-search auto-fit fills the frame and checks BOTH vertical AND horizontal overflow (long words must never clip — that's a hard user requirement). Random light bg from `BACKGROUNDS`. Font ≤72px, line-height grow capped ≤1.9 (no big gaps), title auto-shrinks to one line.
-- **IT-дека — плотная (переделка через Haiku):** `src/anecdotes/it-mine.ts` (добыча длинных 330–620 из `corpora/it-*.jsonl`, источник ~152k) → Haiku-воркфлоу чистки (акценты `e'→è`, юзнет-мусор, mojibake, не-шутки) → `src/anecdotes/build-it-dense.ts` (NSFW-фильтр + дедуп + паки) → 1169 плотных (медиана 424), 2 прохода Haiku (`IT_OFFSET` берёт непересекающиеся кандидаты). Ещё ~3k в полосе не использовано.
+- **IT-дека — плотная:** `src/anecdotes/it-mine.ts` (добыча длинных 330–620 из `corpora/it-*.jsonl`, источник ~152k) → LLM-workflow чистки (модель сначала спросить у пользователя; чистка акцентов `e'→è`, usenet-мусора, mojibake, не-шуток) → `src/anecdotes/build-it-dense.ts` (NSFW-фильтр + дедуп + паки) → `data/anecdotes-it/`. Ещё ~3k в полосе не использовано.
 - Studio: `POST /api/generate/anecdote {text?,title?}` → preview PNG served at `/files/...`; frontend `web/src/pages/Studio.tsx`. Anecdote title one-line limit ≈ 28 Cyrillic chars.
 - E2E: `node --import tsx src/scripts/e2e.ts` (Playwright via `channel:'chrome'`) drives the live site; needs `npm run server` + `npm run web` up.
-- **Лайфхаки (дека `tips`):** 979 русских советов по 10 профессиям, сгенерированы Haiku-воркфлоу
+- **Лайфхаки (дека `tips`):** 979 русских советов по 10 профессиям, сгенерированы LLM-workflow
   (60 партий → `corpora/tips-gen/<prof>-<n>.json` → `src/anecdotes/build-tips.ts` → `data/tips/titled.json` + `index.json`).
   Свой рендер: `templates/lifehack.html` + `renderLifehack()` в `render.ts` (диспетч по флагу `deck.lifehack`);
   фон = `assets/backgrounds/lifehacks/profession_<key>.jpg`, заголовок в красную плашку, текст Г-образно
   обтекает фигуру через `shape-outside` (без «растягивания» межстрочного — оно ломало низ). `item.profession`
   лежит в titled.json и протянут через `pipeline.ts` + 4 точки `server/index.ts`. Фронт деко-агностичен
-  (язык `tips` в `LANGS`, генераторы из `/api/generators`). Перегенерация — повторный Haiku-воркфлоу
-  (правило: лайфхаки → Haiku). Тесты: `src/scripts/render-lifehack-test.ts`, `src/scripts/tips-e2e.ts`.
+  (язык `tips` в `LANGS`, генераторы из `/api/generators`). Перед перегенерацией спроси пользователя,
+  какой моделью запускать workflow. Тесты: `src/scripts/render-lifehack-test.ts`, `src/scripts/tips-e2e.ts`.
 - **Немецкие лайфхаки (дека `tips-de`, «Deutsche Lifehacks»):** 1319 советов, та же структура.
   Фоны — усатый вариант `profession_<key>_chaplin.jpg` (поле `lifehackVariant: "chaplin"` в `decks.ts`;
   русская `tips` — без усов, `profession_<key>.jpg`); `lifehackBgFile(profession, variant)` в `render.ts`.
@@ -147,8 +148,8 @@ unattended, managed from a web dashboard. Architecture & research: `docs/STACK.m
   (аяты Корана + хадисы ан-Навави/кудси + дуа Хиснуль-Муслим), **точный** текст. Пайплайн добычи:
   `src/scripts/islamic-fetch-corpus.mjs` (тянет точный арабский из `api.alquran.cloud`,
   `cdn.jsdelivr.net/gh/fawazahmed0/hadith-api`, `hisnmuslim.com` → `corpora/islamic/*` — gitignored) →
-  `islamic-split.mjs` (слайсы) → **ultracode-воркфлоу, агенты на Sonnet** (правило-исключение по просьбе
-  юзера: тут Sonnet, не Haiku/Opus) выбирают важные id из локальных файлов (не из гугла) →
+  `islamic-split.mjs` (слайсы) → LLM-workflow выбирает важные id из локальных файлов (не из гугла);
+  модель workflow сначала спросить у пользователя →
   `islamic-assemble.mjs` подставляет точный арабский по id из `corpora/islamic/pool.json` →
   `data/islamic/cards.json` (+ index.json). Карточка = `{type,arabic,ref,ref_en,theme}` (как psych —
   весь объект JSON в `text`). Рендер: `templates/islamic.html` + `src/islamic/render.ts`, диспетч по
@@ -171,8 +172,8 @@ unattended, managed from a web dashboard. Architecture & research: `docs/STACK.m
   `corpora/christian/`, gitignored): `christian-fetch-corpus.mjs` (полный KJV из `aruljohn/Bible-kjv`
   через jsDelivr → `pool.json`/`verses.jsonl`) → `christian-build-candidates.mjs` (окна стихов внутри
   главы, банд 320–450, дроп генеалогий/списков; тайлит «богатые» книги + FAMOUS-ссылки из остальных →
-  `cand-pool.json` + слайсы + `manifest.json`) → **Sonnet-воркфлоу** (правило-исключение: тут Sonnet,
-  как у ислама; 63 агента читают слайсы с диска, выбирают лучшие id+theme) → `selection.json` →
+  `cand-pool.json` + слайсы + `manifest.json`) → LLM-workflow (модель сначала спросить у пользователя;
+  агенты читают слайсы с диска, выбирают лучшие id+theme) → `selection.json` →
   `christian-assemble.mjs` (дедуп по id+overlap, топ-ап до 1000 из остатка по «хорошим» книгам, баланс,
   каноничный порядок) → `data/christian/cards.json` (+ index.json). Карточка = `{type,text,ref,theme,
   book,testament}` (весь объект JSON в `text`, как islamic/psych). Рендер: `templates/christian.html` +
