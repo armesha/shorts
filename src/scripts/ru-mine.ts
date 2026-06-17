@@ -1,6 +1,6 @@
 // Майнинг коротких анекдотов под ПАРЫ (две шутки → карточка 350–450) для основной RU-деки.
 // Источник упёрся в 367 символов, поэтому длинных нет — берём короткие (их тысячи) и потом парим.
-// Чистка/дедуп/длина/BLOCK здесь; качество+безопасность+тему отдаём Sonnet-воркфлоу (слайсы → corpora/ru-gen).
+// Чистка/дедуп/длина/BLOCK здесь; качество+безопасность+тему отдаём LLM-workflow (слайсы → corpora/ru-gen).
 //   node --import tsx src/scripts/ru-mine.ts
 import { writeFileSync, mkdirSync, rmSync, existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";

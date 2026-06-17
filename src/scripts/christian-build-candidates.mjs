@@ -1,4 +1,4 @@
-// Build passage CANDIDATES (~350-400 chars) from the KJV corpus for the Sonnet selection workflow.
+// Build passage CANDIDATES (~350-400 chars) from the KJV corpus for the selection workflow.
 // Tiles within-chapter verse windows over the verse-rich books, plus famous passages from the rest.
 // Drops genealogy/census/list noise. Output (gitignored): corpora/christian/cand-pool.json (id->passage),
 // candidates.jsonl, slices/*.jsonl (one per agent), manifest.json (printed as JSON line for Workflow args).
@@ -147,7 +147,7 @@ for (const c of candidates) candPool[c.id] = c;
 writeFileSync(`${OUT}/cand-pool.json`, JSON.stringify(candPool));
 writeFileSync(`${OUT}/candidates.jsonl`, candidates.map((c) => JSON.stringify(c)).join("\n") + "\n");
 
-// slice by section (book), chunked to SLICE_SIZE, for one Sonnet agent each
+// slice by section (book), chunked to SLICE_SIZE, for one workflow agent each
 const bySec = new Map();
 for (const c of candidates) {
   if (!bySec.has(c.sec)) bySec.set(c.sec, []);

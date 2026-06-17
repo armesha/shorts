@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 
-// Applies the Haiku _titles-*.json (written per pack by the haiku-titles workflow) into each
+// Applies the LLM workflow _titles-*.json (written per pack by the title workflow) into each
 // deck's titled.json: sets the title and, for Italian, drops items flagged keep=false (chatter).
 // Russian (data/anecdotes) is intentionally NOT touched here.
 const DIRS: Record<string, string> = {

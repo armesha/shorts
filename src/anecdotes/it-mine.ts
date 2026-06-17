@@ -1,8 +1,8 @@
-// Mines LONG, dense Italian jokes from the Usenet source for a Haiku cleaning pass.
+// Mines LONG, dense Italian jokes from the Usenet source for an LLM cleaning pass.
 // build-it.ts caps length at 400 and keeps short one-liners that render loose (huge line gaps).
 // Here we reuse the same junk-stripping cleaner but keep only the longer, self-contained
 // story/dialogue jokes (which naturally fill the 1080×1920 frame), then emit them in batches
-// for Haiku to fix accents (e' → è), repair mojibake, drop non-jokes, and add a title.
+// for the workflow to fix accents (e' → è), repair mojibake, drop non-jokes, and add a title.
 //
 //   report:  node --import tsx src/anecdotes/it-mine.ts
 //   emit:    node --import tsx src/anecdotes/it-mine.ts --emit [maxFiles] [chunk]

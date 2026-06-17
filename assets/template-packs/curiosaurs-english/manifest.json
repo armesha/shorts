@@ -1,0 +1,31 @@
+{
+  "name": "Curiosaurs English Facts",
+  "lang": "en",
+  "count": 800,
+  "templates": [
+    "01_sunny_day",
+    "02_bedtime_stars",
+    "03_rainbow_pop",
+    "04_jungle",
+    "05_outer_space",
+    "06_under_the_sea",
+    "07_confetti_party",
+    "08_brainy_school",
+    "09_flower_meadow",
+    "10_crayon_doodle"
+  ],
+  "themes": [
+    "animals",
+    "space",
+    "dinosaurs",
+    "human_body",
+    "ocean",
+    "nature"
+  ],
+  "structure": {
+    "hook": "Did you know? 🦕",
+    "fact": "1-2 short true kid-safe sentences",
+    "cta": "Follow for more!"
+  },
+  "sourceTemplates": "/home/davtian/Documents/shorts/temp/timur"
+}

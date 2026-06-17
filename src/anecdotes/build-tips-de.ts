@@ -1,4 +1,4 @@
-// Build the "tips-de" (Deutsche Lifehacks) deck from Haiku batches in corpora/tips-de-gen/.
+// Build the "tips-de" (Deutsche Lifehacks) deck from LLM batches in corpora/tips-de-gen/.
 // Each batch file is <profession>-<n>.json = a JSON array of {title, text} (German).
 // Output: data/tips-de/titled.json (ready items w/ profession) + index.json (stats).
 // Mirrors build-tips.ts; German text runs a touch longer, so the length band is 300..500.
@@ -22,7 +22,7 @@ function parseItems(raw: string): Array<{ title?: string; text?: string }> | nul
   const i = s.indexOf("[");
   const j = s.lastIndexOf("]");
   if (i >= 0 && j > i) s = s.slice(i, j + 1);
-  // Haiku sometimes closes a German quote „…" with a STRAIGHT " (U+0022), which prematurely ends
+  // Some LLM outputs close a German quote „…" with a STRAIGHT " (U+0022), which prematurely ends
   // the JSON string. Try the raw text first; on failure, convert „…<straight "> → „…" (U+201C).
   const fixed = s.replace(/„([^"“]*)"/g, "„$1“");
   for (const cand of [s, fixed]) {

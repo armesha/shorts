@@ -1,4 +1,4 @@
-// Aggregates the Haiku-cleaned Italian jokes (corpora/it-gen/clean-*.json) into a dense, ready-to-use
+// Aggregates the LLM-cleaned Italian jokes (corpora/it-gen/clean-*.json) into a dense, ready-to-use
 // deck: titled.json (the only pool the runtime uses) + index.json + pack-*.json. Replaces the old
 // short-skewed data/anecdotes-it. Run AFTER the it-clean workflow finishes:
 //   node --import tsx src/anecdotes/build-it-dense.ts
@@ -14,14 +14,14 @@ const MAX = Number(process.env.IT_FINAL_MAX ?? 640);
 const PACK = Number(process.env.IT_PACK ?? 1000);
 const TITLE_MAX = 34;
 
-// Deterministic advertiser-safety net on TOP of Haiku's judgment (same philosophy as build-it.ts
-// BLOCK): Haiku keeps clean innuendo, but explicit roots are dropped here for monetization safety.
+// Deterministic advertiser-safety net on TOP of the workflow's judgment (same philosophy as build-it.ts
+// BLOCK): the workflow may keep clean innuendo, but explicit roots are dropped here for monetization safety.
 const UNSAFE =
   /(\bcazz|cul[oi]\b|\bmerd|puttan|\btroi[ae]|\bfiga\b|scopa(re|ta|to)|chiavar|porno|sessual|preservativ|eiacul|erezion|masturb|orgasm|amplesso|sborr|coglion|minchia|frocio|stronz|vaffa|incul|zoccol|pompin|\bpene\b|vagina|\btett[ei]\b|prostitut|verginit|\bsesso\b|\bsega\b)/i;
 
 interface Clean { text?: string; title?: string }
 
-// Haiku sometimes wraps JSON in ```fences``` or adds prose — slice to the outer [ ... ].
+// LLMs sometimes wrap JSON in ```fences``` or add prose — slice to the outer [ ... ].
 function parseLoose(raw: string): Clean[] {
   let s = raw.trim().replace(/^```(?:json)?/i, "").replace(/```$/i, "").trim();
   const a = s.indexOf("["), b = s.lastIndexOf("]");
@@ -34,7 +34,7 @@ function parseLoose(raw: string): Clean[] {
   }
 }
 
-// Safety net for the rare ASCII-accent (~1%) Haiku leaves behind. Only UNAMBIGUOUS words — multi-letter
+// Safety net for rare ASCII accents a workflow may leave behind. Only UNAMBIGUOUS words — multi-letter
 // forms with no innocent homograph, plus standalone "e'" (after start/space/quote, before space).
 function fixAsciiAccents(s: string): string {
   const W: [RegExp, string][] = [

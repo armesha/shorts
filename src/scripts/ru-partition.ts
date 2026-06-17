@@ -1,4 +1,4 @@
-// Делит Sonnet-отобранный пул (corpora/ru-gen/keep-*.json + cand-*.json) на ДВА непересекающихся
+// Делит LLM-отобранный пул (corpora/ru-gen/keep-*.json + cand-*.json) на ДВА непересекающихся
 // набора: pool-friend.json (другу) и pool-mydeck.json (моя дека). Каждый агент парит свой набор —
 // без гонок и дублей между каналами.
 //   FRIEND_N=820 node --import tsx src/scripts/ru-partition.ts

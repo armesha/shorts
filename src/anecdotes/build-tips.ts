@@ -1,4 +1,4 @@
-// Build the "tips" (Народные лайфхаки) deck from Haiku batches in corpora/tips-gen/.
+// Build the "tips" (Народные лайфхаки) deck from LLM batches in corpora/tips-gen/.
 // Each batch file is <profession>-<n>.json = a JSON array of {title, text}.
 // Output: data/tips/titled.json (ready items w/ profession) + index.json (stats).
 // Run: node --import tsx src/anecdotes/build-tips.ts

@@ -1,5 +1,5 @@
 // Split the downloaded corpus into per-agent slice files + emit a manifest (printed as JSON
-// on the first stdout line) to pass as Workflow `args`. Each Sonnet agent reads ONE slice file.
+// on the first stdout line) to pass as Workflow `args`. Each workflow agent reads ONE slice file.
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 
 const OUT = "/home/davtian/Documents/shorts/corpora/islamic";

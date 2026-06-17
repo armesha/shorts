@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "name": "curiosaurs-en-03_rainbow_pop",
+  "canvas": {
+    "w": 1080,
+    "h": 1920,
+    "bg": "#ffffff"
+  },
+  "elements": [
+    {
+      "id": "background",
+      "type": "image",
+      "x": 0,
+      "y": 0,
+      "w": 1080,
+      "h": 1920,
+      "rot": 0,
+      "src": "assets/template-packs/curiosaurs-english/backgrounds/curiosaurs_03_rainbow_pop.png",
+      "fit": "cover"
+    },
+    {
+      "id": "hook",
+      "type": "killbox",
+      "x": 224,
+      "y": 632,
+      "w": 632,
+      "h": 92,
+      "rot": 0,
+      "role": "hook",
+      "padX": 4,
+      "padY": 0,
+      "align": "center",
+      "valign": "center",
+      "font": {
+        "family": "Inter",
+        "size": 70,
+        "weight": 800,
+        "color": "#111827",
+        "lineHeight": 1.05
+      },
+      "fitMin": 50,
+      "fitMax": 70,
+      "maxChars": 24,
+      "placeholder": "hook"
+    },
+    {
+      "id": "fact",
+      "type": "killbox",
+      "x": 224,
+      "y": 754,
+      "w": 632,
+      "h": 318,
+      "rot": 0,
+      "role": "fact",
+      "padX": 4,
+      "padY": 0,
+      "align": "center",
+      "valign": "center",
+      "font": {
+        "family": "Inter",
+        "size": 58,
+        "weight": 700,
+        "color": "#162033",
+        "lineHeight": 1.14
+      },
+      "fitMin": 40,
+      "fitMax": 58,
+      "maxChars": 128,
+      "placeholder": "fact"
+    },
+    {
+      "id": "cta",
+      "type": "killbox",
+      "x": 224,
+      "y": 1106,
+      "w": 632,
+      "h": 78,
+      "rot": 0,
+      "role": "cta",
+      "padX": 4,
+      "padY": 0,
+      "align": "center",
+      "valign": "center",
+      "font": {
+        "family": "Inter",
+        "size": 44,
+        "weight": 800,
+        "color": "#ef5e67",
+        "lineHeight": 1.05
+      },
+      "fitMin": 31,
+      "fitMax": 44,
+      "maxChars": 20,
+      "placeholder": "cta"
+    }
+  ]
+}

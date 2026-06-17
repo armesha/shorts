@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, writeFileSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
 
-// Applies the Haiku reformat/title results (_fmt-*.json) into the packs, rebuilds titled.json.
+// Applies LLM workflow reformat/title results (_fmt-*.json) into the packs, rebuilds titled.json.
 const DIR = resolve(process.cwd(), "data/anecdotes");
 
 const fmtFiles = readdirSync(DIR).filter((f) => f.startsWith("_fmt-") && f.endsWith(".json"));

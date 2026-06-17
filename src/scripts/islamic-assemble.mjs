@@ -1,5 +1,5 @@
 // Assemble the final deck from the agents' selections. Reads corpora/islamic/sel/*.jsonl
-// (ids + theme chosen by the Sonnet agents) and the exact-Arabic pool, dedups, length-bands,
+// (ids + theme chosen by workflow agents) and the exact-Arabic pool, dedups, length-bands,
 // balances by section, caps at 500 → writes data/islamic/cards.json (+ index.json).
 import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from "node:fs";
 

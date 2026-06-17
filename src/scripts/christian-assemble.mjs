@@ -1,4 +1,4 @@
-// Assemble the final Christian deck from the Sonnet agents' selection.
+// Assemble the final Christian deck from the workflow agents' selection.
 // Reads corpora/christian/selection.json (ids + theme) + cand-pool.json (exact passages),
 // dedups (by id + verse-overlap), tops up to CAP from remaining high-yield books, sorts canonically
 // → data/christian/cards.json (+ index.json). Card = {type, text, ref, theme, book, testament}.
