@@ -2,16 +2,27 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { apiClient, type Account, type AppStatus } from "../lib/api";
 import { AppIcon } from "../components/AppIcon";
+import { BrandIcon } from "../components/BrandIcon";
 import { useT } from "../lib/i18n";
+import { fmtCacheTime, readCache, writeCache } from "../lib/cache";
+
+const ACCOUNTS_CACHE_KEY = "sf.accounts.v1";
+type AccountsCache = {
+  accounts: Account[];
+  status: AppStatus | null;
+  queue: Record<number, number>;
+};
 
 export default function Accounts() {
   const { t } = useT();
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const [status, setStatus] = useState<AppStatus | null>(null);
+  const cached = readCache<AccountsCache>(ACCOUNTS_CACHE_KEY);
+  const [accounts, setAccounts] = useState<Account[]>(cached?.value.accounts ?? []);
+  const [status, setStatus] = useState<AppStatus | null>(cached?.value.status ?? null);
   const [loadError, setLoadError] = useState(false);
+  const [cacheSavedAt, setCacheSavedAt] = useState(cached?.savedAt ?? "");
   const [creating, setCreating] = useState(false);
   const [actionErr, setActionErr] = useState("");
-  const [queue, setQueue] = useState<Record<number, number>>({});
+  const [queue, setQueue] = useState<Record<number, number>>(cached?.value.queue ?? {});
   // Sort channels by remaining-video runway (days left); direction remembered between visits.
   const [sortDir, setSortDir] = useState<"asc" | "desc">(() =>
     localStorage.getItem("channelsRunwaySort") === "desc" ? "desc" : "asc",
@@ -34,6 +45,7 @@ export default function Accounts() {
     apiClient
       .accounts()
       .then((a) => {
+        setLoadError(false);
         setAccounts(a);
         a.forEach((acc) =>
           apiClient
@@ -43,8 +55,17 @@ export default function Accounts() {
         );
       })
       .catch(() => setLoadError(true));
-    apiClient.status().then(setStatus).catch(() => setLoadError(true));
+    apiClient.status().then((s) => {
+      setLoadError(false);
+      setStatus(s);
+    }).catch(() => setLoadError(true));
   }, []);
+
+  useEffect(() => {
+    if (!accounts.length && !status && !Object.keys(queue).length) return;
+    writeCache(ACCOUNTS_CACHE_KEY, { accounts, status, queue });
+    setCacheSavedAt(new Date().toISOString());
+  }, [accounts, status, queue]);
 
   async function addAccount() {
     setCreating(true);
@@ -133,19 +154,14 @@ export default function Accounts() {
 
   return (
     <div className="space-y-6">
-      <header className="flex items-start justify-between gap-2 flex-wrap">
-        <div>
-          <h1 className="text-2xl font-bold">{t("accounts.title")}</h1>
-          <p className="text-base-content/60">{t("accounts.subtitle")}</p>
+      <GoogleKeyNotice status={status} loadError={loadError} />
+
+      {loadError && cacheSavedAt && (
+        <div className="alert alert-warning text-sm">
+          <AppIcon name="warning" size={18} className="shrink-0" />
+          <span>{t("accounts.offlineCache", { time: fmtCacheTime(cacheSavedAt) })}</span>
         </div>
-        <div className="flex items-center gap-2">
-          <StatusBadge status={status} loadError={loadError} />
-          <button className="btn btn-primary gap-2" onClick={addAccount} disabled={creating}>
-            {creating ? <span className="loading loading-spinner loading-sm" /> : <AppIcon name="plus" size={18} />}
-            {t("accounts.addChannel")}
-          </button>
-        </div>
-      </header>
+      )}
 
       {actionErr && (
         <div className="alert alert-error text-sm" role="alert">
@@ -211,19 +227,25 @@ export default function Accounts() {
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm text-base-content/60">{t("accounts.sortByRunway")}</span>
-            <button
-              className="btn btn-sm btn-outline btn-square"
-              onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
-              aria-label={t("accounts.flipSort")}
-              title={
-                sortDir === "asc"
-                  ? t("accounts.sortLowFirst")
-                  : t("accounts.sortHighFirst")
-              }
-            >
-              <AppIcon name="chevron-right" size={16} className={sortDir === "asc" ? "-rotate-90" : "rotate-90"} />
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-base-content/60">{t("accounts.sortByRunway")}</span>
+              <button
+                className="btn btn-sm btn-outline btn-square"
+                onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
+                aria-label={t("accounts.flipSort")}
+                title={
+                  sortDir === "asc"
+                    ? t("accounts.sortLowFirst")
+                    : t("accounts.sortHighFirst")
+                }
+              >
+                <AppIcon name="chevron-right" size={16} className={sortDir === "asc" ? "-rotate-90" : "rotate-90"} />
+              </button>
+            </div>
+            <button className="btn btn-primary gap-2 w-full sm:w-auto" onClick={addAccount} disabled={creating}>
+              {creating ? <span className="loading loading-spinner loading-sm" /> : <AppIcon name="plus" size={18} />}
+              {t("accounts.addChannel")}
             </button>
           </div>
 
@@ -274,7 +296,7 @@ export default function Accounts() {
                     className="btn btn-ghost btn-xs gap-1 mt-2 w-fit text-error"
                     title={t("accounts.openOnYouTubeTitle")}
                   >
-                    <AppIcon name="youtube" size={14} />
+                    <BrandIcon name="youtube" size={14} />
                     {t("accounts.openOnYouTube")}
                     <AppIcon name="external" size={13} />
                   </button>
@@ -333,27 +355,28 @@ function Stat({ icon, label, value }: { icon: ReactNode; label: string; value: R
   );
 }
 
-function StatusBadge({ status, loadError }: { status: AppStatus | null; loadError: boolean }) {
+function GoogleKeyNotice({ status, loadError }: { status: AppStatus | null; loadError: boolean }) {
   const { t } = useT();
+  if (status?.credsConfigured) return null;
+  if (!status && !loadError) return null;
   if (status && !status.credsConfigured) {
     return (
-      <div className="badge badge-error gap-1 badge-lg">
-        <AppIcon name="warning" size={14} /> {t("accounts.noGoogleKey")}
+      <div className="alert alert-warning text-sm">
+        <AppIcon name="warning" size={18} className="shrink-0" />
+        <div className="flex-1">
+          <div className="font-semibold">{t("accounts.googleKeyRequiredTitle")}</div>
+          <div className="text-base-content/70">{t("accounts.googleKeyRequiredHint")}</div>
+        </div>
+        <Link to="/settings" className="btn btn-sm btn-outline">
+          {t("accounts.openSettings")}
+        </Link>
       </div>
-    );
-  }
-  if (!status) {
-    return loadError ? (
-      <div className="badge badge-warning gap-1 badge-lg">
-        <AppIcon name="warning" size={14} /> {t("accounts.loadFailed")}
-      </div>
-    ) : (
-      <div className="badge badge-ghost badge-lg">…</div>
     );
   }
   return (
-    <div className="badge badge-success gap-1 badge-lg">
-      <AppIcon name="check" size={14} /> {t("accounts.googleConnected")}
+    <div className="alert alert-warning text-sm">
+      <AppIcon name="warning" size={18} className="shrink-0" />
+      <span>{t("accounts.statusLoadIssue")}</span>
     </div>
   );
 }

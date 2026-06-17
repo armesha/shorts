@@ -80,6 +80,7 @@ unattended, managed from a web dashboard. Architecture & research: `docs/STACK.m
 ## Notes for myself (keep updated)
 - **Subagent/workflow MODEL policy (user rule):** before launching ANY LLM/subagent/workflow that generates, cleans, ranks, formats, or titles pack content, ask the user which model to use. Do not hardcode Haiku/Sonnet/Opus and do not inherit silently when the workflow model choice affects cost/quality. Local parsers/builders/checks can run without asking.
 - **Pack generation docs:** detailed source/generation/replenishment instructions for every built-in deck and template-pack live in `docs/pack-generation.md`. Read it before touching `data/anecdotes*`, `data/tips*`, `data/islamic`, `data/christian`, `data/*/videos.json`, `assets/template-packs/*`, or `data/packs/*`.
+- **New/manual pack rule:** whenever you create a new built-in deck, prebuilt video pack, template-pack, or live `data/packs/*` pack manually, also add/update `docs/pack-generation.md` with how to create it, how content is generated, how to add new cards/videos later, and how to verify it. Future agents must be able to replenish the pack from docs without reverse-engineering the code.
 - Frontend uses DaisyUI v5 + Tailwind v4 (`@plugin "daisyui"` in `web/src/index.css`); theme forced light via `data-theme="light"` on `<html>`.
 - `lucide-react` has no `Chrome` icon — use `MonitorPlay`/`Globe` instead.
 - Pencil templates live in `untitled.pen`; never use Read/Grep on `.pen` files (encrypted) — only the `pencil` MCP tools.

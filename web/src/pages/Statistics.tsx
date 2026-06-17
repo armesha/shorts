@@ -22,6 +22,7 @@ import {
   type YoutubeTopVideo,
 } from "../lib/api";
 import { AppIcon } from "../components/AppIcon";
+import { BrandIcon } from "../components/BrandIcon";
 import { SystemOverview } from "./AdminAnalytics";
 import { useAuth } from "../lib/auth";
 import { compactNumber } from "../lib/format";
@@ -99,7 +100,7 @@ type SavedFilters = {
   sortDir?: "asc" | "desc";
   ownerFilter?: string;
   onlyConnected?: boolean;
-  view?: View;
+  view?: View; // legacy only; the page now always opens on "mine"
   days?: number; // analytics window: 7 / 30 / 90
   scope?: Scope; // legacy (pre-«Сводка» tab) — still honoured when restoring
 };
@@ -120,7 +121,7 @@ export default function Statistics() {
   const [rows, setRows] = useState<StatRow[]>([]);
   const [analytics, setAnalytics] = useState<UserAnalytics | null>(null); // own publishing activity
   const [summary, setSummary] = useState<PlatformSummary | null>(null); // platform-wide totals (all users)
-  const [view, setView] = useState<View>(saved.view ?? saved.scope ?? "mine");
+  const [view, setView] = useState<View>("mine");
   const [days, setDays] = useState<number>(() => {
     const d = saved.days ?? 30;
     return DAYS_OPTIONS.includes(d as 7 | 30 | 90) ? d : 30;
@@ -130,9 +131,12 @@ export default function Statistics() {
   const scope: Scope = view === "all" ? "all" : "mine";
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [dataOnlyRefreshing, setDataOnlyRefreshing] = useState(false);
   // «Сводка» tab refresh is owned by <SystemOverview/>: the header button bumps a nonce and reads back its state.
   const [systemRefreshNonce, setSystemRefreshNonce] = useState(0);
+  const [systemDataOnlyRefreshNonce, setSystemDataOnlyRefreshNonce] = useState(0);
   const [systemRefreshing, setSystemRefreshing] = useState(false);
+  const [systemDataOnlyRefreshing, setSystemDataOnlyRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
   const [avatarMap, setAvatarMap] = useState<Record<number, string | null | undefined>>({});
@@ -193,12 +197,12 @@ export default function Statistics() {
     try {
       localStorage.setItem(
         STORE_KEY,
-        JSON.stringify({ search, sortKey, sortDir, ownerFilter, onlyConnected, view, days }),
+        JSON.stringify({ search, sortKey, sortDir, ownerFilter, onlyConnected, days }),
       );
     } catch {
       /* localStorage unavailable — ignore */
     }
-  }, [search, sortKey, sortDir, ownerFilter, onlyConnected, view, days]);
+  }, [search, sortKey, sortDir, ownerFilter, onlyConnected, days]);
 
   async function refresh() {
     setRefreshing(true);
@@ -220,7 +224,11 @@ export default function Statistics() {
         );
         setResult({
           ok: false,
-          text: t("stats.refreshPartial", { ok: connected.length - failed.length, total: connected.length, failed: failed.length }),
+          text: t(isAdmin ? "stats.refreshPartialAdmin" : "stats.refreshPartial", {
+            ok: connected.length - failed.length,
+            total: connected.length,
+            failed: failed.length,
+          }),
         });
       } else if (connected.length === 0) {
         setResult({ ok: false, text: t("stats.refreshNoneConnected") });
@@ -233,6 +241,37 @@ export default function Statistics() {
       setResult({ ok: false, text: t("stats.refreshErrorBanner") });
     } finally {
       setRefreshing(false);
+    }
+  }
+
+  async function refreshDataOnly() {
+    if (!isAdmin) return;
+    setDataOnlyRefreshing(true);
+    setError(null);
+    setResult(null);
+    try {
+      const refreshScope: Scope = scope;
+      const r = await apiClient.refreshStatsDataOnly(refreshScope);
+      setRows(await apiClient.stats(scope, days));
+      const connected = r.filter((x) => x.connected);
+      const failed = r.filter((x) => x.error);
+      if (failed.length) {
+        setResult({
+          ok: false,
+          text: t("stats.refreshDataOnlyPartial", {
+            ok: connected.length - failed.length,
+            total: connected.length,
+            failed: failed.length,
+          }),
+        });
+      } else {
+        setResult({ ok: true, text: t("stats.refreshDataOnlyOk", { n: connected.length }) });
+      }
+    } catch (e) {
+      console.error("[Статистика] запрос /stats/refresh-data-only упал:", e);
+      setResult({ ok: false, text: t("stats.refreshDataOnlyError") });
+    } finally {
+      setDataOnlyRefreshing(false);
     }
   }
 
@@ -279,7 +318,7 @@ export default function Statistics() {
           <h1 className="text-2xl font-bold">{t("nav.statistics")}</h1>
           <p className="text-base-content/60">{showSystem ? t("analytics.subtitle") : t("stats.subtitle")}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
           <div className="join">
             <button
               className={`btn btn-sm join-item ${view === "mine" ? "btn-primary" : "btn-ghost"}`}
@@ -303,7 +342,7 @@ export default function Statistics() {
             )}
           </div>
           <button
-            className="btn btn-primary gap-2"
+            className="btn btn-sm btn-primary gap-2"
             onClick={() => (showSystem ? setSystemRefreshNonce((n) => n + 1) : refresh())}
             disabled={showSystem ? systemRefreshing : refreshing || loading}
             title={!isAdmin && view === "all" ? t("stats.refreshMineHint") : undefined}
@@ -313,8 +352,23 @@ export default function Statistics() {
             ) : (
               <AppIcon name="refresh" size={18} />
             )}
-            {t("stats.refreshData")}
+            {t("stats.refreshAnalytics")}
           </button>
+          {isAdmin && (
+            <button
+              className="btn btn-sm btn-outline gap-2"
+              onClick={() => (showSystem ? setSystemDataOnlyRefreshNonce((n) => n + 1) : refreshDataOnly())}
+              disabled={showSystem ? systemDataOnlyRefreshing : dataOnlyRefreshing || loading}
+              title={t("stats.refreshDataOnlyTitle")}
+            >
+              {(showSystem ? systemDataOnlyRefreshing : dataOnlyRefreshing) ? (
+                <span className="loading loading-spinner loading-sm" />
+              ) : (
+                <BrandIcon name="youtube" size={18} />
+              )}
+              {t("stats.refreshDataOnly")}
+            </button>
+          )}
         </div>
       </header>
 
@@ -339,13 +393,18 @@ export default function Statistics() {
       )}
 
       {showSystem ? (
-        <SystemOverview refreshNonce={systemRefreshNonce} onRefreshingChange={setSystemRefreshing} />
+        <SystemOverview
+          refreshNonce={systemRefreshNonce}
+          dataOnlyRefreshNonce={systemDataOnlyRefreshNonce}
+          onRefreshingChange={setSystemRefreshing}
+          onDataOnlyRefreshingChange={setSystemDataOnlyRefreshing}
+        />
       ) : (
       <>
       {summary && <PlatformBand s={summary} />}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
         <Stat icon={<AppIcon name="users" />} label={t("stats.totalSubscribers")} value={fmt(overview.subscribers)} />
-        <Stat icon={<AppIcon name="youtube" />} label={t("stats.totalViews")} value={fmt(overview.publicViews)} />
+        <Stat icon={<BrandIcon name="youtube" />} label={t("stats.totalViews")} value={fmt(overview.publicViews)} />
         <Stat
           icon={<AppIcon name="analytics" />}
           label={t("stats.viewsForDays", { n: days })}
@@ -580,16 +639,18 @@ function StatsOverview({
               {overview.dataThrough ? ` · ${t("stats.analyticsDataThrough", { date: overview.dataThrough })}` : ""}
             </div>
           </div>
-          <div className="join">
-            {(["views", "watch", "engaged", "subscribers"] as OverviewMetric[]).map((key) => (
-              <button
-                key={key}
-                className={`btn btn-xs join-item ${metric === key ? "btn-primary" : "btn-ghost"}`}
-                onClick={() => onMetric(key)}
-              >
-                {metricLabels[key]}
-              </button>
-            ))}
+          <div className="min-w-0 max-w-full overflow-x-auto pb-1">
+            <div className="join min-w-max">
+              {(["views", "watch", "engaged", "subscribers"] as OverviewMetric[]).map((key) => (
+                <button
+                  key={key}
+                  className={`btn btn-xs join-item ${metric === key ? "btn-primary" : "btn-ghost"}`}
+                  onClick={() => onMetric(key)}
+                >
+                  {metricLabels[key]}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -901,7 +962,7 @@ function ChannelCard({ row, isAdmin, avatar, days }: { row: StatRow; isAdmin: bo
                 className="btn btn-ghost btn-xs text-error"
                 title={t("stats.openOnYoutube")}
               >
-                <AppIcon name="youtube" size={14} />
+                <BrandIcon name="youtube" size={14} />
                 YouTube
               </a>
             )
@@ -1176,7 +1237,7 @@ function PlatformBand({ s }: { s: PlatformSummary }) {
     <div className="card bg-base-100 border border-base-300">
       <div className="card-body py-3 flex-row flex-wrap items-center gap-x-7 gap-y-2">
         <div className="flex items-center gap-2 text-sm font-semibold text-base-content/70">
-          <AppIcon name="youtube" size={16} className="text-primary" />
+          <BrandIcon name="youtube" size={16} className="text-primary" />
           {t("stats.platTitle")}
         </div>
         <div className="flex flex-wrap items-center gap-x-7 gap-y-2">

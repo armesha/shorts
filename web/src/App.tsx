@@ -1,11 +1,13 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
+import Overview from "./pages/Overview";
 import Studio from "./pages/Studio";
 import Cards from "./pages/Cards";
 import Packs from "./pages/Packs";
 import Accounts from "./pages/Accounts";
 import AccountDetail from "./pages/AccountDetail";
 import History from "./pages/History";
+import Notifications from "./pages/Notifications";
 import Statistics from "./pages/Statistics";
 import Changelog from "./pages/Changelog";
 import Errors from "./pages/Errors";
@@ -33,11 +35,13 @@ function Gate() {
     <GenQueueProvider>
       <Layout>
         <Routes>
-        <Route path="/" element={<Accounts />} />
+        <Route path="/" element={user.role === "admin" ? <Overview /> : <Accounts />} />
+        <Route path="/channels" element={<Accounts />} />
         <Route path="/studio" element={<Studio />} />
         <Route path="/cards" element={<Cards />} />
         <Route path="/packs" element={<Packs />} />
-        <Route path="/accounts" element={<Navigate to="/" replace />} />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/accounts" element={<Navigate to={user.role === "admin" ? "/channels" : "/"} replace />} />
         <Route path="/accounts/:id" element={<AccountDetail />} />
         <Route path="/history" element={<History />} />
         <Route path="/statistics" element={<Statistics />} />

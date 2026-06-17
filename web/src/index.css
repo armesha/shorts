@@ -102,6 +102,114 @@ body {
   --color-error-content: oklch(98% 0.012 25);
 }
 
+.admin-shell {
+  --color-primary: #0066cc;
+  --color-primary-content: #ffffff;
+  --color-secondary: #424245;
+  --color-secondary-content: #ffffff;
+  --color-accent: #007a5a;
+  --color-accent-content: #ffffff;
+  --color-base-100: #ffffff;
+  --color-base-200: #f5f5f7;
+  --color-base-300: #d2d2d7;
+  --color-base-content: #1d1d1f;
+  --color-info: #0066cc;
+  --color-info-content: #ffffff;
+  --color-success: #248a3d;
+  --color-success-content: #ffffff;
+  --color-warning: #a05a00;
+  --color-warning-content: #ffffff;
+  --color-error: #c30010;
+  --color-error-content: #ffffff;
+}
+
+.admin-shell .card {
+  box-shadow:
+    0 1px 2px color-mix(in srgb, #1d1d1f 5%, transparent),
+    0 0 0 1px color-mix(in srgb, #1d1d1f 2%, transparent);
+}
+
+.admin-shell .btn {
+  box-shadow: none;
+}
+
+.admin-shell .btn:not(:disabled):hover {
+  transform: none;
+  box-shadow: 0 1px 3px color-mix(in srgb, #1d1d1f 10%, transparent);
+}
+
+.admin-shell .admin-action-main {
+  background: #0066cc;
+  border-color: #0066cc;
+  color: #ffffff;
+}
+
+.admin-shell .admin-action-secondary {
+  background: #ffffff;
+  border-color: #c6c6c9;
+  color: #1d1d1f;
+}
+
+.admin-shell .admin-action-secondary:hover {
+  background: #f5f5f7;
+  border-color: #86868b;
+  color: #1d1d1f;
+}
+
+.admin-shell .admin-action-quiet {
+  background: transparent;
+  border-color: transparent;
+  color: #424245;
+}
+
+.admin-shell .admin-action-quiet:hover {
+  background: #f5f5f7;
+  border-color: #d2d2d7;
+  color: #1d1d1f;
+}
+
+.admin-shell .admin-inline-action {
+  color: #0066cc;
+  font-size: 0.875rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.admin-shell .admin-inline-action:hover {
+  color: #004c99;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.admin-shell .menu a.active {
+  background: color-mix(in srgb, #0066cc 10%, #ffffff);
+  color: #1d1d1f;
+  box-shadow: inset 3px 0 0 #0066cc;
+}
+
+.admin-shell .drawer-side > aside,
+.admin-shell > .drawer-content > header {
+  background: color-mix(in srgb, #ffffff 94%, #f5f5f7);
+}
+
+.admin-shell main header h1 + p {
+  display: none;
+}
+
+.admin-shell main > div > div > header > div:first-child:has(h1):not(:has(img)) {
+  display: none;
+}
+
+.admin-shell main > div > div > header:has(> h1):not(:has(button, a, select, input, .join)),
+.admin-shell main > div > div > header:has(> svg + div > h1):not(:has(button, a, select, input, .join)) {
+  display: none;
+}
+
+.admin-shell main > div > div > header > svg:first-child:has(+ div > h1),
+.admin-shell main > div > div > header > svg:first-child:has(+ div > h1) + div {
+  display: none;
+}
+
 .drawer-side > aside {
   box-shadow: 1px 0 0 color-mix(in oklch, var(--color-base-content) 7%, transparent);
 }

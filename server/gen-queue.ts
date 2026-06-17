@@ -10,7 +10,10 @@ export type JobState = "queued" | "running" | "done" | "exhausted" | "canceled" 
 
 export interface Job {
   id: string;
+  /** User who created/controls the job (polling and cancel permissions). */
   userId: number;
+  /** User whose content pool is consumed. Defaults to userId for normal users. */
+  ownerUserId: number;
   accountId: number;
   total: number;
   done: number;
@@ -31,7 +34,7 @@ export interface JobStatus extends Job {
 
 export interface GenQueue {
   initWorker(w: GenWorker): void;
-  enqueue(userId: number, accountId: number, total: number): Job;
+  enqueue(userId: number, accountId: number, total: number, ownerUserId?: number): Job;
   cancelJob(id: string, userId: number): boolean;
   jobStatus(id: string): JobStatus | null;
   /** Stop taking NEW videos/jobs; the in-flight video is allowed to finish. For graceful shutdown. */
@@ -104,10 +107,10 @@ export function createGenQueue(): GenQueue {
     initWorker(w) {
       worker = w;
     },
-    enqueue(userId, accountId, total) {
+    enqueue(userId, accountId, total, ownerUserId = userId) {
       prune();
       const id = `g${++seq}-${Date.now().toString(36)}`;
-      const job: Job = { id, userId, accountId, total, done: 0, state: "queued", createdAt: Date.now() };
+      const job: Job = { id, userId, ownerUserId, accountId, total, done: 0, state: "queued", createdAt: Date.now() };
       jobs.set(id, job);
       pending.push(id);
       void pump();
@@ -149,8 +152,8 @@ export function createGenQueue(): GenQueue {
 // ---- process-wide singleton used by the server ----
 const _queue = createGenQueue();
 export const initGenQueue = (w: GenWorker): void => _queue.initWorker(w);
-export const enqueue = (userId: number, accountId: number, total: number): Job =>
-  _queue.enqueue(userId, accountId, total);
+export const enqueue = (userId: number, accountId: number, total: number, ownerUserId?: number): Job =>
+  _queue.enqueue(userId, accountId, total, ownerUserId);
 export const cancelJob = (id: string, userId: number): boolean => _queue.cancelJob(id, userId);
 export const jobStatus = (id: string): JobStatus | null => _queue.jobStatus(id);
 export const drainQueue = (): void => _queue.drain();

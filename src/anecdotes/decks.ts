@@ -166,6 +166,18 @@ export const DECKS: Deck[] = [
     adminOnly: true, // pre-built montage pack — admin-only
     preFact: true,
   },
+  {
+    id: "funny-animals",
+    name: "Funny Animals",
+    dir: "data/funny-animals", // videos.json = [{file,title,text}] synced from /clip-demos funny-reactions
+    source: "",
+    emoji: "😂",
+    hashtags: "#funnyanimals #pets #dogs #cats #funny #shorts",
+    tags: ["funny animals", "pets", "dogs", "cats", "funny pets", "animals", "shorts"],
+    genericTitles: ["Funny Animals", "Funny Pet", "Animal Moment", "Pet Chaos"],
+    adminOnly: true, // pre-built animal montage pack — admin-only
+    preFact: true,
+  },
 ];
 
 export const DEFAULT_DECK = "ru";
@@ -179,7 +191,7 @@ export function isPackDeckId(id?: string | null): boolean {
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
-  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de": "de", space: "en",
+  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de": "de", space: "en", "funny-animals": "en",
 };
 export function deckLang(id: string): string {
   return DECK_LANG[id] || "";

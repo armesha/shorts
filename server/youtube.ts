@@ -49,17 +49,19 @@ export async function exchangeAndGetChannel(
   creds: ClientCreds,
   redirectUri: string,
   code: string,
-): Promise<{ refreshToken: string | null; channelId: string | null; channelTitle: string | null }> {
+): Promise<{ refreshToken: string | null; channelId: string | null; channelTitle: string | null; channelAvatar: string | null }> {
   const oauth = client(creds, redirectUri);
   const { tokens } = await oauth.getToken(code);
   oauth.setCredentials(tokens);
   const yt = google.youtube({ version: "v3", auth: oauth });
   const res = await yt.channels.list({ part: ["snippet"], mine: true });
   const ch = res.data.items?.[0];
+  const thumbs = ch?.snippet?.thumbnails;
   return {
     refreshToken: tokens.refresh_token ?? null,
     channelId: ch?.id ?? null,
     channelTitle: ch?.snippet?.title ?? null,
+    channelAvatar: thumbs?.high?.url ?? thumbs?.medium?.url ?? thumbs?.default?.url ?? null,
   };
 }
 

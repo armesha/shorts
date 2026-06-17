@@ -114,7 +114,14 @@ export default function Errors() {
                           )}
                         </td>
                         <td className="font-medium">
-                          <div className="max-w-md truncate" title={e.message}>{e.message}</div>
+                          <div className="max-w-md truncate flex items-center gap-2" title={e.message}>
+                            <span className="truncate">{e.message}</span>
+                            {(e.count ?? 1) > 1 && (
+                              <span className="badge badge-sm badge-outline shrink-0">
+                                {t("errors.repeatCount", { n: e.count ?? 1 })}
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="text-xs text-base-content/60">
                           <div className="max-w-[16rem] truncate" title={e.context ?? ""}>{e.context}</div>
@@ -123,6 +130,16 @@ export default function Errors() {
                       {expanded === e.id && e.detail && (
                         <tr>
                           <td colSpan={4} className="bg-base-200/50">
+                            {(e.count ?? 1) > 1 && (
+                              <div className="text-xs text-base-content/60 px-2 pt-2">
+                                {t("errors.groupInfo", {
+                                  count: e.count ?? 1,
+                                  first: fmtTime(e.firstCreatedAt ?? e.createdAt),
+                                  last: fmtTime(e.createdAt),
+                                })}
+                                {e.context ? ` · ${t("errors.groupContexts")}: ${e.context}` : ""}
+                              </div>
+                            )}
                             <pre className="text-xs whitespace-pre-wrap overflow-x-auto max-h-72 p-2">
                               {e.detail}
                             </pre>

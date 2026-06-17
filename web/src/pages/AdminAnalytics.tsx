@@ -58,10 +58,14 @@ function presetRange(days: number): Range {
 // button drives it via `refreshNonce` (bumped on click) and reads back its `refreshing` state.
 export function SystemOverview({
   refreshNonce = 0,
+  dataOnlyRefreshNonce = 0,
   onRefreshingChange,
+  onDataOnlyRefreshingChange,
 }: {
   refreshNonce?: number;
+  dataOnlyRefreshNonce?: number;
   onRefreshingChange?: (refreshing: boolean) => void;
+  onDataOnlyRefreshingChange?: (refreshing: boolean) => void;
 } = {}) {
   const { user } = useAuth();
   const { t } = useT();
@@ -73,6 +77,7 @@ export function SystemOverview({
   const [data, setData] = useState<AdminAnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [dataOnlyRefreshing, setDataOnlyRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -140,10 +145,36 @@ export function SystemOverview({
     }
   };
 
+  const refreshYoutubeDataOnly = async () => {
+    setDataOnlyRefreshing(true);
+    setError(null);
+    setNotice(null);
+    try {
+      const rows = await apiClient.refreshStatsDataOnly("all");
+      const failed = rows.filter((r) => r.error).length;
+      const connected = rows.filter((r) => r.connected).length;
+      const fresh = await apiClient.adminAnalytics(range.from, range.to);
+      setData(fresh);
+      setNotice(
+        failed
+          ? t("stats.refreshDataOnlyPartial", { ok: Math.max(0, connected - failed), total: connected, failed })
+          : t("stats.refreshDataOnlyOk", { n: connected }),
+      );
+    } catch (e) {
+      console.error("[Аналитика] обновление YouTube Data упало:", e);
+      setError(t("stats.refreshDataOnlyError"));
+    } finally {
+      setDataOnlyRefreshing(false);
+    }
+  };
+
   // Report the refresh state up so the Statistics page header button can show its spinner.
   useEffect(() => {
     onRefreshingChange?.(refreshing);
   }, [refreshing, onRefreshingChange]);
+  useEffect(() => {
+    onDataOnlyRefreshingChange?.(dataOnlyRefreshing);
+  }, [dataOnlyRefreshing, onDataOnlyRefreshingChange]);
 
   // The page header «Обновить данные» button bumps refreshNonce → run a refresh (skip on mount /
   // re-mount so re-entering the tab never auto-refreshes).
@@ -156,6 +187,16 @@ export function SystemOverview({
     refreshYoutube();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshNonce]);
+
+  const dataOnlyMountedRef = useRef(false);
+  useEffect(() => {
+    if (!dataOnlyMountedRef.current) {
+      dataOnlyMountedRef.current = true;
+      return;
+    }
+    refreshYoutubeDataOnly();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataOnlyRefreshNonce]);
 
   if (!isAdmin) {
     return (

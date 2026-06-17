@@ -8,6 +8,7 @@ import { useAuth } from "../lib/auth";
 import { useGenQueue } from "../lib/genQueue";
 import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
+import { BrandIcon } from "../components/BrandIcon";
 import { BUILTIN_DECKS, CONTENT_LANGS, DECK_LANG, langTag } from "../lib/deck";
 import { cleanDisplayText } from "../lib/text";
 
@@ -600,7 +601,7 @@ export default function AccountDetail() {
                   rel="noreferrer"
                   className="link link-primary inline-flex items-center gap-1"
                 >
-                  <AppIcon name="youtube" size={14} />
+                  <BrandIcon name="youtube" size={14} />
                   {t("account.openOnYouTube")}
                   <AppIcon name="external" size={13} />
                 </a>

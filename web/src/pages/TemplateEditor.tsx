@@ -1,4 +1,4 @@
-import { Shapes, ExternalLink, Info } from "lucide-react";
+import { ExternalLink, Info } from "lucide-react";
 import { useT } from "../lib/i18n";
 
 // Экспериментальный конструктор карточек живёт статикой в web/public/template-editor/
@@ -11,14 +11,7 @@ export default function TemplateEditor() {
   const { t } = useT();
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Shapes className="text-primary" size={22} />
-          <h1 className="text-2xl font-bold">{t("editor.title")}</h1>
-          <span className="badge badge-warning badge-sm" title={t("editor.experimentalFeature")}>
-            {t("editor.testBadge")}
-          </span>
-        </div>
+      <div className="flex justify-end">
         <a
           href={EDITOR_URL}
           target="_blank"

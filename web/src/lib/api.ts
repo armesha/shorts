@@ -159,6 +159,7 @@ export interface AuthUser {
   id: number;
   username: string;
   role: string;
+  impersonator?: { id: number; username: string; role: string } | null;
 }
 
 /** A channel's totals at one moment (used for latest/prev on a stats row). */
@@ -466,6 +467,39 @@ export interface ErrorLogItem {
   context: string | null;
   userId: number | null;
   createdAt: string;
+  firstCreatedAt?: string;
+  count?: number;
+}
+
+/** User-facing deduped notification with a suggested fix. */
+export interface NotificationItem {
+  id: number;
+  userId: number;
+  username: string | null;
+  accountId: number | null;
+  accountName: string | null;
+  severity: "info" | "warning" | "error" | string;
+  category: string;
+  title: string;
+  message: string;
+  solution: string | null;
+  actionUrl: string | null;
+  dedupeKey: string;
+  source: string | null;
+  context: string | null;
+  count: number;
+  readAt: string | null;
+  resolvedAt: string | null;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NotificationCounts {
+  open: number;
+  unread: number;
+  total: number;
 }
 
 /** Live server-health snapshot for the admin «Сервер» page (in-memory history, no DB). */
@@ -677,6 +711,13 @@ export const apiClient = {
       role,
       hidden,
     }),
+  impersonateUser: (userId: number | string) =>
+    send<AuthUser>(`/admin/users/${userId}/impersonate`, "POST", {}),
+  stopImpersonation: () => send<AuthUser>("/auth/impersonation/stop", "POST", {}),
+  adminSendNotification: (
+    userId: number | string,
+    body: { severity?: "info" | "warning" | "error"; title?: string; message: string; solution?: string; actionUrl?: string },
+  ) => send<NotificationItem>(`/admin/users/${userId}/notifications`, "POST", body),
   adminDecks: () => get<DeckInfo[]>("/admin/decks"),
   adminUserDecks: () => get<UserDeckRow[]>("/admin/user-decks"),
   setUserDecks: (userId: number, hidden: string[], grants?: string[]) =>
@@ -789,6 +830,10 @@ export const apiClient = {
   summary: () => get<PlatformSummary>(`/summary`),
   refreshStats: (scope?: "mine" | "all") =>
     send<StatRow[]>(`/stats/refresh${scope === "all" ? "?scope=all" : ""}`, "POST", {}),
+  refreshStatsDataOnly: (scope?: "mine" | "all", accountIds?: number[]) =>
+    send<StatRow[]>(`/stats/refresh-data-only${scope === "all" ? "?scope=all" : ""}`, "POST", {
+      ...(accountIds ? { accountIds } : {}),
+    }),
   statsHistory: (accountId: number | string) => get<StatPoint[]>(`/stats/${accountId}/history`),
   adminAnalytics: (from?: string, to?: string) => {
     const qs = new URLSearchParams();
@@ -808,6 +853,32 @@ export const apiClient = {
   // Error log: admin views/clears; any page can report a client-side error (fire-and-forget).
   errors: () => get<ErrorLogItem[]>("/errors"),
   clearErrors: () => send<{ ok: boolean }>("/errors", "DELETE"),
+  notifications: (params?: {
+    scope?: "mine" | "all";
+    status?: "open" | "unread" | "all";
+    limit?: number;
+    offset?: number;
+  }) => {
+    const qs = new URLSearchParams();
+    if (params?.scope === "all") qs.set("scope", "all");
+    if (params?.status) qs.set("status", params.status);
+    if (params?.limit) qs.set("limit", String(params.limit));
+    if (params?.offset) qs.set("offset", String(params.offset));
+    const s = qs.toString();
+    return get<NotificationItem[]>(`/notifications${s ? "?" + s : ""}`);
+  },
+  notificationCounts: (scope?: "mine" | "all") =>
+    get<NotificationCounts>(`/notifications/counts${scope === "all" ? "?scope=all" : ""}`),
+  readNotification: (id: number | string) => send<NotificationItem>(`/notifications/${id}/read`, "POST", {}),
+  resolveNotification: (id: number | string) =>
+    send<NotificationItem>(`/notifications/${id}/resolve`, "POST", {}),
+  deleteNotification: (id: number | string) => send<{ ok: boolean }>(`/notifications/${id}`, "DELETE"),
+  readAllNotifications: (scope?: "mine" | "all") =>
+    send<{ ok: boolean; changed: number }>(
+      `/notifications/read-all${scope === "all" ? "?scope=all" : ""}`,
+      "POST",
+      {},
+    ),
   // Server health (admin-only): live CPU/RAM/disk + in-memory history + pipeline activity.
   system: () => get<SystemStatus>("/system"),
   reportClientError: (message: string, detail?: string, context?: string) =>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Users, Plus, Check, AlertTriangle, Crown } from "lucide-react";
+import { Users, Plus, Check, AlertTriangle, Crown, LogIn, Send } from "lucide-react";
 import { apiClient, ApiError, type AdminUser, type DeckInfo, type UserDeckRow, type PackSummary } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
@@ -29,6 +29,7 @@ export default function UsersPage() {
 }
 
 function AdminUsers() {
+  const { user, setUser } = useAuth();
   const { t } = useT();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [decks, setDecks] = useState<DeckInfo[]>([]);
@@ -45,6 +46,16 @@ function AdminUsers() {
   const [packs, setPacks] = useState<PackSummary[]>([]); // все кастомные паки (админ видит все) — для назначения владельцев
   const [savingOwner, setSavingOwner] = useState<string | null>(null);
   const [ownerErr, setOwnerErr] = useState<string | null>(null);
+  const [impersonatingId, setImpersonatingId] = useState<number | null>(null);
+  const [noticeUserId, setNoticeUserId] = useState<number | "">("");
+  const [noticeSeverity, setNoticeSeverity] = useState<"info" | "warning" | "error">("info");
+  const [noticeTitle, setNoticeTitle] = useState("");
+  const [noticeMessage, setNoticeMessage] = useState("");
+  const [noticeSolution, setNoticeSolution] = useState("");
+  const [noticeUrl, setNoticeUrl] = useState("");
+  const [noticeBusy, setNoticeBusy] = useState(false);
+  const [noticeState, setNoticeState] = useState<"idle" | "sent" | "error">("idle");
+  const [noticeErr, setNoticeErr] = useState("");
 
   const loadUsers = () => apiClient.adminUsers().then(setUsers).catch(() => {});
   const loadMatrix = () => apiClient.adminUserDecks().then(setRows).catch(() => {});
@@ -128,6 +139,49 @@ function AdminUsers() {
       loadMatrix();
     } finally {
       setSavingCell(null);
+    }
+  }
+
+  async function impersonate(row: UserDeckRow) {
+    const targetId = row.userId;
+    if (!user || targetId === user.id) return;
+    setImpersonatingId(targetId);
+    try {
+      const next = await apiClient.impersonateUser(targetId);
+      setUser(next);
+      window.location.href = "/statistics";
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : t("users.impersonateFailed"));
+    } finally {
+      setImpersonatingId(null);
+    }
+  }
+
+  async function sendNotice() {
+    if (!noticeUserId || !noticeMessage.trim()) return;
+    setNoticeBusy(true);
+    setNoticeState("idle");
+    setNoticeErr("");
+    try {
+      await apiClient.adminSendNotification(noticeUserId, {
+        severity: noticeSeverity,
+        title: noticeTitle.trim(),
+        message: noticeMessage.trim(),
+        solution: noticeSolution.trim(),
+        actionUrl: noticeUrl.trim(),
+      });
+      setNoticeState("sent");
+      setNoticeTitle("");
+      setNoticeMessage("");
+      setNoticeSolution("");
+      setNoticeUrl("");
+      window.dispatchEvent(new CustomEvent("notifications:changed"));
+      window.setTimeout(() => setNoticeState((s) => (s === "sent" ? "idle" : s)), 2500);
+    } catch (e) {
+      setNoticeState("error");
+      setNoticeErr(e instanceof ApiError ? e.message : t("users.notifyFailed"));
+    } finally {
+      setNoticeBusy(false);
     }
   }
 
@@ -230,6 +284,97 @@ function AdminUsers() {
           )}
         </div>
 
+        <div className="border-t border-base-300 pt-3">
+          <p className="text-sm font-medium mb-2 flex items-center gap-2">
+            <Send size={15} className="text-primary" /> {t("users.notifyHeading")}
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-[minmax(160px,220px)_140px_1fr] gap-2">
+            <label className="form-control">
+              <span className="label-text">{t("users.notifyUser")}</span>
+              <select
+                className="select select-bordered select-sm"
+                value={noticeUserId === "" ? "" : String(noticeUserId)}
+                onChange={(e) => setNoticeUserId(e.target.value ? Number(e.target.value) : "")}
+              >
+                <option value="">{t("users.notifyPickUser")}</option>
+                {users.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.username}{u.role === "admin" ? ` (${t("common.admin")})` : ""}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="form-control">
+              <span className="label-text">{t("users.notifySeverity")}</span>
+              <select
+                className="select select-bordered select-sm"
+                value={noticeSeverity}
+                onChange={(e) => setNoticeSeverity(e.target.value as "info" | "warning" | "error")}
+              >
+                <option value="info">{t("notifications.severityInfo")}</option>
+                <option value="warning">{t("notifications.severityWarning")}</option>
+                <option value="error">{t("notifications.severityError")}</option>
+              </select>
+            </label>
+            <label className="form-control">
+              <span className="label-text">{t("users.notifyTitle")}</span>
+              <input
+                className="input input-bordered input-sm"
+                value={noticeTitle}
+                onChange={(e) => setNoticeTitle(e.target.value)}
+                placeholder={t("users.notifyTitlePlaceholder")}
+              />
+            </label>
+            <label className="form-control md:col-span-3">
+              <span className="label-text">{t("users.notifyMessage")}</span>
+              <textarea
+                className="textarea textarea-bordered min-h-24"
+                value={noticeMessage}
+                onChange={(e) => setNoticeMessage(e.target.value)}
+                placeholder={t("users.notifyMessagePlaceholder")}
+              />
+            </label>
+            <label className="form-control md:col-span-2">
+              <span className="label-text">{t("users.notifySolution")}</span>
+              <input
+                className="input input-bordered input-sm"
+                value={noticeSolution}
+                onChange={(e) => setNoticeSolution(e.target.value)}
+                placeholder={t("users.notifySolutionPlaceholder")}
+              />
+            </label>
+            <label className="form-control">
+              <span className="label-text">{t("users.notifyUrl")}</span>
+              <input
+                className="input input-bordered input-sm"
+                value={noticeUrl}
+                onChange={(e) => setNoticeUrl(e.target.value)}
+                placeholder="https://…"
+              />
+            </label>
+          </div>
+          <div className="flex items-center gap-2 mt-2">
+            <button
+              className="btn btn-primary btn-sm gap-1"
+              onClick={sendNotice}
+              disabled={noticeBusy || !noticeUserId || !noticeMessage.trim()}
+            >
+              {noticeBusy ? <span className="loading loading-spinner loading-sm" /> : <Send size={14} />}
+              {t("users.notifySend")}
+            </button>
+            {noticeState === "sent" && (
+              <span className="text-success text-sm inline-flex items-center gap-1">
+                <Check size={14} /> {t("users.notifySent")}
+              </span>
+            )}
+            {noticeState === "error" && (
+              <span className="text-error text-sm inline-flex items-center gap-1">
+                <AlertTriangle size={14} /> {noticeErr}
+              </span>
+            )}
+          </div>
+        </div>
+
         {/* Visibility matrix: users × packs (checkbox = visible; «исп.» = already used) */}
         {rows.length > 0 && decks.length > 0 && (
           <div className="border-t border-base-300 pt-3">
@@ -272,6 +417,22 @@ function AdminUsers() {
                           {row.username}
                           {users.find((u) => u.id === row.userId)?.locked && (
                             <span className="badge badge-error badge-xs">{t("users.locked")}</span>
+                          )}
+                          {row.userId !== user?.id && (
+                            <button
+                              type="button"
+                              className="btn btn-ghost btn-xs gap-1 ml-auto"
+                              disabled={impersonatingId === row.userId}
+                              onClick={() => impersonate(row)}
+                              title={t("users.impersonateTitle")}
+                            >
+                              {impersonatingId === row.userId ? (
+                                <span className="loading loading-spinner loading-xs" />
+                              ) : (
+                                <LogIn size={11} />
+                              )}
+                              {t("users.impersonate")}
+                            </button>
                           )}
                         </div>
                         <div className="text-[11px] font-normal text-base-content/50">

@@ -1,6 +1,7 @@
 import {
   AlertTriangle,
   BarChart3,
+  Bell,
   BookOpen,
   Boxes,
   Check,
@@ -13,6 +14,7 @@ import {
   FileText,
   Globe2,
   History,
+  House,
   Languages,
   Library,
   ListPlus,
@@ -50,11 +52,13 @@ export type AppIconName =
   | "external"
   | "globe"
   | "history"
+  | "home"
   | "library"
   | "login"
   | "logout"
   | "menu"
   | "music"
+  | "notifications"
   | "packs"
   | "plus"
   | "queue"
@@ -90,11 +94,13 @@ const ICONS: Record<AppIconName, LucideIcon> = {
   external: ExternalLink,
   globe: Globe2,
   history: History,
+  home: House,
   library: Library,
   login: LogIn,
   logout: LogOut,
   menu: Menu,
   music: Music2,
+  notifications: Bell,
   packs: PackageOpen,
   plus: Plus,
   queue: ListPlus,

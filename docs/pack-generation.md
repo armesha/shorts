@@ -15,6 +15,30 @@
 Для интернет-источников отдельно проверяй лицензию и происхождение данных перед скачиванием или
 пополнением. Не называй источник свободным только потому, что файл доступен в сети.
 
+## Обязательное правило для новых ручных паков
+
+Если агент вручную создает новый пак любого типа, он обязан сразу добавить сюда инструкцию по этому
+паку. Это касается:
+
+- встроенной деки в `src/anecdotes/decks.ts`;
+- prebuilt video pack с `videos.json` и MP4;
+- template-pack в `assets/template-packs/*`;
+- живого пользовательского пака в `data/packs/*.json`;
+- разового пака, который потом пользователь может захотеть пополнить через агента.
+
+Минимум, который нужно записать:
+
+- где лежит исходник и готовый результат;
+- как создать пак с нуля;
+- как сгенерировать новые карточки/видео;
+- нужна ли LLM-модель и где перед запуском спросить пользователя;
+- как добавить новые элементы к существующему паку без потери старых;
+- как проверить счетчики, файлы, рендер/preview и отсутствие дублей;
+- нужен ли серверный перезапуск.
+
+Не оставляй новый ручной пак только в коде или `data/packs`: без инструкции будущий агент не будет
+знать, как его безопасно пополнить.
+
 ## Быстрая карта паков
 
 | Пак / deck | Где результат | Как появляется контент | LLM нужен |
@@ -315,6 +339,197 @@ node --input-type=module -e 'import fs from "node:fs"; const cards=JSON.parse(fs
 Эти деки не рендерят карточку. Runtime выбирает готовый MP4 из `assets/fact-videos/`, копирует его в
 библиотеку и помечает использованным. Контракт реализован в `server/fact-gen.ts`.
 
+Как это работает в коде:
+
+- в `src/anecdotes/decks.ts` у деки стоит `preFact: true`;
+- `src/anecdotes/library.ts` читает `<deck.dir>/videos.json` свежим при каждом обращении, без cache;
+- `server/index.ts` для batch/queue вместо `buildLibraryVideo()` вызывает `buildFactLibraryVideo()`;
+- `server/fact-gen.ts` копирует MP4 в библиотеку, делает poster-frame через ffmpeg best-effort и
+  отмечает `anecdoteKey(text)` использованным для пользователя;
+- `/api/fact/random?deck=space` отдает случайный preview из `/fact-videos/<file>` и не помечает его
+  использованным.
+
+Текущий `space`:
+
+- реестр: `src/anecdotes/decks.ts`, deck id `space`, `dir: "data/space"`, `preFact: true`;
+- манифест: `data/space/videos.json`;
+- файлы: `assets/fact-videos/space/*.mp4`;
+- сейчас там 70 MP4;
+- `data/space/index.json` сейчас нет, и это нормально: runtime берет количество из `videos.json`;
+- дека `adminOnly: true`, поэтому обычные пользователи ее не видят, пока правило доступа не изменено.
+
+### Space montage pack / admin clip demos
+
+`space` сейчас пополняется не вручную копированием одного MP4, а через локальный free-stack монтажный
+workflow:
+
+- исходные pack specs: `temp/clip-demo/work/pack-space*.json`;
+- последний добавочный spec на 20 новых роликов: `temp/clip-demo/work/pack-space-7.json`;
+- генератор: `temp/clip-demo/buildpack.mjs`;
+- монтаж: `temp/clip-demo/montage.mjs`;
+- локальные source videos: `temp/clip-demo/src/*.mp4`;
+- готовая админ-галерея: `data/output/admin-demos/<id>.mp4`, `<id>.jpg`, `manifest.json`;
+- канал-selectable deck: `assets/fact-videos/space/<id>.mp4` и `data/space/videos.json`;
+- страница просмотра: `/clip-demos` (`web/src/pages/ClipDemos.tsx`).
+
+Как создать новый добавочный набор:
+
+1. Скопировать стиль из `temp/clip-demo/work/pack-space-7.json`.
+2. Использовать только новые `id`, которых нет в `data/output/admin-demos/manifest.json`.
+3. Каждый item описывать как `{id,title,theme,src,transcript,poster,segments}`.
+4. `clip` segments должны попадать в длительность `src`.
+5. `vo` segments используют `edge-tts` и `whisper-ctranslate2`, API-ключи не нужны; если текст VO
+   пишет LLM/workflow, сначала спроси пользователя, какую модель использовать.
+6. Для исходников с пустым transcript (`work/milkyway.json`, `work/moon.json`, `work/sun.json`) можно
+   использовать короткие `clip` segments без исходных субтитров и `vo` segments с новым narration.
+7. Держать итоговые ролики в пределах Shorts-формата: после сборки проверить, что `dur` не больше
+   `1:00`; если получилось больше, укоротить timecodes и пересобрать этот `id`.
+
+Сборка полного добавочного spec:
+
+```bash
+cd temp/clip-demo
+node buildpack.mjs work/pack-space-7.json
+```
+
+`buildpack.mjs` после каждого ролика:
+
+- генерирует VO через `edge-tts`;
+- делает word timestamps через `uvx whisper-ctranslate2`;
+- собирает MP4 через `ffmpeg`;
+- копирует MP4/JPG в `data/output/admin-demos`;
+- добавляет запись в `manifest.json`;
+- сохраняет `createdAt` при пересборке существующего `id` и обновляет `updatedAt`;
+- если `pack.id === "space"`, в конце вызывает `sync-space-deck.mjs`, который копирует MP4 в
+  `assets/fact-videos/space` и полностью пересобирает `data/space/videos.json`.
+
+Если нужно пересобрать только часть роликов, сделай временный subset JSON с тем же shape и запусти:
+
+```bash
+cd temp/clip-demo
+node buildpack.mjs /tmp/shorts-space-subset.json
+```
+
+Проверка `space` после пополнения:
+
+```bash
+node --input-type=module -e 'import fs from "node:fs"; const m=JSON.parse(fs.readFileSync("data/output/admin-demos/manifest.json","utf8")); const p=m.packs.find(p=>p.id==="space"); const v=JSON.parse(fs.readFileSync("data/space/videos.json","utf8")); const missing=v.filter(x=>!fs.existsSync("assets/fact-videos/"+x.file)); const noTime=p.items.filter(x=>!x.createdAt||!x.updatedAt); console.log({adminItems:p.items.length,deckVideos:v.length,missing:missing.length,noTime:noTime.length,newest:p.items.slice(-5).map(x=>[x.id,x.dur,x.createdAt])});'
+```
+
+`/clip-demos` читает `data/output/admin-demos/manifest.json`, показывает `createdAt` как
+`Добавлен <дата>, <время>` и умеет сортировать новые/старые. Для старых записей можно backfill-нуть
+`createdAt` из mtime готовых MP4; новые записи получает сам `buildpack.mjs`.
+
+### Funny Animals / admin clip demos
+
+`funny-reactions` - admin-gallery pack для страницы `/clip-demos` и источник для channel-selectable
+preFact deck `funny-animals`. Галерея хранится в `data/output/admin-demos/manifest.json`, а deck для
+выбора канала синхронизируется в `data/funny-animals/videos.json` и
+`assets/fact-videos/funny-animals/*.mp4`.
+
+Текущий набор:
+
+- pack id: `funny-reactions`;
+- видимый title: `Funny Animals`;
+- pack spec: `temp/clip-demo/work/pack-funny-reactions-1.json`;
+- source videos: `temp/clip-demo/src/funny/*.mp4`;
+- downloader: `temp/clip-demo/funny-download.mjs`;
+- builder: `temp/clip-demo/funny-buildpack.mjs`;
+- selectable-deck sync: `temp/clip-demo/sync-funny-animals-deck.mjs`;
+- output: `data/output/admin-demos/funny_*.mp4` и `funny_*.jpg`;
+- selectable deck id: `funny-animals`, registered in `src/anecdotes/decks.ts` as `preFact:true`;
+- сейчас там 80 MP4, каждый примерно 7-12 секунд.
+
+Формат ролика:
+
+1. короткий English topic intro на 3-7 слов;
+2. intro озвучивается через Microsoft `edge-tts` (`temp/clip-demo/tts.py`), без paid API;
+3. затем идет вертикальный animal Pexels-клип с его исходной аудиодорожкой;
+4. sticker/GIF-like оформление делается локально через ffmpeg `drawtext`: `LOL`, `HAHA`, `XD`, `:D`,
+   `LMAO`, `OH NO` и разные top labels;
+5. external GIF-файлы сейчас не нужны, поэтому нет отдельного copyright риска на sticker assets.
+6. Не генерировать искусственный лай/мяу/animal SFX: если нужен звук, отбирай исходник, где звук уже
+   есть. `funny-buildpack.mjs` должен падать на silent source, а не подмешивать fake audio.
+
+Источники:
+
+- текущие исходники скачаны с Pexels страниц без API-ключа через `yt-dlp` +
+  `--extractor-args generic:impersonate`;
+- Pexels License разрешает бесплатное использование, модификацию и не требует атрибуции, но перед
+  переходом на другой сайт или другой тип source обязательно заново проверить лицензию;
+- не брать случайные TikTok/YouTube/Instagram reposts; для монетизации они рискованнее даже если
+  технически скачиваются.
+
+Как добавить новые funny animal clips:
+
+1. Открыть `temp/clip-demo/work/pack-funny-reactions-1.json`.
+2. Добавить в `videos[]` объект с новым уникальным `id`, например:
+   ```json
+   {
+     "id": "funny_new_animal",
+     "title": "Short Animal Title",
+     "topic": "Three To Seven Words",
+     "src": "src/funny/funny_new_animal.mp4",
+     "sourceUrl": "https://www.pexels.com/video/...",
+     "start": 0.2,
+     "end": 8.8,
+     "style": "pop",
+     "punchline": "SHORT LABEL"
+   }
+   ```
+3. `topic` должен быть на английском и реально 3-7 слов: это первая Microsoft-озвучка.
+4. `style` брать из `pop`, `comic`, `neon`, `reaction`, `meme`, `bubble`; если стиль не указан,
+   builder распределит стили по очереди.
+5. `src` должен лежать под `temp/clip-demo/src/funny/`, а `sourceUrl` должен быть страницей Pexels
+   или другим проверенным лицензированным источником.
+6. После скачивания обязательно проверить исходник:
+   ```bash
+   ffprobe -v error -select_streams a -show_entries stream=index -of csv=p=0 temp/clip-demo/src/funny/funny_new_animal.mp4
+   ```
+   Пустой вывод значит silent source: такой клип не добавлять в pack, даже если видео визуально хорошее.
+7. Если `topic/title/punchline` пишет LLM/workflow, сначала спроси пользователя, какую модель
+   использовать. Если тексты пишутся вручную, модель спрашивать не нужно.
+
+Скачать/проверить исходники:
+
+```bash
+cd temp/clip-demo
+node funny-download.mjs work/pack-funny-reactions-1.json
+```
+
+Собрать весь funny pack:
+
+```bash
+cd temp/clip-demo
+node funny-buildpack.mjs work/pack-funny-reactions-1.json
+```
+
+Пересобрать один или несколько id:
+
+```bash
+cd temp/clip-demo
+node funny-buildpack.mjs work/pack-funny-reactions-1.json funny_poodle_turbo funny_cat_duck_drama
+```
+
+Builder сохраняет `createdAt` при пересборке существующего `id`, обновляет `updatedAt`, пишет
+`sourceProvider/sourceUrl/style/sound:"source"` в item manifest и не вызывает `sync-space-deck.mjs`.
+Для `pack.id === "funny-reactions"` builder вызывает `sync-funny-animals-deck.mjs`, чтобы ролики сразу
+попали в selectable deck `funny-animals`. Если deck id уже есть в запущенном backend, новые MP4 из
+`videos.json` подхватываются без перезапуска; если deck id был добавлен в `src/anecdotes/decks.ts`
+только что, нужен backend restart.
+Если старый элемент удаляется из animal pack, убери его из `manifest.json` и удали лишние
+`data/output/admin-demos/<id>.mp4/.jpg`, `temp/clip-demo/src/funny/<id>.mp4`, `temp/clip-demo/out/<id>.mp4`,
+затем снова запусти `node sync-funny-animals-deck.mjs`.
+
+Проверка `funny-reactions`:
+
+```bash
+node --input-type=module -e 'import fs from "node:fs"; import {execFileSync} from "node:child_process"; const m=JSON.parse(fs.readFileSync("data/output/admin-demos/manifest.json","utf8")); const p=m.packs.find(p=>p.id==="funny-reactions"); const missing=[]; const long=[]; const noTime=[]; const noAudio=[]; for (const it of p?.items||[]) { const f=`data/output/admin-demos/${it.id}.mp4`; if (!fs.existsSync(f)||!fs.existsSync(`data/output/admin-demos/${it.id}.jpg`)) missing.push(it.id); const [mm,ss]=(it.dur||"0:00").split(":").map(Number); if ((mm||0)*60+(ss||0)>60) long.push([it.id,it.dur]); if (!it.createdAt||!it.updatedAt) noTime.push(it.id); const a=fs.existsSync(f) ? execFileSync("ffprobe",["-v","error","-select_streams","a","-show_entries","stream=index","-of","csv=p=0",f]).toString().trim() : ""; if (!a) noAudio.push(it.id); } console.log({title:p?.title,items:p?.items.length,missing,long,noTime,noAudio,newest:p?.items.slice(-5).map(x=>[x.id,x.dur,x.createdAt,x.style,x.sound])});'
+```
+
+Для визуальной проверки сделай poster/contact sheet из готовых `funny_*.jpg` или извлеки strip из
+конкретного MP4. Не утверждай, что pack готов, пока не проверены хотя бы постеры и 1-2 видео strips.
+
 Чтобы пополнить:
 
 1. Положить MP4:
@@ -324,8 +539,12 @@ node --input-type=module -e 'import fs from "node:fs"; const cards=JSON.parse(fs
    ```json
    { "file": "space/new_video.mp4", "title": "Title", "text": "Short description" }
    ```
-3. Обновить `index.json`: `total`, `packSize`, `range`.
+3. Для `fact-en` и `quotes-de` обновить `index.json`: `total`, `packSize`, `range`. Для `space`
+   `index.json` необязателен; если создаешь его, держи `total` равным длине `videos.json`.
 4. Проверить, что каждый `file` реально существует.
+5. Если создаешь новый video pack по этому же паттерну, добавь его в `DECKS` с `preFact: true`,
+   положи `videos.json`, MP4 в `assets/fact-videos/...`, и обязательно добавь сюда отдельную секцию
+   с правилами создания/пополнения именно этого пака.
 
 Проверка:
 
@@ -439,3 +658,14 @@ node --input-type=module -e 'import fs from "node:fs"; const manifest=JSON.parse
 
 Если карточки генерируются LLM, сначала спроси пользователя модель workflow, затем проверь JSON через
 страницу "Карточки" или через `validateBatch()` из `src/packs/store.ts` без записи на диск.
+
+Если такой пак создается агентом для пользователя вручную, после создания добавь в этот документ
+отдельную секцию или подраздел:
+
+- название и `packId`;
+- кто владелец/какой язык;
+- откуда брать или как генерировать новые карточки;
+- точный JSON shape для добавления карточек;
+- команда/API/UI-путь для пополнения;
+- команда preview/render-проверки;
+- как не задублировать уже добавленные карточки.

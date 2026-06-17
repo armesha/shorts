@@ -112,7 +112,7 @@ function randomAvatar(): string | null {
 for (const acc of db.listAccounts()) {
   if (!acc.avatar) {
     const av = randomAvatar();
-    if (av) db.updateAccount(acc.id, { avatar: av });
+    if (av) db.updateAccount(acc.id, { avatar: av, avatarSource: "random" });
   }
 }
 
@@ -174,6 +174,7 @@ if (existsSync(resolve(WEB_DIST, "index.html"))) {
 
 // ---- Auth: session cookie + login throttling ------------------------------------------------
 const SESSION_COOKIE = "sid";
+const ADMIN_SESSION_COOKIE = "admin_sid";
 // Secure cookie: ON by default whenever the app is served over HTTPS (PUBLIC_BASE_URL=https://…),
 // which is the prod case (Cloudflare Tunnel). SESSION_COOKIE_SECURE=1/0 forces it on/off for edge cases.
 const COOKIE_SECURE =
@@ -191,7 +192,7 @@ function getCookie(req: { headers: { cookie?: string } }, name: string): string 
   }
   return null;
 }
-function setSessionCookie(reply: { header: (k: string, v: string) => unknown }, token: string) {
+function sessionCookieHeader(token: string): string {
   const attrs = [
     `${SESSION_COOKIE}=${token}`,
     "HttpOnly",
@@ -200,12 +201,38 @@ function setSessionCookie(reply: { header: (k: string, v: string) => unknown }, 
     `Max-Age=${SESSION_TTL_DAYS * 86_400}`,
   ];
   if (COOKIE_SECURE) attrs.push("Secure");
-  reply.header("Set-Cookie", attrs.join("; "));
+  return attrs.join("; ");
 }
-function clearSessionCookie(reply: { header: (k: string, v: string) => unknown }) {
+
+function adminSessionCookieHeader(token: string): string {
+  const attrs = [
+    `${ADMIN_SESSION_COOKIE}=${token}`,
+    "HttpOnly",
+    "SameSite=Lax",
+    "Path=/",
+    `Max-Age=${SESSION_TTL_DAYS * 86_400}`,
+  ];
+  if (COOKIE_SECURE) attrs.push("Secure");
+  return attrs.join("; ");
+}
+
+function clearSessionCookieHeader(): string {
   const attrs = [`${SESSION_COOKIE}=`, "HttpOnly", "SameSite=Lax", "Path=/", "Max-Age=0"];
   if (COOKIE_SECURE) attrs.push("Secure");
-  reply.header("Set-Cookie", attrs.join("; "));
+  return attrs.join("; ");
+}
+
+function clearAdminSessionCookieHeader(): string {
+  const attrs = [`${ADMIN_SESSION_COOKIE}=`, "HttpOnly", "SameSite=Lax", "Path=/", "Max-Age=0"];
+  if (COOKIE_SECURE) attrs.push("Secure");
+  return attrs.join("; ");
+}
+
+function setSessionCookie(reply: { header: (k: string, v: string) => unknown }, token: string) {
+  reply.header("Set-Cookie", sessionCookieHeader(token));
+}
+function clearSessionCookie(reply: { header: (k: string, v: string) => unknown }) {
+  reply.header("Set-Cookie", clearSessionCookieHeader());
 }
 
 // Gate the whole API behind a session. Exceptions: health, the login endpoint, and the YouTube
@@ -219,6 +246,7 @@ const PUBLIC_API = new Set([
   "/api/telegram/webhook", // Telegram pushes bot updates (/start) here
   "/api/auth/recover/start", // password recovery: ask the bot to DM a code
   "/api/auth/recover/complete", // password recovery: submit code + new password
+  "/api/auth/impersonation/stop", // restore admin session from admin_sid while impersonating
 ]);
 app.addHook("onRequest", async (req, reply) => {
   const path = req.url.split("?")[0];
@@ -303,20 +331,56 @@ app.post("/api/auth/login", async (req, reply) => {
 
 app.post("/api/auth/logout", async (req, reply) => {
   const token = getCookie(req, SESSION_COOKIE);
+  const adminToken = getCookie(req, ADMIN_SESSION_COOKIE);
   if (token) db.deleteSession(token);
-  clearSessionCookie(reply);
+  if (adminToken && adminToken !== token) db.deleteSession(adminToken);
+  reply.header("Set-Cookie", [clearSessionCookieHeader(), clearAdminSessionCookieHeader()]);
   return { ok: true };
 });
 
 app.get("/api/auth/me", async (req, reply) => {
   const user = db.getUserById(uid(req));
   if (!user) return reply.code(401).send({ error: "Не авторизован" });
-  return { id: user.id, username: user.username, role: user.role };
+  return publicUser(req, user);
+});
+
+app.post("/api/auth/impersonation/stop", async (req, reply) => {
+  const adminToken = getCookie(req, ADMIN_SESSION_COOKIE);
+  const admin = validSessionUser(adminToken);
+  if (!admin || admin.role !== "admin" || !adminToken) {
+    reply.header("Set-Cookie", clearAdminSessionCookieHeader());
+    return reply.code(401).send({ error: "Админская сессия не найдена" });
+  }
+  const currentToken = getCookie(req, SESSION_COOKIE);
+  if (currentToken && currentToken !== adminToken) db.deleteSession(currentToken);
+  reply.header("Set-Cookie", [sessionCookieHeader(adminToken), clearAdminSessionCookieHeader()]);
+  return { ...admin, impersonator: null };
 });
 
 // uid of the authenticated request (guaranteed set by the hook for gated routes).
 const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
 type Replyish = { code: (n: number) => { send: (b: unknown) => unknown } };
+
+function validSessionUser(token: string | null): { id: number; username: string; role: string } | null {
+  const sess = token ? db.getSession(token) : null;
+  if (!sess || new Date(sess.expiresAt).getTime() < Date.now()) {
+    if (token) db.deleteSession(token);
+    return null;
+  }
+  const u = db.getUserById(sess.userId);
+  return u ? { id: u.id, username: u.username, role: u.role } : null;
+}
+
+function impersonatorUser(req: unknown): { id: number; username: string; role: string } | null {
+  const currentId = (req as { userId?: number }).userId ?? null;
+  const admin = validSessionUser(getCookie(req as { headers: { cookie?: string } }, ADMIN_SESSION_COOKIE));
+  if (!admin || admin.role !== "admin" || admin.id === currentId) return null;
+  return admin;
+}
+
+function publicUser(req: unknown, user: { id: number; username: string; role: string }) {
+  return { id: user.id, username: user.username, role: user.role, impersonator: impersonatorUser(req) };
+}
 
 function requireAdmin(req: unknown, reply: Replyish): boolean {
   const u = db.getUserById(uid(req));
@@ -326,24 +390,119 @@ function requireAdmin(req: unknown, reply: Replyish): boolean {
   }
   return true;
 }
-// Return the account only if it belongs to the current user, else send 404 and return null.
-function ownAccount(req: unknown, reply: Replyish, id: number): Account | null {
+
+function isAdminReq(req: unknown): boolean {
+  return db.getUserById(uid(req))?.role === "admin";
+}
+
+// Admins may inspect/edit any channel; regular users stay locked to their own channels.
+function accessibleAccount(req: unknown, reply: Replyish, id: number): Account | null {
   const a = db.getAccount(id);
-  if (!a || a.userId !== uid(req)) {
+  if (!a || (!isAdminReq(req) && a.userId !== uid(req))) {
     reply.code(404).send({ error: "Канал не найден" });
     return null;
   }
   return a;
 }
 
+function accountOwnerId(req: unknown, account: Account): number {
+  return account.userId ?? uid(req);
+}
+
+function accountOwnerCreds(req: unknown, account: Account): ClientCreds | null {
+  return userCreds(accountOwnerId(req, account));
+}
+
 // True if the user may use a deck (pack): admins always; admin-only packs never for non-admins;
 // otherwise unless the deck is hidden for them.
 function deckAllowed(req: unknown, deckId: string): boolean {
-  if (db.getUserById(uid(req))?.role === "admin") return true;
+  if (isAdminReq(req)) return true;
   // Кастомные паки: доступ по владению/гранту (getPack применяет canAccess), а не по hidden.
   if (isPackDeckId(deckId)) return getPack(deckId.slice(5), uid(req), false) !== null;
   if (getDeck(deckId).adminOnly) return false;
   return !db.isDeckHiddenFor(uid(req), deckId);
+}
+
+function notificationVisible(req: unknown, notificationId: number): boolean {
+  const n = db.getNotification(notificationId);
+  return !!n && (isAdminReq(req) || n.userId === uid(req));
+}
+
+function errorText(err: unknown): string {
+  const e = err as { message?: string; stack?: string; response?: { data?: unknown }; errors?: unknown };
+  const parts = [e?.message, e?.response?.data, e?.errors, e?.stack]
+    .filter((x) => x != null)
+    .map((x) => {
+      if (typeof x === "string") return x;
+      try {
+        return JSON.stringify(x);
+      } catch {
+        return String(x);
+      }
+    });
+  return parts.join("\n");
+}
+
+function extractGoogleApiUrl(text: string): string | null {
+  const m = text.match(/https:\/\/console\.developers\.google\.com\/apis\/api\/youtubeanalytics\.googleapis\.com\/overview\?project=\d+/i);
+  return m?.[0] ?? null;
+}
+
+function extractGoogleProjectId(text: string): string | null {
+  return (
+    text.match(/[?&]project=(\d+)/)?.[1] ??
+    text.match(/\bproject\s+(\d+)\b/i)?.[1] ??
+    null
+  );
+}
+
+function notifyYouTubeAnalyticsIssue(account: Account, err: unknown, analyticsError: string) {
+  if (account.userId == null) return;
+  const raw = `${analyticsError}\n${errorText(err)}`;
+  const disabled = /SERVICE_DISABLED|accessNotConfigured|has not been used|not enabled|disabled/i.test(raw);
+  const projectId = extractGoogleProjectId(raw);
+  const actionUrl =
+    extractGoogleApiUrl(raw) ??
+    (projectId
+      ? `https://console.developers.google.com/apis/api/youtubeanalytics.googleapis.com/overview?project=${projectId}`
+      : null);
+  const channelName = account.ytChannelTitle || account.channelName || `#${account.id}`;
+  db.upsertNotification({
+    userId: account.userId,
+    accountId: account.id,
+    severity: "error",
+    category: "youtube_analytics",
+    title: disabled ? "YouTube Analytics API выключен" : "Проблема YouTube Analytics",
+    message: `Канал «${channelName}»: ${analyticsError}`,
+    solution: disabled
+      ? "Откройте Google Cloud Console → APIs & Services → Library → YouTube Analytics API → Enable. Если API только что включили, подождите несколько минут и снова нажмите «Обновить статистику»."
+      : "Проверьте Google-ключ владельца канала, доступы OAuth и подключение канала. После исправления нажмите «Обновить статистику» ещё раз.",
+    actionUrl,
+    dedupeKey: disabled
+      ? `youtube-analytics-disabled:account=${account.id}:project=${projectId ?? "unknown"}`
+      : `youtube-analytics-error:account=${account.id}:${analyticsError.slice(0, 120)}`,
+    source: "server",
+    context: `analytics refresh account=${account.id}`,
+  });
+}
+
+function notifyStatsRefreshIssue(account: Account, err: unknown, message: string) {
+  if (account.userId == null) return;
+  const channelName = account.ytChannelTitle || account.channelName || `#${account.id}`;
+  db.upsertNotification({
+    userId: account.userId,
+    accountId: account.id,
+    severity: "error",
+    category: "youtube_stats",
+    title: "Статистика YouTube не обновилась",
+    message: `Канал «${channelName}»: ${message}`,
+    solution:
+      "Проверьте, что канал подключён к YouTube, Google-ключ владельца загружен в «Настройках», а в Google Cloud включён YouTube Data API v3. Потом обновите статистику снова.",
+    actionUrl: null,
+    dedupeKey: `youtube-stats-error:account=${account.id}:${message.slice(0, 120)}`,
+    source: "server",
+    context: `stats refresh account=${account.id}`,
+  });
 }
 
 app.get("/api/health", async () => ({ ok: true, time: new Date().toISOString() }));
@@ -414,6 +573,59 @@ app.post("/api/admin/users", async (req, reply) => {
     if (valid.length) db.setHiddenDecks(u.id, valid);
   }
   return { id: u.id, username: u.username, role: u.role };
+});
+
+app.post("/api/admin/users/:id/impersonate", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+  const targetId = Number((req.params as { id: string }).id);
+  const target = db.getUserById(targetId);
+  if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
+  if (target.id === uid(req)) return reply.code(400).send({ error: "Нельзя войти под самим собой" });
+  const adminToken = getCookie(req, SESSION_COOKIE);
+  if (!adminToken) return reply.code(401).send({ error: "Админская сессия не найдена" });
+  const targetToken = newSessionToken();
+  db.createSession(targetToken, target.id, new Date(Date.now() + SESSION_TTL_DAYS * DAY_MS).toISOString());
+  reply.header("Set-Cookie", [sessionCookieHeader(targetToken), adminSessionCookieHeader(adminToken)]);
+  const admin = db.getUserById(uid(req))!;
+  return {
+    id: target.id,
+    username: target.username,
+    role: target.role,
+    impersonator: { id: admin.id, username: admin.username, role: admin.role },
+  };
+});
+
+app.post("/api/admin/users/:id/notifications", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+  const targetId = Number((req.params as { id: string }).id);
+  const target = db.getUserById(targetId);
+  if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
+  const body =
+    (req.body as {
+      severity?: string;
+      title?: string;
+      message?: string;
+      solution?: string;
+      actionUrl?: string;
+    }) ?? {};
+  const message = (body.message ?? "").trim();
+  if (!message) return reply.code(400).send({ error: "Текст уведомления обязателен" });
+  const title = (body.title ?? "").trim() || "Сообщение от администратора";
+  const severity = ["info", "warning", "error"].includes(body.severity ?? "") ? body.severity! : "info";
+  const admin = db.getUserById(uid(req))!;
+  return db.upsertNotification({
+    userId: target.id,
+    accountId: null,
+    severity,
+    category: "admin_message",
+    title,
+    message,
+    solution: (body.solution ?? "").trim() || null,
+    actionUrl: (body.actionUrl ?? "").trim() || null,
+    dedupeKey: `admin-message:${target.id}:${Date.now()}:${newSessionToken().slice(0, 12)}`,
+    source: "admin",
+    context: `admin notification by ${admin.username}#${admin.id}`,
+  });
 });
 
 // ---- Admin: per-user pack (deck) visibility ----
@@ -563,24 +775,30 @@ app.get("/api/admin/low-decks", async (req, reply) => {
   return out;
 });
 
-// ---- Accounts (scoped to the current user) ----
-// Own channels; admins may pass ?scope=all to list every user's channels (for the history filter).
+// ---- Accounts ----
+// Regular users see/edit only their own channels. Admins may pass ?scope=all to list every user's
+// channels and may open/edit a specific /accounts/:id directly.
 app.get("/api/accounts", async (req) => visibleAccounts(req, (req.query as { scope?: string })?.scope));
 app.get("/api/accounts/:id", async (req, reply) => {
-  const a = ownAccount(req, reply, Number((req.params as { id: string }).id));
+  const a = accessibleAccount(req, reply, Number((req.params as { id: string }).id));
   if (!a) return;
   return a;
 });
 app.post("/api/accounts", async (req) => {
   const body = (req.body as Partial<Account>) ?? {};
-  return db.createAccount({ ...body, userId: uid(req), avatar: body.avatar ?? randomAvatar() });
+  return db.createAccount({
+    ...body,
+    userId: uid(req),
+    avatar: body.avatar ?? randomAvatar(),
+    avatarSource: body.avatar ? "manual" : "random",
+  });
 });
 // Built-in avatar set (CC0) for the channel avatar picker.
 app.get("/api/avatars", async () => listAvatarFiles().map((f) => `/avatars/${f}`));
 // Upload a custom channel avatar (JSON { dataUrl }); stored under data/output/avatars, served via /files/.
 app.post("/api/accounts/:id/avatar", async (req, reply) => {
   const id = Number((req.params as { id: string }).id);
-  if (!ownAccount(req, reply, id)) return;
+  if (!accessibleAccount(req, reply, id)) return;
   const { dataUrl } = (req.body as { dataUrl?: string }) ?? {};
   const m = /^data:image\/(png|jpe?g|webp);base64,([A-Za-z0-9+/=]+)$/.exec(dataUrl ?? "");
   if (!m) return reply.code(400).send({ error: "Нужен PNG / JPEG / WEBP (data URL)." });
@@ -593,10 +811,12 @@ app.post("/api/accounts/:id/avatar", async (req, reply) => {
 });
 app.put("/api/accounts/:id", async (req, reply) => {
   const id = Number((req.params as { id: string }).id);
-  if (!ownAccount(req, reply, id)) return;
+  const acc = accessibleAccount(req, reply, id);
+  if (!acc) return;
   const body = (req.body as Partial<Account>) ?? {};
   // avatar can only be one of our served paths (built-in /avatars/ or uploaded /files/avatars/)
   if (body.avatar != null && !/^\/(avatars|files)\//.test(body.avatar)) delete body.avatar;
+  else if (body.avatar != null) body.avatarSource = "manual";
   if (body.lang) {
     const known = DECKS.some((d) => d.id === body.lang) || isPackDeckId(body.lang);
     if (!known) return reply.code(400).send({ error: `Неизвестный язык канала «${body.lang}».` });
@@ -605,9 +825,8 @@ app.put("/api/accounts/:id", async (req, reply) => {
   }
   // Бэкстоп языка: язык выбранного контента (деки/пака) обязан совпадать с языком канала.
   {
-    const cur0 = db.getAccount(id);
-    const newLang = body.lang ?? cur0?.lang ?? "";
-    const newChannelLang = (body.channelLang ?? cur0?.channelLang ?? "") as string;
+    const newLang = body.lang ?? acc.lang ?? "";
+    const newChannelLang = (body.channelLang ?? acc.channelLang ?? "") as string;
     if (newChannelLang) {
       const cl = isPackDeckId(newLang)
         ? getPack(newLang.slice(5), uid(req), db.getUserById(uid(req))?.role === "admin")?.lang || ""
@@ -632,7 +851,7 @@ app.put("/api/accounts/:id", async (req, reply) => {
 });
 app.delete("/api/accounts/:id", async (req, reply) => {
   const id = Number((req.params as { id: string }).id);
-  if (!ownAccount(req, reply, id)) return;
+  if (!accessibleAccount(req, reply, id)) return;
   db.deleteAccount(id);
   return { ok: true };
 });
@@ -930,7 +1149,14 @@ app.post("/api/stats/refresh", async (req) => {
           : null;
         let wroteSnapshot = false;
         if (!totals) {
-          totals = await fetchChannelStats(creds, REDIRECT_URI, token);
+          const freshTotals = await fetchChannelStats(creds, REDIRECT_URI, token);
+          totals = freshTotals;
+          db.setYouTube(a.id, {
+            refreshToken: token,
+            channelId: freshTotals.channelId ?? a.ytChannelId,
+            channelTitle: freshTotals.channelTitle ?? a.ytChannelTitle,
+            channelAvatar: freshTotals.channelAvatar,
+          });
         }
 
         const cachedTopVideos = db.getReportCache(a.id, "topVideos", analyticsRange.from, analyticsRange.to);
@@ -972,7 +1198,9 @@ app.post("/api/stats/refresh", async (req) => {
               message: "YouTube Analytics: " + analyticsError,
               detail: (err as Error)?.stack ?? null,
               context: `analytics refresh account=${a.id}`,
+              userId: a.userId ?? null,
             });
+            notifyYouTubeAnalyticsIssue(a, err, analyticsError);
           }
         }
 
@@ -1007,13 +1235,91 @@ app.post("/api/stats/refresh", async (req) => {
         if (!wroteSnapshot && analyticsError) errors.set(a.id, analyticsError);
       } catch (err) {
         app.log.error({ err: String(err), accountId: a.id }, "stats refresh failed");
+        const msg = ytErrorMessage(err);
         db.addError({
           source: "server",
-          message: "Статистика: " + ytErrorMessage(err),
+          message: "Статистика: " + msg,
           detail: (err as Error)?.stack ?? null,
           context: `stats refresh account=${a.id}`,
+          userId: a.userId ?? null,
         });
-        errors.set(a.id, ytErrorMessage(err));
+        notifyStatsRefreshIssue(a, err, msg);
+        errors.set(a.id, msg);
+      }
+    }),
+  );
+  return accounts.map((a) => statRow(a, errors.get(a.id)));
+});
+
+app.post("/api/stats/refresh-data-only", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+  const q = (req.query as { scope?: string }) ?? {};
+  const body = (req.body as { accountIds?: number[] }) ?? {};
+  const requested = new Set(
+    Array.isArray(body.accountIds) ? body.accountIds.map(Number).filter((id) => Number.isFinite(id)) : [],
+  );
+  if (Array.isArray(body.accountIds) && requested.size === 0) return [];
+
+  const all = visibleAccounts(req, q.scope);
+  const accounts = all.filter((a) => {
+    if (a.status !== "connected") return false;
+    if (requested.size) return requested.has(a.id);
+    return true;
+  });
+  const errors = new Map<number, string>();
+  const analyticsRange = youtubeAnalyticsRange();
+  await Promise.all(
+    accounts.map(async (a) => {
+      const creds = a.userId != null ? userCreds(a.userId) : null;
+      const token = db.getRefreshToken(a.id);
+      if (!creds) {
+        errors.set(a.id, "Нет Google-ключа у владельца канала");
+        return;
+      }
+      if (!token) {
+        errors.set(a.id, "Канал не подключён к YouTube");
+        return;
+      }
+      try {
+        const totals = await fetchChannelStats(creds, REDIRECT_URI, token);
+        db.setYouTube(a.id, {
+          refreshToken: token,
+          channelId: totals.channelId ?? a.ytChannelId,
+          channelTitle: totals.channelTitle ?? a.ytChannelTitle,
+          channelAvatar: totals.channelAvatar,
+        });
+        const latest = db.latestSnapshot(a.id);
+        const analyticsSummary = summarizeStoredAnalytics(a.id, analyticsRange.from, analyticsRange.to);
+        db.addChannelSnapshot({
+          accountId: a.id,
+          subscribers: totals.subscribers,
+          views: totals.views,
+          videos: totals.videos,
+          analyticsStatus: "data_only",
+          analyticsError: null,
+          dataThrough: latest?.dataThrough ?? db.latestDailyAnalyticsDate(a.id),
+          watchMinutes: analyticsSummary.watchMinutes,
+          engagedViews: analyticsSummary.engagedViews,
+          avgViewDuration: analyticsSummary.avgViewDuration,
+          avgViewPercentage: analyticsSummary.avgViewPercentage,
+          likes: analyticsSummary.likes,
+          comments: analyticsSummary.comments,
+          shares: analyticsSummary.shares,
+          subscribersGained: analyticsSummary.subscribersGained,
+          subscribersLost: analyticsSummary.subscribersLost,
+          analyticsTakenAt: latest?.analyticsTakenAt ?? null,
+        });
+      } catch (err) {
+        app.log.error({ err: String(err), accountId: a.id }, "youtube data-only refresh failed");
+        const msg = ytErrorMessage(err);
+        db.addError({
+          source: "server",
+          message: "Статистика YouTube Data: " + msg,
+          detail: (err as Error)?.stack ?? null,
+          context: `stats data-only refresh account=${a.id}`,
+          userId: a.userId ?? null,
+        });
+        errors.set(a.id, msg);
       }
     }),
   );
@@ -1026,6 +1332,56 @@ app.get("/api/stats/:id/history", async (req, reply) => {
   const a = visibleAccount(req, Number((req.params as { id: string }).id), true);
   if (!a) return reply.code(404).send({ error: "Канал не найден" });
   return db.listChannelSnapshots(a.id);
+});
+
+// ---- User notifications: user issue inbox; admins may inspect all users' inboxes ----
+app.get("/api/notifications", async (req, reply) => {
+  const q = (req.query as { scope?: string; status?: string; limit?: string; offset?: string }) ?? {};
+  const scopeAll = q.scope === "all";
+  if (scopeAll && !requireAdmin(req, reply)) return;
+  const status = q.status || "open";
+  return db.listNotifications({
+    userId: scopeAll ? undefined : uid(req),
+    includeResolved: status === "all",
+    onlyResolved: status === "resolved",
+    onlyUnread: status === "unread",
+    limit: Number(q.limit) || 100,
+    offset: Number(q.offset) || 0,
+  });
+});
+
+app.get("/api/notifications/counts", async (req, reply) => {
+  const q = (req.query as { scope?: string }) ?? {};
+  const scopeAll = q.scope === "all";
+  if (scopeAll && !requireAdmin(req, reply)) return;
+  return db.notificationCounts(scopeAll ? undefined : uid(req));
+});
+
+app.post("/api/notifications/read-all", async (req, reply) => {
+  const q = (req.query as { scope?: string }) ?? {};
+  const scopeAll = q.scope === "all";
+  if (scopeAll && !requireAdmin(req, reply)) return;
+  const changed = db.markAllNotificationsRead(scopeAll ? undefined : uid(req));
+  return { ok: true, changed };
+});
+
+app.post("/api/notifications/:id/read", async (req, reply) => {
+  const id = Number((req.params as { id: string }).id);
+  if (!notificationVisible(req, id)) return reply.code(404).send({ error: "Уведомление не найдено" });
+  return db.markNotificationRead(id);
+});
+
+app.post("/api/notifications/:id/resolve", async (req, reply) => {
+  const id = Number((req.params as { id: string }).id);
+  if (!notificationVisible(req, id)) return reply.code(404).send({ error: "Уведомление не найдено" });
+  return db.resolveNotification(id);
+});
+
+app.delete("/api/notifications/:id", async (req, reply) => {
+  const id = Number((req.params as { id: string }).id);
+  if (!notificationVisible(req, id)) return reply.code(404).send({ error: "Уведомление не найдено" });
+  db.deleteNotification(id);
+  return { ok: true };
 });
 
 // ---- Error log: client-side reports (any user) + admin viewer/clear ----
@@ -1075,8 +1431,9 @@ app.get("/api/system", async () => {
 app.get("/api/youtube/auth-url", async (req, reply) => {
   const accountId = Number((req.query as { accountId?: string }).accountId ?? 0);
   if (!accountId) return reply.code(400).send({ error: "accountId required" });
-  if (!ownAccount(req, reply, accountId)) return;
-  const creds = userCreds(uid(req));
+  const acc = accessibleAccount(req, reply, accountId);
+  if (!acc) return;
+  const creds = accountOwnerCreds(req, acc);
   if (!creds) return reply.code(400).send({ error: "Сначала загрузите свой Google-ключ в Настройках" });
   app.log.info({ accountId, user: uid(req), redirect: REDIRECT_URI }, "[oauth] auth-url issued");
   return { url: buildAuthUrl(creds, REDIRECT_URI, String(accountId)) };
@@ -1122,7 +1479,7 @@ app.get("/api/youtube/callback", async (req, reply) => {
 app.get("/api/videos", async (req, reply) => {
   const accountId = Number((req.query as { accountId?: string }).accountId ?? 0);
   if (!accountId) return [];
-  if (!ownAccount(req, reply, accountId)) return;
+  if (!accessibleAccount(req, reply, accountId)) return;
   return db.listVideos(accountId);
 });
 
@@ -1174,8 +1531,9 @@ async function buildLibraryVideo(input: {
 app.post("/api/videos", async (req, reply) => {
   const body = (req.body as { accountId?: number; text?: string; title?: string; bg?: string; music?: string; deck?: string }) ?? {};
   if (!body.accountId || !body.text) return reply.code(400).send({ error: "accountId и text обязательны" });
-  const acc = ownAccount(req, reply, body.accountId);
+  const acc = accessibleAccount(req, reply, body.accountId);
   if (!acc) return;
+  const ownerId = accountOwnerId(req, acc);
   if (isPackDeckId(acc.lang))
     return reply.code(400).send({ error: "Это пак-канал — добавляйте ролики кнопкой «Сгенерировать» или через Студию." });
   const channelDeck = DECKS.find((d) => d.id === acc.lang);
@@ -1188,7 +1546,7 @@ app.post("/api/videos", async (req, reply) => {
   if ((body.deck || channelDeck.id) !== channelDeck.id)
     return reply.code(400).send({ error: `Язык ролика не совпадает с языком канала (${channelDeck.name}) — не сохранено.` });
   return buildLibraryVideo({
-    userId: uid(req),
+    userId: ownerId,
     accountId: body.accountId,
     text: body.text,
     title: body.title,
@@ -1202,22 +1560,32 @@ app.post("/api/videos", async (req, reply) => {
 app.post("/api/videos/batch", async (req, reply) => {
   const body = (req.body as { accountId?: number; count?: number; bg?: string; music?: string; deck?: string }) ?? {};
   if (!body.accountId) return reply.code(400).send({ error: "accountId обязателен" });
-  const acc = ownAccount(req, reply, body.accountId);
+  const acc = accessibleAccount(req, reply, body.accountId);
   if (!acc) return;
+  const ownerId = accountOwnerId(req, acc);
   const requested = Math.max(1, Math.min(25, Number(body.count) || 5));
-  const seen = new Set<string>(db.usedAnecdoteKeys(uid(req))); // exclude this user's used + dedupe batch
+  const seen = new Set<string>(db.usedAnecdoteKeys(ownerId)); // exclude owner-used + dedupe batch
   const created: unknown[] = [];
   // Пак-канал (язык = "pack:<id>"): случайные неиспользованные карточки пака → рендер мостом.
   if (isPackDeckId(acc.lang)) {
     if (!deckAllowed(req, acc.lang)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
-    const pack = getPack(acc.lang.slice(5), uid(req), db.getUserById(uid(req))?.role === "admin");
+    const pack = getPack(acc.lang.slice(5), ownerId, isAdminReq(req));
     if (!pack) return reply.code(404).send({ error: "Пак не найден." });
     if (!pack.templates.length) return reply.code(400).send({ error: "У пака нет шаблона." });
     for (let i = 0; i < requested; i++) {
       const picked = pickUnusedPackCard(pack, seen);
       if (!picked) break;
       seen.add(picked.key);
-      created.push(await buildPackLibraryVideo({ db, userId: uid(req), accountId: body.accountId, pack, picked, music: body.music || undefined }));
+      created.push(
+        await buildPackLibraryVideo({
+          db,
+          userId: ownerId,
+          accountId: body.accountId,
+          pack,
+          picked,
+          music: body.music || undefined,
+        }),
+      );
     }
     return { created, requested, made: created.length, exhausted: created.length < requested };
   }
@@ -1233,12 +1601,12 @@ app.post("/api/videos/batch", async (req, reply) => {
     seen.add(anecdoteKey(a.text));
     if (channelDeck.preFact) {
       // Pre-built fact videos: copy the chosen mp4 into the library (no rendering).
-      created.push(await buildFactLibraryVideo({ db, userId: uid(req), accountId: body.accountId, deckId, picked: a }));
+      created.push(await buildFactLibraryVideo({ db, userId: ownerId, accountId: body.accountId, deckId, picked: a }));
       continue;
     }
     created.push(
       await buildLibraryVideo({
-        userId: uid(req),
+        userId: ownerId,
         accountId: body.accountId,
         text: a.text,
         title: a.title,
@@ -1257,14 +1625,15 @@ app.post("/api/videos/batch", async (req, reply) => {
 initGenQueue(async (job) => {
   const acc = db.getAccount(job.accountId);
   if (!acc) throw new Error("Канал не найден");
-  const seen = new Set<string>(db.usedAnecdoteKeys(job.userId)); // skip this user's already-used cards
+  const ownerId = job.ownerUserId ?? job.userId;
+  const seen = new Set<string>(db.usedAnecdoteKeys(ownerId)); // skip owner's already-used cards
   // Пак-канал: одна случайная неиспользованная карточка пака → видео в библиотеку.
   if (isPackDeckId(acc.lang)) {
-    const pack = getPack(acc.lang.slice(5), job.userId, db.getUserById(job.userId)?.role === "admin");
+    const pack = getPack(acc.lang.slice(5), ownerId, db.getUserById(job.userId)?.role === "admin");
     if (!pack || !pack.templates.length) throw new Error(`Пак «${acc.lang}» не найден или без шаблона`);
     const picked = pickUnusedPackCard(pack, seen);
     if (!picked) return "exhausted";
-    await buildPackLibraryVideo({ db, userId: job.userId, accountId: job.accountId, pack, picked });
+    await buildPackLibraryVideo({ db, userId: ownerId, accountId: job.accountId, pack, picked });
     return "made";
   }
   const channelDeck = DECKS.find((d) => d.id === acc.lang);
@@ -1272,11 +1641,11 @@ initGenQueue(async (job) => {
   const a = randomAnecdote(channelDeck.id, seen);
   if (!a) return "exhausted"; // deck has no unused cards left
   if (channelDeck.preFact) {
-    await buildFactLibraryVideo({ db, userId: job.userId, accountId: job.accountId, deckId: channelDeck.id, picked: a });
+    await buildFactLibraryVideo({ db, userId: ownerId, accountId: job.accountId, deckId: channelDeck.id, picked: a });
     return "made";
   }
   await buildLibraryVideo({
-    userId: job.userId,
+    userId: ownerId,
     accountId: job.accountId,
     text: a.text,
     title: a.title,
@@ -1290,8 +1659,9 @@ initGenQueue(async (job) => {
 app.post("/api/gen-queue", async (req, reply) => {
   const body = (req.body as { accountId?: number; count?: number }) ?? {};
   if (!body.accountId) return reply.code(400).send({ error: "accountId обязателен" });
-  const acc = ownAccount(req, reply, body.accountId);
+  const acc = accessibleAccount(req, reply, body.accountId);
   if (!acc) return;
+  const ownerId = accountOwnerId(req, acc);
   // Пак-канал тоже можно ставить в очередь (воркер сгенерит карточки пака); иначе — встроенная дека.
   if (isPackDeckId(acc.lang)) {
     if (!deckAllowed(req, acc.lang)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
@@ -1304,7 +1674,7 @@ app.post("/api/gen-queue", async (req, reply) => {
   }
   const cap = db.getUserById(uid(req))?.role === "admin" ? 100 : 50;
   const total = Math.max(1, Math.min(cap, Number(body.count) || 1));
-  const job = genEnqueue(uid(req), body.accountId, total);
+  const job = genEnqueue(uid(req), body.accountId, total, ownerId);
   return { jobId: job.id, total: job.total };
 });
 
@@ -1331,7 +1701,7 @@ app.post("/api/gen-queue/:id/cancel", async (req) => {
 app.delete("/api/videos/:id", async (req, reply) => {
   const v = db.getVideo(Number((req.params as { id: string }).id));
   if (!v) return reply.code(404).send({ error: "not found" });
-  if (!ownAccount(req, reply, v.accountId)) return;
+  if (!accessibleAccount(req, reply, v.accountId)) return;
   db.deleteVideo(v.id);
   return { ok: true };
 });
@@ -1339,11 +1709,11 @@ app.delete("/api/videos/:id", async (req, reply) => {
 app.post("/api/videos/:id/post-now", async (req, reply) => {
   const v = db.getVideo(Number((req.params as { id: string }).id));
   if (!v) return reply.code(404).send({ error: "not found" });
-  const acc = ownAccount(req, reply, v.accountId);
+  const acc = accessibleAccount(req, reply, v.accountId);
   if (!acc) return;
   const token = db.getRefreshToken(v.accountId);
   if (!token) return reply.code(400).send({ error: "Канал не подключён к YouTube" });
-  const creds = userCreds(uid(req));
+  const creds = accountOwnerCreds(req, acc);
   if (!creds) return reply.code(400).send({ error: "Сначала загрузите свой Google-ключ в Настройках" });
   // HARD language guard: never post a video whose language differs from the channel's.
   if (DECKS.some((d) => d.id === acc.lang) && v.deck !== acc.lang)

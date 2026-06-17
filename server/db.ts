@@ -17,8 +17,10 @@ export interface Account {
   createdAt: string;
   ytChannelTitle: string | null;
   ytChannelId: string | null;
+  ytChannelAvatar: string | null;
   slotVideos: Record<string, number>;
-  avatar: string | null; // channel avatar URL (built-in "/avatars/av-XXX.png" or custom "/files/avatars/..."); null = none
+  avatar: string | null; // channel avatar URL (YouTube thumbnail, built-in "/avatars/...", or custom "/files/avatars/...")
+  avatarSource: "random" | "youtube" | "manual";
 }
 
 export interface HistoryItem {
@@ -121,6 +123,33 @@ export interface ErrorLogItem {
   context: string | null; // route, page url, accountId…
   userId: number | null;
   createdAt: string;
+  firstCreatedAt?: string;
+  count?: number;
+}
+
+/** User-facing issue notification. Repeated occurrences update one row via dedupeKey. */
+export interface NotificationItem {
+  id: number;
+  userId: number;
+  username: string | null;
+  accountId: number | null;
+  accountName: string | null;
+  severity: string; // info | warning | error
+  category: string;
+  title: string;
+  message: string;
+  solution: string | null;
+  actionUrl: string | null;
+  dedupeKey: string;
+  source: string | null;
+  context: string | null;
+  count: number;
+  readAt: string | null;
+  resolvedAt: string | null;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 type Row = Record<string, any>;
@@ -140,8 +169,10 @@ const rowToAccount = (r: Row): Account => ({
   createdAt: r.created_at,
   ytChannelTitle: r.yt_channel_title ?? null,
   ytChannelId: r.yt_channel_id ?? null,
+  ytChannelAvatar: r.yt_channel_avatar ?? null,
   slotVideos: JSON.parse(r.slot_videos || "{}"),
   avatar: r.avatar ?? null,
+  avatarSource: r.avatar_source ?? "random",
 });
 
 const rowToVideo = (r: Row): Video => ({
@@ -235,6 +266,30 @@ const rowToError = (r: Row): ErrorLogItem => ({
   context: r.context ?? null,
   userId: r.user_id ?? null,
   createdAt: r.created_at,
+});
+
+const rowToNotification = (r: Row): NotificationItem => ({
+  id: r.id,
+  userId: r.user_id,
+  username: r.username ?? null,
+  accountId: r.account_id ?? null,
+  accountName: r.account_name ?? null,
+  severity: r.severity,
+  category: r.category,
+  title: r.title,
+  message: r.message,
+  solution: r.solution ?? null,
+  actionUrl: r.action_url ?? null,
+  dedupeKey: r.dedupe_key,
+  source: r.source ?? null,
+  context: r.context ?? null,
+  count: Number(r.count) || 1,
+  readAt: r.read_at ?? null,
+  resolvedAt: r.resolved_at ?? null,
+  firstSeenAt: r.first_seen_at,
+  lastSeenAt: r.last_seen_at,
+  createdAt: r.created_at,
+  updatedAt: r.updated_at,
 });
 
 export function openDb(path: string) {
@@ -380,6 +435,28 @@ export function openDb(path: string) {
       user_id INTEGER,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+    CREATE TABLE IF NOT EXISTS notifications (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      account_id INTEGER,
+      severity TEXT NOT NULL DEFAULT 'info',
+      category TEXT NOT NULL DEFAULT 'system',
+      title TEXT NOT NULL,
+      message TEXT NOT NULL,
+      solution TEXT,
+      action_url TEXT,
+      dedupe_key TEXT NOT NULL,
+      source TEXT,
+      context TEXT,
+      count INTEGER NOT NULL DEFAULT 1,
+      read_at TEXT,
+      resolved_at TEXT,
+      first_seen_at TEXT NOT NULL DEFAULT (datetime('now')),
+      last_seen_at TEXT NOT NULL DEFAULT (datetime('now')),
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE (user_id, dedupe_key)
+    );
     CREATE TABLE IF NOT EXISTS user_hidden_decks (
       user_id INTEGER NOT NULL,
       deck_id TEXT NOT NULL,
@@ -418,6 +495,10 @@ export function openDb(path: string) {
   addColumn("accounts", "slot_videos TEXT DEFAULT '{}'");
   addColumn("accounts", "channel_lang TEXT DEFAULT ''");
   addColumn("accounts", "avatar TEXT");
+  addColumn("accounts", "yt_channel_avatar TEXT");
+  addColumn("accounts", "avatar_source TEXT NOT NULL DEFAULT 'random'");
+  db.prepare("UPDATE accounts SET avatar_source = 'youtube' WHERE avatar LIKE 'http%'").run();
+  db.prepare("UPDATE accounts SET avatar_source = 'manual' WHERE avatar LIKE '/files/avatars/%'").run();
   addColumn("videos", "deck TEXT NOT NULL DEFAULT 'ru'");
   addColumn("accounts", "user_id INTEGER");
   addColumn("users", "client_secret_json TEXT");
@@ -453,6 +534,9 @@ export function openDb(path: string) {
     CREATE INDEX IF NOT EXISTS idx_channel_analytics_daily_date ON channel_analytics_daily(date);
     CREATE INDEX IF NOT EXISTS idx_report_cache_account_key_taken ON youtube_report_cache(account_id, report_key, taken_at);
     CREATE INDEX IF NOT EXISTS idx_error_log_created ON error_log(created_at);
+    CREATE INDEX IF NOT EXISTS idx_notifications_user_last ON notifications(user_id, last_seen_at);
+    CREATE INDEX IF NOT EXISTS idx_notifications_account ON notifications(account_id);
+    CREATE INDEX IF NOT EXISTS idx_notifications_last_seen ON notifications(last_seen_at);
   `);
 
   // Schema version stamp. Everything above is additive & idempotent, so it self-applies on every boot.
@@ -494,9 +578,10 @@ export function openDb(path: string) {
       return { ...rowToAccount(r), uploadsToday: countUploadsToday(r.id) };
     },
     createAccount(input: Partial<Account>): Account {
+      const avatarSource = input.avatarSource ?? (input.avatar ? "manual" : "random");
       const info = db
         .prepare(
-          "INSERT INTO accounts (user_id, channel_name, theme, lang, channel_lang, schedule, template, status, avatar) VALUES (?,?,?,?,?,?,?,?,?)",
+          "INSERT INTO accounts (user_id, channel_name, theme, lang, channel_lang, schedule, template, status, avatar, avatar_source) VALUES (?,?,?,?,?,?,?,?,?,?)",
         )
         .run(
           input.userId ?? null,
@@ -508,14 +593,16 @@ export function openDb(path: string) {
           input.template ?? "1 · Kraft Paper",
           input.status ?? "needs_auth",
           input.avatar ?? null,
+          avatarSource,
         );
       return this.getAccount(Number(info.lastInsertRowid))!;
     },
     updateAccount(id: number, input: Partial<Account>): Account | null {
       const cur = this.getAccount(id);
       if (!cur) return null;
+      const hasAvatar = Object.prototype.hasOwnProperty.call(input, "avatar");
       db.prepare(
-        "UPDATE accounts SET channel_name=?, theme=?, lang=?, channel_lang=?, schedule=?, template=?, enabled=?, slot_videos=?, avatar=? WHERE id=?",
+        "UPDATE accounts SET channel_name=?, theme=?, lang=?, channel_lang=?, schedule=?, template=?, enabled=?, slot_videos=?, avatar=?, avatar_source=? WHERE id=?",
       ).run(
         input.channelName ?? cur.channelName,
         input.theme ?? cur.theme,
@@ -526,6 +613,7 @@ export function openDb(path: string) {
         (input.enabled ?? cur.enabled) ? 1 : 0,
         JSON.stringify(input.slotVideos ?? cur.slotVideos),
         input.avatar ?? cur.avatar,
+        hasAvatar ? (input.avatarSource ?? "manual") : cur.avatarSource,
         id,
       );
       return this.getAccount(id);
@@ -535,11 +623,33 @@ export function openDb(path: string) {
     },
     setYouTube(
       id: number,
-      d: { refreshToken: string | null; channelId: string | null; channelTitle: string | null },
+      d: { refreshToken: string | null; channelId: string | null; channelTitle: string | null; channelAvatar?: string | null },
     ): void {
       db.prepare(
-        "UPDATE accounts SET yt_refresh_token=?, yt_channel_id=?, yt_channel_title=? WHERE id=?",
-      ).run(d.refreshToken, d.channelId, d.channelTitle, id);
+        `UPDATE accounts
+         SET yt_refresh_token=?,
+             yt_channel_id=?,
+             yt_channel_title=?,
+             yt_channel_avatar=COALESCE(?, yt_channel_avatar),
+             avatar=CASE
+               WHEN ? IS NOT NULL AND COALESCE(avatar_source, 'random') != 'manual' THEN ?
+               ELSE avatar
+             END,
+             avatar_source=CASE
+               WHEN ? IS NOT NULL AND COALESCE(avatar_source, 'random') != 'manual' THEN 'youtube'
+               ELSE avatar_source
+             END
+         WHERE id=?`,
+      ).run(
+        d.refreshToken,
+        d.channelId,
+        d.channelTitle,
+        d.channelAvatar ?? null,
+        d.channelAvatar ?? null,
+        d.channelAvatar ?? null,
+        d.channelAvatar ?? null,
+        id,
+      );
     },
     getRefreshToken(id: number): string | null {
       const r = db.prepare("SELECT yt_refresh_token FROM accounts WHERE id = ?").get(id) as Row | undefined;
@@ -1178,6 +1288,154 @@ export function openDb(path: string) {
         .get(accountId, reportKey) as Row | undefined;
       return r ? rowToReportCache(r) : null;
     },
+    // ---- User-facing notifications (deduped issue inbox) ----
+    upsertNotification(n: {
+      userId: number;
+      accountId?: number | null;
+      severity?: string;
+      category?: string;
+      title: string;
+      message: string;
+      solution?: string | null;
+      actionUrl?: string | null;
+      dedupeKey: string;
+      source?: string | null;
+      context?: string | null;
+    }): NotificationItem {
+      const severity = ["info", "warning", "error"].includes(n.severity ?? "") ? n.severity! : "info";
+      db.prepare(
+        `INSERT INTO notifications
+          (user_id, account_id, severity, category, title, message, solution, action_url,
+           dedupe_key, source, context, count, first_seen_at, last_seen_at, created_at, updated_at)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,1,datetime('now'),datetime('now'),datetime('now'),datetime('now'))
+         ON CONFLICT(user_id, dedupe_key) DO UPDATE SET
+           account_id=excluded.account_id,
+           severity=excluded.severity,
+           category=excluded.category,
+           title=excluded.title,
+           message=excluded.message,
+           solution=excluded.solution,
+           action_url=excluded.action_url,
+           source=excluded.source,
+           context=excluded.context,
+           count=notifications.count + 1,
+           read_at=NULL,
+           resolved_at=NULL,
+           last_seen_at=datetime('now'),
+           updated_at=datetime('now')`,
+      ).run(
+        n.userId,
+        n.accountId ?? null,
+        severity,
+        String(n.category || "system").slice(0, 80),
+        String(n.title).slice(0, 240),
+        String(n.message).slice(0, 2000),
+        n.solution ? String(n.solution).slice(0, 4000) : null,
+        n.actionUrl ? String(n.actionUrl).slice(0, 1000) : null,
+        String(n.dedupeKey).slice(0, 300),
+        n.source ? String(n.source).slice(0, 80) : null,
+        n.context ? String(n.context).slice(0, 500) : null,
+      );
+      return this.getNotificationByKey(n.userId, String(n.dedupeKey).slice(0, 300))!;
+    },
+    getNotification(id: number): NotificationItem | null {
+      const r = db
+        .prepare(
+          `SELECT n.*, u.username, COALESCE(a.yt_channel_title, a.channel_name) AS account_name
+           FROM notifications n
+           LEFT JOIN users u ON u.id = n.user_id
+           LEFT JOIN accounts a ON a.id = n.account_id
+           WHERE n.id = ?`,
+        )
+        .get(id) as Row | undefined;
+      return r ? rowToNotification(r) : null;
+    },
+    getNotificationByKey(userId: number, dedupeKey: string): NotificationItem | null {
+      const r = db
+        .prepare(
+          `SELECT n.*, u.username, COALESCE(a.yt_channel_title, a.channel_name) AS account_name
+           FROM notifications n
+           LEFT JOIN users u ON u.id = n.user_id
+           LEFT JOIN accounts a ON a.id = n.account_id
+           WHERE n.user_id = ? AND n.dedupe_key = ?`,
+        )
+        .get(userId, dedupeKey) as Row | undefined;
+      return r ? rowToNotification(r) : null;
+    },
+    listNotifications(opts: {
+      userId?: number;
+      includeResolved?: boolean;
+      onlyResolved?: boolean;
+      onlyUnread?: boolean;
+      limit?: number;
+      offset?: number;
+    } = {}): NotificationItem[] {
+      const where: string[] = [];
+      const args: (string | number)[] = [];
+      if (opts.userId != null) {
+        where.push("n.user_id = ?");
+        args.push(opts.userId);
+      }
+      if (opts.onlyResolved) where.push("n.resolved_at IS NOT NULL");
+      else if (!opts.includeResolved) where.push("n.resolved_at IS NULL");
+      if (opts.onlyUnread) where.push("n.read_at IS NULL");
+      const limit = Math.min(200, Math.max(1, opts.limit ?? 100));
+      const offset = Math.max(0, opts.offset ?? 0);
+      const rows = db
+        .prepare(
+          `SELECT n.*, u.username, COALESCE(a.yt_channel_title, a.channel_name) AS account_name
+           FROM notifications n
+           LEFT JOIN users u ON u.id = n.user_id
+           LEFT JOIN accounts a ON a.id = n.account_id
+           ${where.length ? "WHERE " + where.join(" AND ") : ""}
+           ORDER BY (n.resolved_at IS NULL) DESC, n.last_seen_at DESC, n.id DESC
+           LIMIT ? OFFSET ?`,
+        )
+        .all(...args, limit, offset) as Row[];
+      return rows.map(rowToNotification);
+    },
+    notificationCounts(userId?: number): { open: number; unread: number; total: number } {
+      const where = userId != null ? "WHERE user_id = ?" : "";
+      const args = userId != null ? [userId] : [];
+      const r = db
+        .prepare(
+          `SELECT
+            SUM(CASE WHEN resolved_at IS NULL THEN 1 ELSE 0 END) AS open,
+            SUM(CASE WHEN resolved_at IS NULL AND read_at IS NULL THEN 1 ELSE 0 END) AS unread,
+            COUNT(*) AS total
+           FROM notifications ${where}`,
+        )
+        .get(...args) as Row;
+      return {
+        open: Number(r.open) || 0,
+        unread: Number(r.unread) || 0,
+        total: Number(r.total) || 0,
+      };
+    },
+    markNotificationRead(id: number): NotificationItem | null {
+      db.prepare(
+        "UPDATE notifications SET read_at = COALESCE(read_at, datetime('now')), updated_at = datetime('now') WHERE id = ?",
+      ).run(id);
+      return this.getNotification(id);
+    },
+    markAllNotificationsRead(userId?: number): number {
+      const where = userId != null ? "WHERE user_id = ? AND resolved_at IS NULL" : "WHERE resolved_at IS NULL";
+      const args = userId != null ? [userId] : [];
+      const info = db
+        .prepare(`UPDATE notifications SET read_at = COALESCE(read_at, datetime('now')), updated_at = datetime('now') ${where}`)
+        .run(...args);
+      return Number(info.changes) || 0;
+    },
+    resolveNotification(id: number): NotificationItem | null {
+      db.prepare(
+        "UPDATE notifications SET resolved_at = COALESCE(resolved_at, datetime('now')), read_at = COALESCE(read_at, datetime('now')), updated_at = datetime('now') WHERE id = ?",
+      ).run(id);
+      return this.getNotification(id);
+    },
+    deleteNotification(id: number): boolean {
+      const info = db.prepare("DELETE FROM notifications WHERE id = ?").run(id);
+      return (Number(info.changes) || 0) > 0;
+    },
     // ---- Error log (self-cleaning: keeps last 7 days, capped at 1000 rows) ----
     addError(e: {
       source?: string;
@@ -1203,9 +1461,39 @@ export function openDb(path: string) {
       ).run();
     },
     listErrors(limit = 200): ErrorLogItem[] {
-      return (db.prepare("SELECT * FROM error_log ORDER BY id DESC LIMIT ?").all(limit) as Row[]).map(
-        rowToError,
-      );
+      const rows = db.prepare("SELECT * FROM error_log ORDER BY id DESC LIMIT 1000").all() as Row[];
+      const groups = new Map<
+        string,
+        ErrorLogItem & { _contexts: Set<string>; _firstCreatedAt: string }
+      >();
+      for (const r of rows) {
+        const key = [r.source, r.level, r.message].map((x) => String(x ?? "")).join("\u0000");
+        let g = groups.get(key);
+        if (!g) {
+          g = { ...rowToError(r), count: 0, _contexts: new Set<string>(), _firstCreatedAt: r.created_at };
+          groups.set(key, g);
+        }
+        g.count = (g.count ?? 0) + 1;
+        g._firstCreatedAt = r.created_at;
+        if (r.context) g._contexts.add(String(r.context));
+      }
+      return [...groups.values()].slice(0, Math.max(1, limit)).map((g) => {
+        const contexts = [...g._contexts];
+        const shown = contexts.slice(0, 8);
+        const rest = contexts.length - shown.length;
+        return {
+          id: g.id,
+          source: g.source,
+          level: g.level,
+          message: g.message,
+          detail: g.detail,
+          context: shown.length ? shown.join(", ") + (rest > 0 ? `, +${rest}` : "") : g.context,
+          userId: g.userId,
+          createdAt: g.createdAt,
+          firstCreatedAt: g._firstCreatedAt,
+          count: g.count,
+        };
+      });
     },
     errorCount(): number {
       const r = db.prepare("SELECT COUNT(*) AS n FROM error_log").get() as Row;
