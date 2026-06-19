@@ -393,6 +393,7 @@ function NotificationDropdown({
   t: (key: string, vars?: Record<string, string | number>) => string;
 }) {
   const detailsRef = useRef<HTMLDetailsElement>(null);
+  const closeTimer = useRef<number | null>(null);
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -434,22 +435,45 @@ function NotificationDropdown({
     notifyChanged();
   }
 
+  function cancelClose() {
+    if (closeTimer.current !== null) {
+      window.clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  }
+
   function close() {
+    cancelClose();
     if (detailsRef.current) detailsRef.current.open = false;
   }
+
+  function openOnHover() {
+    cancelClose();
+    if (detailsRef.current && !detailsRef.current.open) {
+      detailsRef.current.open = true;
+      load();
+    }
+  }
+
+  // Закрываем не сразу, а с небольшой задержкой, чтобы курсор успел
+  // перейти с колокольчика на панель (иначе зазор между ними её гасит).
+  function scheduleClose() {
+    cancelClose();
+    closeTimer.current = window.setTimeout(() => {
+      closeTimer.current = null;
+      if (detailsRef.current) detailsRef.current.open = false;
+    }, 220);
+  }
+
+  useEffect(() => cancelClose, []);
 
   return (
     <details
       ref={detailsRef}
       className="notification-dropdown dropdown dropdown-end"
       data-no-route-transition
-      onMouseEnter={() => {
-        if (detailsRef.current && !detailsRef.current.open) {
-          detailsRef.current.open = true;
-          load();
-        }
-      }}
-      onMouseLeave={close}
+      onMouseEnter={openOnHover}
+      onMouseLeave={scheduleClose}
       onToggle={(e) => {
         if (e.currentTarget.open) load();
       }}

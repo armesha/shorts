@@ -265,7 +265,7 @@ body {
 }
 
 .admin-shell .notification-dropdown-panel {
-  width: min(26rem, calc(100vw - 1rem));
+  width: min(23rem, calc(100vw - 1rem));
   border: 1px solid var(--color-base-300);
   border-radius: 0.5rem;
   background: var(--color-base-100);
@@ -274,11 +274,21 @@ body {
     0 2px 8px color-mix(in srgb, #1d1d1f 8%, transparent);
 }
 
+/* Невидимый «мостик» через зазор mt-2: курсор не покидает ховер-зону
+   при переходе с колокольчика на панель, и она не гаснет мгновенно. */
+.admin-shell .notification-dropdown-panel::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: -0.5rem;
+  height: 0.5rem;
+}
+
 .admin-shell .notification-mini-card {
   border: 1px solid var(--color-base-300);
   border-radius: 0.5rem;
   background: var(--color-base-100);
-  padding: 0.7rem;
+  padding: 0.55rem 0.6rem;
 }
 
 .admin-shell .notification-mini-card.is-new {
@@ -290,7 +300,7 @@ body {
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
 }
 
 @keyframes notification-bump {
