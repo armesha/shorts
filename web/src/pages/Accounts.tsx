@@ -251,12 +251,18 @@ export default function Accounts() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {shownAccounts.map((a) => (
-            <Link
+            <div
               key={a.id}
-              to={`/accounts/${a.id}`}
-              className="card bg-base-100 border border-base-300 hover:border-primary/45 hover:bg-base-100/90 transition-colors"
+              className="card bg-base-100 border border-base-300 hover:border-primary/45 hover:bg-base-100/90 transition-colors relative"
             >
-              <div className="card-body">
+              {/* Stretched-link overlay: whole card navigates, but it is NOT a parent of the
+                  interactive YouTube link below — so that button can never trigger this navigation. */}
+              <Link
+                to={`/accounts/${a.id}`}
+                aria-label={a.channelName}
+                className="absolute inset-0 z-0 rounded-[inherit]"
+              />
+              <div className="card-body relative z-10 pointer-events-none">
                 <div className="flex items-center gap-3">
                   {a.avatar ? (
                     <img
@@ -287,22 +293,21 @@ export default function Accounts() {
                 </div>
                 <QueueInfo count={queue[a.id]} schedule={a.schedule} enabled={a.enabled} />
                 {a.ytChannelId && (
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      window.open(`https://www.youtube.com/channel/${a.ytChannelId}`, "_blank");
-                    }}
-                    className="btn btn-ghost btn-xs gap-1 mt-2 w-fit text-error"
+                  <a
+                    href={`https://www.youtube.com/channel/${a.ytChannelId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="btn btn-ghost btn-xs gap-1 mt-2 w-fit text-error pointer-events-auto relative z-20"
                     title={t("accounts.openOnYouTubeTitle")}
                   >
                     <BrandIcon name="youtube" size={14} />
                     {t("accounts.openOnYouTube")}
                     <AppIcon name="external" size={13} />
-                  </button>
+                  </a>
                 )}
               </div>
-            </Link>
+            </div>
             ))}
           </div>
         </div>
