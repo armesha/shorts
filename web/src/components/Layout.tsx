@@ -27,9 +27,9 @@ const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
   {
     labelKey: "layout.groupWork",
     items: [
-      { to: "/", labelKey: "nav.overview", icon: "home", end: true, adminOnly: true, adminBadge: true },
       { to: "/", labelKey: "nav.channels", icon: "accounts", end: true, userOnly: true },
       { to: "/channels", labelKey: "nav.channels", icon: "accounts", end: false, adminOnly: true },
+      { to: "/", labelKey: "nav.overview", icon: "home", end: true, adminOnly: true, adminBadge: true },
       { to: "/studio", labelKey: "nav.studio", icon: "studio", end: false },
       { to: "/history", labelKey: "nav.history", icon: "history", end: false },
       { to: "/clip-demos", labelKey: "nav.clipdemos", icon: "clips", end: false, adminOnly: true, adminBadge: true },
@@ -47,6 +47,7 @@ const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
     labelKey: "layout.groupControl",
     items: [
       { to: "/statistics", labelKey: "nav.statistics", icon: "analytics", end: false },
+      { to: "/limits", labelKey: "nav.limits", icon: "limits", end: false, adminOnly: true, adminBadge: true },
       { to: "/notifications", labelKey: "nav.notifications", icon: "notifications", end: false, adminOnly: true, adminBadge: true },
       { to: "/errors", labelKey: "nav.errors", icon: "errors", end: false, adminOnly: true, adminBadge: true },
     ],
@@ -62,11 +63,10 @@ const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
   },
 ];
 const ADMIN_BOTTOM_NAV: NavItem[] = [
-  { to: "/", labelKey: "nav.overview", icon: "home", end: true, adminBadge: true },
   { to: "/channels", labelKey: "nav.channels", icon: "accounts", end: false },
-  { to: "/studio", labelKey: "nav.studio", icon: "studio", end: false },
-  { to: "/clip-demos", labelKey: "nav.clipdemos", icon: "clips", end: false, adminBadge: true },
+  { to: "/", labelKey: "nav.overview", icon: "home", end: true, adminBadge: true },
   { to: "/statistics", labelKey: "nav.statistics", icon: "analytics", end: false },
+  { to: "/history", labelKey: "nav.history", icon: "history", end: false },
 ];
 const USER_BOTTOM_NAV: NavItem[] = [
   { to: "/", labelKey: "nav.channels", icon: "accounts", end: true },
@@ -292,7 +292,7 @@ function AdminLayout({
         </main>
 
         <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 border-t border-base-300 bg-base-100/95 backdrop-blur">
-          <div className="grid grid-cols-5">
+          <div className="grid" style={{ gridTemplateColumns: `repeat(${bottomNav.length}, minmax(0, 1fr))` }}>
             {bottomNav.map((item) => (
               <NavLink
                 key={item.to}
@@ -428,6 +428,12 @@ function NotificationDropdown({
     notifyChanged();
   }
 
+  async function markGroupUnread(group: NotificationGroup) {
+    await Promise.all(group.ids.map((id) => apiClient.unreadNotification(id).catch(() => null)));
+    setItems((cur) => cur.map((n) => (group.ids.includes(n.id) ? { ...n, readAt: null } : n)));
+    notifyChanged();
+  }
+
   function close() {
     if (detailsRef.current) detailsRef.current.open = false;
   }
@@ -437,6 +443,13 @@ function NotificationDropdown({
       ref={detailsRef}
       className="notification-dropdown dropdown dropdown-end"
       data-no-route-transition
+      onMouseEnter={() => {
+        if (detailsRef.current && !detailsRef.current.open) {
+          detailsRef.current.open = true;
+          load();
+        }
+      }}
+      onMouseLeave={close}
       onToggle={(e) => {
         if (e.currentTarget.open) load();
       }}
@@ -518,28 +531,21 @@ function NotificationDropdown({
                   </div>
 
                   <div className="notification-message-preview mt-1 text-xs leading-relaxed text-base-content/70">
-                    {compactNotificationText(group.message)}
+                    {compactNotificationText(group.message, 110)}
                   </div>
 
                   {group.accountLabels.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-1">
-                      {group.accountLabels.slice(0, 5).map((label) => (
+                      {group.accountLabels.slice(0, 3).map((label) => (
                         <span key={label} className="badge badge-ghost badge-xs max-w-full truncate">
                           {label}
                         </span>
                       ))}
-                      {group.accountLabels.length > 5 && (
+                      {group.accountLabels.length > 3 && (
                         <span className="badge badge-outline badge-xs">
-                          {t("notifications.more", { n: group.accountLabels.length - 5 })}
+                          {t("notifications.more", { n: group.accountLabels.length - 3 })}
                         </span>
                       )}
-                    </div>
-                  )}
-
-                  {group.solution && (
-                    <div className="mt-2 rounded-md border border-base-300 bg-base-200/60 p-2 text-xs leading-relaxed">
-                      <div className="font-semibold">{t("notifications.solution")}</div>
-                      <div className="notification-message-preview">{compactNotificationText(group.solution, 220)}</div>
                     </div>
                   )}
 
@@ -556,11 +562,18 @@ function NotificationDropdown({
                     </span>
                   </div>
 
-                  {group.actionUrl && (
-                    <a className="admin-inline-action mt-2 inline-flex text-xs" href={group.actionUrl} target="_blank" rel="noreferrer">
-                      {t("notifications.openFix")}
-                    </a>
-                  )}
+                  <div className="mt-2 flex items-center gap-2">
+                    {group.actionUrl && (
+                      <a className="admin-inline-action inline-flex text-xs" href={group.actionUrl} target="_blank" rel="noreferrer">
+                        {t("notifications.howToFix")}
+                      </a>
+                    )}
+                    {!group.unread && (
+                      <button className="admin-inline-action inline-flex text-xs" onClick={() => markGroupUnread(group)}>
+                        {t("notifications.markUnread")}
+                      </button>
+                    )}
+                  </div>
                 </article>
               ))}
             </div>
