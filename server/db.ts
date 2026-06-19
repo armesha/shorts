@@ -2,12 +2,18 @@ import { DatabaseSync } from "node:sqlite";
 import { mkdirSync, chmodSync } from "node:fs";
 import { dirname } from "node:path";
 
+// Placeholder name a freshly-created channel carries until it's connected to YouTube (or renamed).
+// Kept in one place so createAccount's default and the OAuth "seed the dashboard name from the real
+// YouTube title" check in setYouTube stay in sync — if they drift, auto-naming silently stops firing.
+export const DEFAULT_CHANNEL_NAME = "Новый канал";
+
 export interface Account {
   id: number;
   userId: number | null;
   channelName: string;
   theme: string;
   lang: string; // выбор КОНТЕНТА канала: встроенная дека (ru/de/…) или пак ("pack:<id>")
+  sourceDecks: string[]; // все паки/деки, из которых канал может генерировать и выкладывать
   channelLang: string; // ЯЗЫК канала (ru/de/it/fr/en/ar) — стабилен; пак должен совпадать по языку
   schedule: string[];
   template: string;
@@ -19,6 +25,7 @@ export interface Account {
   ytChannelId: string | null;
   ytChannelAvatar: string | null;
   slotVideos: Record<string, number>;
+  slotDecks: Record<string, string>;
   avatar: string | null; // channel avatar URL (YouTube thumbnail, built-in "/avatars/...", or custom "/files/avatars/...")
   avatarSource: "random" | "youtube" | "manual";
 }
@@ -154,12 +161,39 @@ export interface NotificationItem {
 
 type Row = Record<string, any>;
 
+function parseStringArray(raw: unknown, fallback: string[] = []): string[] {
+  try {
+    const arr = JSON.parse(String(raw ?? "[]"));
+    if (!Array.isArray(arr)) return fallback;
+    return [...new Set(arr.map((x) => String(x || "").trim()).filter(Boolean))];
+  } catch {
+    return fallback;
+  }
+}
+
+function parseStringRecord(raw: unknown): Record<string, string> {
+  try {
+    const obj = JSON.parse(String(raw ?? "{}"));
+    if (!obj || typeof obj !== "object" || Array.isArray(obj)) return {};
+    const out: Record<string, string> = {};
+    for (const [k, v] of Object.entries(obj)) {
+      const key = String(k || "").trim();
+      const val = String(v || "").trim();
+      if (key && val) out[key] = val;
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
 const rowToAccount = (r: Row): Account => ({
   id: r.id,
   userId: r.user_id ?? null,
   channelName: r.channel_name,
   theme: r.theme,
   lang: r.lang,
+  sourceDecks: parseStringArray(r.source_decks, r.lang ? [r.lang] : []),
   channelLang: r.channel_lang ?? "",
   schedule: JSON.parse(r.schedule),
   template: r.template,
@@ -171,6 +205,7 @@ const rowToAccount = (r: Row): Account => ({
   ytChannelId: r.yt_channel_id ?? null,
   ytChannelAvatar: r.yt_channel_avatar ?? null,
   slotVideos: JSON.parse(r.slot_videos || "{}"),
+  slotDecks: parseStringRecord(r.slot_decks),
   avatar: r.avatar ?? null,
   avatarSource: r.avatar_source ?? "random",
 });
@@ -493,6 +528,9 @@ export function openDb(path: string) {
   };
   for (const col of ["yt_refresh_token", "yt_channel_id", "yt_channel_title"]) addColumn("accounts", `${col} TEXT`);
   addColumn("accounts", "slot_videos TEXT DEFAULT '{}'");
+  addColumn("accounts", "slot_decks TEXT DEFAULT '{}'");
+  addColumn("accounts", "source_decks TEXT DEFAULT '[]'");
+  db.prepare("UPDATE accounts SET source_decks = json_array(lang) WHERE source_decks IS NULL OR source_decks = '[]'").run();
   addColumn("accounts", "channel_lang TEXT DEFAULT ''");
   addColumn("accounts", "avatar TEXT");
   addColumn("accounts", "yt_channel_avatar TEXT");
@@ -542,8 +580,18 @@ export function openDb(path: string) {
   // Schema version stamp. Everything above is additive & idempotent, so it self-applies on every boot.
   // For a FUTURE non-additive change (rename/drop/type/constraint), gate it on this version, e.g.:
   //   if (schemaVersion < 2) { db.exec("BEGIN; <migration>; PRAGMA user_version = 2; COMMIT;"); }
-  const SCHEMA_VERSION = 1;
+  const SCHEMA_VERSION = 2;
   const schemaVersion = (db.prepare("PRAGMA user_version").get() as { user_version?: number })?.user_version ?? 0;
+  // v2 (one-time): mirror every connected channel's editable dashboard name to its real YouTube title —
+  // a forced backfill so existing channels stop showing the "Новый канал" placeholder / stale labels.
+  // Gated on user_version so it runs EXACTLY once and never re-clobbers names users edit afterwards.
+  // Channels never connected to YouTube (no title yet) keep their current name.
+  if (schemaVersion < 2) {
+    db.prepare(
+      "UPDATE accounts SET channel_name = yt_channel_title " +
+        "WHERE yt_channel_title IS NOT NULL AND TRIM(yt_channel_title) != ''",
+    ).run();
+  }
   if (schemaVersion < SCHEMA_VERSION) db.exec(`PRAGMA user_version = ${SCHEMA_VERSION}`);
 
   // "Uploaded today" per channel — count of published history rows dated today (UTC).
@@ -581,13 +629,14 @@ export function openDb(path: string) {
       const avatarSource = input.avatarSource ?? (input.avatar ? "manual" : "random");
       const info = db
         .prepare(
-          "INSERT INTO accounts (user_id, channel_name, theme, lang, channel_lang, schedule, template, status, avatar, avatar_source) VALUES (?,?,?,?,?,?,?,?,?,?)",
+          "INSERT INTO accounts (user_id, channel_name, theme, lang, source_decks, channel_lang, schedule, template, status, avatar, avatar_source) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
         )
         .run(
           input.userId ?? null,
-          input.channelName ?? "Новый канал",
+          input.channelName ?? DEFAULT_CHANNEL_NAME,
           input.theme ?? "",
           input.lang ?? "de",
+          JSON.stringify(input.sourceDecks?.length ? input.sourceDecks : [input.lang ?? "de"]),
           input.channelLang ?? input.lang ?? "de",
           JSON.stringify(input.schedule ?? ["12:00"]),
           input.template ?? "1 · Kraft Paper",
@@ -602,16 +651,18 @@ export function openDb(path: string) {
       if (!cur) return null;
       const hasAvatar = Object.prototype.hasOwnProperty.call(input, "avatar");
       db.prepare(
-        "UPDATE accounts SET channel_name=?, theme=?, lang=?, channel_lang=?, schedule=?, template=?, enabled=?, slot_videos=?, avatar=?, avatar_source=? WHERE id=?",
+        "UPDATE accounts SET channel_name=?, theme=?, lang=?, source_decks=?, channel_lang=?, schedule=?, template=?, enabled=?, slot_videos=?, slot_decks=?, avatar=?, avatar_source=? WHERE id=?",
       ).run(
         input.channelName ?? cur.channelName,
         input.theme ?? cur.theme,
         input.lang ?? cur.lang,
+        JSON.stringify(input.sourceDecks ?? cur.sourceDecks),
         input.channelLang ?? cur.channelLang,
         JSON.stringify(input.schedule ?? cur.schedule),
         input.template ?? cur.template,
         (input.enabled ?? cur.enabled) ? 1 : 0,
         JSON.stringify(input.slotVideos ?? cur.slotVideos),
+        JSON.stringify(input.slotDecks ?? cur.slotDecks),
         input.avatar ?? cur.avatar,
         hasAvatar ? (input.avatarSource ?? "manual") : cur.avatarSource,
         id,
@@ -630,6 +681,12 @@ export function openDb(path: string) {
          SET yt_refresh_token=?,
              yt_channel_id=?,
              yt_channel_title=?,
+             channel_name=CASE
+               WHEN ? IS NOT NULL AND TRIM(?) != ''
+                    AND (channel_name IS NULL OR TRIM(channel_name) = '' OR channel_name = ?)
+                 THEN ?
+               ELSE channel_name
+             END,
              yt_channel_avatar=COALESCE(?, yt_channel_avatar),
              avatar=CASE
                WHEN ? IS NOT NULL AND COALESCE(avatar_source, 'random') != 'manual' THEN ?
@@ -643,6 +700,12 @@ export function openDb(path: string) {
       ).run(
         d.refreshToken,
         d.channelId,
+        d.channelTitle,
+        // Seed the editable dashboard name from the real YouTube title — but ONLY while it's still the
+        // placeholder/empty, so a re-auth or a stats refresh never clobbers a name the user edited.
+        d.channelTitle,
+        d.channelTitle,
+        DEFAULT_CHANNEL_NAME,
         d.channelTitle,
         d.channelAvatar ?? null,
         d.channelAvatar ?? null,
@@ -702,6 +765,21 @@ export function openDb(path: string) {
         db.prepare("SELECT * FROM videos WHERE account_id = ? ORDER BY id DESC").all(accountId) as Row[]
       ).map(rowToVideo);
     },
+    findOutputFileOwner(rel: string): { accountId: number; userId: number | null } | null {
+      const r = db
+        .prepare(
+          `SELECT v.account_id, a.user_id
+             FROM videos v JOIN accounts a ON a.id = v.account_id
+            WHERE v.video_rel = ? OR v.image_rel = ?
+           UNION ALL
+           SELECT h.account_id, a.user_id
+             FROM history h JOIN accounts a ON a.id = h.account_id
+            WHERE h.video_path = ? OR h.image_path = ?
+            LIMIT 1`,
+        )
+        .get(rel, rel, rel, rel) as Row | undefined;
+      return r ? { accountId: r.account_id, userId: r.user_id ?? null } : null;
+    },
     deleteVideo(id: number): void {
       db.prepare("DELETE FROM videos WHERE id = ?").run(id);
     },
@@ -735,6 +813,23 @@ export function openDb(path: string) {
               .prepare("SELECT * FROM videos WHERE account_id = ? AND post_count = 0 ORDER BY id ASC LIMIT 1")
               .get(accountId)
       ) as Row | undefined;
+      return r ? rowToVideo(r) : null;
+    },
+    // Next never-posted video from any allowed deck/source. The scheduler uses this for
+    // multi-pack channels; it still only uploads videos already present in the library.
+    nextUnpostedVideoForDecks(accountId: number, decks: string[]): Video | null {
+      const ids = [...new Set(decks.map((d) => String(d || "").trim()).filter(Boolean))];
+      if (ids.length === 0) return this.nextUnpostedVideo(accountId);
+      if (ids.length === 1) return this.nextUnpostedVideo(accountId, ids[0]);
+      const placeholders = ids.map(() => "?").join(",");
+      const r = db
+        .prepare(
+          `SELECT * FROM videos
+           WHERE account_id = ? AND post_count = 0 AND deck IN (${placeholders})
+           ORDER BY post_count ASC, id ASC
+           LIMIT 1`,
+        )
+        .get(accountId, ...ids) as Row | undefined;
       return r ? rowToVideo(r) : null;
     },
     listHistory(): HistoryItem[] {
@@ -1017,8 +1112,10 @@ export function openDb(path: string) {
         if (u == null || !d) return;
         (sets[u] ??= new Set<string>()).add(d);
       };
-      for (const r of db.prepare("SELECT user_id, lang FROM accounts WHERE user_id IS NOT NULL").all() as Row[])
+      for (const r of db.prepare("SELECT user_id, lang, source_decks FROM accounts WHERE user_id IS NOT NULL").all() as Row[]) {
         add(r.user_id as number, r.lang as string);
+        for (const d of parseStringArray(r.source_decks, [])) add(r.user_id as number, d);
+      }
       for (const r of db
         .prepare(
           "SELECT a.user_id AS uid, v.deck FROM videos v JOIN accounts a ON a.id = v.account_id WHERE a.user_id IS NOT NULL",
@@ -1030,7 +1127,7 @@ export function openDb(path: string) {
       return out;
     },
     // Total daily schedule slots (= posts/day) across a user's channels, optionally excluding one account.
-    // Used to cap a user at ≤100 scheduled posts per 24h.
+    // Used for the per-user aggregate schedule cap.
     scheduleSlotsForUser(userId: number, excludeAccountId?: number): number {
       const rows = db.prepare("SELECT id, schedule FROM accounts WHERE user_id = ?").all(userId) as Row[];
       let n = 0;
@@ -1416,6 +1513,10 @@ export function openDb(path: string) {
       db.prepare(
         "UPDATE notifications SET read_at = COALESCE(read_at, datetime('now')), updated_at = datetime('now') WHERE id = ?",
       ).run(id);
+      return this.getNotification(id);
+    },
+    markNotificationUnread(id: number): NotificationItem | null {
+      db.prepare("UPDATE notifications SET read_at = NULL, updated_at = datetime('now') WHERE id = ?").run(id);
       return this.getNotification(id);
     },
     markAllNotificationsRead(userId?: number): number {
