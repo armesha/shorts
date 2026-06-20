@@ -104,10 +104,14 @@ export default function AccountDetail() {
   // «Сделать сразу» не больше остатка свободных карточек выбранного контента (дека/пак) — для всех ролей.
   const roleMax = user?.role === "admin" ? 100 : 50; // потолок: админ 100, обычный юзер 50
   const selectedSources = (sourceDecks.length ? sourceDecks : [lang]).filter(Boolean);
-  const sourceRemaining = (deckId: string) =>
-    deckId.startsWith("pack:")
-      ? packs.find((p) => `pack:${p.id}` === deckId)?.cards ?? 0
-      : gens.find((gg) => gg.id === deckId)?.available ?? 0;
+  // Остаток = СВОБОДНЫЕ (неиспользованные) карточки. Для пака — available (cards − used), не общее число.
+  const sourceRemaining = (deckId: string) => {
+    if (deckId.startsWith("pack:")) {
+      const p = packs.find((pp) => `pack:${pp.id}` === deckId);
+      return p?.available ?? p?.cards ?? 0;
+    }
+    return gens.find((gg) => gg.id === deckId)?.available ?? 0;
+  };
   const canGenerateAllSources = selectedSources.length > 1;
   const activeGenerateDeck =
     generateDeck === GENERATE_ALL_DECKS && canGenerateAllSources
@@ -215,8 +219,13 @@ export default function AccountDetail() {
   }, [id]);
 
   // Когда фоновая генерация (глобальная очередь) завершилась для ЭТОГО канала — обновить библиотеку.
+  // Остатки свободных карточек (деки/паки) перечитываем всегда — они per-user, не per-channel, и
+  // после генерации число свободных уменьшается, поэтому «сразу» сразу подожмётся к новому максимуму.
   useEffect(() => {
-    if (q.completions && q.accountId === Number(id)) reloadVideos();
+    if (!q.completions) return;
+    if (q.accountId === Number(id)) reloadVideos();
+    apiClient.generators().then(setGens).catch(() => {});
+    apiClient.packs().then(setPacks).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q.completions]);
 

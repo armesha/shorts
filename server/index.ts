@@ -53,6 +53,7 @@ import {
   cancelJob as genCancelJob,
   drainQueue as genDrainQueue,
   queuedRemainingForUser as genQueuedRemainingForUser,
+  queuedRemainingForOwnerDecks as genQueuedRemainingForOwnerDecks,
 } from "./gen-queue.ts";
 import { gracefulShutdown } from "./shutdown.ts";
 import { buildAdminAnalytics } from "./admin-analytics.ts";
@@ -796,6 +797,27 @@ function cleanDeckIds(ids: unknown): string[] {
 function accountSourceDecks(account: Account): string[] {
   const ids = account.sourceDecks?.length ? account.sourceDecks : [account.lang];
   return [...new Set(ids.map((x) => String(x || "").trim()).filter(Boolean))];
+}
+
+// How many UNUSED cards the content owner still has across the given decks/packs (free pool).
+// Cards are unique per deck, so summing across decks never double-counts. Used to keep generation
+// from queueing more videos than there are fresh cards (a job can't make a video from a used card).
+function availableUnusedForDecks(ownerId: number, deckIds: string[]): number {
+  const usedKeys = db.usedAnecdoteKeys(ownerId);
+  const ownerIsAdmin = db.getUserById(ownerId)?.role === "admin";
+  let total = 0;
+  for (const deckId of deckIds) {
+    if (isPackDeckId(deckId)) {
+      const pack = getPack(deckId.slice(5), ownerId, ownerIsAdmin);
+      if (!pack) continue;
+      let used = 0;
+      for (const c of pack.cards) if (usedKeys.has(packCardKey(c.values))) used++;
+      total += Math.max(0, pack.cards.length - used);
+    } else {
+      total += libraryStats(deckId, usedKeys).available;
+    }
+  }
+  return total;
 }
 
 function deckExists(req: unknown, deckId: string): boolean {
@@ -2285,7 +2307,7 @@ app.post("/api/gen-queue", async (req, reply) => {
   }
   const isAdmin = db.getUserById(uid(req))?.role === "admin";
   const perRequestCap = isAdmin ? Number.MAX_SAFE_INTEGER : 50;
-  const total = Math.max(1, Math.min(perRequestCap, Math.floor(Number(body.count) || 1)));
+  let total = Math.max(1, Math.min(perRequestCap, Math.floor(Number(body.count) || 1)));
   if (!isAdmin) {
     const queued = genQueuedRemainingForUser(uid(req));
     const remaining = Math.max(0, USER_GEN_QUEUE_CAP - queued);
@@ -2297,6 +2319,20 @@ app.post("/api/gen-queue", async (req, reply) => {
             : `В вашей очереди уже максимум ${USER_GEN_QUEUE_CAP} видео — дождитесь завершения части задач.`,
       });
   }
+  // Never queue more videos than the owner has FREE (unused) cards: a job can only build a video
+  // from an unused card, so any surplus would silently no-op ("exhausted"). Subtract cards already
+  // claimed by the owner's in-flight jobs on these same decks so back-to-back batches can't
+  // over-commit the pool. Applies to everyone (incl. admins) — this is accuracy, not a quota.
+  const free = Math.max(
+    0,
+    availableUnusedForDecks(ownerId, deckIds) - genQueuedRemainingForOwnerDecks(ownerId, deckIds),
+  );
+  if (free <= 0)
+    return reply.code(400).send({
+      error:
+        "Свободных карточек не осталось — все карточки выбранного контента уже использованы или стоят в очереди. Дождитесь окончания текущей генерации или сбросьте использованные карточки.",
+    });
+  total = Math.min(total, free);
   const job = genEnqueue(uid(req), body.accountId, total, ownerId, deckIds);
   return { jobId: job.id, total: job.total };
 });

@@ -662,7 +662,9 @@ export interface PackSummary {
   name: string;
   lang: string;
   templates: number;
-  cards: number;
+  cards: number; // всего карточек в паке
+  used?: number; // сколько карточек этот юзер уже использовал
+  available?: number; // сколько карточек ещё свободно для генерации (cards − used)
   createdAt: string;
 }
 export interface PackRoleRule {

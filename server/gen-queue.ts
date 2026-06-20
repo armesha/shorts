@@ -40,6 +40,9 @@ export interface GenQueue {
   cancelJob(id: string, userId: number): boolean;
   jobStatus(id: string): JobStatus | null;
   queuedRemainingForUser(userId: number): number;
+  /** Videos still to be made for one CONTENT OWNER, counting only jobs that draw from the given
+   *  decks (deck-sets overlapping `deckIds`). Used to not enqueue more than the owner's free cards. */
+  queuedRemainingForOwnerDecks(ownerUserId: number, deckIds: string[]): number;
   /** Stop taking NEW videos/jobs; the in-flight video is allowed to finish. For graceful shutdown. */
   drain(): void;
   isDraining(): boolean;
@@ -162,6 +165,22 @@ export function createGenQueue(): GenQueue {
       }
       return total;
     },
+    queuedRemainingForOwnerDecks(ownerUserId, deckIds) {
+      prune();
+      const want = new Set(deckIds);
+      let total = 0;
+      for (const id of pending) {
+        const j = jobs.get(id);
+        if (!j || j.ownerUserId !== ownerUserId) continue;
+        if (j.state !== "queued" && j.state !== "running") continue;
+        // A job with no recorded decks, or one sharing ≥1 deck, draws from the same card pool.
+        // (Cards are unique per deck, so non-overlapping deck-sets consume disjoint pools.)
+        const jd = j.deckIds ?? [];
+        if (jd.length && !jd.some((d) => want.has(d))) continue;
+        total += Math.max(0, j.total - j.done);
+      }
+      return total;
+    },
     drain() {
       draining = true;
     },
@@ -182,4 +201,6 @@ export const enqueue = (userId: number, accountId: number, total: number, ownerU
 export const cancelJob = (id: string, userId: number): boolean => _queue.cancelJob(id, userId);
 export const jobStatus = (id: string): JobStatus | null => _queue.jobStatus(id);
 export const queuedRemainingForUser = (userId: number): number => _queue.queuedRemainingForUser(userId);
+export const queuedRemainingForOwnerDecks = (ownerUserId: number, deckIds: string[]): number =>
+  _queue.queuedRemainingForOwnerDecks(ownerUserId, deckIds);
 export const drainQueue = (): void => _queue.drain();

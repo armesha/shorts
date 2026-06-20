@@ -88,6 +88,27 @@ test("counts unfinished videos per user across running and queued jobs", async (
   q.drain();
 });
 
+test("queuedRemainingForOwnerDecks: counts per OWNER and only overlapping deck-sets", async () => {
+  const q = createGenQueue();
+  q.initWorker(async () => {
+    await sleep(40);
+    return "made";
+  });
+  // enqueue(userId, accountId, total, ownerUserId, deckIds)
+  q.enqueue(1, 1, 3, 10, ["ru"]); // owner 10, ru
+  q.enqueue(1, 2, 4, 10, ["de"]); // owner 10, de
+  q.enqueue(2, 3, 5, 20, ["ru"]); // owner 20, ru
+  q.enqueue(1, 4, 2, 10, undefined); // owner 10, deck-set unknown → shares any pool
+  await sleep(5); // first is running (done=0), rest queued — all remaining = their totals
+  // ru pool of owner 10 = ru job (3) + unknown-deck job (2); the de job draws a disjoint pool.
+  assert.equal(q.queuedRemainingForOwnerDecks(10, ["ru"]), 5);
+  assert.equal(q.queuedRemainingForOwnerDecks(10, ["de"]), 6); // de job (4) + unknown job (2)
+  assert.equal(q.queuedRemainingForOwnerDecks(20, ["ru"]), 5); // only owner 20's ru job
+  assert.equal(q.queuedRemainingForOwnerDecks(20, ["de"]), 0); // owner 20 has no de/unknown job → disjoint
+  assert.equal(q.queuedRemainingForOwnerDecks(99, ["ru"]), 0); // unknown owner
+  q.drain();
+});
+
 test("exhausted: worker reporting 'exhausted' stops the job softly", async () => {
   const q = createGenQueue();
   let calls = 0;

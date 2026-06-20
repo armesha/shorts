@@ -60,8 +60,9 @@ export default function Studio() {
   const hasTextSources = gens.some((x) => x.total > 0 && !x.preFact) || packs.length > 0;
   const showPackKind = hasVideoSources && hasTextSources;
   const selectedIsVideo = !isPack && !!g?.preFact;
-  // «За раз» не больше, чем осталось свободных карточек в выбранной деке/паке — для всех (и юзеров, и админов).
-  const remaining = isPack ? curPack?.cards ?? 0 : g?.available ?? 0;
+  // «За раз» не больше, чем осталось СВОБОДНЫХ (неиспользованных) карточек в выбранной деке/паке —
+  // для всех (и юзеров, и админов). Для пака берём available (cards − used), не общее число карточек.
+  const remaining = isPack ? curPack?.available ?? curPack?.cards ?? 0 : g?.available ?? 0;
   const maxBatch = Math.max(0, Math.min(roleMax, remaining));
   // Сохранять ролик можно ТОЛЬКО в канал, у которого этот пак (встроенный/свой) выбран источником —
   // иначе планировщик его не выложит (постит по точному паку канала) и язык бы не совпал.
@@ -80,6 +81,14 @@ export default function Studio() {
   useEffect(() => {
     setBatchN((n) => Math.max(1, Math.min(maxBatch || 1, n)));
   }, [maxBatch]);
+
+  // Фоновая генерация завершилась — обновим остатки свободных карточек (дек и паков), чтобы
+  // «за раз» сразу показывал актуальное число и нельзя было поставить больше, чем реально осталось.
+  useEffect(() => {
+    if (!q.completions) return;
+    apiClient.generators().then(setGens).catch(() => {});
+    apiClient.packs().then(setPacks).catch(() => {});
+  }, [q.completions]);
 
   // Keep the save-target channel matching the selected pack's language (hard language guard).
   useEffect(() => {
@@ -243,7 +252,10 @@ export default function Studio() {
                   {isPack ? (
                     <div className="text-sm text-base-content/60 mt-1 flex flex-wrap items-center gap-1.5">
                       {showPackKind && <PackKindBadge video={false} />}
-                      <span className="text-success font-medium">{t("studio.cardsCount", { n: curPack?.cards ?? 0 })}</span> ·{" "}
+                      <span className="text-success font-medium">
+                        {t("studio.availableCount", { n: curPack?.available ?? curPack?.cards ?? 0 })}
+                      </span>
+                      {(curPack?.used ?? 0) > 0 && <> · {t("studio.usedCount", { n: curPack?.used ?? 0 })}</>} ·{" "}
                       <span className="badge badge-ghost badge-sm">{t("studio.packTemplates", { n: curPack?.templates ?? 0 })}</span>
                     </div>
                   ) : (

@@ -25,6 +25,7 @@ import {
   validateTemplateList,
   type TemplateDoc,
 } from "../src/template/render.ts";
+import { packCardKey } from "./pack-gen.ts";
 import { listAudio, packAudioPathFor, resolveAudio } from "../src/video.ts";
 import { buildStillVideoFiles, cardReadable } from "./media.ts";
 import {
@@ -119,8 +120,20 @@ function builtinMusicTracks() {
 
 export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof openDb>) {
   const adminReq = (req: unknown): boolean => db.getUserById(uid(req))?.role === "admin";
-  // Видимые мне паки (владелец / админ / выдан грант).
-  app.get("/api/packs", async (req) => listPacks(uid(req), adminReq(req)));
+  // Видимые мне паки (владелец / админ / выдан грант) + сколько карточек свободно/использовано
+  // именно у этого юзера — фронт по `available` ограничивает «сколько роликов сгенерировать».
+  app.get("/api/packs", async (req) => {
+    const userId = uid(req);
+    const isAdmin = adminReq(req);
+    const usedKeys = db.usedAnecdoteKeys(userId);
+    return listPacks(userId, isAdmin).map((s) => {
+      const pack = getPack(s.id, userId, isAdmin);
+      if (!pack) return { ...s, used: 0, available: s.cards };
+      let used = 0;
+      for (const c of pack.cards) if (usedKeys.has(packCardKey(c.values))) used++;
+      return { ...s, used, available: Math.max(0, pack.cards.length - used) };
+    });
+  });
 
   // Один пак + выведенные из шаблона правила (роли, min/max, списки) — для формы добавления.
   app.get("/api/packs/:id", async (req, reply) => {
