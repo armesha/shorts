@@ -697,6 +697,39 @@ node --input-type=module -e 'import fs from "node:fs"; const m=JSON.parse(fs.rea
 node --input-type=module -e 'import fs from "node:fs"; import path from "node:path"; for (const d of ["data/fact-videos","data/quotes-de","data/space"]) { const arr=JSON.parse(fs.readFileSync(`${d}/videos.json`,"utf8")); const missing=arr.filter(x=>!fs.existsSync(path.resolve("assets/fact-videos",x.file))).map(x=>x.file); const idxPath=`${d}/index.json`; const idx=fs.existsSync(idxPath)?JSON.parse(fs.readFileSync(idxPath,"utf8")):{total:arr.length}; console.log(d,{videos:arr.length,indexTotal:idx.total,missing:missing.slice(0,5),missingCount:missing.length}); }'
 ```
 
+### ⚠️ Inhaltsrichtlinie `quotes-de` — модерация ПЕРЕД добавлением (обязательно)
+
+**История:** 2026-06-19 YouTube снял Short с цитатой Штрауса «…die roten Ratten … in ihre Löcher»
+(`q204.mp4`) — страйк по **hate speech** (дегуманизация). 2026-06-20 из деки удалены 10 цитат (список
+ниже). Дека `adminOnly` и целиком состоит из политических цитат → **повышенный риск** hate-speech и
+прославления насилия.
+
+**Любой агент/воркфлоу, добавляющий цитаты в `data/quotes-de/videos.json` (или любой `*/videos.json`
+политических цитат), ОБЯЗАН отбраковать каждую цитату по этому списку. Сомневаешься — НЕ добавляй.**
+
+Запрещено (немедленный дроп):
+- **Дегуманизация** людей/групп (животные, паразиты, «крысы», «загнать в норы») — напр. `die roten Ratten … in ihre Löcher`.
+- **Слуры по защищённым группам** (ориентация/раса/религия/пол/инвалидность) — напр. `warmer Bruder` (гомофобный).
+- **Прославление нацизма/диктатуры/авторитаризма**, призывы к беспрекословному подчинению, нацистские лозунги — напр. `Deutschnationaler … bedingungslosen Gehorsam`, `Wollt ihr den totalen Krieg?!` (Геббельс), хвала Пиночету `Ordnung … süßer Klang`.
+- **Релятивизация/отрицание Холокоста**, «хватит напоминать о прошлом» — напр. `…auch nicht von Tel Aviv … an unsere Vergangenheit erinnert werden`.
+- **Анти-иммигрантское/этно-сокращение/«вон отсюда»** — напр. `Ausländer um die Hälfte reduzieren`, `so viele Ausländer … ein Fehler`, `Gastrecht missbraucht: Raus`.
+- **Фейк/подделки** (приписанные политику слова, которые он не говорил) — репутационный + дезинфо-риск.
+- Любые **призывы к насилию, ненависти, дискриминации** против лиц или групп.
+
+Можно (целевой регистр деки): достойные/остроумные/исторические высказывания — Weizsäcker (8. Mai,
+память), Brandt, Heuss, Genscher, Rau (покаяние перед жертвами), афоризмы о демократии/экономике/юморе.
+Острая политическая полемика **без атаки на защищённые группы** (реальные мейнстрим-цитаты про
+мультикульти, оппозицию и т.п.) допустима, но при сомнении выбирай нейтральное.
+
+Быстрый lint-страховка перед коммитом пополнения (совпадение ≠ автодроп, но требует ручного решения —
+не замена ручной проверки):
+```bash
+grep -niE "ratten|warmer bruder|bedingungslosen gehorsam|totalen krieg|tel aviv|raus, und zwar|um die hälfte|untermensch|ausrotten|hingehören" data/quotes-de/videos.json
+```
+
+Удалено 2026-06-20 (10): `q204` (страйк), `q150`, `q093`, `q085`, `q239`, `q039` (явные нарушения) +
+`q146`, `q126`, `q225`, `q121` (пограничные). См. также `data/quotes-de/CONTENT-POLICY.md`.
+
 ## Template-pack: The Mind Edge
 
 Исходные карточки собираются из LLM-батчей:
