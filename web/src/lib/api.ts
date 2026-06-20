@@ -847,6 +847,7 @@ export const apiClient = {
     scope?: "mine" | "all";
     userId?: number;
     accountId?: number;
+    onlyErrors?: boolean;
     page?: number;
     pageSize?: number;
   }) => {
@@ -855,6 +856,7 @@ export const apiClient = {
     if (p.scope === "all") qs.set("scope", "all");
     if (p.userId != null) qs.set("userId", String(p.userId));
     if (p.accountId != null) qs.set("accountId", String(p.accountId));
+    if (p.onlyErrors) qs.set("onlyErrors", "1");
     if (p.page != null) qs.set("page", String(p.page));
     if (p.pageSize != null) qs.set("pageSize", String(p.pageSize));
     const s = qs.toString();

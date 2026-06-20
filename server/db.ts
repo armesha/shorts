@@ -938,7 +938,9 @@ export function openDb(path: string) {
     },
     // Enriched + filterable history for the admin "all users" view (and the own view).
     // ownerId/accountId narrow the rows; neither → all channels. Newest first; paginate via limit/offset.
-    listHistoryFiltered(opts: { ownerId?: number; accountId?: number; limit?: number; offset?: number } = {}): HistoryItem[] {
+    listHistoryFiltered(
+      opts: { ownerId?: number; accountId?: number; onlyErrors?: boolean; limit?: number; offset?: number } = {},
+    ): HistoryItem[] {
       const where: string[] = [];
       const args: unknown[] = [];
       if (opts.accountId != null) {
@@ -948,6 +950,8 @@ export function openDb(path: string) {
         where.push("a.user_id = ?");
         args.push(opts.ownerId);
       }
+      // «Только с ошибками»: ролики, которые в итоге не выложились (status=failed либо записан error).
+      if (opts.onlyErrors) where.push("(h.status = 'failed' OR h.error IS NOT NULL)");
       const limit = Math.min(200, Math.max(1, opts.limit ?? 100));
       const offset = Math.max(0, opts.offset ?? 0);
       const sql =
@@ -970,7 +974,7 @@ export function openDb(path: string) {
       }));
     },
     // Row count for the same filter (pagination total).
-    countHistoryFiltered(opts: { ownerId?: number; accountId?: number } = {}): number {
+    countHistoryFiltered(opts: { ownerId?: number; accountId?: number; onlyErrors?: boolean } = {}): number {
       const where: string[] = [];
       const args: unknown[] = [];
       if (opts.accountId != null) {
@@ -980,6 +984,7 @@ export function openDb(path: string) {
         where.push("a.user_id = ?");
         args.push(opts.ownerId);
       }
+      if (opts.onlyErrors) where.push("(h.status = 'failed' OR h.error IS NOT NULL)");
       const sql =
         "SELECT COUNT(*) AS n FROM history h JOIN accounts a ON a.id = h.account_id " +
         (where.length ? "WHERE " + where.join(" AND ") + " " : "");

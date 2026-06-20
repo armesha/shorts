@@ -33,6 +33,9 @@ export default function History() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // «Только с ошибками» — ролики, что в итоге не выложились (доступно всем, не только админу).
+  const [onlyErrors, setOnlyErrors] = useState(false);
+
   // Admin filter: scope "Мои/Все" + optional narrowing by user, then channel.
   const [scopeAll, setScopeAll] = useState(false);
   const [userId, setUserId] = useState<number | "">(""); // "" = все пользователи
@@ -65,6 +68,7 @@ export default function History() {
         scope?: "mine" | "all";
         userId?: number;
         accountId?: number;
+        onlyErrors?: boolean;
         page?: number;
         pageSize?: number;
       } = { page: p, pageSize: PAGE_SIZE };
@@ -73,6 +77,7 @@ export default function History() {
         else if (userId !== "") params.userId = Number(userId);
         else params.scope = "all";
       }
+      if (onlyErrors) params.onlyErrors = true;
       apiClient
         .history(params)
         .then((r) => {
@@ -83,7 +88,7 @@ export default function History() {
         .catch(() => setError(t("history.loadFailed")))
         .finally(() => setLoading(false));
     },
-    [isAdmin, scopeAll, userId, accountId, t],
+    [isAdmin, scopeAll, userId, accountId, onlyErrors, t],
   );
 
   // Reload from page 1 whenever the filter changes.
@@ -109,68 +114,79 @@ export default function History() {
         {!loading && <span className="text-sm text-base-content/50">{t("history.total", { n: total })}</span>}
       </header>
 
-      {/* Admin filter bar */}
-      {isAdmin && (
-        <div className="card bg-base-100 border border-base-300">
-          <div className="card-body py-3 flex-row flex-wrap items-center gap-3">
-            <div className="join">
-              <button
-                className={`btn btn-sm join-item ${!scopeAll ? "btn-primary" : "btn-ghost"}`}
-                onClick={() => {
-                  setScopeAll(false);
-                  setUserId("");
-                  setAccountId("");
-                }}
-              >
-                {t("history.scopeMine")}
-              </button>
-              <button
-                className={`btn btn-sm join-item ${scopeAll ? "btn-primary" : "btn-ghost"}`}
-                onClick={() => setScopeAll(true)}
-              >
-                {t("common.all")}
-              </button>
-            </div>
-
-            {scopeAll && (
-              <>
-                <select
-                  className="select select-bordered select-sm"
-                  aria-label={t("history.user")}
-                  value={userId === "" ? "" : String(userId)}
-                  onChange={(e) => {
-                    setUserId(e.target.value === "" ? "" : Number(e.target.value));
+      {/* Filter bar: admin scope (Мои/Все + user/channel) only for admins; «Только с ошибками» — for everyone. */}
+      <div className="card bg-base-100 border border-base-300">
+        <div className="card-body py-3 flex-row flex-wrap items-center gap-3">
+          {isAdmin && (
+            <>
+              <div className="join">
+                <button
+                  className={`btn btn-sm join-item ${!scopeAll ? "btn-primary" : "btn-ghost"}`}
+                  onClick={() => {
+                    setScopeAll(false);
+                    setUserId("");
                     setAccountId("");
                   }}
                 >
-                  <option value="">{t("history.allUsers")}</option>
-                  {users.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.username}
-                      {u.role === "admin" ? ` (${t("common.admin")})` : ""}
-                    </option>
-                  ))}
-                </select>
-
-                <select
-                  className="select select-bordered select-sm"
-                  aria-label={t("history.channel")}
-                  value={accountId === "" ? "" : String(accountId)}
-                  onChange={(e) => setAccountId(e.target.value === "" ? "" : Number(e.target.value))}
+                  {t("history.scopeMine")}
+                </button>
+                <button
+                  className={`btn btn-sm join-item ${scopeAll ? "btn-primary" : "btn-ghost"}`}
+                  onClick={() => setScopeAll(true)}
                 >
-                  <option value="">{t("history.allChannels")}</option>
-                  {channelOptions.map((a) => (
-                    <option key={a.id} value={a.id}>
-                      {a.ytChannelTitle || a.channelName}
-                      {a.userId != null && userName.get(a.userId) ? ` — ${userName.get(a.userId)}` : ""}
-                    </option>
-                  ))}
-                </select>
-              </>
-            )}
-          </div>
+                  {t("common.all")}
+                </button>
+              </div>
+
+              {scopeAll && (
+                <>
+                  <select
+                    className="select select-bordered select-sm"
+                    aria-label={t("history.user")}
+                    value={userId === "" ? "" : String(userId)}
+                    onChange={(e) => {
+                      setUserId(e.target.value === "" ? "" : Number(e.target.value));
+                      setAccountId("");
+                    }}
+                  >
+                    <option value="">{t("history.allUsers")}</option>
+                    {users.map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.username}
+                        {u.role === "admin" ? ` (${t("common.admin")})` : ""}
+                      </option>
+                    ))}
+                  </select>
+
+                  <select
+                    className="select select-bordered select-sm"
+                    aria-label={t("history.channel")}
+                    value={accountId === "" ? "" : String(accountId)}
+                    onChange={(e) => setAccountId(e.target.value === "" ? "" : Number(e.target.value))}
+                  >
+                    <option value="">{t("history.allChannels")}</option>
+                    {channelOptions.map((a) => (
+                      <option key={a.id} value={a.id}>
+                        {a.ytChannelTitle || a.channelName}
+                        {a.userId != null && userName.get(a.userId) ? ` — ${userName.get(a.userId)}` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              )}
+            </>
+          )}
+
+          <button
+            type="button"
+            className={`btn btn-sm gap-1 ml-auto ${onlyErrors ? "btn-error" : "btn-ghost"}`}
+            onClick={() => setOnlyErrors((v) => !v)}
+            aria-pressed={onlyErrors}
+          >
+            <AlertTriangle size={14} /> {t("history.onlyErrors")}
+          </button>
         </div>
-      )}
+      </div>
 
       {error ? (
         <div className="alert alert-error">
@@ -185,7 +201,9 @@ export default function History() {
         <div className={`card bg-base-100 border border-base-300 ${loading ? "opacity-60 transition" : ""}`}>
           <div className="card-body">
             {items.length === 0 ? (
-              <div className="text-center text-base-content/50 py-12">{t("history.empty")}</div>
+              <div className="text-center text-base-content/50 py-12">
+                {onlyErrors ? t("history.emptyErrors") : t("history.empty")}
+              </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="table">

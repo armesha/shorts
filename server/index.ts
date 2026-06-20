@@ -1418,7 +1418,14 @@ app.delete("/api/accounts/:id", async (req, reply) => {
 // scope=all (every user), or narrow with userId / accountId. Returns { items, total, page, pageSize }.
 app.get("/api/history", async (req) => {
   const q =
-    (req.query as { scope?: string; userId?: string; accountId?: string; page?: string; pageSize?: string }) ?? {};
+    (req.query as {
+      scope?: string;
+      userId?: string;
+      accountId?: string;
+      onlyErrors?: string;
+      page?: string;
+      pageSize?: string;
+    }) ?? {};
   const isAdmin = db.getUserById(uid(req))?.role === "admin";
   let filter: { ownerId?: number; accountId?: number };
   if (!isAdmin) filter = { ownerId: uid(req) }; // non-admin: locked to own channels
@@ -1426,10 +1433,11 @@ app.get("/api/history", async (req) => {
   else if (q.userId) filter = { ownerId: Number(q.userId) };
   else if (q.scope === "all") filter = {}; // every user's channels
   else filter = { ownerId: uid(req) }; // admin's own (default)
+  const onlyErrors = q.onlyErrors === "1" || q.onlyErrors === "true"; // «только не выложенные / с ошибками»
   const page = Math.max(1, Number(q.page) || 1);
   const pageSize = Math.min(100, Math.max(5, Number(q.pageSize) || 25));
-  const total = db.countHistoryFiltered(filter);
-  const items = db.listHistoryFiltered({ ...filter, limit: pageSize, offset: (page - 1) * pageSize });
+  const total = db.countHistoryFiltered({ ...filter, onlyErrors });
+  const items = db.listHistoryFiltered({ ...filter, onlyErrors, limit: pageSize, offset: (page - 1) * pageSize });
   return { items, total, page, pageSize };
 });
 
