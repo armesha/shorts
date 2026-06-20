@@ -2,10 +2,25 @@
 // `app` instance, so the global /api/* session hook already gates them (req.userId is set).
 // Kept in its own file so server/index.ts only needs a 1-line import + 1-line call.
 import type { FastifyInstance } from "fastify";
+import type { Db } from "./db.ts";
 import { psychSchema } from "../src/psych/schema.ts";
 import { validateBatch, appendCards, listCards, deleteCard } from "../src/psych/cards-store.ts";
 
-export function registerPsychCardsRoutes(app: FastifyInstance) {
+export function registerPsychCardsRoutes(app: FastifyInstance, db: Db) {
+  const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
+  // psych is a SINGLE shared curated corpus (one global data/psych/cards.json), like a built-in
+  // deck — only an admin may add/remove cards. Browsing (GET) stays open to everyone (the deck is
+  // visible to all). Without this gate any logged-in user could wipe or poison everyone's psych deck.
+  const requireAdmin = (
+    req: unknown,
+    reply: { code: (n: number) => { send: (b: unknown) => unknown } },
+  ): boolean => {
+    if (db.getUserById(uid(req))?.role !== "admin") {
+      reply.code(403).send({ error: "Менять карточки психологии может только администратор." });
+      return false;
+    }
+    return true;
+  };
   // The format standard (patterns + limits) — drives the on-page instruction panel.
   app.get("/api/psych/cards/schema", async () => psychSchema());
 
@@ -21,6 +36,7 @@ export function registerPsychCardsRoutes(app: FastifyInstance) {
 
   // Validate + append a batch. All-or-nothing: any invalid card → 400 with per-card errors, nothing saved.
   app.post("/api/psych/cards", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
     const body = (req.body as { cards?: unknown; raw?: string }) ?? {};
     const input = body.cards ?? body.raw ?? null;
     if (input == null || (typeof body.raw === "string" && !body.raw.trim())) {
@@ -47,6 +63,7 @@ export function registerPsychCardsRoutes(app: FastifyInstance) {
 
   // Delete ONE uploaded card by index (?addedAt= guards against a shifted list). Seed cards are protected.
   app.delete("/api/psych/cards/:index", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
     const index = Number((req.params as { index: string }).index);
     const addedAt = (req.query as Record<string, string>)?.addedAt;
     const r = deleteCard(index, addedAt);

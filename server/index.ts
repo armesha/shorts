@@ -324,7 +324,7 @@ app.setErrorHandler((err, req, reply) => {
 
 // Self-service password change (logic in a separate file → minimal footprint in this shared module).
 registerPasswordRoutes(app, db);
-registerPsychCardsRoutes(app);
+registerPsychCardsRoutes(app, db);
 registerPacksRoutes(app, db);
 // Failure side-effects for refreshAccountStats() — replays exactly what the inline /api/stats/refresh
 // used to do per channel: server log + error_log row + a notification for the channel's owner. Shared

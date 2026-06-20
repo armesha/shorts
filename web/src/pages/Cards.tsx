@@ -28,6 +28,7 @@ import PackDetail from "../components/PackDetail";
 import CreatePackForm from "../components/CreatePackForm";
 import { PreviewModal, usePreview } from "../components/PreviewModal";
 import { useT } from "../lib/i18n";
+import { useAuth } from "../lib/auth";
 
 // A valid 1-card sample (matches the standard) for the «вставить пример» button.
 const SAMPLE: PsychCard[] = [
@@ -68,6 +69,8 @@ const itemLine = (it: Record<string, string>) => Object.values(it).filter(Boolea
 
 export default function Cards() {
   const { t } = useT();
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin"; // psych — кураторская общая дека: правка только у админа
   const preview = usePreview();
   const [schema, setSchema] = useState<PsychSchema | null>(null);
   const [backendDown, setBackendDown] = useState(false);
@@ -76,6 +79,10 @@ export default function Cards() {
   const [packs, setPacks] = useState<PackSummary[]>([]);
   const [sel, setSel] = useState<string>("psych");
   const reloadPacks = useCallback(() => apiClient.packs().then(setPacks).catch(() => {}), []);
+  // Не-админ не курирует psych — уводим выбор с дефолтного «psych» на «создать пак».
+  useEffect(() => {
+    if (user && !isAdmin && sel === "psych") setSel("new");
+  }, [user, isAdmin, sel]);
 
   const [raw, setRaw] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -217,12 +224,14 @@ export default function Cards() {
 
       {/* Навигация по пакам: встроенная Психология (DE) + кастомные паки + создать */}
       <div className="flex flex-wrap gap-2">
-        <button
-          className={`btn btn-sm ${sel === "psych" ? "btn-primary" : "btn-ghost border border-base-300"}`}
-          onClick={() => setSel("psych")}
-        >
-          Психология (DE)
-        </button>
+        {isAdmin && (
+          <button
+            className={`btn btn-sm ${sel === "psych" ? "btn-primary" : "btn-ghost border border-base-300"}`}
+            onClick={() => setSel("psych")}
+          >
+            Психология (DE)
+          </button>
+        )}
         {packs.map((p) => (
           <button
             key={p.id}
@@ -248,7 +257,7 @@ export default function Cards() {
               packId={sel.slice(5)}
               onChanged={reloadPacks}
               onDeleted={() => {
-                setSel("psych");
+                setSel(isAdmin ? "psych" : "new");
                 reloadPacks();
               }}
             />
@@ -268,8 +277,8 @@ export default function Cards() {
         </div>
       )}
 
-      {/* Встроенный психо-пак (DE) */}
-      {sel === "psych" && (
+      {/* Встроенный психо-пак (DE) — кураторская общая дека, только для админа */}
+      {sel === "psych" && isAdmin && (
         <>
       {backendDown && (
         <div className="alert alert-warning text-sm">
