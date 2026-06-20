@@ -1,0 +1,85 @@
+<!doctype html>
+<!-- Meme caption card. Mirrors the proven anecdote/christian structure: one sized box, bg on it,
+     NO absolute layers / transforms on text (those blank text paint in headless Chrome 149).
+     Heavy sans covering Cyrillic+Latin, white text + dark stroke + scrim for readability over ANY
+     backdrop (CC0 photo / generated texture / solid). Binary-search auto-fit on BOTH axes so long
+     words never clip (hard user requirement). -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root{
+    --bg:{{BG}};
+    --safe-top:{{SAFE_TOP}}px; --safe-right:{{SAFE_RIGHT}}px; --safe-bottom:{{SAFE_BOTTOM}}px; --safe-left:{{SAFE_LEFT}}px;
+    --cap:96px; --kick:40px; --line:1.14; --gap:30px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:1080px;height:1920px;overflow:hidden;background:#000;}
+  .card{position:relative;width:1080px;height:1920px;background:var(--bg);
+    padding:var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+    font-family:"Liberation Sans","DejaVu Sans","Noto Sans",Arial,sans-serif;}
+  /* legibility scrim — pseudo-element = same paint layer (no transform). */
+  .card::before{content:"";position:absolute;top:0;left:0;right:0;bottom:0;
+    background:linear-gradient(180deg, rgba(0,0,0,.30) 0%, rgba(0,0,0,.50) 48%, rgba(0,0,0,.70) 100%);}
+  .frame{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .col{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--gap);text-align:center;}
+  .kicker{font-size:var(--kick);font-weight:700;letter-spacing:1px;color:#ffd54a;text-transform:uppercase;
+    text-shadow:0 2px 10px rgba(0,0,0,.9);}
+  .kicker:empty{display:none;}
+  .cap{width:100%;text-align:center;font-weight:800;
+    font-size:var(--cap);line-height:var(--line);color:#fff;
+    -webkit-text-stroke:1.6px rgba(0,0,0,.5);
+    text-shadow:0 3px 18px rgba(0,0,0,.85), 0 0 4px rgba(0,0,0,.7);
+    word-wrap:break-word;overflow-wrap:break-word;}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="frame" id="frame">
+      <div class="col" id="col">
+        <div class="kicker" id="kicker">{{KICKER}}</div>
+        <div class="cap" id="cap">{{TEXT}}</div>
+      </div>
+    </div>
+  </div>
+<script>
+  var root=document.documentElement,
+      frame=document.getElementById('frame'),
+      col=document.getElementById('col'),
+      cap=document.getElementById('cap');
+  // hidden single-line probe to measure the WIDEST word (break-word would otherwise hide overflow,
+  // letting the font grow until words snap mid-letter — we cap growth so whole words fit a line).
+  var meas=document.createElement('span');
+  meas.style.cssText='position:absolute;visibility:hidden;white-space:nowrap;left:-9999px;top:0;';
+  document.body.appendChild(meas);
+  function setV(s){
+    root.style.setProperty('--cap', s+'px');
+    root.style.setProperty('--kick', Math.max(26, Math.min(56, Math.round(s*0.42)))+'px');
+  }
+  function heightFits(){ return col.scrollHeight <= frame.clientHeight + 1; }
+  function maxWordW(){
+    var cs=getComputedStyle(cap);
+    meas.style.fontFamily=cs.fontFamily; meas.style.fontSize=cs.fontSize;
+    meas.style.fontWeight=cs.fontWeight; meas.style.letterSpacing=cs.letterSpacing;
+    meas.style.webkitTextStroke=cs.webkitTextStroke;
+    var words=(cap.innerText||'').split(/\s+/), m=0;
+    for(var i=0;i<words.length;i++){ if(!words[i]) continue; meas.textContent=words[i]; if(meas.offsetWidth>m) m=meas.offsetWidth; }
+    return m;
+  }
+  function wordFits(){ return maxWordW() <= cap.clientWidth + 1; }
+  function grow(cond){
+    var s=30; setV(s); var g=0;
+    while(s<170 && g++<900){ setV(s+2); if(cond()) s+=2; else { setV(s); break; } }
+    g=0; while(!cond() && s>16 && g++<900){ s-=2; setV(s); }
+    return s;
+  }
+  function fit(){
+    var s=grow(function(){ return heightFits() && wordFits(); }); // ideal: whole words on a line
+    if(s<60){ var s2=grow(heightFits); if(s2>s) s=s2; } // word too long to read whole → break it, but big & legible
+    window.__fitFontPx=s; window.__fitted=true;
+  }
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(fit);} else fit();
+  setTimeout(function(){ if(!window.__fitted) fit(); }, 1800);
+</script>
+</body>
+</html>

@@ -719,12 +719,25 @@ function accountOwnerId(req: unknown, account: Account): number {
   return account.userId ?? uid(req);
 }
 
-function rejectScheduleLimit(reply: Replyish, schedule: unknown, ownerId: number, excludeAccountId?: number): boolean {
+// Schedule guard: (option B) only a CONNECTED channel may carry a posting schedule, and the daily cap
+// is counted PER Google key (oauth_client) — YouTube's upload quota is per Cloud project, not per channel.
+function rejectScheduleLimit(reply: Replyish, schedule: unknown, acc: Account | null, excludeAccountId?: number): boolean {
   if (!Array.isArray(schedule)) return false;
-  const otherSlots = db.scheduleSlotsForUser(ownerId, excludeAccountId);
+  if (schedule.length > 0 && (!acc || acc.status !== "connected")) {
+    reply.code(400).send({ error: "Подключите канал к YouTube — расписание можно задавать только у подключённого канала." });
+    return true;
+  }
+  const otherSlots = acc?.oauthClientId != null ? db.scheduleSlotsForKey(acc.oauthClientId, excludeAccountId) : 0;
   const limitError = dailyScheduleLimitError(schedule.length, otherSlots);
   if (!limitError) return false;
   reply.code(400).send({ error: limitError });
+  return true;
+}
+
+// Option B: a channel must be connected to YouTube before videos can be prepared/queued for it.
+function rejectIfNotConnected(reply: Replyish, acc: Account): boolean {
+  if (acc.status === "connected") return false;
+  reply.code(400).send({ error: "Сначала подключите канал к YouTube — до подключения нельзя готовить видео в очередь." });
   return true;
 }
 
@@ -1318,7 +1331,7 @@ app.get("/api/accounts/:id", async (req, reply) => {
 });
 app.post("/api/accounts", async (req, reply) => {
   const body = (req.body as Partial<Account>) ?? {};
-  if (rejectScheduleLimit(reply, body.schedule, uid(req))) return;
+  if (rejectScheduleLimit(reply, body.schedule, null)) return;
   return db.createAccount({
     ...body,
     userId: uid(req),
@@ -1389,7 +1402,7 @@ app.put("/api/accounts/:id", async (req, reply) => {
     body.slotDecks = clean;
   }
   // Caps apply to admins too; they are about platform load, not permissions.
-  if (rejectScheduleLimit(reply, body.schedule, accountOwnerId(req, acc), id)) return;
+  if (rejectScheduleLimit(reply, body.schedule, acc, id)) return;
   const a = db.updateAccount(id, body);
   if (!a) return reply.code(404).send({ error: "not found" });
   return a;
@@ -2179,6 +2192,7 @@ app.post("/api/videos", async (req, reply) => {
   if (!body.accountId || !body.text) return reply.code(400).send({ error: "accountId и text обязательны" });
   const acc = accessibleAccount(req, reply, body.accountId);
   if (!acc) return;
+  if (rejectIfNotConnected(reply, acc)) return;
   const ownerId = accountOwnerId(req, acc);
   const sourceDeckId = resolveAccountSourceDeck(req, reply, acc, body.deck);
   if (!sourceDeckId) return;
@@ -2209,6 +2223,7 @@ app.post("/api/videos/batch", async (req, reply) => {
   const accountId = body.accountId;
   const acc = accessibleAccount(req, reply, accountId);
   if (!acc) return;
+  if (rejectIfNotConnected(reply, acc)) return;
   if (!enforceGenerationWindow(req, reply, "videos-batch", BATCH_VIDEO_LIMIT)) return;
   return runHeavyGenerationLimited(req, reply, "videos-batch", async () => {
     const ownerId = accountOwnerId(req, acc);

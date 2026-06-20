@@ -1229,6 +1229,21 @@ export function openDb(path: string) {
       }
       return n;
     },
+    // Total daily schedule slots across channels bound to ONE Google key (oauth_client) — per-key cap.
+    // YouTube upload quota is per Cloud project (~100/day; we hold 92), shared by all channels on that key.
+    scheduleSlotsForKey(oauthClientId: number, excludeAccountId?: number): number {
+      const rows = db.prepare("SELECT id, schedule FROM accounts WHERE oauth_client_id = ?").all(oauthClientId) as Row[];
+      let n = 0;
+      for (const r of rows) {
+        if (excludeAccountId != null && (r.id as number) === excludeAccountId) continue;
+        try {
+          n += (JSON.parse((r.schedule as string) || "[]") as unknown[]).length;
+        } catch {
+          /* malformed schedule → count as 0 */
+        }
+      }
+      return n;
+    },
     // Total library videos (queued, not yet posted) across a user's channels.
     countVideosByUser(userId: number): number {
       const r = db

@@ -328,6 +328,8 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     if (body.accountId != null) {
       const acc = db.getAccount(Number(body.accountId));
       if (!acc || acc.userId !== userId) return reply.code(403).send({ error: "Канал не ваш" });
+      if (acc.status !== "connected")
+        return reply.code(400).send({ error: "Сначала подключите канал к YouTube — до подключения нельзя готовить видео в очередь." });
       // Бэкстоп: ролик из пака можно класть только в канал, где этот пак выбран источником.
       // Иначе планировщик не должен его выкладывать.
       const sources = acc.sourceDecks?.length ? acc.sourceDecks : [acc.lang];

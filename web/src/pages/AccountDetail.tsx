@@ -204,8 +204,11 @@ export default function AccountDetail() {
     apiClient
       .accounts()
       .then((accs) => {
+        const myKey = accs.find((a) => a.id === Number(id))?.oauthClientId ?? null;
         const others = accs.filter((a) => a.id !== Number(id));
-        setOtherSlots(others.reduce((s, a) => s + (a.schedule?.length ?? 0), 0));
+        // Per-key daily cap: only channels sharing THIS channel's Google key count toward its 92/day.
+        const sameKey = others.filter((a) => (a.oauthClientId ?? null) === myKey);
+        setOtherSlots(sameKey.reduce((s, a) => s + (a.schedule?.length ?? 0), 0));
         setOtherTimes(others.flatMap((a) => a.schedule ?? []));
       })
       .catch(() => {});
@@ -315,6 +318,8 @@ export default function AccountDetail() {
 
   // Which Google key this channel is bound to — for the "connected via" badge (resolvable for the owner).
   const boundClient = account?.oauthClientId ? clients.find((c) => c.id === account.oauthClientId) ?? null : null;
+  // Option B: until a channel is connected to YouTube you can't schedule it or prepare/queue videos.
+  const isConnected = account?.status === "connected";
 
   // Decide how to connect: 0 keys → prompt; 1 key → use it; >1 → let the user pick which Google key.
   async function startConnect() {
@@ -634,12 +639,19 @@ export default function AccountDetail() {
               </span>
             </div>
 
+            {!isConnected && (
+              <div className="text-xs text-warning mb-2 flex items-center gap-1.5">
+                <AppIcon name="warning" size={13} /> {t("account.connectFirstHint")}
+              </div>
+            )}
+
             <div className="flex flex-wrap gap-2 mb-1 items-center">
               <span className="text-sm text-base-content/60">{t("account.timesPerDay")}</span>
               {[1, 2, 3, 4, 6].map((n) => (
                 <button
                   key={n}
                   className="btn btn-xs btn-outline"
+                  disabled={!isConnected}
                   onClick={() => {
                     if (n > ACCOUNT_DAILY_SLOT_CAP) {
                       notify(t("account.accountDayLimitReached", { n: ACCOUNT_DAILY_SLOT_CAP }), "error", t("account.scheduleLimitToastTitle"));
@@ -671,6 +683,7 @@ export default function AccountDetail() {
               />
               <button
                 className="btn btn-xs btn-primary gap-1"
+                disabled={!isConnected}
                 onClick={() => {
                   if (perDayInput > ACCOUNT_DAILY_SLOT_CAP) {
                     notify(t("account.accountDayLimitReached", { n: ACCOUNT_DAILY_SLOT_CAP }), "error", t("account.scheduleLimitToastTitle"));
@@ -728,6 +741,7 @@ export default function AccountDetail() {
               />
               <button
                 className="btn btn-sm btn-outline gap-1"
+                disabled={!isConnected}
                 onClick={() => {
                   const v = newTime.trim();
                   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(v)) {
@@ -933,6 +947,11 @@ export default function AccountDetail() {
 
             <div className="rounded-md border border-base-300 bg-base-200/30 p-3">
               <div className="font-medium text-sm mb-2">{t("account.generateToLibrary")}</div>
+              {!isConnected && (
+                <div className="text-xs text-warning mb-2 flex items-center gap-1.5">
+                  <AppIcon name="warning" size={13} /> {t("account.connectFirstHint")}
+                </div>
+              )}
               <div className="flex flex-wrap items-center gap-2">
                 <select
                   className="select select-bordered select-sm min-w-[12rem] flex-1"
@@ -968,7 +987,7 @@ export default function AccountDetail() {
                     if (sourcesDirty && !(await save())) return;
                     q.run(id!, Math.min(batchN, maxBatch), generateDeckIds);
                   }}
-                  disabled={langMismatch || saving || maxBatch < 1}
+                  disabled={langMismatch || saving || maxBatch < 1 || !isConnected}
                   title={langMismatch ? t("account.genTitleMismatch") : t("account.generateSelectedTitle")}
                 >
                   <Plus size={14} /> {t("account.generateButton")}

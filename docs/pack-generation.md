@@ -652,6 +652,14 @@ node --input-type=module -e 'import fs from "node:fs"; const cards=JSON.parse(fs
    `node --env-file=.env src/scripts/space-montage/build.mjs --sync-only`.
 5. Держи ролики в Shorts-формате (`dur` ≤ ~0:58); короткие исходники `build.mjs` сам зацикливает.
 
+**Немой субтитровый вариант (`--novoice`):** для клипов без озвучки (свободный футаж + только субтитры,
+чтобы читали) — у источника ставь `novoice: true` (или флаг `--novoice` глобально). Тогда TTS не
+вызывается, тайминг сабов идёт по скорости чтения (`READ_PER_WORD`), аудиодорожки нет (`compositeSilent`),
+а в левом верхнем углу рисуется короткий кредит источника (`shortSource()` → «NASA SVS» и т.п.) поверх
+полной атрибуции снизу. Источник свободной лицензии (PD/CC) обязателен; «только субтитры» на чужой
+авторской документалке — это и копирайт-, и YouTube-«reused content»-риск. Per-clip `zoom`/`startSec` в
+`sources.json` гасят мелкий-объект-на-чёрном и вшитые титры/подписи. Батч-2 = 18 таких клипов.
+
 VO-правила: **ElevenLabs — единственный TTS**; word-тайминги берём из ElevenLabs (`with-timestamps` /
 `alignment`), не из whisper; ключи ротируются из `.env` (`ELEVENLABS_API_KEYS`), free-tier = 10000
 симв/мес на ключ — следи за бюджетом (≈260 симв/ролик). Финальная визуальная QA несколькими субагентами

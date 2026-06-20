@@ -178,5 +178,95 @@
     "id": "helio_solarwind",
     "title": "A Storm Across the Solar System",
     "narration": "The Sun just hurled a billion tons of plasma into space. This eruption races outward at over a million miles an hour, sweeping past Mars, a distant comet, and onward toward Saturn. Watch a single solar storm sail clear across the inner solar system."
+  },
+  {
+    "id": "moon",
+    "title": "The Same Face for Four Billion Years",
+    "narration": "That gray world never turns its back on us. The Moon spins exactly once each time it circles Earth, so a single face stays locked toward home forever. Yet it gently wobbles, a slow nod called libration, letting us glimpse nearly sixty percent of its scarred surface. Always watching."
+  },
+  {
+    "id": "sun_dynamics",
+    "title": "A Million-Degree Inferno of Plasma",
+    "narration": "Loops of fire taller than ten Earths arc across the Sun. This ultraviolet view reveals coronal plasma heated past one million degrees, far hotter than the surface below, a mystery physicists still chase. Magnetic fields snap and tangle, flinging glowing gas skyward. Our star breathes in violence."
+  },
+  {
+    "id": "earth_night",
+    "title": "Our Civilization, Glowing From Orbit",
+    "narration": "Every spark of light down there is humanity. Stitched together from satellite data, this is Earth after dark, cities blazing in golden webs across the continents while oceans fall black. You can trace coastlines, rivers, even highways by our glow alone. Eight billion people, written in light."
+  },
+  {
+    "id": "blue_marble",
+    "title": "The Only Blue Marble We Have",
+    "narration": "One photograph rewrote how we see ourselves. Here turns the whole Earth, true colors stitched from orbit, a single blue marble suspended in absolute black. No borders, no edges, just swirling cloud, deep ocean, and living green. Everyone you have ever known lives on this fragile spinning sphere."
+  },
+  {
+    "id": "milky_way_center",
+    "title": "Half a Million Stars, One Monster",
+    "narration": "Plunge toward the most crowded place in our galaxy. At the Milky Way's heart, half a million stars swarm in a region where night never truly falls, all orbiting an invisible giant. That is Sagittarius A star, a black hole four million times the mass of the Sun. The crowd circles the abyss."
+  },
+  {
+    "id": "orion_nebula",
+    "title": "Flying Into a Star Factory",
+    "narration": "We are diving inside a stellar nursery. This flight through the Orion Nebula sweeps past glowing curtains of gas where brand-new suns are being born right now. Bow shocks ripple, and disks of dust circle infant stars destined to become planets. A cradle of worlds, fifteen hundred light-years away."
+  },
+  {
+    "id": "carina_nebula",
+    "title": "Cosmic Cliffs Seven Light-Years Tall",
+    "narration": "These mountains are made of gas and dust. Webb's infrared eye carries us through the Cosmic Cliffs of the Carina Nebula, towering pillars where radiation from hot young stars sculpts the clouds. Jets from newborn stars pierce the haze, and each peak rises taller than entire solar systems. Creation, frozen mid-act."
+  },
+  {
+    "id": "supernova_1987a",
+    "title": "A Ring Lit by a Dying Star",
+    "narration": "A star exploded, and we caught the shockwave landing. Supernova 1987A blasted its outer layers into space, and now that wave slams into an ancient ring of gas, lighting it like a string of cosmic pearls. The brightest stellar death seen in centuries still glows, light-years across the dark."
+  },
+  {
+    "id": "dark_matter",
+    "title": "The Invisible Web Holding Everything",
+    "narration": "Most of the universe is something we cannot see. Cruise through this simulation, and the purple filaments are dark matter, an unseen scaffold stretching between galaxies. It outweighs all ordinary matter five to one, yet emits no light at all. Without it, galaxies would fly apart. The cosmos hangs on a ghost."
+  },
+  {
+    "id": "dark_energy",
+    "title": "The Force Tearing Space Apart",
+    "narration": "The universe is not just expanding, it is accelerating. Soar past galaxy clusters and watch a cosmic stretch that once slowed now speed up, driven by a mysterious force called dark energy. It fills empty space and makes up most of everything that exists. One day it may pull the sky into darkness."
+  },
+  {
+    "id": "cosmic_dawn",
+    "title": "When the First Stars Switched On",
+    "narration": "For ages, the universe was utterly dark. Then the first stars ignited, blasting ultraviolet light that carved glowing bubbles through a fog of hydrogen. This is cosmic dawn, the moment the lights came on, more than thirteen billion years ago. Every atom in you traces back to those first fires."
+  },
+  {
+    "id": "globular_cluster",
+    "title": "A Million Suns Packed Tight",
+    "narration": "Behold one of the oldest objects in the galaxy. NGC 6397 is a globular cluster, a swarm of hundreds of thousands of ancient stars bound so tightly their cores run thousands of times denser than our neighborhood. These suns formed nearly thirteen billion years ago. A relic of the early cosmos."
+  },
+  {
+    "id": "jupiter_moons",
+    "title": "Four Worlds Circling a Giant",
+    "narration": "Jupiter rules over a miniature solar system. Watch its four Galilean moons sweep around the giant, casting tiny shadows on its banded clouds. One hides a buried ocean, another erupts with volcanoes, and the largest outsizes the planet Mercury. Four centuries ago, these moons proved Earth is not the center."
+  },
+  {
+    "id": "uranus_rings",
+    "title": "An Ice Giant Tipped On Its Side",
+    "narration": "Here glows a planet rolling through space sideways. Webb's infrared view reveals Uranus, an ice giant tilted so far that its poles face the Sun, ringed by bands almost no one has ever seen. A bright polar cap blazes white. Faint, ghostly rings circle a world where each season lasts twenty years."
+  },
+  {
+    "id": "solar_flare",
+    "title": "A Plasma Eruption Bigger Than Earth",
+    "narration": "Watch the Sun fling a piece of itself into space. This eruption launches a towering arc of plasma off the solar limb, glowing at tens of thousands of degrees and dwarfing our entire planet. Magnetic fields twist, then violently release. A single flare can outshine billions of hydrogen bombs."
+  },
+  {
+    "id": "kilonova",
+    "title": "Where the Universe Forges Gold",
+    "narration": "Two dead stars are about to make treasure. These neutron stars spiral together, collide, and rip apart in a kilonova so extreme it forges gold and platinum from pure chaos before collapsing into a black hole. The ring on your finger may have been born in a blast exactly like this one."
+  },
+  {
+    "id": "mars_perseverance",
+    "title": "Standing on a Dead Martian Lake",
+    "narration": "This rusty wasteland was once underwater. Glide across the floor of Gale Crater on Mars, where a rover climbs Mount Sharp and looks back over rock that water carved billions of years ago. The red comes from iron literally rusting in the soil. A whole frozen world, waiting to tell its story."
+  },
+  {
+    "id": "earthrise",
+    "title": "The Photo That Changed Everything",
+    "narration": "From the loneliest place humans had ever traveled, our home appeared. This recreates Earthrise, the moment Apollo 8 rounded the Moon in 1968 and saw our planet climb above a dead gray horizon. Small, bright, and impossibly alive. They went to explore the Moon and discovered the Earth instead."
   }
 ]

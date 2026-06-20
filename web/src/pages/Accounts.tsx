@@ -7,6 +7,7 @@ import { useT } from "../lib/i18n";
 import { fmtCacheTime, readCache, writeCache } from "../lib/cache";
 
 const ACCOUNTS_CACHE_KEY = "sf.accounts.v1";
+const DAILY_KEY_CAP = 92; // YouTube upload quota per Google project/key (held under the ~100/day ceiling)
 type AccountsCache = {
   accounts: Account[];
   status: AppStatus | null;
@@ -247,7 +248,10 @@ export default function Accounts() {
                   <div className="font-medium text-sm truncate">{k.label}</div>
                   {k.projectId && <div className="text-xs text-base-content/45 truncate">{k.projectId}</div>}
                   <div className="text-xs text-base-content/60 mt-1">
-                    {t("accounts.byKeyChannels", { n: k.channels })} · {t("accounts.byKeyPerDay", { n: k.perDay })}
+                    {t("accounts.byKeyChannels", { n: k.channels })} ·{" "}
+                    <span className={k.perDay > DAILY_KEY_CAP ? "text-error font-medium" : k.perDay > DAILY_KEY_CAP * 0.85 ? "text-warning" : ""}>
+                      {t("accounts.byKeyPerDay", { used: k.perDay, cap: DAILY_KEY_CAP })}
+                    </span>
                   </div>
                 </div>
               ))}

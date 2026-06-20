@@ -32,6 +32,8 @@ const args = process.argv.slice(2);
 const onlyId = (() => { const i = args.indexOf("--only"); return i >= 0 ? args[i + 1] : null; })();
 const idsArg = (() => { const i = args.indexOf("--ids"); return i >= 0 ? (args[i + 1] || "").split(",").map((s) => s.trim()).filter(Boolean) : null; })();
 const NO_SYNC = args.includes("--no-sync");
+const NOVOICE = args.includes("--novoice"); // silent subtitle-only Short: no TTS, no audio, captions paced by reading speed
+const READ_PER_WORD = 0.46; // seconds per word for novoice caption pacing
 
 const sources = JSON.parse(fs.readFileSync(path.join(BUILD, "sources.json"), "utf8"));
 const narrationArr = JSON.parse(fs.readFileSync(path.join(HERE, "narration.json"), "utf8"));
@@ -108,6 +110,24 @@ function wordsFromAlignment(al, fallbackText) {
   return words.length ? words : fallbackText.split(/\s+/).map((w, i) => ({ text: w, start: i * 0.32, end: i * 0.32 + 0.28 }));
 }
 
+// novoice: time words by reading speed (no TTS / no audio)
+function wordsFromText(text, perWord = READ_PER_WORD) {
+  const ws = (text || "").trim().split(/\s+/).filter(Boolean);
+  let t = 0; const out = [];
+  for (const w of ws) { out.push({ text: w, start: t, end: t + perWord }); t += perWord; }
+  return out;
+}
+// short source label for the top-left corner credit
+function shortSource(src) {
+  const s = `${src.source || ""} ${src.credit || ""} ${src.pageUrl || ""}`;
+  if (/svs\.gsfc|\bSVS\b/i.test(s)) return "NASA SVS";
+  if (/\bESO\b|eso\.org/i.test(s)) return "ESO";
+  if (/USGS/i.test(s)) return "NASA / USGS";
+  if (/ESA|hubble|webb/i.test(s)) return "NASA / ESA";
+  if (/NASA|nasa\.gov/i.test(s)) return "NASA";
+  return (src.source || "NASA").slice(0, 24);
+}
+
 // ---------- pagination (Animal-Heroes feel: up to 3 lines, ~3 words/line) ----------
 function paginate(words) {
   const MAX_LINES = 3, MAX_WORDS_LINE = 3, MAX_CHARS_LINE = 16;
@@ -144,15 +164,19 @@ function captionCss() {
        -webkit-text-stroke:0;text-shadow:none;box-shadow:0 5px 0 rgba(0,0,0,.32),0 0 0 3px rgba(255,255,255,.16)}
   .credit{position:absolute;left:0;right:0;bottom:46px;text-align:center;
        font-family:'DejaVu Sans',Arial,sans-serif;font-weight:600;font-size:25px;color:#dcdcdc;letter-spacing:.3px;
-       text-shadow:0 2px 5px #000,0 0 10px #000;opacity:.92;padding:0 60px}`;
+       text-shadow:0 2px 5px #000,0 0 10px #000;opacity:.92;padding:0 60px}
+  .srccorner{position:absolute;left:40px;top:44px;font-family:'Lato','DejaVu Sans',Arial,sans-serif;font-weight:800;
+       font-size:34px;color:#fff;letter-spacing:.4px;padding:8px 20px;border-radius:12px;
+       background:rgba(0,0,0,.42);text-shadow:0 2px 6px #000;backdrop-filter:blur(2px)}`;
 }
 const escHtml = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-function captionHtml(page, activeWord, credit) {
+function captionHtml(page, activeWord, credit, corner) {
   const body = page
     ? `<div class="capwrap"><div class="cap" id="cap">${page.map((line) =>
         `<span class="ln">${line.map((w) =>
           `<span class="w${w === activeWord ? " on" : ""}">${escHtml(w.text)}</span>`).join(" ")}</span>`).join("")}</div></div>`
     : "";
+  const corn = corner ? `<div class="srccorner">${escHtml(corner)}</div>` : "";
   const cr = credit ? `<div class="credit">${escHtml(credit)}</div>` : "";
   // fit-shrink: reduce font until the caption block fits its box width & height
   const fit = `<script>
@@ -161,7 +185,7 @@ function captionHtml(page, activeWord, credit) {
       while(fs>40 && (c.scrollWidth>box.clientWidth || c.scrollHeight>box.clientHeight)){fs-=2;c.style.fontSize=fs+'px';}
     }
   </script>`;
-  return `<!doctype html><html><head><meta charset="utf-8"><style>${captionCss()}</style></head><body><div class="stage">${body}${cr}</div>${page ? fit : ""}</body></html>`;
+  return `<!doctype html><html><head><meta charset="utf-8"><style>${captionCss()}</style></head><body><div class="stage">${body}${corn}${cr}</div>${page ? fit : ""}</body></html>`;
 }
 
 // ---------- ffmpeg helpers ----------
@@ -211,7 +235,7 @@ function buildBase(srcPath, dur, outPath, startOverride, zoom = 1) {
 }
 
 // render per-word transparent caption PNGs, return concat list path + nothing else
-async function renderCaptions(page, id, words, pages, credit, totalDur) {
+async function renderCaptions(page, id, words, pages, credit, totalDur, corner) {
   const dir = path.join(CAP_DIR, id);
   fs.rmSync(dir, { recursive: true, force: true });
   fs.mkdirSync(dir, { recursive: true });
@@ -222,7 +246,7 @@ async function renderCaptions(page, id, words, pages, credit, totalDur) {
   const firstStart = flat.length ? Math.max(0, flat[0].start) : 0;
   if (firstStart > 0.06) {
     const blank = path.join(dir, "blank.png");
-    await page.setContent(captionHtml(null, null, credit), { waitUntil: "load" });
+    await page.setContent(captionHtml(null, null, credit, corner), { waitUntil: "load" });
     await page.screenshot({ path: blank, omitBackground: true, clip: { x: 0, y: 0, width: 1080, height: 1920 } });
     frames.push({ png: blank, dur: firstStart });
   }
@@ -230,7 +254,7 @@ async function renderCaptions(page, id, words, pages, credit, totalDur) {
     const w = flat[i];
     const pageWords = pages[w._page];
     const png = path.join(dir, `w${String(i).padStart(3, "0")}.png`);
-    await page.setContent(captionHtml(pageWords, w, credit), { waitUntil: "load" });
+    await page.setContent(captionHtml(pageWords, w, credit, corner), { waitUntil: "load" });
     await page.screenshot({ path: png, omitBackground: true, clip: { x: 0, y: 0, width: 1080, height: 1920 } });
     const end = i < flat.length - 1 ? flat[i + 1].start : totalDur;
     frames.push({ png, dur: Math.max(0.06, end - w.start) });
@@ -252,6 +276,14 @@ function composite(basePath, framesList, voicePath, dur, outPath) {
     "-c:a", "aac", "-b:a", "160k", "-ar", "44100", outPath]);
 }
 
+// novoice: same overlay but no audio track (silent subtitle-only Short)
+function compositeSilent(basePath, framesList, dur, outPath) {
+  run("ffmpeg", ["-y", "-i", basePath, "-f", "concat", "-safe", "0", "-i", framesList,
+    "-filter_complex", "[1:v]fps=30,format=rgba,setpts=PTS-STARTPTS[cap];[0:v][cap]overlay=0:0:eof_action=pass:format=auto,format=yuv420p[v]",
+    "-map", "[v]", "-t", dur.toFixed(2),
+    "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p", "-an", outPath]);
+}
+
 // ---------- per-clip build ----------
 async function buildClip(browser, id) {
   const src = sources[id], nar = narration[id];
@@ -259,20 +291,29 @@ async function buildClip(browser, id) {
   if (!nar?.narration) { console.log(`SKIP ${id}: no narration`); return null; }
   const srcPath = path.join(SRC_DIR, src.file);
   if (!fs.existsSync(srcPath)) { console.log(`SKIP ${id}: missing ${src.file}`); return null; }
-  console.log(`\n== ${id} :: ${nar.title}`);
-  const { mp3, alignment } = await tts(id, nar.narration);
-  const voDur = ffdur(mp3);
-  const totalDur = Math.min(58, voDur + 0.5);
-  const words = wordsFromAlignment(alignment, nar.narration);
+  const useNovoice = NOVOICE || !!src.novoice; // per-clip silent mode (batch2) OR global --novoice
+  console.log(`\n== ${id} :: ${nar.title}${useNovoice ? " [novoice]" : ""}`);
+  let words, totalDur, mp3 = null;
+  if (useNovoice) {
+    words = wordsFromText(nar.narration);
+    totalDur = Math.min(58, (words.length ? words[words.length - 1].end : 6) + 0.9);
+  } else {
+    const r = await tts(id, nar.narration);
+    mp3 = r.mp3;
+    totalDur = Math.min(58, ffdur(mp3) + 0.5);
+    words = wordsFromAlignment(r.alignment, nar.narration);
+  }
   const pages = paginate(words);
+  const corner = shortSource(src);
   const page = await browser.newPage();
   let framesList;
-  try { framesList = await renderCaptions(page, id, words, pages, src.credit || "", totalDur); }
+  try { framesList = await renderCaptions(page, id, words, pages, src.credit || "", totalDur, corner); }
   finally { await page.close(); }
   const basePath = path.join(BASE_DIR, `${id}.mp4`);
   buildBase(srcPath, totalDur, basePath, Number.isFinite(src.startSec) ? src.startSec : null, Number.isFinite(src.zoom) ? src.zoom : 1);
   const outPath = path.join(ADMIN, `${id}.mp4`);
-  composite(basePath, framesList, mp3, totalDur, outPath);
+  if (useNovoice) compositeSilent(basePath, framesList, totalDur, outPath);
+  else composite(basePath, framesList, mp3, totalDur, outPath);
   const finalDur = ffdur(outPath);
   run("ffmpeg", ["-y", "-ss", Math.min(2.0, finalDur / 3).toFixed(2), "-i", outPath, "-frames:v", "1", "-q:v", "3", path.join(ADMIN, `${id}.jpg`)]);
   console.log(`  built ${id}: ${fmtDur(finalDur)} (${words.length} words) -> ${outPath}`);

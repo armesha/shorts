@@ -6,7 +6,7 @@ export function dailyScheduleLimitError(scheduleCount: number, otherSlots: numbe
     return `Максимум ${ACCOUNT_DAILY_SCHEDULE_CAP} видео в сутки на один канал.`;
   }
   if (otherSlots + scheduleCount > USER_DAILY_SCHEDULE_CAP) {
-    return `Лимит ${USER_DAILY_SCHEDULE_CAP} публикаций в сутки на пользователя. На остальных каналах уже ${otherSlots}, этому каналу доступно ${Math.max(0, USER_DAILY_SCHEDULE_CAP - otherSlots)}.`;
+    return `Лимит ${USER_DAILY_SCHEDULE_CAP} публикаций в сутки на один Google-ключ (проект). На других каналах этого ключа уже ${otherSlots}, этому каналу доступно ${Math.max(0, USER_DAILY_SCHEDULE_CAP - otherSlots)}.`;
   }
   return null;
 }
