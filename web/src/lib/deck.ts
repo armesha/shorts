@@ -32,7 +32,9 @@ export const DECK_GLOSS_RU: Record<string, string> = {
   "fact-en": "Интересные факты · видео",
   "quotes-de": "Цитаты политиков · нем.",
   space: "Космос · видео",
-  "funny-animals": "Смешные животные · видео",
+  "visual-riddles": "Визуальные загадки · видео",
+  "animal-superheroes": "ЗвероГерои · видео",
+  "animal-superheroes-en": "ЗвероГерои · видео · англ.",
 };
 
 /** Deck name + Russian gloss in parentheses (when the name is foreign). */
@@ -42,7 +44,7 @@ export const deckLabel = (id: string, name: string): string =>
 /** Content language of each built-in deck (deck id → 2-letter lang). Custom packs carry their own lang. */
 export const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
-  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de": "de", space: "en", "funny-animals": "en",
+  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de": "de", space: "en", "visual-riddles": "ru", "animal-superheroes": "ru", "animal-superheroes-en": "en",
 };
 
 /** Uppercase 2-letter tag for a language code. */
@@ -74,5 +76,7 @@ export const BUILTIN_DECKS: { id: string; label: string }[] = [
   { id: "fact-en", label: "Интересные факты (видео, EN)" },
   { id: "quotes-de", label: "Цитаты политиков (видео, DE)" },
   { id: "space", label: "Космос (видео, EN)" },
-  { id: "funny-animals", label: "Смешные животные (видео, EN)" },
+  { id: "visual-riddles", label: "Вижу Ответ (видео, RU)" },
+  { id: "animal-superheroes", label: "ЗвероГерои (видео, RU)" },
+  { id: "animal-superheroes-en", label: "Animal Heroes (видео, EN)" },
 ];

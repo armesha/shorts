@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { AlertTriangle, ExternalLink, RefreshCw, Trash2 } from "lucide-react";
+import { AlertTriangle, Bell, ExternalLink, RefreshCw, Send, Trash2 } from "lucide-react";
 import { apiClient, type AdminUser, type NotificationItem } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
@@ -28,6 +28,12 @@ export default function Notifications() {
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [noticeUserId, setNoticeUserId] = useState<number | "">("");
+  const [noticeSeverity, setNoticeSeverity] = useState<"info" | "warning" | "error">("info");
+  const [noticeTitle, setNoticeTitle] = useState("");
+  const [noticeMessage, setNoticeMessage] = useState("");
+  const [noticeBusy, setNoticeBusy] = useState(false);
+  const [noticeResult, setNoticeResult] = useState("");
   const groups = groupNotifications(items);
 
   const effectiveScope = isAdmin ? scope : "mine";
@@ -80,6 +86,34 @@ export default function Notifications() {
     await Promise.all(group.ids.map((id) => apiClient.deleteNotification(id).catch(() => null)));
     notifyChanged();
     load();
+  }
+
+  async function markGroupUnread(group: NotificationGroup) {
+    await Promise.all(group.ids.map((id) => apiClient.unreadNotification(id).catch(() => null)));
+    notifyChanged();
+    setItems((cur) => cur.map((n) => (group.ids.includes(n.id) ? { ...n, readAt: null } : n)));
+  }
+
+  async function sendNotice() {
+    if (!noticeUserId || !noticeMessage.trim()) return;
+    setNoticeBusy(true);
+    setNoticeResult("");
+    try {
+      await apiClient.adminSendNotification(noticeUserId, {
+        severity: noticeSeverity,
+        title: noticeTitle.trim(),
+        message: noticeMessage.trim(),
+      });
+      setNoticeTitle("");
+      setNoticeMessage("");
+      setNoticeResult(t("users.notifySent"));
+      notifyChanged();
+      if (effectiveScope === "all") load();
+    } catch (e) {
+      setNoticeResult(e instanceof Error ? e.message : t("users.notifyFailed"));
+    } finally {
+      setNoticeBusy(false);
+    }
   }
 
   return (
@@ -143,6 +177,71 @@ export default function Notifications() {
         )}
       </div>
 
+      {isAdmin && (
+        <section className="card bg-base-100 border border-base-300">
+          <div className="card-body gap-3 py-4">
+            <div className="flex items-center gap-2">
+              <Send size={16} className="text-primary" />
+              <h2 className="font-semibold text-sm">{t("users.notifyHeading")}</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-[minmax(160px,220px)_140px_minmax(0,1fr)_auto] gap-2 items-end">
+              <label className="form-control">
+                <span className="label-text">{t("users.notifyUser")}</span>
+                <select
+                  className="select select-bordered select-sm"
+                  value={noticeUserId === "" ? "" : String(noticeUserId)}
+                  onChange={(e) => setNoticeUserId(e.target.value ? Number(e.target.value) : "")}
+                >
+                  <option value="">{t("users.notifyPickUser")}</option>
+                  {users.map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.username}{u.role === "admin" ? ` (${t("common.admin")})` : ""}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="form-control">
+                <span className="label-text">{t("users.notifySeverity")}</span>
+                <select
+                  className="select select-bordered select-sm"
+                  value={noticeSeverity}
+                  onChange={(e) => setNoticeSeverity(e.target.value as "info" | "warning" | "error")}
+                >
+                  <option value="info">{t("notifications.severityInfo")}</option>
+                  <option value="warning">{t("notifications.severityWarning")}</option>
+                  <option value="error">{t("notifications.severityError")}</option>
+                </select>
+              </label>
+              <label className="form-control">
+                <span className="label-text">{t("users.notifyTitle")}</span>
+                <input
+                  className="input input-bordered input-sm"
+                  value={noticeTitle}
+                  onChange={(e) => setNoticeTitle(e.target.value)}
+                  placeholder={t("users.notifyTitlePlaceholder")}
+                />
+              </label>
+              <button
+                className="btn btn-primary btn-sm gap-1"
+                onClick={sendNotice}
+                disabled={noticeBusy || !noticeUserId || !noticeMessage.trim()}
+              >
+                {noticeBusy ? <span className="loading loading-spinner loading-xs" /> : <Send size={14} />}
+                {t("users.notifySend")}
+              </button>
+            </div>
+            <textarea
+              className="textarea textarea-bordered min-h-20"
+              value={noticeMessage}
+              onChange={(e) => setNoticeMessage(e.target.value)}
+              placeholder={t("users.notifyMessagePlaceholder")}
+              aria-label={t("users.notifyMessage")}
+            />
+            {noticeResult && <div className="text-xs text-base-content/60">{noticeResult}</div>}
+          </div>
+        </section>
+      )}
+
       {error && (
         <div className="alert alert-error text-sm">
           <AlertTriangle size={18} />
@@ -198,13 +297,18 @@ export default function Notifications() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
+                    {!group.unread && (
+                      <button className="btn btn-ghost btn-sm gap-1" onClick={() => markGroupUnread(group)}>
+                        <Bell size={14} /> {t("notifications.markUnread")}
+                      </button>
+                    )}
                     <button className="btn btn-ghost btn-sm text-error gap-1" onClick={() => deleteGroup(group)}>
                       <Trash2 size={14} /> {t("notifications.delete")}
                     </button>
                   </div>
                 </div>
 
-                <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{compactNotificationText(group.message, 260)}</p>
+                <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{compactNotificationText(group.message, 160)}</p>
 
                 {group.accountLabels.length > 0 && (
                   <div className="flex flex-wrap gap-1">
@@ -223,21 +327,22 @@ export default function Notifications() {
                   </div>
                 )}
 
-                {group.solution && (
+                {group.solution && !group.actionUrl && (
                   <div className="rounded-md border border-base-300 bg-base-200/50 p-3 text-sm">
                     <div className="font-medium mb-1">{t("notifications.solution")}</div>
                     <div className="whitespace-pre-wrap break-words">{group.solution}</div>
-                    {group.actionUrl && (
-                      <a
-                        className="btn btn-outline btn-sm gap-1 mt-3"
-                        href={group.actionUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <ExternalLink size={14} /> {t("notifications.openFix")}
-                      </a>
-                    )}
                   </div>
+                )}
+
+                {group.actionUrl && (
+                  <a
+                    className="btn btn-outline btn-sm gap-1 w-fit"
+                    href={group.actionUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <ExternalLink size={14} /> {t("notifications.howToFix")}
+                  </a>
                 )}
 
                 {group.contextLabels.length > 0 && (

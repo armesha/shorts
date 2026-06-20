@@ -931,6 +931,21 @@ export function openDb(path: string) {
         .get(userId) as Row;
       return Number(r.n) || 0;
     },
+    clearAnecdoteUsedKeys(userId: number, keys: string[]): number {
+      const uniq = [...new Set(keys.map((k) => String(k || "").trim()).filter(Boolean))];
+      if (!uniq.length) return 0;
+      const del = db.prepare("DELETE FROM user_used_anecdotes WHERE user_id = ? AND key = ?");
+      let removed = 0;
+      db.exec("BEGIN");
+      try {
+        for (const key of uniq) removed += Number(del.run(userId, key).changes) || 0;
+        db.exec("COMMIT");
+      } catch (err) {
+        db.exec("ROLLBACK");
+        throw err;
+      }
+      return removed;
+    },
     // ---- Auth: users & sessions ----
     countUsers(): number {
       const r = db.prepare("SELECT COUNT(*) AS n FROM users").get() as Row;

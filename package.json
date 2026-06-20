@@ -17,6 +17,7 @@
     "share": "npm run web:build && concurrently -k -n app,tunnel -c blue,magenta \"npm run server\" \"npm run tunnel\"",
     "render:preview": "tsx src/scripts/render-preview.ts",
     "gen:preview": "tsx src/scripts/generate-preview.ts",
+    "e2e:account-ui": "node --experimental-sqlite --import tsx src/scripts/account-ui-e2e.ts",
     "ru:audit": "tsx src/scripts/ru-render-audit.ts",
     "ru:rerender": "node --experimental-sqlite --import tsx src/scripts/ru-rerender-broken.ts",
     "test": "node --import tsx --experimental-sqlite --test 'src/**/*.test.ts' 'server/**/*.test.ts'"

@@ -5,7 +5,7 @@ import { AppIcon } from "../components/AppIcon";
 
 // Admin-only gallery of montage Shorts, grouped into themed PACKS. Reads a manifest (written live by
 // temp/clip-demo/buildpack.mjs). Pure viewer — watch and download mp4, no posting.
-const V = "8"; // bump to bust browser/Cloudflare cache on every clip change
+const V = "11"; // bump to bust browser/Cloudflare cache on every clip change
 
 type Item = { id: string; title: string; theme?: string; voice?: string; dur?: string; createdAt?: string; updatedAt?: string };
 type Pack = { id: string; title: string; lang?: string; items: Item[] };
@@ -148,20 +148,18 @@ export default function ClipDemos() {
             ))}
           </div>
         </div>
-        <div className="join shrink-0 self-start">
+        <div className="shrink-0 self-start">
           <button
-            className={`btn btn-sm join-item gap-1.5 ${sortMode === "newest" ? "btn-primary" : "admin-action-secondary"}`}
-            onClick={() => setSortMode("newest")}
+            className="btn btn-sm btn-primary gap-1.5"
+            onClick={() => setSortMode((mode) => (mode === "newest" ? "oldest" : "newest"))}
+            aria-pressed={sortMode === "newest"}
           >
-            <AppIcon name="time" size={14} />
-            {t("clipdemos.sortNewest")}
-          </button>
-          <button
-            className={`btn btn-sm join-item gap-1.5 ${sortMode === "oldest" ? "btn-primary" : "admin-action-secondary"}`}
-            onClick={() => setSortMode("oldest")}
-          >
-            <AppIcon name="chevron-right" size={14} className="rotate-90" />
-            {t("clipdemos.sortOldest")}
+            {sortMode === "newest" ? (
+              <AppIcon name="time" size={14} />
+            ) : (
+              <AppIcon name="chevron-right" size={14} className="rotate-90" />
+            )}
+            {t(sortMode === "newest" ? "clipdemos.sortNewest" : "clipdemos.sortOldest")}
           </button>
         </div>
       </div>

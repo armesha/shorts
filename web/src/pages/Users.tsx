@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Users, Plus, Check, AlertTriangle, Crown, LogIn, Send } from "lucide-react";
-import { apiClient, ApiError, type AdminUser, type DeckInfo, type UserDeckRow, type PackSummary } from "../lib/api";
+import { apiClient, ApiError, type AdminUser, type DeckInfo, type UserDeckRow, type PackSummary, type PackUsageItem } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
@@ -45,6 +45,9 @@ function AdminUsers() {
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [packs, setPacks] = useState<PackSummary[]>([]); // все кастомные паки (админ видит все) — для назначения владельцев
   const [savingOwner, setSavingOwner] = useState<string | null>(null);
+  const [resettingDeck, setResettingDeck] = useState<string | null>(null);
+  const [resetUserId, setResetUserId] = useState<number | "">(""); // выбранный юзер в блоке «Сброс истории паков»
+  const [resetItems, setResetItems] = useState<PackUsageItem[] | null>(null); // ВСЕ паки юзера: встроенные + кастомные (null = грузим)
   const [ownerErr, setOwnerErr] = useState<string | null>(null);
   const [impersonatingId, setImpersonatingId] = useState<number | null>(null);
   const [noticeUserId, setNoticeUserId] = useState<number | "">("");
@@ -142,6 +145,46 @@ function AdminUsers() {
     }
   }
 
+  async function resetDeckHistory(userId: number, username: string, deckId: string, deckName: string) {
+    const label = `${username} / ${deckName}`;
+    if (!window.confirm(t("users.resetDeckConfirm", { label }))) return;
+    setResettingDeck(`${userId}:${deckId}`);
+    setSaveState("saving");
+    try {
+      await apiClient.resetUserDeck(userId, deckId);
+      setSaveState("saved");
+      loadMatrix();
+      refreshResetDecks(userId); // освежить «осталось N из T» в панели сброса
+      window.setTimeout(() => setSaveState((s) => (s === "saved" ? "idle" : s)), 1800);
+    } catch {
+      setSaveState("error");
+    } finally {
+      setResettingDeck(null);
+    }
+  }
+
+  // ВСЕ паки выбранного юзера (встроенные деки + кастомные паки), что он может использовать или уже
+  // использовал — любой пак, из которого взяли хоть карту, уже «не полный». Источник —
+  // /api/admin/users/:id/pack-usage (считает used и по КАСТОМНЫМ паками, не только встроенным декам).
+  function refreshResetDecks(id: number) {
+    apiClient.adminUserPackUsage(id).then((r) => setResetItems(r.items)).catch(() => setResetItems([]));
+  }
+  useEffect(() => {
+    if (resetUserId === "") {
+      setResetItems(null);
+      return;
+    }
+    let alive = true;
+    setResetItems(null); // спиннер, пока грузим нового юзера (без мигания прошлым)
+    apiClient
+      .adminUserPackUsage(resetUserId)
+      .then((r) => alive && setResetItems(r.items))
+      .catch(() => alive && setResetItems([]));
+    return () => {
+      alive = false;
+    };
+  }, [resetUserId]);
+
   async function impersonate(row: UserDeckRow) {
     const targetId = row.userId;
     if (!user || targetId === user.id) return;
@@ -149,7 +192,7 @@ function AdminUsers() {
     try {
       const next = await apiClient.impersonateUser(targetId);
       setUser(next);
-      window.location.href = "/statistics";
+      window.location.assign("/statistics");
     } catch (e) {
       setError(e instanceof ApiError ? e.message : t("users.impersonateFailed"));
     } finally {
@@ -186,6 +229,7 @@ function AdminUsers() {
   }
 
   return (
+    <>
     <section className="card bg-base-100 border border-base-300">
       <div className="card-body gap-4">
         <div className="flex items-center gap-2">
@@ -442,7 +486,7 @@ function AdminUsers() {
                               ? t("users.sinceDate", { date: new Date(au.createdAt).toLocaleDateString("ru-RU") }) + " · "
                               : "";
                           })()}
-                          {t("users.scheduledPerDay", { n: row.scheduled, limit: row.role !== "admin" ? "/100" : "" })}
+                          {t("users.scheduledPerDay", { n: row.scheduled, limit: "/92" })}
                           {row.library > 0 ? " · " + t("users.inLibrary", { n: row.library }) : ""}
                         </div>
                       </td>
@@ -559,5 +603,90 @@ function AdminUsers() {
         )}
       </div>
     </section>
+
+    {/* Сброс истории паков — отдельный блок (вынесен из тесной матрицы): выбери юзера → */}
+    {/* сбрось «использованные» карточки нужного пака; генерация снова берёт его с начала. */}
+    {rows.length > 0 && (
+      <section className="card bg-base-100 border border-base-300">
+        <div className="card-body gap-3">
+          <div>
+            <h2 className="card-title text-base flex items-center gap-2">
+              <AppIcon name="refresh" size={16} className="text-primary" /> {t("users.resetHeading")}
+            </h2>
+            <p className="text-sm text-base-content/60">{t("users.resetHint")}</p>
+          </div>
+          <select
+            className="select select-bordered select-sm w-full max-w-xs"
+            value={resetUserId === "" ? "" : String(resetUserId)}
+            onChange={(e) => setResetUserId(e.target.value ? Number(e.target.value) : "")}
+          >
+            <option value="">{t("users.resetPickUser")}</option>
+            {[...rows].sort((a, b) => b.usedTotal - a.usedTotal).map((r) => (
+              <option key={r.userId} value={r.userId}>
+                {r.username}
+                {r.role === "admin" ? ` · ${t("users.roleAdmin")}` : ""} ({r.usedTotal})
+              </option>
+            ))}
+          </select>
+          {(() => {
+            const resetRow = rows.find((r) => r.userId === resetUserId);
+            if (!resetRow) return null; // юзер ещё не выбран
+            if (resetItems === null)
+              return <span className="loading loading-spinner loading-sm" />; // грузим список паков
+            if (resetItems.length === 0)
+              return <p className="text-sm text-base-content/60">{t("users.resetEmpty")}</p>;
+            const list = [...resetItems].sort((a, b) => b.used - a.used); // использованные — наверх
+            return (
+              <div className="grid gap-2 sm:grid-cols-2">
+                {list.map((d) => {
+                  const key = `${resetRow.userId}:${d.id}`;
+                  const canReset = d.used > 0; // полный пак сбрасывать нечего
+                  const low = d.available < Math.min(50, Math.ceil(d.total / 2)); // «краснеть» при реальном истощении, не путать маленький свежий пак
+                  return (
+                    <div key={d.id} className="flex flex-col gap-2 rounded-lg border border-base-300 p-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="flex min-w-0 items-center gap-1">
+                          {d.pack && (
+                            <span className="badge badge-ghost badge-xs shrink-0" title={t("users.resetPackTagTitle")}>
+                              {t("users.resetPackTag")}
+                            </span>
+                          )}
+                          <span className="truncate text-sm font-medium" title={d.name}>
+                            {d.name}
+                          </span>
+                        </span>
+                        <button
+                          type="button"
+                          className={`btn btn-ghost btn-xs shrink-0 gap-1 ${canReset ? "text-error" : ""}`}
+                          title={canReset ? t("users.resetDeckTitle") : t("users.resetNothing")}
+                          disabled={!canReset || resettingDeck === key}
+                          onClick={() => resetDeckHistory(resetRow.userId, resetRow.username, d.id, d.name)}
+                        >
+                          {resettingDeck === key ? (
+                            <span className="loading loading-spinner loading-xs" />
+                          ) : (
+                            <AppIcon name="refresh" size={12} />
+                          )}
+                          {t("users.resetBtn")}
+                        </button>
+                      </div>
+                      <progress
+                        className={`progress h-1.5 ${low ? "progress-error" : "progress-primary"}`}
+                        value={d.used}
+                        max={d.total || 1}
+                      />
+                      <div className={`text-[11px] ${low ? "font-semibold text-error" : "text-base-content/60"}`}>
+                        {t("users.resetStats", { used: d.used, available: d.available, total: d.total })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
+        </div>
+      </section>
+    )}
+    </>
   );
 }

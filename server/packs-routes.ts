@@ -2,6 +2,7 @@
 // поэтому глобальный хук /api/* уже проставил req.userId. Изоляция по владельцу — внутри store.
 // Превью карточки рисуется тем же мостом рендера (renderTemplateCard), что и шаблоны редактора.
 import type { FastifyInstance } from "fastify";
+import { createReadStream, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadBaseConfig } from "./config.ts";
 import { openDb } from "./db.ts";
@@ -18,12 +19,103 @@ import {
   deriveRules,
   type PackTemplate,
 } from "../src/packs/store.ts";
-import { renderTemplateCard, type TemplateDoc } from "../src/template/render.ts";
-import { resolveAudio } from "../src/video.ts";
+import {
+  TemplateValidationError,
+  renderTemplateCard,
+  validateTemplateList,
+  type TemplateDoc,
+} from "../src/template/render.ts";
+import { listAudio, packAudioPathFor, resolveAudio } from "../src/video.ts";
 import { buildStillVideoFiles, cardReadable } from "./media.ts";
+import {
+  RATE_LIMIT_MESSAGE,
+  RateLimitError,
+  checkRateLimit,
+  heavyActiveKey,
+  withActiveLimit,
+} from "./rate-limits.ts";
+import { rememberOutputOwner } from "./output-access.ts";
+import {
+  MAX_PACK_AUDIO_FILES,
+  MAX_PACK_AUDIO_UPLOAD_BYTES,
+  deletePackMusicDir,
+  deletePackMusicTrack,
+  musicNameFromFile,
+  packMusicContentType,
+  packMusicTracks,
+  savePackMusicUploads,
+  type PackMusicUploadInput,
+} from "./pack-audio.ts";
 
 const OUTPUT_DIR = loadBaseConfig().outputDir;
 const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
+
+const PACK_PREVIEW_LIMIT = { limit: 20, windowMs: 10 * 60 * 1000 };
+const PACK_VIDEO_LIMIT = { limit: 3, windowMs: 10 * 60 * 1000 };
+
+function sendRateLimit(
+  reply: { header: (k: string, v: string) => unknown; code: (n: number) => { send: (b: unknown) => unknown } },
+  hit?: { retryAfterMs?: number },
+): unknown {
+  const retryAfter = Math.max(1, Math.ceil((hit?.retryAfterMs ?? 1_000) / 1000));
+  reply.header("Retry-After", String(retryAfter));
+  return reply.code(429).send({ error: RATE_LIMIT_MESSAGE });
+}
+
+function enforceWindow(
+  reply: { header: (k: string, v: string) => unknown; code: (n: number) => { send: (b: unknown) => unknown } },
+  userId: number,
+  isAdmin: boolean,
+  route: string,
+  rule: { limit: number; windowMs: number },
+): boolean {
+  if (isAdmin) return true;
+  const hit = checkRateLimit(`user:${userId}:${route}:window`, rule);
+  if (!hit.ok) {
+    sendRateLimit(reply, hit);
+    return false;
+  }
+  return true;
+}
+
+async function runHeavyLimited<T>(
+  reply: { header: (k: string, v: string) => unknown; code: (n: number) => { send: (b: unknown) => unknown } },
+  userId: number,
+  isAdmin: boolean,
+  route: string,
+  fn: () => Promise<T>,
+): Promise<T | unknown> {
+  try {
+    return await withActiveLimit(heavyActiveKey(userId, isAdmin, route), isAdmin ? 2 : 1, fn);
+  } catch (e) {
+    if (e instanceof RateLimitError) return sendRateLimit(reply, e);
+    throw e;
+  }
+}
+
+function templateError(e: unknown): string | null {
+  if (e instanceof TemplateValidationError) return e.message;
+  if ((e as { statusCode?: number })?.statusCode === 400) return String((e as Error)?.message ?? e);
+  return null;
+}
+
+function audioError(e: unknown): string {
+  return e instanceof Error ? e.message : "Музыка недоступна";
+}
+
+function staticAudioUrl(trackId: string): string {
+  return `/audio/${trackId.split("/").map(encodeURIComponent).join("/")}`;
+}
+
+function builtinMusicTracks() {
+  return listAudio().map((id) => ({
+    id,
+    name: musicNameFromFile(id),
+    fileName: id,
+    bytes: 0,
+    url: staticAudioUrl(id),
+  }));
+}
 
 export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof openDb>) {
   const adminReq = (req: unknown): boolean => db.getUserById(uid(req))?.role === "admin";
@@ -41,10 +133,18 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
   app.post("/api/packs", async (req, reply) => {
     const body = (req.body as { name?: string; lang?: string; templates?: PackTemplate[] }) ?? {};
     if (!body.name?.trim()) return reply.code(400).send({ error: "Нужно имя пака" });
+    const templates = Array.isArray(body.templates) ? body.templates : [];
+    try {
+      validateTemplateList(templates);
+    } catch (e) {
+      const msg = templateError(e);
+      if (msg) return reply.code(400).send({ error: msg });
+      throw e;
+    }
     return createPack(uid(req), {
       name: body.name,
       lang: body.lang || "ru",
-      templates: Array.isArray(body.templates) ? body.templates : [],
+      templates,
     });
   });
 
@@ -86,8 +186,10 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
 
   // Удалить пак целиком.
   app.delete("/api/packs/:id", async (req, reply) => {
-    const ok = deletePack((req.params as { id: string }).id, uid(req), adminReq(req));
+    const id = (req.params as { id: string }).id;
+    const ok = deletePack(id, uid(req), adminReq(req));
     if (!ok) return reply.code(404).send({ error: "Пак не найден или нет прав на удаление" });
+    deletePackMusicDir(id);
     return { deleted: true };
   });
 
@@ -115,8 +217,77 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     return { ok: true, name: name.slice(0, 80) };
   });
 
+  // Музыка конкретного пака: встроенные треки + свои треки этого пака.
+  app.get("/api/packs/:id/music", async (req, reply) => {
+    const id = (req.params as { id: string }).id;
+    const userId = uid(req);
+    const isAdmin = adminReq(req);
+    const p = getPack(id, userId, isAdmin);
+    if (!p) return reply.code(404).send({ error: "Пак не найден" });
+    return {
+      builtin: builtinMusicTracks(),
+      custom: packMusicTracks(id),
+      canEdit: canEdit(p, userId, isAdmin),
+      maxFiles: MAX_PACK_AUDIO_FILES,
+      maxFileMb: 25,
+    };
+  });
+
+  app.post(
+    "/api/packs/:id/music",
+    { bodyLimit: MAX_PACK_AUDIO_UPLOAD_BYTES },
+    async (req, reply) => {
+      const id = (req.params as { id: string }).id;
+      const userId = uid(req);
+      const isAdmin = adminReq(req);
+      const p = getPack(id, userId, isAdmin);
+      if (!p) return reply.code(404).send({ error: "Пак не найден" });
+      if (!canEdit(p, userId, isAdmin)) return reply.code(403).send({ error: "Музыку пака может менять только владелец" });
+      const body = (req.body as { files?: PackMusicUploadInput[] }) ?? {};
+      const result = savePackMusicUploads(id, Array.isArray(body.files) ? body.files : []);
+      if (result.added.length === 0 && result.errors.length) {
+        return reply.code(400).send({ error: result.errors[0]?.message || "Не удалось загрузить музыку", ...result });
+      }
+      return { ...result, tracks: packMusicTracks(id) };
+    },
+  );
+
+  app.get("/api/packs/:id/music/:file", async (req, reply) => {
+    const { id, file } = req.params as { id: string; file: string };
+    const p = getPack(id, uid(req), adminReq(req));
+    if (!p) return reply.code(404).send({ error: "Пак не найден" });
+    let abs: string;
+    try {
+      abs = packAudioPathFor(id, file);
+    } catch (e) {
+      return reply.code(400).send({ error: audioError(e) });
+    }
+    if (!existsSync(abs)) return reply.code(404).send({ error: "Трек не найден" });
+    return reply.type(packMusicContentType(file)).send(createReadStream(abs));
+  });
+
+  app.delete("/api/packs/:id/music/:file", async (req, reply) => {
+    const { id, file } = req.params as { id: string; file: string };
+    const userId = uid(req);
+    const isAdmin = adminReq(req);
+    const p = getPack(id, userId, isAdmin);
+    if (!p) return reply.code(404).send({ error: "Пак не найден" });
+    if (!canEdit(p, userId, isAdmin)) return reply.code(403).send({ error: "Музыку пака может менять только владелец" });
+    let deleted = false;
+    try {
+      deleted = deletePackMusicTrack(id, file);
+    } catch (e) {
+      return reply.code(400).send({ error: audioError(e) });
+    }
+    if (!deleted) return reply.code(404).send({ error: "Трек не найден" });
+    return { deleted: true, tracks: packMusicTracks(id) };
+  });
+
   // Превью карточки #i — рендер шаблоном (шаблоны чередуются по карточкам для разнообразия) → PNG в /files.
   app.get("/api/packs/:id/preview", async (req, reply) => {
+    const userId = uid(req);
+    const isAdmin = adminReq(req);
+    if (!enforceWindow(reply, userId, isAdmin, "pack-preview", PACK_PREVIEW_LIMIT)) return;
     const p = getPack((req.params as { id: string }).id, uid(req), adminReq(req));
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
     const i = Math.max(0, Math.floor(Number((req.query as Record<string, string>)?.i) || 0));
@@ -126,8 +297,13 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const tpl = p.templates[i % p.templates.length];
     const rel = `packs/${p.id}-${i}.png`;
     try {
-      await renderTemplateCard(tpl as TemplateDoc, card.values, resolve(process.cwd(), OUTPUT_DIR, rel));
+      const rendered = await runHeavyLimited(reply, userId, isAdmin, "pack-preview", () =>
+        renderTemplateCard(tpl as TemplateDoc, card.values, resolve(process.cwd(), OUTPUT_DIR, rel)),
+      );
+      if (typeof rendered !== "string") return;
     } catch (e) {
+      const msg = templateError(e);
+      if (msg) return reply.code(400).send({ error: msg });
       return reply.code(500).send({ error: "Не удалось отрисовать: " + String(e).slice(0, 120) });
     }
     return { imageUrl: `/files/${rel}?v=${Date.now()}` };
@@ -139,6 +315,8 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const { id, i } = req.params as { id: string; i: string };
     const body = (req.body as { accountId?: number; music?: string }) ?? {};
     const userId = uid(req);
+    const isAdmin = adminReq(req);
+    if (!enforceWindow(reply, userId, isAdmin, "pack-video", PACK_VIDEO_LIMIT)) return;
     const p = getPack(id, userId, adminReq(req));
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
     const idx = Math.max(0, Math.floor(Number(i) || 0));
@@ -150,23 +328,37 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     if (body.accountId != null) {
       const acc = db.getAccount(Number(body.accountId));
       if (!acc || acc.userId !== userId) return reply.code(403).send({ error: "Канал не ваш" });
-      // Бэкстоп: ролик из пака можно класть только в канал, у которого ЭТОТ пак выбран источником
-      // (иначе планировщик его не выложит — он постит по точной деке канала; и язык не тот).
-      if (acc.lang !== `pack:${p.id}`)
+      // Бэкстоп: ролик из пака можно класть только в канал, где этот пак выбран источником.
+      // Иначе планировщик не должен его выкладывать.
+      const sources = acc.sourceDecks?.length ? acc.sourceDecks : [acc.lang];
+      if (!sources.includes(`pack:${p.id}`))
         return reply.code(400).send({ error: "Канал не использует этот пак — сначала выбери пак источником канала." });
     }
-    // музыка: явная / случайная / без (паки не islamic/christian → без оверрайда деки)
-    const { music, audioPath } = resolveAudio(body.music);
+    // музыка: явная / случайная / без; для pack-audio разрешаем только треки этого пака.
+    let resolvedAudio: { music: string; audioPath: string | null };
+    try {
+      resolvedAudio = resolveAudio(body.music, undefined, { packId: id });
+    } catch (e) {
+      return reply.code(400).send({ error: audioError(e) });
+    }
+    const { music, audioPath } = resolvedAudio;
     let imgRel: string;
     let vidRel: string;
     try {
-      ({ imgRel, vidRel } = await buildStillVideoFiles({
-        prefix: "pack",
-        outputDir: OUTPUT_DIR,
-        audioPath,
-        render: (imgAbs) => renderTemplateCard(tpl as TemplateDoc, card.values, imgAbs),
-      }));
+      const built = await runHeavyLimited(reply, userId, isAdmin, "pack-video", () =>
+        buildStillVideoFiles({
+          prefix: "pack",
+          outputDir: OUTPUT_DIR,
+          audioPath,
+          render: (imgAbs) => renderTemplateCard(tpl as TemplateDoc, card.values, imgAbs),
+        }),
+      );
+      if (!built || typeof built !== "object" || !("imgRel" in built) || !("vidRel" in built)) return;
+      ({ imgRel, vidRel } = built as { imgRel: string; vidRel: string });
+      rememberOutputOwner([imgRel, vidRel], userId);
     } catch (e) {
+      const msg = templateError(e);
+      if (msg) return reply.code(400).send({ error: msg });
       return reply.code(500).send({ error: "Сборка не удалась: " + String(e).slice(0, 140) });
     }
     let saved = false;

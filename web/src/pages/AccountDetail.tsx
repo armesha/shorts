@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
-import { ArrowLeft, Save, Trash2, Check, Plus, Upload, Loader2, ChevronLeft, ChevronRight, RefreshCw, Play, Download, X } from "lucide-react";
+import { ArrowLeft, Save, Trash2, Check, Plus, Upload, Loader2, ChevronLeft, ChevronRight, RefreshCw, Play, Download, X, AlertTriangle } from "lucide-react";
 import { apiClient, type Account, type VideoItem, type Generator, type PackSummary } from "../lib/api";
 import VideoPlayer from "../components/VideoPlayer";
 import { confirmDialog } from "../lib/confirm";
@@ -19,6 +20,9 @@ const toMin = (t: string) => {
   const [h, m] = t.split(":").map(Number);
   return h * 60 + m;
 };
+const ACCOUNT_DAILY_SLOT_CAP = 20;
+const USER_DAILY_SLOT_CAP = 92;
+const GENERATE_ALL_DECKS = "__all_decks__";
 const randomDayTimes = (n: number, avoid: Set<number> = new Set()): string[] => {
   if (n <= 0) return [];
   const interval = 1440 / n;
@@ -38,16 +42,6 @@ const randomDayTimes = (n: number, avoid: Set<number> = new Set()): string[] => 
     .sort((a, b) => a - b)
     .map((m) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`);
 };
-
-function PackKindBadge({ video }: { video: boolean }) {
-  const { t } = useT();
-  return (
-    <span className={`badge badge-sm gap-1 shrink-0 ${video ? "badge-primary" : "badge-ghost"}`}>
-      <AppIcon name={video ? "video" : "cards"} size={12} />
-      {video ? t("packKind.video") : t("packKind.text")}
-    </span>
-  );
-}
 
 export default function AccountDetail() {
   const { t } = useT();
@@ -69,6 +63,14 @@ export default function AccountDetail() {
   const [sort, setSort] = useState<"date" | "title" | "posts">("date");
   const [posting, setPosting] = useState<number | null>(null);
   const [slotVideos, setSlotVideos] = useState<Record<string, number>>({});
+  const [slotDecks, setSlotDecks] = useState<Record<string, string>>({});
+  const sourceDecksRef = useRef<string[]>([]);
+  const [sourceDecks, setSourceDecksState] = useState<string[]>([]);
+  const setSourceDecks = (next: string[]) => {
+    sourceDecksRef.current = next;
+    setSourceDecksState(next);
+  };
+  const [generateDeck, setGenerateDeck] = useState("");
   const [lastPosted, setLastPosted] = useState<{ title: string; url: string } | null>(null);
   const [preview, setPreview] = useState<VideoItem | null>(null);
   const [avatarOpen, setAvatarOpen] = useState(false);
@@ -80,13 +82,18 @@ export default function AccountDetail() {
   const [page, setPage] = useState(1);
   const [gens, setGens] = useState<Generator[]>([]);
   const [packs, setPacks] = useState<PackSummary[]>([]); // кастомные паки, доступные юзеру (для дропдауна канала)
-  const [channelLang, setChannelLang] = useState("ru"); // язык канала (стабилен) — пак должен совпадать по языку
-  const [otherSlots, setOtherSlots] = useState(0); // schedule slots on the user's OTHER channels (100/day cap)
+  const channelLangRef = useRef("ru");
+  const [channelLang, setChannelLangState] = useState("ru"); // язык канала (стабилен) — пак должен совпадать по языку
+  const setChannelLang = (next: string) => {
+    channelLangRef.current = next;
+    setChannelLangState(next);
+  };
+  const [otherSlots, setOtherSlots] = useState(0); // schedule slots on the user's OTHER channels (aggregate cap)
   const [otherTimes, setOtherTimes] = useState<string[]>([]); // their actual times — avoid colliding minute-for-minute
   const [perDayInput, setPerDayInput] = useState(4); // "сколько раз в день" for the generator
-  const [notice, setNotice] = useState<{ text: string; kind: "info" | "success" | "error" } | null>(null);
-  const notify = (text: string, kind: "info" | "success" | "error" = "info") => {
-    setNotice({ text, kind });
+  const [notice, setNotice] = useState<{ text: string; kind: "info" | "success" | "error"; title?: string } | null>(null);
+  const notify = (text: string, kind: "info" | "success" | "error" = "info", title?: string) => {
+    setNotice({ text, kind, title });
     (kind === "error" ? console.error : console.log)("[привязка]", text);
   };
 
@@ -94,9 +101,25 @@ export default function AccountDetail() {
 
   // «Сделать сразу» не больше остатка свободных карточек выбранного контента (дека/пак) — для всех ролей.
   const roleMax = user?.role === "admin" ? 100 : 50; // потолок: админ 100, обычный юзер 50
-  const selPack = lang.startsWith("pack:") ? packs.find((p) => `pack:${p.id}` === lang) : undefined;
-  const selGen = lang.startsWith("pack:") ? undefined : gens.find((gg) => gg.id === lang);
-  const remaining = lang.startsWith("pack:") ? selPack?.cards ?? 0 : selGen?.available ?? 0;
+  const selectedSources = (sourceDecks.length ? sourceDecks : [lang]).filter(Boolean);
+  const sourceRemaining = (deckId: string) =>
+    deckId.startsWith("pack:")
+      ? packs.find((p) => `pack:${p.id}` === deckId)?.cards ?? 0
+      : gens.find((gg) => gg.id === deckId)?.available ?? 0;
+  const canGenerateAllSources = selectedSources.length > 1;
+  const activeGenerateDeck =
+    generateDeck === GENERATE_ALL_DECKS && canGenerateAllSources
+      ? GENERATE_ALL_DECKS
+      : selectedSources.includes(generateDeck)
+        ? generateDeck
+        : selectedSources[0] || lang;
+  const generateAllSources = activeGenerateDeck === GENERATE_ALL_DECKS;
+  const generateDeckIds = generateAllSources
+    ? selectedSources.filter((deckId) => sourceRemaining(deckId) > 0)
+    : activeGenerateDeck
+      ? [activeGenerateDeck]
+      : [];
+  const remaining = generateDeckIds.reduce((sum, deckId) => sum + sourceRemaining(deckId), 0);
   const maxBatch = Math.max(0, Math.min(roleMax, remaining));
 
   // Сменили контент канала с меньшим остатком — подожмём «сразу» к новому максимуму.
@@ -149,9 +172,15 @@ export default function AccountDetail() {
         setChannelName(a.channelName);
         setTheme(a.theme);
         setLang(a.lang);
+        {
+          const sources = (a.sourceDecks?.length ? a.sourceDecks : [a.lang]).filter(Boolean);
+          setSourceDecks(sources);
+          setGenerateDeck(sources[0] || a.lang);
+        }
         setChannelLang(a.channelLang || DECK_LANG[a.lang] || "ru");
         setTimes(a.schedule);
         setSlotVideos(a.slotVideos || {});
+        setSlotDecks(a.slotDecks || {});
         console.log("[привязка] канал загружен:", {
           id: a.id,
           status: a.status,
@@ -163,7 +192,7 @@ export default function AccountDetail() {
     reloadVideos();
     apiClient.generators().then(setGens).catch(() => {});
     apiClient.packs().then(setPacks).catch(() => {}); // доступные паки → в дропдаун канала (по имени)
-    // Schedule of the user's OTHER channels — for the «≤100 posts/day» cap counter AND so the
+    // Schedule of the user's OTHER channels — for the aggregate cap counter AND so the
     // time generator can avoid minutes already taken by other channels.
     apiClient
       .accounts()
@@ -206,23 +235,57 @@ export default function AccountDetail() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setPreview(null);
     };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKey);
+    };
   }, [preview]);
 
   async function save(): Promise<boolean> {
     setSaving(true);
     setSaved(false);
     try {
+      const latestSources = sourceDecksRef.current.length ? sourceDecksRef.current : sourceDecks;
+      const cleanSources = [...new Set((latestSources.length ? latestSources : [lang]).filter(Boolean))];
+      const sourceLangs = [...new Set(cleanSources.map(contentLang).filter(Boolean))];
+      const effectiveChannelLang = sourceLangs.length === 1 ? sourceLangs[0] : channelLangRef.current || channelLang;
+      const cleanSlotDecks = Object.fromEntries(
+        Object.entries(slotDecks).filter(([time, deck]) => times.includes(time) && cleanSources.includes(deck)),
+      );
+      if (times.length > ACCOUNT_DAILY_SLOT_CAP) {
+        notify(t("account.accountDayLimitReached", { n: ACCOUNT_DAILY_SLOT_CAP }), "error", t("account.scheduleLimitToastTitle"));
+        return false;
+      }
+      if (otherSlots + times.length > USER_DAILY_SLOT_CAP) {
+        notify(
+          t("account.dayLimitReached", {
+            limit: USER_DAILY_SLOT_CAP,
+            other: otherSlots,
+            available: Math.max(0, USER_DAILY_SLOT_CAP - otherSlots),
+          }),
+          "error",
+          t("account.scheduleLimitToastTitle"),
+        );
+        return false;
+      }
       const updated = await apiClient.updateAccount(id!, {
         channelName,
         theme,
-        lang,
-        channelLang,
+        lang: cleanSources[0] || lang,
+        sourceDecks: cleanSources,
+        channelLang: effectiveChannelLang,
         schedule: times,
         slotVideos,
+        slotDecks: cleanSlotDecks,
       });
       setAccount(updated);
+      setLang(updated.lang);
+      setSourceDecks(updated.sourceDecks?.length ? updated.sourceDecks : [updated.lang]);
+      setChannelLang(updated.channelLang || DECK_LANG[updated.lang] || channelLang);
+      setSlotDecks(updated.slotDecks || {});
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
       return true;
@@ -306,7 +369,7 @@ export default function AccountDetail() {
         : b.id - a.id,
   );
 
-  const PAGE_SIZE = 8;
+  const PAGE_SIZE = 6;
   const pageCount = Math.max(1, Math.ceil(sortedVideos.length / PAGE_SIZE));
   const clampedPage = Math.min(Math.max(1, page), pageCount);
   const pageVideos = sortedVideos.slice((clampedPage - 1) * PAGE_SIZE, clampedPage * PAGE_SIZE);
@@ -314,14 +377,14 @@ export default function AccountDetail() {
 
   // Only offer packs (languages) the user is allowed to see — generators are filtered server-side.
   // While generators load, show all to avoid an empty dropdown; always keep the channel's current value.
+  const currentDeckIds = new Set([lang, ...selectedSources]);
   const gensIds = new Set(gens.map((g) => g.id));
   const visibleLangs =
-    gens.length === 0 ? BUILTIN_DECKS : BUILTIN_DECKS.filter(({ id }) => gensIds.has(id) || id === lang);
+    gens.length === 0 ? BUILTIN_DECKS : BUILTIN_DECKS.filter(({ id }) => gensIds.has(id) || currentDeckIds.has(id));
   const genById = (id: string) => gens.find((g) => g.id === id);
   const hasVideoSources = visibleLangs.some(({ id }) => !!genById(id)?.preFact);
   const hasTextSources = visibleLangs.some(({ id }) => !genById(id)?.preFact) || packs.length > 0;
   const showPackKind = hasVideoSources && hasTextSources;
-  const selectedIsVideo = !lang.startsWith("pack:") && !!genById(lang)?.preFact;
 
   // Опции дропдаунов контента канала: встроенные паки + группа «Кастомные паки» (свои паки по имени) —
   // тот же набор, что в Студии, чтобы пак можно было назначить каналу и генерить из него.
@@ -329,13 +392,44 @@ export default function AccountDetail() {
   // язык выбранного контента (встроенный или свой пак) — для тега и проверки совпадения с языком канала
   const contentLang = (id: string): string =>
     id.startsWith("pack:") ? packs.find((p) => `pack:${p.id}` === id)?.lang || "" : DECK_LANG[id] || id;
-  const curContentLang = contentLang(lang);
-  const langMismatch = !!channelLang && !!curContentLang && curContentLang !== channelLang;
-  const deckOptions = () => (
+  const curContentLang = contentLang(activeGenerateDeck);
+  const mismatchedSources = selectedSources.filter((deckId) => {
+    const lng = contentLang(deckId);
+    return !!channelLang && !!lng && lng !== channelLang;
+  });
+  const langMismatch = mismatchedSources.length > 0;
+  const deckName = (deckId: string) => {
+    if (deckId.startsWith("pack:")) {
+      const p = packs.find((x) => `pack:${x.id}` === deckId);
+      return p ? p.name : `${deckId.slice(5)} ${t("account.noAccess")}`;
+    }
+    return genById(deckId)?.name || BUILTIN_DECKS.find((d) => d.id === deckId)?.label || deckId;
+  };
+  const deckMeta = (deckId: string) => {
+    const lng = contentLang(deckId);
+    const count = sourceRemaining(deckId);
+    const suffix = deckId.startsWith("pack:") ? t("account.cardsCount", { n: count }) : t("account.availableCount", { n: count });
+    return `${langTag(lng)} · ${suffix}`;
+  };
+  const updateSources = (next: string[]) => {
+    const clean = [...new Set(next.filter(Boolean))];
+    const fallback = clean.length ? clean : [lang];
+    setSourceDecks(fallback);
+    setLang(fallback[0] || lang);
+    const sourceLangs = [...new Set(fallback.map(contentLang).filter(Boolean))];
+    if (sourceLangs.length === 1) setChannelLang(sourceLangs[0]);
+    setGenerateDeck((cur) =>
+      cur === GENERATE_ALL_DECKS && fallback.length > 1 ? cur : fallback.includes(cur) ? cur : fallback[0] || "",
+    );
+    setSlotDecks((prev) => Object.fromEntries(Object.entries(prev).filter(([, deckId]) => fallback.includes(deckId))));
+  };
+  const savedSources = account ? (account.sourceDecks?.length ? account.sourceDecks : [account.lang]) : selectedSources;
+  const sourcesDirty = savedSources.join("\u001f") !== selectedSources.join("\u001f");
+  const deckOptions = (excludeSelected = false) => (
     <>
       {visibleLangs.length > 0 && (
         <optgroup label={t("account.builtinPacks")}>
-          {visibleLangs.map(({ id: code, label }) => (
+          {visibleLangs.filter(({ id: code }) => !excludeSelected || !selectedSources.includes(code)).map(({ id: code, label }) => (
             <option key={code} value={code}>
               {/* полное имя пака (как в Студии: «Русские анекдоты» и т.п.), а не язык */}
               {showPackKind ? `[${genById(code)?.preFact ? t("packKind.video") : t("packKind.text")}] ` : ""}
@@ -344,48 +438,81 @@ export default function AccountDetail() {
           ))}
         </optgroup>
       )}
-      {(packs.length > 0 || (lang.startsWith("pack:") && !packIds.has(lang))) && (
+      {(packs.length > 0 || selectedSources.some((x) => x.startsWith("pack:") && !packIds.has(x))) && (
         <optgroup label={isAdmin ? t("account.customPacks") : t("account.myPacks")}>
-          {packs.map((p) => (
+          {packs.filter((p) => !excludeSelected || !selectedSources.includes(`pack:${p.id}`)).map((p) => (
             <option key={p.id} value={`pack:${p.id}`}>
               {showPackKind ? `[${t("packKind.text")}] ` : ""}
               {p.name} · {langTag(p.lang)}
             </option>
           ))}
-          {lang.startsWith("pack:") && !packIds.has(lang) && (
-            <option value={lang}>{lang.slice(5)} {t("account.noAccess")}</option>
-          )}
+          {selectedSources
+            .filter((x) => x.startsWith("pack:") && !packIds.has(x) && (!excludeSelected || !selectedSources.includes(x)))
+            .map((x) => (
+              <option key={x} value={x}>{x.slice(5)} {t("account.noAccess")}</option>
+            ))}
         </optgroup>
       )}
     </>
   );
+  const libraryDeckCounts = videos.reduce((map, v) => map.set(v.deck, (map.get(v.deck) || 0) + 1), new Map<string, number>());
+  const slotDeckOptions = selectedSources.filter((deckId) => (libraryDeckCounts.get(deckId) || 0) > 0);
 
-  // Per-user cap: ≤ 100 scheduled posts/day across ALL channels (admins exempt).
+  // Per-channel cap: ≤20 slots/day; per-user aggregate cap stays separate.
   const isAdmin = user?.role === "admin";
   const dayUsed = otherSlots + times.length; // posts/day across all the user's channels
-  const scheduleRemaining = Math.max(0, 100 - otherSlots); // max slots this channel may hold
+  const scheduleRemaining = Math.max(0, USER_DAILY_SLOT_CAP - otherSlots); // max slots this channel may hold
   const takenMinutes = new Set(otherTimes.map(toMin)); // minutes busy on other channels → generator avoids them
-  const perDayMax = isAdmin ? 100 : Math.max(1, scheduleRemaining); // cap for the «раз в день» generator
+  const perDayMax = Math.min(ACCOUNT_DAILY_SLOT_CAP, scheduleRemaining); // cap for the «раз в день» generator
+  const notifyScheduleLimit = () =>
+    notify(
+      t("account.dayLimitReached", {
+        limit: USER_DAILY_SLOT_CAP,
+        other: otherSlots,
+        available: scheduleRemaining,
+      }),
+      "error",
+      t("account.scheduleLimitToastTitle"),
+    );
+
+  const noticeToast =
+    notice && typeof document !== "undefined"
+      ? createPortal(
+          <div className="toast toast-bottom toast-end z-[1000] pointer-events-none">
+            <div
+              role="alert"
+              className={`pointer-events-auto w-[min(22rem,calc(100vw-2rem))] rounded-md border px-3 py-2.5 shadow-2xl ring-1 ${
+                notice.kind === "error"
+                  ? "border-error/40 border-l-4 bg-error text-error-content ring-error/25"
+                  : notice.kind === "success"
+                    ? "border-success/40 border-l-4 bg-success text-success-content ring-success/25"
+                    : "border-info/40 border-l-4 bg-info text-info-content ring-info/25"
+              }`}
+            >
+              <div className="flex items-start gap-2">
+                {notice.kind === "success" ? (
+                  <Check size={18} className="mt-0.5 shrink-0" />
+                ) : (
+                  <AlertTriangle size={18} className="mt-0.5 shrink-0" />
+                )}
+                <div className="min-w-0">
+                  <div className="text-sm font-bold leading-tight">
+                    {notice.title ?? (notice.kind === "success" ? t("common.saved") : t("common.error"))}
+                  </div>
+                  <div className="mt-1 whitespace-normal break-words text-xs font-semibold leading-snug">{notice.text}</div>
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )
+      : null;
 
   if (!account) return <div className="text-base-content/60">{t("common.loading")}</div>;
 
   return (
-    <div className="space-y-6 max-w-3xl">
-      {notice && (
-        <div className="toast toast-top toast-end z-50">
-          <div
-            className={`alert shadow-lg ${
-              notice.kind === "error"
-                ? "alert-error"
-                : notice.kind === "success"
-                  ? "alert-success"
-                  : "alert-info"
-            }`}
-          >
-            <span>{notice.text}</span>
-          </div>
-        </div>
-      )}
+    <div className="space-y-6 max-w-screen-2xl">
+      {noticeToast}
       <Link to="/accounts" className="btn btn-ghost btn-sm gap-2">
         <ArrowLeft size={16} /> {t("account.backToChannels")}
       </Link>
@@ -425,6 +552,7 @@ export default function AccountDetail() {
         )}
       </header>
 
+      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.85fr)] gap-6 items-start">
       <section className="card bg-base-100 border border-base-300">
         <div className="card-body gap-5">
           <label className="form-control">
@@ -465,11 +593,9 @@ export default function AccountDetail() {
           <div className="form-control">
             <div className="flex items-center justify-between mb-2 gap-2">
               <span className="label-text">{t("account.scheduleLabel")}</span>
-              {!isAdmin && (
-                <span className={`text-xs ${dayUsed > 100 ? "text-error font-medium" : "text-base-content/50"}`}>
-                  {t("account.perDayAllChannels", { n: dayUsed })}
-                </span>
-              )}
+              <span className={`text-xs ${dayUsed > USER_DAILY_SLOT_CAP ? "text-error font-medium" : "text-base-content/50"}`}>
+                {t("account.perDayAllChannels", { n: dayUsed, limit: USER_DAILY_SLOT_CAP })}
+              </span>
             </div>
 
             <div className="flex flex-wrap gap-2 mb-1 items-center">
@@ -478,8 +604,17 @@ export default function AccountDetail() {
                 <button
                   key={n}
                   className="btn btn-xs btn-outline"
-                  disabled={!isAdmin && otherSlots + n > 100}
-                  onClick={() => setTimes(randomDayTimes(n, takenMinutes))}
+                  onClick={() => {
+                    if (n > ACCOUNT_DAILY_SLOT_CAP) {
+                      notify(t("account.accountDayLimitReached", { n: ACCOUNT_DAILY_SLOT_CAP }), "error", t("account.scheduleLimitToastTitle"));
+                      return;
+                    }
+                    if (otherSlots + n > USER_DAILY_SLOT_CAP) {
+                      notifyScheduleLimit();
+                      return;
+                    }
+                    setTimes(randomDayTimes(n, takenMinutes));
+                  }}
                   title={t("account.perDayBtnTitle", { n })}
                 >
                   {n}×
@@ -490,18 +625,27 @@ export default function AccountDetail() {
               <input
                 type="number"
                 min={1}
-                max={perDayMax}
+                max={Math.max(1, perDayMax)}
                 className="input input-bordered input-xs w-16"
                 value={perDayInput}
                 onChange={(e) =>
-                  setPerDayInput(Math.max(1, Math.min(perDayMax, Number(e.target.value) || 1)))
+                  setPerDayInput(Math.max(1, Math.min(Math.max(1, perDayMax), Number(e.target.value) || 1)))
                 }
                 aria-label={t("account.timesPerDayAria")}
               />
               <button
                 className="btn btn-xs btn-primary gap-1"
-                disabled={perDayMax < 1 || (!isAdmin && otherSlots + perDayInput > 100)}
-                onClick={() => setTimes(randomDayTimes(Math.min(perDayInput, perDayMax), takenMinutes))}
+                onClick={() => {
+                  if (perDayInput > ACCOUNT_DAILY_SLOT_CAP) {
+                    notify(t("account.accountDayLimitReached", { n: ACCOUNT_DAILY_SLOT_CAP }), "error", t("account.scheduleLimitToastTitle"));
+                    return;
+                  }
+                  if (otherSlots + perDayInput > USER_DAILY_SLOT_CAP) {
+                    notifyScheduleLimit();
+                    return;
+                  }
+                  setTimes(randomDayTimes(Math.min(perDayInput, perDayMax), takenMinutes));
+                }}
                 title={t("account.spreadTitle")}
               >
                 <RefreshCw size={12} /> {t("common.generate")}
@@ -548,15 +692,18 @@ export default function AccountDetail() {
               />
               <button
                 className="btn btn-sm btn-outline gap-1"
-                disabled={!isAdmin && times.length >= scheduleRemaining}
                 onClick={() => {
                   const v = newTime.trim();
                   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(v)) {
                     notify(t("account.invalidTime"), "error");
                     return;
                   }
-                  if (!isAdmin && times.length >= scheduleRemaining) {
-                    notify(t("account.dayLimitReached", { n: otherSlots }), "error");
+                  if (times.length >= ACCOUNT_DAILY_SLOT_CAP) {
+                    notify(t("account.accountDayLimitReached", { n: ACCOUNT_DAILY_SLOT_CAP }), "error", t("account.scheduleLimitToastTitle"));
+                    return;
+                  }
+                  if (times.length >= scheduleRemaining) {
+                    notifyScheduleLimit();
                     return;
                   }
                   if (!times.includes(v)) setTimes([...times, v]);
@@ -571,7 +718,12 @@ export default function AccountDetail() {
             <button className="btn btn-ghost btn-sm text-error gap-2" onClick={remove}>
               <Trash2 size={16} /> {t("common.delete")}
             </button>
-            <button className="btn btn-primary gap-2" onClick={save} disabled={saving}>
+            <button
+              className="btn btn-primary gap-2"
+              onClick={save}
+              disabled={saving || langMismatch}
+              title={langMismatch ? t("account.genTitleMismatch") : undefined}
+            >
               {saving ? (
                 <span className="loading loading-spinner loading-sm" />
               ) : saved ? (
@@ -631,6 +783,7 @@ export default function AccountDetail() {
           )}
         </div>
       </section>
+      </div>
 
       <section className="card bg-base-100 border border-base-300">
         <div className="card-body">
@@ -659,96 +812,126 @@ export default function AccountDetail() {
               </select>
             </div>
           </div>
-          <div className="mt-3 pt-3 border-t border-base-300 flex flex-wrap items-center gap-x-4 gap-y-2">
-            {/* Слева — выбор пака (mr-auto толкает блок генерации вправо; на десктопе одна строка, ниже sm бейдж уходит вниз) */}
-            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 mr-auto">
-              <span className="text-sm text-base-content/70 shrink-0">{t("account.channelPack")}</span>
+          <div className="mt-3 pt-3 border-t border-base-300 grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(380px,auto)] gap-3 items-start">
+            <div className="rounded-md border border-base-300 bg-base-200/30 p-3 min-w-0">
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <div className="font-medium text-sm">{t("account.channelPacks")}</div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {selectedSources.map((deckId, index) => (
+                  <span
+                    key={deckId}
+                    className={`inline-flex max-w-full items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm ${
+                      index === 0 ? "border-primary/50 bg-primary/10 text-primary" : "border-base-300 bg-base-100"
+                    }`}
+                  >
+                    <span className="min-w-0">
+                      <span className="block truncate font-semibold max-w-[15rem]" title={deckName(deckId)}>
+                        {deckName(deckId)}
+                      </span>
+                      <span className="block text-[11px] opacity-70 leading-tight">{deckMeta(deckId)}</span>
+                    </span>
+                    {selectedSources.length > 1 && (
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-xs btn-square shrink-0"
+                        title={t("account.removePack")}
+                        onClick={() => updateSources(selectedSources.filter((x) => x !== deckId))}
+                      >
+                        <AppIcon name="close" size={12} />
+                      </button>
+                    )}
+                  </span>
+                ))}
+              </div>
               <select
-                className="select select-bordered select-sm min-w-[10rem] max-w-[16rem]"
-                value={lang}
-                onChange={(e) => setLang(e.target.value)}
+                className="select select-bordered select-sm w-full max-w-sm mt-2"
+                aria-label={t("account.addPack")}
+                value=""
+                onChange={(e) => {
+                  if (!e.target.value) return;
+                  updateSources([...selectedSources, e.target.value]);
+                  setGenerateDeck(e.target.value);
+                }}
                 title={t("account.channelPackTitle")}
               >
-                {deckOptions()}
+                <option value="">{t("account.addPack")}</option>
+                {deckOptions(true)}
               </select>
-              {showPackKind && <PackKindBadge video={selectedIsVideo} />}
-              {lang.startsWith("pack:")
-                ? (() => {
-                    const p = packs.find((x) => `pack:${x.id}` === lang);
-                    return p ? <span className="text-xs text-success shrink-0">{t("account.cardsCount", { n: p.cards })}</span> : null;
-                  })()
-                : gens.find((g) => g.id === lang) && (
-                    <span className="text-xs text-success shrink-0">
-                      {t("account.availableCount", { n: gens.find((g) => g.id === lang)!.available })}
-                    </span>
-                  )}
-              {lang !== account.lang && (
-                <button
-                  className="btn btn-sm btn-primary gap-1 shrink-0"
-                  onClick={save}
-                  disabled={saving || langMismatch}
-                >
-                  {saving ? <Loader2 className="animate-spin" size={14} /> : <Save size={14} />}
-                  {t("account.savePack")}
-                </button>
-              )}
             </div>
 
-            {/* Справа — «сколько» + кнопка генерации: на десктопе цельный блок (кнопка у поля),
-                ниже sm — своя строка, кнопка во всю ширину (без горизонтального переполнения) */}
-            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 basis-full sm:basis-auto sm:shrink-0">
-              <span className="text-sm text-base-content/70 shrink-0">{t("account.makeNow")}</span>
-              <input
-                type="number"
-                min={1}
-                max={Math.max(1, maxBatch)}
-                className="input input-bordered input-sm w-16"
-                value={batchN}
-                disabled={q.running || maxBatch < 1}
-                onChange={(e) => setBatchN(Math.max(1, Math.min(maxBatch, Number(e.target.value) || 1)))}
-                aria-label={t("account.howManyVideosAria")}
-              />
-              <span className="text-xs text-base-content/50 shrink-0">
-                {maxBatch < 1 ? t("account.noCards") : `1–${maxBatch}`}
-              </span>
-              {!q.running ? (
+            <div className="rounded-md border border-base-300 bg-base-200/30 p-3">
+              <div className="font-medium text-sm mb-2">{t("account.generateToLibrary")}</div>
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  className="select select-bordered select-sm min-w-[12rem] flex-1"
+                  value={activeGenerateDeck}
+                  onChange={(e) => setGenerateDeck(e.target.value)}
+                  aria-label={t("account.generatePack")}
+                >
+                  {canGenerateAllSources && (
+                    <option value={GENERATE_ALL_DECKS}>{t("account.generateAll")}</option>
+                  )}
+                  {selectedSources.map((deckId) => (
+                    <option key={deckId} value={deckId}>
+                      {deckName(deckId)}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  min={1}
+                  max={Math.max(1, maxBatch)}
+                  className="input input-bordered input-sm w-[4.5rem]"
+                  value={batchN}
+                  disabled={maxBatch < 1}
+                  onChange={(e) => setBatchN(Math.max(1, Math.min(maxBatch, Number(e.target.value) || 1)))}
+                  aria-label={t("account.howManyVideosAria")}
+                />
+                <span className="text-xs text-base-content/50 shrink-0">
+                  {maxBatch < 1 ? t("account.noCards") : `1–${maxBatch}`}
+                </span>
                 <button
-                  className="btn btn-sm btn-primary gap-1 w-full sm:w-auto"
+                  className="btn btn-sm btn-primary gap-1"
                   onClick={async () => {
-                    // «Сгенерировать» = сохранить выбранный пак (если поменяли) + поставить генерацию.
-                    // Иначе генерилось бы из ПРЕЖНЕГО сохранённого контента канала.
-                    if (lang !== account.lang && !(await save())) return;
-                    q.run(id!, Math.min(batchN, maxBatch));
+                    if (sourcesDirty && !(await save())) return;
+                    q.run(id!, Math.min(batchN, maxBatch), generateDeckIds);
                   }}
                   disabled={langMismatch || saving || maxBatch < 1}
-                  title={
-                    langMismatch
-                      ? t("account.genTitleMismatch")
-                      : lang !== account.lang
-                        ? t("account.genTitleSaveAndGen")
-                        : t("account.genTitleQueue")
-                  }
+                  title={langMismatch ? t("account.genTitleMismatch") : t("account.generateSelectedTitle")}
                 >
-                  <Plus size={14} /> {lang !== account.lang ? t("account.saveAndGenerate") : t("common.generate")}
+                  <Plus size={14} /> {t("account.generateButton")}
                 </button>
-              ) : (
-                <button className="btn btn-sm btn-outline btn-error gap-1 w-full sm:w-auto" onClick={q.cancel}>
-                  <Loader2 className="animate-spin" size={14} /> {t("account.stop")}
-                </button>
-              )}
+              </div>
+              <div className="flex flex-wrap justify-end gap-2 mt-2">
+                {q.running && (
+                  <button className="btn btn-sm btn-outline btn-error gap-1" onClick={q.cancel}>
+                    <Loader2 className="animate-spin" size={14} /> {t("account.stop")}
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Предупреждения и доп-действия — отдельными строками, тулбар не ломают */}
             {langMismatch && (
-              <span className="basis-full text-xs text-error font-medium">
-                {t("account.langMismatchWarn", { content: langTag(curContentLang), channel: langTag(channelLang) })}
-              </span>
+              <div
+                role="alert"
+                className="xl:col-span-2 flex items-start gap-2 rounded-md border border-error/40 bg-error/10 px-3 py-2 text-sm font-semibold text-error"
+              >
+                <AlertTriangle size={18} className="mt-0.5 shrink-0" />
+                <span>
+                  {t("account.langMismatchWarn", {
+                    content: mismatchedSources.map((x) => langTag(contentLang(x))).join(", ") || langTag(curContentLang),
+                    channel: langTag(channelLang),
+                  })}
+                </span>
+              </div>
             )}
-            {lang !== account.lang && videos.length > 0 && (
-              <span className="basis-full text-xs text-warning">{t("account.oldVideosWarn")}</span>
+            {sourcesDirty && videos.length > 0 && (
+              <span className="xl:col-span-2 text-xs text-warning">{t("account.oldVideosWarn")}</span>
             )}
             {postedTwicePlus > 0 && (
-              <div className="basis-full flex justify-end">
+              <div className="xl:col-span-2 flex justify-end">
                 <button
                   className="btn btn-sm btn-ghost text-error gap-1"
                   onClick={removePosted}
@@ -781,10 +964,10 @@ export default function AccountDetail() {
               {t("account.libraryEmpty")}
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-3 gap-y-4 mt-3">
               {pageVideos.map((v) => (
-                <div key={v.id} className="group">
-                  <div className="relative aspect-[9/16] rounded-lg overflow-hidden border border-base-300 bg-base-200">
+                <div key={v.id} className="group min-w-0">
+                  <div className="relative mx-auto aspect-[9/16] w-full max-w-[280px] rounded-lg overflow-hidden border border-base-300 bg-base-200">
                     <div
                       role="button"
                       tabIndex={0}
@@ -837,7 +1020,7 @@ export default function AccountDetail() {
                       {t("account.post")}
                     </button>
                   </div>
-                  <div className="mt-1 text-xs font-medium leading-tight line-clamp-2" title={cleanDisplayText(v.title)}>
+                  <div className="mx-auto mt-1.5 max-w-[280px] text-sm font-medium leading-tight line-clamp-2" title={cleanDisplayText(v.title)}>
                     {cleanDisplayText(v.title)}
                   </div>
                 </div>
@@ -868,78 +1051,88 @@ export default function AccountDetail() {
         </div>
       </section>
 
-      {preview && (
-        <div className="modal modal-open" onClick={() => setPreview(null)}>
-          <div className="modal-box max-w-2xl p-0 overflow-hidden relative" onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              onClick={() => setPreview(null)}
-              aria-label={t("common.close")}
-              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-20 bg-base-100/70 hover:bg-base-100"
+      {preview &&
+        createPortal(
+          <div
+            className="modal modal-open modal-middle z-[1000]"
+            role="dialog"
+            aria-modal="true"
+            onClick={() => setPreview(null)}
+          >
+            <div
+              className="modal-box relative w-[calc(100vw-1.5rem)] max-w-3xl max-h-[calc(100dvh-1.5rem)] overflow-hidden rounded-xl bg-base-100 p-0 shadow-2xl sm:max-h-[calc(100dvh-3rem)]"
+              onClick={(e) => e.stopPropagation()}
             >
-              <X size={16} />
-            </button>
-            <div className="flex flex-col sm:flex-row">
-              {/* видео — само по себе, справа */}
-              <div className="bg-black shrink-0 sm:order-2 sm:w-[300px]">
-                <VideoPlayer
-                  src={`/files/${preview.videoRel}`}
-                  poster={preview.imageRel ? `/files/${preview.imageRel}` : undefined}
-                  className="w-full aspect-[9/16] max-h-[75vh]"
-                />
-              </div>
-              {/* описание + характеристики + действия — слева */}
-              <div className="flex-1 min-w-0 p-4 flex flex-col gap-2 sm:order-1">
-                <h3 className="font-bold text-base leading-snug">{cleanDisplayText(preview.title)}</h3>
-                {preview.text && (
-                  <p className="text-sm whitespace-pre-wrap leading-relaxed overflow-auto max-h-[40vh] text-base-content/80">
-                    {preview.text}
-                  </p>
-                )}
-                <div className="text-xs text-base-content/50">
-                  {t("account.charCount", { n: preview.text.length })}
-                  {preview.postCount > 0 ? ` · ${t("account.postedTimes", { n: preview.postCount })}` : ` · ${t("account.notPosted")}`}
-                  {preview.lastPostedAt && ` · ${new Date(preview.lastPostedAt).toLocaleDateString("ru-RU")}`}
-                  {preview.music && preview.music !== "none"
-                    ? ` · ${t("studio.musicLabel").toLowerCase()} ${preview.music.split("/").pop()?.replace(/\.\w+$/, "")}`
-                    : ` · ${t("account.noMusic")}`}
+              <button
+                type="button"
+                onClick={() => setPreview(null)}
+                aria-label={t("common.close")}
+                className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-20 bg-base-100/70 hover:bg-base-100"
+              >
+                <X size={16} />
+              </button>
+              <div className="flex min-h-0 w-full flex-col sm:flex-row">
+                <div className="flex min-h-0 shrink-0 items-center justify-center bg-black sm:order-2 sm:w-[300px]">
+                  <VideoPlayer
+                    src={`/files/${preview.videoRel}`}
+                    poster={preview.imageRel ? `/files/${preview.imageRel}` : undefined}
+                    className="h-[50dvh] max-h-[460px] w-full object-contain sm:aspect-[9/16] sm:h-auto sm:max-h-[calc(100dvh-3rem)]"
+                  />
                 </div>
-                <div className="flex flex-wrap items-center gap-2 pt-2 mt-auto">
-                  <a href={`/files/${preview.videoRel}`} download className="btn btn-sm btn-ghost gap-1">
-                    <Download size={14} /> MP4
-                  </a>
-                  <button
-                    className="btn btn-sm btn-ghost text-error gap-1"
-                    onClick={() => {
-                      const pid = preview.id;
-                      setPreview(null);
-                      removeVid(pid);
-                    }}
-                  >
-                    <Trash2 size={14} /> {t("common.delete")}
-                  </button>
-                  <button
-                    className="btn btn-sm btn-primary gap-1 ml-auto"
-                    disabled={account.status !== "connected" || posting === preview.id}
-                    onClick={() => {
-                      const pid = preview.id;
-                      setPreview(null);
-                      postNow(pid);
-                    }}
-                  >
-                    <Upload size={14} /> {t("account.post")}
-                  </button>
+                <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-y-auto p-3 sm:order-1 sm:p-4">
+                  <h3 className="font-bold text-base leading-snug">{cleanDisplayText(preview.title)}</h3>
+                  {preview.text && (
+                    <p className="max-h-[14dvh] overflow-auto whitespace-pre-wrap text-sm leading-relaxed text-base-content/80 sm:max-h-[40vh]">
+                      {preview.text}
+                    </p>
+                  )}
+                  <div className="text-xs text-base-content/50">
+                    {t("account.charCount", { n: preview.text.length })}
+                    {preview.postCount > 0 ? ` · ${t("account.postedTimes", { n: preview.postCount })}` : ` · ${t("account.notPosted")}`}
+                    {preview.lastPostedAt && ` · ${new Date(preview.lastPostedAt).toLocaleDateString("ru-RU")}`}
+                    {preview.music && preview.music !== "none"
+                      ? ` · ${t("studio.musicLabel").toLowerCase()} ${preview.music.split("/").pop()?.replace(/\.\w+$/, "")}`
+                      : ` · ${t("account.noMusic")}`}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 pt-2 mt-auto">
+                    <a href={`/files/${preview.videoRel}`} download className="btn btn-sm btn-ghost gap-1">
+                      <Download size={14} /> MP4
+                    </a>
+                    <button
+                      className="btn btn-sm btn-ghost text-error gap-1"
+                      onClick={() => {
+                        const pid = preview.id;
+                        setPreview(null);
+                        removeVid(pid);
+                      }}
+                    >
+                      <Trash2 size={14} /> {t("common.delete")}
+                    </button>
+                    <button
+                      className="btn btn-sm btn-primary gap-1 ml-auto"
+                      disabled={account.status !== "connected" || posting === preview.id}
+                      onClick={() => {
+                        const pid = preview.id;
+                        setPreview(null);
+                        postNow(pid);
+                      }}
+                    >
+                      <Upload size={14} /> {t("account.post")}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+            <div className="modal-backdrop bg-black/55" />
+          </div>,
+          document.body,
+        )}
 
       {avatarOpen && (
-        <div className="modal modal-open" onClick={() => !avatarBusy && setAvatarOpen(false)}>
-          <div className="modal-box max-w-lg" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-3">
+        <div className="modal modal-open modal-middle" onClick={() => !avatarBusy && setAvatarOpen(false)}>
+          <div className="modal-box max-w-2xl max-h-[88vh] p-0 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="sticky top-0 z-10 bg-base-100 border-b border-base-300 px-4 py-3">
+              <div className="flex items-center justify-between mb-3">
               <h3 className="font-bold text-lg">{t("account.avatarModalTitle")}</h3>
               <button
                 className="btn btn-sm btn-circle btn-ghost"
@@ -949,8 +1142,8 @@ export default function AccountDetail() {
               >
                 <X size={16} />
               </button>
-            </div>
-            <div className="flex flex-wrap items-center gap-2 mb-3">
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
               <label className={`btn btn-sm btn-primary gap-1 ${avatarBusy ? "btn-disabled" : ""}`}>
                 <Upload size={14} /> {t("account.uploadOwnPhoto")}
                 <input
@@ -973,8 +1166,10 @@ export default function AccountDetail() {
               </button>
               {avatarBusy && <Loader2 className="animate-spin self-center" size={16} />}
               <span className="text-xs text-base-content/50 ml-auto">{t("account.orPickFromSet")}</span>
+              </div>
             </div>
-            <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 max-h-[50vh] overflow-auto p-1">
+            <div className="max-h-[calc(88vh-8.5rem)] overflow-y-auto p-4">
+              <div className="grid grid-cols-5 sm:grid-cols-7 md:grid-cols-9 gap-2 p-1">
               {avatarList.map((u) => (
                 <button
                   key={u}
@@ -982,19 +1177,20 @@ export default function AccountDetail() {
                   onClick={() => setAvatar(u)}
                   disabled={avatarBusy}
                   title={t("account.pickAvatar")}
-                  className={`rounded-full overflow-hidden border-2 transition ${
+                  className={`rounded-full overflow-hidden border-2 transition w-full aspect-square ${
                     account.avatar === u ? "border-primary" : "border-transparent hover:border-base-300"
                   }`}
                 >
                   <img src={u} alt="" className="w-full aspect-square object-cover bg-base-200" loading="lazy" />
                 </button>
               ))}
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {times.length > 0 && videos.length > 0 && (
+      {times.length > 0 && (
         <section className="card bg-base-100 border border-base-300">
           <div className="card-body">
             <h2 className="card-title text-base">{t("account.slotVideoTitle")}</h2>
@@ -1003,14 +1199,19 @@ export default function AccountDetail() {
             </p>
             <div className="space-y-2 mt-2">
               {[...times].sort().map((time) => (
-                <div key={time} className="flex items-center gap-2">
+                <div key={time} className="grid grid-cols-[5rem_minmax(0,1fr)] items-center gap-2">
                   <span className="badge badge-primary badge-lg w-20 justify-center">{time}</span>
                   <select
                     className="select select-bordered select-sm flex-1"
-                    value={slotVideos[time] ?? 0}
+                    value={slotDecks[time] ?? ""}
                     onChange={(e) => {
-                      const v = Number(e.target.value);
+                      const v = e.target.value;
                       setSlotVideos((prev) => {
+                        const n = { ...prev };
+                        delete n[time];
+                        return n;
+                      });
+                      setSlotDecks((prev) => {
                         const n = { ...prev };
                         if (v) n[time] = v;
                         else delete n[time];
@@ -1018,17 +1219,19 @@ export default function AccountDetail() {
                       });
                     }}
                   >
-                    <option value={0}>{t("account.slotAuto")}</option>
-                    {videos.map((v) => (
-                      <option key={v.id} value={v.id}>
-                        {cleanDisplayText(v.title)} (x{v.postCount})
+                    <option value="">{t("account.slotAuto")}</option>
+                    {slotDeckOptions.map((deckId) => (
+                      <option key={deckId} value={deckId}>
+                        {deckName(deckId)} · {t("account.libraryVideosCount", { n: libraryDeckCounts.get(deckId) || 0 })}
                       </option>
                     ))}
                   </select>
                 </div>
               ))}
             </div>
-            <p className="text-xs text-base-content/50 mt-1">{t("account.slotSaveReminder")}</p>
+            <p className="text-xs text-base-content/50 mt-1">
+              {slotDeckOptions.length === 0 ? t("account.slotNeedsLibrary") : t("account.slotSaveReminder")}
+            </p>
           </div>
         </section>
       )}

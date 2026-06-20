@@ -2,13 +2,15 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { mkdir, readdir } from "node:fs/promises";
 import { existsSync, readdirSync } from "node:fs";
-import { dirname, resolve, extname } from "node:path";
+import { dirname, resolve, extname, isAbsolute, relative } from "node:path";
 import ffmpegPath from "ffmpeg-static";
 
 const pexec = promisify(execFile);
 const FFMPEG = ffmpegPath as unknown as string;
 const AUDIO_DIR = resolve(process.cwd(), "assets/audio");
-const AUDIO_EXT = new Set([".mp3", ".m4a", ".aac", ".wav", ".ogg", ".opus"]);
+export const AUDIO_EXT = new Set([".mp3", ".m4a", ".aac", ".wav", ".ogg", ".opus"]);
+export const PACK_AUDIO_PREFIX = "pack-audio/";
+export const PACK_AUDIO_DIR = resolve(process.cwd(), "data/pack-audio");
 // Reserved deck-specific audio subfolders kept OUT of the general (instrumental) pool.
 // Islamic videos use a nature-ambient track; Christian videos use a sacred organ/choir pad —
 // each its own bed, never the shared instrumental music.
@@ -17,6 +19,69 @@ const CHRISTIAN_SUBDIR = "christian";
 const isIslamicTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(ISLAMIC_SUBDIR + "/");
 const isChristianTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(CHRISTIAN_SUBDIR + "/");
 const isReservedTrack = (f: string) => isIslamicTrack(f) || isChristianTrack(f);
+
+function insideDir(base: string, target: string): boolean {
+  const rel = relative(base, target);
+  return rel === "" || (!!rel && !rel.startsWith("..") && !isAbsolute(rel));
+}
+
+function normalizeRelativeName(name: string): string {
+  const n = String(name || "").replace(/\\/g, "/").trim();
+  if (!n || n.startsWith("/") || n.includes("\0")) throw new Error("Bad audio track");
+  const parts = n.split("/");
+  if (parts.some((p) => !p || p === "." || p === "..")) throw new Error("Bad audio track");
+  if (!AUDIO_EXT.has(extname(n).toLowerCase())) throw new Error("Unsupported audio track");
+  return n;
+}
+
+function normalizePackId(packId: string): string {
+  const id = String(packId || "").trim();
+  if (!id || id.includes("/") || id.includes("\\") || id.includes("..") || id.includes("\0")) {
+    throw new Error("Bad pack id");
+  }
+  return id;
+}
+
+export function packAudioTrackId(packId: string, fileName: string): string {
+  return `${PACK_AUDIO_PREFIX}${normalizePackId(packId)}/${normalizeRelativeName(fileName)}`;
+}
+
+export function parsePackAudioTrack(name: string): { packId: string; fileName: string } | null {
+  const normalized = String(name || "").replace(/\\/g, "/").trim();
+  if (!normalized.startsWith(PACK_AUDIO_PREFIX)) return null;
+  const rest = normalized.slice(PACK_AUDIO_PREFIX.length);
+  const parts = rest.split("/");
+  if (parts.length !== 2 || !parts[0] || !parts[1]) return null;
+  const packId = normalizePackId(parts[0]);
+  const fileName = normalizeRelativeName(parts[1]);
+  return { packId, fileName };
+}
+
+export function packAudioPathFor(packId: string, fileName: string): string {
+  const safePackId = normalizePackId(packId);
+  const safeFileName = normalizeRelativeName(fileName);
+  const dir = resolve(PACK_AUDIO_DIR, safePackId);
+  const abs = resolve(dir, safeFileName);
+  if (!insideDir(dir, abs)) throw new Error("Bad audio track");
+  return abs;
+}
+
+export function listPackAudio(packId: string): string[] {
+  const safePackId = normalizePackId(packId);
+  const dir = resolve(PACK_AUDIO_DIR, safePackId);
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir)
+    .map((f) => f.toString())
+    .filter((f) => {
+      try {
+        return AUDIO_EXT.has(extname(f).toLowerCase()) && existsSync(packAudioPathFor(safePackId, f));
+      } catch {
+        return false;
+      }
+    })
+    .sort()
+    .map((f) => packAudioTrackId(safePackId, f));
+}
 
 /** Pick a random royalty-free track from assets/audio, or null if the folder is empty. */
 /** List available audio tracks (relative names under assets/audio). */
@@ -47,8 +112,19 @@ export function pickChristianAudio(): string | null {
 }
 
 /** Resolve a relative track name (from listAudio) to an absolute path. */
-export function audioPathFor(name: string): string {
-  return resolve(AUDIO_DIR, name);
+export function audioPathFor(name: string, opts: { packId?: string } = {}): string {
+  const packTrack = parsePackAudioTrack(name);
+  if (packTrack) {
+    if (!opts.packId || opts.packId !== packTrack.packId) throw new Error("Audio track is not available for this pack");
+    const abs = packAudioPathFor(packTrack.packId, packTrack.fileName);
+    if (!existsSync(abs)) throw new Error("Audio track not found");
+    return abs;
+  }
+
+  const normalized = normalizeRelativeName(name);
+  const abs = resolve(AUDIO_DIR, normalized);
+  if (!insideDir(AUDIO_DIR, abs) || !existsSync(abs)) throw new Error("Audio track not found");
+  return abs;
 }
 
 /** Minimal deck shape needed to pick deck-specific audio (avoids coupling video.ts to decks.ts). */
@@ -70,11 +146,12 @@ export interface AudioDeckHint {
 export function resolveAudio(
   music: string | undefined,
   deck?: AudioDeckHint,
+  opts: { packId?: string } = {},
 ): { music: string; audioPath: string | null } {
   let m = music;
   let audioPath: string | null;
   if (m === "none") audioPath = null;
-  else if (m) audioPath = audioPathFor(m);
+  else if (m) audioPath = audioPathFor(m, opts);
   else {
     const tracks = listAudio();
     if (tracks.length) {

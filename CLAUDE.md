@@ -15,7 +15,7 @@ unattended, managed from a web dashboard. Architecture & research: `docs/STACK.m
 ## 🔁 Перезапуск сервера (MANDATORY — сообщай в конце задания)
 - **В конце КАЖДОГО задания одной строкой пиши, нужен ли перезапуск сервера** (и сделал ли ты его уже).
 - Правило: правки backend (`server/**` и `src/**` — всё, что импортит работающий `server/index.ts`) → **перезапуск НУЖЕН** (`npm run server`; tsx читает TS при старте, на лету не подхватывает). Только фронт (`web/src/**`) → **НЕ нужен**, достаточно `npm run web:build` + Ctrl+F5 (сервер отдаёт `web/dist` статикой). Данные (`data/**`) — обычно не нужен (есть `resetDeckCache`); сомневаешься — перезапусти.
-- Если перезапуск нужен — **делай его сам** (убей старый процесс + `npm run server`, проверь `/api/health` = 200) и в ответе укажи, что уже перезапустил.
+- Если пользователь явно разрешил/попросил перезапуск (например, «не забудь перезапустить», «можешь перезапустить», «перезапусти») — **делай его сам** по регламенту ниже и в ответе укажи, что уже перезапустил.
 
 ## 🔒 Security rules (MANDATORY)
 - **NEVER read, cat, open, print, grep, or otherwise access** the Google OAuth client-secret file:
@@ -31,8 +31,45 @@ unattended, managed from a web dashboard. Architecture & research: `docs/STACK.m
   **без явного разрешения пользователя**. Сервер ОБЩИЙ: над проектом параллельно работают другие
   агенты, которым он нужен; рестарт оборвёт их и текущие генерации/выкладки.
 - После правок бэкенда изменения вступают в силу только после перезапуска (`tsx` не перечитывает код
-  на лету). Если перезапуск нужен — **сначала спроси разрешение и объясни зачем**, сам не перезапускай.
+  на лету). Если разрешения ещё нет — **сначала спроси разрешение и объясни зачем**.
   Фронт в dev/при пересборке подхватывается без рестарта сервера.
+
+### Регламент перезапуска shareboard.live / backend :8080 (MANDATORY)
+- **Цель:** после backend-правок должен остаться ровно один живой backend-процесс на `:8080`, а
+  `https://shareboard.live/` должен обслуживаться новым кодом.
+- **Сначала найти реальный процесс на порту, а не гадать по `pgrep`:**
+  `ss -ltnp sport = :8080`
+- Если `:8080` слушает `node` с PID `<pid>`, остановить именно его:
+  `kill <pid>`
+- Подождать освобождения порта:
+  `sleep 1 && ss -ltnp sport = :8080`
+- Запустить backend из корня проекта:
+  `nohup npm run server >/tmp/shorts-server.log 2>&1 &`
+- Проверить, что поднялся новый процесс и порт слушает:
+  `ss -ltnp sport = :8080`
+- Проверить health:
+  `curl -sS http://localhost:8080/api/health`
+  Ожидаемый ответ: JSON с `"ok":true`.
+- Проверить лог старта:
+  `tail -80 /tmp/shorts-server.log`
+  В логе должны быть `Server listening ... :8080`, `Shorts Factory API on :8080`, без stack trace.
+- Если после запуска видны **два** backend-процесса/две npm-цепочки, оставить только PID, который
+  реально слушает `:8080`; старые `npm run server` / `sh -c node ...` / `node ... server/index.ts`
+  убрать через `kill`.
+- Не использовать shell-pipe в `pgrep` вида `pgrep -af "node|tsx|..."`: это не regex для процессов,
+  а shell pipe. Для диагностики достаточно `ss -ltnp sport = :8080`, затем точечный `ps -fp <pid>`.
+
+## 🚧 Другие проекты на машине — НЕ трогай `casino` (MANDATORY)
+- На этой машине живёт ОТДЕЛЬНЫЙ, несвязанный проект **`casino`** (`~/Documents/casino`); над ним
+  работает другой агент. **Ты занимаешься ТОЛЬКО `shorts`.**
+- **НИКОГДА не читай-для-правки, не редактируй, не перемещай, не удаляй и не коммить** ничего внутри
+  `~/Documents/casino` (или любого другого проекта). Не запускай его скрипты/сборки/миграции/тесты.
+- **НЕ убивай чужие процессы.** Не делай массовых kill по порту/имени (`pkill -f`, `fuser -k`,
+  `kill-port`, `kill %`) — так можно прибить процессы `casino`. Останавливай только процессы
+  `shorts`, точечно по PID (как в регламенте `:8080` выше).
+- Порты: `shorts` держит **:8080** (backend) и **:5173** (Vite). Чтобы не конфликтовать, `casino`
+  работает на ДРУГИХ портах — **:8137** (backend), **:5180** (Vite), **:9100** (ops) — плюс свой
+  ngrok-агент. Не занимай эти порты `casino` и не трогай эти процессы.
 
 ## Git workflow (MANDATORY)
 - Remote `origin` = `https://github.com/armesha/shorts.git`, default branch `main`.
@@ -81,6 +118,8 @@ unattended, managed from a web dashboard. Architecture & research: `docs/STACK.m
 - **Subagent/workflow MODEL policy (user rule):** before launching ANY LLM/subagent/workflow that generates, cleans, ranks, formats, or titles pack content, ask the user which model to use. Do not hardcode Haiku/Sonnet/Opus and do not inherit silently when the workflow model choice affects cost/quality. Local parsers/builders/checks can run without asking.
 - **Pack generation docs:** detailed source/generation/replenishment instructions for every built-in deck and template-pack live in `docs/pack-generation.md`. Read it before touching `data/anecdotes*`, `data/tips*`, `data/islamic`, `data/christian`, `data/*/videos.json`, `assets/template-packs/*`, or `data/packs/*`.
 - **New/manual pack rule:** whenever you create a new built-in deck, prebuilt video pack, template-pack, or live `data/packs/*` pack manually, also add/update `docs/pack-generation.md` with how to create it, how content is generated, how to add new cards/videos later, and how to verify it. Future agents must be able to replenish the pack from docs without reverse-engineering the code.
+- **Voiceover rule:** if any generated or rebuilt video needs narration, use ElevenLabs keys already configured in `.env`/`.env.local` (`ELEVENLABS_API_KEYS`, `ELEVENLABS_API_KEY`, or numbered keys). **ElevenLabs is the ONLY TTS** — never use local/offline engines (`edge-tts`, Piper, Coqui, espeak), not even for previews. For word/subtitle timing read ElevenLabs timestamps (the `with-timestamps` endpoint / `alignment` field), not local `whisper`. Never print or commit real keys; logs may show only key index/last4.
+- **Добавление чужого/«дружеского» ElevenLabs-ключа (ПРАВИЛО):** прежде чем добавлять любой сторонний ключ в `ELEVENLABS_API_KEYS`, СНАЧАЛА проверь, что он реально генерит — недостаточно `GET /v1/user/subscription` = 200; нужен настоящий TTS-вызов (премейд-голос, напр. Roger `CwhRBWXzGAHq8TQ4Fs17`). Free-tier ключи часто помечены `detected_unusual_activity` (триггер — датацентр/VPN-IP сервера или несколько free-аккаунтов) и отдают **401 на генерации**, хотя подписка «ok» (на `/limits` статус `blocked`). **Если ключ заблокирован / исчерпан / невалиден — НЕ добавляй его** (а если уже добавил — удали из `.env`). Премейд/Default-голоса доступны на free-tier; Voice-Library голоса дают `402 payment_required` (Charlotte и т.п.). Рабочий free-ключ = 10000 символов/мес.
 - Frontend uses DaisyUI v5 + Tailwind v4 (`@plugin "daisyui"` in `web/src/index.css`); theme forced light via `data-theme="light"` on `<html>`.
 - `lucide-react` has no `Chrome` icon — use `MonitorPlay`/`Globe` instead.
 - Pencil templates live in `untitled.pen`; never use Read/Grep on `.pen` files (encrypted) — only the `pencil` MCP tools.

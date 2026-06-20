@@ -118,7 +118,7 @@ export default function Statistics() {
   const [saved] = useState(loadFilters); // last-used filters (localStorage), restored on mount
   const [rows, setRows] = useState<StatRow[]>([]);
   const [analytics, setAnalytics] = useState<UserAnalytics | null>(null); // own publishing activity
-  const [summary, setSummary] = useState<PlatformSummary | null>(null); // platform-wide totals (all users)
+  const [summary, setSummary] = useState<PlatformSummary | null>(null); // platform-wide totals for the "all channels" view
   const [view, setView] = useState<View>("mine");
   const [days, setDays] = useState<number>(() => {
     const d = saved.days ?? 30;
@@ -127,7 +127,6 @@ export default function Statistics() {
   const scope: Scope = view === "all" ? "all" : "mine";
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [dataOnlyRefreshing, setDataOnlyRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
   const [avatarMap, setAvatarMap] = useState<Record<number, string | null | undefined>>({});
@@ -168,15 +167,24 @@ export default function Statistics() {
       .catch(() => {});
   }, [scope]);
 
-  // Own publishing analytics (always the user's OWN channels, independent of the admin scope toggle).
+  // Publishing analytics: the user's OWN channels, but admins on «Все каналы» get every channel —
+  // so the activity section/chart follows the same scope toggle as the rest of the page.
   useEffect(() => {
-    apiClient.analytics().then(setAnalytics).catch(() => {});
-  }, []);
+    const allChannels = isAdmin && scope === "all";
+    apiClient
+      .analytics(allChannels ? "all" : undefined)
+      .then(setAnalytics)
+      .catch(() => {});
+  }, [scope, isAdmin]);
 
-  // Platform-wide production totals (same numbers for everyone).
+  // Platform-wide production totals belong only to the "All channels" view.
   useEffect(() => {
+    if (scope !== "all") {
+      setSummary(null);
+      return;
+    }
     apiClient.summary().then(setSummary).catch(() => {});
-  }, []);
+  }, [scope]);
 
   // Any filter/sort/view change → back to page 1.
   useEffect(() => {
@@ -235,50 +243,21 @@ export default function Statistics() {
     }
   }
 
-  async function refreshDataOnly() {
-    if (!isAdmin) return;
-    setDataOnlyRefreshing(true);
-    setError(null);
-    setResult(null);
-    try {
-      const refreshScope: Scope = scope;
-      const r = await apiClient.refreshStatsDataOnly(refreshScope);
-      setRows(await apiClient.stats(scope, days));
-      const connected = r.filter((x) => x.connected);
-      const failed = r.filter((x) => x.error);
-      if (failed.length) {
-        setResult({
-          ok: false,
-          text: t("stats.refreshDataOnlyPartial", {
-            ok: connected.length - failed.length,
-            total: connected.length,
-            failed: failed.length,
-          }),
-        });
-      } else {
-        setResult({ ok: true, text: t("stats.refreshOkShort", { n: connected.length }) });
-      }
-    } catch (e) {
-      console.error("[Статистика] запрос /stats/refresh-data-only упал:", e);
-      setResult({ ok: false, text: t("stats.refreshDataOnlyError") });
-    } finally {
-      setDataOnlyRefreshing(false);
-    }
-  }
-
   const owners = useMemo(
     () => [...new Set(rows.map((r) => r.ownerUsername).filter((x): x is string => !!x))].sort(),
     [rows],
   );
+  const activeOwnerFilter = isAdmin && scope === "all" ? ownerFilter : "";
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return rows.filter((r) => {
       if (onlyConnected && !r.connected) return false;
-      if (ownerFilter && r.ownerUsername !== ownerFilter) return false;
+      if (activeOwnerFilter && r.ownerUsername !== activeOwnerFilter) return false;
       if (q && !`${r.ytChannelTitle || r.channelName} ${r.ownerUsername || ""}`.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [rows, search, ownerFilter, onlyConnected]);
+  }, [rows, search, activeOwnerFilter, onlyConnected]);
+  const scopeOverview = useMemo(() => buildOverview(rows), [rows]);
   const overview = useMemo(() => buildOverview(filtered), [filtered]);
   const sorted = useMemo(() => {
     const dir = sortDir === "asc" ? 1 : -1;
@@ -328,30 +307,15 @@ export default function Statistics() {
             className="btn btn-sm btn-primary gap-2"
             onClick={refresh}
             disabled={refreshing || loading}
-            title={!isAdmin && view === "all" ? t("stats.refreshMineHint") : undefined}
+            title={!isAdmin && view === "all" ? t("stats.refreshMineHint") : t("stats.refreshTitle")}
           >
             {refreshing ? (
               <span className="loading loading-spinner loading-sm" />
             ) : (
               <AppIcon name="refresh" size={18} />
             )}
-            {t("stats.refreshAnalytics")}
+            {t("stats.refresh")}
           </button>
-          {isAdmin && (
-            <button
-              className="btn btn-sm btn-outline gap-2"
-              onClick={refreshDataOnly}
-              disabled={dataOnlyRefreshing || loading}
-              title={t("stats.refreshDataOnlyTitle")}
-            >
-              {dataOnlyRefreshing ? (
-                <span className="loading loading-spinner loading-sm" />
-              ) : (
-                <BrandIcon name="youtube" size={18} />
-              )}
-              {t("stats.refreshDataOnly")}
-            </button>
-          )}
         </div>
       </header>
 
@@ -395,14 +359,17 @@ export default function Statistics() {
       )}
 
       <>
-      {summary && <PlatformBand s={summary} />}
-      <SourceStats overview={overview} days={days} isAdmin={!!isAdmin} />
+      {scope === "all" && summary && <PlatformBand s={summary} />}
+      <SourceStats overview={scopeOverview} days={days} isAdmin={!!isAdmin} />
 
       {analytics &&
         analytics.summary.published + analytics.summary.scheduled + analytics.summary.failed + analytics.summary.queuedVideos > 0 && (
           <section className="card bg-base-100 border border-base-300">
             <div className="card-body gap-4">
-              <h2 className="card-title text-base">{t("stats.publishActivity")}</h2>
+              <h2 className="card-title text-base">
+                {t("stats.publishActivity")} ·{" "}
+                {isAdmin && scope === "all" ? t("stats.publishScopeAll") : t("stats.publishScopeMine")}
+              </h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="rounded-xl border border-base-300 p-3">
                   <div className="text-xs text-base-content/60">{t("stats.published")}</div>
@@ -456,6 +423,8 @@ export default function Statistics() {
         />
       ) : (
         <>
+          <StatsOverview overview={overview} metric={overviewMetric} onMetric={setOverviewMetric} days={days} />
+
           {/* Controls: search / sort / direction / owner filter / only-connected */}
           <div className="card bg-base-100 border border-base-300">
             <div className="card-body py-3 flex-row flex-wrap items-center gap-2">
@@ -528,8 +497,6 @@ export default function Statistics() {
             </div>
           </div>
 
-          <StatsOverview overview={overview} metric={overviewMetric} onMetric={setOverviewMetric} days={days} />
-
           {sorted.length === 0 ? (
             <Empty text={t("stats.emptyNoMatch")} />
           ) : (
@@ -581,7 +548,6 @@ function SourceStats({ overview, days, isAdmin }: { overview: StatsOverviewData;
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className="card-title text-base">{t("stats.youtubeAnalyticsTitle")}</h2>
-              <p className="text-xs text-base-content/55">{t("stats.youtubeAnalyticsHint")}</p>
             </div>
             <span className="badge badge-info badge-sm">Analytics</span>
           </div>
@@ -599,7 +565,6 @@ function SourceStats({ overview, days, isAdmin }: { overview: StatsOverviewData;
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className="card-title text-base">{t("stats.youtubeDataTitle")}</h2>
-                <p className="text-xs text-base-content/55">{t("stats.youtubeDataAdminHint")}</p>
               </div>
               <span className="badge badge-outline badge-sm shrink-0 whitespace-nowrap">Data API</span>
             </div>
@@ -708,8 +673,8 @@ function StatsOverview({
                   <LineChart data={chart} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis dataKey="date" fontSize={12} tickMargin={6} minTickGap={24} />
-                    <YAxis fontSize={12} width={46} allowDecimals={metric === "watch"} tickFormatter={(value) => compactNumber(Number(value))} />
-                    <Tooltip formatter={(value) => compactNumber(Number(value))} />
+                    <YAxis fontSize={12} width={46} allowDecimals={metric === "watch"} tickFormatter={(value) => formatMetricValue(Number(value), metric)} />
+                    <Tooltip formatter={(value) => formatMetricValue(Number(value), metric)} />
                     <Line type="monotone" dataKey="value" name={metricLabels[metric]} stroke="#0f766e" strokeWidth={2.5} dot={false} />
                   </LineChart>
                 </ResponsiveContainer>
@@ -1464,9 +1429,18 @@ function shortDate(s: string): string {
   return new Date(`${s}T00:00:00`).toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" });
 }
 
+// Overview-chart axis/tooltip formatter. The "watch" series is one-decimal hours; compactNumber()
+// integer-rounds anything <1000, so it would flatten 0.3 h → "0" and 1.5 h → "2". Keep the tenths.
+function formatMetricValue(n: number, metric: OverviewMetric): string {
+  if (metric === "watch") return n.toLocaleString("ru-RU", { maximumFractionDigits: 1 });
+  return compactNumber(n);
+}
+
 function formatWatchMinutes(n: number): string {
   if (n >= 6000) return `${compactNumber(Math.round(n / 60))} h`;
-  if (n >= 60) return `${compactNumber(Math.round((n / 60) * 10) / 10)} h`;
+  // 1..100 h: keep one decimal. compactNumber() integer-rounds values <1000, which would turn
+  // 1.5 h into "2 h", so format the hours directly instead of routing through it.
+  if (n >= 60) return `${(Math.round((n / 60) * 10) / 10).toLocaleString("ru-RU", { maximumFractionDigits: 1 })} h`;
   return `${Math.round(n).toLocaleString("ru-RU")} m`;
 }
 

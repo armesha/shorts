@@ -1,0 +1,922 @@
+{
+  "packId": "animal-superheroes",
+  "packTitle": "ЗвероГерои: Кристалл лапы",
+  "voice": "ElevenLabs Jessica",
+  "style": "gpt-image-2 generated scenes, vertical 9:16 modern comic, subtitles over video",
+  "episodes": [
+    {
+      "id": "as_01_signal_generated_scenes_jessica_preview",
+      "episode": 1,
+      "title": "Серия 01. Сигнал в парке",
+      "theme": "origin",
+      "status": "built",
+      "segments": [
+        {
+          "scene": 1,
+          "text": "Ночью над старым парком вспыхнул знак светящейся лапы.",
+          "visualBeat": "old park at night, giant golden paw signal above the heroes",
+          "textEn": "At night, a glowing paw signal flashed above the old park."
+        },
+        {
+          "scene": 2,
+          "text": "Лиса Искра собрала команду.",
+          "visualBeat": "Iskra the orange fox runs through the park with glowing communicator",
+          "textEn": "Iskra the fox called the team."
+        },
+        {
+          "scene": 3,
+          "text": "Барсук, Сова, Черепашка и Белка встали рядом.",
+          "visualBeat": "full animal superhero team lineup under the oak",
+          "textEn": "Badger, Owl, Turtle, and Squirrel stood beside her."
+        },
+        {
+          "scene": 4,
+          "text": "Под дубом они нашли кристалл, который бился как сердце.",
+          "visualBeat": "team discovers the first glowing paw crystal in the oak roots",
+          "textEn": "Under the oak, they found a crystal beating like a heart."
+        },
+        {
+          "scene": 5,
+          "text": "Внутри кристалла проявилась карта заброшенного зоопарка.",
+          "visualBeat": "crystal projects a golden hologram map of the abandoned zoo",
+          "textEn": "Inside it, a map of the abandoned zoo appeared."
+        },
+        {
+          "scene": 6,
+          "text": "Карта показала дверь, которой никто не видел сто лет.",
+          "visualBeat": "ancient zoo gate opens with green-gold light",
+          "textEn": "The map revealed a door unseen for a hundred years."
+        },
+        {
+          "scene": 7,
+          "text": "Из темноты появился тихий вор.",
+          "visualBeat": "shadow thief silhouette in the zoo entrance holding a second crystal",
+          "textEn": "A silent thief stepped out of the darkness."
+        },
+        {
+          "scene": 8,
+          "text": "И второй кристалл исчез в его лапе.",
+          "visualBeat": "cliffhanger close-up of Iskra reacting as thief escapes",
+          "textEn": "And the second crystal vanished in his paw."
+        }
+      ],
+      "titleEn": "Episode 01. Signal in the Park"
+    },
+    {
+      "id": "as_02_stone_lions",
+      "episode": 2,
+      "title": "Серия 02. Каменные львы",
+      "theme": "abandoned-zoo",
+      "segments": [
+        {
+          "scene": 1,
+          "text": "ЗвероГерои бросились за вором в заброшенный зоопарк.",
+          "visualBeat": "team runs through the opened overgrown zoo gate at night",
+          "textEn": "The Animal Heroes rushed after the thief into the abandoned zoo."
+        },
+        {
+          "scene": 2,
+          "text": "Старые таблички сами меняли стрелки и путали дорогу.",
+          "visualBeat": "wooden zoo direction signs twist magically with no readable text",
+          "textEn": "Old signs twisted by themselves and confused the path."
+        },
+        {
+          "scene": 3,
+          "text": "Сова увидела на фонтане след светящейся лапы.",
+          "visualBeat": "Owl with brass goggles studies a glowing paw mark on a dry fountain",
+          "textEn": "Owl spotted a glowing paw print on the fountain."
+        },
+        {
+          "scene": 4,
+          "text": "Два каменных льва вдруг открыли глаза.",
+          "visualBeat": "stone lion statues awaken with golden eyes",
+          "textEn": "Two stone lions suddenly opened their eyes."
+        },
+        {
+          "scene": 5,
+          "text": "Барсук закрыл друзей щитом, пока площадь тряслась.",
+          "visualBeat": "Badger braces with improvised shield as stone lions stomp",
+          "textEn": "Badger shielded his friends as the square shook."
+        },
+        {
+          "scene": 6,
+          "text": "Белка проскочила между лапами и сорвала с фонтана искру.",
+          "visualBeat": "Squirrel darts between giant stone paws and grabs a tiny glowing spark",
+          "textEn": "Squirrel slipped between the paws and grabbed a spark."
+        },
+        {
+          "scene": 7,
+          "text": "Искра вложила ее в медальон, и пол под фонтаном раскрылся.",
+          "visualBeat": "Iskra inserts spark into her golden medallion, hidden floor opens",
+          "textEn": "Iskra placed it into her medallion, and the fountain floor opened."
+        },
+        {
+          "scene": 8,
+          "text": "Внизу улыбнулся крот в плаще: он ждал именно их.",
+          "visualBeat": "cliffhanger: mysterious mole in cloak smiles from an underground stair",
+          "textEn": "Below, a cloaked mole smiled: he had been waiting for them."
+        }
+      ],
+      "titleEn": "Episode 02. Stone Lions"
+    },
+    {
+      "id": "as_03_underground_tram",
+      "episode": 3,
+      "title": "Серия 03. Подземный трамвай",
+      "theme": "underground-chase",
+      "segments": [
+        {
+          "scene": 1,
+          "text": "Крот прыгнул в ржавый трамвай под городом.",
+          "visualBeat": "cloaked mole leaps into an old underground tram",
+          "textEn": "The mole jumped into a rusty tram beneath the city."
+        },
+        {
+          "scene": 2,
+          "text": "Белка влетела следом и чуть не нажала все кнопки сразу.",
+          "visualBeat": "Squirrel bounces across tram controls in a funny action pose",
+          "textEn": "Squirrel flew after him and nearly pressed every button at once."
+        },
+        {
+          "scene": 3,
+          "text": "Над рельсами висел осколок кристалла, как маленькая луна.",
+          "visualBeat": "crystal shard floating above dark rails, glowing like a moon",
+          "textEn": "Above the rails, a crystal shard floated like a tiny moon."
+        },
+        {
+          "scene": 4,
+          "text": "Крот схватил его и дернул рычаг аварийной воды.",
+          "visualBeat": "mole grabs shard and pulls a rusty lever, water bursts behind him",
+          "textEn": "The mole grabbed it and pulled the emergency water lever."
+        },
+        {
+          "scene": 5,
+          "text": "Белка ударила хвостом по проводу, и трамвай ожил.",
+          "visualBeat": "Squirrel sparks a cable with tail, tram lights blaze on",
+          "textEn": "Squirrel sparked a wire with her tail, and the tram woke up."
+        },
+        {
+          "scene": 6,
+          "text": "Вода неслась следом, будто подземная река проснулась.",
+          "visualBeat": "tram races through tunnel while a wave chases it",
+          "textEn": "Water chased them like an underground river had come alive."
+        },
+        {
+          "scene": 7,
+          "text": "Искра увидела впереди обрыв и приказала всем держаться.",
+          "visualBeat": "Iskra points forward from tram roof toward broken rails",
+          "textEn": "Iskra saw a broken bridge ahead and told everyone to hold on."
+        },
+        {
+          "scene": 8,
+          "text": "Рельсы закончились, а трамвай уже летел над пропастью.",
+          "visualBeat": "cliffhanger: tram flying off broken underground bridge over darkness",
+          "textEn": "The rails ended, but the tram was already flying over the void."
+        }
+      ],
+      "titleEn": "Episode 03. The Underground Tram"
+    },
+    {
+      "id": "as_04_rooftop_chase",
+      "episode": 4,
+      "title": "Серия 04. Погоня по крышам",
+      "theme": "rooftops",
+      "segments": [
+        {
+          "scene": 1,
+          "text": "Трамвай выскочил на крышу старой станции прямо под дождем.",
+          "visualBeat": "old tram bursts onto a rooftop station in rain",
+          "textEn": "The tram burst onto the roof of an old station in the rain."
+        },
+        {
+          "scene": 2,
+          "text": "Черепашка раскрыл пузырь и поймал всю команду.",
+          "visualBeat": "Turtle creates a transparent shield bubble around the falling team",
+          "textEn": "Turtle opened a bubble and caught the whole team."
+        },
+        {
+          "scene": 3,
+          "text": "Из облаков сложились бумажные дроны без единой надписи.",
+          "visualBeat": "origami-like paper drones form from storm clouds, no text",
+          "textEn": "Paper drones folded out of the clouds without a single word on them."
+        },
+        {
+          "scene": 4,
+          "text": "Искра перепрыгнула разрыв между крышами и выхватила карту.",
+          "visualBeat": "Iskra leaps across rooftops and grabs a glowing map scrap",
+          "textEn": "Iskra leaped across the rooftops and snatched the map."
+        },
+        {
+          "scene": 5,
+          "text": "Барсук отбил бумажные лезвия крышкой от люка.",
+          "visualBeat": "Badger blocks sharp paper drones with a round manhole cover",
+          "textEn": "Badger blocked the paper blades with a manhole cover."
+        },
+        {
+          "scene": 6,
+          "text": "Механическая сорока вырвала осколок из лапы крота.",
+          "visualBeat": "mechanical magpie steals crystal shard from startled mole",
+          "textEn": "A mechanical magpie tore the shard from the mole’s paw."
+        },
+        {
+          "scene": 7,
+          "text": "Сорока понесла добычу к башенным часам.",
+          "visualBeat": "magpie flies toward huge clock tower with shard in beak",
+          "textEn": "The magpie carried it toward the clock tower."
+        },
+        {
+          "scene": 8,
+          "text": "Осколок упал в шестерни, и часы пошли назад.",
+          "visualBeat": "cliffhanger: crystal shard drops into clock gears, time glow reverses",
+          "textEn": "The shard fell into the gears, and the clock began to run backward."
+        }
+      ],
+      "titleEn": "Episode 04. Rooftop Chase"
+    },
+    {
+      "id": "as_05_clock_beacon",
+      "episode": 5,
+      "title": "Серия 05. Башня-маяк",
+      "theme": "clock-tower",
+      "segments": [
+        {
+          "scene": 1,
+          "text": "Внутри башни шестерни были огромными, как колеса корабля.",
+          "visualBeat": "inside clock tower, enormous ship-wheel gears turning",
+          "textEn": "Inside the tower, the gears were as huge as ship wheels."
+        },
+        {
+          "scene": 2,
+          "text": "Сова решила, что верхняя стрелка значит опасность.",
+          "visualBeat": "Owl reads glowing clock symbols with goggles, confidently wrong",
+          "textEn": "Owl decided the upper hand meant danger."
+        },
+        {
+          "scene": 3,
+          "text": "Но Черепашка заметила: это была не стрелка, а ключ.",
+          "visualBeat": "Turtle spots hidden key shape in clock mechanism",
+          "textEn": "But Turtle noticed it was not a hand. It was a key."
+        },
+        {
+          "scene": 4,
+          "text": "Он остановил механизм прозрачным пузырем.",
+          "visualBeat": "Turtle shield bubble stops massive gears safely",
+          "textEn": "He stopped the mechanism with a clear bubble."
+        },
+        {
+          "scene": 5,
+          "text": "Искра вытащила осколок, и башня вспыхнула маяком.",
+          "visualBeat": "Iskra pulls crystal shard from gears, tower emits golden beacon",
+          "textEn": "Iskra pulled out the shard, and the tower lit like a beacon."
+        },
+        {
+          "scene": 6,
+          "text": "Луч ударил в реку, и вода стала зеркалом.",
+          "visualBeat": "golden beam hits city river, water turns into mirror",
+          "textEn": "The beam struck the river, and the water became a mirror."
+        },
+        {
+          "scene": 7,
+          "text": "В отражении поднялась вторая Искра.",
+          "visualBeat": "a mirror duplicate of Iskra rises from reflective river",
+          "textEn": "A second Iskra rose in the reflection."
+        },
+        {
+          "scene": 8,
+          "text": "На ее медальоне знак лапы был перевернут.",
+          "visualBeat": "cliffhanger close-up: duplicate Iskra has inverted paw medallion",
+          "textEn": "On her medallion, the paw symbol was upside down."
+        }
+      ],
+      "titleEn": "Episode 05. The Beacon Tower"
+    },
+    {
+      "id": "as_06_river_double",
+      "episode": 6,
+      "title": "Серия 06. Двойник из реки",
+      "theme": "mirror-river",
+      "segments": [
+        {
+          "scene": 1,
+          "text": "Река стала зеркалом, и каждый герой увидел своего двойника.",
+          "visualBeat": "mirror river reflects duplicate versions of the animal heroes",
+          "textEn": "The river became a mirror, and every hero saw a double."
+        },
+        {
+          "scene": 2,
+          "text": "Двойники повторяли движения, но улыбались слишком холодно.",
+          "visualBeat": "cold smiling mirror doubles mimic the team",
+          "textEn": "The doubles copied their moves, but smiled too coldly."
+        },
+        {
+          "scene": 3,
+          "text": "Фальшивая Искра предложила обменять кристалл на спокойствие.",
+          "visualBeat": "fake Iskra holds out paw, offering a dark crystal bargain",
+          "textEn": "The false Iskra offered peace in exchange for the crystal."
+        },
+        {
+          "scene": 4,
+          "text": "Барсук ударил щитом, и вода рассыпалась звездами.",
+          "visualBeat": "Badger shield strike shatters mirror water into star droplets",
+          "textEn": "Badger struck with his shield, and the water burst into stars."
+        },
+        {
+          "scene": 5,
+          "text": "Сова прочитала символ наоборот и открыла не ту дверь.",
+          "visualBeat": "Owl decodes reversed symbol, wrong glowing doorway opens",
+          "textEn": "Owl read the symbol backward and opened the wrong door."
+        },
+        {
+          "scene": 6,
+          "text": "Из двери высыпались маленькие зеркальные рыбки.",
+          "visualBeat": "tiny mirror fish swarm out of the wrong doorway",
+          "textEn": "Tiny mirror fish poured out of it."
+        },
+        {
+          "scene": 7,
+          "text": "Черепашка понял: двойники боялись не света, а смеха.",
+          "visualBeat": "Turtle laughs gently, mirror doubles recoil from warm humor",
+          "textEn": "Turtle realized the doubles feared laughter, not light."
+        },
+        {
+          "scene": 8,
+          "text": "Пока все смеялись, двойник уже стоял за их спинами.",
+          "visualBeat": "cliffhanger: fake Iskra silently behind the real team",
+          "textEn": "While everyone laughed, the double was already behind them."
+        }
+      ],
+      "titleEn": "Episode 06. The River Double"
+    },
+    {
+      "id": "as_07_time_kitten",
+      "episode": 7,
+      "title": "Серия 07. Котенок времени",
+      "theme": "time-freeze",
+      "segments": [
+        {
+          "scene": 1,
+          "text": "Башенные часы ударили без звука, и площадь застыла.",
+          "visualBeat": "silent clock strike freezes rainy city square",
+          "textEn": "The clock tower struck without sound, and the square froze."
+        },
+        {
+          "scene": 2,
+          "text": "Герои замерли в воздухе, даже капли дождя не падали.",
+          "visualBeat": "animal heroes suspended midair with frozen raindrops",
+          "textEn": "The heroes hung in the air; even the raindrops stopped falling."
+        },
+        {
+          "scene": 3,
+          "text": "Двигался только котенок с серебряным колокольчиком.",
+          "visualBeat": "tiny kitten with silver bell walks through frozen time",
+          "textEn": "Only a kitten with a silver bell kept moving."
+        },
+        {
+          "scene": 4,
+          "text": "Он спрятал маленькую шестерню в пузырь Черепашки.",
+          "visualBeat": "kitten places tiny gear into Turtle shield bubble",
+          "textEn": "He hid a tiny gear inside Turtle’s bubble."
+        },
+        {
+          "scene": 5,
+          "text": "Время дернулось вперед, и команда снова вдохнула.",
+          "visualBeat": "time jolts forward, heroes gasp back to motion",
+          "textEn": "Time jumped forward, and the team could breathe again."
+        },
+        {
+          "scene": 6,
+          "text": "Котенок показал на башню и исчез между секундными стрелками.",
+          "visualBeat": "kitten points to clock tower and slips between giant second hands",
+          "textEn": "The kitten pointed to the tower and slipped between the second hands."
+        },
+        {
+          "scene": 7,
+          "text": "Стрелки открыли дверь на чердак, которого не было.",
+          "visualBeat": "clock hands form a door to an impossible attic",
+          "textEn": "The hands opened a door to an attic that should not exist."
+        },
+        {
+          "scene": 8,
+          "text": "За дверью плыл деревянный корабль прямо в облаках.",
+          "visualBeat": "cliffhanger: wooden ship floating in clouds beyond attic door",
+          "textEn": "Behind it, a wooden ship floated in the clouds."
+        }
+      ],
+      "titleEn": "Episode 07. The Time Kitten"
+    },
+    {
+      "id": "as_08_cloud_ship",
+      "episode": 8,
+      "title": "Серия 08. Корабль в облаках",
+      "theme": "cloud-ship",
+      "segments": [
+        {
+          "scene": 1,
+          "text": "Дверь на чердак раскрылась прямо в небо.",
+          "visualBeat": "impossible attic door opening into bright storm clouds",
+          "textEn": "The attic door opened straight into the sky."
+        },
+        {
+          "scene": 2,
+          "text": "Деревянный корабль плыл между башнями, как по морю.",
+          "visualBeat": "wooden ship floating between city towers in clouds",
+          "textEn": "A wooden ship sailed between towers like on the sea."
+        },
+        {
+          "scene": 3,
+          "text": "На мачте висел компас из перьев и кристальной пыли.",
+          "visualBeat": "feather compass hanging from cloud ship mast with crystal dust",
+          "textEn": "A feather compass hung from the mast, sparkling with crystal dust."
+        },
+        {
+          "scene": 4,
+          "text": "Сова попыталась прочитать компас, но тот чихнул облаком.",
+          "visualBeat": "Owl with brass goggles startled as feather compass sneezes a cloud",
+          "textEn": "Owl tried to read it, but the compass sneezed out a cloud."
+        },
+        {
+          "scene": 5,
+          "text": "Белка поймала канат и случайно подняла парус наоборот.",
+          "visualBeat": "Squirrel grabs rope and accidentally raises sail upside down",
+          "textEn": "Squirrel caught a rope and accidentally raised the sail upside down."
+        },
+        {
+          "scene": 6,
+          "text": "Корабль резко нырнул в грозовую воронку.",
+          "visualBeat": "cloud ship diving into a swirling storm funnel",
+          "textEn": "The ship suddenly dived into a storm funnel."
+        },
+        {
+          "scene": 7,
+          "text": "Искра увидела внизу остров с одним светящимся деревом.",
+          "visualBeat": "Iskra sees floating island below with one glowing tree",
+          "textEn": "Iskra saw an island below with one glowing tree."
+        },
+        {
+          "scene": 8,
+          "text": "На ветке дерева сидела сорока с украденным осколком.",
+          "visualBeat": "cliffhanger: mechanical magpie on glowing tree branch holding crystal shard",
+          "textEn": "On the tree branch sat the magpie with the stolen shard."
+        }
+      ],
+      "titleEn": "Episode 08. The Cloud Ship"
+    },
+    {
+      "id": "as_09_feather_compass",
+      "episode": 9,
+      "title": "Серия 09. Компас из перьев",
+      "theme": "floating-island",
+      "segments": [
+        {
+          "scene": 1,
+          "text": "Остров качался в воздухе, будто лист на ветру.",
+          "visualBeat": "floating island rocking in the sky like a leaf",
+          "textEn": "The island rocked in the air like a leaf in the wind."
+        },
+        {
+          "scene": 2,
+          "text": "Сорока щёлкнула крылом, и дерево стало лестницей.",
+          "visualBeat": "mechanical magpie clicks wing, glowing tree unfolds into staircase",
+          "textEn": "The magpie clicked its wing, and the tree became a staircase."
+        },
+        {
+          "scene": 3,
+          "text": "Барсук поднялся первым, но ступени убегали от лап.",
+          "visualBeat": "Badger climbing magical stairs that move away under his paws",
+          "textEn": "Badger climbed first, but the steps ran away from his paws."
+        },
+        {
+          "scene": 4,
+          "text": "Черепашка пустил пузырь, и вся команда поплыла вверх.",
+          "visualBeat": "Turtle creates bubble elevator lifting team up tree staircase",
+          "textEn": "Turtle released a bubble, and the whole team floated upward."
+        },
+        {
+          "scene": 5,
+          "text": "Компас показал не север, а смешной рисунок усов.",
+          "visualBeat": "feather compass showing a silly mustache-shaped glowing symbol, no text",
+          "textEn": "The compass showed not north, but a silly mustache shape."
+        },
+        {
+          "scene": 6,
+          "text": "Усы ожили и указали на облачную библиотеку.",
+          "visualBeat": "glowing mustache-shaped symbol points toward cloud library",
+          "textEn": "The mustache came alive and pointed to a cloud library."
+        },
+        {
+          "scene": 7,
+          "text": "Искра коснулась осколка, и он запел голосом ветра.",
+          "visualBeat": "Iskra touches crystal shard, wind-like music glow surrounds it",
+          "textEn": "Iskra touched the shard, and it sang with the voice of the wind."
+        },
+        {
+          "scene": 8,
+          "text": "Но песню услышал кто-то огромный за облаками.",
+          "visualBeat": "cliffhanger: huge shadow silhouette behind clouds hears crystal song",
+          "textEn": "But someone huge behind the clouds heard the song."
+        }
+      ],
+      "titleEn": "Episode 09. The Feather Compass"
+    },
+    {
+      "id": "as_10_moon_library",
+      "episode": 10,
+      "title": "Серия 10. Лунная библиотека",
+      "theme": "moon-library",
+      "segments": [
+        {
+          "scene": 1,
+          "text": "Облачная библиотека висела под луной без единой стены.",
+          "visualBeat": "open-air cloud library floating under moon with shelves and no walls",
+          "textEn": "The cloud library hung under the moon without a single wall."
+        },
+        {
+          "scene": 2,
+          "text": "Книги летали сами и хлопали страницами, как птицы.",
+          "visualBeat": "flying books fluttering like birds around animal heroes",
+          "textEn": "Books flew by themselves and flapped pages like birds."
+        },
+        {
+          "scene": 3,
+          "text": "Сова нашла книгу с пустой обложкой и очень важным видом.",
+          "visualBeat": "Owl finds blank-cover book glowing mysteriously, no readable text",
+          "textEn": "Owl found a blank book that looked extremely important."
+        },
+        {
+          "scene": 4,
+          "text": "Книга открылась и показала карту подземного сердца города.",
+          "visualBeat": "blank book opens showing glowing map to underground city heart, no text",
+          "textEn": "The book opened and showed a map to the city’s underground heart."
+        },
+        {
+          "scene": 5,
+          "text": "Белка решила, что карта щекочется, и громко рассмеялась.",
+          "visualBeat": "Squirrel laughs as glowing map tickles her paws",
+          "textEn": "Squirrel decided the map was ticklish and laughed out loud."
+        },
+        {
+          "scene": 6,
+          "text": "От смеха полки сложились в огромную стрелу.",
+          "visualBeat": "library shelves fold into giant glowing arrow, no letters",
+          "textEn": "Her laugh folded the shelves into a giant arrow."
+        },
+        {
+          "scene": 7,
+          "text": "Стрела указала вниз, туда, где не было земли.",
+          "visualBeat": "giant arrow points down into empty sky beneath cloud library",
+          "textEn": "The arrow pointed down where there was no ground."
+        },
+        {
+          "scene": 8,
+          "text": "Под библиотекой открылся люк в настоящий сад великанов.",
+          "visualBeat": "cliffhanger: hatch under cloud library opens to giant garden below",
+          "textEn": "Under the library, a hatch opened into a real giant garden."
+        }
+      ],
+      "titleEn": "Episode 10. The Moon Library"
+    },
+    {
+      "id": "as_11_giant_garden",
+      "episode": 11,
+      "title": "Серия 11. Сад великанов",
+      "theme": "giant-garden",
+      "segments": [
+        {
+          "scene": 1,
+          "text": "Герои упали в траву выше фонарных столбов.",
+          "visualBeat": "animal heroes landing in grass taller than street lamps",
+          "textEn": "The heroes fell into grass taller than streetlamps."
+        },
+        {
+          "scene": 2,
+          "text": "Каждая капля росы была размером с мяч.",
+          "visualBeat": "giant dew drops like balls around tiny animal heroes",
+          "textEn": "Every drop of dew was the size of a ball."
+        },
+        {
+          "scene": 3,
+          "text": "Искра увидела след лапы на гигантском листе.",
+          "visualBeat": "Iskra finds glowing paw print on enormous leaf",
+          "textEn": "Iskra saw a paw print on a giant leaf."
+        },
+        {
+          "scene": 4,
+          "text": "След вел к улитке-охраннику в очках из росы.",
+          "visualBeat": "giant snail guard wearing dew-drop glasses, no text",
+          "textEn": "The trail led to a snail guard with dew-drop glasses."
+        },
+        {
+          "scene": 5,
+          "text": "Улитка потребовала пароль, но сама его забыла.",
+          "visualBeat": "snail guard confused, heroes waiting, comedic body language",
+          "textEn": "The snail demanded a password, then forgot it himself."
+        },
+        {
+          "scene": 6,
+          "text": "Черепашка помог вспомнить пароль пузырями.",
+          "visualBeat": "Turtle creates bubbles showing memory clues, no readable text",
+          "textEn": "Turtle helped him remember with bubbles."
+        },
+        {
+          "scene": 7,
+          "text": "Сад раскрыл дорожку к ледяному рынку под корнями.",
+          "visualBeat": "giant garden roots open path to icy market below",
+          "textEn": "The garden opened a path to an icy market under the roots."
+        },
+        {
+          "scene": 8,
+          "text": "А за ними уже шёл их зеркальный двойник.",
+          "visualBeat": "cliffhanger: mirror double follows team through giant grass",
+          "textEn": "And their mirror double was already following them."
+        }
+      ],
+      "titleEn": "Episode 11. The Giant Garden"
+    },
+    {
+      "id": "as_12_ice_market",
+      "episode": 12,
+      "title": "Серия 12. Ледяной рынок",
+      "theme": "ice-market",
+      "segments": [
+        {
+          "scene": 1,
+          "text": "Ледяной рынок блестел под корнями, как зимний город.",
+          "visualBeat": "icy market under giant roots, glowing stalls without text",
+          "textEn": "The icy market glittered under the roots like a winter city."
+        },
+        {
+          "scene": 2,
+          "text": "Продавцы-пингвины торговали снежинками в стеклянных банках.",
+          "visualBeat": "penguin vendors selling snowflakes in glass jars, no readable labels",
+          "textEn": "Penguin vendors sold snowflakes in glass jars."
+        },
+        {
+          "scene": 3,
+          "text": "Барсук попытался сторговаться и получил ледяную шляпу.",
+          "visualBeat": "Badger accidentally wearing an icy hat after bargaining",
+          "textEn": "Badger tried to bargain and got an ice hat."
+        },
+        {
+          "scene": 4,
+          "text": "Сова заметила, что одна снежинка повторяла знак кристалла.",
+          "visualBeat": "Owl examines snowflake shaped like paw crystal symbol, no text",
+          "textEn": "Owl noticed one snowflake copied the crystal sign."
+        },
+        {
+          "scene": 5,
+          "text": "Искра нагрела медальон, и снежинка стала дверью.",
+          "visualBeat": "Iskra warms medallion, snowflake unfolds into glowing door",
+          "textEn": "Iskra warmed her medallion, and the snowflake became a door."
+        },
+        {
+          "scene": 6,
+          "text": "Дверь открылась в комнату, где продавали тени.",
+          "visualBeat": "glowing door opens to shadow market room with jars of silhouettes",
+          "textEn": "The door opened into a room where shadows were sold."
+        },
+        {
+          "scene": 7,
+          "text": "Крот стоял там без плаща и выглядел испуганным.",
+          "visualBeat": "mole thief without cloak looking frightened in shadow room",
+          "textEn": "The mole stood there without his cloak and looked frightened."
+        },
+        {
+          "scene": 8,
+          "text": "А его плащ шевелился сам по себе.",
+          "visualBeat": "cliffhanger: dark cloak moving by itself on icy floor",
+          "textEn": "And his cloak was moving all by itself."
+        }
+      ],
+      "titleEn": "Episode 12. The Ice Market"
+    },
+    {
+      "id": "as_13_shadow_mask",
+      "episode": 13,
+      "title": "Серия 13. Маска тени",
+      "theme": "shadow-mask",
+      "segments": [
+        {
+          "scene": 1,
+          "text": "Плащ крота поднялся и стал чёрной маской.",
+          "visualBeat": "dark cloak rising and forming a black mask in shadow room",
+          "textEn": "The mole’s cloak rose and became a black mask."
+        },
+        {
+          "scene": 2,
+          "text": "Маска шепнула без голоса, и лампы погасли.",
+          "visualBeat": "black mask silently whispering as lights go out",
+          "textEn": "The mask whispered without a voice, and the lamps went out."
+        },
+        {
+          "scene": 3,
+          "text": "Крот признался: он крал осколки, чтобы спрятать их от маски.",
+          "visualBeat": "frightened mole confessing to heroes, crystals glowing nearby",
+          "textEn": "The mole confessed he stole shards to hide them from the mask."
+        },
+        {
+          "scene": 4,
+          "text": "Белка решила отвлечь маску танцем и почти преуспела.",
+          "visualBeat": "Squirrel dancing wildly to distract black mask, comedic action",
+          "textEn": "Squirrel tried to distract the mask with a dance and almost succeeded."
+        },
+        {
+          "scene": 5,
+          "text": "Сова увидела на маске перевёрнутый знак лапы.",
+          "visualBeat": "Owl spots inverted paw symbol on black mask, no text",
+          "textEn": "Owl spotted an upside-down paw sign on the mask."
+        },
+        {
+          "scene": 6,
+          "text": "Искра сложила медальон с осколком, и тень отступила.",
+          "visualBeat": "Iskra combines medallion and shard, shadow recoils",
+          "textEn": "Iskra joined the medallion with the shard, and the shadow pulled back."
+        },
+        {
+          "scene": 7,
+          "text": "Маска упала, но под ней оказалась карта из листьев.",
+          "visualBeat": "black mask falls, leaf-made map appears beneath it",
+          "textEn": "The mask fell, but a leaf map lay underneath."
+        },
+        {
+          "scene": 8,
+          "text": "Листья сами сложились в поезд на рельсах из веток.",
+          "visualBeat": "cliffhanger: leaves fold into train on branch rails",
+          "textEn": "The leaves folded themselves into a train on branch rails."
+        }
+      ],
+      "titleEn": "Episode 13. The Shadow Mask"
+    },
+    {
+      "id": "as_14_leaf_train",
+      "episode": 14,
+      "title": "Серия 14. Поезд из листьев",
+      "theme": "leaf-train",
+      "segments": [
+        {
+          "scene": 1,
+          "text": "Поезд из листьев подъехал без колёс и машиниста.",
+          "visualBeat": "leaf train arrives on branch rails with no wheels or driver",
+          "textEn": "The leaf train arrived with no wheels and no driver."
+        },
+        {
+          "scene": 2,
+          "text": "Внутри сидели только светлячки с важным видом.",
+          "visualBeat": "inside leaf train, fireflies sitting like serious passengers",
+          "textEn": "Inside sat only fireflies looking very important."
+        },
+        {
+          "scene": 3,
+          "text": "Светлячки мигали маршрутом к сердцу города.",
+          "visualBeat": "fireflies blinking route pattern to city heart, no readable text",
+          "textEn": "The fireflies blinked the route to the city heart."
+        },
+        {
+          "scene": 4,
+          "text": "Поезд нырнул в корни и понёсся под улицами.",
+          "visualBeat": "leaf train dives into roots and races under city streets",
+          "textEn": "The train dove into the roots and raced beneath the streets."
+        },
+        {
+          "scene": 5,
+          "text": "Барсук держал дверь, пока ветки пытались её закрыть.",
+          "visualBeat": "Badger holding leaf train door open against closing branches",
+          "textEn": "Badger held the door while branches tried to close it."
+        },
+        {
+          "scene": 6,
+          "text": "Черепашка починил рельсы пузырём прямо на ходу.",
+          "visualBeat": "Turtle repairs branch rails with bubble shield while train moves",
+          "textEn": "Turtle fixed the rails with a bubble while the train kept moving."
+        },
+        {
+          "scene": 7,
+          "text": "Впереди засветилась огромная хрустальная станция.",
+          "visualBeat": "huge crystal station glowing ahead under the city",
+          "textEn": "Ahead, a huge crystal station began to glow."
+        },
+        {
+          "scene": 8,
+          "text": "На станции ждали все украденные осколки.",
+          "visualBeat": "cliffhanger: many stolen crystal shards waiting on crystal station",
+          "textEn": "At the station waited all the stolen shards."
+        }
+      ],
+      "titleEn": "Episode 14. The Leaf Train"
+    },
+    {
+      "id": "as_15_city_heart",
+      "episode": 15,
+      "title": "Серия 15. Сердце города",
+      "theme": "city-heart",
+      "segments": [
+        {
+          "scene": 1,
+          "text": "Сердце города билось под станцией золотым светом.",
+          "visualBeat": "underground city heart pulsing golden light beneath crystal station",
+          "textEn": "The heart of the city beat beneath the station with golden light."
+        },
+        {
+          "scene": 2,
+          "text": "Каждый осколок отвечал ему тихим звоном.",
+          "visualBeat": "many crystal shards answering city heart with soft glow",
+          "textEn": "Every shard answered it with a quiet chime."
+        },
+        {
+          "scene": 3,
+          "text": "Крот сказал, что маска хотела остановить это сердце.",
+          "visualBeat": "mole explaining near glowing city heart, heroes listening",
+          "textEn": "The mole said the mask wanted to stop the heart."
+        },
+        {
+          "scene": 4,
+          "text": "Искра поняла: кристаллы были не сокровищем, а защитой.",
+          "visualBeat": "Iskra realizes crystals are protective shield around city heart",
+          "textEn": "Iskra understood: the crystals were not treasure, but protection."
+        },
+        {
+          "scene": 5,
+          "text": "Сова расставила осколки, но один всё время убегал.",
+          "visualBeat": "Owl arranging crystal shards, one mischievous shard rolling away",
+          "textEn": "Owl arranged the shards, but one kept running away."
+        },
+        {
+          "scene": 6,
+          "text": "Белка поймала его хвостом и случайно включила весь зал.",
+          "visualBeat": "Squirrel catches shard with tail, entire hall lights up",
+          "textEn": "Squirrel caught it with her tail and accidentally lit the whole hall."
+        },
+        {
+          "scene": 7,
+          "text": "Стены показали тысячи дверей в другие города.",
+          "visualBeat": "crystal walls reveal thousands of glowing doors to other cities",
+          "textEn": "The walls revealed thousands of doors to other cities."
+        },
+        {
+          "scene": 8,
+          "text": "Одна дверь открылась сама и позвала Искру по имени.",
+          "visualBeat": "cliffhanger: one glowing door opens by itself toward Iskra",
+          "textEn": "One door opened by itself and called Iskra by name."
+        }
+      ],
+      "titleEn": "Episode 15. The City Heart"
+    },
+    {
+      "id": "as_16_first_choice",
+      "episode": 16,
+      "title": "Серия 16. Первый выбор",
+      "theme": "first-choice",
+      "segments": [
+        {
+          "scene": 1,
+          "text": "Дверь светилась так ярко, что даже тень стала маленькой.",
+          "visualBeat": "glowing door so bright that nearby shadow becomes tiny",
+          "textEn": "The door shone so bright that even the shadow became small."
+        },
+        {
+          "scene": 2,
+          "text": "За дверью был город, где все часы шли в разные стороны.",
+          "visualBeat": "strange city beyond door with clocks moving in different directions, no numbers",
+          "textEn": "Beyond it was a city where all clocks moved in different directions."
+        },
+        {
+          "scene": 3,
+          "text": "Котёнок времени вернулся и поклонился Искре.",
+          "visualBeat": "time kitten returns and bows to Iskra near glowing door",
+          "textEn": "The time kitten returned and bowed to Iskra."
+        },
+        {
+          "scene": 4,
+          "text": "Он показал два пути: спасать город сейчас или искать главную маску.",
+          "visualBeat": "kitten shows two glowing paths, city rescue and main mask hunt, no text",
+          "textEn": "He showed two paths: save the city now, or find the main mask."
+        },
+        {
+          "scene": 5,
+          "text": "Барсук хотел закрыть дверь, но сердце города забилось быстрее.",
+          "visualBeat": "Badger tries to close door as city heart pulses faster",
+          "textEn": "Badger wanted to close the door, but the city heart beat faster."
+        },
+        {
+          "scene": 6,
+          "text": "Искра шагнула вперёд, и кристаллы выстроились за ней.",
+          "visualBeat": "Iskra steps forward, crystals line up behind her like guardians",
+          "textEn": "Iskra stepped forward, and the crystals lined up behind her."
+        },
+        {
+          "scene": 7,
+          "text": "Команда прыгнула следом, даже крот.",
+          "visualBeat": "whole animal hero team and mole leap into glowing door together",
+          "textEn": "The team jumped after her, even the mole."
+        },
+        {
+          "scene": 8,
+          "text": "А в пустом зале открылась ещё одна дверь, совсем чёрная.",
+          "visualBeat": "cliffhanger: empty crystal hall with a second completely black door opening",
+          "textEn": "And in the empty hall, another door opened, completely black."
+        }
+      ],
+      "titleEn": "Episode 16. The First Choice"
+    }
+  ],
+  "packTitleEn": "Animal Heroes: The Paw Crystal"
+}

@@ -65,7 +65,8 @@ export default function Studio() {
   const maxBatch = Math.max(0, Math.min(roleMax, remaining));
   // Сохранять ролик можно ТОЛЬКО в канал, у которого этот пак (встроенный/свой) выбран источником —
   // иначе планировщик его не выложит (постит по точному паку канала) и язык бы не совпал.
-  const saveAccounts = accounts.filter((a) => a.lang === deck);
+  const accountSources = (a: Account) => (a.sourceDecks?.length ? a.sourceDecks : [a.lang]);
+  const saveAccounts = accounts.filter((a) => accountSources(a).includes(deck));
 
   useEffect(() => {
     apiClient.generators().then(setGens).catch(() => {});
@@ -82,7 +83,7 @@ export default function Studio() {
 
   // Keep the save-target channel matching the selected pack's language (hard language guard).
   useEffect(() => {
-    const match = accounts.find((a) => a.lang === deck);
+    const match = accounts.find((a) => accountSources(a).includes(deck));
     setChannelId(match ? String(match.id) : "");
   }, [deck, accounts]);
 
@@ -432,23 +433,22 @@ export default function Studio() {
                       max={Math.max(1, maxBatch)}
                       className="input input-bordered input-sm w-20"
                       value={batchN}
-                      disabled={q.running || maxBatch < 1}
+                      disabled={maxBatch < 1}
                       onChange={(e) => setBatchN(Math.max(1, Math.min(maxBatch, Number(e.target.value) || 1)))}
                       aria-label={t("studio.batchCountLabel")}
                     />
                     <span className="text-xs text-base-content/50">
                       {maxBatch < 1 ? t("studio.noFreeCards") : t("studio.batchRange", { n: maxBatch })}
                     </span>
-                    {!q.running ? (
-                      <button
-                        className="btn btn-sm btn-outline gap-1"
-                        onClick={() => q.run(channelId, Math.min(batchN, maxBatch))}
-                        disabled={!channelId || maxBatch < 1}
-                        title={t("studio.batchQueueTitle")}
-                      >
-                        <Plus size={14} /> {t("common.generate")}
-                      </button>
-                    ) : (
+                    <button
+                      className="btn btn-sm btn-outline gap-1"
+                      onClick={() => q.run(channelId, Math.min(batchN, maxBatch), [deck])}
+                      disabled={!channelId || maxBatch < 1}
+                      title={t("studio.batchQueueTitle")}
+                    >
+                      <Plus size={14} /> {t("common.generate")}
+                    </button>
+                    {q.running && (
                       <>
                         <button className="btn btn-sm btn-outline btn-error gap-1" onClick={q.cancel}>
                           <Square size={13} /> {t("studio.stop")}

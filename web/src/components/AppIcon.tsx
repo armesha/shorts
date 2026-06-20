@@ -15,6 +15,7 @@ import {
   Globe2,
   History,
   House,
+  KeyRound,
   Languages,
   Library,
   ListPlus,
@@ -55,6 +56,7 @@ export type AppIconName =
   | "history"
   | "home"
   | "library"
+  | "limits"
   | "login"
   | "logout"
   | "menu"
@@ -98,6 +100,7 @@ const ICONS: Record<AppIconName, LucideIcon> = {
   history: History,
   home: House,
   library: Library,
+  limits: KeyRound,
   login: LogIn,
   logout: LogOut,
   menu: Menu,

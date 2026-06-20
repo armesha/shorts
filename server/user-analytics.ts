@@ -45,10 +45,20 @@ export interface UserAnalytics {
   }[];
 }
 
-export function buildUserAnalytics(dbh: Db, userId: number, input: AnalyticsRange): UserAnalytics {
+export function buildUserAnalytics(
+  dbh: Db,
+  userId: number,
+  input: AnalyticsRange,
+  opts: { allChannels?: boolean } = {},
+): UserAnalytics {
   const range = normalizeAnalyticsRange(input);
   const sql = dbh.db;
-  const ids = (sql.prepare("SELECT id FROM accounts WHERE user_id = ?").all(userId) as Row[]).map((r) => num(r.id));
+  // allChannels (admin + «Все каналы») → aggregate across EVERY account; otherwise the user's own only.
+  const ids = (
+    opts.allChannels
+      ? (sql.prepare("SELECT id FROM accounts").all() as Row[])
+      : (sql.prepare("SELECT id FROM accounts WHERE user_id = ?").all(userId) as Row[])
+  ).map((r) => num(r.id));
 
   const blank: UserAnalytics = {
     range,
@@ -126,7 +136,13 @@ export function buildUserAnalytics(dbh: Db, userId: number, input: AnalyticsRang
 
   const queued = num((sql.prepare(`SELECT COUNT(*) AS n FROM videos WHERE account_id IN (${ph})`).get(...ids) as Row).n);
   const connected = num(
-    (sql.prepare("SELECT COUNT(*) AS n FROM accounts WHERE user_id = ? AND yt_refresh_token IS NOT NULL AND yt_refresh_token <> ''").get(userId) as Row).n,
+    (
+      (opts.allChannels
+        ? sql.prepare("SELECT COUNT(*) AS n FROM accounts WHERE yt_refresh_token IS NOT NULL AND yt_refresh_token <> ''").get()
+        : sql
+            .prepare("SELECT COUNT(*) AS n FROM accounts WHERE user_id = ? AND yt_refresh_token IS NOT NULL AND yt_refresh_token <> ''")
+            .get(userId)) as Row
+    ).n,
   );
 
   const ytRows = sql
@@ -181,6 +197,9 @@ export function buildUserAnalytics(dbh: Db, userId: number, input: AnalyticsRang
       .get(...ids, range.from, range.to) as Row
   );
   const ytViews = num(ytSummary.views);
+  // Branch on whether analytics rows exist, not on ytViews !== 0 — a legitimate period total of 0
+  // must stay 0, not fall back to the (huge) lifetime channel_stats total.
+  const hasYt = ytRows.length > 0;
 
   return {
     range,
@@ -192,10 +211,10 @@ export function buildUserAnalytics(dbh: Db, userId: number, input: AnalyticsRang
       channels: ids.length,
       connected,
       subscribers: num(latest?.subscribers),
-      views: ytViews || num(latest?.views),
+      views: hasYt ? ytViews : num(latest?.views),
       youtubeVideos: num(latest?.videos),
       subscriberDelta: num(growth?.subDelta),
-      viewsDelta: ytViews || num(growth?.viewsDelta),
+      viewsDelta: num(growth?.viewsDelta),
       watchMinutes: num(ytSummary.watchMinutes),
       engagedViews: num(ytSummary.engagedViews),
       avgViewDuration: ytViews > 0 ? num(ytSummary.durationWeighted) / ytViews : 0,

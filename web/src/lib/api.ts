@@ -4,6 +4,7 @@ export interface Account {
   channelName: string;
   theme: string;
   lang: string; // выбор контента: встроенный пак (ru/de/…) или свой пак ("pack:<id>")
+  sourceDecks?: string[]; // выбранные источники канала; старые аккаунты используют lang
   channelLang?: string; // язык канала (ru/de/it/fr/en/ar) — пак должен совпадать по языку
   schedule: string[];
   template: string;
@@ -14,6 +15,7 @@ export interface Account {
   ytChannelTitle: string | null;
   ytChannelId: string | null;
   slotVideos: Record<string, number>;
+  slotDecks?: Record<string, string>;
   avatar?: string | null; // channel avatar URL (built-in /avatars/… or uploaded /files/avatars/…)
 }
 
@@ -67,6 +69,39 @@ export interface AppSettings {
   hasGoogleKey: boolean;
 }
 
+export interface AdminLimitsKey {
+  index: number;
+  keyHint: string;
+  status: "ok" | "exhausted" | "invalid" | "rate_limited" | "error" | "blocked";
+  httpStatus?: number;
+  tier?: string | null;
+  characterCount: number | null;
+  characterLimit: number | null;
+  remaining: number | null;
+  usedPercent: number | null;
+  resetAt: string | null;
+  error?: string;
+}
+
+export interface AdminLimits {
+  provider: "elevenlabs";
+  updatedAt: string;
+  keys: AdminLimitsKey[];
+  totals: {
+    configured: number;
+    active: number;
+    exhausted: number;
+    invalid: number;
+    rateLimited: number;
+    errors: number;
+    blocked: number;
+    characterCount: number | null;
+    characterLimit: number | null;
+    remaining: number | null;
+    usedPercent: number | null;
+  };
+}
+
 export interface AdminUser {
   id: number;
   username: string;
@@ -91,8 +126,19 @@ export interface UserDeckRow {
   used: string[];
   scheduled: number; // posts/day planned across all the user's channels
   library: number; // videos queued in the user's libraries
+  usedTotal: number; // всего использованных карточек (встроенные + кастомные паки) — бейдж в панели сброса
   // Per-deck remaining/used/total/posted for the decks the user uses (admin "when does a pack run out").
   deckStats?: Record<string, { used: number; available: number; total: number; posted: number }>;
+}
+
+/** Одна строка «занятости паков» юзера для админ-панели сброса: встроенный дек ИЛИ кастомный пак. */
+export interface PackUsageItem {
+  id: string; // "<deckId>" (встроенный) или "pack:<id>" (кастомный)
+  name: string;
+  pack: boolean; // true = кастомный пак
+  total: number;
+  used: number;
+  available: number;
 }
 
 /** One pack's stats for the «Паки» tab: total cards / used / remaining / posted. */
@@ -148,6 +194,7 @@ export interface VideoItem {
   text: string;
   bg: string;
   music: string;
+  deck: string;
   videoRel: string;
   imageRel: string | null;
   postCount: number;
@@ -613,6 +660,31 @@ export interface PackFull {
   cards: PackCardRow[];
   rules: PackRoleRule[];
 }
+export interface MusicTrack {
+  id: string;
+  name: string;
+  fileName: string;
+  bytes: number;
+  url: string;
+}
+export interface PackMusic {
+  builtin: MusicTrack[];
+  custom: MusicTrack[];
+  canEdit: boolean;
+  maxFiles: number;
+  maxFileMb: number;
+}
+export interface PackMusicUploadFile {
+  name: string;
+  type: string;
+  size: number;
+  dataUrl: string;
+}
+export interface PackMusicUploadResult {
+  added: MusicTrack[];
+  errors: { name: string; message: string }[];
+  tracks: MusicTrack[];
+}
 
 /** Error carrying the HTTP status + the server's `{error}` message (for lockout/attempt UI). */
 export class ApiError extends Error {
@@ -663,6 +735,7 @@ async function send<T>(path: string, method: string, body?: unknown): Promise<T>
 /** One generation-queue job's live status (one video at a time across all users). */
 export interface GenJobStatus {
   id: string;
+  accountId: number;
   total: number;
   done: number;
   state: "queued" | "running" | "done" | "exhausted" | "canceled" | "error";
@@ -720,8 +793,13 @@ export const apiClient = {
   ) => send<NotificationItem>(`/admin/users/${userId}/notifications`, "POST", body),
   adminDecks: () => get<DeckInfo[]>("/admin/decks"),
   adminUserDecks: () => get<UserDeckRow[]>("/admin/user-decks"),
+  adminLimits: () => get<AdminLimits>("/admin/limits"),
   setUserDecks: (userId: number, hidden: string[], grants?: string[]) =>
     send<{ ok: boolean; hidden: string[] }>(`/admin/users/${userId}/decks`, "PUT", { hidden, grants }),
+  resetUserDeck: (userId: number, deckId: string) =>
+    send<{ ok: boolean; removed: number }>(`/admin/users/${userId}/decks/${encodeURIComponent(deckId)}/reset`, "POST", {}),
+  adminUserPackUsage: (userId: number) =>
+    get<{ userId: number; username: string; items: PackUsageItem[] }>(`/admin/users/${userId}/pack-usage`),
   myDecks: (userId?: number) => get<MyDecks>(`/my-decks${userId != null ? `?userId=${userId}` : ""}`),
   adminLowDecks: () => get<LowDeckRow[]>("/admin/low-decks"),
   accounts: (scope?: "all") => get<Account[]>(`/accounts${scope === "all" ? "?scope=all" : ""}`),
@@ -789,6 +867,14 @@ export const apiClient = {
   // Admin: set a pack's owners (0+; owners edit the pack on /cards). Пусто = без владельца.
   setPackOwners: (id: string, owners: number[]) =>
     send<{ ok: boolean; owners: number[] }>(`/admin/packs/${id}/owners`, "PUT", { owners }),
+  packMusic: (id: string) => get<PackMusic>(`/packs/${id}/music`),
+  uploadPackMusic: (id: string, files: PackMusicUploadFile[]) =>
+    send<PackMusicUploadResult>(`/packs/${id}/music`, "POST", { files }),
+  deletePackMusic: (id: string, fileName: string) =>
+    send<{ deleted: boolean; tracks: MusicTrack[] }>(
+      `/packs/${id}/music/${encodeURIComponent(fileName)}`,
+      "DELETE",
+    ),
   packPreview: (id: string, i: number) => get<{ imageUrl: string }>(`/packs/${id}/preview?i=${i}`),
   packBuildVideo: (id: string, i: number, opts?: { accountId?: number; music?: string }) =>
     send<{ videoUrl: string; music: string; saved: boolean }>(`/packs/${id}/cards/${i}/video`, "POST", opts ?? {}),
@@ -807,8 +893,8 @@ export const apiClient = {
       { accountId: Number(accountId), count, deck },
     ),
   // Generation queue: one video at a time across all users. Enqueue → poll status → optional cancel.
-  enqueueGen: (accountId: number | string, count: number) =>
-    send<{ jobId: string; total: number }>("/gen-queue", "POST", { accountId: Number(accountId), count }),
+  enqueueGen: (accountId: number | string, count: number, deckIds?: string[]) =>
+    send<{ jobId: string; total: number }>("/gen-queue", "POST", { accountId: Number(accountId), count, deckIds }),
   genStatus: (jobId: string) => get<GenJobStatus>(`/gen-queue/${jobId}`),
   cancelGen: (jobId: string) => send<{ ok: boolean }>(`/gen-queue/${jobId}/cancel`, "POST", {}),
   postVideoNow: (id: number | string, publishAt?: string) =>
@@ -842,9 +928,11 @@ export const apiClient = {
     const s = qs.toString();
     return get<AdminAnalytics>(`/admin/analytics${s ? "?" + s : ""}`);
   },
-  // Per-user analytics (own channels only) for the Statistics page.
-  analytics: (from?: string, to?: string) => {
+  // Per-user analytics for the Statistics page. Own channels by default; admins may pass
+  // scope="all" to aggregate publishing activity across every channel.
+  analytics: (scope?: "mine" | "all", from?: string, to?: string) => {
     const qs = new URLSearchParams();
+    if (scope === "all") qs.set("scope", "all");
     if (from) qs.set("from", from);
     if (to) qs.set("to", to);
     const s = qs.toString();
@@ -872,6 +960,7 @@ export const apiClient = {
   notificationCounts: (scope?: "mine" | "all") =>
     get<NotificationCounts>(`/notifications/counts${scope === "all" ? "?scope=all" : ""}`),
   readNotification: (id: number | string) => send<NotificationItem>(`/notifications/${id}/read`, "POST", {}),
+  unreadNotification: (id: number | string) => send<NotificationItem>(`/notifications/${id}/unread`, "POST", {}),
   resolveNotification: (id: number | string) =>
     send<NotificationItem>(`/notifications/${id}/resolve`, "POST", {}),
   deleteNotification: (id: number | string) => send<{ ok: boolean }>(`/notifications/${id}`, "DELETE"),

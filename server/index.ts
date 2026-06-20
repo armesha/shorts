@@ -1,14 +1,23 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import fastifyStatic from "@fastify/static";
-import { resolve } from "node:path";
-import { unlinkSync, readFileSync, existsSync, readdirSync, writeFileSync, mkdirSync } from "node:fs";
+import { extname, isAbsolute, relative, resolve } from "node:path";
+import {
+  createReadStream,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  statSync,
+  unlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { loadBaseConfig, resolveClientSecretFile, credsFileExists } from "./config.ts";
 import { openDb, type Account } from "./db.ts";
-import { randomAnecdote, libraryStats, anecdoteKey } from "../src/anecdotes/library.ts";
+import { randomAnecdote, libraryStats, anecdoteKey, deckAnecdoteKeys } from "../src/anecdotes/library.ts";
 import { DECKS, getDeck, ytMeta, pickGenericTitle, isPackDeckId, deckLang } from "../src/anecdotes/decks.ts";
-import { listAllPacks, setGrant, setPackOwners, getPack } from "../src/packs/store.ts";
-import { pickUnusedPackCard, buildPackLibraryVideo } from "./pack-gen.ts";
+import { listAllPacks, setGrant, setPackOwners, getPack, canAccess } from "../src/packs/store.ts";
+import { pickUnusedPackCard, buildPackLibraryVideo, packCardKey } from "./pack-gen.ts";
 import { buildFactLibraryVideo } from "./fact-gen.ts";
 import { renderAnecdote, listBackgrounds } from "../src/anecdotes/render.ts";
 import { assembleStillVideo, listAudio, resolveAudio } from "../src/video.ts";
@@ -36,10 +45,26 @@ import { registerPasswordRoutes } from "./password-routes.ts";
 import { registerTelegramRoutes } from "./telegram-routes.ts";
 import { registerPsychCardsRoutes } from "./psych-cards-routes.ts";
 import { registerPacksRoutes } from "./packs-routes.ts";
-import { initGenQueue, enqueue as genEnqueue, jobStatus as genJobStatus, cancelJob as genCancelJob, drainQueue as genDrainQueue } from "./gen-queue.ts";
+import {
+  initGenQueue,
+  enqueue as genEnqueue,
+  jobStatus as genJobStatus,
+  cancelJob as genCancelJob,
+  drainQueue as genDrainQueue,
+  queuedRemainingForUser as genQueuedRemainingForUser,
+} from "./gen-queue.ts";
 import { gracefulShutdown } from "./shutdown.ts";
 import { buildAdminAnalytics } from "./admin-analytics.ts";
 import { buildUserAnalytics } from "./user-analytics.ts";
+import { dailyScheduleLimitError } from "./account-limits.ts";
+import {
+  RATE_LIMIT_MESSAGE,
+  RateLimitError,
+  checkRateLimit,
+  heavyActiveKey,
+  withActiveLimit,
+} from "./rate-limits.ts";
+import { rememberedOutputOwner, rememberOutputOwner } from "./output-access.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -121,6 +146,11 @@ const REDIRECT_URI =
 const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:5173";
 const CHANNEL_TOTALS_TTL_MS = 15 * 60 * 1000;
 const YT_ANALYTICS_TTL_MS = 6 * 60 * 60 * 1000;
+const USER_GEN_QUEUE_CAP = 100;
+const STUDIO_IMAGE_LIMIT = { limit: 10, windowMs: 5 * 60 * 1000 };
+const STUDIO_VIDEO_LIMIT = { limit: 3, windowMs: 10 * 60 * 1000 };
+const BATCH_VIDEO_LIMIT = { limit: 2, windowMs: 30 * 60 * 1000 };
+const NORMAL_BATCH_VIDEO_CAP = 5;
 
 // Multi-user: no global key required to boot — each user uploads their own in Settings.
 if (!credsFileExists(credsPath())) {
@@ -144,7 +174,6 @@ function userCreds(userId: number): ClientCreds | null {
 
 const app = Fastify({ logger: true });
 await app.register(cors, { origin: true });
-await app.register(fastifyStatic, { root: resolve(process.cwd(), base.outputDir), prefix: "/files/" });
 await app.register(fastifyStatic, { root: resolve(process.cwd(), "assets/audio"), prefix: "/audio/", decorateReply: false });
 // Pre-built fact videos (preFact deck) — served for the Studio random-preview player.
 await app.register(fastifyStatic, { root: resolve(process.cwd(), "assets/fact-videos"), prefix: "/fact-videos/", decorateReply: false });
@@ -158,14 +187,16 @@ if (existsSync(resolve(WEB_DIST, "index.html"))) {
   await app.register(fastifyStatic, { root: WEB_DIST, prefix: "/", decorateReply: false });
   app.setNotFoundHandler((req, reply) => {
     if (
-      req.method === "GET" &&
+      (req.method === "GET" || req.method === "HEAD") &&
       !req.url.startsWith("/api/") &&
       !req.url.startsWith("/files/") &&
       !req.url.startsWith("/audio/") &&
       !req.url.startsWith("/fact-videos/") &&
       !req.url.startsWith("/avatars/")
     ) {
-      return reply.sendFile("index.html", WEB_DIST); // SPA fallback (e.g. /accounts/1, /login)
+      reply.type("text/html; charset=utf-8");
+      if (req.method === "HEAD") return reply.send();
+      return reply.send(createReadStream(resolve(WEB_DIST, "index.html"))); // SPA fallback (e.g. /accounts/1, /login)
     }
     return reply.code(404).send({ error: "not found" });
   });
@@ -326,7 +357,7 @@ app.post("/api/auth/login", async (req, reply) => {
   const token = newSessionToken();
   db.createSession(token, user.id, new Date(Date.now() + SESSION_TTL_DAYS * DAY_MS).toISOString());
   setSessionCookie(reply, token);
-  return { id: user.id, username: user.username, role: user.role };
+  return publicUser(req, user);
 });
 
 app.post("/api/auth/logout", async (req, reply) => {
@@ -354,7 +385,7 @@ app.post("/api/auth/impersonation/stop", async (req, reply) => {
   const currentToken = getCookie(req, SESSION_COOKIE);
   if (currentToken && currentToken !== adminToken) db.deleteSession(currentToken);
   reply.header("Set-Cookie", [sessionCookieHeader(adminToken), clearAdminSessionCookieHeader()]);
-  return { ...admin, impersonator: null };
+  return publicUser(req, admin, null);
 });
 
 // uid of the authenticated request (guaranteed set by the hook for gated routes).
@@ -378,9 +409,107 @@ function impersonatorUser(req: unknown): { id: number; username: string; role: s
   return admin;
 }
 
-function publicUser(req: unknown, user: { id: number; username: string; role: string }) {
-  return { id: user.id, username: user.username, role: user.role, impersonator: impersonatorUser(req) };
+function publicUser(
+  req: unknown,
+  user: { id: number; username: string; role: string },
+  impersonator = impersonatorUser(req),
+) {
+  return {
+    id: user.id,
+    username: user.username,
+    role: user.role,
+    impersonator,
+  };
 }
+
+const OUTPUT_ROOT = resolve(process.cwd(), base.outputDir);
+
+function cleanOutputRel(raw: string): string | null {
+  let rel = raw.replace(/^\/+/, "");
+  try {
+    rel = decodeURIComponent(rel);
+  } catch {
+    return null;
+  }
+  if (!rel || isAbsolute(rel) || rel.includes("\\")) return null;
+  const parts = rel.split("/");
+  if (parts.some((part) => !part || part === "." || part === "..")) return null;
+  const abs = resolve(OUTPUT_ROOT, rel);
+  const back = relative(OUTPUT_ROOT, abs);
+  if (!back || back.startsWith("..") || isAbsolute(back)) return null;
+  return rel;
+}
+
+function outputContentType(rel: string): string {
+  const ext = extname(rel).toLowerCase();
+  if (ext === ".mp4") return "video/mp4";
+  if (ext === ".png") return "image/png";
+  if (ext === ".jpg" || ext === ".jpeg") return "image/jpeg";
+  if (ext === ".webp") return "image/webp";
+  if (ext === ".json") return "application/json; charset=utf-8";
+  return "application/octet-stream";
+}
+
+function parseRangeHeader(raw: string, size: number): { start: number; end: number } | null {
+  const m = /^bytes=(\d*)-(\d*)$/.exec(raw.trim());
+  if (!m) return null;
+  if (!m[1] && !m[2]) return null;
+  if (!m[1]) {
+    const suffix = Number(m[2]);
+    if (!Number.isFinite(suffix) || suffix <= 0) return null;
+    return { start: Math.max(0, size - suffix), end: size - 1 };
+  }
+  const start = Number(m[1]);
+  const end = m[2] ? Number(m[2]) : size - 1;
+  if (!Number.isFinite(start) || !Number.isFinite(end) || start < 0 || end < start || start >= size) return null;
+  return { start, end: Math.min(end, size - 1) };
+}
+
+function canReadOutputFile(rel: string, user: { id: number; role: string }): boolean {
+  if (user.role === "admin") return true;
+  const rememberedOwner = rememberedOutputOwner(rel);
+  if (rememberedOwner != null) return rememberedOwner === user.id;
+  if (rel.startsWith("preview/")) return true;
+  if (rel.startsWith("avatars/")) return true;
+  if (rel.startsWith("admin-demos/")) return false;
+  const packPreview = /^packs\/(.+)-\d+\.png$/i.exec(rel);
+  if (packPreview) return getPack(packPreview[1], user.id, false) !== null;
+  if (rel.startsWith("library/")) return db.findOutputFileOwner(rel)?.userId === user.id;
+  return false;
+}
+
+// Output files are user data. Serve them through an authz gate instead of exposing data/output.
+app.get("/files/*", async (req, reply) => {
+  const user = validSessionUser(getCookie(req, SESSION_COOKIE));
+  if (!user) return reply.code(401).send({ error: "Не авторизован" });
+  const rel = cleanOutputRel(String((req.params as Record<string, string>)["*"] ?? ""));
+  if (!rel || !canReadOutputFile(rel, user)) return reply.code(404).send({ error: "not found" });
+  const abs = resolve(OUTPUT_ROOT, rel);
+  let st: ReturnType<typeof statSync>;
+  try {
+    st = statSync(abs);
+  } catch {
+    return reply.code(404).send({ error: "not found" });
+  }
+  if (!st.isFile()) return reply.code(404).send({ error: "not found" });
+
+  const contentType = outputContentType(rel);
+  reply.header("Content-Type", contentType);
+  reply.header("Accept-Ranges", "bytes");
+  const rangeRaw = req.headers.range;
+  const range = typeof rangeRaw === "string" ? parseRangeHeader(rangeRaw, st.size) : null;
+  if (rangeRaw && !range) {
+    reply.header("Content-Range", `bytes */${st.size}`);
+    return reply.code(416).send();
+  }
+  if (range) {
+    reply.header("Content-Range", `bytes ${range.start}-${range.end}/${st.size}`);
+    reply.header("Content-Length", String(range.end - range.start + 1));
+    return reply.code(206).send(createReadStream(abs, { start: range.start, end: range.end }));
+  }
+  reply.header("Content-Length", String(st.size));
+  return reply.send(createReadStream(abs));
+});
 
 function requireAdmin(req: unknown, reply: Replyish): boolean {
   const u = db.getUserById(uid(req));
@@ -393,6 +522,180 @@ function requireAdmin(req: unknown, reply: Replyish): boolean {
 
 function isAdminReq(req: unknown): boolean {
   return db.getUserById(uid(req))?.role === "admin";
+}
+
+type ElevenLabsLimitKey = {
+  index: number;
+  keyHint: string;
+  status: "ok" | "exhausted" | "invalid" | "rate_limited" | "error" | "blocked";
+  httpStatus?: number;
+  tier?: string | null;
+  characterCount: number | null;
+  characterLimit: number | null;
+  remaining: number | null;
+  usedPercent: number | null;
+  resetAt: string | null;
+  error?: string;
+};
+
+function readElevenLabsKeys(): string[] {
+  const raw = [
+    process.env.ELEVENLABS_API_KEYS ?? "",
+    process.env.ELEVENLABS_API_KEY ?? "",
+    ...Object.entries(process.env)
+      .filter(([name]) => /^ELEVENLABS_API_KEY_\d+$/.test(name))
+      .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+      .map(([, value]) => value ?? ""),
+  ].join(",");
+  return [...new Set(raw.split(/[\s,;]+/).map((x) => x.trim()).filter(Boolean))];
+}
+
+function secretHint(key: string, index: number): string {
+  return `key #${index + 1} · ...${key.slice(-4)}`;
+}
+
+function scrubElevenLabsError(value: unknown, key?: string): string {
+  let msg = typeof value === "string" ? value : JSON.stringify(value ?? "");
+  if (!msg || msg === "\"\"") return "ElevenLabs did not return an error body";
+  if (key) msg = msg.split(key).join("[secret]");
+  return msg.replace(/sk_[A-Za-z0-9_]+/g, "[secret]").slice(0, 240);
+}
+
+function asNumber(value: unknown): number | null {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+// "Roger" — a premade voice; free-tier API may use it (Voice-Library voices are barred on free).
+const ELEVENLABS_PROBE_VOICE = "CwhRBWXzGAHq8TQ4Fs17";
+
+// A key can pass the subscription check yet be barred from generating: ElevenLabs
+// flags free accounts for "unusual activity" (VPN / datacenter / shared-IP / multi-account)
+// and disables Free-Tier generation, but the subscription endpoint still returns 200/ok.
+// Detect it with an EMPTY-text TTS request — it bills 0 characters, yet a flagged account
+// still returns 401 detected_unusual_activity before any generation. Returns a reason if
+// barred, else null. Only an explicit unusual-activity signal flips the verdict (conservative).
+async function probeElevenLabsBlocked(key: string): Promise<string | null> {
+  try {
+    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_PROBE_VOICE}`, {
+      method: "POST",
+      headers: { "xi-api-key": key, "content-type": "application/json" },
+      body: JSON.stringify({ text: "", model_id: "eleven_multilingual_v2" }),
+    });
+    if (res.ok) return null;
+    const body = (await res.json().catch(() => null)) as { detail?: { status?: string; message?: string } } | null;
+    if (res.status === 401 && body?.detail?.status === "detected_unusual_activity") {
+      return scrubElevenLabsError(body?.detail?.message ?? "Free Tier disabled (unusual activity)", key);
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+async function fetchElevenLabsLimit(key: string, index: number): Promise<ElevenLabsLimitKey> {
+  const baseRow = {
+    index,
+    keyHint: secretHint(key, index),
+    characterCount: null,
+    characterLimit: null,
+    remaining: null,
+    usedPercent: null,
+    resetAt: null,
+  };
+  try {
+    const res = await fetch("https://api.elevenlabs.io/v1/user/subscription", {
+      headers: {
+        accept: "application/json",
+        "xi-api-key": key,
+      },
+    });
+    const body = await res.json().catch(() => null);
+    if (!res.ok) {
+      const status =
+        res.status === 401 || res.status === 403
+          ? "invalid"
+          : res.status === 429
+            ? "rate_limited"
+            : "error";
+      return {
+        ...baseRow,
+        status,
+        httpStatus: res.status,
+        error: scrubElevenLabsError(body, key),
+      };
+    }
+
+    const obj = (body && typeof body === "object" ? body : {}) as Record<string, unknown>;
+    const count = asNumber(obj.character_count);
+    const limit = asNumber(obj.character_limit);
+    const remaining = count != null && limit != null ? Math.max(0, limit - count) : null;
+    const resetUnix = asNumber(obj.next_character_count_reset_unix);
+    const resetAt = resetUnix ? new Date(resetUnix * 1000).toISOString() : null;
+    const usedPercent = count != null && limit != null && limit > 0 ? Math.min(100, Math.round((count / limit) * 1000) / 10) : null;
+    const row: ElevenLabsLimitKey = {
+      ...baseRow,
+      status: remaining === 0 && limit != null && limit > 0 ? "exhausted" : "ok",
+      tier: typeof obj.tier === "string" ? obj.tier : null,
+      characterCount: count,
+      characterLimit: limit,
+      remaining,
+      usedPercent,
+      resetAt,
+    };
+    // Subscription says "ok", but the account may still be barred from generating — probe it.
+    if (row.status === "ok") {
+      const blocked = await probeElevenLabsBlocked(key);
+      if (blocked) {
+        row.status = "blocked";
+        row.error = blocked;
+      }
+    }
+    return row;
+  } catch (err) {
+    return {
+      ...baseRow,
+      status: "error",
+      error: scrubElevenLabsError((err as Error)?.message ?? err, key),
+    };
+  }
+}
+
+type LimitedReplyish = Replyish & { header: (k: string, v: string) => unknown };
+
+function sendGenerationRateLimit(reply: LimitedReplyish, retryAfterMs = 1_000): unknown {
+  reply.header("Retry-After", String(Math.max(1, Math.ceil(retryAfterMs / 1000))));
+  return reply.code(429).send({ error: RATE_LIMIT_MESSAGE });
+}
+
+function enforceGenerationWindow(
+  req: unknown,
+  reply: LimitedReplyish,
+  route: string,
+  rule: { limit: number; windowMs: number },
+): boolean {
+  if (isAdminReq(req)) return true;
+  const hit = checkRateLimit(`user:${uid(req)}:${route}:window`, rule);
+  if (!hit.ok) {
+    sendGenerationRateLimit(reply, hit.retryAfterMs);
+    return false;
+  }
+  return true;
+}
+
+async function runHeavyGenerationLimited<T>(
+  req: unknown,
+  reply: LimitedReplyish,
+  route: string,
+  fn: () => Promise<T>,
+): Promise<T | unknown> {
+  try {
+    const isAdmin = isAdminReq(req);
+    return await withActiveLimit(heavyActiveKey(uid(req), isAdmin, route), isAdmin ? 2 : 1, fn);
+  } catch (e) {
+    if (e instanceof RateLimitError) return sendGenerationRateLimit(reply, e.retryAfterMs);
+    throw e;
+  }
 }
 
 // Admins may inspect/edit any channel; regular users stay locked to their own channels.
@@ -409,6 +712,15 @@ function accountOwnerId(req: unknown, account: Account): number {
   return account.userId ?? uid(req);
 }
 
+function rejectScheduleLimit(reply: Replyish, schedule: unknown, ownerId: number, excludeAccountId?: number): boolean {
+  if (!Array.isArray(schedule)) return false;
+  const otherSlots = db.scheduleSlotsForUser(ownerId, excludeAccountId);
+  const limitError = dailyScheduleLimitError(schedule.length, otherSlots);
+  if (!limitError) return false;
+  reply.code(400).send({ error: limitError });
+  return true;
+}
+
 function accountOwnerCreds(req: unknown, account: Account): ClientCreds | null {
   return userCreds(accountOwnerId(req, account));
 }
@@ -421,6 +733,55 @@ function deckAllowed(req: unknown, deckId: string): boolean {
   if (isPackDeckId(deckId)) return getPack(deckId.slice(5), uid(req), false) !== null;
   if (getDeck(deckId).adminOnly) return false;
   return !db.isDeckHiddenFor(uid(req), deckId);
+}
+
+function cleanDeckIds(ids: unknown): string[] {
+  if (!Array.isArray(ids)) return [];
+  return [...new Set(ids.map((x) => String(x || "").trim()).filter(Boolean))];
+}
+
+function accountSourceDecks(account: Account): string[] {
+  const ids = account.sourceDecks?.length ? account.sourceDecks : [account.lang];
+  return [...new Set(ids.map((x) => String(x || "").trim()).filter(Boolean))];
+}
+
+function deckExists(req: unknown, deckId: string): boolean {
+  if (DECKS.some((d) => d.id === deckId)) return true;
+  return isPackDeckId(deckId) && !!getPack(deckId.slice(5), uid(req), isAdminReq(req));
+}
+
+function deckContentLang(req: unknown, deckId: string): string {
+  if (isPackDeckId(deckId)) return getPack(deckId.slice(5), uid(req), isAdminReq(req))?.lang || "";
+  return deckLang(deckId);
+}
+
+function validateAccountSourceDeck(req: unknown, deckId: string, channelLang: string): string | null {
+  if (!deckExists(req, deckId)) return `Неизвестный пак «${deckId}».`;
+  if (!deckAllowed(req, deckId)) return "Этот пак вам недоступен — нельзя поставить его источником канала.";
+  const contentLang = deckContentLang(req, deckId);
+  if (channelLang && contentLang && contentLang !== channelLang)
+    return `Язык контента (${contentLang.toUpperCase()}) ≠ язык канала (${channelLang.toUpperCase()}) — выровняй их.`;
+  return null;
+}
+
+function resolveAccountSourceDeck(
+  req: unknown,
+  reply: Replyish,
+  account: Account,
+  requested?: string | null,
+): string | null {
+  const deckId = String(requested || account.lang || "").trim();
+  const sources = accountSourceDecks(account);
+  if (!deckId || !sources.includes(deckId)) {
+    reply.code(400).send({ error: "Этот пак не выбран источником канала — сначала добавьте его в «Паки канала»." });
+    return null;
+  }
+  const err = validateAccountSourceDeck(req, deckId, account.channelLang);
+  if (err) {
+    reply.code(err.startsWith("Неизвестный") ? 400 : 403).send({ error: err });
+    return null;
+  }
+  return deckId;
 }
 
 function notificationVisible(req: unknown, notificationId: number): boolean {
@@ -466,6 +827,12 @@ function errorText(err: unknown): string {
       }
     });
   return parts.join("\n");
+}
+
+function publicErrorMessage(err: unknown): string {
+  const msg = (err as { message?: unknown })?.message;
+  if (typeof msg === "string" && msg.trim()) return msg.trim().slice(0, 500);
+  return "Не удалось выполнить операцию";
 }
 
 function extractGoogleApiUrl(text: string): string | null {
@@ -552,7 +919,9 @@ app.get("/api/config", async (req) => {
 });
 
 // ---- Settings: per-user Google key (client_secret JSON, uploaded by each user) ----
-app.get("/api/settings", async (req) => ({ hasGoogleKey: !!db.getUserClientSecret(uid(req)) }));
+app.get("/api/settings", async (req) => ({
+  hasGoogleKey: !!db.getUserClientSecret(uid(req)),
+}));
 
 app.put("/api/settings/google-key", async (req, reply) => {
   const body = (req.body as { json?: string }) ?? {};
@@ -657,6 +1026,34 @@ app.post("/api/admin/users/:id/notifications", async (req, reply) => {
   return notification;
 });
 
+app.get("/api/admin/limits", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+  const keys = readElevenLabsKeys();
+  const rows = await Promise.all(keys.map((key, index) => fetchElevenLabsLimit(key, index)));
+  const numericRows = rows.filter((row) => row.characterCount != null && row.characterLimit != null);
+  const characterCount = numericRows.reduce((sum, row) => sum + (row.characterCount ?? 0), 0);
+  const characterLimit = numericRows.reduce((sum, row) => sum + (row.characterLimit ?? 0), 0);
+  const remaining = numericRows.reduce((sum, row) => sum + Math.max(0, row.remaining ?? 0), 0);
+  return {
+    provider: "elevenlabs",
+    updatedAt: new Date().toISOString(),
+    keys: rows,
+    totals: {
+      configured: rows.length,
+      active: rows.filter((row) => row.status === "ok" && (row.remaining == null || row.remaining > 0)).length,
+      exhausted: rows.filter((row) => row.status === "exhausted").length,
+      invalid: rows.filter((row) => row.status === "invalid").length,
+      rateLimited: rows.filter((row) => row.status === "rate_limited").length,
+      errors: rows.filter((row) => row.status === "error").length,
+      blocked: rows.filter((row) => row.status === "blocked").length,
+      characterCount: numericRows.length ? characterCount : null,
+      characterLimit: numericRows.length ? characterLimit : null,
+      remaining: numericRows.length ? remaining : null,
+      usedPercent: characterLimit > 0 ? Math.min(100, Math.round((characterCount / characterLimit) * 1000) / 10) : null,
+    },
+  };
+});
+
 // ---- Admin: per-user pack (deck) visibility ----
 // All packs (matrix columns).
 app.get("/api/admin/decks", async (req, reply) => {
@@ -696,6 +1093,7 @@ app.get("/api/admin/user-decks", async (req, reply) => {
       used: used[u.id] ?? [],
       scheduled: db.scheduleSlotsForUser(u.id), // posts/day planned across all their channels
       library: db.countVideosByUser(u.id), // videos queued in their libraries
+      usedTotal: db.usedAnecdoteCount(u.id), // всего использованных карточек (встроенные + кастомные) — бейдж в панели сброса
       deckStats,
     };
   });
@@ -720,6 +1118,58 @@ app.put("/api/admin/users/:id/decks", async (req, reply) => {
     }
   }
   return { ok: true, hidden: finalHidden };
+});
+
+// Reset one user's used-history for a built-in deck. Existing library videos stay intact;
+// the next generation can pick that deck's items from the beginning again.
+app.post("/api/admin/users/:id/decks/:deckId/reset", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+  const id = Number((req.params as { id: string; deckId: string }).id);
+  const deckId = decodeURIComponent((req.params as { id: string; deckId: string }).deckId);
+  const target = db.getUserById(id);
+  if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
+  // Кастомный пак: ключи карточек = packCardKey(values); чистим именно их у этого юзера.
+  if (deckId.startsWith("pack:")) {
+    const pack = getPack(deckId.slice(5), id, true); // admin-load: читаем карточки любого пака
+    if (!pack) return reply.code(404).send({ error: "Пак не найден" });
+    const removed = db.clearAnecdoteUsedKeys(id, pack.cards.map((c) => packCardKey(c.values)));
+    return { ok: true, removed };
+  }
+  if (!DECKS.some((d) => d.id === deckId)) return reply.code(404).send({ error: "Пак не найден" });
+  const removed = db.clearAnecdoteUsedKeys(id, deckAnecdoteKeys(deckId));
+  return { ok: true, removed };
+});
+
+// Admin: полная «занятость паков» одного юзера — каждый встроенный дек и кастомный пак, который он
+// МОЖЕТ использовать ИЛИ уже использовал, с per-user used/total/available. Кормит панель сброса
+// (встроенные `DECKS` + кастомные `pack:*`), чтобы было видно ВСЕ паки юзера, а не только использованные.
+app.get("/api/admin/users/:id/pack-usage", async (req, reply) => {
+  if (!requireAdmin(req, reply)) return;
+  const id = Number((req.params as { id: string }).id);
+  const target = db.getUserById(id);
+  if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
+  const usedKeys = db.usedAnecdoteKeys(id);
+  const targetIsAdmin = target.role === "admin";
+  const hidden = targetIsAdmin ? new Set<string>() : new Set(db.hiddenDecksFor(id));
+  const items: { id: string; name: string; pack: boolean; total: number; used: number; available: number }[] = [];
+  // Встроенные деки: видимые юзеру ИЛИ уже использованные (чтобы ничего сбрасываемого не пряталось).
+  for (const d of DECKS) {
+    const visible = (targetIsAdmin || !d.adminOnly) && !hidden.has(d.id);
+    const s = libraryStats(d.id, usedKeys);
+    if (!visible && s.used === 0) continue;
+    items.push({ id: d.id, name: d.name, pack: false, total: s.total, used: s.used, available: s.available });
+  }
+  // Кастомные паки: доступные юзеру ИЛИ уже использованные (ключи карточек — packCardKey(values)).
+  for (const summary of listAllPacks()) {
+    const pack = getPack(summary.id, id, true); // admin-load: нужны карточки, чтобы посчитать used
+    if (!pack) continue;
+    let used = 0;
+    for (const c of pack.cards) if (usedKeys.has(packCardKey(c.values))) used++;
+    if (!canAccess(pack, id, targetIsAdmin) && used === 0) continue;
+    const total = pack.cards.length;
+    items.push({ id: `pack:${pack.id}`, name: pack.name, pack: true, total, used, available: Math.max(0, total - used) });
+  }
+  return { userId: id, username: target.username, items };
 });
 
 // Admin: set a custom pack's owners (0+ users). Owners may edit the pack (name/lang/cards) on /cards.
@@ -813,8 +1263,9 @@ app.get("/api/accounts/:id", async (req, reply) => {
   if (!a) return;
   return a;
 });
-app.post("/api/accounts", async (req) => {
+app.post("/api/accounts", async (req, reply) => {
   const body = (req.body as Partial<Account>) ?? {};
+  if (rejectScheduleLimit(reply, body.schedule, uid(req))) return;
   return db.createAccount({
     ...body,
     userId: uid(req),
@@ -846,34 +1297,46 @@ app.put("/api/accounts/:id", async (req, reply) => {
   // avatar can only be one of our served paths (built-in /avatars/ or uploaded /files/avatars/)
   if (body.avatar != null && !/^\/(avatars|files)\//.test(body.avatar)) delete body.avatar;
   else if (body.avatar != null) body.avatarSource = "manual";
-  if (body.lang) {
-    const known = DECKS.some((d) => d.id === body.lang) || isPackDeckId(body.lang);
-    if (!known) return reply.code(400).send({ error: `Неизвестный язык канала «${body.lang}».` });
-    if (!deckAllowed(req, body.lang))
-      return reply.code(403).send({ error: "Этот пак вам недоступен — нельзя поставить его языком канала." });
+  const requestedSources = cleanDeckIds((body as { sourceDecks?: unknown }).sourceDecks);
+  if (requestedSources.length) {
+    const channelLang = (body.channelLang ?? acc.channelLang ?? "") as string;
+    for (const deckId of requestedSources) {
+      const err = validateAccountSourceDeck(req, deckId, channelLang);
+      if (err) return reply.code(err.startsWith("Неизвестный") ? 400 : 403).send({ error: err });
+    }
+    body.sourceDecks = requestedSources;
+    if (!body.lang || !requestedSources.includes(body.lang)) body.lang = requestedSources[0];
+  } else if (body.lang) {
+    const err = validateAccountSourceDeck(req, body.lang, (body.channelLang ?? acc.channelLang ?? "") as string);
+    if (err) return reply.code(err.startsWith("Неизвестный") ? 400 : 403).send({ error: err });
+    body.sourceDecks = [body.lang];
   }
   // Бэкстоп языка: язык выбранного контента (деки/пака) обязан совпадать с языком канала.
   {
-    const newLang = body.lang ?? acc.lang ?? "";
+    const sources = body.sourceDecks?.length ? body.sourceDecks : accountSourceDecks(acc);
+    const newLang = body.lang ?? sources[0] ?? acc.lang ?? "";
     const newChannelLang = (body.channelLang ?? acc.channelLang ?? "") as string;
-    if (newChannelLang) {
-      const cl = isPackDeckId(newLang)
-        ? getPack(newLang.slice(5), uid(req), db.getUserById(uid(req))?.role === "admin")?.lang || ""
-        : deckLang(newLang);
-      if (cl && cl !== newChannelLang)
+    for (const source of sources) {
+      const cl = deckContentLang(req, source);
+      if (newChannelLang && cl && cl !== newChannelLang)
         return reply
           .code(400)
           .send({ error: `Язык контента (${cl.toUpperCase()}) ≠ язык канала (${newChannelLang.toUpperCase()}) — выровняй их.` });
     }
+    if (!sources.includes(newLang)) body.lang = sources[0] ?? newLang;
   }
-  // Cap: ≤ 100 scheduled posts per day per user (sum of schedule slots across all their channels). Admins exempt.
-  if (Array.isArray(body.schedule) && db.getUserById(uid(req))?.role !== "admin") {
-    const others = db.scheduleSlotsForUser(uid(req), id);
-    if (others + body.schedule.length > 100)
-      return reply.code(400).send({
-        error: `Лимит 100 публикаций в сутки на пользователя. На остальных каналах уже ${others}, этому каналу доступно ${Math.max(0, 100 - others)}.`,
-      });
+  if (body.slotDecks && typeof body.slotDecks === "object" && !Array.isArray(body.slotDecks)) {
+    const allowed = new Set(body.sourceDecks?.length ? body.sourceDecks : accountSourceDecks(acc));
+    const clean: Record<string, string> = {};
+    for (const [time, deckId] of Object.entries(body.slotDecks)) {
+      const t = String(time || "").trim();
+      const d = String(deckId || "").trim();
+      if (/^([01]\d|2[0-3]):[0-5]\d$/.test(t) && allowed.has(d)) clean[t] = d;
+    }
+    body.slotDecks = clean;
   }
+  // Caps apply to admins too; they are about platform load, not permissions.
+  if (rejectScheduleLimit(reply, body.schedule, accountOwnerId(req, acc), id)) return;
   const a = db.updateAccount(id, body);
   if (!a) return reply.code(404).send({ error: "not found" });
   return a;
@@ -912,10 +1375,12 @@ app.get("/api/admin/analytics", async (req, reply) => {
   return buildAdminAnalytics(db, { from: q.from, to: q.to });
 });
 
-// Per-user analytics — any signed-in user, HARD-scoped to their OWN channels only.
+// Per-user analytics — any signed-in user, scoped to their OWN channels. Admins may pass
+// ?scope=all to aggregate publishing activity across EVERY channel (matches the «Все каналы» tab).
 app.get("/api/analytics", async (req) => {
-  const q = (req.query as { from?: string; to?: string }) ?? {};
-  return buildUserAnalytics(db, uid(req), { from: q.from, to: q.to });
+  const q = (req.query as { from?: string; to?: string; scope?: string }) ?? {};
+  const allChannels = q.scope === "all" && db.getUserById(uid(req))?.role === "admin";
+  return buildUserAnalytics(db, uid(req), { from: q.from, to: q.to }, { allChannels });
 });
 
 // ---- Channel stats: subscribers/views/videos snapshots + deltas ----
@@ -1441,6 +1906,14 @@ app.post("/api/notifications/:id/read", async (req, reply) => {
   return notification;
 });
 
+app.post("/api/notifications/:id/unread", async (req, reply) => {
+  const id = Number((req.params as { id: string }).id);
+  if (!notificationVisible(req, id)) return reply.code(404).send({ error: "Уведомление не найдено" });
+  const notification = db.markNotificationUnread(id);
+  if (notification) emitNotificationChange(notification.userId);
+  return notification;
+});
+
 app.post("/api/notifications/:id/resolve", async (req, reply) => {
   const id = Number((req.params as { id: string }).id);
   if (!notificationVisible(req, id)) return reply.code(404).send({ error: "Уведомление не найдено" });
@@ -1608,17 +2081,17 @@ app.post("/api/videos", async (req, reply) => {
   const acc = accessibleAccount(req, reply, body.accountId);
   if (!acc) return;
   const ownerId = accountOwnerId(req, acc);
-  if (isPackDeckId(acc.lang))
+  const sourceDeckId = resolveAccountSourceDeck(req, reply, acc, body.deck);
+  if (!sourceDeckId) return;
+  if (isPackDeckId(sourceDeckId))
     return reply.code(400).send({ error: "Это пак-канал — добавляйте ролики кнопкой «Сгенерировать» или через Студию." });
-  const channelDeck = DECKS.find((d) => d.id === acc.lang);
+  const channelDeck = DECKS.find((d) => d.id === sourceDeckId);
   if (!channelDeck)
-    return reply.code(400).send({ error: `У канала язык «${acc.lang}» без пака — смените язык канала.` });
+    return reply.code(400).send({ error: `У канала язык «${sourceDeckId}» без пака — смените язык канала.` });
   if (channelDeck.preFact)
     return reply.code(400).send({ error: "Это видео-пак — добавляйте ролики кнопкой «Сгенерировать»." });
   if (!deckAllowed(req, channelDeck.id))
     return reply.code(403).send({ error: "Этот пак вам недоступен." });
-  if ((body.deck || channelDeck.id) !== channelDeck.id)
-    return reply.code(400).send({ error: `Язык ролика не совпадает с языком канала (${channelDeck.name}) — не сохранено.` });
   return buildLibraryVideo({
     userId: ownerId,
     accountId: body.accountId,
@@ -1634,64 +2107,70 @@ app.post("/api/videos", async (req, reply) => {
 app.post("/api/videos/batch", async (req, reply) => {
   const body = (req.body as { accountId?: number; count?: number; bg?: string; music?: string; deck?: string }) ?? {};
   if (!body.accountId) return reply.code(400).send({ error: "accountId обязателен" });
-  const acc = accessibleAccount(req, reply, body.accountId);
+  const accountId = body.accountId;
+  const acc = accessibleAccount(req, reply, accountId);
   if (!acc) return;
-  const ownerId = accountOwnerId(req, acc);
-  const requested = Math.max(1, Math.min(25, Number(body.count) || 5));
-  const seen = new Set<string>(db.usedAnecdoteKeys(ownerId)); // exclude owner-used + dedupe batch
-  const created: unknown[] = [];
-  // Пак-канал (язык = "pack:<id>"): случайные неиспользованные карточки пака → рендер мостом.
-  if (isPackDeckId(acc.lang)) {
-    if (!deckAllowed(req, acc.lang)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
-    const pack = getPack(acc.lang.slice(5), ownerId, isAdminReq(req));
-    if (!pack) return reply.code(404).send({ error: "Пак не найден." });
-    if (!pack.templates.length) return reply.code(400).send({ error: "У пака нет шаблона." });
+  if (!enforceGenerationWindow(req, reply, "videos-batch", BATCH_VIDEO_LIMIT)) return;
+  return runHeavyGenerationLimited(req, reply, "videos-batch", async () => {
+    const ownerId = accountOwnerId(req, acc);
+    const requested = Math.max(1, Math.min(isAdminReq(req) ? 25 : NORMAL_BATCH_VIDEO_CAP, Number(body.count) || 5));
+    const seen = new Set<string>(db.usedAnecdoteKeys(ownerId)); // exclude owner-used + dedupe batch
+    const created: unknown[] = [];
+    const sourceDeckId = resolveAccountSourceDeck(req, reply, acc, body.deck);
+    if (!sourceDeckId) return;
+    // Пак-канал (язык = "pack:<id>"): случайные неиспользованные карточки пака → рендер мостом.
+    if (isPackDeckId(sourceDeckId)) {
+      if (!deckAllowed(req, sourceDeckId)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
+      const pack = getPack(sourceDeckId.slice(5), ownerId, isAdminReq(req));
+      if (!pack) return reply.code(404).send({ error: "Пак не найден." });
+      if (!pack.templates.length) return reply.code(400).send({ error: "У пака нет шаблона." });
+      for (let i = 0; i < requested; i++) {
+        const picked = pickUnusedPackCard(pack, seen);
+        if (!picked) break;
+        seen.add(picked.key);
+        created.push(
+          await buildPackLibraryVideo({
+            db,
+            userId: ownerId,
+            accountId,
+            pack,
+            picked,
+            music: body.music || undefined,
+          }),
+        );
+      }
+      return { created, requested, made: created.length, exhausted: created.length < requested };
+    }
+    const channelDeck = DECKS.find((d) => d.id === sourceDeckId);
+    if (!channelDeck)
+      return reply.code(400).send({ error: `У канала язык «${sourceDeckId}» без пака — смените язык канала.` });
+    if (!deckAllowed(req, channelDeck.id))
+      return reply.code(403).send({ error: "Этот пак вам недоступен." });
+    const deckId = channelDeck.id; // FORCE the channel's language — no cross-language mixing
     for (let i = 0; i < requested; i++) {
-      const picked = pickUnusedPackCard(pack, seen);
-      if (!picked) break;
-      seen.add(picked.key);
+      const a = randomAnecdote(deckId, seen);
+      if (!a) break; // no unused anecdotes left
+      seen.add(anecdoteKey(a.text));
+      if (channelDeck.preFact) {
+        // Pre-built fact videos: copy the chosen mp4 into the library (no rendering).
+        created.push(await buildFactLibraryVideo({ db, userId: ownerId, accountId, deckId, picked: a }));
+        continue;
+      }
       created.push(
-        await buildPackLibraryVideo({
-          db,
+        await buildLibraryVideo({
           userId: ownerId,
-          accountId: body.accountId,
-          pack,
-          picked,
-          music: body.music || undefined,
+          accountId,
+          text: a.text,
+          title: a.title,
+          bg: body.bg, // undefined → random background per video
+          music: body.music || undefined, // empty/undefined → random track per video
+          deck: deckId,
+          profession: a.profession, // tips deck → which profession background to render on
         }),
       );
     }
     return { created, requested, made: created.length, exhausted: created.length < requested };
-  }
-  const channelDeck = DECKS.find((d) => d.id === acc.lang);
-  if (!channelDeck)
-    return reply.code(400).send({ error: `У канала язык «${acc.lang}» без пака — смените язык канала.` });
-  if (!deckAllowed(req, channelDeck.id))
-    return reply.code(403).send({ error: "Этот пак вам недоступен." });
-  const deckId = channelDeck.id; // FORCE the channel's language — no cross-language mixing
-  for (let i = 0; i < requested; i++) {
-    const a = randomAnecdote(deckId, seen);
-    if (!a) break; // no unused anecdotes left
-    seen.add(anecdoteKey(a.text));
-    if (channelDeck.preFact) {
-      // Pre-built fact videos: copy the chosen mp4 into the library (no rendering).
-      created.push(await buildFactLibraryVideo({ db, userId: ownerId, accountId: body.accountId, deckId, picked: a }));
-      continue;
-    }
-    created.push(
-      await buildLibraryVideo({
-        userId: ownerId,
-        accountId: body.accountId,
-        text: a.text,
-        title: a.title,
-        bg: body.bg, // undefined → random background per video
-        music: body.music || undefined, // empty/undefined → random track per video
-        deck: deckId,
-        profession: a.profession, // tips deck → which profession background to render on
-      }),
-    );
-  }
-  return { created, requested, made: created.length, exhausted: created.length < requested };
+  });
 });
 
 // ---- Global generation queue: ONE video at a time across ALL users → bounds server load ----
@@ -1701,54 +2180,75 @@ initGenQueue(async (job) => {
   if (!acc) throw new Error("Канал не найден");
   const ownerId = job.ownerUserId ?? job.userId;
   const seen = new Set<string>(db.usedAnecdoteKeys(ownerId)); // skip owner's already-used cards
-  // Пак-канал: одна случайная неиспользованная карточка пака → видео в библиотеку.
-  if (isPackDeckId(acc.lang)) {
-    const pack = getPack(acc.lang.slice(5), ownerId, db.getUserById(job.userId)?.role === "admin");
-    if (!pack || !pack.templates.length) throw new Error(`Пак «${acc.lang}» не найден или без шаблона`);
-    const picked = pickUnusedPackCard(pack, seen);
-    if (!picked) return "exhausted";
-    await buildPackLibraryVideo({ db, userId: ownerId, accountId: job.accountId, pack, picked });
+  const sources = job.deckIds?.length ? job.deckIds : accountSourceDecks(acc);
+  const generateFromSource = async (sourceDeck: string): Promise<"made" | "exhausted"> => {
+    // Пак-канал: одна случайная неиспользованная карточка пака → видео в библиотеку.
+    if (isPackDeckId(sourceDeck)) {
+      const pack = getPack(sourceDeck.slice(5), ownerId, db.getUserById(job.userId)?.role === "admin");
+      if (!pack || !pack.templates.length) throw new Error(`Пак «${sourceDeck}» не найден или без шаблона`);
+      const picked = pickUnusedPackCard(pack, seen);
+      if (!picked) return "exhausted";
+      await buildPackLibraryVideo({ db, userId: ownerId, accountId: job.accountId, pack, picked });
+      return "made";
+    }
+    const channelDeck = DECKS.find((d) => d.id === sourceDeck);
+    if (!channelDeck) throw new Error(`У канала язык «${sourceDeck}» без пака`);
+    const a = randomAnecdote(channelDeck.id, seen);
+    if (!a) return "exhausted"; // deck has no unused cards left
+    if (channelDeck.preFact) {
+      await buildFactLibraryVideo({ db, userId: ownerId, accountId: job.accountId, deckId: channelDeck.id, picked: a });
+      return "made";
+    }
+    await buildLibraryVideo({
+      userId: ownerId,
+      accountId: job.accountId,
+      text: a.text,
+      title: a.title,
+      deck: channelDeck.id,
+      profession: a.profession,
+    });
     return "made";
+  };
+  for (let offset = 0; offset < Math.max(1, sources.length); offset++) {
+    const sourceDeck = sources[(job.done + offset) % Math.max(1, sources.length)] || acc.lang;
+    const result = await generateFromSource(sourceDeck);
+    if (result === "made") return "made";
   }
-  const channelDeck = DECKS.find((d) => d.id === acc.lang);
-  if (!channelDeck) throw new Error(`У канала язык «${acc.lang}» без пака`);
-  const a = randomAnecdote(channelDeck.id, seen);
-  if (!a) return "exhausted"; // deck has no unused cards left
-  if (channelDeck.preFact) {
-    await buildFactLibraryVideo({ db, userId: ownerId, accountId: job.accountId, deckId: channelDeck.id, picked: a });
-    return "made";
-  }
-  await buildLibraryVideo({
-    userId: ownerId,
-    accountId: job.accountId,
-    text: a.text,
-    title: a.title,
-    deck: channelDeck.id,
-    profession: a.profession,
-  });
-  return "made";
+  return "exhausted";
 });
 
-// Enqueue a batch (1–20 for regular users; admins up to 100). Returns the job id to poll.
+// Enqueue a batch. Regular users may have at most USER_GEN_QUEUE_CAP unfinished videos queued
+// across their jobs; admins are not capped.
 app.post("/api/gen-queue", async (req, reply) => {
-  const body = (req.body as { accountId?: number; count?: number }) ?? {};
+  const body = (req.body as { accountId?: number; count?: number; deckIds?: string[] }) ?? {};
   if (!body.accountId) return reply.code(400).send({ error: "accountId обязателен" });
   const acc = accessibleAccount(req, reply, body.accountId);
   if (!acc) return;
   const ownerId = accountOwnerId(req, acc);
-  // Пак-канал тоже можно ставить в очередь (воркер сгенерит карточки пака); иначе — встроенная дека.
-  if (isPackDeckId(acc.lang)) {
-    if (!deckAllowed(req, acc.lang)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
-  } else {
-    const channelDeck = DECKS.find((d) => d.id === acc.lang);
-    if (!channelDeck)
-      return reply.code(400).send({ error: `У канала язык «${acc.lang}» без пака — смените язык канала.` });
-    if (!deckAllowed(req, channelDeck.id))
-      return reply.code(403).send({ error: "Этот пак вам недоступен." });
+  const requestedDecks = cleanDeckIds(body.deckIds);
+  const sources = accountSourceDecks(acc);
+  const deckIds = requestedDecks.length ? requestedDecks : [acc.lang];
+  for (const deckId of deckIds) {
+    if (!sources.includes(deckId))
+      return reply.code(400).send({ error: "Этот пак не выбран источником канала — сначала добавьте его в «Паки канала»." });
+    const err = validateAccountSourceDeck(req, deckId, acc.channelLang);
+    if (err) return reply.code(err.startsWith("Неизвестный") ? 400 : 403).send({ error: err });
   }
-  const cap = db.getUserById(uid(req))?.role === "admin" ? 100 : 50;
-  const total = Math.max(1, Math.min(cap, Number(body.count) || 1));
-  const job = genEnqueue(uid(req), body.accountId, total, ownerId);
+  const isAdmin = db.getUserById(uid(req))?.role === "admin";
+  const perRequestCap = isAdmin ? Number.MAX_SAFE_INTEGER : 50;
+  const total = Math.max(1, Math.min(perRequestCap, Math.floor(Number(body.count) || 1)));
+  if (!isAdmin) {
+    const queued = genQueuedRemainingForUser(uid(req));
+    const remaining = Math.max(0, USER_GEN_QUEUE_CAP - queued);
+    if (total > remaining)
+      return reply.code(400).send({
+        error:
+          remaining > 0
+            ? `В вашей очереди уже ${queued} видео. Можно добавить ещё максимум ${remaining}.`
+            : `В вашей очереди уже максимум ${USER_GEN_QUEUE_CAP} видео — дождитесь завершения части задач.`,
+      });
+  }
+  const job = genEnqueue(uid(req), body.accountId, total, ownerId, deckIds);
   return { jobId: job.id, total: job.total };
 });
 
@@ -1789,9 +2289,9 @@ app.post("/api/videos/:id/post-now", async (req, reply) => {
   if (!token) return reply.code(400).send({ error: "Канал не подключён к YouTube" });
   const creds = accountOwnerCreds(req, acc);
   if (!creds) return reply.code(400).send({ error: "Сначала загрузите свой Google-ключ в Настройках" });
-  // HARD language guard: never post a video whose language differs from the channel's.
-  if (DECKS.some((d) => d.id === acc.lang) && v.deck !== acc.lang)
-    return reply.code(400).send({ error: `Язык ролика (${v.deck}) ≠ язык канала (${acc.lang}) — не выложено.` });
+  // HARD source guard: never post a video whose deck is not selected for this channel.
+  if (!accountSourceDecks(acc).includes(v.deck))
+    return reply.code(400).send({ error: `Пак ролика (${v.deck}) не выбран у канала — не выложено.` });
   // Optional publishAt (RFC3339) → scheduled (private until then); empty → publish now.
   const publishAt = ((req.body as { publishAt?: string })?.publishAt || "").trim() || null;
   try {
@@ -1890,26 +2390,33 @@ app.post("/api/generate/anecdote", async (req, reply) => {
   const body = (req.body as { text?: string; title?: string; bg?: string; avoidBg?: string; deck?: string }) ?? {};
   const deck = getDeck(body.deck);
   if (!deckAllowed(req, deck.id)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
-  let text = body.text;
-  let title = body.title;
-  let profession: string | undefined;
-  if (!text) {
-    const a = randomAnecdote(deck.id, db.usedAnecdoteKeys(uid(req)));
-    if (!a) return { error: "Нет свободных анекдотов (все уже использованы)" };
-    text = a.text;
-    title = a.title || undefined;
-    profession = a.profession;
-    db.markAnecdoteUsed(uid(req), anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот
-  }
-  if (!title) title = pickGenericTitle(deck);
+  if (!enforceGenerationWindow(req, reply, "studio-image", STUDIO_IMAGE_LIMIT)) return;
+  return runHeavyGenerationLimited(req, reply, "studio-image", async () => {
+    let text = body.text;
+    let title = body.title;
+    let profession: string | undefined;
+    if (!text) {
+      const a = randomAnecdote(deck.id, db.usedAnecdoteKeys(uid(req)));
+      if (!a) return { error: "Нет свободных анекдотов (все уже использованы)" };
+      text = a.text;
+      title = a.title || undefined;
+      profession = a.profession;
+      db.markAnecdoteUsed(uid(req), anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот
+    }
+    if (!title) title = pickGenericTitle(deck);
 
-  previewCounter++;
-  const rel = `preview/anek-${Date.now()}-${previewCounter}.png`;
-  const out = resolve(process.cwd(), base.outputDir, rel);
-  const r = await metrics.track("render", () =>
-    renderAnecdote({ title, text, channel: deck.name, bg: body.bg, avoidBg: body.avoidBg, deck: deck.id, profession }, out),
-  );
-  return { imageUrl: `/files/${rel}`, title, text, chars: text.length, bg: r.bg, fontPx: r.fontPx };
+    previewCounter++;
+    const rel = `preview/anek-${Date.now()}-${previewCounter}.png`;
+    const out = resolve(process.cwd(), base.outputDir, rel);
+    const r = await metrics.track("render", () =>
+      renderAnecdote(
+        { title, text, channel: deck.name, bg: body.bg, avoidBg: body.avoidBg, deck: deck.id, profession },
+        out,
+      ),
+    );
+    rememberOutputOwner([rel], uid(req));
+    return { imageUrl: `/files/${rel}`, title, text, chars: text.length, bg: r.bg, fontPx: r.fontPx };
+  });
 });
 
 app.get("/api/backgrounds", async () => listBackgrounds());
@@ -1920,34 +2427,38 @@ app.post("/api/generate/anecdote-video", async (req, reply) => {
   const body = (req.body as { text?: string; title?: string; bg?: string; music?: string; deck?: string }) ?? {};
   const deck = getDeck(body.deck);
   if (!deckAllowed(req, deck.id)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
-  let text = body.text;
-  let title = body.title;
-  let profession: string | undefined;
-  if (!text) {
-    const a = randomAnecdote(deck.id, db.usedAnecdoteKeys(uid(req)));
-    if (!a) return { error: "Нет свободных анекдотов (все уже использованы)" };
-    text = a.text;
-    title = a.title || undefined;
-    profession = a.profession;
-    db.markAnecdoteUsed(uid(req), anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот
-  }
-  if (!title) title = pickGenericTitle(deck);
+  if (!enforceGenerationWindow(req, reply, "studio-video", STUDIO_VIDEO_LIMIT)) return;
+  return runHeavyGenerationLimited(req, reply, "studio-video", async () => {
+    let text = body.text;
+    let title = body.title;
+    let profession: string | undefined;
+    if (!text) {
+      const a = randomAnecdote(deck.id, db.usedAnecdoteKeys(uid(req)));
+      if (!a) return { error: "Нет свободных анекдотов (все уже использованы)" };
+      text = a.text;
+      title = a.title || undefined;
+      profession = a.profession;
+      db.markAnecdoteUsed(uid(req), anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот
+    }
+    if (!title) title = pickGenericTitle(deck);
 
-  // Music: explicit track | "none" = silent | empty = random; islamic/christian get their own ambient bed.
-  const { music, audioPath } = resolveAudio(body.music, deck);
+    // Music: explicit track | "none" = silent | empty = random; islamic/christian get their own ambient bed.
+    const { music, audioPath } = resolveAudio(body.music, deck);
 
-  videoCounter++;
-  const stamp = `${Date.now()}-${videoCounter}`;
-  const imgRel = `preview/anek-${stamp}.png`;
-  const vidRel = `preview/anek-${stamp}.mp4`;
-  const imgOut = resolve(process.cwd(), base.outputDir, imgRel);
-  const vidOut = resolve(process.cwd(), base.outputDir, vidRel);
-  const r = await metrics.track("render", async () => {
-    const rr = await renderAnecdote({ title, text, channel: deck.name, bg: body.bg, deck: deck.id, profession }, imgOut);
-    await assembleStillVideo(imgOut, vidOut, { durationSec: 6, audioPath });
-    return rr;
+    videoCounter++;
+    const stamp = `${Date.now()}-${videoCounter}`;
+    const imgRel = `preview/anek-${stamp}.png`;
+    const vidRel = `preview/anek-${stamp}.mp4`;
+    const imgOut = resolve(process.cwd(), base.outputDir, imgRel);
+    const vidOut = resolve(process.cwd(), base.outputDir, vidRel);
+    const r = await metrics.track("render", async () => {
+      const rr = await renderAnecdote({ title, text, channel: deck.name, bg: body.bg, deck: deck.id, profession }, imgOut);
+      await assembleStillVideo(imgOut, vidOut, { durationSec: 6, audioPath });
+      return rr;
+    });
+    rememberOutputOwner([imgRel, vidRel], uid(req));
+    return { videoUrl: `/files/${vidRel}`, imageUrl: `/files/${imgRel}`, title, text, chars: text.length, bg: r.bg, music };
   });
-  return { videoUrl: `/files/${vidRel}`, imageUrl: `/files/${imgRel}`, title, text, chars: text.length, bg: r.bg, music };
 });
 
 app

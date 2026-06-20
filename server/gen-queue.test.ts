@@ -73,6 +73,21 @@ test("FIFO: second job waits behind the first (position + ahead)", async () => {
   q.drain(); // let the test exit promptly
 });
 
+test("counts unfinished videos per user across running and queued jobs", async () => {
+  const q = createGenQueue();
+  q.initWorker(async () => {
+    await sleep(40);
+    return "made";
+  });
+  q.enqueue(1, 1, 3);
+  q.enqueue(1, 2, 4);
+  q.enqueue(2, 3, 5);
+  await sleep(5);
+  assert.equal(q.queuedRemainingForUser(1), 7);
+  assert.equal(q.queuedRemainingForUser(2), 5);
+  q.drain();
+});
+
 test("exhausted: worker reporting 'exhausted' stops the job softly", async () => {
   const q = createGenQueue();
   let calls = 0;

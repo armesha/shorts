@@ -174,7 +174,7 @@ function killboxContent(val, el) {
   // строка → одна
   if (typeof val === "string") {
     const div = document.createElement("div");
-    div.style.width = "100%";
+    div.style.cssText = "width:100%;white-space:pre-wrap;overflow-wrap:anywhere;";
     if (el.underline && !el.highlight) div.style.textDecoration = "underline";
     div.appendChild(styledText(clampStr(val, max), el));
     return div;

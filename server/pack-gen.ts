@@ -54,7 +54,7 @@ export async function buildPackLibraryVideo(input: {
   music?: string;
 }) {
   const { db, userId, accountId, pack, picked } = input;
-  const { music, audioPath } = resolveAudio(input.music); // packs are never islamic/christian → no deck override
+  const { music, audioPath } = resolveAudio(input.music, undefined, { packId: pack.id }); // packs are never islamic/christian → no deck override
   const { imgRel, vidRel } = await buildStillVideoFiles({
     prefix: "pack",
     outputDir: OUTPUT_DIR,

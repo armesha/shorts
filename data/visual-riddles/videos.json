@@ -1,0 +1,402 @@
+[
+  {
+    "file": "visual-riddles/vr_01_ishihara_1.mp4",
+    "title": "Цветовой круг",
+    "text": "Цветовой круг"
+  },
+  {
+    "file": "visual-riddles/vr_02_ishihara_9.mp4",
+    "title": "Число в точках",
+    "text": "Число в точках"
+  },
+  {
+    "file": "visual-riddles/vr_03_ishihara_11.mp4",
+    "title": "Проверка оттенков",
+    "text": "Проверка оттенков"
+  },
+  {
+    "file": "visual-riddles/vr_04_ishihara_19.mp4",
+    "title": "Скрытая цифра",
+    "text": "Скрытая цифра"
+  },
+  {
+    "file": "visual-riddles/vr_05_ishihara_23.mp4",
+    "title": "Цветная загадка",
+    "text": "Цветная загадка"
+  },
+  {
+    "file": "visual-riddles/vr_06_maze_old_plan.mp4",
+    "title": "Фигура-лабиринт",
+    "text": "Фигура-лабиринт"
+  },
+  {
+    "file": "visual-riddles/vr_07_round_maze.mp4",
+    "title": "Круговой лабиринт",
+    "text": "Круговой лабиринт"
+  },
+  {
+    "file": "visual-riddles/vr_08_square_maze.mp4",
+    "title": "Квадратный лабиринт",
+    "text": "Квадратный лабиринт"
+  },
+  {
+    "file": "visual-riddles/vr_09_garden_maze.mp4",
+    "title": "План сада",
+    "text": "План сада"
+  },
+  {
+    "file": "visual-riddles/vr_10_coin_triangle.mp4",
+    "title": "Монеты треугольником",
+    "text": "Монеты треугольником"
+  },
+  {
+    "file": "visual-riddles/vr_11_number_ring.mp4",
+    "title": "Круг с числами",
+    "text": "Круг с числами"
+  },
+  {
+    "file": "visual-riddles/vr_12_hidden_face.mp4",
+    "title": "Что спрятано?",
+    "text": "Что спрятано?"
+  },
+  {
+    "file": "visual-riddles/vr_13_curved_lines.mp4",
+    "title": "Иллюзия линий",
+    "text": "Иллюзия линий"
+  },
+  {
+    "file": "visual-riddles/vr_14_nested_shapes.mp4",
+    "title": "Фигура внутри фигуры",
+    "text": "Фигура внутри фигуры"
+  },
+  {
+    "file": "visual-riddles/vr_15_circle_packing.mp4",
+    "title": "Круги внутри круга",
+    "text": "Круги внутри круга"
+  },
+  {
+    "file": "visual-riddles/vr_16_magic_clock.mp4",
+    "title": "Часы с подвохом",
+    "text": "Часы с подвохом"
+  },
+  {
+    "file": "visual-riddles/vr_17_magic_square.mp4",
+    "title": "Квадрат чисел",
+    "text": "Квадрат чисел"
+  },
+  {
+    "file": "visual-riddles/vr_18_number_triangle.mp4",
+    "title": "Числовой треугольник",
+    "text": "Числовой треугольник"
+  },
+  {
+    "file": "visual-riddles/vr_19_cube_net.mp4",
+    "title": "Развёртка куба",
+    "text": "Развёртка куба"
+  },
+  {
+    "file": "visual-riddles/vr_20_yin_yang.mp4",
+    "title": "Две половины",
+    "text": "Две половины"
+  },
+  {
+    "file": "visual-riddles/vr_21_birds_count.mp4",
+    "title": "Животные в круге",
+    "text": "Животные в круге"
+  },
+  {
+    "file": "visual-riddles/vr_22_triangle_dots.mp4",
+    "title": "Точки в треугольнике",
+    "text": "Точки в треугольнике"
+  },
+  {
+    "file": "visual-riddles/vr_23_pattern_square.mp4",
+    "title": "Узор с деталями",
+    "text": "Узор с деталями"
+  },
+  {
+    "file": "visual-riddles/vr_24_cup_puzzle.mp4",
+    "title": "Три стакана",
+    "text": "Три стакана"
+  },
+  {
+    "file": "visual-riddles/vr_25_symbol_grid.mp4",
+    "title": "Сетка символов",
+    "text": "Сетка символов"
+  },
+  {
+    "file": "visual-riddles/vr_26_cube_row.mp4",
+    "title": "Кубики в ряд",
+    "text": "Кубики в ряд"
+  },
+  {
+    "file": "visual-riddles/vr_27_domino_field.mp4",
+    "title": "Поле домино",
+    "text": "Поле домино"
+  },
+  {
+    "file": "visual-riddles/vr_28_spiral_path.mp4",
+    "title": "Спиральный рисунок",
+    "text": "Спиральный рисунок"
+  },
+  {
+    "file": "visual-riddles/vr_29_ring_illusion.mp4",
+    "title": "Круговая иллюзия",
+    "text": "Круговая иллюзия"
+  },
+  {
+    "file": "visual-riddles/vr_30_black_white_dots.mp4",
+    "title": "Чёрные и белые точки",
+    "text": "Чёрные и белые точки"
+  },
+  {
+    "file": "visual-riddles/vr_31_hidden_animals_wood.mp4",
+    "title": "Животные в лесу",
+    "text": "Животные в лесу"
+  },
+  {
+    "file": "visual-riddles/vr_32_frog_row_count.mp4",
+    "title": "Ряд лягушек",
+    "text": "Ряд лягушек"
+  },
+  {
+    "file": "visual-riddles/vr_33_rabbit_circle_count.mp4",
+    "title": "Кролики в круге",
+    "text": "Кролики в круге"
+  },
+  {
+    "file": "visual-riddles/vr_34_insects_on_fruit.mp4",
+    "title": "Насекомые на фрукте",
+    "text": "Насекомые на фрукте"
+  },
+  {
+    "file": "visual-riddles/vr_35_farm_animals_grid.mp4",
+    "title": "Животные на ферме",
+    "text": "Животные на ферме"
+  },
+  {
+    "file": "visual-riddles/vr_36_generated_color_01_7.mp4",
+    "title": "Цветовое число 01",
+    "text": "Цветовое число 01"
+  },
+  {
+    "file": "visual-riddles/vr_37_generated_color_02_16.mp4",
+    "title": "Цветовое число 02",
+    "text": "Цветовое число 02"
+  },
+  {
+    "file": "visual-riddles/vr_38_generated_color_03_26.mp4",
+    "title": "Цветовое число 03",
+    "text": "Цветовое число 03"
+  },
+  {
+    "file": "visual-riddles/vr_39_generated_color_04_45.mp4",
+    "title": "Цветовое число 04",
+    "text": "Цветовое число 04"
+  },
+  {
+    "file": "visual-riddles/vr_40_generated_color_05_58.mp4",
+    "title": "Цветовое число 05",
+    "text": "Цветовое число 05"
+  },
+  {
+    "file": "visual-riddles/vr_41_generated_color_06_73.mp4",
+    "title": "Цветовое число 06",
+    "text": "Цветовое число 06"
+  },
+  {
+    "file": "visual-riddles/vr_42_generated_color_07_96.mp4",
+    "title": "Цветовое число 07",
+    "text": "Цветовое число 07"
+  },
+  {
+    "file": "visual-riddles/vr_43_generated_color_08_12.mp4",
+    "title": "Цветовое число 08",
+    "text": "Цветовое число 08"
+  },
+  {
+    "file": "visual-riddles/vr_44_generated_color_09_29.mp4",
+    "title": "Цветовое число 09",
+    "text": "Цветовое число 09"
+  },
+  {
+    "file": "visual-riddles/vr_45_generated_color_10_35.mp4",
+    "title": "Цветовое число 10",
+    "text": "Цветовое число 10"
+  },
+  {
+    "file": "visual-riddles/vr_46_generated_color_11_42.mp4",
+    "title": "Цветовое число 11",
+    "text": "Цветовое число 11"
+  },
+  {
+    "file": "visual-riddles/vr_47_generated_color_12_51.mp4",
+    "title": "Цветовое число 12",
+    "text": "Цветовое число 12"
+  },
+  {
+    "file": "visual-riddles/vr_48_generated_color_13_64.mp4",
+    "title": "Цветовое число 13",
+    "text": "Цветовое число 13"
+  },
+  {
+    "file": "visual-riddles/vr_49_generated_color_14_81.mp4",
+    "title": "Цветовое число 14",
+    "text": "Цветовое число 14"
+  },
+  {
+    "file": "visual-riddles/vr_50_generated_color_15_90.mp4",
+    "title": "Цветовое число 15",
+    "text": "Цветовое число 15"
+  },
+  {
+    "file": "visual-riddles/vr_51_generated_color_16_04.mp4",
+    "title": "Цветовое число 16",
+    "text": "Цветовое число 16"
+  },
+  {
+    "file": "visual-riddles/vr_52_generated_color_17_18.mp4",
+    "title": "Цветовое число 17",
+    "text": "Цветовое число 17"
+  },
+  {
+    "file": "visual-riddles/vr_53_generated_color_18_23.mp4",
+    "title": "Цветовое число 18",
+    "text": "Цветовое число 18"
+  },
+  {
+    "file": "visual-riddles/vr_54_generated_color_19_37.mp4",
+    "title": "Цветовое число 19",
+    "text": "Цветовое число 19"
+  },
+  {
+    "file": "visual-riddles/vr_55_generated_color_20_49.mp4",
+    "title": "Цветовое число 20",
+    "text": "Цветовое число 20"
+  },
+  {
+    "file": "visual-riddles/vr_56_generated_color_21_a.mp4",
+    "title": "Цветовая буква 21",
+    "text": "Цветовая буква 21"
+  },
+  {
+    "file": "visual-riddles/vr_57_generated_color_22_e.mp4",
+    "title": "Цветовая буква 22",
+    "text": "Цветовая буква 22"
+  },
+  {
+    "file": "visual-riddles/vr_58_generated_color_23_m.mp4",
+    "title": "Цветовая буква 23",
+    "text": "Цветовая буква 23"
+  },
+  {
+    "file": "visual-riddles/vr_59_generated_color_24_k.mp4",
+    "title": "Цветовая буква 24",
+    "text": "Цветовая буква 24"
+  },
+  {
+    "file": "visual-riddles/vr_60_generated_color_25_r.mp4",
+    "title": "Цветовая буква 25",
+    "text": "Цветовая буква 25"
+  },
+  {
+    "file": "visual-riddles/vr_61_generated_color_26_s.mp4",
+    "title": "Цветовая буква 26",
+    "text": "Цветовая буква 26"
+  },
+  {
+    "file": "visual-riddles/vr_62_generated_color_27_b.mp4",
+    "title": "Цветовая буква 27",
+    "text": "Цветовая буква 27"
+  },
+  {
+    "file": "visual-riddles/vr_63_generated_color_28_t.mp4",
+    "title": "Цветовая буква 28",
+    "text": "Цветовая буква 28"
+  },
+  {
+    "file": "visual-riddles/vr_64_generated_color_29_l.mp4",
+    "title": "Цветовая буква 29",
+    "text": "Цветовая буква 29"
+  },
+  {
+    "file": "visual-riddles/vr_65_generated_color_30_z.mp4",
+    "title": "Цветовая буква 30",
+    "text": "Цветовая буква 30"
+  },
+  {
+    "file": "visual-riddles/vr_66_generated_color_31_symbol_31.mp4",
+    "title": "Цветовой знак 31",
+    "text": "Цветовой знак 31"
+  },
+  {
+    "file": "visual-riddles/vr_67_generated_color_32_symbol_32.mp4",
+    "title": "Цветовой знак 32",
+    "text": "Цветовой знак 32"
+  },
+  {
+    "file": "visual-riddles/vr_68_generated_color_33_symbol_33.mp4",
+    "title": "Цветовой знак 33",
+    "text": "Цветовой знак 33"
+  },
+  {
+    "file": "visual-riddles/vr_69_generated_color_34_symbol_34.mp4",
+    "title": "Цветовой знак 34",
+    "text": "Цветовой знак 34"
+  },
+  {
+    "file": "visual-riddles/vr_70_generated_color_35_symbol_35.mp4",
+    "title": "Цветовой знак 35",
+    "text": "Цветовой знак 35"
+  },
+  {
+    "file": "visual-riddles/vr_71_generated_color_36_symbol_36.mp4",
+    "title": "Цветовой знак 36",
+    "text": "Цветовой знак 36"
+  },
+  {
+    "file": "visual-riddles/vr_72_generated_color_37_symbol_37.mp4",
+    "title": "Цветовой знак 37",
+    "text": "Цветовой знак 37"
+  },
+  {
+    "file": "visual-riddles/vr_73_generated_color_38_symbol_38.mp4",
+    "title": "Цветовой знак 38",
+    "text": "Цветовой знак 38"
+  },
+  {
+    "file": "visual-riddles/vr_74_generated_color_39_symbol_39.mp4",
+    "title": "Цветовой знак 39",
+    "text": "Цветовой знак 39"
+  },
+  {
+    "file": "visual-riddles/vr_75_generated_color_40_symbol_40.mp4",
+    "title": "Цветовой знак 40",
+    "text": "Цветовой знак 40"
+  },
+  {
+    "file": "visual-riddles/vr_76_generated_color_41_52.mp4",
+    "title": "Цветовое число 41",
+    "text": "Цветовое число 41"
+  },
+  {
+    "file": "visual-riddles/vr_77_generated_color_42_67.mp4",
+    "title": "Цветовое число 42",
+    "text": "Цветовое число 42"
+  },
+  {
+    "file": "visual-riddles/vr_78_generated_color_43_78.mp4",
+    "title": "Цветовое число 43",
+    "text": "Цветовое число 43"
+  },
+  {
+    "file": "visual-riddles/vr_79_generated_color_44_83.mp4",
+    "title": "Цветовое число 44",
+    "text": "Цветовое число 44"
+  },
+  {
+    "file": "visual-riddles/vr_80_generated_color_45_91.mp4",
+    "title": "Цветовое число 45",
+    "text": "Цветовое число 45"
+  }
+]

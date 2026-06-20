@@ -15,6 +15,8 @@ export interface Job {
   /** User whose content pool is consumed. Defaults to userId for normal users. */
   ownerUserId: number;
   accountId: number;
+  /** Optional content source(s) to generate from. Omitted = channel's primary source. */
+  deckIds?: string[];
   total: number;
   done: number;
   state: JobState;
@@ -34,9 +36,10 @@ export interface JobStatus extends Job {
 
 export interface GenQueue {
   initWorker(w: GenWorker): void;
-  enqueue(userId: number, accountId: number, total: number, ownerUserId?: number): Job;
+  enqueue(userId: number, accountId: number, total: number, ownerUserId?: number, deckIds?: string[]): Job;
   cancelJob(id: string, userId: number): boolean;
   jobStatus(id: string): JobStatus | null;
+  queuedRemainingForUser(userId: number): number;
   /** Stop taking NEW videos/jobs; the in-flight video is allowed to finish. For graceful shutdown. */
   drain(): void;
   isDraining(): boolean;
@@ -107,10 +110,21 @@ export function createGenQueue(): GenQueue {
     initWorker(w) {
       worker = w;
     },
-    enqueue(userId, accountId, total, ownerUserId = userId) {
+    enqueue(userId, accountId, total, ownerUserId = userId, deckIds) {
       prune();
       const id = `g${++seq}-${Date.now().toString(36)}`;
-      const job: Job = { id, userId, ownerUserId, accountId, total, done: 0, state: "queued", createdAt: Date.now() };
+      const cleanDeckIds = deckIds?.map((d) => String(d || "").trim()).filter(Boolean);
+      const job: Job = {
+        id,
+        userId,
+        ownerUserId,
+        accountId,
+        deckIds: cleanDeckIds?.length ? [...new Set(cleanDeckIds)] : undefined,
+        total,
+        done: 0,
+        state: "queued",
+        createdAt: Date.now(),
+      };
       jobs.set(id, job);
       pending.push(id);
       void pump();
@@ -137,6 +151,17 @@ export function createGenQueue(): GenQueue {
       }
       return { ...job, ahead, position };
     },
+    queuedRemainingForUser(userId) {
+      prune();
+      let total = 0;
+      for (const id of pending) {
+        const j = jobs.get(id);
+        if (!j || j.userId !== userId) continue;
+        if (j.state !== "queued" && j.state !== "running") continue;
+        total += Math.max(0, j.total - j.done);
+      }
+      return total;
+    },
     drain() {
       draining = true;
     },
@@ -152,8 +177,9 @@ export function createGenQueue(): GenQueue {
 // ---- process-wide singleton used by the server ----
 const _queue = createGenQueue();
 export const initGenQueue = (w: GenWorker): void => _queue.initWorker(w);
-export const enqueue = (userId: number, accountId: number, total: number, ownerUserId?: number): Job =>
-  _queue.enqueue(userId, accountId, total, ownerUserId);
+export const enqueue = (userId: number, accountId: number, total: number, ownerUserId?: number, deckIds?: string[]): Job =>
+  _queue.enqueue(userId, accountId, total, ownerUserId, deckIds);
 export const cancelJob = (id: string, userId: number): boolean => _queue.cancelJob(id, userId);
 export const jobStatus = (id: string): JobStatus | null => _queue.jobStatus(id);
+export const queuedRemainingForUser = (userId: number): number => _queue.queuedRemainingForUser(userId);
 export const drainQueue = (): void => _queue.drain();

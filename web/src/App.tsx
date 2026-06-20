@@ -15,6 +15,7 @@ import System from "./pages/System";
 import Settings from "./pages/Settings";
 import Users from "./pages/Users";
 import ClipDemos from "./pages/ClipDemos";
+import Limits from "./pages/Limits";
 import TemplateEditor from "./pages/TemplateEditor";
 import Login from "./pages/Login";
 import { AuthProvider, useAuth } from "./lib/auth";
@@ -43,6 +44,7 @@ function Gate() {
         {/* Аналитика-сводка переехала во вкладку «Сводка» на /statistics (только админ). */}
         <Route path="/admin/analytics" element={<Navigate to="/statistics" replace />} />
         <Route path="/clip-demos" element={<ClipDemos />} />
+        <Route path="/limits" element={user.role === "admin" ? <Limits /> : <Navigate to="/" replace />} />
         <Route path="/changelog" element={<Changelog />} />
         <Route path="/errors" element={<Errors />} />
         <Route path="/system" element={<System />} />

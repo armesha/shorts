@@ -1,0 +1,123 @@
+[
+  {
+    "file": "animal-superheroes-en/as_en_01_signal_generated_scenes_jessica_preview.mp4",
+    "title": "Episode 01. Signal in the Park",
+    "text": "At night, a glowing paw signal flashed above the old park. Iskra the fox called the team. Badger, Owl, Turtle, and Squirrel stood beside her. Under the oak, they found a crystal beating like a heart. Inside it, a map of the abandoned zoo appeared. The map revealed a door unseen for a hundred years. A silent thief stepped out of the darkness. And the second crystal vanished in his paw.",
+    "series": "Animal Heroes",
+    "episode": 1,
+    "voice": "ElevenLabs Jessica",
+    "lang": "en",
+    "visualSource": "as_01_signal_generated_scenes_jessica_preview",
+    "source": "gpt-image-2 generated scenes + ElevenLabs alignment subtitles"
+  },
+  {
+    "file": "animal-superheroes-en/as_en_02_stone_lions.mp4",
+    "title": "Episode 02. Stone Lions",
+    "text": "The Animal Heroes rushed after the thief into the abandoned zoo. Old signs twisted by themselves and confused the path. Owl spotted a glowing paw print on the fountain. Two stone lions suddenly opened their eyes. Badger shielded his friends as the square shook. Squirrel slipped between the paws and grabbed a spark. Iskra placed it into her medallion, and the fountain floor opened. Below, a cloaked mole smiled: he had been waiting for them.",
+    "series": "Animal Heroes",
+    "episode": 2,
+    "voice": "ElevenLabs Jessica",
+    "lang": "en",
+    "visualSource": "as_02_stone_lions",
+    "source": "gpt-image-2 generated scenes + ElevenLabs alignment subtitles"
+  },
+  {
+    "file": "animal-superheroes-en/as_en_03_underground_tram.mp4",
+    "title": "Episode 03. The Underground Tram",
+    "text": "The mole jumped into a rusty tram beneath the city. Squirrel flew after him and nearly pressed every button at once. Above the rails, a crystal shard floated like a tiny moon. The mole grabbed it and pulled the emergency water lever. Squirrel sparked a wire with her tail, and the tram woke up. Water chased them like an underground river had come alive. Iskra saw a broken bridge ahead and told everyone to hold on. The rails ended, but the tram was already flying over the void.",
+    "series": "Animal Heroes",
+    "episode": 3,
+    "voice": "ElevenLabs Jessica",
+    "lang": "en",
+    "visualSource": "as_03_underground_tram",
+    "source": "gpt-image-2 generated scenes + ElevenLabs alignment subtitles"
+  },
+  {
+    "file": "animal-superheroes-en/as_en_04_rooftop_chase.mp4",
+    "title": "Episode 04. Rooftop Chase",
+    "text": "The tram burst onto the roof of an old station in the rain. Turtle opened a bubble and caught the whole team. Paper drones folded out of the clouds without a single word on them. Iskra leaped across the rooftops and snatched the map. Badger blocked the paper blades with a manhole cover. A mechanical magpie tore the shard from the mole’s paw. The magpie carried it toward the clock tower. The shard fell into the gears, and the clock began to run backward.",
+    "series": "Animal Heroes",
+    "episode": 4,
+    "voice": "ElevenLabs Jessica",
+    "lang": "en",
+    "visualSource": "as_04_rooftop_chase",
+    "source": "gpt-image-2 generated scenes + ElevenLabs alignment subtitles"
+  },
+  {
+    "file": "animal-superheroes-en/as_en_05_clock_beacon.mp4",
+    "title": "Episode 05. The Beacon Tower",
+    "text": "Inside the tower, the gears were as huge as ship wheels. Owl decided the upper hand meant danger. But Turtle noticed it was not a hand. It was a key. He stopped the mechanism with a clear bubble. Iskra pulled out the shard, and the tower lit like a beacon. The beam struck the river, and the water became a mirror. A second Iskra rose in the reflection. On her medallion, the paw symbol was upside down.",
+    "series": "Animal Heroes",
+    "episode": 5,
+    "voice": "ElevenLabs Jessica",
+    "lang": "en",
+    "visualSource": "as_05_clock_beacon",
+    "source": "gpt-image-2 generated scenes + ElevenLabs alignment subtitles"
+  },
+  {
+    "file": "animal-superheroes-en/as_en_06_river_double.mp4",
+    "title": "Episode 06. The River Double",
+    "text": "The river became a mirror, and every hero saw a double. The doubles copied their moves, but smiled too coldly. The false Iskra offered peace in exchange for the crystal. Badger struck with his shield, and the water burst into stars. Owl read the symbol backward and opened the wrong door. Tiny mirror fish poured out of it. Turtle realized the doubles feared laughter, not light. While everyone laughed, the double was already behind them.",
+    "series": "Animal Heroes",
+    "episode": 6,
+    "voice": "ElevenLabs Jessica",
+    "lang": "en",
+    "visualSource": "as_06_river_double",
+    "source": "gpt-image-2 generated scenes + ElevenLabs alignment subtitles"
+  },
+  {
+    "file": "animal-superheroes-en/as_en_07_time_kitten.mp4",
+    "title": "Episode 07. The Time Kitten",
+    "text": "The clock tower struck without sound, and the square froze. The heroes hung in the air; even the raindrops stopped falling. Only a kitten with a silver bell kept moving. He hid a tiny gear inside Turtle’s bubble. Time jumped forward, and the team could breathe again. The kitten pointed to the tower and slipped between the second hands. The hands opened a door to an attic that should not exist. Behind it, a wooden ship floated in the clouds.",
+    "series": "Animal Heroes",
+    "episode": 7,
+    "voice": "ElevenLabs Jessica",
+    "lang": "en",
+    "visualSource": "as_07_time_kitten",
+    "source": "gpt-image-2 generated scenes + ElevenLabs alignment subtitles"
+  },
+  {
+    "file": "animal-superheroes-en/as_en_08_cloud_ship.mp4",
+    "title": "Episode 08. The Cloud Ship",
+    "text": "The attic door opened straight into the sky. A wooden ship sailed between towers like on the sea. A feather compass hung from the mast, sparkling with crystal dust. Owl tried to read it, but the compass sneezed out a cloud. Squirrel caught a rope and accidentally raised the sail upside down. The ship suddenly dived into a storm funnel. Iskra saw an island below with one glowing tree. On the tree branch sat the magpie with the stolen shard.",
+    "series": "Animal Heroes",
+    "episode": 8,
+    "voice": "ElevenLabs Jessica",
+    "lang": "en",
+    "visualSource": "as_08_cloud_ship",
+    "source": "gpt-image-2 generated scenes + ElevenLabs alignment subtitles"
+  },
+  {
+    "file": "animal-superheroes-en/as_en_09_feather_compass.mp4",
+    "title": "Episode 09. The Feather Compass",
+    "text": "The island rocked in the air like a leaf in the wind. The magpie clicked its wing, and the tree became a staircase. Badger climbed first, but the steps ran away from his paws. Turtle released a bubble, and the whole team floated upward. The compass showed not north, but a silly mustache shape. The mustache came alive and pointed to a cloud library. Iskra touched the shard, and it sang with the voice of the wind. But someone huge behind the clouds heard the song.",
+    "series": "Animal Heroes",
+    "episode": 9,
+    "voice": "ElevenLabs Jessica",
+    "lang": "en",
+    "visualSource": "as_09_feather_compass",
+    "source": "gpt-image-2 generated scenes + ElevenLabs alignment subtitles"
+  },
+  {
+    "file": "animal-superheroes-en/as_en_10_moon_library.mp4",
+    "title": "Episode 10. The Moon Library",
+    "text": "The cloud library hung under the moon without a single wall. Books flew by themselves and flapped pages like birds. Owl found a blank book that looked extremely important. The book opened and showed a map to the city’s underground heart. Squirrel decided the map was ticklish and laughed out loud. Her laugh folded the shelves into a giant arrow. The arrow pointed down where there was no ground. Under the library, a hatch opened into a real giant garden.",
+    "series": "Animal Heroes",
+    "episode": 10,
+    "voice": "ElevenLabs Jessica",
+    "lang": "en",
+    "visualSource": "as_10_moon_library",
+    "source": "gpt-image-2 generated scenes + ElevenLabs alignment subtitles"
+  },
+  {
+    "file": "animal-superheroes-en/as_en_11_giant_garden.mp4",
+    "title": "Episode 11. The Giant Garden",
+    "text": "The heroes fell into grass taller than streetlamps. Every drop of dew was the size of a ball. Iskra saw a paw print on a giant leaf. The trail led to a snail guard with dew-drop glasses. The snail demanded a password, then forgot it himself. Turtle helped him remember with bubbles. The garden opened a path to an icy market under the roots. And their mirror double was already following them.",
+    "series": "Animal Heroes",
+    "episode": 11,
+    "voice": "ElevenLabs Jessica",
+    "lang": "en",
+    "visualSource": "as_11_giant_garden",
+    "source": "gpt-image-2 generated scenes + ElevenLabs alignment subtitles"
+  }
+]

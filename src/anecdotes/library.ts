@@ -94,16 +94,23 @@ export function anecdoteKey(text: string): string {
   return `a${h.toString(36)}-${s.length}`;
 }
 
+export function deckAnecdoteKeys(deckId: string): string[] {
+  return [...new Set(poolItems(deckId).map((it) => anecdoteKey(it.text)))];
+}
+
 /**
- * Pick a random READY anecdote (titled) from a deck, skipping any whose key is in `used`.
+ * Pick a READY anecdote (titled) from a deck, skipping any whose key is in `used`.
+ * Most decks are random. Sequential decks always return the first unused item in file order.
  * Falls back to a raw pack before titling exists. Returns null when nothing is left.
  */
 export function randomAnecdote(deckId: string, used?: ReadonlySet<string>): PackItem | null {
   const skip = used && used.size ? used : null;
+  const deck = getDeck(deckId);
   const t = titledItems(deckId);
   if (t.length > 0) {
     const pool = skip ? t.filter((it) => !skip.has(anecdoteKey(it.text))) : t;
     if (pool.length === 0) return null; // every titled anecdote already used
+    if (deck.sequential) return pool[0];
     return pool[Math.floor(Math.random() * pool.length)];
   }
   // Fallback so generation still works before any pack is titled.
@@ -111,9 +118,10 @@ export function randomAnecdote(deckId: string, used?: ReadonlySet<string>): Pack
   if (!existsSync(dir)) return null;
   const packs = readdirSync(dir).filter((f) => f.startsWith("pack-") && f.endsWith(".json")).sort();
   if (packs.length === 0) return null;
-  const file = packs[Math.floor(Math.random() * packs.length)];
+  const file = deck.sequential ? packs[0] : packs[Math.floor(Math.random() * packs.length)];
   let items = JSON.parse(readFileSync(resolve(dir, file), "utf8")) as PackItem[];
   if (skip) items = items.filter((it) => !skip.has(anecdoteKey(it.text)));
+  if (deck.sequential) return items[0] ?? null;
   return items[Math.floor(Math.random() * items.length)] ?? null;
 }
 

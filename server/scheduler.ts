@@ -55,22 +55,24 @@ export function startScheduler(opts: SchedulerOpts) {
       try {
         opts.log(`[sched] account ${acc.id} (${acc.channelName}) firing at ${hhmm}`);
 
-        // HARD language guard: a channel only ever posts videos in its OWN content language
-        // (built-in deck OR a custom pack "pack:<id>" → synthetic deck via getDeck).
-        if (!DECKS.some((d) => d.id === acc.lang) && !isPackDeckId(acc.lang)) {
-          opts.log(`[sched] account ${acc.id}: язык «${acc.lang}» без пака — пропуск`);
+        const sources = (acc.sourceDecks?.length ? acc.sourceDecks : [acc.lang]).filter(
+          (d) => DECKS.some((deck) => deck.id === d) || isPackDeckId(d),
+        );
+        if (!sources.length) {
+          opts.log(`[sched] account ${acc.id}: нет выбранных паков — пропуск`);
           continue;
         }
-        const channelDeck = getDeck(acc.lang);
-        // Post-once queue: a pinned video (if present, unposted & same language), else the next
-        // unposted video IN THE CHANNEL'S LANGUAGE. Each posts ONCE then is removed.
+        const slotDeck = acc.slotDecks?.[hhmm];
+        const allowedDecks = slotDeck && sources.includes(slotDeck) ? [slotDeck] : sources;
+        // Post-once queue: a pinned video (legacy, if present and still valid), else the next
+        // unposted video from the slot's selected pack or any selected channel pack.
         const pinnedId = acc.slotVideos?.[hhmm];
         const pinned = pinnedId ? opts.db.getVideo(pinnedId) : null;
         const lib =
-          (pinned && pinned.postCount === 0 && pinned.deck === channelDeck.id ? pinned : null) ??
-          opts.db.nextUnpostedVideo(acc.id, channelDeck.id);
+          (pinned && pinned.postCount === 0 && allowedDecks.includes(pinned.deck) ? pinned : null) ??
+          opts.db.nextUnpostedVideoForDecks(acc.id, allowedDecks);
         if (!lib) {
-          opts.log(`[sched] account ${acc.id}: нет роликов на языке «${channelDeck.id}» — нечего постить`);
+          opts.log(`[sched] account ${acc.id}: нет роликов в библиотеке для паков «${allowedDecks.join(", ")}» — нечего постить`);
           continue;
         }
         // Each channel posts with its OWNER's Google key (per-user isolation).
@@ -79,7 +81,7 @@ export function startScheduler(opts: SchedulerOpts) {
           opts.log(`[sched] account ${acc.id}: у владельца нет Google-ключа — пропуск`);
           continue;
         }
-        const meta = ytMeta(channelDeck, lib.title, lib.text);
+        const meta = ytMeta(getDeck(lib.deck), lib.title, lib.text);
         const videoId = await metrics.track("upload", () =>
           uploadShort(creds, opts.redirectUri, token, {
             videoPath: resolve(opts.outputDir, lib.videoRel),

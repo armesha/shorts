@@ -35,6 +35,11 @@ images/
 temp/
 .playwright-mcp/
 
+# strike-audit artifacts & deck backups — contain the offending text, NEVER commit
+strike-audit-*.md
+strike-audit-*.json
+*.bak-strike-*
+
 # env & secrets — NEVER commit
 .env
 .env.local
@@ -43,3 +48,13 @@ temp/
 # Google OAuth client secret — NEVER commit, NEVER read
 client_secret_*.json
 *.apps.googleusercontent.com.json
+
+# DB backups (e.g. data/app.db.bak-*) — NEVER commit
+data/*.db.bak*
+
+# python bytecode cache
+__pycache__/
+
+# scratch screenshots at repo root — agent working files, not source
+/image.png
+/gen-queue-toast.png

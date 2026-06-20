@@ -29,6 +29,8 @@ export interface Deck {
    *  (voiceover + stock footage + subtitles) listed in <dir>/videos.json, files in assets/fact-videos/.
    *  Generation copies the chosen mp4 into the library instead of rendering a card (see server/fact-gen.ts). */
   preFact?: boolean;
+  /** When true, generation picks the first unused item by videos.json order instead of random. */
+  sequential?: boolean;
 }
 
 export const DECKS: Deck[] = [
@@ -167,16 +169,42 @@ export const DECKS: Deck[] = [
     preFact: true,
   },
   {
-    id: "funny-animals",
-    name: "Funny Animals",
-    dir: "data/funny-animals", // videos.json = [{file,title,text}] synced from /clip-demos funny-reactions
+    id: "visual-riddles",
+    name: "Вижу Ответ",
+    dir: "data/visual-riddles", // videos.json = [{file,title,text}] synced from /clip-demos visual-riddles
     source: "",
-    emoji: "😂",
-    hashtags: "#funnyanimals #pets #dogs #cats #funny #shorts",
-    tags: ["funny animals", "pets", "dogs", "cats", "funny pets", "animals", "shorts"],
-    genericTitles: ["Funny Animals", "Funny Pet", "Animal Moment", "Pet Chaos"],
-    adminOnly: true, // pre-built animal montage pack — admin-only
+    emoji: "🧩",
+    hashtags: "#загадки #ребусы #головоломки #внимание #shorts",
+    tags: ["загадки", "ребусы", "головоломки", "визуальные загадки", "логика", "внимание", "shorts"],
+    genericTitles: ["Вижу Ответ", "Визуальная загадка", "Задача на внимание", "Ребус"],
+    adminOnly: true, // pre-built visual riddle pack — admin-only
     preFact: true,
+  },
+  {
+    id: "animal-superheroes",
+    name: "ЗвероГерои",
+    dir: "data/animal-superheroes", // videos.json = numbered story episodes with voiceover + subtitles
+    source: "",
+    emoji: "🦊",
+    hashtags: "#животные #супергерои #мультфильм #комикс #shorts",
+    tags: ["животные", "супергерои", "комикс", "мультфильм", "история", "shorts"],
+    genericTitles: ["ЗвероГерои", "Комикс про животных", "Новая серия", "Супергерои животных"],
+    adminOnly: true, // pre-built serial animal comic pack — admin-only
+    preFact: true,
+    sequential: true,
+  },
+  {
+    id: "animal-superheroes-en",
+    name: "Animal Heroes",
+    dir: "data/animal-superheroes-en", // videos.json mirrors animal-superheroes, but with English voiceover/subtitles
+    source: "",
+    emoji: "🦊",
+    hashtags: "#animals #superheroes #comic #cartoon #shorts",
+    tags: ["animals", "superheroes", "comic", "cartoon", "story", "shorts"],
+    genericTitles: ["Animal Heroes", "Animal Comic", "New Episode", "Animal Superheroes"],
+    adminOnly: true, // pre-built serial animal comic pack — admin-only
+    preFact: true,
+    sequential: true,
   },
 ];
 
@@ -191,7 +219,7 @@ export function isPackDeckId(id?: string | null): boolean {
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
-  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de": "de", space: "en", "funny-animals": "en",
+  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de": "de", space: "en", "visual-riddles": "ru", "animal-superheroes": "ru", "animal-superheroes-en": "en",
 };
 export function deckLang(id: string): string {
   return DECK_LANG[id] || "";

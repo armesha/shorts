@@ -15,6 +15,40 @@
 Для интернет-источников отдельно проверяй лицензию и происхождение данных перед скачиванием или
 пополнением. Не называй источник свободным только потому, что файл доступен в сети.
 
+## Общее правило озвучки
+
+Если новый или пересобираемый ролик требует голос, используй ElevenLabs. Ключи уже лежат в окружении
+проекта: `ELEVENLABS_API_KEYS`, `ELEVENLABS_API_KEY` или `ELEVENLABS_API_KEY_1`, `ELEVENLABS_API_KEY_2`
+и т.д. Загружать их можно из `.env` / `.env.local`, но нельзя печатать реальные ключи в логи,
+markdown, код, frontend, БД или git diff. В логах допустимы только номер ключа и last4/hint.
+
+Скрипты должны перебирать ключи: `401`/invalid key - следующий ключ; `402`/quota exceeded - считать
+ключ исчерпанным до reset; `429` - backoff + повтор. ElevenLabs - единственный TTS: локальные/офлайн
+движки (`edge-tts`, Piper, Coqui, espeak) не использовать вообще, даже для чернового preview. Тайминги
+слов/субтитров брать из ElevenLabs (endpoint `with-timestamps` / поле `alignment`), а не локальным `whisper`.
+
+Немое кино не считать приоритетным рутинным форматом: пользователь отклонил это направление как слабое.
+Если когда-нибудь оно понадобится отдельно, брать только public-domain source, удалять исходный звук и
+сначала согласовать формат.
+
+## Общее правило субтитров для Shorts
+
+Для вертикальных Shorts/TikTok/Reels нельзя ставить важный текст в самый низ кадра: мобильный UI
+YouTube Shorts перекрывает нижнюю часть видео кнопками, описанием, названием канала и полем
+комментария. Для `1080x1920` держи субтитры примерно в центральной safe-zone:
+
+- не ниже `y ~= 1320-1360` для нижнего края блока субтитров, лучше держать центр блока около `y ~= 1100-1200`;
+- не вплотную к правому краю, где стоят лайк/дизлайк/комментарии/поделиться;
+- оставляй правый запас около `160-180 px`;
+- не клади субтитры поверх нижних `400-500 px`;
+- проверяй кадр в мобильном Shorts-просмотре или хотя бы на screenshot с типичным правым UI.
+
+Для spoken-word роликов предпочтителен karaoke-style: вся фраза белая с чёрной обводкой, а текущее
+слово или короткий текущий фрагмент подсвечен жёлтым/тёплым цветом по таймингам ElevenLabs. Не
+подсвечивай слишком много слов сразу и не используй низкоконтрастные цвета. Для более живого эффекта
+можно добавить мягкую тёмную подложку и лёгкий pop/lift только на активное слово; весь блок при этом
+не должен прыгать, менять ширину или уходить из safe-zone.
+
 ## Обязательное правило для новых ручных паков
 
 Если агент вручную создает новый пак любого типа, он обязан сразу добавить сюда инструкцию по этому
@@ -55,9 +89,11 @@
 | `fact-en` Interesting Facts | `data/fact-videos/videos.json` + `assets/fact-videos/` | готовые MP4 | не в рантайме; новые ролики собираются вне этого конвейера |
 | `quotes-de` Politiker-Zitate | `data/quotes-de/videos.json` + `assets/fact-videos/` | готовые MP4 | не в рантайме |
 | `space` Space | `data/space/videos.json` + `assets/fact-videos/space/` | готовые MP4 | не в рантайме |
+| `animal-superheroes` / `animal-superheroes-en` ЗвероГерои / Animal Heroes | `data/output/admin-demos/manifest.json` + `data/animal-superheroes*/videos.json` + `assets/fact-videos/animal-superheroes*/` | сериальные MP4-комиксы RU/EN с одинаковым визуалом, ElevenLabs-озвучкой и safe-zone karaoke-субтитрами | нет |
 | `The Mind Edge` template-pack | `assets/template-packs/the-mind-edge/` -> `data/packs/` seed | LLM-батчи -> `cards.json`, шаблоны из кода | да, для новых карточек |
 | `psychology-mgs` template-pack | `assets/template-packs/psychology-mgs/` -> `data/packs/` seed | карточки + 40 шаблонов | зависит от источника новых карточек |
 | `Curiosaurs English Facts` template-pack | `assets/template-packs/curiosaurs-english/` -> `data/packs/` seed | локальный набор kid-safe facts + PNG-шаблоны | нет |
+| `visual-riddles` Вижу Ответ | `data/output/admin-demos/manifest.json` + `data/visual-riddles/videos.json` + `assets/fact-videos/visual-riddles/` | индивидуальные визуальные MP4 для `/clip-demos` и selectable `preFact` deck для каналов | нет |
 
 `data/packs/*.json` - это живые пользовательские паки из страницы "Карточки". Они gitignored и
 пополняются через UI/API или seed-скрипты. Встроенные деки (`data/anecdotes*`, `data/tips*`,
@@ -79,6 +115,220 @@
 4. Для template-pack запусти его QA-рендер или seed-скрипт без дублирования, если он идемпотентный.
 5. После правок `src/**` или `server/**` серверу нужен перезапуск, но не перезапускай общий сервер без
    разрешения пользователя. Чистые изменения `docs/**` перезапуска не требуют.
+
+## Новый этап: visual-first загадки с озвучкой
+
+Для загадочных Shorts больше не гонись за массовостью. Главный критерий - визуальная задача, которую
+понятно решать глазами в первые 1-2 секунды. Пак лучше делать меньше, но каждая карточка должна быть
+сильной как самостоятельная картинка.
+
+Правила карточек:
+
+- основной кадр - крупная визуальная загадка: ребус, спички, шарики, яйца/животные, "найди лишнее",
+  перестановка букв, предметная иллюстрация, лист бумаги с рукой/ручкой;
+- текст на экране короткий: заголовок, картинка, один вопрос; длинное условие уходит в озвучку;
+- цвета ярче, чем в старом тёмном mystery-стиле: жёлтые/красные/синие плашки, светлый фон, жирный
+  чёрный контур, крупные объекты;
+- ответы не показывать в самом Short; CTA ведёт в комментарии;
+- рендерить и смотреть карточки глазами: если текст/объект спорит с композицией, карточка не готова;
+- массовый pack допустим только после того, как 5-10 эталонных карточек выглядят хорошо.
+
+Озвучка:
+
+- голос главный, музыка только тихий фон;
+- готовить отдельный `voiceText`: нормальные русские фразы, меньше символов и цифр, числа лучше
+  словами там, где TTS может ошибиться;
+- использовать общее правило ElevenLabs выше;
+- реальные ключи хранить только в окружении (`.env` / `.env.local`), без записи в код/docs/frontend/DB;
+- если один ключ получил `401`/invalid key - отключить его и взять следующий;
+- если закончилась квота (`402`, quota exceeded или `character_count >= character_limit`) - пометить
+  ключ exhausted до reset и взять следующий;
+- на `429` сначала backoff + jitter; если это concurrency/rate limit, не крутить ключи бесконечно,
+  а ограничивать параллельность и пробовать позже;
+- логировать можно только индекс ключа и last4/hint, не полный секрет.
+
+Базовые ElevenLabs-настройки для русских загадок:
+
+```json
+{
+  "model_id": "eleven_multilingual_v2",
+  "language_code": "ru",
+  "output_format": "mp3_44100_128",
+  "voice_settings": {
+    "stability": 0.52,
+    "similarity_boost": 0.80,
+    "style": 0,
+    "use_speaker_boost": true,
+    "speed": 1.03
+  },
+  "apply_text_normalization": "auto"
+}
+```
+
+Для стабильного batch без ручного прослушивания подними `stability` до `0.58-0.65`. Для более
+напряжённой подачи можно пробовать `stability: 0.42-0.48`, `style: 0-0.08`, но только после прослушивания.
+`eleven_flash_v2_5` годится для дешёвых превью, а не как основной финальный голос. `eleven_v3` оставь для
+ручных выразительных роликов, не для дефолтного batch.
+
+Справка ElevenLabs:
+
+- https://elevenlabs.io/docs/api-reference/text-to-speech/convert
+- https://elevenlabs.io/docs/capabilities/text-to-speech/models
+- https://elevenlabs.io/docs/capabilities/text-to-speech/voice-settings
+- https://elevenlabs.io/docs/api-reference/user/subscription
+
+## ЗвероГерои / Animal Heroes: serial clip demos
+
+Это prebuilt video pack для страницы `/clip-demos` и selectable decks `animal-superheroes`
+и `animal-superheroes-en`. Текущий готовый набор остановлен на 11 последовательных сериях по просьбе
+пользователя; 12+ продолжать только после отдельной явной просьбы. При этом сезон
+считается открытым и может продолжаться дальше без финальной точки.
+
+Формат: вертикальные серии-комиксы по 20-35 секунд, обычно 8 gpt-image-2 сцен на эпизод,
+ElevenLabs Jessica, тихая музыка и safe-zone karaoke-субтитры. RU и EN используют один и тот же
+визуальный ряд, но отдельную озвучку, субтитры и metadata. Decks помечены как `sequential`, поэтому
+генерация в библиотеку берет первый еще не использованный эпизод по порядку из `videos.json`, а не
+случайный ролик.
+
+Готовые артефакты:
+
+- `data/output/admin-demos/manifest.json` - pack `animal-superheroes` для `/clip-demos`;
+- `data/output/admin-demos/as_*.mp4` и `data/output/admin-demos/as_*.jpg` - ролики и постеры;
+- `data/animal-superheroes/videos.json` - RU список серий для selectable `preFact` deck;
+- `data/animal-superheroes-en/videos.json` - EN mirror того же визуального ряда;
+- `assets/fact-videos/animal-superheroes/*.mp4` и `assets/fact-videos/animal-superheroes-en/*.mp4` - MP4, которые генерация копирует в библиотеку;
+- `data/animal-superheroes/episodes-source.json` - каноничный source сценариев RU/EN и visual beats;
+- `data/animal-superheroes/AGENTS.md` - главный контракт по стилю, voice, safe subtitles, ordering, YouTube assets;
+- `data/animal-superheroes/STORY_STATE.md` - короткое состояние сюжета;
+- `scripts/build-animal-superheroes-generated.py` - текущий сборщик RU/EN из gpt-image-2 сцен;
+- `temp/animal-superheroes/gpt-image2/generated_scenes/<episode_id>/scene_01.png...` - визуальные сцены;
+- `temp/animal-superheroes/voice-jessica/` - ElevenLabs voice cache;
+- `temp/animal-superheroes/youtube/` - avatar/banner/name/description для RU и EN каналов.
+
+Музыка: `Sunflower Valley` by `isaiah658`, OpenGameArt, CC0. Источник и license evidence записаны в
+`temp/animal-superheroes/sources.json`.
+
+Пересборка:
+
+```bash
+python3 scripts/build-animal-superheroes-generated.py --episodes 1 2 3 4 --lang both
+```
+
+Скрипт:
+
+- читает ключи ElevenLabs из `.env` / окружения, но не печатает их;
+- использует endpoint `with-timestamps` и сохраняет character alignment рядом с MP3;
+- рендерит safe-zone karaoke-субтитры: фраза белая, текущее слово желтое, текст выше нижнего YouTube Shorts UI;
+- добавляет финальный черный end-card;
+- обновляет в `data/output/admin-demos/manifest.json` только animal packs, не трогая остальные паки;
+- синхронизирует `assets/fact-videos/animal-superheroes*/` и `data/animal-superheroes*/videos.json`.
+
+Проверка:
+
+```bash
+node -e 'const fs=require("fs"); for (const p of ["data/animal-superheroes/videos.json","data/animal-superheroes-en/videos.json"]) { const j=JSON.parse(fs.readFileSync(p,"utf8")); console.log(p,j.length,j.map(x=>x.episode).join(",")); }'
+for f in data/output/admin-demos/as_*.mp4; do printf "%s " "$f"; ffprobe -v error -show_entries format=duration:stream=width,height,codec_type -of compact=p=0:nk=1 "$f" | tr "\n" " "; printf "\n"; done
+```
+
+Если меняются только `data/output/admin-demos/*`, `/clip-demos` подхватит manifest без перезапуска.
+После изменений `src/anecdotes/decks.ts`, `src/anecdotes/library.ts` или `web/src/lib/deck.ts` нужен
+обычный backend/frontend rebuild/restart, чтобы новый selectable deck появился в каналах.
+
+## Вижу Ответ: visual-riddles clip demos
+
+Это не Studio/template-pack. Это набор индивидуальных коротких MP4 для страницы `/clip-demos` и
+одновременно selectable `preFact` deck для выбора источника в каналах, потому что каждая загадка
+требует отдельной картинки, собственной озвучки, музыки и визуальной проверки.
+
+Готовые артефакты:
+
+- `data/output/admin-demos/manifest.json` - pack `visual-riddles` с title `Вижу Ответ`;
+- `data/output/admin-demos/vr_*.mp4` - готовые вертикальные ролики;
+- `data/output/admin-demos/vr_*.jpg` - постеры для карточек в `/clip-demos`;
+- `data/visual-riddles/videos.json` - список роликов для selectable deck;
+- `assets/fact-videos/visual-riddles/*.mp4` - MP4, которые библиотека канала копирует как готовые видео;
+- `temp/visual-riddle-demos/` - локальный рабочий набор карточек, цветовых SVG, музыки, voice-кэша и сборщика;
+- `temp/visual-riddle-channel-avatar.png` и `temp/visual-riddle-channel-wallpaper.png` - оформление канала;
+- `temp/visual-riddle-channel-title-description.md` - название, handle и описание канала.
+
+Важно про `temp/`: это рабочая одноразовая зона. В ней можно держать исходные PNG, voice-cache,
+contact sheets, временные заметки и локальные сборщики, но нельзя оставлять важные правила только там.
+Если во время работы в `temp/` появилась инструкция, решение по стилю, TTS, лицензиям, QA или процессу,
+перенеси её в этот документ или другой профильный файл в `docs/` до завершения задачи.
+
+Пересборка демо:
+
+```bash
+node temp/visual-riddle-demos/create-internet-cards.mjs
+ELEVENLABS_API_KEYS="key1,key2,key3" node temp/visual-riddle-demos/build-demos.mjs
+```
+
+В интерактивной работе лучше передавать ключи через stdin/окружение и не печатать их в команду,
+markdown или git diff. Скрипт сам перебирает ключи при `401`/`402`, повторяет `429`, кэширует уже
+созданные `temp/visual-riddle-demos/voice/*.mp3` и обновляет только pack `visual-riddles` в
+`admin-demos/manifest.json`. `create-internet-cards.mjs` перед сборкой очищает старые numbered PNG,
+пересоздаёт `cards.json` и `sources.json`, скачивает только явно license-safe Commons-источники,
+подтягивает public-domain Project Gutenberg иллюстрации и рендерит финальные карточки. Для финального
+набора `visual-riddles` нельзя запускать старый `create-cards.mjs`: он был черновым самодельным
+прототипом.
+
+После пересборки демо синхронизируй selectable deck:
+
+```bash
+node --input-type=module -e 'import fs from "node:fs"; import path from "node:path"; const m=JSON.parse(fs.readFileSync("data/output/admin-demos/manifest.json","utf8")); const p=m.packs.find(x=>x.id==="visual-riddles"); if(!p) throw new Error("visual-riddles pack not found"); const expected=new Set(p.items.map(x=>x.id)); let removedAdmin=0; for (const f of fs.readdirSync("data/output/admin-demos")) { if (!/^vr_.*\.(mp4|jpg)$/.test(f)) continue; const id=f.replace(/\.(mp4|jpg)$/,""); if(!expected.has(id)){ fs.unlinkSync(path.join("data/output/admin-demos",f)); removedAdmin++; } } fs.mkdirSync("data/visual-riddles",{recursive:true}); fs.mkdirSync("assets/fact-videos/visual-riddles",{recursive:true}); let removedAssets=0; for (const f of fs.readdirSync("assets/fact-videos/visual-riddles")) if(f.endsWith(".mp4")){ fs.unlinkSync(path.join("assets/fact-videos/visual-riddles",f)); removedAssets++; } const videos=[]; for (const it of p.items) { fs.copyFileSync(`data/output/admin-demos/${it.id}.mp4`, `assets/fact-videos/visual-riddles/${it.id}.mp4`); videos.push({file:`visual-riddles/${it.id}.mp4`,title:it.title,text:it.title}); } fs.writeFileSync("data/visual-riddles/videos.json", JSON.stringify(videos,null,2)+"\n"); console.log({videos:videos.length,removedAdmin,removedAssets});'
+```
+
+Deck зарегистрирован в `src/anecdotes/decks.ts` (`id: "visual-riddles"`, `preFact: true`,
+`adminOnly: true`) и во frontend-реестре `web/src/lib/deck.ts`. Если этот deck id добавлен впервые,
+нужны `npm run web:build` и backend restart, иначе уже запущенный сайт не покажет его в селекторе
+источников на `/accounts/:id`.
+
+Правила контента:
+
+- для этого пака не придумывать визуальную задачу с нуля. Самодельные схемы допустимы только как
+  черновик/прототип и не должны попадать в финальные `vr_*.mp4`;
+- финальный визуал брать из готового license-safe источника: public-domain puzzle books, Wikimedia
+  Commons/Openverse/Openclipart/PublicDomainVectors/CC0 или другой источник с явной лицензией;
+- по каждому финальному визуалу хранить source URL, автора/книгу, license и локальный путь в
+  `temp/visual-riddle-demos/sources.json`;
+- текущая финальная схема: 80 карточек: 5 public-domain цветовых карточек из Wikimedia
+  Commons/Ishihara, 45 оригинальных развлекательных pseudo-Ishihara SVG, 24 визуальные задачи из
+  Project Gutenberg puzzle books и 6 hidden-object/counting карточек с животными. Если набор
+  расширяется, новые карточки проходят тот же `sources.json` и не используют `source: own-visual-riddle`;
+- не копировать картинки, сетки, формулировки и ответы из Pinterest/TikTok/YouTube/современных сайтов;
+- если лицензия не ясна, визуал не использовать и не "перерисовывать почти так же"; можно взять только
+  общий тип задачи и найти другой открытый готовый визуал;
+- текст вопроса не дублировать крупно в нескольких местах. На карточке: один короткий вопрос внизу
+  и один визуал в центре; подробности идут в озвучку;
+- каждый интернет-визуал подгонять индивидуально: `imageScale`/contrast/brightness в
+  `create-internet-cards.mjs` не должны оставлять мелкую "книжную" картинку посреди пустого поля, но
+  и не должны резать важные края. Если source плохо ложится в вертикальный формат, заменить source;
+- допустимые темы: готовые visual puzzles, проверка внимания, найди отличия, hidden object, optical
+  illusion, цветовые/оттеночные задачи как развлекательные проверки восприятия;
+- цветовые тесты делать только как развлекательные visual riddles: свои pseudo-Ishihara точки/сетки/оттенки
+  или явно public-domain таблицы с источником. Не копировать реальные медицинские таблицы с неясной
+  лицензией и не утверждать в ролике, что зритель "дальтоник" или получил диагноз;
+- ответы не выводить в ролике; CTA формулировать как `Пиши ответ в комментариях`;
+- каждую новую карточку смотреть глазами в contact sheet и отдельно в вертикальном постере.
+- финальную визуальную приемку делает основной агент лично: открыть итоговые постеры/кадры всех MP4
+  целиком, проверить ровные отступы, центровку, переносы, читаемость с телефона, что текст не вылезает
+  за карточки/кнопки/плашки и не перекрывает важные объекты; субагентам можно поручать поиск идей, но
+  не финальное "выглядит нормально";
+- если пользователь указывает на кривую карточку, сначала перечитать эту секцию, затем удалить/заменить
+  все карточки того же самодельного типа, а не чинить только один видимый пример.
+
+Проверка:
+
+```bash
+node --input-type=module -e 'import fs from "node:fs"; import path from "node:path"; const m=JSON.parse(fs.readFileSync("data/output/admin-demos/manifest.json","utf8")); const p=m.packs.find(p=>p.id==="visual-riddles"); const v=JSON.parse(fs.readFileSync("data/visual-riddles/videos.json","utf8")); const missing=v.filter(x=>!fs.existsSync(path.join("assets/fact-videos",x.file))).map(x=>x.file); console.log({title:p?.title,manifestItems:p?.items?.length,deckVideos:v.length,missing:missing.length});'
+node --input-type=module -e 'import fs from "node:fs"; const m=JSON.parse(fs.readFileSync("data/output/admin-demos/manifest.json","utf8")); const p=m.packs.find(p=>p.id==="visual-riddles"); const own=(p?.items||[]).filter(x=>String(x.source||"").includes("own")); console.log({items:p?.items?.length,ownSource:own.length});'
+for f in data/output/admin-demos/vr_*.mp4; do printf "%s " "$f"; ffprobe -v error -show_entries format=duration:stream=codec_type -of compact=p=0:nk=1 "$f" | tr "\n" " "; printf "\n"; done
+node_modules/ffmpeg-static/ffmpeg -y -pattern_type glob -framerate 1 -i 'data/output/admin-demos/vr_*.jpg' -vf 'scale=120:213,tile=8x10' -frames:v 1 temp/visual-riddle-demos/contact-sheet.jpg
+```
+
+Если меняются только файлы в `data/output/admin-demos/`, перезапуск сервера не нужен: `/clip-demos`
+читает static manifest. Если меняется код сервера или frontend, нужен обычный rebuild/restart по
+правилам проекта.
 
 ## Русские анекдоты (`ru`)
 
@@ -378,8 +628,10 @@ workflow:
 2. Использовать только новые `id`, которых нет в `data/output/admin-demos/manifest.json`.
 3. Каждый item описывать как `{id,title,theme,src,transcript,poster,segments}`.
 4. `clip` segments должны попадать в длительность `src`.
-5. `vo` segments используют `edge-tts` и `whisper-ctranslate2`, API-ключи не нужны; если текст VO
-   пишет LLM/workflow, сначала спроси пользователя, какую модель использовать.
+5. `vo` segments используют ElevenLabs и для голоса, и для таймингов слов (endpoint `with-timestamps` /
+   поле `alignment`); локальные движки (`edge-tts`, `whisper-ctranslate2`) не использовать — если старый
+   builder ещё на них, при ближайшей пересборке перевести его на ElevenLabs.
+   Если текст VO пишет LLM/workflow, сначала спроси пользователя, какую модель использовать.
 6. Для исходников с пустым transcript (`work/milkyway.json`, `work/moon.json`, `work/sun.json`) можно
    использовать короткие `clip` segments без исходных субтитров и `vo` segments с новым narration.
 7. Держать итоговые ролики в пределах Shorts-формата: после сборки проверить, что `dur` не больше
@@ -394,8 +646,8 @@ node buildpack.mjs work/pack-space-7.json
 
 `buildpack.mjs` после каждого ролика:
 
-- генерирует VO через `edge-tts`;
-- делает word timestamps через `uvx whisper-ctranslate2`;
+- генерирует VO через ElevenLabs;
+- получает word timestamps прямо из ElevenLabs (endpoint `with-timestamps` / поле `alignment`);
 - собирает MP4 через `ffmpeg`;
 - копирует MP4/JPG в `data/output/admin-demos`;
 - добавляет запись в `manifest.json`;
@@ -419,116 +671,6 @@ node --input-type=module -e 'import fs from "node:fs"; const m=JSON.parse(fs.rea
 `/clip-demos` читает `data/output/admin-demos/manifest.json`, показывает `createdAt` как
 `Добавлен <дата>, <время>` и умеет сортировать новые/старые. Для старых записей можно backfill-нуть
 `createdAt` из mtime готовых MP4; новые записи получает сам `buildpack.mjs`.
-
-### Funny Animals / admin clip demos
-
-`funny-reactions` - admin-gallery pack для страницы `/clip-demos` и источник для channel-selectable
-preFact deck `funny-animals`. Галерея хранится в `data/output/admin-demos/manifest.json`, а deck для
-выбора канала синхронизируется в `data/funny-animals/videos.json` и
-`assets/fact-videos/funny-animals/*.mp4`.
-
-Текущий набор:
-
-- pack id: `funny-reactions`;
-- видимый title: `Funny Animals`;
-- pack spec: `temp/clip-demo/work/pack-funny-reactions-1.json`;
-- source videos: `temp/clip-demo/src/funny/*.mp4`;
-- downloader: `temp/clip-demo/funny-download.mjs`;
-- builder: `temp/clip-demo/funny-buildpack.mjs`;
-- selectable-deck sync: `temp/clip-demo/sync-funny-animals-deck.mjs`;
-- output: `data/output/admin-demos/funny_*.mp4` и `funny_*.jpg`;
-- selectable deck id: `funny-animals`, registered in `src/anecdotes/decks.ts` as `preFact:true`;
-- сейчас там 80 MP4, каждый примерно 7-12 секунд.
-
-Формат ролика:
-
-1. короткий English topic intro на 3-7 слов;
-2. intro озвучивается через Microsoft `edge-tts` (`temp/clip-demo/tts.py`), без paid API;
-3. затем идет вертикальный animal Pexels-клип с его исходной аудиодорожкой;
-4. sticker/GIF-like оформление делается локально через ffmpeg `drawtext`: `LOL`, `HAHA`, `XD`, `:D`,
-   `LMAO`, `OH NO` и разные top labels;
-5. external GIF-файлы сейчас не нужны, поэтому нет отдельного copyright риска на sticker assets.
-6. Не генерировать искусственный лай/мяу/animal SFX: если нужен звук, отбирай исходник, где звук уже
-   есть. `funny-buildpack.mjs` должен падать на silent source, а не подмешивать fake audio.
-
-Источники:
-
-- текущие исходники скачаны с Pexels страниц без API-ключа через `yt-dlp` +
-  `--extractor-args generic:impersonate`;
-- Pexels License разрешает бесплатное использование, модификацию и не требует атрибуции, но перед
-  переходом на другой сайт или другой тип source обязательно заново проверить лицензию;
-- не брать случайные TikTok/YouTube/Instagram reposts; для монетизации они рискованнее даже если
-  технически скачиваются.
-
-Как добавить новые funny animal clips:
-
-1. Открыть `temp/clip-demo/work/pack-funny-reactions-1.json`.
-2. Добавить в `videos[]` объект с новым уникальным `id`, например:
-   ```json
-   {
-     "id": "funny_new_animal",
-     "title": "Short Animal Title",
-     "topic": "Three To Seven Words",
-     "src": "src/funny/funny_new_animal.mp4",
-     "sourceUrl": "https://www.pexels.com/video/...",
-     "start": 0.2,
-     "end": 8.8,
-     "style": "pop",
-     "punchline": "SHORT LABEL"
-   }
-   ```
-3. `topic` должен быть на английском и реально 3-7 слов: это первая Microsoft-озвучка.
-4. `style` брать из `pop`, `comic`, `neon`, `reaction`, `meme`, `bubble`; если стиль не указан,
-   builder распределит стили по очереди.
-5. `src` должен лежать под `temp/clip-demo/src/funny/`, а `sourceUrl` должен быть страницей Pexels
-   или другим проверенным лицензированным источником.
-6. После скачивания обязательно проверить исходник:
-   ```bash
-   ffprobe -v error -select_streams a -show_entries stream=index -of csv=p=0 temp/clip-demo/src/funny/funny_new_animal.mp4
-   ```
-   Пустой вывод значит silent source: такой клип не добавлять в pack, даже если видео визуально хорошее.
-7. Если `topic/title/punchline` пишет LLM/workflow, сначала спроси пользователя, какую модель
-   использовать. Если тексты пишутся вручную, модель спрашивать не нужно.
-
-Скачать/проверить исходники:
-
-```bash
-cd temp/clip-demo
-node funny-download.mjs work/pack-funny-reactions-1.json
-```
-
-Собрать весь funny pack:
-
-```bash
-cd temp/clip-demo
-node funny-buildpack.mjs work/pack-funny-reactions-1.json
-```
-
-Пересобрать один или несколько id:
-
-```bash
-cd temp/clip-demo
-node funny-buildpack.mjs work/pack-funny-reactions-1.json funny_poodle_turbo funny_cat_duck_drama
-```
-
-Builder сохраняет `createdAt` при пересборке существующего `id`, обновляет `updatedAt`, пишет
-`sourceProvider/sourceUrl/style/sound:"source"` в item manifest и не вызывает `sync-space-deck.mjs`.
-Для `pack.id === "funny-reactions"` builder вызывает `sync-funny-animals-deck.mjs`, чтобы ролики сразу
-попали в selectable deck `funny-animals`. Если deck id уже есть в запущенном backend, новые MP4 из
-`videos.json` подхватываются без перезапуска; если deck id был добавлен в `src/anecdotes/decks.ts`
-только что, нужен backend restart.
-Если старый элемент удаляется из animal pack, убери его из `manifest.json` и удали лишние
-`data/output/admin-demos/<id>.mp4/.jpg`, `temp/clip-demo/src/funny/<id>.mp4`, `temp/clip-demo/out/<id>.mp4`,
-затем снова запусти `node sync-funny-animals-deck.mjs`.
-
-Проверка `funny-reactions`:
-
-```bash
-node --input-type=module -e 'import fs from "node:fs"; import {execFileSync} from "node:child_process"; const m=JSON.parse(fs.readFileSync("data/output/admin-demos/manifest.json","utf8")); const p=m.packs.find(p=>p.id==="funny-reactions"); const missing=[]; const long=[]; const noTime=[]; const noAudio=[]; for (const it of p?.items||[]) { const f=`data/output/admin-demos/${it.id}.mp4`; if (!fs.existsSync(f)||!fs.existsSync(`data/output/admin-demos/${it.id}.jpg`)) missing.push(it.id); const [mm,ss]=(it.dur||"0:00").split(":").map(Number); if ((mm||0)*60+(ss||0)>60) long.push([it.id,it.dur]); if (!it.createdAt||!it.updatedAt) noTime.push(it.id); const a=fs.existsSync(f) ? execFileSync("ffprobe",["-v","error","-select_streams","a","-show_entries","stream=index","-of","csv=p=0",f]).toString().trim() : ""; if (!a) noAudio.push(it.id); } console.log({title:p?.title,items:p?.items.length,missing,long,noTime,noAudio,newest:p?.items.slice(-5).map(x=>[x.id,x.dur,x.createdAt,x.style,x.sound])});'
-```
-
-Для визуальной проверки сделай poster/contact sheet из готовых `funny_*.jpg` или извлеки strip из
-конкретного MP4. Не утверждай, что pack готов, пока не проверены хотя бы постеры и 1-2 видео strips.
 
 Чтобы пополнить:
 

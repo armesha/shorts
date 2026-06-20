@@ -528,10 +528,15 @@ export function buildAdminAnalytics(dbh: Db, input: AnalyticsRange): AdminAnalyt
     subscribersGained: 0,
     subscribersLost: 0,
   }));
+  // Snapshot-derived period change (last − first) per account — reused below so the analytics branch
+  // doesn't report a meaningless viewsDelta (it used to set viewsDelta = period views, i.e. delta == value)
+  // or a hardcoded videoDelta of 0.
+  const snapGrowthByAccount = new Map(youtubeGrowthAll.map((r) => [r.accountId, r]));
   const youtubeGrowthRows = hasYtAnalytics
     ? [...ytByAccount.entries()].map(([accountId, yt]) => {
         const account = accountById.get(accountId);
         const stat = latestStats.get(accountId);
+        const snap = snapGrowthByAccount.get(accountId);
         return {
           accountId,
           channelName: account?.channelName ?? `#${accountId}`,
@@ -540,8 +545,8 @@ export function buildAdminAnalytics(dbh: Db, input: AnalyticsRange): AdminAnalyt
           views: yt.views,
           videos: stat?.videos ?? 0,
           subscriberDelta: yt.subscribersGained - yt.subscribersLost,
-          viewsDelta: yt.views,
-          videoDelta: 0,
+          viewsDelta: snap?.viewsDelta ?? 0,
+          videoDelta: snap?.videoDelta ?? 0,
           watchMinutes: yt.watchMinutes,
           avgViewDuration: yt.avgViewDuration,
           subscribersGained: yt.subscribersGained,
