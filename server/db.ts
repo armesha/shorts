@@ -867,6 +867,22 @@ export function openDb(path: string) {
         id,
       );
     },
+    // Atomic post-claim: flip an UNPOSTED video (post_count 0) to in-flight in ONE statement and
+    // report whether WE won (changes===1). Guarantees at-most-once upload across post-now (incl.
+    // double-clicks) and the scheduler. On upload failure → releaseVideoPost so it can be retried.
+    claimVideoForPost(id: number): boolean {
+      const info = db
+        .prepare(
+          "UPDATE videos SET post_count = post_count + 1, last_posted_at = ? WHERE id = ? AND post_count = 0",
+        )
+        .run(new Date().toISOString(), id);
+      return Number(info.changes) === 1;
+    },
+    releaseVideoPost(id: number): void {
+      db.prepare(
+        "UPDATE videos SET post_count = post_count - 1, last_posted_at = NULL WHERE id = ? AND post_count > 0",
+      ).run(id);
+    },
     leastPostedVideo(accountId: number): Video | null {
       const r = db
         .prepare("SELECT * FROM videos WHERE account_id = ? ORDER BY post_count ASC, id ASC LIMIT 1")
@@ -996,6 +1012,20 @@ export function openDb(path: string) {
       db.prepare(
         "INSERT INTO user_used_anecdotes (user_id, key) VALUES (?, ?) ON CONFLICT(user_id, key) DO NOTHING",
       ).run(userId, key);
+    },
+    // Atomic claim: mark a card used and report whether WE were the one who claimed it (changes>0).
+    // Lets concurrent generation paths reserve a card BEFORE the slow render so the same card is
+    // never built into two videos. A losing caller (false) re-picks; on render failure → releaseAnecdote.
+    claimAnecdote(userId: number, key: string): boolean {
+      const info = db
+        .prepare(
+          "INSERT INTO user_used_anecdotes (user_id, key) VALUES (?, ?) ON CONFLICT(user_id, key) DO NOTHING",
+        )
+        .run(userId, key);
+      return Number(info.changes) > 0;
+    },
+    releaseAnecdote(userId: number, key: string): void {
+      db.prepare("DELETE FROM user_used_anecdotes WHERE user_id = ? AND key = ?").run(userId, key);
     },
     usedAnecdoteKeys(userId: number): Set<string> {
       const rows = db
@@ -1236,6 +1266,19 @@ export function openDb(path: string) {
     },
     // Total daily schedule slots across channels bound to ONE Google key (oauth_client) — per-key cap.
     // YouTube upload quota is per Cloud project (~100/day; we hold 92), shared by all channels on that key.
+    // Actual upload OPERATIONS today on one Google key (Cloud project), across all its channels.
+    // Counted by created_at (when the upload ran) so scheduled-future publishes still count toward
+    // the per-key daily quota. Used to stop post-now / the scheduler from blowing the YouTube quota.
+    uploadsTodayForKey(oauthClientId: number): number {
+      const r = db
+        .prepare(
+          `SELECT COUNT(*) AS n FROM history h JOIN accounts a ON a.id = h.account_id
+            WHERE a.oauth_client_id = ? AND h.status IN ('published','scheduled')
+              AND date(h.created_at) = date('now')`,
+        )
+        .get(oauthClientId) as Row;
+      return Number(r.n) || 0;
+    },
     scheduleSlotsForKey(oauthClientId: number, excludeAccountId?: number): number {
       const rows = db.prepare("SELECT id, schedule FROM accounts WHERE oauth_client_id = ?").all(oauthClientId) as Row[];
       let n = 0;

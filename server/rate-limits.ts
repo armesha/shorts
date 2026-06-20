@@ -57,6 +57,17 @@ export function heavyActiveKey(userId: number, isAdmin: boolean, _route: string)
   return isAdmin ? "admin:heavy" : `user:${userId}:heavy`;
 }
 
+// Process-wide ceiling on concurrent heavy renders (puppeteer Chrome + ffmpeg) across ALL users and
+// ALL inline routes (Studio, batch, pack preview/video). The per-user `heavy` limit only bounds one
+// user; without this, N users → N concurrent Chrome → OOM. The gen-queue worker is separately
+// serialized to 1, so worst-case concurrent renders ≈ MAX_GLOBAL_RENDERS + 1.
+export const GLOBAL_RENDER_KEY = "global:render";
+export const MAX_GLOBAL_RENDERS = 2;
+
+export function withGlobalRenderSlot<T>(fn: () => Promise<T>): Promise<T> {
+  return withActiveLimit(GLOBAL_RENDER_KEY, MAX_GLOBAL_RENDERS, fn);
+}
+
 export async function withActiveLimit<T>(key: string, maxActive: number, fn: () => Promise<T>): Promise<T> {
   if (!Number.isFinite(maxActive) || maxActive <= 0) return fn();
   const current = active.get(key) ?? 0;

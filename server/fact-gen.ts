@@ -9,7 +9,7 @@ import { promisify } from "node:util";
 import ffmpegPath from "ffmpeg-static";
 import type { Db } from "./db.ts";
 import { loadBaseConfig } from "./config.ts";
-import { anecdoteKey, type PackItem } from "../src/anecdotes/library.ts";
+import { type PackItem } from "../src/anecdotes/library.ts";
 import * as metrics from "./metrics.ts";
 
 const pexec = promisify(execFile);
@@ -25,7 +25,7 @@ export async function buildFactLibraryVideo(input: {
   deckId: string;
   picked: PackItem; // .videoFile = имя mp4 в assets/fact-videos/, .text/.title — для метаданных
 }) {
-  const { db, userId, accountId, deckId, picked } = input;
+  const { db, accountId, deckId, picked } = input; // userId: бронь факта делает вызывающий (claimAnecdote)
   if (!picked.videoFile) throw new Error("У видео-факта нет файла (videoFile)");
   const src = resolve(FACT_DIR, picked.videoFile);
   if (!existsSync(src)) throw new Error(`Видео-факт не найден на диске: ${picked.videoFile}`);
@@ -56,6 +56,7 @@ export async function buildFactLibraryVideo(input: {
     videoRel: vidRel,
     imageRel: existsSync(imgAbs) ? imgRel : null,
   });
-  db.markAnecdoteUsed(userId, anecdoteKey(picked.text)); // не повторять этот факт для этого юзера
+  // NB: бронь факта (claimAnecdote) делает ВЫЗЫВАЮЩИЙ ДО копирования — иначе параллельные генерации
+  // взяли бы один факт дважды. Здесь не помечаем.
   return v;
 }

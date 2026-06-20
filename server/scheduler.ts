@@ -4,6 +4,7 @@ import cron from "node-cron";
 import type { Account, Db, Video } from "./db.ts";
 import { DECKS, getDeck, ytMeta, isPackDeckId } from "../src/anecdotes/decks.ts";
 import { uploadShort, ytErrorReason, type ClientCreds } from "./youtube.ts";
+import { USER_DAILY_SCHEDULE_CAP } from "./account-limits.ts";
 import * as metrics from "./metrics.ts";
 
 /** Delete a posted video's rendered files (best-effort). */
@@ -52,6 +53,7 @@ export function startScheduler(opts: SchedulerOpts) {
       if (fired.has(key)) continue;
       fired.add(key);
 
+      let claimedVideoId: number | null = null; // set once we atomically claim a video → release on error
       try {
         opts.log(`[sched] account ${acc.id} (${acc.channelName}) firing at ${hhmm}`);
 
@@ -81,6 +83,18 @@ export function startScheduler(opts: SchedulerOpts) {
           opts.log(`[sched] account ${acc.id}: нет Google-ключа у канала — пропуск`);
           continue;
         }
+        // Daily per-Google-key upload cap (REAL uploads) — shared with manual post-now so the two
+        // together can't blow the Cloud project's YouTube quota for channels on the same key.
+        if (acc.oauthClientId != null && opts.db.uploadsTodayForKey(acc.oauthClientId) >= USER_DAILY_SCHEDULE_CAP) {
+          opts.log(`[sched] account ${acc.id}: дневной лимит ${USER_DAILY_SCHEDULE_CAP} на Google-ключ достигнут — пропуск`);
+          continue;
+        }
+        // Atomic claim: flip this unposted video to in-flight so post-now or another tick can't double-post it.
+        if (!opts.db.claimVideoForPost(lib.id)) {
+          opts.log(`[sched] account ${acc.id}: видео ${lib.id} уже публикуется/опубликовано — пропуск`);
+          continue;
+        }
+        claimedVideoId = lib.id;
         const meta = ytMeta(getDeck(lib.deck), lib.title, lib.text);
         const videoId = await metrics.track("upload", () =>
           uploadShort(creds, opts.redirectUri, token, {
@@ -107,9 +121,11 @@ export function startScheduler(opts: SchedulerOpts) {
           opts.db.deleteVideo(lib.id);
           opts.log(`[sched] account ${acc.id} uploaded ${videoId} — removed from library`);
         } else {
+          opts.db.releaseVideoPost(lib.id); // no id → un-claim so it stays postable next time
           opts.log(`[sched] account ${acc.id}: upload returned no id, keeping video`);
         }
       } catch (err) {
+        if (claimedVideoId != null) opts.db.releaseVideoPost(claimedVideoId); // un-claim on upload error
         opts.db.addHistory({
           accountId: acc.id,
           title: "ошибка автозагрузки",

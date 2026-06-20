@@ -53,7 +53,7 @@ export async function buildPackLibraryVideo(input: {
   picked: PickedPackCard;
   music?: string;
 }) {
-  const { db, userId, accountId, pack, picked } = input;
+  const { db, accountId, pack, picked } = input; // userId: бронь карточки делает вызывающий (claimAnecdote)
   const { music, audioPath } = resolveAudio(input.music, undefined, { packId: pack.id }); // packs are never islamic/christian → no deck override
   const { imgRel, vidRel } = await buildStillVideoFiles({
     prefix: "pack",
@@ -73,6 +73,7 @@ export async function buildPackLibraryVideo(input: {
     videoRel: vidRel,
     imageRel: imgRel,
   });
-  db.markAnecdoteUsed(userId, picked.key); // не повторять эту карточку для этого юзера
+  // NB: «использованность» карточки бронируется ВЫЗЫВАЮЩИМ ДО рендера (db.claimAnecdote), чтобы две
+  // параллельные генерации не собрали одну карту дважды. Здесь не помечаем (иначе бронь была бы after-await).
   return v;
 }

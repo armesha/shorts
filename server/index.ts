@@ -58,13 +58,14 @@ import {
 import { gracefulShutdown } from "./shutdown.ts";
 import { buildAdminAnalytics } from "./admin-analytics.ts";
 import { buildUserAnalytics } from "./user-analytics.ts";
-import { dailyScheduleLimitError } from "./account-limits.ts";
+import { dailyScheduleLimitError, USER_DAILY_SCHEDULE_CAP } from "./account-limits.ts";
 import {
   RATE_LIMIT_MESSAGE,
   RateLimitError,
   checkRateLimit,
   heavyActiveKey,
   withActiveLimit,
+  withGlobalRenderSlot,
 } from "./rate-limits.ts";
 import { rememberedOutputOwner, rememberOutputOwner } from "./output-access.ts";
 
@@ -158,6 +159,7 @@ const STUDIO_IMAGE_LIMIT = { limit: 10, windowMs: 5 * 60 * 1000 };
 const STUDIO_VIDEO_LIMIT = { limit: 3, windowMs: 10 * 60 * 1000 };
 const BATCH_VIDEO_LIMIT = { limit: 2, windowMs: 30 * 60 * 1000 };
 const NORMAL_BATCH_VIDEO_CAP = 5;
+const POST_NOW_LIMIT = { limit: 15, windowMs: 10 * 60 * 1000 }; // burst guard on manual «Опубликовать»
 
 // Multi-user: no global key required to boot — each user uploads their own in Settings.
 if (!credsFileExists(credsPath())) {
@@ -735,7 +737,11 @@ async function runHeavyGenerationLimited<T>(
 ): Promise<T | unknown> {
   try {
     const isAdmin = isAdminReq(req);
-    return await withActiveLimit(heavyActiveKey(uid(req), isAdmin, route), isAdmin ? 2 : 1, fn);
+    // Two ceilings: per-user (fairness) AND a process-wide render cap (shared with the pack routes) so
+    // N users can't each spawn a Chrome+ffmpeg at once and OOM the host. Excess → 429 (RateLimitError).
+    return await withActiveLimit(heavyActiveKey(uid(req), isAdmin, route), isAdmin ? 2 : 1, () =>
+      withGlobalRenderSlot(fn),
+    );
   } catch (e) {
     if (e instanceof RateLimitError) return sendGenerationRateLimit(reply, e.retryAfterMs);
     throw e;
@@ -2162,7 +2168,9 @@ async function buildLibraryVideo(input: {
     videoRel: vidRel,
     imageRel: imgRel,
   });
-  db.markAnecdoteUsed(input.userId, anecdoteKey(input.text)); // never reuse this anecdote for this user
+  // NB: the anecdote is reserved by the CALLER via db.claimAnecdote BEFORE this render starts
+  // (batch/queue), or marked right after by the single-save route — never here (that would be
+  // after the await, leaving a window where a concurrent run builds the same card twice).
   return v;
 }
 
@@ -2184,7 +2192,7 @@ app.post("/api/videos", async (req, reply) => {
     return reply.code(400).send({ error: "Это видео-пак — добавляйте ролики кнопкой «Сгенерировать»." });
   if (!deckAllowed(req, channelDeck.id))
     return reply.code(403).send({ error: "Этот пак вам недоступен." });
-  return buildLibraryVideo({
+  const v = await buildLibraryVideo({
     userId: ownerId,
     accountId: body.accountId,
     text: body.text,
@@ -2193,6 +2201,8 @@ app.post("/api/videos", async (req, reply) => {
     music: body.music,
     deck: channelDeck.id, // forced to the channel's language
   });
+  db.markAnecdoteUsed(ownerId, anecdoteKey(body.text)); // explicit single save → mark used (idempotent)
+  return v;
 });
 
 // Batch: generate N random UNUSED anecdotes straight into a channel's library.
@@ -2217,20 +2227,19 @@ app.post("/api/videos/batch", async (req, reply) => {
       const pack = getPack(sourceDeckId.slice(5), ownerId, isAdminReq(req));
       if (!pack) return reply.code(404).send({ error: "Пак не найден." });
       if (!pack.templates.length) return reply.code(400).send({ error: "У пака нет шаблона." });
-      for (let i = 0; i < requested; i++) {
+      while (created.length < requested) {
         const picked = pickUnusedPackCard(pack, seen);
         if (!picked) break;
         seen.add(picked.key);
-        created.push(
-          await buildPackLibraryVideo({
-            db,
-            userId: ownerId,
-            accountId,
-            pack,
-            picked,
-            music: body.music || undefined,
-          }),
-        );
+        if (!db.claimAnecdote(ownerId, picked.key)) continue; // a concurrent run already took this card
+        try {
+          created.push(
+            await buildPackLibraryVideo({ db, userId: ownerId, accountId, pack, picked, music: body.music || undefined }),
+          );
+        } catch (e) {
+          db.releaseAnecdote(ownerId, picked.key); // render failed → return the card to the pool
+          throw e;
+        }
       }
       return { created, requested, made: created.length, exhausted: created.length < requested };
     }
@@ -2240,27 +2249,34 @@ app.post("/api/videos/batch", async (req, reply) => {
     if (!deckAllowed(req, channelDeck.id))
       return reply.code(403).send({ error: "Этот пак вам недоступен." });
     const deckId = channelDeck.id; // FORCE the channel's language — no cross-language mixing
-    for (let i = 0; i < requested; i++) {
+    while (created.length < requested) {
       const a = randomAnecdote(deckId, seen);
       if (!a) break; // no unused anecdotes left
-      seen.add(anecdoteKey(a.text));
-      if (channelDeck.preFact) {
-        // Pre-built fact videos: copy the chosen mp4 into the library (no rendering).
-        created.push(await buildFactLibraryVideo({ db, userId: ownerId, accountId, deckId, picked: a }));
-        continue;
+      const key = anecdoteKey(a.text);
+      seen.add(key);
+      if (!db.claimAnecdote(ownerId, key)) continue; // a concurrent run already took this card
+      try {
+        if (channelDeck.preFact) {
+          // Pre-built fact videos: copy the chosen mp4 into the library (no rendering).
+          created.push(await buildFactLibraryVideo({ db, userId: ownerId, accountId, deckId, picked: a }));
+        } else {
+          created.push(
+            await buildLibraryVideo({
+              userId: ownerId,
+              accountId,
+              text: a.text,
+              title: a.title,
+              bg: body.bg, // undefined → random background per video
+              music: body.music || undefined, // empty/undefined → random track per video
+              deck: deckId,
+              profession: a.profession, // tips deck → which profession background to render on
+            }),
+          );
+        }
+      } catch (e) {
+        db.releaseAnecdote(ownerId, key); // render failed → return the card to the pool
+        throw e;
       }
-      created.push(
-        await buildLibraryVideo({
-          userId: ownerId,
-          accountId,
-          text: a.text,
-          title: a.title,
-          bg: body.bg, // undefined → random background per video
-          music: body.music || undefined, // empty/undefined → random track per video
-          deck: deckId,
-          profession: a.profession, // tips deck → which profession background to render on
-        }),
-      );
     }
     return { created, requested, made: created.length, exhausted: created.length < requested };
   });
@@ -2274,33 +2290,55 @@ initGenQueue(async (job) => {
   const ownerId = job.ownerUserId ?? job.userId;
   const seen = new Set<string>(db.usedAnecdoteKeys(ownerId)); // skip owner's already-used cards
   const sources = job.deckIds?.length ? job.deckIds : accountSourceDecks(acc);
+  // Each candidate is CLAIMED (db.claimAnecdote) before its render so a concurrent run (another job,
+  // the sync batch, or a co-owner) can't build the same card twice; a lost claim → re-pick; a render
+  // failure → release the claim so the card returns to the pool.
   const generateFromSource = async (sourceDeck: string): Promise<"made" | "exhausted"> => {
     // Пак-канал: одна случайная неиспользованная карточка пака → видео в библиотеку.
     if (isPackDeckId(sourceDeck)) {
       const pack = getPack(sourceDeck.slice(5), ownerId, db.getUserById(job.userId)?.role === "admin");
       if (!pack || !pack.templates.length) throw new Error(`Пак «${sourceDeck}» не найден или без шаблона`);
-      const picked = pickUnusedPackCard(pack, seen);
-      if (!picked) return "exhausted";
-      await buildPackLibraryVideo({ db, userId: ownerId, accountId: job.accountId, pack, picked });
-      return "made";
+      for (;;) {
+        const picked = pickUnusedPackCard(pack, seen);
+        if (!picked) return "exhausted";
+        seen.add(picked.key);
+        if (!db.claimAnecdote(ownerId, picked.key)) continue; // taken by a concurrent run → pick another
+        try {
+          await buildPackLibraryVideo({ db, userId: ownerId, accountId: job.accountId, pack, picked });
+          return "made";
+        } catch (e) {
+          db.releaseAnecdote(ownerId, picked.key);
+          throw e;
+        }
+      }
     }
     const channelDeck = DECKS.find((d) => d.id === sourceDeck);
     if (!channelDeck) throw new Error(`У канала язык «${sourceDeck}» без пака`);
-    const a = randomAnecdote(channelDeck.id, seen);
-    if (!a) return "exhausted"; // deck has no unused cards left
-    if (channelDeck.preFact) {
-      await buildFactLibraryVideo({ db, userId: ownerId, accountId: job.accountId, deckId: channelDeck.id, picked: a });
-      return "made";
+    for (;;) {
+      const a = randomAnecdote(channelDeck.id, seen);
+      if (!a) return "exhausted"; // deck has no unused cards left
+      const key = anecdoteKey(a.text);
+      seen.add(key);
+      if (!db.claimAnecdote(ownerId, key)) continue; // taken by a concurrent run → pick another
+      try {
+        if (channelDeck.preFact) {
+          await buildFactLibraryVideo({ db, userId: ownerId, accountId: job.accountId, deckId: channelDeck.id, picked: a });
+        } else {
+          await buildLibraryVideo({
+            userId: ownerId,
+            accountId: job.accountId,
+            text: a.text,
+            title: a.title,
+            deck: channelDeck.id,
+            profession: a.profession,
+          });
+        }
+        return "made";
+      } catch (e) {
+        db.releaseAnecdote(ownerId, key);
+        throw e;
+      }
     }
-    await buildLibraryVideo({
-      userId: ownerId,
-      accountId: job.accountId,
-      text: a.text,
-      title: a.title,
-      deck: channelDeck.id,
-      profession: a.profession,
-    });
-    return "made";
   };
   for (let offset = 0; offset < Math.max(1, sources.length); offset++) {
     const sourceDeck = sources[(job.done + offset) % Math.max(1, sources.length)] || acc.lang;
@@ -2399,6 +2437,23 @@ app.post("/api/videos/:id/post-now", async (req, reply) => {
   // HARD source guard: never post a video whose deck is not selected for this channel.
   if (!accountSourceDecks(acc).includes(v.deck))
     return reply.code(400).send({ error: `Пак ролика (${v.deck}) не выбран у канала — не выложено.` });
+  // Burst guard (non-admin): manual posting must not be scriptable into a quota-burning loop.
+  if (!isAdminReq(req)) {
+    const rl = checkRateLimit(`user:${uid(req)}:post-now:window`, POST_NOW_LIMIT);
+    if (!rl.ok) {
+      reply.header("Retry-After", String(Math.max(1, Math.ceil((rl.retryAfterMs ?? 1_000) / 1000))));
+      return reply.code(429).send({ error: "Слишком частые публикации — подождите немного." });
+    }
+  }
+  // Daily per-Google-key upload cap (counts REAL uploads, not planned slots): post-now shares the
+  // scheduler's budget so it can't blow the Cloud project's YouTube quota for co-bound channels.
+  if (acc.oauthClientId != null && db.uploadsTodayForKey(acc.oauthClientId) >= USER_DAILY_SCHEDULE_CAP)
+    return reply
+      .code(429)
+      .send({ error: `Достигнут дневной лимит ${USER_DAILY_SCHEDULE_CAP} публикаций на этот Google-ключ — попробуйте позже.` });
+  // Atomic claim: flip this unposted video to in-flight so a double-click (or the scheduler) can't post it twice.
+  if (!db.claimVideoForPost(v.id))
+    return reply.code(409).send({ error: "Этот ролик уже публикуется или опубликован — обновите список." });
   // Optional publishAt (RFC3339) → scheduled (private until then); empty → publish now.
   const publishAt = ((req.body as { publishAt?: string })?.publishAt || "").trim() || null;
   try {
@@ -2433,6 +2488,8 @@ app.post("/api/videos/:id/post-now", async (req, reply) => {
         }
       }
       db.deleteVideo(v.id);
+    } else {
+      db.releaseVideoPost(v.id); // YouTube returned no id → un-claim so it can be retried later
     }
     return {
       ok: true,
@@ -2442,6 +2499,7 @@ app.post("/api/videos/:id/post-now", async (req, reply) => {
       removed: !!youtubeId,
     };
   } catch (err) {
+    db.releaseVideoPost(v.id); // upload threw → un-claim so the video stays postable
     app.log.error(err);
     db.addError({
       source: "server",

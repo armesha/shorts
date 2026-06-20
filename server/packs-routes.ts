@@ -34,6 +34,7 @@ import {
   checkRateLimit,
   heavyActiveKey,
   withActiveLimit,
+  withGlobalRenderSlot,
 } from "./rate-limits.ts";
 import { rememberOutputOwner } from "./output-access.ts";
 import {
@@ -87,7 +88,11 @@ async function runHeavyLimited<T>(
   fn: () => Promise<T>,
 ): Promise<T | unknown> {
   try {
-    return await withActiveLimit(heavyActiveKey(userId, isAdmin, route), isAdmin ? 2 : 1, fn);
+    // Per-user fairness AND the shared process-wide render cap (same `global:render` slot as the
+    // Studio/batch routes) so pack preview/video can't pile onto the host's Chrome+ffmpeg budget.
+    return await withActiveLimit(heavyActiveKey(userId, isAdmin, route), isAdmin ? 2 : 1, () =>
+      withGlobalRenderSlot(fn),
+    );
   } catch (e) {
     if (e instanceof RateLimitError) return sendRateLimit(reply, e);
     throw e;
