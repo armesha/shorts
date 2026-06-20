@@ -1,0 +1,182 @@
+[
+  {
+    "id": "black_hole_disk",
+    "title": "Light Bends Around the Abyss",
+    "narration": "This black hole wears a halo of stolen light. Its gravity is so fierce it bends the glow from the disk behind it into a perfect ring, while a torrent of superheated gas spins around the edge of forever. Nothing that crosses that boundary ever returns."
+  },
+  {
+    "id": "black_hole_binary",
+    "title": "Two Giants Dance to the End",
+    "narration": "Two monster black holes are locked in a death spiral. One holds two hundred million times the mass of the Sun, the other half that, each warping the other's glowing gas into impossible shapes. Soon they merge, shaking the very fabric of spacetime."
+  },
+  {
+    "id": "magnetar",
+    "title": "The Strongest Magnet in Existence",
+    "narration": "Meet the most magnetic object known to science. A single teaspoon of this neutron star would weigh billions of tons, and its magnetic field could wipe a credit card from halfway to the Moon. In twenty twenty it screamed a radio burst across our galaxy."
+  },
+  {
+    "id": "pulsar",
+    "title": "A Lighthouse of the Cosmos",
+    "narration": "Spinning hundreds of times a second, this dead star sweeps beams of radiation across the universe like a cosmic lighthouse. Each flash reaches us with clockwork precision so exact it rivals atomic clocks. A city-sized corpse, keeping perfect time forever."
+  },
+  {
+    "id": "quasar",
+    "title": "Brighter Than a Trillion Suns",
+    "narration": "Aimed straight at us is the brightest engine in the universe. A supermassive black hole gorges on swirling gas and fires a jet of particles at nearly light speed, outshining its entire galaxy of billions of stars. We are staring down the barrel."
+  },
+  {
+    "id": "tidal_disruption",
+    "title": "A Star Torn Into Spaghetti",
+    "narration": "Watch a whole star stretched into a noodle of fire. When it wanders too close, a black hole a million times the Sun's mass rips it apart, shredding it into a long glowing stream of gas. Astronomers call this spaghettification, and it is terrifyingly real."
+  },
+  {
+    "id": "gamma_ray_burst",
+    "title": "The Universe's Deadliest Blast",
+    "narration": "In mere seconds, this explosion releases more energy than the Sun will in its entire ten-billion-year life. A dying giant star collapses and fires a jet of gamma rays across the cosmos, leaving a fading afterglow. It is the most violent event we know."
+  },
+  {
+    "id": "white_dwarf",
+    "title": "A Dead Sun Devours Worlds",
+    "narration": "Here glows the ember of a star like our Sun, crushed to the size of Earth. So dense that a sugar cube of it would weigh a ton, this white dwarf now tears apart and swallows a rocky world. Even in death, it feeds."
+  },
+  {
+    "id": "galaxy_merger",
+    "title": "Andromeda Is Coming for Us",
+    "narration": "Our galaxy is on a collision course. In a few billion years the Milky Way and Andromeda will crash together, their billions of stars sweeping past each other without a single impact, before merging into one giant elliptical. The night sky will never look the same."
+  },
+  {
+    "id": "cosmic_web",
+    "title": "Every Galaxy on Invisible Threads",
+    "narration": "The universe has a hidden skeleton. Galaxies hang like beads of light along vast purple filaments of dark matter, stretching across hundreds of millions of light-years. This cosmic web links everything that exists, woven by gravity since the dawn of time. We live inside it."
+  },
+  {
+    "id": "gaia_milkyway",
+    "title": "Mapping a Billion Stars",
+    "narration": "Behold our galaxy drawn from nearly two billion stars. The Gaia spacecraft measured each one's exact position, brightness, and color, building the most precise map of the Milky Way ever made. Sweep from Cassiopeia to Orion through a sky charted star by star."
+  },
+  {
+    "id": "protoplanet_disk",
+    "title": "Watch Planets Being Born",
+    "narration": "Two glowing spiral arms are carving through this disk of gas and dust around a young star. Hidden inside those swirls, brand-new planets may be sculpting the material as they form. You are witnessing the very birth of worlds, four hundred light-years away."
+  },
+  {
+    "id": "exoplanet_transit",
+    "title": "How We Find Hidden Worlds",
+    "narration": "A tiny dip in starlight just revealed an alien planet. As a distant world crosses its star, it blocks a sliver of light, and that faint flicker is how Kepler and TESS have found thousands of exoplanets. We hunt new worlds by watching shadows."
+  },
+  {
+    "id": "trappist1",
+    "title": "Seven Earths Around One Star",
+    "narration": "Around one tiny dwarf star spin seven Earth-sized worlds, several in the zone where liquid water could exist. Stand on one and the neighboring planets would loom larger than our Moon. Forty light-years away, this could be the best place to search for life."
+  },
+  {
+    "id": "hot_jupiter",
+    "title": "A Planet Hotter Than Stars",
+    "narration": "This gas giant skims so close to its star that its dayside hits over four thousand degrees, hotter than many stars themselves. Three times the mass of Jupiter, it is boiling away into space, its atmosphere streaming off like steam. A world cooked slowly alive."
+  },
+  {
+    "id": "crab_nebula",
+    "title": "The Corpse of an Exploded Star",
+    "narration": "Almost a thousand years ago, Chinese astronomers watched this star explode in broad daylight. Today its glowing wreckage spreads across light-years, lit up from radio waves to X-rays, with a spinning pulsar at its heart. This is what a star leaves behind when it dies violently."
+  },
+  {
+    "id": "star_formation",
+    "title": "Towers Where Stars Are Born",
+    "narration": "These towering pillars of gas stand taller than our entire solar system. Deep inside the cold columns, gravity crushes matter together until brand-new stars ignite. Hubble and Webb peered into the same nursery to watch fresh starlight breaking out of the darkness."
+  },
+  {
+    "id": "mars_flyover",
+    "title": "A Canyon to Swallow Continents",
+    "narration": "Soar over the largest canyon in the solar system. Valles Marineris slices across Mars for over two thousand miles, deep enough to swallow Earth's Grand Canyon many times over. Carved into the red planet, this scar would stretch clear across the United States."
+  },
+  {
+    "id": "jupiter_juno",
+    "title": "Diving Into Jupiter's Storms",
+    "narration": "Plunge to just two thousand miles above Jupiter's clouds. The Juno spacecraft captured these swirling bands and monster vortices, storms wider than entire planets churning across the largest world in our solar system. Down here the chaos never ends, and it never has."
+  },
+  {
+    "id": "saturn_cassini",
+    "title": "The Crown of the Solar System",
+    "narration": "Saturn's rings span tens of thousands of miles, yet are mostly just yards thick, built from countless chunks of ice. Cassini orbited here for thirteen years before its final, fiery plunge into the planet. These real images are its parting gift to us."
+  },
+  {
+    "id": "europa",
+    "title": "An Ocean Under Cracked Ice",
+    "narration": "Beneath this shattered shell of ice hides a global ocean holding twice the water of all Earth's seas. The cracks reveal where warm currents churn the surface into chaos. On this moon of Jupiter, deep dark water may be our best place to search for life."
+  },
+  {
+    "id": "titan",
+    "title": "Rivers of Liquid Methane",
+    "narration": "On Saturn's largest moon it rains, but not water. Under a thick orange haze, methane falls from the clouds, carving rivers and filling vast seas with liquid fuel. Titan is the only other world we know with stable lakes on its surface. A frigid, alien Earth."
+  },
+  {
+    "id": "enceladus",
+    "title": "A Moon That Sprays the Sky",
+    "narration": "This little moon shoots fountains of ocean water straight into space. From cracks called tiger stripes, geysers blast ice, vapor, and organic chemicals hundreds of miles high, fed by a hidden sea below. Enceladus is quite literally leaking the ingredients for life."
+  },
+  {
+    "id": "io_volcanoes",
+    "title": "The Most Volcanic World",
+    "narration": "Painted in sulfur yellows and reds, this moon is the most volcanic place in the solar system. Hundreds of erupting peaks fling plumes high above the surface as Jupiter's gravity flexes and heats its insides. Io is a tortured world that never stops erupting."
+  },
+  {
+    "id": "pluto",
+    "title": "Pluto's Frozen Heart",
+    "narration": "Glide over mountains made of water ice, hard as rock in the deep cold. Below them spreads a vast plain of frozen nitrogen, the left half of Pluto's famous heart. New Horizons captured this distant world in stunning detail after a nine-year journey to the edge."
+  },
+  {
+    "id": "mercury",
+    "title": "Scorched and Battered by the Sun",
+    "narration": "Closest to the Sun spins this scarred grey world. Mercury has almost no atmosphere to shield it, so its surface swings from scorching heat to deep freeze and bears the marks of countless ancient impacts. A planet hammered and baked for billions of years."
+  },
+  {
+    "id": "venus",
+    "title": "A Furnace That Melts Lead",
+    "narration": "Welcome to the hottest planet in the solar system. Venus broils at nearly nine hundred degrees, hot enough to melt lead, beneath crushing clouds of acid. The Parker probe pierced that veil to glimpse its glowing surface in visible light for the very first time."
+  },
+  {
+    "id": "neptune_uranus",
+    "title": "Worlds at the Cold Frontier",
+    "narration": "Far out in the freezing dark drift two ice giants. Uranus rolls on its side, tipped over by an ancient collision, while Neptune whips up the fastest winds in the solar system, over a thousand miles an hour. Hubble keeps watch on these distant blue worlds."
+  },
+  {
+    "id": "bennu",
+    "title": "Touching an Asteroid to Steal Dust",
+    "narration": "A spacecraft reached out and tapped an asteroid. OSIRIS-REx descended to Bennu, pressed its arm into the rubble for just six seconds, and grabbed a sample of dust older than the planets. Then it carried that ancient cargo all the way home to Earth."
+  },
+  {
+    "id": "asteroid_belt",
+    "title": "Leftovers From the Planets' Birth",
+    "narration": "Between Mars and Jupiter drifts the wreckage of a planet that never formed. These millions of rocky asteroids are leftover rubble from our solar system's violent birth, frozen survivors of a chaotic era of collisions. Each one is a time capsule from four billion years ago."
+  },
+  {
+    "id": "aurora",
+    "title": "When the Sun Strikes the Sky",
+    "narration": "The northern lights are born from a cosmic collision. When the solar wind slams into Earth's magnetic field, snapping magnetic lines in the planet's tail unleash a burst of energy that sets the polar sky ablaze in green and red. The Sun is painting our atmosphere."
+  },
+  {
+    "id": "iss_earth",
+    "title": "Racing Earth at 17,500 mph",
+    "narration": "From two hundred twenty miles up, watch our planet glow. The Space Station circles Earth at seventeen thousand five hundred miles an hour, fast enough to see a sunrise every ninety minutes. City lights and a thin blue haze shine against the black of space."
+  },
+  {
+    "id": "voyager",
+    "title": "Humanity's Farthest Traveler",
+    "narration": "Follow the most distant machine humans ever built. After decades of flight, Voyager crossed the boundary where the Sun's wind fades and true interstellar space begins. Now over a hundred times farther from the Sun than Earth, it carries our message into the galaxy."
+  },
+  {
+    "id": "comet_sungrazer",
+    "title": "A Frozen Wanderer Wakes Up",
+    "narration": "Watch a comet blaze to life. This frozen wanderer spent billions of years in the deep cold, until sunlight boiled its ice into a glowing tail streaming millions of miles across space. We get one fleeting show before it vanishes into the dark for a thousand years."
+  },
+  {
+    "id": "webb_deepfield",
+    "title": "Seeing the First Galaxies",
+    "narration": "Zoom into thousands of galaxies in a patch of sky smaller than your fingernail. That faint red dot ranks among the most distant galaxies ever seen, its light traveling more than thirteen billion years to reach us. James Webb is staring back to the cosmic dawn."
+  },
+  {
+    "id": "helio_solarwind",
+    "title": "A Storm Across the Solar System",
+    "narration": "The Sun just hurled a billion tons of plasma into space. This eruption races outward at over a million miles an hour, sweeping past Mars, a distant comet, and onward toward Saturn. Watch a single solar storm sail clear across the inner solar system."
+  }
+]

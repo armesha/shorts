@@ -17,6 +17,7 @@ export interface Account {
   slotVideos: Record<string, number>;
   slotDecks?: Record<string, string>;
   avatar?: string | null; // channel avatar URL (built-in /avatars/… or uploaded /files/avatars/…)
+  oauthClientId?: number | null; // which uploaded Google key the channel was connected with
 }
 
 export interface HistoryItem {
@@ -67,6 +68,29 @@ export interface Generator {
 
 export interface AppSettings {
   hasGoogleKey: boolean;
+}
+
+// One uploaded Google OAuth key (client_secret.json). The secret itself never reaches the client —
+// only this display metadata does.
+export interface OAuthClient {
+  id: number;
+  label: string;
+  clientIdShort: string; // shortened client_id (semi-public; for display only)
+  projectId: string | null;
+  createdAt: string;
+  channelCount: number; // connected channels bound to this key
+}
+
+export interface OAuthClientsResponse {
+  clients: OAuthClient[];
+  max: number;
+  redirectUri: string; // the exact URI the server sends to Google (must be in each key's redirect URIs)
+}
+
+export interface AddOAuthClientResponse {
+  client: OAuthClient;
+  redirectOk: boolean; // false → the key's Authorized redirect URIs is missing our redirectUri
+  redirectUri: string;
 }
 
 export interface AdminLimitsKey {
@@ -774,8 +798,13 @@ export const apiClient = {
   status: () => get<AppStatus>("/config"),
   changelog: () => get<{ raw: string }>("/changelog"),
   settings: () => get<AppSettings>("/settings"),
-  uploadGoogleKey: (json: string) => send<AppSettings>("/settings/google-key", "PUT", { json }),
-  removeGoogleKey: () => send<AppSettings>("/settings/google-key", "DELETE"),
+  // Google keys (client_secret.json) — up to N per user, each channel bound to one.
+  youtubeClients: () => get<OAuthClientsResponse>("/youtube/clients"),
+  addYoutubeClient: (json: string, label?: string) =>
+    send<AddOAuthClientResponse>("/youtube/clients", "POST", { json, label }),
+  renameYoutubeClient: (id: number, label: string) =>
+    send<{ ok: boolean }>(`/youtube/clients/${id}`, "PATCH", { label }),
+  deleteYoutubeClient: (id: number) => send<{ ok: boolean }>(`/youtube/clients/${id}`, "DELETE"),
   adminUsers: () => get<AdminUser[]>("/admin/users"),
   createUser: (username: string, password: string, role?: string, hidden?: string[]) =>
     send<{ id: number; username: string; role: string }>("/admin/users", "POST", {
@@ -811,8 +840,8 @@ export const apiClient = {
   avatars: () => get<string[]>("/avatars"),
   uploadAvatar: (id: number | string, dataUrl: string) =>
     send<Account>(`/accounts/${id}/avatar`, "POST", { dataUrl }),
-  youtubeAuthUrl: (accountId: number | string) =>
-    get<{ url: string }>(`/youtube/auth-url?accountId=${accountId}`),
+  youtubeAuthUrl: (accountId: number | string, clientId?: number) =>
+    get<{ url: string }>(`/youtube/auth-url?accountId=${accountId}${clientId ? `&clientId=${clientId}` : ""}`),
   history: (params?: {
     scope?: "mine" | "all";
     userId?: number;

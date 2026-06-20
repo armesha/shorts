@@ -610,57 +610,52 @@ node --input-type=module -e 'import fs from "node:fs"; const cards=JSON.parse(fs
 
 ### Space montage pack / admin clip demos
 
-`space` сейчас пополняется не вручную копированием одного MP4, а через локальный free-stack монтажный
-workflow:
+`space` пополняется локальным free-stack монтажным конвейером. **Инструмент живёт в отслеживаемом
+`src/scripts/space-montage/`** (раньше был в gitignored `temp/clip-demo/` и из-за этого был утерян — НЕ
+держи монтажный код в `temp/`). Источник теперь — **NASA Scientific Visualization Studio**
+(`svs.gsfc.nasa.gov`, public domain, прямые MP4) с фолбэком Hubble/Webb; общая NASA Image&Video Library
+шумная (пресс-ролики/железо/«говорящие головы») и для этого пака не годится.
 
-- исходные pack specs: `temp/clip-demo/work/pack-space*.json`;
-- последний добавочный spec на 20 новых роликов: `temp/clip-demo/work/pack-space-7.json`;
-- генератор: `temp/clip-demo/buildpack.mjs`;
-- монтаж: `temp/clip-demo/montage.mjs`;
-- локальные source videos: `temp/clip-demo/src/*.mp4`;
+Состав (`src/scripts/space-montage/`):
+
+- `topics.json` — список тем `{id,subject,query}`;
+- `find-svs-sources.workflow.mjs` — Workflow: по агенту на тему, ищет `site:svs.gsfc.nasa.gov` через
+  WebSearch, WebFetch'ит страницу визуализации, достаёт и валидирует (`curl -sIL`) прямой MP4; возвращает
+  `{id,mp4Url,title,description,credit,license,...}` (модель агентов — sonnet, это поиск, не генерация);
+- `fetch-sources.mjs` — фолбэк-добытчик из NASA Image&Video Library (для тем, которых нет в SVS);
+- `write-narration.workflow.mjs` — Workflow: Opus 4.8 (модель VO-текста СНАЧАЛА спроси у пользователя)
+  пишет ~50-словный нарратив + хук-заголовок на каждую тему, привязанный к реальному описанию клипа;
+  draft-всё-сразу → polish (varienty/длина). Темы вшиты в скрипт (см. ниже);
+- `build.mjs` — сборка ролика: ElevenLabs TTS (голос **Matilda** `XrExE9yKIg1WjnnlVkGX`, endpoint
+  `with-timestamps`) → пословные **караоке-субтитры в стиле Animal Heroes** (puppeteer-HTML: белый жирный
+  текст, тёмная обводка, активное слово в золотой плашке `#fbbf24`; см. `captionCss()`), рендер каждого
+  слова в прозрачный PNG → alpha-оверлей через ffmpeg `concat` → рефрейм в 1080×1920 (футаж-бан ~42%
+  высоты + тёмный размытый фон, без чёрных полос) + кредит источника → синк в деку.
+- scratch (gitignored): `temp/space-build/{src,voice,cap,base,sources.json}`;
 - готовая админ-галерея: `data/output/admin-demos/<id>.mp4`, `<id>.jpg`, `manifest.json`;
 - канал-selectable deck: `assets/fact-videos/space/<id>.mp4` и `data/space/videos.json`;
 - страница просмотра: `/clip-demos` (`web/src/pages/ClipDemos.tsx`).
 
-Как создать новый добавочный набор:
+Как пополнить (полный цикл с нуля):
 
-1. Скопировать стиль из `temp/clip-demo/work/pack-space-7.json`.
-2. Использовать только новые `id`, которых нет в `data/output/admin-demos/manifest.json`.
-3. Каждый item описывать как `{id,title,theme,src,transcript,poster,segments}`.
-4. `clip` segments должны попадать в длительность `src`.
-5. `vo` segments используют ElevenLabs и для голоса, и для таймингов слов (endpoint `with-timestamps` /
-   поле `alignment`); локальные движки (`edge-tts`, `whisper-ctranslate2`) не использовать — если старый
-   builder ещё на них, при ближайшей пересборке перевести его на ElevenLabs.
-   Если текст VO пишет LLM/workflow, сначала спроси пользователя, какую модель использовать.
-6. Для исходников с пустым transcript (`work/milkyway.json`, `work/moon.json`, `work/sun.json`) можно
-   использовать короткие `clip` segments без исходных субтитров и `vo` segments с новым narration.
-7. Держать итоговые ролики в пределах Shorts-формата: после сборки проверить, что `dur` не больше
-   `1:00`; если получилось больше, укоротить timecodes и пересобрать этот `id`.
+1. Добавь новые темы в `topics.json` (и в `TOPICS` внутри `find-svs-sources.workflow.mjs`), используя
+   только `id`, которых нет в `data/output/admin-demos/manifest.json`.
+2. Найди источники: `Workflow find-svs-sources.workflow.mjs` → распарсь результат и скачай MP4 в
+   `temp/space-build/src/<id>.mp4`, собери `temp/space-build/sources.json`
+   (`{id:{file,credit,description,subject,...}}`). Визуально отбракуй слабые клипы (контактный лист
+   ffmpeg `tile`), замени плохие точечным WebSearch+WebFetch+curl.
+3. Тексты: **сначала спроси у пользователя модель**, затем `Workflow write-narration.workflow.mjs`
+   (темы/описания вшиваются в скрипт перед запуском) → сохрани результат в
+   `src/scripts/space-montage/narration.json` (`[{id,title,narration}]`, ≤~52 слов).
+4. Собери: `node --env-file=.env src/scripts/space-montage/build.mjs --no-sync` (или `--only <id>`),
+   визуально проверь (см. QA ниже), почини и пересобери точечные `id`, затем синкни в деку:
+   `node --env-file=.env src/scripts/space-montage/build.mjs --sync-only`.
+5. Держи ролики в Shorts-формате (`dur` ≤ ~0:58); короткие исходники `build.mjs` сам зацикливает.
 
-Сборка полного добавочного spec:
-
-```bash
-cd temp/clip-demo
-node buildpack.mjs work/pack-space-7.json
-```
-
-`buildpack.mjs` после каждого ролика:
-
-- генерирует VO через ElevenLabs;
-- получает word timestamps прямо из ElevenLabs (endpoint `with-timestamps` / поле `alignment`);
-- собирает MP4 через `ffmpeg`;
-- копирует MP4/JPG в `data/output/admin-demos`;
-- добавляет запись в `manifest.json`;
-- сохраняет `createdAt` при пересборке существующего `id` и обновляет `updatedAt`;
-- если `pack.id === "space"`, в конце вызывает `sync-space-deck.mjs`, который копирует MP4 в
-  `assets/fact-videos/space` и полностью пересобирает `data/space/videos.json`.
-
-Если нужно пересобрать только часть роликов, сделай временный subset JSON с тем же shape и запусти:
-
-```bash
-cd temp/clip-demo
-node buildpack.mjs /tmp/shorts-space-subset.json
-```
+VO-правила: **ElevenLabs — единственный TTS**; word-тайминги берём из ElevenLabs (`with-timestamps` /
+`alignment`), не из whisper; ключи ротируются из `.env` (`ELEVENLABS_API_KEYS`), free-tier = 10000
+симв/мес на ключ — следи за бюджетом (≈260 симв/ролик). Финальная визуальная QA несколькими субагентами
+обязательна (бить на кадры → читать → искать чёрные полосы/дефекты субтитров → чинить → перепроверять).
 
 Проверка `space` после пополнения:
 

@@ -1,6 +1,19 @@
 import { useEffect, useState, type ChangeEvent } from "react";
-import { KeyRound, Check, AlertTriangle, Upload, Trash2, Lock, Send } from "lucide-react";
-import { apiClient, ApiError, type AppSettings } from "../lib/api";
+import {
+  KeyRound,
+  Check,
+  AlertTriangle,
+  Trash2,
+  Lock,
+  Send,
+  Copy,
+  Plus,
+  Pencil,
+  Link2,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
+import { apiClient, ApiError, type OAuthClient, type OAuthClientsResponse } from "../lib/api";
 import TelegramConnect from "../components/TelegramConnect";
 import { confirmDialog } from "../lib/confirm";
 import { AppIcon } from "../components/AppIcon";
@@ -9,47 +22,6 @@ import { useT } from "../lib/i18n";
 
 export default function Settings() {
   const { t } = useT();
-  const [settings, setSettings] = useState<AppSettings | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-
-  const redirectUrl = `${window.location.origin}/api/youtube/callback`;
-
-  useEffect(() => {
-    apiClient
-      .settings()
-      .then(setSettings)
-      .catch((err) => setError(err instanceof ApiError ? err.message : t("settings.errLoad")));
-  }, [t]);
-
-  async function onFile(e: ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    setError("");
-    setBusy(true);
-    try {
-      const text = await f.text();
-      setSettings(await apiClient.uploadGoogleKey(text));
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : t("settings.errUpload"));
-    } finally {
-      setBusy(false);
-      e.target.value = "";
-    }
-  }
-
-  async function removeKey() {
-    if (!(await confirmDialog(t("settings.removeKeyConfirm"), { title: t("settings.removeKeyTitle"), confirmText: t("settings.removeKey"), danger: true }))) return;
-    setError("");
-    setBusy(true);
-    try {
-      setSettings(await apiClient.removeGoogleKey());
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : t("settings.errRemove"));
-    } finally {
-      setBusy(false);
-    }
-  }
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -60,21 +32,120 @@ export default function Settings() {
 
       <DesignSettings />
 
-      <section className="card bg-base-100 border border-base-300">
-        <div className="card-body gap-3">
-          <div className="flex items-center gap-2 flex-wrap">
-            <KeyRound className="text-primary" size={18} />
-            <h2 className="card-title text-base">{t("settings.googleKeyTitle")}</h2>
-            {settings &&
-              (settings.hasGoogleKey ? (
-                <span className="badge badge-success badge-sm">{t("settings.badgeLoaded")}</span>
-              ) : (
-                <span className="badge badge-warning badge-sm">{t("settings.badgeNotLoaded")}</span>
-              ))}
-          </div>
+      <GoogleKeysManager />
 
-          <div className="text-sm text-base-content/70 space-y-2">
-            <p>{t("settings.googleIntro")}</p>
+      <TelegramLink />
+
+      <ChangePassword />
+    </div>
+  );
+}
+
+// Manage up to N uploaded Google OAuth keys (client_secret.json). Each channel is bound to one key at
+// connect time; the raw secret never leaves the server — we only ever show label/project/short id.
+function GoogleKeysManager() {
+  const { t } = useT();
+  const [data, setData] = useState<OAuthClientsResponse | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [warn, setWarn] = useState("");
+  const [copied, setCopied] = useState(false);
+  const [label, setLabel] = useState("");
+  const [showHow, setShowHow] = useState(false);
+
+  const redirectUrl = data?.redirectUri || `${window.location.origin}/api/youtube/callback`;
+  const clients = data?.clients ?? [];
+  const max = data?.max ?? 5;
+  const atMax = clients.length >= max;
+
+  const load = () =>
+    apiClient
+      .youtubeClients()
+      .then(setData)
+      .catch((e) => setError(e instanceof ApiError ? e.message : t("settings.errLoad")));
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function onFile(e: ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setError("");
+    setWarn("");
+    setBusy(true);
+    try {
+      const text = await f.text();
+      const res = await apiClient.addYoutubeClient(text, label.trim() || undefined);
+      if (!res.redirectOk) setWarn(t("settings.redirectMismatch"));
+      setLabel("");
+      await load();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t("settings.errUpload"));
+    } finally {
+      setBusy(false);
+      e.target.value = "";
+    }
+  }
+
+  async function remove(c: OAuthClient) {
+    if (c.channelCount > 0) return; // UI guard; backend also blocks in-use keys
+    if (
+      !(await confirmDialog(t("settings.removeKeyConfirm"), {
+        title: t("settings.removeKeyTitle"),
+        confirmText: t("settings.removeKey"),
+        danger: true,
+      }))
+    )
+      return;
+    setError("");
+    setBusy(true);
+    try {
+      await apiClient.deleteYoutubeClient(c.id);
+      await load();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t("settings.errRemove"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function copyRedirect() {
+    try {
+      await navigator.clipboard.writeText(redirectUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      /* clipboard unavailable (insecure context) — the URI is shown for manual copy */
+    }
+  }
+
+  return (
+    <section className="card bg-base-100 border border-base-300">
+      <div className="card-body gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
+          <KeyRound className="text-primary" size={18} />
+          <h2 className="card-title text-base">{t("settings.googleKeysTitle")}</h2>
+          {data && (
+            <span className={`badge badge-sm ${clients.length ? "badge-success" : "badge-warning"}`}>
+              {t("settings.keysCount", { n: clients.length, max })}
+            </span>
+          )}
+        </div>
+
+        <p className="text-sm text-base-content/70">{t("settings.googleIntro")}</p>
+
+        {/* Step-by-step instructions — collapsible so a list of 5 keys stays compact. */}
+        <button
+          type="button"
+          className="btn btn-ghost btn-xs w-fit gap-1 -ml-1 text-base-content/70"
+          onClick={() => setShowHow((v) => !v)}
+        >
+          {showHow ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          {t("settings.howToTitle")}
+        </button>
+        {showHow && (
+          <div className="text-sm text-base-content/70 space-y-2 rounded-lg bg-base-200/50 p-3">
             <ol className="list-decimal list-inside space-y-1 text-base-content/80 marker:text-primary marker:font-semibold">
               <li>
                 {t("settings.step1Open")}{" "}
@@ -101,7 +172,9 @@ export default function Settings() {
                 → <b>Create credentials → OAuth client ID</b>.
               </li>
               <li>
-                <b>Application type → Web application</b> {t("settings.step3Pre")}<u>{t("settings.step3NotDesktop")}</u>{t("settings.step3Post")}
+                <b>Application type → Web application</b> {t("settings.step3Pre")}
+                <u>{t("settings.step3NotDesktop")}</u>
+                {t("settings.step3Post")}
               </li>
               <li>
                 {t("settings.step4Section")} <b>Authorized redirect URIs</b> → <b>+ ADD URI</b> → {t("settings.step4Tail")}
@@ -111,39 +184,179 @@ export default function Settings() {
               </li>
             </ol>
             <p className="text-xs text-base-content/50">
-              {t("settings.testingNote1")} <b>OAuth consent screen → Test
-              users</b>{t("settings.testingNote2")}
+              {t("settings.testingNote1")} <b>OAuth consent screen → Test users</b>
+              {t("settings.testingNote2")}
             </p>
           </div>
-          <code className="block bg-base-200 rounded p-2 text-xs break-all">{redirectUrl}</code>
+        )}
 
-          <div className="flex items-center gap-2 flex-wrap">
-            <label className="btn btn-primary btn-sm gap-2">
-              {busy ? <span className="loading loading-spinner loading-sm" /> : <Upload size={16} />}
-              {settings?.hasGoogleKey ? t("settings.replaceKey") : t("settings.uploadKey")}
-              <input type="file" accept=".json,application/json" className="hidden" onChange={onFile} disabled={busy} />
-            </label>
-            {settings?.hasGoogleKey && (
-              <button className="btn btn-ghost btn-sm text-error gap-1" onClick={removeKey} disabled={busy}>
-                <Trash2 size={14} /> {t("settings.removeKey")}
-              </button>
-            )}
+        {/* Redirect URI to paste into every key's Authorized redirect URIs. */}
+        <div>
+          <div className="text-xs text-base-content/60 mb-1 flex items-center gap-1">
+            <Link2 size={12} /> {t("settings.redirectUriLabel")}
           </div>
-          {error && (
-            <div className="text-error text-sm flex items-center gap-1">
-              <AlertTriangle size={14} /> {error}
-            </div>
-          )}
-          <p className="text-xs text-base-content/50">
-            {t("settings.keyPrivacy")}
-          </p>
+          <div className="flex items-stretch gap-2">
+            <code className="flex-1 bg-base-200 rounded p-2 text-xs break-all self-center">{redirectUrl}</code>
+            <button className="btn btn-ghost btn-sm gap-1" onClick={copyRedirect} title={t("settings.copy")}>
+              {copied ? <Check size={14} className="text-success" /> : <Copy size={14} />}
+              {copied ? t("settings.copied") : t("settings.copy")}
+            </button>
+          </div>
         </div>
-      </section>
 
-      <TelegramLink />
+        {/* Existing keys */}
+        {data && clients.length === 0 && (
+          <p className="text-sm text-base-content/50 italic">{t("settings.noKeys")}</p>
+        )}
+        {clients.length > 0 && (
+          <ul className="space-y-2">
+            {clients.map((c) => (
+              <OAuthKeyCard key={c.id} client={c} busy={busy} onRemove={() => remove(c)} onChanged={load} />
+            ))}
+          </ul>
+        )}
 
-      <ChangePassword />
-    </div>
+        {/* Add a key */}
+        {atMax ? (
+          <p className="text-xs text-warning flex items-center gap-1">
+            <AlertTriangle size={14} /> {t("settings.maxKeysReached", { max })}
+          </p>
+        ) : (
+          <div className="flex items-center gap-2 flex-wrap">
+            <input
+              type="text"
+              className="input input-bordered input-sm w-52"
+              placeholder={t("settings.keyLabelPlaceholder")}
+              value={label}
+              maxLength={60}
+              onChange={(e) => setLabel(e.target.value)}
+              disabled={busy}
+            />
+            <label className="btn btn-primary btn-sm gap-2">
+              {busy ? <span className="loading loading-spinner loading-sm" /> : <Plus size={16} />}
+              {t("settings.addKey")}
+              <input
+                type="file"
+                accept=".json,application/json"
+                className="hidden"
+                onChange={onFile}
+                disabled={busy}
+              />
+            </label>
+          </div>
+        )}
+
+        {error && (
+          <div className="text-error text-sm flex items-center gap-1">
+            <AlertTriangle size={14} /> {error}
+          </div>
+        )}
+        {warn && (
+          <div className="text-warning text-sm flex items-start gap-1">
+            <AlertTriangle size={14} className="mt-0.5 shrink-0" /> {warn}
+          </div>
+        )}
+        <p className="text-xs text-base-content/50">{t("settings.keyPrivacy")}</p>
+      </div>
+    </section>
+  );
+}
+
+// One stored key row: label (inline-editable), project + short client id, channel usage, delete.
+function OAuthKeyCard({
+  client,
+  busy,
+  onRemove,
+  onChanged,
+}: {
+  client: OAuthClient;
+  busy: boolean;
+  onRemove: () => void;
+  onChanged: () => void;
+}) {
+  const { t } = useT();
+  const [editing, setEditing] = useState(false);
+  const [label, setLabel] = useState(client.label);
+  const [saving, setSaving] = useState(false);
+  const inUse = client.channelCount > 0;
+
+  async function save() {
+    const next = label.trim();
+    if (!next || next === client.label) {
+      setEditing(false);
+      setLabel(client.label);
+      return;
+    }
+    setSaving(true);
+    try {
+      await apiClient.renameYoutubeClient(client.id, next);
+      setEditing(false);
+      onChanged();
+    } catch {
+      setLabel(client.label);
+      setEditing(false);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <li className="rounded-lg border border-base-300 bg-base-100 p-3 flex items-start justify-between gap-3">
+      <div className="min-w-0 space-y-1">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <Check size={14} className="text-success shrink-0" />
+          {editing ? (
+            <input
+              type="text"
+              className="input input-bordered input-xs w-44"
+              value={label}
+              maxLength={60}
+              autoFocus
+              disabled={saving}
+              onChange={(e) => setLabel(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") save();
+                if (e.key === "Escape") {
+                  setEditing(false);
+                  setLabel(client.label);
+                }
+              }}
+              onBlur={save}
+            />
+          ) : (
+            <>
+              <span className="font-semibold text-sm truncate">{client.label}</span>
+              <button
+                className="btn btn-ghost btn-xs btn-square text-base-content/50"
+                onClick={() => setEditing(true)}
+                title={t("settings.rename")}
+              >
+                <Pencil size={12} />
+              </button>
+            </>
+          )}
+        </div>
+        <div className="text-xs text-base-content/55 break-all">
+          {client.projectId && (
+            <>
+              {t("settings.keyProject")}: <b>{client.projectId}</b> ·{" "}
+            </>
+          )}
+          <span className="font-mono">{client.clientIdShort}</span>
+        </div>
+        <div className="text-xs text-base-content/45">
+          {inUse ? t("settings.keyUsedBy", { n: client.channelCount }) : t("settings.keyUnused")}
+        </div>
+      </div>
+      <button
+        className="btn btn-ghost btn-xs text-error gap-1 shrink-0"
+        onClick={onRemove}
+        disabled={busy || inUse}
+        title={inUse ? t("settings.deleteKeyInUse") : t("settings.removeKey")}
+      >
+        <Trash2 size={14} />
+      </button>
+    </li>
   );
 }
 

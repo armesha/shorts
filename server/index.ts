@@ -13,7 +13,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { loadBaseConfig, resolveClientSecretFile, credsFileExists } from "./config.ts";
-import { openDb, type Account } from "./db.ts";
+import { openDb, parseCredMeta, MAX_OAUTH_CLIENTS_PER_USER, type Account, type OAuthClientRow } from "./db.ts";
 import { randomAnecdote, libraryStats, anecdoteKey, deckAnecdoteKeys } from "../src/anecdotes/library.ts";
 import { DECKS, getDeck, ytMeta, pickGenericTitle, isPackDeckId, deckLang } from "../src/anecdotes/decks.ts";
 import { listAllPacks, setGrant, setPackOwners, getPack, canAccess } from "../src/packs/store.ts";
@@ -92,15 +92,22 @@ if (db.countUsers() === 0)
 const firstAdmin = db.listUsers().find((u) => u.role === "admin") ?? db.listUsers()[0] ?? null;
 if (firstAdmin) {
   db.assignOrphanAccounts(firstAdmin.id); // channels with no owner → admin
-  // Seed the admin's Google key from the legacy global client-secret file so already-connected
-  // channels keep working (their refresh tokens were minted with that client_id).
-  if (!db.getUserClientSecret(firstAdmin.id)) {
+  // Seed the admin's first Google key from the legacy global client-secret file so already-connected
+  // channels keep working (their refresh tokens were minted with that client_id). ONE-TIME, gated on a
+  // persisted flag (not the live key count) so that once the admin deletes that key it is NOT recreated
+  // on the next restart. The per-user legacy column is migrated into oauth_clients in openDb.
+  if (db.getSetting("legacyGlobalKeySeeded") !== "1") {
     try {
       const p = credsPath();
-      if (credsFileExists(p)) db.setUserClientSecret(firstAdmin.id, readFileSync(p, "utf8"));
+      if (credsFileExists(p) && db.countOAuthClients(firstAdmin.id) === 0) {
+        const json = readFileSync(p, "utf8");
+        const meta = parseCredMeta(json);
+        db.addOAuthClient(firstAdmin.id, { json, clientId: meta.clientId, projectId: meta.projectId });
+      }
     } catch {
       /* no global file — admin uploads his own key in Settings */
     }
+    db.setSetting("legacyGlobalKeySeeded", "1");
   }
 }
 
@@ -159,11 +166,11 @@ if (!credsFileExists(credsPath())) {
   );
 }
 
-// Per-user ONLY: a user can act on YouTube solely with THEIR OWN uploaded key (full isolation —
-// nobody inherits anyone else's key). The admin's key is seeded once from the legacy global file
-// in the migration above; everyone else uploads their own in Settings.
-function userCreds(userId: number): ClientCreds | null {
-  const json = db.getUserClientSecret(userId);
+// Per-channel keys: each channel acts on YouTube with the SPECIFIC uploaded key it was connected with
+// (its refresh token's client_id must match). Full per-user isolation — nobody inherits anyone else's
+// key. The admin's first key is seeded once from the legacy global file in the migration above.
+function accountCreds(account: Account): ClientCreds | null {
+  const json = db.oauthClientSecretForAccount(account);
   if (!json) return null;
   try {
     return parseCreds(json);
@@ -721,9 +728,6 @@ function rejectScheduleLimit(reply: Replyish, schedule: unknown, ownerId: number
   return true;
 }
 
-function accountOwnerCreds(req: unknown, account: Account): ClientCreds | null {
-  return userCreds(accountOwnerId(req, account));
-}
 
 // True if the user may use a deck (pack): admins always; admin-only packs never for non-admins;
 // otherwise unless the deck is hidden for them.
@@ -909,7 +913,7 @@ app.get("/api/changelog", async () => {
 });
 
 app.get("/api/config", async (req) => {
-  const hasGoogleKey = !!userCreds(uid(req));
+  const hasGoogleKey = db.countOAuthClients(uid(req)) > 0;
   return {
     hasGoogleKey,
     credsConfigured: hasGoogleKey, // alias kept for the channels badge
@@ -918,27 +922,76 @@ app.get("/api/config", async (req) => {
   };
 });
 
-// ---- Settings: per-user Google key (client_secret JSON, uploaded by each user) ----
-app.get("/api/settings", async (req) => ({
-  hasGoogleKey: !!db.getUserClientSecret(uid(req)),
+// ---- Settings: per-user Google keys (client_secret JSON; up to MAX, each channel bound to one) ----
+// client_id is not a secret (it appears in the consent URL); client_secret_json never leaves the server.
+// We shorten client_id only to keep the UI tidy.
+const maskClientId = (id: string): string => {
+  const core = id.replace(/\.apps\.googleusercontent\.com$/i, "");
+  const head = core.split("-")[0] || core.slice(0, 12);
+  const tail = core.slice(-6);
+  return head && tail && head.length + tail.length < core.length ? `${head}…${tail}` : core.slice(0, 28);
+};
+const publicClient = (c: OAuthClientRow) => ({
+  id: c.id,
+  label: c.label,
+  clientIdShort: maskClientId(c.clientId),
+  projectId: c.projectId,
+  createdAt: c.createdAt,
+  channelCount: c.channelCount,
+});
+
+// Kept for back-compat (AppSettings.hasGoogleKey); the keys UI now uses /api/youtube/clients.
+app.get("/api/settings", async (req) => ({ hasGoogleKey: db.countOAuthClients(uid(req)) > 0 }));
+
+app.get("/api/youtube/clients", async (req) => ({
+  clients: db.listOAuthClients(uid(req)).map(publicClient),
+  max: MAX_OAUTH_CLIENTS_PER_USER,
+  redirectUri: REDIRECT_URI, // authoritative redirect the server sends to Google
 }));
 
-app.put("/api/settings/google-key", async (req, reply) => {
-  const body = (req.body as { json?: string }) ?? {};
+app.post("/api/youtube/clients", async (req, reply) => {
+  const body = (req.body as { json?: string; label?: string }) ?? {};
   const json = (body.json ?? "").trim();
   if (!json) return reply.code(400).send({ error: "Пустой файл ключа" });
+  if (db.countOAuthClients(uid(req)) >= MAX_OAUTH_CLIENTS_PER_USER)
+    return reply
+      .code(409)
+      .send({ error: `Можно хранить не больше ${MAX_OAUTH_CLIENTS_PER_USER} ключей — удалите лишний.` });
+  let creds: ClientCreds;
   try {
-    parseCreds(json); // validate shape (client_id/client_secret present)
+    creds = parseCreds(json); // validates client_id/client_secret present
   } catch (e) {
     return reply.code(400).send({ error: "Неверный client_secret.json: " + String(e).slice(0, 120) });
   }
-  db.setUserClientSecret(uid(req), json);
-  return { hasGoogleKey: true };
+  const meta = parseCredMeta(json);
+  const redirectOk = (creds.redirect_uris ?? []).includes(REDIRECT_URI);
+  const client = db.addOAuthClient(uid(req), {
+    json,
+    label: body.label,
+    clientId: meta.clientId || creds.client_id,
+    projectId: meta.projectId,
+  });
+  return { client: publicClient(client), redirectOk, redirectUri: REDIRECT_URI };
 });
 
-app.delete("/api/settings/google-key", async (req) => {
-  db.setUserClientSecret(uid(req), null);
-  return { hasGoogleKey: false };
+app.patch("/api/youtube/clients/:id", async (req, reply) => {
+  const id = Number((req.params as { id: string }).id);
+  const label = String((req.body as { label?: string })?.label ?? "").trim();
+  if (!label) return reply.code(400).send({ error: "Пустое название" });
+  if (!db.renameOAuthClient(uid(req), id, label.slice(0, 60))) return reply.code(404).send({ error: "Ключ не найден" });
+  return { ok: true };
+});
+
+app.delete("/api/youtube/clients/:id", async (req, reply) => {
+  const id = Number((req.params as { id: string }).id);
+  if (!db.listOAuthClients(uid(req)).some((c) => c.id === id)) return reply.code(404).send({ error: "Ключ не найден" });
+  const inUse = db.accountsUsingOAuthClient(id);
+  if (inUse.length)
+    return reply.code(409).send({
+      error: `Ключ используют каналы: ${inUse.map((a) => a.channelName).join(", ")}. Переподключите их на другой ключ и повторите.`,
+    });
+  db.deleteOAuthClient(uid(req), id);
+  return { ok: true };
 });
 
 // ---- Admin: user management (admin creates accounts for friends) ----
@@ -1626,7 +1679,7 @@ app.post("/api/stats/refresh", async (req) => {
   await Promise.all(
     accounts.map(async (a) => {
       if (a.status !== "connected") return;
-      const creds = a.userId != null ? userCreds(a.userId) : null;
+      const creds = accountCreds(a);
       const token = db.getRefreshToken(a.id);
       if (!creds) {
         errors.set(a.id, "Нет Google-ключа у владельца канала");
@@ -1764,7 +1817,7 @@ app.post("/api/stats/refresh-data-only", async (req, reply) => {
   const analyticsRange = youtubeAnalyticsRange();
   await Promise.all(
     accounts.map(async (a) => {
-      const creds = a.userId != null ? userCreds(a.userId) : null;
+      const creds = accountCreds(a);
       const token = db.getRefreshToken(a.id);
       if (!creds) {
         errors.set(a.id, "Нет Google-ключа у владельца канала");
@@ -1974,21 +2027,48 @@ app.get("/api/system", async () => {
   };
 });
 
-// ---- YouTube OAuth (connect a channel — uses the current user's key) ----
+// ---- YouTube OAuth (connect a channel with ONE of the owner's keys; the channel is bound to it) ----
 app.get("/api/youtube/auth-url", async (req, reply) => {
   const accountId = Number((req.query as { accountId?: string }).accountId ?? 0);
   if (!accountId) return reply.code(400).send({ error: "accountId required" });
   const acc = accessibleAccount(req, reply, accountId);
   if (!acc) return;
-  const creds = accountOwnerCreds(req, acc);
-  if (!creds) return reply.code(400).send({ error: "Сначала загрузите свой Google-ключ в Настройках" });
-  app.log.info({ accountId, user: uid(req), redirect: REDIRECT_URI }, "[oauth] auth-url issued");
-  return { url: buildAuthUrl(creds, REDIRECT_URI, String(accountId)) };
+  const ownerId = accountOwnerId(req, acc);
+  const keys = db.listOAuthClients(ownerId);
+  if (!keys.length) return reply.code(400).send({ error: "Сначала добавьте свой Google-ключ в Настройках" });
+  // Pick the key: explicit ?clientId=, else the channel's existing binding (so RECONNECT — incl. an admin
+  // reconnecting a user's channel — reuses the same key without a picker), else the only key, else ask.
+  const requested = Number((req.query as { clientId?: string }).clientId ?? 0);
+  let chosen = requested ? keys.find((k) => k.id === requested) ?? null : null;
+  if (requested && !chosen) return reply.code(400).send({ error: "Выбранный Google-ключ не найден" });
+  if (!chosen && acc.oauthClientId) chosen = keys.find((k) => k.id === acc.oauthClientId) ?? null;
+  if (!chosen) {
+    if (keys.length > 1)
+      return reply.code(400).send({ error: "Выберите, каким Google-ключом подключить канал", code: "choose_key" });
+    chosen = keys[0];
+  }
+  const json = db.getOAuthClientSecretForUser(ownerId, chosen.id);
+  if (!json) return reply.code(400).send({ error: "Google-ключ недоступен" });
+  let creds: ClientCreds;
+  try {
+    creds = parseCreds(json);
+  } catch {
+    return reply.code(400).send({ error: "Google-ключ повреждён — загрузите его заново в Настройках" });
+  }
+  // Carry the chosen key id in the OAuth state; bind it to the channel ONLY after a successful exchange
+  // (in the callback) — so an abandoned consent never rebinds/breaks an already-working channel.
+  const state = `${accountId}:${chosen.id}`;
+  app.log.info({ accountId, user: uid(req), owner: ownerId, key: chosen.id, redirect: REDIRECT_URI }, "[oauth] auth-url issued");
+  return { url: buildAuthUrl(creds, REDIRECT_URI, state) };
 });
 
 app.get("/api/youtube/callback", async (req, reply) => {
   const { code, state, error: gError } = req.query as { code?: string; state?: string; error?: string };
   app.log.info({ state, hasCode: !!code, gError, webOrigin: WEB_ORIGIN }, "[oauth] callback received");
+  // state = "<accountId>:<oauthClientId>" (clientId optional for legacy links) — split for redirects + creds.
+  const [accIdStr, clientIdStr] = String(state ?? "").split(":");
+  const accountId = Number(accIdStr || 0);
+  const chosenClientId = Number(clientIdStr || 0);
   const fail = (where: string, msg: string, detail: string | null = null) => {
     app.log.error({ state, where, msg }, "[oauth] callback failed");
     db.addError({
@@ -1997,26 +2077,45 @@ app.get("/api/youtube/callback", async (req, reply) => {
       detail,
       context: `youtube/callback ${where} state=${state}`,
     });
-    return reply.redirect(`${WEB_ORIGIN}/accounts/${state ?? ""}?error=${encodeURIComponent(msg)}`);
+    return reply.redirect(`${WEB_ORIGIN}/accounts/${accIdStr ?? ""}?error=${encodeURIComponent(msg)}`);
   };
   if (gError) return fail("google", `Google отклонил доступ (${gError})`);
   if (!code || !state) return fail("params", "Google вернул запрос без code/state");
-  // No session here (Google redirects the browser) — derive the owner's key from the account.
-  const acc = db.getAccount(Number(state));
-  if (!acc || acc.userId == null) return fail("account", `Канал #${state} не найден или без владельца`);
-  const creds = userCreds(acc.userId);
-  if (!creds) return fail("creds", "У владельца канала нет Google-ключа (загрузите его в Настройках)");
+  // No session here (Google redirects the browser) — resolve the owner's key from the state/account.
+  const acc = db.getAccount(accountId);
+  if (!acc || acc.userId == null) return fail("account", `Канал #${accIdStr} не найден или без владельца`);
+  // Decide the key id: from state, else the channel's existing binding, else (legacy link) the owner's
+  // newest key. We ALWAYS bind on success below, so a connected channel is never left unbound (which would
+  // later make accountCreds guess a possibly-wrong key).
+  let useClientId = chosenClientId || acc.oauthClientId || 0;
+  if (!useClientId) {
+    const ks = db.listOAuthClients(acc.userId);
+    useClientId = ks.length ? ks[ks.length - 1].id : 0; // listOAuthClients is ordered by id → last = newest
+  }
+  if (!useClientId) return fail("creds", "Google-ключ канала не найден — начните подключение заново из Настроек");
+  const json = db.getOAuthClientSecretForUser(acc.userId, useClientId);
+  let creds: ClientCreds | null = null;
+  if (json) {
+    try {
+      creds = parseCreds(json);
+    } catch {
+      creds = null;
+    }
+  }
+  if (!creds) return fail("creds", "Google-ключ канала не найден — начните подключение заново из Настроек");
   try {
-    app.log.info({ state, owner: acc.userId }, "[oauth] exchanging code for tokens…");
+    app.log.info({ accountId, owner: acc.userId, key: useClientId }, "[oauth] exchanging code for tokens…");
     const r = await exchangeAndGetChannel(creds, REDIRECT_URI, code);
-    db.setYouTube(Number(state), r);
+    // Success → bind this channel to the key it actually authorized, then store the tokens.
+    db.bindAccountOAuthClient(accountId, useClientId);
+    db.setYouTube(accountId, r);
     app.log.info(
-      { state, channelId: r.channelId, channelTitle: r.channelTitle, hasRefresh: !!r.refreshToken },
+      { accountId, channelId: r.channelId, channelTitle: r.channelTitle, hasRefresh: !!r.refreshToken },
       "[oauth] connected ✓",
     );
     if (!r.refreshToken)
-      app.log.warn({ state }, "[oauth] no refresh_token — re-consent likely needed (prompt=consent)");
-    return reply.redirect(`${WEB_ORIGIN}/accounts/${state}?connected=1`);
+      app.log.warn({ accountId }, "[oauth] no refresh_token — re-consent likely needed (prompt=consent)");
+    return reply.redirect(`${WEB_ORIGIN}/accounts/${accountId}?connected=1`);
   } catch (err) {
     return fail("exchange", ytErrorMessage(err), (err as Error)?.stack ?? null);
   }
@@ -2287,8 +2386,8 @@ app.post("/api/videos/:id/post-now", async (req, reply) => {
   if (!acc) return;
   const token = db.getRefreshToken(v.accountId);
   if (!token) return reply.code(400).send({ error: "Канал не подключён к YouTube" });
-  const creds = accountOwnerCreds(req, acc);
-  if (!creds) return reply.code(400).send({ error: "Сначала загрузите свой Google-ключ в Настройках" });
+  const creds = accountCreds(acc);
+  if (!creds) return reply.code(400).send({ error: "Google-ключ канала не найден — переподключите канал в Настройках" });
   // HARD source guard: never post a video whose deck is not selected for this channel.
   if (!accountSourceDecks(acc).includes(v.deck))
     return reply.code(400).send({ error: `Пак ролика (${v.deck}) не выбран у канала — не выложено.` });
@@ -2469,7 +2568,7 @@ app
     const scheduler = startScheduler({
       db,
       outputDir: resolve(process.cwd(), base.outputDir),
-      credsForUser: userCreds,
+      credsForAccount: (account) => accountCreds(account),
       redirectUri: REDIRECT_URI,
       log: (m) => app.log.info(m),
     });

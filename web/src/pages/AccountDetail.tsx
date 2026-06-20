@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
 import { ArrowLeft, Save, Trash2, Check, Plus, Upload, Loader2, ChevronLeft, ChevronRight, RefreshCw, Play, Download, X, AlertTriangle } from "lucide-react";
-import { apiClient, type Account, type VideoItem, type Generator, type PackSummary } from "../lib/api";
+import { apiClient, type Account, type VideoItem, type Generator, type PackSummary, type OAuthClient } from "../lib/api";
 import VideoPlayer from "../components/VideoPlayer";
 import { confirmDialog } from "../lib/confirm";
 import { useAuth } from "../lib/auth";
@@ -92,6 +92,8 @@ export default function AccountDetail() {
   const [otherTimes, setOtherTimes] = useState<string[]>([]); // their actual times — avoid colliding minute-for-minute
   const [perDayInput, setPerDayInput] = useState(4); // "сколько раз в день" for the generator
   const [notice, setNotice] = useState<{ text: string; kind: "info" | "success" | "error"; title?: string } | null>(null);
+  const [keyChoices, setKeyChoices] = useState<OAuthClient[] | null>(null); // shown when the owner has >1 Google key
+  const [clients, setClients] = useState<OAuthClient[]>([]); // owner's Google keys — to show which one a channel is bound to
   const notify = (text: string, kind: "info" | "success" | "error" = "info", title?: string) => {
     setNotice({ text, kind, title });
     (kind === "error" ? console.error : console.log)("[привязка]", text);
@@ -130,6 +132,11 @@ export default function AccountDetail() {
   useEffect(() => {
     if (avatarOpen && avatarList.length === 0) apiClient.avatars().then(setAvatarList).catch(() => {});
   }, [avatarOpen, avatarList.length]);
+
+  // Load the user's Google keys so a connected channel can show which key/project it posts under.
+  useEffect(() => {
+    apiClient.youtubeClients().then((r) => setClients(r.clients)).catch(() => {});
+  }, []);
 
   async function setAvatar(url: string) {
     setAvatarBusy(true);
@@ -303,11 +310,40 @@ export default function AccountDetail() {
     navigate("/accounts");
   }
 
-  async function connect() {
-    console.log("[привязка] старт: запрашиваю ссылку авторизации Google", { accountId: id });
+  // Owned by the current user? (account.userId is only populated on the admin scope=all listing.)
+  const ownedByMe = !account?.userId || account.userId === user?.id;
+
+  // Which Google key this channel is bound to — for the "connected via" badge (resolvable for the owner).
+  const boundClient = account?.oauthClientId ? clients.find((c) => c.id === account.oauthClientId) ?? null : null;
+
+  // Decide how to connect: 0 keys → prompt; 1 key → use it; >1 → let the user pick which Google key.
+  async function startConnect() {
+    if (!ownedByMe) {
+      connect(); // admin connecting someone else's channel — let the server resolve the owner's key
+      return;
+    }
+    try {
+      const { clients } = await apiClient.youtubeClients();
+      if (!clients.length) {
+        notify(t("account.noKeysConnect"), "error");
+        return;
+      }
+      if (clients.length === 1) {
+        connect(clients[0].id);
+        return;
+      }
+      setKeyChoices(clients);
+    } catch (e) {
+      notify(e instanceof Error ? e.message : t("account.connectStartFailed"), "error");
+    }
+  }
+
+  async function connect(clientId?: number) {
+    setKeyChoices(null);
+    console.log("[привязка] старт: запрашиваю ссылку авторизации Google", { accountId: id, clientId });
     notify(t("account.openingGoogleAuth"), "info");
     try {
-      const { url } = await apiClient.youtubeAuthUrl(id!);
+      const { url } = await apiClient.youtubeAuthUrl(id!, clientId);
       console.log("[привязка] получена ссылка авторизации, перенаправляю на Google:", url);
       window.location.href = url;
     } catch (e) {
@@ -741,6 +777,7 @@ export default function AccountDetail() {
         <div className="card-body">
           <h2 className="card-title text-base">{t("account.youtubeConnection")}</h2>
           {account.ytChannelTitle ? (
+            <>
             <div className="flex items-center gap-2 text-sm flex-wrap">
               <span className="badge badge-success">{t("account.connected")}</span>
               <span>
@@ -760,12 +797,23 @@ export default function AccountDetail() {
               )}
               <button
                 className="btn btn-ghost btn-xs gap-1"
-                onClick={connect}
+                onClick={startConnect}
                 title={t("account.reconnectTitle")}
               >
                 <RefreshCw size={13} /> {t("account.reconnect")}
               </button>
             </div>
+            {clients.length > 1 && boundClient && (
+              <div className="mt-1.5 flex items-center gap-1.5 text-xs text-base-content/60 flex-wrap">
+                <BrandIcon name="youtube" size={12} />
+                <span>{t("account.connectedViaKey")}:</span>
+                <b className="truncate max-w-[14rem]">{boundClient.label}</b>
+                {boundClient.projectId && (
+                  <span className="text-base-content/45 truncate">· {boundClient.projectId}</span>
+                )}
+              </div>
+            )}
+            </>
           ) : (
             <>
               <p className="text-sm text-base-content/60">
@@ -775,11 +823,34 @@ export default function AccountDetail() {
                 <p className="text-success text-sm">{t("account.connectedRefresh")}</p>
               )}
               <div>
-                <button className="btn btn-primary btn-sm" onClick={connect}>
+                <button className="btn btn-primary btn-sm" onClick={startConnect}>
                   {t("account.connectChannel")}
                 </button>
               </div>
             </>
+          )}
+
+          {/* Key picker — shown when the owner has more than one Google key (each channel binds to one). */}
+          {keyChoices && (
+            <div className="mt-2 rounded-lg border border-primary/30 bg-primary/5 p-3 space-y-2">
+              <div className="text-sm font-medium">{t("account.chooseKey")}</div>
+              <div className="flex flex-col gap-1.5">
+                {keyChoices.map((k) => (
+                  <button
+                    key={k.id}
+                    className="btn btn-sm btn-outline justify-start gap-2 normal-case"
+                    onClick={() => connect(k.id)}
+                  >
+                    <BrandIcon name="youtube" size={14} />
+                    <span className="truncate">{k.label}</span>
+                    {k.projectId && <span className="text-xs text-base-content/50 truncate">· {k.projectId}</span>}
+                  </button>
+                ))}
+              </div>
+              <button className="btn btn-ghost btn-xs" onClick={() => setKeyChoices(null)}>
+                {t("common.cancel")}
+              </button>
+            </div>
           )}
         </div>
       </section>

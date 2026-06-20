@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 import { unlinkSync } from "node:fs";
 import cron from "node-cron";
-import type { Db, Video } from "./db.ts";
+import type { Account, Db, Video } from "./db.ts";
 import { DECKS, getDeck, ytMeta, isPackDeckId } from "../src/anecdotes/decks.ts";
 import { uploadShort, ytErrorReason, type ClientCreds } from "./youtube.ts";
 import * as metrics from "./metrics.ts";
@@ -22,8 +22,8 @@ function removeVideoFiles(outputDir: string, v: Video): void {
 export interface SchedulerOpts {
   db: Db;
   outputDir: string;
-  /** Resolve the OAuth client creds for a channel's OWNER (per-user keys). */
-  credsForUser: (userId: number) => ClientCreds | null;
+  /** Resolve the OAuth client creds the channel is BOUND to (per-channel key it was connected with). */
+  credsForAccount: (account: Account) => ClientCreds | null;
   redirectUri: string;
   log: (msg: string) => void;
 }
@@ -75,10 +75,10 @@ export function startScheduler(opts: SchedulerOpts) {
           opts.log(`[sched] account ${acc.id}: нет роликов в библиотеке для паков «${allowedDecks.join(", ")}» — нечего постить`);
           continue;
         }
-        // Each channel posts with its OWNER's Google key (per-user isolation).
-        const creds = acc.userId != null ? opts.credsForUser(acc.userId) : null;
+        // Each channel posts with the SPECIFIC Google key it was connected with (per-channel binding).
+        const creds = opts.credsForAccount(acc);
         if (!creds) {
-          opts.log(`[sched] account ${acc.id}: у владельца нет Google-ключа — пропуск`);
+          opts.log(`[sched] account ${acc.id}: нет Google-ключа у канала — пропуск`);
           continue;
         }
         const meta = ytMeta(getDeck(lib.deck), lib.title, lib.text);

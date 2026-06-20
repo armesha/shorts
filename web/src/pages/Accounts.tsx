@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { apiClient, type Account, type AppStatus } from "../lib/api";
+import { apiClient, type Account, type AppStatus, type OAuthClient } from "../lib/api";
 import { AppIcon } from "../components/AppIcon";
 import { BrandIcon } from "../components/BrandIcon";
 import { useT } from "../lib/i18n";
@@ -23,6 +23,7 @@ export default function Accounts() {
   const [creating, setCreating] = useState(false);
   const [actionErr, setActionErr] = useState("");
   const [queue, setQueue] = useState<Record<number, number>>(cached?.value.queue ?? {});
+  const [clients, setClients] = useState<OAuthClient[]>([]); // user's Google keys — show/group channels by key when >1
   // Sort channels by remaining-video runway (days left); direction remembered between visits.
   const [sortDir, setSortDir] = useState<"asc" | "desc">(() =>
     localStorage.getItem("channelsRunwaySort") === "desc" ? "desc" : "asc",
@@ -59,6 +60,10 @@ export default function Accounts() {
       setLoadError(false);
       setStatus(s);
     }).catch(() => setLoadError(true));
+  }, []);
+
+  useEffect(() => {
+    apiClient.youtubeClients().then((r) => setClients(r.clients)).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -152,6 +157,23 @@ export default function Accounts() {
     return sortDir === "asc" ? ra - rb : rb - ra;
   });
 
+  // Google-key grouping — only surfaced when the user actually has more than one key.
+  const multiKey = clients.length > 1;
+  const clientById = new Map(clients.map((c) => [c.id, c] as const));
+  const perKeyStats = multiKey
+    ? clients.map((c) => {
+        const chans = accounts.filter((a) => a.oauthClientId === c.id);
+        return {
+          id: c.id,
+          label: c.label,
+          projectId: c.projectId,
+          channels: chans.length,
+          perDay: chans.filter((a) => a.enabled).reduce((s, a) => s + a.schedule.length, 0),
+        };
+      })
+    : [];
+  const noKeyChannels = multiKey ? accounts.filter((a) => !a.oauthClientId).length : 0;
+
   return (
     <div className="space-y-6">
       <GoogleKeyNotice status={status} loadError={loadError} />
@@ -212,6 +234,33 @@ export default function Accounts() {
           value={nextRun.time}
         />
       </div>
+
+      {multiKey && (
+        <div className="card bg-base-100 border border-base-300">
+          <div className="card-body py-4 gap-2">
+            <div className="text-sm font-semibold flex items-center gap-2">
+              <BrandIcon name="youtube" size={16} /> {t("accounts.byKeyTitle")}
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+              {perKeyStats.map((k) => (
+                <div key={k.id} className="rounded-lg border border-base-200 px-3 py-2">
+                  <div className="font-medium text-sm truncate">{k.label}</div>
+                  {k.projectId && <div className="text-xs text-base-content/45 truncate">{k.projectId}</div>}
+                  <div className="text-xs text-base-content/60 mt-1">
+                    {t("accounts.byKeyChannels", { n: k.channels })} · {t("accounts.byKeyPerDay", { n: k.perDay })}
+                  </div>
+                </div>
+              ))}
+              {noKeyChannels > 0 && (
+                <div className="rounded-lg border border-dashed border-base-200 px-3 py-2">
+                  <div className="font-medium text-sm text-base-content/60">{t("accounts.byKeyNoKey")}</div>
+                  <div className="text-xs text-base-content/60 mt-1">{t("accounts.byKeyChannels", { n: noKeyChannels })}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {accounts.length === 0 ? (
         <div className="card bg-base-100 border border-base-300 border-dashed">
@@ -292,6 +341,15 @@ export default function Accounts() {
                   <span className="font-medium text-base-content">{a.schedule.join(", ")}</span>
                 </div>
                 <QueueInfo count={queue[a.id]} schedule={a.schedule} enabled={a.enabled} />
+                {multiKey && a.oauthClientId && clientById.get(a.oauthClientId) && (
+                  <div className="mt-2 text-xs text-base-content/45 flex items-center gap-1.5">
+                    <BrandIcon name="youtube" size={12} className="shrink-0" />
+                    <span className="truncate">
+                      {clientById.get(a.oauthClientId)!.label}
+                      {clientById.get(a.oauthClientId)!.projectId ? ` · ${clientById.get(a.oauthClientId)!.projectId}` : ""}
+                    </span>
+                  </div>
+                )}
                 {a.ytChannelId && (
                   <a
                     href={`https://www.youtube.com/channel/${a.ytChannelId}`}
