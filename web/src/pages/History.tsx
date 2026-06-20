@@ -4,6 +4,7 @@ import { apiClient, type HistoryItem, type AdminUser, type Account } from "../li
 import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
 import { cleanDisplayText } from "../lib/text";
+import { formatDateTime } from "../lib/format";
 
 const PAGE_SIZE = 25;
 
@@ -238,8 +239,9 @@ export default function History() {
                           {showOwner && (
                             <td className="text-base-content/70">{h.ownerUsername || "—"}</td>
                           )}
-                          <td className="text-base-content/70">
-                            {h.publishedAt ? new Date(h.publishedAt).toLocaleString("ru-RU") : "—"}
+                          {/* Опубликовано: время публикации, а для невышедших (failed) — время ошибки (createdAt). */}
+                          <td className="text-base-content/70 whitespace-nowrap">
+                            {formatDateTime(h.publishedAt ?? h.createdAt)}
                           </td>
                           <td>
                             <span className={`badge badge-sm ${statusClass(h.status)}`}>{h.status}</span>
