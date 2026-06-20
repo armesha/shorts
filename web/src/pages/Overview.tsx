@@ -52,8 +52,8 @@ export default function Overview() {
 
   // Audience totals (subscribers/views/videos summed across channels) with an independent Мои/Все
   // toggle — loaded separately from the big dashboard fetch so the headline numbers appear fast and
-  // toggling is snappy. Default «Все» — the admin wants the all-channels picture up front.
-  const [audScope, setAudScope] = useState<"mine" | "all">("all");
+  // toggling is snappy. Default «Мои» — admin sees their OWN channels first; toggle for all-channels.
+  const [audScope, setAudScope] = useState<"mine" | "all">("mine");
   const [totals, setTotals] = useState<ChannelTotals | null>(null);
   const [totalsLoading, setTotalsLoading] = useState(true);
 
