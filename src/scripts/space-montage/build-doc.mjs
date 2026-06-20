@@ -130,9 +130,9 @@ function captionCss() {
        -webkit-text-stroke:5px #0a0a0a;paint-order:stroke fill;
        text-shadow:0 5px 0 #000,0 9px 18px rgba(0,0,0,.92),0 0 30px rgba(0,0,0,.7)}
   .cap .ln{display:block}
-  .cap .w{display:inline-block;padding:0 4px}
-  .cap .w.on{background:#fbbf24;color:#1c1407;border-radius:14px;padding:0 16px;margin:0 2px;
-       -webkit-text-stroke:0;text-shadow:none;box-shadow:0 5px 0 rgba(0,0,0,.32),0 0 0 3px rgba(255,255,255,.16)}
+  .cap .w{display:inline-block;padding:0 5px}
+  /* original Space-pack karaoke style: white text, ACTIVE word yellow (no box), same heavy outline */
+  .cap .w.on{color:#ffd21e}
   .srccorner{position:absolute;left:40px;top:44px;font-family:'Lato','DejaVu Sans',Arial,sans-serif;font-weight:800;
        font-size:34px;color:#fff;letter-spacing:.4px;padding:8px 20px;border-radius:12px;
        background:rgba(0,0,0,.42);text-shadow:0 2px 6px #000}`;

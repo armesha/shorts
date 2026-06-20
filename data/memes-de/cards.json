@@ -75,13 +75,7 @@
   "caption": "Mein Beitrag im Meeting:\nKamera aus, Mikro aus, Gehirn aus.\nLäuft bei mir.",
   "format": "ich_iel",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "person sitting in front of laptop with video call interface",
-  "photoFile": "3861964.jpg",
-  "photoSource": {
-   "pexelsId": 3861964,
-   "pageUrl": "https://www.pexels.com/photo/person-using-gray-laptop-3861964/",
-   "photographer": "ThisIsEngineering"
-  }
+  "imageQuery": "person sitting in front of laptop with video call interface"
  },
  {
   "caption": "\"Wir machen das ganz unkompliziert.\"\nVier Wochen später, im siebten Meeting zum Thema",
@@ -177,25 +171,13 @@
   "caption": "ich_iel\n„Ich hol das nur, wenn's im Angebot ist.“\nlegt es trotzdem in den Wagen, weil's morgen vielleicht weg ist",
   "format": "ich_iel",
   "theme": "money, payday & being broke",
-  "imageQuery": "person looking at price tag in supermarket aisle",
-  "photoFile": "7129160.jpg",
-  "photoSource": {
-   "pexelsId": 7129160,
-   "pageUrl": "https://www.pexels.com/photo/crop-person-purchasing-assorted-vegetables-in-grocery-market-7129160/",
-   "photographer": "Michael Burrows"
-  }
+  "imageQuery": "person looking at price tag in supermarket aisle"
  },
  {
   "caption": "Das ist mir wurst, ob's gesund ist.\nEs war reduziert.",
   "format": "caption",
   "theme": "money, payday & being broke",
-  "imageQuery": "discount sticker on grocery shelf",
-  "photoFile": "9321466.jpg",
-  "photoSource": {
-   "pexelsId": 9321466,
-   "pageUrl": "https://www.pexels.com/photo/a-woman-getting-cereal-boxes-from-the-shelf-9321466/",
-   "photographer": "Jessica Latorre"
-  }
+  "imageQuery": "discount sticker on grocery shelf"
  },
  {
   "caption": "Ich am 1.: Heute gönn ich mir was.\nIch am 2.: Wer hat mein ganzes Geld gegessen?",
@@ -687,13 +669,7 @@
   "caption": "ich_iel: stell den Wecker, um beim Discounter morgens als Erster an die reduzierten Sachen zu kommen / verschlafe",
   "format": "ich_iel",
   "theme": "food, cooking & diets",
-  "imageQuery": "yellow discount sticker on supermarket shelf",
-  "photoFile": "9321466.jpg",
-  "photoSource": {
-   "pexelsId": 9321466,
-   "pageUrl": "https://www.pexels.com/photo/a-woman-getting-cereal-boxes-from-the-shelf-9321466/",
-   "photographer": "Jessica Latorre"
-  }
+  "imageQuery": "yellow discount sticker on supermarket shelf"
  },
  {
   "caption": "Mir reicht es zu wissen, dass ich kochen KÖNNTE, wenn ich nur wollte. / Lieferung kommt in 35 Minuten.",
@@ -711,13 +687,7 @@
   "caption": "Niemand:\nDas WLAN um 23:59 Uhr, wenn ich nur noch eine Sache hochladen muss:\n\"Verbindung getrennt\"",
   "format": "nobody",
   "theme": "technology, phones, wifi & updates",
-  "imageQuery": "frustrated person staring at laptop screen at night",
-  "photoFile": "6345319.jpg",
-  "photoSource": {
-   "pexelsId": 6345319,
-   "pageUrl": "https://www.pexels.com/photo/tired-teenage-boy-with-a-laptop-6345319/",
-   "photographer": "www.kaboompics.com"
-  }
+  "imageQuery": "frustrated person staring at laptop screen at night"
  },
  {
   "caption": "ich_iel beim Update:\n\"Dauert nur 2 Minuten\"\nzwei Minuten später: 47% — Geschätzte Restzeit: 4 Stunden",
@@ -873,13 +843,7 @@
   "caption": "Erwartung: Ich nach 4 Wochen Training, diszipliniert und gestählt / Realität: Ich nach 4 Wochen, aber ich habe die Sporttasche schon mal gekauft",
   "format": "expectation-vs-reality",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "new sports bag with tags still on",
-  "photoFile": "13869867.jpg",
-  "photoSource": {
-   "pexelsId": 13869867,
-   "pageUrl": "https://www.pexels.com/photo/black-bag-with-white-tag-13869867/",
-   "photographer": "Matheus Bertelli"
-  }
+  "imageQuery": "new sports bag with tags still on"
  },
  {
   "caption": "Mir reicht es zu wissen, dass ich Sport machen könnte, wenn ich denn wollte.",
@@ -1075,13 +1039,7 @@
  {
   "caption": "ich_iel\n\n'Sprich Deutsch!' sage ich, während ich mein Maimai downloade und danach ein Update brauche.",
   "format": "ich_iel (single first-person confession, centered text on neutral background)",
-  "imageQuery": "smartphone download progress bar on screen plain background",
-  "photoFile": "17789077.jpg",
-  "photoSource": {
-   "pexelsId": 17789077,
-   "pageUrl": "https://www.pexels.com/photo/man-holding-a-phone-17789077/",
-   "photographer": "Beyzaa Yurtkuran"
-  }
+  "imageQuery": "smartphone download progress bar on screen plain background"
  },
  {
   "caption": "Niemand:\nDie Kassiererin: Tüte dazu?\nIch, mit 14 Artikeln in beiden Händen: Nein nein, passt schon.",

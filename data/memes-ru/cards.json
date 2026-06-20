@@ -93,13 +93,7 @@
   "caption": "Когда написал «отправлено во вложении», нажал отправить, а вложение не приложил",
   "format": "caption",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "person looking shocked at laptop screen",
-  "photoFile": "7172793.jpg",
-  "photoSource": {
-   "pexelsId": 7172793,
-   "pageUrl": "https://www.pexels.com/photo/a-shocked-woman-holding-a-laptop-7172793/",
-   "photographer": "Nataliya Vaitkevich"
-  }
+  "imageQuery": "person looking shocked at laptop screen"
  },
  {
   "caption": "Когда два часа на совещании ушло только на то, чтобы решить, когда соберёмся обсудить это нормально",
@@ -531,13 +525,7 @@
   "caption": "Виды людей перед экзаменом:\n— тот, кто учил всё подряд\n— тот, кто учил только важное\n— тот, кто учил, как успокоиться, что ничего не учил",
   "format": "list-top",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "group of students sitting nervously in hallway",
-  "photoFile": "8926637.jpg",
-  "photoSource": {
-   "pexelsId": 8926637,
-   "pageUrl": "https://www.pexels.com/photo/three-girls-in-school-uniform-sitting-on-the-bench-8926637/",
-   "photographer": "Thirdman"
-  }
+  "imageQuery": "group of students sitting nervously in hallway"
  },
  {
   "caption": "Никто:\nМой мозг в 3 часа ночи перед экзаменом: а помнишь, как ты неправильно ответил три года назад?",
@@ -597,13 +585,7 @@
   "caption": "Я в сентябре: в этом семестре буду готовиться к каждой паре заранее.\nЯ в декабре: читаю весь курс с телефона в коридоре за минуту до зачёта",
   "format": "expectation-vs-reality",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "student reading phone in university corridor",
-  "photoFile": "31367501.jpg",
-  "photoSource": {
-   "pexelsId": 31367501,
-   "pageUrl": "https://www.pexels.com/photo/smiling-student-holding-a-book-in-college-hallway-31367501/",
-   "photographer": "Yusuf Çelik"
-  }
+  "imageQuery": "student reading phone in university corridor"
  },
  {
   "caption": "Вы не понимаете, это не прокрастинация. Это стратегическое накопление паники, чтобы выучить всё за одну ночь на чистом адреналине",
@@ -1047,13 +1029,7 @@
   "caption": "Никто:\nНоутбук, на котором открыто 47 вкладок: и долго мы так будем жить?",
   "format": "nobody",
   "theme": "technology, phones, wifi & updates",
-  "imageQuery": "laptop with many browser tabs open on screen",
-  "photoFile": "18096281.jpg",
-  "photoSource": {
-   "pexelsId": 18096281,
-   "pageUrl": "https://www.pexels.com/photo/pexels-website-open-on-a-laptop-screen-18096281/",
-   "photographer": "Emre  Akyol"
-  }
+  "imageQuery": "laptop with many browser tabs open on screen"
  },
  {
   "caption": "Принёс зарядку в другую комнату, а провод не достаёт до розетки буквально на два сантиметра. Ну за что?",
@@ -1209,13 +1185,7 @@
   "caption": "Полчаса выбирал плейлист для мощной тренировки. / На саму тренировку сил уже не осталось",
   "format": "caption",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "person with headphones holding phone",
-  "photoFile": "5077420.jpg",
-  "photoSource": {
-   "pexelsId": 5077420,
-   "pageUrl": "https://www.pexels.com/photo/person-hearing-music-on-a-smartphone-5077420/",
-   "photographer": "cottonbro studio"
-  }
+  "imageQuery": "person with headphones holding phone"
  },
  {
   "caption": "Я в начале января: в этом году точно подкачаюсь / Я в конце декабря: ну, год был, скажем так… подготовительный",
@@ -1321,13 +1291,7 @@
  {
   "caption": "Ожидание / Реальность: продуктивная суббота",
   "format": "Ожидание / Реальность (текстовый диптих)",
-  "imageQuery": "person scrolling laptop late at night tired blue screen glow",
-  "photoFile": "7983348.jpg",
-  "photoSource": {
-   "pexelsId": 7983348,
-   "pageUrl": "https://www.pexels.com/photo/a-woman-lying-her-head-on-the-desk-with-laptop-7983348/",
-   "photographer": "Ron Lach"
-  }
+  "imageQuery": "person scrolling laptop late at night tired blue screen glow"
  },
  {
   "caption": "3 стадии зарплаты: инвестор → экономист → аналитик пустого холодильника",

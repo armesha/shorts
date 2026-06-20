@@ -15,19 +15,37 @@
   "caption": "Io lunedì mattina che apro il laptop pieno di buoni propositi / La realtà: fisso lo schermo per 40 minuti aspettando che parta la voglia",
   "format": "expectation-vs-reality",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "tired office worker staring at laptop at desk"
+  "imageQuery": "tired office worker staring at laptop at desk",
+  "photoFile": "8069139.jpg",
+  "photoSource": {
+   "pexelsId": 8069139,
+   "pageUrl": "https://www.pexels.com/photo/a-tired-man-at-the-office-8069139/",
+   "photographer": "Edmond Dantès"
+  }
  },
  {
   "caption": "POV: il capo dice \"sarò breve\" all'inizio della riunione e tu sai già che perderai due ore della tua vita",
   "format": "POV",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "businessman talking in office meeting room"
+  "imageQuery": "businessman talking in office meeting room",
+  "photoFile": "8123816.jpg",
+  "photoSource": {
+   "pexelsId": 8123816,
+   "pageUrl": "https://www.pexels.com/photo/a-man-in-black-suit-standing-in-front-of-his-colleagues-8123816/",
+   "photographer": "RDNE Stock project"
+  }
  },
  {
   "caption": "Nessuno: / Assolutamente nessuno: / Il collega in riunione: \"Solo un'ultima domanda velocissima...\"",
   "format": "nobody",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "man raising hand in office meeting"
+  "imageQuery": "man raising hand in office meeting",
+  "photoFile": "5756657.jpg",
+  "photoSource": {
+   "pexelsId": 5756657,
+   "pageUrl": "https://www.pexels.com/photo/person-sitting-on-a-wooden-chair-raising-his-hand-5756657/",
+   "photographer": "RDNE Stock project"
+  }
  },
  {
   "caption": "Classifica delle bugie più grandi della storia / 3. \"Ti richiamo io\" / 2. \"Ci vediamo lunedì per chiudere la pratica\" / 1. \"Questa è l'ultima riunione, poi siamo a posto\"",
@@ -51,7 +69,13 @@
   "caption": "Io che annuisco convinto in riunione / Il mio cervello: pasta o riso stasera? boh, vediamo",
   "format": "expectation-vs-reality",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "person nodding thoughtfully in business meeting"
+  "imageQuery": "person nodding thoughtfully in business meeting",
+  "photoFile": "5816282.jpg",
+  "photoSource": {
+   "pexelsId": 5816282,
+   "pageUrl": "https://www.pexels.com/photo/man-in-yellow-sweater-holding-a-pen-5816282/",
+   "photographer": "AI25.Studio  Studio"
+  }
  },
  {
   "caption": "Vabbè raga ci aggiorniamo lunedì / (traduzione: non ci penserà più nessuno fino al prossimo lunedì)",
@@ -63,49 +87,97 @@
   "caption": "Io alle 9:00 pieno di energia e produttività / Io alle 9:07 dopo la prima mail",
   "format": "expectation-vs-reality",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "exhausted woman with head down on office desk"
+  "imageQuery": "exhausted woman with head down on office desk",
+  "photoFile": "6028536.jpg",
+  "photoSource": {
+   "pexelsId": 6028536,
+   "pageUrl": "https://www.pexels.com/photo/woman-resting-on-white-table-6028536/",
+   "photographer": "www.kaboompics.com"
+  }
  },
  {
   "caption": "POV: sono le 17:58, stai spegnendo il pc, e arriva la mail \"giro veloce per allinearci?\"",
   "format": "POV",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "office worker reaching to turn off computer monitor"
+  "imageQuery": "office worker reaching to turn off computer monitor",
+  "photoFile": "12899190.jpg",
+  "photoSource": {
+   "pexelsId": 12899190,
+   "pageUrl": "https://www.pexels.com/photo/vertical-shot-of-a-blond-woman-using-two-computer-screens-12899190/",
+   "photographer": "Mizuno K"
+  }
  },
  {
   "caption": "Domenica sera, ore 21:00 / Io che sento già l'ansia del lunedì come un rumore lontano che si avvicina",
   "format": "POV",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "person lying awake in bed at night anxious"
+  "imageQuery": "person lying awake in bed at night anxious",
+  "photoFile": "6943443.jpg",
+  "photoSource": {
+   "pexelsId": 6943443,
+   "pageUrl": "https://www.pexels.com/photo/man-suffering-from-insomnia-6943443/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "Io il 27 del mese / Io il 3 del mese",
   "format": "expectation-vs-reality",
   "theme": "money, payday & being broke",
-  "imageQuery": "person throwing money in the air celebrating then empty wallet open"
+  "imageQuery": "person throwing money in the air celebrating then empty wallet open",
+  "photoFile": "7927422.jpg",
+  "photoSource": {
+   "pexelsId": 7927422,
+   "pageUrl": "https://www.pexels.com/photo/close-up-of-man-with-empty-wallet-7927422/",
+   "photographer": "Nicola Barts"
+  }
  },
  {
   "caption": "POV: è il 28, è arrivato lo stipendio e tu hai già mentalmente speso tutto in cose che NON ti servono",
   "format": "POV",
   "theme": "money, payday & being broke",
-  "imageQuery": "happy person online shopping on phone at home"
+  "imageQuery": "happy person online shopping on phone at home",
+  "photoFile": "6969750.jpg",
+  "photoSource": {
+   "pexelsId": 6969750,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-white-shirt-holding-smartphone-6969750/",
+   "photographer": "Mikhail Nilov"
+  }
  },
  {
   "caption": "Nessuno: / Assolutamente nessuno: / Il mio conto in banca il 26: nono nono nono",
   "format": "nobody",
   "theme": "money, payday & being broke",
-  "imageQuery": "worried man looking at smartphone bank app"
+  "imageQuery": "worried man looking at smartphone bank app",
+  "photoFile": "6969809.jpg",
+  "photoSource": {
+   "pexelsId": 6969809,
+   "pageUrl": "https://www.pexels.com/photo/a-person-cashless-transaction-online-using-a-cellphone-6969809/",
+   "photographer": "Mikhail Nilov"
+  }
  },
  {
   "caption": "Da lunedì inizio a risparmiare. / Mercoledì: ordino la cena perché non avevo voglia di cucinare.",
   "format": "caption",
   "theme": "money, payday & being broke",
-  "imageQuery": "food delivery containers on a kitchen table"
+  "imageQuery": "food delivery containers on a kitchen table",
+  "photoFile": "6613042.jpg",
+  "photoSource": {
+   "pexelsId": 6613042,
+   "pageUrl": "https://www.pexels.com/photo/paper-bags-beside-glass-bottles-and-takeout-food-on-black-table-6613042/",
+   "photographer": "Mikhail Nilov"
+  }
  },
  {
   "caption": "Quando il commesso ti chiede \"con la carta o in contanti?\" e tu non hai ne l'uno ne l'altro",
   "format": "POV",
   "theme": "money, payday & being broke",
-  "imageQuery": "nervous person at supermarket checkout counter"
+  "imageQuery": "nervous person at supermarket checkout counter",
+  "photoFile": "7990384.jpg",
+  "photoSource": {
+   "pexelsId": 7990384,
+   "pageUrl": "https://www.pexels.com/photo/pregnant-woman-in-brown-coat-doing-grocery-7990384/",
+   "photographer": "Ivan S"
+  }
  },
  {
   "caption": "Classifica dei momenti piu brevi della storia / 3. Un caffe al bar / 2. Le ferie d'agosto / 1. Lo stipendio appena accreditato",
@@ -117,13 +189,25 @@
   "caption": "Io che apro l'app della banca convinto sia un buon momento. / Il saldo: vabbe ci risentiamo il 27.",
   "format": "expectation-vs-reality",
   "theme": "money, payday & being broke",
-  "imageQuery": "disappointed person staring at phone screen"
+  "imageQuery": "disappointed person staring at phone screen",
+  "photoFile": "6383268.jpg",
+  "photoSource": {
+   "pexelsId": 6383268,
+   "pageUrl": "https://www.pexels.com/photo/concerned-woman-browsing-smartphone-in-room-6383268/",
+   "photographer": "Liza Summer"
+  }
  },
  {
   "caption": "\"Metto da parte 200 euro al mese\" disse, mentendo a se stesso per il quattordicesimo mese consecutivo.",
   "format": "demotivator-text",
   "theme": "money, payday & being broke",
-  "imageQuery": "empty glass piggy bank on a desk"
+  "imageQuery": "empty glass piggy bank on a desk",
+  "photoFile": "7680547.jpg",
+  "photoSource": {
+   "pexelsId": 7680547,
+   "pageUrl": "https://www.pexels.com/photo/person-putting-rolled-paper-bills-in-clear-glass-jar-7680547/",
+   "photographer": "www.kaboompics.com"
+  }
  },
  {
   "caption": "Nel mezzo del cammin di nostra vita / mi ritrovai con il conto a meno dieci / che il mese, ahime, non era ancor finita.",
@@ -135,19 +219,37 @@
   "caption": "Io a inizio mese: stavolta arrivo alla fine senza problemi, ho un piano. / Io il giorno 9: raga si accettano offerte per un rene.",
   "format": "expectation-vs-reality",
   "theme": "money, payday & being broke",
-  "imageQuery": "tired young person sitting on floor counting coins"
+  "imageQuery": "tired young person sitting on floor counting coins",
+  "photoFile": "7118211.jpg",
+  "photoSource": {
+   "pexelsId": 7118211,
+   "pageUrl": "https://www.pexels.com/photo/a-person-picking-the-coins-on-the-wooden-flooring-7118211/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "\"Tanto e solo un caffe\" / \"Tanto sono solo 2 euro\" / \"Tanto e in offerta\" / Il conto a fine mese: embe?",
   "format": "list-top",
   "theme": "money, payday & being broke",
-  "imageQuery": "shocked person looking at receipt"
+  "imageQuery": "shocked person looking at receipt",
+  "photoFile": "5900037.jpg",
+  "photoSource": {
+   "pexelsId": 5900037,
+   "pageUrl": "https://www.pexels.com/photo/woman-looking-at-the-receipt-5900037/",
+   "photographer": "www.kaboompics.com"
+  }
  },
  {
   "caption": "Io che imposto 7 sveglie a 5 minuti di distanza: stavolta mi alzo presto / Io che le spengo tutte nel sonno come un ninja: vabbè dai, domani",
   "format": "expectation-vs-reality",
   "theme": "sleep, mornings & alarms",
-  "imageQuery": "hand turning off alarm clock on nightstand"
+  "imageQuery": "hand turning off alarm clock on nightstand",
+  "photoFile": "7622520.jpg",
+  "photoSource": {
+   "pexelsId": 7622520,
+   "pageUrl": "https://www.pexels.com/photo/crop-woman-snoozing-alarm-on-smartphone-7622520/",
+   "photographer": "Miriam Alonso"
+  }
  },
  {
   "caption": "Nessuno:\nAssolutamente nessuno:\nIl mio cervello alle 3 di notte: ma quella cosa imbarazzante del 2014 te la ricordi?",
@@ -165,49 +267,97 @@
   "caption": "POV: hai dormito 9 ore e ti senti comunque come un comodino lasciato sotto la pioggia",
   "format": "POV",
   "theme": "sleep, mornings & alarms",
-  "imageQuery": "exhausted person sitting on edge of bed in the morning"
+  "imageQuery": "exhausted person sitting on edge of bed in the morning",
+  "photoFile": "6753356.jpg",
+  "photoSource": {
+   "pexelsId": 6753356,
+   "pageUrl": "https://www.pexels.com/photo/a-tired-woman-lying-on-the-bed-while-seriously-looking-at-the-camera-6753356/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "Le 5 fasi della sveglia del lunedì:\n1. Negazione\n2. Rabbia\n3. Contrattazione (ancora 5 minuti)\n4. Depressione\n5. Sei già in ritardo",
   "format": "list-top",
   "theme": "sleep, mornings & alarms",
-  "imageQuery": "alarm clock showing early morning time on bedside table"
+  "imageQuery": "alarm clock showing early morning time on bedside table",
+  "photoFile": "7623546.jpg",
+  "photoSource": {
+   "pexelsId": 7623546,
+   "pageUrl": "https://www.pexels.com/photo/close-up-of-hand-turning-off-classic-clock-7623546/",
+   "photographer": "Miriam Alonso"
+  }
  },
  {
   "caption": "Io alle 23:00: dai stasera a letto presto, raga / Io all'1:47 a guardare video su come dormono i polpi: ci sta",
   "format": "expectation-vs-reality",
   "theme": "sleep, mornings & alarms",
-  "imageQuery": "person scrolling phone in bed in dark room"
+  "imageQuery": "person scrolling phone in bed in dark room",
+  "photoFile": "6943448.jpg",
+  "photoSource": {
+   "pexelsId": 6943448,
+   "pageUrl": "https://www.pexels.com/photo/a-man-fell-asleep-while-using-his-mobile-phone-6943448/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "POV: è domenica sera alle 21 e senti già la sveglia del lunedì che si scalda da lontano",
   "format": "POV",
   "theme": "sleep, mornings & alarms",
-  "imageQuery": "person looking anxious on sofa at night window dark"
+  "imageQuery": "person looking anxious on sofa at night window dark",
+  "photoFile": "28912724.jpg",
+  "photoSource": {
+   "pexelsId": 28912724,
+   "pageUrl": "https://www.pexels.com/photo/mysterious-silhouette-in-window-during-night-28912724/",
+   "photographer": "Kenzhar Sharap"
+  }
  },
  {
   "caption": "Quel momento magico in cui ti svegli pieno di energia, guardi l'orologio e mancano 4 minuti alla sveglia. Boh. Cosmico.",
   "format": "caption",
   "theme": "sleep, mornings & alarms",
-  "imageQuery": "close up of bedside alarm clock early morning soft light"
+  "imageQuery": "close up of bedside alarm clock early morning soft light",
+  "photoFile": "6943418.jpg",
+  "photoSource": {
+   "pexelsId": 6943418,
+   "pageUrl": "https://www.pexels.com/photo/a-lamp-shade-and-a-clock-on-the-bedside-table-6943418/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "INSONNIA",
   "format": "demotivator-text",
   "theme": "sleep, mornings & alarms",
-  "imageQuery": "tired person staring at ceiling in dark bedroom"
+  "imageQuery": "tired person staring at ceiling in dark bedroom",
+  "photoFile": "6941123.jpg",
+  "photoSource": {
+   "pexelsId": 6941123,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-white-pajama-lying-on-bed-6941123/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "Io che premo \"posticipa\" sulla sveglia per la dodicesima volta convinto di stare riposando meglio. La scienza non mi può capire.",
   "format": "caption",
   "theme": "sleep, mornings & alarms",
-  "imageQuery": "hand pressing snooze button on phone alarm in bed"
+  "imageQuery": "hand pressing snooze button on phone alarm in bed",
+  "photoFile": "7622520.jpg",
+  "photoSource": {
+   "pexelsId": 7622520,
+   "pageUrl": "https://www.pexels.com/photo/crop-woman-snoozing-alarm-on-smartphone-7622520/",
+   "photographer": "Miriam Alonso"
+  }
  },
  {
   "caption": "Aspettativa: mi alzo all'alba, faccio colazione con calma, sono una persona seria / Realtà: gioco a \"quanti minuti posso togliere alla doccia\" già in ritardo",
   "format": "expectation-vs-reality",
   "theme": "sleep, mornings & alarms",
-  "imageQuery": "messy rushed morning kitchen breakfast on the go"
+  "imageQuery": "messy rushed morning kitchen breakfast on the go",
+  "photoFile": "20672941.jpg",
+  "photoSource": {
+   "pexelsId": 20672941,
+   "pageUrl": "https://www.pexels.com/photo/bearded-man-with-red-mug-in-hand-sitting-by-table-20672941/",
+   "photographer": "Lucas Andrade"
+  }
  },
  {
   "caption": "La sveglia: drin drin / Io, morto, dall'aldilà: chi è? non conosco questa persona",
@@ -237,55 +387,109 @@
   "caption": "POV: hai un esame domani e all'improvviso la cosa più importante del mondo diventa riordinare l'armadio",
   "format": "POV",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "person organizing messy closet at home"
+  "imageQuery": "person organizing messy closet at home",
+  "photoFile": "12911845.jpg",
+  "photoSource": {
+   "pexelsId": 12911845,
+   "pageUrl": "https://www.pexels.com/photo/woman-browsing-through-clothes-on-the-clothing-rack-12911845/",
+   "photographer": "Mizuno K"
+  }
  },
  {
   "caption": "Nessuno: / Assolutamente nessuno: / Il mio cervello alle 3 di notte: ma quanti capitoli hai saltato pensaci bene",
   "format": "nobody",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "tired person lying awake in dark bedroom"
+  "imageQuery": "tired person lying awake in dark bedroom",
+  "photoFile": "6943448.jpg",
+  "photoSource": {
+   "pexelsId": 6943448,
+   "pageUrl": "https://www.pexels.com/photo/a-man-fell-asleep-while-using-his-mobile-phone-6943448/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "\"Tranquillo, lo studio domani\" / Il domani, che non esiste:",
   "format": "expectation-vs-reality",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "empty calendar page on wall"
+  "imageQuery": "empty calendar page on wall",
+  "photoFile": "7723802.jpg",
+  "photoSource": {
+   "pexelsId": 7723802,
+   "pageUrl": "https://www.pexels.com/photo/a-pen-beside-to-do-list-paper-7723802/",
+   "photographer": "Tara Winstead"
+  }
  },
  {
   "caption": "La classifica dei momenti in cui sono più produttivo:\n3. La sera prima dell'esame\n2. Le due ore prima dell'esame\n1. I dieci minuti fuori dall'aula con gli appunti tra le mani",
   "format": "list-top",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "students waiting in university hallway with notes"
+  "imageQuery": "students waiting in university hallway with notes",
+  "photoFile": "8199171.jpg",
+  "photoSource": {
+   "pexelsId": 8199171,
+   "pageUrl": "https://www.pexels.com/photo/students-on-the-staircase-landing-8199171/",
+   "photographer": "Yan Krukau"
+  }
  },
  {
   "caption": "Io a settembre: questa volta sono in pari da subito / Io a gennaio: tre esami in tre giorni perché vabbè ci sta",
   "format": "expectation-vs-reality",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "stressed student surrounded by stacks of books"
+  "imageQuery": "stressed student surrounded by stacks of books",
+  "photoFile": "9572685.jpg",
+  "photoSource": {
+   "pexelsId": 9572685,
+   "pageUrl": "https://www.pexels.com/photo/tired-student-rubbing-his-eyes-while-sitting-in-front-of-a-laptop-surrounded-by-piles-of-books-9572685/",
+   "photographer": "Tima Miroshnichenko"
+  }
  },
  {
   "caption": "Comprare un'agenda nuova mi fa sentire organizzato esattamente quanto basta per non aprirla mai",
   "format": "caption",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "brand new blank planner notebook on desk"
+  "imageQuery": "brand new blank planner notebook on desk",
+  "photoFile": "8546548.jpg",
+  "photoSource": {
+   "pexelsId": 8546548,
+   "pageUrl": "https://www.pexels.com/photo/person-writing-on-notebook-8546548/",
+   "photographer": "www.kaboompics.com"
+  }
  },
  {
   "caption": "PROCRASTINAZIONE\nperché fare oggi quello che il panico farà fare benissimo dopodomani alle 4 di notte",
   "format": "demotivator-text",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "alarm clock showing very late hour dark room"
+  "imageQuery": "alarm clock showing very late hour dark room",
+  "photoFile": "6943420.jpg",
+  "photoSource": {
+   "pexelsId": 6943420,
+   "pageUrl": "https://www.pexels.com/photo/sleeping-pill-and-digital-clock-on-bedside-table-6943420/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "Quel momento magico in cui finisci di evidenziare tutta la pagina di giallo e ti senti come se avessi studiato",
   "format": "caption",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "textbook page covered entirely in yellow highlighter"
+  "imageQuery": "textbook page covered entirely in yellow highlighter",
+  "photoFile": "6958529.jpg",
+  "photoSource": {
+   "pexelsId": 6958529,
+   "pageUrl": "https://www.pexels.com/photo/person-using-blue-highlighter-pen-on-a-book-page-6958529/",
+   "photographer": "www.kaboompics.com"
+  }
  },
  {
   "caption": "Io che spiego ai miei genitori che sto studiando mentre fisso la stessa riga da venti minuti",
   "format": "caption",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "person staring blankly at open textbook"
+  "imageQuery": "person staring blankly at open textbook",
+  "photoFile": "6549863.jpg",
+  "photoSource": {
+   "pexelsId": 6549863,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-reading-a-book-6549863/",
+   "photographer": "Tima Miroshnichenko"
+  }
  },
  {
   "caption": "Tipi di studenti al gruppo del corso:\n- Quello che chiede \"ragazzi entra nel programma?\" il giorno prima\n- Quello che ha finito a ottobre e dorme sereno\n- Io, che leggo tutto e non rispondo perché non ho aperto manco la dispensa",
@@ -297,37 +501,73 @@
   "caption": "Lui: \"ti scrivo io\" / Il messaggio, tre anni dopo: ancora in arrivo",
   "format": "expectation-vs-reality",
   "theme": "relationships, dating & texting",
-  "imageQuery": "person staring at phone screen waiting"
+  "imageQuery": "person staring at phone screen waiting",
+  "photoFile": "7991580.jpg",
+  "photoSource": {
+   "pexelsId": 7991580,
+   "pageUrl": "https://www.pexels.com/photo/a-man-wearing-hoodie-sweater-while-using-his-mobile-phone-7991580/",
+   "photographer": "Tima Miroshnichenko"
+  }
  },
  {
   "caption": "Nessuno: / Assolutamente nessuno: / Io che rileggo per la quarta volta il messaggio prima di mandarlo",
   "format": "nobody",
   "theme": "relationships, dating & texting",
-  "imageQuery": "person typing message on smartphone close up"
+  "imageQuery": "person typing message on smartphone close up",
+  "photoFile": "6669795.jpg",
+  "photoSource": {
+   "pexelsId": 6669795,
+   "pageUrl": "https://www.pexels.com/photo/thumbs-typing-on-smartphone-6669795/",
+   "photographer": "RDNE Stock project"
+  }
  },
  {
   "caption": "POV: ti ha visualizzato alle 14:32 e sono le 23:00 e tu stai ancora benissimo, tranquillo, serenissimo",
   "format": "POV",
   "theme": "relationships, dating & texting",
-  "imageQuery": "person lying awake in bed at night holding phone"
+  "imageQuery": "person lying awake in bed at night holding phone",
+  "photoFile": "6943448.jpg",
+  "photoSource": {
+   "pexelsId": 6943448,
+   "pageUrl": "https://www.pexels.com/photo/a-man-fell-asleep-while-using-his-mobile-phone-6943448/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "Io che scrivo: \"vabbè ci sta, nessun problema\" / Io dentro: che sto allestendo un teatro dell'opera",
   "format": "expectation-vs-reality",
   "theme": "relationships, dating & texting",
-  "imageQuery": "empty grand opera theatre stage with red curtains"
+  "imageQuery": "empty grand opera theatre stage with red curtains",
+  "photoFile": "13331292.jpg",
+  "photoSource": {
+   "pexelsId": 13331292,
+   "pageUrl": "https://www.pexels.com/photo/balconies-inside-a-theater-13331292/",
+   "photographer": "Blue Arauz"
+  }
  },
  {
   "caption": "La situationship: non siamo niente ma se ti scrive un altro io divento il tribunale dell'Aja",
   "format": "caption",
   "theme": "relationships, dating & texting",
-  "imageQuery": "two coffee cups on a table one untouched"
+  "imageQuery": "two coffee cups on a table one untouched",
+  "photoFile": "27589853.jpg",
+  "photoSource": {
+   "pexelsId": 27589853,
+   "pageUrl": "https://www.pexels.com/photo/two-cups-with-toothpicks-on-a-wooden-table-27589853/",
+   "photographer": "Pedro Dias"
+  }
  },
  {
   "caption": "\"Sto arrivando\" / Traduzione: sono ancora sotto la doccia e non ho ancora deciso cosa mettermi",
   "format": "expectation-vs-reality",
   "theme": "relationships, dating & texting",
-  "imageQuery": "person choosing clothes from a full wardrobe"
+  "imageQuery": "person choosing clothes from a full wardrobe",
+  "photoFile": "12911845.jpg",
+  "photoSource": {
+   "pexelsId": 12911845,
+   "pageUrl": "https://www.pexels.com/photo/woman-browsing-through-clothes-on-the-clothing-rack-12911845/",
+   "photographer": "Mizuno K"
+  }
  },
  {
   "caption": "Classifica dei messaggi più terrificanti / 3) \"Dobbiamo parlare\" / 2) \"Va tutto bene\" / 1) \"...ok\"",
@@ -339,19 +579,37 @@
   "caption": "Quando metti \"sta scrivendo\", poi sparisce, poi riappare: raga io intanto sono già passato dalle cinque fasi del lutto",
   "format": "POV",
   "theme": "relationships, dating & texting",
-  "imageQuery": "anxious person biting nails looking at phone"
+  "imageQuery": "anxious person biting nails looking at phone",
+  "photoFile": "13740382.jpg",
+  "photoSource": {
+   "pexelsId": 13740382,
+   "pageUrl": "https://www.pexels.com/photo/woman-looking-at-cellphone-13740382/",
+   "photographer": "Mizuno K"
+  }
  },
  {
   "caption": "Aspettativa: gli rispondo con calma e distacco / Realtà: online dopo 9 secondi come un servizio di emergenza",
   "format": "expectation-vs-reality",
   "theme": "relationships, dating & texting",
-  "imageQuery": "emergency call center operator at desk"
+  "imageQuery": "emergency call center operator at desk",
+  "photoFile": "8192184.jpg",
+  "photoSource": {
+   "pexelsId": 8192184,
+   "pageUrl": "https://www.pexels.com/photo/man-answering-calls-in-front-of-computer-8192184/",
+   "photographer": "AI25.Studio  Studio"
+  }
  },
  {
   "caption": "\"Non sono geloso\" / Sempre lui, mentre studia il \"ultimo accesso\" come se fosse l'esame di anatomia",
   "format": "expectation-vs-reality",
   "theme": "relationships, dating & texting",
-  "imageQuery": "student studying intensely with many books open"
+  "imageQuery": "student studying intensely with many books open",
+  "photoFile": "6958546.jpg",
+  "photoSource": {
+   "pexelsId": 6958546,
+   "pageUrl": "https://www.pexels.com/photo/open-books-on-top-of-a-table-6958546/",
+   "photographer": "www.kaboompics.com"
+  }
  },
  {
   "caption": "Io e il mio ex eravamo destinati a stare insieme / Per sempre / Sui rispettivi profili come \"consigliati\"",
@@ -363,25 +621,49 @@
   "caption": "Da lunedì inizio la dieta / È lunedì, ma quello sbagliato",
   "format": "expectation-vs-reality",
   "theme": "food, cooking & diets",
-  "imageQuery": "person looking at calendar on wall"
+  "imageQuery": "person looking at calendar on wall",
+  "photoFile": "7550892.jpg",
+  "photoSource": {
+   "pexelsId": 7550892,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-thinking-while-looking-at-paper-7550892/",
+   "photographer": "Hanna Pad"
+  }
  },
  {
   "caption": "POV: hai detto a tua nonna che non hai fame",
   "format": "POV",
   "theme": "food, cooking & diets",
-  "imageQuery": "table full of food dishes overhead view"
+  "imageQuery": "table full of food dishes overhead view",
+  "photoFile": "28837721.jpg",
+  "photoSource": {
+   "pexelsId": 28837721,
+   "pageUrl": "https://www.pexels.com/photo/delicious-burger-and-fries-meal-on-rustic-table-28837721/",
+   "photographer": "A Vasan"
+  }
  },
  {
   "caption": "Nessuno: / Assolutamente nessuno: / La pasta: bolle 30 secondi in più e diventa colla",
   "format": "nobody",
   "theme": "food, cooking & diets",
-  "imageQuery": "pot of boiling water on stove"
+  "imageQuery": "pot of boiling water on stove",
+  "photoFile": "10432386.jpg",
+  "photoSource": {
+   "pexelsId": 10432386,
+   "pageUrl": "https://www.pexels.com/photo/mussels-cooking-on-stove-10432386/",
+   "photographer": "RDNE Stock project"
+  }
  },
  {
   "caption": "Io che apro il frigo per la quinta volta sperando sia cambiato qualcosa",
   "format": "caption",
   "theme": "food, cooking & diets",
-  "imageQuery": "person looking inside open refrigerator at night"
+  "imageQuery": "person looking inside open refrigerator at night",
+  "photoFile": "10379533.jpg",
+  "photoSource": {
+   "pexelsId": 10379533,
+   "pageUrl": "https://www.pexels.com/photo/a-man-looking-at-the-refrigirator-10379533/",
+   "photographer": "Aynur Latfullin"
+  }
  },
  {
   "caption": "Classifica dei drammi nazionali / 3. Il Wi-Fi che cade / 2. La sveglia del lunedì / 1. L'ananas sulla pizza",
@@ -393,7 +675,13 @@
   "caption": "Io alle 21:00: stasera mangio leggero / Io alle 21:47 con un piatto di carbonara: vabbè da domani",
   "format": "expectation-vs-reality",
   "theme": "food, cooking & diets",
-  "imageQuery": "plate of creamy pasta on table"
+  "imageQuery": "plate of creamy pasta on table",
+  "photoFile": "32239065.jpg",
+  "photoSource": {
+   "pexelsId": 32239065,
+   "pageUrl": "https://www.pexels.com/photo/delicious-creamy-pasta-plate-in-cozy-restaurant-32239065/",
+   "photographer": "Igor Vieira"
+  }
  },
  {
   "caption": "Io: seguo la ricetta alla perfezione / Il risultato: boh",
@@ -411,25 +699,49 @@
   "caption": "POV: hai messo la moka sul fuoco e te ne sei dimenticato di nuovo",
   "format": "POV",
   "theme": "food, cooking & diets",
-  "imageQuery": "coffee maker on gas stove smoke"
+  "imageQuery": "coffee maker on gas stove smoke",
+  "photoFile": "15047605.jpg",
+  "photoSource": {
+   "pexelsId": 15047605,
+   "pageUrl": "https://www.pexels.com/photo/moka-pot-on-gas-stove-15047605/",
+   "photographer": "Antoine Maurin"
+  }
  },
  {
   "caption": "INSALATA",
   "format": "demotivator-text",
   "theme": "food, cooking & diets",
-  "imageQuery": "lonely bowl of green salad on empty table"
+  "imageQuery": "lonely bowl of green salad on empty table",
+  "photoFile": "7660471.jpg",
+  "photoSource": {
+   "pexelsId": 7660471,
+   "pageUrl": "https://www.pexels.com/photo/salad-bowl-and-chopsticks-7660471/",
+   "photographer": "Cup of  Couple"
+  }
  },
  {
   "caption": "Quando dici 'solo un assaggio' e dopo cinque minuti la teglia è vuota",
   "format": "caption",
   "theme": "food, cooking & diets",
-  "imageQuery": "empty baking tray with crumbs"
+  "imageQuery": "empty baking tray with crumbs",
+  "photoFile": "4051609.jpg",
+  "photoSource": {
+   "pexelsId": 4051609,
+   "pageUrl": "https://www.pexels.com/photo/close-up-photo-of-baked-muffins-in-a-muffin-tin-4051609/",
+   "photographer": "alleksana"
+  }
  },
  {
   "caption": "Il mio cervello alle 3 di notte: e se ti facessi due spaghetti aglio e olio?",
   "format": "nobody",
   "theme": "food, cooking & diets",
-  "imageQuery": "person awake in dark kitchen at night"
+  "imageQuery": "person awake in dark kitchen at night",
+  "photoFile": "6943443.jpg",
+  "photoSource": {
+   "pexelsId": 6943443,
+   "pageUrl": "https://www.pexels.com/photo/man-suffering-from-insomnia-6943443/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "Io che spengo e riaccendo il router per la quarta volta come se la quinta cambiasse qualcosa",
@@ -441,25 +753,49 @@
   "caption": "Aspettativa: aggiornamento di 2 minuti / Realtà: 47% da venti minuti, non spegnere il dispositivo",
   "format": "expectation-vs-reality",
   "theme": "technology, phones, wifi & updates",
-  "imageQuery": "frustrated man staring at laptop with loading screen"
+  "imageQuery": "frustrated man staring at laptop with loading screen",
+  "photoFile": "5717780.jpg",
+  "photoSource": {
+   "pexelsId": 5717780,
+   "pageUrl": "https://www.pexels.com/photo/man-working-with-laptop-5717780/",
+   "photographer": "www.kaboompics.com"
+  }
  },
  {
   "caption": "Nessuno: / Assolutamente nessuno: / Il mio telefono al 1% di batteria: ce la faccio, fidati",
   "format": "nobody",
   "theme": "technology, phones, wifi & updates",
-  "imageQuery": "hand holding smartphone with very low battery warning"
+  "imageQuery": "hand holding smartphone with very low battery warning",
+  "photoFile": "10366316.jpg",
+  "photoSource": {
+   "pexelsId": 10366316,
+   "pageUrl": "https://www.pexels.com/photo/teenage-boys-hand-holding-smart-phone-with-low-battery-in-forest-10366316/",
+   "photographer": "Ron Lach"
+  }
  },
  {
   "caption": "POV: hai una tacca di linea e cammini per casa come un metal detector pur di mandare un messaggio",
   "format": "POV",
   "theme": "technology, phones, wifi & updates",
-  "imageQuery": "person holding phone up high near a window searching for signal"
+  "imageQuery": "person holding phone up high near a window searching for signal",
+  "photoFile": "9461243.jpg",
+  "photoSource": {
+   "pexelsId": 9461243,
+   "pageUrl": "https://www.pexels.com/photo/man-sitting-door-pants-9461243/",
+   "photographer": "Mike Jones"
+  }
  },
  {
   "caption": "Vabbè aggiorno l'app un secondo. / *l'app ha cambiato tutti i pulsanti di posto e ora non trovo più niente*",
   "format": "two-part",
   "theme": "technology, phones, wifi & updates",
-  "imageQuery": "confused senior woman looking at smartphone screen"
+  "imageQuery": "confused senior woman looking at smartphone screen",
+  "photoFile": "6874047.jpg",
+  "photoSource": {
+   "pexelsId": 6874047,
+   "pageUrl": "https://www.pexels.com/photo/elderly-woman-chatting-on-smartphone-on-sofa-at-home-6874047/",
+   "photographer": "Teona Swift"
+  }
  },
  {
   "caption": "Classifica delle bugie più grandi di sempre:\n3) ti richiamo dopo\n2) lo finisco domani\n1) connessione ultraveloce garantita",
@@ -471,13 +807,25 @@
   "caption": "Io alle 23:55 che decido di non aggiornare / Il telefono alle 3 di notte: aggiornamento in corso, non spegnere",
   "format": "expectation-vs-reality",
   "theme": "technology, phones, wifi & updates",
-  "imageQuery": "phone glowing on nightstand in a dark bedroom"
+  "imageQuery": "phone glowing on nightstand in a dark bedroom",
+  "photoFile": "26546535.jpg",
+  "photoSource": {
+   "pexelsId": 26546535,
+   "pageUrl": "https://www.pexels.com/photo/lamp-glowing-on-a-night-table-26546535/",
+   "photographer": "Sami  Abdullah"
+  }
  },
  {
   "caption": "Quando dici \"prendo solo la password del Wi-Fi\" e ti ritrovi a fare assistenza tecnica a tutta la famiglia per tre ore",
   "format": "POV",
   "theme": "technology, phones, wifi & updates",
-  "imageQuery": "young man helping older relatives with a laptop at home"
+  "imageQuery": "young man helping older relatives with a laptop at home",
+  "photoFile": "4126693.jpg",
+  "photoSource": {
+   "pexelsId": 4126693,
+   "pageUrl": "https://www.pexels.com/photo/cheerful-girlfriends-using-laptops-together-4126693/",
+   "photographer": "Ketut Subiyanto"
+  }
  },
  {
   "caption": "GIGABYTE DISPONIBILI\nfiniti il 19, rinnovo il 27, ma de che",
@@ -489,7 +837,13 @@
   "caption": "Aspettativa: la videochiamata di lavoro fila liscia / Realtà: \"mi sentite? ora vi sento io ma voi no, ci sentiamo lunedì\"",
   "format": "expectation-vs-reality",
   "theme": "technology, phones, wifi & updates",
-  "imageQuery": "person on a laptop video call looking confused at home"
+  "imageQuery": "person on a laptop video call looking confused at home",
+  "photoFile": "12912116.jpg",
+  "photoSource": {
+   "pexelsId": 12912116,
+   "pageUrl": "https://www.pexels.com/photo/woman-sitting-on-a-couch-using-laptop-and-looking-confused-12912116/",
+   "photographer": "Mizuno K"
+  }
  },
  {
   "caption": "Io che ho 4000 foto, 92 schede aperte e zero spazio, ma giuro che cancello qualcosa domani",
@@ -501,13 +855,25 @@
   "caption": "Io che compro l'abbonamento annuale in palestra / La palestra che mi vede 3 volte e poi mi chiama \"il fantasma del lunedì\"",
   "format": "expectation-vs-reality",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "empty modern gym interior with weights"
+  "imageQuery": "empty modern gym interior with weights",
+  "photoFile": "4793231.jpg",
+  "photoSource": {
+   "pexelsId": 4793231,
+   "pageUrl": "https://www.pexels.com/photo/heavy-weight-disks-on-rack-in-gym-4793231/",
+   "photographer": "Anete Lusina"
+  }
  },
  {
   "caption": "POV: è domenica sera e nella tua testa da domani sei un atleta olimpico, mangi solo pollo e riso e ti svegli alle 6 / Domani: snooze quattordici volte e brioche al bar",
   "format": "POV",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "person lying in bed hitting alarm clock early morning"
+  "imageQuery": "person lying in bed hitting alarm clock early morning",
+  "photoFile": "7623557.jpg",
+  "photoSource": {
+   "pexelsId": 7623557,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-lying-on-bed-7623557/",
+   "photographer": "Miriam Alonso"
+  }
  },
  {
   "caption": "Nessuno: / Assolutamente nessuno: / Io a gennaio: da lunedì cambio vita, mi alleno tutti i giorni e non tocco più gli zuccheri",
@@ -525,43 +891,85 @@
   "caption": "Aspettativa: dopo una settimana di palestra mi guardo allo specchio scolpito come una statua / Realtà: ho solo i muscoli indolenziti e non riesco più a sedermi sul divano",
   "format": "expectation-vs-reality",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "tired man sitting on gym bench holding lower back"
+  "imageQuery": "tired man sitting on gym bench holding lower back",
+  "photoFile": "4162546.jpg",
+  "photoSource": {
+   "pexelsId": 4162546,
+   "pageUrl": "https://www.pexels.com/photo/man-sitting-on-red-and-black-exercise-equipment-4162546/",
+   "photographer": "Ivan S"
+  }
  },
  {
   "caption": "DA LUNEDÌ\nla dieta che inizia ogni lunedì da quattro anni e finisce ogni martedì all'ora di pranzo",
   "format": "demotivator-text",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "fresh croissant and cappuccino on table"
+  "imageQuery": "fresh croissant and cappuccino on table",
+  "photoFile": "14252812.jpg",
+  "photoSource": {
+   "pexelsId": 14252812,
+   "pageUrl": "https://www.pexels.com/photo/croissant-on-plate-14252812/",
+   "photographer": "Esra Afşar"
+  }
  },
  {
   "caption": "Io in palestra dopo aver fatto due esercizi: \"raga oggi mi sono distrutto\" / Il personal trainer: \"era il riscaldamento\"",
   "format": "expectation-vs-reality",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "exhausted person leaning on treadmill at gym"
+  "imageQuery": "exhausted person leaning on treadmill at gym",
+  "photoFile": "6550862.jpg",
+  "photoSource": {
+   "pexelsId": 6550862,
+   "pageUrl": "https://www.pexels.com/photo/weary-woman-leaning-in-sportive-machine-in-gym-6550862/",
+   "photographer": "Andres  Ayrton"
+  }
  },
  {
   "caption": "Quando dici a tutti che da lunedì inizi la nuova vita così poi sei costretto ad andare in palestra / Lunedì: \"comunque la motivazione viene da dentro, mica devo dirlo agli altri\"",
   "format": "POV",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "person looking at phone lying on sofa"
+  "imageQuery": "person looking at phone lying on sofa",
+  "photoFile": "4277442.jpg",
+  "photoSource": {
+   "pexelsId": 4277442,
+   "pageUrl": "https://www.pexels.com/photo/photo-of-man-lying-on-gray-sofa-4277442/",
+   "photographer": "Lisa from Pexels"
+  }
  },
  {
   "caption": "Il mio cervello alle 3 di notte: e se da domani ti svegli alle 5, corri 10 km, mediti e diventi una persona nuova? / Io alle 5: boh, ci sta dormire ancora un po'",
   "format": "nobody",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "person awake in bed at night staring at ceiling"
+  "imageQuery": "person awake in bed at night staring at ceiling",
+  "photoFile": "6941123.jpg",
+  "photoSource": {
+   "pexelsId": 6941123,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-white-pajama-lying-on-bed-6941123/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "I tre tipi di persone in palestra a gennaio:\n1. Quello fissato che c'è sempre\n2. Quello che fa selfie e poi se ne va\n3. Io, che ho sbagliato porta cercando il bar",
   "format": "list-top",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "row of treadmills in a busy gym"
+  "imageQuery": "row of treadmills in a busy gym",
+  "photoFile": "5411023.jpg",
+  "photoSource": {
+   "pexelsId": 5411023,
+   "pageUrl": "https://www.pexels.com/photo/treadmill-near-glass-window-5411023/",
+   "photographer": "Pietro Saura"
+  }
  },
  {
   "caption": "Spendi 60 euro di integratori, borraccia smart e leggings tecnici per non andare in palestra. La pigrizia: \"non esiste, comunque siamo in due a fare questo lavoro\"",
   "format": "caption",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "protein powder containers and water bottle on counter"
+  "imageQuery": "protein powder containers and water bottle on counter",
+  "photoFile": "15120889.jpg",
+  "photoSource": {
+   "pexelsId": 15120889,
+   "pageUrl": "https://www.pexels.com/photo/close-up-of-preparing-protein-shake-with-powder-15120889/",
+   "photographer": "Krzysztof Biernat"
+  }
  },
  {
   "caption": "Io venerdì alle 18: \"Questo weekend faccio mille cose\" / Io domenica alle 18: ho visto il soffitto da tre angolazioni diverse",
@@ -573,42 +981,90 @@
   "caption": "Aspettativa: sabato mattina sveglia all'alba, corsa al parco, colazione sana / Realtà: mi sveglio alle 13 e considero il pranzo già un successo",
   "format": "expectation-vs-reality",
   "theme": "weekend vs weekday / expectation vs reality",
-  "imageQuery": "messy bed with person sleeping in late"
+  "imageQuery": "messy bed with person sleeping in late",
+  "photoFile": "4080038.jpg",
+  "photoSource": {
+   "pexelsId": 4080038,
+   "pageUrl": "https://www.pexels.com/photo/woman-covered-in-white-blanket-lying-on-bed-4080038/",
+   "photographer": "Elvira Gibadullina"
+  }
  },
  {
   "caption": "Io domenica sera: da domani sveglia alle 6, palestra, colazione sana, una vita nuova\nIo lunedì alle 7:14, terza snooze, che mastico un cracker trovato nel letto: vabbè, da domani",
   "format": "two-panel Io/Realtà (Aspettativa vs Realtà) — top text block + bottom text block on contrasting solid colors",
-  "imageQuery": "alarm clock on nightstand morning bedroom CC0"
+  "imageQuery": "alarm clock on nightstand morning bedroom CC0",
+  "photoFile": "6000675.jpg",
+  "photoSource": {
+   "pexelsId": 6000675,
+   "pageUrl": "https://www.pexels.com/photo/table-lamp-on-brown-wooden-table-6000675/",
+   "photographer": "Dương Nhân"
+  }
  },
  {
   "caption": "POV: la nonna ti ha chiesto se hai mangiato per la terza volta in un'ora e ora ti sta preparando un piatto \"giusto per assaggiare\" da 600 grammi",
   "format": "POV caption — single bold white line over a dark scrim on a neutral background",
-  "imageQuery": "plate of pasta on table home kitchen CC0"
+  "imageQuery": "plate of pasta on table home kitchen CC0",
+  "photoFile": "26207777.jpg",
+  "photoSource": {
+   "pexelsId": 26207777,
+   "pageUrl": "https://www.pexels.com/photo/plate-of-spaghetti-with-tomato-sauce-and-parsley-leaves-26207777/",
+   "photographer": "Esra Korkmaz"
+  }
  },
  {
   "caption": "Nessuno:\nAssolutamente nessuno:\nIl gruppo di famiglia alle 6:47 di mattina: 23 buongiornissimo con glitter, una catena di Sant'Antonio e zio che chiede \"chi ha vinto a Sanremo?\"",
   "format": "Nessuno / Assolutamente nessuno snowclone — three left-aligned text lines, punchline heavier",
-  "imageQuery": "smartphone screen many notifications on table CC0"
+  "imageQuery": "smartphone screen many notifications on table CC0",
+  "photoFile": "5077054.jpg",
+  "photoSource": {
+   "pexelsId": 5077054,
+   "pageUrl": "https://www.pexels.com/photo/person-holding-black-iphone-7-5077054/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "Classifica dei crimini culinari, dal grave all'ergastolo:\n1) Pasta scotta — male, ma capita\n2) Cappuccino dopo le 11 — siamo già in tribunale\n3) Spaghetti spezzati nella pentola — 20 anni\n4) Ananas sulla pizza — questione di principio, ci vediamo all'Aja",
   "format": "Classifica / tier-style ironic list — title + numbered rows with micro-punchlines on a card",
-  "imageQuery": "pineapple slice next to pizza on cutting board CC0"
+  "imageQuery": "pineapple slice next to pizza on cutting board CC0",
+  "photoFile": "32611520.jpg",
+  "photoSource": {
+   "pexelsId": 32611520,
+   "pageUrl": "https://www.pexels.com/photo/delicious-hawaiian-pizza-with-pineapple-and-ham-32611520/",
+   "photographer": "Fernando Capetillo"
+  }
  },
  {
   "caption": "LUNEDÌ\nl'unico film horror che esce ogni settimana e fa sempre il pienone",
   "format": "Demotivazionale — black background, white border, original/CC0 image inside, big serif all-caps title + small ironic subtitle",
-  "imageQuery": "empty foggy street early morning grey sky public domain"
+  "imageQuery": "empty foggy street early morning grey sky public domain",
+  "photoFile": "6494991.jpg",
+  "photoSource": {
+   "pexelsId": 6494991,
+   "pageUrl": "https://www.pexels.com/photo/low-visibility-on-the-road-6494991/",
+   "photographer": "KoolShooters"
+  }
  },
  {
   "caption": "Nel mezzo del cammin di nostra vita...\n...mi ritrovai col conto in rosso il 23 del mese e tre giorni allo stipendio",
   "format": "Dante parody — lofty serif opening fragment on top, deflating modern sans continuation below (two-zone card)",
-  "imageQuery": "open antique leather book on wooden table, warm candle glow, blank aged pages, generic stock photo"
+  "imageQuery": "open antique leather book on wooden table, warm candle glow, blank aged pages, generic stock photo",
+  "photoFile": "33345001.jpg",
+  "photoSource": {
+   "pexelsId": 33345001,
+   "pageUrl": "https://www.pexels.com/photo/vintage-books-on-rustic-wooden-table-33345001/",
+   "photographer": "Esma Nur"
+  }
  },
  {
   "caption": "Io che spengo la moka un secondo prima che \"sbuffi\" come se avessi disinnescato una bomba in un film",
   "format": "Tweet/post relatable — single witty centered sentence on a clean card with lots of negative space (fake handle drawn from scratch, no real logo)",
-  "imageQuery": "stovetop espresso coffee maker on gas stove closeup steam, generic plain metal pot, no logo no brand, CC0 public domain"
+  "imageQuery": "stovetop espresso coffee maker on gas stove closeup steam, generic plain metal pot, no logo no brand, CC0 public domain",
+  "photoFile": "15444159.jpg",
+  "photoSource": {
+   "pexelsId": 15444159,
+   "pageUrl": "https://www.pexels.com/photo/pot-on-stove-15444159/",
+   "photographer": "Efe Ersoy"
+  }
  },
  {
   "caption": "Io che entro al supermercato per comprare SOLO il pane\nIo alla cassa con 47€ di roba, due cose in offerta che non mi servono e senza il pane",
@@ -618,21 +1074,45 @@
  {
   "caption": "POV: hai detto \"esco cinque minuti\" e tua madre ti ha già chiesto dove vai, con chi, a che ora torni e se ti sei messo la maglia della salute a giugno",
   "format": "POV caption — single bold line over dark scrim on textured background",
-  "imageQuery": "person putting on jacket by front door at home CC0"
+  "imageQuery": "person putting on jacket by front door at home CC0",
+  "photoFile": "12912136.jpg",
+  "photoSource": {
+   "pexelsId": 12912136,
+   "pageUrl": "https://www.pexels.com/photo/woman-putting-on-shoes-12912136/",
+   "photographer": "Mizuno K"
+  }
  },
  {
   "caption": "Nessuno:\nAssolutamente nessuno:\nIl mio cervello alle 3 di notte:\nti ricordi quella figuraccia che hai fatto con la prof nel 2014? Bene, rivediamola insieme in 4K",
   "format": "Nessuno / Assolutamente nessuno snowclone — three stacked lines, accent-color punchline",
-  "imageQuery": "person lying awake in bed at night dark room CC0"
+  "imageQuery": "person lying awake in bed at night dark room CC0",
+  "photoFile": "6943448.jpg",
+  "photoSource": {
+   "pexelsId": 6943448,
+   "pageUrl": "https://www.pexels.com/photo/a-man-fell-asleep-while-using-his-mobile-phone-6943448/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "Quando il collega ti dice \"ci sentiamo lunedì\"\ne tu sai benissimo che non ti sentirai con nessuno fino a lunedì alle 9:01",
   "format": "top-text / bottom-text impact caption over a single contextual photo",
-  "imageQuery": "empty office desk with computer end of day CC0"
+  "imageQuery": "empty office desk with computer end of day CC0",
+  "photoFile": "2675055.jpg",
+  "photoSource": {
+   "pexelsId": 2675055,
+   "pageUrl": "https://www.pexels.com/photo/close-up-photo-of-desktop-monitor-and-keyboard-on-wooden-desk-by-window-2675055/",
+   "photographer": "Diana ✨"
+  }
  },
  {
   "caption": "Tipi di collega in riunione, dal migliore al peggiore:\n1) Quello che dice \"facciamo che ne riparliamo via mail\" — eroe\n2) Quella che prende appunti — sospetta\n3) Quello che \"aggiungo solo una cosa veloce\" — bugia, sono 40 minuti\n4) Quello che chiede \"scusa, puoi ricondividere lo schermo?\" — al rogo",
   "format": "Classifica / tier-style ironic list — title + numbered rows with micro-punchlines, alternating row tints",
-  "imageQuery": "people sitting around table business meeting room CC0"
+  "imageQuery": "people sitting around table business meeting room CC0",
+  "photoFile": "5520289.jpg",
+  "photoSource": {
+   "pexelsId": 5520289,
+   "pageUrl": "https://www.pexels.com/photo/men-in-business-suits-in-a-meeting-5520289/",
+   "photographer": "Pavel Danilyuk"
+  }
  }
 ]
