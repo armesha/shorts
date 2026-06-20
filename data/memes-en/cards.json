@@ -1,0 +1,1700 @@
+[
+ {
+  "caption": "this meeting could have been an email / this email could have been a Slack message / this Slack message could have been nothing at all",
+  "format": "list-escalation",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "bored office workers sitting around conference table",
+  "photoFile": "9077349.jpg",
+  "photoSource": {
+   "pexelsId": 9077349,
+   "pageUrl": "https://www.pexels.com/photo/men-sitting-at-the-table-9077349/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Nobody: / My manager: let's hop on a quick call to discuss why we have too many meetings",
+  "format": "nobody",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "stressed man on video call with headphones at desk",
+  "photoFile": "8192198.jpg",
+  "photoSource": {
+   "pexelsId": 8192198,
+   "pageUrl": "https://www.pexels.com/photo/man-in-beige-blazer-wearing-eyeglasses-typing-on-white-keyboard-8192198/",
+   "photographer": "AI25.Studio  Studio"
+  }
+ },
+ {
+  "caption": "POV: you've been in back-to-back meetings since 9am and you still haven't done a single thing you're actually paid to do",
+  "format": "POV",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "exhausted woman rubbing eyes in front of laptop",
+  "photoFile": "8867225.jpg",
+  "photoSource": {
+   "pexelsId": 8867225,
+   "pageUrl": "https://www.pexels.com/photo/a-tired-man-rubbing-his-eyes-8867225/",
+   "photographer": "Yan Krukau"
+  }
+ },
+ {
+  "caption": "me at 8:59am: ready to be productive / me at 9:04am after one email: i think that's enough for today",
+  "format": "expectation-vs-reality",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "tired office worker leaning back in chair coffee",
+  "photoFile": "7256302.jpg",
+  "photoSource": {
+   "pexelsId": 7256302,
+   "pageUrl": "https://www.pexels.com/photo/man-in-brown-button-up-shirt-looking-tired-and-stressed-7256302/",
+   "photographer": "MART  PRODUCTION"
+  }
+ },
+ {
+  "caption": "saying \"per my last email\" is the most polite way to scream",
+  "format": "caption",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "person typing email on laptop closeup keyboard",
+  "photoFile": "7709101.jpg",
+  "photoSource": {
+   "pexelsId": 7709101,
+   "pageUrl": "https://www.pexels.com/photo/a-person-using-a-laptop-7709101/",
+   "photographer": "MART  PRODUCTION"
+  }
+ },
+ {
+  "caption": "the definitive ranking of work activities / S: getting paid / A: lunch / B: the walk to the printer / F: the meeting about the meeting",
+  "format": "list-top",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "office break room with coffee and snacks"
+ },
+ {
+  "caption": "tell me you're in a useless meeting without telling me you're in a useless meeting / *slowly typing my grocery list in the meeting notes*",
+  "format": "tell-me-without-telling-me",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "person taking notes in notebook during meeting",
+  "photoFile": "3184654.jpg",
+  "photoSource": {
+   "pexelsId": 3184654,
+   "pageUrl": "https://www.pexels.com/photo/photo-of-person-writing-on-notebook-3184654/",
+   "photographer": "fauxels"
+  }
+ },
+ {
+  "caption": "they asked if I had any questions at the end of the 90-minute meeting and I said \"no\" with the strength of a thousand suns",
+  "format": "caption",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "relieved office worker stretching at desk",
+  "photoFile": "7888730.jpg",
+  "photoSource": {
+   "pexelsId": 7888730,
+   "pageUrl": "https://www.pexels.com/photo/woman-stretching-her-body-while-sitting-7888730/",
+   "photographer": "RDNE Stock project"
+  }
+ },
+ {
+  "caption": "WORK / the only thing keeping me here is the snacks and the inability to afford not to",
+  "format": "demotivator-text",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "empty office cubicle with computer monitor"
+ },
+ {
+  "caption": "boss: can you stay a little late today / me, who has been mentally clocked out since Tuesday:",
+  "format": "nobody",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "man staring blankly at computer screen in dark office",
+  "photoFile": "14189629.jpg",
+  "photoSource": {
+   "pexelsId": 14189629,
+   "pageUrl": "https://www.pexels.com/photo/man-working-at-a-computer-in-a-dark-room-14189629/",
+   "photographer": "Furkan Salihoğlu"
+  }
+ },
+ {
+  "caption": "me looking incredibly focused on my screen / the screen: an empty spreadsheet I've been staring at for 40 minutes",
+  "format": "expectation-vs-reality",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "person staring intently at computer monitor at work",
+  "photoFile": "12903349.jpg",
+  "photoSource": {
+   "pexelsId": 12903349,
+   "pageUrl": "https://www.pexels.com/photo/young-woman-looking-at-pc-screen-with-attention-12903349/",
+   "photographer": "Mizuno K"
+  }
+ },
+ {
+  "caption": "nothing unites coworkers like all hating the same meeting in the group chat 4 seconds after it ends",
+  "format": "caption",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "people secretly looking at phones under the table",
+  "photoFile": "8483983.jpg",
+  "photoSource": {
+   "pexelsId": 8483983,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-in-yellow-dress-talking-on-the-phone-while-looking-at-her-colleagues-sitting-near-the-laptop-8483983/",
+   "photographer": "Thirdman"
+  }
+ },
+ {
+  "caption": "\"let's circle back on that\" / translation: we will never speak of this again",
+  "format": "caption",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "businesswoman shrugging in meeting room",
+  "photoFile": "8101895.jpg",
+  "photoSource": {
+   "pexelsId": 8101895,
+   "pageUrl": "https://www.pexels.com/photo/young-woman-sitting-at-the-desk-in-an-office-8101895/",
+   "photographer": "Mikhail Nilov"
+  }
+ },
+ {
+  "caption": "POV: the meeting hits the 55-minute mark and someone says \"actually, one more thing\"",
+  "format": "POV",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "frustrated office worker covering face with hands",
+  "photoFile": "9301832.jpg",
+  "photoSource": {
+   "pexelsId": 9301832,
+   "pageUrl": "https://www.pexels.com/photo/a-man-covering-his-face-with-his-hands-9301832/",
+   "photographer": "Mikhail Nilov"
+  }
+ },
+ {
+  "caption": "my camera is off, my mic is muted, my soul left the building, but my little green \"active\" dot says I'm thriving",
+  "format": "caption",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "laptop showing video conference call on screen",
+  "photoFile": "5486096.jpg",
+  "photoSource": {
+   "pexelsId": 5486096,
+   "pageUrl": "https://www.pexels.com/photo/a-group-of-people-chatting-in-a-video-call-in-a-laptop-5486096/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Nobody: / Absolutely nobody: / The guy who scheduled a 30-minute meeting that ends in 4 minutes but won't let anyone leave early:",
+  "format": "nobody",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "man talking and gesturing in conference room",
+  "photoFile": "18935250.jpg",
+  "photoSource": {
+   "pexelsId": 18935250,
+   "pageUrl": "https://www.pexels.com/photo/man-during-presentation-18935250/",
+   "photographer": "Matheus Bertelli"
+  }
+ },
+ {
+  "caption": "two types of coworkers in a meeting / 1. the one taking detailed notes / 2. the one calculating how many hours until the weekend",
+  "format": "list-top",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "two colleagues sitting next to each other at desks",
+  "photoFile": "5273606.jpg",
+  "photoSource": {
+   "pexelsId": 5273606,
+   "pageUrl": "https://www.pexels.com/photo/diverse-colleagues-discussing-work-near-computer-5273606/",
+   "photographer": "Monstera Production"
+  }
+ },
+ {
+  "caption": "plot twist: the most productive part of my entire workday is pretending to look busy when my boss walks by",
+  "format": "plot-twist",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "office worker quickly switching tabs on computer",
+  "photoFile": "12899190.jpg",
+  "photoSource": {
+   "pexelsId": 12899190,
+   "pageUrl": "https://www.pexels.com/photo/vertical-shot-of-a-blond-woman-using-two-computer-screens-12899190/",
+   "photographer": "Mizuno K"
+  }
+ },
+ {
+  "caption": "Payday: I am financially responsible now. / Three hours later: well, the cart said add to bag, not think about it.",
+  "format": "expectation-vs-reality",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person holding shopping bags on couch",
+  "photoFile": "6612554.jpg",
+  "photoSource": {
+   "pexelsId": 6612554,
+   "pageUrl": "https://www.pexels.com/photo/two-women-holding-shopping-bags-6612554/",
+   "photographer": "Mikhail Nilov"
+  }
+ },
+ {
+  "caption": "Nobody: / My bank app at 11:58pm on payday: don't get too excited, this is a layover.",
+  "format": "nobody",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person looking at phone screen in dark room",
+  "photoFile": "7278979.jpg",
+  "photoSource": {
+   "pexelsId": 7278979,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-using-her-smartphone-while-on-the-bed-7278979/",
+   "photographer": "MART  PRODUCTION"
+  }
+ },
+ {
+  "caption": "POV: you check your balance to feel better and it's now a personality test you failed.",
+  "format": "POV",
+  "theme": "money, payday & being broke",
+  "imageQuery": "stressed person looking at laptop at kitchen table",
+  "photoFile": "6975209.jpg",
+  "photoSource": {
+   "pexelsId": 6975209,
+   "pageUrl": "https://www.pexels.com/photo/close-up-shot-of-an-elderly-man-with-eyeglasses-looking-at-the-paper-6975209/",
+   "photographer": "T Leish"
+  }
+ },
+ {
+  "caption": "my money has the object permanence of a toddler. out of the account, out of existence.",
+  "format": "caption",
+  "theme": "money, payday & being broke",
+  "imageQuery": "empty open wallet held in hands",
+  "photoFile": "7927429.jpg",
+  "photoSource": {
+   "pexelsId": 7927429,
+   "pageUrl": "https://www.pexels.com/photo/a-person-holding-a-wallet-7927429/",
+   "photographer": "Nicola Barts"
+  }
+ },
+ {
+  "caption": "The definitive ranking of my expenses: / S: snacks I forgot I bought / A: a subscription I haven't opened since signup / F: literally rent, the actual roof",
+  "format": "list-top",
+  "theme": "money, payday & being broke",
+  "imageQuery": "clean minimal desk with notebook and pen"
+ },
+ {
+  "caption": "Tell me you're broke without telling me you're broke. / I'll start: I know exactly which days my bank posts transactions.",
+  "format": "tell-me-without",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person waiting and checking phone by window",
+  "photoFile": "27259323.jpg",
+  "photoSource": {
+   "pexelsId": 27259323,
+   "pageUrl": "https://www.pexels.com/photo/siluete-27259323/",
+   "photographer": "el jusuf"
+  }
+ },
+ {
+  "caption": "I budgeted for the whole month / The whole month was Tuesday.",
+  "format": "expectation-vs-reality",
+  "theme": "money, payday & being broke",
+  "imageQuery": "calendar page on wall close up",
+  "photoFile": "29509480.jpg",
+  "photoSource": {
+   "pexelsId": 29509480,
+   "pageUrl": "https://www.pexels.com/photo/minimalist-january-desk-calendar-29509480/",
+   "photographer": "Matheus Bertelli"
+  }
+ },
+ {
+  "caption": "Plot twist: the free trial remembered my card better than I remembered the free trial.",
+  "format": "plot-twist",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person frowning at credit card and phone",
+  "photoFile": "5810699.jpg",
+  "photoSource": {
+   "pexelsId": 5810699,
+   "pageUrl": "https://www.pexels.com/photo/man-in-yellow-sweater-wearing-black-framed-eyeglasses-holding-a-card-while-talking-on-phone-5810699/",
+   "photographer": "AI25.Studio  Studio"
+  }
+ },
+ {
+  "caption": "It's giving 'I'll just look, I'm not buying anything' as I enter my address from memory.",
+  "format": "its-giving",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person shopping online on laptop at night",
+  "photoFile": "7620566.jpg",
+  "photoSource": {
+   "pexelsId": 7620566,
+   "pageUrl": "https://www.pexels.com/photo/person-holding-a-card-while-using-laptop-7620566/",
+   "photographer": "Ivan S"
+  }
+ },
+ {
+  "caption": "TREAT YOURSELF / one (1) coffee later, the treat is now the entire weekend's plan.",
+  "format": "demotivator-text",
+  "theme": "money, payday & being broke",
+  "imageQuery": "single coffee cup on cafe table",
+  "photoFile": "31230059.jpg",
+  "photoSource": {
+   "pexelsId": 31230059,
+   "pageUrl": "https://www.pexels.com/photo/black-and-white-cafe-cup-on-rustic-table-31230059/",
+   "photographer": "Eyüpcan Timur"
+  }
+ },
+ {
+  "caption": "When you get paid but you already owe every dollar a previous engagement.",
+  "format": "when-you",
+  "theme": "money, payday & being broke",
+  "imageQuery": "hands counting a few coins on table",
+  "photoFile": "8872344.jpg",
+  "photoSource": {
+   "pexelsId": 8872344,
+   "pageUrl": "https://www.pexels.com/photo/photo-of-a-coins-on-a-piece-of-white-paper-8872344/",
+   "photographer": "MART  PRODUCTION"
+  }
+ },
+ {
+  "caption": "Me, doing math to see if I can afford it: / Me, ignoring the answer:",
+  "format": "me-vs-me",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person thinking with calculator and receipts",
+  "photoFile": "6919706.jpg",
+  "photoSource": {
+   "pexelsId": 6919706,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-in-black-long-sleeve-shirt-sitting-at-the-table-6919706/",
+   "photographer": "Nataliya Vaitkevich"
+  }
+ },
+ {
+  "caption": "My savings account and I have a long-distance relationship. We don't talk, and it never grows.",
+  "format": "caption",
+  "theme": "money, payday & being broke",
+  "imageQuery": "empty glass jar with a few coins",
+  "photoFile": "6863247.jpg",
+  "photoSource": {
+   "pexelsId": 6863247,
+   "pageUrl": "https://www.pexels.com/photo/coins-in-a-jar-6863247/",
+   "photographer": "Nataliya Vaitkevich"
+  }
+ },
+ {
+  "caption": "The way I can find $40 for a snack run but not $40 for a bill is genuinely a magic trick.",
+  "format": "the-way-i",
+  "theme": "money, payday & being broke",
+  "imageQuery": "fast food paper bag on car seat",
+  "photoFile": "15912779.jpg",
+  "photoSource": {
+   "pexelsId": 15912779,
+   "pageUrl": "https://www.pexels.com/photo/coffees-in-disposable-cups-and-a-muffin-in-a-car-cup-holder-15912779/",
+   "photographer": "Erik Mclean"
+  }
+ },
+ {
+  "caption": "Two states of being: / 'add the guac, money is fake' (day 1) / 'is tap water a meal' (day 19)",
+  "format": "vs",
+  "theme": "money, payday & being broke",
+  "imageQuery": "glass of tap water on empty plate",
+  "photoFile": "19454594.jpg",
+  "photoSource": {
+   "pexelsId": 19454594,
+   "pageUrl": "https://www.pexels.com/photo/tea-glass-on-ship-19454594/",
+   "photographer": "Tahir Osman"
+  }
+ },
+ {
+  "caption": "No thoughts. Head empty. / Account: same.",
+  "format": "caption",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person staring blankly out of office window",
+  "photoFile": "9050603.jpg",
+  "photoSource": {
+   "pexelsId": 9050603,
+   "pageUrl": "https://www.pexels.com/photo/woman-wearing-a-blazer-sitting-with-a-colleague-9050603/",
+   "photographer": "Mike Jones"
+  }
+ },
+ {
+  "caption": "POV: you said 'I deserve this' and now you're explaining to your future self why next week is soup.",
+  "format": "POV",
+  "theme": "money, payday & being broke",
+  "imageQuery": "bowl of plain soup on a wooden table",
+  "photoFile": "34326231.jpg",
+  "photoSource": {
+   "pexelsId": 34326231,
+   "pageUrl": "https://www.pexels.com/photo/warm-chicken-noodle-soup-in-white-bowl-34326231/",
+   "photographer": "Anhelina Vasylyk"
+  }
+ },
+ {
+  "caption": "I don't check my balance before payday for the same reason I don't read the smoke alarm manual during the fire.",
+  "format": "caption",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person covering eyes with both hands",
+  "photoFile": "3845545.jpg",
+  "photoSource": {
+   "pexelsId": 3845545,
+   "pageUrl": "https://www.pexels.com/photo/woman-covering-her-eyes-3845545/",
+   "photographer": "Anna Shvets"
+  }
+ },
+ {
+  "caption": "setting 6 alarms 9 minutes apart like that's a sleep schedule and not just hourly disappointment",
+  "format": "caption",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "phone with multiple alarms on nightstand in dark room",
+  "photoFile": "6943420.jpg",
+  "photoSource": {
+   "pexelsId": 6943420,
+   "pageUrl": "https://www.pexels.com/photo/sleeping-pill-and-digital-clock-on-bedside-table-6943420/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Nobody:\nMy brain at 3am:\nremember that thing you said in 2014?",
+  "format": "nobody",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person lying awake in bed staring at ceiling at night",
+  "photoFile": "6943443.jpg",
+  "photoSource": {
+   "pexelsId": 6943443,
+   "pageUrl": "https://www.pexels.com/photo/man-suffering-from-insomnia-6943443/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "POV: it's 5 more minutes for the fourth time and now you're sprinting to work",
+  "format": "POV",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person running late buttoning shirt in a hurry",
+  "photoFile": "13801602.jpg",
+  "photoSource": {
+   "pexelsId": 13801602,
+   "pageUrl": "https://www.pexels.com/photo/businessman-with-a-briefcase-walking-fast-by-a-white-modern-building-13801602/",
+   "photographer": "Mizuno K"
+  }
+ },
+ {
+  "caption": "me at 11pm: i'll wake up early and have a calm morning\nme at 6am: the alarm is my enemy and i will negotiate",
+  "format": "expectation-vs-reality",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "hand slapping snooze on alarm clock under blanket",
+  "photoFile": "6976605.jpg",
+  "photoSource": {
+   "pexelsId": 6976605,
+   "pageUrl": "https://www.pexels.com/photo/yellow-alarm-clock-on-a-yellow-box-6976605/",
+   "photographer": "KoolShooters"
+  }
+ },
+ {
+  "caption": "the definitive ranking of morning sounds:\nF tier: the alarm\nF tier: the second alarm\nF tier: someone saying \"you up?\"",
+  "format": "list-top",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "alarm clock ringing on nightstand in the morning"
+ },
+ {
+  "caption": "tired all day. fully awake the second my head hits the pillow. truly the body of a champion.",
+  "format": "caption",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "wide awake person in bed at night eyes open",
+  "photoFile": "6943443.jpg",
+  "photoSource": {
+   "pexelsId": 6943443,
+   "pageUrl": "https://www.pexels.com/photo/man-suffering-from-insomnia-6943443/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Tell me you got 4 hours of sleep without telling me you got 4 hours of sleep\nme: blinking manually",
+  "format": "tell-me-without",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "exhausted person rubbing eyes at desk with coffee",
+  "photoFile": "8867253.jpg",
+  "photoSource": {
+   "pexelsId": 8867253,
+   "pageUrl": "https://www.pexels.com/photo/a-tired-man-sitting-at-his-desk-rubbing-his-eyes-8867253/",
+   "photographer": "Yan Krukau"
+  }
+ },
+ {
+  "caption": "MORNING PERSON\nsomeone who lies to you before 8am",
+  "format": "demotivator-text",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "blank dark background for poster text"
+ },
+ {
+  "caption": "going to bed early so i can scroll my phone for three hours in a more responsible setting",
+  "format": "caption",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person on phone in bed in the dark glowing screen",
+  "photoFile": "8036749.jpg",
+  "photoSource": {
+   "pexelsId": 8036749,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-white-shirt-lying-down-while-using-smartphone-8036749/",
+   "photographer": "SHVETS production"
+  }
+ },
+ {
+  "caption": "the alarm: BEEP BEEP\nme, who set it: who would do this to us",
+  "format": "caption",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "loud alarm clock ringing on bedside table morning light",
+  "photoFile": "6000675.jpg",
+  "photoSource": {
+   "pexelsId": 6000675,
+   "pageUrl": "https://www.pexels.com/photo/table-lamp-on-brown-wooden-table-6000675/",
+   "photographer": "Dương Nhân"
+  }
+ },
+ {
+  "caption": "POV: you do the math on how much sleep you'll get if you fall asleep RIGHT NOW\n*recalculates four times*",
+  "format": "POV",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person checking phone clock late at night in bed",
+  "photoFile": "20885709.jpg",
+  "photoSource": {
+   "pexelsId": 20885709,
+   "pageUrl": "https://www.pexels.com/photo/man-using-smartphone-while-lying-down-20885709/",
+   "photographer": "Kenneth Surillo"
+  }
+ },
+ {
+  "caption": "weekend me: up at 6am wide awake for no reason\nworkday me: a corpse the alarm cannot move",
+  "format": "expectation-vs-reality",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person sleeping deeply face down in pillow",
+  "photoFile": "6968267.jpg",
+  "photoSource": {
+   "pexelsId": 6968267,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-in-white-tank-top-lying-on-the-bed-6968267/",
+   "photographer": "Mikhail Nilov"
+  }
+ },
+ {
+  "caption": "Nobody:\nMy body 2 minutes before the alarm:\nrise and shine, let's ruin the surprise",
+  "format": "nobody",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person waking up just before alarm clock morning",
+  "photoFile": "6976605.jpg",
+  "photoSource": {
+   "pexelsId": 6976605,
+   "pageUrl": "https://www.pexels.com/photo/yellow-alarm-clock-on-a-yellow-box-6976605/",
+   "photographer": "KoolShooters"
+  }
+ },
+ {
+  "caption": "i don't snooze the alarm. i'm just gathering the strength to disappoint everyone slightly later.",
+  "format": "caption",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "tired person pulling blanket over head in bed",
+  "photoFile": "6756086.jpg",
+  "photoSource": {
+   "pexelsId": 6756086,
+   "pageUrl": "https://www.pexels.com/photo/light-arm-hands-people-6756086/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "things that wake me up:\n- not the alarm\n- not three alarms\n- the sudden fear i missed all of them",
+  "format": "list-top",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person suddenly sitting up awake in bed panicked",
+  "photoFile": "7641254.jpg",
+  "photoSource": {
+   "pexelsId": 7641254,
+   "pageUrl": "https://www.pexels.com/photo/a-man-waking-up-from-sleep-7641254/",
+   "photographer": "MART  PRODUCTION"
+  }
+ },
+ {
+  "caption": "\"i'll just rest my eyes for a second\"\nme, two hours later, fully dressed, lights on:",
+  "format": "expectation-vs-reality",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person asleep on couch with lights on still dressed",
+  "photoFile": "16778213.jpg",
+  "photoSource": {
+   "pexelsId": 16778213,
+   "pageUrl": "https://www.pexels.com/photo/young-woman-sleeping-on-table-near-retro-lamp-16778213/",
+   "photographer": "Pegah Sharifi"
+  }
+ },
+ {
+  "caption": "no thoughts, head empty, alarm in 6 hours, eyes wide open",
+  "format": "caption",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person lying flat awake in bed at night blank stare",
+  "photoFile": "6943443.jpg",
+  "photoSource": {
+   "pexelsId": 6943443,
+   "pageUrl": "https://www.pexels.com/photo/man-suffering-from-insomnia-6943443/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "choose your morning villain:\nthe alarm you set\nthe sun through the blinds\nthe one bird that starts at 4am",
+  "format": "choose",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "morning sunlight through window blinds onto bed",
+  "photoFile": "7927549.jpg",
+  "photoSource": {
+   "pexelsId": 7927549,
+   "pageUrl": "https://www.pexels.com/photo/man-lying-on-belly-in-clothes-on-bed-7927549/",
+   "photographer": "Nicola Barts"
+  }
+ },
+ {
+  "caption": "Nobody: / My brain the night before the exam: oh NOW you wanna learn everything",
+  "format": "nobody",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "tired student studying late at night with books",
+  "photoFile": "8085935.jpg",
+  "photoSource": {
+   "pexelsId": 8085935,
+   "pageUrl": "https://www.pexels.com/photo/tired-woman-in-the-library-8085935/",
+   "photographer": "Ron Lach"
+  }
+ },
+ {
+  "caption": "POV: you open the textbook, read one sentence, and reward yourself with a 3-hour break",
+  "format": "POV",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "open textbook on desk next to phone",
+  "photoFile": "5905435.jpg",
+  "photoSource": {
+   "pexelsId": 5905435,
+   "pageUrl": "https://www.pexels.com/photo/school-desk-with-copybooks-in-modern-classroom-5905435/",
+   "photographer": "Katerina Holmes"
+  }
+ },
+ {
+  "caption": "me 4 weeks before the exam: i have so much time\nme 4 hours before the exam: i have so much time",
+  "format": "expectation-vs-reality",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "person lounging on couch looking relaxed and carefree",
+  "photoFile": "5792982.jpg",
+  "photoSource": {
+   "pexelsId": 5792982,
+   "pageUrl": "https://www.pexels.com/photo/black-man-lying-on-sofa-at-home-5792982/",
+   "photographer": "Laker"
+  }
+ },
+ {
+  "caption": "my entire study plan: do nothing for weeks, then panic-read everything the night before and question every choice that led me here",
+  "format": "caption",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "stressed person surrounded by notes and coffee",
+  "photoFile": "8386571.jpg",
+  "photoSource": {
+   "pexelsId": 8386571,
+   "pageUrl": "https://www.pexels.com/photo/laptop-and-crumpled-papers-on-a-table-8386571/",
+   "photographer": "Tara Winstead"
+  }
+ },
+ {
+  "caption": "the syllabus said 'manage your time well' so i managed to do absolutely nothing for six weeks",
+  "format": "caption",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "calendar with deadline circled in red",
+  "photoFile": "7479192.jpg",
+  "photoSource": {
+   "pexelsId": 7479192,
+   "pageUrl": "https://www.pexels.com/photo/a-calendar-surrounded-with-heart-shaped-paper-cut-outs-on-a-white-surface-7479192/",
+   "photographer": "Nadezhda Moryak"
+  }
+ },
+ {
+  "caption": "group project tier list / S: the one person who did everything / F: the four names also on the slides",
+  "format": "list-top",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "group of students at a table with laptops"
+ },
+ {
+  "caption": "highlighting the entire textbook so my brain knows it's all equally important and i remember none of it",
+  "format": "caption",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "textbook page covered in highlighter",
+  "photoFile": "6958534.jpg",
+  "photoSource": {
+   "pexelsId": 6958534,
+   "pageUrl": "https://www.pexels.com/photo/person-using-blue-highlighter-pen-on-a-book-page-6958534/",
+   "photographer": "www.kaboompics.com"
+  }
+ },
+ {
+  "caption": "tell me you didn't study without telling me you didn't study / *writes the date very neatly at the top of the page*",
+  "format": "tell-me-without",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "blank exam paper with pen",
+  "photoFile": "7013904.jpg",
+  "photoSource": {
+   "pexelsId": 7013904,
+   "pageUrl": "https://www.pexels.com/photo/photograph-of-a-black-pen-on-top-of-a-white-paper-7013904/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "me: i'll just watch one video to relax before studying / youtube, 5 hours later: how a medieval castle toilet worked",
+  "format": "caption",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "person watching phone in bed at night",
+  "photoFile": "6951508.jpg",
+  "photoSource": {
+   "pexelsId": 6951508,
+   "pageUrl": "https://www.pexels.com/photo/photo-of-a-woman-sitting-on-her-bed-while-watching-on-a-television-6951508/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "POV: the exam has a question from the one lecture you skipped because 'we can catch up on that later'",
+  "format": "POV",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "confused student looking at exam paper",
+  "photoFile": "7092506.jpg",
+  "photoSource": {
+   "pexelsId": 7092506,
+   "pageUrl": "https://www.pexels.com/photo/student-cheating-during-an-exam-7092506/",
+   "photographer": "RDNE Stock project"
+  }
+ },
+ {
+  "caption": "PROCRASTINATION / why do today what you can panic about at 3am the night before",
+  "format": "demotivator-text",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "dark room lit only by laptop screen",
+  "photoFile": "14528488.jpg",
+  "photoSource": {
+   "pexelsId": 14528488,
+   "pageUrl": "https://www.pexels.com/photo/laptop-and-mouse-pad-with-light-on-the-table-14528488/",
+   "photographer": "Fatih Doğrul"
+  }
+ },
+ {
+  "caption": "my study plan: 10% reading the material / 90% making a beautiful color-coded schedule i will never follow",
+  "format": "caption",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "colorful planner with sticky notes",
+  "photoFile": "4586900.jpg",
+  "photoSource": {
+   "pexelsId": 4586900,
+   "pageUrl": "https://www.pexels.com/photo/colorful-sticky-notes-4586900/",
+   "photographer": "Anna Shvets"
+  }
+ },
+ {
+  "caption": "walking out of the exam like i nailed it / re-reading question 1 in my head like i absolutely did not",
+  "format": "expectation-vs-reality",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "student walking out of building with backpack",
+  "photoFile": "7972535.jpg",
+  "photoSource": {
+   "pexelsId": 7972535,
+   "pageUrl": "https://www.pexels.com/photo/college-students-walking-together-7972535/",
+   "photographer": "George Pak"
+  }
+ },
+ {
+  "caption": "nobody: / absolutely nobody: / me at 2am: i should reorganize my entire desk before i can possibly study",
+  "format": "nobody",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "messy desk being cleaned at night",
+  "photoFile": "8386567.jpg",
+  "photoSource": {
+   "pexelsId": 8386567,
+   "pageUrl": "https://www.pexels.com/photo/black-letters-surrounded-with-office-supplies-and-crumpled-papers-8386567/",
+   "photographer": "Tara Winstead"
+  }
+ },
+ {
+  "caption": "the five stages of an all-nighter: confidence, snacks, despair, a strange second wind, and the sunrise",
+  "format": "list-top",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "sunrise through a window with study notes",
+  "photoFile": "17869839.jpg",
+  "photoSource": {
+   "pexelsId": 17869839,
+   "pageUrl": "https://www.pexels.com/photo/open-planner-notebook-on-the-table-17869839/",
+   "photographer": "Elif"
+  }
+ },
+ {
+  "caption": "reading the same paragraph for the fourth time and somehow understanding it less each round",
+  "format": "caption",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "person staring blankly at a book",
+  "photoFile": "32756299.jpg",
+  "photoSource": {
+   "pexelsId": 32756299,
+   "pageUrl": "https://www.pexels.com/photo/elegant-woman-reading-in-buenos-aires-portrait-32756299/",
+   "photographer": "Guillermo Berlin"
+  }
+ },
+ {
+  "caption": "me: future me will handle this / future me, now the present, holding a textbook at midnight: i hate that guy",
+  "format": "caption",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "person looking stressed holding a book at night",
+  "photoFile": "7034805.jpg",
+  "photoSource": {
+   "pexelsId": 7034805,
+   "pageUrl": "https://www.pexels.com/photo/woman-touches-her-head-in-pain-7034805/",
+   "photographer": "George Milton"
+  }
+ },
+ {
+  "caption": "choose your fighter / [ ] study a little every day / [x] absorb one semester through your skin overnight",
+  "format": "choose",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "stack of textbooks under a desk lamp"
+ },
+ {
+  "caption": "Nobody: / Absolutely nobody: / Me: rereading the text I sent 4 hours ago to find what I did wrong",
+  "format": "nobody",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "person staring at phone screen worried in dim room",
+  "photoFile": "6943448.jpg",
+  "photoSource": {
+   "pexelsId": 6943448,
+   "pageUrl": "https://www.pexels.com/photo/a-man-fell-asleep-while-using-his-mobile-phone-6943448/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "POV: you typed \"haha\" but you have never been less haha in your life",
+  "format": "POV",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "person with blank expression holding smartphone",
+  "photoFile": "9558582.jpg",
+  "photoSource": {
+   "pexelsId": 9558582,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-black-crew-neck-t-shirt-holding-teal-iphone-case-9558582/",
+   "photographer": "MART  PRODUCTION"
+  }
+ },
+ {
+  "caption": "them: read 6:02 PM / me, building an entire courtroom case in my head: so we're just not doing words now",
+  "format": "expectation-vs-reality",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "empty courtroom with wooden benches",
+  "photoFile": "8468417.jpg",
+  "photoSource": {
+   "pexelsId": 8468417,
+   "pageUrl": "https://www.pexels.com/photo/brown-wooden-benches-beside-white-wall-8468417/",
+   "photographer": "Thirdman"
+  }
+ },
+ {
+  "caption": "what I texted: sounds good! / what I meant: i have rewritten this message nine times and aged a decade",
+  "format": "expectation-vs-reality",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "hands typing on phone at desk"
+ },
+ {
+  "caption": "first date energy: i'm pretty low maintenance / 3 weeks later: why did you put a period at the end of \"ok.\"",
+  "format": "expectation-vs-reality",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "two coffee cups on a cafe table",
+  "photoFile": "30790990.jpg",
+  "photoSource": {
+   "pexelsId": 30790990,
+   "pageUrl": "https://www.pexels.com/photo/colorful-coffee-cups-in-a-modern-cafe-setting-30790990/",
+   "photographer": "DJ Paine"
+  }
+ },
+ {
+  "caption": "the definitive ranking of green flags: / S: replies fast / A: makes you a plate without asking / B: actually picks a restaurant / F: \"u up?\" at 1am",
+  "format": "list-top",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "clean colorful abstract gradient background"
+ },
+ {
+  "caption": "tell me you're overthinking the text without telling me you're overthinking the text / me: should i add an emoji so it doesn't sound mad",
+  "format": "tell-me-without-telling-me",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "person lying awake in bed looking at phone glow",
+  "photoFile": "6943448.jpg",
+  "photoSource": {
+   "pexelsId": 6943448,
+   "pageUrl": "https://www.pexels.com/photo/a-man-fell-asleep-while-using-his-mobile-phone-6943448/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "no thoughts, head empty, just the typing dots appearing and disappearing for the eleventh time",
+  "format": "caption",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "close up of smartphone screen in the dark",
+  "photoFile": "7278915.jpg",
+  "photoSource": {
+   "pexelsId": 7278915,
+   "pageUrl": "https://www.pexels.com/photo/a-person-holding-a-smartphone-7278915/",
+   "photographer": "MART  PRODUCTION"
+  }
+ },
+ {
+  "caption": "us defining the relationship: / them: i'm not really looking for labels / me, who has named our future cat: totally, same",
+  "format": "nobody",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "person nodding awkwardly on a park bench",
+  "photoFile": "10416798.jpg",
+  "photoSource": {
+   "pexelsId": 10416798,
+   "pageUrl": "https://www.pexels.com/photo/a-person-wearing-sunglasses-while-sitting-at-the-bench-on-the-park-10416798/",
+   "photographer": "Anna Galimova"
+  }
+ },
+ {
+  "caption": "the way I left him on read for 20 minutes to seem chill and then replied with two paragraphs",
+  "format": "caption",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "person smiling nervously at phone on couch",
+  "photoFile": "6443359.jpg",
+  "photoSource": {
+   "pexelsId": 6443359,
+   "pageUrl": "https://www.pexels.com/photo/woman-sitting-on-a-couch-using-a-phone-6443359/",
+   "photographer": "Pavel Danilyuk"
+  }
+ },
+ {
+  "caption": "plot twist: the \"we should hang out sometime\" was the hangout",
+  "format": "demotivator-text",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "empty calendar page on a wall"
+ },
+ {
+  "caption": "expectation: we'll just text casually / reality: i have screenshotted this and sent it to three group chats for analysis",
+  "format": "expectation-vs-reality",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "group of friends looking at one phone together",
+  "photoFile": "26863813.jpg",
+  "photoSource": {
+   "pexelsId": 26863813,
+   "pageUrl": "https://www.pexels.com/photo/group-of-friends-looking-at-phone-sitting-at-table-in-restaurant-26863813/",
+   "photographer": "BlackBoy Joy"
+  }
+ },
+ {
+  "caption": "POV: you said \"i'll let you go\" but neither of you is going anywhere and it's 2am",
+  "format": "POV",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "phone lit up on pillow at night",
+  "photoFile": "8036691.jpg",
+  "photoSource": {
+   "pexelsId": 8036691,
+   "pageUrl": "https://www.pexels.com/photo/woman-using-a-cellphone-during-bedtime-8036691/",
+   "photographer": "SHVETS production"
+  }
+ },
+ {
+  "caption": "me deciding whether to double text: / one side: don't, play it cool / other side: but what if he simply forgot he loves me",
+  "format": "nobody",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "person thinking with hand on chin looking at phone",
+  "photoFile": "34357807.jpg",
+  "photoSource": {
+   "pexelsId": 34357807,
+   "pageUrl": "https://www.pexels.com/photo/young-woman-engages-with-smartphone-indoors-34357807/",
+   "photographer": "quang vinh"
+  }
+ },
+ {
+  "caption": "the audacity of someone to reply \"k\" when i wrote them a small novel",
+  "format": "caption",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "person looking shocked at phone screen",
+  "photoFile": "5198280.jpg",
+  "photoSource": {
+   "pexelsId": 5198280,
+   "pageUrl": "https://www.pexels.com/photo/surprised-man-in-white-button-up-shirt-holding-cellphone-and-credit-card-5198280/",
+   "photographer": "Tima Miroshnichenko"
+  }
+ },
+ {
+  "caption": "stages of a situationship: / 1. it's casual / 2. it's complicated / 3. it's a personality trait now",
+  "format": "list-top",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "tangled string lights on a plain wall"
+ },
+ {
+  "caption": "him: i'm bad at texting / also him: replies to everyone else in 0.2 seconds",
+  "format": "caption",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "two phones lying side by side on a table",
+  "photoFile": "33419836.jpg",
+  "photoSource": {
+   "pexelsId": 33419836,
+   "pageUrl": "https://www.pexels.com/photo/vintage-telephone-on-a-wooden-table-with-floral-wallpaper-33419836/",
+   "photographer": "merwak. raw"
+  }
+ },
+ {
+  "caption": "love is being able to send the ugliest possible photo of yourself and getting \"so cute\" back",
+  "format": "caption",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "person making a goofy face at front camera",
+  "photoFile": "29464356.jpg",
+  "photoSource": {
+   "pexelsId": 29464356,
+   "pageUrl": "https://www.pexels.com/photo/amusing-portrait-of-a-young-man-with-glasses-outdoors-29464356/",
+   "photographer": "Mert Coşkun"
+  }
+ },
+ {
+  "caption": "the diet starts monday / it has been monday for 6 years",
+  "format": "expectation-vs-reality",
+  "theme": "food, cooking & diets",
+  "imageQuery": "fresh salad bowl on kitchen counter",
+  "photoFile": "8120238.jpg",
+  "photoSource": {
+   "pexelsId": 8120238,
+   "pageUrl": "https://www.pexels.com/photo/salad-on-a-wooden-bowl-and-blueberries-on-a-saucer-8120238/",
+   "photographer": "Mikhail Nilov"
+  }
+ },
+ {
+  "caption": "Nobody: / Me at 11pm: maybe i'll just have a little snack / Me, three plates later: how did we get here",
+  "format": "nobody",
+  "theme": "food, cooking & diets",
+  "imageQuery": "open refrigerator glowing at night",
+  "photoFile": "10379533.jpg",
+  "photoSource": {
+   "pexelsId": 10379533,
+   "pageUrl": "https://www.pexels.com/photo/a-man-looking-at-the-refrigirator-10379533/",
+   "photographer": "Aynur Latfullin"
+  }
+ },
+ {
+  "caption": "POV: you said \"i'll just have one bite of yours\" and now you're full and they're staring at an empty plate",
+  "format": "POV",
+  "theme": "food, cooking & diets",
+  "imageQuery": "two friends sharing food at a cafe table",
+  "photoFile": "17139821.jpg",
+  "photoSource": {
+   "pexelsId": 17139821,
+   "pageUrl": "https://www.pexels.com/photo/woman-and-man-eating-by-table-17139821/",
+   "photographer": "Ali Dashti"
+  }
+ },
+ {
+  "caption": "me reopening the fridge for the fifth time hoping new food spawned",
+  "format": "caption",
+  "theme": "food, cooking & diets",
+  "imageQuery": "person looking into open refrigerator",
+  "photoFile": "10379533.jpg",
+  "photoSource": {
+   "pexelsId": 10379533,
+   "pageUrl": "https://www.pexels.com/photo/a-man-looking-at-the-refrigirator-10379533/",
+   "photographer": "Aynur Latfullin"
+  }
+ },
+ {
+  "caption": "recipe: 30 minutes / me, a professional: 2 hours and one small kitchen fire",
+  "format": "expectation-vs-reality",
+  "theme": "food, cooking & diets",
+  "imageQuery": "messy kitchen with pots and pans everywhere",
+  "photoFile": "17303438.jpg",
+  "photoSource": {
+   "pexelsId": 17303438,
+   "pageUrl": "https://www.pexels.com/photo/stove-with-pots-and-pans-in-a-restaurant-kitchen-17303438/",
+   "photographer": "Fatma Çekmez"
+  }
+ },
+ {
+  "caption": "the definitive ranking of leftovers: / S: cold pizza for breakfast / A: the curry that's better day two / F: that one container i'm scared to open",
+  "format": "list-top",
+  "theme": "food, cooking & diets",
+  "imageQuery": "stack of food storage containers in fridge"
+ },
+ {
+  "caption": "tell me you're on a diet without telling me you're on a diet / *describes a single sad piece of lettuce for nine minutes*",
+  "format": "tell-me",
+  "theme": "food, cooking & diets",
+  "imageQuery": "single lettuce leaf on a large white plate",
+  "photoFile": "33158370.jpg",
+  "photoSource": {
+   "pexelsId": 33158370,
+   "pageUrl": "https://www.pexels.com/photo/delicious-caesar-salad-topped-with-fresh-parmesan-33158370/",
+   "photographer": "damla selen demir"
+  }
+ },
+ {
+  "caption": "i don't always meal prep but when i do i eat the same chicken and rice until i hate myself by wednesday",
+  "format": "caption",
+  "theme": "food, cooking & diets",
+  "imageQuery": "rows of meal prep containers with chicken and rice",
+  "photoFile": "30635714.jpg",
+  "photoSource": {
+   "pexelsId": 30635714,
+   "pageUrl": "https://www.pexels.com/photo/healthy-meal-prep-with-rice-and-vegetables-30635714/",
+   "photographer": "IARA MELO"
+  }
+ },
+ {
+  "caption": "cooking for one / step one: buy ingredients / step two: let them rot / step three: order takeout",
+  "format": "list-top",
+  "theme": "food, cooking & diets",
+  "imageQuery": "wilted vegetables in kitchen drawer",
+  "photoFile": "37741171.jpg",
+  "photoSource": {
+   "pexelsId": 37741171,
+   "pageUrl": "https://www.pexels.com/photo/rustic-kitchen-interior-with-blue-cabinets-and-vintage-decor-37741171/",
+   "photographer": "Laura  Meinhardt"
+  }
+ },
+ {
+  "caption": "EATING HEALTHY / day one of seven hundred attempts",
+  "format": "demotivator-text",
+  "theme": "food, cooking & diets",
+  "imageQuery": "bowl of fresh fruit and vegetables on table",
+  "photoFile": "5202197.jpg",
+  "photoSource": {
+   "pexelsId": 5202197,
+   "pageUrl": "https://www.pexels.com/photo/fruits-and-vegetables-on-a-gray-surface-5202197/",
+   "photographer": "www.kaboompics.com"
+  }
+ },
+ {
+  "caption": "salad: i can fix my whole life / me adding cheese, croutons, bacon and ranch: agreed",
+  "format": "expectation-vs-reality",
+  "theme": "food, cooking & diets",
+  "imageQuery": "loaded salad bowl with toppings",
+  "photoFile": "12786340.jpg",
+  "photoSource": {
+   "pexelsId": 12786340,
+   "pageUrl": "https://www.pexels.com/photo/lettuce-and-cottage-cheese-12786340/",
+   "photographer": "Jenny Mavimiro"
+  }
+ },
+ {
+  "caption": "Nobody: / The smoke alarm: let me tell everyone dinner is ready",
+  "format": "nobody",
+  "theme": "food, cooking & diets",
+  "imageQuery": "smoke alarm on kitchen ceiling",
+  "photoFile": "18283938.jpg",
+  "photoSource": {
+   "pexelsId": 18283938,
+   "pageUrl": "https://www.pexels.com/photo/round-glass-shinning-lamp-18283938/",
+   "photographer": "Plastic Lines"
+  }
+ },
+ {
+  "caption": "POV: you're \"not hungry\" but you've been circling the kitchen like a shark for forty minutes",
+  "format": "POV",
+  "theme": "food, cooking & diets",
+  "imageQuery": "person standing in kitchen looking thoughtful",
+  "photoFile": "9031807.jpg",
+  "photoSource": {
+   "pexelsId": 9031807,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-beige-long-sleeve-shirt-holding-white-mug-9031807/",
+   "photographer": "Kevin  Malik"
+  }
+ },
+ {
+  "caption": "the way i can't remember a single thing from school but i know exactly how that snack i'm craving tastes",
+  "format": "caption",
+  "theme": "food, cooking & diets",
+  "imageQuery": "hand reaching into a snack cupboard",
+  "photoFile": "34851859.jpg",
+  "photoSource": {
+   "pexelsId": 34851859,
+   "pageUrl": "https://www.pexels.com/photo/woman-reaching-for-snacks-in-kitchen-cabinet-34851859/",
+   "photographer": "Guillermo Berlin"
+  }
+ },
+ {
+  "caption": "what i make: a healthy balanced dinner / what i eat: cereal standing over the sink at midnight",
+  "format": "expectation-vs-reality",
+  "theme": "food, cooking & diets",
+  "imageQuery": "bowl of cereal on kitchen counter at night",
+  "photoFile": "4152559.jpg",
+  "photoSource": {
+   "pexelsId": 4152559,
+   "pageUrl": "https://www.pexels.com/photo/person-pouring-milk-into-bowl-4152559/",
+   "photographer": "Mikael Blomkvist"
+  }
+ },
+ {
+  "caption": "plot twist: the \"5 minute easy recipe\" had nineteen steps and an ingredient i have to drive across town for",
+  "format": "plot-twist",
+  "theme": "food, cooking & diets",
+  "imageQuery": "open cookbook on kitchen counter",
+  "photoFile": "5737465.jpg",
+  "photoSource": {
+   "pexelsId": 5737465,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-reading-a-book-5737465/",
+   "photographer": "RDNE Stock project"
+  }
+ },
+ {
+  "caption": "i'm not saying i'm a great cook / i'm saying the fire department knows my first name",
+  "format": "caption",
+  "theme": "food, cooking & diets",
+  "imageQuery": "burnt toast popping out of toaster",
+  "photoFile": "7937454.jpg",
+  "photoSource": {
+   "pexelsId": 7937454,
+   "pageUrl": "https://www.pexels.com/photo/close-up-shot-of-a-person-using-a-pop-up-toaster-7937454/",
+   "photographer": "Nicola Barts"
+  }
+ },
+ {
+  "caption": "drink more water, they said / me, now full of water and somehow still thinking about fries",
+  "format": "expectation-vs-reality",
+  "theme": "food, cooking & diets",
+  "imageQuery": "glass of water on a table",
+  "photoFile": "5853213.jpg",
+  "photoSource": {
+   "pexelsId": 5853213,
+   "pageUrl": "https://www.pexels.com/photo/a-glass-of-water-over-the-table-5853213/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "the wifi works perfectly until the exact second i actually need it",
+  "format": "caption",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "frustrated person looking at laptop at home",
+  "photoFile": "6958469.jpg",
+  "photoSource": {
+   "pexelsId": 6958469,
+   "pageUrl": "https://www.pexels.com/photo/an-irritated-man-resting-on-a-couch-while-looking-at-the-screen-of-his-laptop-6958469/",
+   "photographer": "www.kaboompics.com"
+  }
+ },
+ {
+  "caption": "Nobody:\nMy phone at 1% battery: i can survive like this for the next 45 minutes",
+  "format": "nobody",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "low battery phone screen in hand",
+  "photoFile": "10366316.jpg",
+  "photoSource": {
+   "pexelsId": 10366316,
+   "pageUrl": "https://www.pexels.com/photo/teenage-boys-hand-holding-smart-phone-with-low-battery-in-forest-10366316/",
+   "photographer": "Ron Lach"
+  }
+ },
+ {
+  "caption": "POV: you've tried everything and you're about to suggest turning it off and on again like you're a certified engineer",
+  "format": "POV",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "person staring at router with cables",
+  "photoFile": "4218546.jpg",
+  "photoSource": {
+   "pexelsId": 4218546,
+   "pageUrl": "https://www.pexels.com/photo/wifi-router-on-yellow-background-4218546/",
+   "photographer": "Aditya Singh"
+  }
+ },
+ {
+  "caption": "the update notes said 'minor bug fixes and improvements' and now nothing is where i left it",
+  "format": "caption",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "confused person holding smartphone",
+  "photoFile": "5915238.jpg",
+  "photoSource": {
+   "pexelsId": 5915238,
+   "pageUrl": "https://www.pexels.com/photo/annoyed-woman-talking-on-the-phone-while-holding-a-coffee-cup-5915238/",
+   "photographer": "RDNE Stock project"
+  }
+ },
+ {
+  "caption": "Expectation: this update will take 2 minutes / Reality: don't touch your phone for the rest of your natural life",
+  "format": "expectation-vs-reality",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "phone updating progress bar on screen",
+  "photoFile": "17789078.jpg",
+  "photoSource": {
+   "pexelsId": 17789078,
+   "pageUrl": "https://www.pexels.com/photo/woman-holding-a-smartphone-on-the-background-of-houseplants-17789078/",
+   "photographer": "Beyzaa Yurtkuran"
+  }
+ },
+ {
+  "caption": "me explaining to the wifi why it's important that it stays connected for one (1) video call",
+  "format": "me-explaining",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "person gesturing while talking at laptop",
+  "photoFile": "5399043.jpg",
+  "photoSource": {
+   "pexelsId": 5399043,
+   "pageUrl": "https://www.pexels.com/photo/photo-of-a-woman-using-headphones-and-microphone-5399043/",
+   "photographer": "www.kaboompics.com"
+  }
+ },
+ {
+  "caption": "phone storage full. the culprit? a 4 second video i recorded by accident in 2021",
+  "format": "caption",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "hand holding phone with full storage"
+ },
+ {
+  "caption": "Tell me you have bad reception without telling me you have bad reception\nme, holding my phone above my head in the corner of the room:",
+  "format": "tell-me-without",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "person raising phone toward ceiling for signal",
+  "photoFile": "7009838.jpg",
+  "photoSource": {
+   "pexelsId": 7009838,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-red-jacket-with-green-backpack-holding-black-mobile-phone-7009838/",
+   "photographer": "Tima Miroshnichenko"
+  }
+ },
+ {
+  "caption": "the definitive ranking of tech fixes:\nS: turning it off and on again\nA: unplugging it dramatically\nB: clearing your throat at it\nF: reading the manual",
+  "format": "list-top",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "tangled cables and electronics on desk"
+ },
+ {
+  "caption": "Nobody:\nAbsolutely nobody:\nThe app at 3am: time to update so you can't open me until i'm 600MB bigger",
+  "format": "nobody",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "phone glowing in the dark at night",
+  "photoFile": "1392093.jpg",
+  "photoSource": {
+   "pexelsId": 1392093,
+   "pageUrl": "https://www.pexels.com/photo/person-holding-space-gray-iphone-6-with-string-lights-during-nighttime-1392093/",
+   "photographer": "Kobe -"
+  }
+ },
+ {
+  "caption": "i don't read terms and conditions. i accept my fate.",
+  "format": "caption",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "person scrolling phone with thumb"
+ },
+ {
+  "caption": "loading...\nloading...\n'check your internet connection'\nme, with full bars: i WILL fight you",
+  "format": "nobody",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "loading spinner on a screen"
+ },
+ {
+  "caption": "POV: the wifi password is 32 characters long and the host says 'it's an easy one'",
+  "format": "POV",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "guest typing password into phone at home",
+  "photoFile": "4051504.jpg",
+  "photoSource": {
+   "pexelsId": 4051504,
+   "pageUrl": "https://www.pexels.com/photo/photo-of-person-using-laptop-4051504/",
+   "photographer": "KATRIN  BOLOVTSOVA"
+  }
+ },
+ {
+  "caption": "ON\nThe single most powerful troubleshooting technique known to mankind",
+  "format": "demotivator-text",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "finger pressing a power button",
+  "photoFile": "8089672.jpg",
+  "photoSource": {
+   "pexelsId": 8089672,
+   "pageUrl": "https://www.pexels.com/photo/hand-pressing-the-recording-button-8089672/",
+   "photographer": "Ron Lach"
+  }
+ },
+ {
+  "caption": "me at the start of the day: i'll use my phone less\nme by noon: reopening the same three apps in a loop like it's my job",
+  "format": "expectation-vs-reality",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "person lying down scrolling phone",
+  "photoFile": "4473873.jpg",
+  "photoSource": {
+   "pexelsId": 4473873,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-white-long-sleeve-shirt-holding-smartphone-4473873/",
+   "photographer": "Ketut Subiyanto"
+  }
+ },
+ {
+  "caption": "they put a new feature where the close button used to be specifically to ruin my morning",
+  "format": "caption",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "annoyed person frowning at phone screen",
+  "photoFile": "13801835.jpg",
+  "photoSource": {
+   "pexelsId": 13801835,
+   "pageUrl": "https://www.pexels.com/photo/frowning-woman-using-a-smart-phone-13801835/",
+   "photographer": "Mizuno K"
+  }
+ },
+ {
+  "caption": "Nobody:\nMy phone, with 60% battery: shutting down. goodbye. it was an honor.",
+  "format": "nobody",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "black phone screen in someones hand",
+  "photoFile": "12498416.jpg",
+  "photoSource": {
+   "pexelsId": 12498416,
+   "pageUrl": "https://www.pexels.com/photo/a-person-holding-a-smartphone-12498416/",
+   "photographer": "Art_Photo_Fil"
+  }
+ },
+ {
+  "caption": "the wifi router has more blinking lights than my entire personality and still refuses to cooperate",
+  "format": "caption",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "wifi router with blinking lights on shelf",
+  "photoFile": "4218546.jpg",
+  "photoSource": {
+   "pexelsId": 4218546,
+   "pageUrl": "https://www.pexels.com/photo/wifi-router-on-yellow-background-4218546/",
+   "photographer": "Aditya Singh"
+  }
+ },
+ {
+  "caption": "New life starts Monday. / It is currently Monday at 9 p.m. and I am eating cereal in the dark planning to start Tuesday.",
+  "format": "expectation-vs-reality",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "person eating cereal alone at night in dark kitchen",
+  "photoFile": "8107172.jpg",
+  "photoSource": {
+   "pexelsId": 8107172,
+   "pageUrl": "https://www.pexels.com/photo/man-in-white-and-brown-stripe-dress-shirt-holding-a-smartphone-8107172/",
+   "photographer": "MART  PRODUCTION"
+  }
+ },
+ {
+  "caption": "Nobody: / Absolutely nobody: / Me at 11 p.m. Sunday: tomorrow I become a completely different person",
+  "format": "nobody",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "person lying awake in bed staring at ceiling at night",
+  "photoFile": "6941123.jpg",
+  "photoSource": {
+   "pexelsId": 6941123,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-white-pajama-lying-on-bed-6941123/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "POV: you bought the gym membership, the water bottle, the new shoes, and a gym bag, and that was the entire workout",
+  "format": "POV",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "new running shoes and water bottle in shopping bag",
+  "photoFile": "5069341.jpg",
+  "photoSource": {
+   "pexelsId": 5069341,
+   "pageUrl": "https://www.pexels.com/photo/person-with-prosthetic-leg-using-cellphone-5069341/",
+   "photographer": "Anna Shvets"
+  }
+ },
+ {
+  "caption": "my gym streak: / day 1, day 2, day 3, and then a mysterious 8-month rest period for recovery",
+  "format": "list-top",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "calendar on wall with most days blank",
+  "photoFile": "29509480.jpg",
+  "photoSource": {
+   "pexelsId": 29509480,
+   "pageUrl": "https://www.pexels.com/photo/minimalist-january-desk-calendar-29509480/",
+   "photographer": "Matheus Bertelli"
+  }
+ },
+ {
+  "caption": "the gym is open 24 hours and somehow I still can't find a time that works for me",
+  "format": "caption",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "empty gym with rows of treadmills",
+  "photoFile": "5411023.jpg",
+  "photoSource": {
+   "pexelsId": 5411023,
+   "pageUrl": "https://www.pexels.com/photo/treadmill-near-glass-window-5411023/",
+   "photographer": "Pietro Saura"
+  }
+ },
+ {
+  "caption": "tell me you started your fitness journey without telling me you started your fitness journey / I have three full water bottles and have not moved in four days",
+  "format": "tell-me-without-telling-me",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "several reusable water bottles lined up on a desk",
+  "photoFile": "8611290.jpg",
+  "photoSource": {
+   "pexelsId": 8611290,
+   "pageUrl": "https://www.pexels.com/photo/close-up-shot-of-blue-water-bottles-8611290/",
+   "photographer": "RDNE Stock project"
+  }
+ },
+ {
+  "caption": "MOTIVATION / it got me off the couch, into the car, into the gym parking lot, and right back home",
+  "format": "demotivator-text",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "car parked in empty parking lot at dusk",
+  "photoFile": "18486897.jpg",
+  "photoSource": {
+   "pexelsId": 18486897,
+   "pageUrl": "https://www.pexels.com/photo/a-car-parked-on-the-parking-lot-18486897/",
+   "photographer": "Kyle  Miller"
+  }
+ },
+ {
+  "caption": "me planning my new healthy life: meal prep, 6 a.m. runs, no snacks / me, four hours later: ordering fries to celebrate how disciplined I'm about to be",
+  "format": "expectation-vs-reality",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "notebook with handwritten meal plan and pen",
+  "photoFile": "8546579.jpg",
+  "photoSource": {
+   "pexelsId": 8546579,
+   "pageUrl": "https://www.pexels.com/photo/person-writing-on-a-notebook-using-a-black-marker-8546579/",
+   "photographer": "www.kaboompics.com"
+  }
+ },
+ {
+  "caption": "the gym is empty all year until January, when suddenly everyone i've ever met decides to become an athlete for three weeks",
+  "format": "caption",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "crowded busy gym with people working out",
+  "photoFile": "14623748.jpg",
+  "photoSource": {
+   "pexelsId": 14623748,
+   "pageUrl": "https://www.pexels.com/photo/people-working-out-together-14623748/",
+   "photographer": "Miguel González"
+  }
+ },
+ {
+  "caption": "the definitive ranking of my workout: / S: buying the outfit / A: telling everyone my plan / B: the warm-up / F: the actual workout",
+  "format": "list-top",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "folded workout clothes with price tags"
+ },
+ {
+  "caption": "set 14 alarms for my first 6 a.m. run. / negotiated with all 14 of them and signed a peace treaty at noon.",
+  "format": "caption",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "phone showing multiple alarms on nightstand",
+  "photoFile": "7622520.jpg",
+  "photoSource": {
+   "pexelsId": 7622520,
+   "pageUrl": "https://www.pexels.com/photo/crop-woman-snoozing-alarm-on-smartphone-7622520/",
+   "photographer": "Miriam Alonso"
+  }
+ },
+ {
+  "caption": "plot twist: the new me starting Monday is just the old me but more tired and now in debt to a gym",
+  "format": "caption",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "tired person resting head on gym bench",
+  "photoFile": "4162545.jpg",
+  "photoSource": {
+   "pexelsId": 4162545,
+   "pageUrl": "https://www.pexels.com/photo/man-resting-after-exercising-4162545/",
+   "photographer": "Ivan S"
+  }
+ },
+ {
+  "caption": "POV: it's the third Monday in a row your new life is starting on Monday",
+  "format": "POV",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "calendar with several mondays circled in marker",
+  "photoFile": "7059605.jpg",
+  "photoSource": {
+   "pexelsId": 7059605,
+   "pageUrl": "https://www.pexels.com/photo/paper-calendar-with-months-and-days-in-sunbeam-7059605/",
+   "photographer": "Nothing Ahead"
+  }
+ },
+ {
+  "caption": "fitness influencer: small changes add up / me: started parking slightly closer to the snacks",
+  "format": "caption",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "person reaching into kitchen snack cupboard"
+ },
+ {
+  "caption": "my home gym equipment after Monday: / treadmill: a clothes rack / yoga mat: a cat bed / dumbbells: a doorstop",
+  "format": "list-top",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "treadmill at home covered with clothes"
+ },
+ {
+  "caption": "no thoughts, just the deep peace of canceling tomorrow's workout tonight",
+  "format": "caption",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "person relaxing comfortably on couch under blanket"
+ },
+ {
+  "caption": "me reading my own motivational note from Sunday like it was written by a naive stranger who knew nothing of Monday",
+  "format": "caption",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "sticky note with handwriting on a mirror"
+ },
+ {
+  "caption": "they say it takes 21 days to build a habit. / I have built the habit of starting on day 1 every single Monday.",
+  "format": "caption",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "open planner with first day of week highlighted"
+ },
+ {
+  "caption": "Me on Friday at 5pm: I'm going to be so productive this weekend / Me on Sunday at 8pm: I changed my socks once",
+  "format": "expectation-vs-reality",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person lying on couch under blanket relaxing"
+ },
+ {
+  "caption": "Weekend to-do list: gym, deep clean, learn a language, meal prep / Actual weekend: located the exact spot on the couch where time stops",
+  "format": "expectation-vs-reality",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "messy living room couch with cozy blankets"
+ },
+ {
+  "caption": "Nobody: / Absolutely nobody: / My brain on Sunday at 9pm: hey remember everything embarrassing you did Monday through Friday",
+  "format": "nobody",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person lying awake in bed at night staring at ceiling",
+  "photoFile": "6941123.jpg",
+  "photoSource": {
+   "pexelsId": 6941123,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-white-pajama-lying-on-bed-6941123/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "POV: it's Saturday morning, you have zero plans, nowhere to be, and you wake up at 6:14am on the dot for absolutely no reason",
+  "format": "POV",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "tired person waking up early in bed by window light"
+ },
+ {
+  "caption": "The weekend has the exact same number of hours as two weekdays and yet one lasts a lifetime and the other lasts eleven minutes",
+  "format": "caption",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "clock on a plain wall"
+ },
+ {
+  "caption": "Friday me, signing me up for a 9am Saturday activity: future me will be thrilled / Saturday me at 9am: future me is filing a complaint",
+  "format": "expectation-vs-reality",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "annoyed person hitting snooze on alarm clock"
+ },
+ {
+  "caption": "Nobody:\nAbsolutely nobody:\n\nMe at 2am: time to reorganize my entire camera roll by color",
+  "format": "Nobody: / Me: (caption-script, text-only card)",
+  "imageQuery": "plain warm beige paper texture background CC0"
+ },
+ {
+  "caption": "POV: you said 'you too' to the waiter who told you to enjoy your meal and now you must move to a new country",
+  "format": "POV: (second-person scenario caption over CC0 background)",
+  "imageQuery": "empty restaurant table set for dinner soft light CC0"
+ },
+ {
+  "caption": "I'm not saying I'm lazy, I'm saying I once waited 40 minutes for someone else to turn off the light because I was already comfortable.",
+  "format": "Relatable one-liner 'big text' card (Twitter/X-style)",
+  "imageQuery": "minimal light gray gradient background CC0"
+ },
+ {
+  "caption": "Tell me you're an introvert without telling me you're an introvert.\nI'll start: I rehearsed ordering coffee and still said 'thanks, you too'",
+  "format": "Tell me you're X without telling me you're X (snowclone, two-zone text)",
+  "imageQuery": "cozy coffee cup on plain table flat lay CC0"
+ },
+ {
+  "caption": "Definitive ranking of being tired:\nS — tired right after a nap\nA — somehow tired at 4pm\nB — tired but inspired\nF — wide awake the second I lie down",
+  "format": "Objective ranking / tier chart (S/A/B/F text grid, CSS)",
+  "imageQuery": "abstract colorful flat geometric blocks background CC0"
+ },
+ {
+  "caption": "Top: 'Just go to sleep, you have work at 8.'\nBottom (me): one more 47-minute documentary about a 1909 shipwreck",
+  "format": "Two-option 'choose' / vs. comparison (text-only stacked panels)",
+  "imageQuery": "two tone split background dark top light bottom minimal CC0"
+ },
+ {
+  "caption": "PRODUCTIVITY\nI opened 14 tabs to start one task. None of them were the task.",
+  "format": "Demotivational / motivational-poster parody (black border, serif caps title + subtitle)",
+  "imageQuery": "vintage CC0 engraving of a busy beehive public domain"
+ },
+ {
+  "caption": "Checking my bank app after the weekend.\nIt's giving 'cancel all future plans forever'.",
+  "format": "It's giving ___ (vibe-label caption over CC0 background)",
+  "imageQuery": "empty wallet flat lay on plain surface CC0"
+ },
+ {
+  "caption": "Me explaining to the cashier why I need the receipt I'm about to throw away in 4 seconds",
+  "format": "Me explaining ___ to ___ (caption-above-photo)",
+  "imageQuery": "person gesturing seriously while talking CC0 stock photo"
+ },
+ {
+  "caption": "When someone says 'we need to talk' and your brain instantly pleads guilty to crimes you didn't commit",
+  "format": "Top-text / bottom-text impact caption (caption-above-photo, original/CC0 animal)",
+  "imageQuery": "wide-eyed startled cat staring at camera CC0 public domain"
+ },
+ {
+  "caption": "My alarm at 7:00: *one (1) soft beep*\nMe: and just like that, the whole day is ruined",
+  "format": "Nobody: / Me: variant (caption-script, text-only)",
+  "imageQuery": "plain soft blue textured wall background CC0"
+ },
+ {
+  "caption": "POV: you typed 'haha' but you are not laughing, you have never been more serious in your life",
+  "format": "POV: (second-person scenario caption over CC0 background)",
+  "imageQuery": "blank neutral phone screen on plain desk CC0"
+ }
+]

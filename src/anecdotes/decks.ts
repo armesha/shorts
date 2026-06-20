@@ -17,6 +17,11 @@ export interface Deck {
   islamic?: boolean;
   /** When true, this deck's items are Christian (English KJV Bible) cards (whole card as JSON in `text`), rendered via templates/christian.html. */
   christian?: boolean;
+  /** When true, this deck's items are meme cards (whole card as JSON in `text`: caption + optional Pexels photoFile), rendered via templates/meme.html. */
+  meme?: boolean;
+  /** When true, this deck renders DETERMINISTICALLY per card (fixed visual, no random bg) → it is a
+   *  static "gallery" pack: shown in the Gallery page where you browse cards and pick a specific one. */
+  gallery?: boolean;
   /** When true, this deck is visible & usable ONLY by admins — hidden from every non-admin regardless of per-user deck settings. */
   adminOnly?: boolean;
   /** Lifehack background style suffix, e.g. "chaplin" → profession_<key>_chaplin.jpg (with moustache).
@@ -85,6 +90,7 @@ export const DECKS: Deck[] = [
     tags: ["лайфхаки", "советы", "полезное", "лайфхак", "быт", "хитрости", "shorts"],
     genericTitles: ["Лайфхак", "Полезный совет", "На заметку", "Хитрость", "Совет дня", "Запомни"],
     lifehack: true,
+    gallery: true,
   },
   {
     id: "tips-de",
@@ -96,6 +102,7 @@ export const DECKS: Deck[] = [
     tags: ["lifehacks", "tipps", "alltagstipps", "lifehack", "haushalt", "tricks", "shorts"],
     genericTitles: ["Lifehack", "Nützlicher Tipp", "Gut zu wissen", "Profi-Trick", "Tipp des Tages", "Merk dir das"],
     lifehack: true,
+    gallery: true,
     lifehackVariant: "chaplin", // мужчины с усами Чаплина (немецкая дека)
   },
   {
@@ -108,6 +115,7 @@ export const DECKS: Deck[] = [
     tags: ["psychologie", "mentale gesundheit", "achtsamkeit", "selbstliebe", "psyche", "mindset", "shorts"],
     genericTitles: ["Psychologie", "Notiz", "Erkenntnis"],
     psych: true,
+    gallery: true,
   },
   {
     id: "islamic",
@@ -131,6 +139,71 @@ export const DECKS: Deck[] = [
     genericTitles: ["Holy Bible", "Scripture", "Bible Verse", "Word of God"],
     christian: true,
     adminOnly: true, // new packs are admin-only by default
+  },
+  {
+    id: "memes-ru",
+    name: "Мемы (RU)",
+    dir: "data/memes-ru", // cards.json: {caption, imageQuery, photoFile?, format, theme}; whole card as JSON in `text`
+    source: "",
+    emoji: "😂",
+    hashtags: "#мемы #юмор #приколы #relatable #shorts",
+    tags: ["мемы", "мем", "юмор", "приколы", "смешное", "relatable", "shorts"],
+    genericTitles: ["Мем", "Мемы", "Это про меня", "Знакомо?"],
+    meme: true,
+    gallery: true,
+    adminOnly: true, // new pack — admin-only first
+  },
+  {
+    id: "memes-en",
+    name: "Memes (EN)",
+    dir: "data/memes-en",
+    source: "",
+    emoji: "😂",
+    hashtags: "#memes #funny #relatable #meme #shorts",
+    tags: ["memes", "meme", "funny", "relatable", "humor", "lol", "shorts"],
+    genericTitles: ["Meme", "Memes", "So relatable", "Me too"],
+    meme: true,
+    gallery: true,
+    adminOnly: true,
+  },
+  {
+    id: "memes-de",
+    name: "Memes (DE)",
+    dir: "data/memes-de",
+    source: "",
+    emoji: "😂",
+    hashtags: "#memes #humor #lustig #relatable #shorts",
+    tags: ["memes", "meme", "humor", "lustig", "relatable", "shorts"],
+    genericTitles: ["Meme", "Memes", "Kennst du das?", "Voll relatable"],
+    meme: true,
+    gallery: true,
+    adminOnly: true,
+  },
+  {
+    id: "memes-fr",
+    name: "Mèmes (FR)",
+    dir: "data/memes-fr",
+    source: "",
+    emoji: "😂",
+    hashtags: "#mèmes #humour #drôle #relatable #shorts",
+    tags: ["mèmes", "mème", "humour", "drôle", "relatable", "shorts"],
+    genericTitles: ["Mème", "Mèmes", "C'est moi", "Tellement vrai"],
+    meme: true,
+    gallery: true,
+    adminOnly: true,
+  },
+  {
+    id: "memes-it",
+    name: "Meme (IT)",
+    dir: "data/memes-it",
+    source: "",
+    emoji: "😂",
+    hashtags: "#meme #umorismo #divertente #relatable #shorts",
+    tags: ["meme", "umorismo", "divertente", "relatable", "ironia", "shorts"],
+    genericTitles: ["Meme", "Io ogni giorno", "Troppo vero", "Mi rivedo"],
+    meme: true,
+    gallery: true,
+    adminOnly: true,
   },
   {
     id: "fact-en",
@@ -220,6 +293,7 @@ export function isPackDeckId(id?: string | null): boolean {
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
   tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de": "de", space: "en", "visual-riddles": "ru", "animal-superheroes": "ru", "animal-superheroes-en": "en",
+  "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it",
 };
 export function deckLang(id: string): string {
   return DECK_LANG[id] || "";
@@ -285,6 +359,22 @@ export function ytMeta(
     return {
       title: `${ref} ${deck.emoji} #shorts`,
       description: `${body}\n\n${ref} (KJV)\n\n${deck.hashtags}`,
+      tags: deck.tags,
+    };
+  }
+  // Meme cards: the whole card is JSON in `text`; title = first caption line, body = full caption.
+  if (deck.meme) {
+    let cap = text;
+    try {
+      const c = JSON.parse(text) as { caption?: string };
+      cap = c.caption ?? text;
+    } catch {
+      /* not JSON — use raw text */
+    }
+    const firstLine = (cap.split(/\r?\n/)[0] || cap).slice(0, 80).trim();
+    return {
+      title: `${firstLine || title} ${deck.emoji} #shorts`,
+      description: `${cap}\n\n${deck.hashtags}`,
       tags: deck.tags,
     };
   }

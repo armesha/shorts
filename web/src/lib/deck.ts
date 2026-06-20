@@ -35,6 +35,10 @@ export const DECK_GLOSS_RU: Record<string, string> = {
   "visual-riddles": "Визуальные загадки · видео",
   "animal-superheroes": "ЗвероГерои · видео",
   "animal-superheroes-en": "ЗвероГерои · видео · англ.",
+  "memes-en": "Мемы · англ.",
+  "memes-de": "Мемы · нем.",
+  "memes-fr": "Мемы · фр.",
+  "memes-it": "Мемы · итал.",
 };
 
 /** Deck name + Russian gloss in parentheses (when the name is foreign). */
@@ -45,6 +49,7 @@ export const deckLabel = (id: string, name: string): string =>
 export const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
   tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de": "de", space: "en", "visual-riddles": "ru", "animal-superheroes": "ru", "animal-superheroes-en": "en",
+  "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it",
 };
 
 /** Uppercase 2-letter tag for a language code. */
@@ -79,4 +84,9 @@ export const BUILTIN_DECKS: { id: string; label: string }[] = [
   { id: "visual-riddles", label: "Вижу Ответ (видео, RU)" },
   { id: "animal-superheroes", label: "ЗвероГерои (видео, RU)" },
   { id: "animal-superheroes-en", label: "Animal Heroes (видео, EN)" },
+  { id: "memes-ru", label: "Мемы (RU)" },
+  { id: "memes-en", label: "Мемы (EN)" },
+  { id: "memes-de", label: "Мемы (DE)" },
+  { id: "memes-fr", label: "Мемы (FR)" },
+  { id: "memes-it", label: "Мемы (IT)" },
 ];

@@ -652,13 +652,28 @@ node --input-type=module -e 'import fs from "node:fs"; const cards=JSON.parse(fs
    `node --env-file=.env src/scripts/space-montage/build.mjs --sync-only`.
 5. Держи ролики в Shorts-формате (`dur` ≤ ~0:58); короткие исходники `build.mjs` сам зацикливает.
 
-**Немой субтитровый вариант (`--novoice`):** для клипов без озвучки (свободный футаж + только субтитры,
-чтобы читали) — у источника ставь `novoice: true` (или флаг `--novoice` глобально). Тогда TTS не
-вызывается, тайминг сабов идёт по скорости чтения (`READ_PER_WORD`), аудиодорожки нет (`compositeSilent`),
-а в левом верхнем углу рисуется короткий кредит источника (`shortSource()` → «NASA SVS» и т.п.) поверх
-полной атрибуции снизу. Источник свободной лицензии (PD/CC) обязателен; «только субтитры» на чужой
-авторской документалке — это и копирайт-, и YouTube-«reused content»-риск. Per-clip `zoom`/`startSec` в
-`sources.json` гасят мелкий-объект-на-чёрном и вшитые титры/подписи. Батч-2 = 18 таких клипов.
+**Документальные нарезки (`build-doc.mjs`) — основной субтитровый формат:** вырезка фрагмента
+**озвученной PD-документалки**, где **родной голос диктора СОХРАНЯЕТСЯ**, а субтитры = **расшифровка его
+речи из официального `.srt`** (whisper НЕ нужен), karaoke-стиль, кредит источника в левом верхнем углу,
+субтитры в мобильной safe-zone (не у самого низа/правого края). Пайплайн (всё в `src/scripts/space-montage/`):
+- `find-narrated-docs.mjs` — ищет в NASA Image&Video Library озвученные видео **с `.srt`** по астро- и
+  МКС-темам (ScienceCasts + produced-ролики), отсеивает talking-head/панели/брифинги/подкасты;
+- `dl-narrated-docs.mjs` — качает mp4(medium)+srt в `temp/space-build/doc/`;
+- `doc-contactsheets.mjs` — по каждому источнику: размеченный таймкодами контактный лист кадров
+  (`/tmp/doc-cs`) + srt-сводка (`/tmp/doc-srt`);
+- `curate-doc.workflow.mjs` — Workflow (Opus): по агенту на источник читает лист+транскрипт и выбирает
+  до 2 **чистых** фрагментов `{start,end,title}` (только космо-съёмка/орбита/эксперимент — без
+  скриншотов/ведущего/слайдов/титров), на границах предложений;
+- `build-doc.mjs` — режет фрагмент (`-ss/-t`), **оставляет дорожку источника** (`-map 0:a`), full-bleed
+  1080×1920, karaoke-сабы из `.srt` (`wordsFromCues`), угловой кредит, синк (`--sync-only`). Spec —
+  `temp/space-build/docs.json` `[{id,title,src,srt,start,end,corner,credit,zoom?}]`.
+Финальная Opus-QA обязательна (ловит просочившиеся кадры ведущего / вшитые именные плашки / не-космос).
+Батч документалок = 29 клипов (из 39 собранных, 10 отсеяла QA). **Честно:** «чужая нарезка + их голос +
+субтитры» легальна при свободной лицензии, но это слабейший формат по YouTube «reused content» —
+пользователь это принял.
+
+(Также есть `--novoice` / `novoice:true` — немой вариант со своими субтитрами-фактами по скорости чтения;
+пользователь отклонил его как слабый, не использовать рутинно.)
 
 VO-правила: **ElevenLabs — единственный TTS**; word-тайминги берём из ElevenLabs (`with-timestamps` /
 `alignment`), не из whisper; ключи ротируются из `.env` (`ELEVENLABS_API_KEYS`), free-tier = 10000
@@ -847,3 +862,38 @@ node --input-type=module -e 'import fs from "node:fs"; const manifest=JSON.parse
 - команда/API/UI-путь для пополнения;
 - команда preview/render-проверки;
 - как не задублировать уже добавленные карточки.
+
+## Мем-деки (`memes-ru` / `memes-en` / `memes-de` / `memes-fr` / `memes-it`)
+
+Встроенные деки оригинальных МЕМОВ (не анекдотов), admin-only. Один формат v1 — **caption**: крупный
+текст-подпись (relatable / «паблик» / POV / «ожидание-реальность» / Nobody:/Me: / списки) на фоне.
+Фон = либо контекстное фото **Pexels**, либо сгенерированный тёмный солид/градиент (типографика).
+
+**ГЛАВНОЕ ПРО СТРАЙК (не нарушать):** НИКОГДА не заливать чужие мем-картинки (кадры из фильмов/сериалов,
+фото знаменитостей, чужой арт, платный сток, «народные» мемы вроде Ждуна/Преведа — у них есть владелец).
+Картинка — только: собственный рендер (captureCard) ИЛИ фото с **Pexels License** (коммерческое
+использование разрешено, атрибуция не нужна, модификация ок), без узнаваемых лиц/брендов/логотипов
+(отсев визуальным обзором агентами). Текст — оригинальный юмор, без цитат копирайтных песен/фильмов/брендов.
+
+### Файлы
+- Данные: `data/memes-<lang>/cards.json` (+ `index.json`). Карточка = `{caption, format, theme, imageQuery, photoFile?, photoSource?}` — весь объект кладётся JSON-строкой в `text` (ветка в `src/anecdotes/library.ts`).
+- Фото: `data/memes/photos/<pexelsId>.jpg` (**gitignored**) + `data/memes/photos/sources.jsonl` (аудит: pexelsId, pageUrl, photographer, license). Воспроизводимо повторным фетчем по сохранённым запросам.
+- Шаблон/рендер: `templates/meme.html` + `src/memes/render.ts` (`buildMemeHtml`/`pickMemeBg`; авто-подгон по ОБОИМ осям + порог читаемости 60px + аварийный перенос — длинные слова не обрезаются). Фото-сорсинг: `src/memes/photos.ts`.
+- Диспетч рендера: флаг `meme:true` в `src/anecdotes/decks.ts` → `renderMeme` в `src/anecdotes/render.ts` (фото инлайнится `photoCss(card.photoFile)`, иначе фон из `pickMemeBg`).
+- Музыка: `assets/audio/memes/*.mp3` (14 битов, 5 семейств: пэды/шкатулка/арп/lo-fi/quirky), синтез ffmpeg в `src/scripts/memes-gen-audio.mjs`; `pickMemesAudio()` в `src/video.ts` (сабдир `memes/` исключён из общего пула).
+
+### Конвейер генерации (модель workflow — **Opus**, пользователь зафиксировал для этого пака)
+1. Ресёрч-workflow `memes-pack-research` (Opus): инструменты/источники/копирайт-вайтлист + культурные брифы по языкам + проверенные сид-мемы → брифы в `/tmp/meme-briefs.json`.
+2. Генерация-workflow `memes-generate` (Opus): по темам на язык → дедуп → пакетная проверка (копирайт/community/«это-мем») → `/tmp/meme-content.json` (цели RU120/EN150/DE90/FR90/IT90).
+3. Фото: `npx tsx src/scripts/memes-fetch-photos.ts` — Pexels по `imageQuery` (ключ `PEXELS_API_KEY` в `.env`; **лимит ~200 запросов/час** → троттлинг ~18.5с/запрос, backoff на 429; резюмируемый, скип уже скачанных) → `/tmp/meme-content-photos.json`.
+4. Сборка: `npx tsx src/scripts/memes-build.ts` → пишет `data/memes-<lang>/cards.json` + `index.json`.
+
+### Пополнение / новые карточки
+- Догенерить текст: повторить шаг 2 (Opus) или вручную дописать в `cards.json` (`{caption, format, theme, imageQuery}`), затем шаги 3–4.
+- Перебрать фото: удалить `photoFile` у нужных карточек в `/tmp/meme-content-photos.json` и снова шаг 3 (докачает недостающее), затем шаг 4.
+- Деке нужен ребилд фронта (`npm run web:build`) только если менялись `web/src/lib/deck.ts`/локали; данные подхватываются `resetDeckCache` или рестартом.
+
+### Проверка
+- End-to-end: `npx tsx src/scripts/memes-verify.ts` → рендерит по карточке из каждой деки в `/tmp/meme-verify/*.png|*.mp4` (полный путь: дека → рендер → видео + мем-бит). Глазами проверить, что текст влезает/читается, фото подходит и не содержит узнаваемых лиц/брендов.
+- Прототип раскладки/стресс длинных слов: `npx tsx src/scripts/meme-proto.ts` → `/tmp/meme-proto/`.
+- Бэкенд-правки (decks/library/render/video) → **нужен рестарт сервера**, чтобы дека стала живой.

@@ -1,0 +1,644 @@
+[
+ {
+  "caption": "DIESE BESPRECHUNG\nhätte auch eine E-Mail sein können.",
+  "format": "demotivator-text",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "bored people sitting around a conference table in a meeting"
+ },
+ {
+  "caption": "Niemand:\nAbsolut niemand:\nKollege im Meeting: \"Ich fasse das nochmal ganz kurz zusammen.\"",
+  "format": "nobody",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "man talking and gesturing in an office meeting"
+ },
+ {
+  "caption": "ich_iel\nstelle den Wecker auf 6:00, um produktiv zu sein /\nbin um 9:00 im Meeting, das auch 2025 noch hätte stattfinden können",
+  "format": "ich_iel",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "tired man rubbing eyes at office desk in the morning"
+ },
+ {
+  "caption": "Sehr geehrte Fahrgäste,\ndas Meeting von 09:00 Uhr verspätet sich um 25 Minuten.\nGrund hierfür ist ein Kollege, der \"nur ganz kurz seinen Bildschirm teilen\" möchte.",
+  "format": "Behörden-announcement",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "laptop screen sharing during a video conference call"
+ },
+ {
+  "caption": "Montag, 08:00 Uhr: Ich schaffe diese Woche alles. /\nMontag, 08:15 Uhr: erste \"kurze\" Abstimmung über die nächste Abstimmung.",
+  "format": "expectation-vs-reality",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "stressed office worker looking at calendar on monitor"
+ },
+ {
+  "caption": "DAS HÄTTE EINE E-MAIL SEIN KÖNNEN\nausgewählte Werke aus 90 Minuten meines Lebens",
+  "format": "demotivator-text",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "empty office meeting room with long table and chairs"
+ },
+ {
+  "caption": "Mein Beitrag im Meeting:\nKamera aus, Mikro aus, Gehirn aus.\nLäuft bei mir.",
+  "format": "ich_iel",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "person sitting in front of laptop with video call interface"
+ },
+ {
+  "caption": "\"Wir machen das ganz unkompliziert.\"\nVier Wochen später, im siebten Meeting zum Thema",
+  "format": "caption",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "overwhelmed businesswoman surrounded by sticky notes and paperwork"
+ },
+ {
+  "caption": "Chef: Noch Fragen?\nDie ganze Abteilung, die seit 30 Minuten an Feierabend denkt:\n\"Nein, alles klar.\"",
+  "format": "nobody",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "group of coworkers silent in a meeting room looking at clock"
+ },
+ {
+  "caption": "Ob die Besprechung etwas bringt?\nDas ist mir wurst.\nIch bin hier nur für die Kekse.",
+  "format": "Galgenhumor-Spruch",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "plate of cookies and coffee cups on office meeting table"
+ },
+ {
+  "caption": "Niemand:\nMein Kontostand am 28.:\n„Bruder muss los.“",
+  "format": "nobody",
+  "theme": "money, payday & being broke",
+  "imageQuery": "empty leather wallet open in hands",
+  "photoFile": "4530606.jpg",
+  "photoSource": {
+   "pexelsId": 4530606,
+   "pageUrl": "https://www.pexels.com/photo/crop-tatted-man-studying-old-reference-books-sitting-at-desk-4530606/",
+   "photographer": "ArtHouse Studio"
+  }
+ },
+ {
+  "caption": "ich_iel\nGehalt kommt rein um 0:01 Uhr\nGehalt geht raus um 0:02 Uhr",
+  "format": "ich_iel",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person looking at phone in dark bedroom at night"
+ },
+ {
+  "caption": "Sehr geehrte Fahrgäste, Ihr Konto verzögert sich um voraussichtlich 14 Tage bis zum nächsten Gehalt. Wir bitten um Ihr Verständnis.",
+  "format": "announcement",
+  "theme": "money, payday & being broke",
+  "imageQuery": "empty train station platform departure board"
+ },
+ {
+  "caption": "REICH\nFür genau 24 Stunden nach Gehaltseingang",
+  "format": "demotivator-text",
+  "theme": "money, payday & being broke",
+  "imageQuery": "black background blank demotivational poster frame"
+ },
+ {
+  "caption": "Erwartung: Ich spare diesen Monat 200 Euro.\nRealität: Ich zähle das Pfand zusammen für ein Brötchen.",
+  "format": "expectation-vs-reality",
+  "theme": "money, payday & being broke",
+  "imageQuery": "hands holding empty plastic bottles for recycling"
+ },
+ {
+  "caption": "ich_iel\n„Ich hol das nur, wenn's im Angebot ist.“\nlegt es trotzdem in den Wagen, weil's morgen vielleicht weg ist",
+  "format": "ich_iel",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person looking at price tag in supermarket aisle"
+ },
+ {
+  "caption": "Das ist mir wurst, ob's gesund ist.\nEs war reduziert.",
+  "format": "caption",
+  "theme": "money, payday & being broke",
+  "imageQuery": "discount sticker on grocery shelf"
+ },
+ {
+  "caption": "Ich am 1.: Heute gönn ich mir was.\nIch am 2.: Wer hat mein ganzes Geld gegessen?",
+  "format": "expectation-vs-reality",
+  "theme": "money, payday & being broke",
+  "imageQuery": "confused man staring at empty fridge"
+ },
+ {
+  "caption": "SPAREN\nDas Geld, das du nicht ausgibst, weil der Online-Shop offline ist.",
+  "format": "demotivator-text",
+  "theme": "money, payday & being broke",
+  "imageQuery": "black background blank framed poster"
+ },
+ {
+  "caption": "Niemand:\nMein Gehirn um 3 Uhr nachts:\n„Lass mal ausrechnen, wie reich du wärst, wenn du nie einen Kaffee gekauft hättest.“",
+  "format": "nobody",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person lying awake in bed at night staring at ceiling",
+  "photoFile": "6943448.jpg",
+  "photoSource": {
+   "pexelsId": 6943448,
+   "pageUrl": "https://www.pexels.com/photo/a-man-fell-asleep-while-using-his-mobile-phone-6943448/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Niemand: / Absolut niemand: / Mein Gehirn um 3 Uhr nachts: \"Erinnerst du dich an den peinlichen Satz von vor 9 Jahren?\"",
+  "format": "nobody",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person lying awake in bed at night staring at ceiling",
+  "photoFile": "6943417.jpg",
+  "photoSource": {
+   "pexelsId": 6943417,
+   "pageUrl": "https://www.pexels.com/photo/a-man-lying-on-the-bed-6943417/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Ich um 22 Uhr: Morgen stehe ich früh auf und werde produktiv. / Ich um 6:30 Uhr: noch 5 Minuten. (zum 7. Mal)",
+  "format": "expectation-vs-reality",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "hand hitting snooze button on alarm clock in the morning"
+ },
+ {
+  "caption": "ich_iel / stelle 6 Wecker, um sicherzugehen, dass ich alle 6 ignorieren kann",
+  "format": "ich_iel",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "multiple alarm clocks on bedside table"
+ },
+ {
+  "caption": "Sehr geehrte Fahrgäste, Ihr Wecker hat heute pünktlich geklingelt. Wir bitten diese Unannehmlichkeit zu entschuldigen.",
+  "format": "behörden-announcement",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "phone alarm clock screen ringing early morning"
+ },
+ {
+  "caption": "MEIN AKKU: 100% / MEIN WECKER NACH 8 STUNDEN SCHLAF: ich auch nicht",
+  "format": "zweizeiler",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "exhausted tired person waking up in the morning"
+ },
+ {
+  "caption": "MONTAG, 6 UHR / Mir reicht zu wissen, dass ich aufstehen könnte, wenn ich wollte.",
+  "format": "demotivator-text",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "dark bedroom early monday morning blanket"
+ },
+ {
+  "caption": "Läuft bei mir. / 4 Stunden geschlafen, drei Kaffee intus, blinzle nur noch in Zeitlupe.",
+  "format": "alman-spruch",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "tired office worker holding coffee cup at desk"
+ },
+ {
+  "caption": "Ich am Wochenende: Plan war, bis 11 zu schlafen.\nIch am Wochenende beim Bäcker um kurz nach 8: Warum sind hier schon ALLE Brötchen weg?",
+  "format": "expectation-vs-reality",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "empty bakery shelf in the morning"
+ },
+ {
+  "caption": "ich_iel / lege mich \"nur kurz hin\" und wache 3 Stunden später im Dunkeln auf wie ein verwirrter Igel im Winter",
+  "format": "ich_iel",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person napping on couch in dark room afternoon"
+ },
+ {
+  "caption": "Top 3 Sportarten der Deutschen: / 3. Mülltrennung / 2. Pünktlich sein / 1. Den Wecker auf snooze stellen",
+  "format": "list-top",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "alarm clock on nightstand morning light"
+ },
+ {
+  "caption": "Kein Plan, welcher Tag ist. / Aber mein Körper hat schon 3 Sekunden vor dem Wecker die Augen aufgerissen, nur um mich zu ärgern.",
+  "format": "galgenhumor-spruch",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person opening eyes waking up just before alarm"
+ },
+ {
+  "caption": "ich_iel\nFängt heute ernsthaft mit dem Lernen an / Räumt erstmal vier Stunden lang den Schreibtisch auf",
+  "format": "ich_iel",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "person organizing a tidy desk with sticky notes"
+ },
+ {
+  "caption": "Niemand:\nAbsolut niemand:\nMein Gehirn um 3 Uhr nachts vor der Prüfung: lass uns nochmal über jeden peinlichen Moment seit der Grundschule reden",
+  "format": "nobody",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "person lying awake in bed at night staring at ceiling",
+  "photoFile": "8486159.jpg",
+  "photoSource": {
+   "pexelsId": 8486159,
+   "pageUrl": "https://www.pexels.com/photo/depressed-woman-lying-on-the-bed-8486159/",
+   "photographer": "Ron Lach"
+  }
+ },
+ {
+  "caption": "Mir reicht es zu wissen, dass ich bestehen könnte, wenn ich angefangen hätte zu lernen.",
+  "format": "alman-spruch",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "calm confident young person leaning back relaxed"
+ },
+ {
+  "caption": "Erwartung: 90 Tage in Ruhe für die Hausarbeit / Realität: alle 60 Seiten in der Nacht davor, fünf Energydrinks tief",
+  "format": "expectation-vs-reality",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "exhausted student surrounded by empty coffee cups and papers at night"
+ },
+ {
+  "caption": "Sehr geehrte Fahrgäste, Ihre Motivation hat sich um voraussichtlich 6 Monate verspätet. Wir bitten um Ihr Verständnis.",
+  "format": "bahn-announcement",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "empty train station platform with departure board"
+ },
+ {
+  "caption": "ALLES UNTER KONTROLLE\nsagte der Student und markierte die letzten 200 Seiten komplett gelb",
+  "format": "demotivator-text",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "textbook page covered entirely in yellow highlighter"
+ },
+ {
+  "caption": "POV: Du hast acht Stunden gelernt. Sieben davon warst du auf YouTube und hast dir angeschaut, wie andere Leute lernen.",
+  "format": "POV",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "person watching laptop with closed textbook on desk"
+ },
+ {
+  "caption": "ich_iel\nMacht 5-Minuten-Pause nach dem Aufschlagen des Buches / Pause läuft seit 3 Tagen",
+  "format": "ich_iel",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "open textbook left abandoned with dust on a table"
+ },
+ {
+  "caption": "Die drei Phasen vor jeder Prüfung:\n1. Hab noch ewig Zeit\n2. Hab noch genug Zeit\n3. Sehr geehrte Fahrgäste",
+  "format": "list-top",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "stressed student looking at clock with stack of books"
+ },
+ {
+  "caption": "Niemand:\nIch in der Klausur: aber das stand doch gar nicht im Skript / Im Skript, Seite 1, fett markiert:",
+  "format": "nobody",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "person staring confused at exam paper in a lecture hall"
+ },
+ {
+  "caption": "Lerngruppe: gemeinsam für die Prüfung büffeln / Lerngruppe: drei Stunden diskutieren, wo wir uns treffen, und dann doch nicht treffen",
+  "format": "expectation-vs-reality",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "empty cafe table with two coffee cups and notebooks"
+ },
+ {
+  "caption": "ich_iel\n\nSie schreibt \"Wir müssen reden\"\nIch, der seit 3 Tagen jede mögliche Antwort durchgerechnet hat: Kein Plan, womit das zusammenhängt",
+  "format": "ich_iel",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "anxious man staring at smartphone screen"
+ },
+ {
+  "caption": "Niemand:\nAbsolut niemand:\nMein Gehirn um 3 Uhr nachts: Was, wenn das \"Hä?\" von gestern eigentlich \"Schluss\" hieß?",
+  "format": "nobody",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "person lying awake in bed at night"
+ },
+ {
+  "caption": "Sehr geehrte Fahrgäste, die für 19:00 Uhr geplante Antwort auf Ihre Nachricht verspätet sich um voraussichtlich 4 Werktage. Grund: Sie hat \"Haha\" geschrieben und ich weiß nicht, ob das gut war.",
+  "format": "behoerden-announcement",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "empty train station platform with departure board"
+ },
+ {
+  "caption": "Erstes Date: Erwartung / Realität\n\nOben: tiefgründiges Gespräch über Träume und das Leben\nUnten: 40 Minuten Diskussion, ob es Brötchen oder Schrippe heißt",
+  "format": "expectation-vs-reality",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "two people on awkward coffee date at cafe"
+ },
+ {
+  "caption": "Sie: blau gehakt\nSie: tippt...\nSie: tippt nicht mehr\nSie: war zuletzt online vor 2 Minuten\nIch, der drei Diagramme erstellt hat: Total entspannt",
+  "format": "ich_iel",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "person looking stressed at phone screen"
+ },
+ {
+  "caption": "ALLES GUT BEI MIR\n\n(geschrieben, während ich die letzten 200 Nachrichten von vor 2 Jahren neu lese)",
+  "format": "demotivator-text",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "dark empty room with single phone glowing"
+ },
+ {
+  "caption": "Mein Liebesleben ist wie die Deutsche Bahn:\nselten pünktlich, oft ausgefallen, und am Ende stehe ich allein am Gleis.",
+  "format": "alman-spruch",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "lonely person waiting at empty train platform"
+ },
+ {
+  "caption": "POV: Du hast \"Sehen uns dann ja Samstag\" geschrieben und tust seit 5 Tagen so, als wäre der Plan damit offiziell, fix und rechtlich bindend.",
+  "format": "POV",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "person checking phone hopefully on couch"
+ },
+ {
+  "caption": "ich_iel\n\nIch: kein Bock auf Menschen, will einfach meine Ruhe\nAuch ich: starre seit 4 Stunden auf das Handy, ob \"die eine Person\" zurückschreibt",
+  "format": "ich_iel",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "person alone on sofa scrolling phone"
+ },
+ {
+  "caption": "Top 3 Lügen beim Schreiben:\n1. \"Bin gleich da\"\n2. \"Hab dein Profil nur kurz überflogen\"\n3. \"Mir ist das alles voll egal\"",
+  "format": "list-top",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "hand holding smartphone with chat bubbles"
+ },
+ {
+  "caption": "Sie: Was machst du gerade so?\nIch: *liege seit 40 Minuten im selben Stuhl und formuliere diese eine lockere Antwort um*\nIch: Och, nix Besonderes, chille halt",
+  "format": "nobody",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "young man typing on phone at desk"
+ },
+ {
+  "caption": "ich_iel: kauf extra das teurere Brot vom Bäcker / werf am Sonntag die Hälfte hart geworden weg",
+  "format": "ich_iel",
+  "theme": "food, cooking & diets",
+  "imageQuery": "loaf of bread on wooden cutting board"
+ },
+ {
+  "caption": "Diät startet Montag. / Es ist Montag. / Diät startet nächsten Montag.",
+  "format": "list-top",
+  "theme": "food, cooking & diets",
+  "imageQuery": "fresh vegetables and salad on plate"
+ },
+ {
+  "caption": "Niemand: / Absolut niemand: / Mein Magen um 3 Uhr nachts: „wir wollten doch eigentlich abnehmen“",
+  "format": "nobody",
+  "theme": "food, cooking & diets",
+  "imageQuery": "open refrigerator glowing in dark kitchen at night"
+ },
+ {
+  "caption": "Sehr geehrte Gäste, das Rezept versprach „in 20 Minuten fertig“. / Mit Verzögerung von 90 Minuten bitten wir um Ihr Verständnis.",
+  "format": "behoerden-announcement",
+  "theme": "food, cooking & diets",
+  "imageQuery": "person stressed cooking in messy kitchen"
+ },
+ {
+  "caption": "Ob Bratwurst oder Weißwurst – ist mir am Ende vom Tag wurst.",
+  "format": "alman-spruch",
+  "theme": "food, cooking & diets",
+  "imageQuery": "grilled sausages on barbecue grill"
+ },
+ {
+  "caption": "Rezept: „eine Prise Salz“ / Ich, der weder Prisen noch Maße kennt: kippt die halbe Packung rein",
+  "format": "expectation-vs-reality",
+  "theme": "food, cooking & diets",
+  "imageQuery": "hand pouring salt into cooking pot"
+ },
+ {
+  "caption": "Erwartung: gesund meal-preppen für die ganze Woche / Realität: am Dienstag schon wieder Tiefkühlpizza",
+  "format": "expectation-vs-reality",
+  "theme": "food, cooking & diets",
+  "imageQuery": "frozen pizza in oven"
+ },
+ {
+  "caption": "LÄUFT BEI DIR / wenn das Brötchen, das Schrippe, das Wecken und das Semmel alle dasselbe sind und trotzdem keiner einig wird",
+  "format": "demotivator-text",
+  "theme": "food, cooking & diets",
+  "imageQuery": "assortment of bread rolls in basket"
+ },
+ {
+  "caption": "POV: du sagst „nur ein kleines Stück Kuchen“ und stehst 10 Minuten später mit der Gabel vor der ganzen Form",
+  "format": "POV",
+  "theme": "food, cooking & diets",
+  "imageQuery": "chocolate cake with fork on plate"
+ },
+ {
+  "caption": "ich_iel: stell den Wecker, um beim Discounter morgens als Erster an die reduzierten Sachen zu kommen / verschlafe",
+  "format": "ich_iel",
+  "theme": "food, cooking & diets",
+  "imageQuery": "yellow discount sticker on supermarket shelf"
+ },
+ {
+  "caption": "Mir reicht es zu wissen, dass ich kochen KÖNNTE, wenn ich nur wollte. / Lieferung kommt in 35 Minuten.",
+  "format": "galgenhumor-spruch",
+  "theme": "food, cooking & diets",
+  "imageQuery": "person on couch holding smartphone ordering food"
+ },
+ {
+  "caption": "Niemand:\nDas WLAN um 23:59 Uhr, wenn ich nur noch eine Sache hochladen muss:\n\"Verbindung getrennt\"",
+  "format": "nobody",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "frustrated person staring at laptop screen at night"
+ },
+ {
+  "caption": "ich_iel beim Update:\n\"Dauert nur 2 Minuten\"\nzwei Minuten später: 47% — Geschätzte Restzeit: 4 Stunden",
+  "format": "ich_iel",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "person waiting impatiently looking at watch"
+ },
+ {
+  "caption": "Mein Handy bei 1% Akku: lebt noch 40 Minuten wie ein Held.\nMein Handy bei 38%: \"Gute Nacht.\"",
+  "format": "expectation-vs-reality",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "smartphone with low battery warning on screen",
+  "photoFile": "10366330.jpg",
+  "photoSource": {
+   "pexelsId": 10366330,
+   "pageUrl": "https://www.pexels.com/photo/teenage-boy-holding-smart-phone-with-low-battery-in-forest-10366330/",
+   "photographer": "Ron Lach"
+  }
+ },
+ {
+  "caption": "Erster Schritt jeder IT-Lösung in Deutschland:\nHaben Sie das Gerät schon mal aus- und wieder eingeschaltet?",
+  "format": "caption",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "hand pressing power button on device"
+ },
+ {
+  "caption": "DAS UPDATE\nVerbessert die Leistung, behebt Fehler — und entfernt genau die eine Funktion, die du gebraucht hast.",
+  "format": "demotivator-text",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "person looking confused at computer screen"
+ },
+ {
+  "caption": "Sehr geehrte Fahrgäste, das WLAN im Zug steht Ihnen heute wieder voll zur Verfügung — bis Sie es benutzen wollen.",
+  "format": "behörden-announcement",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "passenger using phone on a train"
+ },
+ {
+  "caption": "ich_iel im Keller mit dem Handy über dem Kopf:\nKein Empfang.\nDirekt daneben, perfekter Empfang? Falsche Stelle.",
+  "format": "ich_iel",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "person holding phone up high searching for signal"
+ },
+ {
+  "caption": "Niemand:\nMein Drucker, wenn ich EINE Seite brauche und es eilig ist:\n\"Papierstau. Cyan leer.\"",
+  "format": "nobody",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "person frustrated with office printer"
+ },
+ {
+  "caption": "Top 3 deutsche Hochtechnologien:\n3. Das Faxgerät\n2. Das Faxgerät\n1. Immer noch das Faxgerät",
+  "format": "list-top",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "old fax machine on office desk"
+ },
+ {
+  "caption": "AKZEPTIEREN SIE ALLE COOKIES\nWeil das Lesen der 84 Seiten Datenschutz länger dauert als dein ganzes Leben.",
+  "format": "demotivator-text",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "person reading long document on laptop tired"
+ },
+ {
+  "caption": "Erwartung: Ich speichere kurz das Passwort.\nRealität: 3 Sicherheitsfragen, eine SMS, eine E-Mail und ein Anruf von meiner Bank.",
+  "format": "expectation-vs-reality",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "person stressed at desk with phone and laptop"
+ },
+ {
+  "caption": "ich_iel sonntagabends: Ab morgen neues Leben, 6 Uhr joggen, kein Zucker / ich_iel montags um 6 Uhr: Wer war dieser Mann und was hat er sich dabei gedacht",
+  "format": "ich_iel",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "person hitting snooze on alarm clock in bed"
+ },
+ {
+  "caption": "Niemand:\nAbsolut niemand:\nMein Jahresabo im Fitnessstudio: bezahlt euren Beitrag, ich mache hier die ganze Arbeit",
+  "format": "nobody",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "empty gym with treadmills and weights"
+ },
+ {
+  "caption": "Sehr geehrtes Fitnessstudio, mein neues Leben fällt heute leider aus. Grund: es regnet. Voraussichtliche Verspätung: bis nächsten Montag.",
+  "format": "Behörden-announcement",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "rainy window with raindrops gray sky"
+ },
+ {
+  "caption": "NEUES LEBEN AB MONTAG\nLäuft seit drei Jahren erfolgreich nicht an",
+  "format": "demotivator-text",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "dusty dumbbells in corner of room",
+  "photoFile": "4325442.jpg",
+  "photoSource": {
+   "pexelsId": 4325442,
+   "pageUrl": "https://www.pexels.com/photo/black-and-gray-metal-tool-4325442/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Erwartung: Ich nach 4 Wochen Training, diszipliniert und gestählt / Realität: Ich nach 4 Wochen, aber ich habe die Sporttasche schon mal gekauft",
+  "format": "expectation-vs-reality",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "new sports bag with tags still on"
+ },
+ {
+  "caption": "Mir reicht es zu wissen, dass ich Sport machen könnte, wenn ich denn wollte.",
+  "format": "Alman-Spruch",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "person relaxing on couch with snacks"
+ },
+ {
+  "caption": "POV: Du stellst sonntags die Sportsachen raus, damit montags nichts schiefgehen kann. Montag geht trotzdem etwas schief.",
+  "format": "POV",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "workout clothes laid out neatly on chair"
+ },
+ {
+  "caption": "Die drei Phasen meines neuen Lebens:\n1. Montag: hochmotiviert\n2. Dienstag: Muskelkater\n3. Mittwoch: war schön mit euch",
+  "format": "list-top",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "three protein shakes lined up on table"
+ },
+ {
+  "caption": "ich_iel beim Anstehen an der Saftbar im Fitnessstudio: So, das Workout für heute hätten wir",
+  "format": "ich_iel",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "smoothie bar with fresh juice glasses"
+ },
+ {
+  "caption": "Mein Körper: Wir gehen jetzt joggen. / Mein Gehirn um 6 Uhr: Oder wir bleiben liegen und planen das Joggen ganz in Ruhe.",
+  "format": "nobody",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "running shoes by the front door at dawn"
+ },
+ {
+  "caption": "Das Datum, an dem mein neues Leben beginnt, ist mir mittlerweile wurst. Hauptsache, es ist ein Montag.",
+  "format": "Alman-Spruch",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "calendar page with date circled in marker"
+ },
+ {
+  "caption": "Ich am Freitag um 17 Uhr: ich werde dieses Wochenende so produktiv. / Ich am Sonntag um 22 Uhr: Ich habe drei Folgen geguckt und einmal geatmet.",
+  "format": "expectation-vs-reality",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person lying on couch with remote control"
+ },
+ {
+  "caption": "Niemand: / Absolut niemand: / Mein Wecker am Samstag um 6:45: bist du wach? hihi",
+  "format": "nobody",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "alarm clock on nightstand early morning"
+ },
+ {
+  "caption": "Wochenende: 48 Stunden / Gefühlt: ein langes Augenzwinkern",
+  "format": "caption",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "calendar pages flipping fast"
+ },
+ {
+  "caption": "Sehr geehrte Fahrgäste, das Wochenende fällt heute leider aus. Grund: Montag. Wir bitten um Ihr Verständnis.",
+  "format": "deutsche-bahn-announcement",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "empty train station platform morning"
+ },
+ {
+  "caption": "ich_iel\n\nStelle 4 Wecker, um sicherzugehen, dass ich alle 4 ignoriere.",
+  "format": "ich_iel (relatable self-deprecation, big centered text on neutral background)",
+  "imageQuery": "old wind-up alarm clock on nightstand plain background"
+ },
+ {
+  "caption": "Typisch Alman:\n\nUm 9 Uhr verabredet. Sitzt um 8:52 im Auto und ist trotzdem sauer, dass der andere noch nicht da ist.",
+  "format": "Alman-Spruch (single text card, headline + observational punchline)",
+  "imageQuery": "empty parked car driver waiting steering wheel daylight"
+ },
+ {
+  "caption": "Sehr geehrte Fahrgäste,\n\nwegen Verspätung eines vorausfahrenden Zuges verspätet sich auch der Zug, auf den dieser Zug wartet, der eigentlich gar nicht mehr fährt.\n\nWir danken für Ihr Verständnis.",
+  "format": "Deutsche-Bahn / Behörden-Frust (mock-announcement opener + deadpan punchline, single text card with announcement bar)",
+  "imageQuery": "empty train station platform overcast morning, no people, generic"
+ },
+ {
+  "caption": "Niemand:\nAbsolut niemand:\nKein Mensch auf diesem Planeten:\n\nIch um 23:58 Uhr: Ich koch jetzt noch mal richtig auf.",
+  "format": "Niemand / Nobody-Format (Snowclone, single text card)",
+  "imageQuery": "person cooking pasta late at night home kitchen"
+ },
+ {
+  "caption": "ICH AM 1. DES MONATS: WIR SIND REICH\nICH AM 3. DES MONATS:",
+  "format": "Zweizeiler / Top-Bottom Impact (CAPS top third / CAPS bottom third on neutral background)",
+  "imageQuery": "single euro coin on empty wooden table"
+ },
+ {
+  "caption": "Montag ist der Beweis, dass das Wochenende ein befristeter Vertrag ist.\n\n— altes Büro-Sprichwort",
+  "format": "Galgenhumor-Spruch (single deadpan sentence, large centered on muted background, ironic attribution line)",
+  "imageQuery": "empty office desk with cold coffee mug morning light",
+  "photoFile": "6627189.jpg",
+  "photoSource": {
+   "pexelsId": 6627189,
+   "pageUrl": "https://www.pexels.com/photo/drink-in-a-mug-6627189/",
+   "photographer": "KoolShooters"
+  }
+ },
+ {
+  "caption": "PRODUKTIVITÄT\n\nWer früh aufsteht, hat länger Zeit, müde zu sein.",
+  "format": "Demotivator (black canvas, framed centered image, large CAPS slogan, tiny italic sub-caption)",
+  "imageQuery": "single office chair empty meeting room CC0"
+ },
+ {
+  "caption": "ich_iel\n\n'Sprich Deutsch!' sage ich, während ich mein Maimai downloade und danach ein Update brauche.",
+  "format": "ich_iel (single first-person confession, centered text on neutral background)",
+  "imageQuery": "smartphone download progress bar on screen plain background"
+ },
+ {
+  "caption": "Niemand:\nDie Kassiererin: Tüte dazu?\nIch, mit 14 Artikeln in beiden Händen: Nein nein, passt schon.",
+  "format": "Niemand / Nobody-Format (Snowclone, single text card)",
+  "imageQuery": "person juggling groceries in arms without bag supermarket"
+ },
+ {
+  "caption": "MEIN NACHBAR HAT EINEN HALM ZU LANG\nICH, UM 7 UHR SONNTAG MIT DEM RASENMÄHER:",
+  "format": "Zweizeiler / Top-Bottom Impact (CAPS top third / CAPS bottom third on neutral background)",
+  "imageQuery": "neatly trimmed green suburban lawn with hedge sunny"
+ },
+ {
+  "caption": "Termin beim Bürgeramt beantragt.\n\nNächster freier Termin: in 3 Monaten.\n\nMein Anliegen bis dahin: erledigt sich von selbst oder ich auch.",
+  "format": "Deutsche-Bahn / Behörden-Frust (situational setup + deadpan punchline, single text card)",
+  "imageQuery": "empty waiting room rows of chairs government office"
+ },
+ {
+  "caption": "Sparen ist, wenn man heute auf Dinge verzichtet, die man sich morgen immer noch nicht leisten kann.",
+  "format": "Galgenhumor-Spruch (single deadpan sentence, large centered on muted background)",
+  "imageQuery": "empty glass piggy bank on shelf neutral background"
+ }
+]

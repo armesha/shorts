@@ -16,9 +16,11 @@ export const PACK_AUDIO_DIR = resolve(process.cwd(), "data/pack-audio");
 // each its own bed, never the shared instrumental music.
 const ISLAMIC_SUBDIR = "islamic";
 const CHRISTIAN_SUBDIR = "christian";
+const MEMES_SUBDIR = "memes";
 const isIslamicTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(ISLAMIC_SUBDIR + "/");
 const isChristianTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(CHRISTIAN_SUBDIR + "/");
-const isReservedTrack = (f: string) => isIslamicTrack(f) || isChristianTrack(f);
+const isMemesTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(MEMES_SUBDIR + "/");
+const isReservedTrack = (f: string) => isIslamicTrack(f) || isChristianTrack(f) || isMemesTrack(f);
 
 function insideDir(base: string, target: string): boolean {
   const rel = relative(base, target);
@@ -111,6 +113,15 @@ export function pickChristianAudio(): string | null {
   return `${CHRISTIAN_SUBDIR}/${files[Math.floor(Math.random() * files.length)]}`;
 }
 
+/** Pick a random quiet, light bed for the memes deck (relative name under assets/audio), or null. */
+export function pickMemesAudio(): string | null {
+  const dir = resolve(AUDIO_DIR, MEMES_SUBDIR);
+  if (!existsSync(dir)) return null;
+  const files = readdirSync(dir).filter((f) => AUDIO_EXT.has(extname(f).toLowerCase()));
+  if (files.length === 0) return null;
+  return `${MEMES_SUBDIR}/${files[Math.floor(Math.random() * files.length)]}`;
+}
+
 /** Resolve a relative track name (from listAudio) to an absolute path. */
 export function audioPathFor(name: string, opts: { packId?: string } = {}): string {
   const packTrack = parsePackAudioTrack(name);
@@ -131,6 +142,7 @@ export function audioPathFor(name: string, opts: { packId?: string } = {}): stri
 export interface AudioDeckHint {
   islamic?: boolean;
   christian?: boolean;
+  meme?: boolean;
 }
 
 /**
@@ -175,6 +187,13 @@ export function resolveAudio(
     if (pad) {
       m = pad;
       audioPath = audioPathFor(pad);
+    }
+  }
+  if (deck?.meme && m !== "none") {
+    const bed = pickMemesAudio();
+    if (bed) {
+      m = bed;
+      audioPath = audioPathFor(bed);
     }
   }
   return { music: m ?? "none", audioPath };
@@ -250,4 +269,15 @@ export async function assembleStillVideo(
 
   await pexec(FFMPEG, args, { timeout: 120_000, maxBuffer: 16 * 1024 * 1024 });
   return outPath;
+}
+
+/** Downscale an image to a target width (keeps aspect, even height) as JPEG — for Gallery thumbnails. */
+export async function downscaleImage(src: string, dest: string, width = 360): Promise<string> {
+  await mkdir(dirname(dest), { recursive: true });
+  await pexec(
+    FFMPEG,
+    ["-y", "-i", src, "-vf", `scale=${width}:-2:flags=lanczos`, "-q:v", "5", dest],
+    { timeout: 30_000, maxBuffer: 16 * 1024 * 1024 },
+  );
+  return dest;
 }

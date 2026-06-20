@@ -318,7 +318,7 @@ export default function Studio() {
           {preview && (
             <div className="card bg-base-100 border border-base-300">
               <div className="card-body gap-3">
-                {deck !== "psych" && deck !== "islamic" && deck !== "christian" && !isPack ? (
+                {deck !== "psych" && deck !== "islamic" && deck !== "christian" && !deck.startsWith("memes-") && !isPack ? (
                   <>
                     <div className="flex items-center justify-between">
                       <span className="label-text">{t("studio.anecdoteTextEditable")}</span>
@@ -350,7 +350,9 @@ export default function Studio() {
                       ? t("studio.hintIslamic")
                       : deck === "christian"
                         ? t("studio.hintChristian")
-                        : t("studio.hintPsych")}
+                        : deck.startsWith("memes-")
+                          ? t("studio.hintMeme")
+                          : t("studio.hintPsych")}
                   </div>
                 )}
                 <div className="flex flex-wrap items-center gap-2">

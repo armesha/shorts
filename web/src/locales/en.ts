@@ -922,6 +922,7 @@ export const en: Record<string, string> = {
   "studio.generating": "Generating…",
   "studio.hintChristian": "Card (Bible verse, KJV) is ready. Build the video or save it to a channel set to «Holy Bible · KJV».",
   "studio.hintIslamic": "Card (ayah / hadith / dua) is ready. Build the video or save it to a channel set to «Ислам».",
+  "studio.hintMeme": "Meme card is ready (caption + photo when available). Build the video or save it to a channel set to this meme deck.",
   "studio.hintPack": "Pack card is ready. \"Generate\" picks another random one; build the video or save it to a channel.",
   "studio.hintPsych": "Psychology card is ready. Build the video or save it to a channel set to «Психология (DE)».",
   "studio.musicLabel": "Music",

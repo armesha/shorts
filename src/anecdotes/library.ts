@@ -74,6 +74,16 @@ function titledItems(deckId: string): PackItem[] {
       chars: (c.text ?? "").length,
       title: c.ref ?? "",
     }));
+  } else if (getDeck(deckId).meme) {
+    // Memes deck: data/memes-<lang>/cards.json holds {caption, imageQuery, photoFile?, ...}; whole card → JSON in `text`.
+    const file = resolve(deckDir(deckId), "cards.json");
+    const cards = existsSync(file)
+      ? (JSON.parse(readFileSync(file, "utf8")) as { caption?: string }[])
+      : [];
+    items = cards.map((c, i) => {
+      const cap = (c.caption ?? "").trim();
+      return { id: i, pack: 1, text: JSON.stringify(c), chars: cap.length, title: (cap.split(/\r?\n/)[0] || "").slice(0, 40) };
+    });
   } else {
     const titled = resolve(deckDir(deckId), "titled.json");
     items = existsSync(titled) ? (JSON.parse(readFileSync(titled, "utf8")) as PackItem[]) : [];
@@ -123,6 +133,11 @@ export function randomAnecdote(deckId: string, used?: ReadonlySet<string>): Pack
   if (skip) items = items.filter((it) => !skip.has(anecdoteKey(it.text)));
   if (deck.sequential) return items[0] ?? null;
   return items[Math.floor(Math.random() * items.length)] ?? null;
+}
+
+/** All cards of a deck in stable index order (the titled pool) — for the Gallery (browse + pick a specific card). */
+export function deckCards(deckId: string): PackItem[] {
+  return titledItems(deckId);
 }
 
 // The usable pool for a deck: titled items if any, otherwise all raw-pack items (cached).

@@ -1,0 +1,638 @@
+[
+ {
+  "caption": "Questa riunione poteva tranquillamente essere una mail / Questa riunione poteva tranquillamente essere un messaggio di tre parole",
+  "format": "expectation-vs-reality",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "bored people sitting around conference table meeting",
+  "photoFile": "7439768.jpg",
+  "photoSource": {
+   "pexelsId": 7439768,
+   "pageUrl": "https://www.pexels.com/photo/photo-of-serious-people-sitting-at-the-table-7439768/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Io lunedì mattina che apro il laptop pieno di buoni propositi / La realtà: fisso lo schermo per 40 minuti aspettando che parta la voglia",
+  "format": "expectation-vs-reality",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "tired office worker staring at laptop at desk"
+ },
+ {
+  "caption": "POV: il capo dice \"sarò breve\" all'inizio della riunione e tu sai già che perderai due ore della tua vita",
+  "format": "POV",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "businessman talking in office meeting room"
+ },
+ {
+  "caption": "Nessuno: / Assolutamente nessuno: / Il collega in riunione: \"Solo un'ultima domanda velocissima...\"",
+  "format": "nobody",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "man raising hand in office meeting"
+ },
+ {
+  "caption": "Classifica delle bugie più grandi della storia / 3. \"Ti richiamo io\" / 2. \"Ci vediamo lunedì per chiudere la pratica\" / 1. \"Questa è l'ultima riunione, poi siamo a posto\"",
+  "format": "list-top",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "office workers shaking hands in meeting"
+ },
+ {
+  "caption": "LUNEDÌ / Quando ti dicono \"buon inizio settimana\" come se fosse una bella notizia",
+  "format": "demotivator-text",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "alarm clock on bedside table early morning",
+  "photoFile": "7623546.jpg",
+  "photoSource": {
+   "pexelsId": 7623546,
+   "pageUrl": "https://www.pexels.com/photo/close-up-of-hand-turning-off-classic-clock-7623546/",
+   "photographer": "Miriam Alonso"
+  }
+ },
+ {
+  "caption": "Io che annuisco convinto in riunione / Il mio cervello: pasta o riso stasera? boh, vediamo",
+  "format": "expectation-vs-reality",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "person nodding thoughtfully in business meeting"
+ },
+ {
+  "caption": "Vabbè raga ci aggiorniamo lunedì / (traduzione: non ci penserà più nessuno fino al prossimo lunedì)",
+  "format": "caption",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "empty office desk with computer end of day"
+ },
+ {
+  "caption": "Io alle 9:00 pieno di energia e produttività / Io alle 9:07 dopo la prima mail",
+  "format": "expectation-vs-reality",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "exhausted woman with head down on office desk"
+ },
+ {
+  "caption": "POV: sono le 17:58, stai spegnendo il pc, e arriva la mail \"giro veloce per allinearci?\"",
+  "format": "POV",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "office worker reaching to turn off computer monitor"
+ },
+ {
+  "caption": "Domenica sera, ore 21:00 / Io che sento già l'ansia del lunedì come un rumore lontano che si avvicina",
+  "format": "POV",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "person lying awake in bed at night anxious"
+ },
+ {
+  "caption": "Io il 27 del mese / Io il 3 del mese",
+  "format": "expectation-vs-reality",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person throwing money in the air celebrating then empty wallet open"
+ },
+ {
+  "caption": "POV: è il 28, è arrivato lo stipendio e tu hai già mentalmente speso tutto in cose che NON ti servono",
+  "format": "POV",
+  "theme": "money, payday & being broke",
+  "imageQuery": "happy person online shopping on phone at home"
+ },
+ {
+  "caption": "Nessuno: / Assolutamente nessuno: / Il mio conto in banca il 26: nono nono nono",
+  "format": "nobody",
+  "theme": "money, payday & being broke",
+  "imageQuery": "worried man looking at smartphone bank app"
+ },
+ {
+  "caption": "Da lunedì inizio a risparmiare. / Mercoledì: ordino la cena perché non avevo voglia di cucinare.",
+  "format": "caption",
+  "theme": "money, payday & being broke",
+  "imageQuery": "food delivery containers on a kitchen table"
+ },
+ {
+  "caption": "Quando il commesso ti chiede \"con la carta o in contanti?\" e tu non hai ne l'uno ne l'altro",
+  "format": "POV",
+  "theme": "money, payday & being broke",
+  "imageQuery": "nervous person at supermarket checkout counter"
+ },
+ {
+  "caption": "Classifica dei momenti piu brevi della storia / 3. Un caffe al bar / 2. Le ferie d'agosto / 1. Lo stipendio appena accreditato",
+  "format": "list-top",
+  "theme": "money, payday & being broke",
+  "imageQuery": "clean solid colored background"
+ },
+ {
+  "caption": "Io che apro l'app della banca convinto sia un buon momento. / Il saldo: vabbe ci risentiamo il 27.",
+  "format": "expectation-vs-reality",
+  "theme": "money, payday & being broke",
+  "imageQuery": "disappointed person staring at phone screen"
+ },
+ {
+  "caption": "\"Metto da parte 200 euro al mese\" disse, mentendo a se stesso per il quattordicesimo mese consecutivo.",
+  "format": "demotivator-text",
+  "theme": "money, payday & being broke",
+  "imageQuery": "empty glass piggy bank on a desk"
+ },
+ {
+  "caption": "Nel mezzo del cammin di nostra vita / mi ritrovai con il conto a meno dieci / che il mese, ahime, non era ancor finita.",
+  "format": "dante-parody",
+  "theme": "money, payday & being broke",
+  "imageQuery": "clean parchment textured background"
+ },
+ {
+  "caption": "Io a inizio mese: stavolta arrivo alla fine senza problemi, ho un piano. / Io il giorno 9: raga si accettano offerte per un rene.",
+  "format": "expectation-vs-reality",
+  "theme": "money, payday & being broke",
+  "imageQuery": "tired young person sitting on floor counting coins"
+ },
+ {
+  "caption": "\"Tanto e solo un caffe\" / \"Tanto sono solo 2 euro\" / \"Tanto e in offerta\" / Il conto a fine mese: embe?",
+  "format": "list-top",
+  "theme": "money, payday & being broke",
+  "imageQuery": "shocked person looking at receipt"
+ },
+ {
+  "caption": "Io che imposto 7 sveglie a 5 minuti di distanza: stavolta mi alzo presto / Io che le spengo tutte nel sonno come un ninja: vabbè dai, domani",
+  "format": "expectation-vs-reality",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "hand turning off alarm clock on nightstand"
+ },
+ {
+  "caption": "Nessuno:\nAssolutamente nessuno:\nIl mio cervello alle 3 di notte: ma quella cosa imbarazzante del 2014 te la ricordi?",
+  "format": "nobody",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person lying awake in bed at night staring at ceiling",
+  "photoFile": "6753354.jpg",
+  "photoSource": {
+   "pexelsId": 6753354,
+   "pageUrl": "https://www.pexels.com/photo/a-person-sleeping-on-the-bed-6753354/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "POV: hai dormito 9 ore e ti senti comunque come un comodino lasciato sotto la pioggia",
+  "format": "POV",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "exhausted person sitting on edge of bed in the morning"
+ },
+ {
+  "caption": "Le 5 fasi della sveglia del lunedì:\n1. Negazione\n2. Rabbia\n3. Contrattazione (ancora 5 minuti)\n4. Depressione\n5. Sei già in ritardo",
+  "format": "list-top",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "alarm clock showing early morning time on bedside table"
+ },
+ {
+  "caption": "Io alle 23:00: dai stasera a letto presto, raga / Io all'1:47 a guardare video su come dormono i polpi: ci sta",
+  "format": "expectation-vs-reality",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person scrolling phone in bed in dark room"
+ },
+ {
+  "caption": "POV: è domenica sera alle 21 e senti già la sveglia del lunedì che si scalda da lontano",
+  "format": "POV",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person looking anxious on sofa at night window dark"
+ },
+ {
+  "caption": "Quel momento magico in cui ti svegli pieno di energia, guardi l'orologio e mancano 4 minuti alla sveglia. Boh. Cosmico.",
+  "format": "caption",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "close up of bedside alarm clock early morning soft light"
+ },
+ {
+  "caption": "INSONNIA",
+  "format": "demotivator-text",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "tired person staring at ceiling in dark bedroom"
+ },
+ {
+  "caption": "Io che premo \"posticipa\" sulla sveglia per la dodicesima volta convinto di stare riposando meglio. La scienza non mi può capire.",
+  "format": "caption",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "hand pressing snooze button on phone alarm in bed"
+ },
+ {
+  "caption": "Aspettativa: mi alzo all'alba, faccio colazione con calma, sono una persona seria / Realtà: gioco a \"quanti minuti posso togliere alla doccia\" già in ritardo",
+  "format": "expectation-vs-reality",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "messy rushed morning kitchen breakfast on the go"
+ },
+ {
+  "caption": "La sveglia: drin drin / Io, morto, dall'aldilà: chi è? non conosco questa persona",
+  "format": "nobody",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person buried under blanket pillow over head in bed",
+  "photoFile": "6660683.jpg",
+  "photoSource": {
+   "pexelsId": 6660683,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-lying-in-bed-flashing-the-finger-sign-6660683/",
+   "photographer": "www.kaboompics.com"
+  }
+ },
+ {
+  "caption": "Io che apro il libro alle 22:00 sicuro di farcela / Io alle 22:04 che guardo il quinto video su come allevare le api",
+  "format": "expectation-vs-reality",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "person watching phone in bed at night",
+  "photoFile": "8036752.jpg",
+  "photoSource": {
+   "pexelsId": 8036752,
+   "pageUrl": "https://www.pexels.com/photo/woman-with-a-towel-on-her-head-using-her-phone-8036752/",
+   "photographer": "SHVETS production"
+  }
+ },
+ {
+  "caption": "POV: hai un esame domani e all'improvviso la cosa più importante del mondo diventa riordinare l'armadio",
+  "format": "POV",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "person organizing messy closet at home"
+ },
+ {
+  "caption": "Nessuno: / Assolutamente nessuno: / Il mio cervello alle 3 di notte: ma quanti capitoli hai saltato pensaci bene",
+  "format": "nobody",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "tired person lying awake in dark bedroom"
+ },
+ {
+  "caption": "\"Tranquillo, lo studio domani\" / Il domani, che non esiste:",
+  "format": "expectation-vs-reality",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "empty calendar page on wall"
+ },
+ {
+  "caption": "La classifica dei momenti in cui sono più produttivo:\n3. La sera prima dell'esame\n2. Le due ore prima dell'esame\n1. I dieci minuti fuori dall'aula con gli appunti tra le mani",
+  "format": "list-top",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "students waiting in university hallway with notes"
+ },
+ {
+  "caption": "Io a settembre: questa volta sono in pari da subito / Io a gennaio: tre esami in tre giorni perché vabbè ci sta",
+  "format": "expectation-vs-reality",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "stressed student surrounded by stacks of books"
+ },
+ {
+  "caption": "Comprare un'agenda nuova mi fa sentire organizzato esattamente quanto basta per non aprirla mai",
+  "format": "caption",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "brand new blank planner notebook on desk"
+ },
+ {
+  "caption": "PROCRASTINAZIONE\nperché fare oggi quello che il panico farà fare benissimo dopodomani alle 4 di notte",
+  "format": "demotivator-text",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "alarm clock showing very late hour dark room"
+ },
+ {
+  "caption": "Quel momento magico in cui finisci di evidenziare tutta la pagina di giallo e ti senti come se avessi studiato",
+  "format": "caption",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "textbook page covered entirely in yellow highlighter"
+ },
+ {
+  "caption": "Io che spiego ai miei genitori che sto studiando mentre fisso la stessa riga da venti minuti",
+  "format": "caption",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "person staring blankly at open textbook"
+ },
+ {
+  "caption": "Tipi di studenti al gruppo del corso:\n- Quello che chiede \"ragazzi entra nel programma?\" il giorno prima\n- Quello che ha finito a ottobre e dorme sereno\n- Io, che leggo tutto e non rispondo perché non ho aperto manco la dispensa",
+  "format": "list-top",
+  "theme": "studying, exams & procrastination",
+  "imageQuery": "group chat notifications on smartphone screen"
+ },
+ {
+  "caption": "Lui: \"ti scrivo io\" / Il messaggio, tre anni dopo: ancora in arrivo",
+  "format": "expectation-vs-reality",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "person staring at phone screen waiting"
+ },
+ {
+  "caption": "Nessuno: / Assolutamente nessuno: / Io che rileggo per la quarta volta il messaggio prima di mandarlo",
+  "format": "nobody",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "person typing message on smartphone close up"
+ },
+ {
+  "caption": "POV: ti ha visualizzato alle 14:32 e sono le 23:00 e tu stai ancora benissimo, tranquillo, serenissimo",
+  "format": "POV",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "person lying awake in bed at night holding phone"
+ },
+ {
+  "caption": "Io che scrivo: \"vabbè ci sta, nessun problema\" / Io dentro: che sto allestendo un teatro dell'opera",
+  "format": "expectation-vs-reality",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "empty grand opera theatre stage with red curtains"
+ },
+ {
+  "caption": "La situationship: non siamo niente ma se ti scrive un altro io divento il tribunale dell'Aja",
+  "format": "caption",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "two coffee cups on a table one untouched"
+ },
+ {
+  "caption": "\"Sto arrivando\" / Traduzione: sono ancora sotto la doccia e non ho ancora deciso cosa mettermi",
+  "format": "expectation-vs-reality",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "person choosing clothes from a full wardrobe"
+ },
+ {
+  "caption": "Classifica dei messaggi più terrificanti / 3) \"Dobbiamo parlare\" / 2) \"Va tutto bene\" / 1) \"...ok\"",
+  "format": "list-top",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "smartphone screen showing chat conversation bubbles close up"
+ },
+ {
+  "caption": "Quando metti \"sta scrivendo\", poi sparisce, poi riappare: raga io intanto sono già passato dalle cinque fasi del lutto",
+  "format": "POV",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "anxious person biting nails looking at phone"
+ },
+ {
+  "caption": "Aspettativa: gli rispondo con calma e distacco / Realtà: online dopo 9 secondi come un servizio di emergenza",
+  "format": "expectation-vs-reality",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "emergency call center operator at desk"
+ },
+ {
+  "caption": "\"Non sono geloso\" / Sempre lui, mentre studia il \"ultimo accesso\" come se fosse l'esame di anatomia",
+  "format": "expectation-vs-reality",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "student studying intensely with many books open"
+ },
+ {
+  "caption": "Io e il mio ex eravamo destinati a stare insieme / Per sempre / Sui rispettivi profili come \"consigliati\"",
+  "format": "caption",
+  "theme": "relationships, dating & texting",
+  "imageQuery": "smartphone showing social media suggestions screen"
+ },
+ {
+  "caption": "Da lunedì inizio la dieta / È lunedì, ma quello sbagliato",
+  "format": "expectation-vs-reality",
+  "theme": "food, cooking & diets",
+  "imageQuery": "person looking at calendar on wall"
+ },
+ {
+  "caption": "POV: hai detto a tua nonna che non hai fame",
+  "format": "POV",
+  "theme": "food, cooking & diets",
+  "imageQuery": "table full of food dishes overhead view"
+ },
+ {
+  "caption": "Nessuno: / Assolutamente nessuno: / La pasta: bolle 30 secondi in più e diventa colla",
+  "format": "nobody",
+  "theme": "food, cooking & diets",
+  "imageQuery": "pot of boiling water on stove"
+ },
+ {
+  "caption": "Io che apro il frigo per la quinta volta sperando sia cambiato qualcosa",
+  "format": "caption",
+  "theme": "food, cooking & diets",
+  "imageQuery": "person looking inside open refrigerator at night"
+ },
+ {
+  "caption": "Classifica dei drammi nazionali / 3. Il Wi-Fi che cade / 2. La sveglia del lunedì / 1. L'ananas sulla pizza",
+  "format": "list-top",
+  "theme": "food, cooking & diets",
+  "imageQuery": "textured kraft paper background"
+ },
+ {
+  "caption": "Io alle 21:00: stasera mangio leggero / Io alle 21:47 con un piatto di carbonara: vabbè da domani",
+  "format": "expectation-vs-reality",
+  "theme": "food, cooking & diets",
+  "imageQuery": "plate of creamy pasta on table"
+ },
+ {
+  "caption": "Io: seguo la ricetta alla perfezione / Il risultato: boh",
+  "format": "expectation-vs-reality",
+  "theme": "food, cooking & diets",
+  "imageQuery": "burnt food in frying pan",
+  "photoFile": "31094827.jpg",
+  "photoSource": {
+   "pexelsId": 31094827,
+   "pageUrl": "https://www.pexels.com/photo/chef-sauteing-dish-with-dramatic-flames-31094827/",
+   "photographer": "pedro furtado"
+  }
+ },
+ {
+  "caption": "POV: hai messo la moka sul fuoco e te ne sei dimenticato di nuovo",
+  "format": "POV",
+  "theme": "food, cooking & diets",
+  "imageQuery": "coffee maker on gas stove smoke"
+ },
+ {
+  "caption": "INSALATA",
+  "format": "demotivator-text",
+  "theme": "food, cooking & diets",
+  "imageQuery": "lonely bowl of green salad on empty table"
+ },
+ {
+  "caption": "Quando dici 'solo un assaggio' e dopo cinque minuti la teglia è vuota",
+  "format": "caption",
+  "theme": "food, cooking & diets",
+  "imageQuery": "empty baking tray with crumbs"
+ },
+ {
+  "caption": "Il mio cervello alle 3 di notte: e se ti facessi due spaghetti aglio e olio?",
+  "format": "nobody",
+  "theme": "food, cooking & diets",
+  "imageQuery": "person awake in dark kitchen at night"
+ },
+ {
+  "caption": "Io che spengo e riaccendo il router per la quarta volta come se la quinta cambiasse qualcosa",
+  "format": "POV",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "person crouching behind tv cabinet unplugging router cables"
+ },
+ {
+  "caption": "Aspettativa: aggiornamento di 2 minuti / Realtà: 47% da venti minuti, non spegnere il dispositivo",
+  "format": "expectation-vs-reality",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "frustrated man staring at laptop with loading screen"
+ },
+ {
+  "caption": "Nessuno: / Assolutamente nessuno: / Il mio telefono al 1% di batteria: ce la faccio, fidati",
+  "format": "nobody",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "hand holding smartphone with very low battery warning"
+ },
+ {
+  "caption": "POV: hai una tacca di linea e cammini per casa come un metal detector pur di mandare un messaggio",
+  "format": "POV",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "person holding phone up high near a window searching for signal"
+ },
+ {
+  "caption": "Vabbè aggiorno l'app un secondo. / *l'app ha cambiato tutti i pulsanti di posto e ora non trovo più niente*",
+  "format": "two-part",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "confused senior woman looking at smartphone screen"
+ },
+ {
+  "caption": "Classifica delle bugie più grandi di sempre:\n3) ti richiamo dopo\n2) lo finisco domani\n1) connessione ultraveloce garantita",
+  "format": "list-top",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "textured paper background plain"
+ },
+ {
+  "caption": "Io alle 23:55 che decido di non aggiornare / Il telefono alle 3 di notte: aggiornamento in corso, non spegnere",
+  "format": "expectation-vs-reality",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "phone glowing on nightstand in a dark bedroom"
+ },
+ {
+  "caption": "Quando dici \"prendo solo la password del Wi-Fi\" e ti ritrovi a fare assistenza tecnica a tutta la famiglia per tre ore",
+  "format": "POV",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "young man helping older relatives with a laptop at home"
+ },
+ {
+  "caption": "GIGABYTE DISPONIBILI\nfiniti il 19, rinnovo il 27, ma de che",
+  "format": "demotivator-text",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "black background empty frame"
+ },
+ {
+  "caption": "Aspettativa: la videochiamata di lavoro fila liscia / Realtà: \"mi sentite? ora vi sento io ma voi no, ci sentiamo lunedì\"",
+  "format": "expectation-vs-reality",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "person on a laptop video call looking confused at home"
+ },
+ {
+  "caption": "Io che ho 4000 foto, 92 schede aperte e zero spazio, ma giuro che cancello qualcosa domani",
+  "format": "caption",
+  "theme": "technology, phones, wifi & updates",
+  "imageQuery": "hands holding phone showing storage almost full message"
+ },
+ {
+  "caption": "Io che compro l'abbonamento annuale in palestra / La palestra che mi vede 3 volte e poi mi chiama \"il fantasma del lunedì\"",
+  "format": "expectation-vs-reality",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "empty modern gym interior with weights"
+ },
+ {
+  "caption": "POV: è domenica sera e nella tua testa da domani sei un atleta olimpico, mangi solo pollo e riso e ti svegli alle 6 / Domani: snooze quattordici volte e brioche al bar",
+  "format": "POV",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "person lying in bed hitting alarm clock early morning"
+ },
+ {
+  "caption": "Nessuno: / Assolutamente nessuno: / Io a gennaio: da lunedì cambio vita, mi alleno tutti i giorni e non tocco più gli zuccheri",
+  "format": "nobody",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "person eating chocolate cake on the couch"
+ },
+ {
+  "caption": "Le 3 fasi della mia nuova vita fitness:\n1. Compro borsa, scarpe e proteine\n2. Mi alleno con una motivazione da film\n3. \"Vabbè, riparto lunedì prossimo\"",
+  "format": "list-top",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "new running shoes and sports bag on floor"
+ },
+ {
+  "caption": "Aspettativa: dopo una settimana di palestra mi guardo allo specchio scolpito come una statua / Realtà: ho solo i muscoli indolenziti e non riesco più a sedermi sul divano",
+  "format": "expectation-vs-reality",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "tired man sitting on gym bench holding lower back"
+ },
+ {
+  "caption": "DA LUNEDÌ\nla dieta che inizia ogni lunedì da quattro anni e finisce ogni martedì all'ora di pranzo",
+  "format": "demotivator-text",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "fresh croissant and cappuccino on table"
+ },
+ {
+  "caption": "Io in palestra dopo aver fatto due esercizi: \"raga oggi mi sono distrutto\" / Il personal trainer: \"era il riscaldamento\"",
+  "format": "expectation-vs-reality",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "exhausted person leaning on treadmill at gym"
+ },
+ {
+  "caption": "Quando dici a tutti che da lunedì inizi la nuova vita così poi sei costretto ad andare in palestra / Lunedì: \"comunque la motivazione viene da dentro, mica devo dirlo agli altri\"",
+  "format": "POV",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "person looking at phone lying on sofa"
+ },
+ {
+  "caption": "Il mio cervello alle 3 di notte: e se da domani ti svegli alle 5, corri 10 km, mediti e diventi una persona nuova? / Io alle 5: boh, ci sta dormire ancora un po'",
+  "format": "nobody",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "person awake in bed at night staring at ceiling"
+ },
+ {
+  "caption": "I tre tipi di persone in palestra a gennaio:\n1. Quello fissato che c'è sempre\n2. Quello che fa selfie e poi se ne va\n3. Io, che ho sbagliato porta cercando il bar",
+  "format": "list-top",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "row of treadmills in a busy gym"
+ },
+ {
+  "caption": "Spendi 60 euro di integratori, borraccia smart e leggings tecnici per non andare in palestra. La pigrizia: \"non esiste, comunque siamo in due a fare questo lavoro\"",
+  "format": "caption",
+  "theme": "gym & \"new life starting Monday\" self-improvement fails",
+  "imageQuery": "protein powder containers and water bottle on counter"
+ },
+ {
+  "caption": "Io venerdì alle 18: \"Questo weekend faccio mille cose\" / Io domenica alle 18: ho visto il soffitto da tre angolazioni diverse",
+  "format": "expectation-vs-reality",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person lying on couch staring at ceiling"
+ },
+ {
+  "caption": "Aspettativa: sabato mattina sveglia all'alba, corsa al parco, colazione sana / Realtà: mi sveglio alle 13 e considero il pranzo già un successo",
+  "format": "expectation-vs-reality",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "messy bed with person sleeping in late"
+ },
+ {
+  "caption": "Io domenica sera: da domani sveglia alle 6, palestra, colazione sana, una vita nuova\nIo lunedì alle 7:14, terza snooze, che mastico un cracker trovato nel letto: vabbè, da domani",
+  "format": "two-panel Io/Realtà (Aspettativa vs Realtà) — top text block + bottom text block on contrasting solid colors",
+  "imageQuery": "alarm clock on nightstand morning bedroom CC0"
+ },
+ {
+  "caption": "POV: la nonna ti ha chiesto se hai mangiato per la terza volta in un'ora e ora ti sta preparando un piatto \"giusto per assaggiare\" da 600 grammi",
+  "format": "POV caption — single bold white line over a dark scrim on a neutral background",
+  "imageQuery": "plate of pasta on table home kitchen CC0"
+ },
+ {
+  "caption": "Nessuno:\nAssolutamente nessuno:\nIl gruppo di famiglia alle 6:47 di mattina: 23 buongiornissimo con glitter, una catena di Sant'Antonio e zio che chiede \"chi ha vinto a Sanremo?\"",
+  "format": "Nessuno / Assolutamente nessuno snowclone — three left-aligned text lines, punchline heavier",
+  "imageQuery": "smartphone screen many notifications on table CC0"
+ },
+ {
+  "caption": "Classifica dei crimini culinari, dal grave all'ergastolo:\n1) Pasta scotta — male, ma capita\n2) Cappuccino dopo le 11 — siamo già in tribunale\n3) Spaghetti spezzati nella pentola — 20 anni\n4) Ananas sulla pizza — questione di principio, ci vediamo all'Aja",
+  "format": "Classifica / tier-style ironic list — title + numbered rows with micro-punchlines on a card",
+  "imageQuery": "pineapple slice next to pizza on cutting board CC0"
+ },
+ {
+  "caption": "LUNEDÌ\nl'unico film horror che esce ogni settimana e fa sempre il pienone",
+  "format": "Demotivazionale — black background, white border, original/CC0 image inside, big serif all-caps title + small ironic subtitle",
+  "imageQuery": "empty foggy street early morning grey sky public domain"
+ },
+ {
+  "caption": "Nel mezzo del cammin di nostra vita...\n...mi ritrovai col conto in rosso il 23 del mese e tre giorni allo stipendio",
+  "format": "Dante parody — lofty serif opening fragment on top, deflating modern sans continuation below (two-zone card)",
+  "imageQuery": "open antique leather book on wooden table, warm candle glow, blank aged pages, generic stock photo"
+ },
+ {
+  "caption": "Io che spengo la moka un secondo prima che \"sbuffi\" come se avessi disinnescato una bomba in un film",
+  "format": "Tweet/post relatable — single witty centered sentence on a clean card with lots of negative space (fake handle drawn from scratch, no real logo)",
+  "imageQuery": "stovetop espresso coffee maker on gas stove closeup steam, generic plain metal pot, no logo no brand, CC0 public domain"
+ },
+ {
+  "caption": "Io che entro al supermercato per comprare SOLO il pane\nIo alla cassa con 47€ di roba, due cose in offerta che non mi servono e senza il pane",
+  "format": "two-panel Io/Realtà — top block aspiration, bottom block reality, contrasting solid colors",
+  "imageQuery": "shopping basket full of groceries supermarket CC0"
+ },
+ {
+  "caption": "POV: hai detto \"esco cinque minuti\" e tua madre ti ha già chiesto dove vai, con chi, a che ora torni e se ti sei messo la maglia della salute a giugno",
+  "format": "POV caption — single bold line over dark scrim on textured background",
+  "imageQuery": "person putting on jacket by front door at home CC0"
+ },
+ {
+  "caption": "Nessuno:\nAssolutamente nessuno:\nIl mio cervello alle 3 di notte:\nti ricordi quella figuraccia che hai fatto con la prof nel 2014? Bene, rivediamola insieme in 4K",
+  "format": "Nessuno / Assolutamente nessuno snowclone — three stacked lines, accent-color punchline",
+  "imageQuery": "person lying awake in bed at night dark room CC0"
+ },
+ {
+  "caption": "Quando il collega ti dice \"ci sentiamo lunedì\"\ne tu sai benissimo che non ti sentirai con nessuno fino a lunedì alle 9:01",
+  "format": "top-text / bottom-text impact caption over a single contextual photo",
+  "imageQuery": "empty office desk with computer end of day CC0"
+ },
+ {
+  "caption": "Tipi di collega in riunione, dal migliore al peggiore:\n1) Quello che dice \"facciamo che ne riparliamo via mail\" — eroe\n2) Quella che prende appunti — sospetta\n3) Quello che \"aggiungo solo una cosa veloce\" — bugia, sono 40 minuti\n4) Quello che chiede \"scusa, puoi ricondividere lo schermo?\" — al rogo",
+  "format": "Classifica / tier-style ironic list — title + numbered rows with micro-punchlines, alternating row tints",
+  "imageQuery": "people sitting around table business meeting room CC0"
+ }
+]

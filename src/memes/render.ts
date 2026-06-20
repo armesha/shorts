@@ -25,6 +25,8 @@ export interface MemeCard {
   kicker?: string;
   /** Resolved CSS background value for a per-card CC0/PD photo backdrop (data-URI or url). */
   bgCss?: string;
+  /** Per-card CC0/stock photo backdrop file name (in data/memes/photos/); resolved to bgCss by the pipeline. */
+  photoFile?: string;
   /** Background texture/solid name or key (when no per-card photo). */
   bg?: string;
   lang?: string;
@@ -85,6 +87,16 @@ export function pickMemeBg(name?: string | null, avoidName?: string | null): Mem
   const b = name
     ? BACKDROPS.find((x) => x.key === name) ?? pool[Math.floor(Math.random() * pool.length)]
     : pool[Math.floor(Math.random() * pool.length)];
+  return { file: b.key, css: b.css, safe: DEFAULT_SAFE };
+}
+
+/** Deterministic backdrop for a typographic card: same caption → same generated solid/gradient, so a
+ *  Gallery thumbnail always matches what actually gets rendered (no per-render randomness). */
+export function memeBackdropFor(seed: string): MemeBg {
+  const s = seed || "";
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
+  const b = BACKDROPS[h % BACKDROPS.length];
   return { file: b.key, css: b.css, safe: DEFAULT_SAFE };
 }
 

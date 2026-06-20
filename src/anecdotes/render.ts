@@ -9,6 +9,8 @@ import { buildPsychHtml } from "../psych/render.ts";
 import { buildIslamicHtml, pickIslamicBg } from "../islamic/render.ts";
 import { buildChristianHtml, pickChristianBg } from "../christian/render.ts";
 import { buildRussianHtml, pickRussianBg } from "./russian-bg.ts";
+import { buildMemeHtml, memeBackdropFor, type MemeCard } from "../memes/render.ts";
+import { photoCss } from "../memes/photos.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATE = resolve(__dirname, "../../templates/anecdote.html");
@@ -140,6 +142,7 @@ export async function renderAnecdote(
   if (getDeck(a.deck).psych) return renderPsych(a, outPath);
   if (getDeck(a.deck).lifehack) return renderLifehack(a, outPath);
   if (getDeck(a.deck).russianBg) return renderRussian(a, outPath);
+  if (getDeck(a.deck).meme) return renderMeme(a, outPath);
   const bgName = a.bg ?? randomDifferent(listBackgrounds(), a.avoidBg) ?? "";
   const bgCss = backgroundCss(bgName);
   let html = await readFile(TEMPLATE, "utf8");
@@ -212,6 +215,24 @@ async function renderRussian(
   const html = buildRussianHtml({ title: a.title, text: a.text, channel: a.channel }, bg);
   const fontPx = await captureCard(html, outPath);
   return { path: outPath, fontPx, bg: bg.file };
+}
+
+/** Render one meme card (caption + optional CC0/stock photo backdrop; whole card stored as JSON in a.text). */
+async function renderMeme(
+  a: Anecdote,
+  outPath: string,
+): Promise<{ path: string; fontPx: number; bg: string }> {
+  let card: MemeCard;
+  try {
+    card = JSON.parse(a.text) as MemeCard;
+  } catch {
+    card = { caption: a.text };
+  }
+  const bg = memeBackdropFor(card.caption || a.title || ""); // deterministic backdrop (photo overrides via bgCss)
+  const photo = photoCss(card.photoFile);
+  const html = buildMemeHtml({ ...card, bgCss: photo ?? undefined }, bg);
+  const fontPx = await captureCard(html, outPath);
+  return { path: outPath, fontPx, bg: card.photoFile || bg.file };
 }
 
 /** Render one lifehack/tip onto its profession template (title → red banner, text → the paper). */

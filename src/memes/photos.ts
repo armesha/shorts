@@ -49,6 +49,11 @@ export async function pexelsSearch(
       size: "large",
     });
   const r = await fetch(u, { headers: { Authorization: key() } });
+  if (r.status === 429) {
+    const e = new Error(`pexels 429 (burst rate limit)`) as Error & { rateLimited?: boolean };
+    e.rateLimited = true;
+    throw e;
+  }
   if (!r.ok) throw new Error(`pexels HTTP ${r.status} for "${query}"`);
   const j = (await r.json()) as { photos?: any[] };
   return (j.photos || [])
