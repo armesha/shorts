@@ -69,18 +69,112 @@ export function verifyTelegramAuth(
   };
 }
 
+// ---- Inline keyboards (for the in-bot stats menu) ------------------------------------------------
+export interface InlineKeyboardButton {
+  text: string;
+  callback_data?: string; // ≤64 bytes (Telegram limit) — keep our s:* tokens compact
+  url?: string;
+}
+export interface InlineKeyboard {
+  inline_keyboard: InlineKeyboardButton[][];
+}
+export interface SendOpts {
+  replyMarkup?: InlineKeyboard;
+  parseMode?: "HTML" | "MarkdownV2";
+}
+
 /** Send a DM via the bot. Works only if the user allowed the bot (widget "write" access / pressed Start). */
 export async function sendBotMessage(
   botToken: string,
   chatId: string | number,
   text: string,
-): Promise<{ ok: boolean; error?: string }> {
+  opts: SendOpts = {},
+): Promise<{ ok: boolean; error?: string; messageId?: number }> {
   if (!botToken) return { ok: false, error: "no bot token" };
   try {
     const r = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text, disable_web_page_preview: true }),
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        disable_web_page_preview: true,
+        ...(opts.parseMode ? { parse_mode: opts.parseMode } : {}),
+        ...(opts.replyMarkup ? { reply_markup: opts.replyMarkup } : {}),
+      }),
+    });
+    const j = (await r.json().catch(() => ({}))) as { ok?: boolean; description?: string; result?: { message_id?: number } };
+    return j.ok ? { ok: true, messageId: j.result?.message_id } : { ok: false, error: j.description || `HTTP ${r.status}` };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+}
+
+/** Edit an existing bot message in place — powers inline-keyboard navigation without spamming the chat. */
+export async function editMessageText(
+  botToken: string,
+  chatId: string | number,
+  messageId: number,
+  text: string,
+  opts: SendOpts = {},
+): Promise<{ ok: boolean; error?: string }> {
+  if (!botToken) return { ok: false, error: "no bot token" };
+  try {
+    const r = await fetch(`https://api.telegram.org/bot${botToken}/editMessageText`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        message_id: messageId,
+        text,
+        disable_web_page_preview: true,
+        ...(opts.parseMode ? { parse_mode: opts.parseMode } : {}),
+        ...(opts.replyMarkup ? { reply_markup: opts.replyMarkup } : {}),
+      }),
+    });
+    const j = (await r.json().catch(() => ({}))) as { ok?: boolean; description?: string };
+    // Telegram 400s a no-op edit ("message is not modified") — the content is already shown, so treat as ok.
+    if (!j.ok && /not modified/i.test(j.description || "")) return { ok: true };
+    return j.ok ? { ok: true } : { ok: false, error: j.description || `HTTP ${r.status}` };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+}
+
+/** Acknowledge a callback-button press. REQUIRED: until called, the client shows a spinner on the
+ *  button until it times out. Best-effort — a failed ack never propagates into the webhook handler. */
+export async function answerCallbackQuery(
+  botToken: string,
+  callbackQueryId: string,
+  opts: { text?: string; showAlert?: boolean } = {},
+): Promise<void> {
+  if (!botToken) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${botToken}/answerCallbackQuery`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        callback_query_id: callbackQueryId,
+        ...(opts.text ? { text: opts.text } : {}),
+        ...(opts.showAlert ? { show_alert: true } : {}),
+      }),
+    });
+  } catch {
+    /* ignore — only a transient spinner is at stake */
+  }
+}
+
+/** Register the bot's command list → adds the "Menu" button + "/" autocomplete in Telegram clients. */
+export async function setBotCommands(
+  botToken: string,
+  commands: { command: string; description: string }[],
+): Promise<{ ok: boolean; error?: string }> {
+  if (!botToken) return { ok: false, error: "no bot token" };
+  try {
+    const r = await fetch(`https://api.telegram.org/bot${botToken}/setMyCommands`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ commands }),
     });
     const j = (await r.json().catch(() => ({}))) as { ok?: boolean; description?: string };
     return j.ok ? { ok: true } : { ok: false, error: j.description || `HTTP ${r.status}` };
@@ -116,7 +210,9 @@ export async function setBotWebhook(
     const r = await fetch(`https://api.telegram.org/bot${botToken}/setWebhook`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ url, secret_token: secret, allowed_updates: ["message"] }),
+      // callback_query is NOT delivered by default when allowed_updates is set — it must be listed
+      // explicitly, or the inline-keyboard buttons in the stats menu silently do nothing.
+      body: JSON.stringify({ url, secret_token: secret, allowed_updates: ["message", "callback_query"] }),
     });
     const j = (await r.json().catch(() => ({}))) as { ok?: boolean; description?: string };
     return j.ok ? { ok: true } : { ok: false, error: j.description || `HTTP ${r.status}` };

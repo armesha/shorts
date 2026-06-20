@@ -4,9 +4,12 @@
 // Public routes here are whitelisted in PUBLIC_API in index.ts; bind/* + me + unbind stay gated.
 import { createHash, randomBytes, randomInt, timingSafeEqual } from "node:crypto";
 import type { FastifyInstance } from "fastify";
-import type { Db } from "./db.ts";
+import type { Db, Account } from "./db.ts";
+import type { ClientCreds } from "./youtube.ts";
+import type { RefreshHooks, SnapshotAnalyticsFields } from "./stats-refresh.ts";
 import { hashPassword, newSessionToken, SESSION_TTL_DAYS } from "./auth.ts";
-import { sendBotMessage, getBotUsername, setBotWebhook, botStartLink } from "./telegram.ts";
+import { sendBotMessage, getBotUsername, setBotWebhook, botStartLink, setBotCommands } from "./telegram.ts";
+import { makeBotStats, type BotCallbackQuery } from "./telegram-stats.ts";
 
 const DAY_MS = 86_400_000;
 const LINK_TTL_MIN = 10; // a bot-handshake token is valid 10 min
@@ -17,6 +20,14 @@ const RESET_RESEND_SEC = 60;
 interface Deps {
   // Reuse index.ts's cookie writer so session-cookie attributes live in one place.
   setSessionCookie: (reply: { header(k: string, v: string): unknown }, token: string) => void;
+  // ---- For the in-bot stats menu: index.ts hands over the per-account refresh ingredients so the
+  // bot and the /api/stats/refresh route share one code path (same TTL cache, same notifications). ----
+  accountCreds: (account: Account) => ClientCreds | null;
+  redirectUri: string;
+  analyticsRange: (days: number) => { from: string; to: string };
+  summarizeStored: (accountId: number, from: string, to: string) => SnapshotAnalyticsFields;
+  formatStatsError: (err: unknown) => string;
+  refreshHooks: RefreshHooks;
 }
 
 interface TgFrom {
@@ -32,6 +43,7 @@ interface TgMessage {
 }
 interface TgUpdate {
   message?: TgMessage;
+  callback_query?: BotCallbackQuery;
 }
 
 const hashCode = (code: string, userId: number) =>
@@ -47,12 +59,27 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
   const enabled = () => !!botToken();
   const webhookSecret = () => createHash("sha256").update(botToken() + ":webhook").digest("hex").slice(0, 40);
 
-  // Register the webhook on boot so Telegram pushes /start to us (needs a public HTTPS URL).
+  // The in-bot channel-statistics menu (list → card → refresh). Shares the per-account refresh path
+  // with /api/stats/refresh via the injected deps, so behaviour/caching/notifications stay identical.
+  const botStats = makeBotStats({
+    db,
+    botToken,
+    accountCreds: deps.accountCreds,
+    redirectUri: deps.redirectUri,
+    analyticsRange: deps.analyticsRange,
+    summarizeStored: deps.summarizeStored,
+    formatStatsError: deps.formatStatsError,
+    refreshHooks: deps.refreshHooks,
+  });
+
+  // Register the webhook on boot so Telegram pushes updates to us (needs a public HTTPS URL).
   void (async () => {
     if (!enabled()) return;
+    // Show «/stats» in the bot's command menu (independent of the webhook — works even without a base URL).
+    await setBotCommands(botToken(), [{ command: "stats", description: "📊 Статистика каналов" }]);
     const base = (process.env.PUBLIC_BASE_URL || "").trim().replace(/\/+$/, "");
     if (!base) {
-      app.log.warn("[telegram] PUBLIC_BASE_URL not set — bot webhook NOT registered (bot login/bind won't work; password recovery still does)");
+      app.log.warn("[telegram] PUBLIC_BASE_URL not set — bot webhook NOT registered (bot login/bind/stats won't work; password recovery still does)");
       return;
     }
     const url = `${base}/api/telegram/webhook`;
@@ -147,7 +174,7 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
     return { status: "pending" };
   });
 
-  // ---- Public: Telegram webhook — receives /start <token> (verified by secret header) ----
+  // ---- Public: Telegram webhook — receives bot updates: /start <token>, /stats, button taps ----
   app.post("/api/telegram/webhook", async (req, reply) => {
     if (!enabled()) return reply.code(404).send({ ok: false });
     const secret = (req.headers["x-telegram-bot-api-secret-token"] as string) || "";
@@ -155,28 +182,31 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
     const a = Buffer.from(secret);
     const b = Buffer.from(webhookSecret());
     if (a.length !== b.length || !timingSafeEqual(a, b)) return reply.code(401).send({ ok: false });
-    try {
-      await handleStart(req.body as TgUpdate);
-    } catch (e) {
-      app.log.error(e);
-    }
+    // Handle in the background and 200 immediately: a stats refresh can take several seconds and
+    // Telegram retries the webhook if we don't answer fast. The handler acks its own callback query.
+    void handleUpdate(req.body as TgUpdate).catch((e) => app.log.error(e, "[telegram] webhook handler failed"));
     return { ok: true }; // always 200 so Telegram doesn't retry-storm
   });
 
-  async function handleStart(update: TgUpdate) {
-    const msg = update?.message;
-    const text = msg?.text ?? "";
-    if (!msg || !text.startsWith("/start")) return;
+  async function handleUpdate(update: TgUpdate) {
+    if (update?.callback_query) return void (await botStats.callback(update.callback_query));
+    if (update?.message) return void (await handleMessage(update.message));
+  }
+
+  async function handleMessage(msg: TgMessage) {
+    const text = (msg.text ?? "").trim();
     const chatId = msg.chat?.id;
     const tgId = msg.from?.id != null ? String(msg.from.id) : "";
     const label = tgLabel(msg.from);
-    const token = text.slice("/start".length).trim();
     const dm = (t: string) => (chatId != null ? sendBotMessage(botToken(), chatId, t) : Promise.resolve({ ok: false }));
 
-    if (!token) {
-      await dm("Привет! Чтобы войти или привязать аккаунт, откройте сайт и нажмите кнопку «через Telegram» — там будет персональная ссылка.");
-      return;
-    }
+    // /stats or a bare /start → open the in-bot statistics menu (it handles linked vs not-linked).
+    if (text.startsWith("/stats")) return void (await botStats.entry(msg));
+    if (!text.startsWith("/start")) return;
+    const token = text.slice("/start".length).trim();
+    if (!token) return void (await botStats.entry(msg));
+
+    // ---- /start <token>: site-minted handshake for account binding / login (unchanged) ----
     const link = db.getTelegramLink(token);
     if (!link || !tgId || link.status === "consumed" || ageSec(link.createdAt) > LINK_TTL_MIN * 60) {
       await dm("Ссылка устарела или недействительна. Вернитесь на сайт и начните заново.");

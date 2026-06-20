@@ -32,7 +32,8 @@ import {
 import { startScheduler } from "./scheduler.ts";
 import * as metrics from "./metrics.ts";
 import { fetchChannelStats } from "./stats.ts";
-import { fetchChannelAnalyticsBundle, ytAnalyticsErrorMessage } from "./youtube-analytics.ts";
+// One channel's data+analytics refresh, shared by POST /api/stats/refresh and the Telegram stats bot.
+import { refreshAccountStats, type RefreshHooks } from "./stats-refresh.ts";
 import {
   hashPassword,
   verifyPassword,
@@ -151,8 +152,6 @@ for (const acc of db.listAccounts()) {
 const REDIRECT_URI =
   process.env.GOOGLE_OAUTH_REDIRECT ?? `http://localhost:${process.env.PORT ?? 8080}/api/youtube/callback`;
 const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:5173";
-const CHANNEL_TOTALS_TTL_MS = 15 * 60 * 1000;
-const YT_ANALYTICS_TTL_MS = 6 * 60 * 60 * 1000;
 const USER_GEN_QUEUE_CAP = 100;
 const STUDIO_IMAGE_LIMIT = { limit: 10, windowMs: 5 * 60 * 1000 };
 const STUDIO_VIDEO_LIMIT = { limit: 3, windowMs: 10 * 60 * 1000 };
@@ -324,8 +323,45 @@ app.setErrorHandler((err, req, reply) => {
 registerPasswordRoutes(app, db);
 registerPsychCardsRoutes(app);
 registerPacksRoutes(app, db);
-// Telegram login + account binding + bot-delivered password recovery (public routes whitelisted above).
-registerTelegramRoutes(app, db, { setSessionCookie });
+// Failure side-effects for refreshAccountStats() — replays exactly what the inline /api/stats/refresh
+// used to do per channel: server log + error_log row + a notification for the channel's owner. Shared
+// by the HTTP refresh route and the Telegram stats bot so both behave identically.
+const statsRefreshHooks: RefreshHooks = {
+  onAnalyticsError: (a, err, msg) => {
+    app.log.error({ err: String(err), accountId: a.id }, "youtube analytics refresh failed");
+    db.addError({
+      source: "server",
+      message: "YouTube Analytics: " + msg,
+      detail: (err as Error)?.stack ?? null,
+      context: `analytics refresh account=${a.id}`,
+      userId: a.userId ?? null,
+    });
+    notifyYouTubeAnalyticsIssue(a, err, msg);
+  },
+  onStatsError: (a, err, msg) => {
+    app.log.error({ err: String(err), accountId: a.id }, "stats refresh failed");
+    db.addError({
+      source: "server",
+      message: "Статистика: " + msg,
+      detail: (err as Error)?.stack ?? null,
+      context: `stats refresh account=${a.id}`,
+      userId: a.userId ?? null,
+    });
+    notifyStatsRefreshIssue(a, err, msg);
+  },
+};
+
+// Telegram login + account binding + bot-delivered password recovery (public routes whitelisted above)
+// + the in-bot channel-statistics menu (mirrors the website's Statistics tab; reuses refreshAccountStats).
+registerTelegramRoutes(app, db, {
+  setSessionCookie,
+  accountCreds,
+  redirectUri: REDIRECT_URI,
+  analyticsRange: (days) => youtubeAnalyticsRange(new Date(), days),
+  summarizeStored: summarizeStoredAnalytics,
+  formatStatsError: ytErrorMessage,
+  refreshHooks: statsRefreshHooks,
+});
 
 app.post("/api/auth/login", async (req, reply) => {
   const body = (req.body as { username?: string; password?: string }) ?? {};
@@ -1477,16 +1513,6 @@ function visibleAccount(req: unknown, id: number, readonly = false): Account | n
   return a.userId === uid(req) || u?.role === "admin" ? a : null;
 }
 
-function parseUtcMs(s: string | null | undefined): number {
-  if (!s) return 0;
-  return new Date(s.includes("T") ? s : s.replace(" ", "T") + "Z").getTime();
-}
-
-function freshEnough(takenAt: string | null | undefined, ttlMs: number): boolean {
-  const t = parseUtcMs(takenAt);
-  return t > 0 && Date.now() - t < ttlMs;
-}
-
 function isoDate(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
@@ -1700,120 +1726,21 @@ app.post("/api/stats/refresh", async (req) => {
   await Promise.all(
     accounts.map(async (a) => {
       if (a.status !== "connected") return;
-      const creds = accountCreds(a);
-      const token = db.getRefreshToken(a.id);
-      if (!creds) {
-        errors.set(a.id, "Нет Google-ключа у владельца канала");
-        return;
-      }
-      if (!token) {
-        errors.set(a.id, "Канал не подключён к YouTube");
-        return;
-      }
-      try {
-        const latest = db.latestSnapshot(a.id);
-        let totals = latest && freshEnough(latest.takenAt, CHANNEL_TOTALS_TTL_MS)
-          ? { subscribers: latest.subscribers, views: latest.views, videos: latest.videos }
-          : null;
-        let wroteSnapshot = false;
-        if (!totals) {
-          const freshTotals = await fetchChannelStats(creds, REDIRECT_URI, token);
-          totals = freshTotals;
-          db.setYouTube(a.id, {
-            refreshToken: token,
-            channelId: freshTotals.channelId ?? a.ytChannelId,
-            channelTitle: freshTotals.channelTitle ?? a.ytChannelTitle,
-            channelAvatar: freshTotals.channelAvatar,
-          });
-        }
-
-        const cachedTopVideos = db.getReportCache(a.id, "topVideos", analyticsRange.from, analyticsRange.to);
-        let analyticsStatus = latest?.analyticsStatus ?? null;
-        let analyticsError: string | null = null;
-        let dataThrough = latest?.dataThrough ?? db.latestDailyAnalyticsDate(a.id);
-        let analyticsTakenAt = latest?.analyticsTakenAt ?? null;
-        let analyticsSummary = summarizeStoredAnalytics(a.id, analyticsRange.from, analyticsRange.to);
-        let analyticsTouched = false;
-
-        if (cachedTopVideos && freshEnough(cachedTopVideos.takenAt, YT_ANALYTICS_TTL_MS)) {
-          analyticsStatus = "cached";
-          analyticsTakenAt = cachedTopVideos.takenAt;
-        } else {
-          try {
-            const bundle = await fetchChannelAnalyticsBundle(creds, REDIRECT_URI, token, a.id, analyticsRange);
-            db.upsertDailyAnalytics(bundle.daily);
-            db.setReportCache(a.id, "topVideos", analyticsRange.from, analyticsRange.to, bundle.topVideos);
-            db.setReportCache(a.id, "trafficSources", analyticsRange.from, analyticsRange.to, bundle.trafficSources);
-            db.setReportCache(a.id, "devices", analyticsRange.from, analyticsRange.to, bundle.devices);
-            db.setReportCache(a.id, "countries", analyticsRange.from, analyticsRange.to, bundle.countries);
-            db.setReportCache(a.id, "subscribedStatus", analyticsRange.from, analyticsRange.to, bundle.subscribedStatus);
-            db.setReportCache(a.id, "demographics", analyticsRange.from, analyticsRange.to, bundle.demographics);
-            db.setReportCache(a.id, "sharing", analyticsRange.from, analyticsRange.to, bundle.sharing);
-            db.setReportCache(a.id, "retention", analyticsRange.from, analyticsRange.to, bundle.retention);
-            analyticsStatus = "ok";
-            analyticsSummary = bundle.summary;
-            dataThrough = bundle.dataThrough;
-            analyticsTakenAt = new Date().toISOString();
-            analyticsTouched = true;
-          } catch (err) {
-            analyticsStatus = "error";
-            analyticsError = ytAnalyticsErrorMessage(err);
-            analyticsTouched = true;
-            errors.set(a.id, analyticsError);
-            app.log.error({ err: String(err), accountId: a.id }, "youtube analytics refresh failed");
-            db.addError({
-              source: "server",
-              message: "YouTube Analytics: " + analyticsError,
-              detail: (err as Error)?.stack ?? null,
-              context: `analytics refresh account=${a.id}`,
-              userId: a.userId ?? null,
-            });
-            notifyYouTubeAnalyticsIssue(a, err, analyticsError);
-          }
-        }
-
-        if (
-          !latest ||
-          !freshEnough(latest.takenAt, CHANNEL_TOTALS_TTL_MS) ||
-          analyticsTouched ||
-          analyticsStatus !== latest.analyticsStatus ||
-          analyticsError
-        ) {
-          db.addChannelSnapshot({
-            accountId: a.id,
-            subscribers: totals.subscribers,
-            views: totals.views,
-            videos: totals.videos,
-            analyticsStatus,
-            analyticsError,
-            dataThrough,
-            watchMinutes: analyticsSummary.watchMinutes,
-            engagedViews: analyticsSummary.engagedViews,
-            avgViewDuration: analyticsSummary.avgViewDuration,
-            avgViewPercentage: analyticsSummary.avgViewPercentage,
-            likes: analyticsSummary.likes,
-            comments: analyticsSummary.comments,
-            shares: analyticsSummary.shares,
-            subscribersGained: analyticsSummary.subscribersGained,
-            subscribersLost: analyticsSummary.subscribersLost,
-            analyticsTakenAt,
-          });
-          wroteSnapshot = true;
-        }
-        if (!wroteSnapshot && analyticsError) errors.set(a.id, analyticsError);
-      } catch (err) {
-        app.log.error({ err: String(err), accountId: a.id }, "stats refresh failed");
-        const msg = ytErrorMessage(err);
-        db.addError({
-          source: "server",
-          message: "Статистика: " + msg,
-          detail: (err as Error)?.stack ?? null,
-          context: `stats refresh account=${a.id}`,
-          userId: a.userId ?? null,
-        });
-        notifyStatsRefreshIssue(a, err, msg);
-        errors.set(a.id, msg);
-      }
+      // Shared with the Telegram bot — see refreshAccountStats() in stats-refresh.ts. The creds/token
+      // null-checks, 15-min/6-h TTL caching, snapshot write and error/notification side-effects all
+      // live there now; statsRefreshHooks replays exactly the log+error_log+notification this route did.
+      const { error } = await refreshAccountStats({
+        db,
+        account: a,
+        creds: accountCreds(a),
+        refreshToken: db.getRefreshToken(a.id),
+        redirectUri: REDIRECT_URI,
+        analyticsRange,
+        summarizeStored: summarizeStoredAnalytics,
+        formatStatsError: ytErrorMessage,
+        hooks: statsRefreshHooks,
+      });
+      if (error) errors.set(a.id, error);
     }),
   );
   return accounts.map((a) => statRow(a, errors.get(a.id)));
