@@ -134,6 +134,8 @@ export const en: Record<string, string> = {
   "overview.partialLoadCached": "Connection is unstable: some blocks are shown from the latest saved state.",
   "overview.offlineCache": "No API connection. Showing saved data from {time}.",
   "overview.cacheHint": "Data is cached locally · last saved: {time}",
+  "overview.audienceTitle": "Channel audience",
+  "overview.audienceHint": "Summed across {n} channels with data",
   "overview.queue": "Queued",
   "overview.perDay": "{n} videos/day",
   "overview.published": "Published",

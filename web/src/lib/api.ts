@@ -374,6 +374,16 @@ export interface StatPoint {
   takenAt: string;
 }
 
+/** Aggregate audience totals across visible channels (latest snapshot of each), for the dashboard. */
+export interface ChannelTotals {
+  scope: "mine" | "all";
+  channels: number;
+  withData: number;
+  subscribers: number;
+  views: number;
+  videos: number;
+}
+
 // Platform-wide production totals (every signed-in user sees the same aggregate numbers).
 export interface PlatformSummary {
   queued: number;
@@ -950,6 +960,9 @@ export const apiClient = {
     const s = qs.toString();
     return get<StatRow[]>(`/stats${s ? "?" + s : ""}`);
   },
+  // Aggregate subscribers/views/videos across visible channels (Мои/Все) — for the dashboard KPIs.
+  statsTotals: (scope?: "mine" | "all") =>
+    get<ChannelTotals>(`/stats/totals${scope === "all" ? "?scope=all" : ""}`),
   // Platform-wide production totals, shown to every user on /statistics.
   summary: () => get<PlatformSummary>(`/summary`),
   refreshStats: (scope?: "mine" | "all") =>

@@ -138,6 +138,8 @@ export const ru: Record<string, string> = {
   "overview.partialLoadCached": "Связь нестабильна: часть блоков показана из последнего сохранённого состояния.",
   "overview.offlineCache": "Нет соединения с API. Показаны сохранённые данные от {time}.",
   "overview.cacheHint": "Данные кешируются локально · последнее сохранение: {time}",
+  "overview.audienceTitle": "Аудитория каналов",
+  "overview.audienceHint": "Суммарно по {n} каналам с данными",
   "overview.queue": "В очереди",
   "overview.perDay": "{n} видео/день",
   "overview.published": "Опубликовано",

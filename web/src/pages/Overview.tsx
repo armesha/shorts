@@ -5,6 +5,7 @@ import {
   type Account,
   type AdminAnalytics,
   type AppStatus,
+  type ChannelTotals,
   type ErrorLogItem,
   type HistoryPage,
   type LowDeckRow,
@@ -48,6 +49,28 @@ export default function Overview() {
   const [cacheSavedAt, setCacheSavedAt] = useState(cached?.savedAt ?? "");
   const [loading, setLoading] = useState(!cached);
   const [error, setError] = useState("");
+
+  // Audience totals (subscribers/views/videos summed across channels) with an independent Мои/Все
+  // toggle — loaded separately from the big dashboard fetch so the headline numbers appear fast and
+  // toggling is snappy. Default «Все» — the admin wants the all-channels picture up front.
+  const [audScope, setAudScope] = useState<"mine" | "all">("all");
+  const [totals, setTotals] = useState<ChannelTotals | null>(null);
+  const [totalsLoading, setTotalsLoading] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    setTotalsLoading(true);
+    apiClient
+      .statsTotals(audScope)
+      .then((d) => alive && setTotals(d))
+      .catch(() => {})
+      .finally(() => {
+        if (alive) setTotalsLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [audScope]);
 
   useEffect(() => {
     let alive = true;
@@ -141,6 +164,8 @@ export default function Overview() {
           {t("overview.cacheHint", { time: fmtCacheTime(cacheSavedAt) })}
         </div>
       )}
+
+      <AudienceSummary scope={audScope} onScope={setAudScope} totals={totals} loading={totalsLoading} t={t} />
 
       {loading ? (
         <OverviewSkeleton />
@@ -379,6 +404,85 @@ function buildAttention(data: OverviewData, notConnectedCount: number, t: (key: 
     });
   }
   return items.slice(0, 4);
+}
+
+function AudienceSummary({
+  scope,
+  onScope,
+  totals,
+  loading,
+  t,
+}: {
+  scope: "mine" | "all";
+  onScope: (s: "mine" | "all") => void;
+  totals: ChannelTotals | null;
+  loading: boolean;
+  t: (key: string, vars?: Record<string, string | number>) => string;
+}) {
+  return (
+    <section className="card bg-base-100 border border-base-300">
+      <div className="card-body p-3 sm:p-4">
+        <div className="flex items-center justify-between gap-3 mb-3">
+          <div>
+            <h2 className="text-sm font-bold leading-tight">{t("overview.audienceTitle")}</h2>
+            <p className="text-xs text-base-content/55 mt-0.5">{t("overview.audienceHint", { n: totals?.withData ?? 0 })}</p>
+          </div>
+          <div className="join shrink-0">
+            <button
+              className={`btn btn-xs join-item ${scope === "mine" ? "btn-primary" : "btn-ghost"}`}
+              onClick={() => onScope("mine")}
+            >
+              {t("stats.scopeMine")}
+            </button>
+            <button
+              className={`btn btn-xs join-item ${scope === "all" ? "btn-primary" : "btn-ghost"}`}
+              onClick={() => onScope("all")}
+            >
+              {t("stats.scopeAll")}
+            </button>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <BigStat icon="analytics" tone="blue" label={t("stats.totalViews")} value={totals?.views ?? 0} loading={loading} />
+          <BigStat icon="accounts" tone="green" label={t("stats.totalSubscribers")} value={totals?.subscribers ?? 0} loading={loading} />
+          <BigStat icon="video" tone="gray" label={t("stats.videos")} value={totals?.videos ?? 0} loading={loading} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BigStat({
+  icon,
+  tone,
+  label,
+  value,
+  loading,
+}: {
+  icon: "analytics" | "accounts" | "video";
+  tone: "blue" | "green" | "gray" | "amber";
+  label: string;
+  value: number;
+  loading: boolean;
+}) {
+  const exact = value.toLocaleString("ru-RU");
+  return (
+    <div className="rounded-md border border-base-300 p-3 flex items-center gap-3">
+      <div className={`rounded-md p-2 shrink-0 ${metricTone(tone)}`}>
+        <AppIcon name={icon} size={18} />
+      </div>
+      <div className="min-w-0">
+        {loading ? (
+          <div className="skeleton h-7 w-24 rounded" />
+        ) : (
+          <div className="text-xl sm:text-2xl font-bold leading-none tabular-nums truncate" title={exact}>
+            {exact}
+          </div>
+        )}
+        <div className="text-xs font-semibold mt-1 truncate">{label}</div>
+      </div>
+    </div>
+  );
 }
 
 function MetricCard({

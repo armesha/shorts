@@ -1734,6 +1734,28 @@ app.get("/api/stats", async (req) => {
   });
 });
 
+// Aggregate audience totals (subscribers / views / videos) summed from each visible channel's LATEST
+// snapshot. Lightweight: DB-only, no YouTube calls — powers the dashboard «Аудитория» KPIs and its
+// Мои/Все toggle. Same read access as GET /api/stats (scope=all readable by anyone; refresh stays
+// admin-gated elsewhere). `withData` = how many of the channels actually have a stored snapshot yet.
+app.get("/api/stats/totals", async (req) => {
+  const scope = (req.query as { scope?: string }).scope;
+  const accounts = visibleAccounts(req, scope, true);
+  let subscribers = 0;
+  let views = 0;
+  let videos = 0;
+  let withData = 0;
+  for (const a of accounts) {
+    const s = db.latestSnapshot(a.id);
+    if (!s) continue;
+    subscribers += s.subscribers;
+    views += s.views;
+    videos += s.videos;
+    withData += 1;
+  }
+  return { scope: scope === "all" ? "all" : "mine", channels: accounts.length, withData, subscribers, views, videos };
+});
+
 // Platform-wide production totals (queue / uploaded / scheduled / channels) — visible to every
 // signed-in user. No per-user breakdown or PII; just the aggregate counters.
 app.get("/api/summary", async () => db.platformSummary());
