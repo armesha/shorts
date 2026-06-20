@@ -24,6 +24,7 @@ const SPACE_DECK = path.join(ROOT, "data/space/videos.json");
 for (const d of [CAP_DIR, ADMIN, SPACE_FACT]) fs.mkdirSync(d, { recursive: true });
 const args = process.argv.slice(2);
 const onlyId = (() => { const i = args.indexOf("--only"); return i >= 0 ? args[i + 1] : null; })();
+const idsArg = (() => { const i = args.indexOf("--ids"); return i >= 0 ? (args[i + 1] || "").split(",").map((s) => s.trim()).filter(Boolean) : null; })();
 const NO_SYNC = args.includes("--no-sync");
 const CHROME = ["/usr/bin/google-chrome", "/usr/bin/google-chrome-stable", "/usr/bin/chromium", "/usr/bin/chromium-browser"].find((p) => fs.existsSync(p));
 const specs = JSON.parse(fs.readFileSync(path.join(BUILD, "docs.json"), "utf8"));
@@ -226,7 +227,7 @@ if (args.includes("--sync-only")) {
   process.exit(0);
 }
 if (!CHROME) { console.error("no chrome"); process.exit(1); }
-const list = onlyId ? specs.filter((s) => s.id === onlyId) : specs;
+const list = onlyId ? specs.filter((s) => s.id === onlyId) : idsArg ? specs.filter((s) => idsArg.includes(s.id)) : specs;
 const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--font-render-hinting=none", "--hide-scrollbars"] });
 const built = [];
 try { for (const s of list) { try { const b = await buildOne(browser, s); if (b) built.push(b); } catch (e) { console.log(`FAIL ${s.id}: ${String(e.message).slice(0, 300)}`); } } }
