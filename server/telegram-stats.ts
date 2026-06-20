@@ -131,9 +131,24 @@ export function makeBotStats(deps: BotStatsDeps) {
       const pages = Math.max(1, Math.ceil(accounts.length / PAGE_SIZE));
       const p = Math.min(Math.max(0, page), pages - 1);
       const slice = accounts.slice(p * PAGE_SIZE, p * PAGE_SIZE + PAGE_SIZE);
+      // Aggregate totals across ALL channels in the current scope (not just this page) — the headline
+      // numbers the user asked for, summed from each channel's latest snapshot.
+      let subsTotal = 0;
+      let viewsTotal = 0;
+      let videosTotal = 0;
+      for (const a of accounts) {
+        const s = db.latestSnapshot(a.id);
+        if (!s) continue;
+        subsTotal += s.subscribers;
+        viewsTotal += s.views;
+        videosTotal += s.videos;
+      }
       text =
         `${bold("📊 Статистика каналов")}\n` +
         `Режим: ${esc(scopeLabel)} · каналов: ${accounts.length}${pages > 1 ? ` · стр. ${p + 1}/${pages}` : ""}\n\n` +
+        `📈 Просмотров всего: ${bold(intFmt(viewsTotal))}\n` +
+        `👥 Подписчиков всего: ${bold(intFmt(subsTotal))}\n` +
+        `🎬 Видео всего: ${intFmt(videosTotal)}\n\n` +
         `Выберите канал:`;
       for (const a of slice) {
         const name = a.ytChannelTitle || a.channelName || `#${a.id}`;
