@@ -118,64 +118,91 @@ export function makeBotStats(deps: BotStatsDeps) {
   const edit = (chatId: number, messageId: number, text: string, keyboard?: InlineKeyboard) =>
     editMessageText(botToken(), chatId, messageId, text, { parseMode: "HTML", replyMarkup: keyboard });
 
-  function listView(user: UserAuth, scope: Scope, page: number, note?: string): { text: string; keyboard: InlineKeyboard } {
+  // Sum subscribers/views/videos across the scope's channels, each from its latest snapshot.
+  function channelTotals(accounts: Account[]): { subscribers: number; views: number; videos: number } {
+    let subscribers = 0;
+    let views = 0;
+    let videos = 0;
+    for (const a of accounts) {
+      const s = db.latestSnapshot(a.id);
+      if (!s) continue;
+      subscribers += s.subscribers;
+      views += s.views;
+      videos += s.videos;
+    }
+    return { subscribers, views, videos };
+  }
+
+  // Home / focus screen: the headline totals (Мои/Все). The per-channel list is tucked behind the
+  // «📋 Список каналов» button so attention stays on the aggregate numbers.
+  function summaryView(user: UserAuth, scope: Scope, note?: string): { text: string; keyboard: InlineKeyboard } {
     const accounts = visibleAccounts(user, scope);
     const isAdmin = user.role === "admin";
     const scopeLabel = scope === "all" ? "Все каналы" : "Мои каналы";
-    const rows: InlineKeyboardButton[][] = [];
-    let text: string;
+    const toggle: InlineKeyboardButton | null = isAdmin
+      ? { text: scope === "all" ? "👤 Мои каналы" : "🌐 Все каналы", callback_data: `s:sum:${scope === "all" ? "mine" : "all"}` }
+      : null;
 
     if (accounts.length === 0) {
-      text = `${bold("📊 Статистика каналов")}\nРежим: ${esc(scopeLabel)}\n\nНет каналов для показа.`;
-    } else {
-      const pages = Math.max(1, Math.ceil(accounts.length / PAGE_SIZE));
-      const p = Math.min(Math.max(0, page), pages - 1);
-      const slice = accounts.slice(p * PAGE_SIZE, p * PAGE_SIZE + PAGE_SIZE);
-      // Aggregate totals across ALL channels in the current scope (not just this page) — the headline
-      // numbers the user asked for, summed from each channel's latest snapshot.
-      let subsTotal = 0;
-      let viewsTotal = 0;
-      let videosTotal = 0;
-      for (const a of accounts) {
-        const s = db.latestSnapshot(a.id);
-        if (!s) continue;
-        subsTotal += s.subscribers;
-        viewsTotal += s.views;
-        videosTotal += s.videos;
-      }
-      text =
-        `${bold("📊 Статистика каналов")}\n` +
-        `Режим: ${esc(scopeLabel)} · каналов: ${accounts.length}${pages > 1 ? ` · стр. ${p + 1}/${pages}` : ""}\n\n` +
-        `📈 Просмотров всего: ${bold(intFmt(viewsTotal))}\n` +
-        `👥 Подписчиков всего: ${bold(intFmt(subsTotal))}\n` +
-        `🎬 Видео всего: ${intFmt(videosTotal)}\n\n` +
-        `Выберите канал:`;
-      for (const a of slice) {
-        const name = a.ytChannelTitle || a.channelName || `#${a.id}`;
-        const icon = a.status === "connected" ? "📺" : "🚫";
-        rows.push([{ text: truncBtn(`${icon} ${name}`), callback_data: `s:ch:${a.id}:${scope}:${DEFAULT_DAYS}` }]);
-      }
-      if (pages > 1) {
-        const nav: InlineKeyboardButton[] = [];
-        if (p > 0) nav.push({ text: "◀", callback_data: `s:list:${scope}:${p - 1}` });
-        nav.push({ text: `${p + 1}/${pages}`, callback_data: "s:noop" });
-        if (p < pages - 1) nav.push({ text: "▶", callback_data: `s:list:${scope}:${p + 1}` });
-        rows.push(nav);
-      }
+      let text = `${bold("📊 Статистика каналов")}\nРежим: ${esc(scopeLabel)}\n\nНет каналов для показа.`;
+      if (note) text += `\n\n${esc(note)}`;
+      return { text, keyboard: { inline_keyboard: toggle ? [[toggle]] : [] } };
     }
 
+    const t = channelTotals(accounts);
+    let text =
+      `${bold("📊 Статистика каналов")}\n` +
+      `Режим: ${esc(scopeLabel)} · каналов: ${accounts.length}\n\n` +
+      `📈 Просмотров всего: ${bold(intFmt(t.views))}\n` +
+      `👥 Подписчиков всего: ${bold(intFmt(t.subscribers))}\n` +
+      `🎬 Видео всего: ${intFmt(t.videos)}`;
     if (note) text += `\n\n${esc(note)}`;
 
+    const rows: InlineKeyboardButton[][] = [[{ text: "📋 Список каналов", callback_data: `s:list:${scope}:0` }]];
     const controls: InlineKeyboardButton[] = [];
     if (accounts.some((a) => a.status === "connected"))
-      controls.push({ text: "🔄 Обновить все", callback_data: `s:rfall:${scope}:${page}` });
-    if (isAdmin)
-      controls.push({
-        text: scope === "all" ? "👤 Мои каналы" : "🌐 Все каналы",
-        callback_data: `s:list:${scope === "all" ? "mine" : "all"}:0`,
-      });
+      controls.push({ text: "🔄 Обновить все", callback_data: `s:rfall:${scope}` });
+    if (toggle) controls.push(toggle);
     if (controls.length) rows.push(controls);
 
+    return { text, keyboard: { inline_keyboard: rows } };
+  }
+
+  // Channel picker: per-channel buttons + pagination, reached from the summary's «Список каналов».
+  function listView(user: UserAuth, scope: Scope, page: number): { text: string; keyboard: InlineKeyboard } {
+    const accounts = visibleAccounts(user, scope);
+    const scopeLabel = scope === "all" ? "Все каналы" : "Мои каналы";
+    const back: InlineKeyboardButton = { text: "◀ К сводке", callback_data: `s:sum:${scope}` };
+
+    if (accounts.length === 0) {
+      return {
+        text: `${bold("📋 Каналы")}\nРежим: ${esc(scopeLabel)}\n\nНет каналов для показа.`,
+        keyboard: { inline_keyboard: [[back]] },
+      };
+    }
+
+    const pages = Math.max(1, Math.ceil(accounts.length / PAGE_SIZE));
+    const p = Math.min(Math.max(0, page), pages - 1);
+    const slice = accounts.slice(p * PAGE_SIZE, p * PAGE_SIZE + PAGE_SIZE);
+    const rows: InlineKeyboardButton[][] = [];
+    for (const a of slice) {
+      const name = a.ytChannelTitle || a.channelName || `#${a.id}`;
+      const icon = a.status === "connected" ? "📺" : "🚫";
+      rows.push([{ text: truncBtn(`${icon} ${name}`), callback_data: `s:ch:${a.id}:${scope}:${DEFAULT_DAYS}` }]);
+    }
+    if (pages > 1) {
+      const nav: InlineKeyboardButton[] = [];
+      if (p > 0) nav.push({ text: "◀", callback_data: `s:list:${scope}:${p - 1}` });
+      nav.push({ text: `${p + 1}/${pages}`, callback_data: "s:noop" });
+      if (p < pages - 1) nav.push({ text: "▶", callback_data: `s:list:${scope}:${p + 1}` });
+      rows.push(nav);
+    }
+    rows.push([back]);
+
+    const text =
+      `${bold("📋 Каналы")}\n` +
+      `Режим: ${esc(scopeLabel)} · каналов: ${accounts.length}${pages > 1 ? ` · стр. ${p + 1}/${pages}` : ""}\n\n` +
+      `Выберите канал:`;
     return { text, keyboard: { inline_keyboard: rows } };
   }
 
@@ -267,7 +294,7 @@ export function makeBotStats(deps: BotStatsDeps) {
       await send(chatId, NOT_LINKED);
       return;
     }
-    const v = listView(user, "mine", 0);
+    const v = summaryView(user, "mine");
     await send(chatId, v.text, v.keyboard);
   }
 
@@ -290,8 +317,12 @@ export function makeBotStats(deps: BotStatsDeps) {
 
     const parts = data.split(":");
     const action = parts[1] ?? "";
-    const showList = async (scope: Scope, page = 0, note?: string) => {
-      const v = listView(user, scope, page, note);
+    const showSummary = async (scope: Scope, note?: string) => {
+      const v = summaryView(user, scope, note);
+      await edit(chatId, messageId, v.text, v.keyboard);
+    };
+    const showList = async (scope: Scope, page = 0) => {
+      const v = listView(user, scope, page);
       await edit(chatId, messageId, v.text, v.keyboard);
     };
     const showCard = async (a: Account, scope: Scope, days: number, note?: string) => {
@@ -302,9 +333,9 @@ export function makeBotStats(deps: BotStatsDeps) {
     try {
       if (action === "noop") return void (await ack());
 
-      if (action === "home") {
+      if (action === "home" || action === "sum") {
         await ack();
-        return void (await showList("mine", 0));
+        return void (await showSummary(action === "sum" ? normScope(user, parts[2]) : "mine"));
       }
 
       if (action === "list") {
@@ -339,12 +370,11 @@ export function makeBotStats(deps: BotStatsDeps) {
 
       if (action === "rfall") {
         const scope = normScope(user, parts[2]);
-        const page = Number(parts[3]) || 0;
         const targets = visibleAccounts(user, scope).filter((a) => a.status === "connected");
         await ack(targets.length ? `Обновляю ${targets.length}…` : "Нет подключённых каналов");
         if (targets.length) {
           const failed = (await Promise.all(targets.map(refreshOne))).filter(Boolean).length;
-          await showList(scope, page, `✅ Обновлено: ${targets.length - failed}/${targets.length} · только что`);
+          await showSummary(scope, `✅ Обновлено: ${targets.length - failed}/${targets.length} · только что`);
         }
         return;
       }
