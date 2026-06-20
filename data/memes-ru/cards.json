@@ -261,13 +261,7 @@
   "caption": "Составил бюджет на месяц. Очень красивый бюджет. Пока читал — проголодался и заказал доставку.",
   "format": "caption",
   "theme": "money, payday & being broke",
-  "imageQuery": "notebook with pen and calculator on desk",
-  "photoFile": "8296969.jpg",
-  "photoSource": {
-   "pexelsId": 8296969,
-   "pageUrl": "https://www.pexels.com/photo/a-woman-computing-with-a-calculator-8296969/",
-   "photographer": "Mikhail Nilov"
-  }
+  "imageQuery": "notebook with pen and calculator on desk"
  },
  {
   "caption": "Когда наконец-то зарплата, но половина уже расписана по долгам, которые брал, потому что не было зарплаты.",
@@ -1402,5 +1396,3323 @@
    "pageUrl": "https://www.pexels.com/photo/steaming-coffee-cup-in-sunlit-cafe-setting-31145167/",
    "photographer": "Letícia Alvares"
   }
+ },
+ {
+  "caption": "Совещание закончилось.\nСледующее совещание — обсудить итоги совещания.",
+  "format": "demotivator-text",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "empty conference room with whiteboard"
+ },
+ {
+  "caption": "Ожидание: отвечу на все письма с утра\nРеальность: 11:45, открыл первое",
+  "format": "expectation-vs-reality",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "person overwhelmed at computer with coffee cup",
+  "photoFile": "12912018.jpg",
+  "photoSource": {
+   "pexelsId": 12912018,
+   "pageUrl": "https://www.pexels.com/photo/woman-hiding-under-her-desk-12912018/",
+   "photographer": "Mizuno K"
+  }
+ },
+ {
+  "caption": "Никто:\nАбсолютно никто:\nНаш руководитель: давайте созвонимся на 5 минут",
+  "format": "nobody",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "video call laptop screen home office"
+ },
+ {
+  "caption": "Топ-3 вещи, которые убивают продуктивность:\n1. Соцсети\n2. Прокрастинация\n3. Незапланированное совещание в 16:55",
+  "format": "list-top",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "office clock showing end of workday"
+ },
+ {
+  "caption": "Когда задача пришла в пятницу в 17:30 с пометкой «срочно, к понедельнику»",
+  "format": "caption",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "tired office worker looking at phone",
+  "photoFile": "30248025.jpg",
+  "photoSource": {
+   "pexelsId": 30248025,
+   "pageUrl": "https://www.pexels.com/photo/stressed-employee-asleep-at-work-desk-30248025/",
+   "photographer": "Adem Erkoç"
+  }
+ },
+ {
+  "caption": "Я в 9:00: сегодня всё сделаю, буду продуктивным\nЯ в 9:07: ладно, ещё пять минут подготовлюсь",
+  "format": "expectation-vs-reality",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "person staring blankly at computer screen morning"
+ },
+ {
+  "caption": "«Это можно было написать письмом»\n— моя единственная мысль за последние 40 минут",
+  "format": "POV",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "bored employee in meeting room",
+  "photoFile": "9077349.jpg",
+  "photoSource": {
+   "pexelsId": 9077349,
+   "pageUrl": "https://www.pexels.com/photo/men-sitting-at-the-table-9077349/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Виды коллег на созвоне:\n— Тот, кто забыл отключить микрофон\n— Тот, кто опоздал на 10 минут и не извинился\n— Тот, чья камера «не работает» уже третий месяц\n— Я, считающий минуты",
+  "format": "list-top",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "group video conference call multiple screens"
+ },
+ {
+  "caption": "POV: тебе написали «можешь сейчас?» прямо в разгар работы",
+  "format": "POV",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "person interrupted at desk looking at phone",
+  "photoFile": "7971539.jpg",
+  "photoSource": {
+   "pexelsId": 7971539,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-in-yellow-long-sleeves-using-a-smartphone-in-the-office-7971539/",
+   "photographer": "Darlene Alderson"
+  }
+ },
+ {
+  "caption": "ДЕДЛАЙН\n\n— суровое слово, придуманное теми, кто никогда сам ничего не делал к дедлайну",
+  "format": "demotivator-text",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "calendar with red deadline marked"
+ },
+ {
+  "caption": "Когда спрашивают «вопросы есть?» и ты молчишь, потому что вопросы есть, но ещё час сидеть не хочется",
+  "format": "caption",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "office meeting participants looking at presenter",
+  "photoFile": "7793992.jpg",
+  "photoSource": {
+   "pexelsId": 7793992,
+   "pageUrl": "https://www.pexels.com/photo/a-bearded-man-taking-notes-during-a-presentation-7793992/",
+   "photographer": "Yan Krukau"
+  }
+ },
+ {
+  "caption": "Ожидание: удалёнка — это свобода\nРеальность: 11 вечера, пятый созвон за день",
+  "format": "expectation-vs-reality",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "exhausted person working late at home laptop",
+  "photoFile": "7983358.jpg",
+  "photoSource": {
+   "pexelsId": 7983358,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-lying-her-head-n-the-table-while-holding-a-laptop-7983358/",
+   "photographer": "Ron Lach"
+  }
+ },
+ {
+  "caption": "Никто:\nНаш аналитик: а если мы посмотрим на это с другой стороны…\n\n*добавляет ещё 45 минут к совещанию*",
+  "format": "nobody",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "meeting room presentation graphs on screen"
+ },
+ {
+  "caption": "Я в начале рабочей недели: надо разгрести почту, сделать план, поговорить с командой\nЯ в конце: разогрел кофе три раза, не выпил",
+  "format": "expectation-vs-reality",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "cold forgotten coffee mug office desk"
+ },
+ {
+  "caption": "«Давайте пройдёмся по слайдам быстренько»\n\n— сказал человек, у которого 78 слайдов",
+  "format": "caption",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "presenter with long slide deck projector screen",
+  "photoFile": "18999196.jpg",
+  "photoSource": {
+   "pexelsId": 18999196,
+   "pageUrl": "https://www.pexels.com/photo/man-giving-a-presentation-18999196/",
+   "photographer": "Matheus Bertelli"
+  }
+ },
+ {
+  "caption": "Топ ответов на «как дела на работе»:\n1. Нормально\n2. Всё хорошо\n3. *длинная пауза* …нормально",
+  "format": "list-top",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "office worker with forced smile at desk"
+ },
+ {
+  "caption": "Когда совещание наконец закончилось и ты понял, что мог бы написать один абзац",
+  "format": "caption",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "relieved person leaving conference room",
+  "photoFile": "8937555.jpg",
+  "photoSource": {
+   "pexelsId": 8937555,
+   "pageUrl": "https://www.pexels.com/photo/man-sitting-on-an-office-chair-8937555/",
+   "photographer": "Mikhail Nilov"
+  }
+ },
+ {
+  "caption": "POV: ты открыл новый документ, назвал его «план_итог_ФИНАЛ_v3» и закрыл",
+  "format": "POV",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "multiple document files on computer desktop"
+ },
+ {
+  "caption": "Режим работы: занят\nРежим на самом деле: смотрю в экран и думаю о смысле жизни",
+  "format": "expectation-vs-reality",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "office worker staring blankly at computer monitor",
+  "photoFile": "12903349.jpg",
+  "photoSource": {
+   "pexelsId": 12903349,
+   "pageUrl": "https://www.pexels.com/photo/young-woman-looking-at-pc-screen-with-attention-12903349/",
+   "photographer": "Mizuno K"
+  }
+ },
+ {
+  "caption": "«Встреча на 30 минут» — это народная легенда.\nТакой встречи не существует.",
+  "format": "demotivator-text",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "clock on conference room wall"
+ },
+ {
+  "caption": "Никто:\nЯ за 10 минут до конца рабочего дня: ладно, начну вот эту задачу",
+  "format": "nobody",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "office desk end of day tidy up"
+ },
+ {
+  "caption": "Корпоратив: место, где все делают вид, что рады друг другу, но уже договорились уйти пораньше",
+  "format": "caption",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "office party employees standing with glasses",
+  "photoFile": "6518763.jpg",
+  "photoSource": {
+   "pexelsId": 6518763,
+   "pageUrl": "https://www.pexels.com/photo/man-in-black-suit-jacket-holding-red-ceramic-mug-6518763/",
+   "photographer": "RDNE Stock project"
+  }
+ },
+ {
+  "caption": "«Мне нужно буквально пять секунд»\n\n— прошло двадцать минут",
+  "format": "caption",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "colleague standing at desk interrupting someone working",
+  "photoFile": "7653577.jpg",
+  "photoSource": {
+   "pexelsId": 7653577,
+   "pageUrl": "https://www.pexels.com/photo/a-man-and-a-woman-working-in-an-office-7653577/",
+   "photographer": "Thirdman"
+  }
+ },
+ {
+  "caption": "Я в понедельник: работаю эффективно, без отвлечений\nЯ в понедельник (реально): выбираю шрифт для заголовка два часа",
+  "format": "expectation-vs-reality",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "person choosing fonts on computer design screen",
+  "photoFile": "7864530.jpg",
+  "photoSource": {
+   "pexelsId": 7864530,
+   "pageUrl": "https://www.pexels.com/photo/a-person-using-a-laptop-7864530/",
+   "photographer": "VAZHNIK"
+  }
+ },
+ {
+  "caption": "Виды людей на утренней планёрке:\n— Тот, кто ещё не проснулся\n— Тот, кто вчера допоздна\n— Тот, кому всё равно\n— Тот, кто «быстренько покажет таблицу»",
+  "format": "list-top",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "team morning standup meeting tired employees"
+ },
+ {
+  "caption": "POV: тебе поставили задачу в 9 утра, и уже в 9:20 спрашивают, готово ли",
+  "format": "POV",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "person checking watch impatiently office",
+  "photoFile": "8867189.jpg",
+  "photoSource": {
+   "pexelsId": 8867189,
+   "pageUrl": "https://www.pexels.com/photo/man-holding-his-headset-while-looking-at-his-watch-8867189/",
+   "photographer": "Yan Krukau"
+  }
+ },
+ {
+  "caption": "«Это займёт пять минут» — самая смешная шутка в истории офисного планирования",
+  "format": "demotivator-text",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "overflowing in-tray desk paperwork office"
+ },
+ {
+  "caption": "Когда вся команда час обсуждала задачу, а в итоге решили «подождать и посмотреть»",
+  "format": "caption",
+  "theme": "work, office life & pointless meetings",
+  "imageQuery": "empty whiteboard after long meeting brainstorm"
+ },
+ {
+  "caption": "Зарплата:\n— Привет.\n— Пока.",
+  "format": "caption",
+  "theme": "money, payday & being broke",
+  "imageQuery": "empty wallet on table",
+  "photoFile": "6633602.jpg",
+  "photoSource": {
+   "pexelsId": 6633602,
+   "pageUrl": "https://www.pexels.com/photo/credit-cards-lying-on-a-table-and-shopping-bags-on-the-floor-6633602/",
+   "photographer": "Cup of  Couple"
+  }
+ },
+ {
+  "caption": "Я 25-го числа: «Наконец-то можно нормально поесть»\nЯ 3-го числа: изучаю рецепты из гречки и мечтаний",
+  "format": "expectation-vs-reality",
+  "theme": "money, payday & being broke",
+  "imageQuery": "человек смотрит в пустой холодильник"
+ },
+ {
+  "caption": "Ожидание: откладываю 30% зарплаты\nРеальность: откладываю 30% зарплаты в корзину интернет-магазина",
+  "format": "expectation-vs-reality",
+  "theme": "money, payday & being broke",
+  "imageQuery": "online shopping cart laptop"
+ },
+ {
+  "caption": "Когда дожил до аванса, но аванс — это просто маленькая зарплата",
+  "format": "caption",
+  "theme": "money, payday & being broke",
+  "imageQuery": "tired office worker at desk",
+  "photoFile": "8468514.jpg",
+  "photoSource": {
+   "pexelsId": 8468514,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-blazer-wearing-eyeglasses-sitting-at-table-8468514/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Никто:\nАбсолютно никто:\nМои деньги в конце месяца: 👻",
+  "format": "nobody",
+  "theme": "money, payday & being broke",
+  "imageQuery": "empty piggy bank cracked open"
+ },
+ {
+  "caption": "Топ-3 способа сэкономить:\n1. Не есть\n2. Не выходить из дома\n3. Перечитать пункты 1 и 2",
+  "format": "list-top",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person sitting at home looking bored"
+ },
+ {
+  "caption": "Я: «Буду вести бюджет!»\nЯ же, через 4 дня: веду дневник потерь",
+  "format": "expectation-vs-reality",
+  "theme": "money, payday & being broke",
+  "imageQuery": "crumpled paper notebook calculations"
+ },
+ {
+  "caption": "День зарплаты: чувствую себя человеком\nДень минус три до зарплаты: чувствую себя персонажем документального кино про выживание",
+  "format": "expectation-vs-reality",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person counting last coins on table",
+  "photoFile": "8872344.jpg",
+  "photoSource": {
+   "pexelsId": 8872344,
+   "pageUrl": "https://www.pexels.com/photo/photo-of-a-coins-on-a-piece-of-white-paper-8872344/",
+   "photographer": "MART  PRODUCTION"
+  }
+ },
+ {
+  "caption": "POV: смотришь в чек и не можешь найти ошибку, но сумма всё равно кажется ненастоящей",
+  "format": "POV",
+  "theme": "money, payday & being broke",
+  "imageQuery": "grocery receipt close up",
+  "photoFile": "13431759.jpg",
+  "photoSource": {
+   "pexelsId": 13431759,
+   "pageUrl": "https://www.pexels.com/photo/close-up-of-a-person-holding-a-food-delivery-in-a-paper-bag-13431759/",
+   "photographer": "Mizuno K"
+  }
+ },
+ {
+  "caption": "Мой финансовый план:\n— заработать\n— потратить\n— удивиться\n— повторить",
+  "format": "list-top",
+  "theme": "money, payday & being broke",
+  "imageQuery": "confused person looking at phone"
+ },
+ {
+  "caption": "Зарплата пришла.\nЖКХ, кредит, продукты.\nЗарплата ушла.\n\nКруговорот денег в природе.",
+  "format": "demotivator-text",
+  "theme": "money, payday & being broke",
+  "imageQuery": "cycle diagram whiteboard sketch"
+ },
+ {
+  "caption": "Когда говоришь «я в порядке» и имеешь в виду «до зарплаты осталось 4 дня и у меня есть макароны»",
+  "format": "caption",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person giving thumbs up with forced smile",
+  "photoFile": "9017379.jpg",
+  "photoSource": {
+   "pexelsId": 9017379,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-black-button-up-long-sleeve-shirt-doing-thumbs-up-9017379/",
+   "photographer": "Kevin  Malik"
+  }
+ },
+ {
+  "caption": "Я в начале месяца: «Схожу в ресторан, куплю что-нибудь себе, поживу немного»\nЯ в конце месяца: конкурирую за ценник «выгода» в магазине",
+  "format": "expectation-vs-reality",
+  "theme": "money, payday & being broke",
+  "imageQuery": "supermarket discount shelf"
+ },
+ {
+  "caption": "Мозг в 2:00 ночи: «А помнишь, как ты купил ту штуку три года назад? Вот ты мог бы отложить эти деньги»\n\nДа, мозг. Спасибо. Очень помогло.",
+  "format": "caption",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person awake at night staring at ceiling",
+  "photoFile": "6941123.jpg",
+  "photoSource": {
+   "pexelsId": 6941123,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-white-pajama-lying-on-bed-6941123/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "БЕДНОСТЬ\n\nЭто не стиль жизни. Это просто конец месяца.",
+  "format": "demotivator-text",
+  "theme": "money, payday & being broke",
+  "imageQuery": "empty pockets turned out jeans",
+  "photoFile": "7926950.jpg",
+  "photoSource": {
+   "pexelsId": 7926950,
+   "pageUrl": "https://www.pexels.com/photo/a-person-in-white-shirt-and-blue-denim-jeans-7926950/",
+   "photographer": "Nicola Barts"
+  }
+ },
+ {
+  "caption": "Виды людей в очереди в банкомат:\n— снимает наличку\n— проверяет баланс и уходит молча\n— проверяет баланс и уходит с лицом человека, которому есть что сказать",
+  "format": "list-top",
+  "theme": "money, payday & being broke",
+  "imageQuery": "atm machine queue bank"
+ },
+ {
+  "caption": "Когда в приложении банка написано «доступно» и ты знаешь, что это ложь",
+  "format": "caption",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person looking at smartphone banking app skeptical",
+  "photoFile": "7620910.jpg",
+  "photoSource": {
+   "pexelsId": 7620910,
+   "pageUrl": "https://www.pexels.com/photo/a-man-in-black-denim-jacket-leaning-on-a-wooden-wall-while-looking-at-the-cellphone-he-is-holding-7620910/",
+   "photographer": "Ivan S"
+  }
+ },
+ {
+  "caption": "Я: заработаю — сразу отложу!\nЯ же, получив зарплату: ну, в следующий раз точно отложу",
+  "format": "expectation-vs-reality",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person holding money looking away"
+ },
+ {
+  "caption": "POV: ты пришёл в магазин «за хлебом» и твоя корзина как-то сама наполнилась",
+  "format": "POV",
+  "theme": "money, payday & being broke",
+  "imageQuery": "full shopping cart grocery store",
+  "photoFile": "15491800.jpg",
+  "photoSource": {
+   "pexelsId": 15491800,
+   "pageUrl": "https://www.pexels.com/photo/shopping-cart-filled-with-packages-in-empty-aisle-15491800/",
+   "photographer": "Wallace Chuck"
+  }
+ },
+ {
+  "caption": "— Ты чем занимаешься в выходные?\n— Считаю сдачу и смотрю в стену.",
+  "format": "caption",
+  "theme": "money, payday & being broke",
+  "imageQuery": "монеты рассыпаны на столе"
+ },
+ {
+  "caption": "Финансовая грамотность:\nЗнать, куда уходят деньги.\n\nЯ финансово грамотен.\nПросто не могу это остановить.",
+  "format": "demotivator-text",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person writing in notebook looking tired"
+ },
+ {
+  "caption": "Ожидание: живу на проценты со вкладов\nРеальность: живу на проценты за кредит",
+  "format": "expectation-vs-reality",
+  "theme": "money, payday & being broke",
+  "imageQuery": "bank document contract papers desk"
+ },
+ {
+  "caption": "Когда цена на любимый продукт выросла, но ты всё равно берёшь — просто с таким лицом, будто тебя предали",
+  "format": "caption",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person grabbing product from shelf looking disappointed",
+  "photoFile": "8743331.jpg",
+  "photoSource": {
+   "pexelsId": 8743331,
+   "pageUrl": "https://www.pexels.com/photo/beautiful-woman-wearing-a-black-shirt-looking-back-in-a-store-8743331/",
+   "photographer": "ERICK ALFREDO SASI"
+  }
+ },
+ {
+  "caption": "Я в 20 лет: «В 30 у меня будет стабильность и накопления»\nЯ сейчас: ну такое…",
+  "format": "expectation-vs-reality",
+  "theme": "money, payday & being broke",
+  "imageQuery": "adult person sitting looking at phone pensively"
+ },
+ {
+  "caption": "Никто:\nАбсолютно никто:\nМои расходы в день зарплаты: 📉",
+  "format": "nobody",
+  "theme": "money, payday & being broke",
+  "imageQuery": "много пакетов с покупками на полу"
+ },
+ {
+  "caption": "Три стадии конца месяца:\n1. «Ещё есть немного»\n2. «Ну, почти ничего»\n3. «Так, ладно, кто мне должен»",
+  "format": "list-top",
+  "theme": "money, payday & being broke",
+  "imageQuery": "person on phone looking stressed at desk"
+ },
+ {
+  "caption": "POV: смотришь на цены в кафе и вспоминаешь, что дома есть чай и достоинство",
+  "format": "POV",
+  "theme": "money, payday & being broke",
+  "imageQuery": "cafe menu board prices",
+  "photoFile": "18617719.jpg",
+  "photoSource": {
+   "pexelsId": 18617719,
+   "pageUrl": "https://www.pexels.com/photo/menu-and-prices-on-wall-in-cafe-in-turkey-18617719/",
+   "photographer": "Beyzaa Yurtkuran"
+  }
+ },
+ {
+  "caption": "Аванс:\n— Я пришёл!\n— О, наконец-то!\n— Я ушёл.\n— Подожди—\n— Уже нет.",
+  "format": "caption",
+  "theme": "money, payday & being broke",
+  "imageQuery": "door closing empty room"
+ },
+ {
+  "caption": "Ожидание: встану в 6 утра, пробегусь, сделаю завтрак, начну день продуктивно\nРеальность: лежу и читаю телефон 40 минут, потом бегу на работу без завтрака",
+  "format": "expectation-vs-reality",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person lying in bed scrolling phone morning",
+  "photoFile": "4473873.jpg",
+  "photoSource": {
+   "pexelsId": 4473873,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-white-long-sleeve-shirt-holding-smartphone-4473873/",
+   "photographer": "Ketut Subiyanto"
+  }
+ },
+ {
+  "caption": "Никто:\nАбсолютно никто:\nМой мозг в 2 ночи: А помнишь, как ты в 2014 году неловко пошутил на корпоративе?",
+  "format": "nobody",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person awake staring at ceiling at night",
+  "photoFile": "6941123.jpg",
+  "photoSource": {
+   "pexelsId": 6941123,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-white-pajama-lying-on-bed-6941123/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Я в 23:00: лягу пораньше, высплюсь как человек\nЯ в 23:01: ну, один ролик посмотрю\nЯ в 2:47: ну всё, теперь точно сплю",
+  "format": "expectation-vs-reality",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person watching phone in dark bedroom",
+  "photoFile": "6951508.jpg",
+  "photoSource": {
+   "pexelsId": 6951508,
+   "pageUrl": "https://www.pexels.com/photo/photo-of-a-woman-sitting-on-her-bed-while-watching-on-a-television-6951508/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "5 минут ещё полежу\n\n— мой последний разговор с совестью перед тем, как опоздать на работу",
+  "format": "demotivator-text",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "cozy blanket bed morning light"
+ },
+ {
+  "caption": "Виды людей по утрам:\n1. «Доброе утро!» и уже в спортзале\n2. Молча пьёт кофе, не трогайте\n3. Ещё технически не проснулся, но двигается\n4. Опоздает, но выглядит счастливым",
+  "format": "list-top",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "morning coffee cup on kitchen table"
+ },
+ {
+  "caption": "Когда будильник звонит в 7:00, а ты помнишь, что сегодня выходной",
+  "format": "caption",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person smiling pulling blanket over head in bed",
+  "photoFile": "7623564.jpg",
+  "photoSource": {
+   "pexelsId": 7623564,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-covering-with-blanket-7623564/",
+   "photographer": "Miriam Alonso"
+  }
+ },
+ {
+  "caption": "Я ставлю будильник на 7:00.\nЗвонит в 7:00. Я откладываю на 5 минут.\nЗвонит в 7:05. Откладываю.\nЗвонит в 7:10. Откладываю.\n\nЯ в 8:47: всё, сегодня без меня.",
+  "format": "caption",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "alarm clock snooze button close up"
+ },
+ {
+  "caption": "POV: ты лёг спать в 3 ночи, встаёшь в 7, и твой организм смотрит на тебя как на личного врага",
+  "format": "POV",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "tired person hunched over morning coffee",
+  "photoFile": "20672626.jpg",
+  "photoSource": {
+   "pexelsId": 20672626,
+   "pageUrl": "https://www.pexels.com/photo/man-in-eyeglasses-sitting-by-table-20672626/",
+   "photographer": "Lucas Andrade"
+  }
+ },
+ {
+  "caption": "Звонок будильника:\nПесня, которую ты поставил полгода назад: 🎵\n\nЭта же песня через неделю:\nненависть, боль, отвращение",
+  "format": "expectation-vs-reality",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "smartphone alarm screen on pillow"
+ },
+ {
+  "caption": "Я в воскресенье вечером: всё, нормализую режим сна, ложусь в 10!\n\nЯ в воскресенье в 2 ночи: смотрю документалку про мурашей",
+  "format": "expectation-vs-reality",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "laptop glow in dark bedroom at night",
+  "photoFile": "14626645.jpg",
+  "photoSource": {
+   "pexelsId": 14626645,
+   "pageUrl": "https://www.pexels.com/photo/laptop-and-candles-on-the-bed-14626645/",
+   "photographer": "Merve"
+  }
+ },
+ {
+  "caption": "ПРОДУКТИВНОСТЬ\n\nСостояние, которое наступает ровно за 20 минут до конца рабочего дня",
+  "format": "demotivator-text",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "office desk clock five minutes to end of day"
+ },
+ {
+  "caption": "Никто:\nМой будильник в 7:00: позвольте представиться",
+  "format": "nobody",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "loud alarm clock ringing on white background"
+ },
+ {
+  "caption": "Хочу спать: 24/7\nМогу спать: никогда",
+  "format": "expectation-vs-reality",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "exhausted person head on office desk",
+  "photoFile": "18866452.jpg",
+  "photoSource": {
+   "pexelsId": 18866452,
+   "pageUrl": "https://www.pexels.com/photo/troubled-distressed-man-18866452/",
+   "photographer": "UMUT   🆁🅰🆆"
+  }
+ },
+ {
+  "caption": "Когда лёг в 1 ночи, встал в 7 утра, а коллега говорит «ты хорошо выглядишь»:\n\nну такое…",
+  "format": "caption",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person with tired eyes forcing a smile at work",
+  "photoFile": "8867225.jpg",
+  "photoSource": {
+   "pexelsId": 8867225,
+   "pageUrl": "https://www.pexels.com/photo/a-tired-man-rubbing-his-eyes-8867225/",
+   "photographer": "Yan Krukau"
+  }
+ },
+ {
+  "caption": "Топ утренних мыслей:\n1. Зачем я вообще ставил будильник\n2. Это точно уже утро?\n3. Может, я заболел и мне не надо идти\n4. Ладно, встаю\n5. Не встаю",
+  "format": "list-top",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "messy bed pillow rumpled sheets morning"
+ },
+ {
+  "caption": "Я в пятницу в 23:00: посплю подольше на выходных, наконец-то!\nЯ в субботу в 7:00: лежу с открытыми глазами и не понимаю жизнь",
+  "format": "expectation-vs-reality",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person lying awake in bed early morning sunlight",
+  "photoFile": "4330129.jpg",
+  "photoSource": {
+   "pexelsId": 4330129,
+   "pageUrl": "https://www.pexels.com/photo/unrecognizable-person-with-bare-back-sleeping-in-bed-4330129/",
+   "photographer": "ArtHouse Studio"
+  }
+ },
+ {
+  "caption": "Отложить будильник на 5 минут — это не слабость.\nЭто стратегическое планирование ресурсов.",
+  "format": "demotivator-text",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "hand pressing snooze on phone alarm in bed",
+  "photoFile": "7623555.jpg",
+  "photoSource": {
+   "pexelsId": 7623555,
+   "pageUrl": "https://www.pexels.com/photo/a-person-using-a-smartphone-7623555/",
+   "photographer": "Miriam Alonso"
+  }
+ },
+ {
+  "caption": "Никто:\nАбсолютно никто:\nМой кот в 5:47 утра: ПОРА ВСТАВАТЬ, Я СКАЗАЛ",
+  "format": "nobody",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "cat sitting on sleeping person face bed",
+  "photoFile": "5427090.jpg",
+  "photoSource": {
+   "pexelsId": 5427090,
+   "pageUrl": "https://www.pexels.com/photo/brown-tabby-cat-lying-on-white-floor-5427090/",
+   "photographer": "Kraken Images"
+  }
+ },
+ {
+  "caption": "POV: ты наконец лёг пораньше, засыпаешь, и тут твой мозг вспоминает всё, что ты не сделал за день",
+  "format": "POV",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person staring at ceiling at night wide awake"
+ },
+ {
+  "caption": "Я за 10 минут до будильника: просыпаюсь сам\nЯ в момент будильника: это уже издевательство",
+  "format": "expectation-vs-reality",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "digital alarm clock on nightstand bedroom dark"
+ },
+ {
+  "caption": "Стадии утра:\n7:00 — нет\n7:05 — нет\n7:10 — нет\n7:30 — ГОСПОДИ Я ОПАЗДЫВАЮ",
+  "format": "list-top",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person frantically getting dressed in morning rush"
+ },
+ {
+  "caption": "Когда смотришь в телефон в 1 ночи и видишь, что завтра в 7 вставать:\n\nокак",
+  "format": "caption",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "phone screen showing late night time in dark room"
+ },
+ {
+  "caption": "Я: пойду лягу пораньше\nДиван: привет\nЯ: ладно, минут 20\nДиван: понятно\nЯ в полночь: ты манипулятор",
+  "format": "caption",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "comfortable couch with soft blanket and cushions",
+  "photoFile": "19416998.jpg",
+  "photoSource": {
+   "pexelsId": 19416998,
+   "pageUrl": "https://www.pexels.com/photo/a-sofa-in-a-room-19416998/",
+   "photographer": "Beyzaa Yurtkuran"
+  }
+ },
+ {
+  "caption": "Пришёл домой в 11 вечера с твёрдым намерением лечь в 22:00.\n\nЭто провал, братан.",
+  "format": "demotivator-text",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person sitting on bed looking tired late at night"
+ },
+ {
+  "caption": "Когда наконец засыпаешь после часа тишины, а сосед решил, что сейчас идеальное время для дрели",
+  "format": "caption",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person sitting upright in bed startled awake",
+  "photoFile": "7622507.jpg",
+  "photoSource": {
+   "pexelsId": 7622507,
+   "pageUrl": "https://www.pexels.com/photo/dreamy-woman-sitting-on-white-bed-7622507/",
+   "photographer": "Miriam Alonso"
+  }
+ },
+ {
+  "caption": "Режим сна:\nПо плану: 23:00–07:00, 8 часов, всё по-взрослому\nПо факту: лёг в 2, встал в 6, функционирую на злости и кофе",
+  "format": "expectation-vs-reality",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "espresso coffee cup on dark table morning",
+  "photoFile": "21367366.jpg",
+  "photoSource": {
+   "pexelsId": 21367366,
+   "pageUrl": "https://www.pexels.com/photo/cup-of-coffee-on-a-saucer-21367366/",
+   "photographer": "Letícia Alvares"
+  }
+ },
+ {
+  "caption": "Никто:\nЯ в 3 ночи, лёжа в темноте: а интересно, как работает международная почта?\n\nМой мозг: сейчас расскажу",
+  "format": "nobody",
+  "theme": "sleep, mornings & alarms",
+  "imageQuery": "person lying in dark room eyes open thinking"
+ },
+ {
+  "caption": "Ожидание: учу по плану, каждый день понемногу\nРеальность: всё в последнюю ночь, энергетик, слёзы",
+  "format": "expectation-vs-reality",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "student studying late night desk lamp",
+  "photoFile": "30706597.jpg",
+  "photoSource": {
+   "pexelsId": 30706597,
+   "pageUrl": "https://www.pexels.com/photo/young-woman-studying-at-night-with-notebook-30706597/",
+   "photographer": "Oktay Köseoğlu"
+  }
+ },
+ {
+  "caption": "Я в начале семестра: «В этот раз точно буду сдавать всё вовремя»\nЯ в конце семестра: «Так, сколько пропусков можно ещё накопить?»",
+  "format": "expectation-vs-reality",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "tired student slouched over textbook"
+ },
+ {
+  "caption": "Никто:\nАбсолютно никто:\nМой мозг в 2 ночи перед экзаменом: а помнишь ту неловкость из 9 класса?",
+  "format": "nobody",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "person lying awake staring at ceiling dark room",
+  "photoFile": "6943443.jpg",
+  "photoSource": {
+   "pexelsId": 6943443,
+   "pageUrl": "https://www.pexels.com/photo/man-suffering-from-insomnia-6943443/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Когда открыл учебник за 40 минут до экзамена и вдруг понял, что знаешь ВСЁ",
+  "format": "caption",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "confident student thumbs up before exam",
+  "photoFile": "5538574.jpg",
+  "photoSource": {
+   "pexelsId": 5538574,
+   "pageUrl": "https://www.pexels.com/photo/happy-black-lady-standing-with-notepad-5538574/",
+   "photographer": "Zen Chung"
+  }
+ },
+ {
+  "caption": "Топ-3 стадии подготовки к сессии:\n1. «Ещё успею»\n2. «Ещё чуть-чуть успею»\n3. «Ладно, хоть на тройку»",
+  "format": "list-top",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "student looking at calendar with panic expression"
+ },
+ {
+  "caption": "ПОВ: ты открыл конспекты, которые «обязательно перепишешь начисто»",
+  "format": "POV",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "messy handwritten notes notebook chaotic",
+  "photoFile": "7128770.jpg",
+  "photoSource": {
+   "pexelsId": 7128770,
+   "pageUrl": "https://www.pexels.com/photo/white-printer-paper-on-brown-wooden-table-7128770/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "ПРОКРАСТИНАЦИЯ\nНаука о том, как превратить 2 часа работы в 11 часов сожалений",
+  "format": "demotivator-text",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "empty desk clock wall procrastination"
+ },
+ {
+  "caption": "Когда преподаватель говорит «экзамен несложный, главное — посещать пары»\nА ты был на парах ровно два раза",
+  "format": "caption",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "student nervous sweating exam hall",
+  "photoFile": "37831210.jpg",
+  "photoSource": {
+   "pexelsId": 37831210,
+   "pageUrl": "https://www.pexels.com/photo/black-and-white-classroom-study-scene-37831210/",
+   "photographer": "Eduard Perez"
+  }
+ },
+ {
+  "caption": "Я: сегодня точно начну готовиться\nЯ в 23:47: ну, завтра начну, но уже с утра, серьёзно",
+  "format": "expectation-vs-reality",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "person scrolling phone late at night couch",
+  "photoFile": "7856024.jpg",
+  "photoSource": {
+   "pexelsId": 7856024,
+   "pageUrl": "https://www.pexels.com/photo/a-man-playing-a-game-using-smartphone-7856024/",
+   "photographer": "Ron Lach"
+  }
+ },
+ {
+  "caption": "Виды студентов на паре:\n• Спит, но в наушниках — создаёт иллюзию\n• Пишет конспект, но это переписка\n• Смотрит в окно с видом мыслителя\n• «Опоздал на 40 минут, но я тут»",
+  "format": "list-top",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "students in lecture hall university classroom",
+  "photoFile": "8197554.jpg",
+  "photoSource": {
+   "pexelsId": 8197554,
+   "pageUrl": "https://www.pexels.com/photo/woman-reading-a-book-8197554/",
+   "photographer": "Yan Krukau"
+  }
+ },
+ {
+  "caption": "ПОВ: преподаватель сказал «зачёт по итогам работы на паре»\nА работы на паре у тебя — ноль",
+  "format": "POV",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "blank paper pen anxious student"
+ },
+ {
+  "caption": "Ожидание: красивые цветные конспекты, пасты, вкладки\nРеальность: один листочек, исписанный с двух сторон за 20 минут до пары",
+  "format": "expectation-vs-reality",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "colorful organized notes versus messy paper"
+ },
+ {
+  "caption": "Когда нашёл экзаменационный билет прошлого года и там ровно твой вопрос",
+  "format": "caption",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "student surprised happy looking at paper",
+  "photoFile": "7972568.jpg",
+  "photoSource": {
+   "pexelsId": 7972568,
+   "pageUrl": "https://www.pexels.com/photo/photo-of-a-man-in-a-gray-sweatshirt-smiling-while-looking-at-the-camera-7972568/",
+   "photographer": "George Pak"
+  }
+ },
+ {
+  "caption": "Я за 2 недели до сдачи: спокойно, у меня ещё 2 недели\nЯ за 2 дня: всё пропало",
+  "format": "expectation-vs-reality",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "panicked student surrounded by books papers",
+  "photoFile": "6279786.jpg",
+  "photoSource": {
+   "pexelsId": 6279786,
+   "pageUrl": "https://www.pexels.com/photo/a-man-sitting-on-the-floor-6279786/",
+   "photographer": "Yaroslav Shuraev"
+  }
+ },
+ {
+  "caption": "Никто:\nСтудент за 15 минут до сдачи: а расскажи мне весь курс, только коротко",
+  "format": "nobody",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "two students whispering before exam",
+  "photoFile": "8004808.jpg",
+  "photoSource": {
+   "pexelsId": 8004808,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-whispering-to-the-woman-sitting-next-to-her-8004808/",
+   "photographer": "www.kaboompics.com"
+  }
+ },
+ {
+  "caption": "СЕССИЯ\nПериод, когда ты наконец узнаёшь, что именно не учил весь семестр",
+  "format": "demotivator-text",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "student staring blankly at exam paper"
+ },
+ {
+  "caption": "Когда выучил один билет, а вытащил именно его",
+  "format": "caption",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "student fist pump celebrating exam success",
+  "photoFile": "31972628.jpg",
+  "photoSource": {
+   "pexelsId": 31972628,
+   "pageUrl": "https://www.pexels.com/photo/young-graduate-celebrating-outdoors-in-gown-31972628/",
+   "photographer": "Green odette"
+  }
+ },
+ {
+  "caption": "Мой план:\n6:00 — встать, зарядка\n7:00 — повторить материал\n8:00 — позавтракать\n\nРеальность:\n11:43 — проснулся",
+  "format": "expectation-vs-reality",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "alarm clock morning sleepy oversleep",
+  "photoFile": "12562970.jpg",
+  "photoSource": {
+   "pexelsId": 12562970,
+   "pageUrl": "https://www.pexels.com/photo/reflection-of-a-hand-holding-an-alarm-clock-12562970/",
+   "photographer": "Kate N"
+  }
+ },
+ {
+  "caption": "ПОВ: тебе осталось написать «только введение», но ты его пишешь уже третий день",
+  "format": "POV",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "writer blocked laptop blank screen coffee",
+  "photoFile": "8472494.jpg",
+  "photoSource": {
+   "pexelsId": 8472494,
+   "pageUrl": "https://www.pexels.com/photo/a-coffee-pot-and-a-cup-in-front-of-a-laptop-8472494/",
+   "photographer": "Cup of  Couple"
+  }
+ },
+ {
+  "caption": "Когда преподаватель говорит: «На этот вопрос вы точно знаете ответ»\nА ты смотришь в листочек, как будто там появится что-то новое",
+  "format": "caption",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "student staring down at paper confused",
+  "photoFile": "8374326.jpg",
+  "photoSource": {
+   "pexelsId": 8374326,
+   "pageUrl": "https://www.pexels.com/photo/confused-woman-looking-at-papers-8374326/",
+   "photographer": "AI25.Studio  AI GENERATIVE"
+  }
+ },
+ {
+  "caption": "Топ-3 причины не делать курсовую сегодня:\n1. Пятница\n2. Суббота\n3. Воскресенье — надо отдохнуть перед неделей",
+  "format": "list-top",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "relaxed student weekend couch lazy"
+ },
+ {
+  "caption": "Я в начале пары: буду внимательно слушать\nЯ через 7 минут: а что если потолки в зданиях везде разной высоты",
+  "format": "expectation-vs-reality",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "distracted student daydreaming lecture",
+  "photoFile": "8197554.jpg",
+  "photoSource": {
+   "pexelsId": 8197554,
+   "pageUrl": "https://www.pexels.com/photo/woman-reading-a-book-8197554/",
+   "photographer": "Yan Krukau"
+  }
+ },
+ {
+  "caption": "Никто:\nСтудент, сдавший на «удовлетворительно»: ну, главное — корочка",
+  "format": "nobody",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "relieved student diploma certificate"
+ },
+ {
+  "caption": "ДЕДЛАЙН\nЛучший мотиватор, придуманный человечеством.\nК сожалению, работает только в последние 40 минут",
+  "format": "demotivator-text",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "clock countdown pressure deadline work"
+ },
+ {
+  "caption": "Когда зачётная книжка сама по себе произведение искусства:\nстраница 1 — отлично\nстраница 2 — хорошо\nстраница 3 — ну такое…",
+  "format": "caption",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "gradebook open pages student records"
+ },
+ {
+  "caption": "ПОВ: в групповом проекте ты «сделал свою часть», остальные тоже «сделали свою часть», но проект всё равно не готов",
+  "format": "POV",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "group of students confused empty table",
+  "photoFile": "6958581.jpg",
+  "photoSource": {
+   "pexelsId": 6958581,
+   "pageUrl": "https://www.pexels.com/photo/surprised-man-by-table-6958581/",
+   "photographer": "www.kaboompics.com"
+  }
+ },
+ {
+  "caption": "Я каждый семестр: в этот раз буду сдавать всё досрочно\nЭкзаменатор на пересдаче: о, снова ты",
+  "format": "expectation-vs-reality",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "teacher student recurring meeting classroom",
+  "photoFile": "5905923.jpg",
+  "photoSource": {
+   "pexelsId": 5905923,
+   "pageUrl": "https://www.pexels.com/photo/black-teacher-answering-questions-of-pupil-5905923/",
+   "photographer": "Katerina Holmes"
+  }
+ },
+ {
+  "caption": "Топ-4 этапа написания реферата:\n1. Нашёл тему — отлично\n2. Открыл документ — продуктивно\n3. Написал заголовок — устал\n4. Сохранил файл — на сегодня хватит",
+  "format": "list-top",
+  "theme": "studying, university, exams & procrastination",
+  "imageQuery": "student laptop open document minimal progress"
+ },
+ {
+  "caption": "Ожидание: долгий романтический разговор до 3 ночи\nРеальность: «окей», «ок», «понял»",
+  "format": "expectation-vs-reality",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "two people texting on phones at night"
+ },
+ {
+  "caption": "Никто:\nАбсолютно никто:\nЯ, открывая переписку в 2 часа ночи: ну что, начнём разговор про смысл жизни?",
+  "format": "nobody",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "person lying in bed staring at phone screen",
+  "photoFile": "6943437.jpg",
+  "photoSource": {
+   "pexelsId": 6943437,
+   "pageUrl": "https://www.pexels.com/photo/a-man-lying-down-while-using-the-phone-6943437/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Виды ответов в переписке:\n1. «Хорошо» — всё нормально\n2. «Хорошо.» — ничего не нормально\n3. «Ок» — иди думай сам",
+  "format": "list-top",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "smartphone chat messages on screen"
+ },
+ {
+  "caption": "Когда пишешь «я не обиделась» и сидишь ждёшь, когда же он начнёт извиняться",
+  "format": "caption",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "woman sitting with arms crossed looking at phone",
+  "photoFile": "6382640.jpg",
+  "photoSource": {
+   "pexelsId": 6382640,
+   "pageUrl": "https://www.pexels.com/photo/focused-young-ethnic-lady-messaging-on-smartphone-sitting-on-chair-6382640/",
+   "photographer": "Liza Summer"
+  }
+ },
+ {
+  "caption": "Я в начале отношений: отвечаю за 3 секунды, онлайн 24/7\nЯ через год: прочитал, вернусь к этому вопросу",
+  "format": "expectation-vs-reality",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "person casually ignoring phone notification"
+ },
+ {
+  "caption": "POV: ты написал «мне нужно поговорить» и теперь ждёшь ответа",
+  "format": "POV",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "person anxiously watching phone screen"
+ },
+ {
+  "caption": "Высший пилотаж: написать «не грусти» и считать, что вопрос закрыт",
+  "format": "caption",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "person reading message on phone looking unhappy"
+ },
+ {
+  "caption": "Топ способов сказать, что скучаешь:\n1. «Ты чем занимаешься?»\n2. «Видел мем, думал о тебе»\n3. «У тебя есть зарядка от айфона?»",
+  "format": "list-top",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "young man typing message on phone smiling"
+ },
+ {
+  "caption": "Он: просто поставил точку в конце предложения\nЯ: анализирую тональность уже 40 минут",
+  "format": "caption",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "woman staring intensely at phone screen",
+  "photoFile": "12911246.jpg",
+  "photoSource": {
+   "pexelsId": 12911246,
+   "pageUrl": "https://www.pexels.com/photo/overworked-woman-in-office-with-smart-phone-12911246/",
+   "photographer": "Mizuno K"
+  }
+ },
+ {
+  "caption": "Ожидание: встреча один на один, свечи, разговор по душам\nРеальность: сидим рядом, оба в телефоне",
+  "format": "expectation-vs-reality",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "couple sitting together both looking at their phones",
+  "photoFile": "7993390.jpg",
+  "photoSource": {
+   "pexelsId": 7993390,
+   "pageUrl": "https://www.pexels.com/photo/a-couple-holding-a-mobile-phone-while-doing-an-online-shopping-7993390/",
+   "photographer": "Ivan S"
+  }
+ },
+ {
+  "caption": "Никто:\nМои мысли в 1 ночи: а что он имел в виду три года назад, когда написал «норм»?",
+  "format": "nobody",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "person wide awake in dark room holding phone",
+  "photoFile": "6943448.jpg",
+  "photoSource": {
+   "pexelsId": 6943448,
+   "pageUrl": "https://www.pexels.com/photo/a-man-fell-asleep-while-using-his-mobile-phone-6943448/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Когда уже час пишешь сообщение, перечитываешь, удаляешь и в итоге отправляешь «привет»",
+  "format": "caption",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "close-up hands typing and deleting text on smartphone"
+ },
+ {
+  "caption": "Отношения: это когда ты не расстаёшься, просто на время перестаёшь отвечать на сообщения",
+  "format": "demotivator-text",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "notification badge on messaging app icon"
+ },
+ {
+  "caption": "Я: пишу длинное вдумчивое сообщение про свои чувства\nОн: «ясно»",
+  "format": "expectation-vs-reality",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "phone screen showing short one-word reply"
+ },
+ {
+  "caption": "Стадии знакомства в приложении:\n1. Матч — радость\n2. «Привет» — надежда\n3. Тишина три дня — ну такое…",
+  "format": "list-top",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "dating app match screen on smartphone",
+  "photoFile": "34169044.jpg",
+  "photoSource": {
+   "pexelsId": 34169044,
+   "pageUrl": "https://www.pexels.com/photo/luxury-jewelry-display-with-calendar-app-34169044/",
+   "photographer": "光术 山影"
+  }
+ },
+ {
+  "caption": "POV: написал «давай встретимся» и получил «посмотрим»",
+  "format": "POV",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "person reading ambiguous message looking confused"
+ },
+ {
+  "caption": "Он не перезвонил — всё, конец, трагедия.\nОн перезвонил — ты теперь не знаешь, что говорить.",
+  "format": "caption",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "person holding phone looking panicked",
+  "photoFile": "7579370.jpg",
+  "photoSource": {
+   "pexelsId": 7579370,
+   "pageUrl": "https://www.pexels.com/photo/man-having-a-phone-call-7579370/",
+   "photographer": "AI25.Studio  Studio"
+  }
+ },
+ {
+  "caption": "Когда говоришь «я не ревнивый» и следишь за каждым онлайном",
+  "format": "caption",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "person watching phone screen showing online status"
+ },
+ {
+  "caption": "Ожидание первого свидания: лёгкий флирт, искры, смех\nРеальность: оба заказали одно и то же и не знаете, о чём говорить",
+  "format": "expectation-vs-reality",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "two people sitting across table awkward silence restaurant",
+  "photoFile": "4255403.jpg",
+  "photoSource": {
+   "pexelsId": 4255403,
+   "pageUrl": "https://www.pexels.com/photo/man-in-black-formal-suit-jacket-sitting-beside-woman-in-beige-long-sleeve-dress-4255403/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Никто:\nЯ после прочитанного без ответа: ну и ладно. мне и самому было не очень надо. вообще. совсем.",
+  "format": "nobody",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "person pretending not to care while looking at phone"
+ },
+ {
+  "caption": "Два типа людей:\n«Позвони мне» — звонит\n«Позвони мне» — пишет «позвони сам»",
+  "format": "list-top",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "smartphone ringing call screen"
+ },
+ {
+  "caption": "Написал «скучаю». Удалил. Написал «как дела». Отправил. Лежит с этим.",
+  "format": "caption",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "person typing and deleting message on phone at night",
+  "photoFile": "9898392.jpg",
+  "photoSource": {
+   "pexelsId": 9898392,
+   "pageUrl": "https://www.pexels.com/photo/a-person-holding-a-cellphone-9898392/",
+   "photographer": "Ron Lach"
+  }
+ },
+ {
+  "caption": "Когда уже третий «последний» раз пишешь первым",
+  "format": "caption",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "tired person staring at unanswered message on screen"
+ },
+ {
+  "caption": "Паблик ВК: «Настоящий мужчина позвонит»\nРеальность 2024: настоящий мужчина напишет голосовое на 7 минут",
+  "format": "expectation-vs-reality",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "voice message waveform on chat screen"
+ },
+ {
+  "caption": "POV: первое свидание прошло хорошо, ты уже три часа ждёшь сообщения «добрался»",
+  "format": "POV",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "person checking phone repeatedly at home",
+  "photoFile": "4051504.jpg",
+  "photoSource": {
+   "pexelsId": 4051504,
+   "pageUrl": "https://www.pexels.com/photo/photo-of-person-using-laptop-4051504/",
+   "photographer": "KATRIN  BOLOVTSOVA"
+  }
+ },
+ {
+  "caption": "Уровни серьёзности отношений:\nУровень 1: лайкает фото\nУровень 2: пишет первым\nУровень 3: отвечает сразу\nУровень 4: звонит без предупреждения",
+  "format": "list-top",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "phone screen with multiple notification icons"
+ },
+ {
+  "caption": "Я: хочу серьёзных отношений\nТакже я: читаю в 23:47 и думаю «ну не буду же отвечать ночью»",
+  "format": "caption",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "phone screen showing read receipt late at night"
+ },
+ {
+  "caption": "Когда поругались, оба онлайн, оба молчат — и это уже соревнование, кто напишет первым",
+  "format": "caption",
+  "theme": "dating, relationships & texting",
+  "imageQuery": "two smartphones side by side showing online status"
+ },
+ {
+  "caption": "Ожидание: готовлю дома, экономлю деньги, ем здоровое\nРеальность: открываю приложение доставки в 23:47",
+  "format": "expectation-vs-reality",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "smartphone food delivery app night dark room"
+ },
+ {
+  "caption": "Никто:\nЯ, когда поставил воду кипятиться и ушёл «на секунду»:",
+  "format": "nobody",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "pot boiling over stovetop kitchen",
+  "photoFile": "10432848.jpg",
+  "photoSource": {
+   "pexelsId": 10432848,
+   "pageUrl": "https://www.pexels.com/photo/pot-and-kettle-on-gas-hob-10432848/",
+   "photographer": "RDNE Stock project"
+  }
+ },
+ {
+  "caption": "Диета начинается с понедельника.\nС прошлого понедельника.\nС позапрошлого тоже.\nСледующий понедельник — точно последний.",
+  "format": "demotivator-text",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "calendar monday highlighted desk planner"
+ },
+ {
+  "caption": "Виды людей в очереди за кофе:\n— тот, кто знает заказ\n— тот, кто «ещё секунду подумаю»\n— я, который пришёл за кофе и уходит с тремя круассанами",
+  "format": "list-top",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "coffee shop bakery counter display pastries",
+  "photoFile": "8909525.jpg",
+  "photoSource": {
+   "pexelsId": 8909525,
+   "pageUrl": "https://www.pexels.com/photo/a-display-counter-in-a-cafe-8909525/",
+   "photographer": "Elena Yunina"
+  }
+ },
+ {
+  "caption": "POV: ты открыл холодильник в четвёртый раз за час.\nЕда не появилась.",
+  "format": "POV",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "open refrigerator empty shelves late night",
+  "photoFile": "4375718.jpg",
+  "photoSource": {
+   "pexelsId": 4375718,
+   "pageUrl": "https://www.pexels.com/photo/man-sitting-on-the-ground-beside-an-opened-refrigerator-4375718/",
+   "photographer": "Chander Mohan"
+  }
+ },
+ {
+  "caption": "Курьер: «буду через 10 минут»\n\nКурьер через 40 минут:",
+  "format": "expectation-vs-reality",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "delivery person cycling in rain dark street"
+ },
+ {
+  "caption": "Я в начале диеты: отмеряю граммы, считаю КБЖУ\nЯ в конце первой недели: «ну одно печенье — это же ничего»",
+  "format": "expectation-vs-reality",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "kitchen scale with cookies nearby"
+ },
+ {
+  "caption": "Когда готовил по рецепту и всё получилось:\n\nну такое…",
+  "format": "caption",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "home cooked meal slightly burnt imperfect plate",
+  "photoFile": "27439945.jpg",
+  "photoSource": {
+   "pexelsId": 27439945,
+   "pageUrl": "https://www.pexels.com/photo/a-plate-of-food-with-a-steak-and-vegetables-27439945/",
+   "photographer": "Sami  Abdullah"
+  }
+ },
+ {
+  "caption": "Топ-3 лжи, которые я говорю себе каждое утро:\n1. Сегодня начну правильно питаться\n2. Куплю только то, что в списке\n3. Это последний раз заказываю",
+  "format": "list-top",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "person writing shopping list at table with coffee"
+ },
+ {
+  "caption": "Ожидание: красивый бургер из фото в меню\nРеальность: то, что приехало",
+  "format": "expectation-vs-reality",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "fast food burger in box simple plain realistic"
+ },
+ {
+  "caption": "Пришёл в магазин за хлебом.\nДомой пришёл с хлебом, йогуртом, двумя шоколадками и ни одной идеей что готовить.",
+  "format": "caption",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "grocery store cart overflowing supermarket aisle",
+  "photoFile": "15491800.jpg",
+  "photoSource": {
+   "pexelsId": 15491800,
+   "pageUrl": "https://www.pexels.com/photo/shopping-cart-filled-with-packages-in-empty-aisle-15491800/",
+   "photographer": "Wallace Chuck"
+  }
+ },
+ {
+  "caption": "Ожидание: лёгкий салатик на обед\nРеальность: «ладно, суп тоже возьму. И гарнир. И компот. Ну и пирожок — я же заслужил»",
+  "format": "expectation-vs-reality",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "cafeteria tray overloaded food lunch"
+ },
+ {
+  "caption": "Когда ты на диете, но бабушка приготовила:\n\nДиета подождёт.",
+  "format": "caption",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "grandmother serving large plate of homemade food",
+  "photoFile": "13334759.jpg",
+  "photoSource": {
+   "pexelsId": 13334759,
+   "pageUrl": "https://www.pexels.com/photo/man-putting-scrambled-eggs-on-plates-13334759/",
+   "photographer": "Mizuno K"
+  }
+ },
+ {
+  "caption": "Никто:\nМой мозг в 23:30: а что если поджарить что-нибудь?",
+  "format": "nobody",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "dark kitchen frying pan stovetop night light",
+  "photoFile": "18732659.jpg",
+  "photoSource": {
+   "pexelsId": 18732659,
+   "pageUrl": "https://www.pexels.com/photo/black-and-white-photo-of-a-hot-saucepan-by-a-window-18732659/",
+   "photographer": "Mason McCall"
+  }
+ },
+ {
+  "caption": "Статус заказа: «курьер забрал заказ»\n\nЯ у окна:",
+  "format": "caption",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "person looking out window waiting anxiously",
+  "photoFile": "9902133.jpg",
+  "photoSource": {
+   "pexelsId": 9902133,
+   "pageUrl": "https://www.pexels.com/photo/man-looking-through-window-9902133/",
+   "photographer": "Ron Lach"
+  }
+ },
+ {
+  "caption": "Готовить с нуля: 1.5 часа.\nМыть посуду после: 45 минут.\nПирожки съедены за 7 минут.",
+  "format": "demotivator-text",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "pile of dirty dishes in sink after cooking",
+  "photoFile": "6248900.jpg",
+  "photoSource": {
+   "pexelsId": 6248900,
+   "pageUrl": "https://www.pexels.com/photo/dirty-dishes-heaped-in-kitchen-sink-6248900/",
+   "photographer": "Gary  Barnes"
+  }
+ },
+ {
+  "caption": "POV: ты открыл ютуб посмотреть «быстрый рецепт».\nВремя приготовления — 15 минут.\nВремя предисловия шеф-повара — 12 минут.",
+  "format": "POV",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "person watching cooking video on laptop frustrated"
+ },
+ {
+  "caption": "Я в начале месяца: готовлю дома, экономлю\nЯ в конце месяца: пицца уже третий раз за неделю",
+  "format": "expectation-vs-reality",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "pizza box on couch coffee table evening"
+ },
+ {
+  "caption": "Минимальная сумма заказа в доставке — 500 рублей.\nМой заказ — 510 рублей.\nСтоимость доставки — 299 рублей.",
+  "format": "demotivator-text",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "phone screen food delivery app payment checkout"
+ },
+ {
+  "caption": "Никто:\nЯ, листая ленту рецептов перед сном:\n«О, надо попробовать. И это. И это тоже. Завтра точно приготовлю»",
+  "format": "nobody",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "person scrolling phone in bed at night",
+  "photoFile": "9787927.jpg",
+  "photoSource": {
+   "pexelsId": 9787927,
+   "pageUrl": "https://www.pexels.com/photo/a-person-holding-a-smartphone-9787927/",
+   "photographer": "Marcus Aurelius"
+  }
+ },
+ {
+  "caption": "Виды людей в кафе:\n— изучает меню 20 минут и берёт то же, что всегда\n— читает состав каждого блюда\n— я, уже жую хлеб из хлебницы пока не принесли воду",
+  "format": "list-top",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "bread basket restaurant table waiting",
+  "photoFile": "37593667.jpg",
+  "photoSource": {
+   "pexelsId": 37593667,
+   "pageUrl": "https://www.pexels.com/photo/cozy-basket-of-bread-on-restaurant-table-37593667/",
+   "photographer": "Parth  Patel"
+  }
+ },
+ {
+  "caption": "Съел лёгкий перекус в 10 вечера.\nОн был лёгким.\nЭто было пять перекусов.",
+  "format": "caption",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "snacks spread on table late night kitchen"
+ },
+ {
+  "caption": "Ожидание: куплю продукты и буду готовить всю неделю\nРеальность: в среду открываю холодильник и вижу увядший укроп, одно яйцо и вопросы к себе",
+  "format": "expectation-vs-reality",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "sparse nearly empty refrigerator lonely ingredients",
+  "photoFile": "10105462.jpg",
+  "photoSource": {
+   "pexelsId": 10105462,
+   "pageUrl": "https://www.pexels.com/photo/baking-ingredients-on-brown-wooden-table-10105462/",
+   "photographer": "Doralin  Tunas"
+  }
+ },
+ {
+  "caption": "Когда в рецепте написано «по вкусу» и ты не знаешь, какой вкус правильный:\n\nну такое…",
+  "format": "caption",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "person tasting food from spoon uncertain expression",
+  "photoFile": "6150650.jpg",
+  "photoSource": {
+   "pexelsId": 6150650,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-in-white-crew-neck-shirt-holding-a-silver-spoon-6150650/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Правила стройного питания:\n— не есть после 18:00\n— не есть после 20:00\n— ладно, не есть после 22:00\n— съел в 23:15. Продолжаем завтра.",
+  "format": "list-top",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "clock on kitchen wall showing late evening time"
+ },
+ {
+  "caption": "Курьер сфотографировал еду у двери и уехал.\nЯ смотрю в глазок: а, вот она.",
+  "format": "caption",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "food delivery bag left at apartment door hallway",
+  "photoFile": "9461212.jpg",
+  "photoSource": {
+   "pexelsId": 9461212,
+   "pageUrl": "https://www.pexels.com/photo/man-in-black-polo-shirt-and-black-pants-wearing-black-headphones-9461212/",
+   "photographer": "Mike Jones"
+  }
+ },
+ {
+  "caption": "Ожидание: ем осознанно, медленно, без отвлечений\nРеальность: доел суп и не помню, когда начал",
+  "format": "expectation-vs-reality",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "empty bowl on desk next to laptop keyboard",
+  "photoFile": "7657401.jpg",
+  "photoSource": {
+   "pexelsId": 7657401,
+   "pageUrl": "https://www.pexels.com/photo/notepad-with-pencil-beside-gray-laptop-7657401/",
+   "photographer": "Cup of  Couple"
+  }
+ },
+ {
+  "caption": "Это фиаско, братан:\nзаказал здоровое, доставили быстро, съел половину и убрал в холодильник.\nДва дня спустя выбросил.",
+  "format": "demotivator-text",
+  "theme": "food, delivery, cooking & diets",
+  "imageQuery": "takeaway container in fridge forgotten food"
+ },
+ {
+  "caption": "Когда поставил телефон на зарядку и лёг спать,\nа утром — 3%",
+  "format": "caption",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "person looking at dead phone in bed morning",
+  "photoFile": "7623562.jpg",
+  "photoSource": {
+   "pexelsId": 7623562,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-using-a-smartphone-7623562/",
+   "photographer": "Miriam Alonso"
+  }
+ },
+ {
+  "caption": "Ожидание: обновление займёт 2 минуты\nРеальность: телефон перезагружается уже 40 минут, а ты уже опаздываешь",
+  "format": "expectation-vs-reality",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "person waiting staring at loading screen"
+ },
+ {
+  "caption": "Никто:\nМой телефон в 2 часа ночи: 🔔 «Маша опубликовала Историю»",
+  "format": "nobody",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "phone screen glowing in dark bedroom",
+  "photoFile": "6943441.jpg",
+  "photoSource": {
+   "pexelsId": 6943441,
+   "pageUrl": "https://www.pexels.com/photo/a-person-using-mobile-phone-6943441/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Виды Wi-Fi:\n1. Твой дома — быстрый, любимый\n2. У друзей — нормальный\n3. В кафе — «введите 08.05.1994»\n4. В отеле — миф",
+  "format": "list-top",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "wifi router coffee shop"
+ },
+ {
+  "caption": "Когда телефон не ловит сеть, но каким-то образом успел прислать уведомление о скидке в 15% на кроссовки",
+  "format": "caption",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "person holding phone with no signal outdoors",
+  "photoFile": "6831065.jpg",
+  "photoSource": {
+   "pexelsId": 6831065,
+   "pageUrl": "https://www.pexels.com/photo/a-person-holding-a-smartphone-6831065/",
+   "photographer": "Tima Miroshnichenko"
+  }
+ },
+ {
+  "caption": "ОБНОВЛЕНИЕ\n\nМы ничего не сломали.\nПросто стало немного хуже.",
+  "format": "demotivator-text",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "blank update screen phone close up"
+ },
+ {
+  "caption": "Я: наконец-то почищу телефон от лишнего\n\n*3 часа спустя*\n\nЯ: посмотрел фотки с 2018 года и поплакал",
+  "format": "POV",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "person scrolling old photos on smartphone",
+  "photoFile": "6555033.jpg",
+  "photoSource": {
+   "pexelsId": 6555033,
+   "pageUrl": "https://www.pexels.com/photo/person-holding-a-cellphone-6555033/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Уведомления, которые я жду:\n— сообщение от него/неё\n\nУведомления, которые приходят:\n— «Ваша карта: операция на 1 ₽»\n— «Обновите приложение»\n— «Включите уведомления, чтобы ничего не пропустить»",
+  "format": "list-top",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "smartphone notification screen close up"
+ },
+ {
+  "caption": "POV: ты зашёл в настройки, чтобы выключить одно уведомление,\nи вышел оттуда через 45 минут, поменяв обои и язык",
+  "format": "POV",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "person deeply focused on smartphone settings",
+  "photoFile": "8121244.jpg",
+  "photoSource": {
+   "pexelsId": 8121244,
+   "pageUrl": "https://www.pexels.com/photo/a-man-using-his-phone-while-getting-popcorn-from-the-bowl-8121244/",
+   "photographer": "Mikhail Nilov"
+  }
+ },
+ {
+  "caption": "Мой Wi-Fi в соседней комнате:\n█████████░ 90%\n\nМой Wi-Fi на кухне:\n██░░░░░░░░ 20%\n\nМой Wi-Fi в ванной:\n░░░░░░░░░░ нет сигнала\n\nМой Wi-Fi у соседей:\n██████████ 100%",
+  "format": "demotivator-text",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "apartment floor plan wifi signal bars"
+ },
+ {
+  "caption": "Когда приложение пишет «Новые функции!»,\nа ты просто хотел, чтобы старые работали",
+  "format": "caption",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "frustrated person reading phone screen",
+  "photoFile": "5240083.jpg",
+  "photoSource": {
+   "pexelsId": 5240083,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-gray-long-sleeves-shirt-looking-at-the-screen-of-the-cellphone-she-is-holding-5240083/",
+   "photographer": "www.kaboompics.com"
+  }
+ },
+ {
+  "caption": "Ожидание: куплю новый телефон — всё будет иначе\nРеальность: те же приложения, те же чаты, тот же я",
+  "format": "expectation-vs-reality",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "person unboxing new smartphone"
+ },
+ {
+  "caption": "Никто:\nАбсолютно никто:\nМоё приложение доставки в 23:57: «Ты ещё не заказал ужин? 🍕»",
+  "format": "nobody",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "late night food delivery app notification"
+ },
+ {
+  "caption": "Телефон: батарея 20%, включить режим экономии?\nЯ: нет\nТелефон: 15%?\nЯ: нет\nТелефон: 10%?\nЯ: нет\nТелефон: *выключился*\nЯ: окак",
+  "format": "caption",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "smartphone dead battery low power screen"
+ },
+ {
+  "caption": "Стадии принятия обновления:\n1. «Потом поставлю»\n2. «Ладно, потом»\n3. «Не сейчас»\n4. Телефон сам обновился ночью\n5. Всё по-другому. Это не мой телефон.",
+  "format": "list-top",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "confused person looking at changed phone interface"
+ },
+ {
+  "caption": "Когда в кафе попросили пароль от Wi-Fi,\nа тебе написали на бумажке: «WiFi_2.4GHz_EXT_NEW2_kopiya»",
+  "format": "caption",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "waiter handing paper note to customer in cafe",
+  "photoFile": "6829521.jpg",
+  "photoSource": {
+   "pexelsId": 6829521,
+   "pageUrl": "https://www.pexels.com/photo/a-waiter-serving-a-cup-of-coffee-6829521/",
+   "photographer": "Kampus Production"
+  }
+ },
+ {
+  "caption": "Я в начале дня: удалю все ненужные приложения\nЯ в конце дня: скачал ещё четыре",
+  "format": "expectation-vs-reality",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "cluttered smartphone app grid icons"
+ },
+ {
+  "caption": "Приложение: «Разрешить уведомления?»\nЯ: нет\nПриложение: «Уверены? Вы можете пропустить важное»\nЯ: нет\nПриложение: «А вдруг акция?»\nЯ: НЕТ\nПриложение на следующий день: 🔔🔔🔔",
+  "format": "caption",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "smartphone screen showing multiple notification popups"
+ },
+ {
+  "caption": "POV: ты случайно нажал «Разрешить доступ к микрофону»\nи теперь боишься говорить вслух, что хочешь на ужин",
+  "format": "POV",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "person whispering secretly near smartphone",
+  "photoFile": "6964154.jpg",
+  "photoSource": {
+   "pexelsId": 6964154,
+   "pageUrl": "https://www.pexels.com/photo/woman-talking-on-the-phone-6964154/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Скорость интернета по ощущениям:\n\nYouTube в 4 утра — молниеносно\nЗвонок по работе в 10 утра — это фиаско, братан",
+  "format": "demotivator-text",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "person on video call with pixelated frozen screen",
+  "photoFile": "6193570.jpg",
+  "photoSource": {
+   "pexelsId": 6193570,
+   "pageUrl": "https://www.pexels.com/photo/photo-of-person-holding-smartphone-6193570/",
+   "photographer": "Askar Abayev"
+  }
+ },
+ {
+  "caption": "Когда телефон пишет «Память заполнена»,\nа ты точно знаешь, что там лежит:\n2000 фоток еды, которую ты никому не показал",
+  "format": "caption",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "food photos filling smartphone gallery",
+  "photoFile": "18423199.jpg",
+  "photoSource": {
+   "pexelsId": 18423199,
+   "pageUrl": "https://www.pexels.com/photo/person-taking-a-picture-with-their-phone-18423199/",
+   "photographer": "louai benzaoui"
+  }
+ },
+ {
+  "caption": "Никто:\nМой роутер в 3 часа ночи: перезагружусь-ка я сам",
+  "format": "nobody",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "wifi router blinking lights at night",
+  "photoFile": "4218546.jpg",
+  "photoSource": {
+   "pexelsId": 4218546,
+   "pageUrl": "https://www.pexels.com/photo/wifi-router-on-yellow-background-4218546/",
+   "photographer": "Aditya Singh"
+  }
+ },
+ {
+  "caption": "Ожидание: поставлю телефон в «Не беспокоить» и хорошо посплю\nРеальность: сижу в телефоне, просто тихо",
+  "format": "expectation-vs-reality",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "person lying in bed scrolling phone in dark",
+  "photoFile": "6943437.jpg",
+  "photoSource": {
+   "pexelsId": 6943437,
+   "pageUrl": "https://www.pexels.com/photo/a-man-lying-down-while-using-the-phone-6943437/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Топ ситуаций, когда телефон умирает:\n1. В дороге, вдали от дома\n2. Когда ждёшь важный звонок\n3. Когда нашёл розетку, но нет провода\n4. Вы не поверите — прямо сейчас",
+  "format": "list-top",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "person looking at dead phone in public place"
+ },
+ {
+  "caption": "Я: читаю уведомление\nПриложение: о, он открыл нас! покажем ему ещё 47 уведомлений, которые мы копили",
+  "format": "caption",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "overwhelmed person looking at phone notification flood"
+ },
+ {
+  "caption": "Зарядка телефона:\n\n0 → 80% — за ночь\n80% → 100% — вечность",
+  "format": "demotivator-text",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "phone charging cable plugged in close up"
+ },
+ {
+  "caption": "Когда скачал приложение, которое обещало «сделает жизнь проще»,\nа оно сначала попросило зарегистрироваться, потом подтвердить почту, потом включить уведомления, потом оценить приложение — и только потом показало, что функция платная",
+  "format": "caption",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "tired person reading long registration form on phone",
+  "photoFile": "6028548.jpg",
+  "photoSource": {
+   "pexelsId": 6028548,
+   "pageUrl": "https://www.pexels.com/photo/a-bored-woman-holding-her-smartphone-6028548/",
+   "photographer": "www.kaboompics.com"
+  }
+ },
+ {
+  "caption": "Виды людей по реакции на «Обновление доступно»:\n— «Обновлю сразу» (таких нет)\n— «Потом» (напоминание каждые 3 часа)\n— «Установить ночью» (телефон обновился, когда ты в метро)\n— «Пользуется версией 2019 года»",
+  "format": "list-top",
+  "theme": "phones, wifi, apps, updates & notifications",
+  "imageQuery": "smartphone software update notification screen"
+ },
+ {
+  "caption": "Я в воскресенье вечером:\n«С понедельника — зал, правильное питание, режим, всё серьёзно»\n\nЯ в понедельник в 7:00:\n— ну ладно, со следующего понедельника",
+  "format": "expectation-vs-reality",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "person lying in bed morning alarm snooze",
+  "photoFile": "7622520.jpg",
+  "photoSource": {
+   "pexelsId": 7622520,
+   "pageUrl": "https://www.pexels.com/photo/crop-woman-snoozing-alarm-on-smartphone-7622520/",
+   "photographer": "Miriam Alonso"
+  }
+ },
+ {
+  "caption": "Ожидание: прихожу в зал — тело меняется за месяц\nРеальность: прихожу в зал — узнаю, где туалет, и ухожу",
+  "format": "expectation-vs-reality",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "empty gym entrance hallway"
+ },
+ {
+  "caption": "Никто:\nАбсолютно никто:\nЯ в воскресенье ночью: составляю план тренировок на 12 недель в гугл-таблице и иду спать",
+  "format": "nobody",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "person on laptop at night spreadsheet",
+  "photoFile": "8100054.jpg",
+  "photoSource": {
+   "pexelsId": 8100054,
+   "pageUrl": "https://www.pexels.com/photo/person-sitting-beside-a-table-with-documents-on-top-8100054/",
+   "photographer": "Ron Lach"
+  }
+ },
+ {
+  "caption": "Стадии новой жизни с понедельника:\n1. Купил форму\n2. Скачал приложение\n3. Посмотрел ютуб про технику\n4. Перенёс на следующий понедельник",
+  "format": "list-top",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "new sportswear in shopping bag on table"
+ },
+ {
+  "caption": "Я в зале на первой тренировке:\nподнимаю самую лёгкую гантель — уверенно смотрю по сторонам, чтобы никто не увидел",
+  "format": "POV",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "person at gym looking around self-conscious",
+  "photoFile": "14074801.jpg",
+  "photoSource": {
+   "pexelsId": 14074801,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-looking-in-the-mirror-14074801/",
+   "photographer": "Gerardo Manzano"
+  }
+ },
+ {
+  "caption": "Мышечная боль на следующий день после первой тренировки:\n\nВсё. Это была последняя тренировка в этом году.",
+  "format": "caption",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "person wincing in pain trying to get up from sofa",
+  "photoFile": "5938366.jpg",
+  "photoSource": {
+   "pexelsId": 5938366,
+   "pageUrl": "https://www.pexels.com/photo/woman-suffering-from-a-stomach-pain-5938366/",
+   "photographer": "Sora Shimazaki"
+  }
+ },
+ {
+  "caption": "ПОВ: ты пришёл в зал в первый раз за три месяца\n\n— Добрый день!\n— О, вы к нам впервые?",
+  "format": "POV",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "gym reception desk welcome sign"
+ },
+ {
+  "caption": "Ожидание: правильное питание с понедельника\nРеальность: в воскресенье ночью доедаю всё запрещённое «последний раз»",
+  "format": "expectation-vs-reality",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "person eating snacks late at night kitchen",
+  "photoFile": "33579134.jpg",
+  "photoSource": {
+   "pexelsId": 33579134,
+   "pageUrl": "https://www.pexels.com/photo/young-woman-enjoying-instant-noodles-indoors-33579134/",
+   "photographer": "Daniel's Richard"
+  }
+ },
+ {
+  "caption": "Виды людей в тренажёрном зале в январе:\n— Тот, кто пришёл с целью\n— Тот, кто пришёл с новой формой\n— Тот, кто купил абонемент на год и пришёл один раз",
+  "format": "list-top",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "crowded gym January people exercising"
+ },
+ {
+  "caption": "Я держу диету весь день.\nЯ в 23:47 перед холодильником:\nну это уже технически завтра",
+  "format": "caption",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "open refrigerator light at night dark kitchen",
+  "photoFile": "10379533.jpg",
+  "photoSource": {
+   "pexelsId": 10379533,
+   "pageUrl": "https://www.pexels.com/photo/a-man-looking-at-the-refrigirator-10379533/",
+   "photographer": "Aynur Latfullin"
+  }
+ },
+ {
+  "caption": "«Куплю абонемент в зал — точно буду ходить, раз деньги заплачены»\n\nАбонемент: лежит в кошельке, напоминает о себе каждый раз как совесть",
+  "format": "caption",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "gym membership card in wallet closeup"
+ },
+ {
+  "caption": "Я в зале смотрю обучающее видео на телефоне\nвместо того чтобы делать упражнение:\n\nЭто тоже тренировка. Я изучаю теорию.",
+  "format": "caption",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "person watching phone video in gym sitting on bench",
+  "photoFile": "6146959.jpg",
+  "photoSource": {
+   "pexelsId": 6146959,
+   "pageUrl": "https://www.pexels.com/photo/serious-man-with-smartphone-in-park-6146959/",
+   "photographer": "Keira Burton"
+  }
+ },
+ {
+  "caption": "Месяц занятий в зале:\nОжидание: тело как у атлета\nРеальность: знаю, где лежат полотенца",
+  "format": "demotivator-text",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "gym towel rack locker room"
+ },
+ {
+  "caption": "Я в понедельник: начинаю новую жизнь\nЯ во вторник: ну, неплохо начал\nЯ в среду: в общем, со следующего понедельника",
+  "format": "expectation-vs-reality",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "calendar week days closeup"
+ },
+ {
+  "caption": "Составил план питания:\n— завтрак — белки\n— обед — сложные углеводы\n— ужин — овощи\n— 23:00 — пельмени",
+  "format": "list-top",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "healthy food meal prep containers table"
+ },
+ {
+  "caption": "Первый день диеты: держусь, всё хорошо\nВторой день: держусь, немного сложно\nТретий день: ем торт и говорю себе «зато я уже два дня держался»",
+  "format": "list-top",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "slice of cake on plate with fork",
+  "photoFile": "37271307.jpg",
+  "photoSource": {
+   "pexelsId": 37271307,
+   "pageUrl": "https://www.pexels.com/photo/delicious-strawberry-layer-cake-slice-on-plate-37271307/",
+   "photographer": "Veronika Benz"
+  }
+ },
+ {
+  "caption": "ПОВ: дошёл до зала в понедельник\nВышел через 20 минут\n\nТренировка засчитана. Главное — система.",
+  "format": "POV",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "gym exit door from inside"
+ },
+ {
+  "caption": "Моя мотивация накануне:\nЭТОТ РАЗ ВСЁ СЕРЬЁЗНО\n\nМоя мотивация в 6:30 утра, когда звенит будильник:\nну такое…",
+  "format": "expectation-vs-reality",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "alarm clock 6am early morning dark bedroom",
+  "photoFile": "6943418.jpg",
+  "photoSource": {
+   "pexelsId": 6943418,
+   "pageUrl": "https://www.pexels.com/photo/a-lamp-shade-and-a-clock-on-the-bedside-table-6943418/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Я покупаю протеин, бутылку для воды и спортивные перчатки.\n\nЯ так и не дошёл до зала, но экипирован серьёзно.",
+  "format": "caption",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "protein powder bottle sports gloves water bottle flat lay"
+ },
+ {
+  "caption": "Никто:\nЯ в декабре 31-го:\nс 1 января — новая жизнь, другой человек, всё меняется\n\nЯ 2 января: ну, с понедельника",
+  "format": "nobody",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "new year fireworks night sky"
+ },
+ {
+  "caption": "Ожидание: после тренировки — лёгкость и энергия\nРеальность: после тренировки — ползу к дивану и не двигаюсь 40 минут",
+  "format": "expectation-vs-reality",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "exhausted person lying on sofa after workout",
+  "photoFile": "7926671.jpg",
+  "photoSource": {
+   "pexelsId": 7926671,
+   "pageUrl": "https://www.pexels.com/photo/drunk-bearded-man-sleeping-on-a-sofa-7926671/",
+   "photographer": "Nicola Barts"
+  }
+ },
+ {
+  "caption": "Скачал приложение для тренировок.\nНастроил уведомления.\nПоставил цель.\nОтложил телефон и лёг спать.\n\nКлассика.",
+  "format": "caption",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "fitness app smartphone screen on bed"
+ },
+ {
+  "caption": "Типичная неделя «новой жизни»:\n\nПн — ЗАЛ (горжусь собой)\nВт — отдых (заслужил)\nСр — отдых (мышцы болят)\nЧт — ладно, с понедельника",
+  "format": "list-top",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "weekly planner notepad with pen"
+ },
+ {
+  "caption": "Я смотрю мотивирующие видео про зал уже час.\n\nЭто считается? Ну хотя бы частично?",
+  "format": "caption",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "person watching motivational video on laptop couch",
+  "photoFile": "6598987.jpg",
+  "photoSource": {
+   "pexelsId": 6598987,
+   "pageUrl": "https://www.pexels.com/photo/a-man-sitting-on-the-couch-while-flexing-his-muscles-6598987/",
+   "photographer": "AI25.Studio  Studio"
+  }
+ },
+ {
+  "caption": "Человек, который ходит в зал год:\nдисциплина, результат, гордость\n\nЯ, который собираюсь начать уже год:\nтоже своего рода стабильность",
+  "format": "expectation-vs-reality",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "person looking thoughtfully in mirror"
+ },
+ {
+  "caption": "ПОВ: тебе до пляжного сезона три месяца\n\nТы: изучаешь программу питания\nТы через три месяца: изучаешь программу питания",
+  "format": "POV",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "beach summer vacation empty shore",
+  "photoFile": "13952416.jpg",
+  "photoSource": {
+   "pexelsId": 13952416,
+   "pageUrl": "https://www.pexels.com/photo/foamy-waves-washing-up-the-beach-13952416/",
+   "photographer": "Ricardo Oliveira"
+  }
+ },
+ {
+  "caption": "Я: начну бегать по утрам\nЯ в 6:00: …\nЯ в 6:01: начну бегать по вечерам\nЯ в 21:00: …\nЯ: начну бегать с понедельника",
+  "format": "list-top",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "empty running path early morning fog",
+  "photoFile": "20318815.jpg",
+  "photoSource": {
+   "pexelsId": 20318815,
+   "pageUrl": "https://www.pexels.com/photo/person-running-near-road-under-fog-20318815/",
+   "photographer": "Brunxs Monochrome"
+  }
+ },
+ {
+  "caption": "САМООРГАНИЗАЦИЯ\n\nКупить форму — ✓\nСоставить план — ✓\nПрийти в зал — …\n\nВ принципе, два из трёх — это уже прогресс",
+  "format": "demotivator-text",
+  "theme": "gym & \"new life from Monday\" self-improvement fails",
+  "imageQuery": "checklist notepad pen desk"
+ },
+ {
+  "caption": "Я в пятницу вечером:\nну наконец-то, займусь собой, высплюсь, схожу в зал\n\nЯ в субботу в 14:00:\nлежу и смотрю в потолок уже третий час",
+  "format": "expectation-vs-reality",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person lying on couch staring at ceiling",
+  "photoFile": "6029107.jpg",
+  "photoSource": {
+   "pexelsId": 6029107,
+   "pageUrl": "https://www.pexels.com/photo/woman-on-a-brown-leather-couch-staring-at-the-laptop-6029107/",
+   "photographer": "www.kaboompics.com"
+  }
+ },
+ {
+  "caption": "Ожидание: продуктивные выходные\nРеальность: продуктивно нашёл 4 новых сериала",
+  "format": "expectation-vs-reality",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person watching TV with remote control"
+ },
+ {
+  "caption": "Никто:\nАбсолютно никто:\nМой будильник в понедельник утром: ДОБРОЕ УТРО",
+  "format": "nobody",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "alarm clock ringing early morning",
+  "photoFile": "7623546.jpg",
+  "photoSource": {
+   "pexelsId": 7623546,
+   "pageUrl": "https://www.pexels.com/photo/close-up-of-hand-turning-off-classic-clock-7623546/",
+   "photographer": "Miriam Alonso"
+  }
+ },
+ {
+  "caption": "Режим в будни: встал, умылся, поел, вышел, работа\nРежим в выходные: встал… и это уже победа",
+  "format": "caption",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person sleepily drinking coffee in morning"
+ },
+ {
+  "caption": "ПОВ: воскресенье, 21:00\nтихая паника возвращается",
+  "format": "POV",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person looking at phone at night anxious",
+  "photoFile": "6669794.jpg",
+  "photoSource": {
+   "pexelsId": 6669794,
+   "pageUrl": "https://www.pexels.com/photo/love-woman-coffee-smartphone-6669794/",
+   "photographer": "RDNE Stock project"
+  }
+ },
+ {
+  "caption": "Список дел на выходные:\n— убраться\n— съездить к родителям\n— разобрать шкаф\n— наконец поговорить с собой\n\nИтог: лёг в 4, встал в 15, заказал пиццу",
+  "format": "list-top",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "messy room with pizza box"
+ },
+ {
+  "caption": "Я в понедельник:\nВсё, с этой недели — новая жизнь\n\nЯ в среду:\nподождём до следующего понедельника",
+  "format": "expectation-vs-reality",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "tired person at office desk"
+ },
+ {
+  "caption": "Когда наступает пятница, но ты знаешь, что в субботу надо к зубному",
+  "format": "caption",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person smiling nervously outdoors",
+  "photoFile": "3228887.jpg",
+  "photoSource": {
+   "pexelsId": 3228887,
+   "pageUrl": "https://www.pexels.com/photo/photo-of-man-wearing-eyeglasses-3228887/",
+   "photographer": "fauxels"
+  }
+ },
+ {
+  "caption": "В будни: некогда, дела, устал, потом\nВ выходные: некогда, устал, диван, потом",
+  "format": "expectation-vs-reality",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person tired on sofa"
+ },
+ {
+  "caption": "Я в пятницу:\nзавтра встану в 7, побегу, приготовлю нормально поесть\n\nСуббота, 12:30:\nокак",
+  "format": "expectation-vs-reality",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person waking up late disheveled hair",
+  "photoFile": "8090981.jpg",
+  "photoSource": {
+   "pexelsId": 8090981,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-white-robe-lying-on-orange-sofa-8090981/",
+   "photographer": "PNW Production"
+  }
+ },
+ {
+  "caption": "Виды людей в субботу утром:\n1. «Я уже пробежал 10 км»\n2. «Только встал, иду на рынок»\n3. [читает это сообщение лёжа, не вставая]",
+  "format": "list-top",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person reading phone in bed"
+ },
+ {
+  "caption": "ВЫХОДНЫЕ\nОжидал: перезагрузку\nПолучил: продолжение усталости в домашней обстановке",
+  "format": "demotivator-text",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person sitting at home looking drained"
+ },
+ {
+  "caption": "Когда в воскресенье вечером пишешь список дел на понедельник и чувствуешь себя очень организованным человеком",
+  "format": "caption",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person writing in notebook at evening",
+  "photoFile": "13227315.jpg",
+  "photoSource": {
+   "pexelsId": 13227315,
+   "pageUrl": "https://www.pexels.com/photo/man-drawing-on-a-notepad-13227315/",
+   "photographer": "Tahir Osman"
+  }
+ },
+ {
+  "caption": "Понедельник:\nКалендарь заполнен\nЗвонки запланированы\nЭнергии — ноль\n\nПятница:\nКалендарь пуст\nЗвонки отменены\nЭнергии — ноль\n\nВ общем: стабильность",
+  "format": "list-top",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "empty desk with coffee cup"
+ },
+ {
+  "caption": "ПОВ: суббота, ты собирался сделать «хоть что-нибудь полезное», но уже вечер",
+  "format": "POV",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person watching sunset from window",
+  "photoFile": "32502214.jpg",
+  "photoSource": {
+   "pexelsId": 32502214,
+   "pageUrl": "https://www.pexels.com/photo/silhouette-of-people-watching-sunset-32502214/",
+   "photographer": "cnrdmroglu"
+  }
+ },
+ {
+  "caption": "Мой мозг в будни:\nконцентрация, задачи, дедлайны\n\nМой мозг в выходные:\nа что если переставить мебель в 23:00?",
+  "format": "expectation-vs-reality",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person thinking at night lamp light"
+ },
+ {
+  "caption": "Когда ты наконец выспался в субботу, но теперь не можешь уснуть в воскресенье ночью",
+  "format": "caption",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person staring at ceiling in dark bedroom",
+  "photoFile": "6941123.jpg",
+  "photoSource": {
+   "pexelsId": 6941123,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-white-pajama-lying-on-bed-6941123/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Ожидание выходных всю неделю:\n⭐⭐⭐⭐⭐\n\nСами выходные:\n«ну такое…»",
+  "format": "expectation-vs-reality",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person shrugging indoors"
+ },
+ {
+  "caption": "Я в пятницу в 18:01:\nя свободен, жизнь прекрасна, мир огромен\n\nЯ в пятницу в 19:30:\nлежу. думать не хочу. трогать не трогать",
+  "format": "expectation-vs-reality",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person collapsed on sofa after work",
+  "photoFile": "6029112.jpg",
+  "photoSource": {
+   "pexelsId": 6029112,
+   "pageUrl": "https://www.pexels.com/photo/woman-writing-on-a-notebook-6029112/",
+   "photographer": "www.kaboompics.com"
+  }
+ },
+ {
+  "caption": "В будни засыпаю мгновенно\nВ выходные лежу до часу ночи и думаю, почему черепахи живут дольше людей",
+  "format": "caption",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person awake in bed at night looking at ceiling"
+ },
+ {
+  "caption": "Никто:\nАбсолютно никто:\nМоя продуктивность в выходные: уберу вкладку и открою снова через 10 минут",
+  "format": "nobody",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "computer screen with many browser tabs open"
+ },
+ {
+  "caption": "Топ-3 лжи, которую я говорю себе в пятницу:\n1. «Высплюсь и буду человеком»\n2. «На этой неделе точно займусь спортом»\n3. «В понедельник всё переделаю»",
+  "format": "list-top",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person looking hopeful with coffee cup"
+ },
+ {
+  "caption": "Суббота, 10:00 — ещё посплю\nСуббота, 12:00 — сейчас встану\nСуббота, 14:00 — ладно, это уже завтра",
+  "format": "caption",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "cozy unmade bed morning light",
+  "photoFile": "33312399.jpg",
+  "photoSource": {
+   "pexelsId": 33312399,
+   "pageUrl": "https://www.pexels.com/photo/cozy-unmade-bed-in-warm-sunlight-33312399/",
+   "photographer": "Diana ✨"
+  }
+ },
+ {
+  "caption": "ПОНЕДЕЛЬНИК\n\nПришёл. Сел. Открыл ноутбук.\nЗакрыл ноутбук.\nПошёл за кофе.\n\nНу и ладно",
+  "format": "demotivator-text",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "closed laptop next to coffee mug"
+ },
+ {
+  "caption": "ПОВ: ты весь день в субботу ждал вечера чтобы наконец расслабиться, а вечером не знаешь чем заняться",
+  "format": "POV",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person bored at home in evening",
+  "photoFile": "4114911.jpg",
+  "photoSource": {
+   "pexelsId": 4114911,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-gray-hoodie-lying-on-bed-4114911/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Ожидание: встретить выходные активно\nРеальность: выходные встретили меня горизонтально",
+  "format": "expectation-vs-reality",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "person lying flat on floor relaxing",
+  "photoFile": "14792103.jpg",
+  "photoSource": {
+   "pexelsId": 14792103,
+   "pageUrl": "https://www.pexels.com/photo/woman-lying-down-on-the-wooden-flooring-and-sofa-chair-14792103/",
+   "photographer": "Mathilde Langevin"
+  }
+ },
+ {
+  "caption": "Я в воскресенье утром:\nещё не понедельник — это уже хорошо",
+  "format": "caption",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "peaceful morning sunlight through window",
+  "photoFile": "25542638.jpg",
+  "photoSource": {
+   "pexelsId": 25542638,
+   "pageUrl": "https://www.pexels.com/photo/coffee-pot-and-mug-on-the-windowsill-25542638/",
+   "photographer": "Letícia Alvares"
+  }
+ },
+ {
+  "caption": "Режим «буду жить полной жизнью в выходные»:\n\nПятница: включён\nСуббота: немного буксует\nВоскресенье: завтра точно начну",
+  "format": "list-top",
+  "theme": "weekend vs weekday / expectation vs reality",
+  "imageQuery": "calendar on desk with weekend circled"
+ },
+ {
+  "caption": "Когда позвонил маме «просто так» и она уже знает, что ты хочешь денег",
+  "format": "caption",
+  "theme": "family, parents & grandma",
+  "imageQuery": "woman on phone with suspicious expression",
+  "photoFile": "12911958.jpg",
+  "photoSource": {
+   "pexelsId": 12911958,
+   "pageUrl": "https://www.pexels.com/photo/woman-standing-and-talking-on-video-call-12911958/",
+   "photographer": "Mizuno K"
+  }
+ },
+ {
+  "caption": "Бабушка:\n— Ты плохо выглядишь, надо есть больше\n\nБабушка же:\n— Ты пополнел, надо есть меньше",
+  "format": "expectation-vs-reality",
+  "theme": "family, parents & grandma",
+  "imageQuery": "elderly woman wagging finger indoors"
+ },
+ {
+  "caption": "Никто:\nАбсолютно никто:\nМама в 22:00: «Ты уже спишь? Ладно, потом расскажу»",
+  "format": "nobody",
+  "theme": "family, parents & grandma",
+  "imageQuery": "woman looking at smartphone at night"
+ },
+ {
+  "caption": "Ожидание: взросление = свобода\nРеальность: звонок маме «как разморозить мясо»",
+  "format": "expectation-vs-reality",
+  "theme": "family, parents & grandma",
+  "imageQuery": "confused young adult staring into freezer",
+  "photoFile": "21327005.jpg",
+  "photoSource": {
+   "pexelsId": 21327005,
+   "pageUrl": "https://www.pexels.com/photo/customers-by-freezers-choosing-ice-creams-21327005/",
+   "photographer": "Scott Foltz"
+  }
+ },
+ {
+  "caption": "Папа за рулём:\n— Я дорогу знаю, не надо навигатор\n\n*проезжает нужный поворот третий раз*",
+  "format": "POV",
+  "theme": "family, parents & grandma",
+  "imageQuery": "man driving car looking stubborn",
+  "photoFile": "9531395.jpg",
+  "photoSource": {
+   "pexelsId": 9531395,
+   "pageUrl": "https://www.pexels.com/photo/man-in-red-jacket-driving-car-9531395/",
+   "photographer": "Ron Lach"
+  }
+ },
+ {
+  "caption": "Бабушкина логика:\n«Съешь ещё кусочек — обижусь»\n«Съел — теперь ещё кусочек»",
+  "format": "list-top",
+  "theme": "family, parents & grandma",
+  "imageQuery": "table full of homemade food dishes",
+  "photoFile": "20089303.jpg",
+  "photoSource": {
+   "pexelsId": 20089303,
+   "pageUrl": "https://www.pexels.com/photo/choice-of-food-during-family-dinner-20089303/",
+   "photographer": "Nothing Ahead"
+  }
+ },
+ {
+  "caption": "Я в 10 лет: хочу поскорее вырасти и делать что хочу\nЯ в 28: мама, а суп уже готов?",
+  "format": "expectation-vs-reality",
+  "theme": "family, parents & grandma",
+  "imageQuery": "young adult lying on couch at parents home",
+  "photoFile": "8121284.jpg",
+  "photoSource": {
+   "pexelsId": 8121284,
+   "pageUrl": "https://www.pexels.com/photo/a-father-checking-his-daughter-sleeping-on-the-couch-8121284/",
+   "photographer": "Mikhail Nilov"
+  }
+ },
+ {
+  "caption": "Мама отправляет голосовое на 4 минуты.\nТема сообщения: «Ладно, ничего важного».",
+  "format": "caption",
+  "theme": "family, parents & grandma",
+  "imageQuery": "phone screen showing long voice message",
+  "photoFile": "7120126.jpg",
+  "photoSource": {
+   "pexelsId": 7120126,
+   "pageUrl": "https://www.pexels.com/photo/close-up-shot-of-a-person-holding-a-cellphone-7120126/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Топ-3 фразы папы:\n1. «В моё время такого не было»\n2. «Спроси у мамы»\n3. «Я же говорил»",
+  "format": "list-top",
+  "theme": "family, parents & grandma",
+  "imageQuery": "middle aged man with arms crossed nodding"
+ },
+ {
+  "caption": "POV: пришёл к бабушке «на часок»\n*Выходишь через 4 часа с тремя банками варенья и полной сумкой еды*",
+  "format": "POV",
+  "theme": "family, parents & grandma",
+  "imageQuery": "person leaving house carrying heavy bags of food",
+  "photoFile": "16707683.jpg",
+  "photoSource": {
+   "pexelsId": 16707683,
+   "pageUrl": "https://www.pexels.com/photo/man-carrying-sacks-and-baskets-16707683/",
+   "photographer": "Berna"
+  }
+ },
+ {
+  "caption": "Мама: «Ты меня не слушаешь»\nЯ: слушаю\nМама: «Что я только что сказала?»\nЯ: …",
+  "format": "caption",
+  "theme": "family, parents & grandma",
+  "imageQuery": "adult child looking away while parent talks"
+ },
+ {
+  "caption": "Бабушка узнала, что ты плохо спишь:\nТеперь тебе нужно: принять горячее молоко, положить тёплые носки, накрыться вторым одеялом и думать о хорошем.",
+  "format": "demotivator-text",
+  "theme": "family, parents & grandma",
+  "imageQuery": "cozy bed with extra blankets and warm socks"
+ },
+ {
+  "caption": "Папа чинит что-то сам: сломалось окончательно\nПапа вызывает мастера: «Я бы и сам справился»",
+  "format": "expectation-vs-reality",
+  "theme": "family, parents & grandma",
+  "imageQuery": "man attempting DIY repair with tools",
+  "photoFile": "4792525.jpg",
+  "photoSource": {
+   "pexelsId": 4792525,
+   "pageUrl": "https://www.pexels.com/photo/man-hammering-nail-into-wall-during-housework-4792525/",
+   "photographer": "Anete Lusina"
+  }
+ },
+ {
+  "caption": "Никто:\nМама в 8 утра в выходной: «Ты ещё спишь?! День уже на дворе!»",
+  "format": "nobody",
+  "theme": "family, parents & grandma",
+  "imageQuery": "sunlight coming through window onto sleeping person",
+  "photoFile": "7927549.jpg",
+  "photoSource": {
+   "pexelsId": 7927549,
+   "pageUrl": "https://www.pexels.com/photo/man-lying-on-belly-in-clothes-on-bed-7927549/",
+   "photographer": "Nicola Barts"
+  }
+ },
+ {
+  "caption": "Виды «скоро буду» от родителей:\n— Скоро (5 мин) = 40 минут\n— Скоро (у магазина) = ещё один магазин\n— Скоро (едем) = только выходим из дома",
+  "format": "list-top",
+  "theme": "family, parents & grandma",
+  "imageQuery": "person waiting near front door looking at clock"
+ },
+ {
+  "caption": "Бабушка смотрит новости по телевизору и потом спрашивает, всё ли у тебя хорошо.\nВ тоне вопроса — вся мировая тревога.",
+  "format": "caption",
+  "theme": "family, parents & grandma",
+  "imageQuery": "elderly woman watching television with worried look",
+  "photoFile": "6874470.jpg",
+  "photoSource": {
+   "pexelsId": 6874470,
+   "pageUrl": "https://www.pexels.com/photo/portrait-of-old-woman-thinking-6874470/",
+   "photographer": "Teona Swift"
+  }
+ },
+ {
+  "caption": "Я в начале визита к родителям: «Ненадолго, дел много»\nЯ в конце: сижу третий час, ем борщ, смотрю кино с мамой",
+  "format": "expectation-vs-reality",
+  "theme": "family, parents & grandma",
+  "imageQuery": "adult sitting comfortably at family dinner table",
+  "photoFile": "6288691.jpg",
+  "photoSource": {
+   "pexelsId": 6288691,
+   "pageUrl": "https://www.pexels.com/photo/a-man-smiling-sitting-at-the-table-6288691/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Мама переслала полезную статью.\nСтатья называется: «10 причин, почему тебе надо жить ближе к нам».",
+  "format": "caption",
+  "theme": "family, parents & grandma",
+  "imageQuery": "smartphone screen showing forwarded message"
+ },
+ {
+  "caption": "Папа: «Я в интернете не разбираюсь»\nПапа же в споре: «Я смотрел документальный фильм на ютубе»",
+  "format": "expectation-vs-reality",
+  "theme": "family, parents & grandma",
+  "imageQuery": "older man confidently using tablet device",
+  "photoFile": "7544861.jpg",
+  "photoSource": {
+   "pexelsId": 7544861,
+   "pageUrl": "https://www.pexels.com/photo/man-with-tablet-7544861/",
+   "photographer": "SHVETS production"
+  }
+ },
+ {
+  "caption": "Стадии звонка маме:\n1. Привет, как дела\n2. У меня всё хорошо\n3. Почему ты так не ешь\n4. Когда замуж/женишься\n5. Ладно, целую",
+  "format": "list-top",
+  "theme": "family, parents & grandma",
+  "imageQuery": "young person talking on phone with tired expression"
+ },
+ {
+  "caption": "Бабушка не умеет отправлять фото в WhatsApp.\nЗато умеет прислать одну картинку 14 раз подряд.",
+  "format": "caption",
+  "theme": "family, parents & grandma",
+  "imageQuery": "phone screen flooded with duplicate image notifications"
+ },
+ {
+  "caption": "POV: сказал маме, что устал\n— А я не устаю?\n— Ты просто не высыпаешься\n— Это всё нервы\n— Надо меньше в телефоне сидеть",
+  "format": "POV",
+  "theme": "family, parents & grandma",
+  "imageQuery": "tired person on couch listening to someone talking"
+ },
+ {
+  "caption": "Родители дома одни: «Нам ничего не надо, живём хорошо»\nРодители перед твоим приездом: составили список на 2 страницы",
+  "format": "expectation-vs-reality",
+  "theme": "family, parents & grandma",
+  "imageQuery": "long handwritten shopping list on paper",
+  "photoFile": "8581008.jpg",
+  "photoSource": {
+   "pexelsId": 8581008,
+   "pageUrl": "https://www.pexels.com/photo/to-do-list-on-a-notepad-8581008/",
+   "photographer": "RDNE Stock project"
+  }
+ },
+ {
+  "caption": "Никто:\nАбсолютно никто:\nБабушка, когда ты уже одеваешься уходить: «Ну посиди ещё чуточку»",
+  "format": "nobody",
+  "theme": "family, parents & grandma",
+  "imageQuery": "elderly woman holding arm of person near doorway",
+  "photoFile": "36527111.jpg",
+  "photoSource": {
+   "pexelsId": 36527111,
+   "pageUrl": "https://www.pexels.com/photo/elderly-woman-standing-in-a-doorway-36527111/",
+   "photographer": "Veselina Argirova"
+  }
+ },
+ {
+  "caption": "Папа молчит весь вечер.\nПапа в 23:40: «Ладно, спать. Да, вот ещё кое-что…»\n*ещё полтора часа*",
+  "format": "caption",
+  "theme": "family, parents & grandma",
+  "imageQuery": "two people talking late at night in dimly lit room",
+  "photoFile": "5711238.jpg",
+  "photoSource": {
+   "pexelsId": 5711238,
+   "pageUrl": "https://www.pexels.com/photo/man-in-black-button-up-shirt-holding-white-ceramic-mug-5711238/",
+   "photographer": "Tima Miroshnichenko"
+  }
+ },
+ {
+  "caption": "Мама узнала, что ты готовишь сам:\nОжидание: гордость\nРеальность: еженедельная доставка судочков «на всякий случай»",
+  "format": "expectation-vs-reality",
+  "theme": "family, parents & grandma",
+  "imageQuery": "stacked food containers packed with home cooked meals",
+  "photoFile": "8580745.jpg",
+  "photoSource": {
+   "pexelsId": 8580745,
+   "pageUrl": "https://www.pexels.com/photo/a-person-holding-plastic-containers-8580745/",
+   "photographer": "RDNE Stock project"
+  }
+ },
+ {
+  "caption": "Бабушка провожает тебя:\n— Оденься теплее\n— Поешь там нормально\n— Позвони как доедешь\n— Стой, возьми ещё пирожки",
+  "format": "list-top",
+  "theme": "family, parents & grandma",
+  "imageQuery": "elderly woman waving goodbye at front door",
+  "photoFile": "16036297.jpg",
+  "photoSource": {
+   "pexelsId": 16036297,
+   "pageUrl": "https://www.pexels.com/photo/elderly-woman-standing-in-door-16036297/",
+   "photographer": "Gökhan Yetimova"
+  }
+ },
+ {
+  "caption": "Я: купил новую вещь\nМама: «А зачем, у тебя же есть»\nЯ: та порвалась\nМама: «Надо было беречь»",
+  "format": "caption",
+  "theme": "family, parents & grandma",
+  "imageQuery": "person holding new clothing item looking sheepish"
+ },
+ {
+  "caption": "Социальный заряд:\n▓░░░░░░░░░ 10%\n\nЯ: сходил в магазин",
+  "format": "demotivator-text",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "smartphone with critically low battery percentage on screen"
+ },
+ {
+  "caption": "Никто:\nАбсолютно никто:\nМой мозг в 2:47 ночи: а что если тот человек в 2014 году обиделся на твою фразу и просто не подал виду",
+  "format": "nobody",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "person lying awake in dark bedroom staring at ceiling",
+  "photoFile": "6941123.jpg",
+  "photoSource": {
+   "pexelsId": 6941123,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-white-pajama-lying-on-bed-6941123/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Ожидание: иду на вечеринку, расслаблюсь, пообщаюсь\nРеальность: сижу рядом с котом хозяев и рассказываю ему о своей жизни",
+  "format": "expectation-vs-reality",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "person sitting on floor with cat at party",
+  "photoFile": "17200852.jpg",
+  "photoSource": {
+   "pexelsId": 17200852,
+   "pageUrl": "https://www.pexels.com/photo/cat-lying-down-on-floor-and-woman-sitting-behind-17200852/",
+   "photographer": "krishna prasad"
+  }
+ },
+ {
+  "caption": "Когда позвонили вместо того, чтобы написать",
+  "format": "caption",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "person staring at ringing phone with wide eyes",
+  "photoFile": "29895388.jpg",
+  "photoSource": {
+   "pexelsId": 29895388,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-headscarf-with-vintage-orange-phone-29895388/",
+   "photographer": "Shahin  Mren"
+  }
+ },
+ {
+  "caption": "Виды отдыха:\n1. Сон\n2. Тишина\n3. Чтобы никто не трогал\n4. Сон в тишине пока никто не трогает",
+  "format": "list-top",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "person wrapped in blanket on couch alone"
+ },
+ {
+  "caption": "POV: тебя пригласили на корпоратив, ты согласился из вежливости, но уже придумываешь болезнь",
+  "format": "POV",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "person looking stressed at computer desk",
+  "photoFile": "12911216.jpg",
+  "photoSource": {
+   "pexelsId": 12911216,
+   "pageUrl": "https://www.pexels.com/photo/frustrated-businesswoman-in-an-office-12911216/",
+   "photographer": "Mizuno K"
+  }
+ },
+ {
+  "caption": "Я после двух часов общения с людьми:\nвнешне — улыбаюсь\nвнутри — перезагружаюсь как старый ноутбук",
+  "format": "expectation-vs-reality",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "tired person smiling at office meeting",
+  "photoFile": "9077349.jpg",
+  "photoSource": {
+   "pexelsId": 9077349,
+   "pageUrl": "https://www.pexels.com/photo/men-sitting-at-the-table-9077349/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Отменили встречу\n\n— Жаль, конечно... —\n\n(внутри): 🎊",
+  "format": "caption",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "person reading message on phone with suppressed smile",
+  "photoFile": "14280469.jpg",
+  "photoSource": {
+   "pexelsId": 14280469,
+   "pageUrl": "https://www.pexels.com/photo/close-up-shot-of-a-man-in-white-polo-shirt-holding-a-cellphone-14280469/",
+   "photographer": "Mason McCall"
+  }
+ },
+ {
+  "caption": "Мой идеальный выходной:\nНикуда не идти\nНи с кем не говорить\nВыйти один раз за кофе и быстро вернуться\n\nЛюди: это грустно\nЯ: это план",
+  "format": "list-top",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "cozy home interior cup of coffee window view"
+ },
+ {
+  "caption": "Когда наконец пришёл домой после долгого дня среди людей и закрыл дверь",
+  "format": "caption",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "person leaning against closed front door eyes closed relief",
+  "photoFile": "9968443.jpg",
+  "photoSource": {
+   "pexelsId": 9968443,
+   "pageUrl": "https://www.pexels.com/photo/woman-leaning-on-a-wooden-door-9968443/",
+   "photographer": "Vlada Karpovich"
+  }
+ },
+ {
+  "caption": "Я в начале вечеринки: окей, дам себе шанс\nЯ через 40 минут: а в каком часу обычно уходят?",
+  "format": "expectation-vs-reality",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "bored person at social gathering looking at watch",
+  "photoFile": "8864993.jpg",
+  "photoSource": {
+   "pexelsId": 8864993,
+   "pageUrl": "https://www.pexels.com/photo/portrait-of-a-man-with-a-cap-with-his-hand-on-his-cheek-8864993/",
+   "photographer": "Ejov Igor"
+  }
+ },
+ {
+  "caption": "Фраза, сказанная три года назад\nМой мозг сегодня в душе:\nА вот тут надо было ответить иначе",
+  "format": "demotivator-text",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "person in shower thinking deeply"
+ },
+ {
+  "caption": "Никто:\nЯ перед звонком незнакомому человеку: репетирую разговор 15 минут, потом сбрасываю и пишу сообщение",
+  "format": "nobody",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "person rehearsing speech talking to themselves"
+ },
+ {
+  "caption": "Шкала усталости интроверта:\n😊 один человек\n😐 трое людей\n😶 офис\n💀 офис + корпоратив в тот же день",
+  "format": "list-top",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "exhausted office worker head on desk"
+ },
+ {
+  "caption": "Написали: «созвонимся?»\nЯ: А можно просто... не?",
+  "format": "caption",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "person looking at phone message with tired expression",
+  "photoFile": "7394481.jpg",
+  "photoSource": {
+   "pexelsId": 7394481,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-in-striped-shirt-using-a-smartphone-7394481/",
+   "photographer": "Ivan S"
+  }
+ },
+ {
+  "caption": "Мой мозг умеет:\n✓ переосмыслить разговор 2019 года\n✓ придумать 7 сценариев катастрофы\n✓ не спать до 3 ночи\n✗ просто успокоиться",
+  "format": "list-top",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "brain illustration thought bubbles chaos"
+ },
+ {
+  "caption": "POV: все на вечеринке танцуют, а ты нашёл угол, кота и стакан с водой — и тебя всё устраивает",
+  "format": "POV",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "quiet corner at party with single person sitting",
+  "photoFile": "19543559.jpg",
+  "photoSource": {
+   "pexelsId": 19543559,
+   "pageUrl": "https://www.pexels.com/photo/photo-of-a-dark-hallway-19543559/",
+   "photographer": "Feyza Yıldırım"
+  }
+ },
+ {
+  "caption": "Когда написал сообщение, перечитал пять раз, нашёл двойной смысл и удалил",
+  "format": "caption",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "person typing and deleting text on phone"
+ },
+ {
+  "caption": "ИНТРОВЕРТ В ОТПУСКЕ\n\nОжидание окружающих: экскурсии, знакомства, тусовки\nРеальность: номер, книга, завтрак в одиночестве, счастье",
+  "format": "demotivator-text",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "solo traveler reading book in hotel room",
+  "photoFile": "24877179.jpg",
+  "photoSource": {
+   "pexelsId": 24877179,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-in-a-robe-sitting-in-a-chair-holding-a-glass-of-wine-24877179/",
+   "photographer": "Kadir Avşar"
+  }
+ },
+ {
+  "caption": "Люди: ты в порядке? ты какой-то тихий\nЯ: я всегда такой\nЛюди: нет, что-то случилось\nЯ: ...",
+  "format": "caption",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "calm person at crowded table looking neutral"
+ },
+ {
+  "caption": "Я три дня назад согласился встретиться в субботу.\nЯ в пятницу вечером: ладно, умру — значит, умру",
+  "format": "caption",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "person lying dramatically on couch staring at ceiling",
+  "photoFile": "35967719.jpg",
+  "photoSource": {
+   "pexelsId": 35967719,
+   "pageUrl": "https://www.pexels.com/photo/black-and-white-portrait-of-a-resting-man-35967719/",
+   "photographer": "LUXO Filler"
+  }
+ },
+ {
+  "caption": "Спросили: «почему ты такой молчаливый?»\n\nПотому что я уже провёл этот разговор у себя в голове и мне хватило",
+  "format": "demotivator-text",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "person sitting quietly with thoughtful expression"
+ },
+ {
+  "caption": "Никто:\nМой мозг когда я наконец лёг спать: так, разберём все неловкие моменты за последние 11 лет",
+  "format": "nobody",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "person lying in bed with eyes open insomnia night",
+  "photoFile": "6943443.jpg",
+  "photoSource": {
+   "pexelsId": 6943443,
+   "pageUrl": "https://www.pexels.com/photo/man-suffering-from-insomnia-6943443/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Я когда могу не идти на мероприятие и это социально приемлемо:\n\nВнешне: «жаль, не получится»\nВнутри: лучший день в году",
+  "format": "expectation-vs-reality",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "person at home in comfortable clothes looking relieved"
+ },
+ {
+  "caption": "POV: тебе написали «нам надо поговорить» и ты следующие два часа прожил пять жизней",
+  "format": "POV",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "person anxiously looking at phone message",
+  "photoFile": "9898392.jpg",
+  "photoSource": {
+   "pexelsId": 9898392,
+   "pageUrl": "https://www.pexels.com/photo/a-person-holding-a-cellphone-9898392/",
+   "photographer": "Ron Lach"
+  }
+ },
+ {
+  "caption": "Топ занятий интроверта в выходной:\n1. Планировал выйти — передумал\n2. Открыл дверь — закрыл\n3. Написал другу — не отправил\n4. Это и называется «отдохнул»",
+  "format": "list-top",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "person peeking out window from apartment alone"
+ },
+ {
+  "caption": "Ожидание: отвечу сразу, всё будет нормально\nРеальность: сообщение лежит три дня пока я морально готовлюсь",
+  "format": "expectation-vs-reality",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "unread message notification on phone screen",
+  "photoFile": "5053987.jpg",
+  "photoSource": {
+   "pexelsId": 5053987,
+   "pageUrl": "https://www.pexels.com/photo/person-holding-an-iphone-5053987/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Я в начале дня: сегодня буду общительным, открытым, позитивным\nМой социальный заряд после первого совещания: ▓░░░░░░░░░",
+  "format": "expectation-vs-reality",
+  "theme": "introvert life, social battery & overthinking",
+  "imageQuery": "tired professional after morning meeting empty office",
+  "photoFile": "8468123.jpg",
+  "photoSource": {
+   "pexelsId": 8468123,
+   "pageUrl": "https://www.pexels.com/photo/man-in-black-suit-jacket-sitting-on-a-white-office-chair-8468123/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Ожидание: золотая осень, листья кружат, кофе в руках\nРеальность: +2°C, дождь, потерял зонт 5 минут назад",
+  "format": "expectation-vs-reality",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "rainy autumn street puddle fallen leaves",
+  "photoFile": "19250306.jpg",
+  "photoSource": {
+   "pexelsId": 19250306,
+   "pageUrl": "https://www.pexels.com/photo/close-up-of-leaves-on-the-ground-19250306/",
+   "photographer": "Fatih Güney"
+  }
+ },
+ {
+  "caption": "Первый снег: все счастливы\nПервый снег на второй неделе: все хотят домой",
+  "format": "expectation-vs-reality",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "person walking in heavy snowfall city",
+  "photoFile": "14928972.jpg",
+  "photoSource": {
+   "pexelsId": 14928972,
+   "pageUrl": "https://www.pexels.com/photo/a-man-walking-on-snow-covered-street-14928972/",
+   "photographer": "Serkan  Gönültaş"
+  }
+ },
+ {
+  "caption": "Никто:\nЯ в мае: наконец-то тепло, лето!\nЯ в июне: 34°C, я умираю, верните зиму",
+  "format": "nobody",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "person sweating outdoors sunny summer day"
+ },
+ {
+  "caption": "Виды людей в ноябре:\n1. Ждут Новый год\n2. Ждут ещё больше\n3. Уже ждут, но без иллюзий",
+  "format": "list-top",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "dark cloudy november street empty"
+ },
+ {
+  "caption": "Когда 31 декабря и ты понимаешь, что всё, что планировал сделать в этом году — не сделал",
+  "format": "caption",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "person staring blankly at calendar"
+ },
+ {
+  "caption": "Я в начале января: новая жизнь, цели, планы!\nЯ 10 января: сколько там ещё праздников?",
+  "format": "expectation-vs-reality",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "person lying on couch watching TV holidays",
+  "photoFile": "7283704.jpg",
+  "photoSource": {
+   "pexelsId": 7283704,
+   "pageUrl": "https://www.pexels.com/photo/woman-lying-on-sofa-holding-a-remote-control-7283704/",
+   "photographer": "www.kaboompics.com"
+  }
+ },
+ {
+  "caption": "ПОВ: ты проверяешь прогноз погоды утром\nПрогноз: +18, солнечно\nПо факту в 15:00: ливень, +6, туман",
+  "format": "POV",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "surprised person looking at rain through window",
+  "photoFile": "13707957.jpg",
+  "photoSource": {
+   "pexelsId": 13707957,
+   "pageUrl": "https://www.pexels.com/photo/beautiful-woman-portrait-through-window-in-rain-13707957/",
+   "photographer": "sudelermii"
+  }
+ },
+ {
+  "caption": "Отопление дали 15 октября.\nЯ с 16 октября: открываю форточку.",
+  "format": "caption",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "open window winter frost radiator heating"
+ },
+ {
+  "caption": "Топ-3 российских сезона:\n1. Зима\n2. Ещё зима\n3. Технический перерыв (август)",
+  "format": "list-top",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "snowy city street winter landscape"
+ },
+ {
+  "caption": "Когда на улице наконец потеплело, но ты уже успел простудиться в последние холода",
+  "format": "caption",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "person sneezing wrapped in blanket sunny window",
+  "photoFile": "7195083.jpg",
+  "photoSource": {
+   "pexelsId": 7195083,
+   "pageUrl": "https://www.pexels.com/photo/woman-sitting-on-sofa-and-blowing-her-nose-into-a-tissue-7195083/",
+   "photographer": "www.kaboompics.com"
+  }
+ },
+ {
+  "caption": "8 марта: цветы, романтика, весна!\nПо факту снаружи: -7°C, снег с дождём, промокшие ботинки",
+  "format": "expectation-vs-reality",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "woman holding flowers in winter coat snow",
+  "photoFile": "36324990.jpg",
+  "photoSource": {
+   "pexelsId": 36324990,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-blue-coat-walking-on-snowy-path-36324990/",
+   "photographer": "Vika Glitter"
+  }
+ },
+ {
+  "caption": "Лето в России — это две недели невыносимой жары и три месяца воспоминаний о ней",
+  "format": "demotivator-text",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "brief sunny day park people relaxing"
+ },
+ {
+  "caption": "Никто:\nЯ каждый год 1 сентября: ну всё, осень, надо браться за себя\nЯ 3 сентября: ну такое…",
+  "format": "nobody",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "person sitting at desk looking out rainy window autumn",
+  "photoFile": "21578780.jpg",
+  "photoSource": {
+   "pexelsId": 21578780,
+   "pageUrl": "https://www.pexels.com/photo/woman-looking-out-the-window-21578780/",
+   "photographer": "Issam Hajri"
+  }
+ },
+ {
+  "caption": "Когда едешь в отпуск на море, а по возвращении тебя встречает +8°C и дождь.\nДобро пожаловать домой.",
+  "format": "caption",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "person with luggage arriving at cold grey airport",
+  "photoFile": "3223423.jpg",
+  "photoSource": {
+   "pexelsId": 3223423,
+   "pageUrl": "https://www.pexels.com/photo/photo-of-man-standing-while-looking-down-3223423/",
+   "photographer": "Mo Productions"
+  }
+ },
+ {
+  "caption": "Апрель по ощущениям:\nПервая неделя: весна, птицы, надежда\nВторая неделя: снег\nТретья неделя: снег\nЧетвёртая неделя: окак",
+  "format": "list-top",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "snow falling on blooming tree spring",
+  "photoFile": "8336122.jpg",
+  "photoSource": {
+   "pexelsId": 8336122,
+   "pageUrl": "https://www.pexels.com/photo/close-up-of-blooming-tree-8336122/",
+   "photographer": "Lera Mk"
+  }
+ },
+ {
+  "caption": "ПОВ: ты уходишь из дома в лёгкой куртке, потому что «уже тепло»",
+  "format": "POV",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "person in light jacket walking through unexpected rain",
+  "photoFile": "29311599.jpg",
+  "photoSource": {
+   "pexelsId": 29311599,
+   "pageUrl": "https://www.pexels.com/photo/rainy-night-street-scene-through-window-29311599/",
+   "photographer": "Mervin Felix"
+  }
+ },
+ {
+  "caption": "Новый год:\nДекабрь — я буду готовиться заранее!\nЯ 30 декабря: беру ёлку, мандарины и заказываю еду",
+  "format": "expectation-vs-reality",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "last minute shopping groceries bag night city",
+  "photoFile": "12280949.jpg",
+  "photoSource": {
+   "pexelsId": 12280949,
+   "pageUrl": "https://www.pexels.com/photo/foods-on-wooden-shelves-in-a-store-12280949/",
+   "photographer": "Tarikul Raana"
+  }
+ },
+ {
+  "caption": "Зимой: хочу лето\nЛетом: хочу зиму\nВесной и осенью: хочу чтобы это всё прекратилось",
+  "format": "caption",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "person looking out window changing seasons"
+ },
+ {
+  "caption": "Прогноз погоды: возможны осадки\nПрогноз погоды на самом деле: надевай всё что есть и молись",
+  "format": "expectation-vs-reality",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "person dressed in many layers walking in wind rain",
+  "photoFile": "10717478.jpg",
+  "photoSource": {
+   "pexelsId": 10717478,
+   "pageUrl": "https://www.pexels.com/photo/person-in-black-coat-holding-umbrella-walking-on-sidewalk-10717478/",
+   "photographer": "Yasin Tetik"
+  }
+ },
+ {
+  "caption": "Когда в феврале вышло солнце на 20 минут и ты уже написал «весна идёт»",
+  "format": "caption",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "pale winter sunlight through window bare trees"
+ },
+ {
+  "caption": "Я с 1 по 8 января:\nНет мыслей.\nГолова пустая.\nЧто день, что год.",
+  "format": "caption",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "person lying on sofa holiday festive lights dim"
+ },
+ {
+  "caption": "Мама говорит взять зонт.\nЯ: да ладно, небольшой дождик.\nЯ через час:",
+  "format": "caption",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "completely soaked person standing in heavy rain no umbrella",
+  "photoFile": "17295831.jpg",
+  "photoSource": {
+   "pexelsId": 17295831,
+   "pageUrl": "https://www.pexels.com/photo/woman-walking-with-umbrella-during-rain-17295831/",
+   "photographer": "Jean Marc Bonnel"
+  }
+ },
+ {
+  "caption": "Виды людей, переживающих первые холода:\n1. Шарф, шапка, пальто с сентября\n2. «Я не мёрзну» до минус пяти\n3. До сих пор в футболке. Синий.",
+  "format": "list-top",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "people dressed differently cold autumn street"
+ },
+ {
+  "caption": "День города: ожидание — карнавал, фейерверки, веселье\nДень города: реальность — концерт на площади, стоишь под дождём в пальто",
+  "format": "expectation-vs-reality",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "outdoor city event stage crowd overcast weather",
+  "photoFile": "1110085.jpg",
+  "photoSource": {
+   "pexelsId": 1110085,
+   "pageUrl": "https://www.pexels.com/photo/group-of-people-standing-on-stage-1110085/",
+   "photographer": "Artem Saranin"
+  }
+ },
+ {
+  "caption": "Вы не понимаете, это другое — это не просто слякоть, это наш уникальный межсезонный климатический опыт",
+  "format": "demotivator-text",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "muddy slushy street grey sky autumn"
+ },
+ {
+  "caption": "Когда 9 мая, а на улице снова -1 и снег",
+  "format": "caption",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "spring holiday cold weather snow unexpected"
+ },
+ {
+  "caption": "Ожидание: загораю на даче\nРеальность: пропалываю грядки под холодным ветром в куртке",
+  "format": "expectation-vs-reality",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "person gardening dacha cold cloudy summer Russia",
+  "photoFile": "10067627.jpg",
+  "photoSource": {
+   "pexelsId": 10067627,
+   "pageUrl": "https://www.pexels.com/photo/flowers-and-fence-10067627/",
+   "photographer": "Юлия Чалова"
+  }
+ },
+ {
+  "caption": "Первый рабочий день после новогодних: коллеги спрашивают «как отдохнул?»\nЯ: ну такое…",
+  "format": "caption",
+  "theme": "seasons, weather & holidays",
+  "imageQuery": "tired office worker first day back after holiday",
+  "photoFile": "8468514.jpg",
+  "photoSource": {
+   "pexelsId": 8468514,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-blazer-wearing-eyeglasses-sitting-at-table-8468514/",
+   "photographer": "cottonbro studio"
+  }
+ },
+ {
+  "caption": "Ожидание: еду на работу, слушаю подкаст, размышляю о жизни\nРеальность: стою в пробке и слушаю, как сосед по ряду сигналит в небо",
+  "format": "expectation-vs-reality",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "heavy traffic jam highway rush hour cars stopped",
+  "photoFile": "37498129.jpg",
+  "photoSource": {
+   "pexelsId": 37498129,
+   "pageUrl": "https://www.pexels.com/photo/rush-hour-traffic-in-urban-cityscape-37498129/",
+   "photographer": "BI ravencrow"
+  }
+ },
+ {
+  "caption": "Никто:\nАбсолютно никто:\nЯ в автобусе: судорожно делаю вид, что смотрю в телефон, пока бабушка ищет место",
+  "format": "nobody",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "crowded bus interior passengers standing",
+  "photoFile": "10963849.jpg",
+  "photoSource": {
+   "pexelsId": 10963849,
+   "pageUrl": "https://www.pexels.com/photo/people-travelling-on-a-crowded-bus-10963849/",
+   "photographer": "Pew Nguyen"
+  }
+ },
+ {
+  "caption": "Типы людей в метро:\n1. Спит стоя\n2. Ест бургер в час пик\n3. Слушает музыку без наушников\n4. Это ты",
+  "format": "list-top",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "subway metro passengers crowded train"
+ },
+ {
+  "caption": "Когда навигатор говорит «через 200 метров поверните направо», а ты уже проехал этот поворот три минуты назад",
+  "format": "caption",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "frustrated driver car interior steering wheel"
+ },
+ {
+  "caption": "Ожидание: войду в автобус, сяду у окна, поеду с ветерком\nРеальность: стою, зажатый между чужим локтем и чужим рюкзаком",
+  "format": "expectation-vs-reality",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "packed overcrowded city bus commuters rush hour",
+  "photoFile": "16111423.jpg",
+  "photoSource": {
+   "pexelsId": 16111423,
+   "pageUrl": "https://www.pexels.com/photo/buses-standing-in-urban-traffic-jam-16111423/",
+   "photographer": "Ravi Aarav"
+  }
+ },
+ {
+  "caption": "Я в 8:00: выехал заранее, всё успею\nЯ в 8:47: стою в пробке и пишу «уже подъезжаю»",
+  "format": "expectation-vs-reality",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "driver checking phone traffic jam morning"
+ },
+ {
+  "caption": "Пробка рассосалась.\nЯ опоздал на 40 минут.\nПробок больше нет.\nЭто провал, братан.",
+  "format": "demotivator-text",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "empty highway after traffic jam daytime"
+ },
+ {
+  "caption": "POV: ты дождался своего автобуса, зашёл, сел — и он поехал в депо",
+  "format": "POV",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "empty city bus driving away bus stop",
+  "photoFile": "31387316.jpg",
+  "photoSource": {
+   "pexelsId": 31387316,
+   "pageUrl": "https://www.pexels.com/photo/isolated-rural-bus-stop-in-serene-countryside-31387316/",
+   "photographer": "Justinas"
+  }
+ },
+ {
+  "caption": "Виды людей в пробке:\n— Злится и сигналит\n— Слушает аудиокнигу, дзен\n— Уже опоздал, но спокоен, потому что смирился с жизнью",
+  "format": "list-top",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "people inside cars traffic jam different expressions"
+ },
+ {
+  "caption": "Когда нашёл место в маршрутке у окна — это маленькая личная победа, которую никто никогда не поймёт",
+  "format": "caption",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "minibus window seat passenger city view",
+  "photoFile": "36096193.jpg",
+  "photoSource": {
+   "pexelsId": 36096193,
+   "pageUrl": "https://www.pexels.com/photo/urban-scene-with-minibus-in-traffic-36096193/",
+   "photographer": "Mad Knoxx Deluxe"
+  }
+ },
+ {
+  "caption": "Навигатор: «Маршрут построен. Время в пути — 18 минут»\nЯ: Это враньё. Я знаю этот город.",
+  "format": "caption",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "smartphone navigation app car dashboard"
+ },
+ {
+  "caption": "Ожидание: тихое утро, кофе, спокойный путь\nРеальность: в ухо — строительные работы, в лицо — сосед с шаурмой в 7:30",
+  "format": "expectation-vs-reality",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "construction noise city street morning commute"
+ },
+ {
+  "caption": "Когда автобус уехал прямо перед носом и следующий через 25 минут — стоишь и переосмысливаешь всё",
+  "format": "caption",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "person standing alone at bus stop looking sad",
+  "photoFile": "15069349.jpg",
+  "photoSource": {
+   "pexelsId": 15069349,
+   "pageUrl": "https://www.pexels.com/photo/photo-of-a-man-looking-down-and-waiting-for-a-tram-15069349/",
+   "photographer": "Berkay Mavral"
+  }
+ },
+ {
+  "caption": "Шкала усталости пассажира:\n1 остановка — бодрый, изучает город\n5 остановок — просто едет\n14 остановок — смотрит в пустоту и думает о своих поступках",
+  "format": "list-top",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "tired commuter public transport blank stare"
+ },
+ {
+  "caption": "Никто:\nМой телефон в метро: нет сети\nМой мозг: а давай я буду думать обо всех неловких моментах жизни с 2011 года",
+  "format": "nobody",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "person on subway no signal phone underground"
+ },
+ {
+  "caption": "Когда сидишь в пробке и в параллельном ряду машины вдруг поехали — переключаешься, а они уже снова стоят",
+  "format": "caption",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "lane change traffic jam highway frustrated driver",
+  "photoFile": "14851861.jpg",
+  "photoSource": {
+   "pexelsId": 14851861,
+   "pageUrl": "https://www.pexels.com/photo/cars-on-street-in-city-14851861/",
+   "photographer": "el jusuf"
+  }
+ },
+ {
+  "caption": "POV: ты в метро, поезд остановился в тоннеле, машинист молчит уже три минуты",
+  "format": "POV",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "subway train stopped dark tunnel underground",
+  "photoFile": "13413984.jpg",
+  "photoSource": {
+   "pexelsId": 13413984,
+   "pageUrl": "https://www.pexels.com/photo/approaching-train-in-a-subway-terminal-13413984/",
+   "photographer": "Amine İspir"
+  }
+ },
+ {
+  "caption": "Я до пробки: буду спокойным и вежливым водителем\nЯ в пробке: разрабатываю личную систему классификации чужих ошибок вождения",
+  "format": "expectation-vs-reality",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "stressed driver sitting in traffic jam close up",
+  "photoFile": "32487425.jpg",
+  "photoSource": {
+   "pexelsId": 32487425,
+   "pageUrl": "https://www.pexels.com/photo/busy-urban-traffic-jam-captured-from-above-32487425/",
+   "photographer": "Dapur Melodi"
+  }
+ },
+ {
+  "caption": "Двери метро закрываются прямо перед тобой.\nСледующий поезд через 2 минуты.\nНо ты всё равно стоишь и смотришь на закрытые двери.",
+  "format": "demotivator-text",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "metro train doors closing platform",
+  "photoFile": "33185104.jpg",
+  "photoSource": {
+   "pexelsId": 33185104,
+   "pageUrl": "https://www.pexels.com/photo/futuristic-underground-subway-station-platform-33185104/",
+   "photographer": "天玑 不器"
+  }
+ },
+ {
+  "caption": "Когда заходишь в автобус и видишь, что в салоне тепло и почти пусто — блаженство, которого не объяснить словами",
+  "format": "caption",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "warm empty bus interior winter morning",
+  "photoFile": "11302481.jpg",
+  "photoSource": {
+   "pexelsId": 11302481,
+   "pageUrl": "https://www.pexels.com/photo/empty-interior-of-a-bus-11302481/",
+   "photographer": "Dovydas Pranka"
+  }
+ },
+ {
+  "caption": "Топ-3 звука, которые слышит каждый пассажир:\n1. Кто-то смотрит видео без наушников\n2. Пакет, которым шуршат 20 минут подряд\n3. Звонок с включённой громкой связью",
+  "format": "list-top",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "passengers on bus train looking annoyed"
+ },
+ {
+  "caption": "Навигатор сказал «дорога свободна».\nЯ свернул.\nДорога была совсем не свободна.\nНу ладно.",
+  "format": "demotivator-text",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "unexpected road traffic after turn city street"
+ },
+ {
+  "caption": "Ожидание: выйду из метро — и сразу на работу\nРеальность: выйду из метро — и полчаса жду наземный транспорт на ветру",
+  "format": "expectation-vs-reality",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "person waiting at bus stop cold windy weather"
+ },
+ {
+  "caption": "Когда едешь полчаса стоя в переполненном вагоне и наконец появляется свободное место — садишься с видом человека, который только что купил дачу",
+  "format": "caption",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "person sitting down train seat relieved expression",
+  "photoFile": "13122063.jpg",
+  "photoSource": {
+   "pexelsId": 13122063,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-printed-long-sleeve-shirt-sitting-on-a-train-seat-13122063/",
+   "photographer": "Hatice Baran"
+  }
+ },
+ {
+  "caption": "Никто:\nЯ в пробке: подсчитываю, сколько часов жизни провёл вот так",
+  "format": "nobody",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "person looking out car window traffic bored",
+  "photoFile": "5835280.jpg",
+  "photoSource": {
+   "pexelsId": 5835280,
+   "pageUrl": "https://www.pexels.com/photo/passenger-sitting-in-yellow-automobile-in-town-5835280/",
+   "photographer": "Tim  Samuel"
+  }
+ },
+ {
+  "caption": "Поездка на работу: 40 минут\nПоездка домой: 40 минут\nПоиск парковки: отдельная история",
+  "format": "caption",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "car parking lot full urban daytime",
+  "photoFile": "29380377.jpg",
+  "photoSource": {
+   "pexelsId": 29380377,
+   "pageUrl": "https://www.pexels.com/photo/aerial-view-of-urban-parking-lot-with-cars-29380377/",
+   "photographer": "Willian Justen de Vasconcellos"
+  }
+ },
+ {
+  "caption": "POV: ты на конечной, все вышли, ты сидишь и думаешь «пару остановок ещё»",
+  "format": "POV",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "empty bus last stop terminus city"
+ },
+ {
+  "caption": "Я в начале недели: буду выходить из дома на 15 минут раньше\nЯ в пятницу: выбегаю за 3 минуты до автобуса и несусь как будто от этого зависит жизнь",
+  "format": "expectation-vs-reality",
+  "theme": "public transport, commuting & traffic",
+  "imageQuery": "person running to catch bus urban street",
+  "photoFile": "31572681.jpg",
+  "photoSource": {
+   "pexelsId": 31572681,
+   "pageUrl": "https://www.pexels.com/photo/jogger-on-tree-lined-street-in-sunny-cityscape-31572681/",
+   "photographer": "Musa Ortaç"
+  }
+ },
+ {
+  "caption": "Ожидание: куплю только то, что в списке\nРеальность: оформил 14 товаров и добавил ещё 6 в «сохранённые» на потом",
+  "format": "expectation-vs-reality",
+  "theme": "online shopping, marketplaces & deliveries",
+  "imageQuery": "person sitting at laptop looking surprised at screen",
+  "photoFile": "6517182.jpg",
+  "photoSource": {
+   "pexelsId": 6517182,
+   "pageUrl": "https://www.pexels.com/photo/a-man-looking-surprised-while-talking-on-the-phone-6517182/",
+   "photographer": "RDNE Stock project"
+  }
+ },
+ {
+  "caption": "Когда курьер пишет «я у подъезда» ровно в тот момент, когда ты в душе",
+  "format": "POV",
+  "theme": "online shopping, marketplaces & deliveries",
+  "imageQuery": "person running through apartment looking panicked"
+ },
+ {
+  "caption": "Виды людей при слове «скидка 20%»:\n1. Рациональный: «Ну и ладно»\n2. Обычный: «Возьму пару штук»\n3. Я: оформил корзину, сэкономил немного, потратил вдвое больше планируемого",
+  "format": "list-top",
+  "theme": "online shopping, marketplaces & deliveries",
+  "imageQuery": "shopping cart overflowing with items store"
+ },
+ {
+  "caption": "Я: буду ждать доставку спокойно\nЯ же, каждые 20 минут: «Ваш заказ передан в службу доставки»",
+  "format": "caption",
+  "theme": "online shopping, marketplaces & deliveries",
+  "imageQuery": "person constantly checking phone screen",
+  "photoFile": "4051504.jpg",
+  "photoSource": {
+   "pexelsId": 4051504,
+   "pageUrl": "https://www.pexels.com/photo/photo-of-person-using-laptop-4051504/",
+   "photographer": "KATRIN  BOLOVTSOVA"
+  }
+ },
+ {
+  "caption": "ТРЕКИНГ ПОСЫЛКИ\n— Принят на складе\n— Отправлен\n— В пути\n— Прибыл в сортировочный центр\n— Прибыл в другой сортировочный центр\n— Снова в пути\n\n(прошло 11 дней)",
+  "format": "demotivator-text",
+  "theme": "online shopping, marketplaces & deliveries",
+  "imageQuery": "warehouse with conveyor belts and packages"
  }
 ]
