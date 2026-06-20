@@ -629,6 +629,9 @@ function StatsOverview({
               })}
               {overview.dataThrough ? ` · ${t("stats.analyticsDataThrough", { date: overview.dataThrough })}` : ""}
             </div>
+            {days !== 90 && (
+              <div className="text-xs text-base-content/40 mt-0.5">{t("stats.breakdownPeriodNote")}</div>
+            )}
           </div>
           <div className="min-w-0 max-w-full overflow-x-auto pb-1">
             <div className="join min-w-max">
@@ -1027,6 +1030,9 @@ function ChannelAnalytics({ analytics }: { analytics: YoutubeAnalyticsPayload })
         <div className="text-xs text-base-content/50">
           {t("stats.analyticsDataThrough", { date: analytics.dataThrough })}
         </div>
+      )}
+      {analytics.days !== 90 && (
+        <div className="text-xs text-base-content/45">{t("stats.breakdownPeriodNote")}</div>
       )}
       {analytics.topVideos.length > 0 && (
         <div>

@@ -807,6 +807,7 @@ export const en: Record<string, string> = {
   "stats.analyticsPendingChannels": "Show channels",
   "stats.analyticsPendingFootnote": "{n} channel(s): YouTube Analytics has not returned data for this period yet. This is normal for fresh videos.",
   "stats.avgShort": "avg",
+  "stats.breakdownPeriodNote": "Top videos, breakdowns and audience — last 90 days.",
   "stats.publishActivity": "Publishing activity",
   "stats.publishScopeMine": "my channels",
   "stats.publishScopeAll": "all channels",

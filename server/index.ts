@@ -2312,6 +2312,7 @@ app.post("/api/videos/:id/post-now", async (req, reply) => {
       youtubeId,
       videoPath: v.videoRel,
       publishedAt: publishAt ?? new Date().toISOString(),
+      deck: v.deck,
     });
     if (youtubeId) {
       // posted once → remove from the library (files + row) so it never reposts

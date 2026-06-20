@@ -28,6 +28,22 @@ export interface Account {
   slotDecks: Record<string, string>;
   avatar: string | null; // channel avatar URL (YouTube thumbnail, built-in "/avatars/...", or custom "/files/avatars/...")
   avatarSource: "random" | "youtube" | "manual";
+  oauthClientId: number | null; // which uploaded Google key this channel was connected with (oauth_clients.id)
+}
+
+// One uploaded Google OAuth client (client_secret.json) belonging to a user. A user may store up to
+// MAX_OAUTH_CLIENTS_PER_USER of these and bind each channel to one — channels then post under that
+// project's own YouTube Data API quota. The raw JSON is server-only and never sent to the frontend.
+export const MAX_OAUTH_CLIENTS_PER_USER = 5;
+
+export interface OAuthClientRow {
+  id: number;
+  userId: number;
+  label: string;
+  clientId: string;
+  projectId: string | null;
+  createdAt: string;
+  channelCount: number; // connected channels bound to this key (computed)
 }
 
 export interface HistoryItem {
@@ -187,6 +203,22 @@ function parseStringRecord(raw: unknown): Record<string, string> {
   }
 }
 
+/** Tolerantly pull display metadata out of a client_secret.json (web/installed/raw shape). Never throws. */
+export function parseCredMeta(json: string): { clientId: string; projectId: string | null } {
+  try {
+    const j = JSON.parse(json);
+    const c = j.web ?? j.installed ?? j;
+    return { clientId: String(c?.client_id ?? ""), projectId: c?.project_id ? String(c.project_id) : null };
+  } catch {
+    return { clientId: "", projectId: null };
+  }
+}
+
+/** Default display label for a key: its Google project id, else a numbered fallback. */
+export function defaultClientLabel(projectId: string | null, index: number): string {
+  return (projectId && projectId.trim()) || `Ключ ${index}`;
+}
+
 const rowToAccount = (r: Row): Account => ({
   id: r.id,
   userId: r.user_id ?? null,
@@ -208,6 +240,7 @@ const rowToAccount = (r: Row): Account => ({
   slotDecks: parseStringRecord(r.slot_decks),
   avatar: r.avatar ?? null,
   avatarSource: r.avatar_source ?? "random",
+  oauthClientId: r.oauth_client_id ?? null,
 });
 
 const rowToVideo = (r: Row): Video => ({
@@ -514,6 +547,15 @@ export function openDb(path: string) {
       status TEXT NOT NULL DEFAULT 'pending', -- pending|ready|consumed|nomatch|conflict
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+    CREATE TABLE IF NOT EXISTS oauth_clients (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      label TEXT NOT NULL DEFAULT '',
+      client_secret_json TEXT NOT NULL, -- full uploaded JSON; server-only, never returned to the client
+      client_id TEXT NOT NULL DEFAULT '',
+      project_id TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 
   // Additive schema migrations. ADD COLUMN is idempotent across restarts, but ONLY the expected
@@ -539,9 +581,11 @@ export function openDb(path: string) {
   db.prepare("UPDATE accounts SET avatar_source = 'manual' WHERE avatar LIKE '/files/avatars/%'").run();
   addColumn("videos", "deck TEXT NOT NULL DEFAULT 'ru'");
   addColumn("accounts", "user_id INTEGER");
+  addColumn("accounts", "oauth_client_id INTEGER"); // which uploaded Google key the channel is bound to
   addColumn("users", "client_secret_json TEXT");
   addColumn("channel_analytics_daily", "dislikes INTEGER NOT NULL DEFAULT 0");
   addColumn("history", "error TEXT");
+  addColumn("history", "deck TEXT"); // deck a post was actually published with (old rows NULL → fall back to channel lang)
   addColumn("channel_stats", "analytics_status TEXT");
   addColumn("channel_stats", "analytics_error TEXT");
   addColumn("channel_stats", "data_through TEXT");
@@ -575,7 +619,34 @@ export function openDb(path: string) {
     CREATE INDEX IF NOT EXISTS idx_notifications_user_last ON notifications(user_id, last_seen_at);
     CREATE INDEX IF NOT EXISTS idx_notifications_account ON notifications(account_id);
     CREATE INDEX IF NOT EXISTS idx_notifications_last_seen ON notifications(last_seen_at);
+    CREATE INDEX IF NOT EXISTS idx_oauth_clients_user ON oauth_clients(user_id);
+    CREATE INDEX IF NOT EXISTS idx_accounts_oauth_client ON accounts(oauth_client_id);
   `);
+
+  // Multi-key OAuth migration (idempotent via MOVE semantics): pull each user's legacy single
+  // `users.client_secret_json` into one `oauth_clients` row, bind their already-connected channels to
+  // it (so refresh tokens keep matching the same client_id), then NULL the legacy column so deleting
+  // every key later never resurrects one. Runs only while a legacy value is still present.
+  const legacyKeys = db
+    .prepare("SELECT id, client_secret_json FROM users WHERE client_secret_json IS NOT NULL AND TRIM(client_secret_json) != ''")
+    .all() as Row[];
+  for (const u of legacyKeys) {
+    const userId = Number(u.id);
+    const json = String(u.client_secret_json);
+    const meta = parseCredMeta(json);
+    let clientRowId: number;
+    const existing = db.prepare("SELECT id FROM oauth_clients WHERE user_id = ? ORDER BY id LIMIT 1").get(userId) as Row | undefined;
+    if (existing) {
+      clientRowId = Number(existing.id);
+    } else {
+      const info = db
+        .prepare("INSERT INTO oauth_clients (user_id, label, client_secret_json, client_id, project_id) VALUES (?,?,?,?,?)")
+        .run(userId, defaultClientLabel(meta.projectId, 1), json, meta.clientId, meta.projectId);
+      clientRowId = Number(info.lastInsertRowid);
+    }
+    db.prepare("UPDATE accounts SET oauth_client_id = ? WHERE user_id = ? AND oauth_client_id IS NULL").run(clientRowId, userId);
+    db.prepare("UPDATE users SET client_secret_json = NULL WHERE id = ?").run(userId);
+  }
 
   // Schema version stamp. Everything above is additive & idempotent, so it self-applies on every boot.
   // For a FUTURE non-additive change (rename/drop/type/constraint), gate it on this version, e.g.:
@@ -726,9 +797,10 @@ export function openDb(path: string) {
       videoPath?: string | null;
       publishedAt?: string | null;
       error?: string | null;
+      deck?: string | null;
     }): void {
       db.prepare(
-        "INSERT INTO history (account_id, title, status, youtube_id, video_path, published_at, error) VALUES (?,?,?,?,?,?,?)",
+        "INSERT INTO history (account_id, title, status, youtube_id, video_path, published_at, error, deck) VALUES (?,?,?,?,?,?,?,?)",
       ).run(
         h.accountId,
         h.title,
@@ -737,6 +809,7 @@ export function openDb(path: string) {
         h.videoPath ?? null,
         h.publishedAt ?? null,
         h.error ?? null,
+        h.deck ?? null,
       );
     },
     createVideo(v: {
@@ -1201,13 +1274,14 @@ export function openDb(path: string) {
         users: Number(u.n) || 0,
       };
     },
-    // Posted (uploaded to YouTube) count per user per deck (by the channel's current language).
+    // Posted (uploaded to YouTube) count per user per deck — by the deck each post was ACTUALLY
+    // published with (history.deck); old rows predating that column fall back to the channel's lang.
     postedByUserDeck(): Record<number, Record<string, number>> {
       const out: Record<number, Record<string, number>> = {};
       const rows = db
         .prepare(
-          "SELECT a.user_id AS uid, a.lang AS deck, COUNT(*) AS n FROM history h JOIN accounts a ON a.id = h.account_id " +
-            "WHERE a.user_id IS NOT NULL AND h.youtube_id IS NOT NULL AND h.youtube_id <> '' GROUP BY a.user_id, a.lang",
+          "SELECT a.user_id AS uid, COALESCE(h.deck, a.lang) AS deck, COUNT(*) AS n FROM history h JOIN accounts a ON a.id = h.account_id " +
+            "WHERE a.user_id IS NOT NULL AND h.youtube_id IS NOT NULL AND h.youtube_id <> '' GROUP BY a.user_id, COALESCE(h.deck, a.lang)",
         )
         .all() as Row[];
       for (const r of rows) {

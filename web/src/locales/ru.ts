@@ -811,6 +811,7 @@ export const ru: Record<string, string> = {
   "stats.analyticsPendingChannels": "Показать каналы",
   "stats.analyticsPendingFootnote": "{n} канал(ов): YouTube Analytics пока не вернул данные за период. Для свежих роликов это нормально.",
   "stats.avgShort": "средн.",
+  "stats.breakdownPeriodNote": "Топ видео, разбивки и аудитория — за последние 90 дней.",
   "stats.publishActivity": "Активность публикаций",
   "stats.publishScopeMine": "мои каналы",
   "stats.publishScopeAll": "все каналы",

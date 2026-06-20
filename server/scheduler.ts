@@ -98,6 +98,7 @@ export function startScheduler(opts: SchedulerOpts) {
           videoPath: lib.videoRel,
           publishedAt: new Date().toISOString(),
           error: videoId ? null : "YouTube не вернул id ролика — загрузка не удалась.",
+          deck: lib.deck,
         });
         if (videoId) {
           metrics.notePost(); // last successful auto-post timestamp
