@@ -3,61 +3,121 @@
   "caption": "DIESE BESPRECHUNG\nhätte auch eine E-Mail sein können.",
   "format": "demotivator-text",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "bored people sitting around a conference table in a meeting"
+  "imageQuery": "bored people sitting around a conference table in a meeting",
+  "photoFile": "9077349.jpg",
+  "photoSource": {
+   "pexelsId": 9077349,
+   "pageUrl": "https://www.pexels.com/photo/men-sitting-at-the-table-9077349/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "Niemand:\nAbsolut niemand:\nKollege im Meeting: \"Ich fasse das nochmal ganz kurz zusammen.\"",
   "format": "nobody",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "man talking and gesturing in an office meeting"
+  "imageQuery": "man talking and gesturing in an office meeting",
+  "photoFile": "8872601.jpg",
+  "photoSource": {
+   "pexelsId": 8872601,
+   "pageUrl": "https://www.pexels.com/photo/photograph-of-a-man-with-a-yellow-necktie-speaking-8872601/",
+   "photographer": "MART  PRODUCTION"
+  }
  },
  {
   "caption": "ich_iel\nstelle den Wecker auf 6:00, um produktiv zu sein /\nbin um 9:00 im Meeting, das auch 2025 noch hätte stattfinden können",
   "format": "ich_iel",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "tired man rubbing eyes at office desk in the morning"
+  "imageQuery": "tired man rubbing eyes at office desk in the morning",
+  "photoFile": "8867253.jpg",
+  "photoSource": {
+   "pexelsId": 8867253,
+   "pageUrl": "https://www.pexels.com/photo/a-tired-man-sitting-at-his-desk-rubbing-his-eyes-8867253/",
+   "photographer": "Yan Krukau"
+  }
  },
  {
   "caption": "Sehr geehrte Fahrgäste,\ndas Meeting von 09:00 Uhr verspätet sich um 25 Minuten.\nGrund hierfür ist ein Kollege, der \"nur ganz kurz seinen Bildschirm teilen\" möchte.",
   "format": "Behörden-announcement",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "laptop screen sharing during a video conference call"
+  "imageQuery": "laptop screen sharing during a video conference call",
+  "photoFile": "7437492.jpg",
+  "photoSource": {
+   "pexelsId": 7437492,
+   "pageUrl": "https://www.pexels.com/photo/man-on-a-laptop-screen-during-a-meeting-7437492/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "Montag, 08:00 Uhr: Ich schaffe diese Woche alles. /\nMontag, 08:15 Uhr: erste \"kurze\" Abstimmung über die nächste Abstimmung.",
   "format": "expectation-vs-reality",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "stressed office worker looking at calendar on monitor"
+  "imageQuery": "stressed office worker looking at calendar on monitor",
+  "photoFile": "12911216.jpg",
+  "photoSource": {
+   "pexelsId": 12911216,
+   "pageUrl": "https://www.pexels.com/photo/frustrated-businesswoman-in-an-office-12911216/",
+   "photographer": "Mizuno K"
+  }
  },
  {
   "caption": "DAS HÄTTE EINE E-MAIL SEIN KÖNNEN\nausgewählte Werke aus 90 Minuten meines Lebens",
   "format": "demotivator-text",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "empty office meeting room with long table and chairs"
+  "imageQuery": "empty office meeting room with long table and chairs",
+  "photoFile": "3767172.jpg",
+  "photoSource": {
+   "pexelsId": 3767172,
+   "pageUrl": "https://www.pexels.com/photo/oval-table-and-chairs-in-modern-meeting-room-3767172/",
+   "photographer": "Adrien Olichon"
+  }
  },
  {
   "caption": "Mein Beitrag im Meeting:\nKamera aus, Mikro aus, Gehirn aus.\nLäuft bei mir.",
   "format": "ich_iel",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "person sitting in front of laptop with video call interface"
+  "imageQuery": "person sitting in front of laptop with video call interface",
+  "photoFile": "3861964.jpg",
+  "photoSource": {
+   "pexelsId": 3861964,
+   "pageUrl": "https://www.pexels.com/photo/person-using-gray-laptop-3861964/",
+   "photographer": "ThisIsEngineering"
+  }
  },
  {
   "caption": "\"Wir machen das ganz unkompliziert.\"\nVier Wochen später, im siebten Meeting zum Thema",
   "format": "caption",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "overwhelmed businesswoman surrounded by sticky notes and paperwork"
+  "imageQuery": "overwhelmed businesswoman surrounded by sticky notes and paperwork",
+  "photoFile": "12912110.jpg",
+  "photoSource": {
+   "pexelsId": 12912110,
+   "pageUrl": "https://www.pexels.com/photo/woman-sitting-behind-a-desk-and-writing-in-a-notebook-12912110/",
+   "photographer": "Mizuno K"
+  }
  },
  {
   "caption": "Chef: Noch Fragen?\nDie ganze Abteilung, die seit 30 Minuten an Feierabend denkt:\n\"Nein, alles klar.\"",
   "format": "nobody",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "group of coworkers silent in a meeting room looking at clock"
+  "imageQuery": "group of coworkers silent in a meeting room looking at clock",
+  "photoFile": "5325017.jpg",
+  "photoSource": {
+   "pexelsId": 5325017,
+   "pageUrl": "https://www.pexels.com/photo/colleagues-sitting-at-table-with-netbook-and-discussing-project-5325017/",
+   "photographer": "Anna Shvets"
+  }
  },
  {
   "caption": "Ob die Besprechung etwas bringt?\nDas ist mir wurst.\nIch bin hier nur für die Kekse.",
   "format": "Galgenhumor-Spruch",
   "theme": "work, office life & pointless meetings",
-  "imageQuery": "plate of cookies and coffee cups on office meeting table"
+  "imageQuery": "plate of cookies and coffee cups on office meeting table",
+  "photoFile": "34993174.jpg",
+  "photoSource": {
+   "pexelsId": 34993174,
+   "pageUrl": "https://www.pexels.com/photo/festive-treats-with-christmas-tree-34993174/",
+   "photographer": "Esra Afşar"
+  }
  },
  {
   "caption": "Niemand:\nMein Kontostand am 28.:\n„Bruder muss los.“",
@@ -75,13 +135,25 @@
   "caption": "ich_iel\nGehalt kommt rein um 0:01 Uhr\nGehalt geht raus um 0:02 Uhr",
   "format": "ich_iel",
   "theme": "money, payday & being broke",
-  "imageQuery": "person looking at phone in dark bedroom at night"
+  "imageQuery": "person looking at phone in dark bedroom at night",
+  "photoFile": "8036752.jpg",
+  "photoSource": {
+   "pexelsId": 8036752,
+   "pageUrl": "https://www.pexels.com/photo/woman-with-a-towel-on-her-head-using-her-phone-8036752/",
+   "photographer": "SHVETS production"
+  }
  },
  {
   "caption": "Sehr geehrte Fahrgäste, Ihr Konto verzögert sich um voraussichtlich 14 Tage bis zum nächsten Gehalt. Wir bitten um Ihr Verständnis.",
   "format": "announcement",
   "theme": "money, payday & being broke",
-  "imageQuery": "empty train station platform departure board"
+  "imageQuery": "empty train station platform departure board",
+  "photoFile": "13221580.jpg",
+  "photoSource": {
+   "pexelsId": 13221580,
+   "pageUrl": "https://www.pexels.com/photo/empty-train-station-13221580/",
+   "photographer": "Neo Lee"
+  }
  },
  {
   "caption": "REICH\nFür genau 24 Stunden nach Gehaltseingang",
@@ -93,25 +165,49 @@
   "caption": "Erwartung: Ich spare diesen Monat 200 Euro.\nRealität: Ich zähle das Pfand zusammen für ein Brötchen.",
   "format": "expectation-vs-reality",
   "theme": "money, payday & being broke",
-  "imageQuery": "hands holding empty plastic bottles for recycling"
+  "imageQuery": "hands holding empty plastic bottles for recycling",
+  "photoFile": "9475434.jpg",
+  "photoSource": {
+   "pexelsId": 9475434,
+   "pageUrl": "https://www.pexels.com/photo/person-putting-empty-plastic-bottles-in-a-basket-9475434/",
+   "photographer": "Greta Hoffman"
+  }
  },
  {
   "caption": "ich_iel\n„Ich hol das nur, wenn's im Angebot ist.“\nlegt es trotzdem in den Wagen, weil's morgen vielleicht weg ist",
   "format": "ich_iel",
   "theme": "money, payday & being broke",
-  "imageQuery": "person looking at price tag in supermarket aisle"
+  "imageQuery": "person looking at price tag in supermarket aisle",
+  "photoFile": "7129160.jpg",
+  "photoSource": {
+   "pexelsId": 7129160,
+   "pageUrl": "https://www.pexels.com/photo/crop-person-purchasing-assorted-vegetables-in-grocery-market-7129160/",
+   "photographer": "Michael Burrows"
+  }
  },
  {
   "caption": "Das ist mir wurst, ob's gesund ist.\nEs war reduziert.",
   "format": "caption",
   "theme": "money, payday & being broke",
-  "imageQuery": "discount sticker on grocery shelf"
+  "imageQuery": "discount sticker on grocery shelf",
+  "photoFile": "9321466.jpg",
+  "photoSource": {
+   "pexelsId": 9321466,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-getting-cereal-boxes-from-the-shelf-9321466/",
+   "photographer": "Jessica Latorre"
+  }
  },
  {
   "caption": "Ich am 1.: Heute gönn ich mir was.\nIch am 2.: Wer hat mein ganzes Geld gegessen?",
   "format": "expectation-vs-reality",
   "theme": "money, payday & being broke",
-  "imageQuery": "confused man staring at empty fridge"
+  "imageQuery": "confused man staring at empty fridge",
+  "photoFile": "10379533.jpg",
+  "photoSource": {
+   "pexelsId": 10379533,
+   "pageUrl": "https://www.pexels.com/photo/a-man-looking-at-the-refrigirator-10379533/",
+   "photographer": "Aynur Latfullin"
+  }
  },
  {
   "caption": "SPAREN\nDas Geld, das du nicht ausgibst, weil der Online-Shop offline ist.",
@@ -147,13 +243,25 @@
   "caption": "Ich um 22 Uhr: Morgen stehe ich früh auf und werde produktiv. / Ich um 6:30 Uhr: noch 5 Minuten. (zum 7. Mal)",
   "format": "expectation-vs-reality",
   "theme": "sleep, mornings & alarms",
-  "imageQuery": "hand hitting snooze button on alarm clock in the morning"
+  "imageQuery": "hand hitting snooze button on alarm clock in the morning",
+  "photoFile": "7622520.jpg",
+  "photoSource": {
+   "pexelsId": 7622520,
+   "pageUrl": "https://www.pexels.com/photo/crop-woman-snoozing-alarm-on-smartphone-7622520/",
+   "photographer": "Miriam Alonso"
+  }
  },
  {
   "caption": "ich_iel / stelle 6 Wecker, um sicherzugehen, dass ich alle 6 ignorieren kann",
   "format": "ich_iel",
   "theme": "sleep, mornings & alarms",
-  "imageQuery": "multiple alarm clocks on bedside table"
+  "imageQuery": "multiple alarm clocks on bedside table",
+  "photoFile": "6943418.jpg",
+  "photoSource": {
+   "pexelsId": 6943418,
+   "pageUrl": "https://www.pexels.com/photo/a-lamp-shade-and-a-clock-on-the-bedside-table-6943418/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "Sehr geehrte Fahrgäste, Ihr Wecker hat heute pünktlich geklingelt. Wir bitten diese Unannehmlichkeit zu entschuldigen.",
@@ -165,7 +273,13 @@
   "caption": "MEIN AKKU: 100% / MEIN WECKER NACH 8 STUNDEN SCHLAF: ich auch nicht",
   "format": "zweizeiler",
   "theme": "sleep, mornings & alarms",
-  "imageQuery": "exhausted tired person waking up in the morning"
+  "imageQuery": "exhausted tired person waking up in the morning",
+  "photoFile": "20672939.jpg",
+  "photoSource": {
+   "pexelsId": 20672939,
+   "pageUrl": "https://www.pexels.com/photo/tired-man-touching-eye-while-sitting-by-table-in-kitchen-20672939/",
+   "photographer": "Lucas Andrade"
+  }
  },
  {
   "caption": "MONTAG, 6 UHR / Mir reicht zu wissen, dass ich aufstehen könnte, wenn ich wollte.",
@@ -177,19 +291,37 @@
   "caption": "Läuft bei mir. / 4 Stunden geschlafen, drei Kaffee intus, blinzle nur noch in Zeitlupe.",
   "format": "alman-spruch",
   "theme": "sleep, mornings & alarms",
-  "imageQuery": "tired office worker holding coffee cup at desk"
+  "imageQuery": "tired office worker holding coffee cup at desk",
+  "photoFile": "9062788.jpg",
+  "photoSource": {
+   "pexelsId": 9062788,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-sitting-at-the-table-9062788/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "Ich am Wochenende: Plan war, bis 11 zu schlafen.\nIch am Wochenende beim Bäcker um kurz nach 8: Warum sind hier schon ALLE Brötchen weg?",
   "format": "expectation-vs-reality",
   "theme": "sleep, mornings & alarms",
-  "imageQuery": "empty bakery shelf in the morning"
+  "imageQuery": "empty bakery shelf in the morning",
+  "photoFile": "30853711.jpg",
+  "photoSource": {
+   "pexelsId": 30853711,
+   "pageUrl": "https://www.pexels.com/photo/artisan-bread-display-in-a-berlin-bakery-30853711/",
+   "photographer": "Manish Jain"
+  }
  },
  {
   "caption": "ich_iel / lege mich \"nur kurz hin\" und wache 3 Stunden später im Dunkeln auf wie ein verwirrter Igel im Winter",
   "format": "ich_iel",
   "theme": "sleep, mornings & alarms",
-  "imageQuery": "person napping on couch in dark room afternoon"
+  "imageQuery": "person napping on couch in dark room afternoon",
+  "photoFile": "5256186.jpg",
+  "photoSource": {
+   "pexelsId": 5256186,
+   "pageUrl": "https://www.pexels.com/photo/dog-lying-on-couch-near-faceless-black-woman-5256186/",
+   "photographer": "Samson Katt"
+  }
  },
  {
   "caption": "Top 3 Sportarten der Deutschen: / 3. Mülltrennung / 2. Pünktlich sein / 1. Den Wecker auf snooze stellen",
@@ -201,13 +333,25 @@
   "caption": "Kein Plan, welcher Tag ist. / Aber mein Körper hat schon 3 Sekunden vor dem Wecker die Augen aufgerissen, nur um mich zu ärgern.",
   "format": "galgenhumor-spruch",
   "theme": "sleep, mornings & alarms",
-  "imageQuery": "person opening eyes waking up just before alarm"
+  "imageQuery": "person opening eyes waking up just before alarm",
+  "photoFile": "7622520.jpg",
+  "photoSource": {
+   "pexelsId": 7622520,
+   "pageUrl": "https://www.pexels.com/photo/crop-woman-snoozing-alarm-on-smartphone-7622520/",
+   "photographer": "Miriam Alonso"
+  }
  },
  {
   "caption": "ich_iel\nFängt heute ernsthaft mit dem Lernen an / Räumt erstmal vier Stunden lang den Schreibtisch auf",
   "format": "ich_iel",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "person organizing a tidy desk with sticky notes"
+  "imageQuery": "person organizing a tidy desk with sticky notes",
+  "photoFile": "5882650.jpg",
+  "photoSource": {
+   "pexelsId": 5882650,
+   "pageUrl": "https://www.pexels.com/photo/an-empty-glass-cup-on-a-coaster-and-rulers-on-the-desk-5882650/",
+   "photographer": "www.kaboompics.com"
+  }
  },
  {
   "caption": "Niemand:\nAbsolut niemand:\nMein Gehirn um 3 Uhr nachts vor der Prüfung: lass uns nochmal über jeden peinlichen Moment seit der Grundschule reden",
@@ -231,31 +375,61 @@
   "caption": "Erwartung: 90 Tage in Ruhe für die Hausarbeit / Realität: alle 60 Seiten in der Nacht davor, fünf Energydrinks tief",
   "format": "expectation-vs-reality",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "exhausted student surrounded by empty coffee cups and papers at night"
+  "imageQuery": "exhausted student surrounded by empty coffee cups and papers at night",
+  "photoFile": "20672940.jpg",
+  "photoSource": {
+   "pexelsId": 20672940,
+   "pageUrl": "https://www.pexels.com/photo/tired-man-in-eyeglasses-sitting-at-table-in-kitchen-20672940/",
+   "photographer": "Lucas Andrade"
+  }
  },
  {
   "caption": "Sehr geehrte Fahrgäste, Ihre Motivation hat sich um voraussichtlich 6 Monate verspätet. Wir bitten um Ihr Verständnis.",
   "format": "bahn-announcement",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "empty train station platform with departure board"
+  "imageQuery": "empty train station platform with departure board",
+  "photoFile": "13221580.jpg",
+  "photoSource": {
+   "pexelsId": 13221580,
+   "pageUrl": "https://www.pexels.com/photo/empty-train-station-13221580/",
+   "photographer": "Neo Lee"
+  }
  },
  {
   "caption": "ALLES UNTER KONTROLLE\nsagte der Student und markierte die letzten 200 Seiten komplett gelb",
   "format": "demotivator-text",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "textbook page covered entirely in yellow highlighter"
+  "imageQuery": "textbook page covered entirely in yellow highlighter",
+  "photoFile": "6958534.jpg",
+  "photoSource": {
+   "pexelsId": 6958534,
+   "pageUrl": "https://www.pexels.com/photo/person-using-blue-highlighter-pen-on-a-book-page-6958534/",
+   "photographer": "www.kaboompics.com"
+  }
  },
  {
   "caption": "POV: Du hast acht Stunden gelernt. Sieben davon warst du auf YouTube und hast dir angeschaut, wie andere Leute lernen.",
   "format": "POV",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "person watching laptop with closed textbook on desk"
+  "imageQuery": "person watching laptop with closed textbook on desk",
+  "photoFile": "6549863.jpg",
+  "photoSource": {
+   "pexelsId": 6549863,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-reading-a-book-6549863/",
+   "photographer": "Tima Miroshnichenko"
+  }
  },
  {
   "caption": "ich_iel\nMacht 5-Minuten-Pause nach dem Aufschlagen des Buches / Pause läuft seit 3 Tagen",
   "format": "ich_iel",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "open textbook left abandoned with dust on a table"
+  "imageQuery": "open textbook left abandoned with dust on a table",
+  "photoFile": "16335004.jpg",
+  "photoSource": {
+   "pexelsId": 16335004,
+   "pageUrl": "https://www.pexels.com/photo/pages-of-an-old-book-16335004/",
+   "photographer": "Esra Korkmaz"
+  }
  },
  {
   "caption": "Die drei Phasen vor jeder Prüfung:\n1. Hab noch ewig Zeit\n2. Hab noch genug Zeit\n3. Sehr geehrte Fahrgäste",
@@ -267,43 +441,85 @@
   "caption": "Niemand:\nIch in der Klausur: aber das stand doch gar nicht im Skript / Im Skript, Seite 1, fett markiert:",
   "format": "nobody",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "person staring confused at exam paper in a lecture hall"
+  "imageQuery": "person staring confused at exam paper in a lecture hall",
+  "photoFile": "18813812.jpg",
+  "photoSource": {
+   "pexelsId": 18813812,
+   "pageUrl": "https://www.pexels.com/photo/woman-reading-construction-plans-18813812/",
+   "photographer": "Beyzanur K."
+  }
  },
  {
   "caption": "Lerngruppe: gemeinsam für die Prüfung büffeln / Lerngruppe: drei Stunden diskutieren, wo wir uns treffen, und dann doch nicht treffen",
   "format": "expectation-vs-reality",
   "theme": "studying, exams & procrastination",
-  "imageQuery": "empty cafe table with two coffee cups and notebooks"
+  "imageQuery": "empty cafe table with two coffee cups and notebooks",
+  "photoFile": "14910773.jpg",
+  "photoSource": {
+   "pexelsId": 14910773,
+   "pageUrl": "https://www.pexels.com/photo/analog-camera-and-takeaway-cups-on-table-14910773/",
+   "photographer": "Jason Morrison"
+  }
  },
  {
   "caption": "ich_iel\n\nSie schreibt \"Wir müssen reden\"\nIch, der seit 3 Tagen jede mögliche Antwort durchgerechnet hat: Kein Plan, womit das zusammenhängt",
   "format": "ich_iel",
   "theme": "relationships, dating & texting",
-  "imageQuery": "anxious man staring at smartphone screen"
+  "imageQuery": "anxious man staring at smartphone screen",
+  "photoFile": "36993631.jpg",
+  "photoSource": {
+   "pexelsId": 36993631,
+   "pageUrl": "https://www.pexels.com/photo/man-looking-tired-while-checking-phone-in-cafe-36993631/",
+   "photographer": "🇻🇳🇻🇳Nguyễn Tiến Thịnh 🇻🇳🇻🇳"
+  }
  },
  {
   "caption": "Niemand:\nAbsolut niemand:\nMein Gehirn um 3 Uhr nachts: Was, wenn das \"Hä?\" von gestern eigentlich \"Schluss\" hieß?",
   "format": "nobody",
   "theme": "relationships, dating & texting",
-  "imageQuery": "person lying awake in bed at night"
+  "imageQuery": "person lying awake in bed at night",
+  "photoFile": "6943443.jpg",
+  "photoSource": {
+   "pexelsId": 6943443,
+   "pageUrl": "https://www.pexels.com/photo/man-suffering-from-insomnia-6943443/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "Sehr geehrte Fahrgäste, die für 19:00 Uhr geplante Antwort auf Ihre Nachricht verspätet sich um voraussichtlich 4 Werktage. Grund: Sie hat \"Haha\" geschrieben und ich weiß nicht, ob das gut war.",
   "format": "behoerden-announcement",
   "theme": "relationships, dating & texting",
-  "imageQuery": "empty train station platform with departure board"
+  "imageQuery": "empty train station platform with departure board",
+  "photoFile": "32215943.jpg",
+  "photoSource": {
+   "pexelsId": 32215943,
+   "pageUrl": "https://www.pexels.com/photo/empty-subway-platform-with-digital-signage-32215943/",
+   "photographer": "Esra Korkmaz"
+  }
  },
  {
   "caption": "Erstes Date: Erwartung / Realität\n\nOben: tiefgründiges Gespräch über Träume und das Leben\nUnten: 40 Minuten Diskussion, ob es Brötchen oder Schrippe heißt",
   "format": "expectation-vs-reality",
   "theme": "relationships, dating & texting",
-  "imageQuery": "two people on awkward coffee date at cafe"
+  "imageQuery": "two people on awkward coffee date at cafe",
+  "photoFile": "4255403.jpg",
+  "photoSource": {
+   "pexelsId": 4255403,
+   "pageUrl": "https://www.pexels.com/photo/man-in-black-formal-suit-jacket-sitting-beside-woman-in-beige-long-sleeve-dress-4255403/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "Sie: blau gehakt\nSie: tippt...\nSie: tippt nicht mehr\nSie: war zuletzt online vor 2 Minuten\nIch, der drei Diagramme erstellt hat: Total entspannt",
   "format": "ich_iel",
   "theme": "relationships, dating & texting",
-  "imageQuery": "person looking stressed at phone screen"
+  "imageQuery": "person looking stressed at phone screen",
+  "photoFile": "6029109.jpg",
+  "photoSource": {
+   "pexelsId": 6029109,
+   "pageUrl": "https://www.pexels.com/photo/woman-using-her-phone-6029109/",
+   "photographer": "www.kaboompics.com"
+  }
  },
  {
   "caption": "ALLES GUT BEI MIR\n\n(geschrieben, während ich die letzten 200 Nachrichten von vor 2 Jahren neu lese)",
@@ -315,19 +531,37 @@
   "caption": "Mein Liebesleben ist wie die Deutsche Bahn:\nselten pünktlich, oft ausgefallen, und am Ende stehe ich allein am Gleis.",
   "format": "alman-spruch",
   "theme": "relationships, dating & texting",
-  "imageQuery": "lonely person waiting at empty train platform"
+  "imageQuery": "lonely person waiting at empty train platform",
+  "photoFile": "7501148.jpg",
+  "photoSource": {
+   "pexelsId": 7501148,
+   "pageUrl": "https://www.pexels.com/photo/monochrome-of-train-station-7501148/",
+   "photographer": "Te Ta"
+  }
  },
  {
   "caption": "POV: Du hast \"Sehen uns dann ja Samstag\" geschrieben und tust seit 5 Tagen so, als wäre der Plan damit offiziell, fix und rechtlich bindend.",
   "format": "POV",
   "theme": "relationships, dating & texting",
-  "imageQuery": "person checking phone hopefully on couch"
+  "imageQuery": "person checking phone hopefully on couch",
+  "photoFile": "6611918.jpg",
+  "photoSource": {
+   "pexelsId": 6611918,
+   "pageUrl": "https://www.pexels.com/photo/a-person-holding-a-smartphone-with-blank-screen-6611918/",
+   "photographer": "Tima Miroshnichenko"
+  }
  },
  {
   "caption": "ich_iel\n\nIch: kein Bock auf Menschen, will einfach meine Ruhe\nAuch ich: starre seit 4 Stunden auf das Handy, ob \"die eine Person\" zurückschreibt",
   "format": "ich_iel",
   "theme": "relationships, dating & texting",
-  "imageQuery": "person alone on sofa scrolling phone"
+  "imageQuery": "person alone on sofa scrolling phone",
+  "photoFile": "7219912.jpg",
+  "photoSource": {
+   "pexelsId": 7219912,
+   "pageUrl": "https://www.pexels.com/photo/woman-lying-on-the-sofa-while-using-a-cellphone-7219912/",
+   "photographer": "Thirdman"
+  }
  },
  {
   "caption": "Top 3 Lügen beim Schreiben:\n1. \"Bin gleich da\"\n2. \"Hab dein Profil nur kurz überflogen\"\n3. \"Mir ist das alles voll egal\"",
@@ -339,13 +573,25 @@
   "caption": "Sie: Was machst du gerade so?\nIch: *liege seit 40 Minuten im selben Stuhl und formuliere diese eine lockere Antwort um*\nIch: Och, nix Besonderes, chille halt",
   "format": "nobody",
   "theme": "relationships, dating & texting",
-  "imageQuery": "young man typing on phone at desk"
+  "imageQuery": "young man typing on phone at desk",
+  "photoFile": "8348971.jpg",
+  "photoSource": {
+   "pexelsId": 8348971,
+   "pageUrl": "https://www.pexels.com/photo/a-man-wearing-a-denim-top-using-a-laptop-8348971/",
+   "photographer": "Henri Mathieu-Saint-Laurent"
+  }
  },
  {
   "caption": "ich_iel: kauf extra das teurere Brot vom Bäcker / werf am Sonntag die Hälfte hart geworden weg",
   "format": "ich_iel",
   "theme": "food, cooking & diets",
-  "imageQuery": "loaf of bread on wooden cutting board"
+  "imageQuery": "loaf of bread on wooden cutting board",
+  "photoFile": "37809266.jpg",
+  "photoSource": {
+   "pexelsId": 37809266,
+   "pageUrl": "https://www.pexels.com/photo/freshly-baked-bread-with-eggs-on-wooden-board-37809266/",
+   "photographer": "Canshotz"
+  }
  },
  {
   "caption": "Diät startet Montag. / Es ist Montag. / Diät startet nächsten Montag.",
@@ -357,67 +603,133 @@
   "caption": "Niemand: / Absolut niemand: / Mein Magen um 3 Uhr nachts: „wir wollten doch eigentlich abnehmen“",
   "format": "nobody",
   "theme": "food, cooking & diets",
-  "imageQuery": "open refrigerator glowing in dark kitchen at night"
+  "imageQuery": "open refrigerator glowing in dark kitchen at night",
+  "photoFile": "10379533.jpg",
+  "photoSource": {
+   "pexelsId": 10379533,
+   "pageUrl": "https://www.pexels.com/photo/a-man-looking-at-the-refrigirator-10379533/",
+   "photographer": "Aynur Latfullin"
+  }
  },
  {
   "caption": "Sehr geehrte Gäste, das Rezept versprach „in 20 Minuten fertig“. / Mit Verzögerung von 90 Minuten bitten wir um Ihr Verständnis.",
   "format": "behoerden-announcement",
   "theme": "food, cooking & diets",
-  "imageQuery": "person stressed cooking in messy kitchen"
+  "imageQuery": "person stressed cooking in messy kitchen",
+  "photoFile": "20672938.jpg",
+  "photoSource": {
+   "pexelsId": 20672938,
+   "pageUrl": "https://www.pexels.com/photo/worried-man-sitting-at-table-in-kitchen-20672938/",
+   "photographer": "Lucas Andrade"
+  }
  },
  {
   "caption": "Ob Bratwurst oder Weißwurst – ist mir am Ende vom Tag wurst.",
   "format": "alman-spruch",
   "theme": "food, cooking & diets",
-  "imageQuery": "grilled sausages on barbecue grill"
+  "imageQuery": "grilled sausages on barbecue grill",
+  "photoFile": "33312292.jpg",
+  "photoSource": {
+   "pexelsId": 33312292,
+   "pageUrl": "https://www.pexels.com/photo/barbecue-grilling-sausages-with-open-fire-33312292/",
+   "photographer": "Diana ✨"
+  }
  },
  {
   "caption": "Rezept: „eine Prise Salz“ / Ich, der weder Prisen noch Maße kennt: kippt die halbe Packung rein",
   "format": "expectation-vs-reality",
   "theme": "food, cooking & diets",
-  "imageQuery": "hand pouring salt into cooking pot"
+  "imageQuery": "hand pouring salt into cooking pot",
+  "photoFile": "4871233.jpg",
+  "photoSource": {
+   "pexelsId": 4871233,
+   "pageUrl": "https://www.pexels.com/photo/photo-of-a-person-putting-black-pepper-into-a-pot-4871233/",
+   "photographer": "www.kaboompics.com"
+  }
  },
  {
   "caption": "Erwartung: gesund meal-preppen für die ganze Woche / Realität: am Dienstag schon wieder Tiefkühlpizza",
   "format": "expectation-vs-reality",
   "theme": "food, cooking & diets",
-  "imageQuery": "frozen pizza in oven"
+  "imageQuery": "frozen pizza in oven",
+  "photoFile": "5903389.jpg",
+  "photoSource": {
+   "pexelsId": 5903389,
+   "pageUrl": "https://www.pexels.com/photo/pizzerman-putting-pizza-on-a-plate-with-a-pizza-shovel-5903389/",
+   "photographer": "ROMAN ODINTSOV"
+  }
  },
  {
   "caption": "LÄUFT BEI DIR / wenn das Brötchen, das Schrippe, das Wecken und das Semmel alle dasselbe sind und trotzdem keiner einig wird",
   "format": "demotivator-text",
   "theme": "food, cooking & diets",
-  "imageQuery": "assortment of bread rolls in basket"
+  "imageQuery": "assortment of bread rolls in basket",
+  "photoFile": "31141324.jpg",
+  "photoSource": {
+   "pexelsId": 31141324,
+   "pageUrl": "https://www.pexels.com/photo/variety-of-fresh-bread-rolls-in-a-wooden-basket-31141324/",
+   "photographer": "Calvin Seng"
+  }
  },
  {
   "caption": "POV: du sagst „nur ein kleines Stück Kuchen“ und stehst 10 Minuten später mit der Gabel vor der ganzen Form",
   "format": "POV",
   "theme": "food, cooking & diets",
-  "imageQuery": "chocolate cake with fork on plate"
+  "imageQuery": "chocolate cake with fork on plate",
+  "photoFile": "31377999.jpg",
+  "photoSource": {
+   "pexelsId": 31377999,
+   "pageUrl": "https://www.pexels.com/photo/delicious-pistachio-and-chocolate-cake-slice-31377999/",
+   "photographer": "Efnan Yılmaz"
+  }
  },
  {
   "caption": "ich_iel: stell den Wecker, um beim Discounter morgens als Erster an die reduzierten Sachen zu kommen / verschlafe",
   "format": "ich_iel",
   "theme": "food, cooking & diets",
-  "imageQuery": "yellow discount sticker on supermarket shelf"
+  "imageQuery": "yellow discount sticker on supermarket shelf",
+  "photoFile": "9321466.jpg",
+  "photoSource": {
+   "pexelsId": 9321466,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-getting-cereal-boxes-from-the-shelf-9321466/",
+   "photographer": "Jessica Latorre"
+  }
  },
  {
   "caption": "Mir reicht es zu wissen, dass ich kochen KÖNNTE, wenn ich nur wollte. / Lieferung kommt in 35 Minuten.",
   "format": "galgenhumor-spruch",
   "theme": "food, cooking & diets",
-  "imageQuery": "person on couch holding smartphone ordering food"
+  "imageQuery": "person on couch holding smartphone ordering food",
+  "photoFile": "9461214.jpg",
+  "photoSource": {
+   "pexelsId": 9461214,
+   "pageUrl": "https://www.pexels.com/photo/a-person-knocking-on-the-door-for-a-food-delivery-9461214/",
+   "photographer": "Mike Jones"
+  }
  },
  {
   "caption": "Niemand:\nDas WLAN um 23:59 Uhr, wenn ich nur noch eine Sache hochladen muss:\n\"Verbindung getrennt\"",
   "format": "nobody",
   "theme": "technology, phones, wifi & updates",
-  "imageQuery": "frustrated person staring at laptop screen at night"
+  "imageQuery": "frustrated person staring at laptop screen at night",
+  "photoFile": "6345319.jpg",
+  "photoSource": {
+   "pexelsId": 6345319,
+   "pageUrl": "https://www.pexels.com/photo/tired-teenage-boy-with-a-laptop-6345319/",
+   "photographer": "www.kaboompics.com"
+  }
  },
  {
   "caption": "ich_iel beim Update:\n\"Dauert nur 2 Minuten\"\nzwei Minuten später: 47% — Geschätzte Restzeit: 4 Stunden",
   "format": "ich_iel",
   "theme": "technology, phones, wifi & updates",
-  "imageQuery": "person waiting impatiently looking at watch"
+  "imageQuery": "person waiting impatiently looking at watch",
+  "photoFile": "7346175.jpg",
+  "photoSource": {
+   "pexelsId": 7346175,
+   "pageUrl": "https://www.pexels.com/photo/woman-looking-at-a-big-pink-alarm-clock-7346175/",
+   "photographer": "KoolShooters"
+  }
  },
  {
   "caption": "Mein Handy bei 1% Akku: lebt noch 40 Minuten wie ein Held.\nMein Handy bei 38%: \"Gute Nacht.\"",
@@ -447,25 +759,49 @@
   "caption": "Sehr geehrte Fahrgäste, das WLAN im Zug steht Ihnen heute wieder voll zur Verfügung — bis Sie es benutzen wollen.",
   "format": "behörden-announcement",
   "theme": "technology, phones, wifi & updates",
-  "imageQuery": "passenger using phone on a train"
+  "imageQuery": "passenger using phone on a train",
+  "photoFile": "3689276.jpg",
+  "photoSource": {
+   "pexelsId": 3689276,
+   "pageUrl": "https://www.pexels.com/photo/people-using-cellular-phone-3689276/",
+   "photographer": "Levent Simsek"
+  }
  },
  {
   "caption": "ich_iel im Keller mit dem Handy über dem Kopf:\nKein Empfang.\nDirekt daneben, perfekter Empfang? Falsche Stelle.",
   "format": "ich_iel",
   "theme": "technology, phones, wifi & updates",
-  "imageQuery": "person holding phone up high searching for signal"
+  "imageQuery": "person holding phone up high searching for signal",
+  "photoFile": "8869306.jpg",
+  "photoSource": {
+   "pexelsId": 8869306,
+   "pageUrl": "https://www.pexels.com/photo/a-woman-searching-for-phone-signal-8869306/",
+   "photographer": "MART  PRODUCTION"
+  }
  },
  {
   "caption": "Niemand:\nMein Drucker, wenn ich EINE Seite brauche und es eilig ist:\n\"Papierstau. Cyan leer.\"",
   "format": "nobody",
   "theme": "technology, phones, wifi & updates",
-  "imageQuery": "person frustrated with office printer"
+  "imageQuery": "person frustrated with office printer",
+  "photoFile": "9572403.jpg",
+  "photoSource": {
+   "pexelsId": 9572403,
+   "pageUrl": "https://www.pexels.com/photo/white-paper-on-brown-wooden-table-9572403/",
+   "photographer": "Tima Miroshnichenko"
+  }
  },
  {
   "caption": "Top 3 deutsche Hochtechnologien:\n3. Das Faxgerät\n2. Das Faxgerät\n1. Immer noch das Faxgerät",
   "format": "list-top",
   "theme": "technology, phones, wifi & updates",
-  "imageQuery": "old fax machine on office desk"
+  "imageQuery": "old fax machine on office desk",
+  "photoFile": "5993641.jpg",
+  "photoSource": {
+   "pexelsId": 5993641,
+   "pageUrl": "https://www.pexels.com/photo/vintage-typewriter-and-coffee-on-a-table-5993641/",
+   "photographer": "www.kaboompics.com"
+  }
  },
  {
   "caption": "AKZEPTIEREN SIE ALLE COOKIES\nWeil das Lesen der 84 Seiten Datenschutz länger dauert als dein ganzes Leben.",
@@ -477,25 +813,49 @@
   "caption": "Erwartung: Ich speichere kurz das Passwort.\nRealität: 3 Sicherheitsfragen, eine SMS, eine E-Mail und ein Anruf von meiner Bank.",
   "format": "expectation-vs-reality",
   "theme": "technology, phones, wifi & updates",
-  "imageQuery": "person stressed at desk with phone and laptop"
+  "imageQuery": "person stressed at desk with phone and laptop",
+  "photoFile": "8837768.jpg",
+  "photoSource": {
+   "pexelsId": 8837768,
+   "pageUrl": "https://www.pexels.com/photo/woman-in-front-of-a-laptop-8837768/",
+   "photographer": "Yan Krukau"
+  }
  },
  {
   "caption": "ich_iel sonntagabends: Ab morgen neues Leben, 6 Uhr joggen, kein Zucker / ich_iel montags um 6 Uhr: Wer war dieser Mann und was hat er sich dabei gedacht",
   "format": "ich_iel",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "person hitting snooze on alarm clock in bed"
+  "imageQuery": "person hitting snooze on alarm clock in bed",
+  "photoFile": "7622520.jpg",
+  "photoSource": {
+   "pexelsId": 7622520,
+   "pageUrl": "https://www.pexels.com/photo/crop-woman-snoozing-alarm-on-smartphone-7622520/",
+   "photographer": "Miriam Alonso"
+  }
  },
  {
   "caption": "Niemand:\nAbsolut niemand:\nMein Jahresabo im Fitnessstudio: bezahlt euren Beitrag, ich mache hier die ganze Arbeit",
   "format": "nobody",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "empty gym with treadmills and weights"
+  "imageQuery": "empty gym with treadmills and weights",
+  "photoFile": "5411023.jpg",
+  "photoSource": {
+   "pexelsId": 5411023,
+   "pageUrl": "https://www.pexels.com/photo/treadmill-near-glass-window-5411023/",
+   "photographer": "Pietro Saura"
+  }
  },
  {
   "caption": "Sehr geehrtes Fitnessstudio, mein neues Leben fällt heute leider aus. Grund: es regnet. Voraussichtliche Verspätung: bis nächsten Montag.",
   "format": "Behörden-announcement",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "rainy window with raindrops gray sky"
+  "imageQuery": "rainy window with raindrops gray sky",
+  "photoFile": "17647735.jpg",
+  "photoSource": {
+   "pexelsId": 17647735,
+   "pageUrl": "https://www.pexels.com/photo/raindrops-on-a-window-17647735/",
+   "photographer": "Luis Quintero"
+  }
  },
  {
   "caption": "NEUES LEBEN AB MONTAG\nLäuft seit drei Jahren erfolgreich nicht an",
@@ -513,19 +873,37 @@
   "caption": "Erwartung: Ich nach 4 Wochen Training, diszipliniert und gestählt / Realität: Ich nach 4 Wochen, aber ich habe die Sporttasche schon mal gekauft",
   "format": "expectation-vs-reality",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "new sports bag with tags still on"
+  "imageQuery": "new sports bag with tags still on",
+  "photoFile": "13869867.jpg",
+  "photoSource": {
+   "pexelsId": 13869867,
+   "pageUrl": "https://www.pexels.com/photo/black-bag-with-white-tag-13869867/",
+   "photographer": "Matheus Bertelli"
+  }
  },
  {
   "caption": "Mir reicht es zu wissen, dass ich Sport machen könnte, wenn ich denn wollte.",
   "format": "Alman-Spruch",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "person relaxing on couch with snacks"
+  "imageQuery": "person relaxing on couch with snacks",
+  "photoFile": "7856017.jpg",
+  "photoSource": {
+   "pexelsId": 7856017,
+   "pageUrl": "https://www.pexels.com/photo/a-man-playing-video-games-in-the-dark-7856017/",
+   "photographer": "Ron Lach"
+  }
  },
  {
   "caption": "POV: Du stellst sonntags die Sportsachen raus, damit montags nichts schiefgehen kann. Montag geht trotzdem etwas schief.",
   "format": "POV",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "workout clothes laid out neatly on chair"
+  "imageQuery": "workout clothes laid out neatly on chair",
+  "photoFile": "7282420.jpg",
+  "photoSource": {
+   "pexelsId": 7282420,
+   "pageUrl": "https://www.pexels.com/photo/woman-with-baby-clothes-at-table-7282420/",
+   "photographer": "Sarah  Chai"
+  }
  },
  {
   "caption": "Die drei Phasen meines neuen Lebens:\n1. Montag: hochmotiviert\n2. Dienstag: Muskelkater\n3. Mittwoch: war schön mit euch",
@@ -537,68 +915,140 @@
   "caption": "ich_iel beim Anstehen an der Saftbar im Fitnessstudio: So, das Workout für heute hätten wir",
   "format": "ich_iel",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "smoothie bar with fresh juice glasses"
+  "imageQuery": "smoothie bar with fresh juice glasses",
+  "photoFile": "7656388.jpg",
+  "photoSource": {
+   "pexelsId": 7656388,
+   "pageUrl": "https://www.pexels.com/photo/glasses-of-fruit-juices-7656388/",
+   "photographer": "Cup of  Couple"
+  }
  },
  {
   "caption": "Mein Körper: Wir gehen jetzt joggen. / Mein Gehirn um 6 Uhr: Oder wir bleiben liegen und planen das Joggen ganz in Ruhe.",
   "format": "nobody",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "running shoes by the front door at dawn"
+  "imageQuery": "running shoes by the front door at dawn",
+  "photoFile": "9980728.jpg",
+  "photoSource": {
+   "pexelsId": 9980728,
+   "pageUrl": "https://www.pexels.com/photo/shoes-at-the-doorway-9980728/",
+   "photographer": "Dima Solomin"
+  }
  },
  {
   "caption": "Das Datum, an dem mein neues Leben beginnt, ist mir mittlerweile wurst. Hauptsache, es ist ein Montag.",
   "format": "Alman-Spruch",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "calendar page with date circled in marker"
+  "imageQuery": "calendar page with date circled in marker",
+  "photoFile": "7580915.jpg",
+  "photoSource": {
+   "pexelsId": 7580915,
+   "pageUrl": "https://www.pexels.com/photo/person-holding-purple-click-pen-7580915/",
+   "photographer": "RDNE Stock project"
+  }
  },
  {
   "caption": "Ich am Freitag um 17 Uhr: ich werde dieses Wochenende so produktiv. / Ich am Sonntag um 22 Uhr: Ich habe drei Folgen geguckt und einmal geatmet.",
   "format": "expectation-vs-reality",
   "theme": "weekend vs weekday / expectation vs reality",
-  "imageQuery": "person lying on couch with remote control"
+  "imageQuery": "person lying on couch with remote control",
+  "photoFile": "7283704.jpg",
+  "photoSource": {
+   "pexelsId": 7283704,
+   "pageUrl": "https://www.pexels.com/photo/woman-lying-on-sofa-holding-a-remote-control-7283704/",
+   "photographer": "www.kaboompics.com"
+  }
  },
  {
   "caption": "Niemand: / Absolut niemand: / Mein Wecker am Samstag um 6:45: bist du wach? hihi",
   "format": "nobody",
   "theme": "weekend vs weekday / expectation vs reality",
-  "imageQuery": "alarm clock on nightstand early morning"
+  "imageQuery": "alarm clock on nightstand early morning",
+  "photoFile": "6943418.jpg",
+  "photoSource": {
+   "pexelsId": 6943418,
+   "pageUrl": "https://www.pexels.com/photo/a-lamp-shade-and-a-clock-on-the-bedside-table-6943418/",
+   "photographer": "cottonbro studio"
+  }
  },
  {
   "caption": "Wochenende: 48 Stunden / Gefühlt: ein langes Augenzwinkern",
   "format": "caption",
   "theme": "weekend vs weekday / expectation vs reality",
-  "imageQuery": "calendar pages flipping fast"
+  "imageQuery": "calendar pages flipping fast",
+  "photoFile": "29509484.jpg",
+  "photoSource": {
+   "pexelsId": 29509484,
+   "pageUrl": "https://www.pexels.com/photo/close-up-of-march-page-on-desk-calendar-29509484/",
+   "photographer": "Matheus Bertelli"
+  }
  },
  {
   "caption": "Sehr geehrte Fahrgäste, das Wochenende fällt heute leider aus. Grund: Montag. Wir bitten um Ihr Verständnis.",
   "format": "deutsche-bahn-announcement",
   "theme": "weekend vs weekday / expectation vs reality",
-  "imageQuery": "empty train station platform morning"
+  "imageQuery": "empty train station platform morning",
+  "photoFile": "35545033.jpg",
+  "photoSource": {
+   "pexelsId": 35545033,
+   "pageUrl": "https://www.pexels.com/photo/empty-train-station-platform-in-varna-bulgaria-35545033/",
+   "photographer": "Yusuf Çelik"
+  }
  },
  {
   "caption": "ich_iel\n\nStelle 4 Wecker, um sicherzugehen, dass ich alle 4 ignoriere.",
   "format": "ich_iel (relatable self-deprecation, big centered text on neutral background)",
-  "imageQuery": "old wind-up alarm clock on nightstand plain background"
+  "imageQuery": "old wind-up alarm clock on nightstand plain background",
+  "photoFile": "18325164.jpg",
+  "photoSource": {
+   "pexelsId": 18325164,
+   "pageUrl": "https://www.pexels.com/photo/clock-in-the-dark-18325164/",
+   "photographer": "Beyzaa Yurtkuran"
+  }
  },
  {
   "caption": "Typisch Alman:\n\nUm 9 Uhr verabredet. Sitzt um 8:52 im Auto und ist trotzdem sauer, dass der andere noch nicht da ist.",
   "format": "Alman-Spruch (single text card, headline + observational punchline)",
-  "imageQuery": "empty parked car driver waiting steering wheel daylight"
+  "imageQuery": "empty parked car driver waiting steering wheel daylight",
+  "photoFile": "15559044.jpg",
+  "photoSource": {
+   "pexelsId": 15559044,
+   "pageUrl": "https://www.pexels.com/photo/close-up-of-car-dashboard-15559044/",
+   "photographer": "cnrdmroglu"
+  }
  },
  {
   "caption": "Sehr geehrte Fahrgäste,\n\nwegen Verspätung eines vorausfahrenden Zuges verspätet sich auch der Zug, auf den dieser Zug wartet, der eigentlich gar nicht mehr fährt.\n\nWir danken für Ihr Verständnis.",
   "format": "Deutsche-Bahn / Behörden-Frust (mock-announcement opener + deadpan punchline, single text card with announcement bar)",
-  "imageQuery": "empty train station platform overcast morning, no people, generic"
+  "imageQuery": "empty train station platform overcast morning, no people, generic",
+  "photoFile": "10805778.jpg",
+  "photoSource": {
+   "pexelsId": 10805778,
+   "pageUrl": "https://www.pexels.com/photo/hazy-waiting-shed-10805778/",
+   "photographer": "Merve Nur Türker"
+  }
  },
  {
   "caption": "Niemand:\nAbsolut niemand:\nKein Mensch auf diesem Planeten:\n\nIch um 23:58 Uhr: Ich koch jetzt noch mal richtig auf.",
   "format": "Niemand / Nobody-Format (Snowclone, single text card)",
-  "imageQuery": "person cooking pasta late at night home kitchen"
+  "imageQuery": "person cooking pasta late at night home kitchen",
+  "photoFile": "12673686.jpg",
+  "photoSource": {
+   "pexelsId": 12673686,
+   "pageUrl": "https://www.pexels.com/photo/person-lifting-cooked-spaghetti-out-of-a-pot-in-a-kitchen-12673686/",
+   "photographer": "Anna Shvets"
+  }
  },
  {
   "caption": "ICH AM 1. DES MONATS: WIR SIND REICH\nICH AM 3. DES MONATS:",
   "format": "Zweizeiler / Top-Bottom Impact (CAPS top third / CAPS bottom third on neutral background)",
-  "imageQuery": "single euro coin on empty wooden table"
+  "imageQuery": "single euro coin on empty wooden table",
+  "photoFile": "9648165.jpg",
+  "photoSource": {
+   "pexelsId": 9648165,
+   "pageUrl": "https://www.pexels.com/photo/a-close-up-of-burning-coins-9648165/",
+   "photographer": "Panos and Marenia Stavrinos"
+  }
  },
  {
   "caption": "Montag ist der Beweis, dass das Wochenende ein befristeter Vertrag ist.\n\n— altes Büro-Sprichwort",
@@ -614,31 +1064,67 @@
  {
   "caption": "PRODUKTIVITÄT\n\nWer früh aufsteht, hat länger Zeit, müde zu sein.",
   "format": "Demotivator (black canvas, framed centered image, large CAPS slogan, tiny italic sub-caption)",
-  "imageQuery": "single office chair empty meeting room CC0"
+  "imageQuery": "single office chair empty meeting room CC0",
+  "photoFile": "3767172.jpg",
+  "photoSource": {
+   "pexelsId": 3767172,
+   "pageUrl": "https://www.pexels.com/photo/oval-table-and-chairs-in-modern-meeting-room-3767172/",
+   "photographer": "Adrien Olichon"
+  }
  },
  {
   "caption": "ich_iel\n\n'Sprich Deutsch!' sage ich, während ich mein Maimai downloade und danach ein Update brauche.",
   "format": "ich_iel (single first-person confession, centered text on neutral background)",
-  "imageQuery": "smartphone download progress bar on screen plain background"
+  "imageQuery": "smartphone download progress bar on screen plain background",
+  "photoFile": "17789077.jpg",
+  "photoSource": {
+   "pexelsId": 17789077,
+   "pageUrl": "https://www.pexels.com/photo/man-holding-a-phone-17789077/",
+   "photographer": "Beyzaa Yurtkuran"
+  }
  },
  {
   "caption": "Niemand:\nDie Kassiererin: Tüte dazu?\nIch, mit 14 Artikeln in beiden Händen: Nein nein, passt schon.",
   "format": "Niemand / Nobody-Format (Snowclone, single text card)",
-  "imageQuery": "person juggling groceries in arms without bag supermarket"
+  "imageQuery": "person juggling groceries in arms without bag supermarket",
+  "photoFile": "7129130.jpg",
+  "photoSource": {
+   "pexelsId": 7129130,
+   "pageUrl": "https://www.pexels.com/photo/unrecognizable-customer-in-medical-mask-with-lettuce-in-supermarket-7129130/",
+   "photographer": "Michael Burrows"
+  }
  },
  {
   "caption": "MEIN NACHBAR HAT EINEN HALM ZU LANG\nICH, UM 7 UHR SONNTAG MIT DEM RASENMÄHER:",
   "format": "Zweizeiler / Top-Bottom Impact (CAPS top third / CAPS bottom third on neutral background)",
-  "imageQuery": "neatly trimmed green suburban lawn with hedge sunny"
+  "imageQuery": "neatly trimmed green suburban lawn with hedge sunny",
+  "photoFile": "22775477.jpg",
+  "photoSource": {
+   "pexelsId": 22775477,
+   "pageUrl": "https://www.pexels.com/photo/green-park-plants-and-trees-22775477/",
+   "photographer": "Ezgi Kaya"
+  }
  },
  {
   "caption": "Termin beim Bürgeramt beantragt.\n\nNächster freier Termin: in 3 Monaten.\n\nMein Anliegen bis dahin: erledigt sich von selbst oder ich auch.",
   "format": "Deutsche-Bahn / Behörden-Frust (situational setup + deadpan punchline, single text card)",
-  "imageQuery": "empty waiting room rows of chairs government office"
+  "imageQuery": "empty waiting room rows of chairs government office",
+  "photoFile": "12895927.jpg",
+  "photoSource": {
+   "pexelsId": 12895927,
+   "pageUrl": "https://www.pexels.com/photo/arranged-black-metal-chairs-12895927/",
+   "photographer": "易 凡"
+  }
  },
  {
   "caption": "Sparen ist, wenn man heute auf Dinge verzichtet, die man sich morgen immer noch nicht leisten kann.",
   "format": "Galgenhumor-Spruch (single deadpan sentence, large centered on muted background)",
-  "imageQuery": "empty glass piggy bank on shelf neutral background"
+  "imageQuery": "empty glass piggy bank on shelf neutral background",
+  "photoFile": "7680547.jpg",
+  "photoSource": {
+   "pexelsId": 7680547,
+   "pageUrl": "https://www.pexels.com/photo/person-putting-rolled-paper-bills-in-clear-glass-jar-7680547/",
+   "photographer": "www.kaboompics.com"
+  }
  }
 ]

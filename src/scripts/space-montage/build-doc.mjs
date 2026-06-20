@@ -48,6 +48,7 @@ function parseSrt(file) {
 }
 const SKIP = /^\[?\s*(music|applause|sound|noise|silence)\s*\]?$|presented by|science@nasa/i;
 // words within [start,end] window, shifted to 0, distributing each cue's words across its time
+// (FALLBACK only — imprecise even-distribution; the precise path is ElevenLabs forced-alignment below)
 function wordsFromCues(cues, start, end) {
   const out = [];
   for (const c of cues) {
@@ -60,6 +61,61 @@ function wordsFromCues(cues, start, end) {
     ws.forEach((w, i) => out.push({ text: w, start: cs - start + i * per, end: cs - start + (i + 1) * per }));
   }
   return out;
+}
+
+// ---------- PRECISE word timing via ElevenLabs forced-alignment ----------
+// Align the WHOLE source audio to its full .srt transcript ONCE (cached); free (no TTS-char cost).
+const ALIGN = path.join(BUILD, "align"); fs.mkdirSync(ALIGN, { recursive: true });
+function readKeys() {
+  const raw = [process.env.ELEVENLABS_API_KEYS || "", process.env.ELEVENLABS_API_KEY || "",
+    ...Object.entries(process.env).filter(([n]) => /^ELEVENLABS_API_KEY_\d+$/.test(n)).map(([, v]) => v || "")].join(",");
+  return [...new Set(raw.split(/[\s,;]+/).map((s) => s.trim()).filter((x) => x.startsWith("sk_")))];
+}
+async function alignSource(srcFile, srtFile) {
+  const cache = path.join(ALIGN, srcFile.replace(/\.[^.]+$/, "") + ".json");
+  if (fs.existsSync(cache)) return JSON.parse(fs.readFileSync(cache, "utf8"));
+  const cues = parseSrt(path.join(DOC, srtFile));
+  const transcript = cues.filter((c) => !/^\[.*\]$/.test(c.text.trim()) && !/presented by|science@nasa/i.test(c.text)).map((c) => c.text).join(" ").replace(/\s+/g, " ").trim();
+  if (transcript.length < 10) return null;
+  const mp3 = path.join(ALIGN, "_tmp.mp3");
+  try { execFileSync("ffmpeg", ["-v", "error", "-y", "-i", path.join(DOC, srcFile), "-vn", "-ac", "1", "-ar", "16000", "-c:a", "libmp3lame", "-q:a", "5", mp3]); } catch { return null; }
+  for (const key of readKeys()) {
+    try {
+      const fd = new FormData();
+      fd.append("file", new Blob([fs.readFileSync(mp3)], { type: "audio/mpeg" }), "a.mp3");
+      fd.append("text", transcript);
+      const r = await fetch("https://api.elevenlabs.io/v1/forced-alignment", { method: "POST", headers: { "xi-api-key": key }, body: fd });
+      if (r.ok) {
+        const j = await r.json();
+        const words = (j.words || []).filter((w) => w.text && w.text.trim()).map((w) => ({ text: w.text.trim(), start: w.start, end: w.end }));
+        if (words.length) { const out = { words }; fs.writeFileSync(cache, JSON.stringify(out)); return out; }
+      }
+      if (![401, 402, 429].includes(r.status)) break; // real error, not key-quota — stop trying keys
+    } catch {}
+  }
+  return null;
+}
+function wordsInWindow(words, start, end) {
+  const out = [];
+  for (const w of words) {
+    const mid = (w.start + w.end) / 2;
+    if (mid < start || mid >= end) continue;
+    out.push({ text: w.text, start: Math.max(0, w.start - start), end: Math.max(0.08, w.end - start) });
+  }
+  return out;
+}
+const ENDS_SENT = (t) => /[.!?]["”']?$/.test(t || "");
+// snap the requested [start,end] to the nearest clean sentence boundaries using aligned word times
+function snapWindow(words, start, end) {
+  let s = start, e = end;
+  for (let i = 0; i < words.length; i++) {
+    const startsSent = i === 0 || ENDS_SENT(words[i - 1].text);
+    if (startsSent && words[i].start >= start - 2.5 && words[i].start <= start + 4.5) { s = Math.max(0, words[i].start - 0.12); break; }
+  }
+  for (let i = words.length - 1; i >= 0; i--) {
+    if (ENDS_SENT(words[i].text) && words[i].end <= end + 2.5 && words[i].end >= e - 6) { e = words[i].end + 0.18; break; }
+  }
+  return e - s >= 8 ? [s, e] : [start, end];
 }
 
 // ---------- captions (Animal-Heroes karaoke, mobile-safe zone) ----------
@@ -119,10 +175,16 @@ const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(
 async function buildOne(browser, spec) {
   const src = path.join(DOC, spec.src), srt = path.join(DOC, spec.srt);
   if (!fs.existsSync(src) || !fs.existsSync(srt)) { console.log(`SKIP ${spec.id}: missing src/srt`); return null; }
-  const start = +spec.start, dur = Math.min(58, +spec.end - +spec.start);
-  console.log(`\n== ${spec.id} :: ${spec.title} (${start}-${spec.end}s)`);
-  const words = wordsFromCues(parseSrt(srt), start, +spec.end);
+  const aligned = await alignSource(spec.src, spec.srt);
+  let start = +spec.start, end = +spec.end;
+  if (aligned) { const [s2, e2] = snapWindow(aligned.words, start, end); start = s2; end = e2; }
+  const dur = Math.min(58, end - start);
+  console.log(`\n== ${spec.id} :: ${spec.title} (${start.toFixed(1)}-${end.toFixed(1)}s)`);
+  let words = [], mode = "srt-fallback";
+  if (aligned) { words = wordsInWindow(aligned.words, start, end); if (words.length) mode = "forced-alignment"; }
+  if (!words.length) words = wordsFromCues(parseSrt(srt), start, end);
   if (!words.length) { console.log(`  no words in window`); return null; }
+  console.log(`  timing: ${mode} (${words.length} words)`);
   const totalDur = Math.min(dur, (words.at(-1)?.end || dur));
   const pages = paginate(words);
   const page = await browser.newPage();

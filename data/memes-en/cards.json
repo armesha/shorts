@@ -1569,25 +1569,49 @@
   "caption": "fitness influencer: small changes add up / me: started parking slightly closer to the snacks",
   "format": "caption",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "person reaching into kitchen snack cupboard"
+  "imageQuery": "person reaching into kitchen snack cupboard",
+  "photoFile": "34851859.jpg",
+  "photoSource": {
+   "pexelsId": 34851859,
+   "pageUrl": "https://www.pexels.com/photo/woman-reaching-for-snacks-in-kitchen-cabinet-34851859/",
+   "photographer": "Guillermo Berlin"
+  }
  },
  {
   "caption": "my home gym equipment after Monday: / treadmill: a clothes rack / yoga mat: a cat bed / dumbbells: a doorstop",
   "format": "list-top",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "treadmill at home covered with clothes"
+  "imageQuery": "treadmill at home covered with clothes",
+  "photoFile": "6455850.jpg",
+  "photoSource": {
+   "pexelsId": 6455850,
+   "pageUrl": "https://www.pexels.com/photo/athletic-professional-trainer-walking-on-treadmill-6455850/",
+   "photographer": "Julia Larson"
+  }
  },
  {
   "caption": "no thoughts, just the deep peace of canceling tomorrow's workout tonight",
   "format": "caption",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "person relaxing comfortably on couch under blanket"
+  "imageQuery": "person relaxing comfortably on couch under blanket",
+  "photoFile": "30350479.jpg",
+  "photoSource": {
+   "pexelsId": 30350479,
+   "pageUrl": "https://www.pexels.com/photo/cozy-living-room-with-soft-beige-throws-30350479/",
+   "photographer": "SlipcoverKAS .COM"
+  }
  },
  {
   "caption": "me reading my own motivational note from Sunday like it was written by a naive stranger who knew nothing of Monday",
   "format": "caption",
   "theme": "gym & \"new life starting Monday\" self-improvement fails",
-  "imageQuery": "sticky note with handwriting on a mirror"
+  "imageQuery": "sticky note with handwriting on a mirror",
+  "photoFile": "19664302.jpg",
+  "photoSource": {
+   "pexelsId": 19664302,
+   "pageUrl": "https://www.pexels.com/photo/sticky-note-on-a-glass-wall-19664302/",
+   "photographer": "aboodi vesakaran"
+  }
  },
  {
   "caption": "they say it takes 21 days to build a habit. / I have built the habit of starting on day 1 every single Monday.",
@@ -1599,13 +1623,25 @@
   "caption": "Me on Friday at 5pm: I'm going to be so productive this weekend / Me on Sunday at 8pm: I changed my socks once",
   "format": "expectation-vs-reality",
   "theme": "weekend vs weekday / expectation vs reality",
-  "imageQuery": "person lying on couch under blanket relaxing"
+  "imageQuery": "person lying on couch under blanket relaxing",
+  "photoFile": "6750149.jpg",
+  "photoSource": {
+   "pexelsId": 6750149,
+   "pageUrl": "https://www.pexels.com/photo/a-person-lying-on-sofa-6750149/",
+   "photographer": "Rachel Claire"
+  }
  },
  {
   "caption": "Weekend to-do list: gym, deep clean, learn a language, meal prep / Actual weekend: located the exact spot on the couch where time stops",
   "format": "expectation-vs-reality",
   "theme": "weekend vs weekday / expectation vs reality",
-  "imageQuery": "messy living room couch with cozy blankets"
+  "imageQuery": "messy living room couch with cozy blankets",
+  "photoFile": "8534066.jpg",
+  "photoSource": {
+   "pexelsId": 8534066,
+   "pageUrl": "https://www.pexels.com/photo/a-person-resting-on-a-couch-while-covering-herself-using-the-clothes-she-is-holding-8534066/",
+   "photographer": "www.kaboompics.com"
+  }
  },
  {
   "caption": "Nobody: / Absolutely nobody: / My brain on Sunday at 9pm: hey remember everything embarrassing you did Monday through Friday",
@@ -1623,78 +1659,168 @@
   "caption": "POV: it's Saturday morning, you have zero plans, nowhere to be, and you wake up at 6:14am on the dot for absolutely no reason",
   "format": "POV",
   "theme": "weekend vs weekday / expectation vs reality",
-  "imageQuery": "tired person waking up early in bed by window light"
+  "imageQuery": "tired person waking up early in bed by window light",
+  "photoFile": "9641804.jpg",
+  "photoSource": {
+   "pexelsId": 9641804,
+   "pageUrl": "https://www.pexels.com/photo/woman-with-dwarfism-reaching-for-coffee-from-bed-9641804/",
+   "photographer": "Ron Lach"
+  }
  },
  {
   "caption": "The weekend has the exact same number of hours as two weekdays and yet one lasts a lifetime and the other lasts eleven minutes",
   "format": "caption",
   "theme": "weekend vs weekday / expectation vs reality",
-  "imageQuery": "clock on a plain wall"
+  "imageQuery": "clock on a plain wall",
+  "photoFile": "37620732.jpg",
+  "photoSource": {
+   "pexelsId": 37620732,
+   "pageUrl": "https://www.pexels.com/photo/vintage-roman-numeral-wall-clock-on-white-background-37620732/",
+   "photographer": "Kimy Moto"
+  }
  },
  {
   "caption": "Friday me, signing me up for a 9am Saturday activity: future me will be thrilled / Saturday me at 9am: future me is filing a complaint",
   "format": "expectation-vs-reality",
   "theme": "weekend vs weekday / expectation vs reality",
-  "imageQuery": "annoyed person hitting snooze on alarm clock"
+  "imageQuery": "annoyed person hitting snooze on alarm clock",
+  "photoFile": "6976605.jpg",
+  "photoSource": {
+   "pexelsId": 6976605,
+   "pageUrl": "https://www.pexels.com/photo/yellow-alarm-clock-on-a-yellow-box-6976605/",
+   "photographer": "KoolShooters"
+  }
  },
  {
   "caption": "Nobody:\nAbsolutely nobody:\n\nMe at 2am: time to reorganize my entire camera roll by color",
   "format": "Nobody: / Me: (caption-script, text-only card)",
-  "imageQuery": "plain warm beige paper texture background CC0"
+  "imageQuery": "plain warm beige paper texture background CC0",
+  "photoFile": "7599590.jpg",
+  "photoSource": {
+   "pexelsId": 7599590,
+   "pageUrl": "https://www.pexels.com/photo/plain-canvas-7599590/",
+   "photographer": "Eva Bronzini"
+  }
  },
  {
   "caption": "POV: you said 'you too' to the waiter who told you to enjoy your meal and now you must move to a new country",
   "format": "POV: (second-person scenario caption over CC0 background)",
-  "imageQuery": "empty restaurant table set for dinner soft light CC0"
+  "imageQuery": "empty restaurant table set for dinner soft light CC0",
+  "photoFile": "17205673.jpg",
+  "photoSource": {
+   "pexelsId": 17205673,
+   "pageUrl": "https://www.pexels.com/photo/wooden-chairs-and-table-in-restaurant-17205673/",
+   "photographer": "UMUT   🆁🅰🆆"
+  }
  },
  {
   "caption": "I'm not saying I'm lazy, I'm saying I once waited 40 minutes for someone else to turn off the light because I was already comfortable.",
   "format": "Relatable one-liner 'big text' card (Twitter/X-style)",
-  "imageQuery": "minimal light gray gradient background CC0"
+  "imageQuery": "minimal light gray gradient background CC0",
+  "photoFile": "7130481.jpg",
+  "photoSource": {
+   "pexelsId": 7130481,
+   "pageUrl": "https://www.pexels.com/photo/dark-colorful-lights-on-abstract-background-7130481/",
+   "photographer": "Codioful (formerly Gradienta)"
+  }
  },
  {
   "caption": "Tell me you're an introvert without telling me you're an introvert.\nI'll start: I rehearsed ordering coffee and still said 'thanks, you too'",
   "format": "Tell me you're X without telling me you're X (snowclone, two-zone text)",
-  "imageQuery": "cozy coffee cup on plain table flat lay CC0"
+  "imageQuery": "cozy coffee cup on plain table flat lay CC0",
+  "photoFile": "11544788.jpg",
+  "photoSource": {
+   "pexelsId": 11544788,
+   "pageUrl": "https://www.pexels.com/photo/white-ceramic-mug-with-brown-liquid-11544788/",
+   "photographer": "Nida Kurt"
+  }
  },
  {
   "caption": "Definitive ranking of being tired:\nS — tired right after a nap\nA — somehow tired at 4pm\nB — tired but inspired\nF — wide awake the second I lie down",
   "format": "Objective ranking / tier chart (S/A/B/F text grid, CSS)",
-  "imageQuery": "abstract colorful flat geometric blocks background CC0"
+  "imageQuery": "abstract colorful flat geometric blocks background CC0",
+  "photoFile": "8288940.jpg",
+  "photoSource": {
+   "pexelsId": 8288940,
+   "pageUrl": "https://www.pexels.com/photo/a-red-concrete-wall-with-grid-lines-8288940/",
+   "photographer": "Nutchanok Kanokwongtawee"
+  }
  },
  {
   "caption": "Top: 'Just go to sleep, you have work at 8.'\nBottom (me): one more 47-minute documentary about a 1909 shipwreck",
   "format": "Two-option 'choose' / vs. comparison (text-only stacked panels)",
-  "imageQuery": "two tone split background dark top light bottom minimal CC0"
+  "imageQuery": "two tone split background dark top light bottom minimal CC0",
+  "photoFile": "7827838.jpg",
+  "photoSource": {
+   "pexelsId": 7827838,
+   "pageUrl": "https://www.pexels.com/photo/geometric-shapes-on-the-table-7827838/",
+   "photographer": "Mikhail Nilov"
+  }
  },
  {
   "caption": "PRODUCTIVITY\nI opened 14 tabs to start one task. None of them were the task.",
   "format": "Demotivational / motivational-poster parody (black border, serif caps title + subtitle)",
-  "imageQuery": "vintage CC0 engraving of a busy beehive public domain"
+  "imageQuery": "vintage CC0 engraving of a busy beehive public domain",
+  "photoFile": "25797787.jpg",
+  "photoSource": {
+   "pexelsId": 25797787,
+   "pageUrl": "https://www.pexels.com/photo/bees-25797787/",
+   "photographer": "Sajad. isz"
+  }
  },
  {
   "caption": "Checking my bank app after the weekend.\nIt's giving 'cancel all future plans forever'.",
   "format": "It's giving ___ (vibe-label caption over CC0 background)",
-  "imageQuery": "empty wallet flat lay on plain surface CC0"
+  "imageQuery": "empty wallet flat lay on plain surface CC0",
+  "photoFile": "6214459.jpg",
+  "photoSource": {
+   "pexelsId": 6214459,
+   "pageUrl": "https://www.pexels.com/photo/credit-cards-and-a-smartphone-on-a-pink-surface-6214459/",
+   "photographer": "Nataliya Vaitkevich"
+  }
  },
  {
   "caption": "Me explaining to the cashier why I need the receipt I'm about to throw away in 4 seconds",
   "format": "Me explaining ___ to ___ (caption-above-photo)",
-  "imageQuery": "person gesturing seriously while talking CC0 stock photo"
+  "imageQuery": "person gesturing seriously while talking CC0 stock photo",
+  "photoFile": "8276370.jpg",
+  "photoSource": {
+   "pexelsId": 8276370,
+   "pageUrl": "https://www.pexels.com/photo/man-in-long-sleeve-shirt-sitting-on-stool-near-white-wall-8276370/",
+   "photographer": "PNW Production"
+  }
  },
  {
   "caption": "When someone says 'we need to talk' and your brain instantly pleads guilty to crimes you didn't commit",
   "format": "Top-text / bottom-text impact caption (caption-above-photo, original/CC0 animal)",
-  "imageQuery": "wide-eyed startled cat staring at camera CC0 public domain"
+  "imageQuery": "wide-eyed startled cat staring at camera CC0 public domain",
+  "photoFile": "34518802.jpg",
+  "photoSource": {
+   "pexelsId": 34518802,
+   "pageUrl": "https://www.pexels.com/photo/close-up-of-black-and-white-tuxedo-cat-outdoors-34518802/",
+   "photographer": "Çiğdem Gökçe"
+  }
  },
  {
   "caption": "My alarm at 7:00: *one (1) soft beep*\nMe: and just like that, the whole day is ruined",
   "format": "Nobody: / Me: variant (caption-script, text-only)",
-  "imageQuery": "plain soft blue textured wall background CC0"
+  "imageQuery": "plain soft blue textured wall background CC0",
+  "photoFile": "20560811.jpg",
+  "photoSource": {
+   "pexelsId": 20560811,
+   "pageUrl": "https://www.pexels.com/photo/plain-blue-surface-20560811/",
+   "photographer": "Tim Mossholder"
+  }
  },
  {
   "caption": "POV: you typed 'haha' but you are not laughing, you have never been more serious in your life",
   "format": "POV: (second-person scenario caption over CC0 background)",
-  "imageQuery": "blank neutral phone screen on plain desk CC0"
+  "imageQuery": "blank neutral phone screen on plain desk CC0",
+  "photoFile": "33136469.jpg",
+  "photoSource": {
+   "pexelsId": 33136469,
+   "pageUrl": "https://www.pexels.com/photo/organized-workspace-with-weekly-planner-and-phone-33136469/",
+   "photographer": "Ann H"
+  }
  }
 ]

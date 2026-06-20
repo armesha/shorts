@@ -2503,6 +2503,7 @@ app.get("/api/gallery/:deck/cards", async (req, reply) => {
   const deckId = (req.params as { deck: string }).deck;
   const deck = getDeck(deckId);
   if (!deck.gallery) return reply.code(400).send({ error: "Это не статичный пак (нет галереи)." });
+  if (db.getUserById(uid(req))?.role !== "admin") return reply.code(403).send({ error: "Галерея доступна только администраторам." });
   if (!deckAllowed(req, deck.id)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
   const cards = deckCards(deck.id).map((c, i) => {
     let caption = c.title || "";
@@ -2521,6 +2522,7 @@ app.get("/api/gallery/:deck/:i/thumb", async (req, reply) => {
   const { deck: deckId, i } = req.params as { deck: string; i: string };
   const deck = getDeck(deckId);
   if (!deck.gallery || !deckAllowed(req, deck.id)) return reply.code(404).send({ error: "not found" });
+  if (db.getUserById(uid(req))?.role !== "admin") return reply.code(404).send({ error: "not found" });
   const idx = Math.max(0, parseInt(i, 10) || 0);
   const card = deckCards(deck.id)[idx];
   if (!card) return reply.code(404).send({ error: "not found" });

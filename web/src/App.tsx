@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import Overview from "./pages/Overview";
 import Studio from "./pages/Studio";
+import Gallery from "./pages/Gallery";
 import Cards from "./pages/Cards";
 import Packs from "./pages/Packs";
 import Accounts from "./pages/Accounts";
@@ -34,6 +35,7 @@ function Gate() {
         <Route path="/" element={user.role === "admin" ? <Overview /> : <Accounts />} />
         <Route path="/channels" element={<Accounts />} />
         <Route path="/studio" element={<Studio />} />
+        <Route path="/gallery" element={user.role === "admin" ? <Gallery /> : <Navigate to="/" replace />} />
         <Route path="/cards" element={<Cards />} />
         <Route path="/packs" element={<Packs />} />
         <Route path="/notifications" element={user.role === "admin" ? <Notifications /> : <Navigate to="/" replace />} />

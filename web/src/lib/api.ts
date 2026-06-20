@@ -55,6 +55,7 @@ export interface Generator {
   name: string;
   ai: boolean;
   preFact?: boolean; // pre-built video pack — Studio shows a random video instead of a text card
+  gallery?: boolean; // static deck (deterministic per-card render) — browsable in the Gallery page
   total: number;
   titled: number;
   used: number;
@@ -860,6 +861,10 @@ export const apiClient = {
     return get<HistoryPage>(`/history${s ? "?" + s : ""}`);
   },
   generators: () => get<Generator[]>("/generators"),
+  galleryCards: (deck: string) =>
+    get<{ deck: string; name: string; count: number; cards: { i: number; title: string; caption: string; text: string }[] }>(
+      `/gallery/${encodeURIComponent(deck)}/cards`,
+    ),
   // Random pre-built fact video (preFact deck) for the Studio preview player.
   factRandom: (deck: string) =>
     get<{ videoUrl?: string; title?: string; text?: string; error?: string }>(

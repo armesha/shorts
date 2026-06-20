@@ -40,6 +40,7 @@ const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
     items: [
       { to: "/packs", labelKey: "nav.packs", icon: "packs", end: false },
       { to: "/cards", labelKey: "nav.cards", icon: "cards", end: false },
+      { to: "/gallery", labelKey: "nav.gallery", icon: "library", end: false, adminOnly: true, adminBadge: true },
       { to: "/editor", labelKey: "nav.templates", icon: "library", end: false, adminOnly: true, adminBadge: true },
     ],
   },
