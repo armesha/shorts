@@ -18,6 +18,8 @@ export interface Account {
   slotDecks?: Record<string, string>;
   avatar?: string | null; // channel avatar URL (built-in /avatars/… or uploaded /files/avatars/…)
   oauthClientId?: number | null; // which uploaded Google key the channel was connected with
+  authError?: string | null; // YouTube rejected the token (revoked/expired) → канал нужно переподключить
+  authFailedAt?: string | null; // когда токен начал отклоняться (ISO) — для «отвалился …»
 }
 
 export interface HistoryItem {

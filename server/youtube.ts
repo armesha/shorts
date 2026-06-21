@@ -71,7 +71,11 @@ export async function exchangeAndGetChannel(
  * Token endpoint → error/error_description are STRINGS; YouTube Data API → `error` is an OBJECT
  * { code, message, errors:[{reason,message}] } — extracting .message avoids "[object Object]".
  */
-export function ytErrorReason(err: unknown): string {
+/**
+ * Pull the human message string + HTTP status + API reason out of a googleapis/OAuth error.
+ * Shared by `ytErrorReason` (human text) and `isYtAuthError` (classification) so they never drift.
+ */
+function extractYtError(err: unknown): { s: string; status: number | undefined; reason: string } {
   const e = err as {
     code?: number | string;
     response?: { status?: number; data?: { error_description?: string; error?: unknown } };
@@ -96,6 +100,31 @@ export function ytErrorReason(err: unknown): string {
   // Include the error code + reason in the matched string so /invalid_grant/ etc. fire even when the
   // human-readable text is in error_description.
   const s = `${String(raw)} ${errCode} ${reason}`.trim();
+  return { s, status, reason };
+}
+
+/**
+ * True ONLY for definitive OAuth/token failures that mean the channel must be RECONNECTED
+ * (revoked/expired refresh token, 401, no YouTube channel on the Google account, missing scope).
+ * Deliberately FALSE for quota / rate-limit / per-channel upload-cap / API-disabled — those are
+ * transient or project-level, NOT the token, so they must never flip a channel to "needs reconnect".
+ */
+export function isYtAuthError(err: unknown): boolean {
+  const { s, status } = extractYtError(err);
+  // Transient / project-level walls — explicitly NOT a dead token.
+  if (/uploadLimitExceeded|quotaExceeded|dailyLimitExceeded|userRateLimitExceeded|rateLimitExceeded|rateLimit|\bquota\b/i.test(s))
+    return false;
+  if (/SERVICE_DISABLED|accessNotConfigured|has not been used in project/i.test(s)) return false;
+  // Definitive token death → reconnect required.
+  if (/invalid_grant|unauthorized_client|invalid_client/i.test(s)) return true;
+  if (/youtubeSignupRequired|channelNotFound/i.test(s)) return true;
+  if (status === 401 || /\bunauthorized\b|authorizationRequired/i.test(s)) return true;
+  if (/insufficient|scope/i.test(s)) return true;
+  return false;
+}
+
+export function ytErrorReason(err: unknown): string {
+  const { s, status, reason } = extractYtError(err);
   // Три РАЗНЫХ лимита YouTube (403), которые постоянно путают — держим их раздельно, чтобы в истории
   // было видно, какая стена и что её снимает. uploadLimitExceeded = суточный потолок ЗАГРУЗОК самого
   // канала (НЕ квота API); quotaExceeded = дневной бюджет API проекта; rateLimit = слишком частые запросы.

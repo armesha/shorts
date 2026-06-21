@@ -29,6 +29,8 @@ export interface Account {
   avatar: string | null; // channel avatar URL (YouTube thumbnail, built-in "/avatars/...", or custom "/files/avatars/...")
   avatarSource: "random" | "youtube" | "manual";
   oauthClientId: number | null; // which uploaded Google key this channel was connected with (oauth_clients.id)
+  authError: string | null; // last definitive OAuth/token rejection (RU) → channel needs reconnect; NULL = healthy
+  authFailedAt: string | null; // ISO time the token first started being rejected — drives "disconnected since" UX
 }
 
 // One uploaded Google OAuth client (client_secret.json) belonging to a user. A user may store up to
@@ -241,6 +243,8 @@ const rowToAccount = (r: Row): Account => ({
   avatar: r.avatar ?? null,
   avatarSource: r.avatar_source ?? "random",
   oauthClientId: r.oauth_client_id ?? null,
+  authError: r.auth_error ?? null,
+  authFailedAt: r.auth_failed_at ?? null,
 });
 
 const rowToVideo = (r: Row): Video => ({
@@ -582,6 +586,8 @@ export function openDb(path: string) {
   addColumn("videos", "deck TEXT NOT NULL DEFAULT 'ru'");
   addColumn("accounts", "user_id INTEGER");
   addColumn("accounts", "oauth_client_id INTEGER"); // which uploaded Google key the channel is bound to
+  addColumn("accounts", "auth_error TEXT"); // last OAuth/token rejection → channel surfaced as "needs reconnect"
+  addColumn("accounts", "auth_failed_at TEXT"); // when that rejection first started (ISO)
   addColumn("users", "client_secret_json TEXT");
   addColumn("channel_analytics_daily", "dislikes INTEGER NOT NULL DEFAULT 0");
   addColumn("history", "error TEXT");
@@ -766,7 +772,9 @@ export function openDb(path: string) {
              avatar_source=CASE
                WHEN ? IS NOT NULL AND COALESCE(avatar_source, 'random') != 'manual' THEN 'youtube'
                ELSE avatar_source
-             END
+             END,
+             auth_error=NULL,
+             auth_failed_at=NULL
          WHERE id=?`,
       ).run(
         d.refreshToken,
@@ -788,6 +796,25 @@ export function openDb(path: string) {
     getRefreshToken(id: number): string | null {
       const r = db.prepare("SELECT yt_refresh_token FROM accounts WHERE id = ?").get(id) as Row | undefined;
       return (r?.yt_refresh_token as string) ?? null;
+    },
+    /**
+     * Flag a channel as having a dead/rejected token (YouTube returned a definitive auth error on
+     * upload). Surfaced as "needs reconnect" on /channels. Keeps the FIRST failure time so the UI can
+     * show "disconnected since …", but always refreshes the human reason to the latest one.
+     */
+    markAuthError(id: number, reason: string, at: string): void {
+      db.prepare(
+        `UPDATE accounts
+            SET auth_error = ?,
+                auth_failed_at = COALESCE(auth_failed_at, ?)
+          WHERE id = ?`,
+      ).run(reason.slice(0, 300), at, id);
+    },
+    /** Clear the auth-error flag (token works again / channel reconnected). No-op if already clean. */
+    clearAuthError(id: number): void {
+      db.prepare(
+        "UPDATE accounts SET auth_error = NULL, auth_failed_at = NULL WHERE id = ? AND auth_error IS NOT NULL",
+      ).run(id);
     },
     addHistory(h: {
       accountId: number;

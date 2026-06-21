@@ -3,7 +3,7 @@ import { unlinkSync } from "node:fs";
 import cron from "node-cron";
 import type { Account, Db, Video } from "./db.ts";
 import { DECKS, getDeck, ytMeta, isPackDeckId } from "../src/anecdotes/decks.ts";
-import { uploadShort, ytErrorReason, type ClientCreds } from "./youtube.ts";
+import { uploadShort, ytErrorReason, isYtAuthError, type ClientCreds } from "./youtube.ts";
 import { USER_DAILY_SCHEDULE_CAP } from "./account-limits.ts";
 import * as metrics from "./metrics.ts";
 
@@ -116,6 +116,7 @@ export function startScheduler(opts: SchedulerOpts) {
         });
         if (videoId) {
           metrics.notePost(); // last successful auto-post timestamp
+          opts.db.clearAuthError(acc.id); // token works → drop any stale "needs reconnect" flag
           // posted once → remove from the library so it never reposts
           removeVideoFiles(opts.outputDir, lib);
           opts.db.deleteVideo(lib.id);
@@ -126,11 +127,14 @@ export function startScheduler(opts: SchedulerOpts) {
         }
       } catch (err) {
         if (claimedVideoId != null) opts.db.releaseVideoPost(claimedVideoId); // un-claim on upload error
+        const reason = ytErrorReason(err);
+        // Dead/revoked token → flag the channel so /channels shows "needs reconnect" (not just a history line).
+        if (isYtAuthError(err)) opts.db.markAuthError(acc.id, reason, new Date().toISOString());
         opts.db.addHistory({
           accountId: acc.id,
           title: "ошибка автозагрузки",
           status: "failed",
-          error: ytErrorReason(err),
+          error: reason,
         });
         opts.log(`[sched] account ${acc.id} FAILED: ${String(err)}`);
       }

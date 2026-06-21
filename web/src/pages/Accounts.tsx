@@ -148,6 +148,10 @@ export default function Accounts() {
     }
   };
 
+  // Channels whose YouTube token got rejected (revoked/expired/401) — posting is dead until the user
+  // reconnects. Driven by the backend `authError` flag set on the upload paths, not by history.
+  const disconnectedChannels = accounts.filter((a) => a.authError);
+
   // Always sorted by days-of-video-left; the arrow button flips direction. No-schedule/loading last.
   const shownAccounts = [...accounts].sort((a, b) => {
     const ra = runwayDays(a);
@@ -178,6 +182,24 @@ export default function Accounts() {
   return (
     <div className="space-y-6">
       <GoogleKeyNotice status={status} loadError={loadError} />
+
+      {disconnectedChannels.length > 0 && (
+        <div className="alert alert-error shadow-sm flex items-start gap-2 py-2.5" role="alert">
+          <AppIcon name="warning" size={18} className="shrink-0 mt-0.5" />
+          <div className="flex-1 text-sm leading-snug">
+            <span className="font-semibold">{t("accounts.authErrorTitle")}</span> {t("accounts.authErrorLead")}{" "}
+            {disconnectedChannels.map((a, i) => (
+              <span key={a.id}>
+                {i > 0 && ", "}
+                <Link to={`/accounts/${a.id}`} className="link font-medium">
+                  {a.channelName}
+                </Link>
+              </span>
+            ))}
+            . {t("accounts.authErrorHint")}
+          </div>
+        </div>
+      )}
 
       {loadError && cacheSavedAt && (
         <div className="alert alert-warning text-sm">
@@ -334,12 +356,22 @@ export default function Accounts() {
                       {a.theme || t("accounts.noTheme")} · {a.lang.toUpperCase()}
                     </div>
                   </div>
-                  {a.status === "connected" ? (
+                  {a.authError ? (
+                    <span className="badge badge-error badge-sm gap-1" title={a.authError}>
+                      <AppIcon name="warning" size={12} /> {t("accounts.reconnectBadge")}
+                    </span>
+                  ) : a.status === "connected" ? (
                     <span className="badge badge-success badge-sm">{t("accounts.connected")}</span>
                   ) : (
                     <span className="badge badge-warning badge-sm">{t("accounts.needsAuth")}</span>
                   )}
                 </div>
+                {a.authError && (
+                  <div className="mt-2 text-xs text-error flex items-start gap-1.5">
+                    <AppIcon name="warning" size={13} className="shrink-0 mt-0.5" />
+                    <span>{a.authError}</span>
+                  </div>
+                )}
                 <div className="mt-3 text-sm text-base-content/70">
                   {t("accounts.schedule")}{" "}
                   <span className="font-medium text-base-content">{a.schedule.join(", ")}</span>

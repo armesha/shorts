@@ -26,6 +26,8 @@ import {
   buildAuthUrl,
   exchangeAndGetChannel,
   uploadShort,
+  ytErrorReason,
+  isYtAuthError,
   parseCreds,
   type ClientCreds,
 } from "./youtube.ts";
@@ -2477,6 +2479,7 @@ app.post("/api/videos/:id/post-now", async (req, reply) => {
       deck: v.deck,
     });
     if (youtubeId) {
+      db.clearAuthError(v.accountId); // token works → drop any stale "needs reconnect" flag
       // posted once → remove from the library (files + row) so it never reposts
       for (const rel of [v.videoRel, v.imageRel]) {
         if (rel) {
@@ -2501,6 +2504,8 @@ app.post("/api/videos/:id/post-now", async (req, reply) => {
   } catch (err) {
     db.releaseVideoPost(v.id); // upload threw → un-claim so the video stays postable
     app.log.error(err);
+    // Dead/revoked token → flag the channel so /channels shows "needs reconnect", not just history.
+    if (isYtAuthError(err)) db.markAuthError(v.accountId, ytErrorReason(err), new Date().toISOString());
     db.addError({
       source: "server",
       message: "Загрузка видео: " + String((err as Error)?.message ?? err),

@@ -12,6 +12,7 @@ import { AppIcon } from "../components/AppIcon";
 import { BrandIcon } from "../components/BrandIcon";
 import { BUILTIN_DECKS, CONTENT_LANGS, DECK_LANG, langTag } from "../lib/deck";
 import { cleanDisplayText } from "../lib/text";
+import { formatDateTime } from "../lib/format";
 
 // N posts/day spread ~evenly across 24h, but with a small RANDOM per-channel offset + jitter,
 // so two channels with the same N never all fire at the same minute. `avoid` = minutes already
@@ -595,7 +596,11 @@ export default function AccountDetail() {
             <p className="text-base-content/60">{t("account.headerSubtitle")}</p>
           </div>
         </div>
-        {account.status === "connected" ? (
+        {account.authError ? (
+          <span className="badge badge-error gap-1">
+            <AppIcon name="warning" size={13} /> {t("account.reconnectBadge")}
+          </span>
+        ) : account.status === "connected" ? (
           <span className="badge badge-success">{t("account.connected")}</span>
         ) : (
           <span className="badge badge-warning">{t("account.needsAuth")}</span>
@@ -799,10 +804,33 @@ export default function AccountDetail() {
       <section className="card bg-base-100 border border-base-300">
         <div className="card-body">
           <h2 className="card-title text-base">{t("account.youtubeConnection")}</h2>
+          {account.authError && (
+            <div className="alert alert-error text-sm items-start py-2.5">
+              <AppIcon name="warning" size={16} className="shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <div className="font-semibold">{t("account.authErrorTitle")}</div>
+                <div className="opacity-90">{account.authError}</div>
+                {account.authFailedAt && (
+                  <div className="text-xs opacity-70 mt-0.5">
+                    {t("account.authErrorSince", { time: formatDateTime(account.authFailedAt) })}
+                  </div>
+                )}
+                <button className="btn btn-sm btn-neutral mt-2 gap-1" onClick={startConnect}>
+                  <RefreshCw size={14} /> {t("account.reconnect")}
+                </button>
+              </div>
+            </div>
+          )}
           {account.ytChannelTitle ? (
             <>
             <div className="flex items-center gap-2 text-sm flex-wrap">
-              <span className="badge badge-success">{t("account.connected")}</span>
+              {account.authError ? (
+                <span className="badge badge-error gap-1">
+                  <AppIcon name="warning" size={12} /> {t("account.reconnectBadge")}
+                </span>
+              ) : (
+                <span className="badge badge-success">{t("account.connected")}</span>
+              )}
               <span>
                 {t("account.channelColon")} <b>{account.ytChannelTitle}</b>
               </span>
