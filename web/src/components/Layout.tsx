@@ -51,15 +51,22 @@ const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
       { to: "/limits", labelKey: "nav.limits", icon: "limits", end: false, adminOnly: true, adminBadge: true },
       { to: "/notifications", labelKey: "nav.notifications", icon: "notifications", end: false, adminOnly: true, adminBadge: true },
       { to: "/errors", labelKey: "nav.errors", icon: "errors", end: false, adminOnly: true, adminBadge: true },
+      { to: "/system", labelKey: "nav.server", icon: "system", end: false },
+    ],
+  },
+  // Личное / общее — видно ВСЕМ юзерам. Ключи Google живут в «Настройках»; раньше пункт стоял в
+  // группе «Админ» и потому ошибочно казался админским (хотя добавление ключей пер-юзер для всех).
+  {
+    labelKey: "layout.groupAccount",
+    items: [
+      { to: "/settings", labelKey: "nav.settings", icon: "settings", end: false },
+      { to: "/changelog", labelKey: "nav.changelog", icon: "updates", end: false },
     ],
   },
   {
     labelKey: "layout.groupAdmin",
     items: [
       { to: "/users", labelKey: "nav.users", icon: "users", end: false, adminOnly: true, adminBadge: true },
-      { to: "/system", labelKey: "nav.server", icon: "system", end: false },
-      { to: "/settings", labelKey: "nav.settings", icon: "settings", end: false },
-      { to: "/changelog", labelKey: "nav.changelog", icon: "updates", end: false },
     ],
   },
 ];
