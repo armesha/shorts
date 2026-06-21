@@ -53,6 +53,15 @@ export function startScheduler(opts: SchedulerOpts) {
       if (fired.has(key)) continue;
       fired.add(key);
 
+      // Канал помечен «нужно переподключить» (мёртвый/отозванный токен) → не пытаемся выкладывать:
+      // иначе каждый слот падал бы с auth-ошибкой и спамил историю «ошибка автозагрузки». Токен в БД
+      // ещё есть (поэтому проверки `!token` мало), но он недействителен. Переподключение чистит
+      // auth_error (setYouTube) → автопостинг сам возобновится.
+      if (acc.authError) {
+        opts.log(`[sched] account ${acc.id} (${acc.channelName}): помечен «нужно переподключить» — пропуск`);
+        continue;
+      }
+
       let claimedVideoId: number | null = null; // set once we atomically claim a video → release on error
       try {
         opts.log(`[sched] account ${acc.id} (${acc.channelName}) firing at ${hhmm}`);

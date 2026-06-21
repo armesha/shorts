@@ -2434,6 +2434,9 @@ app.post("/api/videos/:id/post-now", async (req, reply) => {
   if (!acc) return;
   const token = db.getRefreshToken(v.accountId);
   if (!token) return reply.code(400).send({ error: "Канал не подключён к YouTube" });
+  // Токен в БД есть, но помечен мёртвым (auth_error) → не пытаемся выкладывать (был бы 500 каждый раз):
+  // канал «отвалился» от YouTube, просим переподключить. setYouTube при переподключении чистит флаг.
+  if (acc.authError) return reply.code(400).send({ error: "Канал нужно переподключить к YouTube — прежний доступ больше не действует." });
   const creds = accountCreds(acc);
   if (!creds) return reply.code(400).send({ error: "Google-ключ канала не найден — переподключите канал в Настройках" });
   // HARD source guard: never post a video whose deck is not selected for this channel.
