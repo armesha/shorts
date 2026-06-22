@@ -3,7 +3,8 @@
 // feeds live YouTube uploads, so a regression here ships broken titles/descriptions.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { deckLang, getDeck, isPackDeckId, ytMeta, pickGenericTitle } from "./decks.ts";
+import { deckLang, getDeck, isPackDeckId, pickGenericTitle } from "./decks.ts";
+import { ytMeta } from "./yt-meta.ts";
 
 test("deckLang maps built-in decks; '' for packs/unknown", () => {
   assert.equal(deckLang("ru"), "ru");

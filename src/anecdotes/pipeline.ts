@@ -1,6 +1,7 @@
 import { resolve } from "node:path";
 import { randomAnecdote, anecdoteKey } from "./library.ts";
-import { getDeck, ytMeta } from "./decks.ts";
+import { getDeck } from "./decks.ts";
+import { ytMeta } from "./yt-meta.ts";
 import { renderAnecdote } from "./render.ts";
 import { assembleStillVideo } from "../video.ts";
 
