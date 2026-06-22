@@ -6,9 +6,11 @@
    UPPERCASE headings, a thin scroll-progress bar and a gentle reveal-on-route.
 
    EVERYTHING here is scoped under html[data-skin="sechenie"] so the file is completely inert until
-   an admin opts in (see lib/skin.tsx). Component rules are scoped one level deeper on `.admin-shell`
-   so their specificity (attr + 2 classes) beats the base `.admin-shell .card`/`.btn` overrides in
-   index.css; loaded AFTER index.css (main.tsx) so equal-specificity ties also win.
+   an admin opts in (see lib/skin.tsx). Rules are scoped to html[data-skin="sechenie"] (NOT .admin-shell)
+   so they ALSO cover overlays that React-portals render into document.body OUTSIDE .admin-shell
+   (preview/confirm modals, dropdowns); loaded AFTER index.css (main.tsx) so equal-specificity ties
+   win by source order. Palette tokens are set BOTH on the root (for portaled overlays) and on
+   .admin-shell (to beat index.css's Apple tokens that sit directly on the .admin-shell element).
 
    Design decisions (verified against a multi-agent art-direction pass):
    - acid (#c7ff00) is a MARKER, never text on paper (it fails contrast) — only fill-with-ink,
@@ -87,7 +89,7 @@ html[data-skin="sechenie"] body::after {
    This single block recolours + squares most DaisyUI components and every tone utility for free.
    --color-accent-content MUST be ink, or acid surfaces become unreadable.
    ============================================================================================ */
-html[data-skin="sechenie"] .admin-shell {
+html[data-skin="sechenie"] {
   --color-primary: #0b0b0b;
   --color-primary-content: #efeee8;
   --color-secondary: #3e55ff;
@@ -117,27 +119,57 @@ html[data-skin="sechenie"] .admin-shell {
   letter-spacing: -0.005em;
 }
 
+/* Re-assert the palette ON .admin-shell too: index.css sets its own Apple tokens directly on the
+   .admin-shell element (closer ancestor than <html>), so without this any DaisyUI base rule inside
+   the shell that reads --color-* directly would fall back to the classic blue. The root block above
+   carries the same tokens for portaled overlays (modals/dialogs) that render OUTSIDE .admin-shell. */
+html[data-skin="sechenie"] .admin-shell {
+  --color-primary: #0b0b0b;
+  --color-primary-content: #efeee8;
+  --color-secondary: #3e55ff;
+  --color-secondary-content: #ffffff;
+  --color-accent: #c7ff00;
+  --color-accent-content: #0b0b0b;
+  --color-neutral: #0b0b0b;
+  --color-neutral-content: #efeee8;
+  --color-base-100: #f5f4ef;
+  --color-base-200: #e9e7de;
+  --color-base-300: #cdcabb;
+  --color-base-content: #0b0b0b;
+  --color-info: #3e55ff;
+  --color-info-content: #ffffff;
+  --color-success: #0c7a4d;
+  --color-success-content: #ffffff;
+  --color-warning: #b4480a;
+  --color-warning-content: #ffffff;
+  --color-error: #d62716;
+  --color-error-content: #ffffff;
+  --radius-box: 0;
+  --radius-field: 0;
+  --radius-selector: 0;
+}
+
 /* ============================================================================================
    Headings + tiny captions (uppercase, heavy, tight) — with a hard data-exempt guard
    ============================================================================================ */
-html[data-skin="sechenie"] .admin-shell .route-page h1,
-html[data-skin="sechenie"] .admin-shell .route-page h2:not(.card-title),
-html[data-skin="sechenie"] .admin-shell .route-page .page-title {
+html[data-skin="sechenie"] .route-page h1,
+html[data-skin="sechenie"] .route-page h2:not(.card-title),
+html[data-skin="sechenie"] .route-page .page-title {
   font-weight: 900;
   letter-spacing: -0.045em;
   text-transform: uppercase;
   line-height: 0.95;
 }
-html[data-skin="sechenie"] .admin-shell .route-page h3 {
+html[data-skin="sechenie"] .route-page h3 {
   font-weight: 800;
   letter-spacing: -0.03em;
 }
-html[data-skin="sechenie"] .admin-shell .card-title {
+html[data-skin="sechenie"] .card-title {
   font-weight: 800;
   letter-spacing: -0.02em;
   text-transform: uppercase;
 }
-html[data-skin="sechenie"] .admin-shell :where(.label-text, label.label, .stat-title) {
+html[data-skin="sechenie"] :where(.label-text, label.label, .stat-title) {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-size: 0.7rem;
@@ -145,7 +177,7 @@ html[data-skin="sechenie"] .admin-shell :where(.label-text, label.label, .stat-t
   color: var(--sx-muted);
 }
 /* DATA-EXEMPT GUARD: never uppercase user data, code, or opted-out text. */
-html[data-skin="sechenie"] .admin-shell :where(.font-mono, code, pre, td, .normal-case, input, textarea) {
+html[data-skin="sechenie"] :where(.font-mono, code, pre, td, .normal-case, input, textarea) {
   text-transform: none;
   letter-spacing: normal;
 }
@@ -155,19 +187,19 @@ html[data-skin="sechenie"] ::selection {
   background: var(--sx-ink);
   color: var(--sx-paper);
 }
-html[data-skin="sechenie"] .admin-shell * {
+html[data-skin="sechenie"] * {
   scrollbar-color: var(--sx-line-strong) transparent;
 }
-html[data-skin="sechenie"] .admin-shell ::-webkit-scrollbar {
+html[data-skin="sechenie"] ::-webkit-scrollbar {
   width: 11px;
   height: 11px;
 }
-html[data-skin="sechenie"] .admin-shell ::-webkit-scrollbar-thumb {
+html[data-skin="sechenie"] ::-webkit-scrollbar-thumb {
   background: var(--sx-line-strong);
   border: 3px solid var(--sx-paper);
   border-radius: 0;
 }
-html[data-skin="sechenie"] .admin-shell ::-webkit-scrollbar-track {
+html[data-skin="sechenie"] ::-webkit-scrollbar-track {
   background: transparent;
 }
 html[data-skin="sechenie"] :where(a, button, summary, input, select, textarea, [tabindex]):focus-visible {
@@ -178,32 +210,32 @@ html[data-skin="sechenie"] :where(a, button, summary, input, select, textarea, [
 /* ============================================================================================
    Cards — hard hairline border, square, no soft shadow; square any inline-rounded inner panels
    ============================================================================================ */
-html[data-skin="sechenie"] .admin-shell .card {
+html[data-skin="sechenie"] .card {
   border-radius: 0;
   border: 1px solid var(--sx-line);
   background: var(--sx-surface);
   box-shadow: none;
   transition: border-color 0.2s var(--sx-ease), transform 0.2s var(--sx-ease);
 }
-html[data-skin="sechenie"] .admin-shell .card:hover {
+html[data-skin="sechenie"] .card:hover {
   border-color: var(--sx-line-strong);
 }
-html[data-skin="sechenie"] .admin-shell .card-body {
+html[data-skin="sechenie"] .card-body {
   border-radius: 0;
 }
-html[data-skin="sechenie"] .admin-shell :where(.rounded-md, .rounded-lg, .rounded-xl, .rounded-2xl) {
+html[data-skin="sechenie"] :where(.rounded-md, .rounded-lg, .rounded-xl, .rounded-2xl) {
   border-radius: 0;
 }
 
 /* ============================================================================================
    Stats — big tabular numerals, uppercase captions
    ============================================================================================ */
-html[data-skin="sechenie"] .admin-shell :where(.stat-value, .card .text-2xl, .card .text-3xl, .card .text-4xl) {
+html[data-skin="sechenie"] :where(.stat-value, .card .text-2xl, .card .text-3xl, .card .text-4xl) {
   font-weight: 900;
   letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
 }
-html[data-skin="sechenie"] .admin-shell :where(.stat-desc) {
+html[data-skin="sechenie"] :where(.stat-desc) {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-size: 0.68rem;
@@ -214,7 +246,7 @@ html[data-skin="sechenie"] .admin-shell :where(.stat-desc) {
 /* ============================================================================================
    Buttons — sharp; ink primary, acid accent; firm 3px "stamp" hover
    ============================================================================================ */
-html[data-skin="sechenie"] .admin-shell .btn {
+html[data-skin="sechenie"] .btn {
   border-radius: 0;
   border: 1px solid var(--sx-line-strong);
   box-shadow: none;
@@ -225,16 +257,16 @@ html[data-skin="sechenie"] .admin-shell .btn {
   transition: background-color 0.15s var(--sx-ease), color 0.15s ease, border-color 0.15s ease,
     box-shadow 0.12s ease, transform 0.12s ease;
 }
-html[data-skin="sechenie"] .admin-shell .btn:not(:disabled):hover {
+html[data-skin="sechenie"] .btn:not(:disabled):hover {
   transform: translateY(-1px);
   box-shadow: 3px 3px 0 0 var(--sx-line-strong);
 }
-html[data-skin="sechenie"] .admin-shell .btn:not(:disabled):active {
+html[data-skin="sechenie"] .btn:not(:disabled):active {
   transform: translateY(0);
   box-shadow: none;
 }
-html[data-skin="sechenie"] .admin-shell .btn:disabled,
-html[data-skin="sechenie"] .admin-shell .btn[disabled] {
+html[data-skin="sechenie"] .btn:disabled,
+html[data-skin="sechenie"] .btn[disabled] {
   background: var(--sx-paper-2);
   border-color: var(--sx-line);
   color: color-mix(in srgb, var(--sx-ink) 62%, transparent);
@@ -242,72 +274,72 @@ html[data-skin="sechenie"] .admin-shell .btn[disabled] {
   opacity: 1;
   transform: none;
 }
-html[data-skin="sechenie"] .admin-shell .btn-sm {
+html[data-skin="sechenie"] .btn-sm {
   font-size: 0.72rem;
 }
-html[data-skin="sechenie"] .admin-shell .btn-xs {
+html[data-skin="sechenie"] .btn-xs {
   font-size: 0.64rem;
 }
-html[data-skin="sechenie"] .admin-shell :where(.btn-square, .btn-circle) {
+html[data-skin="sechenie"] :where(.btn-square, .btn-circle) {
   border-radius: 0;
 }
-html[data-skin="sechenie"] .admin-shell .btn-primary {
+html[data-skin="sechenie"] .btn-primary {
   background: var(--sx-ink);
   color: var(--sx-paper);
   border-color: var(--sx-ink);
 }
-html[data-skin="sechenie"] .admin-shell .btn-primary:not(:disabled):hover {
+html[data-skin="sechenie"] .btn-primary:not(:disabled):hover {
   box-shadow: 3px 3px 0 0 var(--sx-acid);
   color: var(--sx-paper);
 }
-html[data-skin="sechenie"] .admin-shell .btn-secondary {
+html[data-skin="sechenie"] .btn-secondary {
   background: var(--sx-surface);
   color: var(--sx-ink);
   border-color: var(--sx-line-strong);
 }
-html[data-skin="sechenie"] .admin-shell .btn-secondary:not(:disabled):hover {
+html[data-skin="sechenie"] .btn-secondary:not(:disabled):hover {
   background: var(--sx-ink);
   color: var(--sx-paper);
   border-color: var(--sx-ink);
 }
-html[data-skin="sechenie"] .admin-shell .btn-accent {
+html[data-skin="sechenie"] .btn-accent {
   background: var(--sx-acid);
   color: var(--sx-ink);
   border-color: var(--sx-ink);
   font-weight: 800;
 }
-html[data-skin="sechenie"] .admin-shell .btn-accent:not(:disabled):hover {
+html[data-skin="sechenie"] .btn-accent:not(:disabled):hover {
   background: var(--sx-ink);
   color: var(--sx-acid);
   box-shadow: 3px 3px 0 0 var(--sx-line-strong);
 }
-html[data-skin="sechenie"] .admin-shell .btn-error {
+html[data-skin="sechenie"] .btn-error {
   background: #d62716; /* AA-safe red fill (white text → 5.05:1); --sx-red is too bright for text */
   color: #fff;
   border-color: var(--sx-ink);
 }
-html[data-skin="sechenie"] .admin-shell .btn-error:not(:disabled):hover {
+html[data-skin="sechenie"] .btn-error:not(:disabled):hover {
   background: #c0220f;
   color: #fff;
   box-shadow: 3px 3px 0 0 var(--sx-line-strong);
 }
-html[data-skin="sechenie"] .admin-shell .btn-ghost {
+html[data-skin="sechenie"] .btn-ghost {
   border-color: transparent;
   box-shadow: none;
   text-transform: uppercase;
 }
-html[data-skin="sechenie"] .admin-shell .btn-ghost:not(:disabled):hover {
+html[data-skin="sechenie"] .btn-ghost:not(:disabled):hover {
   background: color-mix(in srgb, var(--sx-ink) 8%, transparent);
   border-color: transparent;
   box-shadow: none;
   transform: none;
 }
-html[data-skin="sechenie"] .admin-shell .btn-outline {
+html[data-skin="sechenie"] .btn-outline {
   background: transparent;
   border-color: var(--sx-line-strong);
   box-shadow: none;
 }
-html[data-skin="sechenie"] .admin-shell .btn-outline:not(:disabled):hover {
+html[data-skin="sechenie"] .btn-outline:not(:disabled):hover {
   background: var(--sx-ink);
   color: var(--sx-paper);
   border-color: var(--sx-ink);
@@ -315,77 +347,77 @@ html[data-skin="sechenie"] .admin-shell .btn-outline:not(:disabled):hover {
 }
 
 /* ↗ corner-arrow — the brand micro-detail, on hero CTAs only, never on icon-only buttons */
-html[data-skin="sechenie"] .admin-shell .btn-primary::after,
-html[data-skin="sechenie"] .admin-shell .btn-accent::after,
-html[data-skin="sechenie"] .admin-shell .admin-action-main::after {
+html[data-skin="sechenie"] .btn-primary::after,
+html[data-skin="sechenie"] .btn-accent::after,
+html[data-skin="sechenie"] .admin-action-main::after {
   content: "\2197";
   margin-left: 0.5ch;
   font-weight: 700;
   display: inline-block;
   transition: transform 0.3s var(--sx-ease);
 }
-html[data-skin="sechenie"] .admin-shell .btn-primary:not(:disabled):hover::after,
-html[data-skin="sechenie"] .admin-shell .btn-accent:not(:disabled):hover::after,
-html[data-skin="sechenie"] .admin-shell .admin-action-main:not(:disabled):hover::after {
+html[data-skin="sechenie"] .btn-primary:not(:disabled):hover::after,
+html[data-skin="sechenie"] .btn-accent:not(:disabled):hover::after,
+html[data-skin="sechenie"] .admin-action-main:not(:disabled):hover::after {
   transform: rotate(45deg);
 }
-html[data-skin="sechenie"] .admin-shell :where(.btn-square, .btn-circle, .btn-xs)::after {
+html[data-skin="sechenie"] :where(.btn-square, .btn-circle, .btn-xs)::after {
   content: none;
 }
-html[data-skin="sechenie"] .admin-shell .btn:disabled::after,
-html[data-skin="sechenie"] .admin-shell .btn[disabled]::after {
+html[data-skin="sechenie"] .btn:disabled::after,
+html[data-skin="sechenie"] .btn[disabled]::after {
   content: none;
 }
 
 /* App-specific action classes from index.css (Apple-style) — re-pointed to the editorial palette */
-html[data-skin="sechenie"] .admin-shell .admin-action-main {
+html[data-skin="sechenie"] .admin-action-main {
   background: var(--sx-ink);
   border-color: var(--sx-ink);
   color: var(--sx-paper);
 }
-html[data-skin="sechenie"] .admin-shell .admin-action-main:hover {
+html[data-skin="sechenie"] .admin-action-main:hover {
   background: var(--sx-ink);
   box-shadow: 3px 3px 0 0 var(--sx-acid);
 }
-html[data-skin="sechenie"] .admin-shell .admin-action-secondary {
+html[data-skin="sechenie"] .admin-action-secondary {
   background: var(--sx-surface);
   border-color: var(--sx-line-strong);
   color: var(--sx-ink);
 }
-html[data-skin="sechenie"] .admin-shell .admin-action-secondary:hover {
+html[data-skin="sechenie"] .admin-action-secondary:hover {
   background: var(--sx-ink);
   border-color: var(--sx-ink);
   color: var(--sx-paper);
 }
-html[data-skin="sechenie"] .admin-shell .admin-action-quiet {
+html[data-skin="sechenie"] .admin-action-quiet {
   background: transparent;
   border-color: transparent;
   color: var(--sx-muted);
 }
-html[data-skin="sechenie"] .admin-shell .admin-action-quiet:hover {
+html[data-skin="sechenie"] .admin-action-quiet:hover {
   background: color-mix(in srgb, var(--sx-ink) 8%, transparent);
   border-color: var(--sx-line);
   color: var(--sx-ink);
 }
-html[data-skin="sechenie"] .admin-shell .admin-inline-action {
+html[data-skin="sechenie"] .admin-inline-action {
   color: var(--sx-blue);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   font-size: 0.78rem;
 }
-html[data-skin="sechenie"] .admin-shell .admin-inline-action:hover {
+html[data-skin="sechenie"] .admin-inline-action:hover {
   color: var(--sx-ink);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 /* The header skin toggle, when active, wears an acid chip so its state is obvious */
-html[data-skin="sechenie"] .admin-shell .sx-skin-toggle.is-on {
+html[data-skin="sechenie"] .sx-skin-toggle.is-on {
   background: var(--sx-acid);
   color: var(--sx-ink);
 }
-html[data-skin="sechenie"] .admin-shell .sx-skin-toggle.is-on:hover {
+html[data-skin="sechenie"] .sx-skin-toggle.is-on:hover {
   background: color-mix(in srgb, var(--sx-acid) 80%, var(--sx-ink));
   box-shadow: none;
 }
@@ -393,90 +425,85 @@ html[data-skin="sechenie"] .admin-shell .sx-skin-toggle.is-on:hover {
 /* ============================================================================================
    Badges — square, bordered, semantic
    ============================================================================================ */
-html[data-skin="sechenie"] .admin-shell .badge {
+html[data-skin="sechenie"] .badge {
   border-radius: 0;
   font-weight: 700;
   letter-spacing: 0.02em;
   border-width: 1px;
   text-transform: uppercase;
 }
-html[data-skin="sechenie"] .admin-shell .badge-primary {
+html[data-skin="sechenie"] .badge-primary {
   background: var(--sx-ink);
   color: var(--sx-paper);
   border-color: var(--sx-ink);
 }
-html[data-skin="sechenie"] .admin-shell .badge-secondary {
+html[data-skin="sechenie"] .badge-secondary {
   background: var(--sx-blue);
   color: #fff;
   border-color: var(--sx-ink);
 }
-html[data-skin="sechenie"] .admin-shell .badge-accent {
+html[data-skin="sechenie"] .badge-accent {
   background: var(--sx-acid);
   color: var(--sx-ink);
   border-color: var(--sx-ink);
 }
-html[data-skin="sechenie"] .admin-shell .badge-success {
+html[data-skin="sechenie"] .badge-success {
   background: color-mix(in srgb, var(--sx-green) 16%, var(--sx-paper));
   color: #0a5e3c;
   border-color: var(--sx-green);
 }
-html[data-skin="sechenie"] .admin-shell .badge-warning {
+html[data-skin="sechenie"] .badge-warning {
   background: color-mix(in srgb, var(--sx-orange) 18%, var(--sx-paper));
   color: #8a3700;
   border-color: var(--sx-orange);
 }
-html[data-skin="sechenie"] .admin-shell .badge-error {
+html[data-skin="sechenie"] .badge-error {
   background: #d62716; /* AA-safe red fill (white text → 5.05:1) */
   color: #fff;
   border-color: var(--sx-ink);
 }
-html[data-skin="sechenie"] .admin-shell .badge-ghost {
+html[data-skin="sechenie"] .badge-ghost {
   background: color-mix(in srgb, var(--sx-ink) 7%, var(--sx-paper));
   color: var(--sx-ink);
   border-color: var(--sx-line);
 }
-html[data-skin="sechenie"] .admin-shell .badge-outline {
+html[data-skin="sechenie"] .badge-outline {
   background: transparent;
   border-color: var(--sx-line-strong);
   color: var(--sx-ink);
 }
-/* the "adm" nav badge → acid chip, on brand */
-html[data-skin="sechenie"] .admin-shell .admin-nav-badge {
-  border-radius: 0;
-  background: var(--sx-acid);
-  border-color: var(--sx-ink);
-  color: var(--sx-ink);
-  font-weight: 800;
-  letter-spacing: 0.04em;
+/* The whole СЕЧЕНИЕ skin is admin-only, so the per-item "adm" nav chips are redundant — hide them. */
+html[data-skin="sechenie"] .admin-nav-badge {
+  display: none;
 }
 
 /* ============================================================================================
    Alerts — square, keep the inset semantic edge bar
    ============================================================================================ */
-html[data-skin="sechenie"] .admin-shell .alert {
+html[data-skin="sechenie"] .alert {
   border-radius: 0;
   border: 1px solid var(--sx-line);
   box-shadow: inset 4px 0 0 var(--sx-line-strong);
 }
-html[data-skin="sechenie"] .admin-shell .alert-warning {
+html[data-skin="sechenie"] .alert-warning {
   background: color-mix(in srgb, var(--sx-orange) 10%, var(--sx-paper));
   border-color: color-mix(in srgb, var(--sx-orange) 38%, var(--sx-paper));
   color: #5a2600;
   box-shadow: inset 4px 0 0 var(--sx-orange);
 }
-html[data-skin="sechenie"] .admin-shell .alert-success {
+html[data-skin="sechenie"] .alert-success {
   background: color-mix(in srgb, var(--sx-green) 10%, var(--sx-paper));
   border-color: color-mix(in srgb, var(--sx-green) 38%, var(--sx-paper));
   color: #0a4a32;
   box-shadow: inset 4px 0 0 var(--sx-green);
 }
-html[data-skin="sechenie"] .admin-shell .alert-error {
+html[data-skin="sechenie"] .alert-error {
   background: color-mix(in srgb, var(--sx-red) 9%, var(--sx-paper));
   border-color: color-mix(in srgb, var(--sx-red) 38%, var(--sx-paper));
   color: #7a1206;
   box-shadow: inset 4px 0 0 var(--sx-red);
 }
-html[data-skin="sechenie"] .admin-shell .alert-info {
+html[data-skin="sechenie"] .alert-info {
   background: color-mix(in srgb, var(--sx-blue) 9%, var(--sx-paper));
   border-color: color-mix(in srgb, var(--sx-blue) 34%, var(--sx-paper));
   color: #16236e;
@@ -486,33 +513,33 @@ html[data-skin="sechenie"] .admin-shell .alert-info {
 /* ============================================================================================
    Form controls — square paper fields, crisp hairline, ink focus
    ============================================================================================ */
-html[data-skin="sechenie"] .admin-shell :where(.input, .select, .textarea) {
+html[data-skin="sechenie"] :where(.input, .select, .textarea) {
   border-radius: 0;
   background-color: var(--sx-surface);
   border: 1px solid var(--sx-line-strong);
 }
-html[data-skin="sechenie"] .admin-shell :where(.input, .select, .textarea):focus,
-html[data-skin="sechenie"] .admin-shell :where(.input, .select, .textarea):focus-within {
+html[data-skin="sechenie"] :where(.input, .select, .textarea):focus,
+html[data-skin="sechenie"] :where(.input, .select, .textarea):focus-within {
   outline: 2px solid var(--sx-ink);
   outline-offset: 1px;
   border-color: var(--sx-ink);
 }
-html[data-skin="sechenie"] .admin-shell :where(.input, .select, .textarea)::placeholder {
+html[data-skin="sechenie"] :where(.input, .select, .textarea)::placeholder {
   color: color-mix(in srgb, var(--sx-ink) 55%, transparent);
 }
-html[data-skin="sechenie"] .admin-shell .checkbox {
+html[data-skin="sechenie"] .checkbox {
   border-radius: 0;
   border: 1px solid var(--sx-line-strong);
 }
-html[data-skin="sechenie"] .admin-shell .checkbox:checked {
+html[data-skin="sechenie"] .checkbox:checked {
   background-color: var(--sx-ink);
   border-color: var(--sx-ink);
   color: var(--sx-acid);
 }
-html[data-skin="sechenie"] .admin-shell .toggle {
+html[data-skin="sechenie"] .toggle {
   border: 1px solid var(--sx-line-strong);
 }
-html[data-skin="sechenie"] .admin-shell .toggle:checked {
+html[data-skin="sechenie"] .toggle:checked {
   background-color: var(--sx-ink);
   border-color: var(--sx-ink);
   color: var(--sx-paper);
@@ -521,7 +548,7 @@ html[data-skin="sechenie"] .admin-shell .toggle:checked {
 /* ============================================================================================
    Data surfaces — table, tabs, join, progress, skeleton
    ============================================================================================ */
-html[data-skin="sechenie"] .admin-shell table :where(th) {
+html[data-skin="sechenie"] table :where(th) {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 0.7rem;
@@ -529,72 +556,72 @@ html[data-skin="sechenie"] .admin-shell table :where(th) {
   color: var(--sx-muted);
   border-bottom: 1px solid var(--sx-line-strong);
 }
-html[data-skin="sechenie"] .admin-shell table :where(td) {
+html[data-skin="sechenie"] table :where(td) {
   border-bottom: 1px solid var(--sx-line);
   font-variant-numeric: tabular-nums;
 }
 
-html[data-skin="sechenie"] .admin-shell .tabs .tab {
+html[data-skin="sechenie"] .tabs .tab {
   border-radius: 0;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
-html[data-skin="sechenie"] .admin-shell .tabs .tab.tab-active,
-html[data-skin="sechenie"] .admin-shell .tabs .tab-active {
+html[data-skin="sechenie"] .tabs .tab.tab-active,
+html[data-skin="sechenie"] .tabs .tab-active {
   border-color: var(--sx-ink);
   color: var(--sx-ink);
 }
 
 /* join → one hard segmented control (no gap, overlapping hairlines), ink-filled active segment */
-html[data-skin="sechenie"] .admin-shell .join {
+html[data-skin="sechenie"] .join {
   gap: 0;
 }
-html[data-skin="sechenie"] .admin-shell .join > :where(.join-item) {
+html[data-skin="sechenie"] .join > :where(.join-item) {
   border-radius: 0 !important;
   margin-inline-start: -1px !important;
 }
-html[data-skin="sechenie"] .admin-shell .join > :where(.join-item):first-child {
+html[data-skin="sechenie"] .join > :where(.join-item):first-child {
   margin-inline-start: 0 !important;
 }
-html[data-skin="sechenie"] .admin-shell .join .btn[aria-pressed="true"],
-html[data-skin="sechenie"] .admin-shell .join .btn-active,
-html[data-skin="sechenie"] .admin-shell .join .btn.btn-primary {
+html[data-skin="sechenie"] .join .btn[aria-pressed="true"],
+html[data-skin="sechenie"] .join .btn-active,
+html[data-skin="sechenie"] .join .btn.btn-primary {
   background: var(--sx-ink);
   color: var(--sx-paper);
   border-color: var(--sx-ink);
   z-index: 1;
 }
 
-html[data-skin="sechenie"] .admin-shell progress.progress {
+html[data-skin="sechenie"] progress.progress {
   border-radius: 0;
   height: 0.4rem;
   background: var(--sx-paper-2);
   border: 1px solid var(--sx-line);
 }
-html[data-skin="sechenie"] .admin-shell progress.progress-primary::-webkit-progress-value {
+html[data-skin="sechenie"] progress.progress-primary::-webkit-progress-value {
   background: var(--sx-ink);
 }
-html[data-skin="sechenie"] .admin-shell progress.progress-primary::-moz-progress-bar {
+html[data-skin="sechenie"] progress.progress-primary::-moz-progress-bar {
   background: var(--sx-ink);
 }
-html[data-skin="sechenie"] .admin-shell progress.progress-error::-webkit-progress-value {
+html[data-skin="sechenie"] progress.progress-error::-webkit-progress-value {
   background: var(--sx-red);
 }
-html[data-skin="sechenie"] .admin-shell progress.progress-error::-moz-progress-bar {
+html[data-skin="sechenie"] progress.progress-error::-moz-progress-bar {
   background: var(--sx-red);
 }
 /* Progress/runway bars built from a rounded-full track + inner width-div (Overview runway,
    StatsOverview coverage bar with the bg-base-300/70 opacity variant) — de-round, keep inline width. */
-html[data-skin="sechenie"] .admin-shell [class*="rounded-full"][class*="bg-base-300"] {
+html[data-skin="sechenie"] [class*="rounded-full"][class*="bg-base-300"] {
   border-radius: 0 !important;
   border: 1px solid var(--sx-line);
 }
-html[data-skin="sechenie"] .admin-shell [class*="rounded-full"][class*="bg-base-300"] > div {
+html[data-skin="sechenie"] [class*="rounded-full"][class*="bg-base-300"] > div {
   border-radius: 0 !important;
 }
 
-html[data-skin="sechenie"] .admin-shell .skeleton {
+html[data-skin="sechenie"] .skeleton {
   border-radius: 0;
   background-color: var(--sx-paper-2);
 }
@@ -602,43 +629,43 @@ html[data-skin="sechenie"] .admin-shell .skeleton {
 /* ============================================================================================
    Overlays — modal, loading, link, avatar, divider
    ============================================================================================ */
-html[data-skin="sechenie"] .admin-shell .modal-box,
-html[data-skin="sechenie"] .admin-shell .notification-dropdown-panel,
-html[data-skin="sechenie"] .admin-shell .menu.dropdown-content {
+html[data-skin="sechenie"] .modal-box,
+html[data-skin="sechenie"] .notification-dropdown-panel,
+html[data-skin="sechenie"] .menu.dropdown-content {
   border-radius: 0;
   border: 1px solid var(--sx-line-strong);
 }
-html[data-skin="sechenie"] .admin-shell .modal-box {
+html[data-skin="sechenie"] .modal-box {
   background: var(--sx-paper);
   box-shadow: 8px 8px 0 0 var(--sx-line-strong);
 }
-html[data-skin="sechenie"] .admin-shell .modal-backdrop {
+html[data-skin="sechenie"] .modal-backdrop {
   background: color-mix(in srgb, var(--sx-ink) 38%, transparent);
 }
-html[data-skin="sechenie"] .admin-shell .loading {
+html[data-skin="sechenie"] .loading {
   color: var(--sx-ink);
 }
-html[data-skin="sechenie"] .admin-shell .link-primary {
+html[data-skin="sechenie"] .link-primary {
   color: var(--sx-blue);
 }
-html[data-skin="sechenie"] .admin-shell .link-primary:hover {
+html[data-skin="sechenie"] .link-primary:hover {
   color: var(--sx-ink);
 }
 /* The app never uses DaisyUI's .avatar wrapper — channel avatars are raw <img class="…rounded-full">
    and initials are <div class="…rounded-full bg-primary/10">. Square those by class (NOT a blanket
    .rounded-full reset, which would wrongly square status dots and the video play button). */
-html[data-skin="sechenie"] .admin-shell .avatar :where(img),
-html[data-skin="sechenie"] .admin-shell .avatar > div,
-html[data-skin="sechenie"] .admin-shell img.rounded-full,
-html[data-skin="sechenie"] .admin-shell .rounded-full[class*="bg-primary"] {
+html[data-skin="sechenie"] .avatar :where(img),
+html[data-skin="sechenie"] .avatar > div,
+html[data-skin="sechenie"] img.rounded-full,
+html[data-skin="sechenie"] .rounded-full[class*="bg-primary"] {
   border-radius: 0 !important;
 }
-html[data-skin="sechenie"] .admin-shell .avatar :where(img),
-html[data-skin="sechenie"] .admin-shell img.rounded-full {
+html[data-skin="sechenie"] .avatar :where(img),
+html[data-skin="sechenie"] img.rounded-full {
   border: 1px solid var(--sx-line);
 }
-html[data-skin="sechenie"] .admin-shell .divider::before,
-html[data-skin="sechenie"] .admin-shell .divider::after {
+html[data-skin="sechenie"] .divider::before,
+html[data-skin="sechenie"] .divider::after {
   background: var(--sx-line);
 }
 
@@ -646,95 +673,95 @@ html[data-skin="sechenie"] .admin-shell .divider::after {
    Coverage corrections (from audit) — app-specific chrome the token remap can't reach
    ============================================================================================ */
 /* Statistics success chip — square + editorial green (index.css hardcodes a classic mint pill) */
-html[data-skin="sechenie"] .admin-shell .stats-success-chip {
+html[data-skin="sechenie"] .stats-success-chip {
   border-radius: 0;
   background: color-mix(in srgb, var(--sx-green) 16%, var(--sx-paper));
   border-color: var(--sx-green);
   color: #0a5e3c;
 }
 /* badge-info — editorial blue tint (index.css hardcodes a powder blue) */
-html[data-skin="sechenie"] .admin-shell .badge-info {
+html[data-skin="sechenie"] .badge-info {
   background: color-mix(in srgb, var(--sx-blue) 14%, var(--sx-paper));
   color: #16236e;
   border-color: var(--sx-blue);
 }
 /* Notification dropdown mini-cards — square to match the brutalist panel */
-html[data-skin="sechenie"] .admin-shell .notification-mini-card {
+html[data-skin="sechenie"] .notification-mini-card {
   border-radius: 0;
 }
-html[data-skin="sechenie"] .admin-shell .notification-mini-card.is-new {
+html[data-skin="sechenie"] .notification-mini-card.is-new {
   border-color: color-mix(in srgb, var(--sx-blue) 42%, var(--sx-line));
   background: color-mix(in srgb, var(--sx-blue) 5%, var(--sx-paper));
 }
 /* Recharts — series colours are JS props CSS can't reach, but the grid + axis text are real SVG;
    harmonise them so the chart frame isn't cool-grey on warm paper (series stay classic = known gap). */
-html[data-skin="sechenie"] .admin-shell .recharts-cartesian-grid line {
+html[data-skin="sechenie"] .recharts-cartesian-grid line {
   stroke: var(--sx-line);
 }
-html[data-skin="sechenie"] .admin-shell .recharts-text {
+html[data-skin="sechenie"] .recharts-text {
   fill: var(--sx-muted);
 }
 /* range slider thumb (video scrubber) — square the one round control left in the UI */
-html[data-skin="sechenie"] .admin-shell .range::-webkit-slider-thumb {
+html[data-skin="sechenie"] .range::-webkit-slider-thumb {
   border-radius: 0;
 }
-html[data-skin="sechenie"] .admin-shell .range::-moz-range-thumb {
+html[data-skin="sechenie"] .range::-moz-range-thumb {
   border-radius: 0;
 }
 
 /* ============================================================================================
    Shell — topbar + sidebar (numbered nav, ink active block, acid markers)
    ============================================================================================ */
-html[data-skin="sechenie"] .admin-shell > .drawer-content > header {
+html[data-skin="sechenie"] .drawer-content > header {
   background: color-mix(in srgb, var(--sx-paper) 86%, transparent);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--sx-line-strong);
 }
-html[data-skin="sechenie"] .admin-shell > .drawer-content > header .font-bold {
+html[data-skin="sechenie"] .drawer-content > header .font-bold {
   text-transform: uppercase;
   letter-spacing: -0.04em;
   font-weight: 900;
 }
 /* recolour the built-in route-transition sweep to the brand acid→red */
-html[data-skin="sechenie"] .admin-shell .route-progress::before {
+html[data-skin="sechenie"] .route-progress::before {
   background: linear-gradient(90deg, transparent, var(--sx-acid) 22%, var(--sx-red) 78%, transparent);
 }
 
-html[data-skin="sechenie"] .admin-shell .drawer-side > aside {
+html[data-skin="sechenie"] .drawer-side > aside {
   background: var(--sx-paper-2);
   border-right: 1px solid var(--sx-line-strong);
   box-shadow: none;
 }
-html[data-skin="sechenie"] .admin-shell .drawer-side > aside > a:first-child {
+html[data-skin="sechenie"] .drawer-side > aside > a:first-child {
   font-weight: 900;
   letter-spacing: -0.04em;
   text-transform: uppercase;
   border-bottom: 1px solid var(--sx-line-strong);
 }
-html[data-skin="sechenie"] .admin-shell nav section > div:first-child {
+html[data-skin="sechenie"] nav section > div:first-child {
   color: var(--sx-muted); /* full-opacity muted → 5.06:1 on paper-2 (was ink@.55 = 4.07:1, sub-AA) */
   font-weight: 800;
   letter-spacing: 0.14em;
 }
-html[data-skin="sechenie"] .admin-shell .menu a {
+html[data-skin="sechenie"] .menu a {
   border-radius: 0;
   font-weight: 650;
   letter-spacing: -0.01em;
 }
-html[data-skin="sechenie"] .admin-shell .menu a:hover {
+html[data-skin="sechenie"] .menu a:hover {
   background: color-mix(in srgb, var(--sx-ink) 7%, transparent);
 }
-html[data-skin="sechenie"] .admin-shell .menu a.active {
+html[data-skin="sechenie"] .menu a.active {
   background: var(--sx-ink);
   color: var(--sx-paper);
   box-shadow: inset 4px 0 0 var(--sx-acid);
 }
-html[data-skin="sechenie"] .admin-shell .menu a.active :where(svg) {
+html[data-skin="sechenie"] .menu a.active :where(svg) {
   color: var(--sx-acid);
 }
 /* mobile bottom nav */
-html[data-skin="sechenie"] .admin-shell .drawer-content > nav {
+html[data-skin="sechenie"] .drawer-content > nav {
   background: color-mix(in srgb, var(--sx-paper) 92%, transparent);
   border-top: 1px solid var(--sx-line-strong);
 }
@@ -743,15 +770,15 @@ html[data-skin="sechenie"] .admin-shell .drawer-content > nav {
    Reveal-on-route — short staggered entrance (fill backwards → never stuck hidden)
    ============================================================================================ */
 @media (prefers-reduced-motion: no-preference) {
-  html[data-skin="sechenie"] .admin-shell .route-page > * {
+  html[data-skin="sechenie"] .route-page > * {
     animation: sx-rise 0.5s var(--sx-ease) backwards;
   }
-  html[data-skin="sechenie"] .admin-shell .route-page > :nth-child(1) { animation-delay: 0.02s; }
-  html[data-skin="sechenie"] .admin-shell .route-page > :nth-child(2) { animation-delay: 0.07s; }
-  html[data-skin="sechenie"] .admin-shell .route-page > :nth-child(3) { animation-delay: 0.12s; }
-  html[data-skin="sechenie"] .admin-shell .route-page > :nth-child(4) { animation-delay: 0.17s; }
-  html[data-skin="sechenie"] .admin-shell .route-page > :nth-child(5) { animation-delay: 0.22s; }
-  html[data-skin="sechenie"] .admin-shell .route-page > :nth-child(n + 6) { animation-delay: 0.26s; }
+  html[data-skin="sechenie"] .route-page > :nth-child(1) { animation-delay: 0.02s; }
+  html[data-skin="sechenie"] .route-page > :nth-child(2) { animation-delay: 0.07s; }
+  html[data-skin="sechenie"] .route-page > :nth-child(3) { animation-delay: 0.12s; }
+  html[data-skin="sechenie"] .route-page > :nth-child(4) { animation-delay: 0.17s; }
+  html[data-skin="sechenie"] .route-page > :nth-child(5) { animation-delay: 0.22s; }
+  html[data-skin="sechenie"] .route-page > :nth-child(n + 6) { animation-delay: 0.26s; }
 }
 @keyframes sx-rise {
   from {
