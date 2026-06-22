@@ -1526,13 +1526,6 @@
   "title": "iPhone X orphelins home"
  },
  {
-  "id": 219,
-  "pack": 3,
-  "text": "C'est l'histoire d'une carotte qui veut se suicider. Elle n'y arrive pas et dit :\n\nOh, zut ! C'est rapé !",
-  "chars": 105,
-  "title": "Carotte suicide c'est rapé"
- },
- {
   "id": 220,
   "pack": 3,
   "text": "Comment s'appelle la fille de monsieur et madame Orak ?\n\nElle s'appelle Anne Orak.",
@@ -2224,13 +2217,6 @@
   "text": "Quel est l'animal qui a le plus de dents ?\n\nLa petite souris !",
   "chars": 62,
   "title": "Souris dentée"
- },
- {
-  "id": 319,
-  "pack": 4,
-  "text": "Que dit un sapin de Noël qui arrive en retard le soir du réveillon ?\n\nJe vais encore me faire enguirlander !",
-  "chars": 108,
-  "title": "Sapin enguirlandé"
  },
  {
   "id": 320,
@@ -3304,13 +3290,6 @@
   "title": "Fichier corrompu"
  },
  {
-  "id": 473,
-  "pack": 5,
-  "text": "Que dit une bouteille en retard à son patron ?\n\nDésolé, j'étais dans les bouchons !",
-  "chars": 83,
-  "title": "Bouteille bouchons"
- },
- {
   "id": 474,
   "pack": 5,
   "text": "Un brocoli rencontre un chou-fleur.\n\nAU SECOURS ! UN FANTÔME !",
@@ -4207,13 +4186,6 @@
   "title": "Le pain n'obéit pas à la gravité"
  },
  {
-  "id": 602,
-  "pack": 7,
-  "text": "Chuck Norris a été largué 2 fois...\n\n... à Hiroshima et Nagasaki.",
-  "chars": 65,
-  "title": "Chuck Norris est une arme nucléaire"
- },
- {
   "id": 603,
   "pack": 7,
   "text": "Chuck Norris peut gagner un Grand Prix de F1...\n\n... à bord d'une tractopelle.",
@@ -4366,13 +4338,6 @@
   "text": "Quel est le point commun entre un lingot de fer et une musique rock ?\n\nCe sont tous les deux des morceaux de métal.",
   "chars": 115,
   "title": "Lingot et rock: morceaux métal"
- },
- {
-  "id": 625,
-  "pack": 7,
-  "text": "Qu'est-ce qu'un terroriste sur un fauteuil roulant ?\n\nUne RC-XD",
-  "chars": 63,
-  "title": "Terroriste fauteuil roulant RC-XD"
  },
  {
   "id": 626,
@@ -5859,13 +5824,6 @@
   "title": "C'était pas lui"
  },
  {
-  "id": 838,
-  "pack": 9,
-  "text": "Quel est l'hokage qui reçu le plus d'attentats ?\n\nKakashi Hatake.",
-  "chars": 65,
-  "title": "Kakashi attaqué"
- },
- {
   "id": 839,
   "pack": 9,
   "text": "Pourquoi Half Life 3 ne sortira jamais ?\n\nPar ce qu'on arrive pas a retrouver la Source.",
@@ -6265,13 +6223,6 @@
   "title": "Adam Eve soviétiques"
  },
  {
-  "id": 896,
-  "pack": 9,
-  "text": "Pourquoi Charles est en retard ?\n\nParce que Charles traînait.",
-  "chars": 61,
-  "title": "Charles traînait"
- },
- {
   "id": 897,
   "pack": 9,
   "text": "La semaine dernière, sur mon balcon, je me suis mis à chanter. On m'a lancé des œufs, des tomates et des patates.\n\nDemain je recommencerai, il me manque quelques tomates.",
@@ -6424,20 +6375,6 @@
   "text": "Que dit-on à un poisson qui parle trop fort ?\n\nBaisse d'un thon !",
   "chars": 65,
   "title": "Poisson bruyant"
- },
- {
-  "id": 919,
-  "pack": 10,
-  "text": "Pourquoi avez-vous frappé cet homme sourd ?\n\nC'était un malentendu !",
-  "chars": 68,
-  "title": "Malentendu violent"
- },
- {
-  "id": 920,
-  "pack": 10,
-  "text": "Pourquoi votre feuille de maths s'est suicidée ?\n\nParce qu'elle avait trop de problèmes...",
-  "chars": 90,
-  "title": "Maths suicidaire"
  },
  {
   "id": 921,
@@ -7168,13 +7105,6 @@
   "title": "Poule et chapon"
  },
  {
-  "id": 1025,
-  "pack": 11,
-  "text": "J’ai tellement de sommeil en retard…\n\n… que dans mes rêves je paie en Francs",
-  "chars": 76,
-  "title": "Reves en Francs"
- },
- {
   "id": 1026,
   "pack": 11,
   "text": "Le voleur vole, mais l'oiseau vole aussi.\n\nLa seule différence est que l'oiseau fait son nid alors que le voleur nie son fait.",
@@ -7243,13 +7173,6 @@
   "text": "Qu'est-ce qu'un western ?\n\nUn film à deux balles où le méchant s'en prend une.",
   "chars": 78,
   "title": "Western deux balles"
- },
- {
-  "id": 1036,
-  "pack": 11,
-  "text": "Comment appelle-t-on un crime sans représailles ?\n\nUn suicide.",
-  "chars": 62,
-  "title": "Crime sans represailles"
  },
  {
   "id": 1037,
@@ -7460,13 +7383,6 @@
   "text": "Gilbert Montagné pratique habituellement le tutoiement.\n\nIl ne vouvoie pas.",
   "chars": 75,
   "title": "Montagne vouvoie"
- },
- {
-  "id": 1067,
-  "pack": 11,
-  "text": "Je viens de croiser un agent SNCF en train de courir.\n\nIl est peut-être en retard pour faire grève.",
-  "chars": 99,
-  "title": "SNCF agent greve"
  },
  {
   "id": 1068,
