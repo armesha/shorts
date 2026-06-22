@@ -7,7 +7,7 @@ import {
   packAudioPathFor,
   packAudioTrackId,
   parsePackAudioTrack,
-} from "../src/video.ts";
+} from "../../src/video.ts";
 
 export const MAX_PACK_AUDIO_FILES = 10;
 export const MAX_PACK_AUDIO_BYTES = 25 * 1024 * 1024;

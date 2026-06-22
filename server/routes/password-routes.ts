@@ -1,8 +1,8 @@
 // Self-service password change: a user changes their OWN password, so the admin who issued the
 // initial one no longer knows it. Kept in a separate file for cohesion.
 import type { FastifyInstance } from "fastify";
-import type { Db } from "./db.ts";
-import { hashPassword, verifyPassword } from "./auth.ts";
+import type { Db } from "../db.ts";
+import { hashPassword, verifyPassword } from "../auth.ts";
 
 export function registerPasswordRoutes(app: FastifyInstance, db: Db) {
   // POST /api/auth/change-password { currentPassword, newPassword }

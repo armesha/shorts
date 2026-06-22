@@ -1,5 +1,5 @@
 import { google } from "googleapis";
-import type { ClientCreds } from "./youtube";
+import type { ClientCreds } from "./youtube.ts";
 
 // Channel statistics are read with the SAME OAuth the upload flow already uses
 // (scope youtube.readonly) — no extra consent / re-auth needed. We call

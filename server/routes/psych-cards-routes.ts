@@ -2,9 +2,9 @@
 // `app` instance, so the global /api/* session hook already gates them (req.userId is set).
 // Kept in its own file so server/index.ts only needs a 1-line import + 1-line call.
 import type { FastifyInstance } from "fastify";
-import type { Db } from "./db.ts";
-import { psychSchema } from "../src/psych/schema.ts";
-import { validateBatch, appendCards, listCards, deleteCard } from "../src/psych/cards-store.ts";
+import type { Db } from "../db.ts";
+import { psychSchema } from "../../src/psych/schema.ts";
+import { validateBatch, appendCards, listCards, deleteCard } from "../../src/psych/cards-store.ts";
 
 export function registerPsychCardsRoutes(app: FastifyInstance, db: Db) {
   const uid = (req: unknown): number => (req as { userId?: number }).userId as number;

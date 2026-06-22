@@ -1,7 +1,7 @@
 // Per-user analytics for the Statistics page: same idea as admin analytics but HARD-scoped to the
 // requesting user's own channels (account_id IN <their accounts>). Self-contained — does NOT touch
 // buildAdminAnalytics, so the admin dashboard is unaffected. Read-only, uses stored snapshots.
-import type { Db } from "./db.ts";
+import type { Db } from "../db.ts";
 import { normalizeAnalyticsRange, type AnalyticsRange } from "./admin-analytics.ts";
 
 type Row = Record<string, unknown>;

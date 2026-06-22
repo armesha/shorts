@@ -4,7 +4,7 @@
 // path — same 15-min/6-h TTL caching, same snapshot shape, same error handling. The two pieces that
 // live in index.ts (the `summarizeStored` reader and the `formatStatsError` formatter, plus the
 // notification side-effects) are injected, so this module stays a dependency-free leaf.
-import type { Db, Account } from "./db.ts";
+import type { Db, Account } from "../db.ts";
 import type { ClientCreds } from "./youtube.ts";
 import { fetchChannelStats } from "./stats.ts";
 import { fetchChannelAnalyticsBundle, ytAnalyticsErrorMessage } from "./youtube-analytics.ts";

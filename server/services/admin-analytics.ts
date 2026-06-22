@@ -1,4 +1,4 @@
-import type { Db } from "./db.ts";
+import type { Db } from "../db.ts";
 
 type Row = Record<string, any>;
 type YtMetrics = {

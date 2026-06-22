@@ -4,8 +4,8 @@
 import type { FastifyInstance } from "fastify";
 import { createReadStream, existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { loadBaseConfig } from "./config.ts";
-import { openDb } from "./db.ts";
+import { loadBaseConfig } from "../config.ts";
+import { openDb } from "../db.ts";
 import {
   listPacks,
   getPack,
@@ -18,16 +18,16 @@ import {
   canEdit,
   deriveRules,
   type PackTemplate,
-} from "../src/packs/store.ts";
+} from "../../src/packs/store.ts";
 import {
   TemplateValidationError,
   renderTemplateCard,
   validateTemplateList,
   type TemplateDoc,
-} from "../src/template/render.ts";
-import { packCardKey } from "./pack-gen.ts";
-import { listAudio, packAudioPathFor, resolveAudio } from "../src/video.ts";
-import { buildStillVideoFiles, cardReadable } from "./media.ts";
+} from "../../src/template/render.ts";
+import { packCardKey } from "../services/pack-gen.ts";
+import { listAudio, packAudioPathFor, resolveAudio } from "../../src/video.ts";
+import { buildStillVideoFiles, cardReadable } from "../infra/media.ts";
 import {
   RATE_LIMIT_MESSAGE,
   RateLimitError,
@@ -35,8 +35,8 @@ import {
   heavyActiveKey,
   withActiveLimit,
   withGlobalRenderSlot,
-} from "./rate-limits.ts";
-import { rememberOutputOwner } from "./output-access.ts";
+} from "../infra/rate-limits.ts";
+import { rememberOutputOwner } from "../infra/output-access.ts";
 import {
   MAX_PACK_AUDIO_FILES,
   MAX_PACK_AUDIO_UPLOAD_BYTES,
@@ -47,7 +47,7 @@ import {
   packMusicTracks,
   savePackMusicUploads,
   type PackMusicUploadInput,
-} from "./pack-audio.ts";
+} from "../services/pack-audio.ts";
 
 const OUTPUT_DIR = loadBaseConfig().outputDir;
 const uid = (req: unknown): number => (req as { userId?: number }).userId as number;

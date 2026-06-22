@@ -17,11 +17,11 @@ import { openDb, parseCredMeta, MAX_OAUTH_CLIENTS_PER_USER, type Account, type O
 import { randomAnecdote, libraryStats, anecdoteKey, deckAnecdoteKeys, deckCards } from "../src/anecdotes/library.ts";
 import { DECKS, getDeck, ytMeta, pickGenericTitle, isPackDeckId, deckLang } from "../src/anecdotes/decks.ts";
 import { listAllPacks, setGrant, setPackOwners, getPack, canAccess } from "../src/packs/store.ts";
-import { pickUnusedPackCard, buildPackLibraryVideo, packCardKey } from "./pack-gen.ts";
-import { buildFactLibraryVideo } from "./fact-gen.ts";
+import { pickUnusedPackCard, buildPackLibraryVideo, packCardKey } from "./services/pack-gen.ts";
+import { buildFactLibraryVideo } from "./services/fact-gen.ts";
 import { renderAnecdote, listBackgrounds } from "../src/anecdotes/render.ts";
 import { assembleStillVideo, listAudio, resolveAudio, downscaleImage } from "../src/video.ts";
-import { buildStillVideoFiles } from "./media.ts";
+import { buildStillVideoFiles } from "./infra/media.ts";
 import {
   buildAuthUrl,
   exchangeAndGetChannel,
@@ -30,12 +30,12 @@ import {
   isYtAuthError,
   parseCreds,
   type ClientCreds,
-} from "./youtube.ts";
-import { startScheduler } from "./scheduler.ts";
-import * as metrics from "./metrics.ts";
-import { fetchChannelStats } from "./stats.ts";
+} from "./services/youtube.ts";
+import { startScheduler } from "./infra/scheduler.ts";
+import * as metrics from "./infra/metrics.ts";
+import { fetchChannelStats } from "./services/stats.ts";
 // One channel's data+analytics refresh, shared by POST /api/stats/refresh and the Telegram stats bot.
-import { refreshAccountStats, type RefreshHooks } from "./stats-refresh.ts";
+import { refreshAccountStats, type RefreshHooks } from "./services/stats-refresh.ts";
 import {
   hashPassword,
   verifyPassword,
@@ -44,10 +44,10 @@ import {
   LOCK_MINUTES,
   SESSION_TTL_DAYS,
 } from "./auth.ts";
-import { registerPasswordRoutes } from "./password-routes.ts";
-import { registerTelegramRoutes } from "./telegram-routes.ts";
-import { registerPsychCardsRoutes } from "./psych-cards-routes.ts";
-import { registerPacksRoutes } from "./packs-routes.ts";
+import { registerPasswordRoutes } from "./routes/password-routes.ts";
+import { registerTelegramRoutes } from "./routes/telegram-routes.ts";
+import { registerPsychCardsRoutes } from "./routes/psych-cards-routes.ts";
+import { registerPacksRoutes } from "./routes/packs-routes.ts";
 import {
   initGenQueue,
   enqueue as genEnqueue,
@@ -56,11 +56,11 @@ import {
   drainQueue as genDrainQueue,
   queuedRemainingForUser as genQueuedRemainingForUser,
   queuedRemainingForOwnerDecks as genQueuedRemainingForOwnerDecks,
-} from "./gen-queue.ts";
-import { gracefulShutdown } from "./shutdown.ts";
-import { buildAdminAnalytics } from "./admin-analytics.ts";
-import { buildUserAnalytics } from "./user-analytics.ts";
-import { dailyScheduleLimitError, USER_DAILY_SCHEDULE_CAP } from "./account-limits.ts";
+} from "./services/gen-queue.ts";
+import { gracefulShutdown } from "./infra/shutdown.ts";
+import { buildAdminAnalytics } from "./services/admin-analytics.ts";
+import { buildUserAnalytics } from "./services/user-analytics.ts";
+import { dailyScheduleLimitError, USER_DAILY_SCHEDULE_CAP } from "./infra/account-limits.ts";
 import {
   RATE_LIMIT_MESSAGE,
   RateLimitError,
@@ -68,8 +68,8 @@ import {
   heavyActiveKey,
   withActiveLimit,
   withGlobalRenderSlot,
-} from "./rate-limits.ts";
-import { rememberedOutputOwner, rememberOutputOwner } from "./output-access.ts";
+} from "./infra/rate-limits.ts";
+import { rememberedOutputOwner, rememberOutputOwner } from "./infra/output-access.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);

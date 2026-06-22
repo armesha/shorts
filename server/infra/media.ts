@@ -7,8 +7,8 @@
 // path (anecdote, pack, …) is counted by the graceful-shutdown drain — previously pack/fact renders
 // were invisible to it and could be torn down mid-encode on a restart.
 import { resolve } from "node:path";
-import { assembleStillVideo } from "../src/video.ts";
-import type { CardValues, RoleRule } from "../src/packs/store.ts";
+import { assembleStillVideo } from "../../src/video.ts";
+import type { CardValues, RoleRule } from "../../src/packs/store.ts";
 import * as metrics from "./metrics.ts";
 
 /**

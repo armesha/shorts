@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { openDb } from "./db.ts";
+import { openDb } from "../db.ts";
 import { buildAdminAnalytics, normalizeAnalyticsRange } from "./admin-analytics.ts";
 
 function withDb(fn: (store: ReturnType<typeof openDb>) => void) {

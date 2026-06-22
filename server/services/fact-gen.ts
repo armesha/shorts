@@ -7,10 +7,10 @@ import { resolve, dirname } from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import ffmpegPath from "ffmpeg-static";
-import type { Db } from "./db.ts";
-import { loadBaseConfig } from "./config.ts";
-import { type PackItem } from "../src/anecdotes/library.ts";
-import * as metrics from "./metrics.ts";
+import type { Db } from "../db.ts";
+import { loadBaseConfig } from "../config.ts";
+import { type PackItem } from "../../src/anecdotes/library.ts";
+import * as metrics from "../infra/metrics.ts";
 
 const pexec = promisify(execFile);
 const FFMPEG = ffmpegPath as unknown as string;

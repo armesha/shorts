@@ -4,12 +4,12 @@
 // Public routes here are whitelisted in PUBLIC_API in index.ts; bind/* + me + unbind stay gated.
 import { createHash, randomBytes, randomInt, timingSafeEqual } from "node:crypto";
 import type { FastifyInstance } from "fastify";
-import type { Db, Account } from "./db.ts";
-import type { ClientCreds } from "./youtube.ts";
-import type { RefreshHooks, SnapshotAnalyticsFields } from "./stats-refresh.ts";
-import { hashPassword, newSessionToken, SESSION_TTL_DAYS } from "./auth.ts";
-import { sendBotMessage, getBotUsername, setBotWebhook, botStartLink, setBotCommands } from "./telegram.ts";
-import { makeBotStats, type BotCallbackQuery } from "./telegram-stats.ts";
+import type { Db, Account } from "../db.ts";
+import type { ClientCreds } from "../services/youtube.ts";
+import type { RefreshHooks, SnapshotAnalyticsFields } from "../services/stats-refresh.ts";
+import { hashPassword, newSessionToken, SESSION_TTL_DAYS } from "../auth.ts";
+import { sendBotMessage, getBotUsername, setBotWebhook, botStartLink, setBotCommands } from "../telegram.ts";
+import { makeBotStats, type BotCallbackQuery } from "../services/telegram-stats.ts";
 
 const DAY_MS = 86_400_000;
 const LINK_TTL_MIN = 10; // a bot-handshake token is valid 10 min

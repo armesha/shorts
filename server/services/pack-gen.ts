@@ -2,13 +2,13 @@
 // Тот же мост рендера (renderTemplateCard) + assembleStillVideo, что и в Студии (packs-routes),
 // но карточка выбирается СЛУЧАЙНО среди НЕиспользованных этим юзером (как randomAnecdote у дек).
 // «Использованность» — общий per-user механизм db (markAnecdoteUsed/usedAnecdoteKeys) по ключу карточки.
-import type { Db } from "./db.ts";
-import { loadBaseConfig } from "./config.ts";
-import { deriveRules, type Pack, type CardValues } from "../src/packs/store.ts";
-import { renderTemplateCard, type TemplateDoc } from "../src/template/render.ts";
-import { resolveAudio } from "../src/video.ts";
-import { buildStillVideoFiles, cardReadable } from "./media.ts";
-import { anecdoteKey } from "../src/anecdotes/library.ts";
+import type { Db } from "../db.ts";
+import { loadBaseConfig } from "../config.ts";
+import { deriveRules, type Pack, type CardValues } from "../../src/packs/store.ts";
+import { renderTemplateCard, type TemplateDoc } from "../../src/template/render.ts";
+import { resolveAudio } from "../../src/video.ts";
+import { buildStillVideoFiles, cardReadable } from "../infra/media.ts";
+import { anecdoteKey } from "../../src/anecdotes/library.ts";
 
 const OUTPUT_DIR = loadBaseConfig().outputDir;
 

@@ -1,6 +1,6 @@
 import { google } from "googleapis";
 import type { ClientCreds } from "./youtube.ts";
-import type { ChannelDailyAnalytics } from "./db.ts";
+import type { ChannelDailyAnalytics } from "../db.ts";
 
 export interface AnalyticsBreakdownRow {
   key: string;

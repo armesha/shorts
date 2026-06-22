@@ -4,7 +4,7 @@
 // «Все каналы» toggle to view + refresh everyone's. Navigation is inline keyboards edited in place
 // (no chat spam); one button refreshes BOTH YouTube Data totals and the YouTube Analytics bundle via
 // the shared refreshAccountStats() — same 15-min/6-h TTL cache as the web, so it stays light.
-import type { Db, Account, UserAuth } from "./db.ts";
+import type { Db, Account, UserAuth } from "../db.ts";
 import type { ClientCreds } from "./youtube.ts";
 import {
   refreshAccountStats,
@@ -18,7 +18,7 @@ import {
   answerCallbackQuery,
   type InlineKeyboard,
   type InlineKeyboardButton,
-} from "./telegram.ts";
+} from "../telegram.ts";
 
 // ---- Incoming Telegram shapes this module reads (exported so the webhook router types match) -------
 export interface BotFrom {
