@@ -357,7 +357,11 @@ body {
 
 @media (prefers-reduced-motion: no-preference) {
   .admin-shell .route-page {
-    animation: route-page-enter 180ms cubic-bezier(0.2, 0, 0.2, 1) both;
+    /* fill-mode MUST stay "backwards", never "both"/"forwards": a retained final-keyframe
+       transform: translateY(0) is non-"none", which turns .route-page into the containing block
+       for position:fixed descendants — that pushed centered modals (e.g. the /cards preview) to
+       the middle of the tall page instead of the viewport (looked "stuck at the bottom"). */
+    animation: route-page-enter 180ms cubic-bezier(0.2, 0, 0.2, 1) backwards;
   }
 }
 
