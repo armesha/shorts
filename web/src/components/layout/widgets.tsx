@@ -1,6 +1,33 @@
 import { useEffect, useState } from "react";
 import type { Lang } from "../../lib/i18n";
+import { useSkin } from "../../lib/skin";
 import { AppIcon } from "../AppIcon";
+
+// Admin-only quick toggle for the СЕЧЕНИЕ skin. Renders nothing for non-admins. The classic look is
+// always one click away. When the skin is on, the button itself gets an acid chip (styled in
+// sechenie.css via .sx-skin-toggle.is-on) so its state is obvious.
+export function SkinToggle({
+  t,
+  className = "",
+}: {
+  t: (key: string, vars?: Record<string, string | number>) => string;
+  className?: string;
+}) {
+  const { skinOn, canUseSkin, setSkinOn } = useSkin();
+  if (!canUseSkin) return null;
+  return (
+    <button
+      type="button"
+      className={`btn btn-ghost btn-sm btn-square sx-skin-toggle ${skinOn ? "is-on text-primary" : ""} ${className}`}
+      onClick={() => setSkinOn(!skinOn)}
+      title={`${t("skin.name")} — ${skinOn ? t("skin.on") : t("skin.off")}. ${t("skin.toggleHint")}`}
+      aria-label={t("skin.name")}
+      aria-pressed={skinOn}
+    >
+      <AppIcon name="skin" size={16} />
+    </button>
+  );
+}
 
 export function NetworkIndicator({ t }: { t: (key: string, vars?: Record<string, string | number>) => string }) {
   const [state, setState] = useState<"online" | "checking" | "offline">(() =>

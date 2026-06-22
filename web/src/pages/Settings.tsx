@@ -18,6 +18,7 @@ import TelegramConnect from "../components/TelegramConnect";
 import { confirmDialog } from "../lib/confirm";
 import { AppIcon } from "../components/AppIcon";
 import { DEFAULT_DESIGN, DESIGNS, getSavedDesign, saveDesign, type DesignId } from "../lib/design";
+import { useSkin } from "../lib/skin";
 import { useT } from "../lib/i18n";
 
 export default function Settings() {
@@ -29,6 +30,8 @@ export default function Settings() {
         <h1 className="text-2xl font-bold">{t("settings.title")}</h1>
         <p className="text-base-content/60">{t("settings.subtitle")}</p>
       </header>
+
+      <SkinSettings />
 
       <DesignSettings />
 
@@ -357,6 +360,47 @@ function OAuthKeyCard({
         <Trash2 size={14} />
       </button>
     </li>
+  );
+}
+
+// Admin-only "СЕЧЕНИЕ" skin — a bold editorial re-style layered over the classic look. Renders
+// nothing for non-admins (regular users keep the classic dashboard). The preference is per-browser.
+function SkinSettings() {
+  const { t } = useT();
+  const { skinOn, canUseSkin, setSkinOn } = useSkin();
+  if (!canUseSkin) return null;
+
+  return (
+    <section className="card bg-base-100 border border-base-300">
+      <div className="card-body gap-4">
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div className="flex items-start gap-2">
+            <AppIcon name="skin" className="text-primary mt-0.5" size={18} />
+            <div>
+              <h2 className="card-title text-base">
+                {t("skin.settingsTitle")}
+                <span className="badge badge-error badge-sm ml-2 align-middle">adm</span>
+              </h2>
+              <p className="text-sm text-base-content/60 mt-1">{t("skin.settingsDesc")}</p>
+            </div>
+          </div>
+          <label className="flex items-center gap-3 cursor-pointer select-none">
+            <span className="text-sm font-medium">{skinOn ? t("skin.on") : t("skin.off")}</span>
+            <input
+              type="checkbox"
+              className="toggle toggle-primary"
+              checked={skinOn}
+              onChange={(e) => setSkinOn(e.target.checked)}
+              aria-label={t("skin.toggleHint")}
+            />
+          </label>
+        </div>
+
+        <div className="rounded-lg border border-base-300 bg-base-200/55 px-3 py-2 text-xs text-base-content/60">
+          {t("skin.adminLocalNote")}
+        </div>
+      </div>
+    </section>
   );
 }
 

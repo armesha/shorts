@@ -20,6 +20,7 @@ import Limits from "./pages/Limits";
 import TemplateEditor from "./pages/TemplateEditor";
 import Login from "./pages/Login";
 import { AuthProvider, useAuth } from "./lib/auth";
+import { SkinProvider } from "./lib/skin";
 import { GenQueueProvider } from "./lib/genQueue";
 import { ConfirmHost } from "./lib/confirm";
 import { I18nProvider } from "./lib/i18n";
@@ -126,8 +127,10 @@ export default function App() {
   return (
     <I18nProvider>
       <AuthProvider>
-        <Gate />
-        <ConfirmHost />
+        <SkinProvider>
+          <Gate />
+          <ConfirmHost />
+        </SkinProvider>
       </AuthProvider>
     </I18nProvider>
   );

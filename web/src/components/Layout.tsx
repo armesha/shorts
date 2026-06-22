@@ -8,7 +8,7 @@ import { apiClient, type AuthUser } from "../lib/api";
 import { groupNotifications } from "../lib/notificationGroups";
 import { ADMIN_NAV_GROUPS, ADMIN_BOTTOM_NAV, USER_BOTTOM_NAV, canSeeNav } from "./layout/navConfig";
 import { NotificationDropdown } from "./layout/NotificationDropdown";
-import { NetworkIndicator, LanguageToggle } from "./layout/widgets";
+import { NetworkIndicator, LanguageToggle, SkinToggle } from "./layout/widgets";
 
 const DRAWER_ID = "main-drawer";
 type ViewTransitionHandle = {
@@ -189,6 +189,7 @@ function AdminLayout({
             <div className="ml-auto flex items-center gap-2">
               <NetworkIndicator t={t} />
               <NotificationDropdown user={user} unread={notificationUnread} bump={notificationBump} t={t} />
+              <SkinToggle t={t} />
               <LanguageToggle lang={lang} setLang={setLang} t={t} className="hidden sm:inline-flex" />
               <button className="btn btn-ghost btn-sm btn-square" onClick={logout} title={t("layout.logout")} aria-label={t("layout.logout")}>
                 <AppIcon name="logout" size={16} />

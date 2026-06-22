@@ -35,6 +35,7 @@ import {
   Video,
   X,
   MonitorPlay,
+  Palette,
   type LucideIcon,
   type LucideProps,
 } from "lucide-react";
@@ -67,6 +68,7 @@ export type AppIconName =
   | "queue"
   | "refresh"
   | "settings"
+  | "skin"
   | "studio"
   | "system"
   | "time"
@@ -111,6 +113,7 @@ const ICONS: Record<AppIconName, LucideIcon> = {
   queue: ListPlus,
   refresh: RefreshCw,
   settings: Settings2,
+  skin: Palette,
   studio: Languages,
   system: UserCog,
   time: Clock3,

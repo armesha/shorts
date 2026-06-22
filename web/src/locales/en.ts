@@ -717,6 +717,15 @@ export const en: Record<string, string> = {
   "settings.designResetClassic": "Restore old look",
   "settings.designStoredLocal": "The design changes only for you and does not affect other users.",
   "settings.designTitle": "Appearance",
+  "skin.name": "СЕЧЕНИЕ design",
+  "skin.on": "on",
+  "skin.off": "off",
+  "skin.toggleHint": "Toggle the СЕЧЕНИЕ design (only you, as admin, can see it)",
+  "skin.settingsTitle": "СЕЧЕНИЕ design",
+  "skin.settingsDesc":
+    "A bold editorial restyle of the dashboard: paper background, acid accent, film grain and hard borders. Enabled for you (admin) only; regular users keep the classic look.",
+  "skin.adminLocalNote":
+    "This look changes only in your browser and does not affect other users. The classic look is always available — just turn the toggle off.",
   "settings.errLoad": "Failed to load settings",
   "settings.errRemove": "Failed to remove the key",
   "settings.errUpload": "Failed to upload the key",
