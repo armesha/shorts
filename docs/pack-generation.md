@@ -88,6 +88,7 @@ YouTube Shorts перекрывает нижнюю часть видео кно�
 | `christian` Holy Bible KJV | `data/christian/cards.json` | KJV public domain -> candidates/slices -> workflow выбора id -> assemble | да, только для выбора id/theme |
 | `fact-en` Interesting Facts | `data/fact-videos/videos.json` + `assets/fact-videos/` | готовые MP4 | не в рантайме; новые ролики собираются вне этого конвейера |
 | `quotes-de` Politiker-Zitate | `data/quotes-de/videos.json` + `assets/fact-videos/` | готовые MP4 | не в рантайме |
+| `prayers-de` Gebet | `data/prayers-de/videos.json` + `assets/fact-videos/prayers-de/` | 1000 готовых немецких молитвенных card-style MP4 без тега: примерно 250 про детей/семью и 750 общих молитв | нет |
 | `space` Space | `data/space/videos.json` + `assets/fact-videos/space/` | готовые MP4 | не в рантайме |
 | `animal-superheroes` / `animal-superheroes-en` ЗвероГерои / Animal Heroes | `data/output/admin-demos/manifest.json` + `data/animal-superheroes*/videos.json` + `assets/fact-videos/animal-superheroes*/` | сериальные MP4-комиксы RU/EN с одинаковым визуалом, ElevenLabs-озвучкой и safe-zone karaoke-субтитрами | нет |
 | `The Mind Edge` template-pack | `assets/template-packs/the-mind-edge/` -> `data/packs/` seed | LLM-батчи -> `cards.json`, шаблоны из кода | да, для новых карточек |
@@ -584,7 +585,7 @@ node --input-type=module -e 'import fs from "node:fs"; const cards=JSON.parse(fs
 node --input-type=module -e 'import fs from "node:fs"; const cards=JSON.parse(fs.readFileSync("data/christian/cards.json","utf8")); const idx=JSON.parse(fs.readFileSync("data/christian/index.json","utf8")); console.log({cards:cards.length,indexTotal:idx.total,range:idx.range,sample:Object.keys(cards[0]||{})});'
 ```
 
-## Pre-built video packs (`fact-en`, `quotes-de`, `space`)
+## Pre-built video packs (`fact-en`, `quotes-de`, `space`, `prayers-de`)
 
 Эти деки не рендерят карточку. Runtime выбирает готовый MP4 из `assets/fact-videos/`, копирует его в
 библиотеку и помечает использованным. Контракт реализован в `server/fact-gen.ts`.
@@ -775,6 +776,61 @@ grep -niE "ratten|warmer bruder|bedingungslosen gehorsam|totalen krieg|tel aviv|
 Удалено 2026-06-20 (10): `q204` (страйк), `q150`, `q093`, `q085`, `q239`, `q039` (явные нарушения) +
 `q146`, `q126`, `q225`, `q121` (пограничные). См. также `data/quotes-de/CONTENT-POLICY.md`.
 
+### `prayers-de` German prayer-card pack
+
+2026-06-22 добавлен немецкий молитвенный pack `Gebet`: 1000 статичных devotional card-style MP4 без
+водяного знака/тега. Это `preFact` deck, а не template-pack: runtime выбирает готовый MP4 из
+`assets/fact-videos/prayers-de/` и копирует его в библиотеку. Текущий состав: около 250 карточек про
+детей/семью и около 750 общих молитвенных тем без привязки к детям.
+
+Артефакты:
+
+- сборщик: `scripts/build-prayers-de-pack.py`;
+- исходные imagegen-фоны: `data/prayers-de/backgrounds/bg_*.png`;
+- selectable deck manifest: `data/prayers-de/videos.json`, `index.json`, `sources.json`, `layout-report.json`;
+- готовые MP4 для генерации каналов: `assets/fact-videos/prayers-de/gebet_de_*.mp4`;
+- админ-галерея `/clip-demos`: `data/output/admin-demos/gebet_de_*.mp4`, `.jpg` и pack `prayers-de`
+  в `data/output/admin-demos/manifest.json`;
+- визуальная проверка: `temp/prayers-de/contact.jpg`.
+
+Регистрация:
+
+- `src/anecdotes/decks.ts`: `id: "prayers-de"`, `preFact: true`, visible like normal built-in decks;
+- `web/src/lib/deck.ts`: русский gloss, `DECK_LANG`, пункт в `BUILTIN_DECKS`.
+
+Пересборка:
+
+```bash
+python3 scripts/build-prayers-de-pack.py
+```
+
+Скрипт генерирует 25 визуальных шаблонов поверх текущих imagegen-фонов, пишет MP4, постеры,
+`videos.json`, `index.json`, `sources.json`, `layout-report.json` и только pack `prayers-de` внутри
+`admin-demos/manifest.json`; остальные packs в manifest не трогает. Озвучка не используется: это формат
+картинок/тихих MP4, как в пользовательских референсах. LLM-workflow не нужен, пока меняются только
+тексты/верстка внутри скрипта. Если для будущего пополнения агент запускает workflow, который пишет
+новые молитвы, сначала спросить пользователя модель.
+
+Как пополнить без потери старого:
+
+1. Добавь новый фон в `data/prayers-de/backgrounds/` с именем `bg_*.png`. Если фон взят из интернета,
+   сначала проверь лицензию и запиши источник/автора/license в `sources.json` или расширь сборщик так,
+   чтобы он сохранял эти поля.
+2. Расширь `CHILD_SUBJECTS` или `GENERAL_THEMES` внутри `scripts/build-prayers-de-pack.py`.
+3. Запусти `python3 scripts/build-prayers-de-pack.py --jobs 6`.
+4. Проверь счетчики/файлы/видео:
+   ```bash
+   node --input-type=module -e 'import fs from "node:fs"; import path from "node:path"; const v=JSON.parse(fs.readFileSync("data/prayers-de/videos.json","utf8")); const m=JSON.parse(fs.readFileSync("data/output/admin-demos/manifest.json","utf8")); const p=m.packs.find(x=>x.id==="prayers-de"); const missing=v.filter(x=>!fs.existsSync(path.resolve("assets/fact-videos",x.file))).map(x=>x.file); console.log({deckVideos:v.length, adminItems:p?.items?.length, missing:missing.length});'
+   for f in assets/fact-videos/prayers-de/*.mp4; do printf "%s " "$f"; ffprobe -v error -show_entries format=duration:stream=codec_type,width,height -of compact=p=0:nk=1 "$f" | tr "\n" " "; printf "\n"; done
+   ```
+5. Открой `temp/prayers-de/contact.jpg` глазами: текст должен читаться, без случайного тега, без
+   перекрытия лиц и без низкого контраста.
+
+Если меняются только `data/prayers-de/*`, `assets/fact-videos/prayers-de/*` и
+`data/output/admin-demos/*`, серверный restart не нужен для чтения свежего `videos.json`/manifest.
+После изменений `src/anecdotes/decks.ts` или `web/src/lib/deck.ts` нужен обычный backend/frontend
+rebuild/restart, чтобы новая selectable deck появилась в UI.
+
 ## Template-pack: The Mind Edge
 
 Исходные карточки собираются из LLM-батчей:
@@ -826,6 +882,45 @@ node --import tsx --experimental-sqlite src/scripts/seed-psychology-mgs.ts
 
 При генерации новых карточек через LLM сначала спроси пользователя модель. Для body text сохраняй
 читабельность: яркие плашки можно использовать для коротких labels/title, но не для основного списка.
+
+### Сплит на «психология armen» (без 📌) и «психология mgs» (с 📌) — 2026-06-22
+
+Живой пак `data/packs/психология-mgs-mqe2kfjv.json` (имя **«психология armen»**, lang `de`) бандлил
+**40** editor-шаблонов. Первые **10** (`psychology-mgs` lime/yellow/pink/cyan/orange/violet/mint/sky/
+coral/dark) рисуют 📌-«скрепку» сверху карточки; остальные **30** (note/question/myth/micro/dark-grid+
+calm/ai) — без неё. Карточки рендерятся round-robin: карточка `i` → `templates[i % 40]`
+(см. `buildPackLibraryVideo` / `packs-routes`), поэтому 📌 видна ⇔ `i % 40 < 10`.
+
+По просьбе пользователя 📌-половину вынесли в **отдельный** пак, а из «психология armen» убрали (включая
+уже отрендеренные видео в очереди канала, чтобы они нигде не выложились). Сделано одноразовым скриптом
+`src/scripts/split-psychology-mgs.ts`:
+
+```bash
+node --import tsx --experimental-sqlite src/scripts/split-psychology-mgs.ts
+```
+
+Что он делает (порядок-сохраняющий фильтр сохраняет шаблон КАЖДОЙ карточки 1-в-1):
+
+- **новый пак «психология mgs»** (`data/packs/психология-mgs-<ts36>.json`, новый id) = 10 📌-шаблонов +
+  500 📌-карточек (`i % 40 < 10`); владельцы/гранты/lang скопированы с armen (без владельца → виден
+  только админу на `/cards`);
+- **«психология armen»** переписан = 30 не-📌-шаблонов + 1500 карточек (`id` остаётся
+  `психология-mgs-mqe2kfjv`, имя «психология armen»);
+- из очереди удалены 📌-видео деки `pack:психология-mgs-mqe2kfjv` (строки `videos` + png/mp4 файлы) —
+  совпадение видео↔карточка по `videos.text` (= `cardReadable`), т.к. id карточки/шаблона в `videos`
+  не хранится. На 2026-06-22 удалено 43 видео (канал 44), осталось 105 не-📌.
+
+Бэкапы (gitignored): `data/packs/психология-mgs-mqe2kfjv.json.pre-split.bak` и
+`data/psychology-mgs-split-deleted-videos-<stamp>.json` (удалённые строки). Скрипт идемпотентно
+прерывается, если в armen уже не 40 шаблонов (повторно не запускать). Канал 44 привязан к
+`pack:психология-mgs-mqe2kfjv` (armen), поэтому дальше генерит только не-📌; новый пак ни к какому
+каналу не привязан (привязать при необходимости через язык/`source_decks`). Сервер перезапускать не
+нужно — стор читает паки с диска, БД общая (WAL).
+
+**Пополнение** каждой половины — как и раньше у `psychology-mgs` (build/seed выше), но карточки
+добавляй в нужный пак по содержимому: яркие плашечные (signal/reminder/«Leise Signale») → mgs,
+note/question/myth/micro/ai → armen. Совместимость шаблонов: у всех роли `title` (строка) + `text`
+(список), так что любой набор карточек валиден к любому из этих шаблонов.
 
 ## Template-pack: Curiosaurs English Facts
 
