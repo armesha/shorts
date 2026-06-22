@@ -472,9 +472,14 @@ html[data-skin="sechenie"] .badge-outline {
   border-color: var(--sx-line-strong);
   color: var(--sx-ink);
 }
-/* The whole СЕЧЕНИЕ skin is admin-only, so the per-item "adm" nav chips are redundant — hide them. */
+/* the "adm" nav badge → acid chip, on brand */
 html[data-skin="sechenie"] .admin-nav-badge {
-  display: none;
+  border-radius: 0;
+  background: var(--sx-acid);
+  border-color: var(--sx-ink);
+  color: var(--sx-ink);
+  font-weight: 800;
+  letter-spacing: 0.04em;
 }
 
 /* ============================================================================================

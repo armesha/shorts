@@ -28,7 +28,9 @@ export const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
       { to: "/packs", labelKey: "nav.packs", icon: "packs", end: false },
       { to: "/cards", labelKey: "nav.cards", icon: "cards", end: false },
       { to: "/gallery", labelKey: "nav.gallery", icon: "library", end: false, adminOnly: true, adminBadge: true },
-      { to: "/editor", labelKey: "nav.templates", icon: "library", end: false, adminOnly: true, adminBadge: true },
+      // Редактор шаблонов НЕ выносим отдельной вкладкой: на него уже есть переход из «Паки и карточки»
+      // (/cards → форма создания пака → ссылка «Нарисуйте шаблон в /editor», CreatePackForm.tsx).
+      // Роут /editor (App.tsx) остаётся рабочим по прямой ссылке.
     ],
   },
   {
