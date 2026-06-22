@@ -9,7 +9,9 @@ test("deckLang maps built-in decks; '' for packs/unknown", () => {
   assert.equal(deckLang("ru"), "ru");
   assert.equal(deckLang("psych"), "de");
   assert.equal(deckLang("islamic"), "ar");
-  assert.equal(deckLang("quotes-de"), "de"); // present in the canonical map (was missing in the old index.ts copy)
+  assert.equal(deckLang("quotes-de-1"), "de");
+  assert.equal(deckLang("quotes-de-2"), "de");
+  assert.equal(deckLang("quotes-de-3"), "de");
   assert.equal(deckLang("pack:abc"), "");
   assert.equal(deckLang("does-not-exist"), "");
 });

@@ -19,11 +19,16 @@ export interface Deck {
   christian?: boolean;
   /** When true, this deck's items are meme cards (whole card as JSON in `text`: caption + optional Pexels photoFile), rendered via templates/meme.html. */
   meme?: boolean;
+  /** When true (together with meme), render via the "board" layout — caption band on top + the
+   *  template image below (templates/meme-board.html) — instead of the caption-overlay meme.html. */
+  memeBoard?: boolean;
   /** When true, this deck renders DETERMINISTICALLY per card (fixed visual, no random bg) → it is a
    *  static "gallery" pack: shown in the Gallery page where you browse cards and pick a specific one. */
   gallery?: boolean;
   /** When true, this deck is visible & usable ONLY by admins — hidden from every non-admin regardless of per-user deck settings. */
   adminOnly?: boolean;
+  /** Admin-only built-in deck that can be explicitly granted to non-admin users from /users. */
+  grantable?: boolean;
   /** Lifehack background style suffix, e.g. "chaplin" → profession_<key>_chaplin.jpg (with moustache).
    *  Omitted → the plain profession_<key>.jpg (no moustache). */
   lifehackVariant?: string;
@@ -150,8 +155,9 @@ export const DECKS: Deck[] = [
     tags: ["мемы", "мем", "юмор", "приколы", "смешное", "relatable", "shorts"],
     genericTitles: ["Мем", "Мемы", "Это про меня", "Знакомо?"],
     meme: true,
+    memeBoard: true, // board layout: caption above the meme-template image (templates/meme-board.html)
     gallery: true,
-    adminOnly: true, // new pack — admin-only first
+    adminOnly: true,
   },
   {
     id: "memes-en",
@@ -163,6 +169,7 @@ export const DECKS: Deck[] = [
     tags: ["memes", "meme", "funny", "relatable", "humor", "lol", "shorts"],
     genericTitles: ["Meme", "Memes", "So relatable", "Me too"],
     meme: true,
+    memeBoard: true,
     gallery: true,
     adminOnly: true,
   },
@@ -176,6 +183,7 @@ export const DECKS: Deck[] = [
     tags: ["memes", "meme", "humor", "lustig", "relatable", "shorts"],
     genericTitles: ["Meme", "Memes", "Kennst du das?", "Voll relatable"],
     meme: true,
+    memeBoard: true,
     gallery: true,
     adminOnly: true,
   },
@@ -189,6 +197,7 @@ export const DECKS: Deck[] = [
     tags: ["mèmes", "mème", "humour", "drôle", "relatable", "shorts"],
     genericTitles: ["Mème", "Mèmes", "C'est moi", "Tellement vrai"],
     meme: true,
+    memeBoard: true,
     gallery: true,
     adminOnly: true,
   },
@@ -202,6 +211,7 @@ export const DECKS: Deck[] = [
     tags: ["meme", "umorismo", "divertente", "relatable", "ironia", "shorts"],
     genericTitles: ["Meme", "Io ogni giorno", "Troppo vero", "Mi rivedo"],
     meme: true,
+    memeBoard: true,
     gallery: true,
     adminOnly: true,
   },
@@ -218,15 +228,42 @@ export const DECKS: Deck[] = [
     preFact: true,
   },
   {
-    id: "quotes-de",
-    name: "Politiker-Zitate (DE)",
-    dir: "data/quotes-de", // videos.json = [{file,title,text,author}]; pre-built mp4s shared in assets/fact-videos/
+    id: "quotes-de-1",
+    name: "Politiker-Zitate (DE) 1",
+    dir: "data/quotes-de-1", // videos.json = [{file,title,text,author}]; pre-built mp4s in assets/fact-videos/
     source: "",
     emoji: "🇩🇪",
     hashtags: "#zitate #politik #geschichte #deutschland #staatsmänner #shorts",
     tags: ["zitate", "politik", "geschichte", "deutschland", "staatsmänner", "zitat", "shorts"],
     genericTitles: ["Zitat", "Berühmtes Zitat", "Politiker-Zitat", "Worte der Geschichte"],
     adminOnly: true, // pre-built video pack — admin-only
+    grantable: true,
+    preFact: true,
+  },
+  {
+    id: "quotes-de-2",
+    name: "Politiker-Zitate (DE) 2",
+    dir: "data/quotes-de-2", // videos.json = [{file,title,text,author}]; pre-built mp4s in assets/fact-videos/
+    source: "",
+    emoji: "🇩🇪",
+    hashtags: "#zitate #politik #geschichte #deutschland #staatsmänner #shorts",
+    tags: ["zitate", "politik", "geschichte", "deutschland", "staatsmänner", "zitat", "shorts"],
+    genericTitles: ["Zitat", "Berühmtes Zitat", "Politiker-Zitat", "Worte der Geschichte"],
+    adminOnly: true, // pre-built video pack — admin-only
+    grantable: true,
+    preFact: true,
+  },
+  {
+    id: "quotes-de-3",
+    name: "Politiker-Zitate (DE) 3",
+    dir: "data/quotes-de-3", // videos.json = [{file,title,text,author}]; pre-built mp4s in assets/fact-videos/
+    source: "",
+    emoji: "🇩🇪",
+    hashtags: "#zitate #politik #geschichte #deutschland #staatsmänner #shorts",
+    tags: ["zitate", "politik", "geschichte", "deutschland", "staatsmänner", "zitat", "shorts"],
+    genericTitles: ["Zitat", "Berühmtes Zitat", "Politiker-Zitat", "Worte der Geschichte"],
+    adminOnly: true, // pre-built video pack — admin-only
+    grantable: true,
     preFact: true,
   },
   {
@@ -292,7 +329,7 @@ export function isPackDeckId(id?: string | null): boolean {
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
-  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de": "de", space: "en", "visual-riddles": "ru", "animal-superheroes": "ru", "animal-superheroes-en": "en",
+  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", space: "en", "visual-riddles": "ru", "animal-superheroes": "ru", "animal-superheroes-en": "en",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it",
 };
 export function deckLang(id: string): string {

@@ -705,11 +705,41 @@ node --input-type=module -e 'import fs from "node:fs"; const m=JSON.parse(fs.rea
 5. Если создаешь новый video pack по этому же паттерну, добавь его в `DECKS` с `preFact: true`,
    положи `videos.json`, MP4 в `assets/fact-videos/...`, и обязательно добавь сюда отдельную секцию
    с правилами создания/пополнения именно этого пака.
+6. Если этот `preFact` pack должен выдаваться обычным пользователям через `/users`, в `DECKS`
+   ставь одновременно `adminOnly: true` и `grantable: true`. Такой built-in pack появляется в
+   матрице доступов как opt-in колонка: по умолчанию скрыт, доступ открывается только галочкой
+   админа. Если оставить только `adminOnly: true`, pack останется жёстко скрытым и не будет
+   доступен для выдачи.
 
 Проверка:
 
 ```bash
 node --input-type=module -e 'import fs from "node:fs"; import path from "node:path"; for (const d of ["data/fact-videos","data/quotes-de","data/space"]) { const arr=JSON.parse(fs.readFileSync(`${d}/videos.json`,"utf8")); const missing=arr.filter(x=>!fs.existsSync(path.resolve("assets/fact-videos",x.file))).map(x=>x.file); const idxPath=`${d}/index.json`; const idx=fs.existsSync(idxPath)?JSON.parse(fs.readFileSync(idxPath,"utf8")):{total:arr.length}; console.log(d,{videos:arr.length,indexTotal:idx.total,missing:missing.slice(0,5),missingCount:missing.length}); }'
+```
+
+### `quotes-de` static quote-card expansion
+
+2026-06-21 добавлен статичный card-style batch `q244..q543` (+300 MP4) без озвучки: портрет +
+цитата + процедурная фоновая музыка. Builder:
+
+```bash
+python3 -u scripts/build-quotes-de-cards.py --count 300 --start-id 244 --fetch-wait 0.5 --max-per-author 12 --hard-max-per-author 100 --min-authors 20 --extra-candidates 80 --force
+```
+
+Что builder делает:
+- берет немецкие цитаты из de.Wikiquote, кеширует wikitext в `data/quotes-de/source-cache/wikiquote/`;
+- берет портреты через Wikidata P18 / Wikimedia Commons и по умолчанию оставляет только
+  `Public domain`, `CC0`, `No restrictions`;
+- отбраковывает markup/source artifacts, policy-risk terms и прямые violence terms;
+- генерирует музыку локальным синтезом в `data/quotes-de/music/` (нет внешнего аудио-источника);
+- рендерит карточки в `temp/quotes-de-cards/`, контакт-листы в `temp/quotes-de-contact/`;
+- пишет источники в `data/quotes-de/sources.json` и layout metrics в `data/quotes-de/layout-report.json`;
+- обновляет `data/quotes-de/videos.json`, `index.json` и MP4 в `assets/fact-videos/`.
+
+Проверка нового диапазона:
+
+```bash
+node --input-type=module -e 'import fs from "node:fs"; import path from "node:path"; const v=JSON.parse(fs.readFileSync("data/quotes-de/videos.json","utf8")); const n=v.filter(x=>{const m=x.file.match(/^q(\d+)\.mp4$/); return m && +m[1]>=244 && +m[1]<=543}); const bad=/ratten|warmer bruder|bedingungslosen gehorsam|totalen krieg|tel aviv|raus, und zwar|um die hälfte|untermensch|ausrotten|hingehören|ausländer|asyl|flüchtling|juden|israel|parasiten|schweine|vernichten|vergas|zigeuner|neger|nigger|erschieß|umbring|\btöt|totschlag|totgeschlag|todesstrafe|\brache\b|wiedervergeltung|geschossen|schossen/i; console.log({newCount:n.length, missing:n.filter(x=>!fs.existsSync(path.resolve("assets/fact-videos",x.file))).length, hits:n.filter(x=>bad.test(`${x.title}\n${x.text}`)).map(x=>x.file)});'
 ```
 
 ### ⚠️ Inhaltsrichtlinie `quotes-de` — модерация ПЕРЕД добавлением (обязательно)
@@ -739,7 +769,7 @@ node --input-type=module -e 'import fs from "node:fs"; import path from "node:pa
 Быстрый lint-страховка перед коммитом пополнения (совпадение ≠ автодроп, но требует ручного решения —
 не замена ручной проверки):
 ```bash
-grep -niE "ratten|warmer bruder|bedingungslosen gehorsam|totalen krieg|tel aviv|raus, und zwar|um die hälfte|untermensch|ausrotten|hingehören" data/quotes-de/videos.json
+grep -niE "ratten|warmer bruder|bedingungslosen gehorsam|totalen krieg|tel aviv|raus, und zwar|um die hälfte|untermensch|ausrotten|hingehören|ausländer|asyl|flüchtling|juden|israel|parasiten|schweine|vernichten|vergas|zigeuner|neger|nigger|erschieß|umbring|töt|totschlag|totgeschlag|todesstrafe|rache|wiedervergeltung|geschossen|schossen" data/quotes-de/videos.json
 ```
 
 Удалено 2026-06-20 (10): `q204` (страйк), `q150`, `q093`, `q085`, `q239`, `q039` (явные нарушения) +
@@ -897,3 +927,63 @@ node --input-type=module -e 'import fs from "node:fs"; const manifest=JSON.parse
 - End-to-end: `npx tsx src/scripts/memes-verify.ts` → рендерит по карточке из каждой деки в `/tmp/meme-verify/*.png|*.mp4` (полный путь: дека → рендер → видео + мем-бит). Глазами проверить, что текст влезает/читается, фото подходит и не содержит узнаваемых лиц/брендов.
 - Прототип раскладки/стресс длинных слов: `npx tsx src/scripts/meme-proto.ts` → `/tmp/meme-proto/`.
 - Бэкенд-правки (decks/library/render/video) → **нужен рестарт сервера**, чтобы дека стала живой.
+
+## Мем-паки (board-раскладка, 5 языков) — `memes-{ru,en,de,fr,it}` (admin-only)
+
+ВСЕ пять мем-дек `memes-*` переведены на **board-раскладку**: подпись **НАД** картинкой (плашка
+сверху + готовый реакшн-шаблон снизу), вместо прежнего Pexels-оверлея (раздел выше — историч.).
+Картинка — осмысленный мем-шаблон, подпись пишется ПОД её сюжет. Картинки ОБЩИЕ для всех языков
+(`data/memes/photos/board-<idx>.jpg`), подписи — свои, локализованные под культуру (не перевод).
+Объёмы: ~2000 на КАЖДЫЙ язык (≈24–25 подписей на шаблон; одна картинка = много мемов — норма мем-пабликов).
+Добор до объёма — delta-воркфлоу (`cap-d2-<lang>/`): агентам отдаются УЖЕ существующие подписи шаблона,
+они пишут только НОВЫЕ → дедуп в `assemble_2000.py`. Качество к «хвосту» (15-я+ подпись на картинку) тоньше.
+
+### Источник картинок
+- Папка пользователя `Генератор мемов/` — 157 реакшн-шаблонов (коты/собаки/рыцари/комиксы/абсурд).
+- **⚠️ Лицензия НЕ подтверждена** (сторонние мем-шаблоны). Поэтому дека `adminOnly`, плюс риск
+  демонетизации (статичная картинка + подпись без озвучки = «inauthentic», см. memory
+  youtube-monetization-strategy). Использовать осознанно; не выдавать за «точно чистое».
+- Каталог всех 157 с кратким описанием — `temp/meme-recheck/catalog.json` (+ `Генератор мемов/КАТАЛОГ.md`):
+  поля `desc/mood/memeUse/hasText` на картинку (сгенерированы Opus-vision по превью).
+
+### Конвейер (модель caption-workflow — **Opus**, пользователь зафиксировал; для новых прогонов спросить заново)
+1. **Превью + каталог:** `python3 temp/meme-recheck/scout2.py` → `thumbs2/` (превью с крупным `#idx`) +
+   `manifest2.json`. Описания картинок — Workflow `meme-describe` (Opus-vision) → `catalog.json`.
+2. **Отбор пула:** `python3 temp/meme-recheck/select200.py` → `selection200.json` + даунскейл исходников
+   до ≤1600px в `src-scaled/meme_src_<idx>.jpg` (12-МБ PNG иначе вешают `setContent`) + батч-файлы
+   `cap-batches/` (только `hasText=false`, без фонов-подложек). (Старый `select20.py` — для мини-теста.)
+3. **🔒 Image-safety gate (ОБЯЗАТЕЛЕН):** Workflow `meme-image-safety` (Opus-vision) судит САМУ картинку
+   (без учёта подписи, язык-независимо): дроп реальных узнаваемых людей/детей как объект насмешки,
+   18+, насилие/политика, бодишейминг, религиозная карикатура, узнаваемые персонажи/бренды. Из 97 →
+   63 safe (34 дропнуто). Безопасный пул (63 + 20 одобренных) → `safe-pool.json` + `cap-safe/batch_*.json`.
+4. **Подписи (Opus, смотрят превью):** Workflow `meme-captions-ru-bulk` — ~8 русских подписей на
+   шаблон; Workflow `meme-captions-multilang` — по 2–3 на en/de/fr/it (нативный юмор, НЕ перевод).
+   Каждая ≤110 симв, ≤2 строк (`\n`), YouTube-safe. → `assemble_captions.py` → `captions-<lang>.json`.
+5. **Тест-рендер (опц.):** `npx tsx src/scripts/memes-board-test.ts` (RU из `selection20`/`captions.json`)
+   + Workflow `meme-qa` (Opus-vision: обрезка/попадание/safe) — для проверки раскладки на выборке.
+6. **Сборка 5 дек:** `npx tsx src/scripts/memes-board-build.ts` — копирует общие
+   `data/memes/photos/board-<idx>.jpg` и пишет `data/memes-{ru,en,de,fr,it}/{cards.json,index.json}`;
+   чистит галерейные кэши; убирает временный `data/memes-board-ru`.
+
+### Раскладка и рендер
+- Шаблон `templates/meme-board.html`: белая плашка с подписью сверху (жирный sans, авто-подгон
+  бинарным поиском; плашка `flex:0 0 auto` — НЕ сжимается, поэтому текст не обрезается; `MAXH=600`,
+  чтобы картинке оставалось ≥~1050px), снизу `<img object-fit:contain>` (комиксы/реакшены НЕ кропаются),
+  низ кадра — safe-поле ~196px под UI Shorts.
+- Диспетч: флаги `meme:true` + `memeBoard:true` у деки (`decks.ts`). `meme:true` даёт мем-бит
+  (`pickMemesAudio`), `ytMeta`(title=подпись) и загрузку `cards.json` бесплатно; `memeBoard:true`
+  переключает рендер на board-ветку `renderMemeBoard` в `src/anecdotes/render.ts` (ДО ветки `meme`).
+  Картинка инлайнится через `photoDataUri(card.photoFile)` (`src/memes/photos.ts`).
+- Карточка: `{caption, photoFile, format:"board", theme, srcFile}` (как `memes-ru`, весь объект → JSON в `text`).
+
+### Пополнение / новый батч
+- Прогнать заново шаги 3→6 (или дописать в `captions-<lang>.json` строки `{idx, caption}` и `memes-board-build.ts`).
+  Перед любым caption-workflow **спросить у пользователя модель** (правило про генерацию контента пака).
+- Карточку можно дописать руками в `data/memes-<lang>/cards.json` (`{caption, photoFile:"board-<idx>.jpg", theme}`);
+  затем `resetDeckCache` или рестарт.
+
+### Проверка
+- Все 5 дек на ЖИВОМ сервере (генераторы + рендер карточки сервером):
+  `node --experimental-sqlite --import tsx src/scripts/check-deck-live.ts` → `temp/meme-recheck/deck-verify/live-memes-<lang>.jpg`.
+- Контактный лист RU-выборки — `temp/meme-recheck/contact-sheet.png`.
+- Бэкенд-правки (decks/render/photos) → **рестарт сервера**; фронт (дропдаун) → `npm run web:build`; `data/` gitignored.

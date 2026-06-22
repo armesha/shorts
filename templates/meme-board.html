@@ -1,0 +1,70 @@
+<!doctype html>
+<!-- Meme "board" card: caption BAND on top (black bold text on white), template image BELOW
+     (object-fit:contain — reaction images / comic panels are never cropped or distorted). Bottom
+     safe margin keeps the picture clear of the Shorts mobile UI. Binary-search auto-fit on the
+     caption (height-capped band + longest word must fit) — mirrors the proven anecdote/meme fit so
+     text is sized per caption and never overflows. Heavy sans covers Cyrillic+Latin. -->
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<style>
+  :root{ --cap:84px; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:1080px;height:1920px;overflow:hidden;background:#fff;}
+  #frame{position:relative;width:1080px;height:1920px;background:#fff;display:flex;flex-direction:column;
+    padding:62px 0 196px 0;
+    font-family:"Liberation Sans","DejaVu Sans","Noto Sans",Arial,sans-serif;}
+  #capwrap{flex:0 0 auto;width:1080px;padding:0 60px 32px 60px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  #cap{width:100%;text-align:center;font-weight:800;font-size:var(--cap);line-height:1.13;color:#0f0f0f;
+    word-wrap:break-word;overflow-wrap:break-word;}
+  #imgwrap{flex:1 1 auto;min-height:0;width:1080px;display:flex;align-items:center;justify-content:center;
+    border-top:2px solid #ececec;background:#fff;}
+  #imgwrap img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;}
+</style>
+</head>
+<body>
+  <div id="frame">
+    <div id="capwrap"><div id="cap">{{TEXT}}</div></div>
+    <div id="imgwrap"><img id="pic" src="{{IMG}}" alt=""></div>
+  </div>
+<script>
+  var root=document.documentElement,
+      cap=document.getElementById('cap');
+  var MAXH=600;        // max caption-content height (px) — image keeps the rest (≥~1050px)
+  var FMAX=150, FMIN=30;
+  var meas=document.createElement('span');
+  meas.style.cssText='position:absolute;visibility:hidden;white-space:nowrap;left:-9999px;top:0;';
+  document.body.appendChild(meas);
+  function setV(s){ root.style.setProperty('--cap', s+'px'); }
+  function heightFits(){ return cap.scrollHeight <= MAXH; }
+  function maxWordW(){
+    var cs=getComputedStyle(cap);
+    meas.style.fontFamily=cs.fontFamily; meas.style.fontSize=cs.fontSize;
+    meas.style.fontWeight=cs.fontWeight; meas.style.letterSpacing=cs.letterSpacing;
+    var words=(cap.innerText||'').split(/\s+/), m=0;
+    for(var i=0;i<words.length;i++){ if(!words[i]) continue; meas.textContent=words[i]; if(meas.offsetWidth>m) m=meas.offsetWidth; }
+    return m;
+  }
+  function wordFits(){ return maxWordW() <= cap.clientWidth + 1; }
+  function grow(cond){
+    var s=FMIN; setV(s); var g=0;
+    while(s<FMAX && g++<900){ setV(s+2); if(cond()) s+=2; else { setV(s); break; } }
+    g=0; while(!cond() && s>16 && g++<900){ s-=2; setV(s); }
+    return s;
+  }
+  function fit(){
+    var s=grow(function(){ return heightFits() && wordFits(); });
+    if(s<48){ var s2=grow(heightFits); if(s2>s) s=s2; } // very long word → allow wrap, stay big & legible
+    setV(s);
+    window.__fitFontPx=s; window.__fitted=true;
+  }
+  function go(){
+    var pic=document.getElementById('pic');
+    if(pic && !pic.complete){ pic.addEventListener('load', fit); pic.addEventListener('error', fit); }
+    if(document.fonts&&document.fonts.ready){ document.fonts.ready.then(fit); } else fit();
+  }
+  go();
+  setTimeout(function(){ if(!window.__fitted) fit(); }, 1800);
+</script>
+</body>
+</html>

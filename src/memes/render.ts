@@ -8,6 +8,7 @@ import { launch } from "puppeteer-core";
 import { chromePath } from "../render.ts";
 
 const TEMPLATE = resolve(process.cwd(), "templates/meme.html");
+const BOARD_TEMPLATE = resolve(process.cwd(), "templates/meme-board.html");
 const TEXTURE_DIR = resolve(process.cwd(), "assets/backgrounds");
 
 export interface MemeCard {
@@ -119,6 +120,16 @@ export function buildMemeHtml(card: MemeCard, bg: MemeBg): string {
     .replaceAll("{{SAFE_BOTTOM}}", String(b))
     .replaceAll("{{SAFE_LEFT}}", String(l))
     .replace("{{KICKER}}", esc(card.kicker || ""))
+    .replace("{{TEXT}}", textHtml(captionOf(card)));
+}
+
+/** Board layout (templates/meme-board.html): caption band on top + the template image below (raw
+ *  data-URI <img>, object-fit:contain so reaction images / comic panels are never cropped). The
+ *  caption auto-fits a height-capped band; the image keeps the rest of the 1080x1920 frame. */
+export function buildMemeBoardHtml(card: MemeCard, imgDataUri: string): string {
+  const tpl = readFileSync(BOARD_TEMPLATE, "utf8");
+  return tpl
+    .replace("{{IMG}}", imgDataUri || "")
     .replace("{{TEXT}}", textHtml(captionOf(card)));
 }
 

@@ -8,7 +8,7 @@ import {
   type Account,
   type PackSummary,
 } from "../lib/api";
-import { useDeck, deckLabel } from "../lib/deck";
+import { useDeck, buildDeckGroups } from "../lib/deck";
 import { useAuth } from "../lib/auth";
 import { useGenQueue } from "../lib/genQueue";
 import { useT } from "../lib/i18n";
@@ -68,6 +68,9 @@ export default function Studio() {
   // иначе планировщик его не выложит (постит по точному паку канала) и язык бы не совпал.
   const accountSources = (a: Account) => (a.sourceDecks?.length ? a.sourceDecks : [a.lang]);
   const saveAccounts = accounts.filter((a) => accountSources(a).includes(deck));
+
+  // Единый пикер: встроенные деки + кастомные паки в одном списке, сгруппированы только по языку.
+  const deckGroups = buildDeckGroups(gens, packs, { requireTotal: true });
 
   useEffect(() => {
     apiClient.generators().then(setGens).catch(() => {});
@@ -232,22 +235,16 @@ export default function Studio() {
                     title={t("studio.deckSelectTitle")}
                   >
                     {gens.length === 0 && <option value={deck}>{t("common.loading")}</option>}
-                    {gens.filter((x) => x.total > 0).map((x) => (
-                      <option key={x.id} value={x.id}>
-                        {showPackKind ? `[${x.preFact ? t("packKind.video") : t("packKind.text")}] ` : ""}
-                        {deckLabel(x.id, x.name)}
-                      </option>
-                    ))}
-                    {packs.length > 0 && (
-                      <optgroup label={user?.role === "admin" ? t("studio.customPacks") : t("studio.myPacks")}>
-                        {packs.map((p) => (
-                          <option key={p.id} value={`pack:${p.id}`}>
-                            {showPackKind ? `[${t("packKind.text")}] ` : ""}
-                            {p.name} ({t("studio.packSuffix")})
+                    {deckGroups.map((grp) => (
+                      <optgroup key={grp.key} label={grp.title}>
+                        {grp.items.map((it) => (
+                          <option key={it.id} value={it.id}>
+                            {showPackKind ? `[${it.video ? t("packKind.video") : t("packKind.text")}] ` : ""}
+                            {it.label}
                           </option>
                         ))}
                       </optgroup>
-                    )}
+                    ))}
                   </select>
                   {isPack ? (
                     <div className="text-sm text-base-content/60 mt-1 flex flex-wrap items-center gap-1.5">

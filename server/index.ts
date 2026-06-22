@@ -787,14 +787,29 @@ function rejectIfNotConnected(reply: Replyish, acc: Account): boolean {
 }
 
 
-// True if the user may use a deck (pack): admins always; admin-only packs never for non-admins;
-// otherwise unless the deck is hidden for them.
+function isGrantableBuiltinDeck(deck: (typeof DECKS)[number]): boolean {
+  return !!(deck.adminOnly && deck.grantable);
+}
+
+function isGrantableBuiltinDeckId(deckId: string): boolean {
+  const deck = DECKS.find((d) => d.id === deckId);
+  return !!deck && isGrantableBuiltinDeck(deck);
+}
+
+function builtinDeckVisibleForUser(userId: number, deck: (typeof DECKS)[number]): boolean {
+  if (db.getUserById(userId)?.role === "admin") return true;
+  if (deck.adminOnly) return isGrantableBuiltinDeck(deck) && db.isDeckGrantedFor(userId, deck.id);
+  return !db.isDeckHiddenFor(userId, deck.id);
+}
+
+// True if the user may use a deck (pack): admins always; custom packs by owner/grant;
+// grantable admin-only built-ins by explicit admin grant; normal built-ins unless hidden.
 function deckAllowed(req: unknown, deckId: string): boolean {
   if (isAdminReq(req)) return true;
   // Кастомные паки: доступ по владению/гранту (getPack применяет canAccess), а не по hidden.
   if (isPackDeckId(deckId)) return getPack(deckId.slice(5), uid(req), false) !== null;
-  if (getDeck(deckId).adminOnly) return false;
-  return !db.isDeckHiddenFor(uid(req), deckId);
+  const deck = DECKS.find((d) => d.id === deckId);
+  return !!deck && builtinDeckVisibleForUser(uid(req), deck);
 }
 
 function cleanDeckIds(ids: unknown): string[] {
@@ -1097,7 +1112,7 @@ app.post("/api/admin/users", async (req, reply) => {
   const u = db.createUser({ username, passHash: hashPassword(password), role });
   // Optionally hide some packs for the new user from the start (admins are never restricted).
   if (role !== "admin" && Array.isArray(body.hidden)) {
-    const valid = body.hidden.filter((id) => DECKS.some((d) => d.id === id));
+    const valid = body.hidden.filter((id) => DECKS.some((d) => d.id === id && !isGrantableBuiltinDeck(d)));
     if (valid.length) db.setHiddenDecks(u.id, valid);
   }
   return { id: u.id, username: u.username, role: u.role };
@@ -1192,9 +1207,14 @@ app.get("/api/admin/decks", async (req, reply) => {
   if (!requireAdmin(req, reply)) return;
   // встроенные деки + кастомные паки (всегда показываем паки колонками; id = "pack:<id>")
   return [
-    // adminOnly built-in decks (e.g. fact-en, quotes-de, christian) are NOT user-grantable —
-    // the adminOnly flag hard-hides them from non-admins, so they don't belong in the per-user matrix.
-    ...DECKS.filter((d) => !d.adminOnly).map((d) => ({ id: d.id, name: d.name, pack: false })),
+    // adminOnly built-in decks are hidden unless explicitly marked grantable. Grantable admin-only
+    // decks use the same opt-in checkbox flow as custom packs, but keep their static DECKS entry.
+    ...DECKS.filter((d) => !d.adminOnly || d.grantable).map((d) => ({
+      id: d.id,
+      name: d.name,
+      pack: false,
+      grantable: !!(d.adminOnly && d.grantable),
+    })),
     ...listAllPacks().map((p) => ({ id: `pack:${p.id}`, name: p.name, pack: true })),
   ];
 });
@@ -1202,6 +1222,7 @@ app.get("/api/admin/decks", async (req, reply) => {
 app.get("/api/admin/user-decks", async (req, reply) => {
   if (!requireAdmin(req, reply)) return;
   const hidden = db.hiddenDecksByUser();
+  const grantedBuiltins = db.grantedDecksByUser();
   const used = db.usedDecksByUser();
   const posted = db.postedByUserDeck();
   const allPacks = listAllPacks();
@@ -1219,9 +1240,12 @@ app.get("/api/admin/user-decks", async (req, reply) => {
       username: u.username,
       role: u.role,
       hidden: hidden[u.id] ?? [],
-      grantedPacks: allPacks
-        .filter((p) => u.role === "admin" || p.owners.includes(u.id) || p.grants.includes(u.id))
-        .map((p) => `pack:${p.id}`),
+      grantedPacks: [
+        ...(grantedBuiltins[u.id] ?? []),
+        ...allPacks
+          .filter((p) => u.role === "admin" || p.owners.includes(u.id) || p.grants.includes(u.id))
+          .map((p) => `pack:${p.id}`),
+      ],
       used: used[u.id] ?? [],
       scheduled: db.scheduleSlotsForUser(u.id), // posts/day planned across all their channels
       library: db.countVideosByUser(u.id), // videos queued in their libraries
@@ -1237,13 +1261,18 @@ app.put("/api/admin/users/:id/decks", async (req, reply) => {
   const target = db.getUserById(id);
   if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
   const body = (req.body as { hidden?: string[]; grants?: string[] }) ?? {};
-  const valid = Array.isArray(body.hidden) ? body.hidden.filter((d) => DECKS.some((x) => x.id === d)) : [];
+  const valid = Array.isArray(body.hidden)
+    ? body.hidden.filter((d) => DECKS.some((x) => x.id === d && !isGrantableBuiltinDeck(x)))
+    : [];
   const finalHidden = target.role === "admin" ? [] : valid;
   db.setHiddenDecks(id, finalHidden);
+  const grants = Array.isArray(body.grants) ? body.grants.map((g) => String(g || "").trim()).filter(Boolean) : [];
+  const builtInGrants = grants.filter((deckId) => isGrantableBuiltinDeckId(deckId));
+  db.setGrantedDecks(id, target.role === "admin" ? [] : builtInGrants);
   // Кастомные паки (opt-in): выдать/снять доступ этому юзеру по body.grants (id вида "pack:<id>").
   // Владельца не трогаем; админ и так видит всё.
   if (target.role !== "admin") {
-    const want = new Set((Array.isArray(body.grants) ? body.grants : []).map((g) => g.replace(/^pack:/, "")));
+    const want = new Set(grants.filter((g) => g.startsWith("pack:")).map((g) => g.replace(/^pack:/, "")));
     for (const p of listAllPacks()) {
       if (p.owners.includes(id)) continue; // владельцу грант не нужен
       setGrant(p.id, id, want.has(p.id));
@@ -1282,11 +1311,10 @@ app.get("/api/admin/users/:id/pack-usage", async (req, reply) => {
   if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
   const usedKeys = db.usedAnecdoteKeys(id);
   const targetIsAdmin = target.role === "admin";
-  const hidden = targetIsAdmin ? new Set<string>() : new Set(db.hiddenDecksFor(id));
   const items: { id: string; name: string; pack: boolean; total: number; used: number; available: number }[] = [];
   // Встроенные деки: видимые юзеру ИЛИ уже использованные (чтобы ничего сбрасываемого не пряталось).
   for (const d of DECKS) {
-    const visible = (targetIsAdmin || !d.adminOnly) && !hidden.has(d.id);
+    const visible = targetIsAdmin || builtinDeckVisibleForUser(id, d);
     const s = libraryStats(d.id, usedKeys);
     if (!visible && s.used === 0) continue;
     items.push({ id: d.id, name: d.name, pack: false, total: s.total, used: s.used, available: s.available });
@@ -1326,10 +1354,7 @@ app.put("/api/admin/packs/:id/owners", async (req, reply) => {
 // Admins may pass ?userId=<id> to view another user's packs.
 // Decks a user may see/use: per-user not hidden AND (admin OR not an admin-only deck).
 function visibleDecksForUser(userId: number) {
-  const u = db.getUserById(userId);
-  const isAdminUser = u?.role === "admin";
-  const hidden = isAdminUser ? new Set<string>() : new Set(db.hiddenDecksFor(userId));
-  return DECKS.filter((d) => (isAdminUser || !d.adminOnly) && !hidden.has(d.id));
+  return DECKS.filter((d) => builtinDeckVisibleForUser(userId, d));
 }
 
 app.get("/api/my-decks", async (req, reply) => {
@@ -2142,10 +2167,11 @@ async function buildLibraryVideo(input: {
   profession?: string;
 }) {
   const deck = getDeck(input.deck);
-  // Backstop (covers save, batch, and the gen-queue worker): never build an admin-only or hidden deck.
+  const builtInDeck = DECKS.find((d) => d.id === deck.id);
+  // Backstop (covers save, batch, and the gen-queue worker): never build a deck the user cannot access.
   if (
     db.getUserById(input.userId)?.role !== "admin" &&
-    (deck.adminOnly || db.isDeckHiddenFor(input.userId, deck.id))
+    (!builtInDeck || !builtinDeckVisibleForUser(input.userId, builtInDeck))
   )
     throw new Error("Этот пак вам недоступен");
   const title = input.title || pickGenericTitle(deck);
@@ -2316,6 +2342,8 @@ initGenQueue(async (job) => {
     }
     const channelDeck = DECKS.find((d) => d.id === sourceDeck);
     if (!channelDeck) throw new Error(`У канала язык «${sourceDeck}» без пака`);
+    if (db.getUserById(ownerId)?.role !== "admin" && !builtinDeckVisibleForUser(ownerId, channelDeck))
+      throw new Error("Этот пак вам недоступен");
     for (;;) {
       const a = randomAnecdote(channelDeck.id, seen);
       if (!a) return "exhausted"; // deck has no unused cards left
@@ -2523,11 +2551,7 @@ app.post("/api/videos/:id/post-now", async (req, reply) => {
 // ---- Generators / Studio (per-user used counter) ----
 app.get("/api/generators", async (req) => {
   const used = db.usedAnecdoteKeys(uid(req));
-  // Hide packs the admin has turned off for this user (admins always see all).
-  const isAdmin = db.getUserById(uid(req))?.role === "admin";
-  const hidden = isAdmin ? new Set<string>() : new Set(db.hiddenDecksFor(uid(req)));
-  // Admin-only packs (e.g. new decks) are never exposed to non-admins.
-  const base = DECKS.filter((d) => !hidden.has(d.id) && (isAdmin || !d.adminOnly)).map((d) => {
+  const base = visibleDecksForUser(uid(req)).map((d) => {
     const s = libraryStats(d.id, used);
     return {
       id: d.id,

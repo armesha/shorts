@@ -59,6 +59,23 @@ unattended, managed from a web dashboard. Architecture & research: `docs/STACK.m
 - Не использовать shell-pipe в `pgrep` вида `pgrep -af "node|tsx|..."`: это не regex для процессов,
   а shell pipe. Для диагностики достаточно `ss -ltnp sport = :8080`, затем точечный `ps -fp <pid>`.
 
+### Caddy-«дверь» перед приложением — страница обслуживания вместо 502 (MANDATORY знать)
+- cloudflared теперь ведёт `shareboard.live` + `www` → **Caddy** `http://127.0.0.1:8090` → приложение
+  `:8080`. (`code.shareboard.live` по-прежнему напрямую на `:8443` — не трогать.) Пока приложение
+  перезапускается, Caddy отдаёт страницу **«Обновляемся»** (HTTP 503 + `Retry-After`, авто-рефреш
+  каждые 15с) вместо сырого Cloudflare «502 Bad Gateway».
+- **Приложение осталось на :8080 — весь регламент рестарта выше без изменений.** Рестарт app теперь
+  просто показывает заглушку, а не ошибку; cloudflared трогать НЕ нужно.
+- Конфиг Caddy: `/etc/caddy/Caddyfile` (бэкап дефолта — `/etc/caddy/Caddyfile.orig`). Caddy = systemd
+  сервис `caddy` (enabled, слушает loopback `127.0.0.1:8090`, admin на `127.0.0.1:2019`).
+- Поменять текст/вид страницы: править `/etc/caddy/Caddyfile`, затем
+  `sudo caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile` и
+  `sudo systemctl reload caddy` (graceful, тоннель не рвётся). ВАЖНО: адрес сайта — `http://:8090`
+  (с `http://`, иначе Caddy поднимет HTTPS и cloudflared получит 502; и `bind 127.0.0.1` для loopback);
+  host НЕ фиксировать (cloudflared шлёт `Host: shareboard.live`).
+- cloudflared-ingress: `/etc/cloudflared/config.yml` (бэкап до Caddy — `config.yml.bak.pre-caddy`);
+  флаг `--config` у cloudflared глобальный, ДО подкоманды.
+
 ## 🚧 Другие проекты на машине — НЕ трогай `casino` (MANDATORY)
 - На этой машине живёт ОТДЕЛЬНЫЙ, несвязанный проект **`casino`** (`~/Documents/casino`); над ним
   работает другой агент. **Ты занимаешься ТОЛЬКО `shorts`.**

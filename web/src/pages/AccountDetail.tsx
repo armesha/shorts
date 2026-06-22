@@ -10,7 +10,7 @@ import { useGenQueue } from "../lib/genQueue";
 import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
 import { BrandIcon } from "../components/BrandIcon";
-import { BUILTIN_DECKS, CONTENT_LANGS, DECK_LANG, langTag } from "../lib/deck";
+import { BUILTIN_DECKS, CONTENT_LANGS, DECK_LANG, langTag, buildDeckGroups } from "../lib/deck";
 import { cleanDisplayText } from "../lib/text";
 import { formatDateTime } from "../lib/format";
 
@@ -476,41 +476,30 @@ export default function AccountDetail() {
   };
   const savedSources = account ? (account.sourceDecks?.length ? account.sourceDecks : [account.lang]) : selectedSources;
   const sourcesDirty = savedSources.join("\u001f") !== selectedSources.join("\u001f");
-  const deckOptions = (excludeSelected = false) => (
-    <>
-      {visibleLangs.length > 0 && (
-        <optgroup label={t("account.builtinPacks")}>
-          {visibleLangs.filter(({ id: code }) => !excludeSelected || !selectedSources.includes(code)).map(({ id: code, label }) => (
-            <option key={code} value={code}>
-              {/* полное имя пака (как в Студии: «Русские анекдоты» и т.п.), а не язык */}
-              {showPackKind ? `[${genById(code)?.preFact ? t("packKind.video") : t("packKind.text")}] ` : ""}
-              {genById(code)?.name || label} · {langTag(DECK_LANG[code] || code)}
-            </option>
-          ))}
-        </optgroup>
-      )}
-      {(packs.length > 0 || selectedSources.some((x) => x.startsWith("pack:") && !packIds.has(x))) && (
-        <optgroup label={isAdmin ? t("account.customPacks") : t("account.myPacks")}>
-          {packs.filter((p) => !excludeSelected || !selectedSources.includes(`pack:${p.id}`)).map((p) => (
-            <option key={p.id} value={`pack:${p.id}`}>
-              {showPackKind ? `[${t("packKind.text")}] ` : ""}
-              {p.name} · {langTag(p.lang)}
-            </option>
-          ))}
-          {selectedSources
-            .filter((x) => x.startsWith("pack:") && !packIds.has(x) && (!excludeSelected || !selectedSources.includes(x)))
-            .map((x) => (
-              <option key={x} value={x}>{x.slice(5)} {t("account.noAccess")}</option>
-            ))}
-        </optgroup>
-      )}
-    </>
-  );
+  // Единый пикер источников: встроенные деки + кастомные паки, сгруппированы только по языку.
+  // Общий хелпер со Студией (web/src/lib/deck.ts).
+  const deckOptions = (excludeSelected = false) => {
+    const exclude = excludeSelected ? new Set(selectedSources) : undefined;
+    const extraPacks = selectedSources
+      .filter((x) => x.startsWith("pack:") && !packIds.has(x))
+      .map((x) => ({ id: x, label: `${x.slice(5)} ${t("account.noAccess")}`, lang: "" }));
+    const builtinGens = visibleLangs.map(({ id, label }) => genById(id) ?? { id, name: label });
+    const groups = buildDeckGroups(builtinGens, packs, { excludeIds: exclude, extraPacks });
+    return groups.map((grp) => (
+      <optgroup key={grp.key} label={grp.title}>
+        {grp.items.map((it) => (
+          <option key={it.id} value={it.id}>
+            {showPackKind ? `[${it.video ? t("packKind.video") : t("packKind.text")}] ` : ""}
+            {it.label}
+          </option>
+        ))}
+      </optgroup>
+    ));
+  };
   const libraryDeckCounts = videos.reduce((map, v) => map.set(v.deck, (map.get(v.deck) || 0) + 1), new Map<string, number>());
   const slotDeckOptions = selectedSources.filter((deckId) => (libraryDeckCounts.get(deckId) || 0) > 0);
 
   // Per-channel cap: ≤20 slots/day; per-user aggregate cap stays separate.
-  const isAdmin = user?.role === "admin";
   const dayUsed = otherSlots + times.length; // posts/day across all the user's channels
   const scheduleRemaining = Math.max(0, USER_DAILY_SLOT_CAP - otherSlots); // max slots this channel may hold
   const takenMinutes = new Set(otherTimes.map(toMin)); // minutes busy on other channels → generator avoids them

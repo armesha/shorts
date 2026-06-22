@@ -112,3 +112,12 @@ export function photoCss(file?: string | null): string | null {
   const buf = readFileSync(abs);
   return `url('data:${MIME(file)};base64,${buf.toString("base64")}') center/cover no-repeat`;
 }
+
+/** Inline a photo file (by name) as a RAW data-URI (for an <img src> / board layout), or null if missing. */
+export function photoDataUri(file?: string | null): string | null {
+  if (!file) return null;
+  const abs = resolve(PHOTOS_DIR, file);
+  if (!existsSync(abs)) return null;
+  const buf = readFileSync(abs);
+  return `data:${MIME(file)};base64,${buf.toString("base64")}`;
+}

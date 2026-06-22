@@ -63,6 +63,10 @@ function AdminUsers() {
   const loadUsers = () => apiClient.adminUsers().then(setUsers).catch(() => {});
   const loadMatrix = () => apiClient.adminUserDecks().then(setRows).catch(() => {});
   const loadPacks = () => apiClient.packs().then(setPacks).catch(() => {});
+  const grantById = (deckId: string): boolean => {
+    const deck = decks.find((d) => d.id === deckId);
+    return !!deck?.pack || !!deck?.grantable || deckId.startsWith("pack:");
+  };
   useEffect(() => {
     loadUsers();
     loadMatrix();
@@ -97,9 +101,9 @@ function AdminUsers() {
     setCreated("");
     setBusy(true);
     try {
-      // встроенные паки — opt-out (скрываем неотмеченные); кастомные паки — opt-in (грантим отмеченные)
-      const hidden = role === "admin" ? [] : decks.filter((d) => !d.pack && !newVisible.has(d.id)).map((d) => d.id);
-      const grants = role === "admin" ? [] : decks.filter((d) => d.pack && newVisible.has(d.id)).map((d) => d.id);
+      // обычные встроенные паки — opt-out; кастомные и grantable admin-only built-in паки — opt-in.
+      const hidden = role === "admin" ? [] : decks.filter((d) => !d.pack && !d.grantable && !newVisible.has(d.id)).map((d) => d.id);
+      const grants = role === "admin" ? [] : decks.filter((d) => (d.pack || d.grantable) && newVisible.has(d.id)).map((d) => d.id);
       const u = await apiClient.createUser(username.trim(), password, role, hidden);
       if (grants.length) await apiClient.setUserDecks(u.id, hidden, grants);
       setCreated(t("users.created", { name: u.username, role: u.role === "admin" ? t("users.roleAdmin") : t("users.roleUser") }));
@@ -119,13 +123,13 @@ function AdminUsers() {
   // Toggle one pack's visibility for a user (checked = visible). Optimistic; reverts on failure.
   async function toggle(row: UserDeckRow, deckId: string, visible: boolean) {
     if (row.role === "admin") return;
-    const isPack = deckId.startsWith("pack:"); // паки — opt-in (гранты); встроенные — opt-out (hidden)
-    const nextHidden = isPack
+    const byGrant = grantById(deckId); // кастомные + grantable built-in — opt-in; обычные встроенные — opt-out
+    const nextHidden = byGrant
       ? row.hidden
       : visible
         ? row.hidden.filter((d) => d !== deckId)
         : [...new Set([...row.hidden, deckId])];
-    const nextGrants = isPack
+    const nextGrants = byGrant
       ? visible
         ? [...new Set([...row.grantedPacks, deckId])]
         : row.grantedPacks.filter((d) => d !== deckId)
@@ -497,7 +501,7 @@ function AdminUsers() {
                               {t("users.cellAll")}
                             </td>
                           );
-                        const visible = d.pack ? row.grantedPacks.includes(d.id) : !row.hidden.includes(d.id);
+                        const visible = d.pack || d.grantable ? row.grantedPacks.includes(d.id) : !row.hidden.includes(d.id);
                         const used = row.used.includes(d.id);
                         const st = row.deckStats?.[d.id];
                         return (

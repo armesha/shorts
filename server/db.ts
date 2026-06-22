@@ -534,6 +534,11 @@ export function openDb(path: string) {
       deck_id TEXT NOT NULL,
       PRIMARY KEY (user_id, deck_id)
     );
+    CREATE TABLE IF NOT EXISTS user_granted_decks (
+      user_id INTEGER NOT NULL,
+      deck_id TEXT NOT NULL,
+      PRIMARY KEY (user_id, deck_id)
+    );
     CREATE TABLE IF NOT EXISTS password_resets (
       user_id INTEGER PRIMARY KEY,
       code_hash TEXT NOT NULL,
@@ -1241,6 +1246,19 @@ export function openDb(path: string) {
     isDeckHiddenFor(userId: number, deckId: string): boolean {
       return !!db.prepare("SELECT 1 FROM user_hidden_decks WHERE user_id = ? AND deck_id = ?").get(userId, deckId);
     },
+    grantedDecksFor(userId: number): string[] {
+      return (db.prepare("SELECT deck_id FROM user_granted_decks WHERE user_id = ?").all(userId) as Row[]).map(
+        (r) => r.deck_id as string,
+      );
+    },
+    isDeckGrantedFor(userId: number, deckId: string): boolean {
+      return !!db.prepare("SELECT 1 FROM user_granted_decks WHERE user_id = ? AND deck_id = ?").get(userId, deckId);
+    },
+    setGrantedDecks(userId: number, deckIds: string[]): void {
+      db.prepare("DELETE FROM user_granted_decks WHERE user_id = ?").run(userId);
+      const ins = db.prepare("INSERT OR IGNORE INTO user_granted_decks (user_id, deck_id) VALUES (?, ?)");
+      for (const id of [...new Set(deckIds)]) if (id) ins.run(userId, id);
+    },
     // Replace the user's hidden-deck set with exactly `deckIds`.
     setHiddenDecks(userId: number, deckIds: string[]): void {
       db.prepare("DELETE FROM user_hidden_decks WHERE user_id = ?").run(userId);
@@ -1251,6 +1269,13 @@ export function openDb(path: string) {
     hiddenDecksByUser(): Record<number, string[]> {
       const out: Record<number, string[]> = {};
       for (const r of db.prepare("SELECT user_id, deck_id FROM user_hidden_decks").all() as Row[]) {
+        (out[r.user_id as number] ??= []).push(r.deck_id as string);
+      }
+      return out;
+    },
+    grantedDecksByUser(): Record<number, string[]> {
+      const out: Record<number, string[]> = {};
+      for (const r of db.prepare("SELECT user_id, deck_id FROM user_granted_decks").all() as Row[]) {
         (out[r.user_id as number] ??= []).push(r.deck_id as string);
       }
       return out;
