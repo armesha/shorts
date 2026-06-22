@@ -19,6 +19,7 @@ data/tips/_*.json
 
 # huge source corpora — not needed at runtime (packs are pre-built & shipped)
 Русские анекдоты/
+Генератор мемов/
 corpora/
 
 # pre-built video packs (decks "fact-en", "quotes-de", "space") — big mp4 pool + generated manifests, kept local
@@ -36,7 +37,8 @@ images/
 temp/
 .playwright-mcp/
 
-# strike-audit artifacts & deck backups — contain the offending text, NEVER commit
+# one-off audit artifacts & legacy experiments — collected under audits/ to declutter root; NEVER commit
+/audits/
 strike-audit-*.md
 strike-audit-*.json
 *.bak-strike-*
