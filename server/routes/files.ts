@@ -1,0 +1,103 @@
+// Output-file streamer: GET /files/* behind an authz gate (output files are user data — never expose
+// data/output directly). The path/range/content-type helpers live here (they are only used by this
+// route). Handlers + helpers moved VERBATIM from index.ts.
+import type { FastifyInstance } from "fastify";
+import { createReadStream, statSync } from "node:fs";
+import { extname, isAbsolute, relative, resolve } from "node:path";
+import type { Db } from "../db.ts";
+import { getPack } from "../../src/packs/store.ts";
+import { getCookie, SESSION_COOKIE } from "../infra/auth-session.ts";
+import { rememberedOutputOwner } from "../infra/output-access.ts";
+import type { RouteDeps } from "./deps.ts";
+
+export function registerFilesRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
+  const { validSessionUser } = deps.auth;
+  const OUTPUT_ROOT = resolve(process.cwd(), deps.outputDir);
+
+  function cleanOutputRel(raw: string): string | null {
+    let rel = raw.replace(/^\/+/, "");
+    try {
+      rel = decodeURIComponent(rel);
+    } catch {
+      return null;
+    }
+    if (!rel || isAbsolute(rel) || rel.includes("\\")) return null;
+    const parts = rel.split("/");
+    if (parts.some((part) => !part || part === "." || part === "..")) return null;
+    const abs = resolve(OUTPUT_ROOT, rel);
+    const back = relative(OUTPUT_ROOT, abs);
+    if (!back || back.startsWith("..") || isAbsolute(back)) return null;
+    return rel;
+  }
+
+  function outputContentType(rel: string): string {
+    const ext = extname(rel).toLowerCase();
+    if (ext === ".mp4") return "video/mp4";
+    if (ext === ".png") return "image/png";
+    if (ext === ".jpg" || ext === ".jpeg") return "image/jpeg";
+    if (ext === ".webp") return "image/webp";
+    if (ext === ".json") return "application/json; charset=utf-8";
+    return "application/octet-stream";
+  }
+
+  function parseRangeHeader(raw: string, size: number): { start: number; end: number } | null {
+    const m = /^bytes=(\d*)-(\d*)$/.exec(raw.trim());
+    if (!m) return null;
+    if (!m[1] && !m[2]) return null;
+    if (!m[1]) {
+      const suffix = Number(m[2]);
+      if (!Number.isFinite(suffix) || suffix <= 0) return null;
+      return { start: Math.max(0, size - suffix), end: size - 1 };
+    }
+    const start = Number(m[1]);
+    const end = m[2] ? Number(m[2]) : size - 1;
+    if (!Number.isFinite(start) || !Number.isFinite(end) || start < 0 || end < start || start >= size) return null;
+    return { start, end: Math.min(end, size - 1) };
+  }
+
+  function canReadOutputFile(rel: string, user: { id: number; role: string }): boolean {
+    if (user.role === "admin") return true;
+    const rememberedOwner = rememberedOutputOwner(rel);
+    if (rememberedOwner != null) return rememberedOwner === user.id;
+    if (rel.startsWith("preview/")) return true;
+    if (rel.startsWith("avatars/")) return true;
+    if (rel.startsWith("admin-demos/")) return false;
+    const packPreview = /^packs\/(.+)-\d+\.png$/i.exec(rel);
+    if (packPreview) return getPack(packPreview[1], user.id, false) !== null;
+    if (rel.startsWith("library/")) return db.findOutputFileOwner(rel)?.userId === user.id;
+    return false;
+  }
+
+  // Output files are user data. Serve them through an authz gate instead of exposing data/output.
+  app.get("/files/*", async (req, reply) => {
+    const user = validSessionUser(getCookie(req, SESSION_COOKIE));
+    if (!user) return reply.code(401).send({ error: "Не авторизован" });
+    const rel = cleanOutputRel(String((req.params as Record<string, string>)["*"] ?? ""));
+    if (!rel || !canReadOutputFile(rel, user)) return reply.code(404).send({ error: "not found" });
+    const abs = resolve(OUTPUT_ROOT, rel);
+    let st: ReturnType<typeof statSync>;
+    try {
+      st = statSync(abs);
+    } catch {
+      return reply.code(404).send({ error: "not found" });
+    }
+    if (!st.isFile()) return reply.code(404).send({ error: "not found" });
+
+    const contentType = outputContentType(rel);
+    reply.header("Content-Type", contentType);
+    reply.header("Accept-Ranges", "bytes");
+    const rangeRaw = req.headers.range;
+    const range = typeof rangeRaw === "string" ? parseRangeHeader(rangeRaw, st.size) : null;
+    if (rangeRaw && !range) {
+      reply.header("Content-Range", `bytes */${st.size}`);
+      return reply.code(416).send();
+    }
+    if (range) {
+      reply.header("Content-Range", `bytes ${range.start}-${range.end}/${st.size}`);
+      reply.header("Content-Length", String(range.end - range.start + 1));
+      return reply.code(206).send(createReadStream(abs, { start: range.start, end: range.end }));
+    }
+    reply.header("Content-Length", String(st.size));
+    return reply.send(createReadStream(abs));
+  });
+}

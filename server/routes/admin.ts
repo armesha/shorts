@@ -1,0 +1,352 @@
+// Admin routes: user management, ElevenLabs key limits, per-user pack/deck visibility matrix + reset,
+// pack-owner assignment, admin/user analytics snapshots, low-deck report, and /api/my-decks.
+// Handlers moved VERBATIM from index.ts.
+import type { FastifyInstance } from "fastify";
+import type { Db } from "../db.ts";
+import { hashPassword, newSessionToken, SESSION_TTL_DAYS } from "../auth.ts";
+import { DECKS } from "../../src/anecdotes/decks.ts";
+import { listAllPacks, setGrant, setPackOwners, getPack, canAccess } from "../../src/packs/store.ts";
+import { libraryStats, deckAnecdoteKeys } from "../../src/anecdotes/library.ts";
+import { packCardKey } from "../services/pack-gen.ts";
+import { readElevenLabsKeys, fetchElevenLabsLimit } from "../services/elevenlabs-limits.ts";
+import { buildAdminAnalytics } from "../services/admin-analytics.ts";
+import {
+  DAY_MS,
+  SESSION_COOKIE,
+  getCookie,
+  sessionCookieHeader,
+  adminSessionCookieHeader,
+  uid,
+} from "../infra/auth-session.ts";
+import type { RouteDeps } from "./deps.ts";
+
+export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
+  const { requireAdmin } = deps.auth;
+  const { emitNotificationChange } = deps.notifier;
+  const { isGrantableBuiltinDeck, isGrantableBuiltinDeckId, builtinDeckVisibleForUser, visibleDecksForUser } =
+    deps.deckAccess;
+
+  // ---- Admin: user management (admin creates accounts for friends) ----
+  app.get("/api/admin/users", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
+    return db.listUsers().map((u) => ({
+      id: u.id,
+      username: u.username,
+      role: u.role,
+      locked: !!(u.lockedUntil && new Date(u.lockedUntil).getTime() > Date.now()),
+      createdAt: u.createdAt,
+    }));
+  });
+
+  app.post("/api/admin/users", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
+    const body = (req.body as { username?: string; password?: string; role?: string; hidden?: string[] }) ?? {};
+    const username = (body.username ?? "").trim();
+    const password = body.password ?? "";
+    const role = body.role === "admin" ? "admin" : "user";
+    if (!username || password.length < 6)
+      return reply.code(400).send({ error: "Логин обязателен, пароль ≥ 6 символов" });
+    if (db.getUserByUsername(username)) return reply.code(409).send({ error: "Такой логин уже есть" });
+    const u = db.createUser({ username, passHash: hashPassword(password), role });
+    // Optionally hide some packs for the new user from the start (admins are never restricted).
+    if (role !== "admin" && Array.isArray(body.hidden)) {
+      const valid = body.hidden.filter((id) => DECKS.some((d) => d.id === id && !isGrantableBuiltinDeck(d)));
+      if (valid.length) db.setHiddenDecks(u.id, valid);
+    }
+    return { id: u.id, username: u.username, role: u.role };
+  });
+
+  app.post("/api/admin/users/:id/impersonate", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
+    const targetId = Number((req.params as { id: string }).id);
+    const target = db.getUserById(targetId);
+    if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
+    if (target.id === uid(req)) return reply.code(400).send({ error: "Нельзя войти под самим собой" });
+    const adminToken = getCookie(req, SESSION_COOKIE);
+    if (!adminToken) return reply.code(401).send({ error: "Админская сессия не найдена" });
+    const targetToken = newSessionToken();
+    db.createSession(targetToken, target.id, new Date(Date.now() + SESSION_TTL_DAYS * DAY_MS).toISOString());
+    reply.header("Set-Cookie", [sessionCookieHeader(targetToken), adminSessionCookieHeader(adminToken)]);
+    const admin = db.getUserById(uid(req))!;
+    return {
+      id: target.id,
+      username: target.username,
+      role: target.role,
+      impersonator: { id: admin.id, username: admin.username, role: admin.role },
+    };
+  });
+
+  app.post("/api/admin/users/:id/notifications", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
+    const targetId = Number((req.params as { id: string }).id);
+    const target = db.getUserById(targetId);
+    if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
+    const body =
+      (req.body as {
+        severity?: string;
+        title?: string;
+        message?: string;
+        solution?: string;
+        actionUrl?: string;
+      }) ?? {};
+    const message = (body.message ?? "").trim();
+    if (!message) return reply.code(400).send({ error: "Текст уведомления обязателен" });
+    const title = (body.title ?? "").trim() || "Сообщение от администратора";
+    const severity = ["info", "warning", "error"].includes(body.severity ?? "") ? body.severity! : "info";
+    const admin = db.getUserById(uid(req))!;
+    const notification = db.upsertNotification({
+      userId: target.id,
+      accountId: null,
+      severity,
+      category: "admin_message",
+      title,
+      message,
+      solution: (body.solution ?? "").trim() || null,
+      actionUrl: (body.actionUrl ?? "").trim() || null,
+      dedupeKey: `admin-message:${target.id}:${Date.now()}:${newSessionToken().slice(0, 12)}`,
+      source: "admin",
+      context: `admin notification by ${admin.username}#${admin.id}`,
+    });
+    emitNotificationChange(notification.userId);
+    return notification;
+  });
+
+  app.get("/api/admin/limits", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
+    const keys = readElevenLabsKeys();
+    const rows = await Promise.all(keys.map((key, index) => fetchElevenLabsLimit(key, index)));
+    const numericRows = rows.filter((row) => row.characterCount != null && row.characterLimit != null);
+    const characterCount = numericRows.reduce((sum, row) => sum + (row.characterCount ?? 0), 0);
+    const characterLimit = numericRows.reduce((sum, row) => sum + (row.characterLimit ?? 0), 0);
+    const remaining = numericRows.reduce((sum, row) => sum + Math.max(0, row.remaining ?? 0), 0);
+    return {
+      provider: "elevenlabs",
+      updatedAt: new Date().toISOString(),
+      keys: rows,
+      totals: {
+        configured: rows.length,
+        active: rows.filter((row) => row.status === "ok" && (row.remaining == null || row.remaining > 0)).length,
+        exhausted: rows.filter((row) => row.status === "exhausted").length,
+        invalid: rows.filter((row) => row.status === "invalid").length,
+        rateLimited: rows.filter((row) => row.status === "rate_limited").length,
+        errors: rows.filter((row) => row.status === "error").length,
+        blocked: rows.filter((row) => row.status === "blocked").length,
+        characterCount: numericRows.length ? characterCount : null,
+        characterLimit: numericRows.length ? characterLimit : null,
+        remaining: numericRows.length ? remaining : null,
+        usedPercent: characterLimit > 0 ? Math.min(100, Math.round((characterCount / characterLimit) * 1000) / 10) : null,
+      },
+    };
+  });
+
+  // ---- Admin: per-user pack (deck) visibility ----
+  // All packs (matrix columns).
+  app.get("/api/admin/decks", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
+    // встроенные деки + кастомные паки (всегда показываем паки колонками; id = "pack:<id>")
+    return [
+      // adminOnly built-in decks are hidden unless explicitly marked grantable. Grantable admin-only
+      // decks use the same opt-in checkbox flow as custom packs, but keep their static DECKS entry.
+      ...DECKS.filter((d) => !d.adminOnly || d.grantable).map((d) => ({
+        id: d.id,
+        name: d.name,
+        pack: false,
+        grantable: !!(d.adminOnly && d.grantable),
+      })),
+      ...listAllPacks().map((p) => ({ id: `pack:${p.id}`, name: p.name, pack: true })),
+    ];
+  });
+  // Matrix data: per user — which packs are hidden + which packs they actually use.
+  app.get("/api/admin/user-decks", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
+    const hidden = db.hiddenDecksByUser();
+    const grantedBuiltins = db.grantedDecksByUser();
+    const used = db.usedDecksByUser();
+    const posted = db.postedByUserDeck();
+    const allPacks = listAllPacks();
+    return db.listUsers().map((u) => {
+      // Per-deck remaining/used/posted for the decks this user actually uses (so admin sees when a pack runs out).
+      const usedKeys = new Set(db.usedAnecdoteKeys(u.id));
+      const deckStats: Record<string, { used: number; available: number; total: number; posted: number }> = {};
+      for (const deckId of used[u.id] ?? []) {
+        if (!DECKS.some((d) => d.id === deckId)) continue; // skip non-deck langs (e.g. "en")
+        const s = libraryStats(deckId, usedKeys);
+        deckStats[deckId] = { used: s.used, available: s.available, total: s.total, posted: posted[u.id]?.[deckId] ?? 0 };
+      }
+      return {
+        userId: u.id,
+        username: u.username,
+        role: u.role,
+        hidden: hidden[u.id] ?? [],
+        grantedPacks: [
+          ...(grantedBuiltins[u.id] ?? []),
+          ...allPacks
+            .filter((p) => u.role === "admin" || p.owners.includes(u.id) || p.grants.includes(u.id))
+            .map((p) => `pack:${p.id}`),
+        ],
+        used: used[u.id] ?? [],
+        scheduled: db.scheduleSlotsForUser(u.id), // posts/day planned across all their channels
+        library: db.countVideosByUser(u.id), // videos queued in their libraries
+        usedTotal: db.usedAnecdoteCount(u.id), // всего использованных карточек (встроенные + кастомные) — бейдж в панели сброса
+        deckStats,
+      };
+    });
+  });
+  // Replace a user's hidden-pack set (body.hidden = pack ids to hide). Admins can't be restricted.
+  app.put("/api/admin/users/:id/decks", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
+    const id = Number((req.params as { id: string }).id);
+    const target = db.getUserById(id);
+    if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
+    const body = (req.body as { hidden?: string[]; grants?: string[] }) ?? {};
+    const valid = Array.isArray(body.hidden)
+      ? body.hidden.filter((d) => DECKS.some((x) => x.id === d && !isGrantableBuiltinDeck(x)))
+      : [];
+    const finalHidden = target.role === "admin" ? [] : valid;
+    db.setHiddenDecks(id, finalHidden);
+    const grants = Array.isArray(body.grants) ? body.grants.map((g) => String(g || "").trim()).filter(Boolean) : [];
+    const builtInGrants = grants.filter((deckId) => isGrantableBuiltinDeckId(deckId));
+    db.setGrantedDecks(id, target.role === "admin" ? [] : builtInGrants);
+    // Кастомные паки (opt-in): выдать/снять доступ этому юзеру по body.grants (id вида "pack:<id>").
+    // Владельца не трогаем; админ и так видит всё.
+    if (target.role !== "admin") {
+      const want = new Set(grants.filter((g) => g.startsWith("pack:")).map((g) => g.replace(/^pack:/, "")));
+      for (const p of listAllPacks()) {
+        if (p.owners.includes(id)) continue; // владельцу грант не нужен
+        setGrant(p.id, id, want.has(p.id));
+      }
+    }
+    return { ok: true, hidden: finalHidden };
+  });
+
+  // Reset one user's used-history for a built-in deck. Existing library videos stay intact;
+  // the next generation can pick that deck's items from the beginning again.
+  app.post("/api/admin/users/:id/decks/:deckId/reset", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
+    const id = Number((req.params as { id: string; deckId: string }).id);
+    const deckId = decodeURIComponent((req.params as { id: string; deckId: string }).deckId);
+    const target = db.getUserById(id);
+    if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
+    // Кастомный пак: ключи карточек = packCardKey(values); чистим именно их у этого юзера.
+    if (deckId.startsWith("pack:")) {
+      const pack = getPack(deckId.slice(5), id, true); // admin-load: читаем карточки любого пака
+      if (!pack) return reply.code(404).send({ error: "Пак не найден" });
+      const removed = db.clearAnecdoteUsedKeys(id, pack.cards.map((c) => packCardKey(c.values)));
+      return { ok: true, removed };
+    }
+    if (!DECKS.some((d) => d.id === deckId)) return reply.code(404).send({ error: "Пак не найден" });
+    const removed = db.clearAnecdoteUsedKeys(id, deckAnecdoteKeys(deckId));
+    return { ok: true, removed };
+  });
+
+  // Admin: полная «занятость паков» одного юзера — каждый встроенный дек и кастомный пак, который он
+  // МОЖЕТ использовать ИЛИ уже использовал, с per-user used/total/available. Кормит панель сброса
+  // (встроенные `DECKS` + кастомные `pack:*`), чтобы было видно ВСЕ паки юзера, а не только использованные.
+  app.get("/api/admin/users/:id/pack-usage", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
+    const id = Number((req.params as { id: string }).id);
+    const target = db.getUserById(id);
+    if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
+    const usedKeys = db.usedAnecdoteKeys(id);
+    const targetIsAdmin = target.role === "admin";
+    const items: { id: string; name: string; pack: boolean; total: number; used: number; available: number }[] = [];
+    // Встроенные деки: видимые юзеру ИЛИ уже использованные (чтобы ничего сбрасываемого не пряталось).
+    for (const d of DECKS) {
+      const visible = targetIsAdmin || builtinDeckVisibleForUser(id, d);
+      const s = libraryStats(d.id, usedKeys);
+      if (!visible && s.used === 0) continue;
+      items.push({ id: d.id, name: d.name, pack: false, total: s.total, used: s.used, available: s.available });
+    }
+    // Кастомные паки: доступные юзеру ИЛИ уже использованные (ключи карточек — packCardKey(values)).
+    for (const summary of listAllPacks()) {
+      const pack = getPack(summary.id, id, true); // admin-load: нужны карточки, чтобы посчитать used
+      if (!pack) continue;
+      let used = 0;
+      for (const c of pack.cards) if (usedKeys.has(packCardKey(c.values))) used++;
+      if (!canAccess(pack, id, targetIsAdmin) && used === 0) continue;
+      const total = pack.cards.length;
+      items.push({ id: `pack:${pack.id}`, name: pack.name, pack: true, total, used, available: Math.max(0, total - used) });
+    }
+    return { userId: id, username: target.username, items };
+  });
+
+  // Admin: set a custom pack's owners (0+ users). Owners may edit the pack (name/lang/cards) on /cards.
+  // Админов во владельцы НЕ пишем — админ и так редактирует любой пак; пустой список = у пака нет владельца.
+  app.put("/api/admin/packs/:id/owners", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
+    const id = (req.params as { id: string }).id.replace(/^pack:/, "");
+    const raw = (req.body as { owners?: unknown })?.owners;
+    const ids = Array.isArray(raw) ? [...new Set(raw.map(Number))].filter((n) => Number.isInteger(n) && n > 0) : [];
+    const owners: number[] = [];
+    for (const oid of ids) {
+      const u = db.getUserById(oid);
+      if (!u) return reply.code(404).send({ error: "Пользователь не найден" });
+      if (u.role === "admin") continue; // админ владельцем не становится — у него и так полный доступ
+      owners.push(oid);
+    }
+    if (!setPackOwners(id, owners)) return reply.code(404).send({ error: "Пак не найден" });
+    return { ok: true, owners };
+  });
+
+  app.get("/api/my-decks", async (req, reply) => {
+    const me = db.getUserById(uid(req));
+    const isAdmin = me?.role === "admin";
+    const q = (req.query as { userId?: string }) ?? {};
+    const targetId = isAdmin && q.userId ? Number(q.userId) : uid(req);
+    const target = db.getUserById(targetId);
+    if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
+    const usedKeys = new Set(db.usedAnecdoteKeys(targetId));
+    const posted = db.postedByUserDeck()[targetId] ?? {};
+    const decks = visibleDecksForUser(targetId).map((d) => {
+      const s = libraryStats(d.id, usedKeys);
+      return { id: d.id, name: d.name, total: s.total, used: s.used, available: s.available, posted: posted[d.id] ?? 0 };
+    });
+    return { userId: targetId, username: target.username, decks };
+  });
+
+  // Admin: every (user, pack) where the user's remaining cards in that pack is below the threshold (100).
+  // Across ALL users (admin included) so the admin sees who is about to run out. Lowest remaining first.
+  app.get("/api/admin/low-decks", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
+    const THRESHOLD = 100;
+    const posted = db.postedByUserDeck();
+    const out: {
+      userId: number;
+      username: string;
+      deckId: string;
+      deckName: string;
+      available: number;
+      total: number;
+      used: number;
+      posted: number;
+    }[] = [];
+    for (const u of db.listUsers()) {
+      const usedKeys = new Set(db.usedAnecdoteKeys(u.id));
+      for (const d of visibleDecksForUser(u.id)) {
+        const s = libraryStats(d.id, usedKeys);
+        if (s.available < THRESHOLD) {
+          out.push({
+            userId: u.id,
+            username: u.username,
+            deckId: d.id,
+            deckName: d.name,
+            available: s.available,
+            total: s.total,
+            used: s.used,
+            posted: posted[u.id]?.[d.id] ?? 0,
+          });
+        }
+      }
+    }
+    out.sort((a, b) => a.available - b.available);
+    return out;
+  });
+
+  // Admin analytics: one read-only aggregated snapshot per requested period. No polling and no
+  // YouTube calls here; it uses stored channel_stats snapshots so opening the tab is cheap.
+  app.get("/api/admin/analytics", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
+    const q = (req.query as { from?: string; to?: string }) ?? {};
+    return buildAdminAnalytics(db, { from: q.from, to: q.to });
+  });
+}
