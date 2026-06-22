@@ -4,6 +4,21 @@
 > Цель: (а) агенту/человеку легко ориентироваться, (б) распилить монолиты по SRP — **не сломав
 > живой `:8080`**. Делать строго в порядке риск→ценность; каждая фаза — отдельный коммит, обратимый.
 
+## Статус — ВЫПОЛНЕНО 2026-06-22 (коммиты e1b1188 → 0a24788)
+
+Все 5 фаз сделаны, запушены и верифицированы: `typecheck` 0 · **58/58** тестов · `web:build` · изолированный boot `:8099` (все группы роутов регистрируются, auth-gate работает) · Playwright **20/20** страниц без крашей · аудит-workflow **4/4 PASS, решение GO**. Живой `:8080` НЕ трогался — изменения вступят в силу после рестарта владельцем.
+
+Результаты: `server/index.ts` 2762→**361** (composition root) + 72 роута в `server/routes/*`; `server/db.ts` 1886→**65** (barrel) + `server/db/*`; `web/src/lib/api.ts` 1033 → `lib/api/{types,http,index}`; god-страницы (Statistics/AccountDetail/AdminAnalytics/Layout) → папки-фичи; `server/` → `routes/services/infra` (+`ARCHITECTURE.md`); `src/`: template→validate/render, decks→yt-meta, chromePath→core/chrome.
+
+### Осознанно отложено (follow-up, ничего не блокирует и не ломает)
+- **Общий render-core** вместо copy-paste в 6 per-deck модулях (christian/islamic/memes/psych/anecdotes/russian-bg) — нужна попиксельная визуальная QA по каждой деке (арабский black-frame и пр.); риск визуальной регрессии > выигрыша для structure-only прохода.
+- **`AccountDetail/index.tsx` (1197)** — выемка хука состояния (состояние/эффекты оставлены в index.tsx ради безопасности; модалки + чистые хелперы уже вынесены).
+- Перенос CLI-билдеров `src/anecdotes/{build-*,apply-*,pair-de,it-mine}` → `src/scripts/` (+ `build.ts` SRC/BLOCK → `source.ts`) — низкая ценность, риск незаметный для typecheck (scripts исключены).
+- Полный физический разбор `docs/pack-generation.md` → `docs/packs/*`; реструктуризация «Notes for myself» в CLAUDE.md по подзаголовкам.
+- Нит layering: `server/infra/scheduler.ts` импортит `services/youtube.ts` (единственное infra→services ребро; по сути это app-cron, можно перенести в `services/`).
+- `npm run typecheck` (root tsconfig) не покрывает `web/` — у веба свой `tsc -b`/`tsconfig.app.json` (проходит); опционально включить web в общий чек.
+- Вне scope, но крупные: `Settings.tsx`(699), `Users.tsx`(696), `Overview.tsx`(655).
+
 ## Что нашли (карта проблем)
 
 | Файл / зона | Строк | Проблема |

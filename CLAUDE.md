@@ -133,6 +133,16 @@ Repo layout + SOLID monolith-split / cleanup plan: `docs/REORG-PLAN.md`.
 - Verify the UI headlessly: `npm run server` + `npm run web`, then `tsx src/scripts/screenshot-url.ts <url> <out.png>`.
 
 ## Notes for myself (keep updated)
+- **⚙️ Структура переехала (реорг 2026-06-22 — см. `docs/REORG-PLAN.md` + `server/ARCHITECTURE.md`):**
+  `server/` теперь по слоям: `server/routes/*` (Fastify `register*`), `server/services/*`
+  (youtube/telegram/analytics/gen + общий фундамент: `deck-access`, `notify-stream`, `library-build`,
+  `analytics-range`, `youtube-errors`, `oauth-clients-view`, `elevenlabs-limits`), `server/infra/*`
+  (`scheduler`/`shutdown`/`metrics`/`rate-limits`/`account-limits`/`output-access`/`media`/`auth-session`).
+  **В корне `server/` остались** `index.ts` (тонкий composition root, ~361 стр.), `db.ts` (barrel над
+  `server/db/*` доменными модулями), `config.ts`, `auth.ts`, `telegram.ts` (их импортит `src/scripts/`).
+  Веб-API: `web/src/lib/api.ts` → `web/src/lib/api/{types,http,index}`. Большие страницы → папки-фичи
+  (`pages/Statistics/*`, `pages/AccountDetail/*`). Если в заметках ниже встретишь путь `server/<file>.ts` —
+  проверь, не уехал ли он в `routes/`/`services/`/`infra/` (или `db/<domain>.ts`).
 - **Subagent/workflow MODEL policy (user rule):** before launching ANY LLM/subagent/workflow that generates, cleans, ranks, formats, or titles pack content, ask the user which model to use. Do not hardcode Haiku/Sonnet/Opus and do not inherit silently when the workflow model choice affects cost/quality. Local parsers/builders/checks can run without asking.
 - **Pack generation docs:** detailed source/generation/replenishment instructions for every built-in deck and template-pack live in `docs/pack-generation.md`. Read it before touching `data/anecdotes*`, `data/tips*`, `data/islamic`, `data/christian`, `data/*/videos.json`, `assets/template-packs/*`, or `data/packs/*`.
 - **New/manual pack rule:** whenever you create a new built-in deck, prebuilt video pack, template-pack, or live `data/packs/*` pack manually, also add/update `docs/pack-generation.md` with how to create it, how content is generated, how to add new cards/videos later, and how to verify it. Future agents must be able to replenish the pack from docs without reverse-engineering the code.
