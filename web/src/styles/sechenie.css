@@ -202,6 +202,12 @@ html[data-skin="sechenie"] ::-webkit-scrollbar-thumb {
 html[data-skin="sechenie"] ::-webkit-scrollbar-track {
   background: transparent;
 }
+/* Drop the stepper arrow buttons (the little "toolbar" at the ends of the scrollbar) — keep scrolling */
+html[data-skin="sechenie"] ::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
 html[data-skin="sechenie"] :where(a, button, summary, input, select, textarea, [tabindex]):focus-visible {
   outline: 2px solid var(--sx-ink);
   outline-offset: 2px;
