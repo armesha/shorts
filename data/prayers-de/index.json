@@ -1,0 +1,11 @@
+{
+  "total": 1000,
+  "packs": 1,
+  "packSize": 1000,
+  "range": [
+    1,
+    1000
+  ],
+  "childRelated": 250,
+  "generalPrayer": 750
+}

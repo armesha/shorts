@@ -5,6 +5,7 @@ import type { Account, Db, Video } from "../db.ts";
 import { DECKS, getDeck, isPackDeckId } from "../../src/anecdotes/decks.ts";
 import { ytMeta } from "../../src/anecdotes/yt-meta.ts";
 import { uploadShort, ytErrorReason, isYtAuthError, type ClientCreds } from "../services/youtube.ts";
+import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
 import { USER_DAILY_SCHEDULE_CAP } from "./account-limits.ts";
 import * as metrics from "./metrics.ts";
 
@@ -127,10 +128,19 @@ export function startScheduler(opts: SchedulerOpts) {
         if (videoId) {
           metrics.notePost(); // last successful auto-post timestamp
           opts.db.clearAuthError(acc.id); // token works → drop any stale "needs reconnect" flag
-          // posted once → remove from the library so it never reposts
-          removeVideoFiles(opts.outputDir, lib);
-          opts.db.deleteVideo(lib.id);
-          opts.log(`[sched] account ${acc.id} uploaded ${videoId} — removed from library`);
+          // «Бесконечный пак» (infinite-packs у владельца канала): НЕ удаляем ролик, а возвращаем его в
+          // очередь (рецикл по кругу) — реальные ~50 роликов канала крутятся бесконечно. Иначе обычное
+          // поведение: выложили один раз → удалили из библиотеки, чтобы не повторять.
+          const recycle = acc.userId != null && opts.db.hasFeature(acc.userId, INFINITE_PACKS_FEATURE);
+          if (recycle) {
+            opts.db.recycleVideoForRepost(lib.id);
+            opts.log(`[sched] account ${acc.id} uploaded ${videoId} — recycled (бесконечный пак)`);
+          } else {
+            // posted once → remove from the library so it never reposts
+            removeVideoFiles(opts.outputDir, lib);
+            opts.db.deleteVideo(lib.id);
+            opts.log(`[sched] account ${acc.id} uploaded ${videoId} — removed from library`);
+          }
         } else {
           opts.db.releaseVideoPost(lib.id); // no id → un-claim so it stays postable next time
           opts.log(`[sched] account ${acc.id}: upload returned no id, keeping video`);

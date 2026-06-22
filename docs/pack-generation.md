@@ -73,6 +73,17 @@ YouTube Shorts перекрывает нижнюю часть видео кно�
 Не оставляй новый ручной пак только в коде или `data/packs`: без инструкции будущий агент не будет
 знать, как его безопасно пополнить.
 
+## Формат по умолчанию для статичных паков
+
+По умолчанию новый статичный/card-style пак должен быть динамическим: карточки, тексты, шаблоны и
+ассеты хранятся как данные/template-pack, а MP4 собирается только при использовании, batch-генерации
+или сохранении в библиотеку конкретного канала. Не создавай заранее сотни/тысячи тихих MP4 для
+статичных карточек, если пользователь прямо не попросил prebuilt MP4.
+
+Prebuilt MP4 допустимы как исключение для готовых монтажных/video-source паков, озвученных серий,
+индивидуальных визуальных MP4 или уже существующих legacy prebuilt decks. Для нового статичного пака
+prebuilt MP4 считается исключением и требует явного запроса пользователя.
+
 ## Быстрая карта паков
 
 | Пак / deck | Где результат | Как появляется контент | LLM нужен |
@@ -88,7 +99,7 @@ YouTube Shorts перекрывает нижнюю часть видео кно�
 | `christian` Holy Bible KJV | `data/christian/cards.json` | KJV public domain -> candidates/slices -> workflow выбора id -> assemble | да, только для выбора id/theme |
 | `fact-en` Interesting Facts | `data/fact-videos/videos.json` + `assets/fact-videos/` | готовые MP4 | не в рантайме; новые ролики собираются вне этого конвейера |
 | `quotes-de` Politiker-Zitate | `data/quotes-de/videos.json` + `assets/fact-videos/` | готовые MP4 | не в рантайме |
-| `prayers-de` Gebet | `data/prayers-de/videos.json` + `assets/fact-videos/prayers-de/` | 1000 готовых немецких молитвенных card-style MP4 без тега: примерно 250 про детей/семью и 750 общих молитв | нет |
+| `prayers-de` Gebete | `data/prayers-de/videos.json` + `assets/fact-videos/prayers-de/` | 1000 готовых немецких молитвенных card-style MP4 без тега: примерно 250 про детей/семью и 750 общих молитв | нет |
 | `space` Space | `data/space/videos.json` + `assets/fact-videos/space/` | готовые MP4 | не в рантайме |
 | `animal-superheroes` / `animal-superheroes-en` ЗвероГерои / Animal Heroes | `data/output/admin-demos/manifest.json` + `data/animal-superheroes*/videos.json` + `assets/fact-videos/animal-superheroes*/` | сериальные MP4-комиксы RU/EN с одинаковым визуалом, ElevenLabs-озвучкой и safe-zone karaoke-субтитрами | нет |
 | `The Mind Edge` template-pack | `assets/template-packs/the-mind-edge/` -> `data/packs/` seed | LLM-батчи -> `cards.json`, шаблоны из кода | да, для новых карточек |
@@ -240,6 +251,42 @@ for f in data/output/admin-demos/as_*.mp4; do printf "%s " "$f"; ffprobe -v erro
 Это не Studio/template-pack. Это набор индивидуальных коротких MP4 для страницы `/clip-demos` и
 одновременно selectable `preFact` deck для выбора источника в каналах, потому что каждая загадка
 требует отдельной картинки, собственной озвучки, музыки и визуальной проверки.
+
+### Текущий пайплайн дозаливки (edge-tts, без ElevenLabs) — обновлено 2026-06-22
+
+ElevenLabs-квота исчерпана → озвучка этого пака идёт через **edge-tts** (бесплатные нейроголоса
+Microsoft Edge, голос `ru-RU-DmitryNeural`) в изолированном venv `.venv-tts/` (gitignored: `edge-tts`
++ `pillow` + `cairosvg`). Это намеренное послабление общего правила «только ElevenLabs» для ДАННОГО
+пака. Контент — ТОЛЬКО реально найденные готовые PD/CC0-загадки из интернета (не генерируем и не
+компонуем из клипарта); строго PD/CC0 (без CC-BY/CC-BY-SA — копилефт «заражает» монетизацию).
+
+Тулинг (committed, воспроизводимо):
+- `templates/visual-riddle.html` — карточка (кремовый фон, цветная плашка + чип-категория, рамка с
+  картинкой, вопрос + CTA «Пиши ответ в комментариях»).
+- `scripts/build-visual-riddles.mjs <manifest.json> --outdir DIR` — на каждую: `_vr-prep.py` (PIL:
+  обрезка белых полей + автоконтраст + ≤1200px) → puppeteer-рендер карточки → edge-tts озвучка
+  (retry) → ffmpeg (лёгкий Ken-Burns зум; голос 100% + музыка ~10%). Env `VR_VOICE`/`VR_ZOOM`.
+- `scripts/_vr-ingest.mjs <sourcing.json>` — качает кандидатов (Commons `Special:FilePath?width=1400`
+  растрирует SVG; не-Commons SVG → cairosvg; throttle + retry под 429 Commons; PIL-валидация) →
+  `temp/visual-riddle-demos/build-manifest.json` + `sources.json`.
+- `scripts/_vr-contact.py <dir> <out-prefix>` — контакт-листы для визуального QA.
+- `scripts/_vr-register.mjs --cull id1,id2` — копирует принятые mp4 в
+  `assets/fact-videos/visual-riddles/`, постеры в `data/output/admin-demos/`, дописывает
+  `data/visual-riddles/videos.json` + manifest, пишет `data/visual-riddles/sources.json` (лицензии).
+  Идемпотентно.
+
+Добыча кандидатов: workflow по типам (агенты ищут + верифицируют PD/CC0 на Commons/Openclipart/
+Project Gutenberg/LoC, отдают прямые URL + лицензию + RU вопрос/ответ). Модель workflow сначала
+спросить у пользователя. Реальный выход строгого PD/CC0 невелик: «найди животных» — потолок ~3
+(трио Currier & Ives 1872); большинство хороших иллюзий/лабиринтов/развёрток на Commons под
+CC-BY-SA и отбрасываются. Финальную визуальную приёмку делает основной агент лично по контакт-листам.
+
+**preFact-дека читает `videos.json` СВЕЖИМ (без кэша) → новые ролики видны БЕЗ рестарта сервера**
+(см. `src/anecdotes/library.ts`); `/clip-demos` тоже читает manifest на лету.
+
+Партия 2026-06-22: **+62 карточки `vrx_*`** (лабиринты, оптические иллюзии, развёртки/3D, числовая
+логика, найди-животных, счёт), 6 отбраковано вручную; всего в `videos.json` = 142. Лицензия каждого
+файла — в `data/visual-riddles/sources.json`.
 
 Готовые артефакты:
 
@@ -778,7 +825,7 @@ grep -niE "ratten|warmer bruder|bedingungslosen gehorsam|totalen krieg|tel aviv|
 
 ### `prayers-de` German prayer-card pack
 
-2026-06-22 добавлен немецкий молитвенный pack `Gebet`: 1000 статичных devotional card-style MP4 без
+2026-06-22 добавлен немецкий молитвенный pack `Gebete`: 1000 статичных devotional card-style MP4 без
 водяного знака/тега. Это `preFact` deck, а не template-pack: runtime выбирает готовый MP4 из
 `assets/fact-videos/prayers-de/` и копирует его в библиотеку. Текущий состав: около 250 карточек про
 детей/семью и около 750 общих молитвенных тем без привязки к детям.
@@ -795,7 +842,7 @@ grep -niE "ratten|warmer bruder|bedingungslosen gehorsam|totalen krieg|tel aviv|
 
 Регистрация:
 
-- `src/anecdotes/decks.ts`: `id: "prayers-de"`, `preFact: true`, visible like normal built-in decks;
+- `src/anecdotes/decks.ts`: `id: "prayers-de"`, `preFact: true`, `adminOnly: true`, `grantable: true`;
 - `web/src/lib/deck.ts`: русский gloss, `DECK_LANG`, пункт в `BUILTIN_DECKS`.
 
 Пересборка:

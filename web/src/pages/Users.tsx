@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Users, Plus, Check, AlertTriangle, Crown, LogIn, Send } from "lucide-react";
+import { Users, Plus, Check, AlertTriangle, Crown, LogIn, Send, Infinity as InfinityIcon } from "lucide-react";
 import { apiClient, ApiError, type AdminUser, type DeckInfo, type UserDeckRow, type PackSummary, type PackUsageItem } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
@@ -50,6 +50,7 @@ function AdminUsers() {
   const [resetItems, setResetItems] = useState<PackUsageItem[] | null>(null); // ВСЕ паки юзера: встроенные + кастомные (null = грузим)
   const [ownerErr, setOwnerErr] = useState<string | null>(null);
   const [impersonatingId, setImpersonatingId] = useState<number | null>(null);
+  const [togglingInfinite, setTogglingInfinite] = useState<number | null>(null); // «бесконечный пак» в полёте
   const [noticeUserId, setNoticeUserId] = useState<number | "">("");
   const [noticeSeverity, setNoticeSeverity] = useState<"info" | "warning" | "error">("info");
   const [noticeTitle, setNoticeTitle] = useState("");
@@ -62,11 +63,15 @@ function AdminUsers() {
 
   const loadUsers = () => apiClient.adminUsers().then(setUsers).catch(() => {});
   const loadMatrix = () => apiClient.adminUserDecks().then(setRows).catch(() => {});
-  const loadPacks = () => apiClient.packs().then(setPacks).catch(() => {});
+  // Управление владельцами/матрица должны видеть ВСЕ паки (вкл. скрытые админом у себя) → ?all=1.
+  const loadPacks = () => apiClient.packs({ all: true }).then(setPacks).catch(() => {});
   const grantById = (deckId: string): boolean => {
     const deck = decks.find((d) => d.id === deckId);
     return !!deck?.pack || !!deck?.grantable || deckId.startsWith("pack:");
   };
+  // Деки/паки, которые ВООБЩЕ могут быть у обычного юзера (для формы создания и opt-in грантов):
+  // обычные встроенные (opt-out), grantable admin-only и кастомные паки. Чисто admin-only — исключаем.
+  const userDecks = decks.filter((d) => !d.adminOnly || d.grantable || d.pack);
   useEffect(() => {
     loadUsers();
     loadMatrix();
@@ -102,8 +107,8 @@ function AdminUsers() {
     setBusy(true);
     try {
       // обычные встроенные паки — opt-out; кастомные и grantable admin-only built-in паки — opt-in.
-      const hidden = role === "admin" ? [] : decks.filter((d) => !d.pack && !d.grantable && !newVisible.has(d.id)).map((d) => d.id);
-      const grants = role === "admin" ? [] : decks.filter((d) => (d.pack || d.grantable) && newVisible.has(d.id)).map((d) => d.id);
+      const hidden = role === "admin" ? [] : userDecks.filter((d) => !d.pack && !d.grantable && !newVisible.has(d.id)).map((d) => d.id);
+      const grants = role === "admin" ? [] : userDecks.filter((d) => (d.pack || d.grantable) && newVisible.has(d.id)).map((d) => d.id);
       const u = await apiClient.createUser(username.trim(), password, role, hidden);
       if (grants.length) await apiClient.setUserDecks(u.id, hidden, grants);
       setCreated(t("users.created", { name: u.username, role: u.role === "admin" ? t("users.roleAdmin") : t("users.roleUser") }));
@@ -121,9 +126,11 @@ function AdminUsers() {
   }
 
   // Toggle one pack's visibility for a user (checked = visible). Optimistic; reverts on failure.
+  // Админ (в т.ч. сам себе): видит всё по умолчанию → галочка = opt-out (снято = скрыто лично у него),
+  // и так для ЛЮБОЙ колонки — встроенной (вкл. admin-only) и кастомного пака. Гранты у админа не нужны.
   async function toggle(row: UserDeckRow, deckId: string, visible: boolean) {
-    if (row.role === "admin") return;
-    const byGrant = grantById(deckId); // кастомные + grantable built-in — opt-in; обычные встроенные — opt-out
+    const isAdminRow = row.role === "admin";
+    const byGrant = !isAdminRow && grantById(deckId); // кастомные + grantable built-in — opt-in; обычные встроенные — opt-out
     const nextHidden = byGrant
       ? row.hidden
       : visible
@@ -201,6 +208,25 @@ function AdminUsers() {
       setError(e instanceof ApiError ? e.message : t("users.impersonateFailed"));
     } finally {
       setImpersonatingId(null);
+    }
+  }
+
+  // «Бесконечный пак» (имитация) — вкл/выкл для юзера. Оптимистично; откат к серверу при ошибке.
+  // ON → у юзера ВЕЗДЕ 1000 свободных карточек, а планировщик крутит его очередь роликов по кругу.
+  async function toggleInfinite(row: UserDeckRow) {
+    const next = !row.infiniteSim;
+    setTogglingInfinite(row.userId);
+    setSaveState("saving");
+    setRows((rs) => rs.map((r) => (r.userId === row.userId ? { ...r, infiniteSim: next } : r)));
+    try {
+      await apiClient.setUserInfinitePacks(row.userId, next);
+      setSaveState("saved");
+      window.setTimeout(() => setSaveState((s) => (s === "saved" ? "idle" : s)), 1800);
+    } catch {
+      setSaveState("error");
+      loadMatrix(); // откат к серверному состоянию
+    } finally {
+      setTogglingInfinite(null);
     }
   }
 
@@ -288,14 +314,14 @@ function AdminUsers() {
             </button>
           </div>
 
-          {role !== "admin" && decks.length > 0 && (
+          {role !== "admin" && userDecks.length > 0 && (
             <div className="mt-2">
               <span className="text-xs text-base-content/60">
                 {t("users.newUserPacksHint1")} <b>{t("users.newUserPacksHintNew")}</b> {t("users.newUserPacksHint2")}{" "}
                 <b>{t("users.newUserPacksHintNothing")}</b> {t("users.newUserPacksHint3")}
               </span>
               <div className="flex flex-wrap gap-1.5 mt-1">
-                {decks.map((d) => {
+                {userDecks.map((d) => {
                   const granted = newVisible.has(d.id);
                   return (
                     <button
@@ -451,7 +477,12 @@ function AdminUsers() {
                     <th className="sticky left-0 z-20 bg-base-100 border-r border-base-300">{t("users.colUser")}</th>
                     {decks.map((d) => (
                       <th key={d.id} className="text-center whitespace-nowrap font-normal">
-                        {d.name}
+                        <span className="inline-flex items-center gap-1">
+                          {d.adminOnly && !d.grantable && (
+                            <AppIcon name="admin" size={11} className="text-primary/70" title={t("users.colAdminOnly")} />
+                          )}
+                          {d.name}
+                        </span>
                       </th>
                     ))}
                   </tr>
@@ -493,15 +524,37 @@ function AdminUsers() {
                           {t("users.scheduledPerDay", { n: row.scheduled, limit: "/92" })}
                           {row.library > 0 ? " · " + t("users.inLibrary", { n: row.library }) : ""}
                         </div>
+                        {/* «Бесконечный пак» (имитация): юзер видит 1000 карточек, очередь крутится по кругу. */}
+                        <button
+                          type="button"
+                          className={`btn btn-xs gap-1 mt-1 ${row.infiniteSim ? "btn-primary" : "btn-ghost border border-base-300 opacity-70"}`}
+                          disabled={togglingInfinite === row.userId}
+                          onClick={() => toggleInfinite(row)}
+                          title={t("users.infiniteSimTitle")}
+                        >
+                          {togglingInfinite === row.userId ? (
+                            <span className="loading loading-spinner loading-xs" />
+                          ) : (
+                            <InfinityIcon size={11} />
+                          )}
+                          {row.infiniteSim ? t("users.infiniteSimOn") : t("users.infiniteSimOff")}
+                        </button>
                       </td>
                       {decks.map((d) => {
-                        if (row.role === "admin")
+                        const isAdminRow = row.role === "admin";
+                        // Обычному юзеру чисто admin-only дека недоступна в принципе → «—» (не чекбокс).
+                        if (!isAdminRow && d.adminOnly && !d.grantable && !d.pack)
                           return (
-                            <td key={d.id} className="text-center text-base-content/40">
-                              {t("users.cellAll")}
+                            <td key={d.id} className="text-center text-base-content/25" title={t("users.cellAdminOnly")}>
+                              —
                             </td>
                           );
-                        const visible = d.pack || d.grantable ? row.grantedPacks.includes(d.id) : !row.hidden.includes(d.id);
+                        // Админ видит всё по умолчанию → галочка = «не скрыто у меня» (opt-out) для любой колонки.
+                        const visible = isAdminRow
+                          ? !row.hidden.includes(d.id)
+                          : d.pack || d.grantable
+                            ? row.grantedPacks.includes(d.id)
+                            : !row.hidden.includes(d.id);
                         const used = row.used.includes(d.id);
                         const st = row.deckStats?.[d.id];
                         return (

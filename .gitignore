@@ -58,6 +58,10 @@ data/*.db.bak*
 # python bytecode cache
 __pycache__/
 
+# python venv for edge-tts (TTS tooling) — local only
+.venv-tts/
+.venv/
+
 # scratch screenshots at repo root — agent working files, not source
 /image.png
 /gen-queue-toast.png

@@ -13,6 +13,7 @@ test("deckLang maps built-in decks; '' for packs/unknown", () => {
   assert.equal(deckLang("quotes-de-1"), "de");
   assert.equal(deckLang("quotes-de-2"), "de");
   assert.equal(deckLang("quotes-de-3"), "de");
+  assert.equal(deckLang("prayers-de"), "de");
   assert.equal(deckLang("pack:abc"), "");
   assert.equal(deckLang("does-not-exist"), "");
 });

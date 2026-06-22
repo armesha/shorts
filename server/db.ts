@@ -15,6 +15,7 @@ import { videoMethods } from "./db/videos.ts";
 import { historyMethods } from "./db/history.ts";
 import { userMethods } from "./db/users.ts";
 import { deckMethods } from "./db/decks.ts";
+import { featureMethods } from "./db/features.ts";
 import { oauthMethods } from "./db/oauth-clients.ts";
 import { statsMethods } from "./db/stats.ts";
 import { notifMethods } from "./db/notifications.ts";
@@ -55,6 +56,7 @@ export function openDb(path: string) {
     ...historyMethods(db),
     ...userMethods(db),
     ...deckMethods(db),
+    ...featureMethods(db),
     ...oauthMethods(db),
     ...statsMethods(db),
     ...notifMethods(db),

@@ -78,7 +78,10 @@ export default function Cards() {
   // Навигация по пакам: "psych" (встроенная) | "pack:<id>" (кастомный) | "new" (создать)
   const [packs, setPacks] = useState<PackSummary[]>([]);
   const [sel, setSel] = useState<string>("psych");
-  const reloadPacks = useCallback(() => apiClient.packs().then(setPacks).catch(() => {}), []);
+  // Хаб управления паками: показываем ВСЕ доступные паки, включая скрытые админом у себя (self-hide
+  // влияет на Студию/источники/галерею/обзор, но не должен мешать редактировать пак) → ?all=1.
+  // У не-админа сервер флаг игнорирует — вернёт его обычные паки.
+  const reloadPacks = useCallback(() => apiClient.packs({ all: true }).then(setPacks).catch(() => {}), []);
   // Не-админ не курирует psych — уводим выбор с дефолтного «psych» на «создать пак».
   useEffect(() => {
     if (user && !isAdmin && sel === "psych") setSel("new");

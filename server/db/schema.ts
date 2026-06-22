@@ -160,6 +160,12 @@ export function applySchema(db: DatabaseSync): void {
       deck_id TEXT NOT NULL,
       PRIMARY KEY (user_id, deck_id)
     );
+    CREATE TABLE IF NOT EXISTS user_feature_access (
+      user_id INTEGER NOT NULL,
+      feature TEXT NOT NULL,
+      granted_at TEXT NOT NULL DEFAULT (datetime('now')),
+      PRIMARY KEY (user_id, feature)
+    );
     CREATE TABLE IF NOT EXISTS password_resets (
       user_id INTEGER PRIMARY KEY,
       code_hash TEXT NOT NULL,

@@ -9,6 +9,7 @@ import { getDeck, pickGenericTitle } from "../../src/anecdotes/decks.ts";
 import { randomAnecdote, libraryStats, anecdoteKey, deckCards } from "../../src/anecdotes/library.ts";
 import { renderAnecdote, listBackgrounds } from "../../src/anecdotes/render.ts";
 import { assembleStillVideo, listAudio, resolveAudio, downscaleImage } from "../../src/video.ts";
+import { INFINITE_PACKS_FEATURE, infiniteCounts } from "../services/infinite-packs.ts";
 import * as metrics from "../infra/metrics.ts";
 import { rememberOutputOwner } from "../infra/output-access.ts";
 import { uid } from "../infra/auth-session.ts";
@@ -24,24 +25,29 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
 
   // ---- Generators / Studio (per-user used counter) ----
   app.get("/api/generators", async (req) => {
-    const used = db.usedAnecdoteKeys(uid(req));
-    const base = visibleDecksForUser(uid(req)).map((d) => {
+    const userId = uid(req);
+    const used = db.usedAnecdoteKeys(userId);
+    // «Бесконечный пак»: у этого юзера все встроенные деки показывают фиксированные 1000 свободных
+    // карточек (used=0) — иллюзия неисчерпаемого контента. Реальный учёт не трогаем (см. infinite-packs.ts).
+    const infinite = db.hasFeature(userId, INFINITE_PACKS_FEATURE);
+    const base = visibleDecksForUser(userId).map((d) => {
       const s = libraryStats(d.id, used);
+      const c = infinite ? infiniteCounts() : { total: s.total, used: s.used, available: s.available };
       return {
         id: d.id,
         name: d.name,
         ai: false,
         preFact: !!d.preFact, // pre-built video pack (no text render) — Studio shows a random video
         gallery: !!d.gallery, // static deck (deterministic per-card render) — browsable in the Gallery page
-        total: s.total,
-        titled: s.titled,
-        used: s.used,
-        available: s.available,
+        total: c.total,
+        titled: infinite ? c.total : s.titled,
+        used: c.used,
+        available: c.available,
         packs: s.packs,
         range: s.range,
         readyPacks: s.readyPacks,
-        untitledPacks: s.untitledPacks,
-        untitledTotal: s.untitledTotal,
+        untitledPacks: infinite ? 0 : s.untitledPacks,
+        untitledTotal: infinite ? 0 : s.untitledTotal,
       };
     });
     return base;

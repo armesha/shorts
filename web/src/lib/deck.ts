@@ -33,6 +33,7 @@ export const DECK_GLOSS_RU: Record<string, string> = {
   "quotes-de-1": "Цитаты политиков · нем.",
   "quotes-de-2": "Цитаты политиков · нем.",
   "quotes-de-3": "Цитаты политиков · нем.",
+  "prayers-de": "Молитвы · нем.",
   space: "Космос · видео",
   "visual-riddles": "Визуальные загадки · видео",
   "animal-superheroes": "ЗвероГерои · видео",
@@ -50,7 +51,7 @@ export const deckLabel = (id: string, name: string): string =>
 /** Content language of each built-in deck (deck id → 2-letter lang). Custom packs carry their own lang. */
 export const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
-  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", space: "en", "visual-riddles": "ru", "animal-superheroes": "ru", "animal-superheroes-en": "en",
+  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "animal-superheroes": "ru", "animal-superheroes-en": "en",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it",
 };
 
@@ -84,6 +85,7 @@ export const BUILTIN_DECKS: { id: string; label: string }[] = [
   { id: "quotes-de-1", label: "Цитаты политиков 1 (видео, DE)" },
   { id: "quotes-de-2", label: "Цитаты политиков 2 (видео, DE)" },
   { id: "quotes-de-3", label: "Цитаты политиков 3 (видео, DE)" },
+  { id: "prayers-de", label: "Gebete (видео, DE)" },
   { id: "space", label: "Космос (видео, EN)" },
   { id: "visual-riddles", label: "Вижу Ответ (видео, RU)" },
   { id: "animal-superheroes", label: "ЗвероГерои (видео, RU)" },

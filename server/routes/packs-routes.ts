@@ -8,6 +8,7 @@ import { loadBaseConfig } from "../config.ts";
 import { openDb } from "../db.ts";
 import {
   listPacks,
+  listAllPacks,
   getPack,
   createPack,
   addCards,
@@ -127,11 +128,17 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
   const adminReq = (req: unknown): boolean => db.getUserById(uid(req))?.role === "admin";
   // Видимые мне паки (владелец / админ / выдан грант) + сколько карточек свободно/использовано
   // именно у этого юзера — фронт по `available` ограничивает «сколько роликов сгенерировать».
+  // По умолчанию исключаем паки, скрытые лично у запросившего (для админа это его self-hide из
+  // матрицы; у юзеров hidden пак- id не содержит → no-op). `?all=1` (только админ) отдаёт ВСЕ паки
+  // без фильтра — для управления владельцами/грантами в Админке, где нужно видеть и скрытые.
   app.get("/api/packs", async (req) => {
     const userId = uid(req);
     const isAdmin = adminReq(req);
+    const all = isAdmin && (req.query as { all?: unknown })?.all != null;
     const usedKeys = db.usedAnecdoteKeys(userId);
-    return listPacks(userId, isAdmin).map((s) => {
+    const base = all ? listAllPacks() : listPacks(userId, isAdmin);
+    const visible = all ? base : base.filter((s) => !db.isDeckHiddenFor(userId, `pack:${s.id}`));
+    return visible.map((s) => {
       const pack = getPack(s.id, userId, isAdmin);
       if (!pack) return { ...s, used: 0, available: s.cards };
       let used = 0;

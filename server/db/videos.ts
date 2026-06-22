@@ -51,6 +51,13 @@ export function videoMethods(db: DatabaseSync) {
     deleteVideo(id: number): void {
       db.prepare("DELETE FROM videos WHERE id = ?").run(id);
     },
+    // «Бесконечный пак» (infinite-packs): вместо удаления после успешной выкладки возвращаем ролик в
+    // очередь (post_count→0), СОХРАНЯЯ файлы и last_posted_at (время этой выкладки). next-unposted
+    // сортировка ставит уже выложенные в конец круга (NULL last_posted_at — впереди) → реальные ~50
+    // роликов канала крутятся бесконечно, не исчерпываясь. Для обычных юзеров не вызывается.
+    recycleVideoForRepost(id: number): void {
+      db.prepare("UPDATE videos SET post_count = 0 WHERE id = ?").run(id);
+    },
     // Total rendered videos waiting in the library across all channels (server-health "очередь").
     totalVideoCount(): number {
       const r = db.prepare("SELECT COUNT(*) AS n FROM videos").get() as Row;
@@ -84,17 +91,23 @@ export function videoMethods(db: DatabaseSync) {
         .get(accountId) as Row | undefined;
       return r ? rowToVideo(r) : null;
     },
-    // Next never-posted video (FIFO) for the post-once queue, optionally restricted to a deck/language.
+    // Next claimable video (post_count 0) for the post-once queue, optionally restricted to a deck.
+    // Ordering: last_posted_at ASC (SQLite sorts NULL first → never-posted come first), then id. For
+    // normal channels nothing is ever recycled, so every queued row has last_posted_at = NULL and this
+    // is identical to the old FIFO `ORDER BY id`. For infinite-pack channels (recycleVideoForRepost
+    // keeps the row with its post time) it rotates: oldest-posted next → round-robin over the queue.
     nextUnpostedVideo(accountId: number, deck?: string): Video | null {
       const r = (
         deck
           ? db
               .prepare(
-                "SELECT * FROM videos WHERE account_id = ? AND post_count = 0 AND deck = ? ORDER BY id ASC LIMIT 1",
+                "SELECT * FROM videos WHERE account_id = ? AND post_count = 0 AND deck = ? ORDER BY last_posted_at ASC, id ASC LIMIT 1",
               )
               .get(accountId, deck)
           : db
-              .prepare("SELECT * FROM videos WHERE account_id = ? AND post_count = 0 ORDER BY id ASC LIMIT 1")
+              .prepare(
+                "SELECT * FROM videos WHERE account_id = ? AND post_count = 0 ORDER BY last_posted_at ASC, id ASC LIMIT 1",
+              )
               .get(accountId)
       ) as Row | undefined;
       return r ? rowToVideo(r) : null;
@@ -110,7 +123,7 @@ export function videoMethods(db: DatabaseSync) {
         .prepare(
           `SELECT * FROM videos
            WHERE account_id = ? AND post_count = 0 AND deck IN (${placeholders})
-           ORDER BY post_count ASC, id ASC
+           ORDER BY post_count ASC, last_posted_at ASC, id ASC
            LIMIT 1`,
         )
         .get(accountId, ...ids) as Row | undefined;

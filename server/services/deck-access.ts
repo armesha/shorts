@@ -39,7 +39,11 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
   }
 
   function builtinDeckVisibleForUser(userId: number, deck: (typeof DECKS)[number]): boolean {
-    if (db.getUserById(userId)?.role === "admin") return true;
+    // Админ видит ВСЁ (вкл. admin-only) по умолчанию, КРОМЕ того, что он скрыл лично у себя
+    // (тот же per-user hidden-набор, что и у юзеров — он опционален и легко снимается в матрице
+    // Админки). Это только ВИДИМОСТЬ (списки/пикеры): право генерить у админа остаётся (deckAllowed),
+    // поэтому уже настроенный автопостинг канала не ломается.
+    if (db.getUserById(userId)?.role === "admin") return !db.isDeckHiddenFor(userId, deck.id);
     if (deck.adminOnly) return isGrantableBuiltinDeck(deck) && db.isDeckGrantedFor(userId, deck.id);
     return !db.isDeckHiddenFor(userId, deck.id);
   }

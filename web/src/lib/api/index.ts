@@ -69,6 +69,9 @@ export const apiClient = {
   adminLimits: () => get<AdminLimits>("/admin/limits"),
   setUserDecks: (userId: number, hidden: string[], grants?: string[]) =>
     send<{ ok: boolean; hidden: string[] }>(`/admin/users/${userId}/decks`, "PUT", { hidden, grants }),
+  // «Бесконечный пак» (имитация) — вкл/выкл для юзера: 1000 карточек везде + рецикл очереди по кругу.
+  setUserInfinitePacks: (userId: number, enabled: boolean) =>
+    send<{ ok: boolean; enabled: boolean }>(`/admin/users/${userId}/infinite-packs`, "PUT", { enabled }),
   resetUserDeck: (userId: number, deckId: string) =>
     send<{ ok: boolean; removed: number }>(`/admin/users/${userId}/decks/${encodeURIComponent(deckId)}/reset`, "POST", {}),
   adminUserPackUsage: (userId: number) =>
@@ -129,7 +132,7 @@ export const apiClient = {
       "DELETE",
     ),
   // Кастомные паки
-  packs: () => get<PackSummary[]>("/packs"),
+  packs: (opts?: { all?: boolean }) => get<PackSummary[]>(`/packs${opts?.all ? "?all=1" : ""}`),
   pack: (id: string) => get<PackFull>(`/packs/${id}`),
   createPack: (name: string, lang: string, templates: unknown[]) =>
     send<PackSummary>("/packs", "POST", { name, lang, templates }),

@@ -1,0 +1,139 @@
+{
+  "packId": "prayers-de",
+  "title": "Gebete",
+  "generatedAt": "2026-06-22T13:55:49Z",
+  "generator": "scripts/build-prayers-de-pack.py",
+  "count": 1000,
+  "childRelated": 250,
+  "generalPrayer": 750,
+  "templateCount": 25,
+  "backgroundSource": "OpenAI built-in image_gen backgrounds generated for this pack; no external image URLs; no watermark/tag added.",
+  "textSource": "Original deterministic German devotional templates generated locally: about 25% child-related cards and 75% general prayer themes.",
+  "templates": [
+    {
+      "id": 1,
+      "name": "prayer-template-01",
+      "background": "data/prayers-de/backgrounds/bg_01_9d61e4ade516edd3.png"
+    },
+    {
+      "id": 2,
+      "name": "prayer-template-02",
+      "background": "data/prayers-de/backgrounds/bg_02_460ed7eec45e171c.png"
+    },
+    {
+      "id": 3,
+      "name": "prayer-template-03",
+      "background": "data/prayers-de/backgrounds/bg_03_b1ddd021166b4047.png"
+    },
+    {
+      "id": 4,
+      "name": "prayer-template-04",
+      "background": "data/prayers-de/backgrounds/bg_04_98c28e027d4ea25d.png"
+    },
+    {
+      "id": 5,
+      "name": "prayer-template-05",
+      "background": "data/prayers-de/backgrounds/bg_05_e63c83bf196652cc.png"
+    },
+    {
+      "id": 6,
+      "name": "prayer-template-06",
+      "background": "data/prayers-de/backgrounds/bg_06_2b2124641d1a1799.png"
+    },
+    {
+      "id": 7,
+      "name": "prayer-template-07",
+      "background": "data/prayers-de/backgrounds/bg_07_453fcef30b192775.png"
+    },
+    {
+      "id": 8,
+      "name": "prayer-template-08",
+      "background": "data/prayers-de/backgrounds/bg_08_4f65694315fbf238.png"
+    },
+    {
+      "id": 9,
+      "name": "prayer-template-09",
+      "background": "data/prayers-de/backgrounds/bg_09_aefad0dcfcd1c67a.png"
+    },
+    {
+      "id": 10,
+      "name": "prayer-template-10",
+      "background": "data/prayers-de/backgrounds/bg_10_b649bfc1cd59d568.png"
+    },
+    {
+      "id": 11,
+      "name": "prayer-template-11",
+      "background": "data/prayers-de/backgrounds/bg_11_8146080bae346b8b.png"
+    },
+    {
+      "id": 12,
+      "name": "prayer-template-12",
+      "background": "data/prayers-de/backgrounds/bg_12_64d977a5c338895d.png"
+    },
+    {
+      "id": 13,
+      "name": "prayer-template-13",
+      "background": "data/prayers-de/backgrounds/bg_13_ed39773e8ab0de43.png"
+    },
+    {
+      "id": 14,
+      "name": "prayer-template-14",
+      "background": "data/prayers-de/backgrounds/bg_14_5e52a6421fe901b2.png"
+    },
+    {
+      "id": 15,
+      "name": "prayer-template-15",
+      "background": "data/prayers-de/backgrounds/bg_01_9d61e4ade516edd3.png"
+    },
+    {
+      "id": 16,
+      "name": "prayer-template-16",
+      "background": "data/prayers-de/backgrounds/bg_02_460ed7eec45e171c.png"
+    },
+    {
+      "id": 17,
+      "name": "prayer-template-17",
+      "background": "data/prayers-de/backgrounds/bg_03_b1ddd021166b4047.png"
+    },
+    {
+      "id": 18,
+      "name": "prayer-template-18",
+      "background": "data/prayers-de/backgrounds/bg_04_98c28e027d4ea25d.png"
+    },
+    {
+      "id": 19,
+      "name": "prayer-template-19",
+      "background": "data/prayers-de/backgrounds/bg_05_e63c83bf196652cc.png"
+    },
+    {
+      "id": 20,
+      "name": "prayer-template-20",
+      "background": "data/prayers-de/backgrounds/bg_06_2b2124641d1a1799.png"
+    },
+    {
+      "id": 21,
+      "name": "prayer-template-21",
+      "background": "data/prayers-de/backgrounds/bg_07_453fcef30b192775.png"
+    },
+    {
+      "id": 22,
+      "name": "prayer-template-22",
+      "background": "data/prayers-de/backgrounds/bg_08_4f65694315fbf238.png"
+    },
+    {
+      "id": 23,
+      "name": "prayer-template-23",
+      "background": "data/prayers-de/backgrounds/bg_09_aefad0dcfcd1c67a.png"
+    },
+    {
+      "id": 24,
+      "name": "prayer-template-24",
+      "background": "data/prayers-de/backgrounds/bg_10_b649bfc1cd59d568.png"
+    },
+    {
+      "id": 25,
+      "name": "prayer-template-25",
+      "background": "data/prayers-de/backgrounds/bg_11_8146080bae346b8b.png"
+    }
+  ]
+}

@@ -8,6 +8,7 @@ import { DECKS } from "../../src/anecdotes/decks.ts";
 import { listAllPacks, setGrant, setPackOwners, getPack, canAccess } from "../../src/packs/store.ts";
 import { libraryStats, deckAnecdoteKeys } from "../../src/anecdotes/library.ts";
 import { packCardKey } from "../services/pack-gen.ts";
+import { INFINITE_PACKS_FEATURE, infiniteCounts } from "../services/infinite-packs.ts";
 import { readElevenLabsKeys, fetchElevenLabsLimit } from "../services/elevenlabs-limits.ts";
 import { buildAdminAnalytics } from "../services/admin-analytics.ts";
 import {
@@ -143,17 +144,18 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   // All packs (matrix columns).
   app.get("/api/admin/decks", async (req, reply) => {
     if (!requireAdmin(req, reply)) return;
-    // встроенные деки + кастомные паки (всегда показываем паки колонками; id = "pack:<id>")
+    // встроенные деки + кастомные паки (всегда показываем паки колонками; id = "pack:<id>").
+    // Возвращаем ВСЕ деки (вкл. чисто admin-only): для строк-юзеров такие колонки рисуются «—»
+    // (им недоступно), а в СВОЕЙ строке админ может скрыть любую деку/пак лично у себя (opt-out).
     return [
-      // adminOnly built-in decks are hidden unless explicitly marked grantable. Grantable admin-only
-      // decks use the same opt-in checkbox flow as custom packs, but keep their static DECKS entry.
-      ...DECKS.filter((d) => !d.adminOnly || d.grantable).map((d) => ({
+      ...DECKS.map((d) => ({
         id: d.id,
         name: d.name,
         pack: false,
         grantable: !!(d.adminOnly && d.grantable),
+        adminOnly: !!d.adminOnly,
       })),
-      ...listAllPacks().map((p) => ({ id: `pack:${p.id}`, name: p.name, pack: true })),
+      ...listAllPacks().map((p) => ({ id: `pack:${p.id}`, name: p.name, pack: true, grantable: false, adminOnly: false })),
     ];
   });
   // Matrix data: per user — which packs are hidden + which packs they actually use.
@@ -188,35 +190,67 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
         scheduled: db.scheduleSlotsForUser(u.id), // posts/day planned across all their channels
         library: db.countVideosByUser(u.id), // videos queued in their libraries
         usedTotal: db.usedAnecdoteCount(u.id), // всего использованных карточек (встроенные + кастомные) — бейдж в панели сброса
-        deckStats,
+        infiniteSim: db.hasFeature(u.id, INFINITE_PACKS_FEATURE), // «бесконечный пак» (имитация): тумблер ниже
+        deckStats, // ВСЕГДА реальные числа (правда для админа), даже когда у юзера включён бесконечный пак
       };
     });
   });
-  // Replace a user's hidden-pack set (body.hidden = pack ids to hide). Admins can't be restricted.
+  // Replace a user's hidden-pack set (body.hidden = pack ids to hide) and grants.
   app.put("/api/admin/users/:id/decks", async (req, reply) => {
     if (!requireAdmin(req, reply)) return;
     const id = Number((req.params as { id: string }).id);
     const target = db.getUserById(id);
     if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
     const body = (req.body as { hidden?: string[]; grants?: string[] }) ?? {};
+
+    // АДМИН (в т.ч. сам себе): видит всё по умолчанию → hidden работает как opt-out и может содержать
+    // ЛЮБУЮ встроенную деку (вкл. admin-only) и кастомный пак "pack:<id>". Гранты админу не нужны.
+    if (target.role === "admin") {
+      const packIds = new Set(listAllPacks().map((p) => `pack:${p.id}`));
+      const adminHidden = [
+        ...new Set(
+          (Array.isArray(body.hidden) ? body.hidden : [])
+            .map((d) => String(d || "").trim())
+            .filter((d) => DECKS.some((x) => x.id === d) || packIds.has(d)),
+        ),
+      ];
+      db.setHiddenDecks(id, adminHidden);
+      db.setGrantedDecks(id, []); // у админа полный доступ — гранты не используются
+      return { ok: true, hidden: adminHidden };
+    }
+
+    // ОБЫЧНЫЙ ЮЗЕР: hidden = только обычные встроенные деки (opt-out); admin-only/grantable/кастомные
+    // паки даются грантом (opt-in) ниже.
     const valid = Array.isArray(body.hidden)
       ? body.hidden.filter((d) => DECKS.some((x) => x.id === d && !isGrantableBuiltinDeck(x)))
       : [];
-    const finalHidden = target.role === "admin" ? [] : valid;
-    db.setHiddenDecks(id, finalHidden);
+    db.setHiddenDecks(id, valid);
     const grants = Array.isArray(body.grants) ? body.grants.map((g) => String(g || "").trim()).filter(Boolean) : [];
     const builtInGrants = grants.filter((deckId) => isGrantableBuiltinDeckId(deckId));
-    db.setGrantedDecks(id, target.role === "admin" ? [] : builtInGrants);
+    db.setGrantedDecks(id, builtInGrants);
     // Кастомные паки (opt-in): выдать/снять доступ этому юзеру по body.grants (id вида "pack:<id>").
-    // Владельца не трогаем; админ и так видит всё.
-    if (target.role !== "admin") {
-      const want = new Set(grants.filter((g) => g.startsWith("pack:")).map((g) => g.replace(/^pack:/, "")));
-      for (const p of listAllPacks()) {
-        if (p.owners.includes(id)) continue; // владельцу грант не нужен
-        setGrant(p.id, id, want.has(p.id));
-      }
+    // Владельца не трогаем.
+    const want = new Set(grants.filter((g) => g.startsWith("pack:")).map((g) => g.replace(/^pack:/, "")));
+    for (const p of listAllPacks()) {
+      if (p.owners.includes(id)) continue; // владельцу грант не нужен
+      setGrant(p.id, id, want.has(p.id));
     }
-    return { ok: true, hidden: finalHidden };
+    return { ok: true, hidden: valid };
+  });
+
+  // Admin: toggle the "infinite packs" simulation for a user (his personal request — see
+  // services/infinite-packs.ts). ON → that user's built-in decks report a constant 1000 free cards
+  // everywhere he looks (Studio / channel sources / «Паки»), AND the scheduler recycles his
+  // already-queued videos round-robin forever instead of deleting them after each post. Visibility +
+  // queue recycle only; real used-card accounting and deck access are untouched.
+  app.put("/api/admin/users/:id/infinite-packs", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
+    const id = Number((req.params as { id: string }).id);
+    const target = db.getUserById(id);
+    if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
+    const enabled = !!(req.body as { enabled?: unknown })?.enabled;
+    db.setFeature(id, INFINITE_PACKS_FEATURE, enabled);
+    return { ok: true, enabled };
   });
 
   // Reset one user's used-history for a built-in deck. Existing library videos stay intact;
@@ -297,9 +331,13 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
     const usedKeys = new Set(db.usedAnecdoteKeys(targetId));
     const posted = db.postedByUserDeck()[targetId] ?? {};
+    // «Бесконечный пак»: это «вид паков самого юзера» (его страница «Паки») → показываем 1000/0/1000,
+    // как и в /api/generators. Админ-обзор (матрица/low-decks/pack-usage) остаётся с реальными числами.
+    const infinite = db.hasFeature(targetId, INFINITE_PACKS_FEATURE);
     const decks = visibleDecksForUser(targetId).map((d) => {
       const s = libraryStats(d.id, usedKeys);
-      return { id: d.id, name: d.name, total: s.total, used: s.used, available: s.available, posted: posted[d.id] ?? 0 };
+      const c = infinite ? infiniteCounts() : { total: s.total, used: s.used, available: s.available };
+      return { id: d.id, name: d.name, total: c.total, used: c.used, available: c.available, posted: posted[d.id] ?? 0 };
     });
     return { userId: targetId, username: target.username, decks };
   });

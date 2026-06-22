@@ -267,6 +267,20 @@ export const DECKS: Deck[] = [
     preFact: true,
   },
   {
+    id: "prayers-de",
+    name: "Gebete",
+    dir: "data/prayers-de", // videos.json = [{file,title,text}]; static German prayer-card MP4s
+    source: "",
+    emoji: "🙏",
+    hashtags: "#gebet #glaube #segen #schutz #frieden #amen #shorts",
+    tags: ["gebet", "glaube", "segen", "schutz", "frieden", "hoffnung", "amen", "shorts"],
+    genericTitles: ["Gebet", "Segen", "Amen", "Frieden", "Hoffnung"],
+    // Pre-built prayer-card video pack; admin grants it to regular users from /users.
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+  },
+  {
     id: "space",
     name: "Space",
     dir: "data/space", // videos.json = [{file,title,text}] of pre-built montage mp4s in assets/fact-videos/space/
@@ -329,7 +343,7 @@ export function isPackDeckId(id?: string | null): boolean {
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
-  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", space: "en", "visual-riddles": "ru", "animal-superheroes": "ru", "animal-superheroes-en": "en",
+  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "animal-superheroes": "ru", "animal-superheroes-en": "en",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it",
 };
 export function deckLang(id: string): string {

@@ -143,6 +143,7 @@ export interface DeckInfo {
   name: string;
   pack?: boolean; // кастомный пак (id вида "pack:<id>"); доступ — opt-in (гранты), а не hidden
   grantable?: boolean; // встроенный admin-only deck, который админ выдает opt-in галочкой
+  adminOnly?: boolean; // admin-only дека: юзеру недоступна («—» в матрице), но админ может скрыть её у себя
 }
 /** One row of the admin pack-visibility matrix: a user + which packs are hidden / actually used. */
 export interface UserDeckRow {
@@ -155,6 +156,7 @@ export interface UserDeckRow {
   scheduled: number; // posts/day planned across all the user's channels
   library: number; // videos queued in the user's libraries
   usedTotal: number; // всего использованных карточек (встроенные + кастомные паки) — бейдж в панели сброса
+  infiniteSim?: boolean; // «бесконечный пак» (имитация): юзер видит 1000 карточек, очередь крутится по кругу
   // Per-deck remaining/used/total/posted for the decks the user uses (admin "when does a pack run out").
   deckStats?: Record<string, { used: number; available: number; total: number; posted: number }>;
 }
