@@ -1,48 +1,30 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
-import { ArrowLeft, Save, Trash2, Check, Plus, Upload, Loader2, ChevronLeft, ChevronRight, RefreshCw, Play, Download, X, AlertTriangle } from "lucide-react";
-import { apiClient, type Account, type VideoItem, type Generator, type PackSummary, type OAuthClient } from "../lib/api";
-import VideoPlayer from "../components/VideoPlayer";
-import { confirmDialog } from "../lib/confirm";
-import { useAuth } from "../lib/auth";
-import { useGenQueue } from "../lib/genQueue";
-import { useT } from "../lib/i18n";
-import { AppIcon } from "../components/AppIcon";
-import { BrandIcon } from "../components/BrandIcon";
-import { BUILTIN_DECKS, CONTENT_LANGS, DECK_LANG, langTag, buildDeckGroups } from "../lib/deck";
-import { cleanDisplayText } from "../lib/text";
-import { formatDateTime } from "../lib/format";
-
-// N posts/day spread ~evenly across 24h, but with a small RANDOM per-channel offset + jitter,
-// so two channels with the same N never all fire at the same minute. `avoid` = minutes already
-// used elsewhere (the user's other channels) — collisions are nudged forward a minute.
-const toMin = (t: string) => {
-  const [h, m] = t.split(":").map(Number);
-  return h * 60 + m;
-};
-const ACCOUNT_DAILY_SLOT_CAP = 20;
-const USER_DAILY_SLOT_CAP = 92;
-const GENERATE_ALL_DECKS = "__all_decks__";
-const randomDayTimes = (n: number, avoid: Set<number> = new Set()): string[] => {
-  if (n <= 0) return [];
-  const interval = 1440 / n;
-  const phase = Math.random() * interval; // per-channel random start within the first slot
-  const jitter = Math.min(interval * 0.35, 20); // small → intervals stay roughly equal
-  const used = new Set<number>();
-  const mins: number[] = [];
-  for (let i = 0; i < n; i++) {
-    let m = Math.round(phase + i * interval + (Math.random() * 2 - 1) * jitter);
-    m = ((m % 1440) + 1440) % 1440;
-    let guard = 0;
-    while ((used.has(m) || avoid.has(m)) && guard++ < 120) m = (m + 1) % 1440;
-    used.add(m);
-    mins.push(m);
-  }
-  return mins
-    .sort((a, b) => a - b)
-    .map((m) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`);
-};
+import { ArrowLeft, Save, Trash2, Check, Plus, Upload, Loader2, ChevronLeft, ChevronRight, RefreshCw, Play, AlertTriangle } from "lucide-react";
+import { apiClient, type Account, type VideoItem, type Generator, type PackSummary, type OAuthClient } from "../../lib/api";
+import { confirmDialog } from "../../lib/confirm";
+import { useAuth } from "../../lib/auth";
+import { useGenQueue } from "../../lib/genQueue";
+import { useT } from "../../lib/i18n";
+import { AppIcon } from "../../components/AppIcon";
+import { BrandIcon } from "../../components/BrandIcon";
+import { BUILTIN_DECKS, CONTENT_LANGS, DECK_LANG, langTag, type DeckGroup } from "../../lib/deck";
+import { cleanDisplayText } from "../../lib/text";
+import { formatDateTime } from "../../lib/format";
+import { toMin, randomDayTimes, ACCOUNT_DAILY_SLOT_CAP, USER_DAILY_SLOT_CAP } from "./schedule";
+import {
+  GENERATE_ALL_DECKS,
+  genById as srcGenById,
+  sourceRemaining as srcSourceRemaining,
+  contentLang as srcContentLang,
+  mismatchedSources as srcMismatchedSources,
+  deckName as srcDeckName,
+  deckMeta as srcDeckMeta,
+  deckGroups as srcDeckGroups,
+} from "./sources";
+import VideoPreviewModal from "./VideoPreviewModal";
+import AvatarPickerModal from "./AvatarPickerModal";
 
 export default function AccountDetail() {
   const { t } = useT();
@@ -106,13 +88,7 @@ export default function AccountDetail() {
   const roleMax = user?.role === "admin" ? 100 : 50; // потолок: админ 100, обычный юзер 50
   const selectedSources = (sourceDecks.length ? sourceDecks : [lang]).filter(Boolean);
   // Остаток = СВОБОДНЫЕ (неиспользованные) карточки. Для пака — available (cards − used), не общее число.
-  const sourceRemaining = (deckId: string) => {
-    if (deckId.startsWith("pack:")) {
-      const p = packs.find((pp) => `pack:${pp.id}` === deckId);
-      return p?.available ?? p?.cards ?? 0;
-    }
-    return gens.find((gg) => gg.id === deckId)?.available ?? 0;
-  };
+  const sourceRemaining = (deckId: string) => srcSourceRemaining(packs, gens, deckId);
   const canGenerateAllSources = selectedSources.length > 1;
   const activeGenerateDeck =
     generateDeck === GENERATE_ALL_DECKS && canGenerateAllSources
@@ -432,7 +408,7 @@ export default function AccountDetail() {
   const gensIds = new Set(gens.map((g) => g.id));
   const visibleLangs =
     gens.length === 0 ? BUILTIN_DECKS : BUILTIN_DECKS.filter(({ id }) => gensIds.has(id) || currentDeckIds.has(id));
-  const genById = (id: string) => gens.find((g) => g.id === id);
+  const genById = (id: string) => srcGenById(gens, id);
   const hasVideoSources = visibleLangs.some(({ id }) => !!genById(id)?.preFact);
   const hasTextSources = visibleLangs.some(({ id }) => !genById(id)?.preFact) || packs.length > 0;
   const showPackKind = hasVideoSources && hasTextSources;
@@ -441,27 +417,12 @@ export default function AccountDetail() {
   // тот же набор, что в Студии, чтобы пак можно было назначить каналу и генерить из него.
   const packIds = new Set(packs.map((p) => `pack:${p.id}`));
   // язык выбранного контента (встроенный или свой пак) — для тега и проверки совпадения с языком канала
-  const contentLang = (id: string): string =>
-    id.startsWith("pack:") ? packs.find((p) => `pack:${p.id}` === id)?.lang || "" : DECK_LANG[id] || id;
+  const contentLang = (id: string): string => srcContentLang(packs, id);
   const curContentLang = contentLang(activeGenerateDeck);
-  const mismatchedSources = selectedSources.filter((deckId) => {
-    const lng = contentLang(deckId);
-    return !!channelLang && !!lng && lng !== channelLang;
-  });
+  const mismatchedSources = srcMismatchedSources(packs, selectedSources, channelLang);
   const langMismatch = mismatchedSources.length > 0;
-  const deckName = (deckId: string) => {
-    if (deckId.startsWith("pack:")) {
-      const p = packs.find((x) => `pack:${x.id}` === deckId);
-      return p ? p.name : `${deckId.slice(5)} ${t("account.noAccess")}`;
-    }
-    return genById(deckId)?.name || BUILTIN_DECKS.find((d) => d.id === deckId)?.label || deckId;
-  };
-  const deckMeta = (deckId: string) => {
-    const lng = contentLang(deckId);
-    const count = sourceRemaining(deckId);
-    const suffix = deckId.startsWith("pack:") ? t("account.cardsCount", { n: count }) : t("account.availableCount", { n: count });
-    return `${langTag(lng)} · ${suffix}`;
-  };
+  const deckName = (deckId: string) => srcDeckName(packs, gens, t, deckId);
+  const deckMeta = (deckId: string) => srcDeckMeta(packs, gens, t, deckId);
   const updateSources = (next: string[]) => {
     const clean = [...new Set(next.filter(Boolean))];
     const fallback = clean.length ? clean : [lang];
@@ -475,16 +436,11 @@ export default function AccountDetail() {
     setSlotDecks((prev) => Object.fromEntries(Object.entries(prev).filter(([, deckId]) => fallback.includes(deckId))));
   };
   const savedSources = account ? (account.sourceDecks?.length ? account.sourceDecks : [account.lang]) : selectedSources;
-  const sourcesDirty = savedSources.join("\u001f") !== selectedSources.join("\u001f");
+  const sourcesDirty = savedSources.join("") !== selectedSources.join("");
   // Единый пикер источников: встроенные деки + кастомные паки, сгруппированы только по языку.
-  // Общий хелпер со Студией (web/src/lib/deck.ts).
+  // Группы (данные) считает чистый хелпер sources.ts; здесь только JSX-рендер <optgroup>.
   const deckOptions = (excludeSelected = false) => {
-    const exclude = excludeSelected ? new Set(selectedSources) : undefined;
-    const extraPacks = selectedSources
-      .filter((x) => x.startsWith("pack:") && !packIds.has(x))
-      .map((x) => ({ id: x, label: `${x.slice(5)} ${t("account.noAccess")}`, lang: "" }));
-    const builtinGens = visibleLangs.map(({ id, label }) => genById(id) ?? { id, name: label });
-    const groups = buildDeckGroups(builtinGens, packs, { excludeIds: exclude, extraPacks });
+    const groups: DeckGroup[] = srcDeckGroups(packs, gens, visibleLangs, selectedSources, packIds, t, excludeSelected);
     return groups.map((grp) => (
       <optgroup key={grp.key} label={grp.title}>
         {grp.items.map((it) => (
@@ -1167,143 +1123,28 @@ export default function AccountDetail() {
         </div>
       </section>
 
-      {preview &&
-        createPortal(
-          <div
-            className="modal modal-open modal-middle z-[1000]"
-            role="dialog"
-            aria-modal="true"
-            onClick={() => setPreview(null)}
-          >
-            <div
-              className="modal-box relative w-[calc(100vw-1.5rem)] max-w-3xl max-h-[calc(100dvh-1.5rem)] overflow-hidden rounded-xl bg-base-100 p-0 shadow-2xl sm:max-h-[calc(100dvh-3rem)]"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                type="button"
-                onClick={() => setPreview(null)}
-                aria-label={t("common.close")}
-                className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-20 bg-base-100/70 hover:bg-base-100"
-              >
-                <X size={16} />
-              </button>
-              <div className="flex min-h-0 w-full flex-col sm:flex-row">
-                <div className="flex min-h-0 shrink-0 items-center justify-center bg-black sm:order-2 sm:w-[300px]">
-                  <VideoPlayer
-                    src={`/files/${preview.videoRel}`}
-                    poster={preview.imageRel ? `/files/${preview.imageRel}` : undefined}
-                    className="h-[50dvh] max-h-[460px] w-full object-contain sm:aspect-[9/16] sm:h-auto sm:max-h-[calc(100dvh-3rem)]"
-                  />
-                </div>
-                <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-y-auto p-3 sm:order-1 sm:p-4">
-                  <h3 className="font-bold text-base leading-snug">{cleanDisplayText(preview.title)}</h3>
-                  {preview.text && (
-                    <p className="max-h-[14dvh] overflow-auto whitespace-pre-wrap text-sm leading-relaxed text-base-content/80 sm:max-h-[40vh]">
-                      {preview.text}
-                    </p>
-                  )}
-                  <div className="text-xs text-base-content/50">
-                    {t("account.charCount", { n: preview.text.length })}
-                    {preview.postCount > 0 ? ` · ${t("account.postedTimes", { n: preview.postCount })}` : ` · ${t("account.notPosted")}`}
-                    {preview.lastPostedAt && ` · ${new Date(preview.lastPostedAt).toLocaleDateString("ru-RU")}`}
-                    {preview.music && preview.music !== "none"
-                      ? ` · ${t("studio.musicLabel").toLowerCase()} ${preview.music.split("/").pop()?.replace(/\.\w+$/, "")}`
-                      : ` · ${t("account.noMusic")}`}
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2 pt-2 mt-auto">
-                    <a href={`/files/${preview.videoRel}`} download className="btn btn-sm btn-ghost gap-1">
-                      <Download size={14} /> MP4
-                    </a>
-                    <button
-                      className="btn btn-sm btn-ghost text-error gap-1"
-                      onClick={() => {
-                        const pid = preview.id;
-                        setPreview(null);
-                        removeVid(pid);
-                      }}
-                    >
-                      <Trash2 size={14} /> {t("common.delete")}
-                    </button>
-                    <button
-                      className="btn btn-sm btn-primary gap-1 ml-auto"
-                      disabled={account.status !== "connected" || posting === preview.id}
-                      onClick={() => {
-                        const pid = preview.id;
-                        setPreview(null);
-                        postNow(pid);
-                      }}
-                    >
-                      <Upload size={14} /> {t("account.post")}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="modal-backdrop bg-black/55" />
-          </div>,
-          document.body,
-        )}
+      {preview && (
+        <VideoPreviewModal
+          preview={preview}
+          accountStatus={account.status}
+          posting={posting}
+          onClose={() => setPreview(null)}
+          onRemove={removeVid}
+          onPost={postNow}
+          t={t}
+        />
+      )}
 
       {avatarOpen && (
-        <div className="modal modal-open modal-middle" onClick={() => !avatarBusy && setAvatarOpen(false)}>
-          <div className="modal-box max-w-2xl max-h-[88vh] p-0 overflow-hidden" onClick={(e) => e.stopPropagation()}>
-            <div className="sticky top-0 z-10 bg-base-100 border-b border-base-300 px-4 py-3">
-              <div className="flex items-center justify-between mb-3">
-              <h3 className="font-bold text-lg">{t("account.avatarModalTitle")}</h3>
-              <button
-                className="btn btn-sm btn-circle btn-ghost"
-                onClick={() => setAvatarOpen(false)}
-                disabled={avatarBusy}
-                aria-label={t("common.close")}
-              >
-                <X size={16} />
-              </button>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-              <label className={`btn btn-sm btn-primary gap-1 ${avatarBusy ? "btn-disabled" : ""}`}>
-                <Upload size={14} /> {t("account.uploadOwnPhoto")}
-                <input
-                  type="file"
-                  accept="image/png,image/jpeg,image/webp"
-                  className="hidden"
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (f) onUploadAvatar(f);
-                    e.target.value = "";
-                  }}
-                />
-              </label>
-              <button
-                className="btn btn-sm btn-ghost gap-1"
-                disabled={avatarBusy || avatarList.length === 0}
-                onClick={() => setAvatar(avatarList[Math.floor(Math.random() * avatarList.length)])}
-              >
-                <RefreshCw size={14} /> {t("account.randomAvatar")}
-              </button>
-              {avatarBusy && <Loader2 className="animate-spin self-center" size={16} />}
-              <span className="text-xs text-base-content/50 ml-auto">{t("account.orPickFromSet")}</span>
-              </div>
-            </div>
-            <div className="max-h-[calc(88vh-8.5rem)] overflow-y-auto p-4">
-              <div className="grid grid-cols-5 sm:grid-cols-7 md:grid-cols-9 gap-2 p-1">
-              {avatarList.map((u) => (
-                <button
-                  key={u}
-                  type="button"
-                  onClick={() => setAvatar(u)}
-                  disabled={avatarBusy}
-                  title={t("account.pickAvatar")}
-                  className={`rounded-full overflow-hidden border-2 transition w-full aspect-square ${
-                    account.avatar === u ? "border-primary" : "border-transparent hover:border-base-300"
-                  }`}
-                >
-                  <img src={u} alt="" className="w-full aspect-square object-cover bg-base-200" loading="lazy" />
-                </button>
-              ))}
-              </div>
-            </div>
-          </div>
-        </div>
+        <AvatarPickerModal
+          avatarList={avatarList}
+          avatarBusy={avatarBusy}
+          currentAvatar={account.avatar}
+          onClose={() => setAvatarOpen(false)}
+          onPick={setAvatar}
+          onUpload={onUploadAvatar}
+          t={t}
+        />
       )}
 
       {times.length > 0 && (
