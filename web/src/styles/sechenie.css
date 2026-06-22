@@ -717,26 +717,6 @@ html[data-skin="sechenie"] .admin-shell nav section > div:first-child {
   font-weight: 800;
   letter-spacing: 0.14em;
 }
-/* numbered nav — one counter per menu group, rendered as a tabular 01,02,… prefix */
-html[data-skin="sechenie"] .admin-shell nav .menu {
-  counter-reset: sx-nav;
-}
-html[data-skin="sechenie"] .admin-shell nav .menu > li > a {
-  counter-increment: sx-nav;
-}
-html[data-skin="sechenie"] .admin-shell nav .menu > li > a::before {
-  content: counter(sx-nav, decimal-leading-zero);
-  margin-right: 0.55rem;
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  font-variant-numeric: tabular-nums;
-  color: var(--sx-muted);
-  align-self: center;
-}
-html[data-skin="sechenie"] .admin-shell nav .menu > li > a.active::before {
-  color: var(--sx-acid);
-}
 html[data-skin="sechenie"] .admin-shell .menu a {
   border-radius: 0;
   font-weight: 650;
