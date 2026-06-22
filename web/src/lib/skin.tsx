@@ -1,15 +1,15 @@
-// Admin-only visual "skin" on top of the classic dashboard look.
+// Optional visual "skin" on top of the classic dashboard look — available to EVERY logged-in user.
 //
 // WHY this is separate from lib/design.ts: the design picker (atelier/harbor/berry/classic) only
 // swaps DaisyUI colour tokens. The "СЕЧЕНИЕ" skin is a full editorial re-style (grain, hard borders,
-// acid accent, big uppercase headings) layered OVER the .admin-shell wrapper via CSS scoped under
-// html[data-skin="sechenie"]. It is gated to admins and OFF by default; the classic look is always
-// reachable. Preference is per-browser (localStorage), exactly like the design picker — so there are
-// NO backend changes and no server restart needed.
+// acid accent, big uppercase headings) layered via CSS scoped under html[data-skin="sechenie"].
+// It is OFF by default (so nobody is surprised); anyone who wants it opts in and the classic look is
+// always one click back. Preference is per-browser (localStorage), exactly like the design picker —
+// so there are NO backend changes and no server restart needed.
 //
 // The skin is applied by toggling document.documentElement.dataset.skin. The provider is the single
-// source of truth: it ONLY applies the attribute when the current user is an admin AND opted in, so a
-// non-admin can never end up skinned (even mid-impersonation the role flips to "user" → skin drops).
+// source of truth: it applies the attribute only for a logged-in user who opted in (skin drops on
+// logout when user becomes null, and never shows on the pre-login screen).
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { useAuth } from "./auth";
 
@@ -39,11 +39,11 @@ function applySkinAttr(on: boolean) {
 }
 
 interface SkinState {
-  /** Whether the СЕЧЕНИЕ skin is currently active (admin + opted in). */
+  /** Whether the СЕЧЕНИЕ skin is currently active (logged in + opted in). */
   skinOn: boolean;
-  /** Whether the current user is even allowed to use the skin (admin only). */
+  /** Whether the skin control should be shown (any logged-in user). */
   canUseSkin: boolean;
-  /** Persist + apply the admin's preference. No-op for non-admins. */
+  /** Persist + apply the user's preference. */
   setSkinOn: (on: boolean) => void;
 }
 
@@ -57,10 +57,12 @@ export function useSkin(): SkinState {
 
 export function SkinProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const canUseSkin = user?.role === "admin";
+  // Available to EVERY logged-in user (off by default); only gate is being logged in so the skin
+  // never shows on the pre-login screen and drops on logout.
+  const canUseSkin = !!user;
   const [pref, setPref] = useState<boolean>(() => getSavedSkinPref());
 
-  // Effective state: only admins who opted in get the skin.
+  // Effective state: any logged-in user who opted in gets the skin.
   const skinOn = canUseSkin && pref;
 
   useEffect(() => {

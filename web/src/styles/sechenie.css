@@ -208,6 +208,14 @@ html[data-skin="sechenie"] ::-webkit-scrollbar-button {
   width: 0;
   height: 0;
 }
+/* Sidebar nav: no visible scrollbar at all (still scrolls via wheel / touch / keyboard) */
+html[data-skin="sechenie"] .drawer-side > aside > nav {
+  scrollbar-width: none;
+}
+html[data-skin="sechenie"] .drawer-side > aside > nav::-webkit-scrollbar {
+  display: none;
+  width: 0;
+}
 html[data-skin="sechenie"] :where(a, button, summary, input, select, textarea, [tabindex]):focus-visible {
   outline: 2px solid var(--sx-ink);
   outline-offset: 2px;

@@ -720,10 +720,10 @@ export const en: Record<string, string> = {
   "skin.name": "СЕЧЕНИЕ design",
   "skin.on": "on",
   "skin.off": "off",
-  "skin.toggleHint": "Toggle the СЕЧЕНИЕ design (only you, as admin, can see it)",
+  "skin.toggleHint": "Toggle the СЕЧЕНИЕ design (only you see it)",
   "skin.settingsTitle": "СЕЧЕНИЕ design",
   "skin.settingsDesc":
-    "A bold editorial restyle of the dashboard: paper background, acid accent, film grain and hard borders. Enabled for you (admin) only; regular users keep the classic look.",
+    "A bold editorial restyle of the dashboard: paper background, acid accent, film grain and hard borders. Off by default — turn it on if you like; only you see the change.",
   "skin.adminLocalNote":
     "This look changes only in your browser and does not affect other users. The classic look is always available — just turn the toggle off.",
   "settings.errLoad": "Failed to load settings",

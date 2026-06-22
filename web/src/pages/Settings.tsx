@@ -377,10 +377,7 @@ function SkinSettings() {
           <div className="flex items-start gap-2">
             <AppIcon name="skin" className="text-primary mt-0.5" size={18} />
             <div>
-              <h2 className="card-title text-base">
-                {t("skin.settingsTitle")}
-                <span className="badge badge-error badge-sm ml-2 align-middle">adm</span>
-              </h2>
+              <h2 className="card-title text-base">{t("skin.settingsTitle")}</h2>
               <p className="text-sm text-base-content/60 mt-1">{t("skin.settingsDesc")}</p>
             </div>
           </div>
