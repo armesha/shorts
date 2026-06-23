@@ -13,7 +13,7 @@
    .admin-shell (to beat index.css's Apple tokens that sit directly on the .admin-shell element).
 
    Design decisions (verified against a multi-agent art-direction pass):
-   - acid (#c7ff00) is a MARKER, never text on paper (it fails contrast) — only fill-with-ink,
+   - acid (#c4d96b) is a MARKER, never text on paper (it fails contrast) — only fill-with-ink,
      active-nav bar, ↗ hover, adm chip, toggle-on.
    - primary CTA = ink fill + paper text, acid "stamp" shadow on hover; the one acid fill = btn-accent.
    - only HEADINGS + tiny captions are uppercased; user data (channel names, JSON, table cells,
@@ -29,7 +29,7 @@ html[data-skin="sechenie"] {
   --sx-surface: #f5f4ef;
   --sx-ink: #0b0b0b;
   --sx-muted: #5f5f57;
-  --sx-acid: #c7ff00;
+  --sx-acid: #c4d96b;
   --sx-red: #ff3d2e;
   --sx-blue: #3e55ff;
   --sx-orange: #ff6a00;
@@ -94,7 +94,7 @@ html[data-skin="sechenie"] {
   --color-primary-content: #efeee8;
   --color-secondary: #3e55ff;
   --color-secondary-content: #ffffff;
-  --color-accent: #c7ff00;
+  --color-accent: #c4d96b;
   --color-accent-content: #0b0b0b;
   --color-neutral: #0b0b0b;
   --color-neutral-content: #efeee8;
@@ -128,7 +128,7 @@ html[data-skin="sechenie"] .admin-shell {
   --color-primary-content: #efeee8;
   --color-secondary: #3e55ff;
   --color-secondary-content: #ffffff;
-  --color-accent: #c7ff00;
+  --color-accent: #c4d96b;
   --color-accent-content: #0b0b0b;
   --color-neutral: #0b0b0b;
   --color-neutral-content: #efeee8;
