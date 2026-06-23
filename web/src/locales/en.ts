@@ -723,7 +723,7 @@ export const en: Record<string, string> = {
   "skin.toggleHint": "Toggle the СЕЧЕНИЕ design (only you see it)",
   "skin.settingsTitle": "СЕЧЕНИЕ design",
   "skin.settingsDesc":
-    "A bold editorial restyle of the dashboard: paper background, acid accent, film grain and hard borders. Off by default — turn it on if you like; only you see the change.",
+    "A bold editorial restyle of the dashboard: paper background, acid accent, film grain and hard borders. On by default — turn it off anytime; only you see the change.",
   "skin.adminLocalNote":
     "This look changes only in your browser and does not affect other users. The classic look is always available — just turn the toggle off.",
   "settings.errLoad": "Failed to load settings",

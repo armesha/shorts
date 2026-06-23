@@ -3,9 +3,9 @@
 // WHY this is separate from lib/design.ts: the design picker (atelier/harbor/berry/classic) only
 // swaps DaisyUI colour tokens. The "СЕЧЕНИЕ" skin is a full editorial re-style (grain, hard borders,
 // acid accent, big uppercase headings) layered via CSS scoped under html[data-skin="sechenie"].
-// It is OFF by default (so nobody is surprised); anyone who wants it opts in and the classic look is
-// always one click back. Preference is per-browser (localStorage), exactly like the design picker —
-// so there are NO backend changes and no server restart needed.
+// It is ON by default for everyone; anyone can turn it off (the choice persists per-browser) and the
+// classic look is always one click back. Preference is per-browser (localStorage), exactly like the
+// design picker — so there are NO backend changes and no server restart needed.
 //
 // The skin is applied by toggling document.documentElement.dataset.skin. The provider is the single
 // source of truth: it applies the attribute only for a logged-in user who opted in (skin drops on
@@ -17,10 +17,12 @@ export const SKIN_ID = "sechenie";
 export const SKIN_STORAGE_KEY = "sf.skin";
 
 export function getSavedSkinPref(): boolean {
+  // ON by default for EVERYONE — only an explicit "0" (the user turned it off) disables it; that
+  // choice then persists. A missing value (never toggled) or "1" both mean on.
   try {
-    return localStorage.getItem(SKIN_STORAGE_KEY) === "1";
+    return localStorage.getItem(SKIN_STORAGE_KEY) !== "0";
   } catch {
-    return false;
+    return true;
   }
 }
 

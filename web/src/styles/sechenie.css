@@ -759,6 +759,8 @@ html[data-skin="sechenie"] .drawer-side > aside {
   box-shadow: none;
 }
 html[data-skin="sechenie"] .drawer-side > aside > a:first-child {
+  height: 3.5rem; /* match the h-14 topbar (sidebar brand is h-16=64px) so the header divider is one straight line */
+  min-height: 3.5rem;
   font-weight: 900;
   letter-spacing: -0.04em;
   text-transform: uppercase;
