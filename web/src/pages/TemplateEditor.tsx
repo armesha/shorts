@@ -23,7 +23,7 @@ export default function TemplateEditor() {
         </a>
       </div>
 
-      <div className="alert alert-info text-sm">
+      <div className="alert text-sm">
         <Info size={18} className="shrink-0" />
         <span>
           {t("editor.infoIntro")} <b>{t("editor.infoNoEffect")}</b> {t("editor.infoStorage")}{" "}

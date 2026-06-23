@@ -365,6 +365,19 @@ html[data-skin="sechenie"] .btn-outline:not(:disabled):hover {
   border-color: var(--sx-ink);
   box-shadow: none;
 }
+/* Outline + error (e.g. «Очистить всё», «Стоп»): RED text/border on transparent. Without this the
+   .btn-error rule's white text stays on the transparent outline fill → invisible until hover. */
+html[data-skin="sechenie"] .btn-outline.btn-error {
+  background: transparent;
+  color: #d62716;
+  border-color: #d62716;
+}
+html[data-skin="sechenie"] .btn-outline.btn-error:not(:disabled):hover {
+  background: #d62716;
+  color: #fff;
+  border-color: #d62716;
+  box-shadow: 3px 3px 0 0 var(--sx-line-strong);
+}
 
 /* ↗ corner-arrow — the brand micro-detail, on hero CTAs only, never on icon-only buttons */
 html[data-skin="sechenie"] .btn-primary::after,
