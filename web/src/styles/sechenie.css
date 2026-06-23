@@ -759,7 +759,11 @@ html[data-skin="sechenie"] .drawer-side > aside {
   box-shadow: none;
 }
 html[data-skin="sechenie"] .drawer-side > aside > a:first-child {
-  height: 3.5rem; /* match the h-14 topbar (sidebar brand is h-16=64px) so the header divider is one straight line */
+  /* Align the brand divider with the topbar divider into ONE straight line. The topbar is a 56px
+     (h-14) content box whose 1px border sits BELOW it; content-box makes the brand's 1px border sit
+     below its 56px too (border-box would tuck it inside → the brand line ends up 1px too high). */
+  box-sizing: content-box;
+  height: 3.5rem;
   min-height: 3.5rem;
   font-weight: 900;
   letter-spacing: -0.04em;

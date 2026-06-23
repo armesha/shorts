@@ -1,4 +1,4 @@
-// Optional visual "skin" on top of the classic dashboard look — available to EVERY logged-in user.
+// Optional visual "skin" on top of the classic dashboard look — ON by default for everyone (incl. the login screen).
 //
 // WHY this is separate from lib/design.ts: the design picker (atelier/harbor/berry/classic) only
 // swaps DaisyUI colour tokens. The "СЕЧЕНИЕ" skin is a full editorial re-style (grain, hard borders,
@@ -7,9 +7,10 @@
 // classic look is always one click back. Preference is per-browser (localStorage), exactly like the
 // design picker — so there are NO backend changes and no server restart needed.
 //
-// The skin is applied by toggling document.documentElement.dataset.skin. The provider is the single
-// source of truth: it applies the attribute only for a logged-in user who opted in (skin drops on
-// logout when user becomes null, and never shows on the pre-login screen).
+// The skin is applied by toggling document.documentElement.dataset.skin, purely from the per-browser
+// preference (default ON) — independent of login, so the login/boot screens are skinned too. The
+// CONTROL (toggle + Settings card) is the only login-gated part. main.tsx also applies it before React
+// mounts (applySavedSkin) to avoid a classic→skin flash on first paint.
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { useAuth } from "./auth";
 
@@ -40,6 +41,11 @@ function applySkinAttr(on: boolean) {
   else delete el.dataset.skin;
 }
 
+/** Apply the saved preference to <html> synchronously — call from main.tsx pre-mount to avoid FOUC. */
+export function applySavedSkin() {
+  applySkinAttr(getSavedSkinPref());
+}
+
 interface SkinState {
   /** Whether the СЕЧЕНИЕ skin is currently active (logged in + opted in). */
   skinOn: boolean;
@@ -59,13 +65,14 @@ export function useSkin(): SkinState {
 
 export function SkinProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  // Available to EVERY logged-in user (off by default); only gate is being logged in so the skin
-  // never shows on the pre-login screen and drops on logout.
+  // The skin CONTROL (header toggle + Settings section) is shown to logged-in users only.
   const canUseSkin = !!user;
   const [pref, setPref] = useState<boolean>(() => getSavedSkinPref());
 
-  // Effective state: any logged-in user who opted in gets the skin.
-  const skinOn = canUseSkin && pref;
+  // The skin ITSELF is applied purely from the per-browser preference (default ON), independent of
+  // login — so the LOGIN screen is skinned too. Someone who turned it off ("0") sees classic
+  // everywhere, including login.
+  const skinOn = pref;
 
   useEffect(() => {
     applySkinAttr(skinOn);

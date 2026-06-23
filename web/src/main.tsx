@@ -8,8 +8,11 @@ import "./styles/sechenie.css";
 import App from "./App.tsx";
 import { apiClient } from "./lib/api";
 import { applyDesign, getSavedDesign } from "./lib/design";
+import { applySavedSkin } from "./lib/skin";
 
 applyDesign(getSavedDesign());
+// Apply the СЕЧЕНИЕ skin (default ON) before React mounts so the login/boot screens don't flash classic.
+applySavedSkin();
 
 // Ship uncaught client-side errors to the server log (admin Errors page). Fire-and-forget.
 window.addEventListener("error", (e) => {

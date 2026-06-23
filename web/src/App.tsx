@@ -22,6 +22,7 @@ import Login from "./pages/Login";
 import { AuthProvider, useAuth } from "./lib/auth";
 import { SkinProvider } from "./lib/skin";
 import { GenQueueProvider } from "./lib/genQueue";
+import { GenProgressToast } from "./components/GenProgressToast";
 import { ConfirmHost } from "./lib/confirm";
 import { I18nProvider } from "./lib/i18n";
 
@@ -31,6 +32,7 @@ function Gate() {
   if (!user) return <Login />;
   return (
     <GenQueueProvider>
+      <GenProgressToast />
       <Layout>
         <Routes>
         <Route path="/" element={user.role === "admin" ? <Overview /> : <Accounts />} />

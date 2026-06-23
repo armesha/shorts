@@ -1,5 +1,4 @@
 import { createContext, createElement, useContext, useEffect, useRef, useState, type ReactNode } from "react";
-import { Loader2, Square, CheckCircle2, X } from "lucide-react";
 import { apiClient } from "./api";
 
 // Global generation queue. Generation runs SERVER-SIDE (one video at a time across all users);
@@ -198,139 +197,13 @@ function useProvideGenQueue(): GenQueueUI {
 
 export function GenQueueProvider({ children }: { children: ReactNode }) {
   const value = useProvideGenQueue();
-  // Render children + the global progress toast under one provider (no JSX — this is a .ts file).
-  return createElement(GenQueueContext.Provider, { value }, children, createElement(GenProgressToast));
+  // The progress widget (<GenProgressToast/>) is rendered separately in App.tsx (inside this
+  // provider) so this stays a plain .ts file with no JSX and no import cycle.
+  return createElement(GenQueueContext.Provider, { value }, children);
 }
 
 export function useGenQueue(): GenQueueUI {
   const ctx = useContext(GenQueueContext);
   if (!ctx) throw new Error("useGenQueue must be used within <GenQueueProvider>");
   return ctx;
-}
-
-function pluralRu(n: number, forms: [string, string, string]) {
-  const value = Math.abs(Math.trunc(n));
-  const lastTwo = value % 100;
-  const last = value % 10;
-  if (lastTwo >= 11 && lastTwo <= 14) return forms[2];
-  if (last === 1) return forms[0];
-  if (last >= 2 && last <= 4) return forms[1];
-  return forms[2];
-}
-
-function videoWord(n: number) {
-  return pluralRu(n, ["ролик", "ролика", "роликов"]);
-}
-
-// Bottom-right floating notification, visible on every page while a batch generates (or just finished).
-function GenProgressToast() {
-  const q = useGenQueue();
-  // Auto-hide the «finished» message after a few seconds.
-  useEffect(() => {
-    if (q.msg && !q.running) {
-      const t = setTimeout(() => q.dismiss(), 9000);
-      return () => clearTimeout(t);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [q.msg, q.running]);
-
-  if (!q.running && !q.msg) return null;
-  const waiting = q.running && q.position > 0;
-  // Green check only when everything requested was actually added; partial/canceled/error → warning.
-  // (The completion message reads «Задача завершена…», never «Готово», so the old regex was always false.)
-  const ok = q.total > 0 && q.done >= q.total;
-  const aheadText = `${q.ahead} ${videoWord(q.ahead)}`;
-  const totalText = `${q.total} ${videoWord(q.total)}`;
-
-  const header = createElement(
-    "div",
-    { className: "flex items-center gap-2" },
-    q.running
-      ? createElement(Loader2, { className: "animate-spin text-primary", size: 18 })
-      : createElement(CheckCircle2, { className: ok ? "text-success" : "text-warning", size: 18 }),
-    createElement(
-      "span",
-      { className: "font-medium text-sm flex-1" },
-      q.running ? "Генерация роликов" : "Генерация завершена",
-    ),
-    !q.running &&
-      createElement(
-        "button",
-        {
-          className: "btn btn-ghost btn-xs btn-square",
-          onClick: q.dismiss,
-          "aria-label": "Закрыть",
-        },
-        createElement(X, { size: 14 }),
-      ),
-  );
-
-  const body = q.running
-    ? [
-        waiting
-          ? createElement(
-              "div",
-              {
-                key: "queue",
-                className:
-                  "rounded-lg border border-primary/15 bg-primary/5 p-3 text-xs text-base-content/75",
-              },
-              createElement(
-                "div",
-                { className: "mb-2 flex items-center justify-between gap-3" },
-                createElement("span", { className: "font-medium text-base-content" }, "В очереди"),
-                createElement("span", { className: "rounded-full bg-base-100 px-2 py-0.5 text-[11px] text-primary" }, "ожидание"),
-              ),
-              createElement(
-                "div",
-                { className: "grid grid-cols-2 gap-2" },
-                createElement(
-                  "div",
-                  { className: "rounded-md bg-base-100 p-2" },
-                  createElement("div", { className: "text-[11px] text-base-content/55" }, "Перед вами"),
-                  createElement("div", { className: "mt-0.5 font-semibold text-base-content" }, aheadText),
-                ),
-                createElement(
-                  "div",
-                  { className: "rounded-md bg-base-100 p-2" },
-                  createElement("div", { className: "text-[11px] text-base-content/55" }, "Ваш пакет"),
-                  createElement("div", { className: "mt-0.5 font-semibold text-base-content" }, totalText),
-                ),
-              ),
-            )
-          : createElement(
-              "div",
-              { key: "t", className: "text-xs text-base-content/70" },
-              `Готово ${q.done} из ${q.total}…`,
-            ),
-        waiting
-          ? createElement("progress", { key: "p", className: "progress progress-primary w-full" })
-          : createElement("progress", {
-              key: "p",
-              className: "progress progress-primary w-full",
-              value: q.done,
-              max: q.total,
-            }),
-        createElement(
-          "button",
-          {
-            key: "stop",
-            className: "btn btn-xs btn-outline btn-error self-end gap-1",
-            onClick: q.cancel,
-          },
-          createElement(Square, { size: 12 }),
-          "Стоп",
-        ),
-      ]
-    : [createElement("div", { key: "m", className: "text-xs text-base-content/70" }, q.msg)];
-
-  return createElement(
-    "div",
-    { className: "fixed bottom-32 right-4 z-[60] w-80 max-w-[calc(100vw-2rem)] lg:bottom-4" },
-    createElement(
-      "div",
-      { className: "card bg-base-100 border border-base-300 shadow-xl" },
-      createElement("div", { className: "card-body p-4 gap-3" }, header, ...body),
-    ),
-  );
 }
