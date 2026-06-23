@@ -354,6 +354,16 @@ html[data-skin="sechenie"] .btn-ghost:not(:disabled):hover {
   box-shadow: none;
   transform: none;
 }
+/* A ghost button that EXPLICITLY opted into a border (e.g. the unselected pack chips on /cards,
+   `btn-ghost border border-base-300`) must keep a visible hairline — otherwise btn-ghost's
+   transparent border hides it and the chip reads as bare text. Stays on hover. */
+html[data-skin="sechenie"] .btn-ghost.border-base-300 {
+  border-color: color-mix(in srgb, var(--sx-ink) 32%, transparent);
+}
+html[data-skin="sechenie"] .btn-ghost.border-base-300:not(:disabled):hover {
+  border-color: var(--sx-line-strong);
+  background: color-mix(in srgb, var(--sx-ink) 8%, transparent);
+}
 html[data-skin="sechenie"] .btn-outline {
   background: transparent;
   border-color: var(--sx-line-strong);
