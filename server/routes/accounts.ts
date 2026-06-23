@@ -30,7 +30,7 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
   });
   app.post("/api/accounts", async (req, reply) => {
     const body = (req.body as Partial<Account>) ?? {};
-    if (rejectScheduleLimit(reply, body.schedule, null)) return;
+    if (rejectScheduleLimit(req, reply, body.schedule, null)) return;
     return db.createAccount({
       ...body,
       userId: uid(req),
@@ -100,8 +100,9 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
       }
       body.slotDecks = clean;
     }
-    // Caps apply to admins too; they are about platform load, not permissions.
-    if (rejectScheduleLimit(reply, body.schedule, acc, id)) return;
+    // Caps are about platform load: the per-channel ceiling is 18/day for non-admin owners and 20/day
+    // for admin-owned channels; the per-Google-key cap (92/day) applies to everyone alike.
+    if (rejectScheduleLimit(req, reply, body.schedule, acc, id)) return;
     const a = db.updateAccount(id, body);
     if (!a) return reply.code(404).send({ error: "not found" });
     return a;

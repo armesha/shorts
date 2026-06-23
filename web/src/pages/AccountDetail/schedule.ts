@@ -9,7 +9,12 @@ export const toMin = (t: string): number => {
   return h * 60 + m;
 };
 
-export const ACCOUNT_DAILY_SLOT_CAP = 20;
+// Per-channel daily slot cap follows the channel OWNER's role: admins keep 20/day, every non-admin 18/day.
+// (Backend mirror: server/infra/account-limits.ts — it's the authoritative enforcement.)
+export const ADMIN_ACCOUNT_DAILY_SLOT_CAP = 20;
+export const USER_ACCOUNT_DAILY_SLOT_CAP = 18;
+export const accountDailySlotCap = (ownerIsAdmin: boolean): number =>
+  ownerIsAdmin ? ADMIN_ACCOUNT_DAILY_SLOT_CAP : USER_ACCOUNT_DAILY_SLOT_CAP;
 export const USER_DAILY_SLOT_CAP = 92;
 
 export const randomDayTimes = (n: number, avoid: Set<number> = new Set()): string[] => {

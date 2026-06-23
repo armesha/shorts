@@ -61,7 +61,7 @@ export interface RouteDeps {
   // Account access
   accessibleAccount: (req: unknown, reply: Replyish, id: number) => Account | null;
   accountOwnerId: (req: unknown, account: Account) => number;
-  rejectScheduleLimit: (reply: Replyish, schedule: unknown, acc: Account | null, excludeAccountId?: number) => boolean;
+  rejectScheduleLimit: (req: unknown, reply: Replyish, schedule: unknown, acc: Account | null, excludeAccountId?: number) => boolean;
   rejectIfNotConnected: (reply: Replyish, acc: Account) => boolean;
   visibleAccounts: (req: unknown, scope?: string, readonly?: boolean) => Account[];
   visibleAccount: (req: unknown, id: number, readonly?: boolean) => Account | null;
@@ -147,14 +147,18 @@ export function makeRouteDeps(input: {
 
   // Schedule guard: (option B) only a CONNECTED channel may carry a posting schedule, and the daily cap
   // is counted PER Google key (oauth_client) — YouTube's upload quota is per Cloud project, not per channel.
-  function rejectScheduleLimit(reply: Replyish, schedule: unknown, acc: Account | null, excludeAccountId?: number): boolean {
+  function rejectScheduleLimit(req: unknown, reply: Replyish, schedule: unknown, acc: Account | null, excludeAccountId?: number): boolean {
     if (!Array.isArray(schedule)) return false;
     if (schedule.length > 0 && (!acc || acc.status !== "connected")) {
       reply.code(400).send({ error: "Подключите канал к YouTube — расписание можно задавать только у подключённого канала." });
       return true;
     }
     const otherSlots = acc?.oauthClientId != null ? db.scheduleSlotsForKey(acc.oauthClientId, excludeAccountId) : 0;
-    const limitError = dailyScheduleLimitError(schedule.length, otherSlots);
+    // Per-channel cap follows the channel OWNER's role: admins keep 20/day, every non-admin channel 18/day.
+    // On create (acc === null) the owner is the requester (createAccount sets userId: uid(req)).
+    const ownerId = acc?.userId ?? uid(req);
+    const isAdminOwner = db.getUserById(ownerId)?.role === "admin";
+    const limitError = dailyScheduleLimitError(schedule.length, otherSlots, isAdminOwner);
     if (!limitError) return false;
     reply.code(400).send({ error: limitError });
     return true;

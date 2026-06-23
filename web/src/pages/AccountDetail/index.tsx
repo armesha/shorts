@@ -12,7 +12,7 @@ import { BrandIcon } from "../../components/BrandIcon";
 import { BUILTIN_DECKS, CONTENT_LANGS, DECK_LANG, langTag, type DeckGroup } from "../../lib/deck";
 import { cleanDisplayText } from "../../lib/text";
 import { formatDateTime } from "../../lib/format";
-import { toMin, randomDayTimes, ACCOUNT_DAILY_SLOT_CAP, USER_DAILY_SLOT_CAP } from "./schedule";
+import { toMin, randomDayTimes, accountDailySlotCap, USER_DAILY_SLOT_CAP } from "./schedule";
 import {
   GENERATE_ALL_DECKS,
   genById as srcGenById,
@@ -86,6 +86,10 @@ export default function AccountDetail() {
 
   // «Сделать сразу» не больше остатка свободных карточек выбранного контента (дека/пак) — для всех ролей.
   const roleMax = user?.role === "admin" ? 100 : 50; // потолок: админ 100, обычный юзер 50
+  // Кап «видео в сутки на канал» зависит от роли ВЛАДЕЛЬЦА канала: админ 20, остальные 18.
+  // (Бэкенд — источник истины; здесь это только для UX-валидации/счётчиков.)
+  const ownerIsAdmin = user?.role === "admin" && (!account?.userId || account.userId === user?.id);
+  const perChannelCap = accountDailySlotCap(ownerIsAdmin);
   const selectedSources = (sourceDecks.length ? sourceDecks : [lang]).filter(Boolean);
   // Остаток = СВОБОДНЫЕ (неиспользованные) карточки. Для пака — available (cards − used), не общее число.
   const sourceRemaining = (deckId: string) => srcSourceRemaining(packs, gens, deckId);
@@ -251,8 +255,8 @@ export default function AccountDetail() {
       const cleanSlotDecks = Object.fromEntries(
         Object.entries(slotDecks).filter(([time, deck]) => times.includes(time) && cleanSources.includes(deck)),
       );
-      if (times.length > ACCOUNT_DAILY_SLOT_CAP) {
-        notify(t("account.accountDayLimitReached", { n: ACCOUNT_DAILY_SLOT_CAP }), "error", t("account.scheduleLimitToastTitle"));
+      if (times.length > perChannelCap) {
+        notify(t("account.accountDayLimitReached", { n: perChannelCap }), "error", t("account.scheduleLimitToastTitle"));
         return false;
       }
       if (otherSlots + times.length > USER_DAILY_SLOT_CAP) {
@@ -459,7 +463,7 @@ export default function AccountDetail() {
   const dayUsed = otherSlots + times.length; // posts/day across all the user's channels
   const scheduleRemaining = Math.max(0, USER_DAILY_SLOT_CAP - otherSlots); // max slots this channel may hold
   const takenMinutes = new Set(otherTimes.map(toMin)); // minutes busy on other channels → generator avoids them
-  const perDayMax = Math.min(ACCOUNT_DAILY_SLOT_CAP, scheduleRemaining); // cap for the «раз в день» generator
+  const perDayMax = Math.min(perChannelCap, scheduleRemaining); // cap for the «раз в день» generator
   const notifyScheduleLimit = () =>
     notify(
       t("account.dayLimitReached", {
@@ -612,8 +616,8 @@ export default function AccountDetail() {
                   className="btn btn-xs btn-outline"
                   disabled={!isConnected}
                   onClick={() => {
-                    if (n > ACCOUNT_DAILY_SLOT_CAP) {
-                      notify(t("account.accountDayLimitReached", { n: ACCOUNT_DAILY_SLOT_CAP }), "error", t("account.scheduleLimitToastTitle"));
+                    if (n > perChannelCap) {
+                      notify(t("account.accountDayLimitReached", { n: perChannelCap }), "error", t("account.scheduleLimitToastTitle"));
                       return;
                     }
                     if (otherSlots + n > USER_DAILY_SLOT_CAP) {
@@ -644,8 +648,8 @@ export default function AccountDetail() {
                 className="btn btn-xs btn-primary gap-1"
                 disabled={!isConnected}
                 onClick={() => {
-                  if (perDayInput > ACCOUNT_DAILY_SLOT_CAP) {
-                    notify(t("account.accountDayLimitReached", { n: ACCOUNT_DAILY_SLOT_CAP }), "error", t("account.scheduleLimitToastTitle"));
+                  if (perDayInput > perChannelCap) {
+                    notify(t("account.accountDayLimitReached", { n: perChannelCap }), "error", t("account.scheduleLimitToastTitle"));
                     return;
                   }
                   if (otherSlots + perDayInput > USER_DAILY_SLOT_CAP) {
@@ -707,8 +711,8 @@ export default function AccountDetail() {
                     notify(t("account.invalidTime"), "error");
                     return;
                   }
-                  if (times.length >= ACCOUNT_DAILY_SLOT_CAP) {
-                    notify(t("account.accountDayLimitReached", { n: ACCOUNT_DAILY_SLOT_CAP }), "error", t("account.scheduleLimitToastTitle"));
+                  if (times.length >= perChannelCap) {
+                    notify(t("account.accountDayLimitReached", { n: perChannelCap }), "error", t("account.scheduleLimitToastTitle"));
                     return;
                   }
                   if (times.length >= scheduleRemaining) {
