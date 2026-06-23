@@ -665,7 +665,6 @@ export const en: Record<string, string> = {
   "packs.hide": "Hide",
   "packs.langTagTitle": "Pack language (tag) — affects the \"pack language = channel language\" check",
   "packs.lowDesc": "Packs where a user has fewer than {n} free cards left — who is running low.",
-  "packs.lowThresholdHint": "Flag packs with fewer free cards than",
   "packs.lowEmpty": "No one's pack is running low yet",
   "packs.lowTitle": "Running low (across everyone, including you)",
   "packs.manageInCards": "Manage in \"Cards\" →",
