@@ -185,6 +185,24 @@ export default function Packs() {
         <Stat label={t("packs.statSpent")} value={fmt(totals.used)} />
       </div>
 
+      {/* Shared, editable "running low" threshold — visible to EVERYONE. Drives the red highlight on
+          the pack cards below AND (for admins) the cross-user report at the bottom. Persisted. */}
+      <div className="flex items-center gap-2 flex-wrap rounded-lg border border-base-300 bg-base-100 px-3 py-2 text-sm">
+        <AlertTriangle className="text-warning shrink-0" size={16} />
+        <span className="text-base-content/70">{t("packs.lowThresholdHint")}</span>
+        <input
+          type="number"
+          min={1}
+          max={100000}
+          step={50}
+          className="input input-bordered input-xs w-24"
+          value={threshold}
+          onChange={(e) => setThreshold(Math.max(1, Math.min(100000, Number(e.target.value) || 0)))}
+          aria-label={t("packs.thresholdAria")}
+        />
+        <span className="text-base-content/60">{t("packs.freeShort")}</span>
+      </div>
+
       {!loading && decks.length > 0 && (
         <div className="flex items-center gap-2 flex-wrap">
           <h2 className="text-lg font-bold">{t("packs.builtinHeading")}</h2>
@@ -213,7 +231,7 @@ export default function Packs() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {decks.map((d) => {
-            const low = d.total > 0 && d.available < 50;
+            const low = d.total > 0 && d.available < threshold;
             return (
               <div key={d.id} className="card bg-base-100 border border-base-300">
                 <div className="card-body gap-2 p-4">
@@ -321,7 +339,8 @@ export default function Packs() {
         </div>
       )}
 
-      {/* Admin: cross-user "running low" report — packs with remaining < 100, across everyone (incl. admin). */}
+      {/* Admin: cross-user "running low" report — packs below the shared editable threshold (default
+          300), across everyone (incl. admin). The threshold input lives at the top of the page. */}
       {isAdmin && (
         <div className="card bg-base-100 border border-base-300">
           <div className="card-body gap-2">
@@ -329,22 +348,9 @@ export default function Packs() {
               <AlertTriangle className="text-warning" size={18} />
               <h2 className="card-title text-base">{t("packs.lowTitle")}</h2>
               <span className="badge badge-ghost badge-sm">{lowDecks.length}</span>
-              <label className="ml-auto flex items-center gap-2 text-xs text-base-content/60">
-                {t("packs.thresholdLabel")}
-                <input
-                  type="number"
-                  min={1}
-                  max={100000}
-                  step={50}
-                  className="input input-bordered input-xs w-24"
-                  value={threshold}
-                  onChange={(e) =>
-                    setThreshold(Math.max(1, Math.min(100000, Number(e.target.value) || 0)))
-                  }
-                  aria-label={t("packs.thresholdAria")}
-                />
-                {t("packs.freeShort")}
-              </label>
+              <span className="ml-auto text-xs text-base-content/50">
+                {t("packs.thresholdLabel")}: {fmt(threshold)} {t("packs.freeShort")}
+              </span>
             </div>
             <p className="text-xs text-base-content/50">
               {t("packs.lowDesc", { n: fmt(threshold) })}
