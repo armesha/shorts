@@ -15,7 +15,7 @@ Repo layout + SOLID monolith-split / cleanup plan: `docs/REORG-PLAN.md`.
 
 ## 🔁 Перезапуск сервера (MANDATORY — сообщай в конце задания)
 - **В конце КАЖДОГО задания одной строкой пиши, нужен ли перезапуск сервера** (и сделал ли ты его уже).
-- Правило: правки backend (`server/**` и `src/**` — всё, что импортит работающий `server/index.ts`) → **перезапуск НУЖЕН** (`npm run server`; tsx читает TS при старте, на лету не подхватывает). Только фронт (`web/src/**`) → **НЕ нужен**, достаточно `npm run web:build` + Ctrl+F5 (сервер отдаёт `web/dist` статикой). Данные (`data/**`) — обычно не нужен (есть `resetDeckCache`); сомневаешься — перезапусти.
+- Правило: правки backend (`server/**` и `src/**` — всё, что импортит работающий `server/index.ts`) → **перезапуск НУЖЕН** (`sudo systemctl restart shorts.service` — сервер под systemd; tsx читает TS при старте, на лету не подхватывает). Только фронт (`web/src/**`) → **НЕ нужен**, достаточно `npm run web:build` + Ctrl+F5 (сервер отдаёт `web/dist` статикой). Данные (`data/**`) — обычно не нужен (есть `resetDeckCache`); сомневаешься — перезапусти.
 - Если пользователь явно разрешил/попросил перезапуск (например, «не забудь перезапустить», «можешь перезапустить», «перезапусти») — **делай его сам** по регламенту ниже и в ответе укажи, что уже перезапустил.
 
 ## 🔒 Security rules (MANDATORY)
@@ -34,31 +34,41 @@ Repo layout + SOLID monolith-split / cleanup plan: `docs/REORG-PLAN.md`.
 - После правок бэкенда изменения вступают в силу только после перезапуска (`tsx` не перечитывает код
   на лету). Если разрешения ещё нет — **сначала спроси разрешение и объясни зачем**.
   Фронт в dev/при пересборке подхватывается без рестарта сервера.
+- **Локальный сайт `127.0.0.1` / `localhost` / Vite `:5173` — только для агентской проверки.**
+  Пользователь не пользуется локальной панелью; пользовательский адрес — `https://shareboard.live/`.
+  В финальных ответах не предлагай пользователю проверять `127.0.0.1`, `localhost` или `:5173`.
+  Если нужно показать результат пользователю, ориентируй на `https://shareboard.live/` или конкретные
+  файлы/артефакты. Локальные dev-процессы можно поднимать/использовать для проверки и затем
+  останавливать только если агент сам их запустил; уже существующие общие процессы не убивать без
+  отдельного явного запроса.
 
 ### Регламент перезапуска shareboard.live / backend :8080 (MANDATORY)
-- **Цель:** после backend-правок должен остаться ровно один живой backend-процесс на `:8080`, а
-  `https://shareboard.live/` должен обслуживаться новым кодом.
-- **Сначала найти реальный процесс на порту, а не гадать по `pgrep`:**
-  `ss -ltnp sport = :8080`
-- Если `:8080` слушает `node` с PID `<pid>`, остановить именно его:
-  `kill <pid>`
-- Подождать освобождения порта:
-  `sleep 1 && ss -ltnp sport = :8080`
-- Запустить backend из корня проекта:
-  `nohup npm run server >/tmp/shorts-server.log 2>&1 &`
-- Проверить, что поднялся новый процесс и порт слушает:
-  `ss -ltnp sport = :8080`
-- Проверить health:
-  `curl -sS http://localhost:8080/api/health`
-  Ожидаемый ответ: JSON с `"ok":true`.
-- Проверить лог старта:
-  `tail -80 /tmp/shorts-server.log`
-  В логе должны быть `Server listening ... :8080`, `Shorts Factory API on :8080`, без stack trace.
-- Если после запуска видны **два** backend-процесса/две npm-цепочки, оставить только PID, который
-  реально слушает `:8080`; старые `npm run server` / `sh -c node ...` / `node ... server/index.ts`
-  убрать через `kill`.
-- Не использовать shell-pipe в `pgrep` вида `pgrep -af "node|tsx|..."`: это не regex для процессов,
-  а shell pipe. Для диагностики достаточно `ss -ltnp sport = :8080`, затем точечный `ps -fp <pid>`.
+- **Сервер работает под systemd** — юнит `shorts.service` (`/etc/systemd/system/shorts.service`):
+  `User=davtian`, `WorkingDirectory=/home/davtian/Documents/shorts`,
+  `ExecStart=/usr/bin/node --import tsx --experimental-sqlite server/index.ts` (= то же, что `npm run server`),
+  **`Restart=always` + `RestartSec=5` + `enabled`** → сам поднимается после краха и после ребута.
+  `.env`/`.env.local` грузит само приложение из WorkingDirectory; креды — `server/config.ts`. Логи — в journal.
+- **Перезапуск (passwordless sudo):** `sudo systemctl restart shorts.service`
+  (пока приложение поднимается, Caddy отдаёт страницу «Обновляемся» — это норм, тоннель не рвётся).
+- **Проверить после рестарта:**
+  - `systemctl is-active shorts.service` → `active`
+  - `ss -ltnp sport = :8080` → ровно один `node`, слушает :8080
+  - `curl -sS http://localhost:8080/api/health` → JSON с `"ok":true`
+  - `sudo journalctl -u shorts.service -n 30 --no-pager` → `Server listening ... :8080`,
+    `Shorts Factory API on :8080`, без stack trace / без `EADDRINUSE`.
+- **НИКОГДА не запускать `npm run server` / `node ... server/index.ts` руками** для прод-сервера: ручной
+  процесс занимает :8080, и systemd-инстанс начинает падать по циклу с `EADDRINUSE`, пока не упрётся в
+  лимит рестартов и не уйдёт в `inactive (failed)` — сайт при этом держит «осиротевший» ручной процесс
+  на старом коде (так и было: 186 фейлов 2026-06-22, чинил 2026-06-23). Нужен tsx-прогон для проверки —
+  поднимай на ДРУГОМ порту (`PORT=…`), не на :8080.
+- **Восстановление, если нашёл ручного сквоттера на :8080, а `systemctl is-active` = `inactive/failed`:**
+  найти pid — `ss -ltnpH 'sport = :8080'` (или `ss -ltnp sport = :8080`), убить точечно `kill <pid>`,
+  дождаться освобождения порта, затем
+  `sudo systemctl reset-failed shorts.service && sudo systemctl start shorts.service`, и проверить как выше.
+- **Правка юнита:** редактировать `/etc/systemd/system/shorts.service`, затем
+  `sudo systemctl daemon-reload && sudo systemctl restart shorts.service`.
+- Диагностика — только точечно (`ss -ltnp sport = :8080`, затем `ps -fp <pid>`); НЕ массовые kill по
+  имени/порту (`pkill -f`, `fuser -k`) — рядом живёт `casino`.
 
 ### Caddy-«дверь» перед приложением — страница обслуживания вместо 502 (MANDATORY знать)
 - cloudflared теперь ведёт `shareboard.live` + `www` → **Caddy** `http://127.0.0.1:8090` → приложение
@@ -123,7 +133,6 @@ Repo layout + SOLID monolith-split / cleanup plan: `docs/REORG-PLAN.md`.
 - `server/`   — Fastify API (loads creds, runs the pipeline, scheduler)
 - `web/`      — Vite React frontend (the dashboard site)
 - `docs/`     — STACK.md and notes
-- `untitled.pen` — Pencil design file with the chosen Short templates
 
 ## Commands
 - `npm test` — unit tests (node:test)
@@ -146,12 +155,17 @@ Repo layout + SOLID monolith-split / cleanup plan: `docs/REORG-PLAN.md`.
 - **Subagent/workflow MODEL policy (user rule):** before launching ANY LLM/subagent/workflow that generates, cleans, ranks, formats, or titles pack content, ask the user which model to use. Do not hardcode Haiku/Sonnet/Opus and do not inherit silently when the workflow model choice affects cost/quality. Local parsers/builders/checks can run without asking.
 - **Pack generation docs:** detailed source/generation/replenishment instructions for every built-in deck and template-pack live in `docs/pack-generation.md`. Read it before touching `data/anecdotes*`, `data/tips*`, `data/islamic`, `data/christian`, `data/*/videos.json`, `assets/template-packs/*`, or `data/packs/*`.
 - **New/manual pack rule:** whenever you create a new built-in deck, prebuilt video pack, template-pack, or live `data/packs/*` pack manually, also add/update `docs/pack-generation.md` with how to create it, how content is generated, how to add new cards/videos later, and how to verify it. Future agents must be able to replenish the pack from docs without reverse-engineering the code.
+- **Shorts safe-zone rule:** for every 1080x1920 Shorts/Reels/TikTok-style render, never place important
+  readable text in the bottom UI area. Keep body text/subtitles/logos above roughly `y=1520` (bottom
+  `400px` clear), avoid the right action-column area (target right edge `<=960px`), and verify dense
+  text with real rendered frames. If space is tight, enlarge/reflow the text panel inside the safe
+  area instead of shrinking body text into unreadable sizes or using the very bottom of the frame.
 - **Voiceover rule:** if any generated or rebuilt video needs narration, use ElevenLabs keys already configured in `.env`/`.env.local` (`ELEVENLABS_API_KEYS`, `ELEVENLABS_API_KEY`, or numbered keys). **ElevenLabs is the ONLY TTS** — never use local/offline engines (`edge-tts`, Piper, Coqui, espeak), not even for previews. For word/subtitle timing read ElevenLabs timestamps (the `with-timestamps` endpoint / `alignment` field), not local `whisper`. Never print or commit real keys; logs may show only key index/last4.
   - **Исключение (2026-06-22 — пак `visual-riddles` «Вижу Ответ», admin-only):** ElevenLabs-квота исчерпана → этот пак озвучивается **edge-tts** (`ru-RU-DmitryNeural`, бесплатно, venv `.venv-tts/`) по прямой директиве пользователя. edge-tts — ToS-серый для коммерции и может отвалиться без предупреждения; лицензионный фолбэк — Azure S0 (~$1/партия). Для ОСТАЛЬНЫХ паков/деков правило «только ElevenLabs» в силе. Пайплайн дозаливки — `docs/pack-generation.md` (раздел «Вижу Ответ»).
 - **Добавление чужого/«дружеского» ElevenLabs-ключа (ПРАВИЛО):** прежде чем добавлять любой сторонний ключ в `ELEVENLABS_API_KEYS`, СНАЧАЛА проверь, что он реально генерит — недостаточно `GET /v1/user/subscription` = 200; нужен настоящий TTS-вызов (премейд-голос, напр. Roger `CwhRBWXzGAHq8TQ4Fs17`). Free-tier ключи часто помечены `detected_unusual_activity` (триггер — датацентр/VPN-IP сервера или несколько free-аккаунтов) и отдают **401 на генерации**, хотя подписка «ok» (на `/limits` статус `blocked`). **Если ключ заблокирован / исчерпан / невалиден — НЕ добавляй его** (а если уже добавил — удали из `.env`). Премейд/Default-голоса доступны на free-tier; Voice-Library голоса дают `402 payment_required` (Charlotte и т.п.). Рабочий free-ключ = 10000 символов/мес.
 - Frontend uses DaisyUI v5 + Tailwind v4 (`@plugin "daisyui"` in `web/src/index.css`); theme forced light via `data-theme="light"` on `<html>`.
 - `lucide-react` has no `Chrome` icon — use `MonitorPlay`/`Globe` instead.
-- Pencil templates live in `untitled.pen`; never use Read/Grep on `.pen` files (encrypted) — only the `pencil` MCP tools.
+- Pencil-исходник удалён: `untitled.pen` стёрт, а `pencil` MCP отключён в Codex и Claude (2026-06-23). `.pen`-файлов в проекте больше нет; шаблоны живут только в коде (`src/render.ts` + `templates/*.html`).
 - Backend DB = `node:sqlite` → run with `--experimental-sqlite` (already in `npm run server`). DB file `data/app.db` (gitignored via `data/`). Schema/helpers in `server/db.ts`.
 - Templates: 8 textured ones in Pencil (1 Kraft, 2 Slate, 3 Parchment, 4 Marble, 5 Linen, 6 Concrete, 7 Walnut, 8 Newsprint); the first 5 flat ones were deleted. TODO: convert the chosen template(s) into the real HTML render template (`src/render.ts` currently has no template file — `templates/` was removed).
 - Each account stores a chosen `template` (UI dropdown on the account page).

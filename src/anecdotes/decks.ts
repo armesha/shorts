@@ -289,7 +289,8 @@ export const DECKS: Deck[] = [
     hashtags: "#space #nasa #astronomy #universe #cosmos #shorts",
     tags: ["space", "nasa", "astronomy", "universe", "cosmos", "science", "shorts"],
     genericTitles: ["Space", "The Universe", "Cosmos", "Deep Space"],
-    adminOnly: true, // pre-built montage pack — admin-only
+    adminOnly: true, // pre-built montage pack — admin grants it to regular users from /users
+    grantable: true,
     preFact: true,
   },
   {
@@ -301,7 +302,21 @@ export const DECKS: Deck[] = [
     hashtags: "#загадки #ребусы #головоломки #внимание #shorts",
     tags: ["загадки", "ребусы", "головоломки", "визуальные загадки", "логика", "внимание", "shorts"],
     genericTitles: ["Вижу Ответ", "Визуальная загадка", "Задача на внимание", "Ребус"],
-    adminOnly: true, // pre-built visual riddle pack — admin-only
+    adminOnly: true, // pre-built visual riddle pack — admin grants it to regular users from /users
+    grantable: true,
+    preFact: true,
+  },
+  {
+    id: "visual-riddles-de",
+    name: "Sieh die Antwort",
+    dir: "data/visual-riddles-de", // videos.json = [{file,title,text}]; German localization of visual-riddles
+    source: "",
+    emoji: "🧩",
+    hashtags: "#rätsel #denksport #optischetäuschung #suchbild #shorts",
+    tags: ["rätsel", "denksport", "optische täuschung", "suchbild", "logik", "aufmerksamkeit", "shorts"],
+    genericTitles: ["Sieh die Antwort", "Visuelles Rätsel", "Aufmerksamkeitstest", "Suchbild"],
+    adminOnly: true, // pre-built visual riddle pack (DE) — admin grants it to regular users from /users
+    grantable: true,
     preFact: true,
   },
   {
@@ -313,7 +328,8 @@ export const DECKS: Deck[] = [
     hashtags: "#животные #супергерои #мультфильм #комикс #shorts",
     tags: ["животные", "супергерои", "комикс", "мультфильм", "история", "shorts"],
     genericTitles: ["ЗвероГерои", "Комикс про животных", "Новая серия", "Супергерои животных"],
-    adminOnly: true, // pre-built serial animal comic pack — admin-only
+    adminOnly: true, // pre-built serial animal comic pack — admin grants it to regular users from /users
+    grantable: true,
     preFact: true,
     sequential: true,
   },
@@ -326,9 +342,36 @@ export const DECKS: Deck[] = [
     hashtags: "#animals #superheroes #comic #cartoon #shorts",
     tags: ["animals", "superheroes", "comic", "cartoon", "story", "shorts"],
     genericTitles: ["Animal Heroes", "Animal Comic", "New Episode", "Animal Superheroes"],
-    adminOnly: true, // pre-built serial animal comic pack — admin-only
+    adminOnly: true, // pre-built serial animal comic pack — admin grants it to regular users from /users
+    grantable: true,
     preFact: true,
     sequential: true,
+  },
+  {
+    id: "illusions-3d",
+    name: "Обмани свой мозг",
+    dir: "data/illusions-3d", // videos.json = [{file,title,text}]; rotating ambiguous 3D particle figures
+    source: "",
+    emoji: "🧊",
+    hashtags: "#иллюзия #оптическаяиллюзия #мозг #гипноз #вращение #shorts",
+    tags: ["иллюзия", "оптическая иллюзия", "мозг", "вращение", "гипноз", "силой мысли", "shorts"],
+    genericTitles: ["Обмани свой мозг", "Иллюзия вращения", "Поверни силой мысли", "Куда она крутится?"],
+    adminOnly: true, // pre-built rotating-illusion pack — admin grants it to regular users from /users
+    grantable: true,
+    preFact: true,
+  },
+  {
+    id: "illusions-3d-de",
+    name: "Überliste dein Gehirn",
+    dir: "data/illusions-3d-de", // videos.json = [{file,title,text}]; German localization of illusions-3d
+    source: "",
+    emoji: "🧊",
+    hashtags: "#illusion #optischetäuschung #gehirn #hypnose #shorts",
+    tags: ["illusion", "optische täuschung", "gehirn", "rotation", "gedankenkraft", "shorts"],
+    genericTitles: ["Überliste dein Gehirn", "Drehillusion", "Mit Gedankenkraft drehen", "Wohin dreht es sich?"],
+    adminOnly: true, // pre-built rotating-illusion pack (DE) — admin grants it to regular users from /users
+    grantable: true,
+    preFact: true,
   },
 ];
 
@@ -343,7 +386,7 @@ export function isPackDeckId(id?: string | null): boolean {
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
-  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "animal-superheroes": "ru", "animal-superheroes-en": "en",
+  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "visual-riddles-de": "de", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it",
 };
 export function deckLang(id: string): string {

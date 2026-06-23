@@ -1,0 +1,646 @@
+[
+  {
+    "title": "Chiste largo 001",
+    "text": "En la mañana del dia siguiente se dio nueva orden mandando que nadie saliese sin una linterna con su vela. En aquella tarde, al anochecer, se presentó el mismo hombre con su linterna y su vela. — ¿En dónde está tu linterna? — Hela aquí. —¿Y la vela? — Hela aquí.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:6586-6599",
+    "windowSize": 6,
+    "score": 23
+  },
+  {
+    "title": "Chiste largo 002",
+    "text": "Un estudiante le dijo á un arriero: — ¿Me permite usted que le diga al mulo dos palabras al oido? — Dígale usted aunque sean cuarenta. El estudiante se acercó y le metió en la oreja un fósforo de yesca encendido, diciendo palabras misteriosas que no entendió el arriero.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:8739-8750",
+    "windowSize": 5,
+    "score": 23
+  },
+  {
+    "title": "Chiste largo 003",
+    "text": "Yolvia el catedratico á preguntar, y vuelta á responder: — Es cuestionable. Y tanto y tanto replicaba lo mismo, que le dijo el profesor: — ¿Sabe usted que me parece que no lia estudiado usted una jota? — En eso convienen todos los autores, respondió entonces el graduando.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:3495-3507",
+    "windowSize": 5,
+    "score": 23
+  },
+  {
+    "title": "Chiste largo 004",
+    "text": "En el camino encontró á un pastor y le dijo: — Buen hombre, ¿ha visto usted por casualidad un reloj de plata que acabo de perder? — ¡Reloj! ¿como el de la torre? no, señor; no lo he visto. — No era como el de la torre, sino mucho mas pequeño, y lo he debido perder por aquí.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:3962-3971",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste largo 005",
+    "text": "El mas atrevido de estos, que se llamaba Severo, le dijo un dia: — Señor, ¿no dio usted ayer vente mil reales para la compra de un caballo á un chalan á quien usted no ha visto media docena de veces? — Así es la verdad. — Pues entonces voy á hacer este asiento en el libro verde.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:7413-7423",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste largo 006",
+    "text": "Un pilluelo de Malaga jugaba en Guadarmedina en un dia de los que, en aquel clima ardiente, llaman de frió: un sugeto pasaba embozado en su capa, y viéndolo desnudo y tan alegre, tuvo la humorada de preguntarle: — ¿Di, chico, no tienes frió? — No, señor, contestó. — ¡Cómo, estando casi en cueros!...",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:11019-11031",
+    "windowSize": 5,
+    "score": 23
+  },
+  {
+    "title": "Chiste largo 007",
+    "text": "Se presentó á matricular en la célebre universidad de Alcalá un estudiante de la Mancha. — ¿Cómo se llama usted? le preguntó el escribiente. — Juan Bautista Combé. — ¿Viene usted á enseñarnos ortografía, señor novicio? dijo el secretario tomando parte; cómo se llama usted le preguntan. — Bautista Combé.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:9714-9727",
+    "windowSize": 6,
+    "score": 23
+  },
+  {
+    "title": "Chiste largo 008",
+    "text": "En cierta ocasión, presentó un poeta á Que vedo dos sonetos áun propio asunto, para que aprobase uno de ellos. Oyó el primero, y sin detenerse dijo: — Mejor es el otro. — Pues si usted no lo ha visto, respondió el poeta, ¿cómo lo puede saber? — Señor mió; porque ninguno puede ser peor que el que he oido.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:2191-2202",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste largo 009",
+    "text": "Le dio un vaso, otro y otro, y viendo que todavía alargaba la mano para que lo echase mas, sin decir si era bueno ó malo, le preguntó: — ¿Qué te parece? — ¿No dices que es griego? — Echame otro vaso, porque como no soy hombre de letras entiendo poco de griego, y necesito mas pruebas para formar mi juicio.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:2975-2985",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste largo 010",
+    "text": "Le dio un vaso, otro y otro, y viendo que todavía alargaba la mano para que le echase mas, sin decir si era bueno ó malo le preguntó. — ¿Qué te parece? — ¿No dices que es griego? —Sí. — Échame otro vaso, porque como no soy hombre de letras entiendo poco de griego y necesito mas pruebas para formar juicio.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:2118-2130",
+    "windowSize": 5,
+    "score": 23
+  },
+  {
+    "title": "Chiste largo 011",
+    "text": "Un caballero de manos industriosas le decia á un su cofrade: — Chico, es magnífico el alfiler de brillantes que llevas hoy en la camisa — ¡Van! regularcillo. — ¿Se puede saber su valor? — Hombre, yo no lo sé á punto fijo, porque cuando lo tomé en casa del joyero no habia nadie en la tienda y no pude preguntarlo.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:10241-10255",
+    "windowSize": 6,
+    "score": 23
+  },
+  {
+    "title": "Chiste largo 012",
+    "text": "A poco rato descubrió muchos en un prado inmediato, y gritó á sus amigos: — Ecce cuniculi multi. (Mirad cuanto conejo.) Los conejos al ruido desaparecieron; y reprendiéndolo sus compañeros, respondió: — ¿Quién habia de pensar que los conejos entendiesen también el latin? ¡yá mí que me cuesta tanto el aprenderlo!",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:6491-6503",
+    "windowSize": 5,
+    "score": 23
+  },
+  {
+    "title": "Chiste largo 013",
+    "text": "El caballero lo volvió á examinar y dijo: — Cien duros ofrezco á usted de gratificación, ademas del precio del cuadro, si encuentra el medio de que sea mió. — Ya he dicho á usted lo que hay en esto. — El caballero se marchó, y á poco rato volvió con otro que dijo ser pintor.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:125-134",
+    "windowSize": 4,
+    "score": 20
+  },
+  {
+    "title": "Chiste largo 014",
+    "text": "Un caballero se encontró por casualidad aun hombre á quien no conocía y le dijo: — Présteme usted veinte duros. — Pero señor, no tengo el honor de conocerle. — Casualmente por eso me dirijo á usted, porque los que me conocen no quieren tomarse el trabaja de hacerme ese favor.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:9617-9628",
+    "windowSize": 5,
+    "score": 20
+  },
+  {
+    "title": "Chiste largo 015",
+    "text": "Nuestros lectores nos agradeceran de seguro los siguientes consejos, resultado de largos anos de estudio: —Para que nunca haga daño el café, por malísimo que sea: después de hecho se arroja por la ventana. —Para no perder jamas un duro: no llevar en el bolsillo mas de tres pesetas.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:3334-3343",
+    "windowSize": 4,
+    "score": 20
+  },
+  {
+    "title": "Chiste largo 016",
+    "text": "Cuando se rie mi amigo, á él le toca manifestarme la causa de su alegría; pero cuando llora yo soy quien debe descubrir la causa de su tristeza.!'\\ — No elijais vuestros amigcs entre personas de una clase demasiado superior ó inferior ala vuestra. — El que cree tener diez amigos -no tiene ninguno.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:10455-10462",
+    "windowSize": 2,
+    "score": 20
+  },
+  {
+    "title": "Chiste largo 017",
+    "text": "Decia un exajerador: — He visto en Murcia una berza tan grande que á su sombra descansaban, durante la siesta, varias cuadrillas de segadores. — Yo, contestaba otro que lo oia, he visto hacer una caldera tan colosal, que dentro de ella trabajaban cien jornaleros, y de uno á otro no se oian los martillazos.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:15053-15064",
+    "windowSize": 4,
+    "score": 20
+  },
+  {
+    "title": "Chiste largo 018",
+    "text": "Estando en Salamanca de broma muchos estudiantes, el uno de ellos soltó una pluma de la cola, de esas tan modestas que con dificultad se perciben. Escusandose todos de lo hecho, dijo el mas resabido: — De Perico es, yo lo sé de cierto. Respondió el acusado: — Dice la verdad, porque él demasiado conoce mi género.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:6108-6123",
+    "windowSize": 6,
+    "score": 20
+  },
+  {
+    "title": "Chiste largo 019",
+    "text": "«Se tomaran diez mil libras esterlinas en donde quiera que se encuentren; y la persona que las quiere, recibirá aunque sea doble cantidad, con la circunstancia de que no tendrá reparo de partir la suma total con el sugeto que pueda proporcionarlas.» Suspensión motivada.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:8771-8778",
+    "windowSize": 2,
+    "score": 17
+  },
+  {
+    "title": "Chiste largo 020",
+    "text": "— Helo aquí, dijo el estudiante. — No puede ser cierto, contestó el guarda, porque ello... no es de hombre sino de buey. — ¡Cuerpo detal...! replicó el estudiante. ¡Fuerte cosa es! ¿Tamb.ien se quiere usted meter en que yo haga eso ó no lo haga á lo buey? Enigmas.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:1226-1235",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 021",
+    "text": "— ¿Se suele perder algún viajero al atravesar esta ria? — Cá, no, señor, somos aquí muy despejados. — Pero si está el tiempo tan borrascoso comohoy... — Tampoco: mire usted, el otro dia, lo mas hará diez, se volcó esta misma barca, cayendo al aguaveinte pasajeros.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:12220-12230",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 022",
+    "text": "El mancebo hízolo así, y acabada la comida, viniendo el huésped á ajustar la cuenta, dijo el compañero: — Amigo, pues te has comido el pollo, bien puedes pagar por mí el escote. — ¿Cómo es eso, habiendo comido un huevo cada uno? — Si no quieres pagar los dos huevos, yo te haré pagar el pollo, y ya veras si sales peor librado.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:1445-1456",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste largo 023",
+    "text": "Entró en la casa, donde le esperaban algunos fumadores, entregó su caja muy satisfecho, y se sentó á descansar. — ¡líombre! dijo el papá cuando las viósin cabeza. ¿Qué has traído aquí? — Cerillas, y buenas. —¡Cómo! si ninguna sirve. — Pues las he probado todas para ver si ardían bien como usted me encargo, y ninguna ha fallado.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:5647-5660",
+    "windowSize": 5,
+    "score": 23
+  },
+  {
+    "title": "Chiste largo 024",
+    "text": "El literato leyó: —Es por tí llagado Fulano de Tal. — Esa ha sido mi intención, dijo el estudiante. — Y yo estaría conforme, dijo el literato, si no fuera porque el diminutivo de espuerta puede ser en ica lo mismo que en illa. — ¡Ah, señor! y eso qué importa, dijo candidamente el estudiante. — Como á usted no le importe, lo que es á mi de seguro nada.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:12934-12948",
+    "windowSize": 6,
+    "score": 20
+  },
+  {
+    "title": "Chiste largo 025",
+    "text": "Cuando llegó la hora de almorzar, el encargado aquella semana de la cocina dijo á su compañero: — Chico, Bartolo, ¿quieres que haga el almuerzo? — Sí, contestó el otro desde lejos. — ¿De qué pan corto las migas, del tuyo ó del mió? preguntó gritando el que hacia de cocinero. — ¡Va! pues córtalas del tuyo, contestó Bartolo, que con el viento no se oye lo que dices.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:1288-1299",
+    "windowSize": 5,
+    "score": 18
+  },
+  {
+    "title": "Chiste largo 026",
+    "text": "En un diario de avisos estranj ero se leiael anuncio siguiente: «Se tomaran diez mil libras esterlinas en donde quiera que se encuentren; y la persona que las quiere, recibirá aunque sea doble cantidad, con la circunstancia de que no tendrá reparo de partir la suma total con el sugeto que pueda proporcionarlas.» Suspensión motivada.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:8766-8778",
+    "windowSize": 4,
+    "score": 17
+  },
+  {
+    "title": "Chiste largo 027",
+    "text": "— Es necesario, dijo el honorable examinador, cubrir cuando menos las formalidades y dejar á salvo la conciencia. — Señor, me han ofrecido que seria aprobado sin examen y no vengo dispuesto á contestar, dijo el mozo. — Necesito irremisiblemente hacerte una pregunta, una sola ¿lo entiendes? pero si no la contestas no hay cartilla.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:9697-9707",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 028",
+    "text": "— Trata usted en vano de consolarme, porque demasiado comprendo que la enmienda es imposible. Si el agua debia estar debajo del chocolate y hace media hora que lo he tomado ¿qué remedio puede haber? — Uno muy sencillo, el vaso de agua clara que debia usted tomar antes, tómelo usted ahora en una lavativa, Y -ftllsi ocupará su puesto.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:16336-16344",
+    "windowSize": 2,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 029",
+    "text": "El refran dice que no hay mal quo por bien no venga, y asi fue, porque el disgusto de la falta de su amanuense fue reemplazado por el gusto que le causó la visitado uu primo suyo, cabo furriel de uu batallón de cazadores. — ¿Sabes escribir? — le preguntó la doméstica después de la ordinaria salutación. — Eso no se pregunta á un cabo, — contestó acariciando con orgullo su bigote, esto es, dandose tono.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:4921-4931",
+    "windowSize": 3,
+    "score": 14
+  },
+  {
+    "title": "Chiste largo 030",
+    "text": "Un comisionista de lanas, que recorría los pueblos de la Sierra, tuvo la desgracia de perder en el camino su reloj de plata, que era por cierto de la pomposa magnitud de una cebolla. Echólo de menos, quizá por el peso, y resolvió Yolver pies atras para buscarlo, pero sin ningún resultado. En el camino encontró á un pastor y le dijo: — Buen hombre, ¿ha visto usted por casualidad un reloj de plata que acabo de perder? — ¡Reloj! ¿como el de la torre? no, señor; no lo he visto. — No era como el de la torre, sino mucho mas pequeño, y lo he debido perder por aquí.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:3953-3971",
+    "windowSize": 6,
+    "score": 14
+  },
+  {
+    "title": "Chiste largo 031",
+    "text": "Dos pastores amigos que solian comer juntos apacentaban sus ganados una mañana de marzo en las dos vertientes de un valle pequeño. Estaban á bastante distancia el uno del otro, hacia mucho viento y necesitaban hablarse á voces para entenderse. Cuando llegó la hora de almorzar, el encargado aquella semana de la cocina dijo á su compañero: — Chico, Bartolo, ¿quieres que haga el almuerzo? — Sí, contestó el otro desde lejos. — ¿De qué pan corto las migas, del tuyo ó del mió? preguntó gritando el que hacia de cocinero. — ¡Va! pues córtalas del tuyo, contestó Bartolo, que con el viento no se oye lo que dices.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:1281-1299",
+    "windowSize": 6,
+    "score": 14
+  },
+  {
+    "title": "Chiste largo 032",
+    "text": "— Pauson, le dijo su amigo, precisamente te he dicho todo lo contrario; queria el caballo echado y lo has pintado corriendo. — Pues mas hice de lo que me pedias, dijo Pauson, puesto que para darte gusto, lo he pintado de modo que está haciendo las dos cosas, revolcarse y correr. — ¡Pero hombre! ¿cómo puede ser eso? — Mira, ¿no está ahora corriendo? —Sí. — Pues bien, coloca la tabla boca abajo, y veras que se está revolcando.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:12067-12083",
+    "windowSize": 6,
+    "score": 6
+  },
+  {
+    "title": "Chiste largo 033",
+    "text": "— No importa; mira, puedes salvar mi honor, y lo salvaras. —¿Cómo? — Dispara tu trabuco en mi manta para que vea todo el mundo que me he defendido. — ¿No quieres mas? —No. — Pues ahí va.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:15064-15076",
+    "windowSize": 6,
+    "score": 15,
+    "layout": "scene"
+  },
+  {
+    "title": "Chiste largo 034",
+    "text": "— ¿Y qué es desafinar? — Se desafina, señor, cuando en vez de colocar el dedo en un punto dado del diapasón, se coloca una línea mas arriba ó mas abajo, produciendo un sonido distinto del que se esperaba.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:2186-2191",
+    "windowSize": 2,
+    "score": 15,
+    "layout": "scene"
+  },
+  {
+    "title": "Chiste largo 035",
+    "text": "— Siempre. Vean ustedes: me faltan todos estos dientes; pues bien, el que me los derribó cayó en el acto redondo á mis pies. — ¿Sin moverse? — Nada, qué se habia de mover. — ¡Hombre! ¿y quién era? —Una piedra.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:16335-16345",
+    "windowSize": 5,
+    "score": 15,
+    "layout": "scene"
+  },
+  {
+    "title": "Chiste largo 036",
+    "text": "— ¿Muy pronto vuelves: ¿te han recibido acaso mal? — ¡Por vida mia! respondió, que me han querido hacer comer. En efecto, hablan soltado contra él dos perros alanos, y á no haber sido tanta la ligereza de sus pies, lo hubieran dejado en los huesos.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:2243-2251",
+    "windowSize": 3,
+    "score": 15,
+    "layout": "scene"
+  },
+  {
+    "title": "Chiste largo 037",
+    "text": "— ¿Vá lejos un caballero así y asi? dandole las señas. — Hombre, contestó el caminante, caballero no he visto, pero ahí delante topé un caballo que lleva un sombrero sobre el arzón y unas botas colgadas de la silla; el caballero ha debido perderse.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:4446-4452",
+    "windowSize": 2,
+    "score": 15,
+    "layout": "scene"
+  },
+  {
+    "title": "Chiste largo 038",
+    "text": "—Es que ya que no puedo comer, huelo, y esto me entretiene. — ¿Es decir, que usted se alimenta á mis espensas? — De modo, que si se habia de desperdiciar ese tufillo.... — Pues tiene usted que pagarme, porque vive usted á mi costa. — Pues recoja usted el olor para que no salga a la calle. El pastelero citó á juicio de conciliación al cesante.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:3542-3557",
+    "windowSize": 6,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 039",
+    "text": "— ¡Vaya! cuidado con equivocarse: ¿sabe usted lo que es un doblón de cuatro duros? — ¡De cuatro duros! ¡No lo he de saber! — 'Pues bien, ese es el peso, ni mas ni menos. La boticaria no tenia oro, pero tenia cuartos: reflexionó y dijo: lo mismo dá. Contó cuatro duros en cuartos, los pesó de cantaridas y haceos cargo de lo que podria resultar.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:1666-1678",
+    "windowSize": 5,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 040",
+    "text": "— Todo puede ser; contestóle admirado. — Pero qué cosa es esa? preguntará el paciente lector amostazado con mi reserva. — Esa cosa es.... Mas no; dispensa carísimo y benévolo leyente: no puedo, me es absolutamente imposible satisfacer tu curiosidad. Sería una crisis espantosa que redundará en perjuicio mió, si te lo manifestase públicamente cual pretendes.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:3207-3217",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 041",
+    "text": "— Yo desearía tener tanto dinero como podría escribirse en una cantidad si se volviese tinta toda el agua del mar y se la agotase escribiéndola. — Mucho es, dijo el segundo; pero yo desearía tener tanto oro como cupiese en sacos que para coserse hubiesen tenido que romperse tantas agujas como caben en toda España hasta el techo.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:4396-4403",
+    "windowSize": 2,
+    "score": 12
+  },
+  {
+    "title": "Chiste largo 042",
+    "text": "— No puedo venderlo, contestó el buen hombre, no es mió. El caballero lo volvió á examinar y dijo: — Cien duros ofrezco á usted de gratificación, ademas del precio del cuadro, si encuentra el medio de que sea mió. — Ya he dicho á usted lo que hay en esto. — El caballero se marchó, y á poco rato volvió con otro que dijo ser pintor.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:122-134",
+    "windowSize": 5,
+    "score": 12
+  },
+  {
+    "title": "Chiste largo 043",
+    "text": "— Apenas lo he visto cinco ó seis veces. — Entonces disimule usted, pero no puedo creer que se haya hecho cargo de las piernas. — ¿Y por qué? — Porque soy tan observador como pueda \"usted serlo, y habiéndolo visto mas de cien veces, todavía no he pasado de la cara.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:5321-5330",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 044",
+    "text": "— Maestro, estoy asombrado. — ¿Por qué? — Porque ha sacado usted un gaban muy cumplido y muy bueno con la misma tela con que no pudo sacarlo su vecino Gregorio. — ¡Gregorio! dijo el sastre, veamos: cinco, ocho, diez, diez... No, señor, no podia sacarlo. ¡Cá! imposible!",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:10371-10381",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 045",
+    "text": "— Chico, Bartolo, ¿quieres que haga el almuerzo? — Sí, contestó el otro desde lejos. — ¿De qué pan corto las migas, del tuyo ó del mió? preguntó gritando el que hacia de cocinero. — ¡Va! pues córtalas del tuyo, contestó Bartolo, que con el viento no se oye lo que dices.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:1291-1299",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 046",
+    "text": "— En la orden no se dice que la tenga. En la mañana del dia siguiente se dio nueva orden mandando que nadie saliese sin una linterna con su vela. En aquella tarde, al anochecer, se presentó el mismo hombre con su linterna y su vela. — ¿En dónde está tu linterna? — Hela aquí.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:6584-6595",
+    "windowSize": 5,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 047",
+    "text": "— ¿Qué podrá valer? — Ya sabe usted, señor Juan, que los cuadros estan muy baratos. — Pues bien, dandolo barato. — Hombre, si le dan á usted cuarenta reales, no va usted mal librado, Sr. Juan. — ¿Dice usted cuarenta ó cuarenta mil? — Cuarenta, señor Juan, cuarenta y es mucho.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:227-239",
+    "windowSize": 6,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 048",
+    "text": "— ¿Es decir, que usted se alimenta á mis espensas? — De modo, que si se habia de desperdiciar ese tufillo.... — Pues tiene usted que pagarme, porque vive usted á mi costa. — Pues recoja usted el olor para que no salga a la calle. El pastelero citó á juicio de conciliación al cesante.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:3545-3557",
+    "windowSize": 5,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 049",
+    "text": "— ¿Que lo entregaré dices? — Si; pero espera. También sabes que tengo un perro; pues bien, te lo regalo generosamente para que lo vendas si quieres y retengas su importe, ó lo conserves para que te guarde la casa; y te aseguro que te servirá de gran consuelo, y que sales bien librada.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:15869-15876",
+    "windowSize": 2,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 050",
+    "text": "— Es cuestionable. Yolvia el catedratico á preguntar, y vuelta á responder: — Es cuestionable. Y tanto y tanto replicaba lo mismo, que le dijo el profesor: — ¿Sabe usted que me parece que no lia estudiado usted una jota? — En eso convienen todos los autores, respondió entonces el graduando.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:3493-3507",
+    "windowSize": 6,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 051",
+    "text": "— Sí; pero no tiene vela. — En la orden no se dice que la tenga. En la mañana del dia siguiente se dio nueva orden mandando que nadie saliese sin una linterna con su vela. En aquella tarde, al anochecer, se presentó el mismo hombre con su linterna y su vela. — ¿En dónde está tu linterna? — Hela aquí.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:6582-6595",
+    "windowSize": 6,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 052",
+    "text": "— Pues mas hice de lo que me pedias, dijo Pauson, puesto que para darte gusto, lo he pintado de modo que está haciendo las dos cosas, revolcarse y correr. — ¡Pero hombre! ¿cómo puede ser eso? — Mira, ¿no está ahora corriendo? —Sí. — Pues bien, coloca la tabla boca abajo, y veras que se está revolcando.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:12071-12083",
+    "windowSize": 5,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 053",
+    "text": "— ¿Se cree usted capaz de poner papillotes á cualquiera? — Sin duda alguna. — ¿Trae usted los hierros de dar fuego? — Sí, señor. Entonces el estudiante se levantó, soltó con ímpetu una pluma de la cola, y dijo al peluquero: — Veamos, maestro, si pone usted á ese los papillotes y le hace un par de rizos.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:11529-11542",
+    "windowSize": 6,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 054",
+    "text": "— La ausencia de usted nos era conocida, porque uno de los periódicos facultativos de la corte, aunque inciden talmente, nos ha hablado de ella. — ¡Ah! ¿conque los periódicos han hablado de mi viaje? ¿Y se puede saber qué es lo que han dicho? — Indudablemente, puesto que estan todos aquí. — Veamos, veamos.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:8910-8919",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 055",
+    "text": "— Señores, es tan notable, que solo de anchura tiene trescientas mil varas castellanas. ' — ¿Y su longitud? ¿y su longitud? esclamaron en coro todos los oyentes. En aquel momento sintió la brusca presión del pié de su compañero, y procurando enmendarse, continuó: — Su longitud es de tres varas y media escasas.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:3334-3343",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 056",
+    "text": "— Yo, contestaba otro que lo oia, he visto hacer una caldera tan colosal, que dentro de ella trabajaban cien jornaleros, y de uno á otro no se oian los martillazos. — Hombre, esa es grilla, dijo el de la berza. ¿Con qué objeto podían hacer una caldera tan disforme? — Con el de cocer la berza que vio usted en Murcia.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:15061-15069",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 057",
+    "text": "— Pero si no estaba en casa, ¿cómo habiade? — Pues bien, á lo menos debias haber dejado á uno para preguntarle su nombre, su casa, y el país de donde es. — No se me ocurrió esa idea, lo confieso. — Pues ya puedes contar por perdido el caballo pero toma, no te aflijas, ahí tienes un ochavo para ayuda de comprar otro.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:3914-3924",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 058",
+    "text": "— Pero qué cosa es esa? preguntará el paciente lector amostazado con mi reserva. — Esa cosa es.... Mas no; dispensa carísimo y benévolo leyente: no puedo, me es absolutamente imposible satisfacer tu curiosidad. Sería una crisis espantosa que redundará en perjuicio mió, si te lo manifestase públicamente cual pretendes.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:3209-3217",
+    "windowSize": 2,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 059",
+    "text": "—;Cómo!... esplíquese usted, ¿qué mal? ¿qué grado? — Tuve hace algunos dias la desgracia de ser mordido por un perro rabioso: me han aconsejado que vaya al mar, y voy á mi pueblo á tomar dinero para hacer este viaje. No es mas que esto. Aun no habia acabado su relación cuando ya su compañero se habia bajado del coche.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:3964-3972",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste largo 060",
+    "text": "— ¡De cuatro duros! ¡No lo he de saber! — 'Pues bien, ese es el peso, ni mas ni menos. La boticaria no tenia oro, pero tenia cuartos: reflexionó y dijo: lo mismo dá. Contó cuatro duros en cuartos, los pesó de cantaridas y haceos cargo de lo que podria resultar.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:1669-1678",
+    "windowSize": 4,
+    "score": 12
+  },
+  {
+    "title": "Chiste largo 061",
+    "text": "— Compadre, dijo uno de los viajeros, este carasol está convidando á tomar un refrigerio. — Sea, contestó el otro. Y ambos se sentaron al abrigo del ventorrillo y sacaron sus meriendas. Consistía la del primero en un pedazo de pan y una casi invisible ración de queso.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:2654-2662",
+    "windowSize": 3,
+    "score": 12
+  },
+  {
+    "title": "Chiste largo 062",
+    "text": "— Esa ha sido mi intención, dijo el estudiante. — Y yo estaría conforme, dijo el literato, si no fuera porque el diminutivo de espuerta puede ser en ica lo mismo que en illa. — ¡Ah, señor! y eso qué importa, dijo candidamente el estudiante. — Como á usted no le importe, lo que es á mi de seguro nada.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:12938-12948",
+    "windowSize": 4,
+    "score": 12
+  },
+  {
+    "title": "Chiste largo 063",
+    "text": "— Doy cuarenta mil reales por el cuadro, y cuatro mil reales para usted si me lo proporciona. — Caballero, dijo el buen hombre aturdido; vuelva usted mañana, yo haré lo que pueda, pero de nada respondo. Luego que se marcharon, el prendero cogió el cuadro y lo escondió. A las cuatro de la tarde volvió el dueño.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:144-153",
+    "windowSize": 3,
+    "score": 12
+  },
+  {
+    "title": "Chiste largo 064",
+    "text": "—Es por tí llagado Fulano de Tal. — Esa ha sido mi intención, dijo el estudiante. — Y yo estaría conforme, dijo el literato, si no fuera porque el diminutivo de espuerta puede ser en ica lo mismo que en illa. — ¡Ah, señor! y eso qué importa, dijo candidamente el estudiante. — Como á usted no le importe, lo que es á mi de seguro nada.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:12936-12948",
+    "windowSize": 5,
+    "score": 12
+  },
+  {
+    "title": "Chiste largo 065",
+    "text": "— Porque te hará pagar doble si sabe que te comes un pollo. El mancebo hízolo así, y acabada la comida, viniendo el huésped á ajustar la cuenta, dijo el compañero: — Amigo, pues te has comido el pollo, bien puedes pagar por mí el escote. — ¿Cómo es eso, habiendo comido un huevo cada uno? — Si no quieres pagar los dos huevos, yo te haré pagar el pollo, y ya veras si sales peor librado.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:1442-1456",
+    "windowSize": 5,
+    "score": 10
+  },
+  {
+    "title": "Chiste largo 066",
+    "text": "— No es nada he dicho; no tema usted; el mal no está aun en el grado —;Cómo!... esplíquese usted, ¿qué mal? ¿qué grado? — Tuve hace algunos dias la desgracia de ser mordido por un perro rabioso: me han aconsejado que vaya al mar, y voy á mi pueblo á tomar dinero para hacer este viaje. No es mas que esto. Aun no habia acabado su relación cuando ya su compañero se habia bajado del coche.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:3961-3972",
+    "windowSize": 4,
+    "score": 10
+  },
+  {
+    "title": "Chiste largo 067",
+    "text": "— ¿Es verdad que donde hay dos hay también uno? —Sí. — ¿Es verdad que dos y uno son tres? — También es verdad. — Luego aqui hay tres huevos.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:16193-16201",
+    "windowSize": 5,
+    "score": 10
+  },
+  {
+    "title": "Chiste largo 068",
+    "text": "— ¿Es verdad que donde hay dos hay también imo? —Sí. — ¿Es verdad que dos y uno son tres? — También es verdad. — Luego aqui hay tres huevos.",
+    "source": "Boira III, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-3-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-3-1862.txt:19526-19534",
+    "windowSize": 5,
+    "score": 10
+  },
+  {
+    "title": "Chiste largo 069",
+    "text": "— He visto en Murcia una berza tan grande que á su sombra descansaban, durante la siesta, varias cuadrillas de segadores. — Yo, contestaba otro que lo oia, he visto hacer una caldera tan colosal, que dentro de ella trabajaban cien jornaleros, y de uno á otro no se oian los martillazos. — Hombre, esa es grilla, dijo el de la berza. ¿Con qué objeto podían hacer una caldera tan disforme? — Con el de cocer la berza que vio usted en Murcia.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:15057-15069",
+    "windowSize": 4,
+    "score": 6
+  },
+  {
+    "title": "Chiste largo 070",
+    "text": "— Llegados al picadero, le di al caballo una palmada en la cruz, y el animal temblaba. Pone luego el señor M an olito un pié en el estribo y luego monta. Entonces el caballo dá un boto; Manolito tieso que tieso. El caballo dá otro bote y rompo la cincha, y Manolito tieso que tieso también. El caballo dá otro tercer boto y échala silla al suelo: el señor Manolito siempre tieso que tieso. Las gentes que oian esta aventura, preguntaban: —Pero, hombre, cómo al caer la silla no cayó usted también? — Toma! porque me habia tirado al primer bote.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:2515-2532",
+    "windowSize": 4,
+    "score": 6
+  },
+  {
+    "title": "Chiste largo 071",
+    "text": "— No sé, señor, respondió, para qué son tantas reprensiones cuando no las merezco, porque puedo asegurar á usted, á fé de hombre de bien, que la casa se podrá arruinar, pero no por culpa mia, pujes no gasto un cuarto que no sea con Prudencia, como usted me aconseja. Los frenos ¡trocados. Enrique IV, viendo que su sastre le traia un libro con algunos reglamentos y maximas de estadística que habia compuesto, dijo á uno de sus cortesanos: — Que llamen luego á mi chanciller para que me corte un vestido, pues mi sastre quiere hacer ordenanzas.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:13087-13103",
+    "windowSize": 4,
+    "score": 3
+  }
+]

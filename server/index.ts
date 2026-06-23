@@ -17,7 +17,7 @@ import { parseCreds, type ClientCreds } from "./services/youtube.ts";
 import { startScheduler } from "./infra/scheduler.ts";
 import * as metrics from "./infra/metrics.ts";
 import { type RefreshHooks } from "./services/stats-refresh.ts";
-import { hashPassword } from "./auth.ts";
+import { hashPassword, isSuperAdminUser, SUPER_ADMIN_USERNAME } from "./auth.ts";
 import { gracefulShutdown } from "./infra/shutdown.ts";
 import { drainQueue as genDrainQueue } from "./services/gen-queue.ts";
 
@@ -46,6 +46,7 @@ import { registerYouTubeOAuthRoutes } from "./routes/youtube-oauth.ts";
 import { registerVideosRoutes } from "./routes/videos.ts";
 import { registerGenQueueRoutes } from "./routes/gen-queue.ts";
 import { registerStudioGalleryRoutes } from "./routes/studio-gallery.ts";
+import { registerClipDemosRoutes } from "./routes/clip-demos.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -68,9 +69,18 @@ for (const entry of (process.env.SEED_USERS ?? "").split(",")) {
 }
 if (db.countUsers() === 0)
   console.warn("[auth] No users seeded — set ADMIN_USERNAME/ADMIN_PASSWORD in .env, then restart.");
+const configuredSuperAdmin = db
+  .listUsers()
+  .find((u) => (u.username ?? "").trim() === SUPER_ADMIN_USERNAME);
+if (configuredSuperAdmin && configuredSuperAdmin.role !== "admin") {
+  db.updateUserRole(configuredSuperAdmin.id, "admin");
+  console.log(`[auth] Promoted fixed main admin "${SUPER_ADMIN_USERNAME}" to role "admin".`);
+}
+if (!db.listUsers().some(isSuperAdminUser))
+  console.warn(`[auth] No main admin found — create username "${SUPER_ADMIN_USERNAME}" with role "admin".`);
 
 // ---- One-time migrations: all pre-existing data belongs to the first admin ----
-const firstAdmin = db.listUsers().find((u) => u.role === "admin") ?? db.listUsers()[0] ?? null;
+const firstAdmin = db.listUsers().find(isSuperAdminUser) ?? db.listUsers().find((u) => u.role === "admin") ?? db.listUsers()[0] ?? null;
 if (firstAdmin) {
   db.assignOrphanAccounts(firstAdmin.id); // channels with no owner → admin
   // Seed the admin's first Google key from the legacy global client-secret file so already-connected
@@ -233,7 +243,7 @@ app.setErrorHandler((err, req, reply) => {
 
 // ---- Build the shared foundation singletons ONCE, then thread them into every route module ----
 const auth = makeAuthSession(db);
-const deckAccess = makeDeckAccess(db, { isAdminReq: auth.isAdminReq });
+const deckAccess = makeDeckAccess(db, { isAdminReq: auth.isAdminReq, isSuperAdminReq: auth.isSuperAdminReq });
 const notifier = makeNotifier(db); // SINGLE SSE hub — its emit/notify fns go to notifications + stats + admin
 const buildLibraryVideo = makeBuildLibraryVideo({
   db,
@@ -311,6 +321,7 @@ registerYouTubeOAuthRoutes(app, db, deps);
 registerVideosRoutes(app, db, deps);
 registerGenQueueRoutes(app, db, deps);
 registerStudioGalleryRoutes(app, db, deps);
+registerClipDemosRoutes(app, db, deps);
 
 app
   .listen({ port: base.port, host: "0.0.0.0" })

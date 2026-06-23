@@ -4,6 +4,7 @@
 // match the sync batch path.
 import type { FastifyInstance } from "fastify";
 import type { Db } from "../db.ts";
+import { isSuperAdminUser } from "../auth.ts";
 import { DECKS, isPackDeckId } from "../../src/anecdotes/decks.ts";
 import { randomAnecdote, anecdoteKey } from "../../src/anecdotes/library.ts";
 import { getPack } from "../../src/packs/store.ts";
@@ -41,7 +42,7 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
     const generateFromSource = async (sourceDeck: string): Promise<"made" | "exhausted"> => {
       // Пак-канал: одна случайная неиспользованная карточка пака → видео в библиотеку.
       if (isPackDeckId(sourceDeck)) {
-        const pack = getPack(sourceDeck.slice(5), ownerId, db.getUserById(job.userId)?.role === "admin");
+        const pack = getPack(sourceDeck.slice(5), ownerId, isSuperAdminUser(db.getUserById(ownerId)));
         if (!pack || !pack.templates.length) throw new Error(`Пак «${sourceDeck}» не найден или без шаблона`);
         for (;;) {
           const picked = pickUnusedPackCard(pack, seen);

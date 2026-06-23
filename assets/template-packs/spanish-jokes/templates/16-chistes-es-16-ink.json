@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "name": "chistes-es-16-ink",
+  "canvas": {
+    "w": 1080,
+    "h": 1920,
+    "bg": "#141414"
+  },
+  "elements": [
+    {
+      "id": "background",
+      "type": "image",
+      "x": 0,
+      "y": 0,
+      "w": 1080,
+      "h": 1920,
+      "rot": 0,
+      "src": "assets/template-packs/spanish-jokes/backgrounds/bg-16.jpg",
+      "fit": "cover"
+    },
+    {
+      "id": "text-panel",
+      "type": "text",
+      "x": 118,
+      "y": 278,
+      "w": 844,
+      "h": 1120,
+      "rot": 0,
+      "text": "",
+      "align": "left",
+      "bg": "rgba(18,18,18,.66)",
+      "border": "1px solid rgba(245,200,75,.42)",
+      "radius": 8,
+      "shadow": "0 34px 90px rgba(0,0,0,.34)",
+      "font": {
+        "family": "Inter",
+        "size": 1,
+        "weight": 400,
+        "color": "#111111",
+        "lineHeight": 1
+      }
+    },
+    {
+      "id": "label",
+      "type": "text",
+      "x": 176,
+      "y": 350,
+      "w": 728,
+      "h": 44,
+      "rot": 0,
+      "text": "SONRISA RÁPIDA",
+      "align": "left",
+      "font": {
+        "family": "Inter",
+        "size": 29,
+        "weight": 900,
+        "color": "#f5c84b",
+        "lineHeight": 1.05
+      }
+    },
+    {
+      "id": "title",
+      "type": "killbox",
+      "x": 176,
+      "y": 428,
+      "w": 728,
+      "h": 116,
+      "rot": 0,
+      "role": "title",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 50,
+        "weight": 900,
+        "color": "#fbf8ed",
+        "lineHeight": 1.06
+      },
+      "fitMin": 34,
+      "fitMax": 50,
+      "maxChars": 46,
+      "placeholder": "title"
+    },
+    {
+      "id": "body",
+      "type": "killbox",
+      "x": 176,
+      "y": 588,
+      "w": 728,
+      "h": 654,
+      "rot": 0,
+      "role": "text",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "center",
+      "font": {
+        "family": "Inter",
+        "size": 42,
+        "weight": 720,
+        "color": "#fbf8ed",
+        "lineHeight": 1.22
+      },
+      "fitMin": 28,
+      "fitMax": 42,
+      "maxChars": 430,
+      "placeholder": "text"
+    },
+    {
+      "id": "source",
+      "type": "killbox",
+      "x": 176,
+      "y": 1304,
+      "w": 728,
+      "h": 40,
+      "rot": 0,
+      "role": "source",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 25,
+        "weight": 820,
+        "color": "#bdb6a0",
+        "lineHeight": 1.1
+      },
+      "fitMin": 20,
+      "fitMax": 25,
+      "maxChars": 42,
+      "placeholder": "source"
+    }
+  ]
+}

@@ -90,7 +90,7 @@ export function makeRouteDeps(input: {
   randomAvatar: () => string | null;
 }): RouteDeps {
   const { db, auth, deckAccess, notifier, buildLibraryVideo, statsRefreshHooks, outputDir, redirectUri, webOrigin, accountCreds } = input;
-  const { isAdminReq } = auth;
+    const { isAdminReq, isSuperAdminReq } = auth;
 
   function sendGenerationRateLimit(reply: LimitedReplyish, retryAfterMs = 1_000): unknown {
     reply.header("Retry-After", String(Math.max(1, Math.ceil(retryAfterMs / 1000))));
@@ -131,13 +131,13 @@ export function makeRouteDeps(input: {
     }
   }
 
-  // Admins may inspect/edit any channel; regular users stay locked to their own channels.
-  function accessibleAccount(req: unknown, reply: Replyish, id: number): Account | null {
-    const a = db.getAccount(id);
-    if (!a || (!isAdminReq(req) && a.userId !== uid(req))) {
-      reply.code(404).send({ error: "Канал не найден" });
-      return null;
-    }
+    // Only the main admin may edit any channel; regular admins stay locked to their own channels.
+    function accessibleAccount(req: unknown, reply: Replyish, id: number): Account | null {
+      const a = db.getAccount(id);
+      if (!a || (!isSuperAdminReq(req) && a.userId !== uid(req))) {
+        reply.code(404).send({ error: "Канал не найден" });
+        return null;
+      }
     return a;
   }
 
@@ -179,18 +179,16 @@ export function makeRouteDeps(input: {
   // ---- Channel stats visibility ----
   // Reads (`readonly`): ANY signed-in user may view every channel's stats (?scope=all).
   // Writes/refresh (default): ?scope=all targets every channel ONLY for admins.
-  function visibleAccounts(req: unknown, scope?: string, readonly = false): Account[] {
-    const u = db.getUserById(uid(req));
-    if (scope === "all" && (readonly || u?.role === "admin")) return db.listAccounts();
-    return db.listAccountsByUser(uid(req));
-  }
+    function visibleAccounts(req: unknown, scope?: string, readonly = false): Account[] {
+      if (scope === "all" && (readonly || isSuperAdminReq(req))) return db.listAccounts();
+      return db.listAccountsByUser(uid(req));
+    }
   function visibleAccount(req: unknown, id: number, readonly = false): Account | null {
     const a = db.getAccount(id);
-    if (!a) return null;
-    if (readonly) return a;
-    const u = db.getUserById(uid(req));
-    return a.userId === uid(req) || u?.role === "admin" ? a : null;
-  }
+      if (!a) return null;
+      if (readonly) return a;
+      return a.userId === uid(req) || isSuperAdminReq(req) ? a : null;
+    }
 
   function accountAnalyticsPayload(accountId: number, days = 30) {
     const latest = db.latestSnapshot(accountId);

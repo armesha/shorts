@@ -202,21 +202,21 @@ export function createPack(
     templates: opts.templates?.length ? opts.templates : [],
     cards: [],
     createdAt: now,
-    grants: [], // по умолчанию доступ только у владельца/админа; админ раздаёт через матрицу
+    grants: [], // по умолчанию доступ только у владельца/главного админа; главный админ раздаёт через матрицу
   };
   writeAtomic(packFile(id), pack);
   return pack;
 }
 
-/** Доступ к паку (чтение/использование: список, превью, сборка видео): админ ИЛИ владелец ИЛИ грант. */
-export function canAccess(pack: Pack, userId: number, isAdmin: boolean): boolean {
-  return isAdmin || pack.owners.includes(userId) || (pack.grants ?? []).includes(userId);
+/** Доступ к паку (чтение/использование: список, превью, сборка видео): главный админ ИЛИ владелец ИЛИ грант. */
+export function canAccess(pack: Pack, userId: number, isSuperAdmin: boolean): boolean {
+  return isSuperAdmin || pack.owners.includes(userId) || (pack.grants ?? []).includes(userId);
 }
 
-/** Право РЕДАКТИРОВАТЬ пак (имя, язык, карточки, удаление): админ ИЛИ один из владельцев.
+/** Право РЕДАКТИРОВАТЬ пак (имя, язык, карточки, удаление): главный админ ИЛИ один из владельцев.
  *  Грант даёт лишь чтение/использование — гранчёный юзер пак НЕ редактирует. */
-export function canEdit(pack: Pack, userId: number, isAdmin: boolean): boolean {
-  return isAdmin || pack.owners.includes(userId);
+export function canEdit(pack: Pack, userId: number, isSuperAdmin: boolean): boolean {
+  return isSuperAdmin || pack.owners.includes(userId);
 }
 
 /** Все паки (любой владелец) — для матрицы Админки (колонки + кто гранчен). */
@@ -245,7 +245,7 @@ export function setGrant(packId: string, userId: number, on: boolean): boolean {
   return true;
 }
 
-/** Сменить язык пака (тег языка). Право (владелец/админ) проверяется на уровне роута. */
+/** Сменить язык пака (тег языка). Право (владелец/главный админ) проверяется на уровне роута. */
 export function setPackLang(packId: string, lang: string): boolean {
   const p = readPackFile(packId);
   if (!p) return false;
@@ -254,7 +254,7 @@ export function setPackLang(packId: string, lang: string): boolean {
   return true;
 }
 
-/** Переименовать пак. Право (владелец/админ) проверяется на уровне роута. */
+/** Переименовать пак. Право (владелец/главный админ) проверяется на уровне роута. */
 export function setPackName(packId: string, name: string): boolean {
   const p = readPackFile(packId);
   if (!p) return false;
@@ -265,7 +265,7 @@ export function setPackName(packId: string, name: string): boolean {
   return true;
 }
 
-/** Задать список владельцев пака (0+; только админ — проверка на уровне роута). Пусто = без владельца.
+/** Задать список владельцев пака (0+; только главный админ — проверка на уровне роута). Пусто = без владельца.
  *  Владельцы убираются из грантов (владельцу грант не нужен). Legacy-поле userId стирается. */
 export function setPackOwners(packId: string, ownerIds: number[]): boolean {
   const p = readPackFile(packId);
@@ -279,13 +279,13 @@ export function setPackOwners(packId: string, ownerIds: number[]): boolean {
 }
 
 /** Список паков пользователя (сводки), новейшие сверху. */
-export function listPacks(userId: number, isAdmin = false): PackSummary[] {
+export function listPacks(userId: number, isSuperAdmin = false): PackSummary[] {
   if (!existsSync(PACKS_DIR)) return [];
   const out: PackSummary[] = [];
   for (const f of readdirSync(PACKS_DIR)) {
     if (!f.endsWith(".json") || f.endsWith(".tmp")) continue;
     const p = readPackFile(f.replace(/\.json$/, ""));
-    if (!p || !canAccess(p, userId, isAdmin)) continue;
+    if (!p || !canAccess(p, userId, isSuperAdmin)) continue;
     out.push({ id: p.id, owners: p.owners, name: p.name, lang: p.lang, templates: p.templates.length, cards: p.cards.length, createdAt: p.createdAt, grants: p.grants ?? [] });
   }
   out.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
@@ -293,23 +293,23 @@ export function listPacks(userId: number, isAdmin = false): PackSummary[] {
 }
 
 /** Полный пак — владельцу/админу/гранченному. */
-export function getPack(id: string, userId: number, isAdmin = false): Pack | null {
+export function getPack(id: string, userId: number, isSuperAdmin = false): Pack | null {
   const p = readPackFile(id);
-  if (!p || !canAccess(p, userId, isAdmin)) return null;
+  if (!p || !canAccess(p, userId, isSuperAdmin)) return null;
   return p;
 }
 
 /** Добавить карточки в пак с проверкой по правилам ПЕРВОГО шаблона. All-or-nothing на уровне роута.
- *  Редактирование (добавление) — только владелец/админ (canEdit); грант не даёт права менять контент. */
+ *  Редактирование (добавление) — только владелец/главный админ (canEdit); грант не даёт права менять контент. */
 export function addCards(
   id: string,
   userId: number,
-  isAdmin: boolean,
+  isSuperAdmin: boolean,
   input: unknown,
   now: string = new Date().toISOString(),
 ): { ok: true; added: number; total: number } | { ok: false; reason: "not_found" | "no_template" | "invalid"; result?: ValidationResult } {
   const p = readPackFile(id);
-  if (!p || !canEdit(p, userId, isAdmin)) return { ok: false, reason: "not_found" };
+  if (!p || !canEdit(p, userId, isSuperAdmin)) return { ok: false, reason: "not_found" };
   if (!p.templates.length) return { ok: false, reason: "no_template" };
   const rules = deriveRules(p.templates[0]);
   let result: ValidationResult;
@@ -324,16 +324,16 @@ export function addCards(
   return { ok: true, added: result.cards.length, total: p.cards.length };
 }
 
-/** Удалить одну карточку по индексу (сверка addedAt от гонок). Только владелец/админ (canEdit). */
+/** Удалить одну карточку по индексу (сверка addedAt от гонок). Только владелец/главный админ (canEdit). */
 export function deleteCard(
   id: string,
   userId: number,
-  isAdmin: boolean,
+  isSuperAdmin: boolean,
   index: number,
   expectedAddedAt?: string,
 ): { deleted: boolean; total: number; reason?: "not_found" | "stale" } {
   const p = readPackFile(id);
-  if (!p || !canEdit(p, userId, isAdmin)) return { deleted: false, total: 0, reason: "not_found" };
+  if (!p || !canEdit(p, userId, isSuperAdmin)) return { deleted: false, total: 0, reason: "not_found" };
   if (!Number.isInteger(index) || index < 0 || index >= p.cards.length)
     return { deleted: false, total: p.cards.length, reason: "not_found" };
   if (expectedAddedAt && p.cards[index].addedAt !== expectedAddedAt)
@@ -343,11 +343,11 @@ export function deleteCard(
   return { deleted: true, total: p.cards.length };
 }
 
-/** Удалить пак целиком: админ — любой пак, остальные — только если они владелец (грант не считается). */
-export function deletePack(id: string, userId: number, isAdmin = false): boolean {
+/** Удалить пак целиком: главный админ — любой пак, остальные — только если они владелец (грант не считается). */
+export function deletePack(id: string, userId: number, isSuperAdmin = false): boolean {
   const p = readPackFile(id);
   if (!p) return false;
-  if (!isAdmin && !p.owners.includes(userId)) return false; // не админ → только владелец (не грантополучатель)
+  if (!isSuperAdmin && !p.owners.includes(userId)) return false;
   unlinkSync(packFile(id));
   return true;
 }

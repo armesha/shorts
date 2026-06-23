@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Users, Plus, Check, AlertTriangle, Crown, LogIn, Send, Infinity as InfinityIcon } from "lucide-react";
 import { apiClient, ApiError, type AdminUser, type DeckInfo, type UserDeckRow, type PackSummary, type PackUsageItem } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { isMainAdmin } from "../lib/authz";
 import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
 
@@ -31,6 +32,7 @@ export default function UsersPage() {
 function AdminUsers() {
   const { user, setUser } = useAuth();
   const { t } = useT();
+  const canManageRights = isMainAdmin(user);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [decks, setDecks] = useState<DeckInfo[]>([]);
   const [rows, setRows] = useState<UserDeckRow[]>([]);
@@ -74,10 +76,16 @@ function AdminUsers() {
   const userDecks = decks.filter((d) => !d.adminOnly || d.grantable || d.pack);
   useEffect(() => {
     loadUsers();
-    loadMatrix();
-    loadPacks();
-    apiClient.adminDecks().then(setDecks).catch(() => {});
-  }, []);
+    if (canManageRights) {
+      loadMatrix();
+      loadPacks();
+      apiClient.adminDecks().then(setDecks).catch(() => {});
+    } else {
+      setRows([]);
+      setPacks([]);
+      setDecks([]);
+    }
+  }, [canManageRights]);
 
   // Добавить/убрать владельца пака (только админ). Шлём ВЕСЬ массив владельцев; пусто = без владельца.
   // Оптимистично + ВИДИМАЯ ошибка с откатом (без «тихого возврата» — частая жалоба).
@@ -107,17 +115,22 @@ function AdminUsers() {
     setBusy(true);
     try {
       // обычные встроенные паки — opt-out; кастомные и grantable admin-only built-in паки — opt-in.
-      const hidden = role === "admin" ? [] : userDecks.filter((d) => !d.pack && !d.grantable && !newVisible.has(d.id)).map((d) => d.id);
-      const grants = role === "admin" ? [] : userDecks.filter((d) => (d.pack || d.grantable) && newVisible.has(d.id)).map((d) => d.id);
-      const u = await apiClient.createUser(username.trim(), password, role, hidden);
-      if (grants.length) await apiClient.setUserDecks(u.id, hidden, grants);
+      const nextRole = canManageRights ? role : "user";
+      const hidden = canManageRights && nextRole !== "admin"
+        ? userDecks.filter((d) => !d.pack && !d.grantable && !newVisible.has(d.id)).map((d) => d.id)
+        : [];
+      const grants = canManageRights && nextRole !== "admin"
+        ? userDecks.filter((d) => (d.pack || d.grantable) && newVisible.has(d.id)).map((d) => d.id)
+        : [];
+      const u = await apiClient.createUser(username.trim(), password, nextRole, hidden);
+      if (canManageRights && grants.length) await apiClient.setUserDecks(u.id, hidden, grants);
       setCreated(t("users.created", { name: u.username, role: u.role === "admin" ? t("users.roleAdmin") : t("users.roleUser") }));
       setUsername("");
       setPassword("");
       setRole("user");
       setNewVisible(new Set());
       loadUsers();
-      loadMatrix();
+      if (canManageRights) loadMatrix();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t("users.createFailed"));
     } finally {
@@ -187,14 +200,16 @@ function AdminUsers() {
     }
     let alive = true;
     setResetItems(null); // спиннер, пока грузим нового юзера (без мигания прошлым)
-    apiClient
-      .adminUserPackUsage(resetUserId)
-      .then((r) => alive && setResetItems(r.items))
-      .catch(() => alive && setResetItems([]));
+    if (canManageRights) {
+      apiClient
+        .adminUserPackUsage(resetUserId)
+        .then((r) => alive && setResetItems(r.items))
+        .catch(() => alive && setResetItems([]));
+    }
     return () => {
       alive = false;
     };
-  }, [resetUserId]);
+  }, [resetUserId, canManageRights]);
 
   async function impersonate(row: UserDeckRow) {
     const targetId = row.userId;
@@ -208,6 +223,26 @@ function AdminUsers() {
       setError(e instanceof ApiError ? e.message : t("users.impersonateFailed"));
     } finally {
       setImpersonatingId(null);
+    }
+  }
+
+  async function setRowRole(row: UserDeckRow, nextRole: "admin" | "user") {
+    if (!canManageRights || row.isSuperAdmin) return;
+    setSavingCell(`role:${row.userId}`);
+    setSaveState("saving");
+    try {
+      const res = await apiClient.setUserRole(row.userId, nextRole);
+      setRows((rs) => rs.map((r) => (r.userId === row.userId ? { ...r, role: res.role, isSuperAdmin: res.isSuperAdmin } : r)));
+      setUsers((us) => us.map((u) => (u.id === row.userId ? { ...u, role: res.role, isSuperAdmin: res.isSuperAdmin } : u)));
+      setSaveState("saved");
+      window.setTimeout(() => setSaveState((s) => (s === "saved" ? "idle" : s)), 1800);
+    } catch (e) {
+      setSaveState("error");
+      setError(e instanceof ApiError ? e.message : t("users.saveFailedShort"));
+      loadUsers();
+      loadMatrix();
+    } finally {
+      setSavingCell(null);
     }
   }
 
@@ -293,17 +328,19 @@ function AdminUsers() {
                 autoComplete="off"
               />
             </label>
-            <label className="form-control w-40">
-              <span className="label-text">{t("users.roleLabel")}</span>
-              <select
-                className="select select-bordered select-sm"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-              >
-                <option value="user">{t("users.roleUser")}</option>
-                <option value="admin">{t("users.roleAdmin")}</option>
-              </select>
-            </label>
+            {canManageRights && (
+              <label className="form-control w-40">
+                <span className="label-text">{t("users.roleLabel")}</span>
+                <select
+                  className="select select-bordered select-sm"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                >
+                  <option value="user">{t("users.roleUser")}</option>
+                  <option value="admin">{t("users.roleAdmin")}</option>
+                </select>
+              </label>
+            )}
             <button
               className="btn btn-primary btn-sm gap-1"
               onClick={add}
@@ -314,7 +351,7 @@ function AdminUsers() {
             </button>
           </div>
 
-          {role !== "admin" && userDecks.length > 0 && (
+          {canManageRights && role !== "admin" && userDecks.length > 0 && (
             <div className="mt-2">
               <span className="text-xs text-base-content/60">
                 {t("users.newUserPacksHint1")} <b>{t("users.newUserPacksHintNew")}</b> {t("users.newUserPacksHint2")}{" "}
@@ -356,6 +393,25 @@ function AdminUsers() {
               <AlertTriangle size={14} /> {error}
             </div>
           )}
+        </div>
+
+        <div className="border-t border-base-300 pt-3">
+          <p className="text-sm font-medium mb-2 flex items-center gap-2">
+            <Users size={15} className="text-primary" /> {t("users.registeredHeading")}
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {users.map((u) => (
+              <span key={u.id} className="inline-flex items-center gap-1 rounded border border-base-300 px-2 py-1 text-xs">
+                <span className="font-medium">{u.username}</span>
+                {u.isSuperAdmin ? (
+                  <span className="badge badge-primary badge-xs">{t("users.superAdmin")}</span>
+                ) : u.role === "admin" ? (
+                  <span className="badge badge-ghost badge-xs">{t("users.roleAdmin")}</span>
+                ) : null}
+                {u.locked && <span className="badge badge-error badge-xs">{t("users.locked")}</span>}
+              </span>
+            ))}
+          </div>
         </div>
 
         <div className="border-t border-base-300 pt-3">
@@ -450,7 +506,7 @@ function AdminUsers() {
         </div>
 
         {/* Visibility matrix: users × packs (checkbox = visible; «исп.» = already used) */}
-        {rows.length > 0 && decks.length > 0 && (
+        {canManageRights && rows.length > 0 && decks.length > 0 && (
           <div className="border-t border-base-300 pt-3">
             <p className="text-sm font-medium mb-2 flex items-center gap-2">
               {t("users.matrixHeading")}
@@ -494,10 +550,29 @@ function AdminUsers() {
                         <div className="flex items-center gap-1.5">
                           {row.role === "admin" && <AppIcon name="admin" size={13} className="text-primary" />}
                           {row.username}
+                          {row.isSuperAdmin && <span className="badge badge-primary badge-xs">{t("users.superAdmin")}</span>}
+                          {canManageRights && !row.isSuperAdmin && (
+                            <button
+                              type="button"
+                              className="btn btn-ghost btn-xs gap-1"
+                              disabled={savingCell === `role:${row.userId}`}
+                              onClick={() => setRowRole(row, row.role === "admin" ? "user" : "admin")}
+                              title={row.role === "admin" ? t("users.makeUserTitle") : t("users.makeAdminTitle")}
+                            >
+                              {savingCell === `role:${row.userId}` ? (
+                                <span className="loading loading-spinner loading-xs" />
+                              ) : row.role === "admin" ? (
+                                <Crown size={11} />
+                              ) : (
+                                <Users size={11} />
+                              )}
+                              {row.role === "admin" ? t("users.roleAdmin") : t("users.roleUser")}
+                            </button>
+                          )}
                           {users.find((u) => u.id === row.userId)?.locked && (
                             <span className="badge badge-error badge-xs">{t("users.locked")}</span>
                           )}
-                          {row.userId !== user?.id && (
+                          {canManageRights && row.userId !== user?.id && (
                             <button
                               type="button"
                               className="btn btn-ghost btn-xs gap-1 ml-auto"
@@ -595,8 +670,8 @@ function AdminUsers() {
           </div>
         )}
 
-        {/* Владельцы паков: у пака 0+ владельцев — они редактируют пак (имя/язык/карточки) на /cards. Админ во владельцы не пишется. */}
-        {packs.length > 0 && (
+        {/* Владельцы паков: у пака 0+ владельцев — они редактируют пак (имя/язык/карточки) на /cards. */}
+        {canManageRights && packs.length > 0 && (
           <div className="border-t border-base-300 pt-3">
             <p className="text-sm font-medium mb-1 flex items-center gap-2">
               <Crown size={15} className="text-primary" /> {t("users.ownersHeading")}
@@ -629,7 +704,7 @@ function AdminUsers() {
                       <td className="uppercase text-base-content/70">{p.lang}</td>
                       <td>
                         <div className="flex flex-wrap items-center gap-1">
-                          {users.filter((u) => u.role !== "admin").map((u) => {
+                          {users.filter((u) => !u.isSuperAdmin).map((u) => {
                             const on = p.owners.includes(u.id);
                             return (
                               <button
@@ -644,7 +719,7 @@ function AdminUsers() {
                               </button>
                             );
                           })}
-                          {!p.owners.some((id) => users.some((u) => u.id === id && u.role !== "admin")) && (
+                          {!p.owners.some((id) => users.some((u) => u.id === id && !u.isSuperAdmin)) && (
                             <span className="text-base-content/40 text-xs italic">{t("users.noOwner")}</span>
                           )}
                           {savingOwner === p.id && <span className="loading loading-spinner loading-xs" />}
@@ -663,7 +738,7 @@ function AdminUsers() {
 
     {/* Сброс истории паков — отдельный блок (вынесен из тесной матрицы): выбери юзера → */}
     {/* сбрось «использованные» карточки нужного пака; генерация снова берёт его с начала. */}
-    {rows.length > 0 && (
+    {canManageRights && rows.length > 0 && (
       <section className="card bg-base-100 border border-base-300">
         <div className="card-body gap-3">
           <div>

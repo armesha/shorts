@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "name": "chistes-es-long-39-scene-market",
+  "canvas": {
+    "w": 1080,
+    "h": 1920,
+    "bg": "#f4ecdd"
+  },
+  "elements": [
+    {
+      "id": "background",
+      "type": "image",
+      "x": 0,
+      "y": 0,
+      "w": 1080,
+      "h": 1920,
+      "rot": 0,
+      "src": "assets/template-packs/spanish-jokes-long/backgrounds/scene-russian_market_stall.jpg",
+      "fit": "cover"
+    },
+    {
+      "id": "scene-panel",
+      "type": "text",
+      "x": 235,
+      "y": 230,
+      "w": 545,
+      "h": 660,
+      "rot": 0,
+      "text": "",
+      "align": "left",
+      "bg": "rgba(255,252,243,.76)",
+      "border": "1px solid rgba(99,72,43,.22)",
+      "radius": 3,
+      "shadow": "0 12px 36px rgba(36,24,14,.13)",
+      "font": {
+        "family": "Inter",
+        "size": 1,
+        "weight": 400,
+        "color": "#111111",
+        "lineHeight": 1
+      }
+    },
+    {
+      "id": "label",
+      "type": "text",
+      "x": 259,
+      "y": 254,
+      "w": 497,
+      "h": 34,
+      "rot": 0,
+      "text": "CHISTE ESCENA",
+      "align": "left",
+      "font": {
+        "family": "Inter",
+        "size": 19,
+        "weight": 900,
+        "color": "#186a6d",
+        "lineHeight": 1.05
+      }
+    },
+    {
+      "id": "title",
+      "type": "killbox",
+      "x": 259,
+      "y": 288,
+      "w": 497,
+      "h": 52,
+      "rot": 0,
+      "role": "title",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 32,
+        "weight": 900,
+        "color": "#20160f",
+        "lineHeight": 1.05
+      },
+      "fitMin": 24,
+      "fitMax": 32,
+      "maxChars": 46,
+      "placeholder": "title"
+    },
+    {
+      "id": "body",
+      "type": "killbox",
+      "x": 259,
+      "y": 346,
+      "w": 497,
+      "h": 470,
+      "rot": 0,
+      "role": "text",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 40,
+        "weight": 720,
+        "color": "#20160f",
+        "lineHeight": 1.07
+      },
+      "fitMin": 30,
+      "fitMax": 40,
+      "maxChars": 380,
+      "placeholder": "text"
+    },
+    {
+      "id": "source",
+      "type": "killbox",
+      "x": 259,
+      "y": 840,
+      "w": 497,
+      "h": 30,
+      "rot": 0,
+      "role": "source",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 19,
+        "weight": 820,
+        "color": "#6f5b48",
+        "lineHeight": 1.1
+      },
+      "fitMin": 16,
+      "fitMax": 19,
+      "maxChars": 42,
+      "placeholder": "source"
+    }
+  ]
+}

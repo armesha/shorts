@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <title>Иллюзии вращения — неоднозначные 3D-фигуры</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --panel: rgba(10, 10, 14, .62);
+      --line: rgba(255, 255, 255, .14);
+      --text: rgba(255, 255, 255, .96);
+      --muted: rgba(255, 255, 255, .55);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 52%, transparent 20%, rgba(0,0,0,.14) 62%, rgba(0,0,0,.72) 100%),
+        linear-gradient(to bottom, rgba(0,0,0,.22), transparent 24%, transparent 76%, rgba(0,0,0,.28));
+      z-index: 2;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      z-index: 1;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .title {
+      position: fixed;
+      z-index: 5;
+      top: max(28px, calc(env(safe-area-inset-top) + 20px));
+      left: 50%;
+      width: min(900px, calc(100vw - 40px));
+      transform: translateX(-50%);
+      text-align: center;
+      color: var(--text);
+      font-weight: 830;
+      font-size: clamp(22px, 4.2vw, 48px);
+      line-height: 1.04;
+      letter-spacing: -.045em;
+      text-wrap: balance;
+      filter: drop-shadow(0 3px 18px rgba(0,0,0,.9));
+      pointer-events: none;
+    }
+
+    .subtitle {
+      display: block;
+      margin-top: 10px;
+      color: var(--muted);
+      font-weight: 560;
+      font-size: clamp(11px, 1.35vw, 15px);
+      line-height: 1.25;
+      letter-spacing: .02em;
+    }
+
+    .hud {
+      position: fixed;
+      z-index: 6;
+      left: 50%;
+      bottom: max(18px, calc(env(safe-area-inset-bottom) + 12px));
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+      box-shadow: 0 12px 50px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06);
+      backdrop-filter: blur(16px) saturate(120%);
+      -webkit-backdrop-filter: blur(16px) saturate(120%);
+      transition: opacity .25s ease, transform .25s ease;
+    }
+
+    .hud button {
+      appearance: none;
+      border: 0;
+      color: rgba(255,255,255,.92);
+      background: rgba(255,255,255,.065);
+      min-width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      padding: 0 12px;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+      outline: none;
+      transition: background .18s ease, transform .18s ease;
+    }
+
+    .hud button:hover { background: rgba(255,255,255,.13); }
+    .hud button:active { transform: scale(.94); }
+    .hud button:focus-visible { box-shadow: 0 0 0 2px #fff, 0 0 0 5px rgba(130,110,255,.7); }
+
+    .shape-name {
+      min-width: clamp(132px, 25vw, 224px);
+      padding: 0 10px;
+      color: rgba(255,255,255,.86);
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.1;
+      letter-spacing: .035em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      pointer-events: none;
+    }
+
+    .dots {
+      position: fixed;
+      z-index: 5;
+      left: 50%;
+      bottom: max(70px, calc(env(safe-area-inset-bottom) + 64px));
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      padding: 8px 10px;
+      pointer-events: none;
+    }
+
+    .dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.25);
+      box-shadow: 0 0 10px rgba(255,255,255,.15);
+      transition: width .25s ease, background .25s ease, box-shadow .25s ease;
+    }
+
+    .dot.active {
+      width: 17px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.85);
+      box-shadow: 0 0 16px rgba(255,255,255,.5);
+    }
+
+    .hint {
+      position: fixed;
+      z-index: 5;
+      left: 50%;
+      bottom: max(108px, calc(env(safe-area-inset-bottom) + 102px));
+      transform: translateX(-50%);
+      color: rgba(255,255,255,.34);
+      font-size: 11px;
+      letter-spacing: .025em;
+      white-space: nowrap;
+      pointer-events: none;
+      transition: opacity 1s ease;
+    }
+
+    .hidden { opacity: 0 !important; }
+
+    @media (max-width: 560px) {
+      .title { top: max(24px, calc(env(safe-area-inset-top) + 16px)); }
+      .subtitle { max-width: 330px; margin-left: auto; margin-right: auto; }
+      .hud { gap: 5px; padding: 6px; }
+      .hud button { min-width: 34px; height: 34px; padding: 0 9px; }
+      .shape-name { min-width: 120px; max-width: 155px; font-size: 11px; }
+      .hint { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hud, .dot { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="scene" aria-label="Анимация неоднозначно вращающихся объёмных фигур"></canvas>
+
+  <div class="title">
+    Можешь изменить направление вращения силой мысли?
+    <span class="subtitle">У фигур нет теней, перспективы и передней стороны — поэтому мозг может сам «переворачивать» глубину.</span>
+  </div>
+
+  <div class="hint" id="hint">клик по фигуре — следующая · ← → — выбор · пробел — пауза</div>
+  <div class="dots" id="dots" aria-hidden="true"></div>
+
+  <nav class="hud" aria-label="Управление анимацией">
+    <button id="prev" type="button" aria-label="Предыдущая фигура" title="Предыдущая фигура">‹</button>
+    <div class="shape-name" id="shapeName" aria-live="polite"></div>
+    <button id="pause" type="button" aria-label="Пауза" title="Пауза">Ⅱ</button>
+    <button id="auto" type="button" aria-label="Автоматическая смена фигур" title="Автосмена">A</button>
+    <button id="next" type="button" aria-label="Следующая фигура" title="Следующая фигура">›</button>
+  </nav>
+
+  <script>
+  (() => {
+    'use strict';
+
+    const canvas = document.getElementById('scene');
+    const ctx = canvas.getContext('2d', { alpha: true });
+    const nameEl = document.getElementById('shapeName');
+    const dotsEl = document.getElementById('dots');
+    const hintEl = document.getElementById('hint');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const pauseBtn = document.getElementById('pause');
+    const autoBtn = document.getElementById('auto');
+
+    const TAU = Math.PI * 2;
+    const AUTO_MS = 11500;
+    const TRANSITION_MS = 1000;
+    const DPR_CAP = 2;
+
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let index = 0;
+    let previousIndex = -1;
+    let transitionStarted = -Infinity;
+    let nextAutoAt = performance.now() + AUTO_MS;
+    let autoPlay = true;
+    let paused = false;
+    let pausedAt = 0;
+    let pausedTotal = 0;
+    let startTime = performance.now();
+    let hintTimer = 0;
+
+    // Небольшой детерминированный генератор — рисунок не прыгает при перезапуске кадров.
+    function mulberry32(seed) {
+      return function() {
+        let t = seed += 0x6D2B79F5;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function point(x, y, z, kind = 0, seed = 0) {
+      return { x, y, z, kind, seed };
+    }
+
+    function addEdgeDots(target, a, b, count, rand, kind = 1) {
+      const n = Math.max(2, count | 0);
+      for (let i = 0; i <= n; i++) {
+        const t = i / n;
+        const micro = (rand() - .5) * .004;
+        target.push(point(
+          a[0] + (b[0] - a[0]) * t + micro,
+          a[1] + (b[1] - a[1]) * t + micro,
+          a[2] + (b[2] - a[2]) * t + micro,
+          kind,
+          rand()
+        ));
+      }
+    }
+
+    function nearestEdges(vertices, tolerance = 1.07) {
+      let min = Infinity;
+      for (let i = 0; i < vertices.length; i++) {
+        for (let j = i + 1; j < vertices.length; j++) {
+          const dx = vertices[i][0] - vertices[j][0];
+          const dy = vertices[i][1] - vertices[j][1];
+          const dz = vertices[i][2] - vertices[j][2];
+          const d = Math.hypot(dx, dy, dz);
+          if (d > 1e-6 && d < min) min = d;
+        }
+      }
+      const edges = [];
+      for (let i = 0; i < vertices.length; i++) {
+        for (let j = i + 1; j < vertices.length; j++) {
+          const dx = vertices[i][0] - vertices[j][0];
+          const dy = vertices[i][1] - vertices[j][1];
+          const dz = vertices[i][2] - vertices[j][2];
+          const d = Math.hypot(dx, dy, dz);
+          if (d <= min * tolerance) edges.push([i, j]);
+        }
+      }
+      return edges;
+    }
+
+    function normalize(points, radius = 1.18) {
+      let maxR = 0;
+      for (const p of points) maxR = Math.max(maxR, Math.hypot(p.x, p.y, p.z));
+      const s = maxR > 0 ? radius / maxR : 1;
+      for (const p of points) {
+        p.x *= s;
+        p.y *= s;
+        p.z *= s;
+      }
+      return points;
+    }
+
+    function addSphereDust(target, count, radius, rand) {
+      for (let i = 0; i < count; i++) {
+        const z = rand() * 2 - 1;
+        const a = rand() * TAU;
+        const r = Math.cbrt(rand()) * radius;
+        const q = Math.sqrt(Math.max(0, 1 - z * z));
+        target.push(point(q * Math.cos(a) * r, z * r, q * Math.sin(a) * r, 0, rand()));
+      }
+    }
+
+    function buildPoly(name, vertices, edges, seed, opts = {}) {
+      const rand = mulberry32(seed);
+      const out = [];
+      const edgeDots = opts.edgeDots ?? 24;
+      for (const [a, b] of edges) addEdgeDots(out, vertices[a], vertices[b], edgeDots, rand, 1);
+      addSphereDust(out, opts.dust ?? 180, opts.dustRadius ?? .82, rand);
+      return {
+        name,
+        points: normalize(out, opts.radius ?? 1.18),
+        tilt: opts.tilt ?? .55,
+        roll: opts.roll ?? .06,
+        speed: opts.speed ?? .43,
+        phase: opts.phase ?? rand() * TAU
+      };
+    }
+
+    function cubeShape() {
+      const v = [];
+      for (const x of [-1, 1]) for (const y of [-1, 1]) for (const z of [-1, 1]) v.push([x, y, z]);
+      const e = [];
+      for (let i = 0; i < v.length; i++) {
+        for (let j = i + 1; j < v.length; j++) {
+          const diff = (v[i][0] !== v[j][0]) + (v[i][1] !== v[j][1]) + (v[i][2] !== v[j][2]);
+          if (diff === 1) e.push([i, j]);
+        }
+      }
+      return buildPoly('Куб Неккера', v, e, 11, { edgeDots: 31, dust: 230, dustRadius: .91, tilt: .58, speed: .39 });
+    }
+
+    function octaShape() {
+      const v = [[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
+      return buildPoly('Октаэдр', v, nearestEdges(v), 22, { edgeDots: 30, dust: 190, tilt: .46, speed: .47, roll: .16 });
+    }
+
+    function icosaShape() {
+      const f = (1 + Math.sqrt(5)) / 2;
+      const v = [];
+      for (const a of [-1, 1]) for (const b of [-f, f]) v.push([0, a, b]);
+      for (const a of [-1, 1]) for (const b of [-f, f]) v.push([a, b, 0]);
+      for (const a of [-f, f]) for (const b of [-1, 1]) v.push([a, 0, b]);
+      return buildPoly('Икосаэдр', v, nearestEdges(v), 33, { edgeDots: 17, dust: 250, tilt: .49, speed: .35, roll: -.12 });
+    }
+
+    function dodecaShape() {
+      const f = (1 + Math.sqrt(5)) / 2;
+      const inv = 1 / f;
+      const v = [];
+      for (const x of [-1, 1]) for (const y of [-1, 1]) for (const z of [-1, 1]) v.push([x, y, z]);
+      for (const y of [-inv, inv]) for (const z of [-f, f]) v.push([0, y, z]);
+      for (const x of [-inv, inv]) for (const y of [-f, f]) v.push([x, y, 0]);
+      for (const x of [-f, f]) for (const z of [-inv, inv]) v.push([x, 0, z]);
+      return buildPoly('Додекаэдр', v, nearestEdges(v), 44, { edgeDots: 18, dust: 260, tilt: .61, speed: .31, roll: .08 });
+    }
+
+    function stellaShape() {
+      const v = [];
+      for (const x of [-1, 1]) for (const y of [-1, 1]) for (const z of [-1, 1]) v.push([x, y, z]);
+      const groups = [[], []];
+      v.forEach((p, i) => groups[p[0] * p[1] * p[2] > 0 ? 0 : 1].push(i));
+      const e = [];
+      for (const g of groups) {
+        for (let i = 0; i < g.length; i++) for (let j = i + 1; j < g.length; j++) e.push([g[i], g[j]]);
+      }
+      return buildPoly('Звёздный тетраэдр', v, e, 55, { edgeDots: 30, dust: 250, dustRadius: .88, tilt: .51, speed: .42, roll: .22 });
+    }
+
+    function tesseractShape() {
+      const rand = mulberry32(66);
+      const vertices4 = [];
+      for (const x of [-1, 1]) for (const y of [-1, 1]) for (const z of [-1, 1]) for (const w of [-1, 1]) vertices4.push([x, y, z, w]);
+      const v = vertices4.map(([x,y,z,w]) => {
+        const s = 1 / (3.0 - .72 * w);
+        return [x * s, y * s, z * s];
+      });
+      const edges = [];
+      for (let i = 0; i < vertices4.length; i++) {
+        for (let j = i + 1; j < vertices4.length; j++) {
+          let diff = 0;
+          for (let k = 0; k < 4; k++) diff += vertices4[i][k] !== vertices4[j][k];
+          if (diff === 1) edges.push([i, j]);
+        }
+      }
+      const out = [];
+      for (const [a,b] of edges) addEdgeDots(out, v[a], v[b], 22, rand, 1);
+      addSphereDust(out, 220, .42, rand);
+      return { name: 'Тессеракт', points: normalize(out, 1.18), tilt: .58, roll: -.16, speed: .37, phase: 1.1 };
+    }
+
+    function torusShape() {
+      const rand = mulberry32(77);
+      const out = [];
+      const R = 1;
+      const r = .43;
+      const push = (u, v, kind = 1) => {
+        const rr = R + r * Math.cos(v);
+        out.push(point(rr * Math.cos(u), r * Math.sin(v), rr * Math.sin(u), kind, rand()));
+      };
+      for (let j = 0; j < 12; j++) {
+        const v = j / 12 * TAU;
+        for (let i = 0; i < 120; i++) push(i / 120 * TAU, v, 1);
+      }
+      for (let j = 0; j < 24; j++) {
+        const u = j / 24 * TAU;
+        for (let i = 0; i < 34; i++) push(u, i / 34 * TAU, 1);
+      }
+      for (let i = 0; i < 160; i++) push(rand() * TAU, rand() * TAU, 0);
+      return { name: 'Тороидальная сетка', points: normalize(out, 1.18), tilt: .73, roll: .12, speed: .34, phase: 2.0 };
+    }
+
+    function mobiusShape() {
+      const rand = mulberry32(88);
+      const out = [];
+      const push = (u, v, kind = 1) => {
+        const x = (1 + v * Math.cos(u / 2)) * Math.cos(u);
+        const y = v * Math.sin(u / 2);
+        const z = (1 + v * Math.cos(u / 2)) * Math.sin(u);
+        out.push(point(x, y, z, kind, rand()));
+      };
+      for (let lane = 0; lane < 9; lane++) {
+        const v = -.48 + lane / 8 * .96;
+        for (let i = 0; i < 144; i++) push(i / 144 * TAU, v, 1);
+      }
+      for (let slice = 0; slice < 28; slice++) {
+        const u = slice / 28 * TAU;
+        for (let i = 0; i < 18; i++) push(u, -.48 + i / 17 * .96, 1);
+      }
+      for (let i = 0; i < 160; i++) push(rand() * TAU, rand() * .96 - .48, 0);
+      return { name: 'Лента Мёбиуса', points: normalize(out, 1.18), tilt: .60, roll: -.09, speed: .30, phase: 2.8 };
+    }
+
+    function orbitalSphereShape() {
+      const rand = mulberry32(99);
+      const out = [];
+      const addCircle = (normalAxis, angle, count = 150) => {
+        for (let i = 0; i < count; i++) {
+          const a = i / count * TAU;
+          let x = Math.cos(a), y = Math.sin(a), z = 0;
+          // Поворот исходной окружности вокруг двух осей.
+          const ca = Math.cos(angle), sa = Math.sin(angle);
+          let x1 = x * ca + z * sa;
+          let z1 = -x * sa + z * ca;
+          if (normalAxis === 0) {
+            const yy = y * ca - z1 * sa;
+            const zz = y * sa + z1 * ca;
+            y = yy; z1 = zz;
+          } else if (normalAxis === 1) {
+            const xx = x1 * ca - y * sa;
+            const yy = x1 * sa + y * ca;
+            x1 = xx; y = yy;
+          }
+          out.push(point(x1, y, z1, 1, rand()));
+        }
+      };
+      addCircle(0, 0);
+      addCircle(1, Math.PI / 2);
+      addCircle(0, Math.PI / 2);
+      for (let k = 0; k < 7; k++) addCircle(k % 2, .22 + k * .29, 110);
+      addSphereDust(out, 230, .92, rand);
+      return { name: 'Орбитальная сфера', points: normalize(out, 1.18), tilt: .55, roll: .25, speed: .32, phase: 3.5 };
+    }
+
+    const shapes = [
+      cubeShape(),
+      octaShape(),
+      icosaShape(),
+      dodecaShape(),
+      stellaShape(),
+      tesseractShape(),
+      torusShape(),
+      mobiusShape(),
+      orbitalSphereShape()
+    ];
+
+    const colorCache = new Map();
+    function rgbFor(nx, ny) {
+      // Экранный, а не глубинный градиент: цвет не подсказывает, какая грань ближе.
+      const u = Math.max(0, Math.min(1, nx * .5 + .5));
+      const v = Math.max(0, Math.min(1, ny * .5 + .5));
+      const qu = Math.round(u * 24);
+      const qv = Math.round(v * 24);
+      const key = qu + ',' + qv;
+      if (colorCache.has(key)) return colorCache.get(key);
+      const uu = qu / 24;
+      const vv = qv / 24;
+      const tl = [75, 58, 255];
+      const tr = [255, 35, 112];
+      const bl = [38, 255, 132];
+      const br = [44, 150, 255];
+      const top = tl.map((c, i) => c + (tr[i] - c) * uu);
+      const bottom = bl.map((c, i) => c + (br[i] - c) * uu);
+      const c = top.map((x, i) => Math.round(x + (bottom[i] - x) * vv));
+      const css = `rgb(${c[0]} ${c[1]} ${c[2]})`;
+      colorCache.set(key, css);
+      return css;
+    }
+
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      dpr = Math.min(DPR_CAP, window.devicePixelRatio || 1);
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.imageSmoothingEnabled = true;
+    }
+
+    function rotatePoint(p, ax, ay, az) {
+      const cy = Math.cos(ay), sy = Math.sin(ay);
+      const cx = Math.cos(ax), sx = Math.sin(ax);
+      const cz = Math.cos(az), sz = Math.sin(az);
+
+      let x = p.x * cy + p.z * sy;
+      let z = -p.x * sy + p.z * cy;
+      let y = p.y;
+
+      const y2 = y * cx - z * sx;
+      const z2 = y * sx + z * cx;
+      y = y2;
+      z = z2;
+
+      const x2 = x * cz - y * sz;
+      const y3 = x * sz + y * cz;
+      return { x: x2, y: y3, z };
+    }
+
+    function easeInOut(t) {
+      t = Math.max(0, Math.min(1, t));
+      return t * t * (3 - 2 * t);
+    }
+
+    function motionTime(now) {
+      if (paused) now = pausedAt;
+      return Math.max(0, now - startTime - pausedTotal) / 1000;
+    }
+
+    function drawShape(shape, now, opacity, phaseOffset = 0) {
+      if (opacity <= .002) return;
+      const t = motionTime(now);
+      const compactPortrait = height > width * 1.2;
+      const cx = width * .5;
+      const cy = height * (compactPortrait ? .555 : .535);
+      const scale = Math.min(width, height) * (compactPortrait ? .325 : .31);
+
+      // Главная ось вращается равномерно. Все привычные подсказки глубины намеренно убраны.
+      const yaw = t * shape.speed + shape.phase + phaseOffset;
+      const pitch = shape.tilt + Math.sin(t * .115 + shape.phase) * .045;
+      const roll = shape.roll + Math.sin(t * .083 + shape.phase * .7) * .055;
+
+      const projected = new Array(shape.points.length);
+      for (let i = 0; i < shape.points.length; i++) {
+        const p = shape.points[i];
+        const q = rotatePoint(p, pitch, yaw, roll);
+        projected[i] = {
+          x: cx + q.x * scale,
+          y: cy + q.y * scale,
+          nx: q.x / 1.28,
+          ny: q.y / 1.28,
+          kind: p.kind,
+          seed: p.seed
+        };
+      }
+
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+
+      // Мягкое цветное свечение. Размер не зависит от z — это важно для двусмысленности.
+      for (let i = 0; i < projected.length; i++) {
+        const p = projected[i];
+        const pulse = .82 + .18 * Math.sin(t * 1.7 + p.seed * 19);
+        const r = (p.kind ? 3.5 : 2.45) * pulse;
+        ctx.globalAlpha = opacity * (p.kind ? .085 : .052);
+        ctx.fillStyle = rgbFor(p.nx, p.ny);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, r, 0, TAU);
+        ctx.fill();
+      }
+
+      // Яркое точечное ядро.
+      for (let i = 0; i < projected.length; i++) {
+        const p = projected[i];
+        const twinkle = .88 + .12 * Math.sin(t * 2.2 + p.seed * 31);
+        const r = (p.kind ? 1.05 : .63) * twinkle;
+        ctx.globalAlpha = opacity * (p.kind ? .76 : .46);
+        ctx.fillStyle = rgbFor(p.nx, p.ny);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, r, 0, TAU);
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    function draw(now) {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, width, height);
+
+      if (autoPlay && !paused && now >= nextAutoAt) changeShape(1, true, now);
+
+      const transition = easeInOut((now - transitionStarted) / TRANSITION_MS);
+      if (previousIndex >= 0 && transition < 1) {
+        drawShape(shapes[previousIndex], now, 1 - transition, -.08);
+        drawShape(shapes[index], now, transition, .08);
+      } else {
+        previousIndex = -1;
+        drawShape(shapes[index], now, 1, 0);
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    function updateUi() {
+      nameEl.textContent = `${index + 1} / ${shapes.length} · ${shapes[index].name}`;
+      pauseBtn.textContent = paused ? '▶' : 'Ⅱ';
+      pauseBtn.setAttribute('aria-label', paused ? 'Продолжить' : 'Пауза');
+      pauseBtn.title = paused ? 'Продолжить' : 'Пауза';
+      autoBtn.style.background = autoPlay ? 'rgba(255,255,255,.16)' : 'rgba(255,255,255,.055)';
+      autoBtn.style.color = autoPlay ? '#fff' : 'rgba(255,255,255,.48)';
+      autoBtn.setAttribute('aria-pressed', String(autoPlay));
+      [...dotsEl.children].forEach((el, i) => el.classList.toggle('active', i === index));
+    }
+
+    function changeShape(delta, fromAuto = false, now = performance.now()) {
+      const next = (index + delta + shapes.length) % shapes.length;
+      if (next === index) return;
+      previousIndex = index;
+      index = next;
+      transitionStarted = now;
+      nextAutoAt = now + AUTO_MS;
+      if (!fromAuto) showHintBriefly();
+      updateUi();
+    }
+
+    function togglePause() {
+      const now = performance.now();
+      if (paused) {
+        paused = false;
+        pausedTotal += now - pausedAt;
+        nextAutoAt += now - pausedAt;
+      } else {
+        paused = true;
+        pausedAt = now;
+      }
+      updateUi();
+    }
+
+    function toggleAuto() {
+      autoPlay = !autoPlay;
+      nextAutoAt = performance.now() + AUTO_MS;
+      updateUi();
+    }
+
+    function showHintBriefly() {
+      hintEl.classList.remove('hidden');
+      clearTimeout(hintTimer);
+      hintTimer = setTimeout(() => hintEl.classList.add('hidden'), 3200);
+    }
+
+    for (let i = 0; i < shapes.length; i++) {
+      const el = document.createElement('span');
+      el.className = 'dot' + (i === 0 ? ' active' : '');
+      dotsEl.appendChild(el);
+    }
+
+    prevBtn.addEventListener('click', (e) => { e.stopPropagation(); changeShape(-1); });
+    nextBtn.addEventListener('click', (e) => { e.stopPropagation(); changeShape(1); });
+    pauseBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePause(); });
+    autoBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleAuto(); });
+    canvas.addEventListener('click', () => changeShape(1));
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); changeShape(1); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); changeShape(-1); }
+      else if (e.code === 'Space') { e.preventDefault(); togglePause(); }
+      else if (e.key.toLowerCase() === 'a') { e.preventDefault(); toggleAuto(); }
+    });
+
+    window.addEventListener('resize', resize, { passive: true });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && !paused) togglePause();
+    });
+
+    resize();
+    updateUi();
+    setTimeout(() => hintEl.classList.add('hidden'), 5200);
+    requestAnimationFrame(draw);
+  })();
+  </script>
+</body>
+</html>

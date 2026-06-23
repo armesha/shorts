@@ -12,14 +12,20 @@ import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const BATCH = resolve(ROOT, 'temp/visual-riddle-demos/batch-out');
-const BUILD_MANIFEST = resolve(ROOT, 'temp/visual-riddle-demos/build-manifest.json');
-const SRC_SOURCES = resolve(ROOT, 'temp/visual-riddle-demos/sources.json');
-const ASSETS = resolve(ROOT, 'assets/fact-videos/visual-riddles');
+const _argv = process.argv.slice(2);
+const _argval = (flag, def) => { const i = _argv.indexOf(flag); return i >= 0 ? resolve(_argv[i + 1]) : def; };
+const _argstr = (flag, def) => { const i = _argv.indexOf(flag); return i >= 0 ? _argv[i + 1] : def; };
+const DECK = _argstr('--deck', 'visual-riddles');
+const TITLE = _argstr('--title', 'Вижу Ответ');
+const LANG = _argstr('--lang', 'ru');
+const BATCH = _argval('--batch', resolve(ROOT, 'temp/visual-riddle-demos/batch-out'));
+const BUILD_MANIFEST = _argval('--manifest', resolve(ROOT, 'temp/visual-riddle-demos/build-manifest.json'));
+const SRC_SOURCES = _argval('--sources', resolve(ROOT, 'temp/visual-riddle-demos/sources.json'));
+const ASSETS = resolve(ROOT, 'assets/fact-videos/' + DECK);
 const ADMIN = resolve(ROOT, 'data/output/admin-demos');
-const VIDEOS_JSON = resolve(ROOT, 'data/visual-riddles/videos.json');
+const VIDEOS_JSON = resolve(ROOT, 'data/' + DECK + '/videos.json');
 const MANIFEST = resolve(ADMIN, 'manifest.json');
-const OUT_SOURCES = resolve(ROOT, 'data/visual-riddles/sources.json');
+const OUT_SOURCES = resolve(ROOT, 'data/' + DECK + '/sources.json');
 
 const cullArg = process.argv[process.argv.indexOf('--cull') + 1] || '';
 const CULL = new Set(cullArg.split(',').map((s) => s.trim()).filter(Boolean));
@@ -38,11 +44,11 @@ const buildManifest = JSON.parse(readFileSync(BUILD_MANIFEST, 'utf8'));
 const srcSources = existsSync(SRC_SOURCES) ? JSON.parse(readFileSync(SRC_SOURCES, 'utf8')) : [];
 const srcById = Object.fromEntries(srcSources.map((s) => [s.id, s]));
 
-const videos = JSON.parse(readFileSync(VIDEOS_JSON, 'utf8'));
+const videos = existsSync(VIDEOS_JSON) ? JSON.parse(readFileSync(VIDEOS_JSON, 'utf8')) : [];
 const haveVideo = new Set(videos.map((v) => v.file));
 const manifest = JSON.parse(readFileSync(MANIFEST, 'utf8'));
-const pack = manifest.packs.find((p) => p.id === 'visual-riddles');
-if (!pack) throw new Error('visual-riddles pack missing in manifest');
+let pack = manifest.packs.find((p) => p.id === DECK);
+if (!pack) { pack = { id: DECK, title: TITLE, lang: LANG, items: [] }; manifest.packs.push(pack); }
 const haveItem = new Set(pack.items.map((it) => it.id));
 
 const kept = [];
@@ -54,15 +60,17 @@ for (const card of buildManifest) {
   const mp4 = join(BATCH, `${id}.mp4`);
   const png = join(BATCH, `${id}.png`);
   if (!existsSync(mp4) || !existsSync(png)) { console.log(`MISS ${id}: built files absent`); continue; }
-  // deck source mp4
+  // /clip-demos uses a FLAT admin-demos namespace shared across decks → suffix non-default decks so a
+  // localized card (same vrx_/vry_ id) doesn't clobber the original's poster/mp4.
+  const posterId = DECK === 'visual-riddles' ? id : `${id}-${LANG}`;
+  // deck source mp4 — per-deck dir, plain id (used by channel generation)
   copyFileSync(mp4, join(ASSETS, `${id}.mp4`));
-  // preview poster (jpg) for /clip-demos
-  execFileSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', '-i', png, '-q:v', '3', join(ADMIN, `${id}.jpg`)]);
-  // also drop the mp4 into admin-demos so /clip-demos can play it
-  copyFileSync(mp4, join(ADMIN, `${id}.mp4`));
-  const rel = `visual-riddles/${id}.mp4`;
+  // preview poster + mp4 for /clip-demos — flat dir, deck-unique id
+  execFileSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', '-i', png, '-q:v', '3', join(ADMIN, `${posterId}.jpg`)]);
+  copyFileSync(mp4, join(ADMIN, `${posterId}.mp4`));
+  const rel = `${DECK}/${id}.mp4`;
   if (!haveVideo.has(rel)) { videos.push({ file: rel, title: card.title || 'Загадка', text: card.title || 'Загадка' }); haveVideo.add(rel); }
-  if (!haveItem.has(id)) { pack.items.push({ id, title: card.title || 'Загадка', theme: 'visual-riddle', dur: dur(mp4), createdAt: now, updatedAt: now }); haveItem.add(id); }
+  if (!haveItem.has(posterId)) { pack.items.push({ id: posterId, title: card.title || 'Загадка', theme: 'visual-riddle', dur: dur(mp4), createdAt: now, updatedAt: now }); haveItem.add(posterId); }
   const s = srcById[id] || {};
   sourcesOut.push({ id, type: card.type || '', title: card.title || '', category: card.category || '', question: card.question || '', answer: card.answer || '', sourceUrl: s.sourceUrl || '', downloadUrl: s.downloadUrl || '', license: s.license || '', author: s.author || '' });
   kept.push(id);
@@ -76,9 +84,14 @@ if (manifest.packs.length < before) {
   for (const f of readdirSync(ADMIN)) if (/^sample_.*\.(mp4|jpg)$/.test(f)) { try { unlinkSync(join(ADMIN, f)); } catch {} }
 }
 
+// Merge sources.json (append new ids; never drop earlier batches' license records).
+const existingOut = existsSync(OUT_SOURCES) ? JSON.parse(readFileSync(OUT_SOURCES, 'utf8')) : [];
+const haveSrc = new Set(existingOut.map((s) => s.id));
+for (const s of sourcesOut) if (!haveSrc.has(s.id)) existingOut.push(s);
+
 writeFileSync(VIDEOS_JSON, JSON.stringify(videos, null, 2) + '\n');
 writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2) + '\n');
-writeFileSync(OUT_SOURCES, JSON.stringify(sourcesOut, null, 2) + '\n');
+writeFileSync(OUT_SOURCES, JSON.stringify(existingOut, null, 2) + '\n');
 
 console.log(`registered: ${added} new cards (culled ${CULL.size}). videos.json total=${videos.length}, manifest visual-riddles items=${pack.items.length}.`);
 console.log(`kept ids: ${kept.join(',')}`);

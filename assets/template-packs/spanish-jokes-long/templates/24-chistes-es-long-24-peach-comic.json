@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "name": "chistes-es-long-24-peach-comic",
+  "canvas": {
+    "w": 1080,
+    "h": 1920,
+    "bg": "#fff0e8"
+  },
+  "elements": [
+    {
+      "id": "background",
+      "type": "image",
+      "x": 0,
+      "y": 0,
+      "w": 1080,
+      "h": 1920,
+      "rot": 0,
+      "src": "assets/template-packs/spanish-jokes-long/backgrounds/bg-24.svg",
+      "fit": "cover"
+    },
+    {
+      "id": "long-panel",
+      "type": "text",
+      "x": 68,
+      "y": 196,
+      "w": 944,
+      "h": 1122,
+      "rot": 0,
+      "text": "",
+      "align": "left",
+      "bg": "rgba(255,250,246,.92)",
+      "border": "2px solid rgba(209,95,60,.28)",
+      "radius": 8,
+      "shadow": "0 22px 68px rgba(91,67,43,.15)",
+      "font": {
+        "family": "Inter",
+        "size": 1,
+        "weight": 400,
+        "color": "#111111",
+        "lineHeight": 1
+      }
+    },
+    {
+      "id": "label",
+      "type": "text",
+      "x": 106,
+      "y": 230,
+      "w": 854,
+      "h": 40,
+      "rot": 0,
+      "text": "CHISTE CLASICO",
+      "align": "left",
+      "font": {
+        "family": "Inter",
+        "size": 22,
+        "weight": 900,
+        "color": "#d15f3c",
+        "lineHeight": 1.05
+      }
+    },
+    {
+      "id": "title",
+      "type": "killbox",
+      "x": 106,
+      "y": 268,
+      "w": 854,
+      "h": 62,
+      "rot": 0,
+      "role": "title",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 38,
+        "weight": 900,
+        "color": "#23130d",
+        "lineHeight": 1.04
+      },
+      "fitMin": 28,
+      "fitMax": 38,
+      "maxChars": 46,
+      "placeholder": "title"
+    },
+    {
+      "id": "body",
+      "type": "killbox",
+      "x": 106,
+      "y": 336,
+      "w": 854,
+      "h": 886,
+      "rot": 0,
+      "role": "text",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 51,
+        "weight": 720,
+        "color": "#23130d",
+        "lineHeight": 1.04
+      },
+      "fitMin": 32,
+      "fitMax": 51,
+      "maxChars": 650,
+      "placeholder": "text"
+    },
+    {
+      "id": "source",
+      "type": "killbox",
+      "x": 106,
+      "y": 1256,
+      "w": 854,
+      "h": 34,
+      "rot": 0,
+      "role": "source",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 23,
+        "weight": 820,
+        "color": "#7b5c50",
+        "lineHeight": 1.1
+      },
+      "fitMin": 18,
+      "fitMax": 23,
+      "maxChars": 42,
+      "placeholder": "source"
+    }
+  ]
+}

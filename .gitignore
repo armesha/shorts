@@ -65,3 +65,6 @@ __pycache__/
 # scratch screenshots at repo root — agent working files, not source
 /image.png
 /gen-queue-toast.png
+
+# standalone design mockup (not part of the shorts pipeline) — kept local, not committed
+/example-design/

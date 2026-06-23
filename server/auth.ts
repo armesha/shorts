@@ -28,7 +28,14 @@ export function newSessionToken(): string {
   return randomBytes(32).toString("hex");
 }
 
-// ---- Brute-force / session policy (env-overridable) ----
+// ---- Admin / brute-force / session policy ----
+// The product has exactly one main admin account by rule: username "armen".
+export const SUPER_ADMIN_USERNAME = "armen";
+export function isSuperAdminUser(user: { username?: string | null; role?: string | null } | null | undefined): boolean {
+  return user?.role === "admin" && (user.username ?? "").trim() === SUPER_ADMIN_USERNAME;
+}
+
 export const MAX_FAILED_ATTEMPTS = Math.max(1, Number(process.env.AUTH_MAX_ATTEMPTS ?? 10));
-export const LOCK_MINUTES = Math.max(1, Number(process.env.AUTH_LOCK_MINUTES ?? 15));
+const legacyLockMinutes = process.env.AUTH_LOCK_MINUTES ? Number(process.env.AUTH_LOCK_MINUTES) * 60 : undefined;
+export const LOCK_SECONDS = Math.max(1, Number(process.env.AUTH_LOCK_SECONDS ?? legacyLockMinutes ?? 30));
 export const SESSION_TTL_DAYS = Math.max(1, Number(process.env.SESSION_TTL_DAYS ?? 30));

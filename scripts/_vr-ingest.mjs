@@ -12,14 +12,22 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const VENV_PY = resolve(ROOT, '.venv-tts/bin/python');
 const UA = 'Mozilla/5.0 (shorts-factory visual-riddles builder)';
-const [, , inPath, srcDirArg, manOut, srcOut] = process.argv;
+const argv = process.argv.slice(2);
+let PREFIX = 'vrx';
+const pi = argv.indexOf('--prefix');
+if (pi >= 0) { PREFIX = argv[pi + 1]; argv.splice(pi, 2); }
+const [inPath, srcDirArg, manOut, srcOut] = argv;
 const srcDir = resolve(srcDirArg || resolve(ROOT, 'temp/visual-riddle-demos/src'));
 const manifestOut = resolve(manOut || resolve(ROOT, 'temp/visual-riddle-demos/build-manifest.json'));
 const sourcesOut = resolve(srcOut || resolve(ROOT, 'temp/visual-riddle-demos/sources.json'));
+const EXISTING_SOURCES = resolve(ROOT, 'data/visual-riddles/sources.json');
 mkdirSync(srcDir, { recursive: true });
 
 const raw = JSON.parse(readFileSync(resolve(inPath), 'utf8'));
 const collected = raw.result?.collected || raw.collected || (Array.isArray(raw) ? raw : []);
+// Dedup against already-registered cards: skip a candidate whose source URL we already used.
+const norm = (u) => decodeURIComponent(String(u || '')).split('?')[0].trim().toLowerCase();
+const seen = new Set((existsSync(EXISTING_SOURCES) ? JSON.parse(readFileSync(EXISTING_SOURCES, 'utf8')) : []).map((s) => norm(s.downloadUrl)));
 
 const isCommons = (u) => /commons\.wikimedia\.org\/wiki\/Special:FilePath/i.test(u);
 const withWidth = (u) => (isCommons(u) && !/[?&]width=/.test(u) ? u + (u.includes('?') ? '&' : '?') + 'width=1400' : u);
@@ -52,12 +60,15 @@ function download(url, base) {
 
 const manifest = [];
 const sources = [];
-let n = 0, ok = 0, fail = 0;
+let n = 0, ok = 0, fail = 0, dup = 0;
 for (const grp of collected) {
   for (const c of (grp.candidates || [])) {
+    const key = norm(c.downloadUrl);
+    if (!c.downloadUrl || seen.has(key)) { dup++; continue; }
+    seen.add(key);
     n++;
     if (n > 1) { try { execFileSync('sleep', ['1.2']); } catch { /* throttle Commons rate-limit */ } }
-    const id = 'vrx_' + String(n).padStart(3, '0');
+    const id = PREFIX + '_' + String(n).padStart(3, '0');
     try {
       const img = download(c.downloadUrl, id);
       manifest.push({ id, type: grp.type, category: c.category || '', title: c.title || '', question: c.question || '', image: img, answer: c.answer || '' });
@@ -71,4 +82,4 @@ for (const grp of collected) {
 }
 writeFileSync(manifestOut, JSON.stringify(manifest, null, 2) + '\n');
 writeFileSync(sourcesOut, JSON.stringify(sources, null, 2) + '\n');
-console.log(`ingest: ${ok} ok, ${fail} failed -> ${manifest.length} cards. manifest=${manifestOut}`);
+console.log(`ingest: ${ok} ok, ${fail} failed, ${dup} dup-skipped -> ${manifest.length} cards. manifest=${manifestOut}`);

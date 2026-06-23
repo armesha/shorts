@@ -133,6 +133,7 @@ export interface AdminUser {
   id: number;
   username: string;
   role: string;
+  isSuperAdmin?: boolean;
   locked: boolean;
   createdAt: string;
 }
@@ -150,6 +151,7 @@ export interface UserDeckRow {
   userId: number;
   username: string;
   role: string;
+  isSuperAdmin?: boolean;
   hidden: string[];
   grantedPacks: string[]; // id opt-in паков: кастомные "pack:<id>" + grantable built-in deck ids
   used: string[];
@@ -236,7 +238,8 @@ export interface AuthUser {
   id: number;
   username: string;
   role: string;
-  impersonator?: { id: number; username: string; role: string } | null;
+  isSuperAdmin?: boolean;
+  impersonator?: { id: number; username: string; role: string; isSuperAdmin?: boolean } | null;
 }
 
 /** A channel's totals at one moment (used for latest/prev on a stats row). */

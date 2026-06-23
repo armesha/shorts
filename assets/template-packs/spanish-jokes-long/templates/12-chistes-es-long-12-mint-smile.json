@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "name": "chistes-es-long-12-mint-smile",
+  "canvas": {
+    "w": 1080,
+    "h": 1920,
+    "bg": "#eefaf4"
+  },
+  "elements": [
+    {
+      "id": "background",
+      "type": "image",
+      "x": 0,
+      "y": 0,
+      "w": 1080,
+      "h": 1920,
+      "rot": 0,
+      "src": "assets/template-packs/spanish-jokes-long/backgrounds/bg-12.svg",
+      "fit": "cover"
+    },
+    {
+      "id": "long-panel",
+      "type": "text",
+      "x": 60,
+      "y": 214,
+      "w": 960,
+      "h": 906,
+      "rot": 0,
+      "text": "",
+      "align": "left",
+      "bg": "rgba(251,255,250,.91)",
+      "border": "2px solid rgba(21,149,111,.28)",
+      "radius": 8,
+      "shadow": "0 22px 68px rgba(91,67,43,.15)",
+      "font": {
+        "family": "Inter",
+        "size": 1,
+        "weight": 400,
+        "color": "#111111",
+        "lineHeight": 1
+      }
+    },
+    {
+      "id": "label",
+      "type": "text",
+      "x": 98,
+      "y": 248,
+      "w": 862,
+      "h": 40,
+      "rot": 0,
+      "text": "HUMOR LARGO",
+      "align": "left",
+      "font": {
+        "family": "Inter",
+        "size": 22,
+        "weight": 900,
+        "color": "#15956f",
+        "lineHeight": 1.05
+      }
+    },
+    {
+      "id": "title",
+      "type": "killbox",
+      "x": 98,
+      "y": 286,
+      "w": 862,
+      "h": 62,
+      "rot": 0,
+      "role": "title",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 38,
+        "weight": 900,
+        "color": "#102019",
+        "lineHeight": 1.04
+      },
+      "fitMin": 28,
+      "fitMax": 38,
+      "maxChars": 46,
+      "placeholder": "title"
+    },
+    {
+      "id": "body",
+      "type": "killbox",
+      "x": 98,
+      "y": 354,
+      "w": 862,
+      "h": 670,
+      "rot": 0,
+      "role": "text",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 54,
+        "weight": 720,
+        "color": "#102019",
+        "lineHeight": 1.05
+      },
+      "fitMin": 32,
+      "fitMax": 54,
+      "maxChars": 650,
+      "placeholder": "text"
+    },
+    {
+      "id": "source",
+      "type": "killbox",
+      "x": 98,
+      "y": 1058,
+      "w": 862,
+      "h": 34,
+      "rot": 0,
+      "role": "source",
+      "padX": 0,
+      "padY": 0,
+      "align": "left",
+      "valign": "top",
+      "font": {
+        "family": "Inter",
+        "size": 23,
+        "weight": 820,
+        "color": "#587166",
+        "lineHeight": 1.1
+      },
+      "fitMin": 18,
+      "fitMax": 23,
+      "maxChars": 42,
+      "placeholder": "source"
+    }
+  ]
+}

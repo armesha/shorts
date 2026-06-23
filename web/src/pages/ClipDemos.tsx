@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
 
 // Admin-only gallery of montage Shorts, grouped into themed PACKS. Reads a manifest (written live by
 // temp/clip-demo/buildpack.mjs). Pure viewer — watch and download mp4, no posting.
-const V = "11"; // bump to bust browser/Cloudflare cache on every clip change
+const V = "12"; // bump to bust browser/Cloudflare cache on every clip change
 
 type Item = { id: string; title: string; theme?: string; voice?: string; dur?: string; createdAt?: string; updatedAt?: string };
 type Pack = { id: string; title: string; lang?: string; items: Item[] };
@@ -81,7 +80,6 @@ function Card({ d, addedLabel }: { d: FlatItem; addedLabel: string }) {
 }
 
 export default function ClipDemos() {
-  const { user } = useAuth();
   const { t } = useT();
   const [packs, setPacks] = useState<Pack[] | null>(null);
   const [err, setErr] = useState(false);
@@ -104,33 +102,25 @@ export default function ClipDemos() {
     setPage(1);
   }, [packId, sortMode, packs?.length]);
 
-  // Poll the manifest so the gallery fills in real-time as the pack builder produces videos.
+  // Open to all users; the API returns only the packs THIS user may access (admin → all). Polled so the
+  // gallery fills in real-time as a pack builder produces videos.
   useEffect(() => {
-    if (user?.role !== "admin") return;
     let stop = false, got = false;
     const load = () =>
-      fetch(`/files/admin-demos/manifest.json?t=${Date.now()}`, { cache: "no-store" })
-        .then((r) => (r.ok ? r.json() : Promise.reject(new Error("no manifest"))))
+      fetch(`/api/clip-demos/packs?t=${Date.now()}`, { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : Promise.reject(new Error("no packs"))))
         .then((d) => { if (!stop) { got = true; setPacks(d.packs || []); setErr(false); } })
         .catch(() => { if (!stop && !got) setErr(true); });
     load();
     const id = setInterval(load, 7000);
     return () => { stop = true; clearInterval(id); };
-  }, [user]);
+  }, []);
 
-  if (user?.role !== "admin") {
-    return (
-      <div className="alert alert-warning max-w-xl">
-        <AppIcon name="warning" size={18} />
-        <span>{t("users.adminOnly")}</span>
-      </div>
-    );
-  }
   return (
     <div className="space-y-4 max-w-6xl">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 flex-1">
-          <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="flex flex-wrap gap-2">
             <PackButton
               active={packId === "all"}
               label={t("clipdemos.allPacks")}
@@ -202,7 +192,7 @@ function PackButton({
 }) {
   return (
     <button
-      className={`btn btn-sm shrink-0 gap-2 ${active ? "btn-primary" : "admin-action-secondary"}`}
+      className={`btn btn-sm gap-2 ${active ? "btn-primary" : "btn-ghost border border-base-300"}`}
       onClick={onClick}
       aria-pressed={active}
     >

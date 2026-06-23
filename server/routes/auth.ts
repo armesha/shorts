@@ -7,10 +7,10 @@ import {
   hashPassword,
   verifyPassword,
   newSessionToken,
-  MAX_FAILED_ATTEMPTS,
-  LOCK_MINUTES,
-  SESSION_TTL_DAYS,
-} from "../auth.ts";
+    MAX_FAILED_ATTEMPTS,
+    LOCK_SECONDS,
+    SESSION_TTL_DAYS,
+  } from "../auth.ts";
 import {
   SESSION_COOKIE,
   ADMIN_SESSION_COOKIE,
@@ -38,23 +38,24 @@ export function registerAuthRoutes(app: FastifyInstance, db: Db, deps: RouteDeps
     // Generic message so an attacker can't probe which usernames exist.
     if (!user) return reply.code(401).send({ error: "Неверный логин или пароль" });
 
-    // Lockout: refuse even a correct password while the account is locked.
-    if (user.lockedUntil && new Date(user.lockedUntil).getTime() > Date.now()) {
-      const mins = Math.max(1, Math.ceil((new Date(user.lockedUntil).getTime() - Date.now()) / 60_000));
-      return reply.code(423).send({
-        error: `Аккаунт заблокирован после ${MAX_FAILED_ATTEMPTS} неудачных попыток. Подождите ~${mins} мин.`,
-      });
-    }
-
-    if (!verifyPassword(password, user.passHash)) {
-      const attempts = db.incFailedAttempts(user.id);
-      if (attempts >= MAX_FAILED_ATTEMPTS) {
-        const until = new Date(Date.now() + LOCK_MINUTES * 60_000).toISOString();
-        db.lockUser(user.id, until);
+      // Lockout: refuse even a correct password while frozen; after it expires, start a fresh 10-try window.
+      if (user.lockedUntil && new Date(user.lockedUntil).getTime() > Date.now()) {
+        const secs = Math.max(1, Math.ceil((new Date(user.lockedUntil).getTime() - Date.now()) / 1_000));
         return reply.code(423).send({
-          error: `Слишком много попыток. Аккаунт заблокирован на ${LOCK_MINUTES} мин.`,
+          error: `Слишком много попыток. Вход заморожен на ~${secs} сек.`,
         });
       }
+      if (user.lockedUntil) db.clearLock(user.id);
+
+    if (!verifyPassword(password, user.passHash)) {
+        const attempts = db.incFailedAttempts(user.id);
+        if (attempts >= MAX_FAILED_ATTEMPTS) {
+          const until = new Date(Date.now() + LOCK_SECONDS * 1_000).toISOString();
+          db.lockUser(user.id, until);
+          return reply.code(423).send({
+            error: `Слишком много попыток. Вход заморожен на ${LOCK_SECONDS} сек.`,
+          });
+        }
       return reply.code(401).send({
         error: `Неверный логин или пароль. Осталось попыток: ${MAX_FAILED_ATTEMPTS - attempts}`,
       });

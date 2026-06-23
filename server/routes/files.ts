@@ -2,7 +2,7 @@
 // data/output directly). The path/range/content-type helpers live here (they are only used by this
 // route). Handlers + helpers moved VERBATIM from index.ts.
 import type { FastifyInstance } from "fastify";
-import { createReadStream, statSync } from "node:fs";
+import { createReadStream, readFileSync, statSync } from "node:fs";
 import { extname, isAbsolute, relative, resolve } from "node:path";
 import type { Db } from "../db.ts";
 import { getPack } from "../../src/packs/store.ts";
@@ -13,6 +13,27 @@ import type { RouteDeps } from "./deps.ts";
 export function registerFilesRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
   const { validSessionUser } = deps.auth;
   const OUTPUT_ROOT = resolve(process.cwd(), deps.outputDir);
+
+  // clip-demos gallery: map a clip file id -> its pack (deck) id, so non-admins can stream only the
+  // clips whose pack they may access. Built from admin-demos/manifest.json, refreshed on mtime change.
+  const ADMIN_MANIFEST = resolve(OUTPUT_ROOT, "admin-demos/manifest.json");
+  let cdMap = new Map<string, string>();
+  let cdMtime = -1;
+  function clipDemoPackOf(itemId: string): string | null {
+    try {
+      const m = statSync(ADMIN_MANIFEST).mtimeMs;
+      if (m !== cdMtime) {
+        cdMtime = m;
+        const next = new Map<string, string>();
+        const packs = JSON.parse(readFileSync(ADMIN_MANIFEST, "utf8")).packs ?? [];
+        for (const p of packs) for (const it of p.items ?? []) if (it?.id) next.set(String(it.id), String(p.id));
+        cdMap = next;
+      }
+    } catch {
+      return null;
+    }
+    return cdMap.get(itemId) ?? null;
+  }
 
   function cleanOutputRel(raw: string): string | null {
     let rel = raw.replace(/^\/+/, "");
@@ -61,7 +82,14 @@ export function registerFilesRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     if (rememberedOwner != null) return rememberedOwner === user.id;
     if (rel.startsWith("preview/")) return true;
     if (rel.startsWith("avatars/")) return true;
-    if (rel.startsWith("admin-demos/")) return false;
+    if (rel.startsWith("admin-demos/")) {
+      // Non-admins may read a clip's mp4/poster only if they can access its pack (deck); manifest.json
+      // and any other admin-demos file stay admin-only.
+      const m = /^admin-demos\/([^/]+)\.(?:mp4|jpe?g|png)$/i.exec(rel);
+      if (!m) return false;
+      const packId = clipDemoPackOf(m[1]);
+      return !!packId && deps.deckAccess.deckAllowedForUser(user.id, packId);
+    }
     const packPreview = /^packs\/(.+)-\d+\.png$/i.exec(rel);
     if (packPreview) return getPack(packPreview[1], user.id, false) !== null;
     if (rel.startsWith("library/")) return db.findOutputFileOwner(rel)?.userId === user.id;

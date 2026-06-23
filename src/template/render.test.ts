@@ -67,7 +67,9 @@ test("template validation enforces canvas, element and image limits", () => {
     id: `t${i}`,
   }));
   assert.throws(() => validateTemplateDoc(many), TemplateValidationError);
+});
 
-  const templates = Array.from({ length: TEMPLATE_LIMITS.maxTemplatesPerPack + 1 }, () => baseTemplate());
-  assert.throws(() => validateTemplateList(templates), TemplateValidationError);
+test("template validation does not impose a pack template-count limit", () => {
+  const templates = Array.from({ length: 120 }, () => baseTemplate());
+  assert.doesNotThrow(() => validateTemplateList(templates));
 });

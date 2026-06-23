@@ -21,7 +21,7 @@ const TEMPLATE = resolve(ROOT, 'templates/visual-riddle.html');
 const VENV_PY = resolve(ROOT, '.venv-tts/bin/python');
 const AUDIO_DIR = resolve(ROOT, 'assets/audio');
 const VOICE = process.env.VR_VOICE || 'ru-RU-DmitryNeural';
-const RESERVED_MUSIC = ['islamic', 'christian', 'memes', 'animal-superheroes', 'packs'];
+const RESERVED_MUSIC = ['islamic', 'christian', 'memes', 'animal-superheroes', 'packs', 'illusions-3d'];
 const AUDIO_EXT = new Set(['.mp3', '.m4a', '.aac', '.wav', '.ogg', '.opus']);
 // Banner palette rotates per card (matches the existing pack look).
 const BANNERS = ['#f26d5b', '#f5b942', '#e85aa8', '#a7d96a', '#2bb9b0', '#5ec8e8'];
@@ -95,6 +95,7 @@ async function renderCard(spec, outPng) {
     .replaceAll('{{CATEGORY}}', esc(spec.category))
     .replaceAll('{{TITLE}}', esc(spec.title))
     .replaceAll('{{QUESTION}}', esc(spec.question))
+    .replaceAll('{{CTA}}', esc(spec.cta || process.env.VR_CTA || 'Пиши ответ в комментариях'))
     .replace('{{IMAGE}}', dataUri(spec.image));
   const browser = await puppeteer.launch({
     executablePath: chromePath(), headless: true,
@@ -151,7 +152,7 @@ async function assemble(png, voiceMp3, music, outMp4, voiceDur) {
       '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '160k', '-ar', '48000', '-ac', '2',
       '-movflags', '+faststart', outMp4], { timeout: 180000, maxBuffer: 32 * 1024 * 1024 });
   };
-  const wantZoom = process.env.VR_ZOOM !== '0';
+  const wantZoom = process.env.VR_ZOOM === '1'; // СТАТИКА по умолчанию (загадку надо разглядывать); VR_ZOOM=1 — опционально Ken-Burns
   try { await run(wantZoom ? vZoom : vStatic); }
   catch (e) { if (wantZoom) await run(vStatic); else throw e; }
   return dur;
@@ -164,6 +165,7 @@ async function main() {
   const manifestPath = resolve(args.find((a) => a.endsWith('.json')) || resolve(ROOT, 'temp/visual-riddle-demos/build-manifest.json'));
   const specs = JSON.parse(await readFile(manifestPath, 'utf8'));
   await mkdir(outDir, { recursive: true }); // ensure output dir exists before prepImage writes the first work file
+  const REUSE = process.env.VR_REUSE === '1'; // reuse existing card PNG + voice mp3, re-assemble only (e.g. to toggle zoom)
   console.log(`[vr] ${specs.length} card(s) | chrome=${chromePath()} | voice=${VOICE} | out=${outDir}`);
   const results = [];
   for (let i = 0; i < specs.length; i++) {
@@ -174,10 +176,13 @@ async function main() {
     const mp4 = resolve(outDir, `${s.id}.mp4`);
     const vo = s.vo || `${s.question} Пиши ответ в комментариях.`;
     try {
-      const work = resolve(outDir, `${s.id}.work${/\.(jpg|jpeg)$/i.test(s.image) ? '.jpg' : '.png'}`);
-      await prepImage(s.image, work);
-      await renderCard({ ...s, image: work }, png);
-      const vdur = await narrate(vo, voiceMp3);
+      if (!(REUSE && existsSync(png))) {
+        const work = resolve(outDir, `${s.id}.work${/\.(jpg|jpeg)$/i.test(s.image) ? '.jpg' : '.png'}`);
+        await prepImage(s.image, work);
+        await renderCard({ ...s, image: work }, png);
+      }
+      let vdur = REUSE && existsSync(voiceMp3) ? await ffprobeDur(voiceMp3) : 0;
+      if (!vdur) vdur = await narrate(vo, voiceMp3);
       const music = await pickMusic();
       const dur = await assemble(png, voiceMp3, music, mp4, vdur);
       console.log(`[vr] OK ${s.id}: card+${vdur.toFixed(1)}s voice -> ${dur}s mp4 (music=${music ? music.split('/audio/')[1] : 'none'})`);

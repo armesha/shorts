@@ -36,8 +36,11 @@ export const DECK_GLOSS_RU: Record<string, string> = {
   "prayers-de": "Молитвы · нем.",
   space: "Космос · видео",
   "visual-riddles": "Визуальные загадки · видео",
+  "visual-riddles-de": "Sieh die Antwort · видео (DE)",
   "animal-superheroes": "ЗвероГерои · видео",
   "animal-superheroes-en": "ЗвероГерои · видео · англ.",
+  "illusions-3d": "Иллюзия вращения · видео",
+  "illusions-3d-de": "Überliste dein Gehirn · видео (DE)",
   "memes-en": "Мемы · англ.",
   "memes-de": "Мемы · нем.",
   "memes-fr": "Мемы · фр.",
@@ -51,12 +54,12 @@ export const deckLabel = (id: string, name: string): string =>
 /** Content language of each built-in deck (deck id → 2-letter lang). Custom packs carry their own lang. */
 export const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
-  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "animal-superheroes": "ru", "animal-superheroes-en": "en",
+  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "visual-riddles-de": "de", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it",
 };
 
 /** Uppercase 2-letter tag for a language code. */
-export const LANG_TAG: Record<string, string> = { ru: "RU", de: "DE", it: "IT", fr: "FR", en: "EN", ar: "AR" };
+export const LANG_TAG: Record<string, string> = { ru: "RU", de: "DE", it: "IT", fr: "FR", en: "EN", es: "ES", ar: "AR" };
 export const langTag = (code: string): string => LANG_TAG[code] || (code || "").toUpperCase();
 
 /** The content/channel languages a pack or channel can carry (code → human label). */
@@ -66,6 +69,7 @@ export const CONTENT_LANGS: { code: string; label: string }[] = [
   { code: "it", label: "Итальянский" },
   { code: "fr", label: "Французский" },
   { code: "en", label: "Английский" },
+  { code: "es", label: "Испанский" },
   { code: "ar", label: "Арабский" },
 ];
 
@@ -88,8 +92,11 @@ export const BUILTIN_DECKS: { id: string; label: string }[] = [
   { id: "prayers-de", label: "Gebete (видео, DE)" },
   { id: "space", label: "Космос (видео, EN)" },
   { id: "visual-riddles", label: "Вижу Ответ (видео, RU)" },
+  { id: "visual-riddles-de", label: "Sieh die Antwort (видео, DE)" },
   { id: "animal-superheroes", label: "ЗвероГерои (видео, RU)" },
   { id: "animal-superheroes-en", label: "Animal Heroes (видео, EN)" },
+  { id: "illusions-3d", label: "Обмани свой мозг (видео, RU)" },
+  { id: "illusions-3d-de", label: "Überliste dein Gehirn (видео, DE)" },
   { id: "memes-ru", label: "Мемы (RU)" },
   { id: "memes-en", label: "Мемы (EN)" },
   { id: "memes-de", label: "Мемы (DE)" },

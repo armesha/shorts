@@ -123,6 +123,17 @@ function AdminLayout({
   const firstRoute = useRef(true);
   const [routeSettling, setRouteSettling] = useState(false);
   const bottomNav = user.role === "admin" ? ADMIN_BOTTOM_NAV : USER_BOTTOM_NAV;
+  // Clip-demos (нарезки) is open to all, but the nav item only shows if the user has ≥1 accessible pack.
+  const [hasClipDemos, setHasClipDemos] = useState(user.role === "admin");
+  useEffect(() => {
+    if (user.role === "admin") { setHasClipDemos(true); return; }
+    let alive = true;
+    fetch("/api/clip-demos/packs", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : { packs: [] }))
+      .then((d) => { if (alive) setHasClipDemos((d.packs?.length ?? 0) > 0); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [user.role]);
 
   useEffect(() => {
     if (firstRoute.current) {
@@ -257,7 +268,7 @@ function AdminLayout({
           <nav className="p-3 flex-1 overflow-y-auto">
             <div className="space-y-4">
               {ADMIN_NAV_GROUPS.map((group) => {
-                const items = group.items.filter((item) => canSeeNav(item, user));
+                const items = group.items.filter((item) => canSeeNav(item, user, { hasClipDemos }));
                 if (!items.length) return null;
                 return (
                 <section key={group.labelKey}>

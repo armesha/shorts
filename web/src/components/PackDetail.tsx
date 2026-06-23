@@ -215,8 +215,8 @@ export default function PackDetail({ packId, onChanged, onDeleted }: { packId: s
 
   if (!pack) return <div className="text-sm text-base-content/50 py-6 text-center"><Loader2 className="animate-spin inline" size={16} /> {t("packDetail.loadingPack")}</div>;
   const rules = pack.rules ?? [];
-  // Редактировать пак (имя/язык/карточки) может только владелец или админ. Грант → только использование.
-  const canEdit = !!user && (user.role === "admin" || pack.owners.includes(user.id));
+  // Редактировать пак (имя/язык/карточки) может только владелец или главный админ. Грант → только использование.
+  const canEdit = !!user && (!!user.isSuperAdmin || pack.owners.includes(user.id));
   const metaDirty = name.trim() !== pack.name || lang !== pack.lang;
   const PER_PAGE = 24;
   const totalPages = Math.max(1, Math.ceil(pack.cards.length / PER_PAGE));

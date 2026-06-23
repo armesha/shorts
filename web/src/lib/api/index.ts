@@ -50,13 +50,15 @@ export const apiClient = {
     send<{ ok: boolean }>(`/youtube/clients/${id}`, "PATCH", { label }),
   deleteYoutubeClient: (id: number) => send<{ ok: boolean }>(`/youtube/clients/${id}`, "DELETE"),
   adminUsers: () => get<AdminUser[]>("/admin/users"),
-  createUser: (username: string, password: string, role?: string, hidden?: string[]) =>
-    send<{ id: number; username: string; role: string }>("/admin/users", "POST", {
-      username,
-      password,
-      role,
-      hidden,
-    }),
+    createUser: (username: string, password: string, role?: string, hidden?: string[]) =>
+      send<{ id: number; username: string; role: string; isSuperAdmin?: boolean }>("/admin/users", "POST", {
+        username,
+        password,
+        role,
+        hidden,
+      }),
+    setUserRole: (userId: number | string, role: "admin" | "user") =>
+      send<{ ok: boolean; role: string; isSuperAdmin?: boolean }>(`/admin/users/${userId}/role`, "PUT", { role }),
   impersonateUser: (userId: number | string) =>
     send<AuthUser>(`/admin/users/${userId}/impersonate`, "POST", {}),
   stopImpersonation: () => send<AuthUser>("/auth/impersonation/stop", "POST", {}),

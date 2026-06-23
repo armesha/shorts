@@ -31,17 +31,23 @@ markdown, код, frontend, БД или git diff. В логах допустим
 Если когда-нибудь оно понадобится отдельно, брать только public-domain source, удалять исходный звук и
 сначала согласовать формат.
 
-## Общее правило субтитров для Shorts
+## Общее правило текста и субтитров для Shorts
 
 Для вертикальных Shorts/TikTok/Reels нельзя ставить важный текст в самый низ кадра: мобильный UI
-YouTube Shorts перекрывает нижнюю часть видео кнопками, описанием, названием канала и полем
-комментария. Для `1080x1920` держи субтитры примерно в центральной safe-zone:
+YouTube Shorts перекрывает нижнюю часть видео кнопками, описанием, названием канала, CTA/subscribe и
+полем комментария. Это правило относится не только к субтитрам, но и к card-style тексту, логотипам,
+CTA и любым важным подписям. Для `1080x1920` держи важный текст примерно в центральной safe-zone:
 
-- не ниже `y ~= 1320-1360` для нижнего края блока субтитров, лучше держать центр блока около `y ~= 1100-1200`;
-- не вплотную к правому краю, где стоят лайк/дизлайк/комментарии/поделиться;
-- оставляй правый запас около `160-180 px`;
-- не клади субтитры поверх нижних `400-500 px`;
-- проверяй кадр в мобильном Shorts-просмотре или хотя бы на screenshot с типичным правым UI.
+- абсолютный нижний предел для важного текста: `y <= 1520` (нижние `400px` оставлять под UI);
+- лучше держать нижний край body/subtitles около `y ~= 1320-1450`, а источник/мелкие подписи не ниже
+  `y ~= 1450`;
+- не вплотную к правому краю, где стоят лайк/дизлайк/комментарии/поделиться: целевой правый край
+  важного текста `<= 960px`, правый запас около `120-160px`;
+- не клади важный текст поверх нижних `390-500px`;
+- если тексту тесно, увеличивай/перекомпоновывай текстовую область внутри safe-zone, а не мельчи
+  основной шрифт и не опускай текст в самый низ;
+- проверяй кадр в мобильном Shorts-просмотре или хотя бы на screenshot/contact-sheet с типичным правым
+  UI и нижним overlay.
 
 Для spoken-word роликов предпочтителен karaoke-style: вся фраза белая с чёрной обводкой, а текущее
 слово или короткий текущий фрагмент подсвечен жёлтым/тёплым цветом по таймингам ElevenLabs. Не
@@ -105,12 +111,18 @@ prebuilt MP4 считается исключением и требует явн�
 | `The Mind Edge` template-pack | `assets/template-packs/the-mind-edge/` -> `data/packs/` seed | LLM-батчи -> `cards.json`, шаблоны из кода | да, для новых карточек |
 | `psychology-mgs` template-pack | `assets/template-packs/psychology-mgs/` -> `data/packs/` seed | карточки + 40 шаблонов | зависит от источника новых карточек |
 | `Curiosaurs English Facts` template-pack | `assets/template-packs/curiosaurs-english/` -> `data/packs/` seed | локальный набор kid-safe facts + PNG-шаблоны | нет |
+| `Chistes ES` template-pack | `corpora/spanish-jokes-public-domain/` + `assets/template-packs/spanish-jokes*/` -> `data/packs/chistes-es-public-domain.json`, `data/packs/chistes-es-long.json` | public-domain Spanish joke books -> local safety/quality filter -> фактическое число safe-карточек + 30 short templates + 42 length-aware long templates | нет для локальной сборки; да, спросить модель перед LLM-чисткой/адаптацией |
 | `visual-riddles` Вижу Ответ | `data/output/admin-demos/manifest.json` + `data/visual-riddles/videos.json` + `assets/fact-videos/visual-riddles/` | индивидуальные визуальные MP4 для `/clip-demos` и selectable `preFact` deck для каналов | нет |
 
 `data/packs/*.json` - это живые пользовательские паки из страницы "Карточки". Они gitignored и
 пополняются через UI/API или seed-скрипты. Встроенные деки (`data/anecdotes*`, `data/tips*`,
 `data/islamic`, `data/christian`, `data/*/videos.json`) работают через статический реестр
 `src/anecdotes/decks.ts`.
+
+Для template-pack не вводи бизнес-лимит на количество шаблонов в одном паке: `validateTemplateList`
+проверяет каждый шаблон по security-правилам, но не должен запрещать большие наборы только из-за
+числа шаблонов. Если нужен технический лимит, обоснуй его отдельно как защиту конкретного API/размера
+payload, а не как правило генерации контента.
 
 ## Общие проверки после любого пополнения
 
@@ -127,6 +139,105 @@ prebuilt MP4 считается исключением и требует явн�
 4. Для template-pack запусти его QA-рендер или seed-скрипт без дублирования, если он идемпотентный.
 5. После правок `src/**` или `server/**` серверу нужен перезапуск, но не перезапускай общий сервер без
    разрешения пользователя. Чистые изменения `docs/**` перезапуска не требуют.
+
+## Chistes ES: испанские анекдоты без API
+
+Это живой template-pack для страницы «Карточки». Он не держится за фиксированные 1000 штук: сборщик
+берёт фактическое число фрагментов, прошедших локальный safety/quality-фильтр. Если правила
+ужесточаются, итоговое число карточек может уменьшиться, и это нормально. Текущая строгая сборка
+делает два отдельных пака: основной короткий `Chistes ES` и длинный `Chistes ES Long`.
+
+Источники и права:
+
+- сырые тексты лежат в `corpora/spanish-jokes-public-domain/raw/*.txt`;
+- ledger источников: `corpora/spanish-jokes-public-domain/sources.json`;
+- safety-report основного пака: `corpora/spanish-jokes-public-domain/safety-report.json`;
+- safety-report длинного пака: `corpora/spanish-jokes-public-domain/safety-report-long.json`;
+- основные источники: Internet Archive scans of `El Tesoro de los chistes` (1847), `Museo cómico`
+  (1863), `El libro de los cuentos` Rafael Boira (1862);
+- IA/Wikisource evidence указывает public-domain/`NOT_IN_COPYRIGHT` там, где источник это отдаёт, но
+  для коммерческого масштабирования всё равно сохраняй source ledger рядом с паком.
+
+Готовые артефакты:
+
+- фоны основного пака image generator: `assets/template-packs/spanish-jokes/backgrounds/bg-*.jpg`;
+- фоны длинного пака: `assets/template-packs/spanish-jokes-long/backgrounds/bg-*.svg`; стиль основан на
+  imagegen-референсе, но финальные фоны контролируемые SVG без текста, логотипов и шумных геометрических
+  блоков за body;
+- дополнительные scenic-фоны длинного пака: `assets/template-packs/spanish-jokes-long/backgrounds/scene-*.jpg`,
+  копируются из старого набора `assets/backgrounds/russian_jokes/` и адаптируются через JSON-шаблоны с
+  индивидуальными safe-зонами;
+- шаблоны основного пака: `assets/template-packs/spanish-jokes/templates/*.json`;
+- выбранные карточки основного пака + evidence: `assets/template-packs/spanish-jokes/selected-cards.json`;
+- шаблоны длинного пака: `assets/template-packs/spanish-jokes-long/templates/*.json`;
+- выбранные длинные карточки + evidence: `assets/template-packs/spanish-jokes-long/selected-cards.json`;
+- живые паки: `data/packs/chistes-es-public-domain.json` и `data/packs/chistes-es-long.json`.
+
+Правила раскладки шаблонов:
+
+- каждый шаблон обязан иметь явную большую текстовую зону/панель поверх фона, а не класть body
+  напрямую на декоративную картинку;
+- рабочая зона текста держится примерно в `y=300..1450`; важный body-текст не опускать в нижние
+  `400px` Shorts-кадра и не заводить правее `x=960`;
+- основной пак: `title` около `50-54px`, `body` до `40-42px`, `fitMin` не ниже `28px`, body
+  вертикально центрировать внутри своей зоны, чтобы короткие анекдоты не прилипали к верху;
+- длинный пак: базово брать тексты примерно `260..620` символов и раскладывать их по length-aware
+  шаблонам, потому что сервер/Shareboard выбирает шаблон как `cardIndex % templates.length`. Сейчас
+  long-пак держит 42 шаблона: слоты `1..21` compact для `<320` символов (`body` около `54px`, низ body
+  примерно `y=1012..1028`, низ панели `y=1108..1128`), слоты `22..28` medium для `320..399`
+  символов (`body` около `51px`, низ body примерно `y=1216..1228`, низ панели `y=1312..1324`), слоты
+  `29..32` full для `>=400` символов (`body` около `48px`, низ body примерно `y=1348..1356`, низ
+  панели `y=1444..1452`), слоты `33..42` scenic для старых фото-фонов (`body` около `40..44px`, низ
+  body примерно `y=661..1341`, низ панели примерно `y=735..1415`). Перед записью long-пака карточки
+  сортируются по этим слотам; не возвращай
+  всем карточкам одну огромную панель, иначе появится пустой белый лист. `fitMin` не ниже `32px`,
+  `maxChars` около `650`, body выравнивать сверху; если stress-render давит текст, лучше поднять или
+  расширить область внутри safe-zone либо выкинуть карточку, а не мельчить шрифт дальше и не уходить в
+  нижний YouTube UI;
+- scenic-добавка берёт только safe-уникальные неиспользованные кандидаты из уже очищенного корпуса. Не
+  повторяй тексты ради заполнения шаблонов: текущая строгая сборка нашла `7/10` новых неиспользованных
+  кандидатов и честно дала long-пак `71` карточку вместо искусственного добора повторами. Кандидаты
+  короче `180` символов оставляются в обычных compact-слотах, а не в scenic-шаблонах, чтобы на
+  фото-фонах не появлялась пустая бумажная область;
+- внутренние поля слева/справа не меньше `60px`; source должен оставаться читаемым и не попадать на
+  листья/яркие углы/границы;
+- перед показом пользователю рендерить stress-пример на каждый шаблон и смотреть контакт-лист глазами;
+- main body не должен быть на агрессивной цветовой плашке; насыщенные цвета допустимы только для
+  коротких меток/акцентов.
+
+Пересборка:
+
+```bash
+node scripts/build-spanish-jokes-pack.mjs
+```
+
+Скрипт не скачивает raw-файлы сам. Если raw-файлы отсутствуют, он выведет точные `curl`-команды для
+скачивания `FULL TEXT` без API. Старые `chistes-es-preview.json` / `chistes-es-1000.json` удаляются
+сборщиком, чтобы в UI не висели устаревшие варианты. После пересборки проверь шаблоны и stress-render:
+
+```bash
+node --import tsx --experimental-sqlite --input-type=module - <<'EOF'
+import { readFileSync } from 'node:fs';
+import { mkdir } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { validateTemplateList, renderTemplateCard } from './src/template/render.ts';
+await mkdir('data/output/packs', { recursive: true });
+for (const file of ['data/packs/chistes-es-public-domain.json', 'data/packs/chistes-es-long.json']) {
+  const pack = JSON.parse(readFileSync(file, 'utf8'));
+  validateTemplateList(pack.templates);
+  const longest = [...pack.cards].sort((a, b) => b.values.text.length - a.values.text.length);
+  for (let i = 0; i < pack.templates.length; i++) {
+    const card = longest[i % longest.length];
+    await renderTemplateCard(pack.templates[i], card.values, resolve('data/output/packs', `${pack.id}-template-${String(i + 1).padStart(2, '0')}.png`));
+  }
+}
+EOF
+```
+
+Не запускай LLM-чистку/адаптацию молча: сначала спроси пользователя, какой моделью запускать
+workflow. Локальную regex-фильтрацию можно делать без вопроса, но она не заменяет ручную/LLM-проверку
+старых шуток на protected-class stereotypes, религию, секс, насилие, болезни, детей/семью,
+алкоголь/наркотики, политику/криминал, возрастные шутки, классовые оскорбления и OCR-мусор.
 
 ## Новый этап: visual-first загадки с озвучкой
 
@@ -284,9 +395,38 @@ CC-BY-SA и отбрасываются. Финальную визуальную 
 **preFact-дека читает `videos.json` СВЕЖИМ (без кэша) → новые ролики видны БЕЗ рестарта сервера**
 (см. `src/anecdotes/library.ts`); `/clip-demos` тоже читает manifest на лету.
 
-Партия 2026-06-22: **+62 карточки `vrx_*`** (лабиринты, оптические иллюзии, развёртки/3D, числовая
-логика, найди-животных, счёт), 6 отбраковано вручную; всего в `videos.json` = 142. Лицензия каждого
-файла — в `data/visual-riddles/sources.json`.
+Партии 2026-06-22 (+122 найденных PD/CC0, 9 отбраковано вручную; всего в `videos.json` = 202):
+- **`vrx_*` +62** — лабиринты, оптические иллюзии, развёртки/3D, числовая логика (Loyd/Dudeney),
+  найди-животных (трио Currier & Ives 1872), счёт (гравюры с группами).
+- **`vry_*` +60** — тесты на дальтоника (псевдоизохроматические таблицы Якоба Штиллинга 1870-х–1920-х
+  с Internet Archive — настоящий PD, пред-Ishihara), геом. счёт «сколько треугольников/квадратов/кубов»,
+  новые лабиринты (вкл. фигурные), ещё иллюзии (Пенроуз/Неккер/Рубин/Маха/Дельбёф/Зандер), Арчимбольдо
+  «найди лицо», развёртки многогранников, редкая PD «найди отличие» (гравюры 1568).
+Лицензия каждого файла — в `data/visual-riddles/sources.json`. Дедуп при дозаливке — по `downloadUrl`
+(`_vr-ingest.mjs` сверяется с `sources.json`); вторая партия запускалась с `--prefix vry`.
+
+### Локализация: дека `visual-riddles-de` («Sieh die Antwort») — 2026-06-23
+
+Немецкая версия пака: ТЕ ЖЕ 122 PD/CC0 картинки, но немецкий текст на карточке + озвучка edge-tts
+`de-DE-KatjaNeural`. Как воспроизвести/расширить:
+1. `kept-ru.json` — принятые карточки (id + category_ru + title_ru + question_ru + image), собран из
+   `data/visual-riddles/sources.json` (тексты) + RU build-манифестов (пути к исходникам).
+2. Перевод RU→DE — LLM-агент (модель спросить у пользователя; в этот раз Opus) → `de-texts.json`
+   (`{id,title_de,question_de}`).
+3. Немецкий манифест: `de-texts` + `kept-ru`; категории-чипы по таблице (МАРШРУТ→LABYRINTH,
+   ОПТИЧЕСКАЯ ИЛЛЮЗИЯ→TÄUSCHUNG, ПРОСТРАНСТВО→RAUM, ЛОГИКА→LOGIK, НАЙДИ ЖИВОТНОЕ→SUCHBILD,
+   СЧЁТ→ZÄHLEN, ТЕСТ ЗРЕНИЯ→FARBTEST); `vo = question_de + " Schreib deine Antwort in die Kommentare."`;
+   `cta = "Antwort in die Kommentare!"`.
+4. Сборка: `VR_VOICE=de-DE-KatjaNeural node scripts/build-visual-riddles.mjs <de-manifest> --outdir <batch-de>`.
+5. Регистрация: `node scripts/_vr-register.mjs --deck visual-riddles-de --title "Sieh die Antwort" --lang de
+   --manifest <de-manifest> --batch <batch-de> --sources data/visual-riddles/sources.json`.
+
+Параметризация (общая): CTA — `{{CTA}}` в шаблоне / поле `cta` в манифесте / env `VR_CTA`; зум выключен
+по умолчанию (`VR_ZOOM=1` — включить); `_vr-register.mjs` флаги `--deck/--title/--lang` пишут в
+`data/<deck>/{videos,sources}.json` и создают manifest-пак; постеры на `/clip-demos` (общая плоская
+`admin-demos/`) получают суффикс `-<lang>`, чтобы локализация не затёрла оригинал. Дека прописана в
+`src/anecdotes/decks.ts` (DECKS + lang-map) и `web/src/lib/deck.ts` (label/lang/список) → в селекторе
+каналов появляется после `npm run web:build` + рестарта сервера.
 
 Готовые артефакты:
 
@@ -377,6 +517,70 @@ node_modules/ffmpeg-static/ffmpeg -y -pattern_type glob -framerate 1 -i 'data/ou
 Если меняются только файлы в `data/output/admin-demos/`, перезапуск сервера не нужен: `/clip-demos`
 читает static manifest. Если меняется код сервера или frontend, нужен обычный rebuild/restart по
 правилам проекта.
+
+## Обмани свой мозг / Überliste dein Gehirn: вращающиеся 3D-иллюзии (`illusions-3d`, `illusions-3d-de`)
+
+Admin-only `preFact`-видео-деки. Каждый ролик — «неоднозначная» 3D-фигура из цветных точек на чёрном
+(стиль куба Неккера): нет теней/перспективы/«передней» стороны, поэтому мозг сам переворачивает
+направление вращения. Без озвучки, с тихим фоновым эмбиентом. Заголовки СТРОГО одного типа —
+«поверни/разверни/измени вращение силой мысли» (RU) / «… mit Gedankenkraft» (DE); вопросы не по этой
+теме (сколько граней, где начало ленты и т.п.) НЕ использовать. RU и DE — одинаковая геометрия, разный
+вшитый заголовок и id.
+
+LLM НЕ нужен: фигуры — это математика, заголовки — фиксированный рукописный банк фраз в
+`gen-manifest.mjs`. Вопрос о модели workflow не задаётся. Это исключение из «только ElevenLabs»: озвучки
+нет вообще, а фон — сгенерированный синтез-дрон (не TTS).
+
+Тулинг (committed в `scripts/illusions-3d/`; генерируемые манифесты и немые мастера — в gitignored
+`temp/illusions-3d/`; вдохновение-референс — `scripts/illusions-3d/reference/ambiguous_3d_illusions.html`):
+- `renderer.html` — детерминированный покадровый canvas-рендер 1080×1920. 20 фигур (cube, tetra, octa,
+  icosa, dodeca, stella, tesseract, torus, mobius, orbital, pyramid, bipyramid, prism, antiprism,
+  cubocta, helix, dna, trefoil, fivecell, sixteencell). `window.setup({shape,title,palette,dir,turns,
+  dTilt,dRoll})` + `window.renderFrame(progress)` → PNG dataURL. Бесшовный цикл: yaw = phase + dir·
+  progress·2π·turns при постоянных наклонах; мерцание привязано к progress. Заголовок вшит в canvas
+  (авто-подгон 70→44px, ≤3 строки), фигура центрирована, низ ≤ ~1430px (safe-zone Shorts соблюдена).
+  Палитра по умолчанию `spectrum` (как референс); есть ещё ice/fire/neon/gold/aurora.
+- `build.mjs <manifest.json> --outdir DIR` — Chrome (puppeteer-core) рендерит N кадров → ffmpeg →
+  1080×1920 MP4 **без звука**. Env `DUR`(8)/`FPS`(30)/`PALETTE`/`SKIP_EXISTING=1`(докатка).
+- `gen-manifest.mjs` — пишет `ru-manifest.json` + `de-manifest.json` (по 100: 20 фигур × 5 вариантов
+  направление/скорость/угол; банки заголовков RU/DE «силой мысли»).
+- `publish-pack.mjs` — после рендера: мьюксит эмбиент в каждый немой мастер и раскладывает RU+DE по
+  нарезкам (`admin-demos/`) и канальным декам (`assets/fact-videos/<deck>/` + `data/<deck>/videos.json`),
+  обновляет пак в `admin-demos/manifest.json` (чужие паки не трогает).
+- Мастера (немые): `temp/illusions-3d/out-ru/*.mp4` + `out-de/*.mp4` (+ `.jpg` постеры).
+
+Звук: общий дрон `assets/audio/illusions-3d/ambient_drone.mp3` — синтез ffmpeg (сумма синусов +
+tremolo/aecho/lowpass), 100% свободно, как islamic/christian. **ГРАБЛИ:** без нормализации дрон выходит
+тихим (~−33 dB) и в миксе становится неслышным (−52 dB). Поэтому в синтез добавлен
+`loudnorm=I=-16:TP=-1.0`, а в миксе `volume=0.9` → итог по ролику ≈ −19.5 dB mean (уверенно слышно).
+Дрон добавлен в `RESERVED_MUSIC` в `scripts/build-visual-riddles.mjs`, чтобы не попасть фоном в другие паки.
+
+Полная пересборка с нуля:
+```bash
+node scripts/illusions-3d/gen-manifest.mjs
+SKIP_EXISTING=1 DUR=8 FPS=30 node scripts/illusions-3d/build.mjs temp/illusions-3d/ru-manifest.json --outdir temp/illusions-3d/out-ru
+SKIP_EXISTING=1 DUR=8 FPS=30 node scripts/illusions-3d/build.mjs temp/illusions-3d/de-manifest.json --outdir temp/illusions-3d/out-de
+node scripts/illusions-3d/publish-pack.mjs
+npm run web:build && sudo systemctl restart shorts.service
+```
+
+Добавить ещё фигуры/ролики: завести новую функцию формы в `renderer.html` + ключ в `SHAPES`, дописать
+её в `FIGURES` в `gen-manifest.mjs` (RU+DE имя), при желании поправить банки заголовков/`VARIANTS`,
+затем перегенерировать манифесты и прогнать `build.mjs` с `SKIP_EXISTING=1` (старые ролики не
+перерисовываются) + `publish-pack.mjs`. Менять число фигур/вариантов можно свободно — id и videos.json
+пересобираются из манифеста.
+
+Проверка:
+```bash
+node --input-type=module -e 'import fs from "node:fs"; import path from "node:path"; for (const d of ["illusions-3d","illusions-3d-de"]) { const v=JSON.parse(fs.readFileSync(`data/${d}/videos.json`,"utf8")); const miss=v.filter(x=>!fs.existsSync(path.join("assets/fact-videos",x.file))); console.log(d, {videos:v.length, missing:miss.length}); }'
+for f in data/output/admin-demos/ilr_001_cube.mp4 data/output/admin-demos/ild_001_cube.mp4; do ffprobe -v error -show_entries format=duration:stream=codec_type -of csv=p=0 "$f" | tr '\n' ' '; echo "$f"; done
+```
+
+Регистрация дек: `src/anecdotes/decks.ts` (`illusions-3d` RU + `illusions-3d-de` DE, `preFact:true`,
+`adminOnly:true`, `DECK_LANG`) и `web/src/lib/deck.ts` (`DECK_GLOSS_RU`, `DECK_LANG`, `BUILTIN_DECKS`).
+Новые id деки → нужны `npm run web:build` + рестарт сервера, иначе селектор источников их не покажет.
+preFact читает `videos.json` свежим → ДОЗАЛИВКА роликов в существующую деку видна без рестарта;
+нарезки читают `admin-demos/manifest.json` на лету. Деки admin-only → в CHANGELOG НЕ писать.
 
 ## Русские анекдоты (`ru`)
 

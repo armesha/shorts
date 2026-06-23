@@ -18,11 +18,12 @@ import { AppIcon } from "../components/AppIcon";
 const fmt = (n: number) => n.toLocaleString("ru-RU");
 
 // «Паки» — pack overview for everyone: how many cards are left in each pack.
-// Regular user sees their own; admin can switch to any user.
+// Regular users and regular admins see their own; the main admin can switch to any user.
 export default function Packs() {
   const { t } = useT();
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
+  const canManageAllPacks = !!user?.isSuperAdmin;
   const [actionErr, setActionErr] = useState("");
   const [data, setData] = useState<MyDecks | null>(null);
   const [loading, setLoading] = useState(true);
@@ -40,7 +41,7 @@ export default function Packs() {
   const [savingLang, setSavingLang] = useState<string | null>(null);
   const [confirmPack, setConfirmPack] = useState<PackSummary | null>(null); // пак, ожидающий подтверждения удаления
 
-  // Сменить язык (тег) пака — доступно админу прямо здесь.
+  // Сменить язык (тег) пака — доступно владельцу или главному админу прямо здесь.
   const changePackLang = async (p: PackSummary, lang: string) => {
     setSavingLang(p.id);
     try {
@@ -77,14 +78,14 @@ export default function Packs() {
   };
 
   useEffect(() => {
-    if (!isAdmin) return;
+    if (!canManageAllPacks) return;
     apiClient.adminUsers().then(setUsers).catch(() => {});
     apiClient.adminUserDecks().then(setUserDecks).catch(() => {});
     apiClient
       .generators()
       .then((gs: Generator[]) => setDeckNames(Object.fromEntries(gs.map((g) => [g.id, g.name]))))
       .catch(() => {});
-  }, [isAdmin]);
+  }, [canManageAllPacks]);
 
   // Remember the chosen threshold between visits.
   useEffect(() => {
@@ -121,11 +122,11 @@ export default function Packs() {
   useEffect(() => {
     setLoading(true);
     apiClient
-      .myDecks(isAdmin && viewUser !== "" ? Number(viewUser) : undefined)
+      .myDecks(canManageAllPacks && viewUser !== "" ? Number(viewUser) : undefined)
       .then(setData)
       .catch(() => setData(null))
       .finally(() => setLoading(false));
-  }, [viewUser, isAdmin]);
+  }, [viewUser, canManageAllPacks]);
 
   const decks = data?.decks ?? [];
   const totals = useMemo(
@@ -151,7 +152,7 @@ export default function Packs() {
             <p className="text-base-content/60">{t("packs.subtitle")}</p>
           </div>
         </div>
-        {isAdmin && (
+        {canManageAllPacks && (
           <select
             className="select select-bordered select-sm"
             aria-label={t("packs.whoseAria")}
@@ -260,8 +261,9 @@ export default function Packs() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {customPacks.map((p) => {
               const owned = !!user && p.owners.includes(user.id);
-              const canDelete = isAdmin || owned;
-              const foreign = isAdmin && !owned; // админ не владелец — пак чужой/ничей
+              const canEditPack = canManageAllPacks || owned;
+              const canDelete = canEditPack;
+              const foreign = canManageAllPacks && !owned; // главный админ не владелец — пак чужой/ничей
               return (
                 <div key={p.id} className="card bg-base-100 border border-base-300">
                   <div className="card-body gap-1 p-4">
@@ -297,7 +299,7 @@ export default function Packs() {
                     <div className="text-2xl font-bold leading-none">{fmt(p.cards)}</div>
                     <div className="text-xs text-base-content/50 flex items-center gap-1 flex-wrap">
                       <span>{t("packs.cardsWord")}{p.templates ? ` · ${t("packs.templatesN", { n: p.templates })}` : ""} ·</span>
-                      {isAdmin ? (
+                      {canEditPack ? (
                         <select
                           className="select select-xs select-bordered h-6 min-h-0 py-0"
                           value={p.lang}
@@ -326,7 +328,7 @@ export default function Packs() {
       {/* Admin: cross-user "running low" report — packs below the editable threshold (default 100),
           across everyone (incl. admin). The threshold input lives in this card's header; the same
           threshold also drives the red "low" highlight on the pack cards above. */}
-      {isAdmin && (
+      {canManageAllPacks && (
         <div className="card bg-base-100 border border-base-300">
           <div className="card-body gap-2">
             <div className="flex items-center gap-2 flex-wrap">

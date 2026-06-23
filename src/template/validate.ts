@@ -33,7 +33,6 @@ export const TEMPLATE_LIMITS = {
   maxCanvasW: 1080,
   maxCanvasH: 1920,
   maxElements: 80,
-  maxTemplatesPerPack: 40,
   maxElementDim: 2400,
   maxCoordAbs: 2400,
   maxFontPx: 240,
@@ -194,8 +193,5 @@ export function validateTemplateDoc(tpl: unknown, label = "template"): asserts t
 
 export function validateTemplateList(templates: unknown, label = "templates"): asserts templates is TemplateDoc[] {
   if (!Array.isArray(templates)) badTemplate(`${label}: нужен массив шаблонов`);
-  if (templates.length > TEMPLATE_LIMITS.maxTemplatesPerPack) {
-    badTemplate(`${label}: максимум ${TEMPLATE_LIMITS.maxTemplatesPerPack} шаблонов в одном паке`);
-  }
   templates.forEach((tpl, i) => validateTemplateDoc(tpl, `${label}[${i}]`));
 }

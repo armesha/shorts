@@ -3,6 +3,7 @@
 // «язык пака ≠ язык канала» guard), and count a user's unused-card pool. index.ts builds ONE instance
 // via makeDeckAccess(db, { isAdminReq }) and injects it into every route module that gated on these.
 import type { Db, Account } from "../db.ts";
+import { isSuperAdminUser } from "../auth.ts";
 import { DECKS, isPackDeckId, deckLang } from "../../src/anecdotes/decks.ts";
 import { getPack } from "../../src/packs/store.ts";
 import { libraryStats } from "../../src/anecdotes/library.ts";
@@ -16,6 +17,7 @@ export interface DeckAccess {
   isGrantableBuiltinDeckId: (deckId: string) => boolean;
   builtinDeckVisibleForUser: (userId: number, deck: (typeof DECKS)[number]) => boolean;
   deckAllowed: (req: unknown, deckId: string) => boolean;
+  deckAllowedForUser: (userId: number, deckId: string) => boolean;
   cleanDeckIds: (ids: unknown) => string[];
   accountSourceDecks: (account: Account) => string[];
   availableUnusedForDecks: (ownerId: number, deckIds: string[]) => number;
@@ -26,8 +28,8 @@ export interface DeckAccess {
   visibleDecksForUser: (userId: number) => (typeof DECKS)[number][];
 }
 
-export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boolean }): DeckAccess {
-  const { isAdminReq } = deps;
+export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boolean; isSuperAdminReq: (req: unknown) => boolean }): DeckAccess {
+  const { isAdminReq, isSuperAdminReq } = deps;
 
   function isGrantableBuiltinDeck(deck: (typeof DECKS)[number]): boolean {
     return !!(deck.adminOnly && deck.grantable);
@@ -48,14 +50,24 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
     return !db.isDeckHiddenFor(userId, deck.id);
   }
 
-  // True if the user may use a deck (pack): admins always; custom packs by owner/grant;
-  // grantable admin-only built-ins by explicit admin grant; normal built-ins unless hidden.
-  function deckAllowed(req: unknown, deckId: string): boolean {
-    if (isAdminReq(req)) return true;
-    // Кастомные паки: доступ по владению/гранту (getPack применяет canAccess), а не по hidden.
-    if (isPackDeckId(deckId)) return getPack(deckId.slice(5), uid(req), false) !== null;
-    const deck = DECKS.find((d) => d.id === deckId);
-    return !!deck && builtinDeckVisibleForUser(uid(req), deck);
+    // True if the user may use a deck (pack): admins always; custom packs by owner/grant;
+    // grantable admin-only built-ins by explicit admin grant; normal built-ins unless hidden.
+    function deckAllowed(req: unknown, deckId: string): boolean {
+      // Кастомные паки: доступ по владению/гранту (getPack применяет canAccess), а не по hidden.
+      if (isPackDeckId(deckId)) return getPack(deckId.slice(5), uid(req), isSuperAdminReq(req)) !== null;
+      if (isAdminReq(req)) return true;
+      const deck = DECKS.find((d) => d.id === deckId);
+      return !!deck && builtinDeckVisibleForUser(uid(req), deck);
+    }
+
+  // Same as deckAllowed but keyed by a bare userId (no req) — used by the file streamer's authz gate,
+  // which only has the session {id, role}, not a Fastify request.
+    function deckAllowedForUser(userId: number, deckId: string): boolean {
+      if (isPackDeckId(deckId)) {
+        return getPack(deckId.slice(5), userId, isSuperAdminUser(db.getUserById(userId))) !== null;
+      }
+      const deck = DECKS.find((d) => d.id === deckId);
+      return !!deck && builtinDeckVisibleForUser(userId, deck);
   }
 
   function cleanDeckIds(ids: unknown): string[] {
@@ -73,11 +85,11 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
   // from queueing more videos than there are fresh cards (a job can't make a video from a used card).
   function availableUnusedForDecks(ownerId: number, deckIds: string[]): number {
     const usedKeys = db.usedAnecdoteKeys(ownerId);
-    const ownerIsAdmin = db.getUserById(ownerId)?.role === "admin";
-    let total = 0;
-    for (const deckId of deckIds) {
-      if (isPackDeckId(deckId)) {
-        const pack = getPack(deckId.slice(5), ownerId, ownerIsAdmin);
+      const ownerIsSuperAdmin = isSuperAdminUser(db.getUserById(ownerId));
+      let total = 0;
+      for (const deckId of deckIds) {
+        if (isPackDeckId(deckId)) {
+          const pack = getPack(deckId.slice(5), ownerId, ownerIsSuperAdmin);
         if (!pack) continue;
         let used = 0;
         for (const c of pack.cards) if (usedKeys.has(packCardKey(c.values))) used++;
@@ -89,15 +101,15 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
     return total;
   }
 
-  function deckExists(req: unknown, deckId: string): boolean {
-    if (DECKS.some((d) => d.id === deckId)) return true;
-    return isPackDeckId(deckId) && !!getPack(deckId.slice(5), uid(req), isAdminReq(req));
-  }
+    function deckExists(req: unknown, deckId: string): boolean {
+      if (DECKS.some((d) => d.id === deckId)) return true;
+      return isPackDeckId(deckId) && !!getPack(deckId.slice(5), uid(req), isSuperAdminReq(req));
+    }
 
-  function deckContentLang(req: unknown, deckId: string): string {
-    if (isPackDeckId(deckId)) return getPack(deckId.slice(5), uid(req), isAdminReq(req))?.lang || "";
-    return deckLang(deckId);
-  }
+    function deckContentLang(req: unknown, deckId: string): string {
+      if (isPackDeckId(deckId)) return getPack(deckId.slice(5), uid(req), isSuperAdminReq(req))?.lang || "";
+      return deckLang(deckId);
+    }
 
   function validateAccountSourceDeck(req: unknown, deckId: string, channelLang: string): string | null {
     if (!deckExists(req, deckId)) return `Неизвестный пак «${deckId}».`;
@@ -139,6 +151,7 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
     isGrantableBuiltinDeckId,
     builtinDeckVisibleForUser,
     deckAllowed,
+    deckAllowedForUser,
     cleanDeckIds,
     accountSourceDecks,
     availableUnusedForDecks,

@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<title>illusions-3d renderer</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #000; }
+  #scene { display: block; }
+</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  const CW = 1080, CH = 1920;
+  const TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: false });
+
+  // ---- deterministic RNG (so the dot pattern is identical every render) ----
+  function mulberry32(seed) {
+    return function () {
+      let t = seed += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function point(x, y, z, kind = 0, seed = 0) { return { x, y, z, kind, seed }; }
+  function addEdgeDots(target, a, b, count, rand, kind = 1) {
+    const n = Math.max(2, count | 0);
+    for (let i = 0; i <= n; i++) {
+      const t = i / n;
+      const micro = (rand() - .5) * .004;
+      target.push(point(
+        a[0] + (b[0] - a[0]) * t + micro,
+        a[1] + (b[1] - a[1]) * t + micro,
+        a[2] + (b[2] - a[2]) * t + micro,
+        kind, rand()));
+    }
+  }
+  function nearestEdges(vertices, tolerance = 1.07) {
+    let min = Infinity;
+    for (let i = 0; i < vertices.length; i++)
+      for (let j = i + 1; j < vertices.length; j++) {
+        const d = Math.hypot(vertices[i][0]-vertices[j][0], vertices[i][1]-vertices[j][1], vertices[i][2]-vertices[j][2]);
+        if (d > 1e-6 && d < min) min = d;
+      }
+    const edges = [];
+    for (let i = 0; i < vertices.length; i++)
+      for (let j = i + 1; j < vertices.length; j++) {
+        const d = Math.hypot(vertices[i][0]-vertices[j][0], vertices[i][1]-vertices[j][1], vertices[i][2]-vertices[j][2]);
+        if (d <= min * tolerance) edges.push([i, j]);
+      }
+    return edges;
+  }
+  function normalize(points, radius = 1.18) {
+    let maxR = 0;
+    for (const p of points) maxR = Math.max(maxR, Math.hypot(p.x, p.y, p.z));
+    const s = maxR > 0 ? radius / maxR : 1;
+    for (const p of points) { p.x *= s; p.y *= s; p.z *= s; }
+    return points;
+  }
+  function addSphereDust(target, count, radius, rand) {
+    for (let i = 0; i < count; i++) {
+      const z = rand() * 2 - 1;
+      const a = rand() * TAU;
+      const r = Math.cbrt(rand()) * radius;
+      const q = Math.sqrt(Math.max(0, 1 - z * z));
+      target.push(point(q * Math.cos(a) * r, z * r, q * Math.sin(a) * r, 0, rand()));
+    }
+  }
+  function project4(vertices4, persp = 3.0, k = 0.72) {
+    // perspective project 4D -> 3D: w-depth changes scale (this is what makes 4D figures ambiguous)
+    return vertices4.map(([x, y, z, w]) => { const s = 1 / (persp - k * w); return [x * s, y * s, z * s]; });
+  }
+  function buildPoly(name, vertices, edges, seed, opts = {}) {
+    const rand = mulberry32(seed);
+    const out = [];
+    const edgeDots = opts.edgeDots ?? 24;
+    for (const [a, b] of edges) addEdgeDots(out, vertices[a], vertices[b], edgeDots, rand, 1);
+    addSphereDust(out, opts.dust ?? 180, opts.dustRadius ?? .82, rand);
+    return {
+      name, points: normalize(out, opts.radius ?? 1.18),
+      tilt: opts.tilt ?? .55, roll: opts.roll ?? .06, speed: opts.speed ?? .43,
+      phase: opts.phase ?? rand() * TAU,
+    };
+  }
+
+  // ---- shapes (ported from the reference ambiguous-illusions toy) ----
+  function cubeShape() {
+    const v = [];
+    for (const x of [-1, 1]) for (const y of [-1, 1]) for (const z of [-1, 1]) v.push([x, y, z]);
+    const e = [];
+    for (let i = 0; i < v.length; i++) for (let j = i + 1; j < v.length; j++) {
+      const diff = (v[i][0] !== v[j][0]) + (v[i][1] !== v[j][1]) + (v[i][2] !== v[j][2]);
+      if (diff === 1) e.push([i, j]);
+    }
+    return buildPoly('Куб Неккера', v, e, 11, { edgeDots: 31, dust: 230, dustRadius: .91, tilt: .58 });
+  }
+  function tetraShape() {
+    const v = [[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]];
+    return buildPoly('Тетраэдр', v, nearestEdges(v), 17, { edgeDots: 34, dust: 200, dustRadius: .85, tilt: .52, roll: .1 });
+  }
+  function octaShape() {
+    const v = [[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
+    return buildPoly('Октаэдр', v, nearestEdges(v), 22, { edgeDots: 30, dust: 190, tilt: .46, roll: .16 });
+  }
+  function icosaShape() {
+    const f = (1 + Math.sqrt(5)) / 2;
+    const v = [];
+    for (const a of [-1, 1]) for (const b of [-f, f]) v.push([0, a, b]);
+    for (const a of [-1, 1]) for (const b of [-f, f]) v.push([a, b, 0]);
+    for (const a of [-f, f]) for (const b of [-1, 1]) v.push([a, 0, b]);
+    return buildPoly('Икосаэдр', v, nearestEdges(v), 33, { edgeDots: 17, dust: 250, tilt: .49, roll: -.12 });
+  }
+  function dodecaShape() {
+    const f = (1 + Math.sqrt(5)) / 2, inv = 1 / f;
+    const v = [];
+    for (const x of [-1, 1]) for (const y of [-1, 1]) for (const z of [-1, 1]) v.push([x, y, z]);
+    for (const y of [-inv, inv]) for (const z of [-f, f]) v.push([0, y, z]);
+    for (const x of [-inv, inv]) for (const y of [-f, f]) v.push([x, y, 0]);
+    for (const x of [-f, f]) for (const z of [-inv, inv]) v.push([x, 0, z]);
+    return buildPoly('Додекаэдр', v, nearestEdges(v), 44, { edgeDots: 18, dust: 260, tilt: .61, roll: .08 });
+  }
+  function stellaShape() {
+    const v = [];
+    for (const x of [-1, 1]) for (const y of [-1, 1]) for (const z of [-1, 1]) v.push([x, y, z]);
+    const groups = [[], []];
+    v.forEach((p, i) => groups[p[0] * p[1] * p[2] > 0 ? 0 : 1].push(i));
+    const e = [];
+    for (const g of groups) for (let i = 0; i < g.length; i++) for (let j = i + 1; j < g.length; j++) e.push([g[i], g[j]]);
+    return buildPoly('Звёздный тетраэдр', v, e, 55, { edgeDots: 30, dust: 250, dustRadius: .88, tilt: .51, roll: .22 });
+  }
+  function tesseractShape() {
+    const rand = mulberry32(66);
+    const vertices4 = [];
+    for (const x of [-1, 1]) for (const y of [-1, 1]) for (const z of [-1, 1]) for (const w of [-1, 1]) vertices4.push([x, y, z, w]);
+    const v = vertices4.map(([x, y, z, w]) => { const s = 1 / (3.0 - .72 * w); return [x * s, y * s, z * s]; });
+    const edges = [];
+    for (let i = 0; i < vertices4.length; i++) for (let j = i + 1; j < vertices4.length; j++) {
+      let diff = 0; for (let k = 0; k < 4; k++) diff += vertices4[i][k] !== vertices4[j][k];
+      if (diff === 1) edges.push([i, j]);
+    }
+    const out = [];
+    for (const [a, b] of edges) addEdgeDots(out, v[a], v[b], 22, rand, 1);
+    addSphereDust(out, 220, .42, rand);
+    return { name: 'Тессеракт', points: normalize(out, 1.18), tilt: .58, roll: -.16, speed: .37, phase: 1.1 };
+  }
+  function torusShape() {
+    const rand = mulberry32(77);
+    const out = [];
+    const R = 1, r = .43;
+    const push = (u, v, kind = 1) => { const rr = R + r * Math.cos(v); out.push(point(rr * Math.cos(u), r * Math.sin(v), rr * Math.sin(u), kind, rand())); };
+    for (let j = 0; j < 12; j++) { const v = j / 12 * TAU; for (let i = 0; i < 120; i++) push(i / 120 * TAU, v, 1); }
+    for (let j = 0; j < 24; j++) { const u = j / 24 * TAU; for (let i = 0; i < 34; i++) push(u, i / 34 * TAU, 1); }
+    for (let i = 0; i < 160; i++) push(rand() * TAU, rand() * TAU, 0);
+    return { name: 'Тор', points: normalize(out, 1.18), tilt: .73, roll: .12, speed: .34, phase: 2.0 };
+  }
+  function mobiusShape() {
+    const rand = mulberry32(88);
+    const out = [];
+    const push = (u, v, kind = 1) => {
+      const x = (1 + v * Math.cos(u / 2)) * Math.cos(u);
+      const y = v * Math.sin(u / 2);
+      const z = (1 + v * Math.cos(u / 2)) * Math.sin(u);
+      out.push(point(x, y, z, kind, rand()));
+    };
+    for (let lane = 0; lane < 9; lane++) { const v = -.48 + lane / 8 * .96; for (let i = 0; i < 144; i++) push(i / 144 * TAU, v, 1); }
+    for (let slice = 0; slice < 28; slice++) { const u = slice / 28 * TAU; for (let i = 0; i < 18; i++) push(u, -.48 + i / 17 * .96, 1); }
+    for (let i = 0; i < 160; i++) push(rand() * TAU, rand() * .96 - .48, 0);
+    return { name: 'Лента Мёбиуса', points: normalize(out, 1.18), tilt: .60, roll: -.09, speed: .30, phase: 2.8 };
+  }
+  function orbitalSphereShape() {
+    const rand = mulberry32(99);
+    const out = [];
+    const addCircle = (normalAxis, angle, count = 150) => {
+      for (let i = 0; i < count; i++) {
+        const a = i / count * TAU;
+        let x = Math.cos(a), y = Math.sin(a), z = 0;
+        const ca = Math.cos(angle), sa = Math.sin(angle);
+        let x1 = x * ca + z * sa, z1 = -x * sa + z * ca;
+        if (normalAxis === 0) { const yy = y * ca - z1 * sa, zz = y * sa + z1 * ca; y = yy; z1 = zz; }
+        else if (normalAxis === 1) { const xx = x1 * ca - y * sa, yy = x1 * sa + y * ca; x1 = xx; y = yy; }
+        out.push(point(x1, y, z1, 1, rand()));
+      }
+    };
+    addCircle(0, 0); addCircle(1, Math.PI / 2); addCircle(0, Math.PI / 2);
+    for (let k = 0; k < 7; k++) addCircle(k % 2, .22 + k * .29, 110);
+    addSphereDust(out, 230, .92, rand);
+    return { name: 'Орбитальная сфера', points: normalize(out, 1.18), tilt: .55, roll: .25, speed: .32, phase: 3.5 };
+  }
+
+  function pyramidShape() {
+    const v = [[-1, -1, -0.8], [1, -1, -0.8], [1, 1, -0.8], [-1, 1, -0.8], [0, 0, 1.3]];
+    const e = [[0, 1], [1, 2], [2, 3], [3, 0], [0, 4], [1, 4], [2, 4], [3, 4]];
+    return buildPoly('Пирамида', v, e, 101, { edgeDots: 30, dust: 200, dustRadius: .8, tilt: .5, roll: .12 });
+  }
+  function bipyramidShape() {
+    const N = 5, v = [];
+    for (let i = 0; i < N; i++) { const a = i / N * TAU; v.push([Math.cos(a), Math.sin(a), 0]); }
+    v.push([0, 0, 1.4]); v.push([0, 0, -1.4]);
+    const e = [];
+    for (let i = 0; i < N; i++) { e.push([i, (i + 1) % N]); e.push([i, N]); e.push([i, N + 1]); }
+    return buildPoly('Бипирамида', v, e, 102, { edgeDots: 28, dust: 200, tilt: .46, roll: .18 });
+  }
+  function prismShape() {
+    const N = 6, v = [];
+    for (let i = 0; i < N; i++) { const a = i / N * TAU; v.push([Math.cos(a), Math.sin(a), 1]); }
+    for (let i = 0; i < N; i++) { const a = i / N * TAU; v.push([Math.cos(a), Math.sin(a), -1]); }
+    const e = [];
+    for (let i = 0; i < N; i++) { e.push([i, (i + 1) % N]); e.push([N + i, N + (i + 1) % N]); e.push([i, N + i]); }
+    return buildPoly('Призма', v, e, 103, { edgeDots: 22, dust: 220, tilt: .58, roll: .1 });
+  }
+  function antiprismShape() {
+    const N = 5, v = [];
+    for (let i = 0; i < N; i++) { const a = i / N * TAU; v.push([Math.cos(a), Math.sin(a), 1]); }
+    for (let i = 0; i < N; i++) { const a = i / N * TAU + Math.PI / N; v.push([Math.cos(a), Math.sin(a), -1]); }
+    const e = [];
+    for (let i = 0; i < N; i++) { e.push([i, (i + 1) % N]); e.push([N + i, N + (i + 1) % N]); e.push([i, N + i]); e.push([i, N + ((i - 1 + N) % N)]); }
+    return buildPoly('Антипризма', v, e, 104, { edgeDots: 22, dust: 220, tilt: .5, roll: .2 });
+  }
+  function cuboctaShape() {
+    const v = [], s = [-1, 1];
+    for (const a of s) for (const b of s) { v.push([a, b, 0]); v.push([a, 0, b]); v.push([0, a, b]); }
+    return buildPoly('Кубооктаэдр', v, nearestEdges(v), 105, { edgeDots: 20, dust: 230, tilt: .52, roll: .14 });
+  }
+  function helixShape() {
+    const rand = mulberry32(106), out = [];
+    const turns = 3, per = 60, total = turns * per;
+    for (let i = 0; i <= total; i++) { const t = i / per * TAU; const y = -1.2 + (i / total) * 2.4; out.push(point(Math.cos(t), y, Math.sin(t), 1, rand())); }
+    for (let i = 0; i < 120; i++) { const t = rand() * turns * TAU; const y = -1.2 + rand() * 2.4; out.push(point(Math.cos(t), y, Math.sin(t), 0, rand())); }
+    return { name: 'Спираль', points: normalize(out, 1.18), tilt: .55, roll: .08, speed: .3, phase: rand() * TAU };
+  }
+  function dnaShape() {
+    const rand = mulberry32(107), out = [];
+    const turns = 2.5, per = 70, total = Math.round(turns * per);
+    for (let i = 0; i <= total; i++) {
+      const t = i / per * TAU, y = -1.2 + (i / total) * 2.4;
+      out.push(point(Math.cos(t), y, Math.sin(t), 1, rand()));
+      out.push(point(Math.cos(t + Math.PI), y, Math.sin(t + Math.PI), 1, rand()));
+      if (i % 6 === 0) for (let k = 1; k < 6; k++) { const f = k / 6; out.push(point(Math.cos(t) * (1 - f) + Math.cos(t + Math.PI) * f, y, Math.sin(t) * (1 - f) + Math.sin(t + Math.PI) * f, 1, rand())); }
+    }
+    return { name: 'Двойная спираль', points: normalize(out, 1.18), tilt: .5, roll: .12, speed: .28, phase: rand() * TAU };
+  }
+  function trefoilShape() {
+    const rand = mulberry32(108), out = [], N = 440;
+    const at = (t) => [Math.sin(t) + 2 * Math.sin(2 * t), Math.cos(t) - 2 * Math.cos(2 * t), -Math.sin(3 * t)];
+    for (let i = 0; i < N; i++) { const p = at(i / N * TAU); out.push(point(p[0], p[1], p[2], 1, rand())); }
+    for (let i = 0; i < 110; i++) { const p = at(rand() * TAU); out.push(point(p[0], p[1], p[2], 0, rand())); }
+    return { name: 'Узел', points: normalize(out, 1.18), tilt: .6, roll: .2, speed: .3, phase: rand() * TAU };
+  }
+  function fivecellShape() {
+    const rand = mulberry32(109);
+    const v4 = [[1, 1, 1, 1], [1, -1, -1, 1], [-1, 1, -1, 1], [-1, -1, 1, 1], [0, 0, 0, -1.6]];
+    const v = project4(v4);
+    const e = []; for (let i = 0; i < 5; i++) for (let j = i + 1; j < 5; j++) e.push([i, j]);
+    const out = []; for (const [a, b] of e) addEdgeDots(out, v[a], v[b], 26, rand, 1); addSphereDust(out, 170, .55, rand);
+    return { name: 'Пентатоп (4D)', points: normalize(out, 1.18), tilt: .55, roll: -.1, speed: .34, phase: 1.4 };
+  }
+  function sixteenCellShape() {
+    const rand = mulberry32(110);
+    const v4 = [[1, 0, 0, 0], [-1, 0, 0, 0], [0, 1, 0, 0], [0, -1, 0, 0], [0, 0, 1, 0], [0, 0, -1, 0], [0, 0, 0, 1], [0, 0, 0, -1]];
+    const v = project4(v4);
+    const e = [];
+    for (let i = 0; i < 8; i++) for (let j = i + 1; j < 8; j++) { const opp = (i ^ 1) === j && (i >> 1) === (j >> 1); if (!opp) e.push([i, j]); }
+    const out = []; for (const [a, b] of e) addEdgeDots(out, v[a], v[b], 16, rand, 1); addSphereDust(out, 200, .5, rand);
+    return { name: '16-ячейник (4D)', points: normalize(out, 1.18), tilt: .58, roll: .16, speed: .33, phase: 2.4 };
+  }
+
+  const SHAPES = {
+    cube: cubeShape, tetra: tetraShape, octa: octaShape, icosa: icosaShape,
+    dodeca: dodecaShape, stella: stellaShape, tesseract: tesseractShape,
+    torus: torusShape, mobius: mobiusShape, orbital: orbitalSphereShape,
+    pyramid: pyramidShape, bipyramid: bipyramidShape, prism: prismShape,
+    antiprism: antiprismShape, cubocta: cuboctaShape, helix: helixShape,
+    dna: dnaShape, trefoil: trefoilShape, fivecell: fivecellShape, sixteencell: sixteenCellShape,
+  };
+
+  // ---- screen-space colour gradient (NOT depth-based — that's what keeps the rotation ambiguous) ----
+  const PALETTES = {
+    spectrum: { tl: [75, 58, 255], tr: [255, 35, 112], bl: [38, 255, 132], br: [44, 150, 255] },
+    ice:      { tl: [120, 200, 255], tr: [80, 140, 255], bl: [180, 240, 255], br: [90, 170, 255] },
+    fire:     { tl: [255, 190, 60], tr: [255, 60, 40], bl: [255, 130, 30], br: [255, 40, 90] },
+    neon:     { tl: [70, 255, 130], tr: [190, 255, 50], bl: [40, 220, 170], br: [120, 255, 90] },
+    gold:     { tl: [255, 220, 130], tr: [255, 180, 60], bl: [255, 240, 170], br: [220, 150, 40] },
+    aurora:   { tl: [130, 255, 200], tr: [180, 120, 255], bl: [90, 200, 255], br: [255, 140, 220] },
+  };
+  let colorCache = new Map();
+  let PAL = PALETTES.spectrum;
+  function rgbFor(nx, ny) {
+    const u = Math.max(0, Math.min(1, nx * .5 + .5));
+    const v = Math.max(0, Math.min(1, ny * .5 + .5));
+    const qu = Math.round(u * 24), qv = Math.round(v * 24);
+    const key = qu + ',' + qv;
+    if (colorCache.has(key)) return colorCache.get(key);
+    const uu = qu / 24, vv = qv / 24;
+    const top = PAL.tl.map((c, i) => c + (PAL.tr[i] - c) * uu);
+    const bottom = PAL.bl.map((c, i) => c + (PAL.br[i] - c) * uu);
+    const c = top.map((x, i) => Math.round(x + (bottom[i] - x) * vv));
+    const css = `rgb(${c[0]} ${c[1]} ${c[2]})`;
+    colorCache.set(key, css);
+    return css;
+  }
+
+  function rotatePoint(p, ax, ay, az) {
+    const cy = Math.cos(ay), sy = Math.sin(ay), cx = Math.cos(ax), sx = Math.sin(ax), cz = Math.cos(az), sz = Math.sin(az);
+    let x = p.x * cy + p.z * sy, z = -p.x * sy + p.z * cy, y = p.y;
+    const y2 = y * cx - z * sx, z2 = y * sx + z * cx; y = y2; z = z2;
+    const x2 = x * cz - y * sz, y3 = x * sz + y * cz;
+    return { x: x2, y: y3, z };
+  }
+
+  // ---- title (baked into the canvas so it lives in the encoded video) ----
+  let TITLE_LINES = [];
+  let TITLE_FONT_PX = 64;
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    const words = String(text || '').trim().split(/\s+/);
+    for (let px = 70; px >= 44; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = [];
+      let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_FONT_PX = px; return; }
+      if (px === 44) { TITLE_LINES = lines.slice(0, 3); TITLE_FONT_PX = px; }
+    }
+  }
+  function drawTitle() {
+    if (!TITLE_LINES.length) return;
+    const lh = TITLE_FONT_PX * 1.14;
+    let y = 150 + TITLE_FONT_PX * 0.8;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_FONT_PX);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+    ctx.shadowColor = 'rgba(0,0,0,0.92)';
+    ctx.shadowBlur = 22;
+    ctx.fillStyle = 'rgba(255,255,255,0.97)';
+    for (const line of TITLE_LINES) { ctx.fillText(line, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+
+  let CURRENT = null, TURNS = 1, DIR = 1;
+  // setup(spec): spec = { shape, title, palette, tilt?, roll?, phase?, turns?, dir? }
+  window.setup = function (spec) {
+    CURRENT = SHAPES[spec.shape] ? SHAPES[spec.shape]() : cubeShape();
+    if (typeof spec.dTilt === 'number') CURRENT.tilt += spec.dTilt;
+    if (typeof spec.dRoll === 'number') CURRENT.roll += spec.dRoll;
+    TURNS = spec.turns || 1;
+    DIR = spec.dir === -1 ? -1 : 1;
+    PAL = PALETTES[spec.palette] || PALETTES.spectrum;
+    colorCache = new Map();
+    layoutTitle(spec.title);
+    return { name: CURRENT.name, lines: TITLE_LINES.length, fontPx: TITLE_FONT_PX };
+  };
+
+  const DOT_SCALE = 1.7;    // dot radii are tuned up for the 1080-wide frame
+  const CY_FRAC = 0.515;    // figure vertical centre
+  const SCALE_FRAC = 0.32;  // figure size relative to min(CW,CH)
+  function drawShape(shape, progress) {
+    const cx = CW * 0.5, cy = CH * CY_FRAC;
+    const scale = Math.min(CW, CH) * SCALE_FRAC;
+    const yaw = shape.phase + DIR * progress * TAU * TURNS;   // whole number of turns -> seamless loop
+    const pitch = shape.tilt, roll = shape.roll;
+    const pts = shape.points;
+    const projected = new Array(pts.length);
+    for (let i = 0; i < pts.length; i++) {
+      const p = pts[i];
+      const q = rotatePoint(p, pitch, yaw, roll);
+      projected[i] = { x: cx + q.x * scale, y: cy + q.y * scale, nx: q.x / 1.28, ny: q.y / 1.28, kind: p.kind, seed: p.seed };
+    }
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    // soft colour glow (size independent of z — important for the ambiguity)
+    for (let i = 0; i < projected.length; i++) {
+      const p = projected[i];
+      const pulse = .84 + .16 * Math.sin(progress * TAU + p.seed * 19);   // loops over the clip
+      const r = (p.kind ? 3.6 : 2.5) * pulse * DOT_SCALE;
+      ctx.globalAlpha = p.kind ? .10 : .062;
+      ctx.fillStyle = rgbFor(p.nx, p.ny);
+      ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, TAU); ctx.fill();
+    }
+    // bright cores
+    for (let i = 0; i < projected.length; i++) {
+      const p = projected[i];
+      const tw = .88 + .12 * Math.sin(progress * TAU * 2 + p.seed * 31);
+      const r = (p.kind ? 1.2 : .72) * tw * DOT_SCALE;
+      ctx.globalAlpha = p.kind ? .9 : .56;
+      ctx.fillStyle = rgbFor(p.nx, p.ny);
+      ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, TAU); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.18, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(0.62, 'rgba(0,0,0,0.14)');
+    g.addColorStop(1, 'rgba(0,0,0,0.72)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, CW, CH);
+  }
+
+  // renderFrame(progress 0..1) -> returns the frame as a PNG data URL
+  window.renderFrame = function (progress) {
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, CW, CH);
+    if (CURRENT) drawShape(CURRENT, progress);
+    drawVignette();
+    drawTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

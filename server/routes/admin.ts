@@ -3,7 +3,7 @@
 // Handlers moved VERBATIM from index.ts.
 import type { FastifyInstance } from "fastify";
 import type { Db } from "../db.ts";
-import { hashPassword, newSessionToken, SESSION_TTL_DAYS } from "../auth.ts";
+import { hashPassword, isSuperAdminUser, newSessionToken, SESSION_TTL_DAYS, SUPER_ADMIN_USERNAME } from "../auth.ts";
 import { DECKS } from "../../src/anecdotes/decks.ts";
 import { listAllPacks, setGrant, setPackOwners, getPack, canAccess } from "../../src/packs/store.ts";
 import { libraryStats, deckAnecdoteKeys } from "../../src/anecdotes/library.ts";
@@ -22,7 +22,7 @@ import {
 import type { RouteDeps } from "./deps.ts";
 
 export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
-  const { requireAdmin } = deps.auth;
+  const { requireAdmin, requireSuperAdmin } = deps.auth;
   const { emitNotificationChange } = deps.notifier;
   const { isGrantableBuiltinDeck, isGrantableBuiltinDeckId, builtinDeckVisibleForUser, visibleDecksForUser } =
     deps.deckAccess;
@@ -34,6 +34,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       id: u.id,
       username: u.username,
       role: u.role,
+      isSuperAdmin: isSuperAdminUser(u),
       locked: !!(u.lockedUntil && new Date(u.lockedUntil).getTime() > Date.now()),
       createdAt: u.createdAt,
     }));
@@ -45,20 +46,47 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const username = (body.username ?? "").trim();
     const password = body.password ?? "";
     const role = body.role === "admin" ? "admin" : "user";
+    const isSuperAdmin = deps.auth.isSuperAdminReq(req);
+    if (role === "admin" && !isSuperAdmin) {
+      return reply.code(403).send({ error: "Роль админа может выдавать только главный администратор" });
+    }
+    if (username.toLowerCase() === SUPER_ADMIN_USERNAME && username !== SUPER_ADMIN_USERNAME) {
+      return reply.code(400).send({ error: `Главный администратор должен иметь точный логин "${SUPER_ADMIN_USERNAME}"` });
+    }
+    if (username === SUPER_ADMIN_USERNAME && (!isSuperAdmin || role !== "admin")) {
+      return reply.code(403).send({ error: `Аккаунт "${SUPER_ADMIN_USERNAME}" может создавать только главный администратор как admin` });
+    }
+    if (!isSuperAdmin && Array.isArray(body.hidden) && body.hidden.length > 0) {
+      return reply.code(403).send({ error: "Паки нового пользователя может настраивать только главный администратор" });
+    }
     if (!username || password.length < 6)
       return reply.code(400).send({ error: "Логин обязателен, пароль ≥ 6 символов" });
-    if (db.getUserByUsername(username)) return reply.code(409).send({ error: "Такой логин уже есть" });
+    if (db.listUsers().some((u) => u.username.trim().toLowerCase() === username.toLowerCase()))
+      return reply.code(409).send({ error: "Такой логин уже есть" });
     const u = db.createUser({ username, passHash: hashPassword(password), role });
     // Optionally hide some packs for the new user from the start (admins are never restricted).
     if (role !== "admin" && Array.isArray(body.hidden)) {
       const valid = body.hidden.filter((id) => DECKS.some((d) => d.id === id && !isGrantableBuiltinDeck(d)));
       if (valid.length) db.setHiddenDecks(u.id, valid);
     }
-    return { id: u.id, username: u.username, role: u.role };
+    return { id: u.id, username: u.username, role: u.role, isSuperAdmin: isSuperAdminUser(u) };
+  });
+
+  app.put("/api/admin/users/:id/role", async (req, reply) => {
+    if (!requireSuperAdmin(req, reply)) return;
+    const targetId = Number((req.params as { id: string }).id);
+    const target = db.getUserById(targetId);
+    if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
+    const role = (req.body as { role?: string } | null)?.role === "admin" ? "admin" : "user";
+    if (isSuperAdminUser(target) && role !== "admin") {
+      return reply.code(400).send({ error: "Главного администратора armen нельзя понизить" });
+    }
+    const updated = db.updateUserRole(targetId, role);
+    return { ok: true, role: updated?.role ?? role, isSuperAdmin: isSuperAdminUser(updated) };
   });
 
   app.post("/api/admin/users/:id/impersonate", async (req, reply) => {
-    if (!requireAdmin(req, reply)) return;
+    if (!requireSuperAdmin(req, reply)) return;
     const targetId = Number((req.params as { id: string }).id);
     const target = db.getUserById(targetId);
     if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
@@ -73,7 +101,8 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       id: target.id,
       username: target.username,
       role: target.role,
-      impersonator: { id: admin.id, username: admin.username, role: admin.role },
+      isSuperAdmin: isSuperAdminUser(target),
+      impersonator: { id: admin.id, username: admin.username, role: admin.role, isSuperAdmin: isSuperAdminUser(admin) },
     };
   });
 
@@ -143,7 +172,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   // ---- Admin: per-user pack (deck) visibility ----
   // All packs (matrix columns).
   app.get("/api/admin/decks", async (req, reply) => {
-    if (!requireAdmin(req, reply)) return;
+    if (!requireSuperAdmin(req, reply)) return;
     // встроенные деки + кастомные паки (всегда показываем паки колонками; id = "pack:<id>").
     // Возвращаем ВСЕ деки (вкл. чисто admin-only): для строк-юзеров такие колонки рисуются «—»
     // (им недоступно), а в СВОЕЙ строке админ может скрыть любую деку/пак лично у себя (opt-out).
@@ -160,7 +189,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   });
   // Matrix data: per user — which packs are hidden + which packs they actually use.
   app.get("/api/admin/user-decks", async (req, reply) => {
-    if (!requireAdmin(req, reply)) return;
+    if (!requireSuperAdmin(req, reply)) return;
     const hidden = db.hiddenDecksByUser();
     const grantedBuiltins = db.grantedDecksByUser();
     const used = db.usedDecksByUser();
@@ -175,15 +204,17 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
         const s = libraryStats(deckId, usedKeys);
         deckStats[deckId] = { used: s.used, available: s.available, total: s.total, posted: posted[u.id]?.[deckId] ?? 0 };
       }
+      const userIsSuperAdmin = isSuperAdminUser(u);
       return {
         userId: u.id,
         username: u.username,
         role: u.role,
+        isSuperAdmin: userIsSuperAdmin,
         hidden: hidden[u.id] ?? [],
         grantedPacks: [
           ...(grantedBuiltins[u.id] ?? []),
           ...allPacks
-            .filter((p) => u.role === "admin" || p.owners.includes(u.id) || p.grants.includes(u.id))
+            .filter((p) => userIsSuperAdmin || p.owners.includes(u.id) || p.grants.includes(u.id))
             .map((p) => `pack:${p.id}`),
         ],
         used: used[u.id] ?? [],
@@ -197,15 +228,15 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   });
   // Replace a user's hidden-pack set (body.hidden = pack ids to hide) and grants.
   app.put("/api/admin/users/:id/decks", async (req, reply) => {
-    if (!requireAdmin(req, reply)) return;
+    if (!requireSuperAdmin(req, reply)) return;
     const id = Number((req.params as { id: string }).id);
     const target = db.getUserById(id);
     if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
     const body = (req.body as { hidden?: string[]; grants?: string[] }) ?? {};
 
-    // АДМИН (в т.ч. сам себе): видит всё по умолчанию → hidden работает как opt-out и может содержать
+    // ГЛАВНЫЙ АДМИН: видит всё по умолчанию → hidden работает как opt-out и может содержать
     // ЛЮБУЮ встроенную деку (вкл. admin-only) и кастомный пак "pack:<id>". Гранты админу не нужны.
-    if (target.role === "admin") {
+    if (isSuperAdminUser(target)) {
       const packIds = new Set(listAllPacks().map((p) => `pack:${p.id}`));
       const adminHidden = [
         ...new Set(
@@ -216,6 +247,28 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       ];
       db.setHiddenDecks(id, adminHidden);
       db.setGrantedDecks(id, []); // у админа полный доступ — гранты не используются
+      return { ok: true, hidden: adminHidden };
+    }
+
+    // ОБЫЧНЫЙ АДМИН: встроенные admin-only деки доступны по роли, но кастомные паки — только если
+    // он владелец или главный админ выдал грант. Это не главный админ и не "владелец всего".
+    if (target.role === "admin") {
+      const packIds = new Set(listAllPacks().map((p) => `pack:${p.id}`));
+      const adminHidden = [
+        ...new Set(
+          (Array.isArray(body.hidden) ? body.hidden : [])
+            .map((d) => String(d || "").trim())
+            .filter((d) => DECKS.some((x) => x.id === d) || packIds.has(d)),
+        ),
+      ];
+      db.setHiddenDecks(id, adminHidden);
+      db.setGrantedDecks(id, []);
+      const grants = Array.isArray(body.grants) ? body.grants.map((g) => String(g || "").trim()).filter(Boolean) : [];
+      const want = new Set(grants.filter((g) => g.startsWith("pack:")).map((g) => g.replace(/^pack:/, "")));
+      for (const p of listAllPacks()) {
+        if (p.owners.includes(id)) continue;
+        setGrant(p.id, id, want.has(p.id));
+      }
       return { ok: true, hidden: adminHidden };
     }
 
@@ -244,7 +297,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   // already-queued videos round-robin forever instead of deleting them after each post. Visibility +
   // queue recycle only; real used-card accounting and deck access are untouched.
   app.put("/api/admin/users/:id/infinite-packs", async (req, reply) => {
-    if (!requireAdmin(req, reply)) return;
+    if (!requireSuperAdmin(req, reply)) return;
     const id = Number((req.params as { id: string }).id);
     const target = db.getUserById(id);
     if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
@@ -256,7 +309,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   // Reset one user's used-history for a built-in deck. Existing library videos stay intact;
   // the next generation can pick that deck's items from the beginning again.
   app.post("/api/admin/users/:id/decks/:deckId/reset", async (req, reply) => {
-    if (!requireAdmin(req, reply)) return;
+    if (!requireSuperAdmin(req, reply)) return;
     const id = Number((req.params as { id: string; deckId: string }).id);
     const deckId = decodeURIComponent((req.params as { id: string; deckId: string }).deckId);
     const target = db.getUserById(id);
@@ -277,16 +330,16 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   // МОЖЕТ использовать ИЛИ уже использовал, с per-user used/total/available. Кормит панель сброса
   // (встроенные `DECKS` + кастомные `pack:*`), чтобы было видно ВСЕ паки юзера, а не только использованные.
   app.get("/api/admin/users/:id/pack-usage", async (req, reply) => {
-    if (!requireAdmin(req, reply)) return;
+    if (!requireSuperAdmin(req, reply)) return;
     const id = Number((req.params as { id: string }).id);
     const target = db.getUserById(id);
     if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
     const usedKeys = db.usedAnecdoteKeys(id);
-    const targetIsAdmin = target.role === "admin";
+    const targetIsSuperAdmin = isSuperAdminUser(target);
     const items: { id: string; name: string; pack: boolean; total: number; used: number; available: number }[] = [];
     // Встроенные деки: видимые юзеру ИЛИ уже использованные (чтобы ничего сбрасываемого не пряталось).
     for (const d of DECKS) {
-      const visible = targetIsAdmin || builtinDeckVisibleForUser(id, d);
+      const visible = target.role === "admin" || builtinDeckVisibleForUser(id, d);
       const s = libraryStats(d.id, usedKeys);
       if (!visible && s.used === 0) continue;
       items.push({ id: d.id, name: d.name, pack: false, total: s.total, used: s.used, available: s.available });
@@ -297,17 +350,17 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       if (!pack) continue;
       let used = 0;
       for (const c of pack.cards) if (usedKeys.has(packCardKey(c.values))) used++;
-      if (!canAccess(pack, id, targetIsAdmin) && used === 0) continue;
+      if (!canAccess(pack, id, targetIsSuperAdmin) && used === 0) continue;
       const total = pack.cards.length;
       items.push({ id: `pack:${pack.id}`, name: pack.name, pack: true, total, used, available: Math.max(0, total - used) });
     }
     return { userId: id, username: target.username, items };
   });
 
-  // Admin: set a custom pack's owners (0+ users). Owners may edit the pack (name/lang/cards) on /cards.
-  // Админов во владельцы НЕ пишем — админ и так редактирует любой пак; пустой список = у пака нет владельца.
+  // Main admin: set a custom pack's owners (0+ users). Owners may edit the pack (name/lang/cards) on /cards.
+  // Обычные админы могут быть владельцами своих паков; главного админа во владельцы не пишем — он и так всё может.
   app.put("/api/admin/packs/:id/owners", async (req, reply) => {
-    if (!requireAdmin(req, reply)) return;
+    if (!requireSuperAdmin(req, reply)) return;
     const id = (req.params as { id: string }).id.replace(/^pack:/, "");
     const raw = (req.body as { owners?: unknown })?.owners;
     const ids = Array.isArray(raw) ? [...new Set(raw.map(Number))].filter((n) => Number.isInteger(n) && n > 0) : [];
@@ -315,7 +368,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     for (const oid of ids) {
       const u = db.getUserById(oid);
       if (!u) return reply.code(404).send({ error: "Пользователь не найден" });
-      if (u.role === "admin") continue; // админ владельцем не становится — у него и так полный доступ
+      if (isSuperAdminUser(u)) continue; // главному админу отдельное владение не нужно
       owners.push(oid);
     }
     if (!setPackOwners(id, owners)) return reply.code(404).send({ error: "Пак не найден" });
@@ -324,9 +377,9 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
 
   app.get("/api/my-decks", async (req, reply) => {
     const me = db.getUserById(uid(req));
-    const isAdmin = me?.role === "admin";
+    const isSuperAdmin = isSuperAdminUser(me);
     const q = (req.query as { userId?: string }) ?? {};
-    const targetId = isAdmin && q.userId ? Number(q.userId) : uid(req);
+    const targetId = isSuperAdmin && q.userId ? Number(q.userId) : uid(req);
     const target = db.getUserById(targetId);
     if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
     const usedKeys = new Set(db.usedAnecdoteKeys(targetId));
@@ -345,7 +398,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   // Admin: every (user, pack) where the user's remaining cards in that pack is below the threshold (100).
   // Across ALL users (admin included) so the admin sees who is about to run out. Lowest remaining first.
   app.get("/api/admin/low-decks", async (req, reply) => {
-    if (!requireAdmin(req, reply)) return;
+    if (!requireSuperAdmin(req, reply)) return;
     const THRESHOLD = 100;
     const posted = db.postedByUserDeck();
     const out: {

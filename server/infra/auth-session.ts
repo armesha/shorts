@@ -5,7 +5,7 @@
 // module only provides the cookie writers + session/impersonation lookups the routes need. index.ts
 // builds ONE instance via makeAuthSession(db) and threads the pieces into each route module's `deps`.
 import type { Db } from "../db.ts";
-import { newSessionToken, SESSION_TTL_DAYS } from "../auth.ts";
+import { isSuperAdminUser, newSessionToken, SESSION_TTL_DAYS } from "../auth.ts";
 
 export const SESSION_COOKIE = "sid";
 export const ADMIN_SESSION_COOKIE = "admin_sid";
@@ -75,19 +75,23 @@ export function clearSessionCookie(reply: { header: (k: string, v: string) => un
 export const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
 export type Replyish = { code: (n: number) => { send: (b: unknown) => unknown } };
 
-export type SessionUser = { id: number; username: string; role: string };
+export type SessionUser = { id: number; username: string; role: string; isSuperAdmin: boolean };
+type PublicUserInput = { id: number; username: string; role: string; isSuperAdmin?: boolean };
 
 export interface AuthSession {
   validSessionUser: (token: string | null) => SessionUser | null;
   impersonatorUser: (req: unknown) => SessionUser | null;
-  publicUser: (req: unknown, user: SessionUser, impersonator?: SessionUser | null) => {
+  publicUser: (req: unknown, user: PublicUserInput, impersonator?: SessionUser | null) => {
     id: number;
     username: string;
     role: string;
+    isSuperAdmin: boolean;
     impersonator: SessionUser | null;
   };
   requireAdmin: (req: unknown, reply: Replyish) => boolean;
+  requireSuperAdmin: (req: unknown, reply: Replyish) => boolean;
   isAdminReq: (req: unknown) => boolean;
+  isSuperAdminReq: (req: unknown) => boolean;
 }
 
 export function makeAuthSession(db: Db): AuthSession {
@@ -98,7 +102,7 @@ export function makeAuthSession(db: Db): AuthSession {
       return null;
     }
     const u = db.getUserById(sess.userId);
-    return u ? { id: u.id, username: u.username, role: u.role } : null;
+    return u ? { id: u.id, username: u.username, role: u.role, isSuperAdmin: isSuperAdminUser(u) } : null;
   }
 
   function impersonatorUser(req: unknown): SessionUser | null {
@@ -108,11 +112,12 @@ export function makeAuthSession(db: Db): AuthSession {
     return admin;
   }
 
-  function publicUser(req: unknown, user: SessionUser, impersonator = impersonatorUser(req)) {
+  function publicUser(req: unknown, user: PublicUserInput, impersonator = impersonatorUser(req)) {
     return {
       id: user.id,
       username: user.username,
       role: user.role,
+      isSuperAdmin: user.isSuperAdmin ?? isSuperAdminUser(user),
       impersonator,
     };
   }
@@ -130,5 +135,18 @@ export function makeAuthSession(db: Db): AuthSession {
     return db.getUserById(uid(req))?.role === "admin";
   }
 
-  return { validSessionUser, impersonatorUser, publicUser, requireAdmin, isAdminReq };
+  function requireSuperAdmin(req: unknown, reply: Replyish): boolean {
+    const u = db.getUserById(uid(req));
+    if (!isSuperAdminUser(u)) {
+      reply.code(403).send({ error: "Только для главного администратора" });
+      return false;
+    }
+    return true;
+  }
+
+  function isSuperAdminReq(req: unknown): boolean {
+    return isSuperAdminUser(db.getUserById(uid(req)));
+  }
+
+  return { validSessionUser, impersonatorUser, publicUser, requireAdmin, requireSuperAdmin, isAdminReq, isSuperAdminReq };
 }

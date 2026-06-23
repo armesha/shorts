@@ -17,6 +17,10 @@ export function userMethods(db: DatabaseSync) {
         .run(u.username, u.passHash, u.role ?? "user");
       return this.getUserById(Number(info.lastInsertRowid))!;
     },
+    updateUserRole(id: number, role: "admin" | "user"): UserAuth | null {
+      db.prepare("UPDATE users SET role = ? WHERE id = ?").run(role, id);
+      return this.getUserById(id);
+    },
     getUserById(id: number): UserAuth | null {
       const r = db.prepare("SELECT * FROM users WHERE id = ?").get(id) as Row | undefined;
       return r ? rowToUserAuth(r) : null;
