@@ -30,8 +30,10 @@ export default function Packs() {
   const [viewUser, setViewUser] = useState<number | "">(""); // admin: whose packs to view ("" = self)
   const [userDecks, setUserDecks] = useState<UserDeckRow[]>([]); // per-user deck stats (admin)
   const [deckNames, setDeckNames] = useState<Record<string, string>>({}); // deckId → human name
+  // NB: new storage key on purpose — the old "lowDeckThreshold" auto-persisted 300 on first visit, so
+  // bumping the key lets the new default (100) actually take effect for people who already have 300.
   const [threshold, setThreshold] = useState<number>(
-    () => Number(localStorage.getItem("lowDeckThreshold")) || 300,
+    () => Number(localStorage.getItem("packsLowThreshold")) || 100,
   );
   const [customPacks, setCustomPacks] = useState<PackSummary[]>([]); // кастомные паки, видимые мне
   const [deletingPack, setDeletingPack] = useState<string | null>(null);
@@ -87,7 +89,7 @@ export default function Packs() {
   // Remember the chosen threshold between visits.
   useEffect(() => {
     try {
-      localStorage.setItem("lowDeckThreshold", String(threshold));
+      localStorage.setItem("packsLowThreshold", String(threshold));
     } catch {
       /* private mode */
     }
@@ -340,7 +342,7 @@ export default function Packs() {
       )}
 
       {/* Admin: cross-user "running low" report — packs below the shared editable threshold (default
-          300), across everyone (incl. admin). The threshold input lives at the top of the page. */}
+          100), across everyone (incl. admin). The threshold input lives at the top of the page. */}
       {isAdmin && (
         <div className="card bg-base-100 border border-base-300">
           <div className="card-body gap-2">
@@ -348,9 +350,6 @@ export default function Packs() {
               <AlertTriangle className="text-warning" size={18} />
               <h2 className="card-title text-base">{t("packs.lowTitle")}</h2>
               <span className="badge badge-ghost badge-sm">{lowDecks.length}</span>
-              <span className="ml-auto text-xs text-base-content/50">
-                {t("packs.thresholdLabel")}: {fmt(threshold)} {t("packs.freeShort")}
-              </span>
             </div>
             <p className="text-xs text-base-content/50">
               {t("packs.lowDesc", { n: fmt(threshold) })}
