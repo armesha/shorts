@@ -21,6 +21,7 @@ data/tips/_*.json
 Русские анекдоты/
 Генератор мемов/
 corpora/
+local-assets/
 
 # pre-built video packs (decks "fact-en", "quotes-de", "space") — big mp4 pool + generated manifests, kept local
 assets/fact-videos/
