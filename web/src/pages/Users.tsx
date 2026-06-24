@@ -33,6 +33,9 @@ function AdminUsers() {
   const { user, setUser } = useAuth();
   const { t } = useT();
   const canManageRights = isMainAdmin(user);
+  const canManagePackVisibility = user?.role === "admin";
+  const canManagePackOwners = user?.role === "admin";
+  const canResetPackHistory = user?.role === "admin";
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [decks, setDecks] = useState<DeckInfo[]>([]);
   const [rows, setRows] = useState<UserDeckRow[]>([]);
@@ -65,27 +68,26 @@ function AdminUsers() {
 
   const loadUsers = () => apiClient.adminUsers().then(setUsers).catch(() => {});
   const loadMatrix = () => apiClient.adminUserDecks().then(setRows).catch(() => {});
-  // Управление владельцами/матрица должны видеть ВСЕ паки (вкл. скрытые админом у себя) → ?all=1.
-  const loadPacks = () => apiClient.packs({ all: true }).then(setPacks).catch(() => {});
-  const grantById = (deckId: string): boolean => {
-    const deck = decks.find((d) => d.id === deckId);
-    return !!deck?.pack || !!deck?.grantable || deckId.startsWith("pack:");
-  };
+  // Управление владельцами должно видеть ВСЕ кастомные паки; права редактирования всё равно проверяет сервер.
+  const loadPacks = () => apiClient.adminPacks().then(setPacks).catch(() => {});
   // Деки/паки, которые ВООБЩЕ могут быть у обычного юзера (для формы создания и opt-in грантов):
   // обычные встроенные (opt-out), grantable admin-only и кастомные паки. Чисто admin-only — исключаем.
   const userDecks = decks.filter((d) => !d.adminOnly || d.grantable || d.pack);
   useEffect(() => {
     loadUsers();
-    if (canManageRights) {
+    if (canManagePackVisibility) {
       loadMatrix();
-      loadPacks();
       apiClient.adminDecks().then(setDecks).catch(() => {});
     } else {
       setRows([]);
-      setPacks([]);
       setDecks([]);
     }
-  }, [canManageRights]);
+    if (canManagePackOwners) {
+      loadPacks();
+    } else {
+      setPacks([]);
+    }
+  }, [canManagePackVisibility, canManagePackOwners]);
 
   // Добавить/убрать владельца пака (только админ). Шлём ВЕСЬ массив владельцев; пусто = без владельца.
   // Оптимистично + ВИДИМАЯ ошибка с откатом (без «тихого возврата» — частая жалоба).
@@ -130,7 +132,7 @@ function AdminUsers() {
       setRole("user");
       setNewVisible(new Set());
       loadUsers();
-      if (canManageRights) loadMatrix();
+      if (canManagePackVisibility) loadMatrix();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t("users.createFailed"));
     } finally {
@@ -139,11 +141,13 @@ function AdminUsers() {
   }
 
   // Toggle one pack's visibility for a user (checked = visible). Optimistic; reverts on failure.
-  // Админ (в т.ч. сам себе): видит всё по умолчанию → галочка = opt-out (снято = скрыто лично у него),
-  // и так для ЛЮБОЙ колонки — встроенной (вкл. admin-only) и кастомного пака. Гранты у админа не нужны.
+  // Главный админ видит всё по умолчанию → opt-out. Обычный админ тоже может менять эту строку
+  // в матрице, но это не даёт ему роли, impersonate или сброс истории armen.
   async function toggle(row: UserDeckRow, deckId: string, visible: boolean) {
     const isAdminRow = row.role === "admin";
-    const byGrant = !isAdminRow && grantById(deckId); // кастомные + grantable built-in — opt-in; обычные встроенные — opt-out
+    const deck = decks.find((d) => d.id === deckId);
+    const customPack = !!deck?.pack || deckId.startsWith("pack:");
+    const byGrant = !row.isSuperAdmin && (customPack || (!isAdminRow && !!deck?.grantable));
     const nextHidden = byGrant
       ? row.hidden
       : visible
@@ -170,6 +174,10 @@ function AdminUsers() {
   }
 
   async function resetDeckHistory(userId: number, username: string, deckId: string, deckName: string) {
+    if (!canManageRights && rows.find((r) => r.userId === userId)?.isSuperAdmin) {
+      setSaveState("error");
+      return;
+    }
     const label = `${username} / ${deckName}`;
     if (!window.confirm(t("users.resetDeckConfirm", { label }))) return;
     setResettingDeck(`${userId}:${deckId}`);
@@ -200,7 +208,11 @@ function AdminUsers() {
     }
     let alive = true;
     setResetItems(null); // спиннер, пока грузим нового юзера (без мигания прошлым)
-    if (canManageRights) {
+    if (!canManageRights && rows.find((r) => r.userId === resetUserId)?.isSuperAdmin) {
+      setResetItems([]);
+      return;
+    }
+    if (canResetPackHistory) {
       apiClient
         .adminUserPackUsage(resetUserId)
         .then((r) => alive && setResetItems(r.items))
@@ -209,7 +221,7 @@ function AdminUsers() {
     return () => {
       alive = false;
     };
-  }, [resetUserId, canManageRights]);
+  }, [resetUserId, canResetPackHistory, canManageRights, rows]);
 
   async function impersonate(row: UserDeckRow) {
     const targetId = row.userId;
@@ -292,6 +304,8 @@ function AdminUsers() {
       setNoticeBusy(false);
     }
   }
+
+  const resetRows = canManageRights ? rows : rows.filter((r) => !r.isSuperAdmin);
 
   return (
     <>
@@ -506,7 +520,7 @@ function AdminUsers() {
         </div>
 
         {/* Visibility matrix: users × packs (checkbox = visible; «исп.» = already used) */}
-        {canManageRights && rows.length > 0 && decks.length > 0 && (
+        {canManagePackVisibility && rows.length > 0 && decks.length > 0 && (
           <div className="border-t border-base-300 pt-3">
             <p className="text-sm font-medium mb-2 flex items-center gap-2">
               {t("users.matrixHeading")}
@@ -544,123 +558,127 @@ function AdminUsers() {
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((row) => (
-                    <tr key={row.userId}>
-                      <td className="font-medium whitespace-nowrap sticky left-0 z-10 bg-base-100 border-r border-base-300">
-                        <div className="flex items-center gap-1.5">
-                          {row.role === "admin" && <AppIcon name="admin" size={13} className="text-primary" />}
-                          {row.username}
-                          {row.isSuperAdmin && <span className="badge badge-primary badge-xs">{t("users.superAdmin")}</span>}
-                          {canManageRights && !row.isSuperAdmin && (
+                  {rows.map((row) => {
+                    const canEditMatrixRow = canManagePackVisibility;
+                    return (
+                      <tr key={row.userId}>
+                        <td className="font-medium whitespace-nowrap sticky left-0 z-10 bg-base-100 border-r border-base-300">
+                          <div className="flex items-center gap-1.5">
+                            {row.role === "admin" && <AppIcon name="admin" size={13} className="text-primary" />}
+                            {row.username}
+                            {row.isSuperAdmin && <span className="badge badge-primary badge-xs">{t("users.superAdmin")}</span>}
+                            {canManageRights && !row.isSuperAdmin && (
+                              <button
+                                type="button"
+                                className="btn btn-ghost btn-xs gap-1"
+                                disabled={savingCell === `role:${row.userId}`}
+                                onClick={() => setRowRole(row, row.role === "admin" ? "user" : "admin")}
+                                title={row.role === "admin" ? t("users.makeUserTitle") : t("users.makeAdminTitle")}
+                              >
+                                {savingCell === `role:${row.userId}` ? (
+                                  <span className="loading loading-spinner loading-xs" />
+                                ) : row.role === "admin" ? (
+                                  <Crown size={11} />
+                                ) : (
+                                  <Users size={11} />
+                                )}
+                                {row.role === "admin" ? t("users.roleAdmin") : t("users.roleUser")}
+                              </button>
+                            )}
+                            {users.find((u) => u.id === row.userId)?.locked && (
+                              <span className="badge badge-error badge-xs">{t("users.locked")}</span>
+                            )}
+                            {canManageRights && row.userId !== user?.id && (
+                              <button
+                                type="button"
+                                className="btn btn-ghost btn-xs gap-1 ml-auto"
+                                disabled={impersonatingId === row.userId}
+                                onClick={() => impersonate(row)}
+                                title={t("users.impersonateTitle")}
+                              >
+                                {impersonatingId === row.userId ? (
+                                  <span className="loading loading-spinner loading-xs" />
+                                ) : (
+                                  <LogIn size={11} />
+                                )}
+                                {t("users.impersonate")}
+                              </button>
+                            )}
+                          </div>
+                          <div className="text-[11px] font-normal text-base-content/50">
+                            {(() => {
+                              const au = users.find((u) => u.id === row.userId);
+                              return au?.createdAt
+                                ? t("users.sinceDate", { date: new Date(au.createdAt).toLocaleDateString("ru-RU") }) + " · "
+                                : "";
+                            })()}
+                            {t("users.scheduledPerDay", { n: row.scheduled, limit: "/92" })}
+                            {row.library > 0 ? " · " + t("users.inLibrary", { n: row.library }) : ""}
+                          </div>
+                          {canManageRights && (
                             <button
                               type="button"
-                              className="btn btn-ghost btn-xs gap-1"
-                              disabled={savingCell === `role:${row.userId}`}
-                              onClick={() => setRowRole(row, row.role === "admin" ? "user" : "admin")}
-                              title={row.role === "admin" ? t("users.makeUserTitle") : t("users.makeAdminTitle")}
+                              className={`btn btn-xs gap-1 mt-1 ${row.infiniteSim ? "btn-primary" : "btn-ghost border border-base-300 opacity-70"}`}
+                              disabled={togglingInfinite === row.userId}
+                              onClick={() => toggleInfinite(row)}
+                              title={t("users.infiniteSimTitle")}
                             >
-                              {savingCell === `role:${row.userId}` ? (
-                                <span className="loading loading-spinner loading-xs" />
-                              ) : row.role === "admin" ? (
-                                <Crown size={11} />
-                              ) : (
-                                <Users size={11} />
-                              )}
-                              {row.role === "admin" ? t("users.roleAdmin") : t("users.roleUser")}
-                            </button>
-                          )}
-                          {users.find((u) => u.id === row.userId)?.locked && (
-                            <span className="badge badge-error badge-xs">{t("users.locked")}</span>
-                          )}
-                          {canManageRights && row.userId !== user?.id && (
-                            <button
-                              type="button"
-                              className="btn btn-ghost btn-xs gap-1 ml-auto"
-                              disabled={impersonatingId === row.userId}
-                              onClick={() => impersonate(row)}
-                              title={t("users.impersonateTitle")}
-                            >
-                              {impersonatingId === row.userId ? (
+                              {togglingInfinite === row.userId ? (
                                 <span className="loading loading-spinner loading-xs" />
                               ) : (
-                                <LogIn size={11} />
+                                <InfinityIcon size={11} />
                               )}
-                              {t("users.impersonate")}
+                              {row.infiniteSim ? t("users.infiniteSimOn") : t("users.infiniteSimOff")}
                             </button>
                           )}
-                        </div>
-                        <div className="text-[11px] font-normal text-base-content/50">
-                          {(() => {
-                            const au = users.find((u) => u.id === row.userId);
-                            return au?.createdAt
-                              ? t("users.sinceDate", { date: new Date(au.createdAt).toLocaleDateString("ru-RU") }) + " · "
-                              : "";
-                          })()}
-                          {t("users.scheduledPerDay", { n: row.scheduled, limit: "/92" })}
-                          {row.library > 0 ? " · " + t("users.inLibrary", { n: row.library }) : ""}
-                        </div>
-                        {/* «Бесконечный пак» (имитация): юзер видит 1000 карточек, очередь крутится по кругу. */}
-                        <button
-                          type="button"
-                          className={`btn btn-xs gap-1 mt-1 ${row.infiniteSim ? "btn-primary" : "btn-ghost border border-base-300 opacity-70"}`}
-                          disabled={togglingInfinite === row.userId}
-                          onClick={() => toggleInfinite(row)}
-                          title={t("users.infiniteSimTitle")}
-                        >
-                          {togglingInfinite === row.userId ? (
-                            <span className="loading loading-spinner loading-xs" />
-                          ) : (
-                            <InfinityIcon size={11} />
-                          )}
-                          {row.infiniteSim ? t("users.infiniteSimOn") : t("users.infiniteSimOff")}
-                        </button>
-                      </td>
-                      {decks.map((d) => {
-                        const isAdminRow = row.role === "admin";
-                        // Обычному юзеру чисто admin-only дека недоступна в принципе → «—» (не чекбокс).
-                        if (!isAdminRow && d.adminOnly && !d.grantable && !d.pack)
+                        </td>
+                        {decks.map((d) => {
+                          const isAdminRow = row.role === "admin";
+                          // Обычному юзеру чисто admin-only дека недоступна в принципе → «—» (не чекбокс).
+                          if (!isAdminRow && d.adminOnly && !d.grantable && !d.pack)
+                            return (
+                              <td key={d.id} className="text-center text-base-content/25" title={t("users.cellAdminOnly")}>
+                                —
+                              </td>
+                            );
+                          // Главный админ видит всё по умолчанию; обычный админ получает custom-паки грантом/владением.
+                          const visible = row.isSuperAdmin
+                            ? !row.hidden.includes(d.id)
+                            : d.pack || (!isAdminRow && d.grantable)
+                              ? row.grantedPacks.includes(d.id)
+                              : !row.hidden.includes(d.id);
+                          const used = row.used.includes(d.id);
+                          const st = row.deckStats?.[d.id];
                           return (
-                            <td key={d.id} className="text-center text-base-content/25" title={t("users.cellAdminOnly")}>
-                              —
+                            <td key={d.id} className="text-center align-middle">
+                              <label className="inline-flex flex-col items-center gap-0.5 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  className="checkbox checkbox-sm checkbox-primary"
+                                  checked={visible}
+                                  disabled={!canEditMatrixRow || savingCell === `${row.userId}:${d.id}`}
+                                  onChange={(e) => toggle(row, d.id, e.target.checked)}
+                                />
+                                {used &&
+                                  (st ? (
+                                    <span
+                                      className={`text-[10px] leading-none ${st.available < 50 ? "text-error font-semibold" : "text-base-content/60"}`}
+                                      title={t("users.statTooltip", { available: st.available, total: st.total, posted: st.posted, used: st.used })}
+                                    >
+                                      {st.available}
+                                    </span>
+                                  ) : (
+                                    <span className="text-[10px] leading-none text-success" title={t("users.inUse")}>
+                                      {t("users.usedShort")}
+                                    </span>
+                                  ))}
+                              </label>
                             </td>
                           );
-                        // Админ видит всё по умолчанию → галочка = «не скрыто у меня» (opt-out) для любой колонки.
-                        const visible = isAdminRow
-                          ? !row.hidden.includes(d.id)
-                          : d.pack || d.grantable
-                            ? row.grantedPacks.includes(d.id)
-                            : !row.hidden.includes(d.id);
-                        const used = row.used.includes(d.id);
-                        const st = row.deckStats?.[d.id];
-                        return (
-                          <td key={d.id} className="text-center align-middle">
-                            <label className="inline-flex flex-col items-center gap-0.5 cursor-pointer">
-                              <input
-                                type="checkbox"
-                                className="checkbox checkbox-sm checkbox-primary"
-                                checked={visible}
-                                disabled={savingCell === `${row.userId}:${d.id}`}
-                                onChange={(e) => toggle(row, d.id, e.target.checked)}
-                              />
-                              {used &&
-                                (st ? (
-                                  <span
-                                    className={`text-[10px] leading-none ${st.available < 50 ? "text-error font-semibold" : "text-base-content/60"}`}
-                                    title={t("users.statTooltip", { available: st.available, total: st.total, posted: st.posted, used: st.used })}
-                                  >
-                                    {st.available}
-                                  </span>
-                                ) : (
-                                  <span className="text-[10px] leading-none text-success" title={t("users.inUse")}>
-                                    {t("users.usedShort")}
-                                  </span>
-                                ))}
-                            </label>
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
+                        })}
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -671,7 +689,7 @@ function AdminUsers() {
         )}
 
         {/* Владельцы паков: у пака 0+ владельцев — они редактируют пак (имя/язык/карточки) на /cards. */}
-        {canManageRights && packs.length > 0 && (
+        {canManagePackOwners && packs.length > 0 && (
           <div className="border-t border-base-300 pt-3">
             <p className="text-sm font-medium mb-1 flex items-center gap-2">
               <Crown size={15} className="text-primary" /> {t("users.ownersHeading")}
@@ -738,7 +756,7 @@ function AdminUsers() {
 
     {/* Сброс истории паков — отдельный блок (вынесен из тесной матрицы): выбери юзера → */}
     {/* сбрось «использованные» карточки нужного пака; генерация снова берёт его с начала. */}
-    {canManageRights && rows.length > 0 && (
+    {canResetPackHistory && rows.length > 0 && (
       <section className="card bg-base-100 border border-base-300">
         <div className="card-body gap-3">
           <div>
@@ -753,7 +771,7 @@ function AdminUsers() {
             onChange={(e) => setResetUserId(e.target.value ? Number(e.target.value) : "")}
           >
             <option value="">{t("users.resetPickUser")}</option>
-            {[...rows].sort((a, b) => b.usedTotal - a.usedTotal).map((r) => (
+            {[...resetRows].sort((a, b) => b.usedTotal - a.usedTotal).map((r) => (
               <option key={r.userId} value={r.userId}>
                 {r.username}
                 {r.role === "admin" ? ` · ${t("users.roleAdmin")}` : ""} ({r.usedTotal})
@@ -761,7 +779,7 @@ function AdminUsers() {
             ))}
           </select>
           {(() => {
-            const resetRow = rows.find((r) => r.userId === resetUserId);
+            const resetRow = resetRows.find((r) => r.userId === resetUserId);
             if (!resetRow) return null; // юзер ещё не выбран
             if (resetItems === null)
               return <span className="loading loading-spinner loading-sm" />; // грузим список паков

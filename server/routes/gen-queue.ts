@@ -14,6 +14,7 @@ import {
   initGenQueue,
   enqueue as genEnqueue,
   jobStatus as genJobStatus,
+  listStatuses as genListStatuses,
   cancelJob as genCancelJob,
   queuedRemainingForUser as genQueuedRemainingForUser,
   queuedRemainingForOwnerDecks as genQueuedRemainingForOwnerDecks,
@@ -145,12 +146,35 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
     return { jobId: job.id, total: job.total };
   });
 
+  app.get("/api/gen-queue", async (req) => {
+    const scope = String(((req.query ?? {}) as { scope?: string }).scope ?? "");
+    const all = scope === "all" && db.getUserById(uid(req))?.role === "admin";
+    return {
+      jobs: genListStatuses(all ? undefined : uid(req)).map((job) => ({
+        id: job.id,
+        userId: job.userId,
+        ownerUserId: job.ownerUserId,
+        accountId: job.accountId,
+        deckIds: job.deckIds ?? [],
+        total: job.total,
+        done: job.done,
+        state: job.state,
+        ahead: job.ahead,
+        position: job.position,
+        error: job.error ?? null,
+        createdAt: job.createdAt,
+        endedAt: job.endedAt ?? null,
+      })),
+    };
+  });
+
   // Poll one job's progress + position in the queue.
   app.get("/api/gen-queue/:id", async (req, reply) => {
     const st = genJobStatus((req.params as { id: string }).id);
     if (!st || st.userId !== uid(req)) return reply.code(404).send({ error: "Задача не найдена" });
     return {
       id: st.id,
+      accountId: st.accountId,
       total: st.total,
       done: st.done,
       state: st.state,
@@ -162,6 +186,7 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
 
   // Cancel a job: soft-stops after the current video; already-made videos stay in the library.
   app.post("/api/gen-queue/:id/cancel", async (req) => {
-    return { ok: genCancelJob((req.params as { id: string }).id, uid(req)) };
+    const isAdmin = db.getUserById(uid(req))?.role === "admin";
+    return { ok: genCancelJob((req.params as { id: string }).id, uid(req), isAdmin) };
   });
 }

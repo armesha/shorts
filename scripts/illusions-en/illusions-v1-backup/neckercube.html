@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>illusions-en host</title>
+<style>html,body{margin:0;padding:0;background:#000}#scene{display:block}</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  // ============================================================================
+  //  SHARED HOST  —  DO NOT EDIT below except the two clearly marked regions:
+  //    (1) the SPEC block        (2) the drawIllusion() function
+  //  Everything else (RNG, title, vignette, loop, PNG export) is identical for
+  //  every illusion so titles / safe-zone / seamless-loop behave the same.
+  // ============================================================================
+  const CW = 1080, CH = 1920, TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: false });
+
+  // deterministic RNG (so a clip renders byte-identically every time)
+  function mulberry32(seed) {
+    let s = seed >>> 0;
+    return function () {
+      let t = s += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (x, lo, hi) => x < lo ? lo : x > hi ? hi : x;
+  const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+  // Safe drawing box: title lives above y=380, bottom 400px kept clear (Shorts UI).
+  const SAFE = { x0: 70, y0: 380, x1: 1010, y1: 1520 };
+  const H = { TAU, rng: mulberry32, lerp, clamp, smooth, cx: 540, cy: 960, safe: SAFE,
+              maxR: 460 /* suggested max radius for a centred figure */ };
+
+  // ====================== (1) SPEC — replace these values =====================
+  let SPEC = {
+    key: 'neckercube',
+    name: 'Necker cube',
+    title: 'Which face is in front?',
+    dur: 8,            // seconds
+    fps: 30,
+    light: false,      // true => skip the dark vignette (for grey/white-background illusions)
+  };
+  // ===========================================================================
+
+  // ============ (2) drawIllusion — replace this whole function body ==========
+  // Contract:
+  //   p       progress 0..1 over the clip (build renders frame f at p=f/FRAMES,
+  //           so p=0 and p=1 are the SAME instant -> a LOOPING illusion must make
+  //           draw(0) == draw(1). Non-looping sequences (e.g. afterimage) ignore this.)
+  //   CW,CH   1080 x 1920
+  //   H       helpers: H.rng(seed)->()=>0..1, H.lerp, H.clamp, H.smooth, H.TAU,
+  //           H.cx, H.cy (frame centre of the safe area), H.safe {x0,y0,x1,y1}, H.maxR
+  //   The host fills #000, then calls this, then draws vignette (unless light) + title.
+  //   Keep important content inside H.safe. Use H.rng only (no Math.random) for determinism.
+  function drawIllusion(ctx, p, CW, CH, H) {
+    const TAU = H.TAU;
+    // -------------------------------------------------------------------------
+    //  NECKER CUBE (flat, ambiguous wireframe)
+    //  A clean 2D line drawing of a cube: a FRONT square and an identical BACK
+    //  square offset along a fixed diagonal, joined by 4 connecting edges = 12
+    //  edges total. Crucially every edge is drawn IDENTICALLY (same glow, same
+    //  width, no occlusion / no hidden-line removal) so the brain cannot decide
+    //  which square is nearer -> it spontaneously FLIPS between the two 3D
+    //  readings. Vertices are small glowing dots. The whole figure gently
+    //  oscillates in-plane (a tiny rotation) over exactly ONE full sine period,
+    //  so draw(0) === draw(1): a perfectly seamless loop.
+    // -------------------------------------------------------------------------
+    const cx = H.cx;
+    const cy = (H.safe.y0 + H.safe.y1) / 2;            // vertical centre of safe band (~950)
+
+    // ---- cube geometry (flat parallel projection, classic Necker layout) -----
+    // Front face = an axis-aligned square of side 2*A centred on origin.
+    // Back face  = an IDENTICAL square shifted by the offset vector (dx,dy).
+    // No perspective: both squares are the same size -> the depth is ambiguous.
+    const A = 300;                                     // half-side of each square
+    const OX = 175, OY = -175;                         // back-face offset (up & to the right)
+    // re-centre the whole figure: its bounding box centroid sits at (OX/2,OY/2),
+    // so subtract that from every corner -> the cube is dead-centre in the frame.
+    const RX = -OX / 2, RY = -OY / 2;
+
+    // 8 cube corners in figure space (before in-plane wobble):
+    //   front: f0..f3 (CCW from top-left)   back: b0..b3 (same order, shifted)
+    const front = [
+      { x: -A + RX, y: -A + RY }, { x:  A + RX, y: -A + RY },
+      { x:  A + RX, y:  A + RY }, { x: -A + RX, y:  A + RY },
+    ];
+    const back = front.map((v) => ({ x: v.x + OX, y: v.y + OY }));
+
+    // ---- gentle seamless in-plane oscillation --------------------------------
+    // One full sine period over p (p:0->1) => angle starts & ends at 0 with the
+    // same velocity: draw(0)===draw(1). Amplitude is tiny so the cube only
+    // breathes / sways a little (the FLIP is mental, not a spin).
+    const ang = Math.sin(p * TAU) * 0.055;             // +/- ~3.15 deg sway
+    const ca = Math.cos(ang), sa = Math.sin(ang);
+    // a matching micro drift in position so the sway feels organic (also 1 period)
+    const driftX = Math.sin(p * TAU) * 7;
+    const driftY = Math.cos(p * TAU) * 7 - 7;          // starts & ends at 0
+
+    const place = (v) => ({
+      x: cx + (v.x * ca - v.y * sa) + driftX,
+      y: cy + (v.x * sa + v.y * ca) + driftY,
+    });
+    const F = front.map(place);
+    const B = back.map(place);
+
+    // ---- the 12 edges, as index pairs into [F0..F3, B0..B3] -------------------
+    // front square (4) + back square (4) + 4 connectors. ALL identical weight.
+    const edges = [
+      // front square
+      [F[0], F[1]], [F[1], F[2]], [F[2], F[3]], [F[3], F[0]],
+      // back square
+      [B[0], B[1]], [B[1], B[2]], [B[2], B[3]], [B[3], B[0]],
+      // connectors front->back
+      [F[0], B[0]], [F[1], B[1]], [F[2], B[2]], [F[3], B[3]],
+    ];
+
+    // ---- soft cool glow backing so the wireframe pops on pure black ----------
+    ctx.save();
+    const halo = ctx.createRadialGradient(cx, cy, 60, cx, cy, 540);
+    halo.addColorStop(0, 'rgba(40,90,150,0.34)');
+    halo.addColorStop(0.62, 'rgba(20,50,90,0.16)');
+    halo.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = halo;
+    ctx.beginPath(); ctx.arc(cx, cy, 540, 0, TAU); ctx.fill();
+    ctx.restore();
+
+    // ---- draw all 12 edges identically (this is what makes it ambiguous) -----
+    // Two passes per edge: a wide soft halo stroke + a crisp bright core, giving
+    // a clean neon glow. Cool cyan-white. NO edge is dimmed or broken, so neither
+    // 3D interpretation is favoured.
+    const HALO = 'rgba(90,200,255,0.30)';
+    const CORE = 'rgba(214,244,255,0.98)';
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    // glow halo pass
+    ctx.shadowColor = 'rgba(70,180,255,0.9)';
+    ctx.shadowBlur = 26;
+    ctx.strokeStyle = HALO;
+    ctx.lineWidth = 18;
+    for (const [a, b] of edges) {
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    }
+    // crisp bright core pass
+    ctx.shadowColor = 'rgba(150,220,255,0.95)';
+    ctx.shadowBlur = 12;
+    ctx.strokeStyle = CORE;
+    ctx.lineWidth = 7;
+    for (const [a, b] of edges) {
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    }
+    ctx.restore();
+
+    // ---- vertices as small glowing dots (all identical) ----------------------
+    ctx.save();
+    ctx.shadowColor = 'rgba(150,220,255,0.95)';
+    ctx.shadowBlur = 16;
+    for (const v of F.concat(B)) {
+      ctx.beginPath();
+      ctx.arc(v.x, v.y, 11, 0, TAU);
+      ctx.fillStyle = 'rgba(232,248,255,1)';
+      ctx.fill();
+    }
+    ctx.restore();
+
+    void H.rng;
+  }
+  // ===========================================================================
+
+  // ---------------- title (baked into the canvas, with a dark pill) ----------
+  let TITLE_LINES = [], TITLE_PX = 60;
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { TITLE_LINES = []; return; }
+    for (let px = 72; px >= 40; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = []; let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_PX = px; return; }
+      if (px === 40) { TITLE_LINES = lines.slice(0, 3); TITLE_PX = px; }
+    }
+  }
+  function drawTitle() {
+    if (!TITLE_LINES.length) return;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_PX);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const lh = TITLE_PX * 1.2, n = TITLE_LINES.length;
+    const startY = 210, padX = 42, padY = 28;
+    let maxW = 0; for (const l of TITLE_LINES) maxW = Math.max(maxW, ctx.measureText(l).width);
+    const rx = CW / 2 - maxW / 2 - padX, rw = maxW + padX * 2;
+    const ry = startY - lh / 2 - padY, rh = (n - 1) * lh + lh + padY * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 28); ctx.fill();
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    let y = startY; for (const l of TITLE_LINES) { ctx.fillText(l, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.2, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(0.64, 'rgba(0,0,0,0.12)');
+    g.addColorStop(1, 'rgba(0,0,0,0.66)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  }
+
+  window.setup = function (overrides) {
+    if (overrides && typeof overrides === 'object') SPEC = { ...SPEC, ...overrides };
+    layoutTitle(SPEC.title);
+    return { key: SPEC.key, name: SPEC.name, dur: SPEC.dur, fps: SPEC.fps, lines: TITLE_LINES.length, px: TITLE_PX };
+  };
+  window.getSpec = function () { return { ...SPEC }; };
+
+  window.renderFrame = function (progress) {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    drawTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  layoutTitle(SPEC.title);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

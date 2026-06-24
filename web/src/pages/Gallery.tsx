@@ -12,7 +12,7 @@ import { useT } from "../lib/i18n";
 
 type GCard = { i: number; title: string; caption: string; text: string };
 const musicLabel = (f: string) => f.split("/").pop()!.replace(/\.\w+$/, "");
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 6;
 
 export default function Gallery() {
   const { t } = useT();

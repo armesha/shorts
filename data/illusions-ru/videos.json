@@ -1,0 +1,387 @@
+[
+  {
+    "file": "illusions-ru/spiral.mp4",
+    "title": "Смотри в точку в центре",
+    "text": "Смотри в точку в центре"
+  },
+  {
+    "file": "illusions-ru/wheel.mp4",
+    "title": "В какую сторону оно крутится на самом деле?",
+    "text": "В какую сторону оно крутится на самом деле?"
+  },
+  {
+    "file": "illusions-ru/lilac.mp4",
+    "title": "Смотри на крестик — пурпурный исчезнет",
+    "text": "Смотри на крестик — пурпурный исчезнет"
+  },
+  {
+    "file": "illusions-ru/drift.mp4",
+    "title": "Здесь ничто не движется — только твои глаза",
+    "text": "Здесь ничто не движется — только твои глаза"
+  },
+  {
+    "file": "illusions-ru/cafewall.mp4",
+    "title": "Все ряды здесь идеально прямые",
+    "text": "Все ряды здесь идеально прямые"
+  },
+  {
+    "file": "illusions-ru/scintgrid.mp4",
+    "title": "Сосчитай чёрные точки (их нет)",
+    "text": "Сосчитай чёрные точки (их нет)"
+  },
+  {
+    "file": "illusions-ru/afterimage.mp4",
+    "title": "Colour afterimage",
+    "text": "Colour afterimage"
+  },
+  {
+    "file": "illusions-ru/ebbinghaus.mp4",
+    "title": "Оба оранжевых круга одного размера",
+    "text": "Оба оранжевых круга одного размера"
+  },
+  {
+    "file": "illusions-ru/checkershadow.mp4",
+    "title": "A и B — абсолютно один и тот же серый",
+    "text": "A и B — абсолютно один и тот же серый"
+  },
+  {
+    "file": "illusions-ru/penrose.mp4",
+    "title": "Такого треугольника не может быть",
+    "text": "Такого треугольника не может быть"
+  },
+  {
+    "file": "illusions-ru/aperturebars.mp4",
+    "title": "Полосы едут вбок, а не вниз",
+    "text": "Полосы едут вбок, а не вниз"
+  },
+  {
+    "file": "illusions-ru/barberpole.mp4",
+    "title": "Полосы только КАЖУТСЯ ползущими вверх",
+    "text": "Полосы только КАЖУТСЯ ползущими вверх"
+  },
+  {
+    "file": "illusions-ru/beadspiral.mp4",
+    "title": "Бусины стоят на идеальных спиралях",
+    "text": "Бусины стоят на идеальных спиралях"
+  },
+  {
+    "file": "illusions-ru/benham.mp4",
+    "title": "Раскрути — и глаза придумают цвет",
+    "text": "Раскрути — и глаза придумают цвет"
+  },
+  {
+    "file": "illusions-ru/bezold.mp4",
+    "title": "Оба красных — абсолютно одинаковые",
+    "text": "Оба красных — абсолютно одинаковые"
+  },
+  {
+    "file": "illusions-ru/breathingsquares.mp4",
+    "title": "Эта сетка на самом деле не движется",
+    "text": "Эта сетка на самом деле не движется"
+  },
+  {
+    "file": "illusions-ru/bulgegrid.mp4",
+    "title": "Эта шахматка идеально плоская",
+    "text": "Эта шахматка идеально плоская"
+  },
+  {
+    "file": "illusions-ru/chevrondrift.mp4",
+    "title": "Стрелки не хотят стоять на месте",
+    "text": "Стрелки не хотят стоять на месте"
+  },
+  {
+    "file": "illusions-ru/coffer.mp4",
+    "title": "Найдёшь здесь 16 кругов?",
+    "text": "Найдёшь здесь 16 кругов?"
+  },
+  {
+    "file": "illusions-ru/colorassimilation.mp4",
+    "title": "Обе половины — чисто белые",
+    "text": "Обе половины — чисто белые"
+  },
+  {
+    "file": "illusions-ru/cornsweet.mp4",
+    "title": "Обе половины — один и тот же серый",
+    "text": "Обе половины — один и тот же серый"
+  },
+  {
+    "file": "illusions-ru/crawlingdots.mp4",
+    "title": "Точки закреплены на сетке",
+    "text": "Точки закреплены на сетке"
+  },
+  {
+    "file": "illusions-ru/delboeuf.mp4",
+    "title": "Оба оранжевых круга одного размера",
+    "text": "Оба оранжевых круга одного размера"
+  },
+  {
+    "file": "illusions-ru/depthlattice.mp4",
+    "title": "Плоская сетка превращается в тоннель",
+    "text": "Плоская сетка превращается в тоннель"
+  },
+  {
+    "file": "illusions-ru/devilsfork.mp4",
+    "title": "Сколько у неё зубцов?",
+    "text": "Сколько у неё зубцов?"
+  },
+  {
+    "file": "illusions-ru/eclipsegrid.mp4",
+    "title": "Все центральные точки одинаковые",
+    "text": "Все центральные точки одинаковые"
+  },
+  {
+    "file": "illusions-ru/ehrenstein.mp4",
+    "title": "Этих ярких кругов не существует",
+    "text": "Этих ярких кругов не существует"
+  },
+  {
+    "file": "illusions-ru/enigma.mp4",
+    "title": "Кольца будто струятся — это не так",
+    "text": "Кольца будто струятся — это не так"
+  },
+  {
+    "file": "illusions-ru/expandrings.mp4",
+    "title": "Смотри в центр, потом оглянись",
+    "text": "Смотри в центр, потом оглянись"
+  },
+  {
+    "file": "illusions-ru/fanflip.mp4",
+    "title": "В какую сторону перевернулся веер?",
+    "text": "В какую сторону перевернулся веер?"
+  },
+  {
+    "file": "illusions-ru/floatingrings.mp4",
+    "title": "Каждое кольцо абсолютно плоское",
+    "text": "Каждое кольцо абсолютно плоское"
+  },
+  {
+    "file": "illusions-ru/fraserspiral.mp4",
+    "title": "Это круги, а не спираль",
+    "text": "Это круги, а не спираль"
+  },
+  {
+    "file": "illusions-ru/glasswarp.mp4",
+    "title": "Центр на самом деле не гнётся",
+    "text": "Центр на самом деле не гнётся"
+  },
+  {
+    "file": "illusions-ru/hering.mp4",
+    "title": "Обе красные линии идеально прямые",
+    "text": "Обе красные линии идеально прямые"
+  },
+  {
+    "file": "illusions-ru/hermanngrid.mp4",
+    "title": "Серые точки, которых нет",
+    "text": "Серые точки, которых нет"
+  },
+  {
+    "file": "illusions-ru/hypnotunnel.mp4",
+    "title": "Тоннель нарисован плоскими линиями",
+    "text": "Тоннель нарисован плоскими линиями"
+  },
+  {
+    "file": "illusions-ru/impossiblecube.mp4",
+    "title": "Присмотрись — его не собрать",
+    "text": "Присмотрись — его не собрать"
+  },
+  {
+    "file": "illusions-ru/inducedmotion.mp4",
+    "title": "Точка в центре стоит на месте",
+    "text": "Точка в центре стоит на месте"
+  },
+  {
+    "file": "illusions-ru/jastrow.mp4",
+    "title": "Эти две дуги одинаковые",
+    "text": "Эти две дуги одинаковые"
+  },
+  {
+    "file": "illusions-ru/kanizsa.mp4",
+    "title": "Никакого белого треугольника нет",
+    "text": "Никакого белого треугольника нет"
+  },
+  {
+    "file": "illusions-ru/kineticdots.mp4",
+    "title": "Плоские точки превращаются в шар",
+    "text": "Плоские точки превращаются в шар"
+  },
+  {
+    "file": "illusions-ru/loomroom.mp4",
+    "title": "Комната состоит только из линий",
+    "text": "Комната состоит только из линий"
+  },
+  {
+    "file": "illusions-ru/machbands.mp4",
+    "title": "Каждая полоса — ровный, однотонный серый",
+    "text": "Каждая полоса — ровный, однотонный серый"
+  },
+  {
+    "file": "illusions-ru/mib.mp4",
+    "title": "Смотри в центр — жёлтые точки исчезнут",
+    "text": "Смотри в центр — жёлтые точки исчезнут"
+  },
+  {
+    "file": "illusions-ru/moirepulse.mp4",
+    "title": "Кольца на самом деле не дышат",
+    "text": "Кольца на самом деле не дышат"
+  },
+  {
+    "file": "illusions-ru/mullerlyer.mp4",
+    "title": "Эти две линии одинаковой длины",
+    "text": "Эти две линии одинаковой длины"
+  },
+  {
+    "file": "illusions-ru/munkerwhite.mp4",
+    "title": "Все шары одного оранжевого цвета",
+    "text": "Все шары одного оранжевого цвета"
+  },
+  {
+    "file": "illusions-ru/neckercube.mp4",
+    "title": "Какая грань впереди?",
+    "text": "Какая грань впереди?"
+  },
+  {
+    "file": "illusions-ru/neoncolor.mp4",
+    "title": "Никакого светящегося круга здесь нет",
+    "text": "Никакого светящегося круга здесь нет"
+  },
+  {
+    "file": "illusions-ru/neonladder.mp4",
+    "title": "Свечение возникает между линиями",
+    "text": "Свечение возникает между линиями"
+  },
+  {
+    "file": "illusions-ru/orbitstorm.mp4",
+    "title": "Смотри в точку — кольца закрутятся",
+    "text": "Смотри в точку — кольца закрутятся"
+  },
+  {
+    "file": "illusions-ru/phantomrays.mp4",
+    "title": "Кольца создают призрачные лучи",
+    "text": "Кольца создают призрачные лучи"
+  },
+  {
+    "file": "illusions-ru/phasewaves.mp4",
+    "title": "Две волны спорят с твоими глазами",
+    "text": "Две волны спорят с твоими глазами"
+  },
+  {
+    "file": "illusions-ru/pinna.mp4",
+    "title": "Придвинься и отдались — кольца повернутся",
+    "text": "Придвинься и отдались — кольца повернутся"
+  },
+  {
+    "file": "illusions-ru/poggendorff.mp4",
+    "title": "За полосой — одна прямая линия",
+    "text": "За полосой — одна прямая линия"
+  },
+  {
+    "file": "illusions-ru/polarchecker.mp4",
+    "title": "Ровные кольца будто скручены",
+    "text": "Ровные кольца будто скручены"
+  },
+  {
+    "file": "illusions-ru/ponzo.mp4",
+    "title": "Эти две жёлтые полоски равны",
+    "text": "Эти две жёлтые полоски равны"
+  },
+  {
+    "file": "illusions-ru/pulsechecker.mp4",
+    "title": "Квадраты не меняют размер",
+    "text": "Квадраты не меняют размер"
+  },
+  {
+    "file": "illusions-ru/rayafterimage.mp4",
+    "title": "Смотри, потом моргни на стену",
+    "text": "Смотри, потом моргни на стену"
+  },
+  {
+    "file": "illusions-ru/rotatingsnakes2.mp4",
+    "title": "Картинка абсолютно неподвижна",
+    "text": "Картинка абсолютно неподвижна"
+  },
+  {
+    "file": "illusions-ru/rubinvase.mp4",
+    "title": "Ваза — или два лица?",
+    "text": "Ваза — или два лица?"
+  },
+  {
+    "file": "illusions-ru/sander.mp4",
+    "title": "Обе синие диагонали равны",
+    "text": "Обе синие диагонали равны"
+  },
+  {
+    "file": "illusions-ru/scintcircle.mp4",
+    "title": "Сосчитай чёрные вспышки",
+    "text": "Сосчитай чёрные вспышки"
+  },
+  {
+    "file": "illusions-ru/shepardtables.mp4",
+    "title": "Эти две столешницы одинаковые",
+    "text": "Эти две столешницы одинаковые"
+  },
+  {
+    "file": "illusions-ru/simultcontrast.mp4",
+    "title": "Оба серых квадрата одинаковые",
+    "text": "Оба серых квадрата одинаковые"
+  },
+  {
+    "file": "illusions-ru/splitspiral.mp4",
+    "title": "Две спирали в одной плоской картинке",
+    "text": "Две спирали в одной плоской картинке"
+  },
+  {
+    "file": "illusions-ru/steppingfeet.mp4",
+    "title": "Обе полоски движутся с одной скоростью",
+    "text": "Обе полоски движутся с одной скоростью"
+  },
+  {
+    "file": "illusions-ru/stripebeat.mp4",
+    "title": "Пульсирует только яркость",
+    "text": "Пульсирует только яркость"
+  },
+  {
+    "file": "illusions-ru/tiltcloud.mp4",
+    "title": "Каждая черточка одной длины",
+    "text": "Каждая черточка одной длины"
+  },
+  {
+    "file": "illusions-ru/tiltframe.mp4",
+    "title": "Белый стержень идеально вертикален",
+    "text": "Белый стержень идеально вертикален"
+  },
+  {
+    "file": "illusions-ru/troxler.mp4",
+    "title": "Смотри в точку — цвета растворятся",
+    "text": "Смотри в точку — цвета растворятся"
+  },
+  {
+    "file": "illusions-ru/verticalhorizontal.mp4",
+    "title": "Обе линии одинаковой длины",
+    "text": "Обе линии одинаковой длины"
+  },
+  {
+    "file": "illusions-ru/wavegrid.mp4",
+    "title": "Сетка пытается оставаться прямой",
+    "text": "Сетка пытается оставаться прямой"
+  },
+  {
+    "file": "illusions-ru/whiteillusion.mp4",
+    "title": "Эти две серые полосы — один и тот же серый",
+    "text": "Эти две серые полосы — один и тот же серый"
+  },
+  {
+    "file": "illusions-ru/wundt.mp4",
+    "title": "Эти две красные линии идеально прямые",
+    "text": "Эти две красные линии идеально прямые"
+  },
+  {
+    "file": "illusions-ru/zippermotion.mp4",
+    "title": "Молния ползёт, хотя стоит на месте",
+    "text": "Молния ползёт, хотя стоит на месте"
+  },
+  {
+    "file": "illusions-ru/zollner.mp4",
+    "title": "Все эти длинные линии параллельны",
+    "text": "Все эти длинные линии параллельны"
+  }
+]

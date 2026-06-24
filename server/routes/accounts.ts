@@ -5,6 +5,7 @@ import type { FastifyInstance } from "fastify";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Db, Account } from "../db.ts";
+import { MANUAL_VIDEO_DECK } from "../../src/anecdotes/decks.ts";
 import { uid } from "../infra/auth-session.ts";
 import type { RouteDeps } from "./deps.ts";
 
@@ -92,6 +93,7 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
     }
     if (body.slotDecks && typeof body.slotDecks === "object" && !Array.isArray(body.slotDecks)) {
       const allowed = new Set(body.sourceDecks?.length ? body.sourceDecks : accountSourceDecks(acc));
+      allowed.add(MANUAL_VIDEO_DECK);
       const clean: Record<string, string> = {};
       for (const [time, deckId] of Object.entries(body.slotDecks)) {
         const t = String(time || "").trim();

@@ -45,6 +45,26 @@ export function ytMeta(
       tags: deck.tags,
     };
   }
+  // «Что выберешь?» cards: whole card is JSON in `text`; title = the question, body = both options + CTA.
+  if (deck.choose) {
+    let q = title;
+    let a: { label?: string; desc?: string } = {};
+    let b: { label?: string; desc?: string } = {};
+    try {
+      const c = JSON.parse(text) as { q?: string; a?: typeof a; b?: typeof b };
+      q = c.q ?? title;
+      a = c.a ?? {};
+      b = c.b ?? {};
+    } catch {
+      /* not JSON — use raw text */
+    }
+    const body = `${q}\n\n🔴 ${a.label ?? ""}: ${a.desc ?? ""}\n🔵 ${b.label ?? ""}: ${b.desc ?? ""}\n\nА ты что выберешь? Пиши в комментариях 👇`;
+    return {
+      title: `${q} ${deck.emoji} #shorts`,
+      description: `${body}\n\n${deck.hashtags}`,
+      tags: deck.tags,
+    };
+  }
   // Meme cards: the whole card is JSON in `text`; title = first caption line, body = full caption.
   if (deck.meme) {
     let cap = text;

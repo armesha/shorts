@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>illusions-en host</title>
+<style>html,body{margin:0;padding:0;background:#000}#scene{display:block}</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  // ============================================================================
+  //  SHARED HOST  —  DO NOT EDIT below except the two clearly marked regions:
+  //    (1) the SPEC block        (2) the drawIllusion() function
+  //  Everything else (RNG, title, vignette, loop, PNG export) is identical for
+  //  every illusion so titles / safe-zone / seamless-loop behave the same.
+  // ============================================================================
+  const CW = 1080, CH = 1920, TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: false });
+
+  // deterministic RNG (so a clip renders byte-identically every time)
+  function mulberry32(seed) {
+    let s = seed >>> 0;
+    return function () {
+      let t = s += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (x, lo, hi) => x < lo ? lo : x > hi ? hi : x;
+  const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+  // Safe drawing box: title lives above y=380, bottom 400px kept clear (Shorts UI).
+  const SAFE = { x0: 70, y0: 380, x1: 1010, y1: 1520 };
+  const H = { TAU, rng: mulberry32, lerp, clamp, smooth, cx: 540, cy: 960, safe: SAFE,
+              maxR: 460 /* suggested max radius for a centred figure */ };
+
+  // ====================== (1) SPEC — replace these values =====================
+  let SPEC = {
+    key: 'breathingsquares',
+    name: 'Breathing illusion',
+    title: 'This grid is not actually moving',
+    dur: 8,            // seconds
+    fps: 30,
+    light: false,      // true => skip the dark vignette (for grey/white-background illusions)
+  };
+  // ===========================================================================
+
+  // ============ (2) drawIllusion — replace this whole function body ==========
+  // Contract:
+  //   p       progress 0..1 over the clip (build renders frame f at p=f/FRAMES,
+  //           so p=0 and p=1 are the SAME instant -> a LOOPING illusion must make
+  //           draw(0) == draw(1). Non-looping sequences (e.g. afterimage) ignore this.)
+  //   CW,CH   1080 x 1920
+  //   H       helpers: H.rng(seed)->()=>0..1, H.lerp, H.clamp, H.smooth, H.TAU,
+  //           H.cx, H.cy (frame centre of the safe area), H.safe {x0,y0,x1,y1}, H.maxR
+  //   The host fills #000, then calls this, then draws vignette (unless light) + title.
+  //   Keep important content inside H.safe. Use H.rng only (no Math.random) for determinism.
+  function drawIllusion(ctx, p, CW, CH, H) {
+    // BREATHING / anomalous-expansion illusion (peripheral-drift class).
+    // A regular grid of soft SQUARE tiles whose luminance is a PURE 2-D gradient:
+    // bright at the centre, ramping smoothly down to fully transparent (black) at
+    // the cell border — there is NO opaque core and NO crisp edge anywhere. Each
+    // tile is a separable mask  L(x,y) = peak * bump(x) * bump(y), where bump() is
+    // a smoothstep that falls from 1 at the centre to 0 at the half-width, so the
+    // edge is graded luminance over ~50px (slope a few/px, not a step). With the
+    // gaze parked on the central dot, this soft periodic lattice is misread by
+    // peripheral motion detectors as a collective, illusory PULSE / breathing —
+    // the percept is carried by the SOFT EDGES, not by literal animation. The real
+    // motion is therefore deliberately tiny: the grid barely changes size and the
+    // brightness only flickers a few percent (both seamless over p, whole cosine
+    // periods => draw(0) === draw(1)).
+    const S = H.safe;
+    const cx = H.cx;
+    const cy = (S.y0 + S.y1) / 2;   // ~950, vertical midline of the safe box
+
+    // --- seamless breath driver --------------------------------------------
+    // pp normalises so pp(1)===pp(0)===0 (no IEEE754 drift on the seam).
+    const pp = p - Math.floor(p);
+    // ONE full cosine period over the loop => starts & ends at the same phase.
+    // breath = 0 at p=0/p=1, peaks at mid; range 0..1.
+    const breath = 0.5 - 0.5 * Math.cos(pp * TAU);
+
+    // --- field geometry -----------------------------------------------------
+    // Square working region centred in the safe box. Keep a margin so the soft
+    // tiles never touch the title / bottom clear zone.
+    const fieldW = 880;                        // < safe width 940 / height 1140
+    const N = 7;                               // 7x7 lattice of squares
+    const cell = fieldW / N;                   // pitch (~125.7px)
+
+    // REAL scale oscillation kept DELIBERATELY tiny (<=~2.5% peak-to-peak of the
+    // grid envelope) so the visible motion reads as illusory, not as literal
+    // animation. range = 0.025 => scale 0.9875 .. 1.0125 about 1.0.
+    const scale = 1 + (breath - 0.5) * 0.025;
+    const pitch = cell * scale;
+    const gridSpan = (N - 1) * pitch;
+    const gx0 = cx - gridSpan / 2;             // re-centre after scaling
+    const gy0 = cy - gridSpan / 2;
+
+    // Tile half-extent: how far the gradient reaches from a cell centre. Slightly
+    // less than cell/2 so the soft tail fades essentially to 0 BEFORE meeting the
+    // neighbour -> the inter-tile gaps stay dark (feathers to black) and the
+    // lattice stays clearly visible (good Michelson contrast) while every edge is
+    // pure graded luminance.
+    const halfExt = cell * 0.46 * scale;       // ~57.8px reach per side
+
+    // Synchronous luminance swell: only a few percent (peripheral percept, not a
+    // flash). peakA ~ 0.93 .. 1.0.
+    const peakA = lerp(0.93, 1.0, breath);
+
+    // Subtle per-cell phase jitter (deterministic) so the faint swell isn't a
+    // single rigid flash but a soft organic ripple — strengthens the peripheral
+    // "breathing" without breaking the loop (same periodic driver per cell, only
+    // its phase within the loop is offset).
+    const rnd = H.rng(20260623);
+    const jitter = [];
+    for (let i = 0; i < N * N; i++) jitter.push(rnd());
+
+    // --- pre-bake ONE soft-square tile as a pure luminance gradient ----------
+    // Build it once per frame on an offscreen canvas at the current tile pixel
+    // size, then stamp it per cell (scaled identity, per-cell alpha via
+    // globalAlpha). The mask is separable: lum = bump(|dx|) * bump(|dy|), bump =
+    // smoothstep(1 -> 0) over [0, halfExt]; gamma flattens the very centre a touch
+    // so there is a soft bright plateau-free core. Colour = cool white-blue; pixel
+    // ALPHA carries the luminance so feathering to transparent == feathering to
+    // black under the source-over stamp.
+    const TILE = Math.max(8, Math.ceil(halfExt * 2) + 2); // px (even-ish, +pad)
+    if (!drawIllusion._tile || drawIllusion._tileN !== TILE) {
+      const t = document.createElement('canvas');
+      t.width = TILE; t.height = TILE;
+      const tc = t.getContext('2d');
+      const img = tc.createImageData(TILE, TILE);
+      const d = img.data;
+      const c0 = (TILE - 1) / 2;               // tile centre (px)
+      // cool white-blue core -> the RGB is constant, alpha = luminance.
+      const R = 206, G = 224, B = 255;
+      for (let yy = 0; yy < TILE; yy++) {
+        for (let xx = 0; xx < TILE; xx++) {
+          const dx = Math.abs(xx - c0) / halfExt; // 0..>1
+          const dy = Math.abs(yy - c0) / halfExt;
+          // smoothstep bump: 1 at centre, smoothly 0 at/after the half-width.
+          const bx = dx >= 1 ? 0 : H.smooth(1 - dx);
+          const by = dy >= 1 ? 0 : H.smooth(1 - dy);
+          let lum = bx * by;                    // separable 2-D gradient (0..1)
+          // gentle gamma (<1) lifts mid-tones so the centre is bright without a
+          // hard flat plateau — keeps the edge a smooth ramp.
+          lum = Math.pow(lum, 0.72);
+          const i4 = (yy * TILE + xx) * 4;
+          d[i4] = R; d[i4 + 1] = G; d[i4 + 2] = B;
+          d[i4 + 3] = Math.round(lum * 255);
+        }
+      }
+      tc.putImageData(img, 0, 0);
+      drawIllusion._tile = t;
+      drawIllusion._tileN = TILE;
+    }
+    const tile = drawIllusion._tile;
+    const tHalf = TILE / 2;
+
+    ctx.save();
+    ctx.imageSmoothingEnabled = true;
+    for (let r = 0; r < N; r++) {
+      for (let c = 0; c < N; c++) {
+        const x = gx0 + c * pitch;
+        const y = gy0 + r * pitch;
+        // Per-cell breath phase offset: shift this cell's cosine by a small
+        // deterministic fraction of the period -> the swell sweeps as a wave.
+        const ph = jitter[r * N + c];
+        const localBreath = 0.5 - 0.5 * Math.cos((pp + ph * 0.16) * TAU);
+        const a = lerp(0.90, peakA, localBreath); // this cell's peak alpha (subtle)
+        ctx.globalAlpha = a;
+        ctx.drawImage(tile, x - tHalf, y - tHalf);
+      }
+    }
+    ctx.restore();
+
+    // --- central fixation dot (FIXED — never moves/breathes; the anchor) -----
+    // Sits on a cell centre (N is odd -> the middle cell is exactly at cx,cy).
+    // A small high-contrast crosshair-dot the viewer is told to stare at; keeping
+    // the eyes still pushes the grid into peripheral vision where it "breathes".
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
+    // dark backing so the dot reads against a bright blob
+    ctx.beginPath();
+    ctx.arc(cx, cy, 16, 0, TAU);
+    ctx.fillStyle = 'rgba(0,0,0,0.85)';
+    ctx.fill();
+    // crisp white centre
+    ctx.beginPath();
+    ctx.arc(cx, cy, 8.5, 0, TAU);
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    ctx.fill();
+    // thin ring so it stays visible if a blob brightens behind it
+    ctx.beginPath();
+    ctx.arc(cx, cy, 14, 0, TAU);
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+    ctx.stroke();
+    ctx.restore();
+  }
+  // ===========================================================================
+
+  // ---------------- title (baked into the canvas, with a dark pill) ----------
+  let TITLE_LINES = [], TITLE_PX = 60;
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { TITLE_LINES = []; return; }
+    for (let px = 72; px >= 40; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = []; let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_PX = px; return; }
+      if (px === 40) { TITLE_LINES = lines.slice(0, 3); TITLE_PX = px; }
+    }
+  }
+  function drawTitle() {
+    if (!TITLE_LINES.length) return;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_PX);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const lh = TITLE_PX * 1.2, n = TITLE_LINES.length;
+    const startY = 210, padX = 42, padY = 28;
+    let maxW = 0; for (const l of TITLE_LINES) maxW = Math.max(maxW, ctx.measureText(l).width);
+    const rx = CW / 2 - maxW / 2 - padX, rw = maxW + padX * 2;
+    const ry = startY - lh / 2 - padY, rh = (n - 1) * lh + lh + padY * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 28); ctx.fill();
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    let y = startY; for (const l of TITLE_LINES) { ctx.fillText(l, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.2, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(0.64, 'rgba(0,0,0,0.12)');
+    g.addColorStop(1, 'rgba(0,0,0,0.66)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  }
+
+  window.setup = function (overrides) {
+    if (overrides && typeof overrides === 'object') SPEC = { ...SPEC, ...overrides };
+    layoutTitle(SPEC.title);
+    return { key: SPEC.key, name: SPEC.name, dur: SPEC.dur, fps: SPEC.fps, lines: TITLE_LINES.length, px: TITLE_PX };
+  };
+  window.getSpec = function () { return { ...SPEC }; };
+
+  window.renderFrame = function (progress) {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    drawTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  layoutTitle(SPEC.title);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

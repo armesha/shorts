@@ -393,9 +393,6 @@ function SkinSettings() {
           </label>
         </div>
 
-        <div className="rounded-lg border border-base-300 bg-base-200/55 px-3 py-2 text-xs text-base-content/60">
-          {t("skin.adminLocalNote")}
-        </div>
       </div>
     </section>
   );
@@ -457,15 +454,11 @@ function DesignSettings() {
           })}
         </div>
 
-        <div className="rounded-lg border border-base-300 bg-base-200/55 px-3 py-2 text-xs text-base-content/60">
-          {t("settings.designStoredLocal")}
-          {design !== DEFAULT_DESIGN && (
-            <>
-              {" "}
-              {t("settings.designDefaultHint", { name: t(DESIGNS.find((d) => d.id === DEFAULT_DESIGN)?.labelKey || "") })}
-            </>
-          )}
-        </div>
+        {design !== DEFAULT_DESIGN && (
+          <div className="rounded-lg border border-base-300 bg-base-200/55 px-3 py-2 text-xs text-base-content/60">
+            {t("settings.designDefaultHint", { name: t(DESIGNS.find((d) => d.id === DEFAULT_DESIGN)?.labelKey || "") })}
+          </div>
+        )}
       </div>
     </section>
   );

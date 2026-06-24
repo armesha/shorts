@@ -22,6 +22,9 @@ export interface Deck {
   /** When true (together with meme), render via the "board" layout — caption band on top + the
    *  template image below (templates/meme-board.html) — instead of the caption-overlay meme.html. */
   memeBoard?: boolean;
+  /** When true, this deck's items are «Что выберешь?» cards (whole card as JSON in `text`:
+   *  {q, a:{label,desc,photoFile}, b:{label,desc,photoFile}}), rendered via templates/choose.html. */
+  choose?: boolean;
   /** When true, this deck renders DETERMINISTICALLY per card (fixed visual, no random bg) → it is a
    *  static "gallery" pack: shown in the Gallery page where you browse cards and pick a specific one. */
   gallery?: boolean;
@@ -42,6 +45,8 @@ export interface Deck {
   /** When true, generation picks the first unused item by videos.json order instead of random. */
   sequential?: boolean;
 }
+
+export const MANUAL_VIDEO_DECK = "manual";
 
 export const DECKS: Deck[] = [
   {
@@ -109,6 +114,18 @@ export const DECKS: Deck[] = [
     lifehack: true,
     gallery: true,
     lifehackVariant: "chaplin", // мужчины с усами Чаплина (немецкая дека)
+  },
+  {
+    id: "tips-es",
+    name: "Trucos utiles",
+    dir: "data/tips-es",
+    source: "corpora/tips-es.json",
+    emoji: "💡",
+    hashtags: "#trucos #lifehacks #consejos #util #shorts",
+    tags: ["trucos", "lifehacks", "consejos utiles", "vida diaria", "ahorro", "seguridad", "shorts"],
+    genericTitles: ["Truco util", "Consejo practico", "Guarda este dato", "Dato que ayuda", "Tip del dia", "No lo olvides"],
+    lifehack: true,
+    gallery: true,
   },
   {
     id: "psych",
@@ -214,6 +231,19 @@ export const DECKS: Deck[] = [
     memeBoard: true,
     gallery: true,
     adminOnly: true,
+  },
+  {
+    id: "choose",
+    name: "Что выберешь?",
+    dir: "data/choose", // cards.json: {q, a:{label,desc,photoFile}, b:{label,desc,photoFile}}; whole card as JSON in `text`
+    source: "",
+    emoji: "🤔",
+    hashtags: "#чтовыберешь #выбор #тест #опрос #дилемма #shorts",
+    tags: ["что выберешь", "выбор", "тест", "опрос", "дилемма", "или или", "shorts"],
+    genericTitles: ["Что выберешь?", "А ты что выберешь?", "Сложный выбор", "Выбирай", "Что бы ты выбрал?"],
+    choose: true,
+    gallery: true, // детерминированный рендер per-card → браузится в Галерее (админ)
+    adminOnly: true, // новый пак — по умолчанию только админ (как мемы/christian); снять, когда готов к публике
   },
   {
     id: "fact-en",
@@ -373,6 +403,71 @@ export const DECKS: Deck[] = [
     grantable: true,
     preFact: true,
   },
+  {
+    id: "illusions-en",
+    name: "Optical Illusions",
+    dir: "data/illusions-en", // videos.json = [{file,title,text}]; multi-class animated optical illusions (EN)
+    source: "",
+    emoji: "🌀",
+    hashtags: "#opticalillusion #illusion #brain #satisfying #mindtricks #shorts",
+    tags: ["optical illusion", "illusion", "brain", "satisfying", "mind tricks", "perception", "shorts"],
+    genericTitles: ["Optical Illusions", "Trick Your Eyes", "Can You Trust Your Brain?", "Mind-Bending Illusion"],
+    adminOnly: true, // pre-built optical-illusions pack (EN) — admin grants it to regular users from /users
+    grantable: true,
+    preFact: true,
+  },
+  {
+    id: "illusions-de",
+    name: "Optische Täuschungen",
+    dir: "data/illusions-de", // localized optical-illusions pack (DE) — same geometry as illusions-en, German hooks
+    source: "",
+    emoji: "🌀",
+    hashtags: "#optischetäuschung #illusion #gehirn #wahrnehmung #shorts",
+    tags: ["optische täuschung", "illusion", "gehirn", "wahrnehmung", "augentrick", "shorts"],
+    genericTitles: ["Optische Täuschungen", "Trick für deine Augen", "Kannst du deinem Gehirn trauen?", "Verblüffende Illusion"],
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+  },
+  {
+    id: "illusions-it",
+    name: "Illusioni ottiche",
+    dir: "data/illusions-it", // localized optical-illusions pack (IT)
+    source: "",
+    emoji: "🌀",
+    hashtags: "#illusioneottica #illusione #cervello #percezione #shorts",
+    tags: ["illusione ottica", "illusione", "cervello", "percezione", "inganno visivo", "shorts"],
+    genericTitles: ["Illusioni ottiche", "Inganna i tuoi occhi", "Ti puoi fidare del cervello?", "Illusione sorprendente"],
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+  },
+  {
+    id: "illusions-es",
+    name: "Ilusiones ópticas",
+    dir: "data/illusions-es", // localized optical-illusions pack (ES)
+    source: "",
+    emoji: "🌀",
+    hashtags: "#ilusiónóptica #ilusion #cerebro #percepción #shorts",
+    tags: ["ilusión óptica", "ilusión", "cerebro", "percepción", "engaño visual", "shorts"],
+    genericTitles: ["Ilusiones ópticas", "Engaña a tus ojos", "¿Puedes confiar en tu cerebro?", "Ilusión asombrosa"],
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+  },
+  {
+    id: "illusions-ru",
+    name: "Оптические иллюзии",
+    dir: "data/illusions-ru", // localized optical-illusions pack (RU)
+    source: "",
+    emoji: "🌀",
+    hashtags: "#оптическаяиллюзия #иллюзия #мозг #восприятие #shorts",
+    tags: ["оптическая иллюзия", "иллюзия", "мозг", "восприятие", "обман зрения", "shorts"],
+    genericTitles: ["Оптические иллюзии", "Обмани свои глаза", "Можно ли верить мозгу?", "Поразительная иллюзия"],
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+  },
 ];
 
 export const DEFAULT_DECK = "ru";
@@ -385,8 +480,8 @@ export function isPackDeckId(id?: string | null): boolean {
 }
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
-  ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
-  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "visual-riddles-de": "de", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de",
+  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", choose: "ru",
+  tips: "ru", "tips-de": "de", "tips-es": "es", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "visual-riddles-de": "de", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it",
 };
 export function deckLang(id: string): string {
@@ -405,7 +500,21 @@ function synthPackDeck(id: string): Deck {
   };
 }
 
+function synthManualDeck(): Deck {
+  return {
+    id: MANUAL_VIDEO_DECK,
+    name: "Свои нарезки",
+    dir: "",
+    source: "",
+    emoji: "🎬",
+    hashtags: "#shorts",
+    tags: ["shorts"],
+    genericTitles: ["Свой ролик"],
+  };
+}
+
 export function getDeck(id?: string | null): Deck {
+  if (id === MANUAL_VIDEO_DECK) return synthManualDeck();
   if (isPackDeckId(id)) return synthPackDeck(id as string);
   return DECKS.find((d) => d.id === id) ?? DECKS.find((d) => d.id === DEFAULT_DECK)!;
 }

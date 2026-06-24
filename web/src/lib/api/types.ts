@@ -110,10 +110,22 @@ export interface AdminLimitsKey {
   error?: string;
 }
 
+export interface ManualVideoLimits {
+  maxFileMb: number;
+  uploadsPerHour: number;
+  durationSec: number;
+}
+
+export interface ReadinessLimits {
+  minRunwayDays: number;
+}
+
 export interface AdminLimits {
   provider: "elevenlabs";
   updatedAt: string;
   keys: AdminLimitsKey[];
+  manualVideo: ManualVideoLimits;
+  readiness: ReadinessLimits;
   totals: {
     configured: number;
     active: number;
@@ -611,9 +623,21 @@ export interface SystemStatus {
     nodeVersion: string;
     sampleSec: number;
   };
+  hardware: {
+    tempC: number | null;
+    tempLabel: string | null;
+    cpuTempC: number | null;
+    gpuTempC: number | null;
+    fanRpm: number | null;
+    sensors: {
+      kind: "cpu" | "gpu" | "system" | "other";
+      label: string;
+      tempC: number;
+    }[];
+  };
   active: { render: number; upload: number };
   scheduler: { lastTickAt: number | null; lastPostAt: number | null };
-  history: { t: number; cpu: number; memPct: number; rssMb: number; diskPct: number }[];
+  history: { t: number; cpu: number; memPct: number; rssMb: number; diskPct: number; tempC: number | null }[];
   domain: {
     videosQueued: number;
     accountsTotal: number;
@@ -676,7 +700,8 @@ export interface PsychUploadErrorBody {
 // ---- Кастомные паки (хаб «Паки и карточки») ----
 export interface PackSummary {
   id: string;
-  owners: number[]; // владельцы пака (могут редактировать/удалять; пусто = без владельца)
+  owners: number[]; // владельцы пака (могут редактировать; пусто = без владельца)
+  createdBy: number | null; // кто создал пак; обычный админ может удалять только свои созданные паки
   name: string;
   lang: string;
   templates: number;
@@ -698,6 +723,7 @@ export interface PackCardRow {
 export interface PackFull {
   id: string;
   owners: number[]; // владельцы пака (могут редактировать имя/язык/карточки)
+  createdBy: number | null;
   name: string;
   lang: string;
   createdAt: string;
@@ -734,11 +760,97 @@ export interface PackMusicUploadResult {
 /** One generation-queue job's live status (one video at a time across all users). */
 export interface GenJobStatus {
   id: string;
+  userId?: number;
+  ownerUserId?: number;
   accountId: number;
+  deckIds?: string[];
   total: number;
   done: number;
   state: "queued" | "running" | "done" | "exhausted" | "canceled" | "error";
   ahead: number; // videos remaining ahead before this job starts (0 once running)
   position: number; // 0 = running/next, >0 = waiting, -1 = finished
   error: string | null;
+  createdAt?: number;
+  endedAt?: number | null;
+}
+
+export type ContentCatalogKind = "builtin" | "custom_pack" | "manual" | "clip_demo";
+
+export interface ContentCatalogAccount {
+  id: number;
+  channelName: string;
+  enabled: boolean;
+  connected: boolean;
+}
+
+export interface ContentCatalogItem {
+  id: string;
+  kind: ContentCatalogKind;
+  title: string;
+  lang: string | null;
+  total: number | null;
+  available: number | null;
+  queued: number;
+  demoCount: number;
+  usedByAccounts: ContentCatalogAccount[];
+}
+
+export interface ContentCatalogResponse {
+  items: ContentCatalogItem[];
+}
+
+export type AccountReadinessStatus = "ready" | "warning" | "blocked";
+
+export interface AccountReadiness {
+  status: AccountReadinessStatus;
+  blockers: string[];
+  warnings: string[];
+  actions: string[];
+  queuedVideos: number;
+  postsPerDay: number;
+  runwayDays: number | null;
+  minRunwayDays: number;
+  decks: {
+    deckId: string;
+    queued: number;
+    postsPerDay: number;
+    runwayDays: number | null;
+    status: "ok" | "low" | "empty" | "idle";
+  }[];
+  nextSlotAt: string | null;
+  sourceDecks: string[];
+  availableNow: number;
+}
+
+export interface QueueJob extends GenJobStatus {
+  channelName: string;
+  ownerUsername: string | null;
+}
+
+export interface QueueChannel {
+  accountId: number;
+  channelName: string;
+  ownerUsername: string | null;
+  connected: boolean;
+  enabled: boolean;
+  schedule: string[];
+  sourceDecks: string[];
+  byDeck: Record<string, number>;
+  queued: number;
+  postsPerDay: number;
+  runwayDays: number | null;
+}
+
+export interface QueueSlot {
+  accountId: number;
+  channelName: string;
+  time: string;
+  at: string;
+  deck: string | null;
+}
+
+export interface QueueOverview {
+  generationJobs: QueueJob[];
+  channelQueues: QueueChannel[];
+  upcomingSlots: QueueSlot[];
 }

@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>illusions-en host</title>
+<style>html,body{margin:0;padding:0;background:#000}#scene{display:block}</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  // ============================================================================
+  //  SHARED HOST  —  DO NOT EDIT below except the two clearly marked regions:
+  //    (1) the SPEC block        (2) the drawIllusion() function
+  //  Everything else (RNG, title, vignette, loop, PNG export) is identical for
+  //  every illusion so titles / safe-zone / seamless-loop behave the same.
+  // ============================================================================
+  const CW = 1080, CH = 1920, TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: false });
+
+  // deterministic RNG (so a clip renders byte-identically every time)
+  function mulberry32(seed) {
+    let s = seed >>> 0;
+    return function () {
+      let t = s += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (x, lo, hi) => x < lo ? lo : x > hi ? hi : x;
+  const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+  // Safe drawing box: title lives above y=380, bottom 400px kept clear (Shorts UI).
+  const SAFE = { x0: 70, y0: 380, x1: 1010, y1: 1520 };
+  const H = { TAU, rng: mulberry32, lerp, clamp, smooth, cx: 540, cy: 960, safe: SAFE,
+              maxR: 460 /* suggested max radius for a centred figure */ };
+
+  // ====================== (1) SPEC — replace these values =====================
+  let SPEC = {
+    key: 'tiltframe',
+    name: 'Rod-and-frame illusion',
+    title: 'The white rod is perfectly vertical',
+    dur: 8,            // seconds
+    fps: 30,
+    light: false,      // true => skip the dark vignette (for grey/white-background illusions)
+  };
+  // ===========================================================================
+
+  // ============ (2) drawIllusion — replace this whole function body ==========
+  // Contract:
+  //   p       progress 0..1 over the clip (build renders frame f at p=f/FRAMES,
+  //           so p=0 and p=1 are the SAME instant -> a LOOPING illusion must make
+  //           draw(0) == draw(1). Non-looping sequences (e.g. afterimage) ignore this.)
+  //   CW,CH   1080 x 1920
+  //   H       helpers: H.rng(seed)->()=>0..1, H.lerp, H.clamp, H.smooth, H.TAU,
+  //           H.cx, H.cy (frame centre of the safe area), H.safe {x0,y0,x1,y1}, H.maxR
+  //   The host fills #000, then calls this, then draws vignette (unless light) + title.
+  //   Keep important content inside H.safe. Use H.rng only (no Math.random) for determinism.
+  function drawIllusion(ctx, p, CW, CH, H) {
+    // --- Rod-and-frame illusion ----------------------------------------------
+    // A perfectly VERTICAL white rod sits at the centre of a large square FRAME.
+    // The frame slowly TILTS back and forth (seamless: one full sine period over
+    // p, so draw(0)===draw(1)). The visual system anchors "upright" to the strong
+    // tilted frame, so the rod is mis-seen as leaning the OPPOSITE way — though it
+    // is mathematically dead-vertical (x is constant, the rod is NEVER rotated).
+    // Once per loop a faint dashed PLUMB-LINE flashes down the rod's true vertical
+    // axis to prove it is exactly upright. White / grey on black.
+    const S = H.safe;
+    const cx = Math.round((S.x0 + S.x1) / 2);   // 540 — horizontal centre
+    const cy = Math.round((S.y0 + S.y1) / 2);   // 950 — vertical centre of band
+
+    // ---- frame geometry ------------------------------------------------------
+    // Square side chosen so that even at the max tilt its rotated corners stay
+    // inside the safe box. Corner distance from centre = HALF*sqrt(2).
+    // HALF=278 -> corner radius ~393px; centre (540,950) keeps corners within
+    // x:[70,1010] and y:[380,1520] for tilts up to ~22deg.
+    const HALF = 278;
+
+    // Seamless tilt: ONE full sine period across p=0..1 -> frame returns exactly
+    // to its start. Amplitude is a strong but natural ~18deg lean (the classic
+    // rod-and-frame uses big frame tilts; bigger tilt = stronger illusion).
+    const TILT_DEG = 18;
+    const tilt = (TILT_DEG * Math.PI / 180) * Math.sin(p * TAU); // +-18deg, seamless
+
+    const cos = Math.cos(tilt), sin = Math.sin(tilt);
+    // Rotate a local square corner (lx,ly) about the centre.
+    const rot = (lx, ly) => ({ x: cx + lx * cos - ly * sin, y: cy + lx * sin + ly * cos });
+    const corners = [
+      rot(-HALF, -HALF), rot(HALF, -HALF), rot(HALF, HALF), rot(-HALF, HALF),
+    ];
+
+    ctx.save();
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+
+    // ---- 1) the tilted square frame (the misleading reference) ---------------
+    // A thick light-grey square outline. A subtle inner second outline gives it
+    // weight/presence so it reads as a solid "frame" the eye trusts as upright.
+    const drawSquare = (inset, lw, stroke) => {
+      const ins = inset / HALF; // scale factor toward centre
+      const c2 = [
+        rot(-HALF + inset, -HALF + inset), rot(HALF - inset, -HALF + inset),
+        rot(HALF - inset, HALF - inset),  rot(-HALF + inset, HALF - inset),
+      ];
+      void ins;
+      ctx.beginPath();
+      ctx.moveTo(c2[0].x, c2[0].y);
+      for (let i = 1; i < 4; i++) ctx.lineTo(c2[i].x, c2[i].y);
+      ctx.closePath();
+      ctx.lineWidth = lw;
+      ctx.strokeStyle = stroke;
+      ctx.stroke();
+    };
+    // soft dark halo behind the frame so the grey reads crisply over the vignette
+    ctx.beginPath();
+    ctx.moveTo(corners[0].x, corners[0].y);
+    for (let i = 1; i < 4; i++) ctx.lineTo(corners[i].x, corners[i].y);
+    ctx.closePath();
+    ctx.lineWidth = 30;
+    ctx.strokeStyle = 'rgba(0,0,0,0.55)';
+    ctx.stroke();
+    // outer bold frame edge + a thin inner edge
+    drawSquare(0, 18, 'rgba(150,160,175,0.95)');
+    drawSquare(26, 5, 'rgba(110,120,135,0.85)');
+
+    // ---- 2) the rod: EXACTLY vertical, NEVER rotated -------------------------
+    // Constant x = cx. Length spans most of the frame height so it sits clearly
+    // inside, framed by the tilted square. Drawn last so it stays crisp on top.
+    const rodHalf = HALF - 70;                  // 208 -> rod is shorter than frame
+    const yTop = cy - rodHalf, yBot = cy + rodHalf;
+
+    // dark halo under the rod for contrast where it crosses the frame
+    ctx.beginPath();
+    ctx.moveTo(cx, yTop); ctx.lineTo(cx, yBot);
+    ctx.lineWidth = 24;
+    ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+    ctx.stroke();
+    // the bright white vertical rod
+    ctx.beginPath();
+    ctx.moveTo(cx, yTop); ctx.lineTo(cx, yBot);
+    ctx.lineWidth = 14;
+    ctx.strokeStyle = 'rgb(248,248,248)';
+    ctx.stroke();
+
+    // ---- 3) once-per-loop PLUMB-LINE proof ----------------------------------
+    // A faint cyan dashed true-vertical guide flashes in then out across a mid
+    // window (reveal 0 -> 1 -> 0), invisible at p=0 and p=1 so the loop is clean.
+    let reveal = 0;
+    if (p > 0.20 && p < 0.80) {
+      const t = (p - 0.20) / 0.60;            // 0..1 across the window
+      reveal = Math.sin(t * Math.PI);         // smooth 0 -> 1 -> 0
+    }
+    if (reveal > 0.001) {
+      const a = 0.9 * reveal;
+      // a small plumb-bob hangs at the very top, the dashed line drops dead-straight
+      ctx.save();
+      ctx.setLineDash([16, 14]);
+      ctx.lineDashOffset = 0;
+      ctx.lineCap = 'butt';
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = `rgba(120,220,255,${a})`;
+      const gTop = S.y0 + 12, gBot = S.y1 - 12; // full safe-height plumb line
+      ctx.beginPath();
+      ctx.moveTo(cx, gTop); ctx.lineTo(cx, gBot);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // pivot dot at the top of the plumb line
+      ctx.beginPath();
+      ctx.arc(cx, gTop, 9, 0, TAU);
+      ctx.fillStyle = `rgba(120,220,255,${a})`;
+      ctx.fill();
+      // tiny weight (bob) at the bottom of the plumb line
+      ctx.beginPath();
+      ctx.moveTo(cx - 14, gBot - 22);
+      ctx.lineTo(cx + 14, gBot - 22);
+      ctx.lineTo(cx, gBot);
+      ctx.closePath();
+      ctx.fill();
+      // small "true vertical" label, kept inside the safe band
+      ctx.font = '700 38px "DejaVu Sans","Liberation Sans",Arial,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = `rgba(120,220,255,${a})`;
+      ctx.fillText('true vertical', cx, gTop - 26 < S.y0 + 8 ? S.y0 + 22 : gTop - 26);
+      ctx.restore();
+    }
+
+    ctx.restore();
+    void H.rng; // deterministic geometry; no randomness needed
+  }
+  // ===========================================================================
+
+  // ---------------- title (baked into the canvas, with a dark pill) ----------
+  let TITLE_LINES = [], TITLE_PX = 60;
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { TITLE_LINES = []; return; }
+    for (let px = 72; px >= 40; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = []; let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_PX = px; return; }
+      if (px === 40) { TITLE_LINES = lines.slice(0, 3); TITLE_PX = px; }
+    }
+  }
+  function drawTitle() {
+    if (!TITLE_LINES.length) return;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_PX);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const lh = TITLE_PX * 1.2, n = TITLE_LINES.length;
+    const startY = 210, padX = 42, padY = 28;
+    let maxW = 0; for (const l of TITLE_LINES) maxW = Math.max(maxW, ctx.measureText(l).width);
+    const rx = CW / 2 - maxW / 2 - padX, rw = maxW + padX * 2;
+    const ry = startY - lh / 2 - padY, rh = (n - 1) * lh + lh + padY * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 28); ctx.fill();
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    let y = startY; for (const l of TITLE_LINES) { ctx.fillText(l, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.2, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(0.64, 'rgba(0,0,0,0.12)');
+    g.addColorStop(1, 'rgba(0,0,0,0.66)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  }
+
+  window.setup = function (overrides) {
+    if (overrides && typeof overrides === 'object') SPEC = { ...SPEC, ...overrides };
+    layoutTitle(SPEC.title);
+    return { key: SPEC.key, name: SPEC.name, dur: SPEC.dur, fps: SPEC.fps, lines: TITLE_LINES.length, px: TITLE_PX };
+  };
+  window.getSpec = function () { return { ...SPEC }; };
+
+  window.renderFrame = function (progress) {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    drawTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  layoutTitle(SPEC.title);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

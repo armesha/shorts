@@ -2,7 +2,7 @@ import { resolve } from "node:path";
 import { unlinkSync } from "node:fs";
 import cron from "node-cron";
 import type { Account, Db, Video } from "../db.ts";
-import { DECKS, getDeck, isPackDeckId } from "../../src/anecdotes/decks.ts";
+import { DECKS, MANUAL_VIDEO_DECK, getDeck, isPackDeckId } from "../../src/anecdotes/decks.ts";
 import { ytMeta } from "../../src/anecdotes/yt-meta.ts";
 import { uploadShort, ytErrorReason, isYtAuthError, type ClientCreds } from "../services/youtube.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
@@ -71,12 +71,13 @@ export function startScheduler(opts: SchedulerOpts) {
         const sources = (acc.sourceDecks?.length ? acc.sourceDecks : [acc.lang]).filter(
           (d) => DECKS.some((deck) => deck.id === d) || isPackDeckId(d),
         );
-        if (!sources.length) {
-          opts.log(`[sched] account ${acc.id}: нет выбранных паков — пропуск`);
-          continue;
-        }
         const slotDeck = acc.slotDecks?.[hhmm];
-        const allowedDecks = slotDeck && sources.includes(slotDeck) ? [slotDeck] : sources;
+        const allowedDecks =
+          slotDeck === MANUAL_VIDEO_DECK
+            ? [MANUAL_VIDEO_DECK]
+            : slotDeck && sources.includes(slotDeck)
+              ? [slotDeck]
+              : [...sources, MANUAL_VIDEO_DECK];
         // Post-once queue: a pinned video (legacy, if present and still valid), else the next
         // unposted video from the slot's selected pack or any selected channel pack.
         const pinnedId = acc.slotVideos?.[hhmm];

@@ -7,7 +7,7 @@
 import type { Db } from "../db.ts";
 import { DECKS, getDeck, pickGenericTitle } from "../../src/anecdotes/decks.ts";
 import { renderAnecdote } from "../../src/anecdotes/render.ts";
-import { resolveAudio } from "../../src/video.ts";
+import { pickLifehackMotionOverlay, resolveAudio } from "../../src/video.ts";
 import { buildStillVideoFiles } from "../infra/media.ts";
 
 export type BuildLibraryVideo = (input: {
@@ -41,10 +41,14 @@ export function makeBuildLibraryVideo(deps: {
       throw new Error("Этот пак вам недоступен");
     const title = input.title || pickGenericTitle(deck);
     const { music, audioPath } = resolveAudio(input.music, deck);
+    const motionOverlay = deck.lifehack
+      ? pickLifehackMotionOverlay(`${deck.id}|${input.profession ?? ""}|${title}|${input.text}`)
+      : null;
     const { imgRel, vidRel, render: r } = await buildStillVideoFiles({
       prefix: "vid",
       outputDir,
       audioPath,
+      motionOverlay,
       render: (imgAbs) =>
         renderAnecdote(
           { title, text: input.text, channel: deck.name, bg: input.bg, deck: deck.id, profession: input.profession },

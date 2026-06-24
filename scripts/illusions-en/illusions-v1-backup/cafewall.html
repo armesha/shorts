@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>illusions-en host</title>
+<style>html,body{margin:0;padding:0;background:#000}#scene{display:block}</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  // ============================================================================
+  //  SHARED HOST  —  DO NOT EDIT below except the two clearly marked regions:
+  //    (1) the SPEC block        (2) the drawIllusion() function
+  //  Everything else (RNG, title, vignette, loop, PNG export) is identical for
+  //  every illusion so titles / safe-zone / seamless-loop behave the same.
+  // ============================================================================
+  const CW = 1080, CH = 1920, TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: false });
+
+  // deterministic RNG (so a clip renders byte-identically every time)
+  function mulberry32(seed) {
+    let s = seed >>> 0;
+    return function () {
+      let t = s += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (x, lo, hi) => x < lo ? lo : x > hi ? hi : x;
+  const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+  // Safe drawing box: title lives above y=380, bottom 400px kept clear (Shorts UI).
+  const SAFE = { x0: 70, y0: 380, x1: 1010, y1: 1520 };
+  const H = { TAU, rng: mulberry32, lerp, clamp, smooth, cx: 540, cy: 960, safe: SAFE,
+              maxR: 460 /* suggested max radius for a centred figure */ };
+
+  // ====================== (1) SPEC — replace these values =====================
+  let SPEC = {
+    key: 'cafewall',
+    name: 'Café wall illusion',
+    title: 'Every row here is perfectly straight',
+    dur: 8,            // seconds
+    fps: 30,
+    light: true,       // true => skip the dark vignette (for grey/white-background illusions)
+  };
+  // ===========================================================================
+
+  // ============ (2) drawIllusion — replace this whole function body ==========
+  // Contract:
+  //   p       progress 0..1 over the clip (build renders frame f at p=f/FRAMES,
+  //           so p=0 and p=1 are the SAME instant -> a LOOPING illusion must make
+  //           draw(0) == draw(1). Non-looping sequences (e.g. afterimage) ignore this.)
+  //   CW,CH   1080 x 1920
+  //   H       helpers: H.rng(seed)->()=>0..1, H.lerp, H.clamp, H.smooth, H.TAU,
+  //           H.cx, H.cy (frame centre of the safe area), H.safe {x0,y0,x1,y1}, H.maxR
+  //   The host fills #000, then calls this, then draws vignette (unless light) + title.
+  //   Keep important content inside H.safe. Use H.rng only (no Math.random) for determinism.
+  function drawIllusion(ctx, p, CW, CH, H) {
+    const S = H.safe;
+    const tile = 90;            // square tile size (px)
+    const mortar = 8;           // grey mortar line thickness between rows (px)
+    const period = tile * 2;    // one full black-white colour period
+    const rowPitch = tile + mortar; // vertical distance from one tile-top to the next
+
+    const BLACK = '#000000';
+    const WHITE = '#ffffff';
+    const MORTAR = 'rgb(120,120,120)'; // luminance midway between black & white — the key to the illusion
+    const BG = 'rgb(120,120,120)';     // backdrop = mortar grey so the whole grid sits in one field
+
+    // Fill the safe area with the mortar-grey field (also covers the mortar gaps).
+    ctx.save();
+    ctx.fillStyle = BG;
+    ctx.fillRect(S.x0, S.y0, S.x1 - S.x0, S.y1 - S.y0);
+
+    // Clip strictly to the safe box so nothing bleeds into the title / bottom UI.
+    ctx.beginPath();
+    ctx.rect(S.x0, S.y0, S.x1 - S.x0, S.y1 - S.y0);
+    ctx.clip();
+
+    const safeW = S.x1 - S.x0;
+    const safeH = S.y1 - S.y0;
+
+    // Centre the grid of rows vertically inside the safe area.
+    const nRows = Math.floor(safeH / rowPitch);
+    const gridH = nRows * rowPitch - mortar; // last row has no trailing mortar
+    const topY = S.y0 + Math.round((safeH - gridH) / 2);
+
+    // Seamless loop: scroll each row by exactly ONE colour period over p=0..1.
+    // draw(0) and draw(1) are identical because shift = period at p=1 ≡ 0.
+    const scroll = p * period;
+
+    // tiles needed to overfill the row (plus a couple of margin tiles for the seam)
+    const tilesNeeded = Math.ceil(safeW / tile) + 4;
+
+    for (let r = 0; r < nRows; r++) {
+      const y = topY + r * rowPitch;
+
+      // Static per-row offset: every other row is shifted by HALF a tile width
+      // (= a QUARTER of the colour period, 45px) vs its neighbours. This is the
+      // café-wall stagger: a black tile's corner in one row lands at the MIDDLE
+      // of a tile in the row below, so against the rgb(120) mortar the eye reads
+      // a slope. A FULL-tile shift would only invert colours (plain checkerboard,
+      // corners aligned, NO illusion) — it must be fractional.
+      const phase = (r % 2) * (tile / 2);   // 0, tile/2, 0, tile/2, ... (quarter-period stagger)
+
+      // Animate: alternate scroll direction per row, exactly one full colour
+      // PERIOD over the loop. shift increases by `period` from p=0 to p=1, which
+      // is an EVEN number of tiles -> black/white parity is preserved -> seamless.
+      const dir = (r % 2 === 0) ? 1 : -1;
+      const shift = phase + dir * scroll;
+
+      // Normalise the scroll into [0, period) and start one full period to the
+      // LEFT of the safe box, so the first on-screen tile is always covered.
+      const off = ((shift % period) + period) % period; // 0 .. period
+      const startX = S.x0 + off - period;               // <= S.x0
+
+      // Colour parity is tied to the integer tile index `t` (not to pixel x), so
+      // it never flickers as `shift` moves continuously; a +period scroll == +2
+      // tiles == same parity. Tile 0 is BLACK.
+      for (let t = 0; t < tilesNeeded; t++) {
+        const tx = startX + t * tile;
+        const isBlack = (t % 2) === 0;
+        ctx.fillStyle = isBlack ? BLACK : WHITE;
+        ctx.fillRect(tx, y, tile, tile);
+      }
+    }
+
+    // Re-paint the mortar lines crisply ON TOP, so the grey reads at a clean ~rgb120
+    // between every pair of rows (the tile fills can't bleed over them).
+    ctx.fillStyle = MORTAR;
+    for (let r = 0; r <= nRows; r++) {
+      const my = topY + r * rowPitch - mortar; // mortar strip sits just above each row top
+      if (r === 0) continue; // no mortar above the first row inside the field
+      ctx.fillRect(S.x0, my, safeW, mortar);
+    }
+
+    ctx.restore();
+  }
+  // ===========================================================================
+
+  // ---------------- title (baked into the canvas, with a dark pill) ----------
+  let TITLE_LINES = [], TITLE_PX = 60;
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { TITLE_LINES = []; return; }
+    for (let px = 72; px >= 40; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = []; let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_PX = px; return; }
+      if (px === 40) { TITLE_LINES = lines.slice(0, 3); TITLE_PX = px; }
+    }
+  }
+  function drawTitle() {
+    if (!TITLE_LINES.length) return;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_PX);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const lh = TITLE_PX * 1.2, n = TITLE_LINES.length;
+    const startY = 210, padX = 42, padY = 28;
+    let maxW = 0; for (const l of TITLE_LINES) maxW = Math.max(maxW, ctx.measureText(l).width);
+    const rx = CW / 2 - maxW / 2 - padX, rw = maxW + padX * 2;
+    const ry = startY - lh / 2 - padY, rh = (n - 1) * lh + lh + padY * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 28); ctx.fill();
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    let y = startY; for (const l of TITLE_LINES) { ctx.fillText(l, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.2, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(0.64, 'rgba(0,0,0,0.12)');
+    g.addColorStop(1, 'rgba(0,0,0,0.66)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  }
+
+  window.setup = function (overrides) {
+    if (overrides && typeof overrides === 'object') SPEC = { ...SPEC, ...overrides };
+    layoutTitle(SPEC.title);
+    return { key: SPEC.key, name: SPEC.name, dur: SPEC.dur, fps: SPEC.fps, lines: TITLE_LINES.length, px: TITLE_PX };
+  };
+  window.getSpec = function () { return { ...SPEC }; };
+
+  window.renderFrame = function (progress) {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    drawTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  layoutTitle(SPEC.title);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

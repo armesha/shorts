@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>illusions-en host</title>
+<style>html,body{margin:0;padding:0;background:#000}#scene{display:block}</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  // ============================================================================
+  //  SHARED HOST  —  DO NOT EDIT below except the two clearly marked regions:
+  //    (1) the SPEC block        (2) the drawIllusion() function
+  //  Everything else (RNG, title, vignette, loop, PNG export) is identical for
+  //  every illusion so titles / safe-zone / seamless-loop behave the same.
+  // ============================================================================
+  const CW = 1080, CH = 1920, TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: false });
+
+  // deterministic RNG (so a clip renders byte-identically every time)
+  function mulberry32(seed) {
+    let s = seed >>> 0;
+    return function () {
+      let t = s += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (x, lo, hi) => x < lo ? lo : x > hi ? hi : x;
+  const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+  // Safe drawing box: title lives above y=380, bottom 400px kept clear (Shorts UI).
+  const SAFE = { x0: 70, y0: 380, x1: 1010, y1: 1520 };
+  const H = { TAU, rng: mulberry32, lerp, clamp, smooth, cx: 540, cy: 960, safe: SAFE,
+              maxR: 460 /* suggested max radius for a centred figure */ };
+
+  // ====================== (1) SPEC — replace these values =====================
+  let SPEC = {
+    key: 'penrose',
+    name: 'Penrose impossible triangle',
+    title: 'This triangle cannot exist',
+    dur: 8,            // seconds
+    fps: 30,
+    light: false,      // true => skip the dark vignette (for grey/white-background illusions)
+  };
+  // ===========================================================================
+
+  // ============ (2) drawIllusion — replace this whole function body ==========
+  // Contract:
+  //   p       progress 0..1 over the clip (build renders frame f at p=f/FRAMES,
+  //           so p=0 and p=1 are the SAME instant -> a LOOPING illusion must make
+  //           draw(0) == draw(1). Non-looping sequences (e.g. afterimage) ignore this.)
+  //   CW,CH   1080 x 1920
+  //   H       helpers: H.rng(seed)->()=>0..1, H.lerp, H.clamp, H.smooth, H.TAU,
+  //           H.cx, H.cy (frame centre of the safe area), H.safe {x0,y0,x1,y1}, H.maxR
+  //   The host fills #000, then calls this, then draws vignette (unless light) + title.
+  //   Keep important content inside H.safe. Use H.rng only (no Math.random) for determinism.
+  function drawIllusion(ctx, p, CW, CH, H) {
+    const TAU = H.TAU;
+    // -------------------------------------------------------------------------
+    //  PENROSE TRIBAR (impossible triangle)
+    //  Built from THREE identical bent beams (square cross-section) arranged at
+    //  120 deg rotations about the centroid. Each beam carries a faux-3D bevel
+    //  (3 face tones). The corner joins are drawn so each beam appears to pass
+    //  IN FRONT of the next -> the impossible loop. The whole figure then spins
+    //  in-plane by exactly ONE full turn over the clip (seamless: draw(0)===draw(1)).
+    //
+    //  Geometry: one beam is modelled as a real 3D box in an isometric lattice;
+    //  the three boxes share corners to trace the canonical tribar. We project
+    //  each box to 2D, shade its three visible faces, draw an inner notch where
+    //  the previous beam should occlude it -> the famous impossible overlap.
+    // -------------------------------------------------------------------------
+    const cx = H.cx;
+    const cy = (H.safe.y0 + H.safe.y1) / 2;          // vertical centre of safe band (~950)
+
+    // ---- isometric projection of a 3D lattice point --------------------------
+    // Standard 2:1-ish iso: +X goes down-right, +Y down-left, +Z straight up.
+    const S = 86;                                     // lattice unit -> screen px (overall size)
+    const C30 = Math.cos(Math.PI / 6), S30 = Math.sin(Math.PI / 6);
+    const iso = (x, y, z) => ({
+      x: (x - y) * C30 * S,
+      y: (x + y) * S30 * S - z * S,
+    });
+
+    // ---- one beam = an axis-aligned 3D box, given as 8 corners ---------------
+    // box(x0,x1,y0,y1,z0,z1) -> the 6 corner-projected screen points we need.
+    // For our iso camera (looking from +X,+Y,+Z) the three VISIBLE faces of a box
+    // are: TOP (z=z1, lightest), and two sides. We expose helpers to fill them.
+    const T = 1;                                      // beam thickness (square section)
+    const Larm = 4;                                   // arm length in lattice units
+
+    // The three beams of the tribar, as 3D boxes (lattice units). They form an
+    // open triangular loop; the deliberate occlusion at the joints makes it
+    // impossible. (Classic Reutersvard/Penrose lattice layout.)
+    //   beam A runs along +X,  beam B along +Y,  beam C along +Z.
+    const beams = [
+      // A: long in X. sits at low Y, low Z.            axis 'x'
+      { ax: 'x', x0: 0,        x1: Larm,     y0: 0,        y1: T,        z0: 0,        z1: T },
+      // B: long in Y. starts at far end of A.           axis 'y'
+      { ax: 'y', x0: Larm - T, x1: Larm,     y0: 0,        y1: Larm,     z0: 0,        z1: T },
+      // C: long in Z. closes the loop back toward A.    axis 'z'
+      { ax: 'z', x0: Larm - T, x1: Larm,     y0: Larm - T, y1: Larm,     z0: 0,        z1: Larm },
+    ];
+
+    // project the 8 corners of a box
+    const boxPts = (b) => {
+      const P = {};
+      for (const xi of [b.x0, b.x1]) for (const yi of [b.y0, b.y1]) for (const zi of [b.z0, b.z1]) {
+        P[`${xi === b.x0 ? 0 : 1}${yi === b.y0 ? 0 : 1}${zi === b.z0 ? 0 : 1}`] = iso(xi, yi, zi);
+      }
+      return P; // keys 'xyz' bits: '000','001',... where bit=0 means min, 1 means max
+    };
+
+    // ---- gather every projected point to find the figure centroid ------------
+    let sx = 0, sy = 0, ns = 0;
+    for (const b of beams) { const P = boxPts(b); for (const k in P) { sx += P[k].x; sy += P[k].y; ns++; } }
+    const ccx = sx / ns, ccy = sy / ns;
+
+    // ---- in-plane rotation: exactly ONE full turn over the loop --------------
+    const ang = p * TAU;                              // p:0->1 = 0->360 deg : seamless
+    const ca = Math.cos(ang), sa = Math.sin(ang);
+    const place = (pt) => {
+      const x0 = pt.x - ccx, y0 = pt.y - ccy;
+      return { x: cx + (x0 * ca - y0 * sa), y: cy + (x0 * sa + y0 * ca) };
+    };
+
+    // ---- cool palette: 3 face tones per beam for the bevel -------------------
+    // top = brightest, then two darker sides. Cool steel-cyan on black.
+    const TOPC = 'rgb(150,205,238)';   // lightest
+    const LFTC = 'rgb(88,142,184)';    // mid (left face)
+    const RGTC = 'rgb(48,86,124)';     // darkest (right face)
+    const EDGE = 'rgba(228,244,253,0.95)';
+
+    const fillQuad = (a, b, c, d, col) => {
+      ctx.beginPath();
+      const p0 = place(a); ctx.moveTo(p0.x, p0.y);
+      for (const q of [b, c, d]) { const r = place(q); ctx.lineTo(r.x, r.y); }
+      ctx.closePath();
+      ctx.fillStyle = col;
+      ctx.fill();
+    };
+    const strokePath = (pts, w, col, close) => {
+      ctx.beginPath();
+      const p0 = place(pts[0]); ctx.moveTo(p0.x, p0.y);
+      for (let i = 1; i < pts.length; i++) { const r = place(pts[i]); ctx.lineTo(r.x, r.y); }
+      if (close) ctx.closePath();
+      ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+      ctx.lineWidth = w; ctx.strokeStyle = col;
+      ctx.stroke();
+    };
+
+    // convex hull (monotone chain) of projected screen points -> silhouette path
+    const hull = (pts) => {
+      const ps = pts.slice().sort((a, b) => a.x - b.x || a.y - b.y);
+      const cross = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+      const lo = [];
+      for (const pt of ps) { while (lo.length >= 2 && cross(lo[lo.length - 2], lo[lo.length - 1], pt) <= 0) lo.pop(); lo.push(pt); }
+      const hi = [];
+      for (let i = ps.length - 1; i >= 0; i--) { const pt = ps[i]; while (hi.length >= 2 && cross(hi[hi.length - 2], hi[hi.length - 1], pt) <= 0) hi.pop(); hi.push(pt); }
+      lo.pop(); hi.pop();
+      return lo.concat(hi);
+    };
+
+    // draw a full beam box: its 3 visible faces (faux-3D bevel) + crisp outline.
+    // Camera sits at +X +Y +Z, so the three faces an observer SEES are:
+    //   TOP   : z = z1  -> lightest   (TOPC)
+    //   RIGHT : x = x1  -> darkest    (RGTC)  (+X face, points down-right)
+    //   LEFT  : y = y1  -> mid        (LFTC)  (+Y face, points down-left)
+    // We fill these three quads (they meet at the near corner 111), then stroke
+    // the box silhouette (convex hull of all 8 projected corners) and the three
+    // internal creases radiating from the shared near corner 111.
+    const drawBox = (b, creases) => {
+      const P = boxPts(b);
+      // TOP face (z=z1): corners 001,101,111,011
+      fillQuad(P['001'], P['101'], P['111'], P['011'], TOPC);
+      // RIGHT face (x=x1): corners 100,110,111,101
+      fillQuad(P['100'], P['110'], P['111'], P['101'], RGTC);
+      // LEFT face (y=y1): corners 010,110,111,011
+      fillQuad(P['010'], P['110'], P['111'], P['011'], LFTC);
+      // crisp outline = silhouette hull of the box
+      strokePath(hull(Object.values(P)), 3.5, EDGE, true);
+      // internal creases from the shared near corner 111 to the 3 face seams
+      if (creases !== false) {
+        strokePath([P['111'], P['101']], 2.5, EDGE, false); // top|right crease
+        strokePath([P['111'], P['011']], 2.5, EDGE, false); // top|left crease
+        strokePath([P['111'], P['110']], 2.5, EDGE, false); // left|right (vertical) crease
+      }
+    };
+
+    // ---- soft cool glow backing so the figure pops on black ------------------
+    ctx.save();
+    const halo = ctx.createRadialGradient(cx, cy, 40, cx, cy, 470);
+    halo.addColorStop(0, 'rgba(40,72,104,0.45)');
+    halo.addColorStop(0.7, 'rgba(20,40,62,0.20)');
+    halo.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = halo;
+    ctx.beginPath(); ctx.arc(cx, cy, 470, 0, TAU); ctx.fill();
+    ctx.restore();
+
+    // ---- draw the three beams to create the IMPOSSIBLE join ------------------
+    // Painter order A -> B -> C gives a *consistent* (possible) corner: at the
+    // A-B joint B covers A, at the B-C joint C covers B, but at the C-A joint C
+    // (drawn last) also covers A. To make it IMPOSSIBLE we flip exactly that one
+    // joint: after drawing all three beams we redraw the HEAD segment of beam A
+    // (its first T units in X, at the top vertex) ON TOP of beam C, so A now
+    // appears in front of C. That completes the cyclic A>C, B>A, C>B occlusion —
+    // the contradiction the eye cannot resolve. (No drop shadow: it would leak a
+    // faint streak into the open centre and break the clean cool look.)
+    ctx.save();
+    drawBox(beams[0]);                 // A  (back)
+    drawBox(beams[1]);                 // B  (over A)
+    drawBox(beams[2]);                 // C  (over B, and currently over A's head)
+    // the occlusion FLIP: re-draw beam A's HEAD segment on top of C so beam A
+    // appears to pass in FRONT of C. We extend it ~1.35*T so it reads as the
+    // horizontal beam continuing across (not a stuck-on cube), and we draw its
+    // bevel creases so the crossing looks solid, but the hull cleanly hides C.
+    const aHead = { x0: 0, x1: 1.35 * T, y0: beams[0].y0, y1: beams[0].y1, z0: beams[0].z0, z1: beams[0].z1 };
+    drawBox(aHead, true);
+    ctx.restore();
+
+    void H.rng;
+  }
+  // ===========================================================================
+
+  // ---------------- title (baked into the canvas, with a dark pill) ----------
+  let TITLE_LINES = [], TITLE_PX = 60;
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { TITLE_LINES = []; return; }
+    for (let px = 72; px >= 40; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = []; let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_PX = px; return; }
+      if (px === 40) { TITLE_LINES = lines.slice(0, 3); TITLE_PX = px; }
+    }
+  }
+  function drawTitle() {
+    if (!TITLE_LINES.length) return;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_PX);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const lh = TITLE_PX * 1.2, n = TITLE_LINES.length;
+    const startY = 210, padX = 42, padY = 28;
+    let maxW = 0; for (const l of TITLE_LINES) maxW = Math.max(maxW, ctx.measureText(l).width);
+    const rx = CW / 2 - maxW / 2 - padX, rw = maxW + padX * 2;
+    const ry = startY - lh / 2 - padY, rh = (n - 1) * lh + lh + padY * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 28); ctx.fill();
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    let y = startY; for (const l of TITLE_LINES) { ctx.fillText(l, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.2, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(0.64, 'rgba(0,0,0,0.12)');
+    g.addColorStop(1, 'rgba(0,0,0,0.66)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  }
+
+  window.setup = function (overrides) {
+    if (overrides && typeof overrides === 'object') SPEC = { ...SPEC, ...overrides };
+    layoutTitle(SPEC.title);
+    return { key: SPEC.key, name: SPEC.name, dur: SPEC.dur, fps: SPEC.fps, lines: TITLE_LINES.length, px: TITLE_PX };
+  };
+  window.getSpec = function () { return { ...SPEC }; };
+
+  window.renderFrame = function (progress) {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    drawTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  layoutTitle(SPEC.title);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

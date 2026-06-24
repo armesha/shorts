@@ -14,6 +14,13 @@ import { pickUnusedPackCard, buildPackLibraryVideo } from "../services/pack-gen.
 import { buildFactLibraryVideo } from "../services/fact-gen.ts";
 import { uploadShort, isYtAuthError, ytErrorReason } from "../services/youtube.ts";
 import { ytErrorMessage } from "../services/youtube-errors.ts";
+import {
+  MANUAL_VIDEO_DECK,
+  MAX_MANUAL_VIDEO_UPLOAD_BYTES,
+  getManualVideoLimits,
+  saveManualVideoUpload,
+  type ManualVideoUploadInput,
+} from "../services/manual-videos.ts";
 import * as metrics from "../infra/metrics.ts";
 import { checkRateLimit } from "../infra/rate-limits.ts";
 import { USER_DAILY_SCHEDULE_CAP } from "../infra/account-limits.ts";
@@ -23,6 +30,7 @@ import type { RouteDeps, LimitedReplyish } from "./deps.ts";
 const BATCH_VIDEO_LIMIT = { limit: 2, windowMs: 30 * 60 * 1000 };
 const NORMAL_BATCH_VIDEO_CAP = 5;
 const POST_NOW_LIMIT = { limit: 15, windowMs: 10 * 60 * 1000 }; // burst guard on manual «Опубликовать»
+const MANUAL_VIDEO_UPLOAD_WINDOW_MS = 60 * 60 * 1000;
 
 export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
   const {
@@ -78,6 +86,46 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     db.markAnecdoteUsed(ownerId, anecdoteKey(body.text)); // explicit single save → mark used (idempotent)
     return v;
   });
+
+  app.post(
+    "/api/videos/upload",
+    { bodyLimit: MAX_MANUAL_VIDEO_UPLOAD_BYTES },
+    async (req, reply) => {
+      const body = (req.body as ManualVideoUploadInput & { accountId?: number }) ?? {};
+      if (!body.accountId) return reply.code(400).send({ error: "accountId обязателен" });
+      const acc = accessibleAccount(req, reply, body.accountId);
+      if (!acc) return;
+      if (rejectIfNotConnected(reply, acc)) return;
+      const manualLimits = getManualVideoLimits(db);
+      if (!isAdminReq(req)) {
+        const rl = checkRateLimit(`user:${uid(req)}:manual-video-upload`, {
+          limit: manualLimits.uploadsPerHour,
+          windowMs: MANUAL_VIDEO_UPLOAD_WINDOW_MS,
+        });
+        if (!rl.ok) {
+          reply.header("Retry-After", String(Math.max(1, Math.ceil((rl.retryAfterMs ?? 1_000) / 1000))));
+          return reply.code(429).send({ error: "Слишком много загрузок видео — подождите немного." });
+        }
+      }
+      try {
+        const saved = await saveManualVideoUpload(outputDir, body, manualLimits);
+        return db.createVideo({
+          accountId: body.accountId,
+          title: saved.title,
+          text: saved.text,
+          bg: "manual",
+          music: "none",
+          deck: MANUAL_VIDEO_DECK,
+          videoRel: saved.videoRel,
+          imageRel: null,
+        });
+      } catch (e) {
+        return reply.code(400).send({ error: e instanceof Error ? e.message : "Не удалось загрузить видео" });
+      }
+    },
+  );
+
+  app.get("/api/videos/manual-limits", async () => getManualVideoLimits(db));
 
   // Batch: generate N random UNUSED anecdotes straight into a channel's library.
   app.post("/api/videos/batch", async (req, reply) => {
@@ -177,7 +225,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     const creds = accountCreds(acc);
     if (!creds) return reply.code(400).send({ error: "Google-ключ канала не найден — переподключите канал в Настройках" });
     // HARD source guard: never post a video whose deck is not selected for this channel.
-    if (!accountSourceDecks(acc).includes(v.deck))
+    if (v.deck !== MANUAL_VIDEO_DECK && !accountSourceDecks(acc).includes(v.deck))
       return reply.code(400).send({ error: `Пак ролика (${v.deck}) не выбран у канала — не выложено.` });
     // Burst guard (non-admin): manual posting must not be scriptable into a quota-burning loop.
     if (!isAdminReq(req)) {

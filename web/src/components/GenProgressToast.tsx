@@ -2,7 +2,8 @@
 // finished). It is DRAGGABLE (grab the header), COLLAPSIBLE to a tiny pill, and stays compact on
 // mobile (sits above the bottom nav, never full-screen). Position + collapsed state persist per
 // browser. State/logic live in lib/genQueue.ts; this is purely the presentation.
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
+import { createPortal } from "react-dom";
 import { Loader2, Square, CheckCircle2, X, Minus, ChevronUp, GripVertical } from "lucide-react";
 import { useGenQueue } from "../lib/genQueue";
 
@@ -128,9 +129,11 @@ export function GenProgressToast() {
   const totalText = `${q.total} ${videoWord(q.total)}`;
 
   const positioned = pos != null;
-  const style = positioned ? { left: pos.left, top: pos.top, right: "auto", bottom: "auto" } : undefined;
+  const style: CSSProperties = positioned
+    ? { left: pos.left, top: pos.top, right: "auto", bottom: "auto", zIndex: 10000 }
+    : { zIndex: 10000 };
   // Default (un-dragged): bottom-right, above the mobile bottom nav; lg drops it to the corner.
-  const baseCls = `fixed z-[60]${positioned ? "" : " bottom-32 right-4 lg:bottom-4"}`;
+  const baseCls = `fixed${positioned ? "" : " bottom-32 right-4 lg:bottom-4"}`;
 
   const statusIcon = q.running ? (
     <Loader2 className="animate-spin text-primary shrink-0" size={18} />
@@ -145,31 +148,27 @@ export function GenProgressToast() {
     onPointerCancel: onHandleUp,
   };
 
-  if (collapsed) {
-    return (
-      <div ref={elRef} className={baseCls} style={style}>
-        <div className="card bg-base-100 border border-base-300 shadow-lg">
-          <div className="flex items-center gap-1.5 py-1.5 pl-1 pr-2 cursor-move touch-none select-none" {...dragHandlers}>
-            <GripVertical className="text-base-content/30 shrink-0" size={14} />
-            {statusIcon}
-            <span className="text-xs font-medium tabular-nums whitespace-nowrap">
-              {q.running ? `${q.done}/${q.total}` : ok ? "Готово" : "Завершено"}
-            </span>
-            <button
-              className="btn btn-ghost btn-xs btn-square ml-0.5"
-              onClick={() => setCollapsedPersist(false)}
-              aria-label="Развернуть"
-              title="Развернуть"
-            >
-              <ChevronUp size={14} />
-            </button>
-          </div>
+  const content = collapsed ? (
+    <div ref={elRef} className={baseCls} style={style}>
+      <div className="card bg-base-100 border border-base-300 shadow-lg">
+        <div className="flex items-center gap-1.5 py-1.5 pl-1 pr-2 cursor-move touch-none select-none" {...dragHandlers}>
+          <GripVertical className="text-base-content/30 shrink-0" size={14} />
+          {statusIcon}
+          <span className="text-xs font-medium tabular-nums whitespace-nowrap">
+            {q.running ? `${q.done}/${q.total}` : ok ? "Готово" : "Завершено"}
+          </span>
+          <button
+            className="btn btn-ghost btn-xs btn-square ml-0.5"
+            onClick={() => setCollapsedPersist(false)}
+            aria-label="Развернуть"
+            title="Развернуть"
+          >
+            <ChevronUp size={14} />
+          </button>
         </div>
       </div>
-    );
-  }
-
-  return (
+    </div>
+  ) : (
     <div ref={elRef} className={`${baseCls} w-80 max-w-[calc(100vw-2rem)]`} style={style}>
       <div className="card bg-base-100 border border-base-300 shadow-xl">
         <div className="card-body p-4 gap-3">
@@ -232,4 +231,6 @@ export function GenProgressToast() {
       </div>
     </div>
   );
+
+  return typeof document === "undefined" ? content : createPortal(content, document.body);
 }

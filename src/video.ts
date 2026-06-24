@@ -8,6 +8,7 @@ import ffmpegPath from "ffmpeg-static";
 const pexec = promisify(execFile);
 const FFMPEG = ffmpegPath as unknown as string;
 const AUDIO_DIR = resolve(process.cwd(), "assets/audio");
+const LIFEHACK_MOTION_DIR = resolve(process.cwd(), "assets/motion/lifehacks");
 export const AUDIO_EXT = new Set([".mp3", ".m4a", ".aac", ".wav", ".ogg", ".opus"]);
 export const PACK_AUDIO_PREFIX = "pack-audio/";
 export const PACK_AUDIO_DIR = resolve(process.cwd(), "data/pack-audio");
@@ -17,10 +18,12 @@ export const PACK_AUDIO_DIR = resolve(process.cwd(), "data/pack-audio");
 const ISLAMIC_SUBDIR = "islamic";
 const CHRISTIAN_SUBDIR = "christian";
 const MEMES_SUBDIR = "memes";
+const LIFEHACK_SUBDIR = "lifehacks";
 const isIslamicTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(ISLAMIC_SUBDIR + "/");
 const isChristianTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(CHRISTIAN_SUBDIR + "/");
 const isMemesTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(MEMES_SUBDIR + "/");
-const isReservedTrack = (f: string) => isIslamicTrack(f) || isChristianTrack(f) || isMemesTrack(f);
+const isLifehackTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(LIFEHACK_SUBDIR + "/");
+const isReservedTrack = (f: string) => isIslamicTrack(f) || isChristianTrack(f) || isMemesTrack(f) || isLifehackTrack(f);
 
 function insideDir(base: string, target: string): boolean {
   const rel = relative(base, target);
@@ -122,6 +125,15 @@ export function pickMemesAudio(): string | null {
   return `${MEMES_SUBDIR}/${files[Math.floor(Math.random() * files.length)]}`;
 }
 
+/** Pick a random upbeat copyright-free bed for lifehack decks (relative name under assets/audio), or null. */
+export function pickLifehackAudio(): string | null {
+  const dir = resolve(AUDIO_DIR, LIFEHACK_SUBDIR);
+  if (!existsSync(dir)) return null;
+  const files = readdirSync(dir).filter((f) => AUDIO_EXT.has(extname(f).toLowerCase()));
+  if (files.length === 0) return null;
+  return `${LIFEHACK_SUBDIR}/${files[Math.floor(Math.random() * files.length)]}`;
+}
+
 /** Resolve a relative track name (from listAudio) to an absolute path. */
 export function audioPathFor(name: string, opts: { packId?: string } = {}): string {
   const packTrack = parsePackAudioTrack(name);
@@ -143,6 +155,7 @@ export interface AudioDeckHint {
   islamic?: boolean;
   christian?: boolean;
   meme?: boolean;
+  lifehack?: boolean;
 }
 
 /**
@@ -152,7 +165,8 @@ export interface AudioDeckHint {
  *  - music === "none"        → silent (audioPath null)
  *  - music === explicit name → that track
  *  - music empty/undefined   → a random instrumental track (or silent if the pool is empty)
- * Deck overrides (skipped when music is explicitly "none"): islamic → nature ambient, christian → sacred pad.
+ * Deck overrides (skipped when music is explicitly "none"): islamic → nature ambient, christian → sacred pad,
+ * meme → quiet meme bed, lifehack → upbeat synthetic bed.
  * Returns the resolved track name (to store on the videos row) + absolute audio path (null = silent).
  */
 export function resolveAudio(
@@ -161,6 +175,7 @@ export function resolveAudio(
   opts: { packId?: string } = {},
 ): { music: string; audioPath: string | null } {
   let m = music;
+  const explicitNone = m === "none";
   let audioPath: string | null;
   if (m === "none") audioPath = null;
   else if (m) audioPath = audioPathFor(m, opts);
@@ -175,22 +190,29 @@ export function resolveAudio(
     }
   }
   // Islamic deck → nature ambient; Christian deck → sacred organ/choir pad. Explicit "none" stays silent.
-  if (deck?.islamic && m !== "none") {
+  if (deck?.islamic && !explicitNone) {
     const amb = pickIslamicAudio();
     if (amb) {
       m = amb;
       audioPath = audioPathFor(amb);
     }
   }
-  if (deck?.christian && m !== "none") {
+  if (deck?.christian && !explicitNone) {
     const pad = pickChristianAudio();
     if (pad) {
       m = pad;
       audioPath = audioPathFor(pad);
     }
   }
-  if (deck?.meme && m !== "none") {
+  if (deck?.meme && !explicitNone) {
     const bed = pickMemesAudio();
+    if (bed) {
+      m = bed;
+      audioPath = audioPathFor(bed);
+    }
+  }
+  if (deck?.lifehack && !explicitNone) {
+    const bed = pickLifehackAudio();
     if (bed) {
       m = bed;
       audioPath = audioPathFor(bed);
@@ -214,6 +236,39 @@ export interface VideoOptions {
   durationSec?: number;
   /** Explicit audio path; undefined = auto-pick from assets/audio; null = force silent. */
   audioPath?: string | null;
+  /** Optional animated sticker overlay, used by lifehack decks. */
+  motionOverlay?: MotionOverlay | null;
+}
+
+export interface MotionOverlay {
+  path: string;
+  width: number;
+  x: string;
+  y: string;
+}
+
+function stableHash(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h >>> 0;
+}
+
+export function pickLifehackMotionOverlay(seed: string): MotionOverlay | null {
+  if (!existsSync(LIFEHACK_MOTION_DIR)) return null;
+  const files = readdirSync(LIFEHACK_MOTION_DIR)
+    .map((f) => f.toString())
+    .filter((f) => /\.gif$/i.test(f))
+    .sort();
+  if (files.length === 0) return null;
+  return {
+    path: resolve(LIFEHACK_MOTION_DIR, files[stableHash(seed) % files.length]),
+    width: 235,
+    x: "main_w-overlay_w-70",
+    y: "main_h-overlay_h-86",
+  };
 }
 
 /**
@@ -227,6 +282,7 @@ export async function assembleStillVideo(
 ): Promise<string> {
   const dur = opts.durationSec ?? 6;
   const audio = opts.audioPath === undefined ? await pickAudio() : opts.audioPath;
+  const motion = opts.motionOverlay ?? null;
   await mkdir(dirname(outPath), { recursive: true });
 
   const vf =
@@ -240,16 +296,24 @@ export async function assembleStillVideo(
   } else {
     args.push("-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=48000");
   }
+  if (motion) {
+    args.push("-ignore_loop", "0", "-i", motion.path);
+  }
 
+  args.push("-t", String(dur));
+  if (motion) {
+    const overlay = `[0:v]${vf}[base];[2:v]fps=30,scale=${motion.width}:-1:flags=lanczos,format=rgba[sticker];[base][sticker]overlay=x='${motion.x}':y='${motion.y}':shortest=0:format=auto[v]`;
+    args.push("-filter_complex", overlay, "-map", "[v]", "-map", "1:a");
+  } else {
+    args.push("-vf", vf);
+  }
   args.push(
-    "-t", String(dur),
     "-c:v", "libx264",
     "-preset", "veryfast",
     "-profile:v", "high",
     "-pix_fmt", "yuv420p",
     "-r", "30",
     "-tune", "stillimage",
-    "-vf", vf,
   );
 
   if (audio) {

@@ -11,12 +11,13 @@ import {
 } from "../lib/api";
 import { confirmDialog } from "../lib/confirm";
 import { useAuth } from "../lib/auth";
+import { isMainAdmin } from "../lib/authz";
 import { useT } from "../lib/i18n";
 import { CONTENT_LANGS } from "../lib/deck";
 import { PreviewModal, usePreview } from "./PreviewModal";
 
 // Вид одного кастомного пака: правила (из шаблона), добавление JSON-карточек, лента карточек с превью/удалением.
-// Редактировать (имя/язык/карточки) может только владелец пака или админ; гранчёному пак выдан лишь для использования.
+// Редактировать (имя/язык/карточки) может только владелец пака или главный админ; гранчёному пак выдан лишь для использования.
 const valStr = (v: string | string[]) => (Array.isArray(v) ? v.join(" · ") : v);
 const fileLabel = (f: string) => f.split("/").pop()!.replace(/\.\w+$/, "").replace(/[-_]+/g, " ");
 const fmtBytes = (n: number) => {
@@ -67,7 +68,7 @@ export default function PackDetail({ packId, onChanged, onDeleted }: { packId: s
   const [lang, setLang] = useState("ru"); // редактируемый язык-тег (владелец/админ)
   const [metaBusy, setMetaBusy] = useState(false);
   const [metaMsg, setMetaMsg] = useState<string | null>(null);
-  const [removing, setRemoving] = useState(false); // удаление пака целиком (владелец/админ)
+  const [removing, setRemoving] = useState(false); // удаление пака целиком
   const [musicData, setMusicData] = useState<PackMusic | null>(null);
   const [music, setMusic] = useState("");
   const [musicBusy, setMusicBusy] = useState(false);
@@ -201,9 +202,11 @@ export default function PackDetail({ packId, onChanged, onDeleted }: { packId: s
     }
   }
 
-  // Удалить пак целиком. Право (владелец/админ) совпадает с canEdit; бэкенд гейтит повторно.
+  // Удалить пак целиком. Бэкенд повторно проверяет: главный админ — любой, обычный админ — созданный им.
   async function removePack() {
-    if (!pack) return;
+    if (!pack || !user) return;
+    const canRemove = isMainAdmin(user) || (user.role === "admin" ? pack.createdBy === user.id : pack.owners.includes(user.id));
+    if (!canRemove) return;
     const msg = pack.cards.length
       ? t("packDetail.confirmDeletePackCards", { name: pack.name, n: pack.cards.length })
       : t("packDetail.confirmDeletePack", { name: pack.name });
@@ -216,7 +219,9 @@ export default function PackDetail({ packId, onChanged, onDeleted }: { packId: s
   if (!pack) return <div className="text-sm text-base-content/50 py-6 text-center"><Loader2 className="animate-spin inline" size={16} /> {t("packDetail.loadingPack")}</div>;
   const rules = pack.rules ?? [];
   // Редактировать пак (имя/язык/карточки) может только владелец или главный админ. Грант → только использование.
-  const canEdit = !!user && (!!user.isSuperAdmin || pack.owners.includes(user.id));
+  const canEdit = !!user && (isMainAdmin(user) || pack.owners.includes(user.id));
+  const createdByMe = !!user && pack.createdBy === user.id;
+  const canDelete = !!user && (isMainAdmin(user) || (user.role === "admin" ? createdByMe : pack.owners.includes(user.id)));
   const metaDirty = name.trim() !== pack.name || lang !== pack.lang;
   const PER_PAGE = 24;
   const totalPages = Math.max(1, Math.ceil(pack.cards.length / PER_PAGE));
@@ -237,48 +242,54 @@ export default function PackDetail({ packId, onChanged, onDeleted }: { packId: s
   return (
     <div className="space-y-4">
       {/* Редактирование имени/языка — только владелец/админ. Гранчёному — пометка «только для использования». */}
-      {canEdit ? (
+      {canEdit || canDelete ? (
         <div className="flex flex-wrap items-end gap-2 bg-base-200/40 rounded-lg p-3 border border-base-300">
-          <label className="form-control">
-            <span className="label-text text-xs mb-1">{t("packDetail.packName")}</span>
-            <input
-              className="input input-bordered input-sm w-56"
-              value={name}
-              maxLength={80}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </label>
-          <label className="form-control">
-            <span className="label-text text-xs mb-1">{t("packDetail.lang")}</span>
-            <select
-              className="select select-bordered select-sm w-44"
-              value={lang}
-              onChange={(e) => setLang(e.target.value)}
-              title={t("packDetail.langHint")}
-            >
-              {CONTENT_LANGS.map((o) => (
-                <option key={o.code} value={o.code}>{o.label} ({o.code.toUpperCase()})</option>
-              ))}
-            </select>
-          </label>
-          <button className="btn btn-primary btn-sm gap-1" onClick={saveMeta} disabled={metaBusy || !metaDirty || !name.trim()}>
-            {metaBusy ? <Loader2 className="animate-spin" size={15} /> : <Save size={15} />} {t("common.save")}
-          </button>
-          {metaMsg && (
-            <span className="text-success text-xs inline-flex items-center gap-1"><Check size={13} /> {metaMsg}</span>
+          {canEdit && (
+            <>
+              <label className="form-control">
+                <span className="label-text text-xs mb-1">{t("packDetail.packName")}</span>
+                <input
+                  className="input input-bordered input-sm w-56"
+                  value={name}
+                  maxLength={80}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </label>
+              <label className="form-control">
+                <span className="label-text text-xs mb-1">{t("packDetail.lang")}</span>
+                <select
+                  className="select select-bordered select-sm w-44"
+                  value={lang}
+                  onChange={(e) => setLang(e.target.value)}
+                  title={t("packDetail.langHint")}
+                >
+                  {CONTENT_LANGS.map((o) => (
+                    <option key={o.code} value={o.code}>{o.label} ({o.code.toUpperCase()})</option>
+                  ))}
+                </select>
+              </label>
+              <button className="btn btn-primary btn-sm gap-1" onClick={saveMeta} disabled={metaBusy || !metaDirty || !name.trim()}>
+                {metaBusy ? <Loader2 className="animate-spin" size={15} /> : <Save size={15} />} {t("common.save")}
+              </button>
+              {metaMsg && (
+                <span className="text-success text-xs inline-flex items-center gap-1"><Check size={13} /> {metaMsg}</span>
+              )}
+            </>
           )}
           <div className="ml-auto flex items-center gap-2 self-center">
-            {user?.role === "admin" && !pack.owners.includes(user.id) && (
+            {canEdit && user?.role === "admin" && !pack.owners.includes(user.id) && (
               <span className="text-[11px] text-warning/90">{t("packDetail.editingAsAdmin")}</span>
             )}
-            <button
-              className="btn btn-error btn-outline btn-sm gap-1"
-              onClick={removePack}
-              disabled={removing || metaBusy}
-              title={t("packDetail.deletePackHint")}
-            >
-              {removing ? <Loader2 className="animate-spin" size={15} /> : <Trash2 size={15} />} {t("packDetail.deletePack")}
-            </button>
+            {canDelete && (
+              <button
+                className="btn btn-error btn-outline btn-sm gap-1"
+                onClick={removePack}
+                disabled={removing || metaBusy}
+                title={t("packDetail.deletePackHint")}
+              >
+                {removing ? <Loader2 className="animate-spin" size={15} /> : <Trash2 size={15} />} {t("packDetail.deletePack")}
+              </button>
+            )}
           </div>
         </div>
       ) : (

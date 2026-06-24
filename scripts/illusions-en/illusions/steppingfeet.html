@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>illusions host v2 (variants + localizable title overlay)</title>
+<style>html,body{margin:0;padding:0;background:#000}#scene{display:block}</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  // ============================================================================
+  //  SHARED HOST v2 — variant-aware + localizable title overlay.
+  //  Edit ONLY the two marked regions: (1) SPEC block, (2) drawIllusion().
+  //  New vs v1:
+  //   - H.v  = variant params {palette,dir,turns,speed,seed,density,angle} (from SPEC.variant)
+  //   - H.PALETTES / H.pal(t) / H.palStops()  = named colour schemes for variants
+  //   - window.renderTitle(text) -> TRANSPARENT png with ONLY the title (for ffmpeg overlay,
+  //     so one titleless geometry render is reused across all 5 languages)
+  //   - canvas is alpha:true; renderFrame() fills its own opaque background.
+  // ============================================================================
+  const CW = 1080, CH = 1920, TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: true });
+
+  function mulberry32(seed) {
+    let s = (seed >>> 0) || 1;
+    return function () {
+      let t = s += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (x, lo, hi) => x < lo ? lo : x > hi ? hi : x;
+  const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+
+  // Named palettes: ordered RGB stops. H.pal(t) interpolates across them; H.palStops() returns raw stops.
+  const PALETTES = {
+    classic:  [[75,58,255],[255,35,112],[38,255,132],[44,150,255]], // v1 spectrum (default look)
+    spectrum: [[75,58,255],[255,35,112],[38,255,132],[44,150,255]],
+    aurora:   [[130,255,200],[120,180,255],[180,120,255],[255,140,220]],
+    fire:     [[255,210,90],[255,120,40],[255,60,60],[210,40,120]],
+    ice:      [[200,240,255],[120,190,255],[255,255,255],[90,150,230]],
+    neon:     [[80,255,140],[190,255,60],[40,230,180],[120,255,90]],
+    gold:     [[255,235,170],[255,190,80],[255,250,210],[210,150,50]],
+    sunset:   [[255,180,90],[255,90,120],[200,70,200],[120,80,220]],
+    emerald:  [[170,255,210],[60,220,150],[30,180,140],[120,255,180]],
+    magma:    [[255,230,120],[255,140,40],[230,40,40],[120,20,60]],
+    mono:     [[255,255,255],[210,210,210],[170,170,170],[235,235,235]],
+    candy:    [[255,160,210],[120,210,255],[255,225,130],[180,160,255]],
+  };
+  function palStops(name) { return PALETTES[name] || PALETTES.classic; }
+  function pal(t, name) {
+    const s = palStops(name || (V && V.palette) || 'classic');
+    t = clamp(t, 0, 1) * (s.length - 1);
+    const i = Math.min(s.length - 2, Math.floor(t)), f = t - i;
+    const a = s[i], b = s[i + 1];
+    return `rgb(${Math.round(lerp(a[0],b[0],f))} ${Math.round(lerp(a[1],b[1],f))} ${Math.round(lerp(a[2],b[2],f))})`;
+  }
+
+  // active variant (filled at setup)
+  let V = { palette: 'classic', dir: 1, turns: 1, speed: 1, seed: 1, density: 1, angle: 0 };
+
+  const SAFE = { x0: 70, y0: 380, x1: 1010, y1: 1520 };
+  const H = { TAU, rng: mulberry32, lerp, clamp, smooth, cx: 540, cy: 960, safe: SAFE, maxR: 460,
+              PALETTES, pal, palStops, get v() { return V; } };
+
+  // ====================== (1) SPEC — replace these values =====================
+  let SPEC = {
+    key: 'steppingfeet',
+    name: 'Stepping-feet illusion',
+    title: 'Both bars glide at the same speed',
+    dur: 8,            // seconds
+    fps: 30,
+    light: false,      // true => skip the dark vignette (for grey/white-background illusions)
+  };
+  // ===========================================================================
+
+  // ============ (2) drawIllusion — replace this whole function body ==========
+  // Contract:
+  //   p       progress 0..1 over the clip (build renders frame f at p=f/FRAMES,
+  //           so p=0 and p=1 are the SAME instant -> a LOOPING illusion must make
+  //           draw(0) == draw(1). Non-looping sequences (e.g. afterimage) ignore this.)
+  //   CW,CH   1080 x 1920
+  //   H       helpers: H.rng(seed)->()=>0..1, H.lerp, H.clamp, H.smooth, H.TAU,
+  //           H.cx, H.cy (frame centre of the safe area), H.safe {x0,y0,x1,y1}, H.maxR
+  //   The host fills #000, then calls this, then draws vignette (unless light) + title.
+  //   Keep important content inside H.safe. Use H.rng only (no Math.random) for determinism.
+  function drawIllusion(ctx, p, CW, CH, H) {
+    // --- STEPPING-FEET ILLUSION (Stuart Anstis) -----------------------------
+    // A field of vertical BLACK & WHITE stripes. Two stacked horizontal BARS —
+    // one DARK-BLUE (top), one PALE-YELLOW (bottom) — glide LEFT->RIGHT at the
+    // SAME constant speed, fast (~188 px/s). They appear to alternately surge
+    // and stall. The effect is pure luminance contrast at each bar's vertical
+    // (leading/trailing) edges as they cross the stripes:
+    //   • the DARK-BLUE bar (Y≈0.03, ≈ the BLACK stripes) shows crisp edges over
+    //     WHITE stripes (high contrast -> motion seen) but its edges VANISH over
+    //     BLACK stripes (no contrast -> motion stalls).
+    //   • the PALE-YELLOW bar (Y≈0.85, ≈ the WHITE stripes) is the mirror: edges
+    //     crisp over BLACK, invisible over WHITE.
+    // The two bars are offset by HALF a stripe-period, so they are always in
+    // OPPOSITE contrast states — when blue is "stepping" yellow is "stalled" and
+    // vice-versa. Stacking blue directly above yellow makes the alternation
+    // directly comparable.
+    const S = H.safe;
+    const safeW = S.x1 - S.x0;        // 940
+    const safeH = S.y1 - S.y0;        // 1140
+
+    // Vertical stripe geometry. period = one BLACK + one WHITE stripe.
+    const stripeW = 47;               // single stripe width (px)
+    const period = stripeW * 2;       // 94 px — one full colour cycle
+    // Integer count of WHOLE periods that fill the safe width, so the stripe
+    // field tiles seamlessly across the box (no half stripe at the right edge).
+    const nPeriods = Math.round(safeW / period);   // 10
+    const fieldW = nPeriods * period;              // 940 (== safeW here)
+    const fieldX = S.x0 + (safeW - fieldW) / 2;     // centred (0 offset)
+
+    const BLACK = '#000000';
+    const WHITE = '#ffffff';
+
+    ctx.save();
+    // Clip strictly to the safe box so nothing bleeds into title / bottom UI.
+    ctx.beginPath();
+    ctx.rect(S.x0, S.y0, safeW, safeH);
+    ctx.clip();
+
+    // Neutral frame backdrop = mid grey, so the clipped box reads as a panel.
+    ctx.fillStyle = 'rgb(124,124,124)';
+    ctx.fillRect(S.x0, S.y0, safeW, safeH);
+
+    // ---- vertical black & white stripe field (static) ----------------------
+    // Stripe index 0 is BLACK. Parity tied to integer index -> crisp, no seam.
+    for (let i = 0; i < nPeriods * 2; i++) {
+      const x = fieldX + i * stripeW;
+      ctx.fillStyle = (i % 2 === 0) ? BLACK : WHITE;
+      ctx.fillRect(x, S.y0, stripeW, safeH);
+    }
+
+    // ---- the two rows of travelling BARS -----------------------------------
+    // Each row carries WIDE solid bars (3 stripes wide, 1-stripe gap = 75% duty)
+    // so each bar reads as a continuous block with crisp LEADING and TRAILING
+    // vertical edges crossing the stripes — that is where the surge/stall lives.
+    // SPEED is the whole point: the bars travel MANY whole periods per loop, so
+    // the eye sees real, fast horizontal motion (not a near-static pattern).
+    const footW = stripeW * 3;        // solid bar = 3 stripes wide (141px)
+    const pitch = period * 2;         // bar + gap repeat = 2 periods (188px)
+    // The bars travel a whole number of `pitch` lengths over p=0..1 so the bar
+    // lattice lands exactly on itself at p=1 => draw(0) == draw(1) (seamless).
+    // Use an ODD number of pitches (9): then the quarter-loop offsets are all
+    // DISTINCT (0, +stripe, +2·stripe, +3·stripe of phase), so a frame sampled
+    // at p=0/0.25/0.5/0.75 shows the bars in clearly DIFFERENT positions — i.e.
+    // real, measurable, fast motion (an EVEN pitch-count would make 0/0.5 — and
+    // 0/0.25 for multiples of 4 — land on the same phase and look frozen).
+    const PITCHES_PER_LOOP = 9;       // 9*188 = 1692px over 8s ≈ 212 px/s
+    const travel = p * (PITCHES_PER_LOOP * pitch);
+
+    const footH = 170;                // bar thickness
+    const gapY = 120;                 // vertical gap between the two stacked rows
+    // Centre the two rows vertically inside the safe area.
+    const blockH = footH * 2 + gapY;
+    const blueY = S.y0 + (safeH - blockH) / 2;
+    const yellowY = blueY + footH + gapY;
+
+    // Half-period horizontal offset between the rows keeps the blue & yellow
+    // bars in OPPOSITE contrast states (one stepping while the other stalls)
+    // — this is what makes them appear to alternately surge and freeze.
+    const HALF = stripeW;             // half a period (47px)
+
+    // Colours (luminance-matched to the stripes so edges genuinely vanish):
+    //   DARK-BLUE  rgb(20,28,150)  -> Y≈0.03  ≈ BLACK (0.0)
+    //   PALE-YELLOW rgb(250,240,170) -> Y≈0.85 ≈ WHITE (1.0)
+    // Each bar's edges disappear over the same-luminance stripe and pop over the
+    // opposite one — a symmetric pair (dark-over-black vs pale-over-white).
+    const BLUE = 'rgb(20,28,150)';      // low luminance (≈ black stripes)
+    const YELLOW = 'rgb(250,240,170)';  // high luminance (≈ white stripes)
+
+    // Lay bars every `pitch` across the field, scrolled by `offsetX`. Start one
+    // pitch to the LEFT so a bar is always entering from the left edge; the clip
+    // crops partial bars, and because travel(1) is a whole multiple of `pitch`
+    // the lattice at p=1 coincides with p=0.
+    const paintBars = (offsetX, y, color) => {
+      ctx.fillStyle = color;
+      const off = ((offsetX % pitch) + pitch) % pitch;     // 0 .. pitch
+      const startX = fieldX + off - pitch;                 // <= fieldX
+      for (let x = startX; x < fieldX + fieldW + pitch; x += pitch) {
+        ctx.fillRect(x, y, footW, footH);
+      }
+    };
+
+    // Blue bars at `travel`; yellow bars offset half a period (opposite phase).
+    paintBars(travel, blueY, BLUE);
+    paintBars(travel + HALF, yellowY, YELLOW);
+
+    ctx.restore();
+  }
+  // ===========================================================================
+
+  // ---------------- title (identical layout to v1; drawn as overlay or inline) ----------
+  let TITLE_LINES = [], TITLE_PX = 60, TITLE_TEXT = '';
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    TITLE_TEXT = String(text || '');
+    const words = TITLE_TEXT.trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { TITLE_LINES = []; return; }
+    for (let px = 72; px >= 40; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = []; let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_PX = px; return; }
+      if (px === 40) { TITLE_LINES = lines.slice(0, 3); TITLE_PX = px; }
+    }
+  }
+  function paintTitle() {
+    if (!TITLE_LINES.length) return;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_PX);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const lh = TITLE_PX * 1.2, n = TITLE_LINES.length;
+    const startY = 210, padX = 42, padY = 28;
+    let maxW = 0; for (const l of TITLE_LINES) maxW = Math.max(maxW, ctx.measureText(l).width);
+    const rx = CW / 2 - maxW / 2 - padX, rw = maxW + padX * 2;
+    const ry = startY - lh / 2 - padY, rh = (n - 1) * lh + lh + padY * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 28); ctx.fill();
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    let y = startY; for (const l of TITLE_LINES) { ctx.fillText(l, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.2, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.64, 'rgba(0,0,0,0.12)'); g.addColorStop(1, 'rgba(0,0,0,0.66)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  }
+
+  window.setup = function (overrides) {
+    if (overrides && typeof overrides === 'object') {
+      const { variant, ...rest } = overrides;
+      SPEC = { ...SPEC, ...rest };
+      if (variant && typeof variant === 'object') SPEC.variant = variant;
+    }
+    V = { palette: 'classic', dir: 1, turns: 1, speed: 1, seed: 1, density: 1, angle: 0, ...(SPEC.variant || {}) };
+    layoutTitle(SPEC.title);
+    return { key: SPEC.key, name: SPEC.name, dur: SPEC.dur, fps: SPEC.fps, light: !!SPEC.light, variant: V, lines: TITLE_LINES.length, px: TITLE_PX };
+  };
+  window.getSpec = function () { return { ...SPEC, v: { ...V } }; };
+
+  // Full frame (background + illusion + vignette + INLINE title). Used for standalone preview.
+  window.renderFrame = function (progress) {
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    paintTitle();
+    return canvas.toDataURL('image/png');
+  };
+  // Geometry only, NO title (opaque). Rendered ONCE; localized titles overlaid later.
+  window.renderBase = function (progress) {
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    return canvas.toDataURL('image/png');
+  };
+  // TRANSPARENT png with ONLY the title (pill + text), for ffmpeg overlay onto a titleless clip.
+  window.renderTitle = function (text) {
+    layoutTitle(text);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.clearRect(0, 0, CW, CH);
+    paintTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  layoutTitle(SPEC.title);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

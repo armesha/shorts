@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>illusions-en host</title>
+<style>html,body{margin:0;padding:0;background:#000}#scene{display:block}</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  // ============================================================================
+  //  SHARED HOST  —  DO NOT EDIT below except the two clearly marked regions:
+  //    (1) the SPEC block        (2) the drawIllusion() function
+  //  Everything else (RNG, title, vignette, loop, PNG export) is identical for
+  //  every illusion so titles / safe-zone / seamless-loop behave the same.
+  // ============================================================================
+  const CW = 1080, CH = 1920, TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: false });
+
+  // deterministic RNG (so a clip renders byte-identically every time)
+  function mulberry32(seed) {
+    let s = seed >>> 0;
+    return function () {
+      let t = s += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (x, lo, hi) => x < lo ? lo : x > hi ? hi : x;
+  const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+  // Safe drawing box: title lives above y=380, bottom 400px kept clear (Shorts UI).
+  const SAFE = { x0: 70, y0: 380, x1: 1010, y1: 1520 };
+  const H = { TAU, rng: mulberry32, lerp, clamp, smooth, cx: 540, cy: 960, safe: SAFE,
+              maxR: 460 /* suggested max radius for a centred figure */ };
+
+  // ====================== (1) SPEC — replace these values =====================
+  let SPEC = {
+    key: 'cornsweet',
+    name: 'Cornsweet illusion',
+    title: 'Both halves are the same grey',
+    dur: 8,            // seconds
+    fps: 30,
+    light: true,       // true => skip the dark vignette (for grey/white-background illusions)
+  };
+  // ===========================================================================
+
+  // ============ (2) drawIllusion — replace this whole function body ==========
+  // Contract:
+  //   p       progress 0..1 over the clip (build renders frame f at p=f/FRAMES,
+  //           so p=0 and p=1 are the SAME instant -> a LOOPING illusion must make
+  //           draw(0) == draw(1). Non-looping sequences (e.g. afterimage) ignore this.)
+  //   CW,CH   1080 x 1920
+  //   H       helpers: H.rng(seed)->()=>0..1, H.lerp, H.clamp, H.smooth, H.TAU,
+  //           H.cx, H.cy (frame centre of the safe area), H.safe {x0,y0,x1,y1}, H.maxR
+  //   The host fills #000, then calls this, then draws vignette (unless light) + title.
+  //   Keep important content inside H.safe. Use H.rng only (no Math.random) for determinism.
+  function drawIllusion(ctx, p, CW, CH, H) {
+    const S = H.safe;
+
+    // ---- Cornsweet (Craik-O'Brien-Cornsweet) edge illusion -----------------
+    // The whole figure is ONE flat mid-grey (rgb 150). The two large halves are
+    // physically identical. The ONLY non-flat thing is a soft luminance CUSP
+    // straddling the central vertical edge: just left of the edge the grey ramps
+    // brighter toward the edge, just right of it the grey ramps darker toward the
+    // edge. That edge cue alone makes the brain paint the ENTIRE left half as
+    // "lighter" and the ENTIRE right half as "darker", even though every flat
+    // pixel away from the edge is the same 150.
+    //   Proof: once per loop a vertical occluder bar of the SAME 150 grey slides
+    // across the central edge, hiding the cusp. With the edge covered the illusion
+    // collapses and both fields read as one uniform grey corridor.
+    //   Triangle wave on p (bar fully retracted at p=0 and p=1) => draw(0)===draw(1).
+
+    const BX0 = S.x0, BY0 = S.y0, BX1 = S.x1, BY1 = S.y1;
+    const BW = BX1 - BX0, BH = BY1 - BY0;
+    const midX = Math.round((BX0 + BX1) / 2);     // the central edge (vertical)
+
+    const BASE = 150;                              // the one true flat grey
+    const AMP = 88;                                // cusp peak/trough delta at the edge
+    const CUSP = 150;                              // half-width (px) of the gradient band
+    const greyOf = (v) => { const c = Math.round(clamp(v, 0, 255)); return `rgb(${c},${c},${c})`; };
+
+    ctx.save();
+
+    // Clip everything to the safe box so nothing spills into the title / UI zone.
+    ctx.beginPath();
+    ctx.rect(BX0, BY0, BW, BH);
+    ctx.clip();
+
+    // 1) Both large flat fields painted with the IDENTICAL base grey. Drawn full
+    //    width first; the narrow cusp band is overpainted on top in step 2.
+    ctx.fillStyle = greyOf(BASE);
+    ctx.fillRect(BX0, BY0, BW, BH);
+
+    // 2) The Cornsweet cusp: a 2*CUSP-wide vertical band centred on the edge.
+    //    Painted column by column. Distance d = x - edge (negative on the left).
+    //    Profile rises smoothly to +AMP just LEFT of the edge and drops to -AMP
+    //    just RIGHT of it, decaying back to BASE by |d| = CUSP. A cubic falloff
+    //    (1-u)^2*(1+something)-style via smooth() keeps the far ends flush with
+    //    the flat fields (no visible seam where band meets field).
+    const bandX0 = Math.max(BX0, midX - CUSP);
+    const bandX1 = Math.min(BX1, midX + CUSP);
+    for (let x = bandX0; x < bandX1; x++) {
+      const d = x - midX;                          // signed distance from edge
+      const u = clamp(Math.abs(d) / CUSP, 0, 1);   // 0 at edge -> 1 at band rim
+      // Classic Cornsweet falloff: contrast is CONCENTRATED at the edge then
+      // decays with a long gentle tail (steep near u=0). A power curve gives the
+      // sharp cusp the brain reads as a luminance step; the tail meets the flat
+      // field smoothly (f -> 0 at u=1) so there is no visible seam at the rim.
+      const f = Math.pow(1 - u, 2.2);
+      // sign: brighter on the left of the edge, darker on the right
+      const sgn = d < 0 ? 1 : -1;
+      const v = BASE + sgn * AMP * f;
+      ctx.fillStyle = greyOf(v);
+      ctx.fillRect(x, BY0, 1, BH);
+    }
+
+    // 3) The sliding occluder: a vertical bar of the SAME base grey that travels
+    //    across the central edge, covering the cusp. It is wide enough to fully
+    //    hide the 2*CUSP cusp band when centred. When it overlaps the edge the
+    //    gradient vanishes and the two halves are exposed as one uniform grey.
+    //    Triangle wave: bar parked OFF the band at p=0 and p=1 (cusp visible),
+    //    sweeps to fully cover the edge at p=0.5.
+    const tri = p < 0.5 ? p * 2 : 2 - p * 2;       // 0 -> 1 -> 0
+    const t = smooth(tri);
+    const barW = Math.round(CUSP * 2 + 90);        // covers the whole cusp + margin
+    // At t=0 the bar is parked entirely LEFT of the safe box (right edge exactly at
+    // the box rim) so the clip hides it completely -> a clean, artifact-free
+    // Cornsweet field with the whole cusp exposed. At t=1 the bar is centred on the
+    // edge, fully hiding the cusp -> both fields read as one uniform grey. Because
+    // the bar is invisible at t=0, draw(0)===draw(1) (seamless loop).
+    const parkX = BX0 - barW;                       // fully off the figure (clipped)
+    const coverX = Math.round(midX - barW / 2);     // centred on the edge
+    const barX = Math.round(lerp(parkX, coverX, t));
+
+    // subtle frame so the moving bar is legible as a physical card, not a gap.
+    ctx.fillStyle = greyOf(BASE);
+    ctx.fillRect(barX, BY0, barW, BH);
+    ctx.strokeStyle = 'rgba(0,0,0,0.22)';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(barX + 1.5, BY0 + 1.5, barW - 3, BH - 3);
+
+    ctx.restore();
+  }
+  // ===========================================================================
+
+  // ---------------- title (baked into the canvas, with a dark pill) ----------
+  let TITLE_LINES = [], TITLE_PX = 60;
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { TITLE_LINES = []; return; }
+    for (let px = 72; px >= 40; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = []; let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_PX = px; return; }
+      if (px === 40) { TITLE_LINES = lines.slice(0, 3); TITLE_PX = px; }
+    }
+  }
+  function drawTitle() {
+    if (!TITLE_LINES.length) return;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_PX);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const lh = TITLE_PX * 1.2, n = TITLE_LINES.length;
+    const startY = 210, padX = 42, padY = 28;
+    let maxW = 0; for (const l of TITLE_LINES) maxW = Math.max(maxW, ctx.measureText(l).width);
+    const rx = CW / 2 - maxW / 2 - padX, rw = maxW + padX * 2;
+    const ry = startY - lh / 2 - padY, rh = (n - 1) * lh + lh + padY * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 28); ctx.fill();
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    let y = startY; for (const l of TITLE_LINES) { ctx.fillText(l, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.2, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(0.64, 'rgba(0,0,0,0.12)');
+    g.addColorStop(1, 'rgba(0,0,0,0.66)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  }
+
+  window.setup = function (overrides) {
+    if (overrides && typeof overrides === 'object') SPEC = { ...SPEC, ...overrides };
+    layoutTitle(SPEC.title);
+    return { key: SPEC.key, name: SPEC.name, dur: SPEC.dur, fps: SPEC.fps, lines: TITLE_LINES.length, px: TITLE_PX };
+  };
+  window.getSpec = function () { return { ...SPEC }; };
+
+  window.renderFrame = function (progress) {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    drawTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  layoutTitle(SPEC.title);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

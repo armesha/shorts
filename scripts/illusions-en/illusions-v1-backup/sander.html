@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>illusions-en host</title>
+<style>html,body{margin:0;padding:0;background:#000}#scene{display:block}</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  // ============================================================================
+  //  SHARED HOST  —  DO NOT EDIT below except the two clearly marked regions:
+  //    (1) the SPEC block        (2) the drawIllusion() function
+  //  Everything else (RNG, title, vignette, loop, PNG export) is identical for
+  //  every illusion so titles / safe-zone / seamless-loop behave the same.
+  // ============================================================================
+  const CW = 1080, CH = 1920, TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: false });
+
+  // deterministic RNG (so a clip renders byte-identically every time)
+  function mulberry32(seed) {
+    let s = seed >>> 0;
+    return function () {
+      let t = s += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (x, lo, hi) => x < lo ? lo : x > hi ? hi : x;
+  const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+  // Safe drawing box: title lives above y=380, bottom 400px kept clear (Shorts UI).
+  const SAFE = { x0: 70, y0: 380, x1: 1010, y1: 1520 };
+  const H = { TAU, rng: mulberry32, lerp, clamp, smooth, cx: 540, cy: 960, safe: SAFE,
+              maxR: 460 /* suggested max radius for a centred figure */ };
+
+  // ====================== (1) SPEC — replace these values =====================
+  let SPEC = {
+    key: 'sander',
+    name: 'Sander parallelogram',
+    title: 'Both blue diagonals are equal',
+    dur: 8,            // seconds
+    fps: 30,
+    light: false,      // true => skip the dark vignette (for grey/white-background illusions)
+  };
+  // ===========================================================================
+
+  // ============ (2) drawIllusion — replace this whole function body ==========
+  // Contract:
+  //   p       progress 0..1 over the clip (build renders frame f at p=f/FRAMES,
+  //           so p=0 and p=1 are the SAME instant -> a LOOPING illusion must make
+  //           draw(0) == draw(1). Non-looping sequences (e.g. afterimage) ignore this.)
+  //   CW,CH   1080 x 1920
+  //   H       helpers: H.rng(seed)->()=>0..1, H.lerp, H.clamp, H.smooth, H.TAU,
+  //           H.cx, H.cy (frame centre of the safe area), H.safe {x0,y0,x1,y1}, H.maxR
+  //   The host fills #000, then calls this, then draws vignette (unless light) + title.
+  //   Keep important content inside H.safe. Use H.rng only (no Math.random) for determinism.
+  function drawIllusion(ctx, p, CW, CH, H) {
+    // ---- Sander parallelogram --------------------------------------------
+    // A large parallelogram is split by a line (the divider) into a WIDE left
+    // sub-parallelogram and a NARROW right one. A blue diagonal is drawn across
+    // each cell; both diagonals share the apex at the top of the divider:
+    //   LEFT  diagonal:  BL  -> Apex   (spans the wide cell -> LOOKS much longer)
+    //   RIGHT diagonal:  Apex -> BR    (spans the narrow cell)
+    // They are EXACTLY the same length (502.2 px). Once per loop a bright ghost
+    // copy of the RIGHT diagonal lifts off and rotates to lie on top of the LEFT
+    // diagonal, proving the lengths match, then fades away so draw(0)===draw(1).
+    //
+    // Geometry is precomputed (see scripts/illusions-en notes): all three slanted
+    // sides share the slant vector (-120,-410) so both halves are true
+    // parallelograms; bbox is centred on x=540 and sits well inside H.safe.
+    const yTop = 650, yBot = 1060;
+    const BL   = { x: 310, y: yBot };   // bottom-left  (outer corner)
+    const M    = { x: 720, y: yBot };   // divider foot (on bottom edge)
+    const BR   = { x: 890, y: yBot };   // bottom-right (outer corner)
+    const TL   = { x: 190, y: yTop };   // top-left     (outer corner)
+    const Apex = { x: 600, y: yTop };   // divider top  (shared diagonal apex)
+    const TR   = { x: 770, y: yTop };   // top-right    (outer corner)
+
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // helper: stroke a polyline through points -----------------------------
+    const stroke = (pts, color, w, close) => {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = w;
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+      if (close) ctx.closePath();
+      ctx.stroke();
+    };
+
+    // --- the outer parallelogram + the dividing line (white) --------------
+    const WHITE = 'rgb(238,238,238)';
+    stroke([TL, TR, BR, BL], WHITE, 8, true); // outer parallelogram
+    stroke([M, Apex], WHITE, 8, false);       // divider splitting it in two
+
+    // --- the two EQUAL diagonals (blue) -----------------------------------
+    // Left across the wide cell (BL->Apex), right across the narrow cell
+    // (Apex->BR). Drawn a touch thicker so they read as the "measured" lines.
+    const BLUE = 'rgb(70,150,255)';
+    const LW = 12;
+    stroke([BL, Apex], BLUE, LW, false);   // left  diagonal (looks longer)
+    stroke([Apex, BR], BLUE, LW, false);   // right diagonal (equal length)
+
+    // small dots at the three diagonal endpoints to anchor them
+    const dot = (pt, color, r) => {
+      ctx.fillStyle = color;
+      ctx.beginPath(); ctx.arc(pt.x, pt.y, r, 0, TAU); ctx.fill();
+    };
+    dot(BL, BLUE, 9); dot(Apex, BLUE, 9); dot(BR, BLUE, 9);
+
+    // --- once-per-loop PROOF: rotate a ghost of the RIGHT diagonal onto the
+    //     LEFT diagonal. Both diagonals are the same length, so the ghost keeps
+    //     its length while it swings + glides across, landing exactly over the
+    //     left one. reveal bump 0 -> 1 -> 0 keeps p=0 and p=1 identical.
+    let reveal = 0;
+    if (p > 0.20 && p < 0.80) {
+      const t = (p - 0.20) / 0.60;          // 0..1 across the window
+      reveal = Math.sin(t * Math.PI);       // smooth 0 -> 1 -> 0
+    }
+    if (reveal > 0.001) {
+      const m = H.smooth(reveal);           // eased 0..1..0 (holds near the peak)
+
+      // Represent each diagonal as centre + (angle, halfLen). Measure both
+      // pointing "up" (bottom corner -> apex) so the rotation is the short way.
+      const rMid = { x: (Apex.x + BR.x) / 2, y: (Apex.y + BR.y) / 2 };  // 745,855
+      const lMid = { x: (BL.x + Apex.x) / 2, y: (BL.y + Apex.y) / 2 };  // 455,855
+      const half = Math.hypot(Apex.x - BR.x, Apex.y - BR.y) / 2;        // 251.1
+      const rAng = Math.atan2(Apex.y - BR.y, Apex.x - BR.x);            // up-left
+      const lAng = Math.atan2(Apex.y - BL.y, Apex.x - BL.x);            // up-right
+
+      // animate centre right->left and angle right->left
+      const cxg = lerp(rMid.x, lMid.x, m);
+      const cyg = lerp(rMid.y, lMid.y, m);
+      const ang = lerp(rAng, lAng, m);
+      const ux = Math.cos(ang), uy = Math.sin(ang);
+      const gx0 = cxg - ux * half, gy0 = cyg - uy * half;  // bottom end
+      const gx1 = cxg + ux * half, gy1 = cyg + uy * half;  // apex end
+
+      ctx.save();
+      // bright cyan ghost bar (distinct from the static blue diagonals)
+      ctx.strokeStyle = `rgba(120,235,255,${0.96 * reveal})`;
+      ctx.lineWidth = 11;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(gx0, gy0);
+      ctx.lineTo(gx1, gy1);
+      ctx.stroke();
+      // end caps perpendicular to the ghost so its length reads unambiguously
+      ctx.lineCap = 'butt';
+      ctx.lineWidth = 5;
+      const pxn = -uy, pyn = ux;          // perpendicular unit
+      const capH = 26;
+      for (const [ex, ey] of [[gx0, gy0], [gx1, gy1]]) {
+        ctx.beginPath();
+        ctx.moveTo(ex - pxn * capH, ey - pyn * capH);
+        ctx.lineTo(ex + pxn * capH, ey + pyn * capH);
+        ctx.stroke();
+      }
+
+      // Near the landing (ghost lying over the LEFT diagonal) drop a short
+      // "equal" label so the match is explicit.
+      if (m > 0.55) {
+        const g = (m - 0.55) / 0.45;      // 0..1 only near the overlay
+        ctx.fillStyle = `rgba(150,240,255,${0.96 * reveal * g})`;
+        ctx.font = '700 44px "DejaVu Sans","Liberation Sans",Arial,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('equal', cxg, cyg + 86);
+      }
+      ctx.restore();
+    }
+
+    void H.rng; // deterministic geometry; no randomness needed
+  }
+  // ===========================================================================
+
+  // ---------------- title (baked into the canvas, with a dark pill) ----------
+  let TITLE_LINES = [], TITLE_PX = 60;
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { TITLE_LINES = []; return; }
+    for (let px = 72; px >= 40; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = []; let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_PX = px; return; }
+      if (px === 40) { TITLE_LINES = lines.slice(0, 3); TITLE_PX = px; }
+    }
+  }
+  function drawTitle() {
+    if (!TITLE_LINES.length) return;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_PX);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const lh = TITLE_PX * 1.2, n = TITLE_LINES.length;
+    const startY = 210, padX = 42, padY = 28;
+    let maxW = 0; for (const l of TITLE_LINES) maxW = Math.max(maxW, ctx.measureText(l).width);
+    const rx = CW / 2 - maxW / 2 - padX, rw = maxW + padX * 2;
+    const ry = startY - lh / 2 - padY, rh = (n - 1) * lh + lh + padY * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 28); ctx.fill();
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    let y = startY; for (const l of TITLE_LINES) { ctx.fillText(l, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.2, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(0.64, 'rgba(0,0,0,0.12)');
+    g.addColorStop(1, 'rgba(0,0,0,0.66)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  }
+
+  window.setup = function (overrides) {
+    if (overrides && typeof overrides === 'object') SPEC = { ...SPEC, ...overrides };
+    layoutTitle(SPEC.title);
+    return { key: SPEC.key, name: SPEC.name, dur: SPEC.dur, fps: SPEC.fps, lines: TITLE_LINES.length, px: TITLE_PX };
+  };
+  window.getSpec = function () { return { ...SPEC }; };
+
+  window.renderFrame = function (progress) {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    drawTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  layoutTitle(SPEC.title);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

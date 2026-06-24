@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>illusions-en host</title>
+<style>html,body{margin:0;padding:0;background:#000}#scene{display:block}</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  // ============================================================================
+  //  SHARED HOST  —  DO NOT EDIT below except the two clearly marked regions:
+  //    (1) the SPEC block        (2) the drawIllusion() function
+  //  Everything else (RNG, title, vignette, loop, PNG export) is identical for
+  //  every illusion so titles / safe-zone / seamless-loop behave the same.
+  // ============================================================================
+  const CW = 1080, CH = 1920, TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: false });
+
+  // deterministic RNG (so a clip renders byte-identically every time)
+  function mulberry32(seed) {
+    let s = seed >>> 0;
+    return function () {
+      let t = s += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (x, lo, hi) => x < lo ? lo : x > hi ? hi : x;
+  const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+  // Safe drawing box: title lives above y=380, bottom 400px kept clear (Shorts UI).
+  const SAFE = { x0: 70, y0: 380, x1: 1010, y1: 1520 };
+  const H = { TAU, rng: mulberry32, lerp, clamp, smooth, cx: 540, cy: 960, safe: SAFE,
+              maxR: 460 /* suggested max radius for a centred figure */ };
+
+  // ====================== (1) SPEC — replace these values =====================
+  let SPEC = {
+    key: 'fraserspiral',
+    name: 'Fraser spiral illusion',
+    title: 'These are circles, not a spiral',
+    dur: 8,            // seconds
+    fps: 30,
+    light: true,       // true => skip the dark vignette (for grey/white-background illusions)
+  };
+  // ===========================================================================
+
+  // ============ (2) drawIllusion — replace this whole function body ==========
+  // Contract:
+  //   p       progress 0..1 over the clip (build renders frame f at p=f/FRAMES,
+  //           so p=0 and p=1 are the SAME instant -> a LOOPING illusion must make
+  //           draw(0) == draw(1). Non-looping sequences (e.g. afterimage) ignore this.)
+  //   CW,CH   1080 x 1920
+  //   H       helpers: H.rng(seed)->()=>0..1, H.lerp, H.clamp, H.smooth, H.TAU,
+  //           H.cx, H.cy (frame centre of the safe area), H.safe {x0,y0,x1,y1}, H.maxR
+  //   The host fills #000, then calls this, then draws vignette (unless light) + title.
+  //   Keep important content inside H.safe. Use H.rng only (no Math.random) for determinism.
+  function drawIllusion(ctx, p, CW, CH, H) {
+    // --- Fraser "spiral" illusion ----------------------------------------------
+    // The figure is a stack of SEPARATE concentric CIRCLES, each built from a
+    // "twisted cord": short black & white segments laid end to end, every segment
+    // tilted by the SAME oblique angle relative to the circle's tangent (and all
+    // circles tilt the SAME rotational way). On the high-contrast CHECKED grey
+    // background the eye integrates those oblique strands into one continuous
+    // line that appears to wind INWARD — a spiral that does not exist. Once per
+    // loop one circle is traced faintly in colour to prove it closes on itself.
+    const cx = H.cx, cy = H.cy;
+    const TAU = H.TAU;
+    const S = H.safe;
+    const rng = H.rng(20240623);
+
+    // Disc radius: tightest reach is horizontal (cx=540 -> x1=1010 => 470px).
+    // Outermost cord centre at 432 + half cord width (~16) = 448 < 470 -> fits.
+    const DISC = 462;          // background-check disc radius (overfills, clipped)
+    const VIS = 456;           // feathered visible edge of the disc
+
+    ctx.save();
+    // Clip everything to the safe box so nothing bleeds into title / bottom UI.
+    ctx.beginPath();
+    ctx.rect(S.x0, S.y0, S.x1 - S.x0, S.y1 - S.y0);
+    ctx.clip();
+
+    // ---- gentle, seamless shimmer driver (one full period over the loop) ----
+    // Geometry stays perfectly static (crisp cord, no flicker); only soft
+    // luminance breathes. sin/cos of (p*TAU) return to themselves at p=1.
+    const wob = Math.sin(p * TAU);            // -1..1, ==0 at p=0 and p=1
+    const sweepA = p * TAU;                   // highlight sweep angle, one full turn
+
+    // ---------- 1) CHECKED GREY BACKGROUND (clipped to a circular disc) --------
+    // Two grey tones in a square check; the contrast at the cord edges is what
+    // makes the oblique segments read as a drifting spiral. Painted per-pixel so
+    // the disc has a clean feathered rim and a soft shimmer.
+    const G_HI = 196, G_LO = 120;             // light / dark check greys
+    const cell = 46;                          // check square size (px)
+    const img = ctx.getImageData(0, 0, CW, CH);
+    const data = img.data;
+    const yTop = Math.max(S.y0, Math.floor(cy - DISC));
+    const yBot = Math.min(S.y1, Math.ceil(cy + DISC));
+    const xLeft = Math.max(S.x0, Math.floor(cx - DISC));
+    const xRight = Math.min(S.x1, Math.ceil(cx + DISC));
+    const D2 = DISC * DISC;
+    // shimmer: a slow radial brightness wave that completes whole cycles over loop
+    const shimAmp = 10;                       // +/- luminance of the breathing
+    for (let y = yTop; y < yBot; y++) {
+      const dy = y - cy;
+      const dy2 = dy * dy;
+      const cy_cell = Math.floor((y - S.y0) / cell);
+      const rowOff = y * CW;
+      for (let x = xLeft; x < xRight; x++) {
+        const dx = x - cx;
+        const d2 = dx * dx + dy2;
+        if (d2 > D2) continue;                // outside disc -> leave black bg
+        const cx_cell = Math.floor((x - S.x0) / cell);
+        const checkHi = ((cx_cell + cy_cell) & 1) === 0;
+        let g = checkHi ? G_HI : G_LO;
+        // soft breathing shimmer: brightness wave in radius, full loop period
+        const r = Math.sqrt(d2);
+        const wave = Math.sin(r / 54 - sweepA);   // travels inward, loop-safe
+        g += shimAmp * wave * 0.5;
+        g = g < 0 ? 0 : g > 255 ? 255 : g;
+        // feather the disc rim so the edge isn't a hard ragged circle
+        let a = 1;
+        if (r > VIS) a = clamp(1 - (r - VIS) / (DISC - VIS), 0, 1);
+        const gg = Math.round(g * a);             // fade toward black at the rim
+        const o = (rowOff + x) * 4;
+        data[o] = gg; data[o + 1] = gg; data[o + 2] = gg;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+
+    // Re-establish the clip after putImageData (it ignores the canvas clip).
+    ctx.beginPath();
+    ctx.rect(S.x0, S.y0, S.x1 - S.x0, S.y1 - S.y0);
+    // clip to the visible disc too, so cords never poke past the feathered rim
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, VIS, 0, TAU);
+    ctx.clip();
+
+    // ---------- 2) CONCENTRIC CIRCLES OF TWISTED CORD --------------------------
+    // Each circle = many short oblique segments. Going around, the segment colour
+    // alternates black / white; each segment is oriented at tangent + TILT (same
+    // sign on every circle) so the whole stack shares one oblique "lean" and the
+    // brain glues them into a single inward spiral.
+    const TILT = 0.62;            // oblique lean of each cord segment vs tangent (rad ~36deg)
+    const SEG_FILL = 0.86;        // fraction of each slot the segment fills (small gaps)
+    const radii = [102, 162, 222, 282, 342, 402];   // 6 concentric circles
+    const cordW = 17;             // cord thickness (px)
+    const segLenK = 1.18;         // segment length = slot arc * this (slight overlap, no gaps)
+
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    for (let ci = 0; ci < radii.length; ci++) {
+      const R = radii[ci];
+      // segments per circle ~ constant arc spacing (denser on larger circles)
+      const count = Math.max(20, Math.round((TAU * R) / 30));
+      const segCount = count - (count % 2);     // force EVEN -> b/w alternation closes
+      const da = TAU / segCount;
+      const segArc = da * R;                    // arc length of one slot
+      const segLen = segArc * segLenK;          // drawn segment length
+      // static per-circle angular offset so seams don't line up radially (loop-safe)
+      const phase = rng() * da;
+
+      for (let i = 0; i < segCount; i++) {
+        const a = phase + i * da;               // centre angle of this segment
+        const px = cx + R * Math.cos(a);
+        const py = cy + R * Math.sin(a);
+        // tangent direction at this point, then add the oblique TILT
+        const tang = a + Math.PI / 2;
+        const dir = tang + TILT;                // SAME-sign tilt on every circle
+        const hx = Math.cos(dir) * segLen / 2;
+        const hy = Math.sin(dir) * segLen / 2;
+        const black = (i & 1) === 0;
+        ctx.strokeStyle = black ? '#0b0b0b' : '#f4f4f4';
+        ctx.lineWidth = cordW;
+        ctx.beginPath();
+        ctx.moveTo(px - hx, py - hy);
+        ctx.lineTo(px + hx, py + hy);
+        ctx.stroke();
+        void SEG_FILL;
+      }
+    }
+
+    ctx.restore();   // drop the disc clip (keep the safe-box clip)
+
+    // ---------- 3) GENTLE HIGHLIGHT SWEEP (video life, loop-safe) --------------
+    // A soft bright wedge orbits the disc once per loop. Pure additive light over
+    // the static cord, so it never makes the figure flicker. Returns to start at p=1.
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, VIS, 0, TAU);
+    ctx.clip();
+    ctx.globalCompositeOperation = 'lighter';
+    const hx = cx + Math.cos(sweepA) * 250;
+    const hy = cy + Math.sin(sweepA) * 250;
+    const hg = ctx.createRadialGradient(hx, hy, 0, hx, hy, 360);
+    hg.addColorStop(0, 'rgba(255,255,255,0.10)');
+    hg.addColorStop(0.5, 'rgba(255,255,255,0.04)');
+    hg.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = hg;
+    ctx.fillRect(cx - VIS, cy - VIS, VIS * 2, VIS * 2);
+    ctx.restore();
+
+    // ---------- 4) PROOF: trace ONE circle in colour, once per loop ------------
+    // Reveal a coloured arc that sweeps all the way around a single circle and
+    // back to nothing, so it's obvious it closes into a CIRCLE (not a spiral).
+    // The whole reveal lives strictly inside p=0..1 and is empty at the seam.
+    const proofR = radii[3];                    // the 4th circle (clearly mid-figure)
+    // reveal window: grow the arc 0..full over the first ~62%, hold, then fade.
+    const grow = smooth(clamp(p / 0.55, 0, 1));         // 0..1 arc fraction drawn
+    const fade = 1 - smooth(clamp((p - 0.80) / 0.20, 0, 1)); // fade out near the end
+    const alpha = (1 - smooth(clamp((0.06 - p) / 0.06, 0, 1))) * fade; // also fade IN at start
+    if (alpha > 0.01 && grow > 0.001) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, VIS, 0, TAU);
+      ctx.clip();
+      const a0 = -Math.PI / 2;                  // start at top
+      const a1 = a0 + grow * TAU;               // sweep clockwise
+      // bright glow under the line so it reads over both black & white cord
+      ctx.lineCap = 'round';
+      ctx.lineWidth = cordW + 12;
+      ctx.strokeStyle = `rgba(0,0,0,${0.30 * alpha})`;
+      ctx.beginPath();
+      ctx.arc(cx, cy, proofR, a0, a1);
+      ctx.stroke();
+      ctx.lineWidth = cordW + 2;
+      ctx.strokeStyle = `rgba(255,70,60,${0.95 * alpha})`;   // vivid red trace
+      ctx.beginPath();
+      ctx.arc(cx, cy, proofR, a0, a1);
+      ctx.stroke();
+      // a small dot rides the leading tip while it's still drawing
+      if (grow < 0.999) {
+        const tx = cx + proofR * Math.cos(a1);
+        const ty = cy + proofR * Math.sin(a1);
+        ctx.beginPath();
+        ctx.arc(tx, ty, 13, 0, TAU);
+        ctx.fillStyle = `rgba(255,235,120,${0.98 * alpha})`;
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    ctx.restore();   // drop the safe-box clip
+
+    void wob;
+  }
+  // ===========================================================================
+
+  // ---------------- title (baked into the canvas, with a dark pill) ----------
+  let TITLE_LINES = [], TITLE_PX = 60;
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { TITLE_LINES = []; return; }
+    for (let px = 72; px >= 40; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = []; let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_PX = px; return; }
+      if (px === 40) { TITLE_LINES = lines.slice(0, 3); TITLE_PX = px; }
+    }
+  }
+  function drawTitle() {
+    if (!TITLE_LINES.length) return;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_PX);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const lh = TITLE_PX * 1.2, n = TITLE_LINES.length;
+    const startY = 210, padX = 42, padY = 28;
+    let maxW = 0; for (const l of TITLE_LINES) maxW = Math.max(maxW, ctx.measureText(l).width);
+    const rx = CW / 2 - maxW / 2 - padX, rw = maxW + padX * 2;
+    const ry = startY - lh / 2 - padY, rh = (n - 1) * lh + lh + padY * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 28); ctx.fill();
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    let y = startY; for (const l of TITLE_LINES) { ctx.fillText(l, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.2, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(0.64, 'rgba(0,0,0,0.12)');
+    g.addColorStop(1, 'rgba(0,0,0,0.66)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  }
+
+  window.setup = function (overrides) {
+    if (overrides && typeof overrides === 'object') SPEC = { ...SPEC, ...overrides };
+    layoutTitle(SPEC.title);
+    return { key: SPEC.key, name: SPEC.name, dur: SPEC.dur, fps: SPEC.fps, lines: TITLE_LINES.length, px: TITLE_PX };
+  };
+  window.getSpec = function () { return { ...SPEC }; };
+
+  window.renderFrame = function (progress) {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    drawTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  layoutTitle(SPEC.title);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

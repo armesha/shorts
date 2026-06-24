@@ -1,4 +1,5 @@
-import { type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Link } from "react-router-dom";
 import {
   LineChart,
   Line,
@@ -211,27 +212,65 @@ export function MiniStat({ label, value, title }: { label: string; value: ReactN
 
 export function TopVideosPanel({ videos }: { videos: OverviewTopVideo[] }) {
   const { t } = useT();
+  const [visible, setVisible] = useState(10);
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const shown = videos.slice(0, visible);
+
+  useEffect(() => {
+    setVisible(10);
+  }, [videos.length]);
+
+  useEffect(() => {
+    const root = listRef.current;
+    const target = sentinelRef.current;
+    if (!root || !target || visible >= videos.length) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) setVisible((n) => Math.min(videos.length, n + 10));
+      },
+      { root, rootMargin: "96px 0px", threshold: 0.01 },
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [videos.length, visible]);
+
   return (
     <div className="rounded-lg bg-base-200/50 p-3 min-w-0">
-      <div className="text-sm font-semibold mb-3">{t("stats.topVideosAll")}</div>
+      <div className="flex items-center justify-between gap-3 mb-3">
+        <div className="text-sm font-semibold">{t("stats.topVideosAll")}</div>
+        {videos.length > 0 && <span className="badge badge-ghost badge-sm">{shown.length} / {videos.length}</span>}
+      </div>
       {videos.length === 0 ? (
         <div className="h-72 flex items-center justify-center text-sm text-base-content/45 text-center px-4">
           {t("stats.noTopVideos")}
         </div>
       ) : (
-        <div className="space-y-2 max-h-72 overflow-auto pr-1">
-          {videos.slice(0, 10).map((v, index) => (
-            <a
+        <>
+        <div ref={listRef} className="space-y-2 max-h-72 overflow-auto pr-1">
+          {shown.map((v, index) => (
+            <div
               key={`${v.accountId}:${v.videoId}`}
-              href={`https://www.youtube.com/watch?v=${v.videoId}`}
-              target="_blank"
-              rel="noreferrer"
               className="grid grid-cols-[1.5rem_minmax(0,1fr)_auto] items-center gap-3 rounded-lg bg-base-100/70 p-2 hover:bg-base-100"
             >
               <div className="text-xs text-base-content/45 text-right shrink-0">{index + 1}</div>
               <div className="min-w-0">
-                <div className="font-medium text-sm truncate">{cleanDisplayText(v.title)}</div>
-                <div className="text-xs text-base-content/50 truncate">{v.channelTitle}</div>
+                <a
+                  href={`https://www.youtube.com/shorts/${v.videoId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium text-sm truncate link-hover block"
+                  title={t("stats.openOnYoutube")}
+                >
+                  {cleanDisplayText(v.title)}
+                </a>
+                <Link
+                  to={`/accounts/${v.accountId}`}
+                  className="text-xs text-base-content/50 truncate link-hover block"
+                  title={t("stats.openChannel")}
+                >
+                  {v.channelTitle}
+                </Link>
               </div>
               <div className="text-right shrink-0">
                 <div className="text-sm font-semibold tabular-nums">{fmt(v.views)}</div>
@@ -239,9 +278,11 @@ export function TopVideosPanel({ videos }: { videos: OverviewTopVideo[] }) {
                   {t("stats.views").toLowerCase()} · {formatWatchMinutes(v.watchMinutes)}
                 </div>
               </div>
-            </a>
+            </div>
           ))}
+          {videos.length > visible && <div ref={sentinelRef} className="h-8" aria-hidden="true" />}
         </div>
+        </>
       )}
     </div>
   );
@@ -249,12 +290,34 @@ export function TopVideosPanel({ videos }: { videos: OverviewTopVideo[] }) {
 
 export function TopChannelsPanel({ rows }: { rows: OverviewTopChannel[] }) {
   const { t } = useT();
-  const ranked = rows.slice(0, 8).map((r) => ({
+  const [visible, setVisible] = useState(8);
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const ranked = rows.slice(0, visible).map((r) => ({
     ...r,
     mainViews: r.analyticsViews || r.publicViews,
     hasAnalytics: r.analyticsViews > 0,
   }));
   const maxViews = Math.max(1, ...ranked.map((r) => r.mainViews));
+
+  useEffect(() => {
+    setVisible(8);
+  }, [rows.length]);
+
+  useEffect(() => {
+    const root = listRef.current;
+    const target = sentinelRef.current;
+    if (!root || !target || visible >= rows.length) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) setVisible((n) => Math.min(rows.length, n + 8));
+      },
+      { root, rootMargin: "96px 0px", threshold: 0.01 },
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [rows.length, visible]);
+
   return (
     <aside className="card bg-base-100 border border-base-300">
       <div className="card-body p-4 gap-3">
@@ -270,7 +333,7 @@ export function TopChannelsPanel({ rows }: { rows: OverviewTopChannel[] }) {
       {rows.length === 0 ? (
         <div className="text-sm text-base-content/45 py-6 text-center">{t("stats.noTopChannels")}</div>
       ) : (
-        <div className="space-y-2">
+        <div ref={listRef} className="space-y-2 max-h-[32rem] overflow-auto pr-1">
           {ranked.map((r, index) => {
             const pct = Math.max(3, Math.round((r.mainViews / maxViews) * 100));
             return (
@@ -285,19 +348,26 @@ export function TopChannelsPanel({ rows }: { rows: OverviewTopChannel[] }) {
                     {index + 1}
                   </div>
                   <div className="min-w-0">
-                    {r.ytChannelId ? (
-                      <a
-                        href={`https://www.youtube.com/channel/${r.ytChannelId}`}
-                        target="_blank"
-                        rel="noreferrer"
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Link
+                        to={`/accounts/${r.accountId}`}
                         className="font-medium truncate block link-hover"
-                        title={t("stats.openOnYoutube")}
+                        title={t("stats.openChannel")}
                       >
                         {r.channelTitle}
-                      </a>
-                    ) : (
-                      <div className="font-medium truncate">{r.channelTitle}</div>
-                    )}
+                      </Link>
+                      {r.ytChannelId && (
+                        <a
+                          href={`https://www.youtube.com/channel/${r.ytChannelId}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="badge badge-ghost badge-xs shrink-0"
+                          title={t("stats.openOnYoutube")}
+                        >
+                          YouTube
+                        </a>
+                      )}
+                    </div>
                     <div className="flex items-center gap-2 text-xs text-base-content/45 min-w-0">
                       {r.ownerUsername && <span className="truncate">@{r.ownerUsername}</span>}
                       {!r.hasAnalytics && <span className="badge badge-ghost badge-xs">{t("stats.noPeriodAnalyticsShort")}</span>}
@@ -345,6 +415,7 @@ export function TopChannelsPanel({ rows }: { rows: OverviewTopChannel[] }) {
               </div>
             );
           })}
+          {rows.length > visible && <div ref={sentinelRef} className="h-8" aria-hidden="true" />}
         </div>
       )}
       </div>

@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>illusions host v2 (variants + localizable title overlay)</title>
+<style>html,body{margin:0;padding:0;background:#000}#scene{display:block}</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  // ============================================================================
+  //  SHARED HOST v2 — variant-aware + localizable title overlay.
+  //  Edit ONLY the two marked regions: (1) SPEC block, (2) drawIllusion().
+  //  New vs v1:
+  //   - H.v  = variant params {palette,dir,turns,speed,seed,density,angle} (from SPEC.variant)
+  //   - H.PALETTES / H.pal(t) / H.palStops()  = named colour schemes for variants
+  //   - window.renderTitle(text) -> TRANSPARENT png with ONLY the title (for ffmpeg overlay,
+  //     so one titleless geometry render is reused across all 5 languages)
+  //   - canvas is alpha:true; renderFrame() fills its own opaque background.
+  // ============================================================================
+  const CW = 1080, CH = 1920, TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: true });
+
+  function mulberry32(seed) {
+    let s = (seed >>> 0) || 1;
+    return function () {
+      let t = s += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (x, lo, hi) => x < lo ? lo : x > hi ? hi : x;
+  const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+
+  // Named palettes: ordered RGB stops. H.pal(t) interpolates across them; H.palStops() returns raw stops.
+  const PALETTES = {
+    classic:  [[75,58,255],[255,35,112],[38,255,132],[44,150,255]], // v1 spectrum (default look)
+    spectrum: [[75,58,255],[255,35,112],[38,255,132],[44,150,255]],
+    aurora:   [[130,255,200],[120,180,255],[180,120,255],[255,140,220]],
+    fire:     [[255,210,90],[255,120,40],[255,60,60],[210,40,120]],
+    ice:      [[200,240,255],[120,190,255],[255,255,255],[90,150,230]],
+    neon:     [[80,255,140],[190,255,60],[40,230,180],[120,255,90]],
+    gold:     [[255,235,170],[255,190,80],[255,250,210],[210,150,50]],
+    sunset:   [[255,180,90],[255,90,120],[200,70,200],[120,80,220]],
+    emerald:  [[170,255,210],[60,220,150],[30,180,140],[120,255,180]],
+    magma:    [[255,230,120],[255,140,40],[230,40,40],[120,20,60]],
+    mono:     [[255,255,255],[210,210,210],[170,170,170],[235,235,235]],
+    candy:    [[255,160,210],[120,210,255],[255,225,130],[180,160,255]],
+  };
+  function palStops(name) { return PALETTES[name] || PALETTES.classic; }
+  function pal(t, name) {
+    const s = palStops(name || (V && V.palette) || 'classic');
+    t = clamp(t, 0, 1) * (s.length - 1);
+    const i = Math.min(s.length - 2, Math.floor(t)), f = t - i;
+    const a = s[i], b = s[i + 1];
+    return `rgb(${Math.round(lerp(a[0],b[0],f))} ${Math.round(lerp(a[1],b[1],f))} ${Math.round(lerp(a[2],b[2],f))})`;
+  }
+
+  // active variant (filled at setup)
+  let V = { palette: 'classic', dir: 1, turns: 1, speed: 1, seed: 1, density: 1, angle: 0 };
+
+  const SAFE = { x0: 70, y0: 380, x1: 1010, y1: 1520 };
+  const H = { TAU, rng: mulberry32, lerp, clamp, smooth, cx: 540, cy: 960, safe: SAFE, maxR: 460,
+              PALETTES, pal, palStops, get v() { return V; } };
+
+  // ====================== (1) SPEC — replace these values =====================
+  let SPEC = {
+    key: 'drift',
+    name: 'Peripheral drift',
+    title: 'Nothing here is moving — only your eyes',
+    dur: 8,            // seconds
+    fps: 30,
+    light: true,       // true => skip the dark vignette (for grey/white-background illusions)
+  };
+  // ===========================================================================
+
+  // ============ (2) drawIllusion — replace this whole function body ==========
+  // Contract:
+  //   p       progress 0..1 over the clip (build renders frame f at p=f/FRAMES,
+  //           so p=0 and p=1 are the SAME instant -> a LOOPING illusion must make
+  //           draw(0) == draw(1). Non-looping sequences (e.g. afterimage) ignore this.)
+  //   CW,CH   1080 x 1920
+  //   H       helpers: H.rng(seed)->()=>0..1, H.lerp, H.clamp, H.smooth, H.TAU,
+  //           H.cx, H.cy (frame centre of the safe area), H.safe {x0,y0,x1,y1}, H.maxR
+  //   The host fills #000, then calls this, then draws vignette (unless light) + title.
+  //   Keep important content inside H.safe. Use H.rng only (no Math.random) for determinism.
+  function drawIllusion(ctx, p, CW, CH, H) {
+    const cx = H.cx, cy = H.cy;
+    const TAU = H.TAU;
+
+    // --- Kitaoka "rotating snakes" peripheral-drift ---------------------------
+    // A STATIC pattern: concentric rings of repeating asymmetric-luminance
+    // micro-segments. The repeating 4-step ramp black -> dark -> white -> light
+    // drives illusory rotation toward the dark->light edge. Adjacent rings flip
+    // the ramp so they seem to spin opposite ways. Only the gentle full-frame
+    // brightness FLICKER animates the file — never an actual rotation.
+
+    // Mid-grey backdrop so both black and white tiles read clearly (the host
+    // fills #000 first; with light:true there is no vignette to fight).
+    const GREY = '#8d8d8d';
+    ctx.fillStyle = GREY;
+    ctx.fillRect(0, 0, CW, CH);
+
+    // Ramp colours: a strict luminance ladder black -> blue -> white -> yellow.
+    // (black darkest, blue darkish, white brightest, yellow lightish) — the
+    // asymmetry of this ordered ladder is what generates the drift percept.
+    const RAMP = ['#0a0a0a', '#1c3fb0', '#f6f6f6', '#e8d23a'];
+
+    // Four concentric rings. Inner radius then outward; each ring is a band.
+    // Sized large so the pattern reaches well into peripheral vision (the drift
+    // percept is strongest where you are NOT directly looking). outerR ~= 469,
+    // which fits the safe box on EVERY side (cx=540 -> 470px to x0/x1; cy=960
+    // -> 580px up / 560px down), so nothing clips and the bottom 400px is clear.
+    const NRINGS = 4;
+    const innerR = 104;         // inside this sits the fixation dot
+    const bandGap = 7;          // thin grey gap between rings -> crisp separation
+    const bandW = 86;           // radial thickness of each ring band
+    // segments per ring scaled by circumference so micro-segments stay similar
+    // in arc-length across rings (more segments on bigger rings).
+    const baseSegPerRamp = 9;   // number of full 4-step ramps on ring 0
+
+    for (let ring = 0; ring < NRINGS; ring++) {
+      const r0 = innerR + ring * (bandW + bandGap);
+      const r1 = r0 + bandW;
+      const rMid = (r0 + r1) / 2;
+      // keep more ramps on outer rings so tile arc-length stays ~constant
+      const ramps = baseSegPerRamp + ring * 3;
+      const cells = ramps * 4;            // total micro-segments around the ring
+      const da = TAU / cells;
+      // Alternate rings reverse the ramp order -> opposite illusory spin.
+      const flip = (ring % 2) === 1;
+      // A small per-ring angular phase offset so ramp seams don't line up
+      // radially (looks more like Kitaoka's tiled snakes).
+      const phase = (ring * 0.5) * da;
+
+      for (let c = 0; c < cells; c++) {
+        let step = c % 4;
+        if (flip) step = 3 - step;        // reverse ramp direction on odd rings
+        const a0 = phase + c * da;
+        const a1 = a0 + da;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r1, a0, a1, false);
+        ctx.arc(cx, cy, r0, a1, a0, true);
+        ctx.closePath();
+        ctx.fillStyle = RAMP[step];
+        ctx.fill();
+      }
+
+      // Thin neutral outline top & bottom of each band keeps edges clean and
+      // stops anti-alias bleed between bright/dark neighbours.
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'rgba(141,141,141,0.9)';
+      ctx.beginPath(); ctx.arc(cx, cy, r0, 0, TAU); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy, r1, 0, TAU); ctx.stroke();
+      void rMid;
+    }
+
+    // Central fixation dot (stare here; drift is strongest in the periphery).
+    ctx.beginPath();
+    ctx.arc(cx, cy, 10, 0, TAU);
+    ctx.fillStyle = '#111';
+    ctx.fill();
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#f4f4f4';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 10, 0, TAU);
+    ctx.stroke();
+
+    // --- gentle full-frame brightness FLICKER (transient drive, NOT motion) ---
+    // 4 full cycles over the clip so draw(0) === draw(1) (seamless loop).
+    const pulse = 0.06 * Math.sin(p * TAU * 4);
+    if (pulse !== 0) {
+      ctx.save();
+      ctx.globalCompositeOperation = pulse > 0 ? 'lighter' : 'source-over';
+      ctx.fillStyle = pulse > 0
+        ? 'rgba(255,255,255,' + Math.abs(pulse).toFixed(4) + ')'
+        : 'rgba(0,0,0,' + Math.abs(pulse).toFixed(4) + ')';
+      ctx.fillRect(0, 0, CW, CH);
+      ctx.restore();
+    }
+  }
+  // ===========================================================================
+
+  // ---------------- title (identical layout to v1; drawn as overlay or inline) ----------
+  let TITLE_LINES = [], TITLE_PX = 60, TITLE_TEXT = '';
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    TITLE_TEXT = String(text || '');
+    const words = TITLE_TEXT.trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { TITLE_LINES = []; return; }
+    for (let px = 72; px >= 40; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = []; let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_PX = px; return; }
+      if (px === 40) { TITLE_LINES = lines.slice(0, 3); TITLE_PX = px; }
+    }
+  }
+  function paintTitle() {
+    if (!TITLE_LINES.length) return;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_PX);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const lh = TITLE_PX * 1.2, n = TITLE_LINES.length;
+    const startY = 210, padX = 42, padY = 28;
+    let maxW = 0; for (const l of TITLE_LINES) maxW = Math.max(maxW, ctx.measureText(l).width);
+    const rx = CW / 2 - maxW / 2 - padX, rw = maxW + padX * 2;
+    const ry = startY - lh / 2 - padY, rh = (n - 1) * lh + lh + padY * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 28); ctx.fill();
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    let y = startY; for (const l of TITLE_LINES) { ctx.fillText(l, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.2, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.64, 'rgba(0,0,0,0.12)'); g.addColorStop(1, 'rgba(0,0,0,0.66)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  }
+
+  window.setup = function (overrides) {
+    if (overrides && typeof overrides === 'object') {
+      const { variant, ...rest } = overrides;
+      SPEC = { ...SPEC, ...rest };
+      if (variant && typeof variant === 'object') SPEC.variant = variant;
+    }
+    V = { palette: 'classic', dir: 1, turns: 1, speed: 1, seed: 1, density: 1, angle: 0, ...(SPEC.variant || {}) };
+    layoutTitle(SPEC.title);
+    return { key: SPEC.key, name: SPEC.name, dur: SPEC.dur, fps: SPEC.fps, light: !!SPEC.light, variant: V, lines: TITLE_LINES.length, px: TITLE_PX };
+  };
+  window.getSpec = function () { return { ...SPEC, v: { ...V } }; };
+
+  // Full frame (background + illusion + vignette + INLINE title). Used for standalone preview.
+  window.renderFrame = function (progress) {
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    paintTitle();
+    return canvas.toDataURL('image/png');
+  };
+  // Geometry only, NO title (opaque). Rendered ONCE; localized titles overlaid later.
+  window.renderBase = function (progress) {
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    return canvas.toDataURL('image/png');
+  };
+  // TRANSPARENT png with ONLY the title (pill + text), for ffmpeg overlay onto a titleless clip.
+  window.renderTitle = function (text) {
+    layoutTitle(text);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.clearRect(0, 0, CW, CH);
+    paintTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  layoutTitle(SPEC.title);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

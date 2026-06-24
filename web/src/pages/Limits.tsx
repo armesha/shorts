@@ -9,13 +9,25 @@ export default function Limits() {
   const { user } = useAuth();
   const { t, lang } = useT();
   const [data, setData] = useState<AdminLimits | null>(null);
+  const [manualDraft, setManualDraft] = useState({ maxFileMb: 40, uploadsPerHour: 100 });
+  const [readinessDraft, setReadinessDraft] = useState({ minRunwayDays: 2.5 });
+  const [manualSaving, setManualSaving] = useState(false);
+  const [readinessSaving, setReadinessSaving] = useState(false);
+  const [manualMsg, setManualMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [readinessMsg, setReadinessMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      setData(await apiClient.adminLimits());
+      const next = await apiClient.adminLimits();
+      setData(next);
+      setManualDraft({
+        maxFileMb: next.manualVideo.maxFileMb,
+        uploadsPerHour: next.manualVideo.uploadsPerHour,
+      });
+      setReadinessDraft({ minRunwayDays: next.readiness.minRunwayDays });
       setError(false);
     } catch (err) {
       console.error("[limits] /admin/limits failed", err);
@@ -29,6 +41,36 @@ export default function Limits() {
     void load();
   }, [load]);
 
+  async function saveManualLimits() {
+    setManualSaving(true);
+    setManualMsg(null);
+    try {
+      const saved = await apiClient.updateAdminManualVideoLimits(manualDraft);
+      setData((cur) => (cur ? { ...cur, manualVideo: saved } : cur));
+      setManualDraft({ maxFileMb: saved.maxFileMb, uploadsPerHour: saved.uploadsPerHour });
+      setManualMsg({ ok: true, text: t("limits.manualSaved") });
+    } catch (err) {
+      setManualMsg({ ok: false, text: err instanceof Error ? err.message : t("limits.manualSaveFailed") });
+    } finally {
+      setManualSaving(false);
+    }
+  }
+
+  async function saveReadinessLimits() {
+    setReadinessSaving(true);
+    setReadinessMsg(null);
+    try {
+      const saved = await apiClient.updateAdminReadinessLimits(readinessDraft);
+      setData((cur) => (cur ? { ...cur, readiness: saved } : cur));
+      setReadinessDraft({ minRunwayDays: saved.minRunwayDays });
+      setReadinessMsg({ ok: true, text: t("limits.readinessSaved") });
+    } catch (err) {
+      setReadinessMsg({ ok: false, text: err instanceof Error ? err.message : t("limits.readinessSaveFailed") });
+    } finally {
+      setReadinessSaving(false);
+    }
+  }
+
   if (user?.role !== "admin") return <Navigate to="/" replace />;
 
   const totals = data?.totals;
@@ -36,6 +78,11 @@ export default function Limits() {
   const limit = totals?.characterLimit;
   const remaining = totals?.remaining;
   const pct = totals?.usedPercent ?? 0;
+  const manualDirty =
+    !!data?.manualVideo &&
+    (manualDraft.maxFileMb !== data.manualVideo.maxFileMb ||
+      manualDraft.uploadsPerHour !== data.manualVideo.uploadsPerHour);
+  const readinessDirty = !!data?.readiness && readinessDraft.minRunwayDays !== data.readiness.minRunwayDays;
 
   return (
     <div className="space-y-6">
@@ -77,6 +124,124 @@ export default function Limits() {
               })}
               danger={(totals?.invalid ?? 0) + (totals?.errors ?? 0) + (totals?.blocked ?? 0) > 0}
             />
+          </div>
+
+          <div className="card bg-base-100 border border-base-300">
+            <div className="card-body gap-4">
+              <div className="flex items-start justify-between gap-3 flex-wrap">
+                <div>
+                  <div className="font-semibold">{t("limits.manualTitle")}</div>
+                  <div className="text-sm text-base-content/60">
+                    {t("limits.manualDesc", {
+                      sec: data?.manualVideo.durationSec ?? 60,
+                    })}
+                  </div>
+                </div>
+                <span className="badge badge-ghost">{t("limits.manualAdminEditable")}</span>
+              </div>
+              <form
+                className="grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void saveManualLimits();
+                }}
+              >
+                <label className="form-control">
+                  <span className="label-text text-xs mb-1">{t("limits.manualMaxFileMb")}</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={200}
+                    className="input input-bordered input-sm"
+                    value={manualDraft.maxFileMb}
+                    onChange={(e) =>
+                      setManualDraft((cur) => ({
+                        ...cur,
+                        maxFileMb: Math.max(1, Math.min(200, Number(e.target.value) || 1)),
+                      }))
+                    }
+                  />
+                </label>
+                <label className="form-control">
+                  <span className="label-text text-xs mb-1">{t("limits.manualUploadsPerHour")}</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={1000}
+                    className="input input-bordered input-sm"
+                    value={manualDraft.uploadsPerHour}
+                    onChange={(e) =>
+                      setManualDraft((cur) => ({
+                        ...cur,
+                        uploadsPerHour: Math.max(1, Math.min(1000, Number(e.target.value) || 1)),
+                      }))
+                    }
+                  />
+                </label>
+                <button className="btn btn-sm btn-primary" type="submit" disabled={manualSaving || !manualDirty}>
+                  {manualSaving ? <span className="loading loading-spinner loading-xs" /> : null}
+                  {t("common.save")}
+                </button>
+              </form>
+              <div className="grid gap-2 sm:grid-cols-3 text-xs text-base-content/60">
+                <span>{t("limits.manualCurrentSize", { n: fmt(data?.manualVideo.maxFileMb, lang) })}</span>
+                <span>{t("limits.manualCurrentRate", { n: fmt(data?.manualVideo.uploadsPerHour, lang) })}</span>
+                <span>{t("limits.manualHardCaps")}</span>
+              </div>
+              {manualMsg && (
+                <div className={`alert py-2 text-sm ${manualMsg.ok ? "alert-success" : "alert-error"}`}>
+                  <span>{manualMsg.text}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="card bg-base-100 border border-base-300">
+            <div className="card-body gap-4">
+              <div className="flex items-start justify-between gap-3 flex-wrap">
+                <div>
+                  <div className="font-semibold">{t("limits.readinessTitle")}</div>
+                  <div className="text-sm text-base-content/60">{t("limits.readinessDesc")}</div>
+                </div>
+                <span className="badge badge-ghost">{t("limits.manualAdminEditable")}</span>
+              </div>
+              <form
+                className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void saveReadinessLimits();
+                }}
+              >
+                <label className="form-control">
+                  <span className="label-text text-xs mb-1">{t("limits.readinessMinDays")}</span>
+                  <input
+                    type="number"
+                    min={0.5}
+                    max={30}
+                    step={0.5}
+                    className="input input-bordered input-sm"
+                    value={readinessDraft.minRunwayDays}
+                    onChange={(e) =>
+                      setReadinessDraft({
+                        minRunwayDays: Math.max(0.5, Math.min(30, Math.round((Number(e.target.value) || 0.5) * 10) / 10)),
+                      })
+                    }
+                  />
+                </label>
+                <button className="btn btn-sm btn-primary" type="submit" disabled={readinessSaving || !readinessDirty}>
+                  {readinessSaving ? <span className="loading loading-spinner loading-xs" /> : null}
+                  {t("common.save")}
+                </button>
+              </form>
+              <div className="text-xs text-base-content/60">
+                {t("limits.readinessCurrent", { n: fmt(data?.readiness.minRunwayDays, lang) })}
+              </div>
+              {readinessMsg && (
+                <div className={`alert py-2 text-sm ${readinessMsg.ok ? "alert-success" : "alert-error"}`}>
+                  <span>{readinessMsg.text}</span>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="card bg-base-100 border border-base-300">

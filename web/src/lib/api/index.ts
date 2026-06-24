@@ -5,11 +5,12 @@ export { ApiError } from "./http";
 import { get, send } from "./http";
 import type {
   Account, HistoryPage, AppStatus, AppSettings, OAuthClientsResponse, AddOAuthClientResponse,
-  AdminUser, DeckInfo, UserDeckRow, AdminLimits, PackUsageItem, MyDecks, LowDeckRow,
+  AdminUser, DeckInfo, UserDeckRow, AdminLimits, PackUsageItem, MyDecks, LowDeckRow, ManualVideoLimits, ReadinessLimits,
   AuthUser, Generator, GeneratedPreview, GeneratedVideo, VideoItem, GenJobStatus,
   PsychSchema, PsychCardList, PackSummary, PackFull, PackMusic, PackMusicUploadFile,
   PackMusicUploadResult, MusicTrack, StatRow, ChannelTotals, PlatformSummary, StatPoint,
   AdminAnalytics, UserAnalytics, ErrorLogItem, NotificationItem, NotificationCounts, SystemStatus,
+  ContentCatalogResponse, AccountReadiness, QueueOverview,
 } from "./types";
 
 export const apiClient = {
@@ -50,15 +51,15 @@ export const apiClient = {
     send<{ ok: boolean }>(`/youtube/clients/${id}`, "PATCH", { label }),
   deleteYoutubeClient: (id: number) => send<{ ok: boolean }>(`/youtube/clients/${id}`, "DELETE"),
   adminUsers: () => get<AdminUser[]>("/admin/users"),
-    createUser: (username: string, password: string, role?: string, hidden?: string[]) =>
-      send<{ id: number; username: string; role: string; isSuperAdmin?: boolean }>("/admin/users", "POST", {
-        username,
-        password,
-        role,
-        hidden,
-      }),
-    setUserRole: (userId: number | string, role: "admin" | "user") =>
-      send<{ ok: boolean; role: string; isSuperAdmin?: boolean }>(`/admin/users/${userId}/role`, "PUT", { role }),
+  createUser: (username: string, password: string, role?: string, hidden?: string[]) =>
+    send<{ id: number; username: string; role: string; isSuperAdmin?: boolean }>("/admin/users", "POST", {
+      username,
+      password,
+      role,
+      hidden,
+    }),
+  setUserRole: (userId: number | string, role: "admin" | "user") =>
+    send<{ ok: boolean; role: string; isSuperAdmin?: boolean }>(`/admin/users/${userId}/role`, "PUT", { role }),
   impersonateUser: (userId: number | string) =>
     send<AuthUser>(`/admin/users/${userId}/impersonate`, "POST", {}),
   stopImpersonation: () => send<AuthUser>("/auth/impersonation/stop", "POST", {}),
@@ -67,8 +68,14 @@ export const apiClient = {
     body: { severity?: "info" | "warning" | "error"; title?: string; message: string; solution?: string; actionUrl?: string },
   ) => send<NotificationItem>(`/admin/users/${userId}/notifications`, "POST", body),
   adminDecks: () => get<DeckInfo[]>("/admin/decks"),
+  adminPacks: () => get<PackSummary[]>("/admin/packs"),
   adminUserDecks: () => get<UserDeckRow[]>("/admin/user-decks"),
   adminLimits: () => get<AdminLimits>("/admin/limits"),
+  updateAdminManualVideoLimits: (body: { maxFileMb: number; uploadsPerHour: number }) =>
+    send<ManualVideoLimits>("/admin/manual-video-limits", "PUT", body),
+  updateAdminReadinessLimits: (body: { minRunwayDays: number }) =>
+    send<ReadinessLimits>("/admin/readiness-limits", "PUT", body),
+  manualVideoLimits: () => get<ManualVideoLimits>("/videos/manual-limits"),
   setUserDecks: (userId: number, hidden: string[], grants?: string[]) =>
     send<{ ok: boolean; hidden: string[] }>(`/admin/users/${userId}/decks`, "PUT", { hidden, grants }),
   // «Бесконечный пак» (имитация) — вкл/выкл для юзера: 1000 карточек везде + рецикл очереди по кругу.
@@ -79,9 +86,11 @@ export const apiClient = {
   adminUserPackUsage: (userId: number) =>
     get<{ userId: number; username: string; items: PackUsageItem[] }>(`/admin/users/${userId}/pack-usage`),
   myDecks: (userId?: number) => get<MyDecks>(`/my-decks${userId != null ? `?userId=${userId}` : ""}`),
+  contentCatalog: () => get<ContentCatalogResponse>("/content-catalog"),
   adminLowDecks: () => get<LowDeckRow[]>("/admin/low-decks"),
   accounts: (scope?: "all") => get<Account[]>(`/accounts${scope === "all" ? "?scope=all" : ""}`),
   account: (id: number | string) => get<Account>(`/accounts/${id}`),
+  accountReadiness: (id: number | string) => get<AccountReadiness>(`/accounts/${id}/readiness`),
   createAccount: () => send<Account>("/accounts", "POST", {}),
   updateAccount: (id: number | string, data: Partial<Account>) =>
     send<Account>(`/accounts/${id}`, "PUT", data),
@@ -169,6 +178,8 @@ export const apiClient = {
   videos: (accountId: number | string) => get<VideoItem[]>(`/videos?accountId=${accountId}`),
   saveVideo: (body: { accountId: number; text: string; title: string; bg?: string; music?: string; deck?: string }) =>
     send<VideoItem>("/videos", "POST", body),
+  uploadVideo: (body: { accountId: number; name: string; type: string; size: number; dataUrl: string; title?: string }) =>
+    send<VideoItem>("/videos/upload", "POST", body),
   deleteVideo: (id: number | string) => send<{ ok: boolean }>(`/videos/${id}`, "DELETE"),
   batchVideos: (accountId: number | string, count: number, deck?: string) =>
     send<{ created: VideoItem[]; requested: number; made: number; exhausted: boolean }>(
@@ -179,8 +190,10 @@ export const apiClient = {
   // Generation queue: one video at a time across all users. Enqueue → poll status → optional cancel.
   enqueueGen: (accountId: number | string, count: number, deckIds?: string[]) =>
     send<{ jobId: string; total: number }>("/gen-queue", "POST", { accountId: Number(accountId), count, deckIds }),
+  genJobs: (scope?: "all") => get<{ jobs: GenJobStatus[] }>(`/gen-queue${scope === "all" ? "?scope=all" : ""}`),
   genStatus: (jobId: string) => get<GenJobStatus>(`/gen-queue/${jobId}`),
   cancelGen: (jobId: string) => send<{ ok: boolean }>(`/gen-queue/${jobId}/cancel`, "POST", {}),
+  queueOverview: (scope?: "all") => get<QueueOverview>(`/queue${scope === "all" ? "?scope=all" : ""}`),
   postVideoNow: (id: number | string, publishAt?: string) =>
     send<{ ok: boolean; youtubeId?: string; url?: string; scheduled?: boolean; removed?: boolean }>(
       `/videos/${id}/post-now`,

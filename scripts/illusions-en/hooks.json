@@ -1,0 +1,310 @@
+[
+  {
+    "id": "spiral",
+    "en": "Stare at the center dot"
+  },
+  {
+    "id": "wheel",
+    "en": "Which way is it really spinning?"
+  },
+  {
+    "id": "lilac",
+    "en": "Stare at the cross — watch the magenta vanish"
+  },
+  {
+    "id": "drift",
+    "en": "Nothing here is moving — only your eyes"
+  },
+  {
+    "id": "cafewall",
+    "en": "Every row here is perfectly straight"
+  },
+  {
+    "id": "scintgrid",
+    "en": "Count the black dots (there are none)"
+  },
+  {
+    "id": "afterimage",
+    "en": ""
+  },
+  {
+    "id": "ebbinghaus",
+    "en": "Both orange dots are the same size"
+  },
+  {
+    "id": "checkershadow",
+    "en": "A and B are the exact same grey"
+  },
+  {
+    "id": "penrose",
+    "en": "This triangle cannot exist"
+  },
+  {
+    "id": "aperturebars",
+    "en": "The bars slide sideways, not down"
+  },
+  {
+    "id": "barberpole",
+    "en": "These stripes only LOOK like they rise"
+  },
+  {
+    "id": "beadspiral",
+    "en": "The beads sit on perfect spirals"
+  },
+  {
+    "id": "benham",
+    "en": "Spin it and your eyes invent colour"
+  },
+  {
+    "id": "bezold",
+    "en": "Both reds are the exact same red"
+  },
+  {
+    "id": "breathingsquares",
+    "en": "This grid is not actually moving"
+  },
+  {
+    "id": "bulgegrid",
+    "en": "This checkerboard is perfectly flat"
+  },
+  {
+    "id": "chevrondrift",
+    "en": "The arrows refuse to sit still"
+  },
+  {
+    "id": "coffer",
+    "en": "Can you find the 16 circles?"
+  },
+  {
+    "id": "colorassimilation",
+    "en": "Both panels are pure white"
+  },
+  {
+    "id": "cornsweet",
+    "en": "Both halves are the same grey"
+  },
+  {
+    "id": "crawlingdots",
+    "en": "The dots are locked to the grid"
+  },
+  {
+    "id": "delboeuf",
+    "en": "Both orange dots are the same size"
+  },
+  {
+    "id": "depthlattice",
+    "en": "A flat grid becomes a tunnel"
+  },
+  {
+    "id": "devilsfork",
+    "en": "How many prongs does it have?"
+  },
+  {
+    "id": "eclipsegrid",
+    "en": "Every center dot is identical"
+  },
+  {
+    "id": "ehrenstein",
+    "en": "Those bright discs are not real"
+  },
+  {
+    "id": "enigma",
+    "en": "The rings seem to stream — they do not"
+  },
+  {
+    "id": "expandrings",
+    "en": "Stare at the center, then look around"
+  },
+  {
+    "id": "fanflip",
+    "en": "Which way did the fan flip?"
+  },
+  {
+    "id": "floatingrings",
+    "en": "Every ring is perfectly flat"
+  },
+  {
+    "id": "fraserspiral",
+    "en": "These are circles, not a spiral"
+  },
+  {
+    "id": "glasswarp",
+    "en": "The centre is not bending"
+  },
+  {
+    "id": "hering",
+    "en": "Both red lines are perfectly straight"
+  },
+  {
+    "id": "hermanngrid",
+    "en": "Grey dots that are not there"
+  },
+  {
+    "id": "hypnotunnel",
+    "en": "The tunnel is only flat lines"
+  },
+  {
+    "id": "impossiblecube",
+    "en": "Look closely — it cannot be built"
+  },
+  {
+    "id": "inducedmotion",
+    "en": "The center dot is perfectly still"
+  },
+  {
+    "id": "jastrow",
+    "en": "These two arcs are identical"
+  },
+  {
+    "id": "kanizsa",
+    "en": "There is no white triangle"
+  },
+  {
+    "id": "kineticdots",
+    "en": "Flat dots turn into a sphere"
+  },
+  {
+    "id": "loomroom",
+    "en": "The room is only lines"
+  },
+  {
+    "id": "machbands",
+    "en": "Each band is a flat, even grey"
+  },
+  {
+    "id": "mib",
+    "en": "Stare at the centre — the yellow dots vanish"
+  },
+  {
+    "id": "moirepulse",
+    "en": "The rings are not breathing"
+  },
+  {
+    "id": "mullerlyer",
+    "en": "These two lines are the same length"
+  },
+  {
+    "id": "munkerwhite",
+    "en": "Every sphere is the same orange"
+  },
+  {
+    "id": "neckercube",
+    "en": "Which face is in front?"
+  },
+  {
+    "id": "neoncolor",
+    "en": "There is no glowing disc here"
+  },
+  {
+    "id": "neonladder",
+    "en": "The glow appears between the lines"
+  },
+  {
+    "id": "orbitstorm",
+    "en": "Stare at the dot — the rings swirl"
+  },
+  {
+    "id": "phantomrays",
+    "en": "The rings create ghost rays"
+  },
+  {
+    "id": "phasewaves",
+    "en": "Two wave fields fight your eyes"
+  },
+  {
+    "id": "pinna",
+    "en": "Lean in and out — the rings rotate"
+  },
+  {
+    "id": "poggendorff",
+    "en": "It is one straight line behind the bar"
+  },
+  {
+    "id": "polarchecker",
+    "en": "Straight rings feel twisted"
+  },
+  {
+    "id": "ponzo",
+    "en": "These two yellow bars are equal"
+  },
+  {
+    "id": "pulsechecker",
+    "en": "The squares never change size"
+  },
+  {
+    "id": "rayafterimage",
+    "en": "Stare, then blink at a wall"
+  },
+  {
+    "id": "rotatingsnakes2",
+    "en": "This image is completely still"
+  },
+  {
+    "id": "rubinvase",
+    "en": "A vase — or two faces?"
+  },
+  {
+    "id": "sander",
+    "en": "Both blue diagonals are equal"
+  },
+  {
+    "id": "scintcircle",
+    "en": "Count the black sparks"
+  },
+  {
+    "id": "shepardtables",
+    "en": "These two tabletops are identical"
+  },
+  {
+    "id": "simultcontrast",
+    "en": "Both grey squares are identical"
+  },
+  {
+    "id": "splitspiral",
+    "en": "Two spirals share one flat image"
+  },
+  {
+    "id": "steppingfeet",
+    "en": "Both bars glide at the same speed"
+  },
+  {
+    "id": "stripebeat",
+    "en": "Only the brightness is pulsing"
+  },
+  {
+    "id": "tiltcloud",
+    "en": "Every dash is the same length"
+  },
+  {
+    "id": "tiltframe",
+    "en": "The white rod is perfectly vertical"
+  },
+  {
+    "id": "troxler",
+    "en": "Stare at the dot — the colours fade"
+  },
+  {
+    "id": "verticalhorizontal",
+    "en": "Both lines are the same length"
+  },
+  {
+    "id": "wavegrid",
+    "en": "The grid is trying to stay straight"
+  },
+  {
+    "id": "whiteillusion",
+    "en": "These two grey bars are the same grey"
+  },
+  {
+    "id": "wundt",
+    "en": "These two red lines are perfectly straight"
+  },
+  {
+    "id": "zippermotion",
+    "en": "The zipper crawls without moving"
+  },
+  {
+    "id": "zollner",
+    "en": "These long lines are all parallel"
+  }
+]

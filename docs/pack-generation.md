@@ -79,6 +79,17 @@ CTA и любым важным подписям. Для `1080x1920` держи �
 Не оставляй новый ручной пак только в коде или `data/packs`: без инструкции будущий агент не будет
 знать, как его безопасно пополнить.
 
+**Пак сразу должен быть РАБОЧИМ в проекте (MANDATORY, прямое требование пользователя 2026-06-23).**
+Даже если добавляешь всего несколько карточек «для примера» — за тот же заход доведи пак до полностью
+интегрированного, ЗАПУСКАЕМОГО состояния, а НЕ оставляй его как превью-картинки на диске
+(`data/output/*`). «Рабочий» значит: пак виден в Студии / `/api/generators` (или как живой
+`data/packs/*`), реально рендерится и генерится с канала, фронт пересобран (`npm run web:build`), а при
+правках бэкенда сервер перезапущен. Для встроенной деки это весь путь: `src/anecdotes/decks.ts` (запись +
+флаг + `DECK_LANG`) → `src/anecdotes/library.ts` (загрузчик `cards.json`) → `src/anecdotes/render.ts`
+(диспетч + рендер-функция) → `src/anecdotes/yt-meta.ts` (читаемые title/description) → веб
+`web/src/lib/deck.ts` (`DECK_LANG` + при необходимости `BUILTIN_DECKS`/`DECK_GLOSS_RU`). Проверь рендер
+реальными кадрами и покажи пользователю, ГДЕ это на сайте (а не локальный путь к файлу).
+
 ## Формат по умолчанию для статичных паков
 
 По умолчанию новый статичный/card-style пак должен быть динамическим: карточки, тексты, шаблоны и
@@ -100,6 +111,7 @@ prebuilt MP4 считается исключением и требует явн�
 | `it` Barzellette Italiane | `data/anecdotes-it/` | текущий плотный вариант из `corpora/it-gen/clean-*.json` | да, для чистки кандидатов; сборка локальная |
 | `tips` Народные лайфхаки | `data/tips/` | LLM-батчи `corpora/tips-gen/*.json` -> локальная сборка | да, для новых батчей |
 | `tips-de` Deutsche Lifehacks | `data/tips-de/` | LLM-батчи `corpora/tips-de-gen/*.json` -> локальная сборка | да, для новых батчей |
+| `tips-es` Trucos utiles | `data/tips-es/` | source-backed батчи `corpora/tips-es-gen/*.json` -> локальная сборка | да, для новых батчей |
 | `psych` Psychologie (DE) | `data/psych/cards.json` | структурные карточки по `docs/psych-cards-standard.md` | обычно да, но можно загрузить вручную |
 | `islamic` آيات وأذكار | `data/islamic/cards.json` | точные интернет-корпусы -> локальные slices -> workflow выбора id -> assemble | да, только для выбора id/theme |
 | `christian` Holy Bible KJV | `data/christian/cards.json` | KJV public domain -> candidates/slices -> workflow выбора id -> assemble | да, только для выбора id/theme |
@@ -113,6 +125,7 @@ prebuilt MP4 считается исключением и требует явн�
 | `Curiosaurs English Facts` template-pack | `assets/template-packs/curiosaurs-english/` -> `data/packs/` seed | локальный набор kid-safe facts + PNG-шаблоны | нет |
 | `Chistes ES` template-pack | `corpora/spanish-jokes-public-domain/` + `assets/template-packs/spanish-jokes*/` -> `data/packs/chistes-es-public-domain.json`, `data/packs/chistes-es-long.json` | public-domain Spanish joke books -> local safety/quality filter -> фактическое число safe-карточек + 30 short templates + 42 length-aware long templates | нет для локальной сборки; да, спросить модель перед LLM-чисткой/адаптацией |
 | `visual-riddles` Вижу Ответ | `data/output/admin-demos/manifest.json` + `data/visual-riddles/videos.json` + `assets/fact-videos/visual-riddles/` | индивидуальные визуальные MP4 для `/clip-demos` и selectable `preFact` deck для каналов | нет |
+| `choose` Что выберешь? | `data/choose/cards.json` + `data/choose/photos/` | дилеммы «A или B» (RU) + реальные фото Pexels (без апскейла); статичная card-style дека | да — генерация дилемм + VISION-отбраковка неверных фото (спросить модель) |
 
 `data/packs/*.json` - это живые пользовательские паки из страницы "Карточки". Они gitignored и
 пополняются через UI/API или seed-скрипты. Встроенные деки (`data/anecdotes*`, `data/tips*`,
@@ -716,10 +729,21 @@ node --import tsx src/anecdotes/build-it.ts
 node --input-type=module -e 'import fs from "node:fs"; const idx=JSON.parse(fs.readFileSync("data/anecdotes-it/index.json","utf8")); const titled=JSON.parse(fs.readFileSync("data/anecdotes-it/titled.json","utf8")); console.log({indexTotal:idx.total,titled:titled.length,range:idx.range});'
 ```
 
-## Лайфхаки (`tips`, `tips-de`)
+## Лайфхаки (`tips`, `tips-de`, `tips-es`)
 
-Контент генерируется LLM-batches в `corpora/tips-gen/` и `corpora/tips-de-gen/`, затем локально
-валидируется, дедупится и складывается в `data/tips*/titled.json`.
+Контент генерируется/пополняется батчами в `corpora/tips-gen/`, `corpora/tips-de-gen/` и
+`corpora/tips-es-gen/`, затем локально валидируется, дедупится и складывается в
+`data/tips*/titled.json`. Mixed batch может держать `profession` в каждом item; если его нет,
+профессия берётся из имени файла.
+
+2026-06-24 добавлен source-backed набор `surprising-lifehacks-2026-06`: RU/DE/ES локализации по
+25 карточек, источники в `corpora/tips-sources/surprising-lifehacks-2026-06.json`.
+Визуальный рендер обновлён: `src/anecdotes/lifehack-templates.ts` содержит 25 детерминированных
+вариантов, `templates/lifehack.html` держит спокойную текстовую панель и свободную нижнюю зону.
+MP4 для `lifehack`-дек получают маленький синтезированный GIF-оверлей из
+`assets/motion/lifehacks/` и отдельную синтезированную музыку из `assets/audio/lifehacks/`
+(оба набора без скачанных ассетов, пересборка скриптами `src/scripts/lifehack-gen-motion.mjs` и
+`src/scripts/lifehack-gen-audio.mjs`).
 
 Перед генерацией новых батчей спроси пользователя модель workflow. Имена файлов должны быть
 `<profession>-<n>.json`, где profession - один из:
@@ -732,7 +756,7 @@ chef, mechanic, firefighter, lawyer, accountant, teacher, programmer, builder, p
 
 ```json
 [
-  { "title": "Kurzer Titel", "text": "300-500 Zeichen полезного совета..." }
+  { "title": "Kurzer Titel", "profession": "chef", "text": "300-500 Zeichen полезного совета..." }
 ]
 ```
 
@@ -748,10 +772,16 @@ node --import tsx src/anecdotes/build-tips.ts
 node --import tsx src/anecdotes/build-tips-de.ts
 ```
 
+Сборка ES:
+
+```bash
+node --import tsx src/anecdotes/build-tips-es.ts
+```
+
 Проверка:
 
 ```bash
-node --input-type=module -e 'import fs from "node:fs"; for (const d of ["data/tips","data/tips-de"]) { const idx=JSON.parse(fs.readFileSync(`${d}/index.json`,"utf8")); const titled=JSON.parse(fs.readFileSync(`${d}/titled.json`,"utf8")); console.log(d,{indexTotal:idx.total,titled:titled.length,byProfession:idx.byProfession}); }'
+node --input-type=module -e 'import fs from "node:fs"; for (const d of ["data/tips","data/tips-de","data/tips-es"]) { const idx=JSON.parse(fs.readFileSync(`${d}/index.json`,"utf8")); const titled=JSON.parse(fs.readFileSync(`${d}/titled.json`,"utf8")); console.log(d,{indexTotal:idx.total,titled:titled.length,byProfession:idx.byProfession}); }'
 ```
 
 ## Psychologie (`psych`)
@@ -835,6 +865,39 @@ node --input-type=module -e 'import fs from "node:fs"; const cards=JSON.parse(fs
 ```bash
 node --input-type=module -e 'import fs from "node:fs"; const cards=JSON.parse(fs.readFileSync("data/christian/cards.json","utf8")); const idx=JSON.parse(fs.readFileSync("data/christian/index.json","utf8")); console.log({cards:cards.length,indexTotal:idx.total,range:idx.range,sample:Object.keys(cards[0]||{})});'
 ```
+
+## Что выберешь? (`choose`)
+
+Дека-карточка «A или B» (id `choose`, RU, по умолчанию admin-only): вопрос сверху + два варианта с
+**реальными бесплатными фото Pexels** (лицензия Pexels — свободно для коммерции, без атрибуции, без
+апскейла), подписи и короткие описания. Движок вовлечения — комментарии («пиши свой выбор») + реплей.
+Статичная card-style дека (как мемы): вся карточка хранится как JSON в `text`, MP4 собирается только
+при использовании/сохранении в библиотеку.
+
+- **Где результат:** `data/choose/cards.json` — массив `{q, a:{label,desc,photoFile}, b:{label,desc,photoFile}}`;
+  фото в `data/choose/photos/*.jpg` (+ `sources.jsonl` — аудит лицензий); `data/choose/index.json` — счётчики.
+- **Шаблон/рендер:** `templates/choose.html` (два столбца, «ИЛИ»-пилюля, авто-фит описаний — длинный текст
+  не обрезается) + `src/choose/render.ts` (`buildChooseHtml` + `choosePhotoDataUri`). Диспетч по флагу
+  `choose:true` в `src/anecdotes/render.ts` (`renderChoose`). Реестр/метаданные — `src/anecdotes/decks.ts`
+  (+ `DECK_LANG`), `src/anecdotes/library.ts` (загрузчик), `src/anecdotes/yt-meta.ts` (читаемые title/desc),
+  веб `web/src/lib/deck.ts`.
+- **Безопасная зона шортса:** заложена в `choose.html` — контент в верхней части кадра, правый край ≤950px
+  (не под колонку кнопок), нижние ~500px пустые. Соблюдать при любой правке вёрстки и проверять кадрами.
+- **Создать с нуля / пополнить:** `node --import tsx src/choose/build.ts` — берёт массив `CARDS` (правь его),
+  под каждый вариант качает квадратное фото Pexels по `query`, пишет `cards.json` + `index.json`. Качает
+  только недостающие фото; `--refetch` — перекачать все. Нужен `PEXELS_API_KEY` в `.env`.
+- **⚠️ Грабли подбора фото:** топ-результат Pexels часто НЕ тот (особенно крупные кошки — «lion»/«tiger»
+  отдают пуму/леопарда/зебру). Для масштабной генерации ОБЯЗАТЕЛЕН VISION-этап: на каждый вариант скачать
+  8–12 кандидатов и vision-моделью выбрать верное фото, отбраковать неподходящие/с лицами/логотипами/брендами.
+  Разовая ручная починка одного фото — `src/choose/refetch-one.ts` (`dump "<query>" <prefix>` → сетка
+  кандидатов в scratch → `pick <prefix> <index> <destFile>`). Модель для генерации дилемм/vision — СНАЧАЛА
+  спросить у пользователя (правило про модель workflow).
+- **Проверка:** `node --import tsx src/choose/verify.ts` — рендерит все карточки через настоящий путь движка
+  (`decks`+`library`+`renderAnecdote`+`ytMeta`) в `data/output/choose-deck/`; затем просмотреть кадры глазами.
+  Дубли — по тексту вопроса `q`.
+- **Перезапуск:** правки `decks.ts`/`render.ts`/`library.ts`/`yt-meta.ts` (бэкенд) → нужен
+  `sudo systemctl restart shorts.service`. Только `cards.json`/фото — кэш `_titledCache` живёт до рестарта,
+  так что при правке готового набора на живом сервере всё равно перезапусти.
 
 ## Pre-built video packs (`fact-en`, `quotes-de`, `space`, `prayers-de`)
 
@@ -1333,3 +1396,55 @@ node --input-type=module -e 'import fs from "node:fs"; const manifest=JSON.parse
   `node --experimental-sqlite --import tsx src/scripts/check-deck-live.ts` → `temp/meme-recheck/deck-verify/live-memes-<lang>.jpg`.
 - Контактный лист RU-выборки — `temp/meme-recheck/contact-sheet.png`.
 - Бэкенд-правки (decks/render/photos) → **рестарт сервера**; фронт (дропдаун) → `npm run web:build`; `data/` gitignored.
+
+## Оптические иллюзии — `illusions-{en,de,it,es,ru}` (admin-only, 77×5, видео)
+
+Анимированные оптические иллюзии (вдохновлено [[illusions-3d]], но НЕ копия: там один класс — крутящиеся
+многогранники; здесь МНОГО разных классов: спираль-последействие, café wall, мерцающая решётка, Эббингауз,
+шахматная тень Адельсона, Канижа, Пенроуз, невозможный куб/трезубец, ваза Рубина, Мюллер-Лайер, Понцо,
+Цёлльнер, Поггендорф, спираль Фрейзера, Бенхам, motion-induced blindness, барбер-поул, moiré pulse,
+hypnotic tunnel, kinetic depth dots, aperture bars, neon ladder, ray afterimage и т.д.). Всё —
+**детерминированный canvas-рендер (математика → 0 риска страйка)**, тёмная эстетика, английский хук в safe-зоне,
+бесплатный ffmpeg-эмбиент. 77 уникальных ТИПОВ, локализованы на 5 языков (геометрия одна, меняется только
+текст-хук) = **5 дек по 77 = 385 клипов**. Деки `preFact+adminOnly+grantable`.
+
+Всё в `scripts/illusions-en/`:
+- `skeleton-v2.html` — общий host. Каждая иллюзия = самодостаточный `illusions/<key>.html` = копия host'а,
+  где правится ТОЛЬКО блок `SPEC` (key/name/title/dur/fps/light) и тело `drawIllusion(ctx,p,CW,CH,H)`.
+  Host даёт: `H.rng/lerp/clamp/smooth/TAU/cx/cy/safe/maxR`, палитры `H.PALETTES`/`H.pal(t)`, параметры
+  вариации `H.v` (palette/dir/turns/speed/seed/density/angle — задел под варианты), и три рендера:
+  `renderFrame(p)` (со встроенным титром, для превью), `renderBase(p)` (ТОЛЬКО геометрия, без титра —
+  рендерим ОДИН раз) и `renderTitle(text)` (ПРОЗРАЧНЫЙ PNG только с титром — для оверлея локализаций).
+  Так геометрия рендерится один раз, а подписи на 5 языков накладываются ffmpeg-оверлеем (а не 5× полный рендер).
+- Превью кадров: `render-samples.mjs` (v1) / `render-samples-v2.mjs <html> <prefix> <progresses> '<variantJSON>'`.
+- `add-sticky-illusions.mjs` — воспроизводимо добавляет вторую волну 26 "залипательных" типов поверх
+  `skeleton-v2.html` и дописывает их переводы в `localize.json`.
+- `skeleton.html` (v1) → миграция на v2 детерминантным `upgrade-host.mjs` (вырезает SPEC+drawIllusion по
+  маркерам с отступом РОВНО 2 пробела — внутри-функции `// ====` с отступом ≥4 НЕ должны совпадать, иначе
+  обрезает функцию; бэкап в `illusions-v1-backup/`).
+
+Пайплайн пересборки/локализации (модель для LLM-шагов СНАЧАЛА спросить у пользователя):
+1. Иллюзии-типы создаются Opus-воркфлоу (автор пишет canvas-код → рендерит кадры → состязательная
+   ВИЗУАЛЬНАЯ проверка агентом по пикселям → фикс). Заголовки — английские хуки, пишутся руками/агентом.
+2. `gen-manifest-en.mjs` → `manifest.json` (читает SPEC каждой через `getSpec`).
+3. `gen-matrix-51.mjs` → `matrix.json` (77 дизайнов, `variant:{}`) + `hooks.json` (англ. заголовок на дизайн).
+4. **Перевод** хуков: воркфлоу `scratchpad/illusions-en-translate.js` (Opus, по агенту на язык; хуки
+   ЗАШИТЫ в скрипт — `args` через Workflow-тул не доходил надёжно) → `assemble-localize.mjs <out>` →
+   `localize.json` `{id:{en,de,it,es,ru}}` (afterimage пустой — рисует свой текст сам).
+5. `build-base.mjs` (`SKIP_EXISTING=1`) → 77 titleless-mp4 в `temp/illusions-en/base/`.
+6. `make-titles.mjs` → 380 прозрачных подписей `temp/illusions-en/titles/<id>_<lang>.png`.
+7. `compose-publish.mjs` → на каждый (lang×дизайн): оверлей подписи (или без — для afterimage) + эмбиент →
+   `assets/fact-videos/illusions-<lang>/<id>.mp4`, **хардлинк** в `data/output/admin-demos/<lang>-<id>.mp4`
+   (+постер), запись `data/illusions-<lang>/videos.json` и пакета в `admin-demos/manifest.json`.
+   `SKIP_EXISTING=1` пропускает уже готовые финальные MP4 и кодирует только недостающие.
+8. Регистрация дек в `src/anecdotes/decks.ts` (объект + `DECK_LANG`) и `web/src/lib/deck.ts`
+   (`DECK_GLOSS_RU`/`DECK_LANG`/`BUILTIN_DECKS`) → `npm run web:build` → **рестарт сервера**.
+
+Эмбиент: `assets/audio/illusions-en/ambient.mp3` (ffmpeg-синтез, `gen-audio.mjs`, loudnorm I=-16 → слышно).
+Новый ЯЗЫК: добавить в `compose-publish.mjs ALL_LANGS`/`PACK_TITLE`, перевести хуки, зарегать деку.
+Новый ТИП: создать `illusions/<key>.html` от `skeleton-v2.html`, прогнать шаги 2→8.
+**Доступ:** админ видит все 5 в Нарезках без рестарта (`deckAllowed`/`files.ts` admin-bypass, манифест читается
+свежим); рестарт нужен лишь для не-админ-грантов и канал-источника. Admin-only → в CHANGELOG НЕ писать.
+ВАЖНО (рендер кириллицы/умляутов/ñ в headless Chrome): титры рисуются шрифтом DejaVu Sans — все 5 языков
+рендерятся корректно (проверено на ru/de/es). Вариации (1 тип → N обликов через `H.v`) — задел готов
+(`variants/<key>.json` + `gen-matrix-from-variants.mjs`), но в текущем паке НЕ используются (77 = по 1 на тип).

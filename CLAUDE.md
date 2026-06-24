@@ -103,6 +103,9 @@ Repo layout + SOLID monolith-split / cleanup plan: `docs/REORG-PLAN.md`.
 - Remote `origin` = `https://github.com/armesha/shorts.git`, default branch `main`.
 - **After finishing each feature/fix: commit AND push** (`git add -A && git commit -m "…" && git push`). Don't leave work uncommitted.
 - Веди **CHANGELOG.md** (Добавлено/Изменено/Убрано/Исправлено) — обновляй его перед коммитом каждой фичи.
+  **ОДИН ДЕНЬ = ОДНА ВЕРСИЯ (MANDATORY):** не дроби changelog на много версий за один день.
+  Все публичные изменения одного календарного дня объединяй в один блок `## [0.xxx] — YYYY-MM-DD`.
+  Если изменений много — режь внутри этого же дня по секциям/коротким пунктам, а не создавай новые версии.
   **КРАТКО (MANDATORY):** каждый пункт — ОДНА короткая строка (≈до 12–15 слов), как заголовок: что появилось, без
   абзацев, без перечисления всех деталей/механики. Подробное описание — лишнее, оно засоряет страницу «Обновления».
   Образец — текущий `CHANGELOG.md` (одна строка на фичу). Не разворачивай старые пункты обратно в абзацы.
@@ -155,6 +158,7 @@ Repo layout + SOLID monolith-split / cleanup plan: `docs/REORG-PLAN.md`.
 - **Subagent/workflow MODEL policy (user rule):** before launching ANY LLM/subagent/workflow that generates, cleans, ranks, formats, or titles pack content, ask the user which model to use. Do not hardcode Haiku/Sonnet/Opus and do not inherit silently when the workflow model choice affects cost/quality. Local parsers/builders/checks can run without asking.
 - **Pack generation docs:** detailed source/generation/replenishment instructions for every built-in deck and template-pack live in `docs/pack-generation.md`. Read it before touching `data/anecdotes*`, `data/tips*`, `data/islamic`, `data/christian`, `data/*/videos.json`, `assets/template-packs/*`, or `data/packs/*`.
 - **New/manual pack rule:** whenever you create a new built-in deck, prebuilt video pack, template-pack, or live `data/packs/*` pack manually, also add/update `docs/pack-generation.md` with how to create it, how content is generated, how to add new cards/videos later, and how to verify it. Future agents must be able to replenish the pack from docs without reverse-engineering the code.
+- **Новый пак = сразу РАБОЧИЙ в проекте (MANDATORY — прямое требование пользователя 2026-06-23):** если добавляешь любой новый пак/деку — **даже 2–3 карточки «для примера»** — за тот же заход доведи его до полностью интегрированного, **запускаемого в проекте** состояния: виден в Студии / `/api/generators` (или как живой `data/packs/*`), реально рендерится и генерится с канала, фронт пересобран (`npm run web:build`), бэкенд перезапущен при серверных правках. **НЕ оставляй пак как «превью-картинки на диске» (`data/output/*`)** — пользователь должен видеть и использовать его на сайте (`https://shareboard.live/`). Для встроенной деки полный путь: `decks.ts` (запись+флаг+`DECK_LANG`) → `library.ts` (загрузчик `cards.json`) → `render.ts` (диспетч+рендер) → `yt-meta.ts` → `web/src/lib/deck.ts`. Полный чек-лист — в `docs/pack-generation.md` («Обязательное правило для новых ручных паков»). Образец такой деки — `choose` («Что выберешь?»).
 - **Shorts safe-zone rule:** for every 1080x1920 Shorts/Reels/TikTok-style render, never place important
   readable text in the bottom UI area. Keep body text/subtitles/logos above roughly `y=1520` (bottom
   `400px` clear), avoid the right action-column area (target right edge `<=960px`), and verify dense

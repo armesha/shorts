@@ -10,6 +10,8 @@ import { libraryStats, deckAnecdoteKeys } from "../../src/anecdotes/library.ts";
 import { packCardKey } from "../services/pack-gen.ts";
 import { INFINITE_PACKS_FEATURE, infiniteCounts } from "../services/infinite-packs.ts";
 import { readElevenLabsKeys, fetchElevenLabsLimit } from "../services/elevenlabs-limits.ts";
+import { getManualVideoLimits, setManualVideoLimits } from "../services/manual-videos.ts";
+import { getReadinessLimits, setReadinessLimits } from "../services/readiness-limits.ts";
 import { buildAdminAnalytics } from "../services/admin-analytics.ts";
 import {
   DAY_MS,
@@ -153,6 +155,8 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       provider: "elevenlabs",
       updatedAt: new Date().toISOString(),
       keys: rows,
+      manualVideo: getManualVideoLimits(db),
+      readiness: getReadinessLimits(db),
       totals: {
         configured: rows.length,
         active: rows.filter((row) => row.status === "ok" && (row.remaining == null || row.remaining > 0)).length,
@@ -169,10 +173,22 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     };
   });
 
+  app.put("/api/admin/manual-video-limits", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
+    const body = (req.body as { maxFileMb?: unknown; uploadsPerHour?: unknown }) ?? {};
+    return setManualVideoLimits(db, body);
+  });
+
+  app.put("/api/admin/readiness-limits", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
+    const body = (req.body as { minRunwayDays?: unknown }) ?? {};
+    return setReadinessLimits(db, body);
+  });
+
   // ---- Admin: per-user pack (deck) visibility ----
   // All packs (matrix columns).
   app.get("/api/admin/decks", async (req, reply) => {
-    if (!requireSuperAdmin(req, reply)) return;
+    if (!requireAdmin(req, reply)) return;
     // встроенные деки + кастомные паки (всегда показываем паки колонками; id = "pack:<id>").
     // Возвращаем ВСЕ деки (вкл. чисто admin-only): для строк-юзеров такие колонки рисуются «—»
     // (им недоступно), а в СВОЕЙ строке админ может скрыть любую деку/пак лично у себя (opt-out).
@@ -187,9 +203,17 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       ...listAllPacks().map((p) => ({ id: `pack:${p.id}`, name: p.name, pack: true, grantable: false, adminOnly: false })),
     ];
   });
+
+  // All custom packs for admin-only rights screens (owners matrix / grants). This does not grant
+  // edit access on /cards; pack editing still uses owner/super-admin checks in /api/packs/:id.
+  app.get("/api/admin/packs", async (req, reply) => {
+    if (!requireAdmin(req, reply)) return;
+    return listAllPacks();
+  });
+
   // Matrix data: per user — which packs are hidden + which packs they actually use.
   app.get("/api/admin/user-decks", async (req, reply) => {
-    if (!requireSuperAdmin(req, reply)) return;
+    if (!requireAdmin(req, reply)) return;
     const hidden = db.hiddenDecksByUser();
     const grantedBuiltins = db.grantedDecksByUser();
     const used = db.usedDecksByUser();
@@ -228,7 +252,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   });
   // Replace a user's hidden-pack set (body.hidden = pack ids to hide) and grants.
   app.put("/api/admin/users/:id/decks", async (req, reply) => {
-    if (!requireSuperAdmin(req, reply)) return;
+    if (!requireAdmin(req, reply)) return;
     const id = Number((req.params as { id: string }).id);
     const target = db.getUserById(id);
     if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
@@ -309,11 +333,14 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   // Reset one user's used-history for a built-in deck. Existing library videos stay intact;
   // the next generation can pick that deck's items from the beginning again.
   app.post("/api/admin/users/:id/decks/:deckId/reset", async (req, reply) => {
-    if (!requireSuperAdmin(req, reply)) return;
+    if (!requireAdmin(req, reply)) return;
     const id = Number((req.params as { id: string; deckId: string }).id);
     const deckId = decodeURIComponent((req.params as { id: string; deckId: string }).deckId);
     const target = db.getUserById(id);
     if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
+    if (!deps.auth.isSuperAdminReq(req) && isSuperAdminUser(target)) {
+      return reply.code(403).send({ error: "Сброс истории главного администратора доступен только armen" });
+    }
     // Кастомный пак: ключи карточек = packCardKey(values); чистим именно их у этого юзера.
     if (deckId.startsWith("pack:")) {
       const pack = getPack(deckId.slice(5), id, true); // admin-load: читаем карточки любого пака
@@ -330,10 +357,13 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   // МОЖЕТ использовать ИЛИ уже использовал, с per-user used/total/available. Кормит панель сброса
   // (встроенные `DECKS` + кастомные `pack:*`), чтобы было видно ВСЕ паки юзера, а не только использованные.
   app.get("/api/admin/users/:id/pack-usage", async (req, reply) => {
-    if (!requireSuperAdmin(req, reply)) return;
+    if (!requireAdmin(req, reply)) return;
     const id = Number((req.params as { id: string }).id);
     const target = db.getUserById(id);
     if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
+    if (!deps.auth.isSuperAdminReq(req) && isSuperAdminUser(target)) {
+      return reply.code(403).send({ error: "Историю главного администратора может смотреть только armen" });
+    }
     const usedKeys = db.usedAnecdoteKeys(id);
     const targetIsSuperAdmin = isSuperAdminUser(target);
     const items: { id: string; name: string; pack: boolean; total: number; used: number; available: number }[] = [];
@@ -357,10 +387,10 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     return { userId: id, username: target.username, items };
   });
 
-  // Main admin: set a custom pack's owners (0+ users). Owners may edit the pack (name/lang/cards) on /cards.
-  // Обычные админы могут быть владельцами своих паков; главного админа во владельцы не пишем — он и так всё может.
+  // Admin: set a custom pack's owners (0+ users). Owners may edit the pack (name/lang/cards) on /cards.
+  // Главного админа во владельцы не пишем — он и так всё может.
   app.put("/api/admin/packs/:id/owners", async (req, reply) => {
-    if (!requireSuperAdmin(req, reply)) return;
+    if (!requireAdmin(req, reply)) return;
     const id = (req.params as { id: string }).id.replace(/^pack:/, "");
     const raw = (req.body as { owners?: unknown })?.owners;
     const ids = Array.isArray(raw) ? [...new Set(raw.map(Number))].filter((n) => Number.isInteger(n) && n > 0) : [];

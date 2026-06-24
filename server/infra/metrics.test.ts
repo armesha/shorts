@@ -39,6 +39,10 @@ test("snapshot exposes live fields, history array and active counters", () => {
   assert.ok(Array.isArray(s.now.loadavg) && s.now.loadavg.length === 3);
   assert.equal(typeof s.now.cpuPct, "number");
   assert.ok(s.now.cpuPct >= 0 && s.now.cpuPct <= 100);
+  assert.ok(s.hardware);
+  assert.ok("tempC" in s.hardware);
+  assert.ok("fanRpm" in s.hardware);
+  assert.ok(Array.isArray(s.hardware.sensors));
   assert.ok(Array.isArray(s.history));
   assert.deepEqual(Object.keys(s.active).sort(), ["render", "upload"]);
 });

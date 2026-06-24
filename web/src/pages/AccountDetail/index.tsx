@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
 import { ArrowLeft, Save, Trash2, Check, Plus, Upload, Loader2, ChevronLeft, ChevronRight, RefreshCw, Play, AlertTriangle } from "lucide-react";
-import { apiClient, type Account, type VideoItem, type Generator, type PackSummary, type OAuthClient } from "../../lib/api";
+import { apiClient, type Account, type VideoItem, type Generator, type PackSummary, type OAuthClient, type AccountReadiness } from "../../lib/api";
 import { confirmDialog } from "../../lib/confirm";
 import { useAuth } from "../../lib/auth";
 import { useGenQueue } from "../../lib/genQueue";
@@ -26,6 +26,15 @@ import {
 import VideoPreviewModal from "./VideoPreviewModal";
 import AvatarPickerModal from "./AvatarPickerModal";
 
+function readDataUrl(file: File): Promise<string> {
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => res(String(fr.result));
+    fr.onerror = () => rej(new Error("read error"));
+    fr.readAsDataURL(file);
+  });
+}
+
 export default function AccountDetail() {
   const { t } = useT();
   const { id } = useParams();
@@ -43,6 +52,7 @@ export default function AccountDetail() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [videos, setVideos] = useState<VideoItem[]>([]);
+  const [readiness, setReadiness] = useState<AccountReadiness | null>(null);
   const [sort, setSort] = useState<"date" | "title" | "posts">("date");
   const [posting, setPosting] = useState<number | null>(null);
   const [slotVideos, setSlotVideos] = useState<Record<string, number>>({});
@@ -62,6 +72,8 @@ export default function AccountDetail() {
   const [batchN, setBatchN] = useState(5);
   const q = useGenQueue();
   const [clearing, setClearing] = useState(false);
+  const [manualUploading, setManualUploading] = useState(false);
+  const [manualLimits, setManualLimits] = useState<{ maxFileMb: number; uploadsPerHour: number; durationSec: number } | null>(null);
   const [page, setPage] = useState(1);
   const [gens, setGens] = useState<Generator[]>([]);
   const [packs, setPacks] = useState<PackSummary[]>([]); // кастомные паки, доступные юзеру (для дропдауна канала)
@@ -82,7 +94,15 @@ export default function AccountDetail() {
     (kind === "error" ? console.error : console.log)("[привязка]", text);
   };
 
-  const reloadVideos = () => apiClient.videos(id!).then(setVideos).catch(() => {});
+  const reloadReadiness = () => apiClient.accountReadiness(id!).then(setReadiness).catch(() => {});
+  const reloadVideos = () =>
+    apiClient
+      .videos(id!)
+      .then((items) => {
+        setVideos(items);
+        void reloadReadiness();
+      })
+      .catch(() => {});
 
   // «Сделать сразу» не больше остатка свободных карточек выбранного контента (дека/пак) — для всех ролей.
   const roleMax = user?.role === "admin" ? 100 : 50; // потолок: админ 100, обычный юзер 50
@@ -182,6 +202,8 @@ export default function AccountDetail() {
       })
       .catch(() => {});
     reloadVideos();
+    reloadReadiness();
+    apiClient.manualVideoLimits().then(setManualLimits).catch(() => {});
     apiClient.generators().then(setGens).catch(() => {});
     apiClient.packs().then(setPacks).catch(() => {}); // доступные паки → в дропдаун канала (по имени)
     // Schedule of the user's OTHER channels — for the aggregate cap counter AND so the
@@ -204,7 +226,10 @@ export default function AccountDetail() {
   // после генерации число свободных уменьшается, поэтому «сразу» сразу подожмётся к новому максимуму.
   useEffect(() => {
     if (!q.completions) return;
-    if (q.accountId === Number(id)) reloadVideos();
+    if (q.accountId === Number(id)) {
+      reloadVideos();
+      reloadReadiness();
+    }
     apiClient.generators().then(setGens).catch(() => {});
     apiClient.packs().then(setPacks).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -253,7 +278,7 @@ export default function AccountDetail() {
       const sourceLangs = [...new Set(cleanSources.map(contentLang).filter(Boolean))];
       const effectiveChannelLang = sourceLangs.length === 1 ? sourceLangs[0] : channelLangRef.current || channelLang;
       const cleanSlotDecks = Object.fromEntries(
-        Object.entries(slotDecks).filter(([time, deck]) => times.includes(time) && cleanSources.includes(deck)),
+        Object.entries(slotDecks).filter(([time, deck]) => times.includes(time) && (cleanSources.includes(deck) || deck === "manual")),
       );
       if (times.length > perChannelCap) {
         notify(t("account.accountDayLimitReached", { n: perChannelCap }), "error", t("account.scheduleLimitToastTitle"));
@@ -287,6 +312,7 @@ export default function AccountDetail() {
       setChannelLang(updated.channelLang || DECK_LANG[updated.lang] || channelLang);
       setSlotDecks(updated.slotDecks || {});
       setSaved(true);
+      void reloadReadiness();
       setTimeout(() => setSaved(false), 2000);
       return true;
     } catch (e) {
@@ -358,6 +384,37 @@ export default function AccountDetail() {
       notify(t("account.postFailed") + " " + String(e), "error");
     } finally {
       setPosting(null);
+    }
+  }
+
+  async function uploadManualVideo(file: File | null) {
+    if (!file) return;
+    if (!/\.mp4$/i.test(file.name)) {
+      notify(t("account.manualUploadTypeError"), "error");
+      return;
+    }
+    const maxFileMb = manualLimits?.maxFileMb ?? 40;
+    if (file.size > maxFileMb * 1024 * 1024) {
+      notify(t("account.manualUploadTooBig", { mb: maxFileMb }), "error");
+      return;
+    }
+    setManualUploading(true);
+    try {
+      const dataUrl = await readDataUrl(file);
+      const v = await apiClient.uploadVideo({
+        accountId: Number(id),
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        dataUrl,
+      });
+      setVideos((cur) => [v, ...cur]);
+      setPage(1);
+      notify(t("account.manualUploadSuccess"), "success");
+    } catch (e) {
+      notify(t("account.manualUploadFailed") + " " + String(e), "error");
+    } finally {
+      setManualUploading(false);
     }
   }
 
@@ -437,7 +494,7 @@ export default function AccountDetail() {
     setGenerateDeck((cur) =>
       cur === GENERATE_ALL_DECKS && fallback.length > 1 ? cur : fallback.includes(cur) ? cur : fallback[0] || "",
     );
-    setSlotDecks((prev) => Object.fromEntries(Object.entries(prev).filter(([, deckId]) => fallback.includes(deckId))));
+    setSlotDecks((prev) => Object.fromEntries(Object.entries(prev).filter(([, deckId]) => fallback.includes(deckId) || deckId === "manual")));
   };
   const savedSources = account ? (account.sourceDecks?.length ? account.sourceDecks : [account.lang]) : selectedSources;
   const sourcesDirty = savedSources.join("") !== selectedSources.join("");
@@ -457,7 +514,14 @@ export default function AccountDetail() {
     ));
   };
   const libraryDeckCounts = videos.reduce((map, v) => map.set(v.deck, (map.get(v.deck) || 0) + 1), new Map<string, number>());
-  const slotDeckOptions = selectedSources.filter((deckId) => (libraryDeckCounts.get(deckId) || 0) > 0);
+  const slotDeckOptions = [
+    ...selectedSources.filter((deckId) => (libraryDeckCounts.get(deckId) || 0) > 0),
+    ...(libraryDeckCounts.get("manual") ? ["manual"] : []),
+  ];
+  const librarySourceName = (deckId: string) => deckId === "manual" ? t("account.manualVideoBadge") : deckName(deckId);
+  const manualMaxFileMb = manualLimits?.maxFileMb ?? 40;
+  const manualDurationSec = manualLimits?.durationSec ?? 60;
+  const manualUploadsPerHour = manualLimits?.uploadsPerHour ?? 100;
 
   // Per-channel cap: ≤20 slots/day; per-user aggregate cap stays separate.
   const dayUsed = otherSlots + times.length; // posts/day across all the user's channels
@@ -508,6 +572,36 @@ export default function AccountDetail() {
         )
       : null;
 
+  const readinessBadge =
+    readiness?.status === "ready" ? "badge-success" : readiness?.status === "warning" ? "badge-warning" : "badge-error";
+  const readinessTitle =
+    readiness?.status === "ready"
+      ? t("account.readinessReady")
+      : readiness?.status === "warning"
+        ? t("account.readinessWarning")
+        : t("account.readinessBlocked");
+  const readinessReason = (code: string) => t(`account.readinessReason.${code}`);
+  const readinessAction = (action: string) => {
+    if (action === "connect_youtube") return t("account.readinessActionConnect");
+    if (action === "set_schedule") return t("account.readinessActionSchedule");
+    if (action === "fix_sources") return t("account.readinessActionSources");
+    if (action === "generate_or_upload") return t("account.readinessActionContent");
+    return t("account.readinessActionQueue");
+  };
+  const readinessRunway =
+    readiness?.runwayDays == null ? "—" : readiness.runwayDays < 1 ? "<1" : readiness.runwayDays.toFixed(readiness.runwayDays < 10 ? 1 : 0);
+  const deckRunwayText = (days: number | null) => (days == null ? "—" : days < 1 ? "<1" : days.toFixed(days < 10 ? 1 : 0));
+  const deckReadinessClass = (status: string) =>
+    status === "ok" ? "badge-success" : status === "idle" ? "badge-ghost" : status === "low" ? "badge-warning" : "badge-error";
+  const deckReadinessLabel = (status: string) =>
+    status === "ok"
+      ? t("account.deckReadinessOk")
+      : status === "idle"
+        ? t("account.deckReadinessIdle")
+        : status === "low"
+          ? t("account.deckReadinessLow")
+          : t("account.deckReadinessEmpty");
+
   if (!account) return <div className="text-base-content/60">{t("common.loading")}</div>;
 
   return (
@@ -556,8 +650,110 @@ export default function AccountDetail() {
         )}
       </header>
 
+      {readiness && (
+        <section className="card bg-base-100 border border-base-300">
+          <div className="card-body gap-4">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className={`badge ${readinessBadge}`}>{readinessTitle}</span>
+                  <h2 className="card-title text-base">{t("account.cockpitTitle")}</h2>
+                </div>
+                <p className="mt-1 max-w-2xl text-sm text-base-content/60">{t("account.cockpitSubtitle")}</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {readiness.actions.map((action) =>
+                  action === "connect_youtube" ? (
+                    <button key={action} className="btn btn-sm btn-primary" onClick={startConnect}>
+                      {readinessAction(action)}
+                    </button>
+                  ) : action === "open_queue" ? (
+                    <Link key={action} to="/queue" className="btn btn-sm btn-outline">
+                      {readinessAction(action)}
+                    </Link>
+                  ) : (
+                    <a
+                      key={action}
+                      href={action === "generate_or_upload" ? "#channel-content" : "#channel-settings"}
+                      className="btn btn-sm btn-outline"
+                    >
+                      {readinessAction(action)}
+                    </a>
+                  ),
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+              <div className="rounded-2xl bg-base-200 p-3">
+                <div className="text-2xl font-black">{readiness.queuedVideos}</div>
+                <div className="text-xs text-base-content/55">{t("account.cockpitQueued")}</div>
+              </div>
+              <div className="rounded-2xl bg-base-200 p-3">
+                <div className="text-2xl font-black">{readiness.postsPerDay}</div>
+                <div className="text-xs text-base-content/55">{t("account.cockpitPerDay")}</div>
+              </div>
+              <div className="rounded-2xl bg-base-200 p-3">
+                <div className="text-2xl font-black">{readinessRunway}</div>
+                <div className="text-xs text-base-content/55">{t("account.cockpitRunway")}</div>
+              </div>
+              <div className="rounded-2xl bg-base-200 p-3">
+                <div className="truncate text-sm font-bold">
+                  {readiness.nextSlotAt ? formatDateTime(readiness.nextSlotAt) : "—"}
+                </div>
+                <div className="text-xs text-base-content/55">{t("account.cockpitNextSlot")}</div>
+              </div>
+            </div>
+
+            {!!readiness.decks?.length && (
+              <div className="rounded-2xl border border-base-300">
+                <div className="border-b border-base-300 px-4 py-3">
+                  <div className="font-bold">{t("account.deckReadinessTitle")}</div>
+                  <div className="text-xs text-base-content/55">
+                    {t("account.deckReadinessHint", { n: readiness.minRunwayDays })}
+                  </div>
+                </div>
+                <div className="divide-y divide-base-300">
+                  {readiness.decks.map((deck) => (
+                    <div key={deck.deckId} className="grid gap-3 px-4 py-3 md:grid-cols-[minmax(0,1fr)_auto_auto_auto_auto] md:items-center">
+                      <div className="min-w-0">
+                        <div className="truncate font-semibold" title={deckName(deck.deckId)}>
+                          {librarySourceName(deck.deckId)}
+                        </div>
+                        <div className="text-xs text-base-content/45">{deck.deckId}</div>
+                      </div>
+                      <span className={`badge ${deckReadinessClass(deck.status)}`}>{deckReadinessLabel(deck.status)}</span>
+                      <div className="text-sm">
+                        <b>{deck.queued}</b> <span className="text-base-content/50">{t("account.deckReadinessQueued")}</span>
+                      </div>
+                      <div className="text-sm">
+                        <b>{deck.postsPerDay}</b> <span className="text-base-content/50">{t("account.deckReadinessPerDay")}</span>
+                      </div>
+                      <div className="text-sm">
+                        <b>{deckRunwayText(deck.runwayDays)}</b> <span className="text-base-content/50">{t("account.deckReadinessDays")}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="flex flex-wrap gap-2">
+              {[...readiness.blockers, ...readiness.warnings].map((code) => (
+                <span key={code} className={`badge ${readiness.blockers.includes(code) ? "badge-error" : "badge-warning"} badge-outline`}>
+                  {readinessReason(code)}
+                </span>
+              ))}
+              {readiness.blockers.length === 0 && readiness.warnings.length === 0 && (
+                <span className="badge badge-success badge-outline">{t("account.cockpitNoIssues")}</span>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.85fr)] gap-6 items-start">
-      <section className="card bg-base-100 border border-base-300">
+      <section id="channel-settings" className="card bg-base-100 border border-base-300">
         <div className="card-body gap-5">
           <label className="form-control">
             <span className="label-text mb-1">{t("account.channelName")}</span>
@@ -856,7 +1052,7 @@ export default function AccountDetail() {
       </section>
       </div>
 
-      <section className="card bg-base-100 border border-base-300">
+      <section id="channel-content" className="card bg-base-100 border border-base-300">
         <div className="card-body">
           <div className="flex items-center justify-between gap-2 flex-wrap">
             <h2 className="card-title text-base">{t("account.libraryTitle", { n: videos.length })}</h2>
@@ -883,7 +1079,7 @@ export default function AccountDetail() {
               </select>
             </div>
           </div>
-          <div className="mt-3 pt-3 border-t border-base-300 grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(380px,auto)] gap-3 items-start">
+          <div className="mt-3 pt-3 border-t border-base-300 grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.8fr)_minmax(300px,0.7fr)] gap-3 items-start">
             <div className="rounded-md border border-base-300 bg-base-200/30 p-3 min-w-0">
               <div className="flex items-center justify-between gap-2 mb-2">
                 <div className="font-medium text-sm">{t("account.channelPacks")}</div>
@@ -988,11 +1184,42 @@ export default function AccountDetail() {
               </div>
             </div>
 
+            <div className="rounded-md border border-base-300 bg-base-200/30 p-3">
+              <div className="font-medium text-sm mb-2">{t("account.manualUploadTitle")}</div>
+              {!isConnected && (
+                <div className="text-xs text-warning mb-2 flex items-center gap-1.5">
+                  <AppIcon name="warning" size={13} /> {t("account.connectFirstHint")}
+                </div>
+              )}
+              <p className="text-xs text-base-content/60 mb-3 leading-snug">
+                {t("account.manualUploadHint", {
+                  mb: manualMaxFileMb,
+                  sec: manualDurationSec,
+                  n: manualUploadsPerHour,
+                })}
+              </p>
+              <label className={`btn btn-sm btn-outline gap-1 w-full ${manualUploading || !isConnected ? "btn-disabled" : ""}`}>
+                {manualUploading ? <Loader2 className="animate-spin" size={14} /> : <Upload size={14} />}
+                {manualUploading ? t("account.manualUploading") : t("account.manualUploadButton")}
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="video/mp4,.mp4"
+                  disabled={manualUploading || !isConnected}
+                  onChange={(e) => {
+                    const file = e.currentTarget.files?.[0] ?? null;
+                    e.currentTarget.value = "";
+                    void uploadManualVideo(file);
+                  }}
+                />
+              </label>
+            </div>
+
             {/* Предупреждения и доп-действия — отдельными строками, тулбар не ломают */}
             {langMismatch && (
               <div
                 role="alert"
-                className="xl:col-span-2 flex items-start gap-2 rounded-md border border-error/40 bg-error/10 px-3 py-2 text-sm font-semibold text-error"
+                className="xl:col-span-3 flex items-start gap-2 rounded-md border border-error/40 bg-error/10 px-3 py-2 text-sm font-semibold text-error"
               >
                 <AlertTriangle size={18} className="mt-0.5 shrink-0" />
                 <span>
@@ -1004,10 +1231,10 @@ export default function AccountDetail() {
               </div>
             )}
             {sourcesDirty && videos.length > 0 && (
-              <span className="xl:col-span-2 text-xs text-warning">{t("account.oldVideosWarn")}</span>
+              <span className="xl:col-span-3 text-xs text-warning">{t("account.oldVideosWarn")}</span>
             )}
             {postedTwicePlus > 0 && (
-              <div className="xl:col-span-2 flex justify-end">
+              <div className="xl:col-span-3 flex justify-end">
                 <button
                   className="btn btn-sm btn-ghost text-error gap-1"
                   onClick={removePosted}
@@ -1099,6 +1326,9 @@ export default function AccountDetail() {
                   <div className="mx-auto mt-1.5 max-w-[280px] text-sm font-medium leading-tight line-clamp-2" title={cleanDisplayText(v.title)}>
                     {cleanDisplayText(v.title)}
                   </div>
+                  <div className="mx-auto mt-1 max-w-[280px] text-[11px] text-base-content/50 truncate">
+                    {librarySourceName(v.deck)}
+                  </div>
                 </div>
               ))}
             </div>
@@ -1183,7 +1413,7 @@ export default function AccountDetail() {
                     <option value="">{t("account.slotAuto")}</option>
                     {slotDeckOptions.map((deckId) => (
                       <option key={deckId} value={deckId}>
-                        {deckName(deckId)} · {t("account.libraryVideosCount", { n: libraryDeckCounts.get(deckId) || 0 })}
+                        {librarySourceName(deckId)} · {t("account.libraryVideosCount", { n: libraryDeckCounts.get(deckId) || 0 })}
                       </option>
                     ))}
                   </select>

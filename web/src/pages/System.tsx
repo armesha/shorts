@@ -4,6 +4,8 @@ import {
   MemoryStick,
   HardDrive,
   Clock,
+  Thermometer,
+  Fan,
   Activity,
   Film,
   Bug,
@@ -82,6 +84,7 @@ export default function System() {
   }, []);
 
   const now = data?.now;
+  const hardware = data?.hardware;
   const idle = data ? data.active.render === 0 && data.active.upload === 0 : true;
 
   return (
@@ -112,7 +115,7 @@ export default function System() {
       ) : (
         <>
           {/* System resources */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
             <Gauge
               icon={<Cpu />}
               label={t("system.cpu")}
@@ -124,6 +127,22 @@ export default function System() {
                   : `${t("system.avgOver", { n: now!.sampleSec })} · ${t("system.cores", { n: now!.cpuCount })}`
               }
             />
+            {hardware?.tempC != null ? (
+              <Gauge
+                icon={<Thermometer />}
+                label={t("system.temperature")}
+                value={fmtTemp(hardware.tempC)}
+                pct={Math.max(0, Math.min(100, Math.round(hardware.tempC)))}
+                hint={temperatureHint(hardware, t)}
+              />
+            ) : (
+              <Stat
+                icon={<Thermometer />}
+                label={t("system.temperature")}
+                value="—"
+                hint={t("system.temperatureUnavailable")}
+              />
+            )}
             <Gauge
               icon={<MemoryStick />}
               label={t("system.memory")}
@@ -147,6 +166,12 @@ export default function System() {
               label={t("system.uptime")}
               value={fmtUptime(now!.uptimeSec)}
               hint={`${now!.platform} · Node ${now!.nodeVersion}`}
+            />
+            <Stat
+              icon={<Fan />}
+              label={t("system.fan")}
+              value={hardware?.fanRpm != null ? fmtRpm(hardware.fanRpm) : "—"}
+              hint={hardware?.fanRpm != null ? t("system.fanHint") : t("system.fanUnavailable")}
             />
           </div>
 
@@ -212,7 +237,7 @@ export default function System() {
                     : ` · ${t("system.noPostsYet")}`}
                 </div>
               </div>
-              <SchedulerBadge lastTickAt={data.scheduler.lastTickAt} />
+              <SchedulerBadge lastTickAt={data.scheduler.lastTickAt} nowMs={updatedAt ?? 0} />
             </div>
           </div>
 
@@ -255,10 +280,15 @@ function HistoryChart({ history }: { history: SystemStatus["history"] }) {
       </div>
     );
   }
+  const cpuKey = t("system.chartCpu");
+  const ramKey = t("system.chartRam");
+  const tempKey = t("system.chartTemp");
+  const hasTemp = history.some((p) => p.tempC != null);
   const data = history.map((p) => ({
     t: new Date(p.t).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }),
-    "CPU %": p.cpu,
-    "RAM %": p.memPct,
+    [cpuKey]: p.cpu,
+    [ramKey]: p.memPct,
+    [tempKey]: p.tempC,
   }));
   return (
     <div className="card bg-base-100 border border-base-300">
@@ -272,8 +302,18 @@ function HistoryChart({ history }: { history: SystemStatus["history"] }) {
               <YAxis fontSize={12} width={40} domain={[0, 100]} unit="%" />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="CPU %" stroke="#6419e6" strokeWidth={2} dot={false} />
-              <Line type="monotone" dataKey="RAM %" stroke="#1d4ed8" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey={cpuKey} stroke="#6419e6" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey={ramKey} stroke="#1d4ed8" strokeWidth={2} dot={false} />
+              {hasTemp && (
+                <Line
+                  type="monotone"
+                  dataKey={tempKey}
+                  stroke="#dc2626"
+                  strokeWidth={2}
+                  dot={false}
+                  connectNulls
+                />
+              )}
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -282,11 +322,11 @@ function HistoryChart({ history }: { history: SystemStatus["history"] }) {
   );
 }
 
-function SchedulerBadge({ lastTickAt }: { lastTickAt: number | null }) {
+function SchedulerBadge({ lastTickAt, nowMs }: { lastTickAt: number | null; nowMs: number }) {
   const { t } = useT();
   // The cron fires every minute; if the last tick is older than ~3 min, something is wrong.
   if (!lastTickAt) return <span className="badge badge-ghost badge-sm">{t("system.waiting")}</span>;
-  const stale = Date.now() - lastTickAt > 3 * 60_000;
+  const stale = nowMs - lastTickAt > 3 * 60_000;
   return stale ? (
     <span className="badge badge-warning badge-sm">{t("system.stale")}</span>
   ) : (
@@ -371,6 +411,24 @@ function fmt(n: number): string {
 function fmtMb(mb: number): string {
   if (mb >= 1024) return `${(mb / 1024).toLocaleString("ru-RU", { maximumFractionDigits: 1 })} ГБ`;
   return `${fmt(Math.round(mb))} МБ`;
+}
+
+function fmtTemp(c: number): string {
+  return `${c.toLocaleString("ru-RU", { maximumFractionDigits: 1 })} °C`;
+}
+
+function fmtRpm(rpm: number): string {
+  return `${fmt(rpm)} RPM`;
+}
+
+function temperatureHint(
+  hardware: SystemStatus["hardware"],
+  t: (key: string, vars?: Record<string, string | number>) => string,
+): string {
+  const parts: string[] = [];
+  if (hardware.cpuTempC != null) parts.push(t("system.cpuTemp", { n: fmtTemp(hardware.cpuTempC) }));
+  if (hardware.gpuTempC != null) parts.push(t("system.gpuTemp", { n: fmtTemp(hardware.gpuTempC) }));
+  return parts.length ? parts.join(" · ") : hardware.tempLabel || t("system.temperatureAvailable");
 }
 
 function fmtUptime(sec: number): string {

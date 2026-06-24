@@ -130,15 +130,16 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
   const superAdminReq = (req: unknown): boolean => isSuperAdminUser(db.getUserById(uid(req)));
   // Видимые мне паки (владелец / главный админ / выдан грант) + сколько карточек свободно/использовано
   // именно у этого юзера — фронт по `available` ограничивает «сколько роликов сгенерировать».
-  // По умолчанию исключаем паки, скрытые лично у запросившего. `?all=1` (только главный админ)
-  // отдаёт ВСЕ паки без фильтра — для управления владельцами/грантами в Админке.
+  // По умолчанию исключаем паки, скрытые лично у запросившего. `?all=1` оставляет скрытые
+  // доступные паки в списке; все чужие паки для админки идут через /api/admin/packs.
   app.get("/api/packs", async (req) => {
     const userId = uid(req);
     const isSuperAdmin = superAdminReq(req);
-    const all = isSuperAdmin && (req.query as { all?: unknown })?.all != null;
+    const includeHidden = adminReq(req) && (req.query as { all?: unknown })?.all != null;
+    const all = isSuperAdmin && includeHidden;
     const usedKeys = db.usedAnecdoteKeys(userId);
     const base = all ? listAllPacks() : listPacks(userId, isSuperAdmin);
-    const visible = all ? base : base.filter((s) => !db.isDeckHiddenFor(userId, `pack:${s.id}`));
+    const visible = includeHidden ? base : base.filter((s) => !db.isDeckHiddenFor(userId, `pack:${s.id}`));
     return visible.map((s) => {
       const pack = getPack(s.id, userId, isSuperAdmin);
       if (!pack) return { ...s, used: 0, available: s.cards };
@@ -213,7 +214,8 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
   // Удалить пак целиком.
   app.delete("/api/packs/:id", async (req, reply) => {
     const id = (req.params as { id: string }).id;
-    const ok = deletePack(id, uid(req), superAdminReq(req));
+    const me = db.getUserById(uid(req));
+    const ok = deletePack(id, uid(req), superAdminReq(req), { isAdmin: me?.role === "admin" });
     if (!ok) return reply.code(404).send({ error: "Пак не найден или нет прав на удаление" });
     deletePackMusicDir(id);
     return { deleted: true };

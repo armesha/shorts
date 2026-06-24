@@ -42,6 +42,21 @@ const SAFE: Record<string, [number, number, number, number]> = {
   "protestant_photo_pulpit_bible.jpg": [180, 150, 640, 150],// pulpit+bible bottom → text upper
   "protestant_photo_rainy_bible.jpg": [210, 470, 560, 150], // rainy window right, bible bottom → left column
   "protestant_photo_wooden_church.jpg": [170, 150, 1040, 150], // church right, sky top → top band
+  "protestant_ai_stained_glow.jpg": [300, 150, 310, 150],
+  "protestant_ai_open_bible_glow.jpg": [260, 135, 520, 135],
+  "protestant_ai_hill_sunrise.jpg": [230, 150, 560, 180],
+  "protestant_ai_candle_arch.jpg": [260, 150, 420, 150],
+  "protestant_ai_glass_border.jpg": [300, 170, 320, 170],
+  "protestant_ai_empty_pews_warm.jpg": [230, 140, 560, 140],
+  "protestant_ai_parchment_frame.jpg": [300, 145, 300, 145],
+  "protestant_ai_walnut_cross.jpg": [300, 145, 430, 145],
+  "protestant_ai_lake_chapel.jpg": [230, 145, 540, 145],
+  "protestant_ai_ruby_glass.jpg": [300, 170, 320, 170],
+  "protestant_ai_olive_branch.jpg": [290, 150, 420, 150],
+  "protestant_ai_rainy_window.jpg": [260, 160, 360, 160],
+  "protestant_ai_forest_path.jpg": [240, 150, 540, 150],
+  "protestant_ai_stone_arch.jpg": [270, 150, 430, 150],
+  "protestant_ai_emerald_cloth.jpg": [310, 145, 310, 145],
 };
 const DEFAULT_SAFE: [number, number, number, number] = [320, 130, 320, 130];
 

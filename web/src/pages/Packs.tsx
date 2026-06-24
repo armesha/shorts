@@ -9,8 +9,10 @@ import {
   type UserDeckRow,
   type Generator,
   type PackSummary,
+  type ContentCatalogItem,
 } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { isMainAdmin } from "../lib/authz";
 import { useT } from "../lib/i18n";
 import { CONTENT_LANGS, langTag } from "../lib/deck";
 import { AppIcon } from "../components/AppIcon";
@@ -23,7 +25,7 @@ export default function Packs() {
   const { t } = useT();
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
-  const canManageAllPacks = !!user?.isSuperAdmin;
+  const canManageAllPacks = isMainAdmin(user);
   const [actionErr, setActionErr] = useState("");
   const [data, setData] = useState<MyDecks | null>(null);
   const [loading, setLoading] = useState(true);
@@ -37,6 +39,9 @@ export default function Packs() {
     () => Number(localStorage.getItem("packsLowThreshold")) || 100,
   );
   const [customPacks, setCustomPacks] = useState<PackSummary[]>([]); // кастомные паки, видимые мне
+  const [catalog, setCatalog] = useState<ContentCatalogItem[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [catalogFilter, setCatalogFilter] = useState<"all" | ContentCatalogItem["kind"]>("all");
   const [deletingPack, setDeletingPack] = useState<string | null>(null);
   const [savingLang, setSavingLang] = useState<string | null>(null);
   const [confirmPack, setConfirmPack] = useState<PackSummary | null>(null); // пак, ожидающий подтверждения удаления
@@ -59,8 +64,27 @@ export default function Packs() {
     apiClient.packs().then(setCustomPacks).catch(() => {});
   }, []);
 
-  // Удаление пака (админ — любой, юзер — свой): клик открывает модалку-подтверждение (всегда видна,
-  // браузер её не подавляет), а реально удаляет doRemovePack после «Удалить».
+  useEffect(() => {
+    let alive = true;
+    setCatalogLoading(true);
+    apiClient
+      .contentCatalog()
+      .then((res) => {
+        if (alive) setCatalog(res.items);
+      })
+      .catch(() => {
+        if (alive) setCatalog([]);
+      })
+      .finally(() => {
+        if (alive) setCatalogLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  // Удаление пака: главный админ — любой, обычный админ — только созданный им, юзер — свой.
+  // Клик открывает модалку-подтверждение, а реально удаляет doRemovePack после «Удалить».
   const removePack = (p: PackSummary) => setConfirmPack(p);
   const doRemovePack = async () => {
     const p = confirmPack;
@@ -141,6 +165,30 @@ export default function Packs() {
       ),
     [decks],
   );
+  const filteredCatalog = useMemo(
+    () => (catalogFilter === "all" ? catalog : catalog.filter((item) => item.kind === catalogFilter)),
+    [catalog, catalogFilter],
+  );
+  const catalogTotals = useMemo(
+    () =>
+      catalog.reduce(
+        (acc, item) => {
+          acc.queued += item.queued;
+          acc.sources += 1;
+          if (item.available != null) acc.available += item.available;
+          return acc;
+        },
+        { sources: 0, queued: 0, available: 0 },
+      ),
+    [catalog],
+  );
+
+  const kindLabel = (kind: ContentCatalogItem["kind"]) => {
+    if (kind === "builtin") return t("packs.catalogKindBuiltin");
+    if (kind === "custom_pack") return t("packs.catalogKindCustom");
+    if (kind === "manual") return t("packs.catalogKindManual");
+    return t("packs.catalogKindClip");
+  };
 
   return (
     <div className="space-y-6">
@@ -187,6 +235,127 @@ export default function Packs() {
         <Stat label={t("packs.statRemaining")} value={fmt(totals.available)} />
         <Stat label={t("packs.statSpent")} value={fmt(totals.used)} />
       </div>
+
+      <section className="card bg-base-100 border border-base-300">
+        <div className="card-body gap-4">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <AppIcon name="packs" size={20} className="text-primary" />
+                <h2 className="card-title">{t("packs.catalogTitle")}</h2>
+              </div>
+              <p className="mt-1 max-w-2xl text-sm text-base-content/60">{t("packs.catalogSubtitle")}</p>
+            </div>
+            <div className="grid grid-cols-3 gap-2 text-center sm:flex">
+              <div className="rounded-xl bg-base-200 px-3 py-2">
+                <div className="text-lg font-black">{fmt(catalogTotals.sources)}</div>
+                <div className="text-[11px] text-base-content/50">{t("packs.catalogSources")}</div>
+              </div>
+              <div className="rounded-xl bg-base-200 px-3 py-2">
+                <div className="text-lg font-black">{fmt(catalogTotals.available)}</div>
+                <div className="text-[11px] text-base-content/50">{t("packs.catalogAvailable")}</div>
+              </div>
+              <div className="rounded-xl bg-base-200 px-3 py-2">
+                <div className="text-lg font-black">{fmt(catalogTotals.queued)}</div>
+                <div className="text-[11px] text-base-content/50">{t("packs.catalogQueued")}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {[
+              ["all", t("packs.catalogFilterAll")],
+              ["builtin", t("packs.catalogKindBuiltin")],
+              ["custom_pack", t("packs.catalogKindCustom")],
+              ["manual", t("packs.catalogKindManual")],
+              ["clip_demo", t("packs.catalogKindClip")],
+            ].map(([value, label]) => (
+              <button
+                key={value}
+                className={`btn btn-xs ${catalogFilter === value ? "btn-primary" : "btn-ghost"}`}
+                onClick={() => setCatalogFilter(value as typeof catalogFilter)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {catalogLoading ? (
+            <div className="py-10 text-center">
+              <span className="loading loading-spinner text-primary" />
+            </div>
+          ) : filteredCatalog.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-base-300 p-6 text-center text-sm text-base-content/60">
+              {t("packs.catalogEmpty")}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 xl:grid-cols-3">
+              {filteredCatalog.map((item) => (
+                <article key={item.id} className="rounded-2xl border border-base-300 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="badge badge-outline">{kindLabel(item.kind)}</span>
+                        {item.lang && <span className="badge badge-ghost">{langTag(item.lang)}</span>}
+                      </div>
+                      <h3 className="mt-2 truncate text-base font-bold" title={item.title}>
+                        {item.title}
+                      </h3>
+                      <div className="mt-1 text-xs text-base-content/50">{item.id}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-2xl font-black">{item.available == null ? "—" : fmt(item.available)}</div>
+                      <div className="text-[11px] text-base-content/50">
+                        {item.total == null ? t("packs.catalogManualPool") : t("packs.catalogOf", { n: fmt(item.total) })}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+                    <div className="rounded-xl bg-base-200 p-2">
+                      <div className="font-black">{fmt(item.queued)}</div>
+                      <div className="text-[11px] text-base-content/50">{t("packs.catalogQueued")}</div>
+                    </div>
+                    <div className="rounded-xl bg-base-200 p-2">
+                      <div className="font-black">{fmt(item.usedByAccounts.length)}</div>
+                      <div className="text-[11px] text-base-content/50">{t("packs.catalogChannels")}</div>
+                    </div>
+                    <div className="rounded-xl bg-base-200 p-2">
+                      <div className="font-black">{fmt(item.demoCount)}</div>
+                      <div className="text-[11px] text-base-content/50">{t("packs.catalogDemos")}</div>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-1">
+                    {item.usedByAccounts.slice(0, 3).map((account) => (
+                      <Link key={account.id} to={`/accounts/${account.id}`} className="badge badge-ghost hover:badge-primary">
+                        {account.channelName}
+                      </Link>
+                    ))}
+                    {item.usedByAccounts.length > 3 && (
+                      <span className="badge badge-ghost">+{item.usedByAccounts.length - 3}</span>
+                    )}
+                    {!item.usedByAccounts.length && <span className="badge badge-ghost">{t("packs.catalogUnused")}</span>}
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <Link to="/queue" className="btn btn-xs btn-outline">
+                      {t("packs.catalogOpenQueue")}
+                    </Link>
+                    {item.kind === "custom_pack" && (
+                      <Link to="/cards" className="btn btn-xs btn-outline">
+                        {t("packs.catalogEditCards")}
+                      </Link>
+                    )}
+                    {item.demoCount > 0 && (
+                      <Link to="/clip-demos" className="btn btn-xs btn-outline">
+                        {t("packs.catalogOpenDemos")}
+                      </Link>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
 
       {!loading && decks.length > 0 && (
         <div className="flex items-center gap-2 flex-wrap">
@@ -261,8 +430,9 @@ export default function Packs() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {customPacks.map((p) => {
               const owned = !!user && p.owners.includes(user.id);
+              const createdByMe = !!user && p.createdBy === user.id;
               const canEditPack = canManageAllPacks || owned;
-              const canDelete = canEditPack;
+              const canDelete = canManageAllPacks || (isAdmin ? createdByMe : owned);
               const foreign = canManageAllPacks && !owned; // главный админ не владелец — пак чужой/ничей
               return (
                 <div key={p.id} className="card bg-base-100 border border-base-300">

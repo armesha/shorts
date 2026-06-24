@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>illusions host v2 (variants + localizable title overlay)</title>
+<style>html,body{margin:0;padding:0;background:#000}#scene{display:block}</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  // ============================================================================
+  //  SHARED HOST v2 — variant-aware + localizable title overlay.
+  //  Edit ONLY the two marked regions: (1) SPEC block, (2) drawIllusion().
+  //  New vs v1:
+  //   - H.v  = variant params {palette,dir,turns,speed,seed,density,angle} (from SPEC.variant)
+  //   - H.PALETTES / H.pal(t) / H.palStops()  = named colour schemes for variants
+  //   - window.renderTitle(text) -> TRANSPARENT png with ONLY the title (for ffmpeg overlay,
+  //     so one titleless geometry render is reused across all 5 languages)
+  //   - canvas is alpha:true; renderFrame() fills its own opaque background.
+  // ============================================================================
+  const CW = 1080, CH = 1920, TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: true });
+
+  function mulberry32(seed) {
+    let s = (seed >>> 0) || 1;
+    return function () {
+      let t = s += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (x, lo, hi) => x < lo ? lo : x > hi ? hi : x;
+  const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+
+  // Named palettes: ordered RGB stops. H.pal(t) interpolates across them; H.palStops() returns raw stops.
+  const PALETTES = {
+    classic:  [[75,58,255],[255,35,112],[38,255,132],[44,150,255]], // v1 spectrum (default look)
+    spectrum: [[75,58,255],[255,35,112],[38,255,132],[44,150,255]],
+    aurora:   [[130,255,200],[120,180,255],[180,120,255],[255,140,220]],
+    fire:     [[255,210,90],[255,120,40],[255,60,60],[210,40,120]],
+    ice:      [[200,240,255],[120,190,255],[255,255,255],[90,150,230]],
+    neon:     [[80,255,140],[190,255,60],[40,230,180],[120,255,90]],
+    gold:     [[255,235,170],[255,190,80],[255,250,210],[210,150,50]],
+    sunset:   [[255,180,90],[255,90,120],[200,70,200],[120,80,220]],
+    emerald:  [[170,255,210],[60,220,150],[30,180,140],[120,255,180]],
+    magma:    [[255,230,120],[255,140,40],[230,40,40],[120,20,60]],
+    mono:     [[255,255,255],[210,210,210],[170,170,170],[235,235,235]],
+    candy:    [[255,160,210],[120,210,255],[255,225,130],[180,160,255]],
+  };
+  function palStops(name) { return PALETTES[name] || PALETTES.classic; }
+  function pal(t, name) {
+    const s = palStops(name || (V && V.palette) || 'classic');
+    t = clamp(t, 0, 1) * (s.length - 1);
+    const i = Math.min(s.length - 2, Math.floor(t)), f = t - i;
+    const a = s[i], b = s[i + 1];
+    return `rgb(${Math.round(lerp(a[0],b[0],f))} ${Math.round(lerp(a[1],b[1],f))} ${Math.round(lerp(a[2],b[2],f))})`;
+  }
+
+  // active variant (filled at setup)
+  let V = { palette: 'classic', dir: 1, turns: 1, speed: 1, seed: 1, density: 1, angle: 0 };
+
+  const SAFE = { x0: 70, y0: 380, x1: 1010, y1: 1520 };
+  const H = { TAU, rng: mulberry32, lerp, clamp, smooth, cx: 540, cy: 960, safe: SAFE, maxR: 460,
+              PALETTES, pal, palStops, get v() { return V; } };
+
+  // ====================== (1) SPEC — replace these values =====================
+  let SPEC = {
+    key: 'ponzo',
+    name: 'Ponzo illusion',
+    title: 'These two yellow bars are equal',
+    dur: 8,            // seconds
+    fps: 30,
+    light: false,      // true => skip the dark vignette (for grey/white-background illusions)
+  };
+  // ===========================================================================
+
+  // ============ (2) drawIllusion — replace this whole function body ==========
+  // Contract:
+  //   p       progress 0..1 over the clip (build renders frame f at p=f/FRAMES,
+  //           so p=0 and p=1 are the SAME instant -> a LOOPING illusion must make
+  //           draw(0) == draw(1). Non-looping sequences (e.g. afterimage) ignore this.)
+  //   CW,CH   1080 x 1920
+  //   H       helpers: H.rng(seed)->()=>0..1, H.lerp, H.clamp, H.smooth, H.TAU,
+  //           H.cx, H.cy (frame centre of the safe area), H.safe {x0,y0,x1,y1}, H.maxR
+  //   The host fills #000, then calls this, then draws vignette (unless light) + title.
+  //   Keep important content inside H.safe. Use H.rng only (no Math.random) for determinism.
+  function drawIllusion(ctx, p, CW, CH, H) {
+    const S = H.safe;
+    // ---- Ponzo illusion -----------------------------------------------------
+    // Two converging "railway" rails recede to a vanishing point near the TOP.
+    // Two horizontal YELLOW bars share the SAME pixel length. The UPPER bar sits
+    // where the rails are close together, so perspective makes it read as
+    // farther away and therefore LONGER; the LOWER bar sits where the rails are
+    // wide, so it reads as nearer and SHORTER. Subtle ground + sleepers
+    // (railroad ties) sell the depth. Once per loop a faint guide drops vertical
+    // lines from the bar ends to prove the lengths are identical.
+
+    // --- perspective frame ----------------------------------------------------
+    const VPX = (S.x0 + S.x1) / 2;     // vanishing point x = 540 (centred)
+    const VPY = S.y0 + 56;             // vanishing point y ~436 (near top of safe)
+    const baseY = S.y1 - 30;           // rails reach this y at the bottom ~1490
+    const halfBase = 388;              // half spread of the rails at baseY
+    const xLb = VPX - halfBase;        // left rail x at baseY
+    const xRb = VPX + halfBase;        // right rail x at baseY
+
+    // map a y (between VPY and baseY) to the rail half-width at that depth.
+    // linear taper from 0 at the VP to halfBase at baseY -> a clean perspective.
+    const railHalfAt = (y) => {
+      const t = (y - VPY) / (baseY - VPY); // 0 at VP, 1 at base
+      return halfBase * t;
+    };
+    const railXL = (y) => VPX - railHalfAt(y);
+    const railXR = (y) => VPX + railHalfAt(y);
+
+    // --- ground: a soft dark band so the rails read as lying on a surface ----
+    ctx.save();
+    const gnd = ctx.createLinearGradient(0, VPY, 0, baseY);
+    gnd.addColorStop(0.00, 'rgb(20,22,30)');
+    gnd.addColorStop(0.55, 'rgb(30,32,42)');
+    gnd.addColorStop(1.00, 'rgb(44,46,58)');
+    ctx.beginPath();
+    ctx.moveTo(VPX, VPY);
+    ctx.lineTo(xLb, baseY);
+    ctx.lineTo(xRb, baseY);
+    ctx.closePath();
+    ctx.fillStyle = gnd;
+    ctx.fill();
+    ctx.restore();
+
+    // --- sleepers (railroad ties): horizontal slats fading toward the VP -----
+    // Spaced by perspective so nearer ties are taller & farther apart. We pan
+    // them slowly upward over the loop with an integer number of full steps so
+    // the very last frame equals the first (seamless). The pattern repeats every
+    // unit of the depth parameter `t`, so a whole-number phase shift loops.
+    const N_TIES = 22;                 // ties drawn across the depth range
+    const PAN_STEPS = 1;               // whole repeats panned per loop -> seamless
+    // phase wrapped into [0,1); =0 at BOTH p=0 and p=1 so draw(0)===draw(1).
+    let phase = (p * PAN_STEPS) % 1;
+    phase = phase - Math.floor(phase); // guard tiny negative fp -> exact [0,1)
+    ctx.save();
+    for (let i = 0; i < N_TIES; i++) {
+      // depth parameter in [0,1): 0 = at VP (far), ->1 = at base (near).
+      // (i + phase)/N_TIES stays in [0,1) for i in 0..N_TIES-1 (phase<1), so no
+      // wrap branch is needed -> byte-identical geometry whenever phase matches.
+      const u = (i + phase) / N_TIES;
+      const t = Math.sqrt(u);          // far ties bunch up, near ties spread out
+      const y = lerp(VPY, baseY, t);
+      if (y <= VPY + 2 || y >= baseY) continue;
+      const hw = railHalfAt(y);        // tie spans just inside the rails
+      const tieW = hw * 0.86;
+      const tieH = clamp(2 + t * 14, 2, 16);  // thicker as it nears the viewer
+      const a = 0.10 + t * 0.30;       // brighter when nearer
+      ctx.fillStyle = `rgba(120,128,150,${a})`;
+      ctx.fillRect(VPX - tieW, y - tieH / 2, tieW * 2, tieH);
+    }
+    ctx.restore();
+
+    // --- the two converging rails --------------------------------------------
+    ctx.save();
+    ctx.lineCap = 'round';
+    // soft dark under-stroke for grounding
+    ctx.strokeStyle = 'rgba(0,0,0,0.55)';
+    ctx.lineWidth = 12;
+    ctx.beginPath(); ctx.moveTo(VPX, VPY); ctx.lineTo(xLb, baseY);
+    ctx.moveTo(VPX, VPY); ctx.lineTo(xRb, baseY); ctx.stroke();
+    // bright rail
+    const rail = ctx.createLinearGradient(0, VPY, 0, baseY);
+    rail.addColorStop(0, 'rgba(150,160,185,0.55)');
+    rail.addColorStop(1, 'rgba(225,232,250,0.98)');
+    ctx.strokeStyle = rail;
+    ctx.lineWidth = 7;
+    ctx.beginPath(); ctx.moveTo(VPX, VPY); ctx.lineTo(xLb, baseY);
+    ctx.moveTo(VPX, VPY); ctx.lineTo(xRb, baseY); ctx.stroke();
+    ctx.restore();
+
+    // --- the two IDENTICAL yellow bars ---------------------------------------
+    // Same pixel length, centred horizontally, one high (near VP) one low.
+    const BAR_LEN = 372;               // EXACTLY equal for both
+    const BAR_H   = 26;
+    const yUpper  = lerp(VPY, baseY, 0.30);  // high up where rails are close
+    const yLower  = lerp(VPY, baseY, 0.86);  // low down where rails are wide
+    const YELLOW  = 'rgb(255,214,10)';
+
+    const drawBar = (cyBar) => {
+      const x0 = VPX - BAR_LEN / 2;
+      ctx.save();
+      // subtle drop shadow to lift the bar off the ground
+      ctx.shadowColor = 'rgba(0,0,0,0.6)';
+      ctx.shadowBlur = 12;
+      ctx.shadowOffsetY = 4;
+      ctx.fillStyle = YELLOW;
+      ctx.beginPath();
+      ctx.roundRect(x0, cyBar - BAR_H / 2, BAR_LEN, BAR_H, 7);
+      ctx.fill();
+      ctx.restore();
+      // thin warm outline for crispness (no shadow)
+      ctx.save();
+      ctx.strokeStyle = 'rgba(120,80,0,0.65)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(x0, cyBar - BAR_H / 2, BAR_LEN, BAR_H, 7);
+      ctx.stroke();
+      ctx.restore();
+    };
+    drawBar(yUpper);
+    drawBar(yLower);
+
+    // --- once-per-loop PROOF reveal ------------------------------------------
+    // Vertical dashed drop-lines connect the matching ends of the two bars, and
+    // a faint horizontal caliper marks the shared length. Fades 0->1->0 around
+    // mid-loop so it is invisible at p=0 and p=1 (seamless).
+    let reveal = 0;
+    if (p > 0.30 && p < 0.70) {
+      const t = (p - 0.30) / 0.40;     // 0..1 across the window
+      reveal = Math.sin(t * Math.PI);  // 0 -> 1 -> 0 (smooth bump)
+    }
+    if (reveal > 0.001) {
+      ctx.save();
+      const xL = VPX - BAR_LEN / 2;
+      const xR = VPX + BAR_LEN / 2;
+      // vertical dashed lines from each upper-bar end down to the lower-bar end:
+      // because the bars share x-extent, these are perfectly vertical -> equal.
+      ctx.setLineDash([12, 9]);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = `rgba(120,220,255,${0.9 * reveal})`;
+      for (const x of [xL, xR]) {
+        ctx.beginPath();
+        ctx.moveTo(x, yUpper - BAR_H / 2 - 6);
+        ctx.lineTo(x, yLower + BAR_H / 2 + 6);
+        ctx.stroke();
+      }
+      // small end-caps (ticks) on each bar end to anchor the eye
+      ctx.setLineDash([]);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = `rgba(120,220,255,${0.95 * reveal})`;
+      for (const yb of [yUpper, yLower]) {
+        for (const x of [xL, xR]) {
+          ctx.beginPath();
+          ctx.moveTo(x, yb - BAR_H / 2 - 12);
+          ctx.lineTo(x, yb - BAR_H / 2 - 2);
+          ctx.stroke();
+        }
+      }
+      // a faint caliper label band between the bars, reinforcing "same width"
+      const yMid = (yUpper + yLower) / 2;
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = `rgba(255,255,255,${0.5 * reveal})`;
+      ctx.beginPath();
+      ctx.moveTo(xL, yMid);
+      ctx.lineTo(xR, yMid);
+      ctx.stroke();
+      // arrow-ish end ticks on the caliper
+      for (const x of [xL, xR]) {
+        const dir = x === xL ? 1 : -1;
+        ctx.beginPath();
+        ctx.moveTo(x, yMid);
+        ctx.lineTo(x + dir * 14, yMid - 8);
+        ctx.moveTo(x, yMid);
+        ctx.lineTo(x + dir * 14, yMid + 8);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    void H.rng; // deterministic geometry; no randomness needed
+  }
+  // ===========================================================================
+
+  // ---------------- title (identical layout to v1; drawn as overlay or inline) ----------
+  let TITLE_LINES = [], TITLE_PX = 60, TITLE_TEXT = '';
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    TITLE_TEXT = String(text || '');
+    const words = TITLE_TEXT.trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { TITLE_LINES = []; return; }
+    for (let px = 72; px >= 40; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = []; let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_PX = px; return; }
+      if (px === 40) { TITLE_LINES = lines.slice(0, 3); TITLE_PX = px; }
+    }
+  }
+  function paintTitle() {
+    if (!TITLE_LINES.length) return;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_PX);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const lh = TITLE_PX * 1.2, n = TITLE_LINES.length;
+    const startY = 210, padX = 42, padY = 28;
+    let maxW = 0; for (const l of TITLE_LINES) maxW = Math.max(maxW, ctx.measureText(l).width);
+    const rx = CW / 2 - maxW / 2 - padX, rw = maxW + padX * 2;
+    const ry = startY - lh / 2 - padY, rh = (n - 1) * lh + lh + padY * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 28); ctx.fill();
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    let y = startY; for (const l of TITLE_LINES) { ctx.fillText(l, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.2, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.64, 'rgba(0,0,0,0.12)'); g.addColorStop(1, 'rgba(0,0,0,0.66)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  }
+
+  window.setup = function (overrides) {
+    if (overrides && typeof overrides === 'object') {
+      const { variant, ...rest } = overrides;
+      SPEC = { ...SPEC, ...rest };
+      if (variant && typeof variant === 'object') SPEC.variant = variant;
+    }
+    V = { palette: 'classic', dir: 1, turns: 1, speed: 1, seed: 1, density: 1, angle: 0, ...(SPEC.variant || {}) };
+    layoutTitle(SPEC.title);
+    return { key: SPEC.key, name: SPEC.name, dur: SPEC.dur, fps: SPEC.fps, light: !!SPEC.light, variant: V, lines: TITLE_LINES.length, px: TITLE_PX };
+  };
+  window.getSpec = function () { return { ...SPEC, v: { ...V } }; };
+
+  // Full frame (background + illusion + vignette + INLINE title). Used for standalone preview.
+  window.renderFrame = function (progress) {
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    paintTitle();
+    return canvas.toDataURL('image/png');
+  };
+  // Geometry only, NO title (opaque). Rendered ONCE; localized titles overlaid later.
+  window.renderBase = function (progress) {
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    return canvas.toDataURL('image/png');
+  };
+  // TRANSPARENT png with ONLY the title (pill + text), for ffmpeg overlay onto a titleless clip.
+  window.renderTitle = function (text) {
+    layoutTitle(text);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.clearRect(0, 0, CW, CH);
+    paintTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  layoutTitle(SPEC.title);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

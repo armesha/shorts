@@ -37,8 +37,9 @@ export interface JobStatus extends Job {
 export interface GenQueue {
   initWorker(w: GenWorker): void;
   enqueue(userId: number, accountId: number, total: number, ownerUserId?: number, deckIds?: string[]): Job;
-  cancelJob(id: string, userId: number): boolean;
+  cancelJob(id: string, userId: number, force?: boolean): boolean;
   jobStatus(id: string): JobStatus | null;
+  listStatuses(userId?: number): JobStatus[];
   queuedRemainingForUser(userId: number): number;
   /** Videos still to be made for one CONTENT OWNER, counting only jobs that draw from the given
    *  decks (deck-sets overlapping `deckIds`). Used to not enqueue more than the owner's free cards. */
@@ -109,6 +110,18 @@ export function createGenQueue(): GenQueue {
     }
   }
 
+  function statusFor(id: string): JobStatus | null {
+    const job = jobs.get(id);
+    if (!job) return null;
+    const position = pending.indexOf(id);
+    let ahead = 0;
+    for (let i = 0; i < position; i++) {
+      const j = jobs.get(pending[i]);
+      if (j) ahead += Math.max(0, j.total - j.done);
+    }
+    return { ...job, ahead, position };
+  }
+
   return {
     initWorker(w) {
       worker = w;
@@ -133,9 +146,9 @@ export function createGenQueue(): GenQueue {
       void pump();
       return job;
     },
-    cancelJob(id, userId) {
+    cancelJob(id, userId, force = false) {
       const job = jobs.get(id);
-      if (!job || job.userId !== userId) return false;
+      if (!job || (!force && job.userId !== userId)) return false;
       if (job.state !== "queued" && job.state !== "running") return false;
       job.state = "canceled";
       job.endedAt = Date.now();
@@ -144,15 +157,23 @@ export function createGenQueue(): GenQueue {
       return true;
     },
     jobStatus(id) {
-      const job = jobs.get(id);
-      if (!job) return null;
-      const position = pending.indexOf(id);
-      let ahead = 0;
-      for (let i = 0; i < position; i++) {
-        const j = jobs.get(pending[i]);
-        if (j) ahead += Math.max(0, j.total - j.done);
-      }
-      return { ...job, ahead, position };
+      return statusFor(id);
+    },
+    listStatuses(userId) {
+      prune();
+      const rank: Record<JobState, number> = {
+        running: 0,
+        queued: 1,
+        error: 2,
+        exhausted: 3,
+        canceled: 4,
+        done: 5,
+      };
+      return [...jobs.values()]
+        .filter((job) => userId == null || job.userId === userId)
+        .map((job) => statusFor(job.id))
+        .filter((job): job is JobStatus => !!job)
+        .sort((a, b) => rank[a.state] - rank[b.state] || a.position - b.position || b.createdAt - a.createdAt);
     },
     queuedRemainingForUser(userId) {
       prune();
@@ -198,8 +219,9 @@ const _queue = createGenQueue();
 export const initGenQueue = (w: GenWorker): void => _queue.initWorker(w);
 export const enqueue = (userId: number, accountId: number, total: number, ownerUserId?: number, deckIds?: string[]): Job =>
   _queue.enqueue(userId, accountId, total, ownerUserId, deckIds);
-export const cancelJob = (id: string, userId: number): boolean => _queue.cancelJob(id, userId);
+export const cancelJob = (id: string, userId: number, force?: boolean): boolean => _queue.cancelJob(id, userId, force);
 export const jobStatus = (id: string): JobStatus | null => _queue.jobStatus(id);
+export const listStatuses = (userId?: number): JobStatus[] => _queue.listStatuses(userId);
 export const queuedRemainingForUser = (userId: number): number => _queue.queuedRemainingForUser(userId);
 export const queuedRemainingForOwnerDecks = (ownerUserId: number, deckIds: string[]): number =>
   _queue.queuedRemainingForOwnerDecks(ownerUserId, deckIds);

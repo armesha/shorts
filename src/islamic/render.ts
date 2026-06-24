@@ -36,6 +36,21 @@ const SAFE: Record<string, [number, number, number, number]> = {
   "islamic_prayer_rug.jpg": [305, 195, 305, 195],
   "islamic_quran_corner.jpg": [600, 100, 230, 100],
   "islamic_quran_header.jpg": [640, 110, 230, 110],
+  "islamic_ai_emerald_arch.jpg": [300, 130, 290, 130],
+  "islamic_ai_desert_dawn.jpg": [260, 130, 420, 130],
+  "islamic_ai_navy_dome.jpg": [320, 130, 320, 130],
+  "islamic_ai_prayer_rug.jpg": [280, 145, 320, 145],
+  "islamic_ai_sapphire_mihrab.jpg": [340, 135, 270, 135],
+  "islamic_ai_courtyard.jpg": [270, 150, 360, 150],
+  "islamic_ai_palm_garden.jpg": [300, 160, 330, 160],
+  "islamic_ai_velvet_filigree.jpg": [320, 145, 320, 145],
+  "islamic_ai_sandstone_arch.jpg": [300, 145, 300, 145],
+  "islamic_ai_burgundy_frame.jpg": [320, 145, 320, 145],
+  "islamic_ai_turquoise_mosaic.jpg": [280, 175, 300, 175],
+  "islamic_ai_green_rosette.jpg": [330, 145, 330, 145],
+  "islamic_ai_stone_niche.jpg": [300, 140, 290, 140],
+  "islamic_ai_night_domes.jpg": [260, 135, 440, 135],
+  "islamic_ai_open_book.jpg": [300, 135, 430, 135],
 };
 const DEFAULT_SAFE: [number, number, number, number] = [380, 120, 360, 120];
 

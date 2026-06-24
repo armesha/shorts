@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>illusions host v2 (variants + localizable title overlay)</title>
+<style>html,body{margin:0;padding:0;background:#000}#scene{display:block}</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  // ============================================================================
+  //  SHARED HOST v2 — variant-aware + localizable title overlay.
+  //  Edit ONLY the two marked regions: (1) SPEC block, (2) drawIllusion().
+  //  New vs v1:
+  //   - H.v  = variant params {palette,dir,turns,speed,seed,density,angle} (from SPEC.variant)
+  //   - H.PALETTES / H.pal(t) / H.palStops()  = named colour schemes for variants
+  //   - window.renderTitle(text) -> TRANSPARENT png with ONLY the title (for ffmpeg overlay,
+  //     so one titleless geometry render is reused across all 5 languages)
+  //   - canvas is alpha:true; renderFrame() fills its own opaque background.
+  // ============================================================================
+  const CW = 1080, CH = 1920, TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: true });
+
+  function mulberry32(seed) {
+    let s = (seed >>> 0) || 1;
+    return function () {
+      let t = s += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (x, lo, hi) => x < lo ? lo : x > hi ? hi : x;
+  const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+
+  // Named palettes: ordered RGB stops. H.pal(t) interpolates across them; H.palStops() returns raw stops.
+  const PALETTES = {
+    classic:  [[75,58,255],[255,35,112],[38,255,132],[44,150,255]], // v1 spectrum (default look)
+    spectrum: [[75,58,255],[255,35,112],[38,255,132],[44,150,255]],
+    aurora:   [[130,255,200],[120,180,255],[180,120,255],[255,140,220]],
+    fire:     [[255,210,90],[255,120,40],[255,60,60],[210,40,120]],
+    ice:      [[200,240,255],[120,190,255],[255,255,255],[90,150,230]],
+    neon:     [[80,255,140],[190,255,60],[40,230,180],[120,255,90]],
+    gold:     [[255,235,170],[255,190,80],[255,250,210],[210,150,50]],
+    sunset:   [[255,180,90],[255,90,120],[200,70,200],[120,80,220]],
+    emerald:  [[170,255,210],[60,220,150],[30,180,140],[120,255,180]],
+    magma:    [[255,230,120],[255,140,40],[230,40,40],[120,20,60]],
+    mono:     [[255,255,255],[210,210,210],[170,170,170],[235,235,235]],
+    candy:    [[255,160,210],[120,210,255],[255,225,130],[180,160,255]],
+  };
+  function palStops(name) { return PALETTES[name] || PALETTES.classic; }
+  function pal(t, name) {
+    const s = palStops(name || (V && V.palette) || 'classic');
+    t = clamp(t, 0, 1) * (s.length - 1);
+    const i = Math.min(s.length - 2, Math.floor(t)), f = t - i;
+    const a = s[i], b = s[i + 1];
+    return `rgb(${Math.round(lerp(a[0],b[0],f))} ${Math.round(lerp(a[1],b[1],f))} ${Math.round(lerp(a[2],b[2],f))})`;
+  }
+
+  // active variant (filled at setup)
+  let V = { palette: 'classic', dir: 1, turns: 1, speed: 1, seed: 1, density: 1, angle: 0 };
+
+  const SAFE = { x0: 70, y0: 380, x1: 1010, y1: 1520 };
+  const H = { TAU, rng: mulberry32, lerp, clamp, smooth, cx: 540, cy: 960, safe: SAFE, maxR: 460,
+              PALETTES, pal, palStops, get v() { return V; } };
+
+  // ====================== (1) SPEC — replace these values =====================
+  let SPEC = {
+    key: 'wheel',
+    name: 'Wagon-wheel effect',
+    title: 'Which way is it really spinning?',
+    dur: 8,            // seconds
+    fps: 30,
+    light: false,      // true => skip the dark vignette (for grey/white-background illusions)
+  };
+  // ===========================================================================
+
+  // ============ (2) drawIllusion — replace this whole function body ==========
+  // Contract:
+  //   p       progress 0..1 over the clip (build renders frame f at p=f/FRAMES,
+  //           so p=0 and p=1 are the SAME instant -> a LOOPING illusion must make
+  //           draw(0) == draw(1). Non-looping sequences (e.g. afterimage) ignore this.)
+  //   CW,CH   1080 x 1920
+  //   H       helpers: H.rng(seed)->()=>0..1, H.lerp, H.clamp, H.smooth, H.TAU,
+  //           H.cx, H.cy (frame centre of the safe area), H.safe {x0,y0,x1,y1}, H.maxR
+  //   The host fills #000, then calls this, then draws vignette (unless light) + title.
+  //   Keep important content inside H.safe. Use H.rng only (no Math.random) for determinism.
+  function drawIllusion(ctx, p, CW, CH, H) {
+    const TAU = H.TAU;
+    const cx = H.cx, cy = H.cy;
+
+    // --- geometry (centred, well inside H.safe vertically) -------------------
+    // safe box is y:380..1520 (height 1140) -> centre the wheel on its midline,
+    // and size the rim so it never reaches the title or the bottom clear zone.
+    const wcy = (H.safe.y0 + H.safe.y1) / 2;        // ~950, vertical centre of figure
+    const rimR = 430;                               // outer rim radius (fits 380..1520)
+    const spokeOuter = rimR - 14;                   // spokes stop just short of the rim
+    const hubR = 46;                                // central hub radius
+    const spokeInner = hubR + 6;                    // spokes start just outside the hub
+
+    // --- the stroboscopic rotation -------------------------------------------
+    // 13 FULL forward turns over the loop -> at 30fps / 240 frames that is
+    // 13*360/240 = 19.5 deg per frame, just under the 20 deg spoke spacing,
+    // so the 18-fold-symmetric spoke pattern reads as crawling BACKWARD.
+    // 13 (integer turns) x 18 (fold symmetry) => draw(0) === draw(1): seamless.
+    const N = 18;                                    // evenly spaced radial spokes
+    const yaw = p * TAU * 13;                        // true forward rotation
+
+    // --- soft dark backing disc (so bright spokes read crisply) --------------
+    ctx.save();
+    const bg = ctx.createRadialGradient(cx, wcy, hubR, cx, wcy, rimR + 30);
+    bg.addColorStop(0, 'rgba(24,26,34,0.95)');
+    bg.addColorStop(0.82, 'rgba(12,13,18,0.92)');
+    bg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = bg;
+    ctx.beginPath(); ctx.arc(cx, wcy, rimR + 30, 0, TAU); ctx.fill();
+    ctx.restore();
+
+    // --- outer rim -----------------------------------------------------------
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = 'rgba(238,242,252,0.96)';
+    ctx.lineWidth = 16;
+    ctx.shadowColor = 'rgba(150,190,255,0.35)';
+    ctx.shadowBlur = 14;
+    ctx.beginPath(); ctx.arc(cx, wcy, rimR, 0, TAU); ctx.stroke();
+    ctx.restore();
+
+    // --- spokes (bright on black) --------------------------------------------
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineWidth = 12;
+    ctx.shadowColor = 'rgba(140,180,255,0.30)';
+    ctx.shadowBlur = 8;
+    for (let i = 0; i < N; i++) {
+      const a = yaw + (i / N) * TAU;            // each spoke advances with yaw
+      const ca = Math.cos(a), sa = Math.sin(a);
+      ctx.strokeStyle = 'rgba(244,247,255,0.97)';
+      ctx.beginPath();
+      ctx.moveTo(cx + ca * spokeInner, wcy + sa * spokeInner);
+      ctx.lineTo(cx + ca * spokeOuter, wcy + sa * spokeOuter);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // --- central hub ---------------------------------------------------------
+    ctx.save();
+    const hg = ctx.createRadialGradient(cx - 12, wcy - 12, 4, cx, wcy, hubR);
+    hg.addColorStop(0, 'rgba(250,252,255,1)');
+    hg.addColorStop(1, 'rgba(196,206,226,1)');
+    ctx.fillStyle = hg;
+    ctx.beginPath(); ctx.arc(cx, wcy, hubR, 0, TAU); ctx.fill();
+    ctx.strokeStyle = 'rgba(120,140,180,0.9)';
+    ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.arc(cx, wcy, hubR, 0, TAU); ctx.stroke();
+    ctx.restore();
+
+    // --- the ONE coloured reference dot on the rim ---------------------------
+    // A single unique mark has NO 18-fold ambiguity, so it visibly tracks the
+    // TRUE forward rotation -> the careful viewer can confirm the wheel really
+    // spins forward even while the spokes seem to crawl backward.
+    const dotA = yaw;                            // sits between spoke 0 and 1
+    const dotR = rimR;                           // ride exactly on the rim
+    const dx = cx + Math.cos(dotA) * dotR;
+    const dy = wcy + Math.sin(dotA) * dotR;
+    ctx.save();
+    // bright halo so it stays unmistakable against the white rim
+    ctx.shadowColor = 'rgba(255,120,40,0.9)';
+    ctx.shadowBlur = 22;
+    ctx.fillStyle = 'rgba(255,170,40,1)';
+    ctx.beginPath(); ctx.arc(dx, dy, 22, 0, TAU); ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = 'rgba(255,90,30,1)';
+    ctx.beginPath(); ctx.arc(dx, dy, 13, 0, TAU); ctx.fill();
+    ctx.fillStyle = 'rgba(255,236,200,1)';
+    ctx.beginPath(); ctx.arc(dx - 3, dy - 3, 4.5, 0, TAU); ctx.fill();
+    ctx.restore();
+  }
+  // ===========================================================================
+
+  // ---------------- title (identical layout to v1; drawn as overlay or inline) ----------
+  let TITLE_LINES = [], TITLE_PX = 60, TITLE_TEXT = '';
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    TITLE_TEXT = String(text || '');
+    const words = TITLE_TEXT.trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { TITLE_LINES = []; return; }
+    for (let px = 72; px >= 40; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = []; let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_PX = px; return; }
+      if (px === 40) { TITLE_LINES = lines.slice(0, 3); TITLE_PX = px; }
+    }
+  }
+  function paintTitle() {
+    if (!TITLE_LINES.length) return;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_PX);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const lh = TITLE_PX * 1.2, n = TITLE_LINES.length;
+    const startY = 210, padX = 42, padY = 28;
+    let maxW = 0; for (const l of TITLE_LINES) maxW = Math.max(maxW, ctx.measureText(l).width);
+    const rx = CW / 2 - maxW / 2 - padX, rw = maxW + padX * 2;
+    const ry = startY - lh / 2 - padY, rh = (n - 1) * lh + lh + padY * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 28); ctx.fill();
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    let y = startY; for (const l of TITLE_LINES) { ctx.fillText(l, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.2, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.64, 'rgba(0,0,0,0.12)'); g.addColorStop(1, 'rgba(0,0,0,0.66)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  }
+
+  window.setup = function (overrides) {
+    if (overrides && typeof overrides === 'object') {
+      const { variant, ...rest } = overrides;
+      SPEC = { ...SPEC, ...rest };
+      if (variant && typeof variant === 'object') SPEC.variant = variant;
+    }
+    V = { palette: 'classic', dir: 1, turns: 1, speed: 1, seed: 1, density: 1, angle: 0, ...(SPEC.variant || {}) };
+    layoutTitle(SPEC.title);
+    return { key: SPEC.key, name: SPEC.name, dur: SPEC.dur, fps: SPEC.fps, light: !!SPEC.light, variant: V, lines: TITLE_LINES.length, px: TITLE_PX };
+  };
+  window.getSpec = function () { return { ...SPEC, v: { ...V } }; };
+
+  // Full frame (background + illusion + vignette + INLINE title). Used for standalone preview.
+  window.renderFrame = function (progress) {
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    paintTitle();
+    return canvas.toDataURL('image/png');
+  };
+  // Geometry only, NO title (opaque). Rendered ONCE; localized titles overlaid later.
+  window.renderBase = function (progress) {
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    return canvas.toDataURL('image/png');
+  };
+  // TRANSPARENT png with ONLY the title (pill + text), for ffmpeg overlay onto a titleless clip.
+  window.renderTitle = function (text) {
+    layoutTitle(text);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.clearRect(0, 0, CW, CH);
+    paintTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  layoutTitle(SPEC.title);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

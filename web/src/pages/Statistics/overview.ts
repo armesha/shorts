@@ -172,10 +172,9 @@ export function buildOverview(rows: StatRow[]): StatsOverviewData {
   }
 
   overview.daily = [...daily.values()].sort((a, b) => a.date.localeCompare(b.date));
-  overview.topVideos = topVideos.sort((a, b) => b.views - a.views).slice(0, 10);
+  overview.topVideos = topVideos.sort((a, b) => b.views - a.views);
   overview.topChannels = topChannels
-    .sort((a, b) => (b.analyticsViews || b.publicViews) - (a.analyticsViews || a.publicViews))
-    .slice(0, 8);
+    .sort((a, b) => (b.analyticsViews || b.publicViews) - (a.analyticsViews || a.publicViews));
   overview.trafficSources = mergeBreakdowns(trafficSources);
   overview.devices = mergeBreakdowns(devices);
   overview.countries = mergeBreakdowns(countries);

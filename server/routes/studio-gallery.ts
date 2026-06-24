@@ -8,7 +8,7 @@ import type { Db } from "../db.ts";
 import { getDeck, pickGenericTitle } from "../../src/anecdotes/decks.ts";
 import { randomAnecdote, libraryStats, anecdoteKey, deckCards } from "../../src/anecdotes/library.ts";
 import { renderAnecdote, listBackgrounds } from "../../src/anecdotes/render.ts";
-import { assembleStillVideo, listAudio, resolveAudio, downscaleImage } from "../../src/video.ts";
+import { assembleStillVideo, listAudio, pickLifehackMotionOverlay, resolveAudio, downscaleImage } from "../../src/video.ts";
 import { INFINITE_PACKS_FEATURE, infiniteCounts } from "../services/infinite-packs.ts";
 import * as metrics from "../infra/metrics.ts";
 import { rememberOutputOwner } from "../infra/output-access.ts";
@@ -183,9 +183,10 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
       const vidRel = `preview/anek-${stamp}.mp4`;
       const imgOut = resolve(process.cwd(), outputDir, imgRel);
       const vidOut = resolve(process.cwd(), outputDir, vidRel);
+      const motionOverlay = deck.lifehack ? pickLifehackMotionOverlay(`${deck.id}|${profession ?? ""}|${title}|${text}`) : null;
       const r = await metrics.track("render", async () => {
         const rr = await renderAnecdote({ title, text, channel: deck.name, bg: body.bg, deck: deck.id, profession }, imgOut);
-        await assembleStillVideo(imgOut, vidOut, { durationSec: 6, audioPath });
+        await assembleStillVideo(imgOut, vidOut, { durationSec: 6, audioPath, motionOverlay });
         return rr;
       });
       rememberOutputOwner([imgRel, vidRel], uid(req));

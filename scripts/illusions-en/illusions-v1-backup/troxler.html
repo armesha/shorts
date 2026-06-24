@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>illusions-en host</title>
+<style>html,body{margin:0;padding:0;background:#000}#scene{display:block}</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  // ============================================================================
+  //  SHARED HOST  —  DO NOT EDIT below except the two clearly marked regions:
+  //    (1) the SPEC block        (2) the drawIllusion() function
+  //  Everything else (RNG, title, vignette, loop, PNG export) is identical for
+  //  every illusion so titles / safe-zone / seamless-loop behave the same.
+  // ============================================================================
+  const CW = 1080, CH = 1920, TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: false });
+
+  // deterministic RNG (so a clip renders byte-identically every time)
+  function mulberry32(seed) {
+    let s = seed >>> 0;
+    return function () {
+      let t = s += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (x, lo, hi) => x < lo ? lo : x > hi ? hi : x;
+  const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+  // Safe drawing box: title lives above y=380, bottom 400px kept clear (Shorts UI).
+  const SAFE = { x0: 70, y0: 380, x1: 1010, y1: 1520 };
+  const H = { TAU, rng: mulberry32, lerp, clamp, smooth, cx: 540, cy: 960, safe: SAFE,
+              maxR: 460 /* suggested max radius for a centred figure */ };
+
+  // ====================== (1) SPEC — replace these values =====================
+  let SPEC = {
+    key: 'troxler',
+    name: 'Troxler fading',
+    title: 'Stare at the dot — the colours fade',
+    dur: 10,           // seconds
+    fps: 30,
+    light: true,       // true => skip the dark vignette (for grey/white-background illusions)
+  };
+  // ===========================================================================
+
+  // ============ (2) drawIllusion — replace this whole function body ==========
+  // Contract:
+  //   p       progress 0..1 over the clip (build renders frame f at p=f/FRAMES,
+  //           so p=0 and p=1 are the SAME instant -> a LOOPING illusion must make
+  //           draw(0) == draw(1). Non-looping sequences (e.g. afterimage) ignore this.)
+  //   CW,CH   1080 x 1920
+  //   H       helpers: H.rng(seed)->()=>0..1, H.lerp, H.clamp, H.smooth, H.TAU,
+  //           H.cx, H.cy (frame centre of the safe area), H.safe {x0,y0,x1,y1}, H.maxR
+  //   The host fills #000, then calls this, then draws vignette (unless light) + title.
+  //   Keep important content inside H.safe. Use H.rng only (no Math.random) for determinism.
+  function drawIllusion(ctx, p, CW, CH, H) {
+    // ---- TROXLER FADING ------------------------------------------------------
+    // A uniform mid-grey field with a central black fixation dot. Around the
+    // periphery sit several soft, blurry pastel blobs. The illusion: while the eye
+    // holds the central dot, the unchanging peripheral blobs are erased by the
+    // visual system and fade into the uniform grey. We SIMULATE that by slowly
+    // reducing every blob's contrast toward the grey background over the clip,
+    // then bringing it back at the very end so the clip loops seamlessly.
+    const cx = H.cx, cy = H.cy;
+    const BG = 128;                                   // uniform grey field (rgb 128)
+
+    // ---- uniform grey field over the WHOLE frame (the "nothing" blobs fade to) --
+    ctx.fillStyle = 'rgb(128,128,128)';
+    ctx.fillRect(0, 0, CW, CH);
+
+    // ---- fade envelope: strength 1 (blobs vivid) -> ~0 (faded to grey) -> 1 -----
+    // Triangle on p so the value at p=0 and p=1 is IDENTICAL (=1) -> seamless loop.
+    // A high power makes the curve sit LOW for most of the clip (long fade-out /
+    // brief settle / quick return), which reads as "holding fixation makes them go".
+    const tri = p < 0.5 ? p * 2 : 2 - p * 2;          // 0 -> 1 -> 0
+    const env = smooth(tri);                          // eased 0 -> 1 -> 0
+    const strength = Math.pow(1 - env, 1.7);          // 1 -> ~0 -> 1, lingers faded
+
+    // ---- soft, blurry pastel blob (gaussian-ish radial falloff to the field) ---
+    // col = [r,g,b] of the blob's vivid core. `s` = current contrast strength:
+    // s=1 full pastel, s=0 the blob equals the background (invisible).
+    const drawBlob = (x, y, r, col, s) => {
+      if (s <= 0.004) return;                         // fully faded -> draw nothing
+      // Blend the vivid pastel toward the grey field by (1 - s): low s = near grey.
+      const cr = Math.round(lerp(BG, col[0], s));
+      const cg = Math.round(lerp(BG, col[1], s));
+      const cb = Math.round(lerp(BG, col[2], s));
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      // Soft core, long blurry tail that melts into the field (alpha -> 0).
+      g.addColorStop(0.00, `rgba(${cr},${cg},${cb},0.95)`);
+      g.addColorStop(0.30, `rgba(${cr},${cg},${cb},0.78)`);
+      g.addColorStop(0.55, `rgba(${cr},${cg},${cb},0.45)`);
+      g.addColorStop(0.78, `rgba(${cr},${cg},${cb},0.16)`);
+      g.addColorStop(1.00, `rgba(${cr},${cg},${cb},0)`);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, TAU);
+      ctx.fill();
+    };
+
+    // ---- pastel palette (gentle, low-saturation — true Troxler stimulus) -------
+    const PASTELS = [
+      [120, 150, 235],   // periwinkle blue
+      [235, 140, 175],   // rose pink
+      [150, 210, 160],   // sage green
+      [240, 200, 130],   // warm sand
+      [185, 150, 220],   // lavender
+      [130, 205, 215],   // aqua
+      [240, 165, 140],   // peach
+    ];
+
+    // ---- place blobs on a periphery ring, deterministically jittered ----------
+    // Center of the safe box; ring radius keeps blobs OUT of the central fixation
+    // zone yet well inside the safe box (max extent r + ringR stays < ~570px).
+    const sCx = (H.safe.x0 + H.safe.x1) / 2;          // 540
+    const sCy = (H.safe.y0 + H.safe.y1) / 2;          // 950
+    const rnd = H.rng(70707);
+    const N = 7;                                       // number of peripheral blobs
+    const ringR = 330;                                 // distance from centre
+    const margin = 80;                                 // keep blob bodies off the safe edge
+
+    for (let i = 0; i < N; i++) {
+      // even angular spacing + a small deterministic angular jitter (no Math.random)
+      const ang = -Math.PI / 2 + (i / N) * TAU + (rnd() - 0.5) * 0.45;
+      const rr = ringR + (rnd() - 0.5) * 70;           // slight radial jitter
+      let x = sCx + rr * Math.cos(ang);
+      let y = sCy + rr * Math.sin(ang);
+      const blobR = 150 + Math.round(rnd() * 36);      // soft radius ~150-186px
+      // clamp the blob CENTRE so its visible core stays inside the safe box
+      x = clamp(x, H.safe.x0 + margin, H.safe.x1 - margin);
+      y = clamp(y, H.safe.y0 + margin, H.safe.y1 - margin);
+      const col = PASTELS[i % PASTELS.length];
+      // each blob fades on the SAME global envelope (uniform Troxler erase),
+      // with a tiny per-blob phase so they don't snap perfectly in lockstep
+      const phase = 1 - (rnd() * 0.10);
+      drawBlob(x, y, blobR, col, clamp(strength * phase, 0, 1));
+    }
+
+    // ---- central black fixation DOT (the thing the viewer must stare at) -------
+    // A tiny crisp dot with a faint ring halo so it stays findable on grey.
+    ctx.beginPath();
+    ctx.arc(cx, cy, 16, 0, TAU);
+    ctx.fillStyle = 'rgb(15,15,15)';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx, cy, 24, 0, TAU);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(15,15,15,0.35)';
+    ctx.stroke();
+  }
+  // ===========================================================================
+
+  // ---------------- title (baked into the canvas, with a dark pill) ----------
+  let TITLE_LINES = [], TITLE_PX = 60;
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { TITLE_LINES = []; return; }
+    for (let px = 72; px >= 40; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = []; let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_PX = px; return; }
+      if (px === 40) { TITLE_LINES = lines.slice(0, 3); TITLE_PX = px; }
+    }
+  }
+  function drawTitle() {
+    if (!TITLE_LINES.length) return;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_PX);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const lh = TITLE_PX * 1.2, n = TITLE_LINES.length;
+    const startY = 210, padX = 42, padY = 28;
+    let maxW = 0; for (const l of TITLE_LINES) maxW = Math.max(maxW, ctx.measureText(l).width);
+    const rx = CW / 2 - maxW / 2 - padX, rw = maxW + padX * 2;
+    const ry = startY - lh / 2 - padY, rh = (n - 1) * lh + lh + padY * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 28); ctx.fill();
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    let y = startY; for (const l of TITLE_LINES) { ctx.fillText(l, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.2, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(0.64, 'rgba(0,0,0,0.12)');
+    g.addColorStop(1, 'rgba(0,0,0,0.66)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  }
+
+  window.setup = function (overrides) {
+    if (overrides && typeof overrides === 'object') SPEC = { ...SPEC, ...overrides };
+    layoutTitle(SPEC.title);
+    return { key: SPEC.key, name: SPEC.name, dur: SPEC.dur, fps: SPEC.fps, lines: TITLE_LINES.length, px: TITLE_PX };
+  };
+  window.getSpec = function () { return { ...SPEC }; };
+
+  window.renderFrame = function (progress) {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    drawTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  layoutTitle(SPEC.title);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

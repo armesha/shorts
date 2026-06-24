@@ -1,0 +1,387 @@
+[
+  {
+    "file": "illusions-en/spiral.mp4",
+    "title": "Stare at the center dot",
+    "text": "Stare at the center dot"
+  },
+  {
+    "file": "illusions-en/wheel.mp4",
+    "title": "Which way is it really spinning?",
+    "text": "Which way is it really spinning?"
+  },
+  {
+    "file": "illusions-en/lilac.mp4",
+    "title": "Stare at the cross — watch the magenta vanish",
+    "text": "Stare at the cross — watch the magenta vanish"
+  },
+  {
+    "file": "illusions-en/drift.mp4",
+    "title": "Nothing here is moving — only your eyes",
+    "text": "Nothing here is moving — only your eyes"
+  },
+  {
+    "file": "illusions-en/cafewall.mp4",
+    "title": "Every row here is perfectly straight",
+    "text": "Every row here is perfectly straight"
+  },
+  {
+    "file": "illusions-en/scintgrid.mp4",
+    "title": "Count the black dots (there are none)",
+    "text": "Count the black dots (there are none)"
+  },
+  {
+    "file": "illusions-en/afterimage.mp4",
+    "title": "Colour afterimage",
+    "text": "Colour afterimage"
+  },
+  {
+    "file": "illusions-en/ebbinghaus.mp4",
+    "title": "Both orange dots are the same size",
+    "text": "Both orange dots are the same size"
+  },
+  {
+    "file": "illusions-en/checkershadow.mp4",
+    "title": "A and B are the exact same grey",
+    "text": "A and B are the exact same grey"
+  },
+  {
+    "file": "illusions-en/penrose.mp4",
+    "title": "This triangle cannot exist",
+    "text": "This triangle cannot exist"
+  },
+  {
+    "file": "illusions-en/aperturebars.mp4",
+    "title": "The bars slide sideways, not down",
+    "text": "The bars slide sideways, not down"
+  },
+  {
+    "file": "illusions-en/barberpole.mp4",
+    "title": "These stripes only LOOK like they rise",
+    "text": "These stripes only LOOK like they rise"
+  },
+  {
+    "file": "illusions-en/beadspiral.mp4",
+    "title": "The beads sit on perfect spirals",
+    "text": "The beads sit on perfect spirals"
+  },
+  {
+    "file": "illusions-en/benham.mp4",
+    "title": "Spin it and your eyes invent colour",
+    "text": "Spin it and your eyes invent colour"
+  },
+  {
+    "file": "illusions-en/bezold.mp4",
+    "title": "Both reds are the exact same red",
+    "text": "Both reds are the exact same red"
+  },
+  {
+    "file": "illusions-en/breathingsquares.mp4",
+    "title": "This grid is not actually moving",
+    "text": "This grid is not actually moving"
+  },
+  {
+    "file": "illusions-en/bulgegrid.mp4",
+    "title": "This checkerboard is perfectly flat",
+    "text": "This checkerboard is perfectly flat"
+  },
+  {
+    "file": "illusions-en/chevrondrift.mp4",
+    "title": "The arrows refuse to sit still",
+    "text": "The arrows refuse to sit still"
+  },
+  {
+    "file": "illusions-en/coffer.mp4",
+    "title": "Can you find the 16 circles?",
+    "text": "Can you find the 16 circles?"
+  },
+  {
+    "file": "illusions-en/colorassimilation.mp4",
+    "title": "Both panels are pure white",
+    "text": "Both panels are pure white"
+  },
+  {
+    "file": "illusions-en/cornsweet.mp4",
+    "title": "Both halves are the same grey",
+    "text": "Both halves are the same grey"
+  },
+  {
+    "file": "illusions-en/crawlingdots.mp4",
+    "title": "The dots are locked to the grid",
+    "text": "The dots are locked to the grid"
+  },
+  {
+    "file": "illusions-en/delboeuf.mp4",
+    "title": "Both orange dots are the same size",
+    "text": "Both orange dots are the same size"
+  },
+  {
+    "file": "illusions-en/depthlattice.mp4",
+    "title": "A flat grid becomes a tunnel",
+    "text": "A flat grid becomes a tunnel"
+  },
+  {
+    "file": "illusions-en/devilsfork.mp4",
+    "title": "How many prongs does it have?",
+    "text": "How many prongs does it have?"
+  },
+  {
+    "file": "illusions-en/eclipsegrid.mp4",
+    "title": "Every center dot is identical",
+    "text": "Every center dot is identical"
+  },
+  {
+    "file": "illusions-en/ehrenstein.mp4",
+    "title": "Those bright discs are not real",
+    "text": "Those bright discs are not real"
+  },
+  {
+    "file": "illusions-en/enigma.mp4",
+    "title": "The rings seem to stream — they do not",
+    "text": "The rings seem to stream — they do not"
+  },
+  {
+    "file": "illusions-en/expandrings.mp4",
+    "title": "Stare at the center, then look around",
+    "text": "Stare at the center, then look around"
+  },
+  {
+    "file": "illusions-en/fanflip.mp4",
+    "title": "Which way did the fan flip?",
+    "text": "Which way did the fan flip?"
+  },
+  {
+    "file": "illusions-en/floatingrings.mp4",
+    "title": "Every ring is perfectly flat",
+    "text": "Every ring is perfectly flat"
+  },
+  {
+    "file": "illusions-en/fraserspiral.mp4",
+    "title": "These are circles, not a spiral",
+    "text": "These are circles, not a spiral"
+  },
+  {
+    "file": "illusions-en/glasswarp.mp4",
+    "title": "The centre is not bending",
+    "text": "The centre is not bending"
+  },
+  {
+    "file": "illusions-en/hering.mp4",
+    "title": "Both red lines are perfectly straight",
+    "text": "Both red lines are perfectly straight"
+  },
+  {
+    "file": "illusions-en/hermanngrid.mp4",
+    "title": "Grey dots that are not there",
+    "text": "Grey dots that are not there"
+  },
+  {
+    "file": "illusions-en/hypnotunnel.mp4",
+    "title": "The tunnel is only flat lines",
+    "text": "The tunnel is only flat lines"
+  },
+  {
+    "file": "illusions-en/impossiblecube.mp4",
+    "title": "Look closely — it cannot be built",
+    "text": "Look closely — it cannot be built"
+  },
+  {
+    "file": "illusions-en/inducedmotion.mp4",
+    "title": "The center dot is perfectly still",
+    "text": "The center dot is perfectly still"
+  },
+  {
+    "file": "illusions-en/jastrow.mp4",
+    "title": "These two arcs are identical",
+    "text": "These two arcs are identical"
+  },
+  {
+    "file": "illusions-en/kanizsa.mp4",
+    "title": "There is no white triangle",
+    "text": "There is no white triangle"
+  },
+  {
+    "file": "illusions-en/kineticdots.mp4",
+    "title": "Flat dots turn into a sphere",
+    "text": "Flat dots turn into a sphere"
+  },
+  {
+    "file": "illusions-en/loomroom.mp4",
+    "title": "The room is only lines",
+    "text": "The room is only lines"
+  },
+  {
+    "file": "illusions-en/machbands.mp4",
+    "title": "Each band is a flat, even grey",
+    "text": "Each band is a flat, even grey"
+  },
+  {
+    "file": "illusions-en/mib.mp4",
+    "title": "Stare at the centre — the yellow dots vanish",
+    "text": "Stare at the centre — the yellow dots vanish"
+  },
+  {
+    "file": "illusions-en/moirepulse.mp4",
+    "title": "The rings are not breathing",
+    "text": "The rings are not breathing"
+  },
+  {
+    "file": "illusions-en/mullerlyer.mp4",
+    "title": "These two lines are the same length",
+    "text": "These two lines are the same length"
+  },
+  {
+    "file": "illusions-en/munkerwhite.mp4",
+    "title": "Every sphere is the same orange",
+    "text": "Every sphere is the same orange"
+  },
+  {
+    "file": "illusions-en/neckercube.mp4",
+    "title": "Which face is in front?",
+    "text": "Which face is in front?"
+  },
+  {
+    "file": "illusions-en/neoncolor.mp4",
+    "title": "There is no glowing disc here",
+    "text": "There is no glowing disc here"
+  },
+  {
+    "file": "illusions-en/neonladder.mp4",
+    "title": "The glow appears between the lines",
+    "text": "The glow appears between the lines"
+  },
+  {
+    "file": "illusions-en/orbitstorm.mp4",
+    "title": "Stare at the dot — the rings swirl",
+    "text": "Stare at the dot — the rings swirl"
+  },
+  {
+    "file": "illusions-en/phantomrays.mp4",
+    "title": "The rings create ghost rays",
+    "text": "The rings create ghost rays"
+  },
+  {
+    "file": "illusions-en/phasewaves.mp4",
+    "title": "Two wave fields fight your eyes",
+    "text": "Two wave fields fight your eyes"
+  },
+  {
+    "file": "illusions-en/pinna.mp4",
+    "title": "Lean in and out — the rings rotate",
+    "text": "Lean in and out — the rings rotate"
+  },
+  {
+    "file": "illusions-en/poggendorff.mp4",
+    "title": "It is one straight line behind the bar",
+    "text": "It is one straight line behind the bar"
+  },
+  {
+    "file": "illusions-en/polarchecker.mp4",
+    "title": "Straight rings feel twisted",
+    "text": "Straight rings feel twisted"
+  },
+  {
+    "file": "illusions-en/ponzo.mp4",
+    "title": "These two yellow bars are equal",
+    "text": "These two yellow bars are equal"
+  },
+  {
+    "file": "illusions-en/pulsechecker.mp4",
+    "title": "The squares never change size",
+    "text": "The squares never change size"
+  },
+  {
+    "file": "illusions-en/rayafterimage.mp4",
+    "title": "Stare, then blink at a wall",
+    "text": "Stare, then blink at a wall"
+  },
+  {
+    "file": "illusions-en/rotatingsnakes2.mp4",
+    "title": "This image is completely still",
+    "text": "This image is completely still"
+  },
+  {
+    "file": "illusions-en/rubinvase.mp4",
+    "title": "A vase — or two faces?",
+    "text": "A vase — or two faces?"
+  },
+  {
+    "file": "illusions-en/sander.mp4",
+    "title": "Both blue diagonals are equal",
+    "text": "Both blue diagonals are equal"
+  },
+  {
+    "file": "illusions-en/scintcircle.mp4",
+    "title": "Count the black sparks",
+    "text": "Count the black sparks"
+  },
+  {
+    "file": "illusions-en/shepardtables.mp4",
+    "title": "These two tabletops are identical",
+    "text": "These two tabletops are identical"
+  },
+  {
+    "file": "illusions-en/simultcontrast.mp4",
+    "title": "Both grey squares are identical",
+    "text": "Both grey squares are identical"
+  },
+  {
+    "file": "illusions-en/splitspiral.mp4",
+    "title": "Two spirals share one flat image",
+    "text": "Two spirals share one flat image"
+  },
+  {
+    "file": "illusions-en/steppingfeet.mp4",
+    "title": "Both bars glide at the same speed",
+    "text": "Both bars glide at the same speed"
+  },
+  {
+    "file": "illusions-en/stripebeat.mp4",
+    "title": "Only the brightness is pulsing",
+    "text": "Only the brightness is pulsing"
+  },
+  {
+    "file": "illusions-en/tiltcloud.mp4",
+    "title": "Every dash is the same length",
+    "text": "Every dash is the same length"
+  },
+  {
+    "file": "illusions-en/tiltframe.mp4",
+    "title": "The white rod is perfectly vertical",
+    "text": "The white rod is perfectly vertical"
+  },
+  {
+    "file": "illusions-en/troxler.mp4",
+    "title": "Stare at the dot — the colours fade",
+    "text": "Stare at the dot — the colours fade"
+  },
+  {
+    "file": "illusions-en/verticalhorizontal.mp4",
+    "title": "Both lines are the same length",
+    "text": "Both lines are the same length"
+  },
+  {
+    "file": "illusions-en/wavegrid.mp4",
+    "title": "The grid is trying to stay straight",
+    "text": "The grid is trying to stay straight"
+  },
+  {
+    "file": "illusions-en/whiteillusion.mp4",
+    "title": "These two grey bars are the same grey",
+    "text": "These two grey bars are the same grey"
+  },
+  {
+    "file": "illusions-en/wundt.mp4",
+    "title": "These two red lines are perfectly straight",
+    "text": "These two red lines are perfectly straight"
+  },
+  {
+    "file": "illusions-en/zippermotion.mp4",
+    "title": "The zipper crawls without moving",
+    "text": "The zipper crawls without moving"
+  },
+  {
+    "file": "illusions-en/zollner.mp4",
+    "title": "These long lines are all parallel",
+    "text": "These long lines are all parallel"
+  }
+]

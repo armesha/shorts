@@ -1,5 +1,6 @@
 // Build the "tips-de" (Deutsche Lifehacks) deck from LLM batches in corpora/tips-de-gen/.
 // Each batch file is <profession>-<n>.json = a JSON array of {title, text} (German).
+// New mixed batches may also carry item.profession; that wins over the file name.
 // Output: data/tips-de/titled.json (ready items w/ profession) + index.json (stats).
 // Mirrors build-tips.ts; German text runs a touch longer, so the length band is 300..500.
 //   node --import tsx src/anecdotes/build-tips-de.ts
@@ -17,7 +18,7 @@ const PROFS = new Set([
   "teacher", "programmer", "builder", "police", "hairdresser",
 ]);
 
-function parseItems(raw: string): Array<{ title?: string; text?: string }> | null {
+function parseItems(raw: string): Array<{ title?: string; text?: string; profession?: string }> | null {
   let s = raw.trim().replace(/^```(?:json)?/i, "").replace(/```$/i, "").trim();
   const i = s.indexOf("[");
   const j = s.lastIndexOf("]");
@@ -69,13 +70,15 @@ const items: Array<{ text: string; title: string; profession: string }> = [];
 let parsedFiles = 0, badFiles = 0, rawCount = 0, tooShort = 0, tooLong = 0, dup = 0, noTitle = 0, skipProf = 0;
 
 for (const f of files) {
-  const prof = f.replace(/-\d+\.json$/, "");
-  if (!PROFS.has(prof)) { skipProf++; continue; }
+  const fileProf = f.replace(/-\d+\.json$/, "");
   const arr = parseItems(readFileSync(resolve(SRC_DIR, f), "utf8"));
   if (!arr) { badFiles++; console.warn(`  ! не разобрал ${f}`); continue; }
   parsedFiles++;
   for (const it of arr) {
     rawCount++;
+    const itemProf = cleanText(it?.profession).toLowerCase();
+    const prof = PROFS.has(itemProf) ? itemProf : fileProf;
+    if (!PROFS.has(prof)) { skipProf++; continue; }
     const text = cleanText(it?.text);
     if (!text) continue;
     if (text.length < MIN) { tooShort++; continue; }

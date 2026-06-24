@@ -7,7 +7,7 @@
 // path (anecdote, pack, …) is counted by the graceful-shutdown drain — previously pack/fact renders
 // were invisible to it and could be torn down mid-encode on a restart.
 import { resolve } from "node:path";
-import { assembleStillVideo } from "../../src/video.ts";
+import { assembleStillVideo, type MotionOverlay } from "../../src/video.ts";
 import type { CardValues, RoleRule } from "../../src/packs/store.ts";
 import * as metrics from "./metrics.ts";
 
@@ -21,6 +21,7 @@ export async function buildStillVideoFiles<T>(opts: {
   outputDir: string; // base.outputDir (relative to cwd)
   audioPath: string | null;
   durationSec?: number;
+  motionOverlay?: MotionOverlay | null;
   render: (imgAbs: string) => Promise<T>;
 }): Promise<{ imgRel: string; vidRel: string; render: T }> {
   const stamp = `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
@@ -30,7 +31,11 @@ export async function buildStillVideoFiles<T>(opts: {
   const vidAbs = resolve(process.cwd(), opts.outputDir, vidRel);
   const render = await metrics.track("render", async () => {
     const r = await opts.render(imgAbs);
-    await assembleStillVideo(imgAbs, vidAbs, { durationSec: opts.durationSec ?? 6, audioPath: opts.audioPath });
+    await assembleStillVideo(imgAbs, vidAbs, {
+      durationSec: opts.durationSec ?? 6,
+      audioPath: opts.audioPath,
+      motionOverlay: opts.motionOverlay,
+    });
     return r;
   });
   return { imgRel, vidRel, render };

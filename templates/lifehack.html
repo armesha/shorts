@@ -4,68 +4,154 @@
 <meta charset="utf-8" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;750;850&family=PT+Serif:wght@600;700&display=swap" rel="stylesheet" />
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { width: 1080px; height: 1920px; overflow: hidden; }
   .card {
     position: relative;
     width: 1080px; height: 1920px;
-    background: var(--bg, #ffffff);
+    background: linear-gradient(180deg, var(--scrim-a), var(--scrim-b)), var(--bg, #f7f2e8);
     background-size: cover;
     background-position: center;
+    overflow: hidden;
   }
-
-  /* Title — white, sits inside the red brush banner near the top */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 42px 42px 360px 42px;
+    border: 3px solid color-mix(in srgb, var(--accent) 58%, white);
+    border-radius: 46px;
+    opacity: 0.72;
+    pointer-events: none;
+  }
+  .card::after {
+    content: attr(data-template);
+    position: absolute;
+    right: 60px;
+    bottom: 80px;
+    width: 310px;
+    height: 310px;
+    border-radius: 46px;
+    background:
+      radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--accent-2) 42%, transparent) 0 16%, transparent 17%),
+      radial-gradient(circle at 70% 64%, color-mix(in srgb, var(--accent) 36%, transparent) 0 13%, transparent 14%),
+      linear-gradient(145deg, rgba(255,255,255,0.22), rgba(255,255,255,0.02));
+    border: 2px dashed rgba(255, 255, 255, 0.45);
+    color: transparent;
+    opacity: 0.4;
+    pointer-events: none;
+  }
   .title {
     position: absolute;
-    left: 12%; top: 7.2%;
-    width: 66%; height: 12.6%;
+    left: var(--title-left); top: var(--title-top);
+    width: var(--title-width); height: var(--title-height);
     display: flex; align-items: center; justify-content: center;
+    padding: 20px 34px;
+    border-radius: var(--title-radius);
+    background:
+      linear-gradient(135deg, color-mix(in srgb, var(--title-bg) 88%, white), var(--title-bg)),
+      var(--title-bg);
+    color: var(--title-fg);
+    font-family: Inter, Arial, sans-serif;
+    font-weight: 850;
     text-align: center;
-    font-family: 'Oswald', 'PT Serif', sans-serif;
-    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #ffffff;
+    letter-spacing: 0;
     line-height: 1.04;
-    font-size: 60px;
-    text-shadow: 0 2px 7px rgba(0, 0, 0, 0.4);
+    font-size: var(--title-size);
+    text-wrap: balance;
     overflow: hidden;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.22);
   }
-
-  /* Body — dark text on the white "paper", wraps around the person (bottom-right) */
+  .title::before {
+    content: "";
+    position: absolute;
+    left: 22px; right: 22px; top: 18px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--accent-2);
+    opacity: 0.85;
+  }
   .body {
     position: absolute;
-    left: 11%; top: 25%;
-    width: 73%; height: 64%;
+    left: var(--body-left); top: var(--body-top);
+    width: var(--body-width); height: var(--body-height);
+    padding: 50px 56px;
+    border-radius: var(--body-radius);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0)),
+      var(--body-bg);
+    border: 3px solid var(--panel-border);
+    box-shadow: var(--panel-shadow);
     overflow: hidden;
-    color: #1d1b18;
-    font-family: 'PT Serif', Georgia, 'DejaVu Serif', serif;
+    color: var(--ink);
   }
-  /* Invisible float over the person: text flows full-width on top, then only to its LEFT
-     in the bottom portion. Exclusion starts at 55% so most text stays full-width. */
-  .cut {
-    float: right;
-    width: 38%;
-    height: 100%;
-    shape-outside: polygon(0% 55%, 100% 55%, 100% 100%, 0% 100%);
+  .body::before {
+    content: "";
+    position: absolute;
+    left: 36px; right: 36px; top: 34px;
+    height: 10px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    opacity: 0.9;
+  }
+  .body::after {
+    content: "";
+    position: absolute;
+    inset: 76px 42px 38px 42px;
+    background: repeating-linear-gradient(180deg, transparent 0 62px, var(--rule) 63px 65px);
+    pointer-events: none;
   }
   .text {
-    font-size: 50px;
-    line-height: 1.42;
-    text-align: left;
+    position: relative;
+    z-index: 1;
+    font-family: 'PT Serif', Georgia, 'DejaVu Serif', serif;
+    font-weight: 700;
+    font-size: var(--text-size);
+    line-height: var(--text-lh);
+    color: var(--ink);
     white-space: pre-wrap;
-    overflow-wrap: break-word; /* safety net: never clip a long word, wrap it instead */
-    hyphens: none;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+  .layout-ledger .body { transform: rotate(-0.6deg); }
+  .layout-ledger .title { transform: rotate(0.6deg); }
+  .layout-note .body { border-radius: 30px 60px 36px 44px; }
+  .layout-note .title { border-radius: 999px; }
+  .layout-poster .body {
+    top: calc(var(--body-top) + 26px);
+    height: calc(var(--body-height) - 40px);
+    border-width: 0;
+  }
+  .layout-poster .title { left: calc(var(--title-left) + 34px); width: calc(var(--title-width) - 60px); }
+  .layout-split .title {
+    width: 330px;
+    height: 310px;
+    align-items: center;
+    padding: 30px;
+    font-size: 54px;
+  }
+  .layout-split .body {
+    top: 420px;
+    height: 910px;
+    padding-top: 58px;
+  }
+  .layout-label .title {
+    height: 135px;
+    justify-content: flex-start;
+    text-align: left;
+  }
+  .layout-label .body {
+    top: 450px;
+    height: 895px;
   }
 </style>
 </head>
 <body>
-  <div class="card" style="--bg: {{BG}};">
+  <div class="card {{TEMPLATE_CLASS}}" data-template="{{TEMPLATE_ID}}" style="--bg: {{BG}}; {{STYLE}}">
     <div class="title">{{TITLE}}</div>
     <div class="body">
-      <div class="cut"></div>
       <div class="text">{{TEXT}}</div>
     </div>
   </div>
@@ -77,8 +163,7 @@
         var text = document.querySelector('.text');
         var title = document.querySelector('.title');
 
-        // Title: largest size (<=80) that stays on one banner row, no overflow.
-        var tmin = 26, tmax = 80, tbest = tmin;
+        var tmin = 26, tmax = 76, tbest = tmin;
         while (tmin <= tmax) {
           var tm = (tmin + tmax) >> 1;
           title.style.fontSize = tm + 'px';
@@ -88,17 +173,17 @@
         }
         title.style.fontSize = tbest + 'px';
 
-        // Body: largest font (<=64) that fits height AND width (no horizontal overflow).
-        // No line-spacing "grow" here: with the shape-outside wrap it pushes text
-        // non-linearly into the narrow column and overflows. Fixed line-height instead.
-        var BASE_LH = 1.42;
-        text.style.lineHeight = String(BASE_LH);
-        var min = 22, max = 64, best = min;
+        var bodyStyle = getComputedStyle(body);
+        var padY = parseFloat(bodyStyle.paddingTop) + parseFloat(bodyStyle.paddingBottom);
+        var availableH = Math.max(1, body.clientHeight - padY - 8);
+
+        text.style.lineHeight = getComputedStyle(text).getPropertyValue('--text-lh') || '1.28';
+        var min = 20, max = 58, best = min;
         while (min <= max) {
           var mid = (min + max) >> 1;
           text.style.fontSize = mid + 'px';
-          var fitsV = text.scrollHeight <= body.clientHeight;
-          var fitsH = text.scrollWidth <= body.clientWidth + 2;
+          var fitsV = text.scrollHeight <= availableH;
+          var fitsH = text.scrollWidth <= text.clientWidth + 2;
           if (fitsV && fitsH) { best = mid; min = mid + 1; }
           else { max = mid - 1; }
         }

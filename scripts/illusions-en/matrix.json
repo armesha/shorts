@@ -1,0 +1,695 @@
+[
+  {
+    "id": "spiral",
+    "key": "spiral",
+    "html": "illusions/spiral.html",
+    "variant": {},
+    "dur": 9,
+    "fps": 30,
+    "name": "Spiral aftereffect"
+  },
+  {
+    "id": "wheel",
+    "key": "wheel",
+    "html": "illusions/wheel.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Wagon-wheel effect"
+  },
+  {
+    "id": "lilac",
+    "key": "lilac",
+    "html": "illusions/lilac.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Lilac chaser"
+  },
+  {
+    "id": "drift",
+    "key": "drift",
+    "html": "illusions/drift.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Peripheral drift"
+  },
+  {
+    "id": "cafewall",
+    "key": "cafewall",
+    "html": "illusions/cafewall.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Café wall illusion"
+  },
+  {
+    "id": "scintgrid",
+    "key": "scintgrid",
+    "html": "illusions/scintgrid.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Scintillating grid"
+  },
+  {
+    "id": "afterimage",
+    "key": "afterimage",
+    "html": "illusions/afterimage.html",
+    "variant": {},
+    "dur": 12,
+    "fps": 30,
+    "name": "Colour afterimage"
+  },
+  {
+    "id": "ebbinghaus",
+    "key": "ebbinghaus",
+    "html": "illusions/ebbinghaus.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Ebbinghaus illusion"
+  },
+  {
+    "id": "checkershadow",
+    "key": "checkershadow",
+    "html": "illusions/checkershadow.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Checker-shadow illusion"
+  },
+  {
+    "id": "penrose",
+    "key": "penrose",
+    "html": "illusions/penrose.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Penrose impossible triangle"
+  },
+  {
+    "id": "aperturebars",
+    "key": "aperturebars",
+    "html": "illusions/aperturebars.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Aperture bars"
+  },
+  {
+    "id": "barberpole",
+    "key": "barberpole",
+    "html": "illusions/barberpole.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Barber-pole illusion"
+  },
+  {
+    "id": "beadspiral",
+    "key": "beadspiral",
+    "html": "illusions/beadspiral.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Bead spiral"
+  },
+  {
+    "id": "benham",
+    "key": "benham",
+    "html": "illusions/benham.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Benham's disc"
+  },
+  {
+    "id": "bezold",
+    "key": "bezold",
+    "html": "illusions/bezold.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Bezold effect"
+  },
+  {
+    "id": "breathingsquares",
+    "key": "breathingsquares",
+    "html": "illusions/breathingsquares.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Breathing illusion"
+  },
+  {
+    "id": "bulgegrid",
+    "key": "bulgegrid",
+    "html": "illusions/bulgegrid.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Bulge illusion"
+  },
+  {
+    "id": "chevrondrift",
+    "key": "chevrondrift",
+    "html": "illusions/chevrondrift.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Chevron drift"
+  },
+  {
+    "id": "coffer",
+    "key": "coffer",
+    "html": "illusions/coffer.html",
+    "variant": {},
+    "dur": 9,
+    "fps": 30,
+    "name": "Coffer illusion"
+  },
+  {
+    "id": "colorassimilation",
+    "key": "colorassimilation",
+    "html": "illusions/colorassimilation.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Colour assimilation"
+  },
+  {
+    "id": "cornsweet",
+    "key": "cornsweet",
+    "html": "illusions/cornsweet.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Cornsweet illusion"
+  },
+  {
+    "id": "crawlingdots",
+    "key": "crawlingdots",
+    "html": "illusions/crawlingdots.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Crawling dots"
+  },
+  {
+    "id": "delboeuf",
+    "key": "delboeuf",
+    "html": "illusions/delboeuf.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Delboeuf illusion"
+  },
+  {
+    "id": "depthlattice",
+    "key": "depthlattice",
+    "html": "illusions/depthlattice.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Depth lattice"
+  },
+  {
+    "id": "devilsfork",
+    "key": "devilsfork",
+    "html": "illusions/devilsfork.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Impossible trident"
+  },
+  {
+    "id": "eclipsegrid",
+    "key": "eclipsegrid",
+    "html": "illusions/eclipsegrid.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Eclipse grid"
+  },
+  {
+    "id": "ehrenstein",
+    "key": "ehrenstein",
+    "html": "illusions/ehrenstein.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Ehrenstein illusion"
+  },
+  {
+    "id": "enigma",
+    "key": "enigma",
+    "html": "illusions/enigma.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Leviant's Enigma"
+  },
+  {
+    "id": "expandrings",
+    "key": "expandrings",
+    "html": "illusions/expandrings.html",
+    "variant": {},
+    "dur": 9,
+    "fps": 30,
+    "name": "Expanding-rings aftereffect"
+  },
+  {
+    "id": "fanflip",
+    "key": "fanflip",
+    "html": "illusions/fanflip.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Ambiguous fan"
+  },
+  {
+    "id": "floatingrings",
+    "key": "floatingrings",
+    "html": "illusions/floatingrings.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Floating rings"
+  },
+  {
+    "id": "fraserspiral",
+    "key": "fraserspiral",
+    "html": "illusions/fraserspiral.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Fraser spiral illusion"
+  },
+  {
+    "id": "glasswarp",
+    "key": "glasswarp",
+    "html": "illusions/glasswarp.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Glass warp"
+  },
+  {
+    "id": "hering",
+    "key": "hering",
+    "html": "illusions/hering.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Hering illusion"
+  },
+  {
+    "id": "hermanngrid",
+    "key": "hermanngrid",
+    "html": "illusions/hermanngrid.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Hermann grid"
+  },
+  {
+    "id": "hypnotunnel",
+    "key": "hypnotunnel",
+    "html": "illusions/hypnotunnel.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Hypnotic tunnel"
+  },
+  {
+    "id": "impossiblecube",
+    "key": "impossiblecube",
+    "html": "illusions/impossiblecube.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Impossible cube"
+  },
+  {
+    "id": "inducedmotion",
+    "key": "inducedmotion",
+    "html": "illusions/inducedmotion.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Induced motion"
+  },
+  {
+    "id": "jastrow",
+    "key": "jastrow",
+    "html": "illusions/jastrow.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Jastrow illusion"
+  },
+  {
+    "id": "kanizsa",
+    "key": "kanizsa",
+    "html": "illusions/kanizsa.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Kanizsa triangle"
+  },
+  {
+    "id": "kineticdots",
+    "key": "kineticdots",
+    "html": "illusions/kineticdots.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Kinetic depth dots"
+  },
+  {
+    "id": "loomroom",
+    "key": "loomroom",
+    "html": "illusions/loomroom.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Looming room"
+  },
+  {
+    "id": "machbands",
+    "key": "machbands",
+    "html": "illusions/machbands.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Mach bands"
+  },
+  {
+    "id": "mib",
+    "key": "mib",
+    "html": "illusions/mib.html",
+    "variant": {},
+    "dur": 9,
+    "fps": 30,
+    "name": "Motion-induced blindness"
+  },
+  {
+    "id": "moirepulse",
+    "key": "moirepulse",
+    "html": "illusions/moirepulse.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Moiré pulse"
+  },
+  {
+    "id": "mullerlyer",
+    "key": "mullerlyer",
+    "html": "illusions/mullerlyer.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Müller-Lyer illusion"
+  },
+  {
+    "id": "munkerwhite",
+    "key": "munkerwhite",
+    "html": "illusions/munkerwhite.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Munker-White illusion"
+  },
+  {
+    "id": "neckercube",
+    "key": "neckercube",
+    "html": "illusions/neckercube.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Necker cube"
+  },
+  {
+    "id": "neoncolor",
+    "key": "neoncolor",
+    "html": "illusions/neoncolor.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Neon colour spreading"
+  },
+  {
+    "id": "neonladder",
+    "key": "neonladder",
+    "html": "illusions/neonladder.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Neon ladder"
+  },
+  {
+    "id": "orbitstorm",
+    "key": "orbitstorm",
+    "html": "illusions/orbitstorm.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Orbit storm"
+  },
+  {
+    "id": "phantomrays",
+    "key": "phantomrays",
+    "html": "illusions/phantomrays.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Phantom rays"
+  },
+  {
+    "id": "phasewaves",
+    "key": "phasewaves",
+    "html": "illusions/phasewaves.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Phase waves"
+  },
+  {
+    "id": "pinna",
+    "key": "pinna",
+    "html": "illusions/pinna.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Pinna rotating illusion"
+  },
+  {
+    "id": "poggendorff",
+    "key": "poggendorff",
+    "html": "illusions/poggendorff.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Poggendorff illusion"
+  },
+  {
+    "id": "polarchecker",
+    "key": "polarchecker",
+    "html": "illusions/polarchecker.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Polar checker"
+  },
+  {
+    "id": "ponzo",
+    "key": "ponzo",
+    "html": "illusions/ponzo.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Ponzo illusion"
+  },
+  {
+    "id": "pulsechecker",
+    "key": "pulsechecker",
+    "html": "illusions/pulsechecker.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Pulse checker"
+  },
+  {
+    "id": "rayafterimage",
+    "key": "rayafterimage",
+    "html": "illusions/rayafterimage.html",
+    "variant": {},
+    "dur": 10,
+    "fps": 30,
+    "name": "Ray afterimage"
+  },
+  {
+    "id": "rotatingsnakes2",
+    "key": "rotatingsnakes2",
+    "html": "illusions/rotatingsnakes2.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Rotating snakes (rosette)"
+  },
+  {
+    "id": "rubinvase",
+    "key": "rubinvase",
+    "html": "illusions/rubinvase.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Rubin vase"
+  },
+  {
+    "id": "sander",
+    "key": "sander",
+    "html": "illusions/sander.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Sander parallelogram"
+  },
+  {
+    "id": "scintcircle",
+    "key": "scintcircle",
+    "html": "illusions/scintcircle.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Scintillating circle grid"
+  },
+  {
+    "id": "shepardtables",
+    "key": "shepardtables",
+    "html": "illusions/shepardtables.html",
+    "variant": {},
+    "dur": 9,
+    "fps": 30,
+    "name": "Shepard's tabletops"
+  },
+  {
+    "id": "simultcontrast",
+    "key": "simultcontrast",
+    "html": "illusions/simultcontrast.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Simultaneous contrast"
+  },
+  {
+    "id": "splitspiral",
+    "key": "splitspiral",
+    "html": "illusions/splitspiral.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Split spiral"
+  },
+  {
+    "id": "steppingfeet",
+    "key": "steppingfeet",
+    "html": "illusions/steppingfeet.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Stepping-feet illusion"
+  },
+  {
+    "id": "stripebeat",
+    "key": "stripebeat",
+    "html": "illusions/stripebeat.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Stripe beat"
+  },
+  {
+    "id": "tiltcloud",
+    "key": "tiltcloud",
+    "html": "illusions/tiltcloud.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Tilt cloud"
+  },
+  {
+    "id": "tiltframe",
+    "key": "tiltframe",
+    "html": "illusions/tiltframe.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Rod-and-frame illusion"
+  },
+  {
+    "id": "troxler",
+    "key": "troxler",
+    "html": "illusions/troxler.html",
+    "variant": {},
+    "dur": 10,
+    "fps": 30,
+    "name": "Troxler fading"
+  },
+  {
+    "id": "verticalhorizontal",
+    "key": "verticalhorizontal",
+    "html": "illusions/verticalhorizontal.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Vertical–horizontal illusion"
+  },
+  {
+    "id": "wavegrid",
+    "key": "wavegrid",
+    "html": "illusions/wavegrid.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Liquid wave grid"
+  },
+  {
+    "id": "whiteillusion",
+    "key": "whiteillusion",
+    "html": "illusions/whiteillusion.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "White's illusion"
+  },
+  {
+    "id": "wundt",
+    "key": "wundt",
+    "html": "illusions/wundt.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Wundt illusion"
+  },
+  {
+    "id": "zippermotion",
+    "key": "zippermotion",
+    "html": "illusions/zippermotion.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Zipper motion"
+  },
+  {
+    "id": "zollner",
+    "key": "zollner",
+    "html": "illusions/zollner.html",
+    "variant": {},
+    "dur": 8,
+    "fps": 30,
+    "name": "Zöllner illusion"
+  }
+]

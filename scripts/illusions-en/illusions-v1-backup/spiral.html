@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>illusions-en host</title>
+<style>html,body{margin:0;padding:0;background:#000}#scene{display:block}</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  // ============================================================================
+  //  SHARED HOST  —  DO NOT EDIT below except the two clearly marked regions:
+  //    (1) the SPEC block        (2) the drawIllusion() function
+  //  Everything else (RNG, title, vignette, loop, PNG export) is identical for
+  //  every illusion so titles / safe-zone / seamless-loop behave the same.
+  // ============================================================================
+  const CW = 1080, CH = 1920, TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: false });
+
+  // deterministic RNG (so a clip renders byte-identically every time)
+  function mulberry32(seed) {
+    let s = seed >>> 0;
+    return function () {
+      let t = s += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (x, lo, hi) => x < lo ? lo : x > hi ? hi : x;
+  const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+  // Safe drawing box: title lives above y=380, bottom 400px kept clear (Shorts UI).
+  const SAFE = { x0: 70, y0: 380, x1: 1010, y1: 1520 };
+  const H = { TAU, rng: mulberry32, lerp, clamp, smooth, cx: 540, cy: 960, safe: SAFE,
+              maxR: 460 /* suggested max radius for a centred figure */ };
+
+  // ====================== (1) SPEC — replace these values =====================
+  let SPEC = {
+    key: 'spiral',
+    name: 'Spiral aftereffect',
+    title: 'Stare at the center dot',
+    dur: 9,            // seconds
+    fps: 30,
+    light: false,      // true => skip the dark vignette (for grey/white-background illusions)
+  };
+  // ===========================================================================
+
+  // ============ (2) drawIllusion — replace this whole function body ==========
+  // Contract:
+  //   p       progress 0..1 over the clip (build renders frame f at p=f/FRAMES,
+  //           so p=0 and p=1 are the SAME instant -> a LOOPING illusion must make
+  //           draw(0) == draw(1). Non-looping sequences (e.g. afterimage) ignore this.)
+  //   CW,CH   1080 x 1920
+  //   H       helpers: H.rng(seed)->()=>0..1, H.lerp, H.clamp, H.smooth, H.TAU,
+  //           H.cx, H.cy (frame centre of the safe area), H.safe {x0,y0,x1,y1}, H.maxR
+  //   The host fills #000, then calls this, then draws vignette (unless light) + title.
+  //   Keep important content inside H.safe. Use H.rng only (no Math.random) for determinism.
+  function drawIllusion(ctx, p, CW, CH, H) {
+    const cx = H.cx, cy = H.cy;
+    const TAU = H.TAU;
+
+    // ---- spiral geometry ----
+    // Multi-arm Archimedean spiral of alternating bright / dark bands packed into
+    // the safe circle. A point's band coordinate is
+    //     band = ARMS * (theta + yaw)/TAU  +  TWIST * (radius / R)
+    // and its fractional part selects bright (first half of the period) vs dark
+    // (second half). Rotating "yaw" by a WHOLE turn over the loop sweeps every arm
+    // so bands flow continuously INWARD (a vortex), yet draw(0) === draw(1).
+    const ARMS = 4;          // interleaved spiral arms
+    const TWIST = 11;        // how many bands you cross going centre -> rim (band tightness)
+    const R = 560;           // outer radius of the spiral disc (overfills the safe box; clipped to a circle)
+    const RVIS = 555;        // visible radius (slightly inside R so the rim isn't a hard ragged edge)
+    // ONE whole turn over the loop, divided by ARMS so the band pattern returns to
+    // itself at p=1 (period of the band field is 1 arm-step = TAU/ARMS in yaw).
+    // yaw of +TAU/ARMS already repeats the field; use +TAU (a full visual turn) so
+    // the motion reads as a strong, coherent single rotation and still loops.
+    const yaw = p * TAU;     // counter-clockwise spiral wound so this drift reads INWARD
+
+    // antialiased softness of the band edges (in band-units), keeps it smooth not jaggy
+    const EDGE = 0.13;
+
+    const img = ctx.getImageData(0, 0, CW, CH);
+    const data = img.data;
+
+    // vertical span we actually need to touch (the spiral disc), clamped to canvas
+    const yTop = Math.max(0, Math.floor(cy - R));
+    const yBot = Math.min(CH, Math.ceil(cy + R));
+    const xLeft = Math.max(0, Math.floor(cx - R));
+    const xRight = Math.min(CW, Math.ceil(cx + R));
+    const R2 = R * R;
+
+    const BR_R = 248, BR_G = 246, BR_B = 232;   // warm-white band colour
+
+    for (let y = yTop; y < yBot; y++) {
+      const dy = y - cy;
+      const dy2 = dy * dy;
+      let rowOff = y * CW;
+      for (let x = xLeft; x < xRight; x++) {
+        const dx = x - cx;
+        const d2 = dx * dx + dy2;
+        if (d2 > R2) continue;            // outside the disc -> leave black
+        const r = Math.sqrt(d2);
+        const th = Math.atan2(dy, dx) + Math.PI;   // 0..TAU
+        // Band field: each arm winds with +radius (outward); ADDING yaw pushes a
+        // given band toward the centre as yaw grows  ->  perceived INWARD flow.
+        // s = fractional position across ONE band period (one bright + one dark band).
+        const band = ARMS * ((th + yaw) / TAU) + TWIST * (r / R);
+        const s = band - Math.floor(band);         // 0..1 across one band period
+        // Balanced 50/50 two-tone with anti-aliased edges, symmetric about the band
+        // boundaries: bright on s in [0,0.5), dark on s in [0.5,1). dEdge is the
+        // distance to the nearest boundary (0, 0.5 or 1), so the AA ramp is identical
+        // on both sides of every edge -> bright & dark bands keep equal width.
+        const dEdge = Math.min(s, Math.abs(s - 0.5), 1 - s); // dist to nearest crossing
+        const inBright = (s < 0.5);
+        const aa = smooth(dEdge / EDGE);           // 0 at an edge -> 1 in band core
+        let bw = inBright ? aa : 1 - aa;           // 1 = bright core, 0 = dark core, soft edges
+
+        // Feather the rim and clear a tiny dark disc at the centre for the dot.
+        if (r > RVIS) bw *= clamp(1 - (r - RVIS) / (R - RVIS), 0, 1);
+        const core = clamp(1 - r / 26, 0, 1);      // 1 at centre -> 0 by r=26
+        bw *= (1 - core);
+
+        const o = (rowOff + x) * 4;
+        data[o]     = Math.round(BR_R * bw);
+        data[o + 1] = Math.round(BR_G * bw);
+        data[o + 2] = Math.round(BR_B * bw);
+        // alpha byte stays 255 (opaque canvas)
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+
+    // ---- bright fixation dot exactly at the centre ----
+    ctx.save();
+    // soft glow
+    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, 26);
+    g.addColorStop(0, 'rgba(255,80,70,0.95)');
+    g.addColorStop(0.45, 'rgba(255,60,55,0.55)');
+    g.addColorStop(1, 'rgba(255,40,40,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(cx, cy, 26, 0, TAU); ctx.fill();
+    // crisp core
+    ctx.fillStyle = '#ff4d44';
+    ctx.beginPath(); ctx.arc(cx, cy, 8, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath(); ctx.arc(cx, cy, 3.2, 0, TAU); ctx.fill();
+    ctx.restore();
+  }
+  // ===========================================================================
+
+  // ---------------- title (baked into the canvas, with a dark pill) ----------
+  let TITLE_LINES = [], TITLE_PX = 60;
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { TITLE_LINES = []; return; }
+    for (let px = 72; px >= 40; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = []; let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_PX = px; return; }
+      if (px === 40) { TITLE_LINES = lines.slice(0, 3); TITLE_PX = px; }
+    }
+  }
+  function drawTitle() {
+    if (!TITLE_LINES.length) return;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_PX);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const lh = TITLE_PX * 1.2, n = TITLE_LINES.length;
+    const startY = 210, padX = 42, padY = 28;
+    let maxW = 0; for (const l of TITLE_LINES) maxW = Math.max(maxW, ctx.measureText(l).width);
+    const rx = CW / 2 - maxW / 2 - padX, rw = maxW + padX * 2;
+    const ry = startY - lh / 2 - padY, rh = (n - 1) * lh + lh + padY * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 28); ctx.fill();
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    let y = startY; for (const l of TITLE_LINES) { ctx.fillText(l, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.2, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(0.64, 'rgba(0,0,0,0.12)');
+    g.addColorStop(1, 'rgba(0,0,0,0.66)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  }
+
+  window.setup = function (overrides) {
+    if (overrides && typeof overrides === 'object') SPEC = { ...SPEC, ...overrides };
+    layoutTitle(SPEC.title);
+    return { key: SPEC.key, name: SPEC.name, dur: SPEC.dur, fps: SPEC.fps, lines: TITLE_LINES.length, px: TITLE_PX };
+  };
+  window.getSpec = function () { return { ...SPEC }; };
+
+  window.renderFrame = function (progress) {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    drawTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  layoutTitle(SPEC.title);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

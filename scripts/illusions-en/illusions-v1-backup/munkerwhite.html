@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>illusions-en host</title>
+<style>html,body{margin:0;padding:0;background:#000}#scene{display:block}</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  // ============================================================================
+  //  SHARED HOST  —  DO NOT EDIT below except the two clearly marked regions:
+  //    (1) the SPEC block        (2) the drawIllusion() function
+  //  Everything else (RNG, title, vignette, loop, PNG export) is identical for
+  //  every illusion so titles / safe-zone / seamless-loop behave the same.
+  // ============================================================================
+  const CW = 1080, CH = 1920, TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: false });
+
+  // deterministic RNG (so a clip renders byte-identically every time)
+  function mulberry32(seed) {
+    let s = seed >>> 0;
+    return function () {
+      let t = s += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (x, lo, hi) => x < lo ? lo : x > hi ? hi : x;
+  const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+  // Safe drawing box: title lives above y=380, bottom 400px kept clear (Shorts UI).
+  const SAFE = { x0: 70, y0: 380, x1: 1010, y1: 1520 };
+  const H = { TAU, rng: mulberry32, lerp, clamp, smooth, cx: 540, cy: 960, safe: SAFE,
+              maxR: 460 /* suggested max radius for a centred figure */ };
+
+  // ====================== (1) SPEC — replace these values =====================
+  let SPEC = {
+    key: 'munkerwhite',
+    name: 'Munker-White illusion',
+    title: 'Every sphere is the same orange',
+    dur: 8,            // seconds
+    fps: 30,
+    light: true,       // true => skip the dark vignette (for grey/white-background illusions)
+  };
+  // ===========================================================================
+
+  // ============ (2) drawIllusion — replace this whole function body ==========
+  // Contract:
+  //   p       progress 0..1 over the clip (build renders frame f at p=f/FRAMES,
+  //           so p=0 and p=1 are the SAME instant -> a LOOPING illusion must make
+  //           draw(0) == draw(1). Non-looping sequences (e.g. afterimage) ignore this.)
+  //   CW,CH   1080 x 1920
+  //   H       helpers: H.rng(seed)->()=>0..1, H.lerp, H.clamp, H.smooth, H.TAU,
+  //           H.cx, H.cy (frame centre of the safe area), H.safe {x0,y0,x1,y1}, H.maxR
+  //   The host fills #000, then calls this, then draws vignette (unless light) + title.
+  //   Keep important content inside H.safe. Use H.rng only (no Math.random) for determinism.
+  function drawIllusion(ctx, p, CW, CH, H) {
+    const S = H.safe;
+    const lerp = H.lerp, smooth = H.smooth;
+
+    // ---- Munker (a.k.a. Munker-White) colour assimilation -------------------
+    // A grid of spheres that are ALL the IDENTICAL orange. Thin opaque stripes are
+    // laid OVER them: RED stripes over the LEFT half, BLUE stripes over the RIGHT
+    // half (the divide is the frame centre, x=540; no sphere straddles it). The eye
+    // averages each stripe colour into the orange it crosses (assimilation): the
+    // left spheres look like warm RED-orange, the right spheres look like a cool,
+    // washed-out orange — although every disc is pixel-for-pixel the same colour.
+    // PROOF: once per loop the stripes fade fully away (alpha 1 -> 0 -> 1, a
+    // triangle on p), exposing the bare grid so you can see all spheres are equal.
+    // draw(0)===draw(1): stripe alpha=1 and the vertical scroll = one whole period
+    // (i.e. 0) at both ends -> seamless loop.
+
+    const BX0 = S.x0, BY0 = S.y0, BX1 = S.x1, BY1 = S.y1;
+    const BW = BX1 - BX0, BH = BY1 - BY0;
+    const midX = (BX0 + BX1) / 2;                 // 540 = red | blue divide (== frame centre)
+
+    const BG = 'rgb(150,150,150)';                // neutral mid-grey field (favours neither hue)
+    const ORANGE = [235, 150, 55];                // the ONE identical sphere colour
+    const ORANGE_HI = [248, 186, 110];            // gentle sphere highlight (same for ALL discs)
+    const ORANGE_LO = [196, 116, 30];             // gentle sphere shade   (same for ALL discs)
+    const RED = 'rgb(226,28,28)';
+    const BLUE = 'rgb(28,58,228)';
+    const rgb = (a) => `rgb(${a[0]},${a[1]},${a[2]})`;
+
+    // Stripe geometry (horizontal bands). Thin enough that the eye blends the
+    // stripe colour with the orange instead of reading them as separate bars.
+    const stripe = 14;                            // coloured band thickness (px)
+    const period = stripe * 2;                    // one band + one gap (gap shows orange/grey)
+
+    // Sphere grid: 4 columns x 6 rows, centred in the safe box. Cols 0-1 sit fully
+    // in the red half, cols 2-3 fully in the blue half (verified: no disc crosses 540).
+    const cols = 4, rows = 6;
+    const colPitch = BW / cols, rowPitch = BH / rows;
+    const R = 70;                                 // sphere radius (diam 140 < both pitches)
+
+    ctx.save();
+    // Clip strictly to the safe box so nothing spills into the title / bottom UI.
+    ctx.beginPath();
+    ctx.rect(BX0, BY0, BW, BH);
+    ctx.clip();
+
+    // 1) Neutral grey field.
+    ctx.fillStyle = BG;
+    ctx.fillRect(BX0, BY0, BW, BH);
+
+    // 2) The spheres — every one painted with the IDENTICAL orange gradient.
+    //    A subtle radial shade makes them read as little spheres; the stops are
+    //    the same for all discs, so the "identical colour" claim is literally true.
+    const drawSphere = (cxp, cyp) => {
+      const g = ctx.createRadialGradient(
+        cxp - R * 0.34, cyp - R * 0.34, R * 0.10,
+        cxp, cyp, R * 1.04);
+      g.addColorStop(0.00, rgb(ORANGE_HI));
+      g.addColorStop(0.55, rgb(ORANGE));
+      g.addColorStop(1.00, rgb(ORANGE_LO));
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(cxp, cyp, R, 0, TAU);
+      ctx.fill();
+    };
+    for (let c = 0; c < cols; c++) {
+      const cxp = BX0 + colPitch * (c + 0.5);
+      for (let r = 0; r < rows; r++) {
+        const cyp = BY0 + rowPitch * (r + 0.5);
+        drawSphere(cxp, cyp);
+      }
+    }
+
+    // 3) The coloured stripe overlay (left half RED, right half BLUE), drawn OVER
+    //    the whole field so the thin bands cross both spheres and grey gaps alike.
+    //    Gentle vertical scroll of exactly ONE period over the loop keeps it alive
+    //    while staying seamless (scroll at p=1 == period == 0 mod period).
+    //    Stripe opacity follows a triangle so they vanish at mid-loop = the proof.
+    const tri = p < 0.5 ? p * 2 : 2 - p * 2;      // 0 -> 1 -> 0 over the loop
+    const cover = 1 - smooth(tri);                // 1 at p=0/1 (full), 0 at p=0.5 (revealed)
+    const scroll = p * period;                    // 0 .. period (one whole band shift)
+
+    if (cover > 0.001) {
+      ctx.globalAlpha = cover;
+      // Start one full period above the box so the top band is always covered.
+      const startY = BY0 - period + ((scroll % period) + period) % period;
+      for (let y = startY; y < BY1; y += period) {
+        // left segment = red, right segment = blue (clamped to the box edges)
+        ctx.fillStyle = RED;
+        ctx.fillRect(BX0, y, midX - BX0, stripe);
+        ctx.fillStyle = BLUE;
+        ctx.fillRect(midX, y, BX1 - midX, stripe);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    ctx.restore();
+  }
+  // ===========================================================================
+
+  // ---------------- title (baked into the canvas, with a dark pill) ----------
+  let TITLE_LINES = [], TITLE_PX = 60;
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { TITLE_LINES = []; return; }
+    for (let px = 72; px >= 40; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = []; let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_PX = px; return; }
+      if (px === 40) { TITLE_LINES = lines.slice(0, 3); TITLE_PX = px; }
+    }
+  }
+  function drawTitle() {
+    if (!TITLE_LINES.length) return;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_PX);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const lh = TITLE_PX * 1.2, n = TITLE_LINES.length;
+    const startY = 210, padX = 42, padY = 28;
+    let maxW = 0; for (const l of TITLE_LINES) maxW = Math.max(maxW, ctx.measureText(l).width);
+    const rx = CW / 2 - maxW / 2 - padX, rw = maxW + padX * 2;
+    const ry = startY - lh / 2 - padY, rh = (n - 1) * lh + lh + padY * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 28); ctx.fill();
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    let y = startY; for (const l of TITLE_LINES) { ctx.fillText(l, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.2, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(0.64, 'rgba(0,0,0,0.12)');
+    g.addColorStop(1, 'rgba(0,0,0,0.66)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  }
+
+  window.setup = function (overrides) {
+    if (overrides && typeof overrides === 'object') SPEC = { ...SPEC, ...overrides };
+    layoutTitle(SPEC.title);
+    return { key: SPEC.key, name: SPEC.name, dur: SPEC.dur, fps: SPEC.fps, lines: TITLE_LINES.length, px: TITLE_PX };
+  };
+  window.getSpec = function () { return { ...SPEC }; };
+
+  window.renderFrame = function (progress) {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    drawTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  layoutTitle(SPEC.title);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,541 @@
+{
+  "spiral": {
+    "en": "Stare at the center dot",
+    "de": "Starr auf den Punkt in der Mitte",
+    "it": "Fissa il punto al centro",
+    "es": "Fija la vista en el punto central",
+    "ru": "Смотри в точку в центре"
+  },
+  "wheel": {
+    "en": "Which way is it really spinning?",
+    "de": "In welche Richtung dreht es sich wirklich?",
+    "it": "In che verso gira davvero?",
+    "es": "¿Hacia dónde gira en realidad?",
+    "ru": "В какую сторону оно крутится на самом деле?"
+  },
+  "lilac": {
+    "en": "Stare at the cross — watch the magenta vanish",
+    "de": "Starr auf das Kreuz – sieh das Magenta verschwinden",
+    "it": "Fissa la croce e guarda sparire il magenta",
+    "es": "Mira la cruz y verás desaparecer el magenta",
+    "ru": "Смотри на крестик — пурпурный исчезнет"
+  },
+  "drift": {
+    "en": "Nothing here is moving — only your eyes",
+    "de": "Hier bewegt sich nichts – nur deine Augen",
+    "it": "Qui non si muove nulla, solo i tuoi occhi",
+    "es": "Aquí nada se mueve — solo tus ojos",
+    "ru": "Здесь ничто не движется — только твои глаза"
+  },
+  "cafewall": {
+    "en": "Every row here is perfectly straight",
+    "de": "Jede Reihe hier ist schnurgerade",
+    "it": "Ogni riga qui è perfettamente dritta",
+    "es": "Todas estas filas están perfectamente rectas",
+    "ru": "Все ряды здесь идеально прямые"
+  },
+  "scintgrid": {
+    "en": "Count the black dots (there are none)",
+    "de": "Zähl die schwarzen Punkte (es gibt keine)",
+    "it": "Conta i punti neri (non ce ne sono)",
+    "es": "Cuenta los puntos negros (no hay ninguno)",
+    "ru": "Сосчитай чёрные точки (их нет)"
+  },
+  "afterimage": {
+    "en": "",
+    "de": "",
+    "it": "",
+    "es": "",
+    "ru": ""
+  },
+  "ebbinghaus": {
+    "en": "Both orange dots are the same size",
+    "de": "Beide orangen Punkte sind gleich groß",
+    "it": "I due punti arancioni sono identici",
+    "es": "Los dos puntos naranjas son del mismo tamaño",
+    "ru": "Оба оранжевых круга одного размера"
+  },
+  "checkershadow": {
+    "en": "A and B are the exact same grey",
+    "de": "A und B sind exakt dasselbe Grau",
+    "it": "A e B sono lo stesso identico grigio",
+    "es": "A y B son exactamente el mismo gris",
+    "ru": "A и B — абсолютно один и тот же серый"
+  },
+  "penrose": {
+    "en": "This triangle cannot exist",
+    "de": "Dieses Dreieck kann nicht existieren",
+    "it": "Questo triangolo non può esistere",
+    "es": "Este triángulo no puede existir",
+    "ru": "Такого треугольника не может быть"
+  },
+  "barberpole": {
+    "en": "These stripes only LOOK like they rise",
+    "de": "Diese Streifen steigen nur SCHEINBAR",
+    "it": "Le strisce SEMBRANO solo salire",
+    "es": "Estas franjas solo PARECEN subir",
+    "ru": "Полосы только КАЖУТСЯ ползущими вверх"
+  },
+  "benham": {
+    "en": "Spin it and your eyes invent colour",
+    "de": "Dreh es – deine Augen erfinden Farbe",
+    "it": "Falla girare e i tuoi occhi inventano il colore",
+    "es": "Gíralo y tus ojos inventan color",
+    "ru": "Раскрути — и глаза придумают цвет"
+  },
+  "bezold": {
+    "en": "Both reds are the exact same red",
+    "de": "Beide Rottöne sind exakt dasselbe Rot",
+    "it": "I due rossi sono lo stesso identico rosso",
+    "es": "Los dos rojos son exactamente el mismo rojo",
+    "ru": "Оба красных — абсолютно одинаковые"
+  },
+  "breathingsquares": {
+    "en": "This grid is not actually moving",
+    "de": "Dieses Gitter bewegt sich gar nicht",
+    "it": "Questa griglia non si muove davvero",
+    "es": "Esta cuadrícula en realidad no se mueve",
+    "ru": "Эта сетка на самом деле не движется"
+  },
+  "bulgegrid": {
+    "en": "This checkerboard is perfectly flat",
+    "de": "Dieses Schachbrett ist völlig flach",
+    "it": "Questa scacchiera è perfettamente piatta",
+    "es": "Este tablero es perfectamente plano",
+    "ru": "Эта шахматка идеально плоская"
+  },
+  "coffer": {
+    "en": "Can you find the 16 circles?",
+    "de": "Findest du die 16 Kreise?",
+    "it": "Riesci a trovare i 16 cerchi?",
+    "es": "¿Puedes encontrar los 16 círculos?",
+    "ru": "Найдёшь здесь 16 кругов?"
+  },
+  "colorassimilation": {
+    "en": "Both panels are pure white",
+    "de": "Beide Felder sind reines Weiß",
+    "it": "Entrambi i pannelli sono bianco puro",
+    "es": "Ambos paneles son blanco puro",
+    "ru": "Обе половины — чисто белые"
+  },
+  "cornsweet": {
+    "en": "Both halves are the same grey",
+    "de": "Beide Hälften sind dasselbe Grau",
+    "it": "Le due metà sono lo stesso grigio",
+    "es": "Las dos mitades son del mismo gris",
+    "ru": "Обе половины — один и тот же серый"
+  },
+  "delboeuf": {
+    "en": "Both orange dots are the same size",
+    "de": "Beide orangen Punkte sind gleich groß",
+    "it": "I due punti arancioni sono identici",
+    "es": "Los dos puntos naranjas son del mismo tamaño",
+    "ru": "Оба оранжевых круга одного размера"
+  },
+  "devilsfork": {
+    "en": "How many prongs does it have?",
+    "de": "Wie viele Zinken hat sie wirklich?",
+    "it": "Quanti rebbi ha davvero?",
+    "es": "¿Cuántas púas tiene en realidad?",
+    "ru": "Сколько у неё зубцов?"
+  },
+  "ehrenstein": {
+    "en": "Those bright discs are not real",
+    "de": "Diese hellen Scheiben gibt es nicht",
+    "it": "Quei dischi luminosi non esistono",
+    "es": "Esos discos brillantes no son reales",
+    "ru": "Этих ярких кругов не существует"
+  },
+  "enigma": {
+    "en": "The rings seem to stream — they do not",
+    "de": "Die Ringe scheinen zu fließen – tun sie nicht",
+    "it": "Gli anelli sembrano scorrere, ma è falso",
+    "es": "Los anillos parecen fluir — pero no lo hacen",
+    "ru": "Кольца будто струятся — это не так"
+  },
+  "expandrings": {
+    "en": "Stare at the center, then look around",
+    "de": "Starr in die Mitte, dann schau dich um",
+    "it": "Fissa il centro, poi guardati intorno",
+    "es": "Fija la vista en el centro y luego mira alrededor",
+    "ru": "Смотри в центр, потом оглянись"
+  },
+  "fraserspiral": {
+    "en": "These are circles, not a spiral",
+    "de": "Das sind Kreise, keine Spirale",
+    "it": "Sono cerchi, non una spirale",
+    "es": "Son círculos, no una espiral",
+    "ru": "Это круги, а не спираль"
+  },
+  "hering": {
+    "en": "Both red lines are perfectly straight",
+    "de": "Beide roten Linien sind schnurgerade",
+    "it": "Le due linee rosse sono perfettamente dritte",
+    "es": "Las dos líneas rojas están perfectamente rectas",
+    "ru": "Обе красные линии идеально прямые"
+  },
+  "hermanngrid": {
+    "en": "Grey dots that are not there",
+    "de": "Graue Punkte, die gar nicht da sind",
+    "it": "Punti grigi che non ci sono",
+    "es": "Puntos grises que no están ahí",
+    "ru": "Серые точки, которых нет"
+  },
+  "impossiblecube": {
+    "en": "Look closely — it cannot be built",
+    "de": "Schau genau hin – baubar ist er nicht",
+    "it": "Guarda bene: non si può costruire",
+    "es": "Míralo de cerca — no se puede construir",
+    "ru": "Присмотрись — его не собрать"
+  },
+  "inducedmotion": {
+    "en": "The center dot is perfectly still",
+    "de": "Der Punkt in der Mitte steht völlig still",
+    "it": "Il punto al centro è perfettamente fermo",
+    "es": "El punto central está totalmente quieto",
+    "ru": "Точка в центре стоит на месте"
+  },
+  "jastrow": {
+    "en": "These two arcs are identical",
+    "de": "Diese beiden Bögen sind identisch",
+    "it": "Questi due archi sono identici",
+    "es": "Estos dos arcos son idénticos",
+    "ru": "Эти две дуги одинаковые"
+  },
+  "kanizsa": {
+    "en": "There is no white triangle",
+    "de": "Es gibt kein weißes Dreieck",
+    "it": "Non c'è nessun triangolo bianco",
+    "es": "No hay ningún triángulo blanco",
+    "ru": "Никакого белого треугольника нет"
+  },
+  "machbands": {
+    "en": "Each band is a flat, even grey",
+    "de": "Jeder Streifen ist ein flaches, gleichmäßiges Grau",
+    "it": "Ogni banda è un grigio piatto e uniforme",
+    "es": "Cada banda es un gris plano y uniforme",
+    "ru": "Каждая полоса — ровный, однотонный серый"
+  },
+  "mib": {
+    "en": "Stare at the centre — the yellow dots vanish",
+    "de": "Starr in die Mitte – die gelben Punkte verschwinden",
+    "it": "Fissa il centro e i punti gialli spariscono",
+    "es": "Fija la vista en el centro — los puntos amarillos desaparecen",
+    "ru": "Смотри в центр — жёлтые точки исчезнут"
+  },
+  "mullerlyer": {
+    "en": "These two lines are the same length",
+    "de": "Diese beiden Linien sind gleich lang",
+    "it": "Queste due linee sono lunghe uguali",
+    "es": "Estas dos líneas miden lo mismo",
+    "ru": "Эти две линии одинаковой длины"
+  },
+  "munkerwhite": {
+    "en": "Every sphere is the same orange",
+    "de": "Jede Kugel hat dasselbe Orange",
+    "it": "Ogni sfera è dello stesso arancione",
+    "es": "Todas las esferas son del mismo naranja",
+    "ru": "Все шары одного оранжевого цвета"
+  },
+  "neckercube": {
+    "en": "Which face is in front?",
+    "de": "Welche Seite ist vorne?",
+    "it": "Quale faccia è davanti?",
+    "es": "¿Qué cara está al frente?",
+    "ru": "Какая грань впереди?"
+  },
+  "neoncolor": {
+    "en": "There is no glowing disc here",
+    "de": "Hier gibt es keine leuchtende Scheibe",
+    "it": "Qui non c'è nessun disco luminoso",
+    "es": "Aquí no hay ningún disco brillante",
+    "ru": "Никакого светящегося круга здесь нет"
+  },
+  "pinna": {
+    "en": "Lean in and out — the rings rotate",
+    "de": "Lehn dich vor und zurück – die Ringe drehen sich",
+    "it": "Avvicinati e allontanati: gli anelli ruotano",
+    "es": "Acércate y aléjate — los anillos giran",
+    "ru": "Придвинься и отдались — кольца повернутся"
+  },
+  "poggendorff": {
+    "en": "It is one straight line behind the bar",
+    "de": "Hinter dem Balken ist es eine gerade Linie",
+    "it": "È un'unica linea dritta dietro la barra",
+    "es": "Es una sola línea recta tras la barra",
+    "ru": "За полосой — одна прямая линия"
+  },
+  "ponzo": {
+    "en": "These two yellow bars are equal",
+    "de": "Diese beiden gelben Balken sind gleich",
+    "it": "Queste due barre gialle sono uguali",
+    "es": "Estas dos barras amarillas son iguales",
+    "ru": "Эти две жёлтые полоски равны"
+  },
+  "rotatingsnakes2": {
+    "en": "This image is completely still",
+    "de": "Dieses Bild steht völlig still",
+    "it": "Questa immagine è completamente ferma",
+    "es": "Esta imagen está completamente quieta",
+    "ru": "Картинка абсолютно неподвижна"
+  },
+  "rubinvase": {
+    "en": "A vase — or two faces?",
+    "de": "Eine Vase – oder zwei Gesichter?",
+    "it": "Un vaso o due volti?",
+    "es": "¿Un jarrón o dos caras?",
+    "ru": "Ваза — или два лица?"
+  },
+  "sander": {
+    "en": "Both blue diagonals are equal",
+    "de": "Beide blauen Diagonalen sind gleich lang",
+    "it": "Le due diagonali blu sono uguali",
+    "es": "Las dos diagonales azules son iguales",
+    "ru": "Обе синие диагонали равны"
+  },
+  "shepardtables": {
+    "en": "These two tabletops are identical",
+    "de": "Diese beiden Tischplatten sind identisch",
+    "it": "Questi due piani sono identici",
+    "es": "Estas dos mesas son idénticas",
+    "ru": "Эти две столешницы одинаковые"
+  },
+  "simultcontrast": {
+    "en": "Both grey squares are identical",
+    "de": "Beide grauen Quadrate sind identisch",
+    "it": "I due quadrati grigi sono identici",
+    "es": "Los dos cuadrados grises son idénticos",
+    "ru": "Оба серых квадрата одинаковые"
+  },
+  "steppingfeet": {
+    "en": "Both bars glide at the same speed",
+    "de": "Beide Balken gleiten gleich schnell",
+    "it": "Le due barre scorrono alla stessa velocità",
+    "es": "Las dos barras avanzan a la misma velocidad",
+    "ru": "Обе полоски движутся с одной скоростью"
+  },
+  "tiltframe": {
+    "en": "The white rod is perfectly vertical",
+    "de": "Der weiße Stab steht senkrecht",
+    "it": "L'asta bianca è perfettamente verticale",
+    "es": "La barra blanca está perfectamente vertical",
+    "ru": "Белый стержень идеально вертикален"
+  },
+  "troxler": {
+    "en": "Stare at the dot — the colours fade",
+    "de": "Starr auf den Punkt – die Farben verblassen",
+    "it": "Fissa il punto e i colori svaniscono",
+    "es": "Fija la vista en el punto — los colores se desvanecen",
+    "ru": "Смотри в точку — цвета растворятся"
+  },
+  "verticalhorizontal": {
+    "en": "Both lines are the same length",
+    "de": "Beide Linien sind gleich lang",
+    "it": "Le due linee sono lunghe uguali",
+    "es": "Las dos líneas miden lo mismo",
+    "ru": "Обе линии одинаковой длины"
+  },
+  "whiteillusion": {
+    "en": "These two grey bars are the same grey",
+    "de": "Diese beiden grauen Balken sind dasselbe Grau",
+    "it": "Queste due barre grigie sono lo stesso grigio",
+    "es": "Estas dos barras grises son del mismo gris",
+    "ru": "Эти две серые полосы — один и тот же серый"
+  },
+  "wundt": {
+    "en": "These two red lines are perfectly straight",
+    "de": "Diese beiden roten Linien sind schnurgerade",
+    "it": "Le due linee rosse sono perfettamente dritte",
+    "es": "Estas dos líneas rojas están perfectamente rectas",
+    "ru": "Эти две красные линии идеально прямые"
+  },
+  "zollner": {
+    "en": "These long lines are all parallel",
+    "de": "Diese langen Linien sind alle parallel",
+    "it": "Queste lunghe linee sono tutte parallele",
+    "es": "Estas líneas largas son todas paralelas",
+    "ru": "Все эти длинные линии параллельны"
+  },
+  "moirepulse": {
+    "en": "The rings are not breathing",
+    "de": "Die Ringe atmen nicht wirklich",
+    "it": "Gli anelli non respirano davvero",
+    "es": "Los anillos no están respirando",
+    "ru": "Кольца на самом деле не дышат"
+  },
+  "hypnotunnel": {
+    "en": "The tunnel is only flat lines",
+    "de": "Der Tunnel besteht nur aus flachen Linien",
+    "it": "Il tunnel è fatto solo di linee piatte",
+    "es": "El túnel son solo líneas planas",
+    "ru": "Тоннель нарисован плоскими линиями"
+  },
+  "wavegrid": {
+    "en": "The grid is trying to stay straight",
+    "de": "Das Gitter versucht gerade zu bleiben",
+    "it": "La griglia cerca di restare dritta",
+    "es": "La cuadrícula intenta seguir recta",
+    "ru": "Сетка пытается оставаться прямой"
+  },
+  "kineticdots": {
+    "en": "Flat dots turn into a sphere",
+    "de": "Flache Punkte werden zu einer Kugel",
+    "it": "Punti piatti diventano una sfera",
+    "es": "Puntos planos se vuelven una esfera",
+    "ru": "Плоские точки превращаются в шар"
+  },
+  "aperturebars": {
+    "en": "The bars slide sideways, not down",
+    "de": "Die Streifen gleiten seitlich, nicht nach unten",
+    "it": "Le barre scorrono di lato, non in basso",
+    "es": "Las barras se deslizan de lado, no hacia abajo",
+    "ru": "Полосы едут вбок, а не вниз"
+  },
+  "chevrondrift": {
+    "en": "The arrows refuse to sit still",
+    "de": "Die Pfeile wollen nicht stillhalten",
+    "it": "Le frecce non vogliono stare ferme",
+    "es": "Las flechas se niegan a quedarse quietas",
+    "ru": "Стрелки не хотят стоять на месте"
+  },
+  "orbitstorm": {
+    "en": "Stare at the dot — the rings swirl",
+    "de": "Starr auf den Punkt - die Ringe wirbeln",
+    "it": "Fissa il punto: gli anelli vorticano",
+    "es": "Mira el punto: los anillos giran",
+    "ru": "Смотри в точку — кольца закрутятся"
+  },
+  "tiltcloud": {
+    "en": "Every dash is the same length",
+    "de": "Jeder Strich ist gleich lang",
+    "it": "Ogni trattino ha la stessa lunghezza",
+    "es": "Cada raya tiene la misma longitud",
+    "ru": "Каждая черточка одной длины"
+  },
+  "pulsechecker": {
+    "en": "The squares never change size",
+    "de": "Die Quadrate ändern nie ihre Größe",
+    "it": "I quadrati non cambiano mai dimensione",
+    "es": "Los cuadrados nunca cambian de tamaño",
+    "ru": "Квадраты не меняют размер"
+  },
+  "phasewaves": {
+    "en": "Two wave fields fight your eyes",
+    "de": "Zwei Wellenfelder verwirren deine Augen",
+    "it": "Due campi d onde confondono gli occhi",
+    "es": "Dos campos de ondas confunden tus ojos",
+    "ru": "Две волны спорят с твоими глазами"
+  },
+  "phantomrays": {
+    "en": "The rings create ghost rays",
+    "de": "Die Ringe erzeugen Geisterstrahlen",
+    "it": "Gli anelli creano raggi fantasma",
+    "es": "Los anillos crean rayos fantasma",
+    "ru": "Кольца создают призрачные лучи"
+  },
+  "floatingrings": {
+    "en": "Every ring is perfectly flat",
+    "de": "Jeder Ring ist vollkommen flach",
+    "it": "Ogni anello è perfettamente piatto",
+    "es": "Cada anillo es totalmente plano",
+    "ru": "Каждое кольцо абсолютно плоское"
+  },
+  "depthlattice": {
+    "en": "A flat grid becomes a tunnel",
+    "de": "Ein flaches Gitter wird zum Tunnel",
+    "it": "Una griglia piatta diventa un tunnel",
+    "es": "Una cuadrícula plana se vuelve túnel",
+    "ru": "Плоская сетка превращается в тоннель"
+  },
+  "stripebeat": {
+    "en": "Only the brightness is pulsing",
+    "de": "Nur die Helligkeit pulsiert",
+    "it": "Pulsa solo la luminosità",
+    "es": "Solo pulsa el brillo",
+    "ru": "Пульсирует только яркость"
+  },
+  "beadspiral": {
+    "en": "The beads sit on perfect spirals",
+    "de": "Die Perlen liegen auf perfekten Spiralen",
+    "it": "Le perle stanno su spirali perfette",
+    "es": "Las cuentas están en espirales perfectas",
+    "ru": "Бусины стоят на идеальных спиралях"
+  },
+  "glasswarp": {
+    "en": "The centre is not bending",
+    "de": "Die Mitte verbiegt sich nicht",
+    "it": "Il centro non si piega davvero",
+    "es": "El centro no se está doblando",
+    "ru": "Центр на самом деле не гнётся"
+  },
+  "scintcircle": {
+    "en": "Count the black sparks",
+    "de": "Zähl die schwarzen Funken",
+    "it": "Conta le scintille nere",
+    "es": "Cuenta las chispas negras",
+    "ru": "Сосчитай чёрные вспышки"
+  },
+  "crawlingdots": {
+    "en": "The dots are locked to the grid",
+    "de": "Die Punkte bleiben im Raster",
+    "it": "I punti restano bloccati sulla griglia",
+    "es": "Los puntos están fijos en la cuadrícula",
+    "ru": "Точки закреплены на сетке"
+  },
+  "fanflip": {
+    "en": "Which way did the fan flip?",
+    "de": "In welche Richtung kippt der Fächer?",
+    "it": "Da che parte si ribalta il ventaglio?",
+    "es": "¿Hacia qué lado gira el abanico?",
+    "ru": "В какую сторону перевернулся веер?"
+  },
+  "polarchecker": {
+    "en": "Straight rings feel twisted",
+    "de": "Gerade Ringe wirken verdreht",
+    "it": "Anelli regolari sembrano contorti",
+    "es": "Anillos rectos parecen retorcidos",
+    "ru": "Ровные кольца будто скручены"
+  },
+  "zippermotion": {
+    "en": "The zipper crawls without moving",
+    "de": "Der Reißverschluss kriecht ohne Bewegung",
+    "it": "La cerniera striscia senza muoversi",
+    "es": "La cremallera avanza sin moverse",
+    "ru": "Молния ползёт, хотя стоит на месте"
+  },
+  "eclipsegrid": {
+    "en": "Every center dot is identical",
+    "de": "Jeder Mittelpunkt ist identisch",
+    "it": "Ogni punto centrale è identico",
+    "es": "Cada punto central es idéntico",
+    "ru": "Все центральные точки одинаковые"
+  },
+  "neonladder": {
+    "en": "The glow appears between the lines",
+    "de": "Das Leuchten erscheint zwischen den Linien",
+    "it": "Il bagliore appare tra le linee",
+    "es": "El brillo aparece entre las líneas",
+    "ru": "Свечение возникает между линиями"
+  },
+  "splitspiral": {
+    "en": "Two spirals share one flat image",
+    "de": "Zwei Spiralen teilen ein flaches Bild",
+    "it": "Due spirali condividono un immagine piatta",
+    "es": "Dos espirales comparten una imagen plana",
+    "ru": "Две спирали в одной плоской картинке"
+  },
+  "rayafterimage": {
+    "en": "Stare, then blink at a wall",
+    "de": "Starr hin, dann blinzle zur Wand",
+    "it": "Fissa, poi sbatti le palpebre verso il muro",
+    "es": "Mira fijo y luego parpadea hacia una pared",
+    "ru": "Смотри, потом моргни на стену"
+  },
+  "loomroom": {
+    "en": "The room is only lines",
+    "de": "Der Raum besteht nur aus Linien",
+    "it": "La stanza è fatta solo di linee",
+    "es": "La habitación son solo líneas",
+    "ru": "Комната состоит только из линий"
+  }
+}

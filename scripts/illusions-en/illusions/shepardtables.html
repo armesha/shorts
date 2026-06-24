@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>illusions host v2 (variants + localizable title overlay)</title>
+<style>html,body{margin:0;padding:0;background:#000}#scene{display:block}</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  // ============================================================================
+  //  SHARED HOST v2 — variant-aware + localizable title overlay.
+  //  Edit ONLY the two marked regions: (1) SPEC block, (2) drawIllusion().
+  //  New vs v1:
+  //   - H.v  = variant params {palette,dir,turns,speed,seed,density,angle} (from SPEC.variant)
+  //   - H.PALETTES / H.pal(t) / H.palStops()  = named colour schemes for variants
+  //   - window.renderTitle(text) -> TRANSPARENT png with ONLY the title (for ffmpeg overlay,
+  //     so one titleless geometry render is reused across all 5 languages)
+  //   - canvas is alpha:true; renderFrame() fills its own opaque background.
+  // ============================================================================
+  const CW = 1080, CH = 1920, TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: true });
+
+  function mulberry32(seed) {
+    let s = (seed >>> 0) || 1;
+    return function () {
+      let t = s += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (x, lo, hi) => x < lo ? lo : x > hi ? hi : x;
+  const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+
+  // Named palettes: ordered RGB stops. H.pal(t) interpolates across them; H.palStops() returns raw stops.
+  const PALETTES = {
+    classic:  [[75,58,255],[255,35,112],[38,255,132],[44,150,255]], // v1 spectrum (default look)
+    spectrum: [[75,58,255],[255,35,112],[38,255,132],[44,150,255]],
+    aurora:   [[130,255,200],[120,180,255],[180,120,255],[255,140,220]],
+    fire:     [[255,210,90],[255,120,40],[255,60,60],[210,40,120]],
+    ice:      [[200,240,255],[120,190,255],[255,255,255],[90,150,230]],
+    neon:     [[80,255,140],[190,255,60],[40,230,180],[120,255,90]],
+    gold:     [[255,235,170],[255,190,80],[255,250,210],[210,150,50]],
+    sunset:   [[255,180,90],[255,90,120],[200,70,200],[120,80,220]],
+    emerald:  [[170,255,210],[60,220,150],[30,180,140],[120,255,180]],
+    magma:    [[255,230,120],[255,140,40],[230,40,40],[120,20,60]],
+    mono:     [[255,255,255],[210,210,210],[170,170,170],[235,235,235]],
+    candy:    [[255,160,210],[120,210,255],[255,225,130],[180,160,255]],
+  };
+  function palStops(name) { return PALETTES[name] || PALETTES.classic; }
+  function pal(t, name) {
+    const s = palStops(name || (V && V.palette) || 'classic');
+    t = clamp(t, 0, 1) * (s.length - 1);
+    const i = Math.min(s.length - 2, Math.floor(t)), f = t - i;
+    const a = s[i], b = s[i + 1];
+    return `rgb(${Math.round(lerp(a[0],b[0],f))} ${Math.round(lerp(a[1],b[1],f))} ${Math.round(lerp(a[2],b[2],f))})`;
+  }
+
+  // active variant (filled at setup)
+  let V = { palette: 'classic', dir: 1, turns: 1, speed: 1, seed: 1, density: 1, angle: 0 };
+
+  const SAFE = { x0: 70, y0: 380, x1: 1010, y1: 1520 };
+  const H = { TAU, rng: mulberry32, lerp, clamp, smooth, cx: 540, cy: 960, safe: SAFE, maxR: 460,
+              PALETTES, pal, palStops, get v() { return V; } };
+
+  // ====================== (1) SPEC — replace these values =====================
+  let SPEC = {
+    key: 'shepardtables',
+    name: "Shepard's tabletops",
+    title: 'These two tabletops are identical',
+    dur: 9,            // seconds
+    fps: 30,
+    light: false,      // true => skip the dark vignette (for grey/white-background illusions)
+  };
+  // ===========================================================================
+
+  // ============ (2) drawIllusion — replace this whole function body ==========
+  // Contract:
+  //   p       progress 0..1 over the clip (build renders frame f at p=f/FRAMES,
+  //           so p=0 and p=1 are the SAME instant -> a LOOPING illusion must make
+  //           draw(0) == draw(1). Non-looping sequences (e.g. afterimage) ignore this.)
+  //   CW,CH   1080 x 1920
+  //   H       helpers: H.rng(seed)->()=>0..1, H.lerp, H.clamp, H.smooth, H.TAU,
+  //           H.cx, H.cy (frame centre of the safe area), H.safe {x0,y0,x1,y1}, H.maxR
+  //   The host fills #000, then calls this, then draws vignette (unless light) + title.
+  //   Keep important content inside H.safe. Use H.rng only (no Math.random) for determinism.
+  function drawIllusion(ctx, p, CW, CH, H) {
+    // ---- Shepard's tabletops -----------------------------------------------
+    // Two parallelogram tabletops drawn in perspective. They are the SAME
+    // parallelogram, just ROTATED by 90 deg, so they are perfectly congruent —
+    // yet the left one reads as a long, narrow table receding away and the right
+    // one as a short, wide table. Legs sell the "table" reading. Once per loop a
+    // glowing GHOST copy of the right top slides + rotates onto the left top and
+    // snaps into an exact overlap, proving they are identical. The proof fades
+    // 0->1->0 around mid-loop, so draw(0) === draw(1) and the clip loops cleanly.
+
+    // --- the ONE base parallelogram (centred on its own centroid) -----------
+    // Edge u (long) along +x, edge v (short) at an acute angle -> a rhomboid.
+    const EL = 430, EW = 150, SKEW = 68 * Math.PI / 180;
+    const ux = EL, uy = 0;
+    const vx = EW * Math.cos(SKEW), vy = EW * Math.sin(SKEW);
+    let baseRaw = [
+      { x: 0,       y: 0       },
+      { x: ux,      y: uy      },
+      { x: ux + vx, y: uy + vy },
+      { x: vx,      y: vy      },
+    ];
+    const bcx = (baseRaw[0].x + baseRaw[1].x + baseRaw[2].x + baseRaw[3].x) / 4;
+    const bcy = (baseRaw[0].y + baseRaw[1].y + baseRaw[2].y + baseRaw[3].y) / 4;
+    const BASE = baseRaw.map((q) => ({ x: q.x - bcx, y: q.y - bcy }));
+
+    // rigid transform: rotate a base point by deg, then translate to (tx,ty)
+    const place = (q, deg, tx, ty) => {
+      const r = deg * Math.PI / 180, c = Math.cos(r), s = Math.sin(r);
+      return { x: tx + q.x * c - q.y * s, y: ty + q.x * s + q.y * c };
+    };
+    const placeAll = (deg, tx, ty) => BASE.map((q) => place(q, deg, tx, ty));
+
+    // two tables: SAME parallelogram, orientations exactly 90 deg apart.
+    const ROT_A = 63, ROT_B = ROT_A - 90;       // -27
+    const AX = 312, AY = 860;                   // left table top centre
+    const BX = 735, BY = 980;                   // right table top centre
+    const polyA = placeAll(ROT_A, AX, AY);      // long & narrow look
+    const polyB = placeAll(ROT_B, BX, BY);      // short & wide look
+
+    // ---- helpers -----------------------------------------------------------
+    const pathPoly = (poly) => {
+      ctx.beginPath();
+      ctx.moveTo(poly[0].x, poly[0].y);
+      for (let i = 1; i < poly.length; i++) ctx.lineTo(poly[i].x, poly[i].y);
+      ctx.closePath();
+    };
+    // the two corners with the largest screen-y are the "front" corners; legs
+    // hang straight down from them. (index pairs precomputed -> stable & cheap)
+    const frontLegs = (poly, len, color) => {
+      const idx = poly.map((q, i) => [q.y, i]).sort((a, b) => b[0] - a[0]);
+      const front = [poly[idx[0][1]], poly[idx[1][1]]];
+      ctx.save();
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 13;
+      for (const f of front) {
+        ctx.beginPath();
+        ctx.moveTo(f.x, f.y);
+        ctx.lineTo(f.x, f.y + len);
+        ctx.stroke();
+      }
+      ctx.restore();
+    };
+
+    // draw one finished table: legs first (behind), then the shaded top.
+    const drawTable = (poly, top, side, edge, legLen) => {
+      // legs behind the top so the top edge tucks over them
+      frontLegs(poly, legLen, side);
+      // top fill with a soft gradient so it reads as a lit surface
+      ctx.save();
+      const g = ctx.createLinearGradient(poly[0].x, poly[0].y, poly[2].x, poly[2].y);
+      g.addColorStop(0, top[0]);
+      g.addColorStop(1, top[1]);
+      pathPoly(poly);
+      ctx.fillStyle = g;
+      ctx.shadowColor = 'rgba(0,0,0,0.45)';
+      ctx.shadowBlur = 22;
+      ctx.shadowOffsetY = 10;
+      ctx.fill();
+      ctx.restore();
+      // crisp top edge
+      ctx.save();
+      pathPoly(poly);
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = edge;
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    // ---- the two real tables ----------------------------------------------
+    // warm wood for A, cooler wood for B (purely cosmetic; shapes are identical)
+    drawTable(polyA, ['rgb(196,128,72)', 'rgb(150,90,46)'], 'rgb(96,60,34)',
+              'rgba(255,224,180,0.55)', 150);
+    drawTable(polyB, ['rgb(120,150,196)', 'rgb(78,104,150)'], 'rgb(46,62,96)',
+              'rgba(200,224,255,0.55)', 132);
+
+    // ---- once-per-loop PROOF: ghost of B slides + rotates onto A -----------
+    // A single smooth bump: invisible at p=0 and p=1, peaks mid-loop, where the
+    // ghost has fully overlapped A (orientation ROT_A, centre AX/AY === polyA).
+    let bump = 0;            // 0..1 visibility / motion progress
+    if (p > 0.30 && p < 0.92) {
+      const t = (p - 0.30) / (0.92 - 0.30);   // 0..1 across the window
+      bump = Math.sin(t * Math.PI);            // 0 -> 1 -> 0 (seamless ends)
+    }
+    if (bump > 0.001) {
+      const m = smooth(bump);                  // eased travel
+      const deg = lerp(ROT_B, ROT_A, m);
+      const gx = lerp(BX, AX, m);
+      const gy = lerp(BY, AY, m);
+      const ghost = placeAll(deg, gx, gy);
+      const fade = Math.min(1, bump * 1.6);    // fully opaque for most of motion
+
+      // motion trail line from B's start to the ghost (a faint guide)
+      ctx.save();
+      ctx.strokeStyle = `rgba(120,220,255,${0.30 * fade})`;
+      ctx.setLineDash([10, 12]);
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(BX, BY);
+      ctx.lineTo(gx, gy);
+      ctx.stroke();
+      ctx.restore();
+
+      // the glowing translucent ghost top
+      ctx.save();
+      pathPoly(ghost);
+      ctx.fillStyle = `rgba(150,235,255,${0.30 * fade})`;
+      ctx.shadowColor = `rgba(120,220,255,${0.8 * fade})`;
+      ctx.shadowBlur = 26;
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      pathPoly(ghost);
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = `rgba(190,245,255,${0.95 * fade})`;
+      ctx.lineWidth = 5;
+      ctx.stroke();
+      ctx.restore();
+
+      // when overlapped, a bright "= identical" snap ring around the match
+      const snap = clamp((m - 0.82) / 0.18, 0, 1);   // only near full overlap
+      if (snap > 0.001) {
+        ctx.save();
+        pathPoly(polyA);
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = `rgba(255,255,255,${0.9 * snap})`;
+        ctx.lineWidth = 6;
+        ctx.shadowColor = `rgba(150,235,255,${0.9 * snap})`;
+        ctx.shadowBlur = 30;
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    void H.rng; // deterministic geometry; no randomness needed
+  }
+  // ===========================================================================
+
+  // ---------------- title (identical layout to v1; drawn as overlay or inline) ----------
+  let TITLE_LINES = [], TITLE_PX = 60, TITLE_TEXT = '';
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    TITLE_TEXT = String(text || '');
+    const words = TITLE_TEXT.trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { TITLE_LINES = []; return; }
+    for (let px = 72; px >= 40; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = []; let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_PX = px; return; }
+      if (px === 40) { TITLE_LINES = lines.slice(0, 3); TITLE_PX = px; }
+    }
+  }
+  function paintTitle() {
+    if (!TITLE_LINES.length) return;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_PX);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const lh = TITLE_PX * 1.2, n = TITLE_LINES.length;
+    const startY = 210, padX = 42, padY = 28;
+    let maxW = 0; for (const l of TITLE_LINES) maxW = Math.max(maxW, ctx.measureText(l).width);
+    const rx = CW / 2 - maxW / 2 - padX, rw = maxW + padX * 2;
+    const ry = startY - lh / 2 - padY, rh = (n - 1) * lh + lh + padY * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 28); ctx.fill();
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    let y = startY; for (const l of TITLE_LINES) { ctx.fillText(l, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.2, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.64, 'rgba(0,0,0,0.12)'); g.addColorStop(1, 'rgba(0,0,0,0.66)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  }
+
+  window.setup = function (overrides) {
+    if (overrides && typeof overrides === 'object') {
+      const { variant, ...rest } = overrides;
+      SPEC = { ...SPEC, ...rest };
+      if (variant && typeof variant === 'object') SPEC.variant = variant;
+    }
+    V = { palette: 'classic', dir: 1, turns: 1, speed: 1, seed: 1, density: 1, angle: 0, ...(SPEC.variant || {}) };
+    layoutTitle(SPEC.title);
+    return { key: SPEC.key, name: SPEC.name, dur: SPEC.dur, fps: SPEC.fps, light: !!SPEC.light, variant: V, lines: TITLE_LINES.length, px: TITLE_PX };
+  };
+  window.getSpec = function () { return { ...SPEC, v: { ...V } }; };
+
+  // Full frame (background + illusion + vignette + INLINE title). Used for standalone preview.
+  window.renderFrame = function (progress) {
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    paintTitle();
+    return canvas.toDataURL('image/png');
+  };
+  // Geometry only, NO title (opaque). Rendered ONCE; localized titles overlaid later.
+  window.renderBase = function (progress) {
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    return canvas.toDataURL('image/png');
+  };
+  // TRANSPARENT png with ONLY the title (pill + text), for ffmpeg overlay onto a titleless clip.
+  window.renderTitle = function (text) {
+    layoutTitle(text);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.clearRect(0, 0, CW, CH);
+    paintTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  layoutTitle(SPEC.title);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,695 @@
+[
+  {
+    "id": "spiral",
+    "html": "illusions/spiral.html",
+    "title": "Stare at the center dot",
+    "name": "Spiral aftereffect",
+    "dur": 9,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "wheel",
+    "html": "illusions/wheel.html",
+    "title": "Which way is it really spinning?",
+    "name": "Wagon-wheel effect",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "lilac",
+    "html": "illusions/lilac.html",
+    "title": "Stare at the cross — watch the magenta vanish",
+    "name": "Lilac chaser",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "drift",
+    "html": "illusions/drift.html",
+    "title": "Nothing here is moving — only your eyes",
+    "name": "Peripheral drift",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "cafewall",
+    "html": "illusions/cafewall.html",
+    "title": "Every row here is perfectly straight",
+    "name": "Café wall illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "scintgrid",
+    "html": "illusions/scintgrid.html",
+    "title": "Count the black dots (there are none)",
+    "name": "Scintillating grid",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "afterimage",
+    "html": "illusions/afterimage.html",
+    "title": "",
+    "name": "Colour afterimage",
+    "dur": 12,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "ebbinghaus",
+    "html": "illusions/ebbinghaus.html",
+    "title": "Both orange dots are the same size",
+    "name": "Ebbinghaus illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "checkershadow",
+    "html": "illusions/checkershadow.html",
+    "title": "A and B are the exact same grey",
+    "name": "Checker-shadow illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "penrose",
+    "html": "illusions/penrose.html",
+    "title": "This triangle cannot exist",
+    "name": "Penrose impossible triangle",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "aperturebars",
+    "html": "illusions/aperturebars.html",
+    "title": "The bars slide sideways, not down",
+    "name": "Aperture bars",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "barberpole",
+    "html": "illusions/barberpole.html",
+    "title": "These stripes only LOOK like they rise",
+    "name": "Barber-pole illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "beadspiral",
+    "html": "illusions/beadspiral.html",
+    "title": "The beads sit on perfect spirals",
+    "name": "Bead spiral",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "benham",
+    "html": "illusions/benham.html",
+    "title": "Spin it and your eyes invent colour",
+    "name": "Benham's disc",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "bezold",
+    "html": "illusions/bezold.html",
+    "title": "Both reds are the exact same red",
+    "name": "Bezold effect",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "breathingsquares",
+    "html": "illusions/breathingsquares.html",
+    "title": "This grid is not actually moving",
+    "name": "Breathing illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "bulgegrid",
+    "html": "illusions/bulgegrid.html",
+    "title": "This checkerboard is perfectly flat",
+    "name": "Bulge illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "chevrondrift",
+    "html": "illusions/chevrondrift.html",
+    "title": "The arrows refuse to sit still",
+    "name": "Chevron drift",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "coffer",
+    "html": "illusions/coffer.html",
+    "title": "Can you find the 16 circles?",
+    "name": "Coffer illusion",
+    "dur": 9,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "colorassimilation",
+    "html": "illusions/colorassimilation.html",
+    "title": "Both panels are pure white",
+    "name": "Colour assimilation",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "cornsweet",
+    "html": "illusions/cornsweet.html",
+    "title": "Both halves are the same grey",
+    "name": "Cornsweet illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "crawlingdots",
+    "html": "illusions/crawlingdots.html",
+    "title": "The dots are locked to the grid",
+    "name": "Crawling dots",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "delboeuf",
+    "html": "illusions/delboeuf.html",
+    "title": "Both orange dots are the same size",
+    "name": "Delboeuf illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "depthlattice",
+    "html": "illusions/depthlattice.html",
+    "title": "A flat grid becomes a tunnel",
+    "name": "Depth lattice",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "devilsfork",
+    "html": "illusions/devilsfork.html",
+    "title": "How many prongs does it have?",
+    "name": "Impossible trident",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "eclipsegrid",
+    "html": "illusions/eclipsegrid.html",
+    "title": "Every center dot is identical",
+    "name": "Eclipse grid",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "ehrenstein",
+    "html": "illusions/ehrenstein.html",
+    "title": "Those bright discs are not real",
+    "name": "Ehrenstein illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "enigma",
+    "html": "illusions/enigma.html",
+    "title": "The rings seem to stream — they do not",
+    "name": "Leviant's Enigma",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "expandrings",
+    "html": "illusions/expandrings.html",
+    "title": "Stare at the center, then look around",
+    "name": "Expanding-rings aftereffect",
+    "dur": 9,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "fanflip",
+    "html": "illusions/fanflip.html",
+    "title": "Which way did the fan flip?",
+    "name": "Ambiguous fan",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "floatingrings",
+    "html": "illusions/floatingrings.html",
+    "title": "Every ring is perfectly flat",
+    "name": "Floating rings",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "fraserspiral",
+    "html": "illusions/fraserspiral.html",
+    "title": "These are circles, not a spiral",
+    "name": "Fraser spiral illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "glasswarp",
+    "html": "illusions/glasswarp.html",
+    "title": "The centre is not bending",
+    "name": "Glass warp",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "hering",
+    "html": "illusions/hering.html",
+    "title": "Both red lines are perfectly straight",
+    "name": "Hering illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "hermanngrid",
+    "html": "illusions/hermanngrid.html",
+    "title": "Grey dots that are not there",
+    "name": "Hermann grid",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "hypnotunnel",
+    "html": "illusions/hypnotunnel.html",
+    "title": "The tunnel is only flat lines",
+    "name": "Hypnotic tunnel",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "impossiblecube",
+    "html": "illusions/impossiblecube.html",
+    "title": "Look closely — it cannot be built",
+    "name": "Impossible cube",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "inducedmotion",
+    "html": "illusions/inducedmotion.html",
+    "title": "The center dot is perfectly still",
+    "name": "Induced motion",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "jastrow",
+    "html": "illusions/jastrow.html",
+    "title": "These two arcs are identical",
+    "name": "Jastrow illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "kanizsa",
+    "html": "illusions/kanizsa.html",
+    "title": "There is no white triangle",
+    "name": "Kanizsa triangle",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "kineticdots",
+    "html": "illusions/kineticdots.html",
+    "title": "Flat dots turn into a sphere",
+    "name": "Kinetic depth dots",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "loomroom",
+    "html": "illusions/loomroom.html",
+    "title": "The room is only lines",
+    "name": "Looming room",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "machbands",
+    "html": "illusions/machbands.html",
+    "title": "Each band is a flat, even grey",
+    "name": "Mach bands",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "mib",
+    "html": "illusions/mib.html",
+    "title": "Stare at the centre — the yellow dots vanish",
+    "name": "Motion-induced blindness",
+    "dur": 9,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "moirepulse",
+    "html": "illusions/moirepulse.html",
+    "title": "The rings are not breathing",
+    "name": "Moiré pulse",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "mullerlyer",
+    "html": "illusions/mullerlyer.html",
+    "title": "These two lines are the same length",
+    "name": "Müller-Lyer illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "munkerwhite",
+    "html": "illusions/munkerwhite.html",
+    "title": "Every sphere is the same orange",
+    "name": "Munker-White illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "neckercube",
+    "html": "illusions/neckercube.html",
+    "title": "Which face is in front?",
+    "name": "Necker cube",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "neoncolor",
+    "html": "illusions/neoncolor.html",
+    "title": "There is no glowing disc here",
+    "name": "Neon colour spreading",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "neonladder",
+    "html": "illusions/neonladder.html",
+    "title": "The glow appears between the lines",
+    "name": "Neon ladder",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "orbitstorm",
+    "html": "illusions/orbitstorm.html",
+    "title": "Stare at the dot — the rings swirl",
+    "name": "Orbit storm",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "phantomrays",
+    "html": "illusions/phantomrays.html",
+    "title": "The rings create ghost rays",
+    "name": "Phantom rays",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "phasewaves",
+    "html": "illusions/phasewaves.html",
+    "title": "Two wave fields fight your eyes",
+    "name": "Phase waves",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "pinna",
+    "html": "illusions/pinna.html",
+    "title": "Lean in and out — the rings rotate",
+    "name": "Pinna rotating illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "poggendorff",
+    "html": "illusions/poggendorff.html",
+    "title": "It is one straight line behind the bar",
+    "name": "Poggendorff illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "polarchecker",
+    "html": "illusions/polarchecker.html",
+    "title": "Straight rings feel twisted",
+    "name": "Polar checker",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "ponzo",
+    "html": "illusions/ponzo.html",
+    "title": "These two yellow bars are equal",
+    "name": "Ponzo illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "pulsechecker",
+    "html": "illusions/pulsechecker.html",
+    "title": "The squares never change size",
+    "name": "Pulse checker",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "rayafterimage",
+    "html": "illusions/rayafterimage.html",
+    "title": "Stare, then blink at a wall",
+    "name": "Ray afterimage",
+    "dur": 10,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "rotatingsnakes2",
+    "html": "illusions/rotatingsnakes2.html",
+    "title": "This image is completely still",
+    "name": "Rotating snakes (rosette)",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "rubinvase",
+    "html": "illusions/rubinvase.html",
+    "title": "A vase — or two faces?",
+    "name": "Rubin vase",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "sander",
+    "html": "illusions/sander.html",
+    "title": "Both blue diagonals are equal",
+    "name": "Sander parallelogram",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "scintcircle",
+    "html": "illusions/scintcircle.html",
+    "title": "Count the black sparks",
+    "name": "Scintillating circle grid",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "shepardtables",
+    "html": "illusions/shepardtables.html",
+    "title": "These two tabletops are identical",
+    "name": "Shepard's tabletops",
+    "dur": 9,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "simultcontrast",
+    "html": "illusions/simultcontrast.html",
+    "title": "Both grey squares are identical",
+    "name": "Simultaneous contrast",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "splitspiral",
+    "html": "illusions/splitspiral.html",
+    "title": "Two spirals share one flat image",
+    "name": "Split spiral",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "steppingfeet",
+    "html": "illusions/steppingfeet.html",
+    "title": "Both bars glide at the same speed",
+    "name": "Stepping-feet illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "stripebeat",
+    "html": "illusions/stripebeat.html",
+    "title": "Only the brightness is pulsing",
+    "name": "Stripe beat",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "tiltcloud",
+    "html": "illusions/tiltcloud.html",
+    "title": "Every dash is the same length",
+    "name": "Tilt cloud",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "tiltframe",
+    "html": "illusions/tiltframe.html",
+    "title": "The white rod is perfectly vertical",
+    "name": "Rod-and-frame illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "troxler",
+    "html": "illusions/troxler.html",
+    "title": "Stare at the dot — the colours fade",
+    "name": "Troxler fading",
+    "dur": 10,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "verticalhorizontal",
+    "html": "illusions/verticalhorizontal.html",
+    "title": "Both lines are the same length",
+    "name": "Vertical–horizontal illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "wavegrid",
+    "html": "illusions/wavegrid.html",
+    "title": "The grid is trying to stay straight",
+    "name": "Liquid wave grid",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "whiteillusion",
+    "html": "illusions/whiteillusion.html",
+    "title": "These two grey bars are the same grey",
+    "name": "White's illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": true
+  },
+  {
+    "id": "wundt",
+    "html": "illusions/wundt.html",
+    "title": "These two red lines are perfectly straight",
+    "name": "Wundt illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "zippermotion",
+    "html": "illusions/zippermotion.html",
+    "title": "The zipper crawls without moving",
+    "name": "Zipper motion",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  },
+  {
+    "id": "zollner",
+    "html": "illusions/zollner.html",
+    "title": "These long lines are all parallel",
+    "name": "Zöllner illusion",
+    "dur": 8,
+    "fps": 30,
+    "light": false
+  }
+]

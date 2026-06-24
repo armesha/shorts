@@ -1,12 +1,13 @@
 // Assemble the final Christian deck from the workflow agents' selection.
 // Reads corpora/christian/selection.json (ids + theme) + cand-pool.json (exact passages),
-// dedups (by id + verse-overlap), tops up to CAP from remaining high-yield books, sorts canonically
-// → data/christian/cards.json (+ index.json). Card = {type, text, ref, theme, book, testament}.
+// dedups (by id + verse-overlap), applies a family-safe devotional filter, tops up to CAP
+// from remaining high-yield books, sorts canonically → data/christian/cards.json (+ index.json).
+// Card = {type, text, ref, theme, book, testament}.
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 
 const REPO = "/home/davtian/Documents/shorts";
 const OUT = `${REPO}/corpora/christian`;
-const CAP = 1000;
+const CAP = Number(process.env.CHRISTIAN_PACK_CAP || 1500);
 
 const pool = JSON.parse(readFileSync(`${OUT}/cand-pool.json`, "utf8")); // id -> passage
 const picks = JSON.parse(readFileSync(`${OUT}/selection.json`, "utf8")); // [{id, theme}]
@@ -15,12 +16,40 @@ const bookIdx = new Map(books.map((b, i) => [b, i]));
 
 const overlaps = (a, b) => a.book === b.book && a.ch === b.ch && a.vStart <= b.vEnd && b.vStart <= a.vEnd;
 
+const BLOCKED_PASSAGE =
+  /(war|battle|kill|slay|smite|wrath|vengeance|hell|damnation|enemy|enemies|blood|sword|whore|harlot|abomination|beast|dragon|plague|famine|pestilence|curse|cursed|destruction|burn(?:ed|ing)?|fire and brimstone|torment|captiv|oppress|bondage)/i;
+
+function isFamilySafePassage(c) {
+  return !BLOCKED_PASSAGE.test(`${c.text || ""} ${c.ref || ""} ${c.book || ""}`);
+}
+
+function devotionalTheme(c) {
+  const text = `${c.text || ""} ${c.ref || ""}`.toLowerCase();
+  if (/love|charity/.test(text)) return "love";
+  if (/faith|believ/.test(text)) return "faith";
+  if (/hope/.test(text)) return "hope";
+  if (/wisdom|understanding|knowledge/.test(text)) return "wisdom";
+  if (/trust|refuge/.test(text)) return "trust";
+  if (/pray|prayer|supplication/.test(text)) return "prayer";
+  if (/mercy|compassion/.test(text)) return "mercy";
+  if (/comfort|consol/.test(text)) return "comfort";
+  if (/thank|praise|bless/.test(text)) return "praise";
+  if (/guide|path|way/.test(text)) return "guidance";
+  if (/strength|strong|courage/.test(text)) return "strength";
+  if (/peace/.test(text)) return "peace";
+  if (/joy|rejoice/.test(text)) return "joy";
+  if (/forgiv/.test(text)) return "forgiveness";
+  if (/grace|saved|salvation/.test(text)) return "grace";
+  return "devotional";
+}
+
 // 1) map the agents' picks to exact passages (skip unknown ids / dupes)
 const byId = new Map();
 let unknown = 0;
 for (const p of picks) {
   const c = pool[p.id];
   if (!c) { unknown++; continue; }
+  if (!isFamilySafePassage(c)) continue;
   if (byId.has(p.id)) continue;
   byId.set(p.id, { ...c, theme: String(p.theme || "").toLowerCase().slice(0, 20) });
 }
@@ -40,6 +69,7 @@ const PRIORITY = [
   "Psalms", "Proverbs", "John", "Matthew", "Luke", "Romans", "Isaiah", "Acts", "Mark",
   "1 Corinthians", "Ephesians", "Hebrews", "Philippians", "2 Corinthians", "Revelation",
   "James", "1 Peter", "Galatians", "Ecclesiastes", "Colossians", "1 John", "Lamentations", "Daniel",
+  "Zechariah", "1 Timothy", "Titus", "Hosea", "Amos", "Jonah", "Malachi", "2 Timothy",
 ];
 if (cards.length < CAP) {
   const usedIds = new Set(cards.map((c) => c.id));
@@ -47,6 +77,7 @@ if (cards.length < CAP) {
   for (const c of Object.values(pool)) {
     if (usedIds.has(c.id)) continue;
     if (!PRIORITY.includes(c.sec)) continue;
+    if (!isFamilySafePassage(c)) continue;
     if (placed.some((x) => overlaps(x, c))) continue;
     (rem[c.sec] ??= []).push(c);
   }
@@ -59,7 +90,7 @@ if (cards.length < CAP) {
       const c = arr.shift();
       if (placed.some((x) => overlaps(x, c))) continue;
       placed.push(c);
-      cards.push({ ...c, theme: "" }); // top-ups have no agent theme
+      cards.push({ ...c, theme: devotionalTheme(c) }); // deterministic top-up theme
       added = true;
       if (cards.length >= CAP) break;
     }

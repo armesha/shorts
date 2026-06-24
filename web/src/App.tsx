@@ -5,6 +5,7 @@ import Studio from "./pages/Studio";
 import Gallery from "./pages/Gallery";
 import Cards from "./pages/Cards";
 import Packs from "./pages/Packs";
+import QueuePage from "./pages/Queue";
 import Accounts from "./pages/Accounts";
 import AccountDetail from "./pages/AccountDetail";
 import History from "./pages/History";
@@ -41,6 +42,7 @@ function Gate() {
         <Route path="/gallery" element={user.role === "admin" ? <Gallery /> : <Navigate to="/" replace />} />
         <Route path="/cards" element={<Cards />} />
         <Route path="/packs" element={<Packs />} />
+        <Route path="/queue" element={<QueuePage />} />
         <Route path="/notifications" element={user.role === "admin" ? <Notifications /> : <Navigate to="/" replace />} />
         <Route path="/accounts" element={<Navigate to={user.role === "admin" ? "/channels" : "/"} replace />} />
         <Route path="/accounts/:id" element={<AccountDetail />} />

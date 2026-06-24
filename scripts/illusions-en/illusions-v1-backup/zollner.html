@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>illusions-en host</title>
+<style>html,body{margin:0;padding:0;background:#000}#scene{display:block}</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  // ============================================================================
+  //  SHARED HOST  —  DO NOT EDIT below except the two clearly marked regions:
+  //    (1) the SPEC block        (2) the drawIllusion() function
+  //  Everything else (RNG, title, vignette, loop, PNG export) is identical for
+  //  every illusion so titles / safe-zone / seamless-loop behave the same.
+  // ============================================================================
+  const CW = 1080, CH = 1920, TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: false });
+
+  // deterministic RNG (so a clip renders byte-identically every time)
+  function mulberry32(seed) {
+    let s = seed >>> 0;
+    return function () {
+      let t = s += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (x, lo, hi) => x < lo ? lo : x > hi ? hi : x;
+  const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+  // Safe drawing box: title lives above y=380, bottom 400px kept clear (Shorts UI).
+  const SAFE = { x0: 70, y0: 380, x1: 1010, y1: 1520 };
+  const H = { TAU, rng: mulberry32, lerp, clamp, smooth, cx: 540, cy: 960, safe: SAFE,
+              maxR: 460 /* suggested max radius for a centred figure */ };
+
+  // ====================== (1) SPEC — replace these values =====================
+  let SPEC = {
+    key: 'zollner',
+    name: 'Zöllner illusion',
+    title: 'These long lines are all parallel',
+    dur: 8,            // seconds
+    fps: 30,
+    light: false,      // true => skip the dark vignette (for grey/white-background illusions)
+  };
+  // ===========================================================================
+
+  // ============ (2) drawIllusion — replace this whole function body ==========
+  // Contract:
+  //   p       progress 0..1 over the clip (build renders frame f at p=f/FRAMES,
+  //           so p=0 and p=1 are the SAME instant -> a LOOPING illusion must make
+  //           draw(0) == draw(1). Non-looping sequences (e.g. afterimage) ignore this.)
+  //   CW,CH   1080 x 1920
+  //   H       helpers: H.rng(seed)->()=>0..1, H.lerp, H.clamp, H.smooth, H.TAU,
+  //           H.cx, H.cy (frame centre of the safe area), H.safe {x0,y0,x1,y1}, H.maxR
+  //   The host fills #000, then calls this, then draws vignette (unless light) + title.
+  //   Keep important content inside H.safe. Use H.rng only (no Math.random) for determinism.
+  function drawIllusion(ctx, p, CW, CH, H) {
+    // --- Zöllner illusion -----------------------------------------------------
+    // A family of long, equally spaced, PARALLEL straight lines crosses the frame
+    // as gentle diagonals (all tilted by the SAME small angle phi off vertical, so
+    // they are genuinely parallel). Each long line is studded with short HATCH
+    // marks; the hatch direction ALTERNATES from one long line to the next
+    // (line 0 hatched at +theta to the line, line 1 at -theta, line 2 at +theta…).
+    // Because the inducing hatches meet neighbouring long lines at opposite oblique
+    // angles, the eye mis-judges the long lines' orientation and they appear to
+    // splay — tilting toward / away from each other — even though they are exactly
+    // parallel.  The long lines never change orientation; the whole set merely
+    // DRIFTS sideways (perpendicular to the lines) by exactly one line-spacing over
+    // the clip, so a line wrapping off one edge is replaced by an identical one on
+    // the other -> draw(0) === draw(1), a seamless gentle scroll.
+    const S = H.safe;
+    const TAU = H.TAU;
+    const cx = (S.x0 + S.x1) / 2;        // 540
+    const cy = (S.y0 + S.y1) / 2;        // 950 — centre of the safe box
+
+    // Black field inside the safe box (host already filled #000, but be explicit so
+    // the figure region is unambiguous and the clip below is tidy).
+    ctx.save();
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(S.x0, S.y0, S.x1 - S.x0, S.y1 - S.y0);
+
+    // Clip strictly to the safe box so the long lines never bleed into the title
+    // row above or the bottom 400px UI strip below.
+    ctx.beginPath();
+    ctx.rect(S.x0, S.y0, S.x1 - S.x0, S.y1 - S.y0);
+    ctx.clip();
+
+    // ---- geometry of the parallel family ------------------------------------
+    // phi = tilt of every long line, measured off the VERTICAL. ~10 degrees gives
+    // the classic "diagonal stripes" look while staying steep enough that the
+    // hatch-induced tilt reads strongly.
+    const phi = 10 * Math.PI / 180;
+    // Unit DIRECTION vector along a long line (down-and-slightly-right).
+    const dirX = Math.sin(phi), dirY = Math.cos(phi);
+    // Unit NORMAL vector (perpendicular to the lines, pointing right-ish). The
+    // family is indexed by signed distance n*spacing along this normal from centre.
+    const nrmX = Math.cos(phi), nrmY = -Math.sin(phi);
+
+    const spacing = 132;                 // perpendicular gap between adjacent lines
+    // Half-length to extend each line so it always overfills the safe box after
+    // clipping. Safe box diagonal ~ hypot(940,1140)/... -> 800 each way is ample.
+    const halfLen = 800;
+
+    // How many lines we need on each side of centre to cover the box even when the
+    // whole family is shifted by up to one spacing. Box half-width across the
+    // normal direction is at most hypot(470,570) ~= 738 -> +/- ~6 lines + margin.
+    const nSide = Math.ceil(738 / spacing) + 2;   // 8 lines each side
+
+    // ---- seamless drift ------------------------------------------------------
+    // Shift the whole family along the normal by exactly ONE spacing over p=0..1.
+    // KEY for a perfect loop: a line's hatch PARITY is derived from the SLOT it
+    // physically occupies (round(position/spacing)), NOT from the loop counter. So
+    // when the drift pushes line k from slot s to slot s+1 it adopts slot s+1's
+    // parity — exactly the parity that slot held at drift=0. Position set + parity
+    // pattern are therefore identical at p=0 and p=1 -> draw(0) === draw(1).
+    const drift = p * spacing;
+
+    // Hatch parameters. Longer, denser hatches at ~45 degrees to the long line are
+    // the strong inducers: they dominate the local orientation cue, so the eye
+    // mis-reads the long line as tilted toward the hatch lean. Adjacent long lines
+    // lean their hatches OPPOSITE ways -> the parallels seem to splay apart/together.
+    const hatchLen = 42;                 // length of each short cross mark
+    const hatchPitch = 46;               // spacing of hatches ALONG a long line (dense)
+    const theta = 45 * Math.PI / 180;    // hatch angle relative to the long line
+
+    ctx.lineCap = 'butt';
+    ctx.strokeStyle = '#ffffff';
+
+    // Draw a generous index window; lines fully outside the clip are cheaply culled
+    // by the canvas clip. The window is fixed in count, so the number of visible
+    // lines stays constant across the loop (no pop-in/pop-out).
+    for (let i = -nSide; i <= nSide; i++) {
+      // Continuous signed perpendicular offset of THIS line from centre.
+      const offset = i * spacing + drift;
+      const px = cx + nrmX * offset;
+      const py = cy + nrmY * offset;
+
+      // Endpoints of the long line (centre point +/- halfLen along the direction).
+      const ax = px - dirX * halfLen, ay = py - dirY * halfLen;
+      const bx = px + dirX * halfLen, by = py + dirY * halfLen;
+
+      // ---- 1) the long parallel line ----------------------------------------
+      // Kept moderately thin so the hatch marks (not the bare line) carry the
+      // orientation signal — that maximises the Zöllner tilt.
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(bx, by);
+      ctx.stroke();
+
+      // ---- 2) the alternating hatch marks -----------------------------------
+      // Parity from the SLOT the line currently sits in (round(offset/spacing)),
+      // so it stays flicker-free as the family drifts AND makes the loop seamless
+      // (a line entering a slot inherits that slot's fixed parity).
+      const slot = Math.round(offset / spacing);
+      const sign = (slot & 1) ? -1 : 1;
+      // Hatch direction = long-line direction rotated by +/- theta. Rotate the
+      // unit direction (dirX,dirY) by sign*theta.
+      const ct = Math.cos(sign * theta), st = Math.sin(sign * theta);
+      const hx = dirX * ct - dirY * st;  // rotated direction x
+      const hy = dirX * st + dirY * ct;  // rotated direction y
+
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      // Place hatch centres at regular intervals along the line, from -halfLen to
+      // +halfLen. The hatch phase is FIXED per line (does not scroll along the
+      // line) so the only motion is the perpendicular family drift, keeping the
+      // loop trivially seamless.
+      for (let t = -halfLen; t <= halfLen; t += hatchPitch) {
+        const mx = px + dirX * t;        // hatch centre on the long line
+        const my = py + dirY * t;
+        // Short mark centred on (mx,my) along the rotated hatch direction.
+        ctx.moveTo(mx - hx * hatchLen / 2, my - hy * hatchLen / 2);
+        ctx.lineTo(mx + hx * hatchLen / 2, my + hy * hatchLen / 2);
+      }
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  }
+  // ===========================================================================
+
+  // ---------------- title (baked into the canvas, with a dark pill) ----------
+  let TITLE_LINES = [], TITLE_PX = 60;
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { TITLE_LINES = []; return; }
+    for (let px = 72; px >= 40; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = []; let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_PX = px; return; }
+      if (px === 40) { TITLE_LINES = lines.slice(0, 3); TITLE_PX = px; }
+    }
+  }
+  function drawTitle() {
+    if (!TITLE_LINES.length) return;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_PX);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const lh = TITLE_PX * 1.2, n = TITLE_LINES.length;
+    const startY = 210, padX = 42, padY = 28;
+    let maxW = 0; for (const l of TITLE_LINES) maxW = Math.max(maxW, ctx.measureText(l).width);
+    const rx = CW / 2 - maxW / 2 - padX, rw = maxW + padX * 2;
+    const ry = startY - lh / 2 - padY, rh = (n - 1) * lh + lh + padY * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 28); ctx.fill();
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    let y = startY; for (const l of TITLE_LINES) { ctx.fillText(l, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.2, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(0.64, 'rgba(0,0,0,0.12)');
+    g.addColorStop(1, 'rgba(0,0,0,0.66)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  }
+
+  window.setup = function (overrides) {
+    if (overrides && typeof overrides === 'object') SPEC = { ...SPEC, ...overrides };
+    layoutTitle(SPEC.title);
+    return { key: SPEC.key, name: SPEC.name, dur: SPEC.dur, fps: SPEC.fps, lines: TITLE_LINES.length, px: TITLE_PX };
+  };
+  window.getSpec = function () { return { ...SPEC }; };
+
+  window.renderFrame = function (progress) {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    drawTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  layoutTitle(SPEC.title);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

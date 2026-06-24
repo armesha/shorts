@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>illusions host v2 (variants + localizable title overlay)</title>
+<style>html,body{margin:0;padding:0;background:#000}#scene{display:block}</style>
+</head>
+<body>
+<canvas id="scene" width="1080" height="1920"></canvas>
+<script>
+(() => {
+  'use strict';
+  // ============================================================================
+  //  SHARED HOST v2 — variant-aware + localizable title overlay.
+  //  Edit ONLY the two marked regions: (1) SPEC block, (2) drawIllusion().
+  //  New vs v1:
+  //   - H.v  = variant params {palette,dir,turns,speed,seed,density,angle} (from SPEC.variant)
+  //   - H.PALETTES / H.pal(t) / H.palStops()  = named colour schemes for variants
+  //   - window.renderTitle(text) -> TRANSPARENT png with ONLY the title (for ffmpeg overlay,
+  //     so one titleless geometry render is reused across all 5 languages)
+  //   - canvas is alpha:true; renderFrame() fills its own opaque background.
+  // ============================================================================
+  const CW = 1080, CH = 1920, TAU = Math.PI * 2;
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d', { alpha: true });
+
+  function mulberry32(seed) {
+    let s = (seed >>> 0) || 1;
+    return function () {
+      let t = s += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (x, lo, hi) => x < lo ? lo : x > hi ? hi : x;
+  const smooth = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+
+  // Named palettes: ordered RGB stops. H.pal(t) interpolates across them; H.palStops() returns raw stops.
+  const PALETTES = {
+    classic:  [[75,58,255],[255,35,112],[38,255,132],[44,150,255]], // v1 spectrum (default look)
+    spectrum: [[75,58,255],[255,35,112],[38,255,132],[44,150,255]],
+    aurora:   [[130,255,200],[120,180,255],[180,120,255],[255,140,220]],
+    fire:     [[255,210,90],[255,120,40],[255,60,60],[210,40,120]],
+    ice:      [[200,240,255],[120,190,255],[255,255,255],[90,150,230]],
+    neon:     [[80,255,140],[190,255,60],[40,230,180],[120,255,90]],
+    gold:     [[255,235,170],[255,190,80],[255,250,210],[210,150,50]],
+    sunset:   [[255,180,90],[255,90,120],[200,70,200],[120,80,220]],
+    emerald:  [[170,255,210],[60,220,150],[30,180,140],[120,255,180]],
+    magma:    [[255,230,120],[255,140,40],[230,40,40],[120,20,60]],
+    mono:     [[255,255,255],[210,210,210],[170,170,170],[235,235,235]],
+    candy:    [[255,160,210],[120,210,255],[255,225,130],[180,160,255]],
+  };
+  function palStops(name) { return PALETTES[name] || PALETTES.classic; }
+  function pal(t, name) {
+    const s = palStops(name || (V && V.palette) || 'classic');
+    t = clamp(t, 0, 1) * (s.length - 1);
+    const i = Math.min(s.length - 2, Math.floor(t)), f = t - i;
+    const a = s[i], b = s[i + 1];
+    return `rgb(${Math.round(lerp(a[0],b[0],f))} ${Math.round(lerp(a[1],b[1],f))} ${Math.round(lerp(a[2],b[2],f))})`;
+  }
+
+  // active variant (filled at setup)
+  let V = { palette: 'classic', dir: 1, turns: 1, speed: 1, seed: 1, density: 1, angle: 0 };
+
+  const SAFE = { x0: 70, y0: 380, x1: 1010, y1: 1520 };
+  const H = { TAU, rng: mulberry32, lerp, clamp, smooth, cx: 540, cy: 960, safe: SAFE, maxR: 460,
+              PALETTES, pal, palStops, get v() { return V; } };
+
+  // ====================== (1) SPEC — replace these values =====================
+  let SPEC = {
+    key: 'devilsfork',
+    name: 'Impossible trident',
+    title: 'How many prongs does it have?',
+    dur: 8,            // seconds
+    fps: 30,
+    light: false,      // true => skip the dark vignette (for grey/white-background illusions)
+  };
+  // ===========================================================================
+
+  // ============ (2) drawIllusion — replace this whole function body ==========
+  // Contract:
+  //   p       progress 0..1 over the clip (build renders frame f at p=f/FRAMES,
+  //           so p=0 and p=1 are the SAME instant -> a LOOPING illusion must make
+  //           draw(0) == draw(1). Non-looping sequences (e.g. afterimage) ignore this.)
+  //   CW,CH   1080 x 1920
+  //   H       helpers: H.rng(seed)->()=>0..1, H.lerp, H.clamp, H.smooth, H.TAU,
+  //           H.cx, H.cy (frame centre of the safe area), H.safe {x0,y0,x1,y1}, H.maxR
+  //   The host fills #000, then calls this, then draws vignette (unless light) + title.
+  //   Keep important content inside H.safe. Use H.rng only (no Math.random) for determinism.
+  function drawIllusion(ctx, p, CW, CH, H) {
+    const TAU = H.TAU;
+    // -------------------------------------------------------------------------
+    //  IMPOSSIBLE TRIDENT  (devil's fork / blivet / poiuyt)
+    //  Drawn as ONE FLAT LINE DRAWING (no shaded tubes, no fills, no specular
+    //  streaks) — every contour is the SAME uniform neon line, exactly like the
+    //  Necker cube. That single rule is what makes the figure impossible: if any
+    //  line were dimmer, or if a brightness step appeared anywhere, the eye would
+    //  instantly localise the 3->2 morph and the magic would be gone.
+    //
+    //  Topology (figure space, +x = right toward the flat block) — the classic
+    //  blivet wiring:
+    //    LEFT end = THREE round prongs separated by TWO black gaps:
+    //      TOP prong    [yT  .. yTi]   (outer-top  + its inner edge yTi)
+    //      gap1         [yTi .. yA]    (background black)
+    //      MIDDLE prong [yA  .. yB]    (edges yA, yB)
+    //      gap2         [yB  .. yBi]   (background black)
+    //      BOTTOM prong [yBi .. yBt]   (its inner edge yBi + outer-bottom)
+    //    Each prong is closed at the left by its own SEMICIRCULAR cap -> ROUND
+    //    (round is implied ONLY by cap shape, never by fill/brightness).
+    //    RIGHT end = a flat block (SQUARE corners) with ONE central SLOT:
+    //      top bar [yT..yA]  |  SLOT [yA..yB] (open mouth)  |  bottom bar [yB..yBt].
+    //
+    //    THE TRICK: the MIDDLE prong's two edges, yA & yB, are the ONLY interior
+    //    lines that run UNBROKEN all the way to the block — and there they become
+    //    the SLOT WALLS. So the band [yA,yB] is a SOLID rod on the left (a finger
+    //    between two black gaps) and an EMPTY slot on the right (a notch between
+    //    two bars), bounded by the very same pair of lines: geometrically
+    //    impossible. Meanwhile the TOP & BOTTOM prongs' inner edges (yTi, yBi)
+    //    quietly VANISH in mid-figure (the famous "lines that go nowhere"), so
+    //    the eye never catches the two outer prongs fattening into full bars.
+    //    EVERY line is the same neon weight and there are NO fills -> no tonal
+    //    seam anywhere, so the 3->2 swap cannot be localised. 3 round prongs <->
+    //    2 flat prongs, irreconcilable.
+    //
+    //  Whole figure gently drifts over exactly ONE sine period (seamless loop:
+    //  draw(0)===draw(1)); the illusion itself is purely structural.
+    // -------------------------------------------------------------------------
+    const cx = H.cx;
+    const cy = (H.safe.y0 + H.safe.y1) / 2;            // vertical centre of safe band (~950)
+
+    // ---- gentle seamless horizontal drift ------------------------------------
+    // One full sine period over p: position starts & ends identical with matching
+    // velocity, so draw(0)===draw(1). A slow lateral sway (the figure itself is
+    // static -> the illusion is structural, the drift just adds life on black).
+    const driftX = Math.sin(p * TAU) * 24;             // +/- 24px lateral sway
+    const driftY = (Math.cos(p * TAU) - 1) * 5;        // tiny vertical bob, 0 at p=0,1
+
+    // ---- figure dimensions (local space, origin at figure centre) ------------
+    const halfLen = 366;                               // half overall length (x)
+    const xL = -halfLen;                               // left edge (round caps live here)
+    const xR =  halfLen;                               // right edge (flat block face)
+
+    // THREE round prongs + TWO black gaps across the full height.
+    //   3*ph + 2*gp = 2*halfH ;  the MIDDLE prong (= the slot band) is centred.
+    const halfH = 162;                                 // half overall height
+    const yT  = -halfH;                                // outer TOP edge   (full length)
+    const yBt =  halfH;                                // outer BOTTOM edge (full length)
+    const gp  = 40;                                    // black gap between adjacent prongs
+    const ph  = (2 * halfH - 2 * gp) / 3;              // each round prong height (~108)
+    const ar  = ph / 2;                                // semicircle cap radius (= half a prong)
+    const capCx = xL + ar;                             // x of every left cap centre
+    // MIDDLE prong (= slot band), centred about 0:
+    const yA  = -ph / 2;                               // MIDDLE prong TOP edge  (= slot TOP wall)
+    const yB  =  ph / 2;                               // MIDDLE prong BOTTOM edge (= slot BOTTOM wall)
+    // TOP prong: its inner (lower) edge yTi sits one gap above yA.
+    const yTi = yA - gp;                               // TOP prong inner edge (this line VANISHES)
+    // BOTTOM prong: its inner (upper) edge yBi sits one gap below yB.
+    const yBi = yB + gp;                               // BOTTOM prong inner edge (this line VANISHES)
+    // (yT === yTi - ph and yBt === yBi + ph by construction)
+
+    // x where the two outer prongs' inner edges quietly VANISH (lines to nowhere).
+    // They reach well past the prong caps into open space, then simply stop —
+    // far enough that the top/bottom prongs read as real prongs, short enough
+    // that the eye can't pin where they "should" have met the block.
+    const deadEndX = 96;                               // ~3/4 of the way to the block
+
+    // prong vertical mid-lines (centres of the three left semicircular caps)
+    const ymTop = (yT + yTi) / 2;
+    const ymMid = 0;                                   // (yA + yB)/2
+    const ymBot = (yBi + yBt) / 2;
+
+    // ---- placement: figure space -> screen -----------------------------------
+    const SX = cx + driftX;
+    const SY = cy + driftY;
+    const px = (x) => SX + x;
+    const py = (y) => SY + y;
+
+    // ---- palette: ONE neon cyan-white line weight on black -------------------
+    //  CRITICAL for the illusion: EVERY contour line is the SAME weight & colour
+    //  (like a Necker cube). NO fills, NO gradients, NO highlight streaks -> there
+    //  is no brightness step anywhere, so the 3->2 morph cannot be localised.
+    //  Round vs flat is conveyed ONLY by cap shape: semicircle (left) vs square
+    //  corner (right). Two passes per line (soft glow halo + crisp bright core)
+    //  give a clean engineering-blueprint glow, identical for every edge.
+    const HALO = 'rgba(90,200,255,0.30)';      // soft glow pass colour
+    const CORE = 'rgba(220,246,255,0.98)';     // crisp bright core colour
+    const LW_HALO = 17;                        // glow pass width  (uniform)
+    const LW_CORE = 7;                         // core pass width  (uniform)
+
+    // ---- soft cool glow backing so the figure pops on black ------------------
+    //  A single CENTRED radial halo (symmetric -> introduces no directional/seam
+    //  cue); it merely lifts the line work off pure black.
+    ctx.save();
+    const halo = ctx.createRadialGradient(SX, SY, 60, SX, SY, 560);
+    halo.addColorStop(0, 'rgba(36,78,116,0.34)');
+    halo.addColorStop(0.62, 'rgba(18,44,72,0.16)');
+    halo.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = halo;
+    ctx.fillRect(SX - 560, SY - 320, 1120, 640);
+    ctx.restore();
+
+    // ===========================================================================
+    //  Collect every contour as a build-fn, then stroke them ALL twice (glow
+    //  pass + core pass) with identical settings. No path is filled, dimmed, or
+    //  broken -> a single coherent flat line drawing.
+    // ===========================================================================
+    const lines = [];
+    const add = (fn) => lines.push(fn);
+
+    // --- outer TOP edge: full length (top prong's top edge AND top bar's top
+    //     edge — one unbroken line the eye trusts). From the top cap to the block.
+    add(() => { ctx.moveTo(px(capCx), py(yT)); ctx.lineTo(px(xR), py(yT)); });
+    // --- outer BOTTOM edge: full length, same role.
+    add(() => { ctx.moveTo(px(capCx), py(yBt)); ctx.lineTo(px(xR), py(yBt)); });
+
+    // --- the MIDDLE prong's two edges yA, yB: the ONLY interior lines that run
+    //     CONTINUOUS & UNBROKEN from the left cap straight to the slot mouth at
+    //     xR. On the LEFT they bound the solid middle rod; on the RIGHT they are
+    //     the two SLOT WALLS. Same equal-weight line, never broken -> the band
+    //     [yA,yB] is at once a solid prong and an empty slot: the impossibility.
+    add(() => { ctx.moveTo(px(capCx), py(yA)); ctx.lineTo(px(xR), py(yA)); });  // slot TOP wall
+    add(() => { ctx.moveTo(px(capCx), py(yB)); ctx.lineTo(px(xR), py(yB)); });  // slot BOTTOM wall
+
+    // --- the TWO "lines that go nowhere": the TOP & BOTTOM prongs' inner edges
+    //     (yTi, yBi). They start at their prong caps and quietly VANISH at
+    //     deadEndX — SAME neon weight as every other line (that is what hides the
+    //     trick). To their right the top/bottom prongs silently become full bars.
+    add(() => { ctx.moveTo(px(capCx), py(yTi)); ctx.lineTo(px(deadEndX), py(yTi)); });
+    add(() => { ctx.moveTo(px(capCx), py(yBi)); ctx.lineTo(px(deadEndX), py(yBi)); });
+
+    // --- RIGHT block face: SQUARE corners (flat). Only the TOP bar [yT,yA] and
+    //     the BOTTOM bar [yB,yBt] reach the face; the MIDDLE band is the OPEN
+    //     slot mouth -> deliberately nothing across [yA,yB]. Two short verticals.
+    add(() => { ctx.moveTo(px(xR), py(yT)); ctx.lineTo(px(xR), py(yA)); });     // top bar end
+    add(() => { ctx.moveTo(px(xR), py(yB)); ctx.lineTo(px(xR), py(yBt)); });    // bottom bar end
+
+    // --- LEFT semicircular caps for all THREE prongs (round implied by shape).
+    add(() => { ctx.arc(px(capCx), py(ymTop), ar, Math.PI / 2, -Math.PI / 2, false); });
+    add(() => { ctx.arc(px(capCx), py(ymMid), ar, Math.PI / 2, -Math.PI / 2, false); });
+    add(() => { ctx.arc(px(capCx), py(ymBot), ar, Math.PI / 2, -Math.PI / 2, false); });
+
+    ctx.save();
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    // pass 1: soft glow halo (wide, blurred) — identical for every line.
+    ctx.shadowColor = 'rgba(70,180,255,0.9)';
+    ctx.shadowBlur = 24;
+    ctx.strokeStyle = HALO;
+    ctx.lineWidth = LW_HALO;
+    for (const fn of lines) { ctx.beginPath(); fn(); ctx.stroke(); }
+    // pass 2: crisp bright core — identical for every line.
+    ctx.shadowColor = 'rgba(150,220,255,0.95)';
+    ctx.shadowBlur = 11;
+    ctx.strokeStyle = CORE;
+    ctx.lineWidth = LW_CORE;
+    for (const fn of lines) { ctx.beginPath(); fn(); ctx.stroke(); }
+    ctx.restore();
+
+    void H.rng;
+  }
+  // ===========================================================================
+
+  // ---------------- title (identical layout to v1; drawn as overlay or inline) ----------
+  let TITLE_LINES = [], TITLE_PX = 60, TITLE_TEXT = '';
+  const TITLE_FONT = (px) => `800 ${px}px "DejaVu Sans","Liberation Sans",Arial,sans-serif`;
+  const TITLE_MAXW = 920;
+  function layoutTitle(text) {
+    TITLE_TEXT = String(text || '');
+    const words = TITLE_TEXT.trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { TITLE_LINES = []; return; }
+    for (let px = 72; px >= 40; px -= 2) {
+      ctx.font = TITLE_FONT(px);
+      const lines = []; let cur = '';
+      for (const w of words) {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width <= TITLE_MAXW || !cur) cur = test;
+        else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      const tooWide = lines.some((l) => ctx.measureText(l).width > TITLE_MAXW);
+      if (lines.length <= 3 && !tooWide) { TITLE_LINES = lines; TITLE_PX = px; return; }
+      if (px === 40) { TITLE_LINES = lines.slice(0, 3); TITLE_PX = px; }
+    }
+  }
+  function paintTitle() {
+    if (!TITLE_LINES.length) return;
+    ctx.save();
+    ctx.font = TITLE_FONT(TITLE_PX);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const lh = TITLE_PX * 1.2, n = TITLE_LINES.length;
+    const startY = 210, padX = 42, padY = 28;
+    let maxW = 0; for (const l of TITLE_LINES) maxW = Math.max(maxW, ctx.measureText(l).width);
+    const rx = CW / 2 - maxW / 2 - padX, rw = maxW + padX * 2;
+    const ry = startY - lh / 2 - padY, rh = (n - 1) * lh + lh + padY * 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 28); ctx.fill();
+    ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 16;
+    ctx.fillStyle = 'rgba(255,255,255,0.98)';
+    let y = startY; for (const l of TITLE_LINES) { ctx.fillText(l, CW / 2, y); y += lh; }
+    ctx.restore();
+  }
+  function drawVignette() {
+    const g = ctx.createRadialGradient(CW / 2, CH * 0.52, CW * 0.2, CW / 2, CH * 0.52, CH * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.64, 'rgba(0,0,0,0.12)'); g.addColorStop(1, 'rgba(0,0,0,0.66)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  }
+
+  window.setup = function (overrides) {
+    if (overrides && typeof overrides === 'object') {
+      const { variant, ...rest } = overrides;
+      SPEC = { ...SPEC, ...rest };
+      if (variant && typeof variant === 'object') SPEC.variant = variant;
+    }
+    V = { palette: 'classic', dir: 1, turns: 1, speed: 1, seed: 1, density: 1, angle: 0, ...(SPEC.variant || {}) };
+    layoutTitle(SPEC.title);
+    return { key: SPEC.key, name: SPEC.name, dur: SPEC.dur, fps: SPEC.fps, light: !!SPEC.light, variant: V, lines: TITLE_LINES.length, px: TITLE_PX };
+  };
+  window.getSpec = function () { return { ...SPEC, v: { ...V } }; };
+
+  // Full frame (background + illusion + vignette + INLINE title). Used for standalone preview.
+  window.renderFrame = function (progress) {
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    paintTitle();
+    return canvas.toDataURL('image/png');
+  };
+  // Geometry only, NO title (opaque). Rendered ONCE; localized titles overlaid later.
+  window.renderBase = function (progress) {
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, CW, CH);
+    drawIllusion(ctx, progress, CW, CH, H);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    if (!SPEC.light) drawVignette();
+    return canvas.toDataURL('image/png');
+  };
+  // TRANSPARENT png with ONLY the title (pill + text), for ffmpeg overlay onto a titleless clip.
+  window.renderTitle = function (text) {
+    layoutTitle(text);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.clearRect(0, 0, CW, CH);
+    paintTitle();
+    return canvas.toDataURL('image/png');
+  };
+
+  layoutTitle(SPEC.title);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

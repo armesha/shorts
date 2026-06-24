@@ -26,6 +26,7 @@ export const DECK_GLOSS_RU: Record<string, string> = {
   fr: "Французские анекдоты",
   en: "Английские анекдоты",
   "tips-de": "Немецкие лайфхаки",
+  "tips-es": "Испанские лайфхаки",
   psych: "Психология",
   islamic: "Ислам · арабский",
   christian: "Библия · англ.",
@@ -41,6 +42,11 @@ export const DECK_GLOSS_RU: Record<string, string> = {
   "animal-superheroes-en": "ЗвероГерои · видео · англ.",
   "illusions-3d": "Иллюзия вращения · видео",
   "illusions-3d-de": "Überliste dein Gehirn · видео (DE)",
+  "illusions-en": "Оптические иллюзии · видео · англ.",
+  "illusions-de": "Оптические иллюзии · видео · нем.",
+  "illusions-it": "Оптические иллюзии · видео · итал.",
+  "illusions-es": "Оптические иллюзии · видео · исп.",
+  "illusions-ru": "Оптические иллюзии · видео",
   "memes-en": "Мемы · англ.",
   "memes-de": "Мемы · нем.",
   "memes-fr": "Мемы · фр.",
@@ -53,8 +59,8 @@ export const deckLabel = (id: string, name: string): string =>
 
 /** Content language of each built-in deck (deck id → 2-letter lang). Custom packs carry their own lang. */
 export const DECK_LANG: Record<string, string> = {
-  ru: "ru", de: "de", it: "it", fr: "fr", en: "en",
-  tips: "ru", "tips-de": "de", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "visual-riddles-de": "de", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de",
+  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", choose: "ru",
+  tips: "ru", "tips-de": "de", "tips-es": "es", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "visual-riddles-de": "de", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it",
 };
 
@@ -81,7 +87,9 @@ export const BUILTIN_DECKS: { id: string; label: string }[] = [
   { id: "fr", label: "Французский" },
   { id: "en", label: "Английский" },
   { id: "tips", label: "Народные лайфхаки" },
+  { id: "choose", label: "Что выберешь? (RU)" },
   { id: "tips-de", label: "Немецкие лайфхаки" },
+  { id: "tips-es", label: "Trucos utiles (ES)" },
   { id: "psych", label: "Психология (DE)" },
   { id: "islamic", label: "Ислам · арабский (Коран и хадисы)" },
   { id: "christian", label: "Христианство · Библия (англ., KJV)" },
@@ -97,6 +105,11 @@ export const BUILTIN_DECKS: { id: string; label: string }[] = [
   { id: "animal-superheroes-en", label: "Animal Heroes (видео, EN)" },
   { id: "illusions-3d", label: "Обмани свой мозг (видео, RU)" },
   { id: "illusions-3d-de", label: "Überliste dein Gehirn (видео, DE)" },
+  { id: "illusions-en", label: "Optical Illusions (видео, EN)" },
+  { id: "illusions-de", label: "Optische Täuschungen (видео, DE)" },
+  { id: "illusions-it", label: "Illusioni ottiche (видео, IT)" },
+  { id: "illusions-es", label: "Ilusiones ópticas (видео, ES)" },
+  { id: "illusions-ru", label: "Оптические иллюзии (видео, RU)" },
   { id: "memes-ru", label: "Мемы (RU)" },
   { id: "memes-en", label: "Мемы (EN)" },
   { id: "memes-de", label: "Мемы (DE)" },

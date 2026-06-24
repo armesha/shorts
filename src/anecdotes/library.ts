@@ -84,6 +84,16 @@ function titledItems(deckId: string): PackItem[] {
       const cap = (c.caption ?? "").trim();
       return { id: i, pack: 1, text: JSON.stringify(c), chars: cap.length, title: (cap.split(/\r?\n/)[0] || "").slice(0, 40) };
     });
+  } else if (getDeck(deckId).choose) {
+    // «Что выберешь?» deck: data/choose/cards.json holds {q, a:{...}, b:{...}}; whole card → JSON in `text`.
+    const file = resolve(deckDir(deckId), "cards.json");
+    const cards = existsSync(file)
+      ? (JSON.parse(readFileSync(file, "utf8")) as { q?: string }[])
+      : [];
+    items = cards.map((c, i) => {
+      const q = (c.q ?? "").trim();
+      return { id: i, pack: 1, text: JSON.stringify(c), chars: q.length, title: q };
+    });
   } else {
     const titled = resolve(deckDir(deckId), "titled.json");
     items = existsSync(titled) ? (JSON.parse(readFileSync(titled, "utf8")) as PackItem[]) : [];
