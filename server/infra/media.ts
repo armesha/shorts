@@ -21,6 +21,8 @@ export async function buildStillVideoFiles<T>(opts: {
   outputDir: string; // base.outputDir (relative to cwd)
   audioPath: string | null;
   durationSec?: number;
+  audioVolume?: number;
+  fadeAudio?: boolean;
   motionOverlay?: MotionOverlay | null;
   render: (imgAbs: string) => Promise<T>;
 }): Promise<{ imgRel: string; vidRel: string; render: T }> {
@@ -34,6 +36,8 @@ export async function buildStillVideoFiles<T>(opts: {
     await assembleStillVideo(imgAbs, vidAbs, {
       durationSec: opts.durationSec ?? 6,
       audioPath: opts.audioPath,
+      audioVolume: opts.audioVolume,
+      fadeAudio: opts.fadeAudio,
       motionOverlay: opts.motionOverlay,
     });
     return r;

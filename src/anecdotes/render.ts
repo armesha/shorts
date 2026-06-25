@@ -162,7 +162,7 @@ export async function renderAnecdote(
   outPath: string,
   item?: PackItem,
 ): Promise<{ path: string; fontPx: number; bg: string }> {
-  if (getDeck(a.deck).quote) return renderQuote(a, outPath, item);
+  if (getDeck(a.deck).quote || getDeck(a.deck).quoteVideo) return renderQuote(a, outPath, item);
   if (getDeck(a.deck).islamic) return renderIslamic(a, outPath);
   if (getDeck(a.deck).christian) return renderChristian(a, outPath);
   if (getDeck(a.deck).psych) return renderPsych(a, outPath);

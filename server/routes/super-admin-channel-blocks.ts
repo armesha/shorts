@@ -90,8 +90,10 @@ const QUOTE_STATIC_DECK_BY_LANG: Record<string, string[]> = {
 };
 
 const QUOTE_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
-  // Real narrated quote-video decks should be added here when they exist.
-  // The legacy quotes-de-1/2/3 decks are static quote cards and are replaced by quotes-de.
+  ru: ["quote-video-ru"],
+  en: ["quote-video-en"],
+  es: ["quote-video-es"],
+  de: ["quote-video-de"],
 };
 
 const QUOTE_SOURCE_GROUPS: SourceGroupDef[] = [

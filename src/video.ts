@@ -236,6 +236,10 @@ export interface VideoOptions {
   durationSec?: number;
   /** Explicit audio path; undefined = auto-pick from assets/audio; null = force silent. */
   audioPath?: string | null;
+  /** Audio gain for explicit/auto audio. Defaults to 0.5 for background music. */
+  audioVolume?: number;
+  /** Fade audio out near the end. Defaults to true for background music. */
+  fadeAudio?: boolean;
   /** Optional animated sticker overlay, used by lifehack decks. */
   motionOverlay?: MotionOverlay | null;
 }
@@ -317,9 +321,14 @@ export async function assembleStillVideo(
   );
 
   if (audio) {
-    const fadeStart = Math.max(0, dur - 1);
-    // volume=0.5 → music sits quietly under the (silent) video; fade out at the end.
-    args.push("-af", `volume=0.5,afade=t=out:st=${fadeStart}:d=1,aresample=48000`);
+    const volume = Number.isFinite(opts.audioVolume) ? Math.max(0, Math.min(4, opts.audioVolume ?? 0.5)) : 0.5;
+    const filters = [`volume=${volume}`];
+    if (opts.fadeAudio !== false) {
+      const fadeStart = Math.max(0, dur - 1);
+      filters.push(`afade=t=out:st=${fadeStart}:d=1`);
+    }
+    filters.push("aresample=48000");
+    args.push("-af", filters.join(","));
   }
 
   args.push(

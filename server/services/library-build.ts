@@ -10,6 +10,7 @@ import type { PackItem } from "../../src/anecdotes/library.ts";
 import { renderAnecdote } from "../../src/anecdotes/render.ts";
 import { pickLifehackMotionOverlay, resolveAudio } from "../../src/video.ts";
 import { buildStillVideoFiles } from "../infra/media.ts";
+import { quoteVoiceover } from "./quote-voiceover.ts";
 
 export type BuildLibraryVideo = (input: {
   userId: number;
@@ -42,14 +43,19 @@ export function makeBuildLibraryVideo(deps: {
     )
       throw new Error("Этот пак вам недоступен");
     const title = input.title || pickGenericTitle(deck);
-    const { music, audioPath } = resolveAudio(input.music, deck);
+    const audio = deck.quoteVideo
+      ? await quoteVoiceover({ deck, title, text: input.text })
+      : { ...resolveAudio(input.music, deck), durationSec: undefined as number | undefined };
     const motionOverlay = deck.lifehack
       ? pickLifehackMotionOverlay(`${deck.id}|${input.profession ?? ""}|${title}|${input.text}`)
       : null;
     const { imgRel, vidRel, render: r } = await buildStillVideoFiles({
       prefix: "vid",
       outputDir,
-      audioPath,
+      audioPath: audio.audioPath,
+      durationSec: audio.durationSec,
+      audioVolume: deck.quoteVideo ? 1 : undefined,
+      fadeAudio: deck.quoteVideo ? false : undefined,
       motionOverlay,
       render: (imgAbs) =>
         renderAnecdote(
@@ -63,7 +69,7 @@ export function makeBuildLibraryVideo(deps: {
       title,
       text: input.text,
       bg: r.bg,
-      music,
+      music: audio.music,
       deck: deck.id,
       videoRel: vidRel,
       imageRel: imgRel,

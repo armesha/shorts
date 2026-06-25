@@ -19,7 +19,15 @@ function readJson<T>(path: string, sources: SourceRead[], fallback: T): T {
 
 function sourceHash(deck: Deck, sources: SourceRead[]): string {
   const h = createHash("sha256");
-  h.update(JSON.stringify({ id: deck.id, name: deck.name, lang: deckLang(deck.id), preFact: !!deck.preFact }));
+  h.update(
+    JSON.stringify({
+      id: deck.id,
+      name: deck.name,
+      lang: deckLang(deck.id),
+      preFact: !!deck.preFact,
+      quoteVideo: !!deck.quoteVideo,
+    }),
+  );
   for (const s of sources.sort((a, b) => a.path.localeCompare(b.path))) {
     h.update("\0");
     h.update(s.path);

@@ -44,6 +44,8 @@ export interface Deck {
   preFact?: boolean;
   /** Multilingual sourced quote cards rendered dynamically from titled.json (not pre-built MP4). */
   quote?: boolean;
+  /** Quote cards rendered dynamically but assembled with an on-demand TTS voiceover. */
+  quoteVideo?: boolean;
   /** Pre-built long compilation assembled from many short readable scenes into one 5-15 minute video. */
   longVideo?: boolean;
   /** When true, generation picks the first unused item by videos.json order instead of random. */
@@ -65,6 +67,31 @@ function quoteDeck(input: { id: string; name: string; lang: string; hashtags: st
     adminOnly: true,
     grantable: true,
     quote: true,
+    gallery: true,
+  };
+}
+
+function quoteVideoDeck(input: {
+  id: string;
+  name: string;
+  dir: string;
+  hashtags: string;
+  tags: string[];
+  titles: string[];
+}): Deck {
+  return {
+    id: input.id,
+    name: input.name,
+    dir: input.dir,
+    source: "Wikiquote source ledger; edge-tts voiceover generated on demand",
+    emoji: "🎙️",
+    hashtags: input.hashtags,
+    tags: input.tags,
+    genericTitles: input.titles,
+    adminOnly: true,
+    grantable: true,
+    quote: true,
+    quoteVideo: true,
     gallery: true,
   };
 }
@@ -456,6 +483,38 @@ export const DECKS: Deck[] = [
     grantable: true,
     preFact: true,
   },
+  quoteVideoDeck({
+    id: "quote-video-ru",
+    name: "Видео-цитаты RU",
+    dir: "data/quotes-ru",
+    hashtags: "#цитаты #мудрость #мотивация #история #shorts",
+    tags: ["цитаты", "мудрость", "мотивация", "история", "великие люди", "shorts"],
+    titles: ["Видео-цитата", "Мудрые слова", "Мысль дня"],
+  }),
+  quoteVideoDeck({
+    id: "quote-video-en",
+    name: "Video Quotes EN",
+    dir: "data/quotes-en",
+    hashtags: "#quotes #wisdom #motivation #history #shorts",
+    tags: ["quotes", "wisdom", "motivation", "history", "famous quotes", "shorts"],
+    titles: ["Video Quote", "Words of Wisdom", "Thought of the Day"],
+  }),
+  quoteVideoDeck({
+    id: "quote-video-es",
+    name: "Video citas ES",
+    dir: "data/quotes-es",
+    hashtags: "#citas #sabiduria #motivacion #historia #shorts",
+    tags: ["citas", "sabiduria", "motivacion", "historia", "frases celebres", "shorts"],
+    titles: ["Video cita", "Palabras de sabiduria", "Pensamiento del dia"],
+  }),
+  quoteVideoDeck({
+    id: "quote-video-de",
+    name: "Video-Zitate DE",
+    dir: "data/quote-video-de",
+    hashtags: "#zitate #weisheit #motivation #geschichte #shorts",
+    tags: ["zitate", "weisheit", "motivation", "geschichte", "berühmte zitate", "shorts"],
+    titles: ["Video-Zitat", "Worte der Weisheit", "Gedanke des Tages"],
+  }),
   {
     id: "quotes-de-1",
     name: "Politiker-Zitate (DE) 1",
@@ -831,7 +890,7 @@ export function isPackDeckId(id?: string | null): boolean {
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en", choose: "ru",
-  tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-ru": "ru", "quotes-ar": "ar", "quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
+  tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-ru": "ru", "quotes-ar": "ar", "quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it",
 };
 export function deckLang(id: string): string {
