@@ -1,10 +1,12 @@
 import type { FastifyInstance } from "fastify";
 import type { Account, Db, Video } from "../db.ts";
-import { SUPER_ADMIN_USERNAME } from "../auth.ts";
+import { SUPER_ADMIN_USERNAME, isSuperAdminUser } from "../auth.ts";
 import { DECKS, deckLang, isPackDeckId } from "../../src/anecdotes/decks.ts";
+import { libraryStats } from "../../src/anecdotes/library.ts";
 import { getPack } from "../../src/packs/store.ts";
 import { uid } from "../infra/auth-session.ts";
 import type { RouteDeps } from "./deps.ts";
+import { packCardKey } from "../services/pack-gen.ts";
 import {
   enqueue as genEnqueue,
   queuedRemainingForOwnerDecks,
@@ -53,7 +55,7 @@ const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
     it: ["it", "memes-it"],
     es: ["pack:chistes-es-public-domain", "pack:chistes-es-long"],
     fr: ["fr", "memes-fr"],
-    en: ["memes-en"],
+    en: ["en", "memes-en"],
   },
   lifehacks: {
     ru: ["tips"],
@@ -90,7 +92,7 @@ const BLOCKS: BlockDef[] = [
       "Мемы публиковать массово только после проверки прав на шаблоны/фото и отсутствия оскорбительного контекста.",
       "Локализации считаются одним тематическим семейством, но unsafe-языки или отсутствующие мем-паки не подставляются автоматически.",
     ],
-    accountIds: [7, 14, 15, 62, 64, 68, 70],
+    accountIds: [7, 14, 15, 62, 64, 68, 70, 79],
   },
   {
     id: "lifehacks",
@@ -183,23 +185,128 @@ function videosByDeck(videos: Video[]): Record<string, number> {
   return out;
 }
 
+type BlockContext = {
+  accounts: Account[];
+  queuedByAccount: Map<number, number>;
+  queuedByAccountDeck: Map<number, Record<string, number>>;
+  availableCache: Map<string, number>;
+  contentIndexReady: boolean;
+};
+
+function makeBlockContext(db: Db, accounts: Account[]): BlockContext {
+  const ids = accounts.map((account) => account.id);
+  const queuedByAccount = new Map<number, number>();
+  const queuedByAccountDeck = new Map<number, Record<string, number>>();
+  for (const id of ids) {
+    queuedByAccount.set(id, 0);
+    queuedByAccountDeck.set(id, {});
+  }
+  if (ids.length) {
+    const ph = ids.map(() => "?").join(",");
+    const rows = db.db
+      .prepare(`SELECT account_id, deck, COUNT(*) AS n FROM videos WHERE account_id IN (${ph}) GROUP BY account_id, deck`)
+      .all(...ids) as { account_id: number; deck: string; n: number }[];
+    for (const row of rows) {
+      const accountId = Number(row.account_id);
+      const count = Number(row.n) || 0;
+      queuedByAccount.set(accountId, (queuedByAccount.get(accountId) ?? 0) + count);
+      const byDeck = queuedByAccountDeck.get(accountId) ?? {};
+      byDeck[String(row.deck || "")] = count;
+      queuedByAccountDeck.set(accountId, byDeck);
+    }
+  }
+  let contentIndexReady = false;
+  try {
+    db.db.prepare("SELECT 1 FROM content_items LIMIT 1").get();
+    contentIndexReady = true;
+  } catch {
+    contentIndexReady = false;
+  }
+  return { accounts, queuedByAccount, queuedByAccountDeck, availableCache: new Map(), contentIndexReady };
+}
+
+function builtinDeckTotal(db: Db, deckId: string): number {
+  try {
+    const row = db.db.prepare("SELECT total FROM content_decks WHERE deck_id = ?").get(deckId) as { total?: number } | undefined;
+    if (row) return Number(row.total) || 0;
+  } catch {
+    /* fall back below */
+  }
+  return libraryStats(deckId, new Set()).total;
+}
+
+function builtinDeckUsed(db: Db, ownerId: number, deckId: string): number {
+  try {
+    const row = db.db
+      .prepare(
+        `SELECT COUNT(DISTINCT ci.item_key) AS n
+           FROM content_items ci
+           JOIN user_used_anecdotes used ON used.key = ci.item_key AND used.user_id = ?
+          WHERE ci.deck_id = ?`,
+      )
+      .get(ownerId, deckId) as { n?: number } | undefined;
+    return Number(row?.n) || 0;
+  } catch {
+    return libraryStats(deckId, db.usedAnecdoteKeys(ownerId)).used;
+  }
+}
+
+function availableForDecks(db: Db, deps: RouteDeps, ctx: BlockContext | undefined, ownerId: number, deckIds: string[]): number {
+  const clean = [...new Set(deckIds.filter(Boolean))];
+  if (!clean.length) return 0;
+  const key = `${ownerId}|${clean.slice().sort().join("\u0001")}`;
+  const cached = ctx?.availableCache.get(key);
+  if (cached != null) return cached;
+
+  let total = 0;
+  try {
+    const ownerIsSuperAdmin = isSuperAdminUser(db.getUserById(ownerId));
+    const infinite = db.hasFeature(ownerId, INFINITE_PACKS_FEATURE);
+    const usedKeys = infinite ? null : db.usedAnecdoteKeys(ownerId);
+    for (const deckId of clean) {
+      if (isPackDeckId(deckId)) {
+        const pack = getPack(deckId.slice(5), ownerId, ownerIsSuperAdmin);
+        if (!pack) continue;
+        if (infinite) {
+          total += pack.cards.length;
+        } else {
+          let used = 0;
+          for (const card of pack.cards) if (usedKeys?.has(packCardKey(card.values))) used++;
+          total += Math.max(0, pack.cards.length - used);
+        }
+      } else if (ctx?.contentIndexReady) {
+        const deckTotal = builtinDeckTotal(db, deckId);
+        total += infinite ? deckTotal : Math.max(0, deckTotal - builtinDeckUsed(db, ownerId, deckId));
+      } else {
+        total += deps.deckAccess.availableUnusedForDecks(ownerId, [deckId]);
+      }
+    }
+  } catch {
+    total = deps.deckAccess.availableUnusedForDecks(ownerId, clean);
+  }
+  ctx?.availableCache.set(key, total);
+  return total;
+}
+
 function deckSummaries(input: {
   db: Db;
   deps: RouteDeps;
+  ctx?: BlockContext;
   ownerId: number;
   deckIds: string[];
   queuedByDeck: Record<string, number>;
 }) {
-  const { db, deps, ownerId, deckIds, queuedByDeck } = input;
+  const { db, deps, ctx, ownerId, deckIds, queuedByDeck } = input;
   return deckIds.map((deckId) => {
     const title = deckTitle(deckId, ownerId);
+    const available = availableForDecks(db, deps, ctx, ownerId, [deckId]);
     return {
       id: deckId,
       name: title.name,
       lang: title.lang,
-      available: deps.deckAccess.availableUnusedForDecks(ownerId, [deckId]),
+      available,
       queued: queuedByDeck[deckId] ?? 0,
-      total: db.hasFeature(ownerId, INFINITE_PACKS_FEATURE) ? deps.deckAccess.availableUnusedForDecks(ownerId, [deckId]) : null,
+      total: db.hasFeature(ownerId, INFINITE_PACKS_FEATURE) ? available : null,
     };
   });
 }
@@ -222,15 +329,14 @@ function accountBelongsToBlock(deps: RouteDeps, block: BlockDef, account: Accoun
   return sameDeckSet(deps.deckAccess.accountSourceDecks(account), defaults);
 }
 
-function accountSummary(db: Db, deps: RouteDeps, account: Account) {
+function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockContext) {
   const ownerId = account.userId ?? 0;
   const sourceDecks = deps.deckAccess.accountSourceDecks(account);
-  const videos = db.listVideos(account.id);
-  const queuedByDeck = videosByDeck(videos);
+  const queuedByDeck = ctx?.queuedByAccountDeck.get(account.id) ?? videosByDeck(db.listVideos(account.id));
   return {
     id: account.id,
     userId: account.userId,
-    channelName: account.channelName,
+    channelName: account.ytChannelTitle || account.channelName,
     theme: account.theme,
     channelLang: account.channelLang,
     enabled: account.enabled,
@@ -240,10 +346,10 @@ function accountSummary(db: Db, deps: RouteDeps, account: Account) {
     schedule: account.schedule,
     avatar: account.avatar,
     ytChannelId: account.ytChannelId,
-    queued: videos.length,
+    queued: ctx?.queuedByAccount.get(account.id) ?? db.listVideos(account.id).length,
     queuedByDeck,
-    shortAvailable: deps.deckAccess.availableUnusedForDecks(ownerId, sourceDecks),
-    sourceDecks: deckSummaries({ db, deps, ownerId, deckIds: sourceDecks, queuedByDeck }),
+    shortAvailable: availableForDecks(db, deps, ctx, ownerId, sourceDecks),
+    sourceDecks: deckSummaries({ db, deps, ctx, ownerId, deckIds: sourceDecks, queuedByDeck }),
   };
 }
 
@@ -273,6 +379,7 @@ function buildPayload(db: Db, deps: RouteDeps) {
   const ownerId = armenId(db);
   if (ownerId == null) return { languages: BLOCK_LANGS, blocks: [], unassignedAccounts: [] };
   const accounts = db.listAccountsByUser(ownerId);
+  const ctx = makeBlockContext(db, accounts);
   const byId = new Map(accounts.map((account) => [account.id, account]));
   const assigned = new Set<number>();
   const supportedLangs = new Set<string>(BLOCK_LANGS.map((lang) => lang.code));
@@ -289,7 +396,7 @@ function buildPayload(db: Db, deps: RouteDeps) {
         .filter((account): account is Account => !!account && account.channelLang === lang.code)
         .map((account) => {
           assigned.add(account.id);
-          return accountSummary(db, deps, account);
+          return accountSummary(db, deps, account, ctx);
         });
       return {
         lang: lang.code,
@@ -325,7 +432,7 @@ function buildPayload(db: Db, deps: RouteDeps) {
   }
   const unassignedAccounts = accounts
     .filter((account) => !assigned.has(account.id) || !supportedLangs.has(account.channelLang) || !configuredIds.has(account.id))
-    .map((account) => accountSummary(db, deps, account));
+    .map((account) => accountSummary(db, deps, account, ctx));
 
   return { languages: BLOCK_LANGS, blocks, unassignedAccounts };
 }

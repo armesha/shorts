@@ -1,0 +1,14 @@
+{
+  "total": 2000,
+  "packs": 7,
+  "packSize": 300,
+  "range": [
+    120,
+    619
+  ],
+  "safety": {
+    "filters": "protected-class/religion/politics/violence/sexual/alcohol blocklist + length/readability checks",
+    "dialogue": 1466,
+    "question": 852
+  }
+}

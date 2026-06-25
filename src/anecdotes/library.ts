@@ -13,6 +13,13 @@ export interface PackItem {
   profession?: string;
   /** preFact deck only: relative filename of the pre-built mp4 in assets/fact-videos/. */
   videoFile?: string;
+  /** Quote decks: portrait image relative to repo root plus optional source metadata. */
+  portraitFile?: string;
+  portraitUrl?: string;
+  portraitCredit?: string;
+  portraitLicense?: string;
+  source?: string;
+  qid?: string;
 }
 
 const deckDir = (deckId: string): string => resolve(process.cwd(), getDeck(deckId).dir);

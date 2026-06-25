@@ -56,13 +56,9 @@
     font-size: 64px;
   }
 
-  /* Footer: laughing emoji (left) + channel signature (right) */
-  .footer { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; }
+  /* Footer: laughing emoji only; no channel signature on the card. */
+  .footer { flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-start; }
   .emoji { font-family: 'Noto Color Emoji', sans-serif; font-size: 96px; line-height: 1; }
-  .signature {
-    font-family: 'Marck Script', 'Caveat', cursive;
-    font-size: 56px; color: var(--accent);
-  }
 </style>
 </head>
 <body>
@@ -71,7 +67,6 @@
     <div class="body"><div class="text">{{TEXT}}</div></div>
     <div class="footer">
       <span class="emoji" id="emoji">😂</span>
-      <span class="signature">{{CHANNEL}}</span>
     </div>
   </div>
 

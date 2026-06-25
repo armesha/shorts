@@ -13,6 +13,7 @@ import { buildMemeHtml, buildMemeBoardHtml, memeBackdropFor, type MemeCard } fro
 import { photoCss, photoDataUri } from "../memes/photos.ts";
 import { buildChooseHtml, type ChooseCard } from "../choose/render.ts";
 import { lifehackTemplateStyle, pickLifehackTemplate } from "./lifehack-templates.ts";
+import type { PackItem } from "./library.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATE = resolve(__dirname, "../../templates/anecdote.html");
@@ -22,6 +23,15 @@ const LIFEHACK_BG_DIR = resolve(process.cwd(), "assets/backgrounds/lifehacks");
 
 const esc = (s: string): string =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+function dataUriFromRootRel(file?: string | null): string | null {
+  if (!file) return null;
+  const abs = resolve(process.cwd(), file);
+  if (!existsSync(abs)) return null;
+  const buf = readFileSync(abs);
+  const mime = /\.png$/i.test(file) ? "image/png" : /\.webp$/i.test(file) ? "image/webp" : "image/jpeg";
+  return `data:${mime};base64,${buf.toString("base64")}`;
+}
 
 const SOLID_FALLBACK = ["#fbf6ea", "#f4eee1", "#eef2f4", "#f6ece9"];
 
@@ -150,8 +160,9 @@ async function captureCard(html: string, outPath: string): Promise<number> {
 export async function renderAnecdote(
   a: Anecdote,
   outPath: string,
+  item?: PackItem,
 ): Promise<{ path: string; fontPx: number; bg: string }> {
-  if (getDeck(a.deck).quote) return renderQuote(a, outPath);
+  if (getDeck(a.deck).quote) return renderQuote(a, outPath, item);
   if (getDeck(a.deck).islamic) return renderIslamic(a, outPath);
   if (getDeck(a.deck).christian) return renderChristian(a, outPath);
   if (getDeck(a.deck).psych) return renderPsych(a, outPath);
@@ -172,12 +183,13 @@ export async function renderAnecdote(
   return { path: outPath, fontPx, bg: bgName };
 }
 
-function quoteHtml(input: { quote: string; author: string; lang: string; channel: string }): string {
+function quoteHtml(input: { quote: string; author: string; lang: string; channel: string; portraitDataUri?: string | null }): string {
   const lang = input.lang || "en";
   const rtl = lang === "ar";
   const q = esc(input.quote);
   const author = esc(input.author);
   const channel = esc(input.channel);
+  const portrait = input.portraitDataUri;
   return `<!doctype html>
 <html lang="${esc(lang)}" dir="${rtl ? "rtl" : "ltr"}">
 <head>
@@ -196,7 +208,19 @@ function quoteHtml(input: { quote: string; author: string; lang: string; channel
   .card {
     width: 100%;
     height: 100%;
-    padding: 108px 86px 92px;
+    padding: ${portrait ? "0" : "108px 86px 92px"};
+    display: flex;
+    flex-direction: column;
+  }
+  .portrait {
+    height: 760px;
+    background: ${portrait ? `linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.36)), url("${portrait}") center 34%/cover no-repeat` : "transparent"};
+    filter: grayscale(.12) contrast(1.05);
+  }
+  .quote-panel {
+    flex: 1;
+    min-height: 0;
+    padding: ${portrait ? "72px 82px 84px" : "0"};
     display: flex;
     flex-direction: column;
   }
@@ -249,21 +273,24 @@ function quoteHtml(input: { quote: string; author: string; lang: string; channel
 </head>
 <body>
   <main class="card">
-    <div>
-      <div class="kicker">${channel}</div>
-      <div class="rule"></div>
-    </div>
-    <section class="body">
+    ${portrait ? '<div class="portrait"></div>' : ""}
+    <div class="quote-panel">
       <div>
-        <div class="mark">${rtl ? "”" : "“"}</div>
-        <div class="quote">${q}</div>
-        <div class="author">— ${author}</div>
+        <div class="kicker">${channel}</div>
+        <div class="rule"></div>
       </div>
-    </section>
-    <footer class="footer">
-      <span>${lang.toUpperCase()}</span>
-      <span>SHORTS</span>
-    </footer>
+      <section class="body">
+        <div>
+          <div class="mark">${rtl ? "”" : "“"}</div>
+          <div class="quote">${q}</div>
+          <div class="author">— ${author}</div>
+        </div>
+      </section>
+      <footer class="footer">
+        <span>${lang.toUpperCase()}</span>
+        <span>SHORTS</span>
+      </footer>
+    </div>
   </main>
   <script>
     (function () {
@@ -294,12 +321,14 @@ function quoteHtml(input: { quote: string; author: string; lang: string; channel
 async function renderQuote(
   a: Anecdote,
   outPath: string,
+  item?: PackItem,
 ): Promise<{ path: string; fontPx: number; bg: string }> {
   const html = quoteHtml({
     quote: a.text,
     author: a.title || getDeck(a.deck).name,
     lang: deckLang(a.deck || "") || "en",
     channel: getDeck(a.deck).name,
+    portraitDataUri: dataUriFromRootRel(item?.portraitFile),
   });
   const fontPx = await captureCard(html, outPath);
   return { path: outPath, fontPx, bg: "quote" };

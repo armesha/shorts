@@ -7,6 +7,7 @@ import { resolve } from "node:path";
 import type { Db } from "../db.ts";
 import { getDeck, pickGenericTitle } from "../../src/anecdotes/decks.ts";
 import { randomAnecdote, firstAnecdote, libraryStats, anecdoteKey, deckCards } from "../../src/anecdotes/library.ts";
+import type { PackItem } from "../../src/anecdotes/library.ts";
 import { renderAnecdote, listBackgrounds } from "../../src/anecdotes/render.ts";
 import { assembleStillVideo, listAudio, pickLifehackMotionOverlay, resolveAudio, downscaleImage } from "../../src/video.ts";
 import { INFINITE_PACKS_FEATURE, infiniteCounts } from "../services/infinite-packs.ts";
@@ -128,6 +129,7 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
       let text = body.text;
       let title = body.title;
       let profession: string | undefined;
+      let pickedItem: PackItem | undefined;
       if (!text) {
         const infinite = db.hasFeature(uid(req), INFINITE_PACKS_FEATURE);
         const a = infinite ? firstAnecdote(deck.id) : randomAnecdote(deck.id, db.usedAnecdoteKeys(uid(req)));
@@ -135,6 +137,7 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
         text = a.text;
         title = a.title || undefined;
         profession = a.profession;
+        pickedItem = a;
         if (!infinite) db.markAnecdoteUsed(uid(req), anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот
       }
       if (!title) title = pickGenericTitle(deck);
@@ -146,6 +149,7 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
         renderAnecdote(
           { title, text, channel: deck.name, bg: body.bg, avoidBg: body.avoidBg, deck: deck.id, profession },
           out,
+          pickedItem,
         ),
       );
       rememberOutputOwner([rel], uid(req));
@@ -166,6 +170,7 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
       let text = body.text;
       let title = body.title;
       let profession: string | undefined;
+      let pickedItem: PackItem | undefined;
       if (!text) {
         const infinite = db.hasFeature(uid(req), INFINITE_PACKS_FEATURE);
         const a = infinite ? firstAnecdote(deck.id) : randomAnecdote(deck.id, db.usedAnecdoteKeys(uid(req)));
@@ -173,6 +178,7 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
         text = a.text;
         title = a.title || undefined;
         profession = a.profession;
+        pickedItem = a;
         if (!infinite) db.markAnecdoteUsed(uid(req), anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот
       }
       if (!title) title = pickGenericTitle(deck);
@@ -188,7 +194,7 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
       const vidOut = resolve(process.cwd(), outputDir, vidRel);
       const motionOverlay = deck.lifehack ? pickLifehackMotionOverlay(`${deck.id}|${profession ?? ""}|${title}|${text}`) : null;
       const r = await metrics.track("render", async () => {
-        const rr = await renderAnecdote({ title, text, channel: deck.name, bg: body.bg, deck: deck.id, profession }, imgOut);
+        const rr = await renderAnecdote({ title, text, channel: deck.name, bg: body.bg, deck: deck.id, profession }, imgOut, pickedItem);
         await assembleStillVideo(imgOut, vidOut, { durationSec: 6, audioPath, motionOverlay });
         return rr;
       });

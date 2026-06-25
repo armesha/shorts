@@ -26,6 +26,10 @@ type BlockDeckSummary = {
 
 type OperationalAccount = Pick<Account, "enabled" | "schedule" | "uploadsToday" | "oauthClientId">;
 
+let channelBlocksCache: ChannelThemeBlocksResponse | null = null;
+let accountsCache: Account[] = [];
+let clientsCache: OAuthClient[] = [];
+
 function accountsInBlock(block: ChannelThemeBlock): ChannelThemeBlockAccount[] {
   return block.cells.flatMap((cell) => cell.accounts);
 }
@@ -70,9 +74,9 @@ function queueRange(block: ChannelThemeBlock): { min: number; max: number } {
 export default function ChannelBlocks({ onShowClassic }: Props) {
   const { t } = useT();
   const queue = useGenQueue();
-  const [data, setData] = useState<ChannelThemeBlocksResponse | null>(null);
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const [clients, setClients] = useState<OAuthClient[]>([]);
+  const [data, setData] = useState<ChannelThemeBlocksResponse | null>(channelBlocksCache);
+  const [accounts, setAccounts] = useState<Account[]>(accountsCache);
+  const [clients, setClients] = useState<OAuthClient[]>(clientsCache);
   const [searchParams, setSearchParams] = useSearchParams();
   const [err, setErr] = useState("");
   const [shortCount, setShortCount] = useState(1);
@@ -84,14 +88,21 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
     apiClient
       .channelThemeBlocks()
       .then((res) => {
+        channelBlocksCache = res;
         setData(res);
         setErr("");
       })
       .catch((e) => setErr(e instanceof Error ? e.message : String(e)));
 
   const loadOps = () => {
-    apiClient.accounts().then(setAccounts).catch(() => {});
-    apiClient.youtubeClients().then((res) => setClients(res.clients)).catch(() => {});
+    apiClient.accounts().then((res) => {
+      accountsCache = res;
+      setAccounts(res);
+    }).catch(() => {});
+    apiClient.youtubeClients().then((res) => {
+      clientsCache = res.clients;
+      setClients(res.clients);
+    }).catch(() => {});
   };
 
   useEffect(() => {

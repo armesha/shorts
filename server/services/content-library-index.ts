@@ -125,6 +125,7 @@ export function syncContentLibraryIndex(db: DatabaseSync): { decks: number; item
       deckStmt.run(deck.id, deck.name, deckLang(deck.id) || null, deck.preFact ? 1 : 0, deck.longVideo ? 1 : 0, items.length, hash, now);
       items.forEach((item, index) => {
         const normalized: PackItem = {
+          ...item,
           id: Number(item.id ?? index),
           pack: Number(item.pack ?? 1),
           text: String(item.text ?? ""),

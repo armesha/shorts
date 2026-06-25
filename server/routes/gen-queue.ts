@@ -86,6 +86,7 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
               title: a.title,
               deck: channelDeck.id,
               profession: a.profession,
+              item: a,
             });
           }
           return "made";

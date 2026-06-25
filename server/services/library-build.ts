@@ -6,6 +6,7 @@
 // routes AND the gen-queue worker registration.
 import type { Db } from "../db.ts";
 import { DECKS, getDeck, pickGenericTitle } from "../../src/anecdotes/decks.ts";
+import type { PackItem } from "../../src/anecdotes/library.ts";
 import { renderAnecdote } from "../../src/anecdotes/render.ts";
 import { pickLifehackMotionOverlay, resolveAudio } from "../../src/video.ts";
 import { buildStillVideoFiles } from "../infra/media.ts";
@@ -19,6 +20,7 @@ export type BuildLibraryVideo = (input: {
   music?: string;
   deck?: string;
   profession?: string;
+  item?: PackItem;
 }) => Promise<ReturnType<Db["createVideo"]>>;
 
 export function makeBuildLibraryVideo(deps: {
@@ -53,6 +55,7 @@ export function makeBuildLibraryVideo(deps: {
         renderAnecdote(
           { title, text: input.text, channel: deck.name, bg: input.bg, deck: deck.id, profession: input.profession },
           imgAbs,
+          input.item,
         ),
     });
     const v = db.createVideo({

@@ -1,0 +1,140 @@
+{
+  "licenseNote": "All listed source books are Project Gutenberg texts marked public domain in the USA. The builder keeps only short, filtered joke/anecdote snippets for dynamic card rendering.",
+  "generatedAt": "2026-06-25T13:06:59.188Z",
+  "sourceCounts": [
+    {
+      "id": 21084,
+      "title": "Jokes For All Occasions",
+      "selected": 347
+    },
+    {
+      "id": 12444,
+      "title": "Toaster's Handbook: Jokes, Stories, and Quotations",
+      "selected": 752
+    },
+    {
+      "id": 49370,
+      "title": "English Jests and Anecdotes, Collected from Various Sources",
+      "selected": 56
+    },
+    {
+      "id": 43101,
+      "title": "Witty Pieces by Witty People",
+      "selected": 162
+    },
+    {
+      "id": 29419,
+      "title": "The Book of Anecdotes and Budget of Fun",
+      "selected": 117
+    },
+    {
+      "id": 20352,
+      "title": "The Jest Book",
+      "selected": 79
+    },
+    {
+      "id": 69216,
+      "title": "Sheared cream o' wit",
+      "selected": 226
+    },
+    {
+      "id": 44643,
+      "title": "The Funny Bone",
+      "selected": 83
+    },
+    {
+      "id": 15338,
+      "title": "More Toasts",
+      "selected": 776
+    },
+    {
+      "id": 60973,
+      "title": "Vaudeville Wit and Humor",
+      "selected": 40
+    },
+    {
+      "id": 43996,
+      "title": "The American Joe Miller",
+      "selected": 109
+    }
+  ],
+  "sources": [
+    {
+      "id": 21084,
+      "title": "Jokes For All Occasions",
+      "author": "Anonymous",
+      "url": "https://www.gutenberg.org/cache/epub/21084/pg21084.txt",
+      "license": "Project Gutenberg; public domain in the USA"
+    },
+    {
+      "id": 12444,
+      "title": "Toaster's Handbook: Jokes, Stories, and Quotations",
+      "author": "C. E. Fanning and H. W. Wilson",
+      "url": "https://www.gutenberg.org/cache/epub/12444/pg12444.txt",
+      "license": "Project Gutenberg; public domain in the USA"
+    },
+    {
+      "id": 49370,
+      "title": "English Jests and Anecdotes, Collected from Various Sources",
+      "author": "Various",
+      "url": "https://www.gutenberg.org/cache/epub/49370/pg49370.txt",
+      "license": "Project Gutenberg; public domain in the USA"
+    },
+    {
+      "id": 43101,
+      "title": "Witty Pieces by Witty People",
+      "author": "Various",
+      "url": "https://www.gutenberg.org/cache/epub/43101/pg43101.txt",
+      "license": "Project Gutenberg; public domain in the USA"
+    },
+    {
+      "id": 29419,
+      "title": "The Book of Anecdotes and Budget of Fun",
+      "author": "Various",
+      "url": "https://www.gutenberg.org/cache/epub/29419/pg29419.txt",
+      "license": "Project Gutenberg; public domain in the USA"
+    },
+    {
+      "id": 20352,
+      "title": "The Jest Book",
+      "author": "Mark Lemon",
+      "url": "https://www.gutenberg.org/cache/epub/20352/pg20352.txt",
+      "license": "Project Gutenberg; public domain in the USA"
+    },
+    {
+      "id": 69216,
+      "title": "Sheared cream o' wit",
+      "author": "Carl J. Mittler",
+      "url": "https://www.gutenberg.org/cache/epub/69216/pg69216.txt",
+      "license": "Project Gutenberg; public domain in the USA"
+    },
+    {
+      "id": 44643,
+      "title": "The Funny Bone",
+      "author": "Henry Martyn Kieffer",
+      "url": "https://www.gutenberg.org/cache/epub/44643/pg44643.txt",
+      "license": "Project Gutenberg; public domain in the USA"
+    },
+    {
+      "id": 15338,
+      "title": "More Toasts",
+      "author": "Marion Dix Mosher",
+      "url": "https://www.gutenberg.org/cache/epub/15338/pg15338.txt",
+      "license": "Project Gutenberg; public domain in the USA"
+    },
+    {
+      "id": 60973,
+      "title": "Vaudeville Wit and Humor",
+      "author": "Various",
+      "url": "https://www.gutenberg.org/cache/epub/60973/pg60973.txt",
+      "license": "Project Gutenberg; public domain in the USA"
+    },
+    {
+      "id": 43996,
+      "title": "The American Joe Miller",
+      "author": "Robert Kempt",
+      "url": "https://www.gutenberg.org/cache/epub/43996/pg43996.txt",
+      "license": "Project Gutenberg; public domain in the USA"
+    }
+  ]
+}

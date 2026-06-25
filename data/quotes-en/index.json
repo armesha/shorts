@@ -1,13 +1,13 @@
 {
   "language": "en",
-  "total": 1000,
-  "packs": 10,
+  "total": 1200,
+  "packs": 12,
   "packSize": 100,
   "range": [
     35,
-    278
+    279
   ],
-  "target": 1000,
-  "source": "Wikiquote",
-  "generator": "scripts/build-multilang-quote-decks.py"
+  "target": 1200,
+  "source": "Curated Wikiquote + Commons portraits",
+  "generator": "scripts/build-curated-portrait-quote-decks.py"
 }

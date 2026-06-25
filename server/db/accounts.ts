@@ -95,9 +95,7 @@ export function accountMethods(db: DatabaseSync) {
              yt_channel_id=?,
              yt_channel_title=?,
              channel_name=CASE
-               WHEN ? IS NOT NULL AND TRIM(?) != ''
-                    AND (channel_name IS NULL OR TRIM(channel_name) = '' OR channel_name = ?)
-                 THEN ?
+               WHEN ? IS NOT NULL AND TRIM(?) != '' THEN ?
                ELSE channel_name
              END,
              yt_channel_avatar=COALESCE(?, yt_channel_avatar),
@@ -110,11 +108,9 @@ export function accountMethods(db: DatabaseSync) {
         d.refreshToken,
         d.channelId,
         d.channelTitle,
-        // Seed the editable dashboard name from the real YouTube title — but ONLY while it's still the
-        // placeholder/empty, so a re-auth or a stats refresh never clobbers a name the user edited.
+        // YouTube title is the source of truth for connected channels.
         d.channelTitle,
         d.channelTitle,
-        DEFAULT_CHANNEL_NAME,
         d.channelTitle,
         d.channelAvatar ?? null,
         d.channelAvatar ?? null,

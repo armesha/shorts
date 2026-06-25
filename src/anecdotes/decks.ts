@@ -112,6 +112,16 @@ export const DECKS: Deck[] = [
     genericTitles: ["Blague", "Blague du jour", "Pour rire", "Tu connais celle-là ?", "Écoute ça", "Drôle"],
   },
   {
+    id: "en",
+    name: "English Jokes",
+    dir: "data/anecdotes-en",
+    source: "Project Gutenberg public-domain joke books; see data/anecdotes-en/sources.json",
+    emoji: "😂",
+    hashtags: "#jokes #humor #funny #laugh #comedy #shorts",
+    tags: ["jokes", "humor", "funny", "laugh", "comedy", "shorts"],
+    genericTitles: ["Joke", "Quick Joke", "Funny Story", "A Little Laugh", "Classic Joke", "One More Joke"],
+  },
+  {
     id: "tips",
     name: "Народные лайфхаки",
     dir: "data/tips",
