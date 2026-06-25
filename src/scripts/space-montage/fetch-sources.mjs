@@ -4,7 +4,10 @@
 // (away from talking-head/host series), download a ~medium mp4 into
 // temp/space-build/src/<id>.mp4, and record metadata to temp/space-build/sources.json.
 //
-// Idempotent: already-downloaded ids are skipped. Run: node src/scripts/space-montage/fetch-sources.mjs
+// Idempotent: already-downloaded ids are skipped.
+//   node src/scripts/space-montage/fetch-sources.mjs
+//   node src/scripts/space-montage/fetch-sources.mjs --ids mars_dust,saturn_rings
+//   node src/scripts/space-montage/fetch-sources.mjs --skip-existing-deck
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -16,8 +19,28 @@ const SRC_DIR = path.join(ROOT, "temp/space-build/src");
 const META = path.join(ROOT, "temp/space-build/sources.json");
 fs.mkdirSync(SRC_DIR, { recursive: true });
 
-const topics = JSON.parse(fs.readFileSync(path.join(HERE, "topics.json"), "utf8"));
+const args = process.argv.slice(2);
+const idsArg = (() => {
+  const i = args.indexOf("--ids");
+  return i >= 0 ? new Set((args[i + 1] || "").split(",").map((s) => s.trim()).filter(Boolean)) : null;
+})();
+const skipExistingDeck = args.includes("--skip-existing-deck");
+const deckIds = (() => {
+  if (!skipExistingDeck) return new Set();
+  try {
+    const deck = JSON.parse(fs.readFileSync(path.join(ROOT, "data/space/videos.json"), "utf8"));
+    return new Set(deck.map((item) => path.basename(String(item.file || ""), path.extname(String(item.file || "")))));
+  } catch {
+    return new Set();
+  }
+})();
+const allTopics = JSON.parse(fs.readFileSync(path.join(HERE, "topics.json"), "utf8"));
+const topics = allTopics.filter((topic) => (!idsArg || idsArg.has(topic.id)) && !deckIds.has(topic.id));
 const meta = fs.existsSync(META) ? JSON.parse(fs.readFileSync(META, "utf8")) : {};
+if (!topics.length) {
+  console.log("No topics selected.");
+  process.exit(0);
+}
 
 const enc = (u) => encodeURI(u.replace(/^http:/, "https:"));
 async function j(url) {

@@ -178,5 +178,140 @@
     "id": "helio_solarwind",
     "title": "A Storm Across the Solar System",
     "narration": "The Sun just hurled a billion tons of plasma into space. This eruption races outward at over a million miles an hour, sweeping past Mars, a distant comet, and onward toward Saturn. Watch a single solar storm sail clear across the inner solar system."
+  },
+  {
+    "id": "mars_dust",
+    "title": "A Dust Storm Swallows Mars",
+    "narration": "On Mars, dust can grow from a local storm into a planet-wide veil. Fine red particles rise into the thin air, trap sunlight, and warm the atmosphere, helping the storm spread even farther. In twenty eighteen, one of these global storms ended the Opportunity rover's mission after fifteen years."
+  },
+  {
+    "id": "saturn_rings",
+    "title": "Saturn's Rings Are Falling",
+    "narration": "Saturn's rings look eternal, but they are slowly raining into the planet. The rings are made mostly of countless icy fragments, from grains of dust to boulders, spread across a disk wider than Earth but often only tens of feet thick. Even the crown of the solar system is temporary."
+  },
+  {
+    "id": "europa_ocean",
+    "title": "An Ocean Locked Under Ice",
+    "narration": "Europa hides one of the solar system's most tempting secrets. Under its cracked ice shell may lie a global ocean with more water than all of Earth's oceans combined. Jupiter's gravity flexes the moon, keeping the interior warm enough for liquid water to survive in the dark."
+  },
+  {
+    "id": "titan_lakes",
+    "title": "Lakes Made of Liquid Methane",
+    "narration": "Titan has weather that looks strangely familiar, but the chemistry is alien. Methane and ethane rain from orange skies, flow through river channels, and collect in dark lakes near the poles. It is the only world beyond Earth known to have stable liquid on its surface."
+  },
+  {
+    "id": "enceladus_geysers",
+    "title": "A Moon Spraying Its Ocean",
+    "narration": "Enceladus is small, bright, and leaking into space. From cracks near its south pole, geysers fire water vapor, ice grains, salts, and organic molecules hundreds of miles above the surface. Cassini flew through those plumes and found clues pointing to a hidden ocean below."
+  },
+  {
+    "id": "pluto_flyby",
+    "title": "Flying Over Pluto's Heart",
+    "narration": "Pluto was supposed to be a frozen, simple world. New Horizons revealed mountains of water ice, hazy blue skies, and a vast heart-shaped plain of nitrogen ice slowly moving like a glacier. At the edge of the solar system, Pluto turned out to be alive with geology."
+  },
+  {
+    "id": "venus_hell",
+    "title": "The Planet That Became a Furnace",
+    "narration": "Venus is Earth's near twin in size, but its surface is a pressure cooker. Thick carbon dioxide air traps heat until the ground reaches about nine hundred degrees Fahrenheit, hot enough to melt lead. Above it, clouds of sulfuric acid hide a world crushed by a runaway greenhouse effect."
+  },
+  {
+    "id": "mercury_messenger",
+    "title": "Mercury, Scorched and Frozen",
+    "narration": "Mercury lives closest to the Sun, but it is not simply a ball of heat. With almost no atmosphere, its dayside bakes while its nightside plunges into extreme cold. NASA's MESSENGER mission mapped its cratered surface and even found water ice hiding in permanently shadowed polar craters."
+  },
+  {
+    "id": "neptune_winds",
+    "title": "The Fastest Winds Around a Planet",
+    "narration": "Neptune is the farthest major planet from the Sun, yet its atmosphere is wildly energetic. Winds can race faster than the speed of sound, pushing dark storms through deep blue clouds. Somehow this cold ice giant still powers some of the fastest weather in the solar system."
+  },
+  {
+    "id": "uranus_tilt",
+    "title": "The Planet Knocked Sideways",
+    "narration": "Uranus does not spin like the other planets. It rolls around the Sun on its side, with an axial tilt of about ninety-eight degrees, probably from a giant impact long ago. That strange lean gives it extreme seasons where each pole can face decades of sunlight, then decades of darkness."
+  },
+  {
+    "id": "bennu_asteroid",
+    "title": "A Sample From Before Earth",
+    "narration": "Bennu is a rubble pile older than the planets. OSIRIS-REx touched its surface for only seconds, blasted nitrogen into the dust, and captured a sample to bring home. Inside those dark grains are chemical clues from the dawn of the solar system, before Earth had fully formed."
+  },
+  {
+    "id": "comet_67p",
+    "title": "The Comet With a Lander",
+    "narration": "Comet 67P looks like two icy worlds stuck together. As it nears the Sun, heat wakes the surface, jets of gas and dust burst out, and a glowing coma forms around it. Rosetta orbited this strange body for years, and Philae became the first lander to touch a comet."
+  },
+  {
+    "id": "lucy_trojans",
+    "title": "Fossils Sharing Jupiter's Orbit",
+    "narration": "Ahead of and behind Jupiter travel swarms of ancient asteroids called Trojans. They are leftovers from the chaotic time when the giant planets were settling into place. NASA's Lucy mission is visiting them because these small worlds may preserve clues about how the outer solar system was built."
+  },
+  {
+    "id": "voyager_interstellar",
+    "title": "Beyond the Sun's Bubble",
+    "narration": "Voyager crossed a boundary no spacecraft had reached before. Far beyond the planets, the solar wind weakens and interstellar space begins. The probe is now traveling through material between the stars, still sending faint signals home after decades, carrying a golden record from Earth into the dark."
+  },
+  {
+    "id": "iss_orbit",
+    "title": "Sixteen Sunrises Every Day",
+    "narration": "The International Space Station circles Earth roughly every ninety minutes. That means astronauts can see about sixteen sunrises and sunsets in a single day, watching city lights, storms, oceans, and the thin blue atmosphere slide beneath them. It is a laboratory moving faster than a rifle bullet."
+  },
+  {
+    "id": "aurora_orbit",
+    "title": "Auroras Seen From Above",
+    "narration": "From orbit, auroras are not just curtains in the sky. They form glowing rings around Earth's magnetic poles, where charged particles guided by the planet's magnetic field crash into the upper atmosphere. Oxygen and nitrogen light up in green, red, and purple, revealing our magnetic shield at work."
+  },
+  {
+    "id": "earth_magnetosphere",
+    "title": "Earth's Invisible Shield",
+    "narration": "Earth is wrapped in an invisible magnetic shield. The magnetosphere pushes back against the solar wind, deflecting many charged particles that would otherwise strike the atmosphere directly. It stretches into a long tail away from the Sun, turning our planet into a tiny protected bubble in space."
+  },
+  {
+    "id": "heliosphere",
+    "title": "The Sun's Giant Bubble",
+    "narration": "The Sun does not end at the planets. Its wind blows outward in every direction, carving a vast bubble called the heliosphere through interstellar space. Voyager crossed the edge of that bubble, showing that our entire solar system travels inside a protective shell made by the Sun."
+  },
+  {
+    "id": "pulsar_beam",
+    "title": "A Dead Star Flashing Like a Beacon",
+    "narration": "A pulsar is the crushed core of a dead star, spinning with astonishing precision. Beams of radiation stream from its magnetic poles, and if one sweeps past Earth, we see a flash. Some pulsars rotate hundreds of times every second, keeping time with cosmic accuracy."
+  },
+  {
+    "id": "rogue_planet",
+    "title": "A Planet With No Sunrise",
+    "narration": "Some planets do not orbit any star. They drift alone through the galaxy, thrown out by gravitational chaos or born in isolation. A rogue planet would have no sunrise, no seasons, and no daylit sky, only the faint glow of distant stars above a frozen world."
+  },
+  {
+    "id": "globular_cluster",
+    "title": "A Million Ancient Stars",
+    "narration": "Globular clusters are some of the oldest star cities in the universe. Hundreds of thousands, sometimes millions, of stars crowd into a tight sphere held together by gravity. Many formed more than ten billion years ago, long before the Sun, making them fossils of the early Milky Way."
+  },
+  {
+    "id": "brown_dwarf",
+    "title": "The Star That Never Ignited",
+    "narration": "A brown dwarf is too massive to be a planet, but too small to shine like a true star. It forms like a star from collapsing gas, then fails to sustain hydrogen fusion in its core. These dim objects glow mostly in infrared, hiding between planets and suns."
+  },
+  {
+    "id": "dark_energy",
+    "title": "The Force Stretching Everything Apart",
+    "narration": "The universe is not just expanding. Its expansion is speeding up. Astronomers call the mysterious driver dark energy, a name for whatever is pushing galaxies farther apart on the largest scales. We cannot see it directly, but its effect dominates the future of the cosmos."
+  },
+  {
+    "id": "solar_system_birth",
+    "title": "How the Solar System Began",
+    "narration": "Our solar system began inside a collapsing cloud of gas and dust. Most material fell into the young Sun, while the leftovers flattened into a spinning disk. Inside that disk, grains stuck together, rocks became worlds, and the planets slowly grew from cosmic dust."
+  },
+  {
+    "id": "kuiper_belt",
+    "title": "The Frozen Ring Beyond Neptune",
+    "narration": "Beyond Neptune lies the Kuiper Belt, a vast ring of icy leftovers from planet formation. Pluto is one member of this distant population, along with countless smaller bodies preserved in deep cold. Studying them is like opening a freezer full of ancient solar system material."
+  },
+  {
+    "id": "oort_cloud",
+    "title": "The Comet Shell Around the Sun",
+    "narration": "Far beyond the planets may lie the Oort Cloud, a huge spherical reservoir of icy bodies surrounding the Sun. We have never seen it directly, but long-period comets appear to fall inward from that distant shell. It may stretch a light-year or more into space."
+  },
+  {
+    "id": "einstein_ring",
+    "title": "Gravity Turns Light Into a Ring",
+    "narration": "A perfect ring of light can form when gravity bends the universe into a lens. If a massive galaxy lines up with a more distant galaxy behind it, spacetime curves the background light around the foreground object. The result is an Einstein ring, a prediction of relativity made visible."
   }
 ]
