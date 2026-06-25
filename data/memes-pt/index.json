@@ -1,0 +1,14 @@
+{
+  "total": 830,
+  "packs": 1,
+  "packSize": 830,
+  "withPhoto": 830,
+  "range": [
+    1,
+    83
+  ],
+  "source": "Original Portuguese captions over the existing local meme-board template image set. No new external images downloaded.",
+  "safety": {
+    "filters": "religion/adult/violence/protected-class blocklist + length checks"
+  }
+}

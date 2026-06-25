@@ -80,6 +80,7 @@ export const DECK_GLOSS_RU: Record<string, string> = {
   "memes-de": "Мемы · нем.",
   "memes-fr": "Мемы · фр.",
   "memes-it": "Мемы · итал.",
+  "memes-pt": "Мемы · порт.",
 };
 
 /** Deck name + Russian gloss in parentheses (when the name is foreign). */
@@ -90,7 +91,7 @@ export const deckLabel = (id: string, name: string): string =>
 export const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", choose: "ru",
   tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-ru": "ru", "quotes-ar": "ar", "quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
-  "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it",
+  "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt",
 };
 
 /** Uppercase 2-letter tag for a language code. */
@@ -187,6 +188,7 @@ export const BUILTIN_DECKS: { id: string; label: string }[] = [
   { id: "memes-de", label: "Мемы (DE)" },
   { id: "memes-fr", label: "Мемы (FR)" },
   { id: "memes-it", label: "Мемы (IT)" },
+  { id: "memes-pt", label: "Memes (PT)" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────

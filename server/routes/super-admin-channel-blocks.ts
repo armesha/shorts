@@ -60,6 +60,7 @@ const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
   it: ["memes-it"],
   fr: ["memes-fr"],
   en: ["memes-en"],
+  pt: ["memes-pt"],
 };
 
 const JOKE_SOURCE_GROUPS: SourceGroupDef[] = [
