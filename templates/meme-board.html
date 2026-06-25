@@ -3,7 +3,7 @@
      (object-fit:contain — reaction images / comic panels are never cropped or distorted). Bottom
      safe margin keeps the picture clear of the Shorts mobile UI. Binary-search auto-fit on the
      caption (height-capped band + longest word must fit) — mirrors the proven anecdote/meme fit so
-     text is sized per caption and never overflows. Heavy sans covers Cyrillic+Latin. -->
+     text is sized per caption and never overflows. Heavy sans covers Cyrillic+Latin+Arabic+Devanagari. -->
 <html lang="ru">
 <head>
 <meta charset="utf-8">
@@ -13,10 +13,10 @@
   html,body{width:1080px;height:1920px;overflow:hidden;background:#fff;}
   #frame{position:relative;width:1080px;height:1920px;background:#fff;display:flex;flex-direction:column;
     padding:62px 0 196px 0;
-    font-family:"Liberation Sans","DejaVu Sans","Noto Sans",Arial,sans-serif;}
+    font-family:"Noto Sans","Noto Sans Devanagari","Noto Sans Arabic","Noto Naskh Arabic","Liberation Sans","DejaVu Sans",Arial,sans-serif;}
   #capwrap{flex:0 0 auto;width:1080px;padding:0 60px 32px 60px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
   #cap{width:100%;text-align:center;font-weight:800;font-size:var(--cap);line-height:1.13;color:#0f0f0f;
-    word-wrap:break-word;overflow-wrap:break-word;}
+    word-wrap:break-word;overflow-wrap:break-word;unicode-bidi:plaintext;}
   #imgwrap{flex:1 1 auto;min-height:0;width:1080px;display:flex;align-items:center;justify-content:center;
     border-top:2px solid #ececec;background:#fff;}
   #imgwrap img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;}

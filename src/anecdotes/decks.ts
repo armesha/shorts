@@ -401,6 +401,48 @@ export const DECKS: Deck[] = [
     adminOnly: true,
   },
   {
+    id: "memes-hi",
+    name: "मीम्स (HI)",
+    dir: "data/memes-hi",
+    source: "scripts/build-extra-board-memes.mjs",
+    emoji: "😂",
+    hashtags: "#मीम #हास्य #मजेदार #relatable #shorts",
+    tags: ["मीम", "हास्य", "मजेदार", "relatable", "shorts"],
+    genericTitles: ["मीम", "बहुत असली", "यह मैं हूं", "मजेदार"],
+    meme: true,
+    memeBoard: true,
+    gallery: true,
+    adminOnly: true,
+  },
+  {
+    id: "memes-id",
+    name: "Memes (ID)",
+    dir: "data/memes-id",
+    source: "scripts/build-extra-board-memes.mjs",
+    emoji: "😂",
+    hashtags: "#meme #humor #lucu #relatable #shorts",
+    tags: ["meme", "humor", "lucu", "relatable", "shorts"],
+    genericTitles: ["Meme", "Aku banget", "Terlalu nyata", "Lucu"],
+    meme: true,
+    memeBoard: true,
+    gallery: true,
+    adminOnly: true,
+  },
+  {
+    id: "memes-ar",
+    name: "ميمز (AR)",
+    dir: "data/memes-ar",
+    source: "scripts/build-extra-board-memes.mjs",
+    emoji: "😂",
+    hashtags: "#ميمز #ضحك #كوميديا #relatable #shorts",
+    tags: ["ميمز", "ضحك", "كوميديا", "relatable", "shorts"],
+    genericTitles: ["ميم", "واقعي جدًا", "هذا أنا", "مضحك"],
+    meme: true,
+    memeBoard: true,
+    gallery: true,
+    adminOnly: true,
+  },
+  {
     id: "choose",
     name: "Что выберешь?",
     dir: "data/choose", // cards.json: {q, a:{label,desc,photoFile}, b:{label,desc,photoFile}}; whole card as JSON in `text`
@@ -918,7 +960,7 @@ export function isPackDeckId(id?: string | null): boolean {
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", choose: "ru",
   tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-ru": "ru", "quotes-ar": "ar", "quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
-  "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt",
+  "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar",
 };
 export function deckLang(id: string): string {
   return DECK_LANG[id] || "";

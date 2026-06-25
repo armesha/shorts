@@ -61,6 +61,9 @@ const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
   fr: ["memes-fr"],
   en: ["memes-en"],
   pt: ["memes-pt"],
+  hi: ["memes-hi"],
+  id: ["memes-id"],
+  ar: ["memes-ar"],
 };
 
 const JOKE_SOURCE_GROUPS: SourceGroupDef[] = [
