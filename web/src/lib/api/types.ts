@@ -865,8 +865,11 @@ export interface ChannelThemeBlockAccount {
   avatar?: string | null;
   ytChannelId?: string | null;
   queued: number;
+  effectiveQueued?: number;
+  effectiveRunwayDays?: number | null;
   queuedByDeck: Record<string, number>;
   shortAvailable: number;
+  rawShortAvailable?: number;
   sourceDecks: ChannelThemeBlockDeck[];
 }
 
@@ -910,7 +913,7 @@ export interface ChannelThemeBlockGenerateResult {
 export interface ChannelThemeBlockNormalizeResult {
   blockId: string;
   targetQueued: number;
-  jobs: { accountId: number; channelName: string; deckIds: string[]; jobId: string; total: number; currentQueued: number; targetQueued: number }[];
+  jobs: { accountId: number; channelName: string; deckIds: string[]; jobId: string; total: number; currentQueued: number; targetQueued: number; rawQueued?: number }[];
   skipped: { accountId: number; channelName: string; reason: string; currentQueued?: number; targetQueued?: number }[];
 }
 
