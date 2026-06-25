@@ -2,8 +2,6 @@
   "version": 1,
   "deck": "space",
   "policy": "NASA/SVS/ESA/Commons-style source ledger. Legacy entries without provenance must not be treated as rights-cleared proof.",
-  "createdAt": "2026-06-25T19:33:07.938Z",
-  "updatedAt": "2026-06-25T19:33:07.938Z",
   "items": [
     {
       "id": "37_miles_a_second_into_jupiter",
@@ -62,6 +60,24 @@
       "note": "Existing local space deck item predates permanent source ledger."
     },
     {
+      "id": "aurora_orbit",
+      "file": "space/aurora_orbit.mp4",
+      "title": "Auroras Seen From Above",
+      "text": "Auroras Seen From Above",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_image_video_library",
+      "sourceFile": "aurora_orbit.mp4",
+      "sourceUrl": "https://images-assets.nasa.gov/video/GSFC_20181022_ICON_m12902_Airglow/GSFC_20181022_ICON_m12902_Airglow~medium.mp4",
+      "nasaId": "GSFC_20181022_ICON_m12902_Airglow",
+      "nasaTitle": "The Secrets behind Earth’s Multi-colored Glow",
+      "subject": "Auroras glowing over Earth seen from orbit",
+      "credit": "Joy Ng, Sarah L. Jones, Scott England, Krystofer Kim, Kathalina Tran, Mary P. Hrybyk-Keith",
+      "center": "GSFC",
+      "licenseNote": "NASA media source recorded by the builder; perform per-item manual rights spot-check before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T19:44:38.545Z"
+    },
+    {
       "id": "aurora_with_the_energy_of_an_e",
       "file": "space/aurora_with_the_energy_of_an_e.mp4",
       "title": "Aurora With the Energy of an Earthquake",
@@ -74,6 +90,26 @@
       "title": "When the Sun Strikes the Sky",
       "provenanceStatus": "legacy_missing_source_ledger",
       "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "bennu_asteroid",
+      "file": "space/bennu_asteroid.mp4",
+      "title": "A Sample From Before Earth",
+      "text": "A Sample From Before Earth",
+      "provenanceStatus": "rejected_after_qa",
+      "sourceType": "nasa_image_video_library",
+      "sourceFile": "bennu_asteroid.mp4",
+      "sourceUrl": "https://images-assets.nasa.gov/video/GSFC_20180824_M13051_orex_approach/GSFC_20180824_M13051_orex_approach~medium.mp4",
+      "nasaId": "GSFC_20180824_M13051_orex_approach",
+      "nasaTitle": "NASA's OSIRIS-REx Approaches Asteroid Bennu",
+      "subject": "Asteroid Bennu and the sample brought back to Earth",
+      "credit": "NASA/GSFC",
+      "center": "GSFC",
+      "licenseNote": "NASA media source recorded by the builder; perform per-item manual rights spot-check before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T19:47:29.764Z",
+      "excludedFromDeck": true,
+      "qaNote": "Rejected after source/frame QA: source is mostly presenter/logo/chart/title material, not clean cinematic space footage for the topic."
     },
     {
       "id": "bennu",
@@ -265,6 +301,26 @@
       "note": "Existing local space deck item predates permanent source ledger."
     },
     {
+      "id": "dark_energy",
+      "file": "space/dark_energy.mp4",
+      "title": "The Force Stretching Everything Apart",
+      "text": "The Force Stretching Everything Apart",
+      "provenanceStatus": "rejected_after_qa",
+      "sourceType": "nasa_image_video_library",
+      "sourceFile": "dark_energy.mp4",
+      "sourceUrl": "https://images-assets.nasa.gov/video/ksc_052004_chandra/ksc_052004_chandra~mobile.mp4",
+      "nasaId": "ksc_052004_chandra",
+      "nasaTitle": "KSC-04-S-00174",
+      "subject": "Dark energy tearing the universe apart faster and faster",
+      "credit": "NASA or National Aeronautics and Space Administration",
+      "center": "KSC",
+      "licenseNote": "NASA media source recorded by the builder; perform per-item manual rights spot-check before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T19:47:29.764Z",
+      "excludedFromDeck": true,
+      "qaNote": "Rejected after source/frame QA: source is mostly presenter/logo/chart/title material, not clean cinematic space footage for the topic."
+    },
+    {
       "id": "dm_bullets_crossfire",
       "file": "space/dm_bullets_crossfire.mp4",
       "title": "Two Bullets Meeting In A Crossfire",
@@ -284,6 +340,24 @@
       "title": "What Orbits At The Speed Of Light?",
       "provenanceStatus": "legacy_missing_source_ledger",
       "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "earth_magnetosphere",
+      "file": "space/earth_magnetosphere.mp4",
+      "title": "Earth's Invisible Shield",
+      "text": "Earth's Invisible Shield",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_image_video_library",
+      "sourceFile": "earth_magnetosphere.mp4",
+      "sourceUrl": "https://images-assets.nasa.gov/video/GSFC_20180509_MMS_m12901_Turbulent/GSFC_20180509_MMS_m12901_Turbulent~medium.mp4",
+      "nasaId": "GSFC_20180509_MMS_m12901_Turbulent",
+      "nasaTitle": "NASA Spacecraft Finds New Magnetic Process in Turbulent Space: Explosive Magnetic Reconnection",
+      "subject": "Earth's magnetic field shielding us from the Sun",
+      "credit": "Joy Ng, Tai Phan, James Drake, Michael Shay, Jonathan Eastwood, Mara Johnson-Groh, Tom Bridgman, Lisa Poje, Josh Masters, Walt Feimer, Brian Monroe, Mary P. Hrybyk-Keith, Colby Haggerty, Ashley Michini, Tulasi Parashar, Aaron Lepsch",
+      "center": "GSFC",
+      "licenseNote": "NASA media source recorded by the builder; perform per-item manual rights spot-check before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T19:44:38.545Z"
     },
     {
       "id": "enceladus",
@@ -503,6 +577,24 @@
       "note": "Existing local space deck item predates permanent source ledger."
     },
     {
+      "id": "lucy_trojans",
+      "file": "space/lucy_trojans.mp4",
+      "title": "Fossils Sharing Jupiter's Orbit",
+      "text": "Fossils Sharing Jupiter's Orbit",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_image_video_library",
+      "sourceFile": "lucy_trojans.mp4",
+      "sourceUrl": "https://images-assets.nasa.gov/video/Lucy_EP3_Trojan_Asteroids/Lucy_EP3_Trojan_Asteroids~medium.mp4",
+      "nasaId": "Lucy_EP3_Trojan_Asteroids",
+      "nasaTitle": "Lucy: Ep 3 Trojan Asteroids",
+      "subject": "The Trojan asteroids, fossils of planet formation",
+      "credit": "NASA/HQ",
+      "center": "HQ",
+      "licenseNote": "NASA media source recorded by the builder; perform per-item manual rights spot-check before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T19:44:38.545Z"
+    },
+    {
       "id": "m1_rocket",
       "file": "space/m1_rocket.mp4",
       "title": "The real reason they board a rocket",
@@ -720,6 +812,24 @@
       "note": "Existing local space deck item predates permanent source ledger."
     },
     {
+      "id": "oort_cloud",
+      "file": "space/oort_cloud.mp4",
+      "title": "The Comet Shell Around the Sun",
+      "text": "The Comet Shell Around the Sun",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_image_video_library",
+      "sourceFile": "oort_cloud.mp4",
+      "sourceUrl": "https://images-assets.nasa.gov/video/GSFC_20141017_MAVEN_m11714_Comet_SidingSpring/GSFC_20141017_MAVEN_m11714_Comet_SidingSpring~medium.mp4",
+      "nasaId": "GSFC_20141017_MAVEN_m11714_Comet_SidingSpring",
+      "nasaTitle": "Observing Comet Siding Spring at Mars",
+      "subject": "The Oort Cloud, a shell of comets at the edge of the Sun's reach",
+      "credit": "Dan Gallagher",
+      "center": "GSFC",
+      "licenseNote": "NASA media source recorded by the builder; perform per-item manual rights spot-check before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T19:44:38.545Z"
+    },
+    {
       "id": "pluto",
       "file": "space/pluto.mp4",
       "title": "Pluto's Frozen Heart",
@@ -753,6 +863,26 @@
       "title": "The Crown of the Solar System",
       "provenanceStatus": "legacy_missing_source_ledger",
       "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "saturn_rings",
+      "file": "space/saturn_rings.mp4",
+      "title": "Saturn's Rings Are Falling",
+      "text": "Saturn's Rings Are Falling",
+      "provenanceStatus": "rejected_after_qa",
+      "sourceType": "nasa_image_video_library",
+      "sourceFile": "saturn_rings.mp4",
+      "sourceUrl": "https://images-assets.nasa.gov/video/GSFC_20170912_Cassini_m12709_CIRS_Long/GSFC_20170912_Cassini_m12709_CIRS_Long~medium.mp4",
+      "nasaId": "GSFC_20170912_Cassini_m12709_CIRS_Long",
+      "nasaTitle": "Cassini's Infrared Saturn (Directors Cut)",
+      "subject": "Saturn's rings, made of countless icy fragments",
+      "credit": "Dan Gallagher",
+      "center": "GSFC",
+      "licenseNote": "NASA media source recorded by the builder; perform per-item manual rights spot-check before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T19:47:29.764Z",
+      "excludedFromDeck": true,
+      "qaNote": "Rejected after source/frame QA: source is mostly presenter/logo/chart/title material, not clean cinematic space footage for the topic."
     },
     {
       "id": "saturn_s_rings_will_be_gone_in",
@@ -895,6 +1025,24 @@
       "note": "Existing local space deck item predates permanent source ledger."
     },
     {
+      "id": "titan_lakes",
+      "file": "space/titan_lakes.mp4",
+      "title": "Lakes Made of Liquid Methane",
+      "text": "Lakes Made of Liquid Methane",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_image_video_library",
+      "sourceFile": "titan_lakes.mp4",
+      "sourceUrl": "https://images-assets.nasa.gov/video/GSFC_20130930_Titan_m11339_Propylene/GSFC_20130930_Titan_m11339_Propylene~medium.mp4",
+      "nasaId": "GSFC_20130930_Titan_m11339_Propylene",
+      "nasaTitle": "Propylene on Titan",
+      "subject": "Titan's seas of liquid methane under an orange haze",
+      "credit": "Dan Gallagher",
+      "center": "GSFC",
+      "licenseNote": "NASA media source recorded by the builder; perform per-item manual rights spot-check before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T19:44:38.545Z"
+    },
+    {
       "id": "titan",
       "file": "space/titan.mp4",
       "title": "Rivers of Liquid Methane",
@@ -1006,5 +1154,7 @@
       "provenanceStatus": "legacy_missing_source_ledger",
       "note": "Existing local space deck item predates permanent source ledger."
     }
-  ]
+  ],
+  "updatedAt": "2026-06-25T19:47:29.764Z",
+  "createdAt": "2026-06-25T19:33:07.938Z"
 }

@@ -225,6 +225,7 @@ function loadSpaceSourceLedger() {
   if (fs.existsSync(SPACE_SOURCES)) {
     const parsed = JSON.parse(fs.readFileSync(SPACE_SOURCES, "utf8"));
     return {
+      ...parsed,
       version: 1,
       deck: "space",
       policy: parsed.policy || "NASA/SVS/ESA/Commons-style source ledger. Verify each item before publication.",
@@ -275,7 +276,7 @@ function syncSourceLedger(built) {
   }
   ledger.items = [...byFile.values()].sort((a, b) => String(a.file).localeCompare(String(b.file)));
   ledger.updatedAt = now;
-  fs.writeFileSync(SPACE_SOURCES, JSON.stringify(ledger, null, 2));
+  fs.writeFileSync(SPACE_SOURCES, `${JSON.stringify(ledger, null, 2)}\n`);
 }
 
 if (args.includes("--sync-only")) {
