@@ -865,7 +865,7 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
       queuedTotals.set(account.id, total);
       effectiveQueued.set(account.id, effectiveCapacityForSchedule(account, sourceDecks, queuedByDeck, total).effective);
     }
-    const targetQueued = Math.max(...effectiveQueued.values());
+    const targetQueued = Math.max(...queuedTotals.values());
     const jobs: unknown[] = [];
     const skipped: unknown[] = [];
     for (const account of accounts) {
