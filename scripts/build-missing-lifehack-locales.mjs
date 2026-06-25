@@ -27,6 +27,7 @@ const PROFS = [
   "programmer",
   "teacher",
 ];
+const LENS_OFFSETS = [0, 3, 6, 9];
 
 const locales = {
   en: {
@@ -272,18 +273,22 @@ function titleFor(locale, topic, variant) {
 
 function buildLocale(locale) {
   const cards = [];
-  for (const profession of PROFS) {
-    for (const topic of locale.topics) {
-      for (let variant = 0; variant < locale.patterns.length; variant += 1) {
-        const text = `${locale.patterns[variant](topic)} ${locale.lenses[profession]}.`.replace(/\s+/g, " ").trim();
-        cards.push({
-          id: cards.length + 1,
-          pack: Math.floor(cards.length / PACK_SIZE) + 1,
-          text,
-          chars: text.length,
-          title: titleFor(locale, topic, variant),
-          profession,
-        });
+  for (const lensOffset of LENS_OFFSETS) {
+    for (const [professionIndex, profession] of PROFS.entries()) {
+      for (const topic of locale.topics) {
+        for (let variant = 0; variant < locale.patterns.length; variant += 1) {
+          const secondLens =
+            lensOffset > 0 ? ` ${locale.lenses[PROFS[(professionIndex + lensOffset) % PROFS.length]]}.` : "";
+          const text = `${locale.patterns[variant](topic)} ${locale.lenses[profession]}.${secondLens}`.replace(/\s+/g, " ").trim();
+          cards.push({
+            id: cards.length + 1,
+            pack: Math.floor(cards.length / PACK_SIZE) + 1,
+            text,
+            chars: text.length,
+            title: titleFor(locale, topic, variant),
+            profession,
+          });
+        }
       }
     }
   }

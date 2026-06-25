@@ -18,7 +18,7 @@ Source / safety ledger:
 */
 
 const ROOT = process.cwd();
-const TARGET = 300;
+const TARGET = 1200;
 const PACK_SIZE = 300;
 const SOURCE_SEED_COUNT = 25;
 const PROFS = [
@@ -35,9 +35,9 @@ const PROFS = [
 ];
 
 const DECKS = [
-  { id: "tips", dir: "data/tips", locale: "ru", min: 300, max: 620 },
-  { id: "tips-de", dir: "data/tips-de", locale: "de", min: 300, max: 620 },
-  { id: "tips-es", dir: "data/tips-es", locale: "es", min: 300, max: 620 },
+  { id: "tips", dir: "data/tips", locale: "ru", min: 300, max: 700 },
+  { id: "tips-de", dir: "data/tips-de", locale: "de", min: 300, max: 700 },
+  { id: "tips-es", dir: "data/tips-es", locale: "es", min: 300, max: 700 },
 ];
 
 const TITLE_PATTERNS = {
@@ -107,6 +107,27 @@ const FILLER = {
   ru: "Повторяемость важнее идеального оформления: простая заметка, коробка или стикер уже достаточно хороши для старта.",
   de: "Wiederholung ist wichtiger als Perfektion: Eine Notiz, eine Box oder ein Etikett reicht fuer den Start.",
   es: "La repeticion importa mas que la perfeccion: una nota, una caja o una etiqueta ya sirven para empezar.",
+};
+
+const EXTRA_CHECKS = {
+  ru: [
+    "",
+    "Раз в месяц проверяйте, работает ли это без новых покупок.",
+    "Если правило нельзя повторить за минуту, упростите его.",
+    "Держите подсказку там, где вы принимаете решение.",
+  ],
+  de: [
+    "",
+    "Pruefe einmal im Monat, ob es ohne neue Kaeufe funktioniert.",
+    "Wenn die Regel nicht in einer Minute passt, mach sie einfacher.",
+    "Lege den Hinweis dorthin, wo die Entscheidung faellt.",
+  ],
+  es: [
+    "",
+    "Revisa cada mes si funciona sin compras nuevas.",
+    "Si la regla no cabe en un minuto, hazla mas simple.",
+    "Deja la pista justo donde tomas la decision.",
+  ],
 };
 
 const concepts = [
@@ -1840,11 +1861,13 @@ function candidatesFor(locale, profession) {
     for (let variant = 0; variant < TEXT_PATTERNS[locale].length; variant += 1) {
       let text = sentenceCaseAfterPeriods(TEXT_PATTERNS[locale][variant](localized));
       if (text.length < 300) text = `${text} ${FILLER[locale]}`;
-      out.push({
-        title: truncateTitle(TITLE_PATTERNS[locale][variant](localized.short)),
-        text,
-        profession,
-      });
+      for (const extra of EXTRA_CHECKS[locale]) {
+        out.push({
+          title: truncateTitle(TITLE_PATTERNS[locale][variant](localized.short)),
+          text: sentenceCaseAfterPeriods(`${text} ${extra}`),
+          profession,
+        });
+      }
     }
   }
   return out;
