@@ -13,7 +13,7 @@ type Props = {
 
 const DAILY_KEY_CAP = 92;
 
-type BusyState = { blockId: string; kind: "short" | "schedule" | "account"; lang?: string } | null;
+type BusyState = { blockId: string; kind: "short" | "normalize" | "schedule" | "account"; lang?: string } | null;
 
 type BlockDeckSummary = {
   id: string;
@@ -23,6 +23,8 @@ type BlockDeckSummary = {
   queued: number;
   channels: number;
 };
+
+type OperationalAccount = Pick<Account, "enabled" | "schedule" | "uploadsToday" | "oauthClientId">;
 
 function accountsInBlock(block: ChannelThemeBlock): ChannelThemeBlockAccount[] {
   return block.cells.flatMap((cell) => cell.accounts);
@@ -59,6 +61,12 @@ function formatRunwayDays(days: number | null): string {
   return days.toFixed(days < 10 ? 1 : 0);
 }
 
+function queueRange(block: ChannelThemeBlock): { min: number; max: number } {
+  const values = accountsInBlock(block).map((account) => account.queued);
+  if (!values.length) return { min: 0, max: 0 };
+  return { min: Math.min(...values), max: Math.max(...values) };
+}
+
 export default function ChannelBlocks({ onShowClassic }: Props) {
   const { t } = useT();
   const queue = useGenQueue();
@@ -93,6 +101,19 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
 
   const selectedBlockId = searchParams.get("block");
   const selectedBlock = data?.blocks.find((block) => block.id === selectedBlockId) ?? null;
+  const operationalAccounts = useMemo<OperationalAccount[]>(() => {
+    if (!selectedBlock) return accounts;
+    const fullById = new Map(accounts.map((account) => [account.id, account]));
+    return accountsInBlock(selectedBlock).map((account) => {
+      const full = fullById.get(account.id);
+      return {
+        enabled: full?.enabled ?? account.enabled,
+        schedule: full?.schedule ?? account.schedule,
+        uploadsToday: full?.uploadsToday ?? 0,
+        oauthClientId: full?.oauthClientId ?? null,
+      };
+    });
+  }, [accounts, selectedBlock]);
 
   async function generateShort(block: ChannelThemeBlock) {
     setBusy({ blockId: block.id, kind: "short" });
@@ -104,6 +125,28 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
         t("channelBlocks.shortQueued", {
           jobs: res.jobs.length,
           videos: res.jobs.reduce((sum, job) => sum + job.total, 0),
+          skipped: res.skipped.length,
+        }),
+      );
+      await load();
+    } catch (e) {
+      setNotice(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function normalizeQueue(block: ChannelThemeBlock) {
+    setBusy({ blockId: block.id, kind: "normalize" });
+    setNotice("");
+    try {
+      const res = await apiClient.normalizeChannelThemeBlock(block.id);
+      queue.trackJobs(res.jobs);
+      setNotice(
+        t("channelBlocks.normalizeQueued", {
+          jobs: res.jobs.length,
+          videos: res.jobs.reduce((sum, job) => sum + job.total, 0),
+          target: res.targetQueued,
           skipped: res.skipped.length,
         }),
       );
@@ -185,7 +228,7 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
         </div>
       )}
 
-      <OperationalSummary accounts={accounts} clients={clients} />
+      <OperationalSummary accounts={operationalAccounts} clients={clients} />
 
       {data && !selectedBlock && (
         <>
@@ -221,6 +264,7 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
           setPerDay={setPerDay}
           busy={busy}
           generateShort={generateShort}
+          normalizeQueue={normalizeQueue}
           applySchedule={applySchedule}
           addBlockAccount={addBlockAccount}
         />
@@ -278,6 +322,7 @@ function BlockDetail({
   setPerDay,
   busy,
   generateShort,
+  normalizeQueue,
   applySchedule,
   addBlockAccount,
 }: {
@@ -289,13 +334,17 @@ function BlockDetail({
   setPerDay: (value: number) => void;
   busy: BusyState;
   generateShort: (block: ChannelThemeBlock) => Promise<void>;
+  normalizeQueue: (block: ChannelThemeBlock) => Promise<void>;
   applySchedule: (block: ChannelThemeBlock) => Promise<void>;
   addBlockAccount: (block: ChannelThemeBlock, lang: string) => Promise<void>;
 }) {
   const { t } = useT();
   const shortBusy = busy?.blockId === block.id && busy.kind === "short";
+  const normalizeBusy = busy?.blockId === block.id && busy.kind === "normalize";
   const scheduleBusy = busy?.blockId === block.id && busy.kind === "schedule";
   const decks = deckSummaries(block);
+  const range = queueRange(block);
+  const canNormalize = block.totalAccounts > 1 && range.max > range.min;
   return (
     <>
       <div className="grid gap-3 md:grid-cols-5">
@@ -336,6 +385,15 @@ function BlockDetail({
               >
                 {shortBusy ? <span className="loading loading-spinner loading-xs" /> : <AppIcon name="plus" size={14} />}
                 {t("channelBlocks.generateShort")}
+              </button>
+              <button
+                className="btn btn-sm btn-outline gap-1 whitespace-nowrap"
+                disabled={normalizeBusy || !canNormalize}
+                onClick={() => void normalizeQueue(block)}
+                title={canNormalize ? t("channelBlocks.normalizeTitle", { target: range.max }) : t("channelBlocks.normalizeAlready")}
+              >
+                {normalizeBusy ? <span className="loading loading-spinner loading-xs" /> : <AppIcon name="refresh" size={14} />}
+                {t("channelBlocks.normalizeQueue")}
               </button>
             </div>
             <div className="flex flex-wrap items-end gap-2">
@@ -442,7 +500,7 @@ function BlockDetail({
   );
 }
 
-function OperationalSummary({ accounts, clients }: { accounts: Account[]; clients: OAuthClient[] }) {
+function OperationalSummary({ accounts, clients }: { accounts: OperationalAccount[]; clients: OAuthClient[] }) {
   const { t } = useT();
   const uploadsToday = accounts.reduce((sum, account) => sum + account.uploadsToday, 0);
   const perDay = accounts.filter((account) => account.enabled).reduce((sum, account) => sum + account.schedule.length, 0);

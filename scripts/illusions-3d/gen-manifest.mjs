@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// Generate RU + DE 200-clip manifests for the illusions-3d pack.
+// Generate RU + DE + EN 200-clip manifests for the illusions-3d pack.
 //   20 figures x 10 variants (direction / speed / view angle) = 200 clips.
 //   Titles are ONE theme only: "rotate/flip the figure with your mind" (RU силой мысли / DE Gedankenkraft).
-//   Same geometry RU vs DE; only the baked title + ids differ. Palette fixed = spectrum.
+//   Same geometry RU/DE/EN; only the baked title + ids differ. Palette fixed = spectrum.
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -13,26 +13,26 @@ const WORK = resolve(ROOT, 'temp/illusions-3d'); // generated manifests live in 
 mkdirSync(WORK, { recursive: true });
 
 const FIGURES = [
-  { shape: 'cube', ru: 'Куб Неккера', de: 'Necker-Würfel' },
-  { shape: 'tetra', ru: 'Тетраэдр', de: 'Tetraeder' },
-  { shape: 'octa', ru: 'Октаэдр', de: 'Oktaeder' },
-  { shape: 'icosa', ru: 'Икосаэдр', de: 'Ikosaeder' },
-  { shape: 'dodeca', ru: 'Додекаэдр', de: 'Dodekaeder' },
-  { shape: 'stella', ru: 'Звёздный тетраэдр', de: 'Sterntetraeder' },
-  { shape: 'tesseract', ru: 'Тессеракт', de: 'Tesserakt' },
-  { shape: 'torus', ru: 'Тор', de: 'Torus' },
-  { shape: 'mobius', ru: 'Лента Мёбиуса', de: 'Möbiusband' },
-  { shape: 'orbital', ru: 'Орбитальная сфера', de: 'Orbitale Sphäre' },
-  { shape: 'pyramid', ru: 'Пирамида', de: 'Pyramide' },
-  { shape: 'bipyramid', ru: 'Бипирамида', de: 'Bipyramide' },
-  { shape: 'prism', ru: 'Призма', de: 'Prisma' },
-  { shape: 'antiprism', ru: 'Антипризма', de: 'Antiprisma' },
-  { shape: 'cubocta', ru: 'Кубооктаэдр', de: 'Kuboktaeder' },
-  { shape: 'helix', ru: 'Спираль', de: 'Spirale' },
-  { shape: 'dna', ru: 'Двойная спираль', de: 'Doppelhelix' },
-  { shape: 'trefoil', ru: 'Узел', de: 'Knoten' },
-  { shape: 'fivecell', ru: 'Пентатоп (4D)', de: 'Pentachoron (4D)' },
-  { shape: 'sixteencell', ru: '16-ячейник (4D)', de: '16-Zell (4D)' },
+  { shape: 'cube', ru: 'Куб Неккера', de: 'Necker-Würfel', en: 'Necker Cube' },
+  { shape: 'tetra', ru: 'Тетраэдр', de: 'Tetraeder', en: 'Tetrahedron' },
+  { shape: 'octa', ru: 'Октаэдр', de: 'Oktaeder', en: 'Octahedron' },
+  { shape: 'icosa', ru: 'Икосаэдр', de: 'Ikosaeder', en: 'Icosahedron' },
+  { shape: 'dodeca', ru: 'Додекаэдр', de: 'Dodekaeder', en: 'Dodecahedron' },
+  { shape: 'stella', ru: 'Звёздный тетраэдр', de: 'Sterntetraeder', en: 'Stella Octangula' },
+  { shape: 'tesseract', ru: 'Тессеракт', de: 'Tesserakt', en: 'Tesseract' },
+  { shape: 'torus', ru: 'Тор', de: 'Torus', en: 'Torus' },
+  { shape: 'mobius', ru: 'Лента Мёбиуса', de: 'Möbiusband', en: 'Mobius Strip' },
+  { shape: 'orbital', ru: 'Орбитальная сфера', de: 'Orbitale Sphäre', en: 'Orbital Sphere' },
+  { shape: 'pyramid', ru: 'Пирамида', de: 'Pyramide', en: 'Pyramid' },
+  { shape: 'bipyramid', ru: 'Бипирамида', de: 'Bipyramide', en: 'Bipyramid' },
+  { shape: 'prism', ru: 'Призма', de: 'Prisma', en: 'Prism' },
+  { shape: 'antiprism', ru: 'Антипризма', de: 'Antiprisma', en: 'Antiprism' },
+  { shape: 'cubocta', ru: 'Кубооктаэдр', de: 'Kuboktaeder', en: 'Cuboctahedron' },
+  { shape: 'helix', ru: 'Спираль', de: 'Spirale', en: 'Helix' },
+  { shape: 'dna', ru: 'Двойная спираль', de: 'Doppelhelix', en: 'Double Helix' },
+  { shape: 'trefoil', ru: 'Узел', de: 'Knoten', en: 'Trefoil Knot' },
+  { shape: 'fivecell', ru: 'Пентатоп (4D)', de: 'Pentachoron (4D)', en: '5-Cell (4D)' },
+  { shape: 'sixteencell', ru: '16-ячейник (4D)', de: '16-Zell (4D)', en: '16-Cell (4D)' },
 ];
 
 // 10 visual variants — direction, number of turns over the 8s loop, and a view-angle nudge.
@@ -85,8 +85,24 @@ const DE = [
   'Schau hin, bis sich die Richtung ändert',
   'Dreh die Drehung mit Gedankenkraft um',
 ];
+const EN = [
+  'Rotate the image with your mind',
+  'Change the spin direction with your mind',
+  'Flip the figure with your mind',
+  'Make it spin the other way with your mind',
+  'Switch the rotation with your mind',
+  'Change which way it turns with your mind',
+  'Can you flip it with one look?',
+  'Your brain flips this figure on its own',
+  'Catch the moment when the spin reverses',
+  'One look and it spins the other way',
+  'Stop it and reverse the spin with your mind',
+  'Make the figure spin backward with your mind',
+  'Keep watching until the direction changes',
+  'Flip the rotation with your mind',
+];
 
-const ru = [], de = [];
+const ru = [], de = [], en = [];
 let num = 0;
 function emit(fi, fig, k) {
   num++;
@@ -96,6 +112,7 @@ function emit(fi, fig, k) {
   const common = { shape: fig.shape, dir: vr.dir, turns: vr.turns, dTilt: vr.dTilt, dRoll: vr.dRoll };
   ru.push({ id: `ilr_${id}_${fig.shape}`, ...common, title: RU[tIdx], name: fig.ru });
   de.push({ id: `ild_${id}_${fig.shape}`, ...common, title: DE[tIdx], name: fig.de });
+  en.push({ id: `ile_${id}_${fig.shape}`, ...common, title: EN[tIdx], name: fig.en });
 }
 // Pass A (ids 001..100): variants 0..4 — IDENTICAL to the original 100 so SKIP_EXISTING reuses them.
 FIGURES.forEach((fig, fi) => { for (let k = 0; k < 5; k++) emit(fi, fig, k); });
@@ -104,4 +121,5 @@ FIGURES.forEach((fig, fi) => { for (let k = 5; k < 10; k++) emit(fi, fig, k); })
 
 writeFileSync(resolve(WORK, 'ru-manifest.json'), JSON.stringify(ru, null, 2) + '\n');
 writeFileSync(resolve(WORK, 'de-manifest.json'), JSON.stringify(de, null, 2) + '\n');
-console.log(`ru-manifest: ${ru.length} clips; de-manifest: ${de.length} clips (20 figures x 10 variants)`);
+writeFileSync(resolve(WORK, 'en-manifest.json'), JSON.stringify(en, null, 2) + '\n');
+console.log(`ru-manifest: ${ru.length} clips; de-manifest: ${de.length} clips; en-manifest: ${en.length} clips (20 figures x 10 variants)`);

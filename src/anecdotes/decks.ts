@@ -502,6 +502,19 @@ export const DECKS: Deck[] = [
     preFact: true,
   },
   {
+    id: "visual-riddles-en",
+    name: "Visual Riddles",
+    dir: "data/visual-riddles-en", // videos.json = [{file,title,text}]; English localization of visual-riddles
+    source: "",
+    emoji: "🧩",
+    hashtags: "#riddles #visualriddle #brainteaser #opticalillusion #shorts",
+    tags: ["riddles", "visual riddle", "brain teaser", "optical illusion", "logic", "attention", "shorts"],
+    genericTitles: ["Visual Riddles", "Brain Teaser", "Attention Test", "Can You Solve It?"],
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+  },
+  {
     id: "animal-superheroes",
     name: "ЗвероГерои",
     dir: "data/animal-superheroes", // videos.json = numbered story episodes with voiceover + subtitles
@@ -552,6 +565,19 @@ export const DECKS: Deck[] = [
     tags: ["illusion", "optische täuschung", "gehirn", "rotation", "gedankenkraft", "shorts"],
     genericTitles: ["Überliste dein Gehirn", "Drehillusion", "Mit Gedankenkraft drehen", "Wohin dreht es sich?"],
     adminOnly: true, // pre-built rotating-illusion pack (DE) — admin grants it to regular users from /users
+    grantable: true,
+    preFact: true,
+  },
+  {
+    id: "illusions-3d-en",
+    name: "Mind-Flip 3D Illusions",
+    dir: "data/illusions-3d-en", // videos.json = [{file,title,text}]; English localization of illusions-3d
+    source: "",
+    emoji: "🧊",
+    hashtags: "#opticalillusion #illusion #brain #rotation #mindtrick #shorts",
+    tags: ["optical illusion", "illusion", "brain", "rotation", "mind trick", "perception", "shorts"],
+    genericTitles: ["Mind-Flip 3D Illusions", "Rotation Illusion", "Flip It With Your Mind", "Which Way Is It Turning?"],
+    adminOnly: true,
     grantable: true,
     preFact: true,
   },
@@ -633,7 +659,7 @@ export function isPackDeckId(id?: string | null): boolean {
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en", choose: "ru",
-  tips: "ru", "tips-de": "de", "tips-es": "es", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-ru": "ru", "quotes-ar": "ar", "quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru",
+  tips: "ru", "tips-de": "de", "tips-es": "es", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-ru": "ru", "quotes-ar": "ar", "quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it",
 };
 export function deckLang(id: string): string {

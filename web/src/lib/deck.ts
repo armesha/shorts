@@ -51,10 +51,12 @@ export const DECK_GLOSS_RU: Record<string, string> = {
   "long-islamic-ar": "Ислам · длинное видео · арабский",
   "long-christian-en": "Христианство · длинное видео · англ.",
   "visual-riddles-de": "Sieh die Antwort · видео (DE)",
+  "visual-riddles-en": "Визуальные загадки · видео · англ.",
   "animal-superheroes": "ЗвероГерои · видео",
   "animal-superheroes-en": "ЗвероГерои · видео · англ.",
   "illusions-3d": "Иллюзия вращения · видео",
   "illusions-3d-de": "Überliste dein Gehirn · видео (DE)",
+  "illusions-3d-en": "3D-иллюзии вращения · видео · англ.",
   "illusions-en": "Оптические иллюзии · видео · англ.",
   "illusions-de": "Оптические иллюзии · видео · нем.",
   "illusions-it": "Оптические иллюзии · видео · итал.",
@@ -73,7 +75,7 @@ export const deckLabel = (id: string, name: string): string =>
 /** Content language of each built-in deck (deck id → 2-letter lang). Custom packs carry their own lang. */
 export const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en", choose: "ru",
-  tips: "ru", "tips-de": "de", "tips-es": "es", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-ru": "ru", "quotes-ar": "ar", "quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru",
+  tips: "ru", "tips-de": "de", "tips-es": "es", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-ru": "ru", "quotes-ar": "ar", "quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it",
 };
 
@@ -141,10 +143,12 @@ export const BUILTIN_DECKS: { id: string; label: string }[] = [
   { id: "long-islamic-ar", label: "القرآن والحديث والدعاء (длинное видео, AR)" },
   { id: "long-christian-en", label: "The Faithful Journey (длинное видео, EN)" },
   { id: "visual-riddles-de", label: "Sieh die Antwort (видео, DE)" },
+  { id: "visual-riddles-en", label: "Visual Riddles (видео, EN)" },
   { id: "animal-superheroes", label: "ЗвероГерои (видео, RU)" },
   { id: "animal-superheroes-en", label: "Animal Heroes (видео, EN)" },
   { id: "illusions-3d", label: "Обмани свой мозг (видео, RU)" },
   { id: "illusions-3d-de", label: "Überliste dein Gehirn (видео, DE)" },
+  { id: "illusions-3d-en", label: "Mind-Flip 3D Illusions (видео, EN)" },
   { id: "illusions-en", label: "Optical Illusions (видео, EN)" },
   { id: "illusions-de", label: "Optische Täuschungen (видео, DE)" },
   { id: "illusions-it", label: "Illusioni ottiche (видео, IT)" },

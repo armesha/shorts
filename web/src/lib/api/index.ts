@@ -12,7 +12,7 @@ import type {
   AdminAnalytics, UserAnalytics, ErrorLogItem, NotificationItem, NotificationCounts, SystemStatus,
   ContentCatalogResponse, AccountReadiness, QueueOverview, LongVideoCatalog,
   ChannelThemeBlockAccount, ChannelThemeBlocksResponse, ChannelThemeBlockGenerateResult,
-  ChannelThemeBlockScheduleResult,
+  ChannelThemeBlockNormalizeResult, ChannelThemeBlockScheduleResult,
 } from "./types";
 
 export const apiClient = {
@@ -102,6 +102,12 @@ export const apiClient = {
       "POST",
       { count, ...(accountIds ? { accountIds } : {}) },
     ),
+  normalizeChannelThemeBlock: (blockId: string, accountIds?: number[]) =>
+    send<ChannelThemeBlockNormalizeResult>(
+      `/super-admin/channel-blocks/${encodeURIComponent(blockId)}/normalize`,
+      "POST",
+      { ...(accountIds ? { accountIds } : {}) },
+    ),
   setChannelThemeBlockSchedule: (blockId: string, perDay: number, accountIds?: number[]) =>
     send<ChannelThemeBlockScheduleResult>(
       `/super-admin/channel-blocks/${encodeURIComponent(blockId)}/schedule`,
@@ -142,6 +148,19 @@ export const apiClient = {
     if (p.pageSize != null) qs.set("pageSize", String(p.pageSize));
     const s = qs.toString();
     return get<HistoryPage>(`/history${s ? "?" + s : ""}`);
+  },
+  clearHistoryErrors: (params?: {
+    scope?: "mine" | "all";
+    userId?: number;
+    accountId?: number;
+  }) => {
+    const p = params ?? {};
+    const qs = new URLSearchParams();
+    if (p.scope === "all") qs.set("scope", "all");
+    if (p.userId != null) qs.set("userId", String(p.userId));
+    if (p.accountId != null) qs.set("accountId", String(p.accountId));
+    const s = qs.toString();
+    return send<{ ok: boolean; removed: number }>(`/history/errors${s ? "?" + s : ""}`, "DELETE");
   },
   generators: () => get<Generator[]>("/generators"),
   galleryCards: (deck: string) =>

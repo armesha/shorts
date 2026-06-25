@@ -63,7 +63,7 @@ const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
   riddles_illusions: {
     ru: ["visual-riddles", "illusions-ru", "illusions-3d"],
     de: ["visual-riddles-de", "illusions-de", "illusions-3d-de"],
-    en: ["illusions-en"],
+    en: ["visual-riddles-en", "illusions-en", "illusions-3d-en"],
     it: ["illusions-it"],
     es: ["illusions-es"],
   },
@@ -111,7 +111,7 @@ const BLOCKS: BlockDef[] = [
       "Один визуальный ассет можно локализовать через текстовые overlays, если права на исходник проверены.",
       "Для новых языков готовить отдельные titles/labels, а не смешивать языки внутри одного ролика.",
     ],
-    accountIds: [52, 72],
+    accountIds: [52, 72, 78],
   },
   {
     id: "religion",
@@ -405,8 +405,8 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
       sourceDecks,
       channelLang: lang,
       schedule: [],
-      avatar: deps.randomAvatar(),
-      avatarSource: "random",
+      avatar: null,
+      avatarSource: "youtube",
       status: "needs_auth",
       enabled: true,
     });
@@ -446,6 +446,56 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
       jobs.push({ accountId: account.id, channelName: account.channelName, deckIds, jobId: job.id, total: job.total });
     }
     return { blockId, requestedPerChannel: count, jobs, skipped };
+  });
+
+  app.post("/api/super-admin/channel-blocks/:id/normalize", async (req, reply) => {
+    if (!requireSuperAdmin(req, reply, deps)) return;
+    const blockId = (req.params as { id: string }).id;
+    const only = requestedAccountIds(req.body);
+    const accounts = blockAccounts(db, deps, blockId).filter((account) => !only || only.has(account.id));
+    if (!accounts.length) return reply.code(404).send({ error: "Тематический блок не найден или пуст." });
+
+    const queuedByAccount = new Map(accounts.map((account) => [account.id, db.listVideos(account.id).length]));
+    const targetQueued = Math.max(...queuedByAccount.values());
+    const jobs: unknown[] = [];
+    const skipped: unknown[] = [];
+    for (const account of accounts) {
+      const currentQueued = queuedByAccount.get(account.id) ?? 0;
+      const missing = targetQueued - currentQueued;
+      if (missing <= 0) {
+        skipped.push({ accountId: account.id, channelName: account.channelName, reason: "already_at_target", currentQueued, targetQueued });
+        continue;
+      }
+      const ownerId = account.userId ?? uid(req);
+      const deckIds = deps.deckAccess.accountSourceDecks(account);
+      if (!deckIds.length) {
+        skipped.push({ accountId: account.id, channelName: account.channelName, reason: "no_sources", currentQueued, targetQueued });
+        continue;
+      }
+      let total = missing;
+      if (!db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) {
+        const free = Math.max(
+          0,
+          deps.deckAccess.availableUnusedForDecks(ownerId, deckIds) - queuedRemainingForOwnerDecks(ownerId, deckIds),
+        );
+        if (free <= 0) {
+          skipped.push({ accountId: account.id, channelName: account.channelName, reason: "no_free_cards", currentQueued, targetQueued });
+          continue;
+        }
+        total = Math.min(total, free);
+      }
+      const job = genEnqueue(uid(req), account.id, total, ownerId, deckIds);
+      jobs.push({
+        accountId: account.id,
+        channelName: account.channelName,
+        deckIds,
+        jobId: job.id,
+        total: job.total,
+        currentQueued,
+        targetQueued,
+      });
+    }
+    return { blockId, targetQueued, jobs, skipped };
   });
 
   app.post("/api/super-admin/channel-blocks/:id/schedule", async (req, reply) => {

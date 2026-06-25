@@ -28,6 +28,7 @@ import { makeNotifier } from "./services/notify-stream.ts";
 import { makeBuildLibraryVideo } from "./services/library-build.ts";
 import { youtubeAnalyticsRange, summarizeStoredAnalytics } from "./services/analytics-range.ts";
 import { ytErrorMessage } from "./services/youtube-errors.ts";
+import { syncContentLibraryIndex } from "./services/content-library-index.ts";
 import { makeRouteDeps } from "./routes/deps.ts";
 
 // ---- Route modules ----
@@ -55,6 +56,14 @@ import { registerSuperAdminChannelBlockRoutes } from "./routes/super-admin-chann
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
+try {
+  const synced = syncContentLibraryIndex(db.db);
+  process.env.CONTENT_LIBRARY_SQLITE = "1";
+  process.env.CONTENT_LIBRARY_DB = base.dbPath;
+  console.log(`[content] SQLite library index synced: ${synced.decks} decks, ${synced.items} items.`);
+} catch (err) {
+  console.warn("[content] SQLite library index sync failed; falling back to JSON files.", err);
+}
 
 const credsPath = (): string => resolveClientSecretFile(db.getSetting("googleClientSecretFile"));
 
@@ -123,24 +132,13 @@ for (const acc of db.listAccounts()) {
   if (lng) db.updateAccount(acc.id, { channelLang: lng });
 }
 
-// ---- Channel avatars: built-in CC0 set in assets/avatars; random by default, custom upload allowed ----
+// ---- Legacy built-in avatar set. Channel display avatars come from YouTube thumbnails. ----
 const AVATAR_DIR = resolve(process.cwd(), "assets/avatars");
 function listAvatarFiles(): string[] {
   try {
     return readdirSync(AVATAR_DIR).filter((f) => /\.(png|jpe?g|webp|svg)$/i.test(f)).sort();
   } catch {
     return [];
-  }
-}
-function randomAvatar(): string | null {
-  const all = listAvatarFiles();
-  return all.length ? `/avatars/${all[Math.floor(Math.random() * all.length)]}` : null;
-}
-// Backfill: existing channels with no avatar get a random one (only fills empty).
-for (const acc of db.listAccounts()) {
-  if (!acc.avatar) {
-    const av = randomAvatar();
-    if (av) db.updateAccount(acc.id, { avatar: av, avatarSource: "random" });
   }
 }
 
@@ -296,7 +294,6 @@ const deps = makeRouteDeps({
   webOrigin: WEB_ORIGIN,
   accountCreds,
   listAvatarFiles,
-  randomAvatar,
 });
 
 // ---- Register every route module (composition only — handlers live in routes/) ----

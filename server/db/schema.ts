@@ -197,6 +197,30 @@ export function applySchema(db: DatabaseSync): void {
       project_id TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+    CREATE TABLE IF NOT EXISTS content_decks (
+      deck_id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      kind TEXT NOT NULL DEFAULT 'builtin',
+      lang TEXT,
+      pre_fact INTEGER NOT NULL DEFAULT 0,
+      long_video INTEGER NOT NULL DEFAULT 0,
+      total INTEGER NOT NULL DEFAULT 0,
+      source_hash TEXT NOT NULL DEFAULT '',
+      synced_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE TABLE IF NOT EXISTS content_items (
+      deck_id TEXT NOT NULL,
+      item_index INTEGER NOT NULL,
+      item_key TEXT NOT NULL,
+      pack_no INTEGER NOT NULL DEFAULT 1,
+      title TEXT NOT NULL DEFAULT '',
+      text TEXT NOT NULL DEFAULT '',
+      chars INTEGER NOT NULL DEFAULT 0,
+      video_file TEXT,
+      payload_json TEXT NOT NULL,
+      synced_at TEXT NOT NULL DEFAULT (datetime('now')),
+      PRIMARY KEY (deck_id, item_index)
+    );
   `);
 
   // Additive schema migrations. ADD COLUMN is idempotent across restarts, but ONLY the expected
@@ -225,6 +249,9 @@ export function applySchema(db: DatabaseSync): void {
   addColumn("accounts", "avatar_source TEXT NOT NULL DEFAULT 'random'");
   db.prepare("UPDATE accounts SET avatar_source = 'youtube' WHERE avatar LIKE 'http%'").run();
   db.prepare("UPDATE accounts SET avatar_source = 'manual' WHERE avatar LIKE '/files/avatars/%'").run();
+  db.prepare(
+    "UPDATE accounts SET avatar = yt_channel_avatar, avatar_source = 'youtube' WHERE yt_channel_avatar IS NOT NULL AND TRIM(yt_channel_avatar) != ''",
+  ).run();
   addColumn("videos", "deck TEXT NOT NULL DEFAULT 'ru'");
   addColumn("accounts", "user_id INTEGER");
   addColumn("accounts", "oauth_client_id INTEGER"); // which uploaded Google key the channel is bound to
@@ -269,6 +296,8 @@ export function applySchema(db: DatabaseSync): void {
     CREATE INDEX IF NOT EXISTS idx_notifications_last_seen ON notifications(last_seen_at);
     CREATE INDEX IF NOT EXISTS idx_oauth_clients_user ON oauth_clients(user_id);
     CREATE INDEX IF NOT EXISTS idx_accounts_oauth_client ON accounts(oauth_client_id);
+    CREATE INDEX IF NOT EXISTS idx_content_items_deck_key ON content_items(deck_id, item_key);
+    CREATE INDEX IF NOT EXISTS idx_content_decks_lang ON content_decks(lang);
   `);
 
   // Multi-key OAuth migration (idempotent via MOVE semantics): pull each user's legacy single

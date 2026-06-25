@@ -1,9 +1,7 @@
-// Channel (account) CRUD + avatar upload/list + publishing history. Regular users see/edit only their
+// Channel (account) CRUD + avatar lookup + publishing history. Regular users see/edit only their
 // own channels; admins may pass ?scope=all and open any /accounts/:id. Handlers moved VERBATIM from
 // index.ts. The source-deck validation / language guards run through the injected deckAccess cluster.
-import type { FastifyInstance } from "fastify";
-import { mkdirSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import type { Db, Account } from "../db.ts";
 import { DECKS, MANUAL_VIDEO_DECK } from "../../src/anecdotes/decks.ts";
 import { uid } from "../infra/auth-session.ts";
@@ -15,10 +13,8 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
   const {
     accessibleAccount,
     rejectScheduleLimit,
-    randomAvatar,
     listAvatarFiles,
     visibleAccounts,
-    outputDir,
   } = deps;
   const { validateAccountSourceDeck, cleanDeckIds, accountSourceDecks, deckContentLang, deckExists, deckAllowed } = deps.deckAccess;
 
@@ -37,34 +33,24 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
     return db.createAccount({
       ...body,
       userId: uid(req),
-      avatar: body.avatar ?? randomAvatar(),
-      avatarSource: body.avatar ? "manual" : "random",
+      avatar: null,
+      avatarSource: "youtube",
     });
   });
-  // Built-in avatar set (CC0) for the channel avatar picker.
+  // Legacy endpoint kept for old clients; the UI now always uses the real YouTube channel avatar.
   app.get("/api/avatars", async () => listAvatarFiles().map((f) => `/avatars/${f}`));
-  // Upload a custom channel avatar (JSON { dataUrl }); stored under data/output/avatars, served via /files/.
   app.post("/api/accounts/:id/avatar", async (req, reply) => {
     const id = Number((req.params as { id: string }).id);
     if (!accessibleAccount(req, reply, id)) return;
-    const { dataUrl } = (req.body as { dataUrl?: string }) ?? {};
-    const m = /^data:image\/(png|jpe?g|webp);base64,([A-Za-z0-9+/=]+)$/.exec(dataUrl ?? "");
-    if (!m) return reply.code(400).send({ error: "Нужен PNG / JPEG / WEBP (data URL)." });
-    const buf = Buffer.from(m[2], "base64");
-    if (buf.length > 3_000_000) return reply.code(400).send({ error: "Слишком большой файл (макс 3 МБ)." });
-    const rel = `avatars/acc-${id}-${Date.now()}.${m[1] === "jpeg" ? "jpg" : m[1]}`;
-    mkdirSync(resolve(process.cwd(), outputDir, "avatars"), { recursive: true });
-    writeFileSync(resolve(process.cwd(), outputDir, rel), buf);
-    return db.updateAccount(id, { avatar: `/files/${rel}` });
+    return reply.code(410).send({ error: "Аватар канала берётся из YouTube и не задаётся вручную." });
   });
   app.put("/api/accounts/:id", async (req, reply) => {
     const id = Number((req.params as { id: string }).id);
     const acc = accessibleAccount(req, reply, id);
     if (!acc) return;
     const body = (req.body as Partial<Account>) ?? {};
-    // avatar can only be one of our served paths (built-in /avatars/ or uploaded /files/avatars/)
-    if (body.avatar != null && !/^\/(avatars|files)\//.test(body.avatar)) delete body.avatar;
-    else if (body.avatar != null) body.avatarSource = "manual";
+    delete body.avatar;
+    delete body.avatarSource;
     const validateLongVideoDecks = (deckIds: string[]): boolean => {
       const channelLang = (body.channelLang ?? acc.channelLang ?? "") as string;
       for (const deckId of deckIds) {
@@ -160,6 +146,18 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
 
   // History list (paginated). Regular users see ONLY their own channels. Admins may pass
   // scope=all (every user), or narrow with userId / accountId. Returns { items, total, page, pageSize }.
+  const historyFilterForReq = (
+    req: FastifyRequest,
+    q: { scope?: string; userId?: string; accountId?: string },
+  ): { ownerId?: number; accountId?: number } => {
+    const isAdmin = db.getUserById(uid(req))?.role === "admin";
+    if (!isAdmin) return { ownerId: uid(req) };
+    if (q.accountId) return { accountId: Number(q.accountId) };
+    if (q.userId) return { ownerId: Number(q.userId) };
+    if (q.scope === "all") return {};
+    return { ownerId: uid(req) };
+  };
+
   app.get("/api/history", async (req) => {
     const q =
       (req.query as {
@@ -170,18 +168,23 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
         page?: string;
         pageSize?: string;
       }) ?? {};
-    const isAdmin = db.getUserById(uid(req))?.role === "admin";
-    let filter: { ownerId?: number; accountId?: number };
-    if (!isAdmin) filter = { ownerId: uid(req) }; // non-admin: locked to own channels
-    else if (q.accountId) filter = { accountId: Number(q.accountId) };
-    else if (q.userId) filter = { ownerId: Number(q.userId) };
-    else if (q.scope === "all") filter = {}; // every user's channels
-    else filter = { ownerId: uid(req) }; // admin's own (default)
+    const filter = historyFilterForReq(req, q);
     const onlyErrors = q.onlyErrors === "1" || q.onlyErrors === "true"; // «только не выложенные / с ошибками»
     const page = Math.max(1, Number(q.page) || 1);
     const pageSize = Math.min(100, Math.max(5, Number(q.pageSize) || 25));
     const total = db.countHistoryFiltered({ ...filter, onlyErrors });
     const items = db.listHistoryFiltered({ ...filter, onlyErrors, limit: pageSize, offset: (page - 1) * pageSize });
     return { items, total, page, pageSize };
+  });
+
+  app.delete("/api/history/errors", async (req) => {
+    const q =
+      (req.query as {
+        scope?: string;
+        userId?: string;
+        accountId?: string;
+      }) ?? {};
+    const removed = db.deleteHistoryErrors(historyFilterForReq(req, q));
+    return { ok: true, removed };
   });
 }

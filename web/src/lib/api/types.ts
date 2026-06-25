@@ -210,6 +210,7 @@ export interface LowDeckRow {
   username: string;
   deckId: string;
   deckName: string;
+  lang?: string | null;
   available: number;
   total: number;
   used: number;
@@ -894,6 +895,13 @@ export interface ChannelThemeBlockGenerateResult {
   requestedPerChannel: number;
   jobs: { accountId: number; channelName: string; deckIds: string[]; jobId: string; total: number }[];
   skipped: { accountId: number; channelName: string; reason: string }[];
+}
+
+export interface ChannelThemeBlockNormalizeResult {
+  blockId: string;
+  targetQueued: number;
+  jobs: { accountId: number; channelName: string; deckIds: string[]; jobId: string; total: number; currentQueued: number; targetQueued: number }[];
+  skipped: { accountId: number; channelName: string; reason: string; currentQueued?: number; targetQueued?: number }[];
 }
 
 export interface ChannelThemeBlockScheduleResult {

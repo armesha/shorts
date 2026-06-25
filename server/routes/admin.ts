@@ -4,7 +4,7 @@
 import type { FastifyInstance } from "fastify";
 import type { Db } from "../db.ts";
 import { hashPassword, isSuperAdminUser, newSessionToken, SESSION_TTL_DAYS, SUPER_ADMIN_USERNAME } from "../auth.ts";
-import { DECKS } from "../../src/anecdotes/decks.ts";
+import { DECKS, deckLang } from "../../src/anecdotes/decks.ts";
 import { listAllPacks, setGrant, setPackOwners, getPack, canAccess } from "../../src/packs/store.ts";
 import { libraryStats, deckAnecdoteKeys } from "../../src/anecdotes/library.ts";
 import { packCardKey } from "../services/pack-gen.ts";
@@ -451,6 +451,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       username: string;
       deckId: string;
       deckName: string;
+      lang: string | null;
       available: number;
       total: number;
       used: number;
@@ -466,6 +467,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
             username: u.username,
             deckId: d.id,
             deckName: d.name,
+            lang: deckLang(d.id) || null,
             available: s.available,
             total: s.total,
             used: s.used,

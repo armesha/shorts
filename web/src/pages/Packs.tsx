@@ -14,10 +14,18 @@ import {
 import { useAuth } from "../lib/auth";
 import { isMainAdmin } from "../lib/authz";
 import { useT } from "../lib/i18n";
-import { CONTENT_LANGS, langTag } from "../lib/deck";
+import { CONTENT_LANGS, DECK_LANG, langTag } from "../lib/deck";
 import { AppIcon } from "../components/AppIcon";
 
 const fmt = (n: number) => n.toLocaleString("ru-RU");
+const CATALOG_PAGE_SIZE = 12;
+const BUILTIN_PAGE_SIZE = 18;
+const CUSTOM_PAGE_SIZE = 18;
+const LOW_PAGE_SIZE = 25;
+
+const pagesFor = (total: number, pageSize: number) => Math.max(1, Math.ceil(total / pageSize));
+const pageItems = <T,>(items: T[], page: number, pageSize: number) =>
+  items.slice((page - 1) * pageSize, page * pageSize);
 
 // «Паки» — pack overview for everyone: how many cards are left in each pack.
 // Regular users and regular admins see their own; the main admin can switch to any user.
@@ -42,6 +50,10 @@ export default function Packs() {
   const [catalog, setCatalog] = useState<ContentCatalogItem[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [catalogFilter, setCatalogFilter] = useState<"all" | ContentCatalogItem["kind"]>("all");
+  const [catalogPage, setCatalogPage] = useState(1);
+  const [builtinPage, setBuiltinPage] = useState(1);
+  const [customPage, setCustomPage] = useState(1);
+  const [lowPage, setLowPage] = useState(1);
   const [deletingPack, setDeletingPack] = useState<string | null>(null);
   const [savingLang, setSavingLang] = useState<string | null>(null);
   const [confirmPack, setConfirmPack] = useState<PackSummary | null>(null); // пак, ожидающий подтверждения удаления
@@ -132,6 +144,7 @@ export default function Packs() {
             username: u.username,
             deckId,
             deckName: deckNames[deckId] ?? deckId,
+            lang: DECK_LANG[deckId] || null,
             available: s.available,
             total: s.total,
             used: s.used,
@@ -169,6 +182,18 @@ export default function Packs() {
     () => (catalogFilter === "all" ? catalog : catalog.filter((item) => item.kind === catalogFilter)),
     [catalog, catalogFilter],
   );
+  const catalogPages = pagesFor(filteredCatalog.length, CATALOG_PAGE_SIZE);
+  const catalogPageItems = useMemo(
+    () => pageItems(filteredCatalog, catalogPage, CATALOG_PAGE_SIZE),
+    [filteredCatalog, catalogPage],
+  );
+  const builtinPages = pagesFor(decks.length, BUILTIN_PAGE_SIZE);
+  const builtinPageItems = useMemo(() => pageItems(decks, builtinPage, BUILTIN_PAGE_SIZE), [decks, builtinPage]);
+  const customPages = pagesFor(customPacks.length, CUSTOM_PAGE_SIZE);
+  const customPageItems = useMemo(
+    () => pageItems(customPacks, customPage, CUSTOM_PAGE_SIZE),
+    [customPacks, customPage],
+  );
   const catalogTotals = useMemo(
     () =>
       catalog.reduce(
@@ -182,6 +207,28 @@ export default function Packs() {
       ),
     [catalog],
   );
+  const lowPages = pagesFor(lowDecks.length, LOW_PAGE_SIZE);
+  const lowPageItems = useMemo(() => pageItems(lowDecks, lowPage, LOW_PAGE_SIZE), [lowDecks, lowPage]);
+
+  useEffect(() => {
+    setCatalogPage(1);
+  }, [catalogFilter]);
+
+  useEffect(() => {
+    setCatalogPage((p) => Math.min(p, catalogPages));
+  }, [catalogPages]);
+
+  useEffect(() => {
+    setBuiltinPage((p) => Math.min(p, builtinPages));
+  }, [builtinPages]);
+
+  useEffect(() => {
+    setCustomPage((p) => Math.min(p, customPages));
+  }, [customPages]);
+
+  useEffect(() => {
+    setLowPage((p) => Math.min(p, lowPages));
+  }, [lowPages]);
 
   const kindLabel = (kind: ContentCatalogItem["kind"]) => {
     if (kind === "builtin") return t("packs.catalogKindBuiltin");
@@ -290,7 +337,7 @@ export default function Packs() {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 xl:grid-cols-3">
-              {filteredCatalog.map((item) => (
+              {catalogPageItems.map((item) => (
                 <article key={item.id} className="rounded-2xl border border-base-300 p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -356,6 +403,17 @@ export default function Packs() {
               ))}
             </div>
           )}
+          {!catalogLoading && filteredCatalog.length > CATALOG_PAGE_SIZE && (
+            <Pager
+              page={catalogPage}
+              pages={catalogPages}
+              total={filteredCatalog.length}
+              onPage={setCatalogPage}
+              label={t("packs.paginationCatalog")}
+              pageText={t("packs.pageOf", { page: catalogPage, pages: catalogPages })}
+              totalText={t("packs.totalN", { n: fmt(filteredCatalog.length) })}
+            />
+          )}
         </div>
       </section>
 
@@ -386,7 +444,7 @@ export default function Packs() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {decks.map((d) => {
+          {builtinPageItems.map((d) => {
             const low = d.total > 0 && d.available < threshold;
             return (
               <div key={d.id} className="card bg-base-100 border border-base-300">
@@ -415,6 +473,19 @@ export default function Packs() {
               </div>
             );
           })}
+          {decks.length > BUILTIN_PAGE_SIZE && (
+            <div className="sm:col-span-2 lg:col-span-3">
+              <Pager
+                page={builtinPage}
+                pages={builtinPages}
+                total={decks.length}
+                onPage={setBuiltinPage}
+                label={t("packs.paginationBuiltin")}
+                pageText={t("packs.pageOf", { page: builtinPage, pages: builtinPages })}
+                totalText={t("packs.totalN", { n: fmt(decks.length) })}
+              />
+            </div>
+          )}
         </div>
       )}
 
@@ -430,7 +501,7 @@ export default function Packs() {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {customPacks.map((p) => {
+            {customPageItems.map((p) => {
               const owned = !!user && p.owners.includes(user.id);
               const createdByMe = !!user && p.createdBy === user.id;
               const canEditPack = canManageAllPacks || owned;
@@ -493,6 +564,19 @@ export default function Packs() {
                 </div>
               );
             })}
+            {customPacks.length > CUSTOM_PAGE_SIZE && (
+              <div className="sm:col-span-2 lg:col-span-3">
+                <Pager
+                  page={customPage}
+                  pages={customPages}
+                  total={customPacks.length}
+                  onPage={setCustomPage}
+                  label={t("packs.paginationCustom")}
+                  pageText={t("packs.pageOf", { page: customPage, pages: customPages })}
+                  totalText={t("packs.totalN", { n: fmt(customPacks.length) })}
+                />
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -536,18 +620,22 @@ export default function Packs() {
                     <tr>
                       <th>{t("packs.thUser")}</th>
                       <th>{t("packs.thPack")}</th>
+                      <th>{t("packs.thLang")}</th>
                       <th className="text-right">{t("packs.thRemaining")}</th>
                       <th className="text-right">{t("packs.thPosted")}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {lowDecks.map((r) => (
+                    {lowPageItems.map((r) => (
                       <tr key={`${r.userId}:${r.deckId}`}>
                         <td className="whitespace-nowrap font-medium">
                           {r.username}
                           {r.userId === user?.id ? ` ${t("packs.youSuffix")}` : ""}
                         </td>
                         <td className="whitespace-nowrap">{r.deckName}</td>
+                        <td className="whitespace-nowrap">
+                          <span className="badge badge-ghost badge-sm">{langTag(r.lang || DECK_LANG[r.deckId] || "")}</span>
+                        </td>
                         <td className={`text-right font-semibold ${r.available < 30 ? "text-error" : "text-warning"}`}>
                           {fmt(r.available)}{" "}
                           <span className="text-xs font-normal text-base-content/40">{t("packs.ofN", { n: fmt(r.total) })}</span>
@@ -558,6 +646,17 @@ export default function Packs() {
                   </tbody>
                 </table>
               </div>
+            )}
+            {lowDecks.length > LOW_PAGE_SIZE && (
+              <Pager
+                page={lowPage}
+                pages={lowPages}
+                total={lowDecks.length}
+                onPage={setLowPage}
+                label={t("packs.paginationLow")}
+                pageText={t("packs.pageOf", { page: lowPage, pages: lowPages })}
+                totalText={t("packs.totalN", { n: fmt(lowDecks.length) })}
+              />
             )}
           </div>
         </div>
@@ -598,5 +697,56 @@ function Stat({ label, value }: { label: string; value: string }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function Pager({
+  page,
+  pages,
+  total,
+  onPage,
+  label,
+  pageText,
+  totalText,
+}: {
+  page: number;
+  pages: number;
+  total: number;
+  onPage: (page: number) => void;
+  label: string;
+  pageText: string;
+  totalText: string;
+}) {
+  if (total === 0 || pages <= 1) return null;
+  return (
+    <nav className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-base-300 pt-3" aria-label={label}>
+      <div className="text-xs text-base-content/50">
+        {pageText} · {totalText}
+      </div>
+      <div className="join">
+        <button className="btn btn-xs join-item" disabled={page <= 1} onClick={() => onPage(1)} aria-label="first page">
+          «
+        </button>
+        <button
+          className="btn btn-xs join-item"
+          disabled={page <= 1}
+          onClick={() => onPage(Math.max(1, page - 1))}
+          aria-label="previous page"
+        >
+          ‹
+        </button>
+        <button
+          className="btn btn-xs join-item"
+          disabled={page >= pages}
+          onClick={() => onPage(Math.min(pages, page + 1))}
+          aria-label="next page"
+        >
+          ›
+        </button>
+        <button className="btn btn-xs join-item" disabled={page >= pages} onClick={() => onPage(pages)} aria-label="last page">
+          »
+        </button>
+      </div>
+    </nav>
   );
 }

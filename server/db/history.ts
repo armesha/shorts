@@ -113,6 +113,19 @@ export function historyMethods(db: DatabaseSync) {
         (where.length ? "WHERE " + where.join(" AND ") + " " : "");
       return (db.prepare(sql).get(...(args as (string | number)[])) as { n: number }).n;
     },
+    deleteHistoryErrors(opts: { ownerId?: number; accountId?: number } = {}): number {
+      const where: string[] = ["(status = 'failed' OR error IS NOT NULL)"];
+      const args: unknown[] = [];
+      if (opts.accountId != null) {
+        where.push("account_id = ?");
+        args.push(opts.accountId);
+      } else if (opts.ownerId != null) {
+        where.push("account_id IN (SELECT id FROM accounts WHERE user_id = ?)");
+        args.push(opts.ownerId);
+      }
+      const r = db.prepare(`DELETE FROM history WHERE ${where.join(" AND ")}`).run(...(args as (string | number)[]));
+      return Number(r.changes) || 0;
+    },
     // Total daily schedule slots across channels bound to ONE Google key (oauth_client) — per-key cap.
     // YouTube upload quota is per Cloud project (~100/day; we hold 92), shared by all channels on that key.
     // Actual upload OPERATIONS today on one Google key (Cloud project), across all its channels.

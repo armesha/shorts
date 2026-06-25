@@ -75,7 +75,7 @@ export const rowToAccount = (r: Row): Account => ({
   ytChannelAvatar: r.yt_channel_avatar ?? null,
   slotVideos: JSON.parse(r.slot_videos || "{}"),
   slotDecks: parseStringRecord(r.slot_decks),
-  avatar: r.avatar ?? null,
+  avatar: r.yt_channel_avatar ?? r.avatar ?? null,
   avatarSource: r.avatar_source ?? "random",
   oauthClientId: r.oauth_client_id ?? null,
   authError: r.auth_error ?? null,

@@ -37,7 +37,7 @@ export function accountMethods(db: DatabaseSync) {
       return { ...rowToAccount(r), uploadsToday: countUploadsToday(r.id) };
     },
     createAccount(input: Partial<Account>): Account {
-      const avatarSource = input.avatarSource ?? (input.avatar ? "manual" : "random");
+      const avatarSource = input.avatarSource ?? "youtube";
       const info = db
         .prepare(
           "INSERT INTO accounts (user_id, channel_name, theme, lang, source_decks, long_video_decks, channel_lang, schedule, template, status, avatar, avatar_source) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
@@ -101,14 +101,8 @@ export function accountMethods(db: DatabaseSync) {
                ELSE channel_name
              END,
              yt_channel_avatar=COALESCE(?, yt_channel_avatar),
-             avatar=CASE
-               WHEN ? IS NOT NULL AND COALESCE(avatar_source, 'random') != 'manual' THEN ?
-               ELSE avatar
-             END,
-             avatar_source=CASE
-               WHEN ? IS NOT NULL AND COALESCE(avatar_source, 'random') != 'manual' THEN 'youtube'
-               ELSE avatar_source
-             END,
+             avatar=COALESCE(?, avatar),
+             avatar_source=CASE WHEN ? IS NOT NULL THEN 'youtube' ELSE avatar_source END,
              auth_error=NULL,
              auth_failed_at=NULL
          WHERE id=?`,
@@ -122,7 +116,6 @@ export function accountMethods(db: DatabaseSync) {
         d.channelTitle,
         DEFAULT_CHANNEL_NAME,
         d.channelTitle,
-        d.channelAvatar ?? null,
         d.channelAvatar ?? null,
         d.channelAvatar ?? null,
         d.channelAvatar ?? null,

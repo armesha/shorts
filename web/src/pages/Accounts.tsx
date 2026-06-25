@@ -387,11 +387,28 @@ function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
               <div className="card-body relative z-10 pointer-events-none">
                 <div className="flex items-center gap-3">
                   {a.avatar ? (
-                    <img
-                      src={a.avatar}
-                      alt=""
-                      className="w-12 h-12 rounded-full object-cover border border-base-300 shrink-0 bg-base-200"
-                    />
+                    a.ytChannelId ? (
+                      <a
+                        href={`https://www.youtube.com/channel/${a.ytChannelId}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="pointer-events-auto shrink-0 rounded-full"
+                        aria-label={t("account.openYouTubeChannel")}
+                        title={t("account.openYouTubeChannel")}
+                      >
+                        <img
+                          src={a.avatar}
+                          alt=""
+                          className="w-12 h-12 rounded-full object-cover border border-base-300 bg-base-200 transition hover:border-primary"
+                        />
+                      </a>
+                    ) : (
+                      <img
+                        src={a.avatar}
+                        alt=""
+                        className="w-12 h-12 rounded-full object-cover border border-base-300 shrink-0 bg-base-200"
+                      />
+                    )
                   ) : (
                     <div className="bg-primary/10 text-primary rounded-full w-12 h-12 flex items-center justify-center shrink-0">
                       <AppIcon name="accounts" size={22} />

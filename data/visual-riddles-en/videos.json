@@ -1,0 +1,567 @@
+[
+  {
+    "file": "visual-riddles-en/vrx_001.mp4",
+    "title": "Maze simple",
+    "text": "Maze simple"
+  },
+  {
+    "file": "visual-riddles-en/vrx_002.mp4",
+    "title": "Simple maze on grid",
+    "text": "Simple maze on grid"
+  },
+  {
+    "file": "visual-riddles-en/vrx_003.mp4",
+    "title": "Help the mouse find the cheese maze",
+    "text": "Help the mouse find the cheese maze"
+  },
+  {
+    "file": "visual-riddles-en/vrx_004.mp4",
+    "title": "Help the squirell find the acorn maze",
+    "text": "Help the squirell find the acorn maze"
+  },
+  {
+    "file": "visual-riddles-en/vrx_005.mp4",
+    "title": "Labyrinth A B Exit",
+    "text": "Labyrinth A B Exit"
+  },
+  {
+    "file": "visual-riddles-en/vrx_006.mp4",
+    "title": "Maze: Start S – Ziel E",
+    "text": "Maze: Start S – Ziel E"
+  },
+  {
+    "file": "visual-riddles-en/vrx_007.mp4",
+    "title": "Rundes Maze: zur Mitte",
+    "text": "Rundes Maze: zur Mitte"
+  },
+  {
+    "file": "visual-riddles-en/vrx_008.mp4",
+    "title": "Einfaches dickes Maze",
+    "text": "Einfaches dickes Maze"
+  },
+  {
+    "file": "visual-riddles-en/vrx_009.mp4",
+    "title": "Krummes Squares-Maze",
+    "text": "Krummes Squares-Maze"
+  },
+  {
+    "file": "visual-riddles-en/vrx_010.mp4",
+    "title": "Maze mit Spiralen",
+    "text": "Maze mit Spiralen"
+  },
+  {
+    "file": "visual-riddles-en/vrx_011.mp4",
+    "title": "Maze mit Halle in der Mitte",
+    "text": "Maze mit Halle in der Mitte"
+  },
+  {
+    "file": "visual-riddles-en/vrx_012.mp4",
+    "title": "Example maze on grid",
+    "text": "Example maze on grid"
+  },
+  {
+    "file": "visual-riddles-en/vrx_013.mp4",
+    "title": "Maze for the bot",
+    "text": "Maze for the bot"
+  },
+  {
+    "file": "visual-riddles-en/vrx_014.mp4",
+    "title": "Dichtes Squares-Maze",
+    "text": "Dichtes Squares-Maze"
+  },
+  {
+    "file": "visual-riddles-en/vrx_015.mp4",
+    "title": "Muller-Lyer Illusion",
+    "text": "Muller-Lyer Illusion"
+  },
+  {
+    "file": "visual-riddles-en/vrx_016.mp4",
+    "title": "Muller-Lyer Arrows",
+    "text": "Muller-Lyer Arrows"
+  },
+  {
+    "file": "visual-riddles-en/vrx_017.mp4",
+    "title": "Ebbinghaus Illusion",
+    "text": "Ebbinghaus Illusion"
+  },
+  {
+    "file": "visual-riddles-en/vrx_019.mp4",
+    "title": "Poggendorff Illusion",
+    "text": "Poggendorff Illusion"
+  },
+  {
+    "file": "visual-riddles-en/vrx_020.mp4",
+    "title": "Zollner Illusion",
+    "text": "Zollner Illusion"
+  },
+  {
+    "file": "visual-riddles-en/vrx_021.mp4",
+    "title": "Fraser Spiral",
+    "text": "Fraser Spiral"
+  },
+  {
+    "file": "visual-riddles-en/vrx_023.mp4",
+    "title": "Cafe Wall Illusion",
+    "text": "Cafe Wall Illusion"
+  },
+  {
+    "file": "visual-riddles-en/vrx_024.mp4",
+    "title": "Hermann Grid",
+    "text": "Hermann Grid"
+  },
+  {
+    "file": "visual-riddles-en/vrx_025.mp4",
+    "title": "Scintillating Grid",
+    "text": "Scintillating Grid"
+  },
+  {
+    "file": "visual-riddles-en/vrx_026.mp4",
+    "title": "Ehrenstein Illusion",
+    "text": "Ehrenstein Illusion"
+  },
+  {
+    "file": "visual-riddles-en/vrx_027.mp4",
+    "title": "Squares und Linien",
+    "text": "Squares und Linien"
+  },
+  {
+    "file": "visual-riddles-en/vrx_028.mp4",
+    "title": "Eleven nets of a cube",
+    "text": "Eleven nets of a cube"
+  },
+  {
+    "file": "visual-riddles-en/vrx_029.mp4",
+    "title": "Würfelnetze",
+    "text": "Würfelnetze"
+  },
+  {
+    "file": "visual-riddles-en/vrx_030.mp4",
+    "title": "Siatki szescianu",
+    "text": "Siatki szescianu"
+  },
+  {
+    "file": "visual-riddles-en/vrx_031.mp4",
+    "title": "Net cube",
+    "text": "Net cube"
+  },
+  {
+    "file": "visual-riddles-en/vrx_032.mp4",
+    "title": "Hexominos Cube",
+    "text": "Hexominos Cube"
+  },
+  {
+    "file": "visual-riddles-en/vrx_033.mp4",
+    "title": "Foldable hexahedron (blank)",
+    "text": "Foldable hexahedron (blank)"
+  },
+  {
+    "file": "visual-riddles-en/vrx_035.mp4",
+    "title": "Dice template",
+    "text": "Dice template"
+  },
+  {
+    "file": "visual-riddles-en/vrx_036.mp4",
+    "title": "Dice simple",
+    "text": "Dice simple"
+  },
+  {
+    "file": "visual-riddles-en/vrx_037.mp4",
+    "title": "Perspective isometrique cube gris",
+    "text": "Perspective isometrique cube gris"
+  },
+  {
+    "file": "visual-riddles-en/vrx_038.mp4",
+    "title": "Bogen mit Cube Netn",
+    "text": "Bogen mit Cube Netn"
+  },
+  {
+    "file": "visual-riddles-en/vrx_039.mp4",
+    "title": "Cube Net zum Ausdrucken",
+    "text": "Cube Net zum Ausdrucken"
+  },
+  {
+    "file": "visual-riddles-en/vrx_040.mp4",
+    "title": "Cube in Perspektive",
+    "text": "Cube in Perspektive"
+  },
+  {
+    "file": "visual-riddles-en/vrx_041.mp4",
+    "title": "Durer's Magic Square",
+    "text": "Durer's Magic Square"
+  },
+  {
+    "file": "visual-riddles-en/vrx_043.mp4",
+    "title": "Die schlaue Acht",
+    "text": "Die schlaue Acht"
+  },
+  {
+    "file": "visual-riddles-en/vrx_044.mp4",
+    "title": "Logic Puzzle",
+    "text": "Logic Puzzle"
+  },
+  {
+    "file": "visual-riddles-en/vrx_045.mp4",
+    "title": "Das spanische Verlies",
+    "text": "Das spanische Verlies"
+  },
+  {
+    "file": "visual-riddles-en/vrx_046.mp4",
+    "title": "Die sibirischen Kerker",
+    "text": "Die sibirischen Kerker"
+  },
+  {
+    "file": "visual-riddles-en/vrx_047.mp4",
+    "title": "Magic Square aus Karten",
+    "text": "Magic Square aus Karten"
+  },
+  {
+    "file": "visual-riddles-en/vrx_048.mp4",
+    "title": "Achtzehn Dominosteine",
+    "text": "Achtzehn Dominosteine"
+  },
+  {
+    "file": "visual-riddles-en/vrx_049.mp4",
+    "title": "Kreuze aus Spielsteinen",
+    "text": "Kreuze aus Spielsteinen"
+  },
+  {
+    "file": "visual-riddles-en/vrx_050.mp4",
+    "title": "Dominos in Reihe",
+    "text": "Dominos in Reihe"
+  },
+  {
+    "file": "visual-riddles-en/vrx_052.mp4",
+    "title": "Rahmen aus Karten",
+    "text": "Rahmen aus Karten"
+  },
+  {
+    "file": "visual-riddles-en/vrx_054.mp4",
+    "title": "Einfacher Zerschnitt",
+    "text": "Einfacher Zerschnitt"
+  },
+  {
+    "file": "visual-riddles-en/vrx_055.mp4",
+    "title": "The puzzled fox find the horse, lamb, wild boar, mens and womens",
+    "text": "The puzzled fox find the horse, lamb, wild boar, mens and womens"
+  },
+  {
+    "file": "visual-riddles-en/vrx_056.mp4",
+    "title": "The bewildered hunter \"Puzzle picture\"",
+    "text": "The bewildered hunter \"Puzzle picture\""
+  },
+  {
+    "file": "visual-riddles-en/vrx_057.mp4",
+    "title": "Puzzle picture. old Swiss mill",
+    "text": "Puzzle picture. old Swiss mill"
+  },
+  {
+    "file": "visual-riddles-en/vrx_058.mp4",
+    "title": "Five birds (on branch)",
+    "text": "Five birds (on branch)"
+  },
+  {
+    "file": "visual-riddles-en/vrx_059.mp4",
+    "title": "Birds, nests and eggs) drawn from nature by A. Wilson ; engraved",
+    "text": "Birds, nests and eggs) drawn from nature by A. Wilson ; engraved"
+  },
+  {
+    "file": "visual-riddles-en/vrx_060.mp4",
+    "title": "Illustrations of the American ornithology of Alexander Wilson an",
+    "text": "Illustrations of the American ornithology of Alexander Wilson an"
+  },
+  {
+    "file": "visual-riddles-en/vrx_061.mp4",
+    "title": "Illustrations of the American ornithology of Alexander Wilson an",
+    "text": "Illustrations of the American ornithology of Alexander Wilson an"
+  },
+  {
+    "file": "visual-riddles-en/vrx_062.mp4",
+    "title": "Illustrations of the American ornithology of Alexander Wilson an",
+    "text": "Illustrations of the American ornithology of Alexander Wilson an"
+  },
+  {
+    "file": "visual-riddles-en/vrx_063.mp4",
+    "title": "Illustrations of the American ornithology of Alexander Wilson an",
+    "text": "Illustrations of the American ornithology of Alexander Wilson an"
+  },
+  {
+    "file": "visual-riddles-en/vrx_064.mp4",
+    "title": "Illustrations of the American ornithology of Alexander Wilson an",
+    "text": "Illustrations of the American ornithology of Alexander Wilson an"
+  },
+  {
+    "file": "visual-riddles-en/vrx_065.mp4",
+    "title": "Illustrations of the American ornithology of Alexander Wilson an",
+    "text": "Illustrations of the American ornithology of Alexander Wilson an"
+  },
+  {
+    "file": "visual-riddles-en/vrx_066.mp4",
+    "title": "Illustrations of the American ornithology of Alexander Wilson an",
+    "text": "Illustrations of the American ornithology of Alexander Wilson an"
+  },
+  {
+    "file": "visual-riddles-en/vrx_067.mp4",
+    "title": "Illustrations of the American ornithology of Alexander Wilson an",
+    "text": "Illustrations of the American ornithology of Alexander Wilson an"
+  },
+  {
+    "file": "visual-riddles-en/vrx_068.mp4",
+    "title": "American ornithology, or, The natural history of the birds of th",
+    "text": "American ornithology, or, The natural history of the birds of th"
+  },
+  {
+    "file": "visual-riddles-en/vry_001.mp4",
+    "title": "Color Dots: Hidden Numbers",
+    "text": "Color Dots: Hidden Numbers"
+  },
+  {
+    "file": "visual-riddles-en/vry_002.mp4",
+    "title": "Rot auf Grau: welche Zahl?",
+    "text": "Rot auf Grau: welche Zahl?"
+  },
+  {
+    "file": "visual-riddles-en/vry_003.mp4",
+    "title": "Farbsinn-Tafel (Stilling, 1922)",
+    "text": "Farbsinn-Tafel (Stilling, 1922)"
+  },
+  {
+    "file": "visual-riddles-en/vry_004.mp4",
+    "title": "Hidden Numbers aus Punkten",
+    "text": "Hidden Numbers aus Punkten"
+  },
+  {
+    "file": "visual-riddles-en/vry_005.mp4",
+    "title": "Finde die Zahl in den Punkten",
+    "text": "Finde die Zahl in den Punkten"
+  },
+  {
+    "file": "visual-riddles-en/vry_006.mp4",
+    "title": "Farbsehtest: Zahl aus Punkten",
+    "text": "Farbsehtest: Zahl aus Punkten"
+  },
+  {
+    "file": "visual-riddles-en/vry_007.mp4",
+    "title": "Alte Farbenblind-Tafel (1883)",
+    "text": "Alte Farbenblind-Tafel (1883)"
+  },
+  {
+    "file": "visual-riddles-en/vry_008.mp4",
+    "title": "Farbsinn-Tafel (Stilling, 1889)",
+    "text": "Farbsinn-Tafel (Stilling, 1889)"
+  },
+  {
+    "file": "visual-riddles-en/vry_009.mp4",
+    "title": "Help the mouse find the cheese maze",
+    "text": "Help the mouse find the cheese maze"
+  },
+  {
+    "file": "visual-riddles-en/vry_010.mp4",
+    "title": "Squirrel und Acorn",
+    "text": "Squirrel und Acorn"
+  },
+  {
+    "file": "visual-riddles-en/vry_011.mp4",
+    "title": "Help the squirell find the acorn maze",
+    "text": "Help the squirell find the acorn maze"
+  },
+  {
+    "file": "visual-riddles-en/vry_012.mp4",
+    "title": "Hen and chicks in a labyrinth",
+    "text": "Hen and chicks in a labyrinth"
+  },
+  {
+    "file": "visual-riddles-en/vry_013.mp4",
+    "title": "EB1911 Labyrinth Hampton Court",
+    "text": "EB1911 Labyrinth Hampton Court"
+  },
+  {
+    "file": "visual-riddles-en/vry_014.mp4",
+    "title": "EB1911 Labyrinth Somerleyton Hall",
+    "text": "EB1911 Labyrinth Somerleyton Hall"
+  },
+  {
+    "file": "visual-riddles-en/vry_015.mp4",
+    "title": "Maze mantua 1550",
+    "text": "Maze mantua 1550"
+  },
+  {
+    "file": "visual-riddles-en/vry_016.mp4",
+    "title": "EB1911 Labyrinth Versailles",
+    "text": "EB1911 Labyrinth Versailles"
+  },
+  {
+    "file": "visual-riddles-en/vry_017.mp4",
+    "title": "Example maze on grid",
+    "text": "Example maze on grid"
+  },
+  {
+    "file": "visual-riddles-en/vry_018.mp4",
+    "title": "Katzen-Maze",
+    "text": "Katzen-Maze"
+  },
+  {
+    "file": "visual-riddles-en/vry_019.mp4",
+    "title": "Square Count Riddle",
+    "text": "Square Count Riddle"
+  },
+  {
+    "file": "visual-riddles-en/vry_020.mp4",
+    "title": "Finding cubes",
+    "text": "Finding cubes"
+  },
+  {
+    "file": "visual-riddles-en/vry_022.mp4",
+    "title": "Counting triangles",
+    "text": "Counting triangles"
+  },
+  {
+    "file": "visual-riddles-en/vry_023.mp4",
+    "title": "Counting triangles 3",
+    "text": "Counting triangles 3"
+  },
+  {
+    "file": "visual-riddles-en/vry_024.mp4",
+    "title": "Counting triangles 2",
+    "text": "Counting triangles 2"
+  },
+  {
+    "file": "visual-riddles-en/vry_026.mp4",
+    "title": "Two square counting puzzles",
+    "text": "Two square counting puzzles"
+  },
+  {
+    "file": "visual-riddles-en/vry_028.mp4",
+    "title": "MA I437612 TePapa Plate XIII The butterflies full",
+    "text": "MA I437612 TePapa Plate XIII The butterflies full"
+  },
+  {
+    "file": "visual-riddles-en/vry_029.mp4",
+    "title": "Mushrooms of America (Plate II) (8596718043)",
+    "text": "Mushrooms of America (Plate II) (8596718043)"
+  },
+  {
+    "file": "visual-riddles-en/vry_031.mp4",
+    "title": "Delboeuf Illusion",
+    "text": "Delboeuf Illusion"
+  },
+  {
+    "file": "visual-riddles-en/vry_032.mp4",
+    "title": "Sander Parallelogram",
+    "text": "Sander Parallelogram"
+  },
+  {
+    "file": "visual-riddles-en/vry_033.mp4",
+    "title": "Penrose Triangle",
+    "text": "Penrose Triangle"
+  },
+  {
+    "file": "visual-riddles-en/vry_034.mp4",
+    "title": "Impossible objects",
+    "text": "Impossible objects"
+  },
+  {
+    "file": "visual-riddles-en/vry_035.mp4",
+    "title": "Orbison Illusion",
+    "text": "Orbison Illusion"
+  },
+  {
+    "file": "visual-riddles-en/vry_036.mp4",
+    "title": "Mach Bands",
+    "text": "Mach Bands"
+  },
+  {
+    "file": "visual-riddles-en/vry_037.mp4",
+    "title": "Double optical illusion",
+    "text": "Double optical illusion"
+  },
+  {
+    "file": "visual-riddles-en/vry_038.mp4",
+    "title": "Necker Cube",
+    "text": "Necker Cube"
+  },
+  {
+    "file": "visual-riddles-en/vry_039.mp4",
+    "title": "Rubin's Vase",
+    "text": "Rubin's Vase"
+  },
+  {
+    "file": "visual-riddles-en/vry_040.mp4",
+    "title": "White Illusion",
+    "text": "White Illusion"
+  },
+  {
+    "file": "visual-riddles-en/vry_041.mp4",
+    "title": "Bezold Effect",
+    "text": "Bezold Effect"
+  },
+  {
+    "file": "visual-riddles-en/vry_042.mp4",
+    "title": "Optical illusion checkerboard bw",
+    "text": "Optical illusion checkerboard bw"
+  },
+  {
+    "file": "visual-riddles-en/vry_050.mp4",
+    "title": "Vertumnus, by Arcimboldo",
+    "text": "Vertumnus, by Arcimboldo"
+  },
+  {
+    "file": "visual-riddles-en/vry_052.mp4",
+    "title": "Puzzling picture postcard Bismarck",
+    "text": "Puzzling picture postcard Bismarck"
+  },
+  {
+    "file": "visual-riddles-en/vry_053.mp4",
+    "title": "Geometric Net of an Octahedron",
+    "text": "Geometric Net of an Octahedron"
+  },
+  {
+    "file": "visual-riddles-en/vry_054.mp4",
+    "title": "Geometric Net of a regular tetrahedron",
+    "text": "Geometric Net of a regular tetrahedron"
+  },
+  {
+    "file": "visual-riddles-en/vry_055.mp4",
+    "title": "Geometric Net of a Regular Icosahedron",
+    "text": "Geometric Net of a Regular Icosahedron"
+  },
+  {
+    "file": "visual-riddles-en/vry_056.mp4",
+    "title": "Geometric Net of a Regular Dodecahedron",
+    "text": "Geometric Net of a Regular Dodecahedron"
+  },
+  {
+    "file": "visual-riddles-en/vry_057.mp4",
+    "title": "Geometric Net of a Truncated Octahedron",
+    "text": "Geometric Net of a Truncated Octahedron"
+  },
+  {
+    "file": "visual-riddles-en/vry_058.mp4",
+    "title": "Geometric Net of a Truncated Icosahedron",
+    "text": "Geometric Net of a Truncated Icosahedron"
+  },
+  {
+    "file": "visual-riddles-en/vry_059.mp4",
+    "title": "Geometric Net of a Hexagonal Prism",
+    "text": "Geometric Net of a Hexagonal Prism"
+  },
+  {
+    "file": "visual-riddles-en/vry_060.mp4",
+    "title": "Geometric Net of an Octagonal Pyramid",
+    "text": "Geometric Net of an Octagonal Pyramid"
+  },
+  {
+    "file": "visual-riddles-en/vry_061.mp4",
+    "title": "Print, Two Cones, plate H. iiii in Persepctiva. Corporum Regular",
+    "text": "Print, Two Cones, plate H. iiii in Persepctiva. Corporum Regular"
+  },
+  {
+    "file": "visual-riddles-en/vry_062.mp4",
+    "title": "Print, Two Rings, plate I. i. in Perspectiva. Corporum Regulariu",
+    "text": "Print, Two Rings, plate I. i. in Perspectiva. Corporum Regulariu"
+  },
+  {
+    "file": "visual-riddles-en/vry_063.mp4",
+    "title": "Perspectiva Corporum Regularium 08f",
+    "text": "Perspectiva Corporum Regularium 08f"
+  }
+]

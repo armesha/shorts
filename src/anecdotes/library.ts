@@ -1,5 +1,6 @@
 import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
+import { DatabaseSync } from "node:sqlite";
 import { getDeck } from "./decks.ts";
 
 export interface PackItem {
@@ -16,9 +17,73 @@ export interface PackItem {
 
 const deckDir = (deckId: string): string => resolve(process.cwd(), getDeck(deckId).dir);
 
+type ContentRow = {
+  id?: number;
+  item_index?: number;
+  pack_no?: number;
+  title?: string;
+  text?: string;
+  chars?: number;
+  video_file?: string | null;
+  payload_json?: string;
+};
+
+let _contentDb: DatabaseSync | null | undefined;
+function contentDb(): DatabaseSync | null {
+  if (process.env.CONTENT_LIBRARY_SQLITE !== "1") return null;
+  if (_contentDb !== undefined) return _contentDb;
+  const dbPath = process.env.CONTENT_LIBRARY_DB || process.env.DATABASE_PATH || resolve(process.cwd(), "data/app.db");
+  if (!existsSync(dbPath)) {
+    _contentDb = null;
+    return null;
+  }
+  try {
+    _contentDb = new DatabaseSync(dbPath, { readOnly: true });
+    _contentDb.exec("PRAGMA query_only = ON");
+  } catch {
+    _contentDb = null;
+  }
+  return _contentDb;
+}
+
+function sqliteItems(deckId: string): PackItem[] | null {
+  const db = contentDb();
+  if (!db) return null;
+  try {
+    const rows = db
+      .prepare(
+        "SELECT item_index, pack_no, title, text, chars, video_file, payload_json FROM content_items WHERE deck_id = ? ORDER BY item_index",
+      )
+      .all(deckId) as ContentRow[];
+    if (!rows.length) return null;
+    return rows.map((row) => {
+      if (row.payload_json) {
+        try {
+          return JSON.parse(row.payload_json) as PackItem;
+        } catch {
+          /* fall through to column values */
+        }
+      }
+      const text = String(row.text ?? "");
+      return {
+        id: Number(row.item_index ?? 0),
+        pack: Number(row.pack_no ?? 1),
+        text,
+        chars: Number(row.chars ?? text.length) || 0,
+        title: String(row.title ?? ""),
+        videoFile: row.video_file ?? undefined,
+      };
+    });
+  } catch {
+    return null;
+  }
+}
+
 // titled.json per deck = the pool of READY (titled) anecdotes — the only ones generation may use.
 const _titledCache = new Map<string, PackItem[]>();
 function titledItems(deckId: string): PackItem[] {
+  const indexed = sqliteItems(deckId);
+  if (indexed) return indexed;
   // preFact decks read videos.json FRESH every time (no cache) so the mp4 pool can keep
   // accumulating (re-run populate) and appear immediately WITHOUT a server restart.
   if (getDeck(deckId).preFact) {

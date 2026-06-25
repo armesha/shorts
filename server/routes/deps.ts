@@ -55,9 +55,8 @@ export interface RouteDeps {
   webOrigin: string;
   // Per-channel Google creds (parsed from the key the channel was connected with).
   accountCreds: (account: Account) => ClientCreds | null;
-  // Avatars
+  // Legacy avatar set endpoint. Channel display avatars come from YouTube thumbnails.
   listAvatarFiles: () => string[];
-  randomAvatar: () => string | null;
   // Account access
   accessibleAccount: (req: unknown, reply: Replyish, id: number) => Account | null;
   accountOwnerId: (req: unknown, account: Account) => number;
@@ -87,7 +86,6 @@ export function makeRouteDeps(input: {
   webOrigin: string;
   accountCreds: (account: Account) => ClientCreds | null;
   listAvatarFiles: () => string[];
-  randomAvatar: () => string | null;
 }): RouteDeps {
   const { db, auth, deckAccess, notifier, buildLibraryVideo, statsRefreshHooks, outputDir, redirectUri, webOrigin, accountCreds } = input;
     const { isAdminReq, isSuperAdminReq } = auth;
@@ -281,7 +279,6 @@ export function makeRouteDeps(input: {
     webOrigin,
     accountCreds,
     listAvatarFiles: input.listAvatarFiles,
-    randomAvatar: input.randomAvatar,
     accessibleAccount,
     accountOwnerId,
     rejectScheduleLimit,

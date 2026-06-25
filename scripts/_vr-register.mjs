@@ -27,7 +27,8 @@ const VIDEOS_JSON = resolve(ROOT, 'data/' + DECK + '/videos.json');
 const MANIFEST = resolve(ADMIN, 'manifest.json');
 const OUT_SOURCES = resolve(ROOT, 'data/' + DECK + '/sources.json');
 
-const cullArg = process.argv[process.argv.indexOf('--cull') + 1] || '';
+const cullIdx = process.argv.indexOf('--cull');
+const cullArg = cullIdx >= 0 ? process.argv[cullIdx + 1] || '' : '';
 const CULL = new Set(cullArg.split(',').map((s) => s.trim()).filter(Boolean));
 
 const dur = (f) => {

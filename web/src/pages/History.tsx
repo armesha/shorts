@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { AlertTriangle, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
+import { AlertTriangle, ChevronLeft, ChevronRight, ExternalLink, Trash2 } from "lucide-react";
 import { apiClient, type HistoryItem, type AdminUser, type Account } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
@@ -33,6 +33,8 @@ export default function History() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [clearingErrors, setClearingErrors] = useState(false);
 
   // «Только с ошибками» — ролики, что в итоге не выложились (доступно всем, не только админу).
   const [onlyErrors, setOnlyErrors] = useState(false);
@@ -61,6 +63,20 @@ export default function History() {
     [allAccounts],
   );
 
+  const historyScopeParams = useCallback((): {
+    scope?: "mine" | "all";
+    userId?: number;
+    accountId?: number;
+  } => {
+    const params: { scope?: "mine" | "all"; userId?: number; accountId?: number } = {};
+    if (isAdmin && scopeAll) {
+      if (accountId !== "") params.accountId = Number(accountId);
+      else if (userId !== "") params.userId = Number(userId);
+      else params.scope = "all";
+    }
+    return params;
+  }, [isAdmin, scopeAll, userId, accountId]);
+
   const load = useCallback(
     (p: number) => {
       setLoading(true);
@@ -72,12 +88,7 @@ export default function History() {
         onlyErrors?: boolean;
         page?: number;
         pageSize?: number;
-      } = { page: p, pageSize: PAGE_SIZE };
-      if (isAdmin && scopeAll) {
-        if (accountId !== "") params.accountId = Number(accountId);
-        else if (userId !== "") params.userId = Number(userId);
-        else params.scope = "all";
-      }
+      } = { ...historyScopeParams(), page: p, pageSize: PAGE_SIZE };
       if (onlyErrors) params.onlyErrors = true;
       apiClient
         .history(params)
@@ -89,8 +100,24 @@ export default function History() {
         .catch(() => setError(t("history.loadFailed")))
         .finally(() => setLoading(false));
     },
-    [isAdmin, scopeAll, userId, accountId, onlyErrors, t],
+    [historyScopeParams, onlyErrors, t],
   );
+
+  const clearFailedItems = useCallback(async () => {
+    if (!window.confirm(t("history.clearErrorsConfirm"))) return;
+    setClearingErrors(true);
+    setError(null);
+    setNotice(null);
+    try {
+      const res = await apiClient.clearHistoryErrors(historyScopeParams());
+      setNotice(t("history.clearErrorsDone", { n: res.removed }));
+      load(1);
+    } catch {
+      setError(t("history.clearErrorsFailed"));
+    } finally {
+      setClearingErrors(false);
+    }
+  }, [historyScopeParams, load, t]);
 
   // Reload from page 1 whenever the filter changes.
   useEffect(() => {
@@ -178,16 +205,34 @@ export default function History() {
             </>
           )}
 
-          <button
-            type="button"
-            className={`btn btn-sm gap-1 ml-auto ${onlyErrors ? "btn-error" : "btn-ghost"}`}
-            onClick={() => setOnlyErrors((v) => !v)}
-            aria-pressed={onlyErrors}
-          >
-            <AlertTriangle size={14} /> {t("history.onlyErrors")}
-          </button>
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              className="btn btn-sm btn-error gap-1"
+              onClick={clearFailedItems}
+              disabled={clearingErrors || loading || (onlyErrors && total === 0)}
+              title={t("history.clearErrorsTitle")}
+            >
+              {clearingErrors ? <span className="loading loading-spinner loading-xs" /> : <Trash2 size={14} />}
+              {t("history.clearErrors")}
+            </button>
+            <button
+              type="button"
+              className={`btn btn-sm gap-1 ${onlyErrors ? "btn-error" : "btn-ghost"}`}
+              onClick={() => setOnlyErrors((v) => !v)}
+              aria-pressed={onlyErrors}
+            >
+              <AlertTriangle size={14} /> {t("history.onlyErrors")}
+            </button>
+          </div>
         </div>
       </div>
+
+      {notice && (
+        <div className="alert alert-success">
+          <span>{notice}</span>
+        </div>
+      )}
 
       {error ? (
         <div className="alert alert-error">
