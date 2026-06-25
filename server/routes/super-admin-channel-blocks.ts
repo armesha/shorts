@@ -90,7 +90,8 @@ const QUOTE_STATIC_DECK_BY_LANG: Record<string, string[]> = {
 };
 
 const QUOTE_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
-  de: ["quotes-de-1", "quotes-de-2", "quotes-de-3"],
+  // Real narrated quote-video decks should be added here when they exist.
+  // The legacy quotes-de-1/2/3 decks are static quote cards and are replaced by quotes-de.
 };
 
 const QUOTE_SOURCE_GROUPS: SourceGroupDef[] = [
@@ -100,12 +101,16 @@ const QUOTE_SOURCE_GROUPS: SourceGroupDef[] = [
     defaultWeight: 4,
     sources: QUOTE_STATIC_DECK_BY_LANG,
   },
-  {
-    id: "video",
-    title: "Видео-цитаты с озвучкой",
-    defaultWeight: 1,
-    sources: QUOTE_VIDEO_DECK_BY_LANG,
-  },
+  ...(Object.keys(QUOTE_VIDEO_DECK_BY_LANG).length
+    ? [
+        {
+          id: "video",
+          title: "Видео-цитаты с озвучкой",
+          defaultWeight: 1,
+          sources: QUOTE_VIDEO_DECK_BY_LANG,
+        },
+      ]
+    : []),
 ];
 
 const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
