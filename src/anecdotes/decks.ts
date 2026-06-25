@@ -753,6 +753,71 @@ export const DECKS: Deck[] = [
     grantable: true,
     preFact: true,
   },
+  {
+    id: "illusions-fr",
+    name: "Illusions optiques",
+    dir: "data/illusions-fr", // localized optical-illusions pack (FR)
+    source: "",
+    emoji: "🌀",
+    hashtags: "#illusionoptique #illusion #cerveau #perception #shorts",
+    tags: ["illusion optique", "illusion", "cerveau", "perception", "trompe-l'oeil", "shorts"],
+    genericTitles: ["Illusions optiques", "Trompe tes yeux", "Peux-tu faire confiance à ton cerveau ?", "Illusion surprenante"],
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+  },
+  {
+    id: "illusions-pt",
+    name: "Ilusões ópticas",
+    dir: "data/illusions-pt", // localized optical-illusions pack (PT)
+    source: "",
+    emoji: "🌀",
+    hashtags: "#ilusãoóptica #ilusao #cerebro #percepcao #shorts",
+    tags: ["ilusão óptica", "ilusão", "cérebro", "percepção", "truque visual", "shorts"],
+    genericTitles: ["Ilusões ópticas", "Engane seus olhos", "Você confia no seu cérebro?", "Ilusão surpreendente"],
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+  },
+  {
+    id: "illusions-hi",
+    name: "दृष्टि भ्रम",
+    dir: "data/illusions-hi", // localized optical-illusions pack (HI)
+    source: "",
+    emoji: "🌀",
+    hashtags: "#opticalillusion #illusion #brain #perception #shorts",
+    tags: ["दृष्टि भ्रम", "भ्रम", "दिमाग", "विजुअल ट्रिक", "shorts"],
+    genericTitles: ["दृष्टि भ्रम", "अपनी आँखों को चुनौती दें", "क्या आप अपने दिमाग पर भरोसा कर सकते हैं?", "अद्भुत भ्रम"],
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+  },
+  {
+    id: "illusions-id",
+    name: "Ilusi Optik",
+    dir: "data/illusions-id", // localized optical-illusions pack (ID)
+    source: "",
+    emoji: "🌀",
+    hashtags: "#ilusioptik #ilusi #otak #persepsi #shorts",
+    tags: ["ilusi optik", "ilusi", "otak", "persepsi", "trik mata", "shorts"],
+    genericTitles: ["Ilusi Optik", "Tipu Matamu", "Bisakah Kamu Percaya Otakmu?", "Ilusi Mengejutkan"],
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+  },
+  {
+    id: "illusions-ar",
+    name: "خدع بصرية",
+    dir: "data/illusions-ar", // localized optical-illusions pack (AR)
+    source: "",
+    emoji: "🌀",
+    hashtags: "#خدعبصرية #وهم #دماغ #إدراك #shorts",
+    tags: ["خدع بصرية", "وهم بصري", "دماغ", "إدراك", "shorts"],
+    genericTitles: ["خدع بصرية", "اخدع عينيك", "هل تثق بدماغك؟", "وهم مذهل"],
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+  },
 ];
 
 export const DEFAULT_DECK = "ru";
@@ -766,7 +831,7 @@ export function isPackDeckId(id?: string | null): boolean {
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en", choose: "ru",
-  tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-ru": "ru", "quotes-ar": "ar", "quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru",
+  tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-ru": "ru", "quotes-ar": "ar", "quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it",
 };
 export function deckLang(id: string): string {

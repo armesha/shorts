@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Render transparent title-overlay PNGs for every (design, language). renderTitle is host-level
 // (illusion-independent), so we load ONE skeleton-v2 page and stamp all titles from it.
-// Reads localize.json: { "<designId>": { en, de, it, es, ru } }. Empty/missing title => no PNG (skipped).
+// Reads localize.json: { "<designId>": { en, de, it, es, ru, ... } }. Empty/missing title => no PNG (skipped).
 // Output: temp/illusions-en/titles/<designId>_<lang>.png
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -13,14 +13,17 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, '../..');
 const TITLES = resolve(ROOT, 'temp/illusions-en/titles');
 const HOST = resolve(HERE, 'illusions/spiral.html'); // any skeleton-v2 page exposes renderTitle
+const ALL_LANGS = ['en', 'de', 'it', 'es', 'ru', 'fr', 'pt', 'hi', 'id', 'ar'];
 function chromePath() {
   for (const c of [process.env.CHROME_PATH, '/usr/bin/google-chrome', '/usr/bin/chromium', '/snap/bin/chromium'].filter(Boolean)) if (existsSync(c)) return c;
   throw new Error('Chrome not found');
 }
-const LANGS = ['en', 'de', 'it', 'es', 'ru'];
 
 async function main() {
-  const locPath = process.argv.find((a) => a.endsWith('.json')) || resolve(HERE, 'localize.json');
+  const argv = process.argv.slice(2);
+  const langIdx = argv.indexOf('--langs');
+  const langs = langIdx >= 0 ? argv[langIdx + 1].split(',').map((lang) => lang.trim()).filter(Boolean) : ALL_LANGS;
+  const locPath = argv.find((a) => a.endsWith('.json')) || resolve(HERE, 'localize.json');
   const loc = JSON.parse(await readFile(resolve(locPath), 'utf8'));
   await mkdir(TITLES, { recursive: true });
   const browser = await puppeteer.launch({ executablePath: chromePath(), headless: true,
@@ -32,7 +35,7 @@ async function main() {
     await page.goto('file://' + HOST, { waitUntil: 'load' });
     await page.waitForFunction('window.__ready === true', { timeout: 8000 });
     for (const [id, byLang] of Object.entries(loc)) {
-      for (const lang of LANGS) {
+      for (const lang of langs) {
         const text = (byLang && byLang[lang] || '').trim();
         if (!text) { skip++; continue; }
         const url = await page.evaluate((t) => window.renderTitle(t), text);
@@ -41,6 +44,6 @@ async function main() {
       }
     }
   } finally { await browser.close(); }
-  console.log(`make-titles: ${n} title PNGs written, ${skip} skipped (empty)`);
+  console.log(`make-titles: ${n} title PNGs written for ${langs.join(',')}, ${skip} skipped (empty)`);
 }
 main().catch((e) => { console.error(e); process.exit(1); });

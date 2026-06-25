@@ -43,6 +43,38 @@ type SourceGroupDef = {
   sources: Record<string, string[]>;
 };
 
+const JOKE_TEXT_DECK_BY_LANG: Record<string, string[]> = {
+  ru: ["ru"],
+  de: ["de"],
+  it: ["it"],
+  es: ["pack:chistes-es-public-domain", "pack:chistes-es-long"],
+  fr: ["fr"],
+  en: ["en"],
+};
+
+const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
+  ru: ["memes-ru"],
+  de: ["memes-de"],
+  it: ["memes-it"],
+  fr: ["memes-fr"],
+  en: ["memes-en"],
+};
+
+const JOKE_SOURCE_GROUPS: SourceGroupDef[] = [
+  {
+    id: "jokes",
+    title: "Анекдоты",
+    defaultWeight: 4,
+    sources: JOKE_TEXT_DECK_BY_LANG,
+  },
+  {
+    id: "memes",
+    title: "Мемы",
+    defaultWeight: 1,
+    sources: JOKE_MEME_DECK_BY_LANG,
+  },
+];
+
 const QUOTE_STATIC_DECK_BY_LANG: Record<string, string[]> = {
   ru: ["quotes-ru"],
   ar: ["quotes-ar"],
@@ -76,14 +108,7 @@ const QUOTE_SOURCE_GROUPS: SourceGroupDef[] = [
 ];
 
 const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
-  jokes_memes: {
-    ru: ["ru", "memes-ru"],
-    de: ["de", "memes-de"],
-    it: ["it", "memes-it"],
-    es: ["pack:chistes-es-public-domain", "pack:chistes-es-long"],
-    fr: ["fr", "memes-fr"],
-    en: ["en", "memes-en"],
-  },
+  jokes_memes: JOKE_TEXT_DECK_BY_LANG,
   lifehacks: {
     ru: ["tips"],
     ar: ["tips-ar"],
@@ -98,10 +123,15 @@ const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
   },
   riddles_illusions: {
     ru: ["visual-riddles", "illusions-ru", "illusions-3d"],
+    ar: ["illusions-ar"],
     de: ["visual-riddles-de", "illusions-de", "illusions-3d-de"],
     en: ["visual-riddles-en", "illusions-en", "illusions-3d-en"],
     it: ["illusions-it"],
     es: ["illusions-es"],
+    fr: ["illusions-fr"],
+    pt: ["illusions-pt"],
+    hi: ["illusions-hi"],
+    id: ["illusions-id"],
   },
   religion: {
     ar: ["islamic"],
@@ -127,6 +157,7 @@ const BLOCKS: BlockDef[] = [
       "Локализации считаются одним тематическим семейством, но unsafe-языки или отсутствующие мем-паки не подставляются автоматически.",
     ],
     accountIds: [7, 14, 15, 62, 64, 68, 70, 79],
+    sourceGroups: JOKE_SOURCE_GROUPS,
   },
   {
     id: "lifehacks",

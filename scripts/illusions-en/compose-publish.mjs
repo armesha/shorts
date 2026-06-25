@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Compose localized clips from titleless bases + title overlays + ambient, and publish 5 decks.
-// Inputs: matrix.json [{id,key,html,variant,dur,fps,name}], localize.json {id:{en,de,it,es,ru}},
+// Compose localized clips from titleless bases + title overlays + ambient, and publish localized decks.
+// Inputs: matrix.json [{id,key,html,variant,dur,fps,name}], localize.json {id:{en,de,it,es,ru,...}},
 //   temp/illusions-en/base/<id>.mp4(+.jpg), temp/illusions-en/titles/<id>_<lang>.png, ambient.mp3
 // Per (lang,design): overlay title PNG onto the base + mux ambient -> final mp4, placed in:
 //   assets/fact-videos/illusions-<lang>/<id>.mp4   (channel deck source)
@@ -20,8 +20,19 @@ const TITLES = resolve(ROOT, 'temp/illusions-en/titles');
 const ADMIN = resolve(ROOT, 'data/output/admin-demos');
 const MANIFEST = resolve(ADMIN, 'manifest.json');
 const AMBIENT = resolve(ROOT, 'assets/audio/illusions-en/ambient.mp3');
-const PACK_TITLE = { en: 'Optical Illusions', de: 'Optische Täuschungen', it: 'Illusioni ottiche', es: 'Ilusiones ópticas', ru: 'Оптические иллюзии' };
-const ALL_LANGS = ['en', 'de', 'it', 'es', 'ru'];
+const PACK_TITLE = {
+  en: 'Optical Illusions',
+  de: 'Optische Täuschungen',
+  it: 'Illusioni ottiche',
+  es: 'Ilusiones ópticas',
+  ru: 'Оптические иллюзии',
+  fr: 'Illusions optiques',
+  pt: 'Ilusões ópticas',
+  hi: 'दृष्टि भ्रम',
+  id: 'Ilusi Optik',
+  ar: 'خدع بصرية',
+};
+const ALL_LANGS = ['en', 'de', 'it', 'es', 'ru', 'fr', 'pt', 'hi', 'id', 'ar'];
 const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
 const hardlink = (src, dst) => { try { if (existsSync(dst)) unlinkSync(dst); linkSync(src, dst); } catch { copyFileSync(src, dst); } };
 
