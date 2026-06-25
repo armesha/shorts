@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- RU-дека на фонах russian_jokes/* (сцены со встроенным светлым «листом»: кухня, баня, поезд…).
-     Тот же тёмный PT Serif + заголовок с красным акцентом + подпись и авто-подгон, что и в
+     Тот же тёмный PT Serif + заголовок с красным акцентом + авто-подгон, что и в
      anecdote.html, но текст лежит в SAFE-зоне «листа» (padding = отступы фона). Лист светлый →
      тёмные чернила без скрима. Текст течёт с реальными переносами (white-space:pre-wrap) — две
      склеенные шутки разделяются пустой строкой + тонким разделителем. -->
@@ -59,10 +59,9 @@
   }
   /* Тонкий разделитель между двумя склеенными анекдотами (если в тексте есть строка «— — —») */
 
-  /* Подпись: смайл (слева) + рукописная подпись канала (справа) */
-  .footer { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; }
+  /* Низ карточки: только смайл, без подписи/тега канала. */
+  .footer { flex: 0 0 auto; display: flex; align-items: center; justify-content: flex-start; }
   .emoji { font-family: 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif; font-size: 60px; line-height: 1; }
-  .signature { font-family: 'RU Caveat', 'Caveat', cursive; font-size: 44px; color: var(--accent); }
 </style>
 </head>
 <body>
@@ -71,7 +70,6 @@
     <div class="body"><div class="text">{{TEXT}}</div></div>
     <div class="footer">
       <span class="emoji">😂</span>
-      <span class="signature">{{CHANNEL}}</span>
     </div>
   </div>
 

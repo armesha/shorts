@@ -120,7 +120,7 @@ export function pickRussianBg(name?: string | null, textLen = 0, avoidName?: str
   return { file, css: bgCss(file), safe: RUSSIAN_BG_SAFE[file] ?? DEFAULT_SAFE };
 }
 
-/** HTML карточки RU-деки на фоне russian_jokes: заголовок + текст в safe-зоне + подпись канала. */
+/** HTML карточки RU-деки на фоне russian_jokes: заголовок + текст в safe-зоне, без подписи канала. */
 export function buildRussianHtml(
   card: { title: string; text: string; channel: string },
   bg: RussianBg,
