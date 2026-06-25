@@ -24,6 +24,35 @@ public-domain книги, Wikisource/Internet Archive/Gutenberg, open-source д�
 легального текста и safety-фильтр. Если права или происхождение текста неясны, такой источник не
 использовать.
 
+## Статус блока "Анекдоты и мемы" armen
+
+Тематический блок `jokes_memes` состоит из двух source groups: `jokes` с весом 4 и `memes` с весом 1.
+Это означает целевую пропорцию примерно 80% анекдоты/текстовые юмористические истории и 20% мемы.
+Длинные видео в эту формулу не включать: длинные сборники публикуются отдельно из библиотеки канала.
+
+Текущие подготовленные текстовые joke/anecdote источники: `ru`, `de`, `it`, `fr`, `en`, `pt`, а для
+испанского канала живые template packs `pack:chistes-es-public-domain` и `pack:chistes-es-long`.
+Текущие подготовленные meme decks: `memes-ru`, `memes-en`, `memes-de`, `memes-fr`, `memes-it`,
+`memes-es`, `memes-pt`, `memes-ar`, `memes-hi`, `memes-id`. Meme decks сделаны как оригинальные
+локализованные подписи поверх уже существующего локального набора meme-board шаблонов; новые внешние
+картинки для них не скачивались.
+
+Не подставляй автоматически fake text deck для `ar`, `hi`, `id`. Для этих языков нужен отдельный
+ingestion/safety проход:
+
+- `ar`: лучший стартовый кандидат - ACO/Wikisource классические Juha/نوادر источники, например
+  `https://aco.dlib.nyu.edu/book/columbia_aco000613/1` и related ACO Arabic wit and humor records.
+  Не брать сразу `البخلاء` как массовый short-joke corpus: после фильтрации он дает много тяжелой
+  философской прозы, а не короткие анекдоты. Нужна ручная выборка 50-100 cards + религия/оскорбления
+  safety pass.
+- `hi`: пока не найден чистый современный Hindi joke corpus с понятной лицензией. Возможен только
+  отдельный пилот "classic fables / witty moral stories" из public-domain `Hitopadesha`/`Panchatantra`
+  или Hindi Wikisource, но это не называть полноценным паком "анекдоты" без ручного отбора.
+- `id`: перспективны public-domain Malay/Indonesian witty tales (`Hikayat Abu Nawas`,
+  `Hikayat Pelanduk Jenaka`), но часть текста на Wikisource лежит в jawi/старом Malay. Не
+  транслитерировать/модернизировать автоматически без отдельной проверки качества; сначала получить
+  латинский текст/OCR, затем сделать source ledger и safety pass.
+
 ## Общее правило озвучки
 
 Если новый или пересобираемый ролик требует голос, по текущему правилу пользователя используй
