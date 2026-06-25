@@ -86,8 +86,15 @@ const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
   },
   lifehacks: {
     ru: ["tips"],
+    ar: ["tips-ar"],
+    en: ["tips-en"],
+    it: ["tips-it"],
     de: ["tips-de"],
     es: ["tips-es"],
+    fr: ["tips-fr"],
+    pt: ["tips-pt"],
+    hi: ["tips-hi"],
+    id: ["tips-id"],
   },
   riddles_illusions: {
     ru: ["visual-riddles", "illusions-ru", "illusions-3d"],

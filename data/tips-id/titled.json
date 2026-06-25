@@ -1,0 +1,2402 @@
+[
+  {
+    "id": 1,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Simpan pengingat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 413,
+    "title": "Langganan: satu tempat",
+    "profession": "accountant"
+  },
+  {
+    "id": 2,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Lalu lihat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Buat kecil dan mudah diulang. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 441,
+    "title": "Langganan: cek mingguan",
+    "profession": "accountant"
+  },
+  {
+    "id": 3,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Letakkan tanda di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 475,
+    "title": "Langganan: tanda terlihat",
+    "profession": "accountant"
+  },
+  {
+    "id": 4,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Simpan pengingat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 388,
+    "title": "Dapur: satu tempat",
+    "profession": "accountant"
+  },
+  {
+    "id": 5,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Lalu lihat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Buat kecil dan mudah diulang. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 416,
+    "title": "Dapur: cek mingguan",
+    "profession": "accountant"
+  },
+  {
+    "id": 6,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: taruh barang yang kedaluwarsa lebih dulu di baris depan. Letakkan tanda di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 450,
+    "title": "Dapur: tanda terlihat",
+    "profession": "accountant"
+  },
+  {
+    "id": 7,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Simpan pengingat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 428,
+    "title": "Dokumen: satu tempat",
+    "profession": "accountant"
+  },
+  {
+    "id": 8,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Lalu lihat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Buat kecil dan mudah diulang. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 456,
+    "title": "Dokumen: cek mingguan",
+    "profession": "accountant"
+  },
+  {
+    "id": 9,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Letakkan tanda di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 490,
+    "title": "Dokumen: tanda terlihat",
+    "profession": "accountant"
+  },
+  {
+    "id": 10,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Simpan pengingat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Jangan gunakan kabel retak atau alat yang terasa panas. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 404,
+    "title": "Kabel: satu tempat",
+    "profession": "accountant"
+  },
+  {
+    "id": 11,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Lalu lihat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Buat kecil dan mudah diulang. Jangan gunakan kabel retak atau alat yang terasa panas. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 432,
+    "title": "Kabel: cek mingguan",
+    "profession": "accountant"
+  },
+  {
+    "id": 12,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Letakkan tanda di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan gunakan kabel retak atau alat yang terasa panas. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 466,
+    "title": "Kabel: tanda terlihat",
+    "profession": "accountant"
+  },
+  {
+    "id": 13,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Simpan pengingat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 407,
+    "title": "Cucian: satu tempat",
+    "profession": "accountant"
+  },
+  {
+    "id": 14,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Lalu lihat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Buat kecil dan mudah diulang. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 435,
+    "title": "Cucian: cek mingguan",
+    "profession": "accountant"
+  },
+  {
+    "id": 15,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Letakkan tanda di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 469,
+    "title": "Cucian: tanda terlihat",
+    "profession": "accountant"
+  },
+  {
+    "id": 16,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Simpan pengingat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 408,
+    "title": "Struk: satu tempat",
+    "profession": "accountant"
+  },
+  {
+    "id": 17,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Lalu lihat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Buat kecil dan mudah diulang. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 436,
+    "title": "Struk: cek mingguan",
+    "profession": "accountant"
+  },
+  {
+    "id": 18,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Letakkan tanda di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 470,
+    "title": "Struk: tanda terlihat",
+    "profession": "accountant"
+  },
+  {
+    "id": 19,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Simpan pengingat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 381,
+    "title": "Sisa makanan: satu tempat",
+    "profession": "accountant"
+  },
+  {
+    "id": 20,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Lalu lihat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Buat kecil dan mudah diulang. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 409,
+    "title": "Sisa makanan: cek mingguan",
+    "profession": "accountant"
+  },
+  {
+    "id": 21,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat satu rak kulkas khusus untuk yang harus segera dipakai. Letakkan tanda setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 443,
+    "title": "Sisa makanan: tanda terlihat",
+    "profession": "accountant"
+  },
+  {
+    "id": 22,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Simpan pengingat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 430,
+    "title": "Alat bersih: satu tempat",
+    "profession": "accountant"
+  },
+  {
+    "id": 23,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Lalu lihat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Buat kecil dan mudah diulang. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 458,
+    "title": "Alat bersih: cek mingguan",
+    "profession": "accountant"
+  },
+  {
+    "id": 24,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Letakkan tanda di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 492,
+    "title": "Alat bersih: tanda terlihat",
+    "profession": "accountant"
+  },
+  {
+    "id": 25,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tambahkan jam berangkat, bukan hanya jam janji. Simpan pengingat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Jangan tulis kode pribadi di catatan kalender bersama. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 344,
+    "title": "Kalender: satu tempat",
+    "profession": "accountant"
+  },
+  {
+    "id": 26,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tambahkan jam berangkat, bukan hanya jam janji. Lalu lihat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Buat kecil dan mudah diulang. Jangan tulis kode pribadi di catatan kalender bersama. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 372,
+    "title": "Kalender: cek mingguan",
+    "profession": "accountant"
+  },
+  {
+    "id": 27,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tambahkan jam berangkat, bukan hanya jam janji. Letakkan tanda di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan tulis kode pribadi di catatan kalender bersama. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 406,
+    "title": "Kalender: tanda terlihat",
+    "profession": "accountant"
+  },
+  {
+    "id": 28,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Simpan pengingat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 426,
+    "title": "Kata sandi: satu tempat",
+    "profession": "accountant"
+  },
+  {
+    "id": 29,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Lalu lihat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Buat kecil dan mudah diulang. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 454,
+    "title": "Kata sandi: cek mingguan",
+    "profession": "accountant"
+  },
+  {
+    "id": 30,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Letakkan tanda di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Buat terukur: tulis tanggal, jumlah, atau hitungan saat tugas masih segar.",
+    "chars": 488,
+    "title": "Kata sandi: tanda terlihat",
+    "profession": "accountant"
+  },
+  {
+    "id": 31,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Simpan pengingat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 392,
+    "title": "Langganan: satu tempat",
+    "profession": "builder"
+  },
+  {
+    "id": 32,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Lalu lihat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Buat kecil dan mudah diulang. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 420,
+    "title": "Langganan: cek mingguan",
+    "profession": "builder"
+  },
+  {
+    "id": 33,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Letakkan tanda di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 454,
+    "title": "Langganan: tanda terlihat",
+    "profession": "builder"
+  },
+  {
+    "id": 34,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Simpan pengingat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 367,
+    "title": "Dapur: satu tempat",
+    "profession": "builder"
+  },
+  {
+    "id": 35,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Lalu lihat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Buat kecil dan mudah diulang. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 395,
+    "title": "Dapur: cek mingguan",
+    "profession": "builder"
+  },
+  {
+    "id": 36,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: taruh barang yang kedaluwarsa lebih dulu di baris depan. Letakkan tanda di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 429,
+    "title": "Dapur: tanda terlihat",
+    "profession": "builder"
+  },
+  {
+    "id": 37,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Simpan pengingat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 407,
+    "title": "Dokumen: satu tempat",
+    "profession": "builder"
+  },
+  {
+    "id": 38,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Lalu lihat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Buat kecil dan mudah diulang. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 435,
+    "title": "Dokumen: cek mingguan",
+    "profession": "builder"
+  },
+  {
+    "id": 39,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Letakkan tanda di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 469,
+    "title": "Dokumen: tanda terlihat",
+    "profession": "builder"
+  },
+  {
+    "id": 40,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Simpan pengingat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Jangan gunakan kabel retak atau alat yang terasa panas. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 383,
+    "title": "Kabel: satu tempat",
+    "profession": "builder"
+  },
+  {
+    "id": 41,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Lalu lihat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Buat kecil dan mudah diulang. Jangan gunakan kabel retak atau alat yang terasa panas. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 411,
+    "title": "Kabel: cek mingguan",
+    "profession": "builder"
+  },
+  {
+    "id": 42,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Letakkan tanda di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan gunakan kabel retak atau alat yang terasa panas. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 445,
+    "title": "Kabel: tanda terlihat",
+    "profession": "builder"
+  },
+  {
+    "id": 43,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Simpan pengingat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 386,
+    "title": "Cucian: satu tempat",
+    "profession": "builder"
+  },
+  {
+    "id": 44,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Lalu lihat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Buat kecil dan mudah diulang. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 414,
+    "title": "Cucian: cek mingguan",
+    "profession": "builder"
+  },
+  {
+    "id": 45,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Letakkan tanda di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 448,
+    "title": "Cucian: tanda terlihat",
+    "profession": "builder"
+  },
+  {
+    "id": 46,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Simpan pengingat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 387,
+    "title": "Struk: satu tempat",
+    "profession": "builder"
+  },
+  {
+    "id": 47,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Lalu lihat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Buat kecil dan mudah diulang. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 415,
+    "title": "Struk: cek mingguan",
+    "profession": "builder"
+  },
+  {
+    "id": 48,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Letakkan tanda di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 449,
+    "title": "Struk: tanda terlihat",
+    "profession": "builder"
+  },
+  {
+    "id": 49,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Simpan pengingat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 360,
+    "title": "Sisa makanan: satu tempat",
+    "profession": "builder"
+  },
+  {
+    "id": 50,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Lalu lihat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Buat kecil dan mudah diulang. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 388,
+    "title": "Sisa makanan: cek mingguan",
+    "profession": "builder"
+  },
+  {
+    "id": 51,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat satu rak kulkas khusus untuk yang harus segera dipakai. Letakkan tanda setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 422,
+    "title": "Sisa makanan: tanda terlihat",
+    "profession": "builder"
+  },
+  {
+    "id": 52,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Simpan pengingat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 409,
+    "title": "Alat bersih: satu tempat",
+    "profession": "builder"
+  },
+  {
+    "id": 53,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Lalu lihat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Buat kecil dan mudah diulang. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 437,
+    "title": "Alat bersih: cek mingguan",
+    "profession": "builder"
+  },
+  {
+    "id": 54,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Letakkan tanda di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 471,
+    "title": "Alat bersih: tanda terlihat",
+    "profession": "builder"
+  },
+  {
+    "id": 55,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tambahkan jam berangkat, bukan hanya jam janji. Simpan pengingat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Jangan tulis kode pribadi di catatan kalender bersama. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 323,
+    "title": "Kalender: satu tempat",
+    "profession": "builder"
+  },
+  {
+    "id": 56,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tambahkan jam berangkat, bukan hanya jam janji. Lalu lihat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Buat kecil dan mudah diulang. Jangan tulis kode pribadi di catatan kalender bersama. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 351,
+    "title": "Kalender: cek mingguan",
+    "profession": "builder"
+  },
+  {
+    "id": 57,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tambahkan jam berangkat, bukan hanya jam janji. Letakkan tanda di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan tulis kode pribadi di catatan kalender bersama. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 385,
+    "title": "Kalender: tanda terlihat",
+    "profession": "builder"
+  },
+  {
+    "id": 58,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Simpan pengingat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 405,
+    "title": "Kata sandi: satu tempat",
+    "profession": "builder"
+  },
+  {
+    "id": 59,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Lalu lihat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Buat kecil dan mudah diulang. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 433,
+    "title": "Kata sandi: cek mingguan",
+    "profession": "builder"
+  },
+  {
+    "id": 60,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Letakkan tanda di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Bersihkan jalur fisik dulu agar aturan mudah diikuti.",
+    "chars": 467,
+    "title": "Kata sandi: tanda terlihat",
+    "profession": "builder"
+  },
+  {
+    "id": 61,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Simpan pengingat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 411,
+    "title": "Langganan: satu tempat",
+    "profession": "chef"
+  },
+  {
+    "id": 62,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Lalu lihat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Buat kecil dan mudah diulang. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 439,
+    "title": "Langganan: cek mingguan",
+    "profession": "chef"
+  },
+  {
+    "id": 63,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Letakkan tanda di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 473,
+    "title": "Langganan: tanda terlihat",
+    "profession": "chef"
+  },
+  {
+    "id": 64,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Simpan pengingat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 386,
+    "title": "Dapur: satu tempat",
+    "profession": "chef"
+  },
+  {
+    "id": 65,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Lalu lihat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Buat kecil dan mudah diulang. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 414,
+    "title": "Dapur: cek mingguan",
+    "profession": "chef"
+  },
+  {
+    "id": 66,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: taruh barang yang kedaluwarsa lebih dulu di baris depan. Letakkan tanda di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 448,
+    "title": "Dapur: tanda terlihat",
+    "profession": "chef"
+  },
+  {
+    "id": 67,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Simpan pengingat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 426,
+    "title": "Dokumen: satu tempat",
+    "profession": "chef"
+  },
+  {
+    "id": 68,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Lalu lihat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Buat kecil dan mudah diulang. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 454,
+    "title": "Dokumen: cek mingguan",
+    "profession": "chef"
+  },
+  {
+    "id": 69,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Letakkan tanda di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 488,
+    "title": "Dokumen: tanda terlihat",
+    "profession": "chef"
+  },
+  {
+    "id": 70,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Simpan pengingat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Jangan gunakan kabel retak atau alat yang terasa panas. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 402,
+    "title": "Kabel: satu tempat",
+    "profession": "chef"
+  },
+  {
+    "id": 71,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Lalu lihat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Buat kecil dan mudah diulang. Jangan gunakan kabel retak atau alat yang terasa panas. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 430,
+    "title": "Kabel: cek mingguan",
+    "profession": "chef"
+  },
+  {
+    "id": 72,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Letakkan tanda di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan gunakan kabel retak atau alat yang terasa panas. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 464,
+    "title": "Kabel: tanda terlihat",
+    "profession": "chef"
+  },
+  {
+    "id": 73,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Simpan pengingat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 405,
+    "title": "Cucian: satu tempat",
+    "profession": "chef"
+  },
+  {
+    "id": 74,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Lalu lihat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Buat kecil dan mudah diulang. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 433,
+    "title": "Cucian: cek mingguan",
+    "profession": "chef"
+  },
+  {
+    "id": 75,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Letakkan tanda di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 467,
+    "title": "Cucian: tanda terlihat",
+    "profession": "chef"
+  },
+  {
+    "id": 76,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Simpan pengingat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 406,
+    "title": "Struk: satu tempat",
+    "profession": "chef"
+  },
+  {
+    "id": 77,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Lalu lihat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Buat kecil dan mudah diulang. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 434,
+    "title": "Struk: cek mingguan",
+    "profession": "chef"
+  },
+  {
+    "id": 78,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Letakkan tanda di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 468,
+    "title": "Struk: tanda terlihat",
+    "profession": "chef"
+  },
+  {
+    "id": 79,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Simpan pengingat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 379,
+    "title": "Sisa makanan: satu tempat",
+    "profession": "chef"
+  },
+  {
+    "id": 80,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Lalu lihat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Buat kecil dan mudah diulang. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 407,
+    "title": "Sisa makanan: cek mingguan",
+    "profession": "chef"
+  },
+  {
+    "id": 81,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat satu rak kulkas khusus untuk yang harus segera dipakai. Letakkan tanda setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 441,
+    "title": "Sisa makanan: tanda terlihat",
+    "profession": "chef"
+  },
+  {
+    "id": 82,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Simpan pengingat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 428,
+    "title": "Alat bersih: satu tempat",
+    "profession": "chef"
+  },
+  {
+    "id": 83,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Lalu lihat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Buat kecil dan mudah diulang. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 456,
+    "title": "Alat bersih: cek mingguan",
+    "profession": "chef"
+  },
+  {
+    "id": 84,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Letakkan tanda di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 490,
+    "title": "Alat bersih: tanda terlihat",
+    "profession": "chef"
+  },
+  {
+    "id": 85,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tambahkan jam berangkat, bukan hanya jam janji. Simpan pengingat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Jangan tulis kode pribadi di catatan kalender bersama. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 342,
+    "title": "Kalender: satu tempat",
+    "profession": "chef"
+  },
+  {
+    "id": 86,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tambahkan jam berangkat, bukan hanya jam janji. Lalu lihat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Buat kecil dan mudah diulang. Jangan tulis kode pribadi di catatan kalender bersama. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 370,
+    "title": "Kalender: cek mingguan",
+    "profession": "chef"
+  },
+  {
+    "id": 87,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tambahkan jam berangkat, bukan hanya jam janji. Letakkan tanda di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan tulis kode pribadi di catatan kalender bersama. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 404,
+    "title": "Kalender: tanda terlihat",
+    "profession": "chef"
+  },
+  {
+    "id": 88,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Simpan pengingat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 424,
+    "title": "Kata sandi: satu tempat",
+    "profession": "chef"
+  },
+  {
+    "id": 89,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Lalu lihat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Buat kecil dan mudah diulang. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 452,
+    "title": "Kata sandi: cek mingguan",
+    "profession": "chef"
+  },
+  {
+    "id": 90,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Letakkan tanda di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Taruh makanan atau barang dapur di tempat yang terlihat sebelum terlupa.",
+    "chars": 486,
+    "title": "Kata sandi: tanda terlihat",
+    "profession": "chef"
+  },
+  {
+    "id": 91,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Simpan pengingat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 411,
+    "title": "Langganan: satu tempat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 92,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Lalu lihat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Buat kecil dan mudah diulang. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 439,
+    "title": "Langganan: cek mingguan",
+    "profession": "firefighter"
+  },
+  {
+    "id": 93,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Letakkan tanda di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 473,
+    "title": "Langganan: tanda terlihat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 94,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Simpan pengingat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 386,
+    "title": "Dapur: satu tempat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 95,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Lalu lihat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Buat kecil dan mudah diulang. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 414,
+    "title": "Dapur: cek mingguan",
+    "profession": "firefighter"
+  },
+  {
+    "id": 96,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: taruh barang yang kedaluwarsa lebih dulu di baris depan. Letakkan tanda di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 448,
+    "title": "Dapur: tanda terlihat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 97,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Simpan pengingat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 426,
+    "title": "Dokumen: satu tempat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 98,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Lalu lihat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Buat kecil dan mudah diulang. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 454,
+    "title": "Dokumen: cek mingguan",
+    "profession": "firefighter"
+  },
+  {
+    "id": 99,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Letakkan tanda di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 488,
+    "title": "Dokumen: tanda terlihat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 100,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Simpan pengingat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Jangan gunakan kabel retak atau alat yang terasa panas. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 402,
+    "title": "Kabel: satu tempat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 101,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Lalu lihat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Buat kecil dan mudah diulang. Jangan gunakan kabel retak atau alat yang terasa panas. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 430,
+    "title": "Kabel: cek mingguan",
+    "profession": "firefighter"
+  },
+  {
+    "id": 102,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Letakkan tanda di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan gunakan kabel retak atau alat yang terasa panas. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 464,
+    "title": "Kabel: tanda terlihat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 103,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Simpan pengingat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 405,
+    "title": "Cucian: satu tempat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 104,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Lalu lihat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Buat kecil dan mudah diulang. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 433,
+    "title": "Cucian: cek mingguan",
+    "profession": "firefighter"
+  },
+  {
+    "id": 105,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Letakkan tanda di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 467,
+    "title": "Cucian: tanda terlihat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 106,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Simpan pengingat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 406,
+    "title": "Struk: satu tempat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 107,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Lalu lihat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Buat kecil dan mudah diulang. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 434,
+    "title": "Struk: cek mingguan",
+    "profession": "firefighter"
+  },
+  {
+    "id": 108,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Letakkan tanda di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 468,
+    "title": "Struk: tanda terlihat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 109,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Simpan pengingat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 379,
+    "title": "Sisa makanan: satu tempat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 110,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Lalu lihat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Buat kecil dan mudah diulang. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 407,
+    "title": "Sisa makanan: cek mingguan",
+    "profession": "firefighter"
+  },
+  {
+    "id": 111,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat satu rak kulkas khusus untuk yang harus segera dipakai. Letakkan tanda setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 441,
+    "title": "Sisa makanan: tanda terlihat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 112,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Simpan pengingat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 428,
+    "title": "Alat bersih: satu tempat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 113,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Lalu lihat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Buat kecil dan mudah diulang. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 456,
+    "title": "Alat bersih: cek mingguan",
+    "profession": "firefighter"
+  },
+  {
+    "id": 114,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Letakkan tanda di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 490,
+    "title": "Alat bersih: tanda terlihat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 115,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tambahkan jam berangkat, bukan hanya jam janji. Simpan pengingat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Jangan tulis kode pribadi di catatan kalender bersama. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 342,
+    "title": "Kalender: satu tempat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 116,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tambahkan jam berangkat, bukan hanya jam janji. Lalu lihat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Buat kecil dan mudah diulang. Jangan tulis kode pribadi di catatan kalender bersama. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 370,
+    "title": "Kalender: cek mingguan",
+    "profession": "firefighter"
+  },
+  {
+    "id": 117,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tambahkan jam berangkat, bukan hanya jam janji. Letakkan tanda di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan tulis kode pribadi di catatan kalender bersama. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 404,
+    "title": "Kalender: tanda terlihat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 118,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Simpan pengingat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 424,
+    "title": "Kata sandi: satu tempat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 119,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Lalu lihat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Buat kecil dan mudah diulang. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 452,
+    "title": "Kata sandi: cek mingguan",
+    "profession": "firefighter"
+  },
+  {
+    "id": 120,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Letakkan tanda di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Jauhkan panas, tumpukan barang, dan pintu terhalang dari pengaturan ini.",
+    "chars": 486,
+    "title": "Kata sandi: tanda terlihat",
+    "profession": "firefighter"
+  },
+  {
+    "id": 121,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Simpan pengingat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 404,
+    "title": "Langganan: satu tempat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 122,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Lalu lihat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Buat kecil dan mudah diulang. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 432,
+    "title": "Langganan: cek mingguan",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 123,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Letakkan tanda di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 466,
+    "title": "Langganan: tanda terlihat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 124,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Simpan pengingat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 379,
+    "title": "Dapur: satu tempat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 125,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Lalu lihat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Buat kecil dan mudah diulang. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 407,
+    "title": "Dapur: cek mingguan",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 126,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: taruh barang yang kedaluwarsa lebih dulu di baris depan. Letakkan tanda di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 441,
+    "title": "Dapur: tanda terlihat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 127,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Simpan pengingat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 419,
+    "title": "Dokumen: satu tempat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 128,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Lalu lihat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Buat kecil dan mudah diulang. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 447,
+    "title": "Dokumen: cek mingguan",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 129,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Letakkan tanda di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 481,
+    "title": "Dokumen: tanda terlihat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 130,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Simpan pengingat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Jangan gunakan kabel retak atau alat yang terasa panas. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 395,
+    "title": "Kabel: satu tempat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 131,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Lalu lihat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Buat kecil dan mudah diulang. Jangan gunakan kabel retak atau alat yang terasa panas. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 423,
+    "title": "Kabel: cek mingguan",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 132,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Letakkan tanda di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan gunakan kabel retak atau alat yang terasa panas. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 457,
+    "title": "Kabel: tanda terlihat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 133,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Simpan pengingat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 398,
+    "title": "Cucian: satu tempat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 134,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Lalu lihat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Buat kecil dan mudah diulang. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 426,
+    "title": "Cucian: cek mingguan",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 135,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Letakkan tanda di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 460,
+    "title": "Cucian: tanda terlihat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 136,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Simpan pengingat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 399,
+    "title": "Struk: satu tempat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 137,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Lalu lihat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Buat kecil dan mudah diulang. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 427,
+    "title": "Struk: cek mingguan",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 138,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Letakkan tanda di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 461,
+    "title": "Struk: tanda terlihat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 139,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Simpan pengingat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 372,
+    "title": "Sisa makanan: satu tempat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 140,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Lalu lihat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Buat kecil dan mudah diulang. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 400,
+    "title": "Sisa makanan: cek mingguan",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 141,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat satu rak kulkas khusus untuk yang harus segera dipakai. Letakkan tanda setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 434,
+    "title": "Sisa makanan: tanda terlihat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 142,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Simpan pengingat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 421,
+    "title": "Alat bersih: satu tempat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 143,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Lalu lihat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Buat kecil dan mudah diulang. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 449,
+    "title": "Alat bersih: cek mingguan",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 144,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Letakkan tanda di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 483,
+    "title": "Alat bersih: tanda terlihat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 145,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tambahkan jam berangkat, bukan hanya jam janji. Simpan pengingat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Jangan tulis kode pribadi di catatan kalender bersama. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 335,
+    "title": "Kalender: satu tempat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 146,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tambahkan jam berangkat, bukan hanya jam janji. Lalu lihat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Buat kecil dan mudah diulang. Jangan tulis kode pribadi di catatan kalender bersama. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 363,
+    "title": "Kalender: cek mingguan",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 147,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tambahkan jam berangkat, bukan hanya jam janji. Letakkan tanda di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan tulis kode pribadi di catatan kalender bersama. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 397,
+    "title": "Kalender: tanda terlihat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 148,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Simpan pengingat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 417,
+    "title": "Kata sandi: satu tempat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 149,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Lalu lihat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Buat kecil dan mudah diulang. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 445,
+    "title": "Kata sandi: cek mingguan",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 150,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Letakkan tanda di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Buat tanda visual cukup jelas untuk terlihat saat bergerak cepat.",
+    "chars": 479,
+    "title": "Kata sandi: tanda terlihat",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 151,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Simpan pengingat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 400,
+    "title": "Langganan: satu tempat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 152,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Lalu lihat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Buat kecil dan mudah diulang. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 428,
+    "title": "Langganan: cek mingguan",
+    "profession": "lawyer"
+  },
+  {
+    "id": 153,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Letakkan tanda di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 462,
+    "title": "Langganan: tanda terlihat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 154,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Simpan pengingat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 375,
+    "title": "Dapur: satu tempat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 155,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Lalu lihat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Buat kecil dan mudah diulang. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 403,
+    "title": "Dapur: cek mingguan",
+    "profession": "lawyer"
+  },
+  {
+    "id": 156,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: taruh barang yang kedaluwarsa lebih dulu di baris depan. Letakkan tanda di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 437,
+    "title": "Dapur: tanda terlihat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 157,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Simpan pengingat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 415,
+    "title": "Dokumen: satu tempat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 158,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Lalu lihat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Buat kecil dan mudah diulang. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 443,
+    "title": "Dokumen: cek mingguan",
+    "profession": "lawyer"
+  },
+  {
+    "id": 159,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Letakkan tanda di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 477,
+    "title": "Dokumen: tanda terlihat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 160,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Simpan pengingat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Jangan gunakan kabel retak atau alat yang terasa panas. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 391,
+    "title": "Kabel: satu tempat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 161,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Lalu lihat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Buat kecil dan mudah diulang. Jangan gunakan kabel retak atau alat yang terasa panas. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 419,
+    "title": "Kabel: cek mingguan",
+    "profession": "lawyer"
+  },
+  {
+    "id": 162,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Letakkan tanda di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan gunakan kabel retak atau alat yang terasa panas. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 453,
+    "title": "Kabel: tanda terlihat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 163,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Simpan pengingat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 394,
+    "title": "Cucian: satu tempat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 164,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Lalu lihat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Buat kecil dan mudah diulang. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 422,
+    "title": "Cucian: cek mingguan",
+    "profession": "lawyer"
+  },
+  {
+    "id": 165,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Letakkan tanda di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 456,
+    "title": "Cucian: tanda terlihat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 166,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Simpan pengingat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 395,
+    "title": "Struk: satu tempat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 167,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Lalu lihat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Buat kecil dan mudah diulang. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 423,
+    "title": "Struk: cek mingguan",
+    "profession": "lawyer"
+  },
+  {
+    "id": 168,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Letakkan tanda di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 457,
+    "title": "Struk: tanda terlihat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 169,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Simpan pengingat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 368,
+    "title": "Sisa makanan: satu tempat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 170,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Lalu lihat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Buat kecil dan mudah diulang. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 396,
+    "title": "Sisa makanan: cek mingguan",
+    "profession": "lawyer"
+  },
+  {
+    "id": 171,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat satu rak kulkas khusus untuk yang harus segera dipakai. Letakkan tanda setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 430,
+    "title": "Sisa makanan: tanda terlihat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 172,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Simpan pengingat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 417,
+    "title": "Alat bersih: satu tempat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 173,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Lalu lihat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Buat kecil dan mudah diulang. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 445,
+    "title": "Alat bersih: cek mingguan",
+    "profession": "lawyer"
+  },
+  {
+    "id": 174,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Letakkan tanda di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 479,
+    "title": "Alat bersih: tanda terlihat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 175,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tambahkan jam berangkat, bukan hanya jam janji. Simpan pengingat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Jangan tulis kode pribadi di catatan kalender bersama. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 331,
+    "title": "Kalender: satu tempat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 176,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tambahkan jam berangkat, bukan hanya jam janji. Lalu lihat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Buat kecil dan mudah diulang. Jangan tulis kode pribadi di catatan kalender bersama. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 359,
+    "title": "Kalender: cek mingguan",
+    "profession": "lawyer"
+  },
+  {
+    "id": 177,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tambahkan jam berangkat, bukan hanya jam janji. Letakkan tanda di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan tulis kode pribadi di catatan kalender bersama. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 393,
+    "title": "Kalender: tanda terlihat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 178,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Simpan pengingat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 413,
+    "title": "Kata sandi: satu tempat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 179,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Lalu lihat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Buat kecil dan mudah diulang. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 441,
+    "title": "Kata sandi: cek mingguan",
+    "profession": "lawyer"
+  },
+  {
+    "id": 180,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Letakkan tanda di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Tinggalkan catatan kecil agar keputusan mudah dipahami nanti.",
+    "chars": 475,
+    "title": "Kata sandi: tanda terlihat",
+    "profession": "lawyer"
+  },
+  {
+    "id": 181,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Simpan pengingat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 393,
+    "title": "Langganan: satu tempat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 182,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Lalu lihat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Buat kecil dan mudah diulang. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 421,
+    "title": "Langganan: cek mingguan",
+    "profession": "mechanic"
+  },
+  {
+    "id": 183,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Letakkan tanda di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 455,
+    "title": "Langganan: tanda terlihat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 184,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Simpan pengingat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 368,
+    "title": "Dapur: satu tempat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 185,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Lalu lihat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Buat kecil dan mudah diulang. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 396,
+    "title": "Dapur: cek mingguan",
+    "profession": "mechanic"
+  },
+  {
+    "id": 186,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: taruh barang yang kedaluwarsa lebih dulu di baris depan. Letakkan tanda di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 430,
+    "title": "Dapur: tanda terlihat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 187,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Simpan pengingat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 408,
+    "title": "Dokumen: satu tempat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 188,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Lalu lihat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Buat kecil dan mudah diulang. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 436,
+    "title": "Dokumen: cek mingguan",
+    "profession": "mechanic"
+  },
+  {
+    "id": 189,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Letakkan tanda di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 470,
+    "title": "Dokumen: tanda terlihat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 190,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Simpan pengingat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Jangan gunakan kabel retak atau alat yang terasa panas. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 384,
+    "title": "Kabel: satu tempat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 191,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Lalu lihat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Buat kecil dan mudah diulang. Jangan gunakan kabel retak atau alat yang terasa panas. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 412,
+    "title": "Kabel: cek mingguan",
+    "profession": "mechanic"
+  },
+  {
+    "id": 192,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Letakkan tanda di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan gunakan kabel retak atau alat yang terasa panas. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 446,
+    "title": "Kabel: tanda terlihat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 193,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Simpan pengingat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 387,
+    "title": "Cucian: satu tempat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 194,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Lalu lihat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Buat kecil dan mudah diulang. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 415,
+    "title": "Cucian: cek mingguan",
+    "profession": "mechanic"
+  },
+  {
+    "id": 195,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Letakkan tanda di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 449,
+    "title": "Cucian: tanda terlihat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 196,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Simpan pengingat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 388,
+    "title": "Struk: satu tempat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 197,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Lalu lihat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Buat kecil dan mudah diulang. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 416,
+    "title": "Struk: cek mingguan",
+    "profession": "mechanic"
+  },
+  {
+    "id": 198,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Letakkan tanda di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 450,
+    "title": "Struk: tanda terlihat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 199,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Simpan pengingat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 361,
+    "title": "Sisa makanan: satu tempat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 200,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Lalu lihat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Buat kecil dan mudah diulang. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 389,
+    "title": "Sisa makanan: cek mingguan",
+    "profession": "mechanic"
+  },
+  {
+    "id": 201,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat satu rak kulkas khusus untuk yang harus segera dipakai. Letakkan tanda setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 423,
+    "title": "Sisa makanan: tanda terlihat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 202,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Simpan pengingat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 410,
+    "title": "Alat bersih: satu tempat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 203,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Lalu lihat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Buat kecil dan mudah diulang. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 438,
+    "title": "Alat bersih: cek mingguan",
+    "profession": "mechanic"
+  },
+  {
+    "id": 204,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Letakkan tanda di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 472,
+    "title": "Alat bersih: tanda terlihat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 205,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tambahkan jam berangkat, bukan hanya jam janji. Simpan pengingat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Jangan tulis kode pribadi di catatan kalender bersama. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 324,
+    "title": "Kalender: satu tempat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 206,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tambahkan jam berangkat, bukan hanya jam janji. Lalu lihat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Buat kecil dan mudah diulang. Jangan tulis kode pribadi di catatan kalender bersama. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 352,
+    "title": "Kalender: cek mingguan",
+    "profession": "mechanic"
+  },
+  {
+    "id": 207,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tambahkan jam berangkat, bukan hanya jam janji. Letakkan tanda di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan tulis kode pribadi di catatan kalender bersama. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 386,
+    "title": "Kalender: tanda terlihat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 208,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Simpan pengingat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 406,
+    "title": "Kata sandi: satu tempat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 209,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Lalu lihat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Buat kecil dan mudah diulang. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 434,
+    "title": "Kata sandi: cek mingguan",
+    "profession": "mechanic"
+  },
+  {
+    "id": 210,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Letakkan tanda di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Cek tanda aus sederhana sebelum masalah menjadi mahal.",
+    "chars": 468,
+    "title": "Kata sandi: tanda terlihat",
+    "profession": "mechanic"
+  },
+  {
+    "id": 211,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Simpan pengingat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 408,
+    "title": "Langganan: satu tempat",
+    "profession": "police"
+  },
+  {
+    "id": 212,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Lalu lihat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Buat kecil dan mudah diulang. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 436,
+    "title": "Langganan: cek mingguan",
+    "profession": "police"
+  },
+  {
+    "id": 213,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Letakkan tanda di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 470,
+    "title": "Langganan: tanda terlihat",
+    "profession": "police"
+  },
+  {
+    "id": 214,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Simpan pengingat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 383,
+    "title": "Dapur: satu tempat",
+    "profession": "police"
+  },
+  {
+    "id": 215,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Lalu lihat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Buat kecil dan mudah diulang. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 411,
+    "title": "Dapur: cek mingguan",
+    "profession": "police"
+  },
+  {
+    "id": 216,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: taruh barang yang kedaluwarsa lebih dulu di baris depan. Letakkan tanda di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 445,
+    "title": "Dapur: tanda terlihat",
+    "profession": "police"
+  },
+  {
+    "id": 217,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Simpan pengingat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 423,
+    "title": "Dokumen: satu tempat",
+    "profession": "police"
+  },
+  {
+    "id": 218,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Lalu lihat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Buat kecil dan mudah diulang. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 451,
+    "title": "Dokumen: cek mingguan",
+    "profession": "police"
+  },
+  {
+    "id": 219,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Letakkan tanda di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 485,
+    "title": "Dokumen: tanda terlihat",
+    "profession": "police"
+  },
+  {
+    "id": 220,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Simpan pengingat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Jangan gunakan kabel retak atau alat yang terasa panas. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 399,
+    "title": "Kabel: satu tempat",
+    "profession": "police"
+  },
+  {
+    "id": 221,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Lalu lihat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Buat kecil dan mudah diulang. Jangan gunakan kabel retak atau alat yang terasa panas. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 427,
+    "title": "Kabel: cek mingguan",
+    "profession": "police"
+  },
+  {
+    "id": 222,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Letakkan tanda di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan gunakan kabel retak atau alat yang terasa panas. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 461,
+    "title": "Kabel: tanda terlihat",
+    "profession": "police"
+  },
+  {
+    "id": 223,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Simpan pengingat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 402,
+    "title": "Cucian: satu tempat",
+    "profession": "police"
+  },
+  {
+    "id": 224,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Lalu lihat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Buat kecil dan mudah diulang. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 430,
+    "title": "Cucian: cek mingguan",
+    "profession": "police"
+  },
+  {
+    "id": 225,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Letakkan tanda di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 464,
+    "title": "Cucian: tanda terlihat",
+    "profession": "police"
+  },
+  {
+    "id": 226,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Simpan pengingat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 403,
+    "title": "Struk: satu tempat",
+    "profession": "police"
+  },
+  {
+    "id": 227,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Lalu lihat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Buat kecil dan mudah diulang. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 431,
+    "title": "Struk: cek mingguan",
+    "profession": "police"
+  },
+  {
+    "id": 228,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Letakkan tanda di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 465,
+    "title": "Struk: tanda terlihat",
+    "profession": "police"
+  },
+  {
+    "id": 229,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Simpan pengingat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 376,
+    "title": "Sisa makanan: satu tempat",
+    "profession": "police"
+  },
+  {
+    "id": 230,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Lalu lihat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Buat kecil dan mudah diulang. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 404,
+    "title": "Sisa makanan: cek mingguan",
+    "profession": "police"
+  },
+  {
+    "id": 231,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat satu rak kulkas khusus untuk yang harus segera dipakai. Letakkan tanda setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 438,
+    "title": "Sisa makanan: tanda terlihat",
+    "profession": "police"
+  },
+  {
+    "id": 232,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Simpan pengingat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 425,
+    "title": "Alat bersih: satu tempat",
+    "profession": "police"
+  },
+  {
+    "id": 233,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Lalu lihat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Buat kecil dan mudah diulang. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 453,
+    "title": "Alat bersih: cek mingguan",
+    "profession": "police"
+  },
+  {
+    "id": 234,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Letakkan tanda di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 487,
+    "title": "Alat bersih: tanda terlihat",
+    "profession": "police"
+  },
+  {
+    "id": 235,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tambahkan jam berangkat, bukan hanya jam janji. Simpan pengingat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Jangan tulis kode pribadi di catatan kalender bersama. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 339,
+    "title": "Kalender: satu tempat",
+    "profession": "police"
+  },
+  {
+    "id": 236,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tambahkan jam berangkat, bukan hanya jam janji. Lalu lihat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Buat kecil dan mudah diulang. Jangan tulis kode pribadi di catatan kalender bersama. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 367,
+    "title": "Kalender: cek mingguan",
+    "profession": "police"
+  },
+  {
+    "id": 237,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tambahkan jam berangkat, bukan hanya jam janji. Letakkan tanda di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan tulis kode pribadi di catatan kalender bersama. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 401,
+    "title": "Kalender: tanda terlihat",
+    "profession": "police"
+  },
+  {
+    "id": 238,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Simpan pengingat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 421,
+    "title": "Kata sandi: satu tempat",
+    "profession": "police"
+  },
+  {
+    "id": 239,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Lalu lihat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Buat kecil dan mudah diulang. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 449,
+    "title": "Kata sandi: cek mingguan",
+    "profession": "police"
+  },
+  {
+    "id": 240,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Letakkan tanda di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Gunakan satu titik serah agar barang bersama tidak menjadi pencarian.",
+    "chars": 483,
+    "title": "Kata sandi: tanda terlihat",
+    "profession": "police"
+  },
+  {
+    "id": 241,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Simpan pengingat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 413,
+    "title": "Langganan: satu tempat",
+    "profession": "programmer"
+  },
+  {
+    "id": 242,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Lalu lihat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Buat kecil dan mudah diulang. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 441,
+    "title": "Langganan: cek mingguan",
+    "profession": "programmer"
+  },
+  {
+    "id": 243,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Letakkan tanda di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 475,
+    "title": "Langganan: tanda terlihat",
+    "profession": "programmer"
+  },
+  {
+    "id": 244,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Simpan pengingat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 388,
+    "title": "Dapur: satu tempat",
+    "profession": "programmer"
+  },
+  {
+    "id": 245,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Lalu lihat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Buat kecil dan mudah diulang. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 416,
+    "title": "Dapur: cek mingguan",
+    "profession": "programmer"
+  },
+  {
+    "id": 246,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: taruh barang yang kedaluwarsa lebih dulu di baris depan. Letakkan tanda di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 450,
+    "title": "Dapur: tanda terlihat",
+    "profession": "programmer"
+  },
+  {
+    "id": 247,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Simpan pengingat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 428,
+    "title": "Dokumen: satu tempat",
+    "profession": "programmer"
+  },
+  {
+    "id": 248,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Lalu lihat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Buat kecil dan mudah diulang. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 456,
+    "title": "Dokumen: cek mingguan",
+    "profession": "programmer"
+  },
+  {
+    "id": 249,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Letakkan tanda di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 490,
+    "title": "Dokumen: tanda terlihat",
+    "profession": "programmer"
+  },
+  {
+    "id": 250,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Simpan pengingat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Jangan gunakan kabel retak atau alat yang terasa panas. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 404,
+    "title": "Kabel: satu tempat",
+    "profession": "programmer"
+  },
+  {
+    "id": 251,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Lalu lihat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Buat kecil dan mudah diulang. Jangan gunakan kabel retak atau alat yang terasa panas. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 432,
+    "title": "Kabel: cek mingguan",
+    "profession": "programmer"
+  },
+  {
+    "id": 252,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Letakkan tanda di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan gunakan kabel retak atau alat yang terasa panas. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 466,
+    "title": "Kabel: tanda terlihat",
+    "profession": "programmer"
+  },
+  {
+    "id": 253,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Simpan pengingat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 407,
+    "title": "Cucian: satu tempat",
+    "profession": "programmer"
+  },
+  {
+    "id": 254,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Lalu lihat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Buat kecil dan mudah diulang. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 435,
+    "title": "Cucian: cek mingguan",
+    "profession": "programmer"
+  },
+  {
+    "id": 255,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Letakkan tanda di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 469,
+    "title": "Cucian: tanda terlihat",
+    "profession": "programmer"
+  },
+  {
+    "id": 256,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Simpan pengingat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 408,
+    "title": "Struk: satu tempat",
+    "profession": "programmer"
+  },
+  {
+    "id": 257,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Lalu lihat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Buat kecil dan mudah diulang. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 436,
+    "title": "Struk: cek mingguan",
+    "profession": "programmer"
+  },
+  {
+    "id": 258,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Letakkan tanda di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 470,
+    "title": "Struk: tanda terlihat",
+    "profession": "programmer"
+  },
+  {
+    "id": 259,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Simpan pengingat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 381,
+    "title": "Sisa makanan: satu tempat",
+    "profession": "programmer"
+  },
+  {
+    "id": 260,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Lalu lihat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Buat kecil dan mudah diulang. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 409,
+    "title": "Sisa makanan: cek mingguan",
+    "profession": "programmer"
+  },
+  {
+    "id": 261,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat satu rak kulkas khusus untuk yang harus segera dipakai. Letakkan tanda setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 443,
+    "title": "Sisa makanan: tanda terlihat",
+    "profession": "programmer"
+  },
+  {
+    "id": 262,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Simpan pengingat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 430,
+    "title": "Alat bersih: satu tempat",
+    "profession": "programmer"
+  },
+  {
+    "id": 263,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Lalu lihat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Buat kecil dan mudah diulang. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 458,
+    "title": "Alat bersih: cek mingguan",
+    "profession": "programmer"
+  },
+  {
+    "id": 264,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Letakkan tanda di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 492,
+    "title": "Alat bersih: tanda terlihat",
+    "profession": "programmer"
+  },
+  {
+    "id": 265,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tambahkan jam berangkat, bukan hanya jam janji. Simpan pengingat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Jangan tulis kode pribadi di catatan kalender bersama. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 344,
+    "title": "Kalender: satu tempat",
+    "profession": "programmer"
+  },
+  {
+    "id": 266,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tambahkan jam berangkat, bukan hanya jam janji. Lalu lihat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Buat kecil dan mudah diulang. Jangan tulis kode pribadi di catatan kalender bersama. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 372,
+    "title": "Kalender: cek mingguan",
+    "profession": "programmer"
+  },
+  {
+    "id": 267,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tambahkan jam berangkat, bukan hanya jam janji. Letakkan tanda di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan tulis kode pribadi di catatan kalender bersama. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 406,
+    "title": "Kalender: tanda terlihat",
+    "profession": "programmer"
+  },
+  {
+    "id": 268,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Simpan pengingat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 426,
+    "title": "Kata sandi: satu tempat",
+    "profession": "programmer"
+  },
+  {
+    "id": 269,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Lalu lihat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Buat kecil dan mudah diulang. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 454,
+    "title": "Kata sandi: cek mingguan",
+    "profession": "programmer"
+  },
+  {
+    "id": 270,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Letakkan tanda di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Buat pengingat mudah dicari dan jauhkan data pribadi dari catatan terbuka.",
+    "chars": 488,
+    "title": "Kata sandi: tanda terlihat",
+    "profession": "programmer"
+  },
+  {
+    "id": 271,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Simpan pengingat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 411,
+    "title": "Langganan: satu tempat",
+    "profession": "teacher"
+  },
+  {
+    "id": 272,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Lalu lihat di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Buat kecil dan mudah diulang. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 439,
+    "title": "Langganan: cek mingguan",
+    "profession": "teacher"
+  },
+  {
+    "id": 273,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tulis nama layanan, tanggal tagihan, dan jumlahnya dalam satu daftar. Letakkan tanda di dekat aplikasi bank atau lembar anggaran. Tambahkan baris langsung setelah setiap pendaftaran. biaya yang terlupa terlihat sebelum tagihan berikutnya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan kata sandi, kode, atau nomor kartu lengkap di sana. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 473,
+    "title": "Langganan: tanda terlihat",
+    "profession": "teacher"
+  },
+  {
+    "id": 274,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Simpan pengingat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 386,
+    "title": "Dapur: satu tempat",
+    "profession": "teacher"
+  },
+  {
+    "id": 275,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: taruh barang yang kedaluwarsa lebih dulu di baris depan. Lalu lihat di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Buat kecil dan mudah diulang. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 414,
+    "title": "Dapur: cek mingguan",
+    "profession": "teacher"
+  },
+  {
+    "id": 276,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: taruh barang yang kedaluwarsa lebih dulu di baris depan. Letakkan tanda di rak dengan label pakai dulu. Periksa baris itu sebelum membuka kemasan baru. makanan yang masih bagus terpakai sebelum tertutup kotak baru. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan simpan makanan terbuka tanpa tanggal atau wadah tertutup. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 448,
+    "title": "Dapur: tanda terlihat",
+    "profession": "teacher"
+  },
+  {
+    "id": 277,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Simpan pengingat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 426,
+    "title": "Dokumen: satu tempat",
+    "profession": "teacher"
+  },
+  {
+    "id": 278,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Lalu lihat di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Buat kecil dan mudah diulang. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 454,
+    "title": "Dokumen: cek mingguan",
+    "profession": "teacher"
+  },
+  {
+    "id": 279,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat catatan pendek tentang lokasi dokumen asli dan salinannya. Letakkan tanda di folder terlindungi dan indeks kertas sederhana. Setelah perjalanan atau perpanjangan, ubah hanya baris yang berubah. pencarian lebih tenang saat satu dokumen dibutuhkan cepat. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan kirim scan di chat bersama tanpa menutup data pribadi. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 488,
+    "title": "Dokumen: tanda terlihat",
+    "profession": "teacher"
+  },
+  {
+    "id": 280,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Simpan pengingat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Jangan gunakan kabel retak atau alat yang terasa panas. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 402,
+    "title": "Kabel: satu tempat",
+    "profession": "teacher"
+  },
+  {
+    "id": 281,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Lalu lihat di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Buat kecil dan mudah diulang. Jangan gunakan kabel retak atau alat yang terasa panas. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 430,
+    "title": "Kabel: cek mingguan",
+    "profession": "teacher"
+  },
+  {
+    "id": 282,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tentukan satu tempat pengisian daya dan cabut adaptor lama dari stopkontak. Letakkan tanda di permukaan kosong jauh dari kertas dan kain. Sebelum tidur, cek tidak ada kabel terjepit furnitur. panas, kusut, dan pencarian mendadak berkurang. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan gunakan kabel retak atau alat yang terasa panas. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 464,
+    "title": "Kabel: tanda terlihat",
+    "profession": "teacher"
+  },
+  {
+    "id": 283,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Simpan pengingat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 405,
+    "title": "Cucian: satu tempat",
+    "profession": "teacher"
+  },
+  {
+    "id": 284,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Lalu lihat di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Buat kecil dan mudah diulang. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 433,
+    "title": "Cucian: cek mingguan",
+    "profession": "teacher"
+  },
+  {
+    "id": 285,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gantung kantong jaring di keranjang untuk kaus kaki dan pakaian halus. Letakkan tanda di kait atau di dalam keranjang. Tutup kantong sebelum mencuci dan cek saku. barang kecil tidak mudah hilang antara sortir dan pengeringan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan isi kantong terlalu penuh karena kain perlu ruang untuk terbilas. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 467,
+    "title": "Cucian: tanda terlihat",
+    "profession": "teacher"
+  },
+  {
+    "id": 286,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Simpan pengingat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 406,
+    "title": "Struk: satu tempat",
+    "profession": "teacher"
+  },
+  {
+    "id": 287,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Lalu lihat di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Buat kecil dan mudah diulang. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 434,
+    "title": "Struk: cek mingguan",
+    "profession": "teacher"
+  },
+  {
+    "id": 288,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: masukkan struk kertas ke satu amplop dan beri tag sama untuk struk digital. Letakkan tanda di laci dekat pintu atau folder email. Akhir minggu, simpan hanya yang perlu untuk retur atau garansi. belanja kecil tidak tersebar di tas dan saku. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan foto dokumen di dekat data pribadi yang tidak perlu. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 468,
+    "title": "Struk: tanda terlihat",
+    "profession": "teacher"
+  },
+  {
+    "id": 289,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Simpan pengingat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 379,
+    "title": "Sisa makanan: satu tempat",
+    "profession": "teacher"
+  },
+  {
+    "id": 290,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: buat satu rak kulkas khusus untuk yang harus segera dipakai. Lalu lihat setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Buat kecil dan mudah diulang. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 407,
+    "title": "Sisa makanan: cek mingguan",
+    "profession": "teacher"
+  },
+  {
+    "id": 291,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: buat satu rak kulkas khusus untuk yang harus segera dipakai. Letakkan tanda setinggi mata dengan label kecil. Mulai memasak dengan melihat rak itu dulu. sisa makanan menjadi makan malam, bukan wadah terlupa. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan biarkan makanan matang di luar lebih lama dari yang aman. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 441,
+    "title": "Sisa makanan: tanda terlihat",
+    "profession": "teacher"
+  },
+  {
+    "id": 292,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Simpan pengingat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 428,
+    "title": "Alat bersih: satu tempat",
+    "profession": "teacher"
+  },
+  {
+    "id": 293,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Lalu lihat di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Buat kecil dan mudah diulang. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 456,
+    "title": "Alat bersih: cek mingguan",
+    "profession": "teacher"
+  },
+  {
+    "id": 294,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: beri satu fungsi untuk tiap warna lap dan simpan daftarnya bersama lap. Letakkan tanda di bagian dalam tutup kotak bersih-bersih. Cuci atau ganti lap sebelum tugas berikutnya. permukaan lebih bersih karena lap kamar mandi, dapur, dan debu tidak bercampur. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan mencampur produk pembersih atau membuat ramuan lebih kuat. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 490,
+    "title": "Alat bersih: tanda terlihat",
+    "profession": "teacher"
+  },
+  {
+    "id": 295,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: tambahkan jam berangkat, bukan hanya jam janji. Simpan pengingat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Jangan tulis kode pribadi di catatan kalender bersama. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 342,
+    "title": "Kalender: satu tempat",
+    "profession": "teacher"
+  },
+  {
+    "id": 296,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: tambahkan jam berangkat, bukan hanya jam janji. Lalu lihat di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Buat kecil dan mudah diulang. Jangan tulis kode pribadi di catatan kalender bersama. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 370,
+    "title": "Kalender: cek mingguan",
+    "profession": "teacher"
+  },
+  {
+    "id": 297,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: tambahkan jam berangkat, bukan hanya jam janji. Letakkan tanda di acara kalender yang sama. Masukkan perjalanan, sepatu, tas, dan jeda kecil. pagi hari menjadi rute, bukan kejutan. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan tulis kode pribadi di catatan kalender bersama. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 404,
+    "title": "Kalender: tanda terlihat",
+    "profession": "teacher"
+  },
+  {
+    "id": 298,
+    "pack": 1,
+    "text": "Aturan sederhana bisa membantu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Simpan pengingat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 424,
+    "title": "Kata sandi: satu tempat",
+    "profession": "teacher"
+  },
+  {
+    "id": 299,
+    "pack": 1,
+    "text": "Pakai cek lima menit setiap minggu: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Lalu lihat di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Buat kecil dan mudah diulang. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 452,
+    "title": "Kata sandi: cek mingguan",
+    "profession": "teacher"
+  },
+  {
+    "id": 300,
+    "pack": 1,
+    "text": "Buat terlihat sebelum menjadi darurat: gunakan pengelola kata sandi dan beri tiap akun penting kata sandi unik. Letakkan tanda di pengelola, bukan di catatan bernama password. Aktifkan perlindungan multifaktor jika tersedia. satu kata sandi bocor tidak langsung membuka semuanya. Satu catatan, label, atau kotak sudah cukup untuk mulai. Jangan pakai ulang kode pemulihan atau menyimpannya sebagai tangkapan layar. Ubah aturan menjadi satu kalimat yang bisa diulang semua orang di rumah.",
+    "chars": 486,
+    "title": "Kata sandi: tanda terlihat",
+    "profession": "teacher"
+  }
+]

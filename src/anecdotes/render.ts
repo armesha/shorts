@@ -455,8 +455,11 @@ async function renderLifehack(
 ): Promise<{ path: string; fontPx: number; bg: string }> {
   const { css, name } = lifehackBgCss(a.profession, getDeck(a.deck).lifehackVariant, `${a.deck}|${a.title}|${a.text}`);
   const template = pickLifehackTemplate({ deck: a.deck, profession: a.profession, title: a.title, text: a.text });
+  const lang = deckLang(a.deck ?? "") || "en";
   let html = await readFile(LIFEHACK_TEMPLATE, "utf8");
   html = html
+    .replaceAll("{{LANG}}", esc(lang))
+    .replaceAll("{{DIR}}", lang === "ar" ? "rtl" : "ltr")
     .replaceAll("{{TITLE}}", esc(a.title))
     .replace("{{TEXT}}", esc(a.text))
     .replaceAll("{{BG}}", css)

@@ -1,0 +1,2402 @@
+[
+  {
+    "id": 1,
+    "pack": 1,
+    "text": "A simple rule helps here: write the service name, billing date, and amount in one list. Keep the reminder next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Do not store passwords, codes, or full card numbers there. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 379,
+    "title": "Subscriptions: fixed place",
+    "profession": "accountant"
+  },
+  {
+    "id": 2,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: write the service name, billing date, and amount in one list. Then look at next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Keep it small and repeatable. Do not store passwords, codes, or full card numbers there. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 410,
+    "title": "Subscriptions: weekly check",
+    "profession": "accountant"
+  },
+  {
+    "id": 3,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: write the service name, billing date, and amount in one list. Put the cue next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. One note, label, or box is enough to start. Do not store passwords, codes, or full card numbers there. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 433,
+    "title": "Subscriptions: visible cue",
+    "profession": "accountant"
+  },
+  {
+    "id": 4,
+    "pack": 1,
+    "text": "A simple rule helps here: keep the items that expire first in the front row. Keep the reminder on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Do not keep open food without a date or closed container. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 373,
+    "title": "Pantry: fixed place",
+    "profession": "accountant"
+  },
+  {
+    "id": 5,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep the items that expire first in the front row. Then look at on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Keep it small and repeatable. Do not keep open food without a date or closed container. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 404,
+    "title": "Pantry: weekly check",
+    "profession": "accountant"
+  },
+  {
+    "id": 6,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep the items that expire first in the front row. Put the cue on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. One note, label, or box is enough to start. Do not keep open food without a date or closed container. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 427,
+    "title": "Pantry: visible cue",
+    "profession": "accountant"
+  },
+  {
+    "id": 7,
+    "pack": 1,
+    "text": "A simple rule helps here: keep a short note that says where each original and copy lives. Keep the reminder in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Do not send scans through shared chats unless private data is hidden. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 416,
+    "title": "Documents: fixed place",
+    "profession": "accountant"
+  },
+  {
+    "id": 8,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep a short note that says where each original and copy lives. Then look at in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Keep it small and repeatable. Do not send scans through shared chats unless private data is hidden. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 447,
+    "title": "Documents: weekly check",
+    "profession": "accountant"
+  },
+  {
+    "id": 9,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep a short note that says where each original and copy lives. Put the cue in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. One note, label, or box is enough to start. Do not send scans through shared chats unless private data is hidden. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 470,
+    "title": "Documents: visible cue",
+    "profession": "accountant"
+  },
+  {
+    "id": 10,
+    "pack": 1,
+    "text": "A simple rule helps here: choose one charging place and remove old adapters from sockets. Keep the reminder on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Do not use cracked cables or anything that becomes hot. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 403,
+    "title": "Cables: fixed place",
+    "profession": "accountant"
+  },
+  {
+    "id": 11,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: choose one charging place and remove old adapters from sockets. Then look at on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Keep it small and repeatable. Do not use cracked cables or anything that becomes hot. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 434,
+    "title": "Cables: weekly check",
+    "profession": "accountant"
+  },
+  {
+    "id": 12,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: choose one charging place and remove old adapters from sockets. Put the cue on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. One note, label, or box is enough to start. Do not use cracked cables or anything that becomes hot. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 457,
+    "title": "Cables: visible cue",
+    "profession": "accountant"
+  },
+  {
+    "id": 13,
+    "pack": 1,
+    "text": "A simple rule helps here: hang a mesh bag on the laundry basket for socks and delicate pieces. Keep the reminder on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Do not overfill the bag because fabric still needs room to rinse. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 393,
+    "title": "Laundry: fixed place",
+    "profession": "accountant"
+  },
+  {
+    "id": 14,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: hang a mesh bag on the laundry basket for socks and delicate pieces. Then look at on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Keep it small and repeatable. Do not overfill the bag because fabric still needs room to rinse. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 424,
+    "title": "Laundry: weekly check",
+    "profession": "accountant"
+  },
+  {
+    "id": 15,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: hang a mesh bag on the laundry basket for socks and delicate pieces. Put the cue on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. One note, label, or box is enough to start. Do not overfill the bag because fabric still needs room to rinse. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 447,
+    "title": "Laundry: visible cue",
+    "profession": "accountant"
+  },
+  {
+    "id": 16,
+    "pack": 1,
+    "text": "A simple rule helps here: put paper receipts in one envelope and tag digital receipts the same way. Keep the reminder in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Do not photograph documents beside unnecessary personal data. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 420,
+    "title": "Receipts: fixed place",
+    "profession": "accountant"
+  },
+  {
+    "id": 17,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: put paper receipts in one envelope and tag digital receipts the same way. Then look at in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Keep it small and repeatable. Do not photograph documents beside unnecessary personal data. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 451,
+    "title": "Receipts: weekly check",
+    "profession": "accountant"
+  },
+  {
+    "id": 18,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: put paper receipts in one envelope and tag digital receipts the same way. Put the cue in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. One note, label, or box is enough to start. Do not photograph documents beside unnecessary personal data. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 474,
+    "title": "Receipts: visible cue",
+    "profession": "accountant"
+  },
+  {
+    "id": 19,
+    "pack": 1,
+    "text": "A simple rule helps here: make one fridge shelf the use-soon shelf. Keep the reminder at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Do not leave cooked food sitting out longer than is safe. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 350,
+    "title": "Leftovers: fixed place",
+    "profession": "accountant"
+  },
+  {
+    "id": 20,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: make one fridge shelf the use-soon shelf. Then look at at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Keep it small and repeatable. Do not leave cooked food sitting out longer than is safe. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 381,
+    "title": "Leftovers: weekly check",
+    "profession": "accountant"
+  },
+  {
+    "id": 21,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: make one fridge shelf the use-soon shelf. Put the cue at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. One note, label, or box is enough to start. Do not leave cooked food sitting out longer than is safe. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 404,
+    "title": "Leftovers: visible cue",
+    "profession": "accountant"
+  },
+  {
+    "id": 22,
+    "pack": 1,
+    "text": "A simple rule helps here: give each cloth color one job and keep the list with the cloths. Keep the reminder inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Do not mix cleaning products or invent stronger blends. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 397,
+    "title": "Cleaning kit: fixed place",
+    "profession": "accountant"
+  },
+  {
+    "id": 23,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: give each cloth color one job and keep the list with the cloths. Then look at inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Keep it small and repeatable. Do not mix cleaning products or invent stronger blends. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 428,
+    "title": "Cleaning kit: weekly check",
+    "profession": "accountant"
+  },
+  {
+    "id": 24,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: give each cloth color one job and keep the list with the cloths. Put the cue inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. One note, label, or box is enough to start. Do not mix cleaning products or invent stronger blends. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 451,
+    "title": "Cleaning kit: visible cue",
+    "profession": "accountant"
+  },
+  {
+    "id": 25,
+    "pack": 1,
+    "text": "A simple rule helps here: add the leaving time, not only the appointment time. Keep the reminder in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Do not put private access codes in shared calendar notes. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 364,
+    "title": "Calendar: fixed place",
+    "profession": "accountant"
+  },
+  {
+    "id": 26,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: add the leaving time, not only the appointment time. Then look at in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Keep it small and repeatable. Do not put private access codes in shared calendar notes. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 395,
+    "title": "Calendar: weekly check",
+    "profession": "accountant"
+  },
+  {
+    "id": 27,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: add the leaving time, not only the appointment time. Put the cue in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. One note, label, or box is enough to start. Do not put private access codes in shared calendar notes. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 418,
+    "title": "Calendar: visible cue",
+    "profession": "accountant"
+  },
+  {
+    "id": 28,
+    "pack": 1,
+    "text": "A simple rule helps here: use a password manager and give every important account a unique password. Keep the reminder in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Do not reuse recovery codes or keep them in screenshots. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 416,
+    "title": "Passwords: fixed place",
+    "profession": "accountant"
+  },
+  {
+    "id": 29,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: use a password manager and give every important account a unique password. Then look at in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Keep it small and repeatable. Do not reuse recovery codes or keep them in screenshots. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 447,
+    "title": "Passwords: weekly check",
+    "profession": "accountant"
+  },
+  {
+    "id": 30,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: use a password manager and give every important account a unique password. Put the cue in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. One note, label, or box is enough to start. Do not reuse recovery codes or keep them in screenshots. Make it measurable: write the date, amount, or count while the task is fresh.",
+    "chars": 470,
+    "title": "Passwords: visible cue",
+    "profession": "accountant"
+  },
+  {
+    "id": 31,
+    "pack": 1,
+    "text": "A simple rule helps here: write the service name, billing date, and amount in one list. Keep the reminder next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Do not store passwords, codes, or full card numbers there. Clear the physical path first so the rule is easy to follow.",
+    "chars": 362,
+    "title": "Subscriptions: fixed place",
+    "profession": "builder"
+  },
+  {
+    "id": 32,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: write the service name, billing date, and amount in one list. Then look at next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Keep it small and repeatable. Do not store passwords, codes, or full card numbers there. Clear the physical path first so the rule is easy to follow.",
+    "chars": 393,
+    "title": "Subscriptions: weekly check",
+    "profession": "builder"
+  },
+  {
+    "id": 33,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: write the service name, billing date, and amount in one list. Put the cue next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. One note, label, or box is enough to start. Do not store passwords, codes, or full card numbers there. Clear the physical path first so the rule is easy to follow.",
+    "chars": 416,
+    "title": "Subscriptions: visible cue",
+    "profession": "builder"
+  },
+  {
+    "id": 34,
+    "pack": 1,
+    "text": "A simple rule helps here: keep the items that expire first in the front row. Keep the reminder on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Do not keep open food without a date or closed container. Clear the physical path first so the rule is easy to follow.",
+    "chars": 356,
+    "title": "Pantry: fixed place",
+    "profession": "builder"
+  },
+  {
+    "id": 35,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep the items that expire first in the front row. Then look at on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Keep it small and repeatable. Do not keep open food without a date or closed container. Clear the physical path first so the rule is easy to follow.",
+    "chars": 387,
+    "title": "Pantry: weekly check",
+    "profession": "builder"
+  },
+  {
+    "id": 36,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep the items that expire first in the front row. Put the cue on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. One note, label, or box is enough to start. Do not keep open food without a date or closed container. Clear the physical path first so the rule is easy to follow.",
+    "chars": 410,
+    "title": "Pantry: visible cue",
+    "profession": "builder"
+  },
+  {
+    "id": 37,
+    "pack": 1,
+    "text": "A simple rule helps here: keep a short note that says where each original and copy lives. Keep the reminder in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Do not send scans through shared chats unless private data is hidden. Clear the physical path first so the rule is easy to follow.",
+    "chars": 399,
+    "title": "Documents: fixed place",
+    "profession": "builder"
+  },
+  {
+    "id": 38,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep a short note that says where each original and copy lives. Then look at in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Keep it small and repeatable. Do not send scans through shared chats unless private data is hidden. Clear the physical path first so the rule is easy to follow.",
+    "chars": 430,
+    "title": "Documents: weekly check",
+    "profession": "builder"
+  },
+  {
+    "id": 39,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep a short note that says where each original and copy lives. Put the cue in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. One note, label, or box is enough to start. Do not send scans through shared chats unless private data is hidden. Clear the physical path first so the rule is easy to follow.",
+    "chars": 453,
+    "title": "Documents: visible cue",
+    "profession": "builder"
+  },
+  {
+    "id": 40,
+    "pack": 1,
+    "text": "A simple rule helps here: choose one charging place and remove old adapters from sockets. Keep the reminder on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Do not use cracked cables or anything that becomes hot. Clear the physical path first so the rule is easy to follow.",
+    "chars": 386,
+    "title": "Cables: fixed place",
+    "profession": "builder"
+  },
+  {
+    "id": 41,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: choose one charging place and remove old adapters from sockets. Then look at on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Keep it small and repeatable. Do not use cracked cables or anything that becomes hot. Clear the physical path first so the rule is easy to follow.",
+    "chars": 417,
+    "title": "Cables: weekly check",
+    "profession": "builder"
+  },
+  {
+    "id": 42,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: choose one charging place and remove old adapters from sockets. Put the cue on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. One note, label, or box is enough to start. Do not use cracked cables or anything that becomes hot. Clear the physical path first so the rule is easy to follow.",
+    "chars": 440,
+    "title": "Cables: visible cue",
+    "profession": "builder"
+  },
+  {
+    "id": 43,
+    "pack": 1,
+    "text": "A simple rule helps here: hang a mesh bag on the laundry basket for socks and delicate pieces. Keep the reminder on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Do not overfill the bag because fabric still needs room to rinse. Clear the physical path first so the rule is easy to follow.",
+    "chars": 376,
+    "title": "Laundry: fixed place",
+    "profession": "builder"
+  },
+  {
+    "id": 44,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: hang a mesh bag on the laundry basket for socks and delicate pieces. Then look at on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Keep it small and repeatable. Do not overfill the bag because fabric still needs room to rinse. Clear the physical path first so the rule is easy to follow.",
+    "chars": 407,
+    "title": "Laundry: weekly check",
+    "profession": "builder"
+  },
+  {
+    "id": 45,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: hang a mesh bag on the laundry basket for socks and delicate pieces. Put the cue on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. One note, label, or box is enough to start. Do not overfill the bag because fabric still needs room to rinse. Clear the physical path first so the rule is easy to follow.",
+    "chars": 430,
+    "title": "Laundry: visible cue",
+    "profession": "builder"
+  },
+  {
+    "id": 46,
+    "pack": 1,
+    "text": "A simple rule helps here: put paper receipts in one envelope and tag digital receipts the same way. Keep the reminder in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Do not photograph documents beside unnecessary personal data. Clear the physical path first so the rule is easy to follow.",
+    "chars": 403,
+    "title": "Receipts: fixed place",
+    "profession": "builder"
+  },
+  {
+    "id": 47,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: put paper receipts in one envelope and tag digital receipts the same way. Then look at in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Keep it small and repeatable. Do not photograph documents beside unnecessary personal data. Clear the physical path first so the rule is easy to follow.",
+    "chars": 434,
+    "title": "Receipts: weekly check",
+    "profession": "builder"
+  },
+  {
+    "id": 48,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: put paper receipts in one envelope and tag digital receipts the same way. Put the cue in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. One note, label, or box is enough to start. Do not photograph documents beside unnecessary personal data. Clear the physical path first so the rule is easy to follow.",
+    "chars": 457,
+    "title": "Receipts: visible cue",
+    "profession": "builder"
+  },
+  {
+    "id": 49,
+    "pack": 1,
+    "text": "A simple rule helps here: make one fridge shelf the use-soon shelf. Keep the reminder at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Do not leave cooked food sitting out longer than is safe. Clear the physical path first so the rule is easy to follow.",
+    "chars": 333,
+    "title": "Leftovers: fixed place",
+    "profession": "builder"
+  },
+  {
+    "id": 50,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: make one fridge shelf the use-soon shelf. Then look at at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Keep it small and repeatable. Do not leave cooked food sitting out longer than is safe. Clear the physical path first so the rule is easy to follow.",
+    "chars": 364,
+    "title": "Leftovers: weekly check",
+    "profession": "builder"
+  },
+  {
+    "id": 51,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: make one fridge shelf the use-soon shelf. Put the cue at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. One note, label, or box is enough to start. Do not leave cooked food sitting out longer than is safe. Clear the physical path first so the rule is easy to follow.",
+    "chars": 387,
+    "title": "Leftovers: visible cue",
+    "profession": "builder"
+  },
+  {
+    "id": 52,
+    "pack": 1,
+    "text": "A simple rule helps here: give each cloth color one job and keep the list with the cloths. Keep the reminder inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Do not mix cleaning products or invent stronger blends. Clear the physical path first so the rule is easy to follow.",
+    "chars": 380,
+    "title": "Cleaning kit: fixed place",
+    "profession": "builder"
+  },
+  {
+    "id": 53,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: give each cloth color one job and keep the list with the cloths. Then look at inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Keep it small and repeatable. Do not mix cleaning products or invent stronger blends. Clear the physical path first so the rule is easy to follow.",
+    "chars": 411,
+    "title": "Cleaning kit: weekly check",
+    "profession": "builder"
+  },
+  {
+    "id": 54,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: give each cloth color one job and keep the list with the cloths. Put the cue inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. One note, label, or box is enough to start. Do not mix cleaning products or invent stronger blends. Clear the physical path first so the rule is easy to follow.",
+    "chars": 434,
+    "title": "Cleaning kit: visible cue",
+    "profession": "builder"
+  },
+  {
+    "id": 55,
+    "pack": 1,
+    "text": "A simple rule helps here: add the leaving time, not only the appointment time. Keep the reminder in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Do not put private access codes in shared calendar notes. Clear the physical path first so the rule is easy to follow.",
+    "chars": 347,
+    "title": "Calendar: fixed place",
+    "profession": "builder"
+  },
+  {
+    "id": 56,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: add the leaving time, not only the appointment time. Then look at in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Keep it small and repeatable. Do not put private access codes in shared calendar notes. Clear the physical path first so the rule is easy to follow.",
+    "chars": 378,
+    "title": "Calendar: weekly check",
+    "profession": "builder"
+  },
+  {
+    "id": 57,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: add the leaving time, not only the appointment time. Put the cue in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. One note, label, or box is enough to start. Do not put private access codes in shared calendar notes. Clear the physical path first so the rule is easy to follow.",
+    "chars": 401,
+    "title": "Calendar: visible cue",
+    "profession": "builder"
+  },
+  {
+    "id": 58,
+    "pack": 1,
+    "text": "A simple rule helps here: use a password manager and give every important account a unique password. Keep the reminder in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Do not reuse recovery codes or keep them in screenshots. Clear the physical path first so the rule is easy to follow.",
+    "chars": 399,
+    "title": "Passwords: fixed place",
+    "profession": "builder"
+  },
+  {
+    "id": 59,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: use a password manager and give every important account a unique password. Then look at in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Keep it small and repeatable. Do not reuse recovery codes or keep them in screenshots. Clear the physical path first so the rule is easy to follow.",
+    "chars": 430,
+    "title": "Passwords: weekly check",
+    "profession": "builder"
+  },
+  {
+    "id": 60,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: use a password manager and give every important account a unique password. Put the cue in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. One note, label, or box is enough to start. Do not reuse recovery codes or keep them in screenshots. Clear the physical path first so the rule is easy to follow.",
+    "chars": 453,
+    "title": "Passwords: visible cue",
+    "profession": "builder"
+  },
+  {
+    "id": 61,
+    "pack": 1,
+    "text": "A simple rule helps here: write the service name, billing date, and amount in one list. Keep the reminder next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Do not store passwords, codes, or full card numbers there. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 376,
+    "title": "Subscriptions: fixed place",
+    "profession": "chef"
+  },
+  {
+    "id": 62,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: write the service name, billing date, and amount in one list. Then look at next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Keep it small and repeatable. Do not store passwords, codes, or full card numbers there. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 407,
+    "title": "Subscriptions: weekly check",
+    "profession": "chef"
+  },
+  {
+    "id": 63,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: write the service name, billing date, and amount in one list. Put the cue next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. One note, label, or box is enough to start. Do not store passwords, codes, or full card numbers there. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 430,
+    "title": "Subscriptions: visible cue",
+    "profession": "chef"
+  },
+  {
+    "id": 64,
+    "pack": 1,
+    "text": "A simple rule helps here: keep the items that expire first in the front row. Keep the reminder on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Do not keep open food without a date or closed container. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 370,
+    "title": "Pantry: fixed place",
+    "profession": "chef"
+  },
+  {
+    "id": 65,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep the items that expire first in the front row. Then look at on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Keep it small and repeatable. Do not keep open food without a date or closed container. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 401,
+    "title": "Pantry: weekly check",
+    "profession": "chef"
+  },
+  {
+    "id": 66,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep the items that expire first in the front row. Put the cue on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. One note, label, or box is enough to start. Do not keep open food without a date or closed container. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 424,
+    "title": "Pantry: visible cue",
+    "profession": "chef"
+  },
+  {
+    "id": 67,
+    "pack": 1,
+    "text": "A simple rule helps here: keep a short note that says where each original and copy lives. Keep the reminder in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Do not send scans through shared chats unless private data is hidden. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 413,
+    "title": "Documents: fixed place",
+    "profession": "chef"
+  },
+  {
+    "id": 68,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep a short note that says where each original and copy lives. Then look at in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Keep it small and repeatable. Do not send scans through shared chats unless private data is hidden. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 444,
+    "title": "Documents: weekly check",
+    "profession": "chef"
+  },
+  {
+    "id": 69,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep a short note that says where each original and copy lives. Put the cue in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. One note, label, or box is enough to start. Do not send scans through shared chats unless private data is hidden. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 467,
+    "title": "Documents: visible cue",
+    "profession": "chef"
+  },
+  {
+    "id": 70,
+    "pack": 1,
+    "text": "A simple rule helps here: choose one charging place and remove old adapters from sockets. Keep the reminder on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Do not use cracked cables or anything that becomes hot. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 400,
+    "title": "Cables: fixed place",
+    "profession": "chef"
+  },
+  {
+    "id": 71,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: choose one charging place and remove old adapters from sockets. Then look at on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Keep it small and repeatable. Do not use cracked cables or anything that becomes hot. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 431,
+    "title": "Cables: weekly check",
+    "profession": "chef"
+  },
+  {
+    "id": 72,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: choose one charging place and remove old adapters from sockets. Put the cue on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. One note, label, or box is enough to start. Do not use cracked cables or anything that becomes hot. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 454,
+    "title": "Cables: visible cue",
+    "profession": "chef"
+  },
+  {
+    "id": 73,
+    "pack": 1,
+    "text": "A simple rule helps here: hang a mesh bag on the laundry basket for socks and delicate pieces. Keep the reminder on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Do not overfill the bag because fabric still needs room to rinse. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 390,
+    "title": "Laundry: fixed place",
+    "profession": "chef"
+  },
+  {
+    "id": 74,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: hang a mesh bag on the laundry basket for socks and delicate pieces. Then look at on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Keep it small and repeatable. Do not overfill the bag because fabric still needs room to rinse. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 421,
+    "title": "Laundry: weekly check",
+    "profession": "chef"
+  },
+  {
+    "id": 75,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: hang a mesh bag on the laundry basket for socks and delicate pieces. Put the cue on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. One note, label, or box is enough to start. Do not overfill the bag because fabric still needs room to rinse. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 444,
+    "title": "Laundry: visible cue",
+    "profession": "chef"
+  },
+  {
+    "id": 76,
+    "pack": 1,
+    "text": "A simple rule helps here: put paper receipts in one envelope and tag digital receipts the same way. Keep the reminder in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Do not photograph documents beside unnecessary personal data. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 417,
+    "title": "Receipts: fixed place",
+    "profession": "chef"
+  },
+  {
+    "id": 77,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: put paper receipts in one envelope and tag digital receipts the same way. Then look at in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Keep it small and repeatable. Do not photograph documents beside unnecessary personal data. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 448,
+    "title": "Receipts: weekly check",
+    "profession": "chef"
+  },
+  {
+    "id": 78,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: put paper receipts in one envelope and tag digital receipts the same way. Put the cue in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. One note, label, or box is enough to start. Do not photograph documents beside unnecessary personal data. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 471,
+    "title": "Receipts: visible cue",
+    "profession": "chef"
+  },
+  {
+    "id": 79,
+    "pack": 1,
+    "text": "A simple rule helps here: make one fridge shelf the use-soon shelf. Keep the reminder at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Do not leave cooked food sitting out longer than is safe. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 347,
+    "title": "Leftovers: fixed place",
+    "profession": "chef"
+  },
+  {
+    "id": 80,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: make one fridge shelf the use-soon shelf. Then look at at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Keep it small and repeatable. Do not leave cooked food sitting out longer than is safe. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 378,
+    "title": "Leftovers: weekly check",
+    "profession": "chef"
+  },
+  {
+    "id": 81,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: make one fridge shelf the use-soon shelf. Put the cue at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. One note, label, or box is enough to start. Do not leave cooked food sitting out longer than is safe. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 401,
+    "title": "Leftovers: visible cue",
+    "profession": "chef"
+  },
+  {
+    "id": 82,
+    "pack": 1,
+    "text": "A simple rule helps here: give each cloth color one job and keep the list with the cloths. Keep the reminder inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Do not mix cleaning products or invent stronger blends. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 394,
+    "title": "Cleaning kit: fixed place",
+    "profession": "chef"
+  },
+  {
+    "id": 83,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: give each cloth color one job and keep the list with the cloths. Then look at inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Keep it small and repeatable. Do not mix cleaning products or invent stronger blends. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 425,
+    "title": "Cleaning kit: weekly check",
+    "profession": "chef"
+  },
+  {
+    "id": 84,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: give each cloth color one job and keep the list with the cloths. Put the cue inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. One note, label, or box is enough to start. Do not mix cleaning products or invent stronger blends. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 448,
+    "title": "Cleaning kit: visible cue",
+    "profession": "chef"
+  },
+  {
+    "id": 85,
+    "pack": 1,
+    "text": "A simple rule helps here: add the leaving time, not only the appointment time. Keep the reminder in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Do not put private access codes in shared calendar notes. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 361,
+    "title": "Calendar: fixed place",
+    "profession": "chef"
+  },
+  {
+    "id": 86,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: add the leaving time, not only the appointment time. Then look at in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Keep it small and repeatable. Do not put private access codes in shared calendar notes. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 392,
+    "title": "Calendar: weekly check",
+    "profession": "chef"
+  },
+  {
+    "id": 87,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: add the leaving time, not only the appointment time. Put the cue in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. One note, label, or box is enough to start. Do not put private access codes in shared calendar notes. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 415,
+    "title": "Calendar: visible cue",
+    "profession": "chef"
+  },
+  {
+    "id": 88,
+    "pack": 1,
+    "text": "A simple rule helps here: use a password manager and give every important account a unique password. Keep the reminder in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Do not reuse recovery codes or keep them in screenshots. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 413,
+    "title": "Passwords: fixed place",
+    "profession": "chef"
+  },
+  {
+    "id": 89,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: use a password manager and give every important account a unique password. Then look at in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Keep it small and repeatable. Do not reuse recovery codes or keep them in screenshots. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 444,
+    "title": "Passwords: weekly check",
+    "profession": "chef"
+  },
+  {
+    "id": 90,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: use a password manager and give every important account a unique password. Put the cue in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. One note, label, or box is enough to start. Do not reuse recovery codes or keep them in screenshots. Put the food or kitchen item where it will be seen before it is forgotten.",
+    "chars": 467,
+    "title": "Passwords: visible cue",
+    "profession": "chef"
+  },
+  {
+    "id": 91,
+    "pack": 1,
+    "text": "A simple rule helps here: write the service name, billing date, and amount in one list. Keep the reminder next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Do not store passwords, codes, or full card numbers there. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 357,
+    "title": "Subscriptions: fixed place",
+    "profession": "firefighter"
+  },
+  {
+    "id": 92,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: write the service name, billing date, and amount in one list. Then look at next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Keep it small and repeatable. Do not store passwords, codes, or full card numbers there. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 388,
+    "title": "Subscriptions: weekly check",
+    "profession": "firefighter"
+  },
+  {
+    "id": 93,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: write the service name, billing date, and amount in one list. Put the cue next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. One note, label, or box is enough to start. Do not store passwords, codes, or full card numbers there. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 411,
+    "title": "Subscriptions: visible cue",
+    "profession": "firefighter"
+  },
+  {
+    "id": 94,
+    "pack": 1,
+    "text": "A simple rule helps here: keep the items that expire first in the front row. Keep the reminder on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Do not keep open food without a date or closed container. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 351,
+    "title": "Pantry: fixed place",
+    "profession": "firefighter"
+  },
+  {
+    "id": 95,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep the items that expire first in the front row. Then look at on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Keep it small and repeatable. Do not keep open food without a date or closed container. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 382,
+    "title": "Pantry: weekly check",
+    "profession": "firefighter"
+  },
+  {
+    "id": 96,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep the items that expire first in the front row. Put the cue on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. One note, label, or box is enough to start. Do not keep open food without a date or closed container. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 405,
+    "title": "Pantry: visible cue",
+    "profession": "firefighter"
+  },
+  {
+    "id": 97,
+    "pack": 1,
+    "text": "A simple rule helps here: keep a short note that says where each original and copy lives. Keep the reminder in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Do not send scans through shared chats unless private data is hidden. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 394,
+    "title": "Documents: fixed place",
+    "profession": "firefighter"
+  },
+  {
+    "id": 98,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep a short note that says where each original and copy lives. Then look at in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Keep it small and repeatable. Do not send scans through shared chats unless private data is hidden. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 425,
+    "title": "Documents: weekly check",
+    "profession": "firefighter"
+  },
+  {
+    "id": 99,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep a short note that says where each original and copy lives. Put the cue in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. One note, label, or box is enough to start. Do not send scans through shared chats unless private data is hidden. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 448,
+    "title": "Documents: visible cue",
+    "profession": "firefighter"
+  },
+  {
+    "id": 100,
+    "pack": 1,
+    "text": "A simple rule helps here: choose one charging place and remove old adapters from sockets. Keep the reminder on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Do not use cracked cables or anything that becomes hot. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 381,
+    "title": "Cables: fixed place",
+    "profession": "firefighter"
+  },
+  {
+    "id": 101,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: choose one charging place and remove old adapters from sockets. Then look at on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Keep it small and repeatable. Do not use cracked cables or anything that becomes hot. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 412,
+    "title": "Cables: weekly check",
+    "profession": "firefighter"
+  },
+  {
+    "id": 102,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: choose one charging place and remove old adapters from sockets. Put the cue on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. One note, label, or box is enough to start. Do not use cracked cables or anything that becomes hot. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 435,
+    "title": "Cables: visible cue",
+    "profession": "firefighter"
+  },
+  {
+    "id": 103,
+    "pack": 1,
+    "text": "A simple rule helps here: hang a mesh bag on the laundry basket for socks and delicate pieces. Keep the reminder on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Do not overfill the bag because fabric still needs room to rinse. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 371,
+    "title": "Laundry: fixed place",
+    "profession": "firefighter"
+  },
+  {
+    "id": 104,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: hang a mesh bag on the laundry basket for socks and delicate pieces. Then look at on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Keep it small and repeatable. Do not overfill the bag because fabric still needs room to rinse. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 402,
+    "title": "Laundry: weekly check",
+    "profession": "firefighter"
+  },
+  {
+    "id": 105,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: hang a mesh bag on the laundry basket for socks and delicate pieces. Put the cue on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. One note, label, or box is enough to start. Do not overfill the bag because fabric still needs room to rinse. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 425,
+    "title": "Laundry: visible cue",
+    "profession": "firefighter"
+  },
+  {
+    "id": 106,
+    "pack": 1,
+    "text": "A simple rule helps here: put paper receipts in one envelope and tag digital receipts the same way. Keep the reminder in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Do not photograph documents beside unnecessary personal data. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 398,
+    "title": "Receipts: fixed place",
+    "profession": "firefighter"
+  },
+  {
+    "id": 107,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: put paper receipts in one envelope and tag digital receipts the same way. Then look at in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Keep it small and repeatable. Do not photograph documents beside unnecessary personal data. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 429,
+    "title": "Receipts: weekly check",
+    "profession": "firefighter"
+  },
+  {
+    "id": 108,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: put paper receipts in one envelope and tag digital receipts the same way. Put the cue in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. One note, label, or box is enough to start. Do not photograph documents beside unnecessary personal data. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 452,
+    "title": "Receipts: visible cue",
+    "profession": "firefighter"
+  },
+  {
+    "id": 109,
+    "pack": 1,
+    "text": "A simple rule helps here: make one fridge shelf the use-soon shelf. Keep the reminder at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Do not leave cooked food sitting out longer than is safe. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 328,
+    "title": "Leftovers: fixed place",
+    "profession": "firefighter"
+  },
+  {
+    "id": 110,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: make one fridge shelf the use-soon shelf. Then look at at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Keep it small and repeatable. Do not leave cooked food sitting out longer than is safe. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 359,
+    "title": "Leftovers: weekly check",
+    "profession": "firefighter"
+  },
+  {
+    "id": 111,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: make one fridge shelf the use-soon shelf. Put the cue at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. One note, label, or box is enough to start. Do not leave cooked food sitting out longer than is safe. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 382,
+    "title": "Leftovers: visible cue",
+    "profession": "firefighter"
+  },
+  {
+    "id": 112,
+    "pack": 1,
+    "text": "A simple rule helps here: give each cloth color one job and keep the list with the cloths. Keep the reminder inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Do not mix cleaning products or invent stronger blends. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 375,
+    "title": "Cleaning kit: fixed place",
+    "profession": "firefighter"
+  },
+  {
+    "id": 113,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: give each cloth color one job and keep the list with the cloths. Then look at inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Keep it small and repeatable. Do not mix cleaning products or invent stronger blends. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 406,
+    "title": "Cleaning kit: weekly check",
+    "profession": "firefighter"
+  },
+  {
+    "id": 114,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: give each cloth color one job and keep the list with the cloths. Put the cue inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. One note, label, or box is enough to start. Do not mix cleaning products or invent stronger blends. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 429,
+    "title": "Cleaning kit: visible cue",
+    "profession": "firefighter"
+  },
+  {
+    "id": 115,
+    "pack": 1,
+    "text": "A simple rule helps here: add the leaving time, not only the appointment time. Keep the reminder in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Do not put private access codes in shared calendar notes. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 342,
+    "title": "Calendar: fixed place",
+    "profession": "firefighter"
+  },
+  {
+    "id": 116,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: add the leaving time, not only the appointment time. Then look at in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Keep it small and repeatable. Do not put private access codes in shared calendar notes. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 373,
+    "title": "Calendar: weekly check",
+    "profession": "firefighter"
+  },
+  {
+    "id": 117,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: add the leaving time, not only the appointment time. Put the cue in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. One note, label, or box is enough to start. Do not put private access codes in shared calendar notes. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 396,
+    "title": "Calendar: visible cue",
+    "profession": "firefighter"
+  },
+  {
+    "id": 118,
+    "pack": 1,
+    "text": "A simple rule helps here: use a password manager and give every important account a unique password. Keep the reminder in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Do not reuse recovery codes or keep them in screenshots. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 394,
+    "title": "Passwords: fixed place",
+    "profession": "firefighter"
+  },
+  {
+    "id": 119,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: use a password manager and give every important account a unique password. Then look at in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Keep it small and repeatable. Do not reuse recovery codes or keep them in screenshots. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 425,
+    "title": "Passwords: weekly check",
+    "profession": "firefighter"
+  },
+  {
+    "id": 120,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: use a password manager and give every important account a unique password. Put the cue in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. One note, label, or box is enough to start. Do not reuse recovery codes or keep them in screenshots. Keep heat, clutter, and blocked exits out of the setup.",
+    "chars": 448,
+    "title": "Passwords: visible cue",
+    "profession": "firefighter"
+  },
+  {
+    "id": 121,
+    "pack": 1,
+    "text": "A simple rule helps here: write the service name, billing date, and amount in one list. Keep the reminder next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Do not store passwords, codes, or full card numbers there. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 368,
+    "title": "Subscriptions: fixed place",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 122,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: write the service name, billing date, and amount in one list. Then look at next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Keep it small and repeatable. Do not store passwords, codes, or full card numbers there. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 399,
+    "title": "Subscriptions: weekly check",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 123,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: write the service name, billing date, and amount in one list. Put the cue next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. One note, label, or box is enough to start. Do not store passwords, codes, or full card numbers there. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 422,
+    "title": "Subscriptions: visible cue",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 124,
+    "pack": 1,
+    "text": "A simple rule helps here: keep the items that expire first in the front row. Keep the reminder on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Do not keep open food without a date or closed container. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 362,
+    "title": "Pantry: fixed place",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 125,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep the items that expire first in the front row. Then look at on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Keep it small and repeatable. Do not keep open food without a date or closed container. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 393,
+    "title": "Pantry: weekly check",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 126,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep the items that expire first in the front row. Put the cue on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. One note, label, or box is enough to start. Do not keep open food without a date or closed container. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 416,
+    "title": "Pantry: visible cue",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 127,
+    "pack": 1,
+    "text": "A simple rule helps here: keep a short note that says where each original and copy lives. Keep the reminder in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Do not send scans through shared chats unless private data is hidden. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 405,
+    "title": "Documents: fixed place",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 128,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep a short note that says where each original and copy lives. Then look at in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Keep it small and repeatable. Do not send scans through shared chats unless private data is hidden. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 436,
+    "title": "Documents: weekly check",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 129,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep a short note that says where each original and copy lives. Put the cue in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. One note, label, or box is enough to start. Do not send scans through shared chats unless private data is hidden. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 459,
+    "title": "Documents: visible cue",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 130,
+    "pack": 1,
+    "text": "A simple rule helps here: choose one charging place and remove old adapters from sockets. Keep the reminder on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Do not use cracked cables or anything that becomes hot. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 392,
+    "title": "Cables: fixed place",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 131,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: choose one charging place and remove old adapters from sockets. Then look at on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Keep it small and repeatable. Do not use cracked cables or anything that becomes hot. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 423,
+    "title": "Cables: weekly check",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 132,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: choose one charging place and remove old adapters from sockets. Put the cue on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. One note, label, or box is enough to start. Do not use cracked cables or anything that becomes hot. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 446,
+    "title": "Cables: visible cue",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 133,
+    "pack": 1,
+    "text": "A simple rule helps here: hang a mesh bag on the laundry basket for socks and delicate pieces. Keep the reminder on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Do not overfill the bag because fabric still needs room to rinse. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 382,
+    "title": "Laundry: fixed place",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 134,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: hang a mesh bag on the laundry basket for socks and delicate pieces. Then look at on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Keep it small and repeatable. Do not overfill the bag because fabric still needs room to rinse. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 413,
+    "title": "Laundry: weekly check",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 135,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: hang a mesh bag on the laundry basket for socks and delicate pieces. Put the cue on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. One note, label, or box is enough to start. Do not overfill the bag because fabric still needs room to rinse. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 436,
+    "title": "Laundry: visible cue",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 136,
+    "pack": 1,
+    "text": "A simple rule helps here: put paper receipts in one envelope and tag digital receipts the same way. Keep the reminder in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Do not photograph documents beside unnecessary personal data. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 409,
+    "title": "Receipts: fixed place",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 137,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: put paper receipts in one envelope and tag digital receipts the same way. Then look at in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Keep it small and repeatable. Do not photograph documents beside unnecessary personal data. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 440,
+    "title": "Receipts: weekly check",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 138,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: put paper receipts in one envelope and tag digital receipts the same way. Put the cue in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. One note, label, or box is enough to start. Do not photograph documents beside unnecessary personal data. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 463,
+    "title": "Receipts: visible cue",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 139,
+    "pack": 1,
+    "text": "A simple rule helps here: make one fridge shelf the use-soon shelf. Keep the reminder at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Do not leave cooked food sitting out longer than is safe. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 339,
+    "title": "Leftovers: fixed place",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 140,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: make one fridge shelf the use-soon shelf. Then look at at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Keep it small and repeatable. Do not leave cooked food sitting out longer than is safe. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 370,
+    "title": "Leftovers: weekly check",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 141,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: make one fridge shelf the use-soon shelf. Put the cue at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. One note, label, or box is enough to start. Do not leave cooked food sitting out longer than is safe. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 393,
+    "title": "Leftovers: visible cue",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 142,
+    "pack": 1,
+    "text": "A simple rule helps here: give each cloth color one job and keep the list with the cloths. Keep the reminder inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Do not mix cleaning products or invent stronger blends. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 386,
+    "title": "Cleaning kit: fixed place",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 143,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: give each cloth color one job and keep the list with the cloths. Then look at inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Keep it small and repeatable. Do not mix cleaning products or invent stronger blends. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 417,
+    "title": "Cleaning kit: weekly check",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 144,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: give each cloth color one job and keep the list with the cloths. Put the cue inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. One note, label, or box is enough to start. Do not mix cleaning products or invent stronger blends. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 440,
+    "title": "Cleaning kit: visible cue",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 145,
+    "pack": 1,
+    "text": "A simple rule helps here: add the leaving time, not only the appointment time. Keep the reminder in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Do not put private access codes in shared calendar notes. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 353,
+    "title": "Calendar: fixed place",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 146,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: add the leaving time, not only the appointment time. Then look at in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Keep it small and repeatable. Do not put private access codes in shared calendar notes. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 384,
+    "title": "Calendar: weekly check",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 147,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: add the leaving time, not only the appointment time. Put the cue in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. One note, label, or box is enough to start. Do not put private access codes in shared calendar notes. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 407,
+    "title": "Calendar: visible cue",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 148,
+    "pack": 1,
+    "text": "A simple rule helps here: use a password manager and give every important account a unique password. Keep the reminder in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Do not reuse recovery codes or keep them in screenshots. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 405,
+    "title": "Passwords: fixed place",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 149,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: use a password manager and give every important account a unique password. Then look at in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Keep it small and repeatable. Do not reuse recovery codes or keep them in screenshots. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 436,
+    "title": "Passwords: weekly check",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 150,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: use a password manager and give every important account a unique password. Put the cue in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. One note, label, or box is enough to start. Do not reuse recovery codes or keep them in screenshots. Make the visual cue obvious enough to notice while moving quickly.",
+    "chars": 459,
+    "title": "Passwords: visible cue",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 151,
+    "pack": 1,
+    "text": "A simple rule helps here: write the service name, billing date, and amount in one list. Keep the reminder next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Do not store passwords, codes, or full card numbers there. Leave a small paper trail so you can understand the decision later.",
+    "chars": 369,
+    "title": "Subscriptions: fixed place",
+    "profession": "lawyer"
+  },
+  {
+    "id": 152,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: write the service name, billing date, and amount in one list. Then look at next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Keep it small and repeatable. Do not store passwords, codes, or full card numbers there. Leave a small paper trail so you can understand the decision later.",
+    "chars": 400,
+    "title": "Subscriptions: weekly check",
+    "profession": "lawyer"
+  },
+  {
+    "id": 153,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: write the service name, billing date, and amount in one list. Put the cue next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. One note, label, or box is enough to start. Do not store passwords, codes, or full card numbers there. Leave a small paper trail so you can understand the decision later.",
+    "chars": 423,
+    "title": "Subscriptions: visible cue",
+    "profession": "lawyer"
+  },
+  {
+    "id": 154,
+    "pack": 1,
+    "text": "A simple rule helps here: keep the items that expire first in the front row. Keep the reminder on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Do not keep open food without a date or closed container. Leave a small paper trail so you can understand the decision later.",
+    "chars": 363,
+    "title": "Pantry: fixed place",
+    "profession": "lawyer"
+  },
+  {
+    "id": 155,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep the items that expire first in the front row. Then look at on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Keep it small and repeatable. Do not keep open food without a date or closed container. Leave a small paper trail so you can understand the decision later.",
+    "chars": 394,
+    "title": "Pantry: weekly check",
+    "profession": "lawyer"
+  },
+  {
+    "id": 156,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep the items that expire first in the front row. Put the cue on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. One note, label, or box is enough to start. Do not keep open food without a date or closed container. Leave a small paper trail so you can understand the decision later.",
+    "chars": 417,
+    "title": "Pantry: visible cue",
+    "profession": "lawyer"
+  },
+  {
+    "id": 157,
+    "pack": 1,
+    "text": "A simple rule helps here: keep a short note that says where each original and copy lives. Keep the reminder in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Do not send scans through shared chats unless private data is hidden. Leave a small paper trail so you can understand the decision later.",
+    "chars": 406,
+    "title": "Documents: fixed place",
+    "profession": "lawyer"
+  },
+  {
+    "id": 158,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep a short note that says where each original and copy lives. Then look at in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Keep it small and repeatable. Do not send scans through shared chats unless private data is hidden. Leave a small paper trail so you can understand the decision later.",
+    "chars": 437,
+    "title": "Documents: weekly check",
+    "profession": "lawyer"
+  },
+  {
+    "id": 159,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep a short note that says where each original and copy lives. Put the cue in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. One note, label, or box is enough to start. Do not send scans through shared chats unless private data is hidden. Leave a small paper trail so you can understand the decision later.",
+    "chars": 460,
+    "title": "Documents: visible cue",
+    "profession": "lawyer"
+  },
+  {
+    "id": 160,
+    "pack": 1,
+    "text": "A simple rule helps here: choose one charging place and remove old adapters from sockets. Keep the reminder on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Do not use cracked cables or anything that becomes hot. Leave a small paper trail so you can understand the decision later.",
+    "chars": 393,
+    "title": "Cables: fixed place",
+    "profession": "lawyer"
+  },
+  {
+    "id": 161,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: choose one charging place and remove old adapters from sockets. Then look at on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Keep it small and repeatable. Do not use cracked cables or anything that becomes hot. Leave a small paper trail so you can understand the decision later.",
+    "chars": 424,
+    "title": "Cables: weekly check",
+    "profession": "lawyer"
+  },
+  {
+    "id": 162,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: choose one charging place and remove old adapters from sockets. Put the cue on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. One note, label, or box is enough to start. Do not use cracked cables or anything that becomes hot. Leave a small paper trail so you can understand the decision later.",
+    "chars": 447,
+    "title": "Cables: visible cue",
+    "profession": "lawyer"
+  },
+  {
+    "id": 163,
+    "pack": 1,
+    "text": "A simple rule helps here: hang a mesh bag on the laundry basket for socks and delicate pieces. Keep the reminder on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Do not overfill the bag because fabric still needs room to rinse. Leave a small paper trail so you can understand the decision later.",
+    "chars": 383,
+    "title": "Laundry: fixed place",
+    "profession": "lawyer"
+  },
+  {
+    "id": 164,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: hang a mesh bag on the laundry basket for socks and delicate pieces. Then look at on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Keep it small and repeatable. Do not overfill the bag because fabric still needs room to rinse. Leave a small paper trail so you can understand the decision later.",
+    "chars": 414,
+    "title": "Laundry: weekly check",
+    "profession": "lawyer"
+  },
+  {
+    "id": 165,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: hang a mesh bag on the laundry basket for socks and delicate pieces. Put the cue on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. One note, label, or box is enough to start. Do not overfill the bag because fabric still needs room to rinse. Leave a small paper trail so you can understand the decision later.",
+    "chars": 437,
+    "title": "Laundry: visible cue",
+    "profession": "lawyer"
+  },
+  {
+    "id": 166,
+    "pack": 1,
+    "text": "A simple rule helps here: put paper receipts in one envelope and tag digital receipts the same way. Keep the reminder in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Do not photograph documents beside unnecessary personal data. Leave a small paper trail so you can understand the decision later.",
+    "chars": 410,
+    "title": "Receipts: fixed place",
+    "profession": "lawyer"
+  },
+  {
+    "id": 167,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: put paper receipts in one envelope and tag digital receipts the same way. Then look at in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Keep it small and repeatable. Do not photograph documents beside unnecessary personal data. Leave a small paper trail so you can understand the decision later.",
+    "chars": 441,
+    "title": "Receipts: weekly check",
+    "profession": "lawyer"
+  },
+  {
+    "id": 168,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: put paper receipts in one envelope and tag digital receipts the same way. Put the cue in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. One note, label, or box is enough to start. Do not photograph documents beside unnecessary personal data. Leave a small paper trail so you can understand the decision later.",
+    "chars": 464,
+    "title": "Receipts: visible cue",
+    "profession": "lawyer"
+  },
+  {
+    "id": 169,
+    "pack": 1,
+    "text": "A simple rule helps here: make one fridge shelf the use-soon shelf. Keep the reminder at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Do not leave cooked food sitting out longer than is safe. Leave a small paper trail so you can understand the decision later.",
+    "chars": 340,
+    "title": "Leftovers: fixed place",
+    "profession": "lawyer"
+  },
+  {
+    "id": 170,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: make one fridge shelf the use-soon shelf. Then look at at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Keep it small and repeatable. Do not leave cooked food sitting out longer than is safe. Leave a small paper trail so you can understand the decision later.",
+    "chars": 371,
+    "title": "Leftovers: weekly check",
+    "profession": "lawyer"
+  },
+  {
+    "id": 171,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: make one fridge shelf the use-soon shelf. Put the cue at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. One note, label, or box is enough to start. Do not leave cooked food sitting out longer than is safe. Leave a small paper trail so you can understand the decision later.",
+    "chars": 394,
+    "title": "Leftovers: visible cue",
+    "profession": "lawyer"
+  },
+  {
+    "id": 172,
+    "pack": 1,
+    "text": "A simple rule helps here: give each cloth color one job and keep the list with the cloths. Keep the reminder inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Do not mix cleaning products or invent stronger blends. Leave a small paper trail so you can understand the decision later.",
+    "chars": 387,
+    "title": "Cleaning kit: fixed place",
+    "profession": "lawyer"
+  },
+  {
+    "id": 173,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: give each cloth color one job and keep the list with the cloths. Then look at inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Keep it small and repeatable. Do not mix cleaning products or invent stronger blends. Leave a small paper trail so you can understand the decision later.",
+    "chars": 418,
+    "title": "Cleaning kit: weekly check",
+    "profession": "lawyer"
+  },
+  {
+    "id": 174,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: give each cloth color one job and keep the list with the cloths. Put the cue inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. One note, label, or box is enough to start. Do not mix cleaning products or invent stronger blends. Leave a small paper trail so you can understand the decision later.",
+    "chars": 441,
+    "title": "Cleaning kit: visible cue",
+    "profession": "lawyer"
+  },
+  {
+    "id": 175,
+    "pack": 1,
+    "text": "A simple rule helps here: add the leaving time, not only the appointment time. Keep the reminder in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Do not put private access codes in shared calendar notes. Leave a small paper trail so you can understand the decision later.",
+    "chars": 354,
+    "title": "Calendar: fixed place",
+    "profession": "lawyer"
+  },
+  {
+    "id": 176,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: add the leaving time, not only the appointment time. Then look at in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Keep it small and repeatable. Do not put private access codes in shared calendar notes. Leave a small paper trail so you can understand the decision later.",
+    "chars": 385,
+    "title": "Calendar: weekly check",
+    "profession": "lawyer"
+  },
+  {
+    "id": 177,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: add the leaving time, not only the appointment time. Put the cue in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. One note, label, or box is enough to start. Do not put private access codes in shared calendar notes. Leave a small paper trail so you can understand the decision later.",
+    "chars": 408,
+    "title": "Calendar: visible cue",
+    "profession": "lawyer"
+  },
+  {
+    "id": 178,
+    "pack": 1,
+    "text": "A simple rule helps here: use a password manager and give every important account a unique password. Keep the reminder in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Do not reuse recovery codes or keep them in screenshots. Leave a small paper trail so you can understand the decision later.",
+    "chars": 406,
+    "title": "Passwords: fixed place",
+    "profession": "lawyer"
+  },
+  {
+    "id": 179,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: use a password manager and give every important account a unique password. Then look at in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Keep it small and repeatable. Do not reuse recovery codes or keep them in screenshots. Leave a small paper trail so you can understand the decision later.",
+    "chars": 437,
+    "title": "Passwords: weekly check",
+    "profession": "lawyer"
+  },
+  {
+    "id": 180,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: use a password manager and give every important account a unique password. Put the cue in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. One note, label, or box is enough to start. Do not reuse recovery codes or keep them in screenshots. Leave a small paper trail so you can understand the decision later.",
+    "chars": 460,
+    "title": "Passwords: visible cue",
+    "profession": "lawyer"
+  },
+  {
+    "id": 181,
+    "pack": 1,
+    "text": "A simple rule helps here: write the service name, billing date, and amount in one list. Keep the reminder next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Do not store passwords, codes, or full card numbers there. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 367,
+    "title": "Subscriptions: fixed place",
+    "profession": "mechanic"
+  },
+  {
+    "id": 182,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: write the service name, billing date, and amount in one list. Then look at next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Keep it small and repeatable. Do not store passwords, codes, or full card numbers there. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 398,
+    "title": "Subscriptions: weekly check",
+    "profession": "mechanic"
+  },
+  {
+    "id": 183,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: write the service name, billing date, and amount in one list. Put the cue next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. One note, label, or box is enough to start. Do not store passwords, codes, or full card numbers there. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 421,
+    "title": "Subscriptions: visible cue",
+    "profession": "mechanic"
+  },
+  {
+    "id": 184,
+    "pack": 1,
+    "text": "A simple rule helps here: keep the items that expire first in the front row. Keep the reminder on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Do not keep open food without a date or closed container. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 361,
+    "title": "Pantry: fixed place",
+    "profession": "mechanic"
+  },
+  {
+    "id": 185,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep the items that expire first in the front row. Then look at on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Keep it small and repeatable. Do not keep open food without a date or closed container. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 392,
+    "title": "Pantry: weekly check",
+    "profession": "mechanic"
+  },
+  {
+    "id": 186,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep the items that expire first in the front row. Put the cue on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. One note, label, or box is enough to start. Do not keep open food without a date or closed container. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 415,
+    "title": "Pantry: visible cue",
+    "profession": "mechanic"
+  },
+  {
+    "id": 187,
+    "pack": 1,
+    "text": "A simple rule helps here: keep a short note that says where each original and copy lives. Keep the reminder in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Do not send scans through shared chats unless private data is hidden. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 404,
+    "title": "Documents: fixed place",
+    "profession": "mechanic"
+  },
+  {
+    "id": 188,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep a short note that says where each original and copy lives. Then look at in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Keep it small and repeatable. Do not send scans through shared chats unless private data is hidden. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 435,
+    "title": "Documents: weekly check",
+    "profession": "mechanic"
+  },
+  {
+    "id": 189,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep a short note that says where each original and copy lives. Put the cue in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. One note, label, or box is enough to start. Do not send scans through shared chats unless private data is hidden. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 458,
+    "title": "Documents: visible cue",
+    "profession": "mechanic"
+  },
+  {
+    "id": 190,
+    "pack": 1,
+    "text": "A simple rule helps here: choose one charging place and remove old adapters from sockets. Keep the reminder on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Do not use cracked cables or anything that becomes hot. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 391,
+    "title": "Cables: fixed place",
+    "profession": "mechanic"
+  },
+  {
+    "id": 191,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: choose one charging place and remove old adapters from sockets. Then look at on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Keep it small and repeatable. Do not use cracked cables or anything that becomes hot. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 422,
+    "title": "Cables: weekly check",
+    "profession": "mechanic"
+  },
+  {
+    "id": 192,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: choose one charging place and remove old adapters from sockets. Put the cue on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. One note, label, or box is enough to start. Do not use cracked cables or anything that becomes hot. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 445,
+    "title": "Cables: visible cue",
+    "profession": "mechanic"
+  },
+  {
+    "id": 193,
+    "pack": 1,
+    "text": "A simple rule helps here: hang a mesh bag on the laundry basket for socks and delicate pieces. Keep the reminder on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Do not overfill the bag because fabric still needs room to rinse. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 381,
+    "title": "Laundry: fixed place",
+    "profession": "mechanic"
+  },
+  {
+    "id": 194,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: hang a mesh bag on the laundry basket for socks and delicate pieces. Then look at on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Keep it small and repeatable. Do not overfill the bag because fabric still needs room to rinse. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 412,
+    "title": "Laundry: weekly check",
+    "profession": "mechanic"
+  },
+  {
+    "id": 195,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: hang a mesh bag on the laundry basket for socks and delicate pieces. Put the cue on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. One note, label, or box is enough to start. Do not overfill the bag because fabric still needs room to rinse. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 435,
+    "title": "Laundry: visible cue",
+    "profession": "mechanic"
+  },
+  {
+    "id": 196,
+    "pack": 1,
+    "text": "A simple rule helps here: put paper receipts in one envelope and tag digital receipts the same way. Keep the reminder in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Do not photograph documents beside unnecessary personal data. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 408,
+    "title": "Receipts: fixed place",
+    "profession": "mechanic"
+  },
+  {
+    "id": 197,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: put paper receipts in one envelope and tag digital receipts the same way. Then look at in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Keep it small and repeatable. Do not photograph documents beside unnecessary personal data. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 439,
+    "title": "Receipts: weekly check",
+    "profession": "mechanic"
+  },
+  {
+    "id": 198,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: put paper receipts in one envelope and tag digital receipts the same way. Put the cue in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. One note, label, or box is enough to start. Do not photograph documents beside unnecessary personal data. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 462,
+    "title": "Receipts: visible cue",
+    "profession": "mechanic"
+  },
+  {
+    "id": 199,
+    "pack": 1,
+    "text": "A simple rule helps here: make one fridge shelf the use-soon shelf. Keep the reminder at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Do not leave cooked food sitting out longer than is safe. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 338,
+    "title": "Leftovers: fixed place",
+    "profession": "mechanic"
+  },
+  {
+    "id": 200,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: make one fridge shelf the use-soon shelf. Then look at at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Keep it small and repeatable. Do not leave cooked food sitting out longer than is safe. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 369,
+    "title": "Leftovers: weekly check",
+    "profession": "mechanic"
+  },
+  {
+    "id": 201,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: make one fridge shelf the use-soon shelf. Put the cue at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. One note, label, or box is enough to start. Do not leave cooked food sitting out longer than is safe. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 392,
+    "title": "Leftovers: visible cue",
+    "profession": "mechanic"
+  },
+  {
+    "id": 202,
+    "pack": 1,
+    "text": "A simple rule helps here: give each cloth color one job and keep the list with the cloths. Keep the reminder inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Do not mix cleaning products or invent stronger blends. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 385,
+    "title": "Cleaning kit: fixed place",
+    "profession": "mechanic"
+  },
+  {
+    "id": 203,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: give each cloth color one job and keep the list with the cloths. Then look at inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Keep it small and repeatable. Do not mix cleaning products or invent stronger blends. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 416,
+    "title": "Cleaning kit: weekly check",
+    "profession": "mechanic"
+  },
+  {
+    "id": 204,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: give each cloth color one job and keep the list with the cloths. Put the cue inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. One note, label, or box is enough to start. Do not mix cleaning products or invent stronger blends. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 439,
+    "title": "Cleaning kit: visible cue",
+    "profession": "mechanic"
+  },
+  {
+    "id": 205,
+    "pack": 1,
+    "text": "A simple rule helps here: add the leaving time, not only the appointment time. Keep the reminder in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Do not put private access codes in shared calendar notes. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 352,
+    "title": "Calendar: fixed place",
+    "profession": "mechanic"
+  },
+  {
+    "id": 206,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: add the leaving time, not only the appointment time. Then look at in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Keep it small and repeatable. Do not put private access codes in shared calendar notes. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 383,
+    "title": "Calendar: weekly check",
+    "profession": "mechanic"
+  },
+  {
+    "id": 207,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: add the leaving time, not only the appointment time. Put the cue in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. One note, label, or box is enough to start. Do not put private access codes in shared calendar notes. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 406,
+    "title": "Calendar: visible cue",
+    "profession": "mechanic"
+  },
+  {
+    "id": 208,
+    "pack": 1,
+    "text": "A simple rule helps here: use a password manager and give every important account a unique password. Keep the reminder in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Do not reuse recovery codes or keep them in screenshots. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 404,
+    "title": "Passwords: fixed place",
+    "profession": "mechanic"
+  },
+  {
+    "id": 209,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: use a password manager and give every important account a unique password. Then look at in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Keep it small and repeatable. Do not reuse recovery codes or keep them in screenshots. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 435,
+    "title": "Passwords: weekly check",
+    "profession": "mechanic"
+  },
+  {
+    "id": 210,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: use a password manager and give every important account a unique password. Put the cue in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. One note, label, or box is enough to start. Do not reuse recovery codes or keep them in screenshots. Check the simple wear signs before the problem becomes expensive.",
+    "chars": 458,
+    "title": "Passwords: visible cue",
+    "profession": "mechanic"
+  },
+  {
+    "id": 211,
+    "pack": 1,
+    "text": "A simple rule helps here: write the service name, billing date, and amount in one list. Keep the reminder next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Do not store passwords, codes, or full card numbers there. Use one handoff point so shared items do not become a search mission.",
+    "chars": 371,
+    "title": "Subscriptions: fixed place",
+    "profession": "police"
+  },
+  {
+    "id": 212,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: write the service name, billing date, and amount in one list. Then look at next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Keep it small and repeatable. Do not store passwords, codes, or full card numbers there. Use one handoff point so shared items do not become a search mission.",
+    "chars": 402,
+    "title": "Subscriptions: weekly check",
+    "profession": "police"
+  },
+  {
+    "id": 213,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: write the service name, billing date, and amount in one list. Put the cue next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. One note, label, or box is enough to start. Do not store passwords, codes, or full card numbers there. Use one handoff point so shared items do not become a search mission.",
+    "chars": 425,
+    "title": "Subscriptions: visible cue",
+    "profession": "police"
+  },
+  {
+    "id": 214,
+    "pack": 1,
+    "text": "A simple rule helps here: keep the items that expire first in the front row. Keep the reminder on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Do not keep open food without a date or closed container. Use one handoff point so shared items do not become a search mission.",
+    "chars": 365,
+    "title": "Pantry: fixed place",
+    "profession": "police"
+  },
+  {
+    "id": 215,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep the items that expire first in the front row. Then look at on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Keep it small and repeatable. Do not keep open food without a date or closed container. Use one handoff point so shared items do not become a search mission.",
+    "chars": 396,
+    "title": "Pantry: weekly check",
+    "profession": "police"
+  },
+  {
+    "id": 216,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep the items that expire first in the front row. Put the cue on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. One note, label, or box is enough to start. Do not keep open food without a date or closed container. Use one handoff point so shared items do not become a search mission.",
+    "chars": 419,
+    "title": "Pantry: visible cue",
+    "profession": "police"
+  },
+  {
+    "id": 217,
+    "pack": 1,
+    "text": "A simple rule helps here: keep a short note that says where each original and copy lives. Keep the reminder in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Do not send scans through shared chats unless private data is hidden. Use one handoff point so shared items do not become a search mission.",
+    "chars": 408,
+    "title": "Documents: fixed place",
+    "profession": "police"
+  },
+  {
+    "id": 218,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep a short note that says where each original and copy lives. Then look at in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Keep it small and repeatable. Do not send scans through shared chats unless private data is hidden. Use one handoff point so shared items do not become a search mission.",
+    "chars": 439,
+    "title": "Documents: weekly check",
+    "profession": "police"
+  },
+  {
+    "id": 219,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep a short note that says where each original and copy lives. Put the cue in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. One note, label, or box is enough to start. Do not send scans through shared chats unless private data is hidden. Use one handoff point so shared items do not become a search mission.",
+    "chars": 462,
+    "title": "Documents: visible cue",
+    "profession": "police"
+  },
+  {
+    "id": 220,
+    "pack": 1,
+    "text": "A simple rule helps here: choose one charging place and remove old adapters from sockets. Keep the reminder on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Do not use cracked cables or anything that becomes hot. Use one handoff point so shared items do not become a search mission.",
+    "chars": 395,
+    "title": "Cables: fixed place",
+    "profession": "police"
+  },
+  {
+    "id": 221,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: choose one charging place and remove old adapters from sockets. Then look at on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Keep it small and repeatable. Do not use cracked cables or anything that becomes hot. Use one handoff point so shared items do not become a search mission.",
+    "chars": 426,
+    "title": "Cables: weekly check",
+    "profession": "police"
+  },
+  {
+    "id": 222,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: choose one charging place and remove old adapters from sockets. Put the cue on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. One note, label, or box is enough to start. Do not use cracked cables or anything that becomes hot. Use one handoff point so shared items do not become a search mission.",
+    "chars": 449,
+    "title": "Cables: visible cue",
+    "profession": "police"
+  },
+  {
+    "id": 223,
+    "pack": 1,
+    "text": "A simple rule helps here: hang a mesh bag on the laundry basket for socks and delicate pieces. Keep the reminder on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Do not overfill the bag because fabric still needs room to rinse. Use one handoff point so shared items do not become a search mission.",
+    "chars": 385,
+    "title": "Laundry: fixed place",
+    "profession": "police"
+  },
+  {
+    "id": 224,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: hang a mesh bag on the laundry basket for socks and delicate pieces. Then look at on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Keep it small and repeatable. Do not overfill the bag because fabric still needs room to rinse. Use one handoff point so shared items do not become a search mission.",
+    "chars": 416,
+    "title": "Laundry: weekly check",
+    "profession": "police"
+  },
+  {
+    "id": 225,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: hang a mesh bag on the laundry basket for socks and delicate pieces. Put the cue on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. One note, label, or box is enough to start. Do not overfill the bag because fabric still needs room to rinse. Use one handoff point so shared items do not become a search mission.",
+    "chars": 439,
+    "title": "Laundry: visible cue",
+    "profession": "police"
+  },
+  {
+    "id": 226,
+    "pack": 1,
+    "text": "A simple rule helps here: put paper receipts in one envelope and tag digital receipts the same way. Keep the reminder in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Do not photograph documents beside unnecessary personal data. Use one handoff point so shared items do not become a search mission.",
+    "chars": 412,
+    "title": "Receipts: fixed place",
+    "profession": "police"
+  },
+  {
+    "id": 227,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: put paper receipts in one envelope and tag digital receipts the same way. Then look at in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Keep it small and repeatable. Do not photograph documents beside unnecessary personal data. Use one handoff point so shared items do not become a search mission.",
+    "chars": 443,
+    "title": "Receipts: weekly check",
+    "profession": "police"
+  },
+  {
+    "id": 228,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: put paper receipts in one envelope and tag digital receipts the same way. Put the cue in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. One note, label, or box is enough to start. Do not photograph documents beside unnecessary personal data. Use one handoff point so shared items do not become a search mission.",
+    "chars": 466,
+    "title": "Receipts: visible cue",
+    "profession": "police"
+  },
+  {
+    "id": 229,
+    "pack": 1,
+    "text": "A simple rule helps here: make one fridge shelf the use-soon shelf. Keep the reminder at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Do not leave cooked food sitting out longer than is safe. Use one handoff point so shared items do not become a search mission.",
+    "chars": 342,
+    "title": "Leftovers: fixed place",
+    "profession": "police"
+  },
+  {
+    "id": 230,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: make one fridge shelf the use-soon shelf. Then look at at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Keep it small and repeatable. Do not leave cooked food sitting out longer than is safe. Use one handoff point so shared items do not become a search mission.",
+    "chars": 373,
+    "title": "Leftovers: weekly check",
+    "profession": "police"
+  },
+  {
+    "id": 231,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: make one fridge shelf the use-soon shelf. Put the cue at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. One note, label, or box is enough to start. Do not leave cooked food sitting out longer than is safe. Use one handoff point so shared items do not become a search mission.",
+    "chars": 396,
+    "title": "Leftovers: visible cue",
+    "profession": "police"
+  },
+  {
+    "id": 232,
+    "pack": 1,
+    "text": "A simple rule helps here: give each cloth color one job and keep the list with the cloths. Keep the reminder inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Do not mix cleaning products or invent stronger blends. Use one handoff point so shared items do not become a search mission.",
+    "chars": 389,
+    "title": "Cleaning kit: fixed place",
+    "profession": "police"
+  },
+  {
+    "id": 233,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: give each cloth color one job and keep the list with the cloths. Then look at inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Keep it small and repeatable. Do not mix cleaning products or invent stronger blends. Use one handoff point so shared items do not become a search mission.",
+    "chars": 420,
+    "title": "Cleaning kit: weekly check",
+    "profession": "police"
+  },
+  {
+    "id": 234,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: give each cloth color one job and keep the list with the cloths. Put the cue inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. One note, label, or box is enough to start. Do not mix cleaning products or invent stronger blends. Use one handoff point so shared items do not become a search mission.",
+    "chars": 443,
+    "title": "Cleaning kit: visible cue",
+    "profession": "police"
+  },
+  {
+    "id": 235,
+    "pack": 1,
+    "text": "A simple rule helps here: add the leaving time, not only the appointment time. Keep the reminder in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Do not put private access codes in shared calendar notes. Use one handoff point so shared items do not become a search mission.",
+    "chars": 356,
+    "title": "Calendar: fixed place",
+    "profession": "police"
+  },
+  {
+    "id": 236,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: add the leaving time, not only the appointment time. Then look at in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Keep it small and repeatable. Do not put private access codes in shared calendar notes. Use one handoff point so shared items do not become a search mission.",
+    "chars": 387,
+    "title": "Calendar: weekly check",
+    "profession": "police"
+  },
+  {
+    "id": 237,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: add the leaving time, not only the appointment time. Put the cue in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. One note, label, or box is enough to start. Do not put private access codes in shared calendar notes. Use one handoff point so shared items do not become a search mission.",
+    "chars": 410,
+    "title": "Calendar: visible cue",
+    "profession": "police"
+  },
+  {
+    "id": 238,
+    "pack": 1,
+    "text": "A simple rule helps here: use a password manager and give every important account a unique password. Keep the reminder in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Do not reuse recovery codes or keep them in screenshots. Use one handoff point so shared items do not become a search mission.",
+    "chars": 408,
+    "title": "Passwords: fixed place",
+    "profession": "police"
+  },
+  {
+    "id": 239,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: use a password manager and give every important account a unique password. Then look at in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Keep it small and repeatable. Do not reuse recovery codes or keep them in screenshots. Use one handoff point so shared items do not become a search mission.",
+    "chars": 439,
+    "title": "Passwords: weekly check",
+    "profession": "police"
+  },
+  {
+    "id": 240,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: use a password manager and give every important account a unique password. Put the cue in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. One note, label, or box is enough to start. Do not reuse recovery codes or keep them in screenshots. Use one handoff point so shared items do not become a search mission.",
+    "chars": 462,
+    "title": "Passwords: visible cue",
+    "profession": "police"
+  },
+  {
+    "id": 241,
+    "pack": 1,
+    "text": "A simple rule helps here: write the service name, billing date, and amount in one list. Keep the reminder next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Do not store passwords, codes, or full card numbers there. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 372,
+    "title": "Subscriptions: fixed place",
+    "profession": "programmer"
+  },
+  {
+    "id": 242,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: write the service name, billing date, and amount in one list. Then look at next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Keep it small and repeatable. Do not store passwords, codes, or full card numbers there. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 403,
+    "title": "Subscriptions: weekly check",
+    "profession": "programmer"
+  },
+  {
+    "id": 243,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: write the service name, billing date, and amount in one list. Put the cue next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. One note, label, or box is enough to start. Do not store passwords, codes, or full card numbers there. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 426,
+    "title": "Subscriptions: visible cue",
+    "profession": "programmer"
+  },
+  {
+    "id": 244,
+    "pack": 1,
+    "text": "A simple rule helps here: keep the items that expire first in the front row. Keep the reminder on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Do not keep open food without a date or closed container. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 366,
+    "title": "Pantry: fixed place",
+    "profession": "programmer"
+  },
+  {
+    "id": 245,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep the items that expire first in the front row. Then look at on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Keep it small and repeatable. Do not keep open food without a date or closed container. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 397,
+    "title": "Pantry: weekly check",
+    "profession": "programmer"
+  },
+  {
+    "id": 246,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep the items that expire first in the front row. Put the cue on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. One note, label, or box is enough to start. Do not keep open food without a date or closed container. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 420,
+    "title": "Pantry: visible cue",
+    "profession": "programmer"
+  },
+  {
+    "id": 247,
+    "pack": 1,
+    "text": "A simple rule helps here: keep a short note that says where each original and copy lives. Keep the reminder in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Do not send scans through shared chats unless private data is hidden. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 409,
+    "title": "Documents: fixed place",
+    "profession": "programmer"
+  },
+  {
+    "id": 248,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep a short note that says where each original and copy lives. Then look at in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Keep it small and repeatable. Do not send scans through shared chats unless private data is hidden. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 440,
+    "title": "Documents: weekly check",
+    "profession": "programmer"
+  },
+  {
+    "id": 249,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep a short note that says where each original and copy lives. Put the cue in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. One note, label, or box is enough to start. Do not send scans through shared chats unless private data is hidden. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 463,
+    "title": "Documents: visible cue",
+    "profession": "programmer"
+  },
+  {
+    "id": 250,
+    "pack": 1,
+    "text": "A simple rule helps here: choose one charging place and remove old adapters from sockets. Keep the reminder on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Do not use cracked cables or anything that becomes hot. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 396,
+    "title": "Cables: fixed place",
+    "profession": "programmer"
+  },
+  {
+    "id": 251,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: choose one charging place and remove old adapters from sockets. Then look at on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Keep it small and repeatable. Do not use cracked cables or anything that becomes hot. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 427,
+    "title": "Cables: weekly check",
+    "profession": "programmer"
+  },
+  {
+    "id": 252,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: choose one charging place and remove old adapters from sockets. Put the cue on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. One note, label, or box is enough to start. Do not use cracked cables or anything that becomes hot. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 450,
+    "title": "Cables: visible cue",
+    "profession": "programmer"
+  },
+  {
+    "id": 253,
+    "pack": 1,
+    "text": "A simple rule helps here: hang a mesh bag on the laundry basket for socks and delicate pieces. Keep the reminder on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Do not overfill the bag because fabric still needs room to rinse. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 386,
+    "title": "Laundry: fixed place",
+    "profession": "programmer"
+  },
+  {
+    "id": 254,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: hang a mesh bag on the laundry basket for socks and delicate pieces. Then look at on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Keep it small and repeatable. Do not overfill the bag because fabric still needs room to rinse. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 417,
+    "title": "Laundry: weekly check",
+    "profession": "programmer"
+  },
+  {
+    "id": 255,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: hang a mesh bag on the laundry basket for socks and delicate pieces. Put the cue on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. One note, label, or box is enough to start. Do not overfill the bag because fabric still needs room to rinse. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 440,
+    "title": "Laundry: visible cue",
+    "profession": "programmer"
+  },
+  {
+    "id": 256,
+    "pack": 1,
+    "text": "A simple rule helps here: put paper receipts in one envelope and tag digital receipts the same way. Keep the reminder in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Do not photograph documents beside unnecessary personal data. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 413,
+    "title": "Receipts: fixed place",
+    "profession": "programmer"
+  },
+  {
+    "id": 257,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: put paper receipts in one envelope and tag digital receipts the same way. Then look at in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Keep it small and repeatable. Do not photograph documents beside unnecessary personal data. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 444,
+    "title": "Receipts: weekly check",
+    "profession": "programmer"
+  },
+  {
+    "id": 258,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: put paper receipts in one envelope and tag digital receipts the same way. Put the cue in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. One note, label, or box is enough to start. Do not photograph documents beside unnecessary personal data. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 467,
+    "title": "Receipts: visible cue",
+    "profession": "programmer"
+  },
+  {
+    "id": 259,
+    "pack": 1,
+    "text": "A simple rule helps here: make one fridge shelf the use-soon shelf. Keep the reminder at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Do not leave cooked food sitting out longer than is safe. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 343,
+    "title": "Leftovers: fixed place",
+    "profession": "programmer"
+  },
+  {
+    "id": 260,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: make one fridge shelf the use-soon shelf. Then look at at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Keep it small and repeatable. Do not leave cooked food sitting out longer than is safe. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 374,
+    "title": "Leftovers: weekly check",
+    "profession": "programmer"
+  },
+  {
+    "id": 261,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: make one fridge shelf the use-soon shelf. Put the cue at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. One note, label, or box is enough to start. Do not leave cooked food sitting out longer than is safe. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 397,
+    "title": "Leftovers: visible cue",
+    "profession": "programmer"
+  },
+  {
+    "id": 262,
+    "pack": 1,
+    "text": "A simple rule helps here: give each cloth color one job and keep the list with the cloths. Keep the reminder inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Do not mix cleaning products or invent stronger blends. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 390,
+    "title": "Cleaning kit: fixed place",
+    "profession": "programmer"
+  },
+  {
+    "id": 263,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: give each cloth color one job and keep the list with the cloths. Then look at inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Keep it small and repeatable. Do not mix cleaning products or invent stronger blends. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 421,
+    "title": "Cleaning kit: weekly check",
+    "profession": "programmer"
+  },
+  {
+    "id": 264,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: give each cloth color one job and keep the list with the cloths. Put the cue inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. One note, label, or box is enough to start. Do not mix cleaning products or invent stronger blends. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 444,
+    "title": "Cleaning kit: visible cue",
+    "profession": "programmer"
+  },
+  {
+    "id": 265,
+    "pack": 1,
+    "text": "A simple rule helps here: add the leaving time, not only the appointment time. Keep the reminder in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Do not put private access codes in shared calendar notes. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 357,
+    "title": "Calendar: fixed place",
+    "profession": "programmer"
+  },
+  {
+    "id": 266,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: add the leaving time, not only the appointment time. Then look at in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Keep it small and repeatable. Do not put private access codes in shared calendar notes. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 388,
+    "title": "Calendar: weekly check",
+    "profession": "programmer"
+  },
+  {
+    "id": 267,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: add the leaving time, not only the appointment time. Put the cue in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. One note, label, or box is enough to start. Do not put private access codes in shared calendar notes. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 411,
+    "title": "Calendar: visible cue",
+    "profession": "programmer"
+  },
+  {
+    "id": 268,
+    "pack": 1,
+    "text": "A simple rule helps here: use a password manager and give every important account a unique password. Keep the reminder in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Do not reuse recovery codes or keep them in screenshots. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 409,
+    "title": "Passwords: fixed place",
+    "profession": "programmer"
+  },
+  {
+    "id": 269,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: use a password manager and give every important account a unique password. Then look at in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Keep it small and repeatable. Do not reuse recovery codes or keep them in screenshots. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 440,
+    "title": "Passwords: weekly check",
+    "profession": "programmer"
+  },
+  {
+    "id": 270,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: use a password manager and give every important account a unique password. Put the cue in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. One note, label, or box is enough to start. Do not reuse recovery codes or keep them in screenshots. Make the reminder searchable and keep private data out of plain notes.",
+    "chars": 463,
+    "title": "Passwords: visible cue",
+    "profession": "programmer"
+  },
+  {
+    "id": 271,
+    "pack": 1,
+    "text": "A simple rule helps here: write the service name, billing date, and amount in one list. Keep the reminder next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Do not store passwords, codes, or full card numbers there. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 362,
+    "title": "Subscriptions: fixed place",
+    "profession": "teacher"
+  },
+  {
+    "id": 272,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: write the service name, billing date, and amount in one list. Then look at next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. Keep it small and repeatable. Do not store passwords, codes, or full card numbers there. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 393,
+    "title": "Subscriptions: weekly check",
+    "profession": "teacher"
+  },
+  {
+    "id": 273,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: write the service name, billing date, and amount in one list. Put the cue next to your banking app or budget sheet. Add a row immediately after every signup. you can spot forgotten charges before the next bill. One note, label, or box is enough to start. Do not store passwords, codes, or full card numbers there. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 416,
+    "title": "Subscriptions: visible cue",
+    "profession": "teacher"
+  },
+  {
+    "id": 274,
+    "pack": 1,
+    "text": "A simple rule helps here: keep the items that expire first in the front row. Keep the reminder on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Do not keep open food without a date or closed container. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 356,
+    "title": "Pantry: fixed place",
+    "profession": "teacher"
+  },
+  {
+    "id": 275,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep the items that expire first in the front row. Then look at on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. Keep it small and repeatable. Do not keep open food without a date or closed container. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 387,
+    "title": "Pantry: weekly check",
+    "profession": "teacher"
+  },
+  {
+    "id": 276,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep the items that expire first in the front row. Put the cue on one shelf label that says use first. Check that row before opening a new pack. good food gets used before it disappears behind newer boxes. One note, label, or box is enough to start. Do not keep open food without a date or closed container. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 410,
+    "title": "Pantry: visible cue",
+    "profession": "teacher"
+  },
+  {
+    "id": 277,
+    "pack": 1,
+    "text": "A simple rule helps here: keep a short note that says where each original and copy lives. Keep the reminder in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Do not send scans through shared chats unless private data is hidden. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 399,
+    "title": "Documents: fixed place",
+    "profession": "teacher"
+  },
+  {
+    "id": 278,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: keep a short note that says where each original and copy lives. Then look at in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. Keep it small and repeatable. Do not send scans through shared chats unless private data is hidden. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 430,
+    "title": "Documents: weekly check",
+    "profession": "teacher"
+  },
+  {
+    "id": 279,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: keep a short note that says where each original and copy lives. Put the cue in a protected folder and a simple paper index. Update only the changed line after a trip or renewal. searching becomes calmer when one paper is needed quickly. One note, label, or box is enough to start. Do not send scans through shared chats unless private data is hidden. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 453,
+    "title": "Documents: visible cue",
+    "profession": "teacher"
+  },
+  {
+    "id": 280,
+    "pack": 1,
+    "text": "A simple rule helps here: choose one charging place and remove old adapters from sockets. Keep the reminder on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Do not use cracked cables or anything that becomes hot. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 386,
+    "title": "Cables: fixed place",
+    "profession": "teacher"
+  },
+  {
+    "id": 281,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: choose one charging place and remove old adapters from sockets. Then look at on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. Keep it small and repeatable. Do not use cracked cables or anything that becomes hot. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 417,
+    "title": "Cables: weekly check",
+    "profession": "teacher"
+  },
+  {
+    "id": 282,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: choose one charging place and remove old adapters from sockets. Put the cue on a clear surface away from paper and fabric. Before sleep, check that no cable is pinched by furniture. there is less heat, clutter, and last-minute searching. One note, label, or box is enough to start. Do not use cracked cables or anything that becomes hot. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 440,
+    "title": "Cables: visible cue",
+    "profession": "teacher"
+  },
+  {
+    "id": 283,
+    "pack": 1,
+    "text": "A simple rule helps here: hang a mesh bag on the laundry basket for socks and delicate pieces. Keep the reminder on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Do not overfill the bag because fabric still needs room to rinse. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 376,
+    "title": "Laundry: fixed place",
+    "profession": "teacher"
+  },
+  {
+    "id": 284,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: hang a mesh bag on the laundry basket for socks and delicate pieces. Then look at on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. Keep it small and repeatable. Do not overfill the bag because fabric still needs room to rinse. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 407,
+    "title": "Laundry: weekly check",
+    "profession": "teacher"
+  },
+  {
+    "id": 285,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: hang a mesh bag on the laundry basket for socks and delicate pieces. Put the cue on a hook or inside the basket. Close the bag before each wash and check pockets. small items stop vanishing between sorting and drying. One note, label, or box is enough to start. Do not overfill the bag because fabric still needs room to rinse. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 430,
+    "title": "Laundry: visible cue",
+    "profession": "teacher"
+  },
+  {
+    "id": 286,
+    "pack": 1,
+    "text": "A simple rule helps here: put paper receipts in one envelope and tag digital receipts the same way. Keep the reminder in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Do not photograph documents beside unnecessary personal data. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 403,
+    "title": "Receipts: fixed place",
+    "profession": "teacher"
+  },
+  {
+    "id": 287,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: put paper receipts in one envelope and tag digital receipts the same way. Then look at in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. Keep it small and repeatable. Do not photograph documents beside unnecessary personal data. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 434,
+    "title": "Receipts: weekly check",
+    "profession": "teacher"
+  },
+  {
+    "id": 288,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: put paper receipts in one envelope and tag digital receipts the same way. Put the cue in an entry drawer or mail folder. At the end of the week, keep only what matters for returns or warranty. small purchases stop spreading across bags and pockets. One note, label, or box is enough to start. Do not photograph documents beside unnecessary personal data. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 457,
+    "title": "Receipts: visible cue",
+    "profession": "teacher"
+  },
+  {
+    "id": 289,
+    "pack": 1,
+    "text": "A simple rule helps here: make one fridge shelf the use-soon shelf. Keep the reminder at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Do not leave cooked food sitting out longer than is safe. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 333,
+    "title": "Leftovers: fixed place",
+    "profession": "teacher"
+  },
+  {
+    "id": 290,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: make one fridge shelf the use-soon shelf. Then look at at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. Keep it small and repeatable. Do not leave cooked food sitting out longer than is safe. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 364,
+    "title": "Leftovers: weekly check",
+    "profession": "teacher"
+  },
+  {
+    "id": 291,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: make one fridge shelf the use-soon shelf. Put the cue at eye level with a small label. Start cooking by looking there first. leftovers become dinner instead of a forgotten container. One note, label, or box is enough to start. Do not leave cooked food sitting out longer than is safe. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 387,
+    "title": "Leftovers: visible cue",
+    "profession": "teacher"
+  },
+  {
+    "id": 292,
+    "pack": 1,
+    "text": "A simple rule helps here: give each cloth color one job and keep the list with the cloths. Keep the reminder inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Do not mix cleaning products or invent stronger blends. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 380,
+    "title": "Cleaning kit: fixed place",
+    "profession": "teacher"
+  },
+  {
+    "id": 293,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: give each cloth color one job and keep the list with the cloths. Then look at inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. Keep it small and repeatable. Do not mix cleaning products or invent stronger blends. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 411,
+    "title": "Cleaning kit: weekly check",
+    "profession": "teacher"
+  },
+  {
+    "id": 294,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: give each cloth color one job and keep the list with the cloths. Put the cue inside the cleaning box lid. Replace or wash the cloths before the next task. surfaces stay cleaner because bathroom, kitchen, and dust cloths do not mix. One note, label, or box is enough to start. Do not mix cleaning products or invent stronger blends. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 434,
+    "title": "Cleaning kit: visible cue",
+    "profession": "teacher"
+  },
+  {
+    "id": 295,
+    "pack": 1,
+    "text": "A simple rule helps here: add the leaving time, not only the appointment time. Keep the reminder in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Do not put private access codes in shared calendar notes. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 347,
+    "title": "Calendar: fixed place",
+    "profession": "teacher"
+  },
+  {
+    "id": 296,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: add the leaving time, not only the appointment time. Then look at in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. Keep it small and repeatable. Do not put private access codes in shared calendar notes. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 378,
+    "title": "Calendar: weekly check",
+    "profession": "teacher"
+  },
+  {
+    "id": 297,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: add the leaving time, not only the appointment time. Put the cue in the same calendar entry. Include travel, shoes, bag, and a small buffer. the morning plan becomes a route instead of a surprise. One note, label, or box is enough to start. Do not put private access codes in shared calendar notes. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 401,
+    "title": "Calendar: visible cue",
+    "profession": "teacher"
+  },
+  {
+    "id": 298,
+    "pack": 1,
+    "text": "A simple rule helps here: use a password manager and give every important account a unique password. Keep the reminder in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Do not reuse recovery codes or keep them in screenshots. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 399,
+    "title": "Passwords: fixed place",
+    "profession": "teacher"
+  },
+  {
+    "id": 299,
+    "pack": 1,
+    "text": "Use a weekly five-minute check: use a password manager and give every important account a unique password. Then look at in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. Keep it small and repeatable. Do not reuse recovery codes or keep them in screenshots. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 430,
+    "title": "Passwords: weekly check",
+    "profession": "teacher"
+  },
+  {
+    "id": 300,
+    "pack": 1,
+    "text": "Make it visible before it becomes urgent: use a password manager and give every important account a unique password. Put the cue in the manager, not in a note called passwords. Turn on multi-factor protection where it is available. one leaked password is less likely to open everything else. One note, label, or box is enough to start. Do not reuse recovery codes or keep them in screenshots. Turn the rule into one sentence everyone at home can repeat.",
+    "chars": 453,
+    "title": "Passwords: visible cue",
+    "profession": "teacher"
+  }
+]

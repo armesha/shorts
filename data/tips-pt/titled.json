@@ -1,0 +1,2402 @@
+[
+  {
+    "id": 1,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: anote nome do servico, data de cobranca e valor em uma lista unica. Mantenha o lembrete perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Nao guarde ali senhas, codigos ou numeros completos de cartao. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 410,
+    "title": "Assinaturas: lugar fixo",
+    "profession": "accountant"
+  },
+  {
+    "id": 2,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: anote nome do servico, data de cobranca e valor em uma lista unica. Depois olhe perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Mantenha tudo pequeno e repetivel. Nao guarde ali senhas, codigos ou numeros completos de cartao. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 455,
+    "title": "Assinaturas: checagem semanal",
+    "profession": "accountant"
+  },
+  {
+    "id": 3,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: anote nome do servico, data de cobranca e valor em uma lista unica. Coloque o sinal perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Uma nota, etiqueta ou caixa ja basta para começar. Nao guarde ali senhas, codigos ou numeros completos de cartao. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 471,
+    "title": "Assinaturas: lembrete visivel",
+    "profession": "accountant"
+  },
+  {
+    "id": 4,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: deixe na frente os itens que vencem primeiro. Mantenha o lembrete em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Nao deixe comida aberta sem data ou pote fechado. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 372,
+    "title": "Despensa: lugar fixo",
+    "profession": "accountant"
+  },
+  {
+    "id": 5,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: deixe na frente os itens que vencem primeiro. Depois olhe em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Mantenha tudo pequeno e repetivel. Nao deixe comida aberta sem data ou pote fechado. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 417,
+    "title": "Despensa: checagem semanal",
+    "profession": "accountant"
+  },
+  {
+    "id": 6,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: deixe na frente os itens que vencem primeiro. Coloque o sinal em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida aberta sem data ou pote fechado. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 433,
+    "title": "Despensa: lembrete visivel",
+    "profession": "accountant"
+  },
+  {
+    "id": 7,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: mantenha uma nota curta dizendo onde ficam originais e copias. Mantenha o lembrete em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Nao envie scans em chats compartilhados sem ocultar dados privados. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 446,
+    "title": "Documentos: lugar fixo",
+    "profession": "accountant"
+  },
+  {
+    "id": 8,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: mantenha uma nota curta dizendo onde ficam originais e copias. Depois olhe em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Mantenha tudo pequeno e repetivel. Nao envie scans em chats compartilhados sem ocultar dados privados. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 491,
+    "title": "Documentos: checagem semanal",
+    "profession": "accountant"
+  },
+  {
+    "id": 9,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: mantenha uma nota curta dizendo onde ficam originais e copias. Coloque o sinal em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Uma nota, etiqueta ou caixa ja basta para começar. Nao envie scans em chats compartilhados sem ocultar dados privados. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 507,
+    "title": "Documentos: lembrete visivel",
+    "profession": "accountant"
+  },
+  {
+    "id": 10,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Mantenha o lembrete em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Nao use cabos rachados ou qualquer item que esquente. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 411,
+    "title": "Cabos: lugar fixo",
+    "profession": "accountant"
+  },
+  {
+    "id": 11,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Depois olhe em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Mantenha tudo pequeno e repetivel. Nao use cabos rachados ou qualquer item que esquente. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 456,
+    "title": "Cabos: checagem semanal",
+    "profession": "accountant"
+  },
+  {
+    "id": 12,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Coloque o sinal em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Uma nota, etiqueta ou caixa ja basta para começar. Nao use cabos rachados ou qualquer item que esquente. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 472,
+    "title": "Cabos: lembrete visivel",
+    "profession": "accountant"
+  },
+  {
+    "id": 13,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: pendure um saquinho de rede no cesto para meias e pecas delicadas. Mantenha o lembrete em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 387,
+    "title": "Lavanderia: lugar fixo",
+    "profession": "accountant"
+  },
+  {
+    "id": 14,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: pendure um saquinho de rede no cesto para meias e pecas delicadas. Depois olhe em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Mantenha tudo pequeno e repetivel. Nao encha demais o saco: o tecido ainda precisa enxaguar. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 432,
+    "title": "Lavanderia: checagem semanal",
+    "profession": "accountant"
+  },
+  {
+    "id": 15,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: pendure um saquinho de rede no cesto para meias e pecas delicadas. Coloque o sinal em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Uma nota, etiqueta ou caixa ja basta para começar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 448,
+    "title": "Lavanderia: lembrete visivel",
+    "profession": "accountant"
+  },
+  {
+    "id": 16,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Mantenha o lembrete em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Nao fotografe documentos perto de dados pessoais desnecessarios. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 445,
+    "title": "Recibos: lugar fixo",
+    "profession": "accountant"
+  },
+  {
+    "id": 17,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Depois olhe em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Mantenha tudo pequeno e repetivel. Nao fotografe documentos perto de dados pessoais desnecessarios. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 490,
+    "title": "Recibos: checagem semanal",
+    "profession": "accountant"
+  },
+  {
+    "id": 18,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Coloque o sinal em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Uma nota, etiqueta ou caixa ja basta para começar. Nao fotografe documentos perto de dados pessoais desnecessarios. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 506,
+    "title": "Recibos: lembrete visivel",
+    "profession": "accountant"
+  },
+  {
+    "id": 19,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: reserve uma prateleira da geladeira para o que precisa ser usado logo. Mantenha o lembrete na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Nao deixe comida cozida fora por mais tempo do que e seguro. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 398,
+    "title": "Sobras: lugar fixo",
+    "profession": "accountant"
+  },
+  {
+    "id": 20,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: reserve uma prateleira da geladeira para o que precisa ser usado logo. Depois olhe na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Mantenha tudo pequeno e repetivel. Nao deixe comida cozida fora por mais tempo do que e seguro. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 443,
+    "title": "Sobras: checagem semanal",
+    "profession": "accountant"
+  },
+  {
+    "id": 21,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: reserve uma prateleira da geladeira para o que precisa ser usado logo. Coloque o sinal na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida cozida fora por mais tempo do que e seguro. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 459,
+    "title": "Sobras: lembrete visivel",
+    "profession": "accountant"
+  },
+  {
+    "id": 22,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: de a cada cor de pano uma funcao e guarde a lista com os panos. Mantenha o lembrete dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 424,
+    "title": "Limpeza: lugar fixo",
+    "profession": "accountant"
+  },
+  {
+    "id": 23,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: de a cada cor de pano uma funcao e guarde a lista com os panos. Depois olhe dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Mantenha tudo pequeno e repetivel. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 469,
+    "title": "Limpeza: checagem semanal",
+    "profession": "accountant"
+  },
+  {
+    "id": 24,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: de a cada cor de pano uma funcao e guarde a lista com os panos. Coloque o sinal dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Uma nota, etiqueta ou caixa ja basta para começar. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 485,
+    "title": "Limpeza: lembrete visivel",
+    "profession": "accountant"
+  },
+  {
+    "id": 25,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: adicione o horario de sair, nao so o horario do compromisso. Mantenha o lembrete no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Nao coloque codigos privados em notas de calendario compartilhadas. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 379,
+    "title": "Calendario: lugar fixo",
+    "profession": "accountant"
+  },
+  {
+    "id": 26,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: adicione o horario de sair, nao so o horario do compromisso. Depois olhe no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Mantenha tudo pequeno e repetivel. Nao coloque codigos privados em notas de calendario compartilhadas. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 424,
+    "title": "Calendario: checagem semanal",
+    "profession": "accountant"
+  },
+  {
+    "id": 27,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: adicione o horario de sair, nao so o horario do compromisso. Coloque o sinal no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Uma nota, etiqueta ou caixa ja basta para começar. Nao coloque codigos privados em notas de calendario compartilhadas. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 440,
+    "title": "Calendario: lembrete visivel",
+    "profession": "accountant"
+  },
+  {
+    "id": 28,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: use um gerenciador e de uma senha unica a cada conta importante. Mantenha o lembrete no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 404,
+    "title": "Senhas: lugar fixo",
+    "profession": "accountant"
+  },
+  {
+    "id": 29,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: use um gerenciador e de uma senha unica a cada conta importante. Depois olhe no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Mantenha tudo pequeno e repetivel. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 449,
+    "title": "Senhas: checagem semanal",
+    "profession": "accountant"
+  },
+  {
+    "id": 30,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: use um gerenciador e de uma senha unica a cada conta importante. Coloque o sinal no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Uma nota, etiqueta ou caixa ja basta para começar. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Torne mensuravel: anote data, valor ou quantidade enquanto a tarefa esta fresca.",
+    "chars": 465,
+    "title": "Senhas: lembrete visivel",
+    "profession": "accountant"
+  },
+  {
+    "id": 31,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: anote nome do servico, data de cobranca e valor em uma lista unica. Mantenha o lembrete perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Nao guarde ali senhas, codigos ou numeros completos de cartao. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 397,
+    "title": "Assinaturas: lugar fixo",
+    "profession": "builder"
+  },
+  {
+    "id": 32,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: anote nome do servico, data de cobranca e valor em uma lista unica. Depois olhe perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Mantenha tudo pequeno e repetivel. Nao guarde ali senhas, codigos ou numeros completos de cartao. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 442,
+    "title": "Assinaturas: checagem semanal",
+    "profession": "builder"
+  },
+  {
+    "id": 33,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: anote nome do servico, data de cobranca e valor em uma lista unica. Coloque o sinal perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Uma nota, etiqueta ou caixa ja basta para começar. Nao guarde ali senhas, codigos ou numeros completos de cartao. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 458,
+    "title": "Assinaturas: lembrete visivel",
+    "profession": "builder"
+  },
+  {
+    "id": 34,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: deixe na frente os itens que vencem primeiro. Mantenha o lembrete em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Nao deixe comida aberta sem data ou pote fechado. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 359,
+    "title": "Despensa: lugar fixo",
+    "profession": "builder"
+  },
+  {
+    "id": 35,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: deixe na frente os itens que vencem primeiro. Depois olhe em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Mantenha tudo pequeno e repetivel. Nao deixe comida aberta sem data ou pote fechado. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 404,
+    "title": "Despensa: checagem semanal",
+    "profession": "builder"
+  },
+  {
+    "id": 36,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: deixe na frente os itens que vencem primeiro. Coloque o sinal em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida aberta sem data ou pote fechado. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 420,
+    "title": "Despensa: lembrete visivel",
+    "profession": "builder"
+  },
+  {
+    "id": 37,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: mantenha uma nota curta dizendo onde ficam originais e copias. Mantenha o lembrete em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Nao envie scans em chats compartilhados sem ocultar dados privados. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 433,
+    "title": "Documentos: lugar fixo",
+    "profession": "builder"
+  },
+  {
+    "id": 38,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: mantenha uma nota curta dizendo onde ficam originais e copias. Depois olhe em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Mantenha tudo pequeno e repetivel. Nao envie scans em chats compartilhados sem ocultar dados privados. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 478,
+    "title": "Documentos: checagem semanal",
+    "profession": "builder"
+  },
+  {
+    "id": 39,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: mantenha uma nota curta dizendo onde ficam originais e copias. Coloque o sinal em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Uma nota, etiqueta ou caixa ja basta para começar. Nao envie scans em chats compartilhados sem ocultar dados privados. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 494,
+    "title": "Documentos: lembrete visivel",
+    "profession": "builder"
+  },
+  {
+    "id": 40,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Mantenha o lembrete em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Nao use cabos rachados ou qualquer item que esquente. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 398,
+    "title": "Cabos: lugar fixo",
+    "profession": "builder"
+  },
+  {
+    "id": 41,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Depois olhe em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Mantenha tudo pequeno e repetivel. Nao use cabos rachados ou qualquer item que esquente. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 443,
+    "title": "Cabos: checagem semanal",
+    "profession": "builder"
+  },
+  {
+    "id": 42,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Coloque o sinal em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Uma nota, etiqueta ou caixa ja basta para começar. Nao use cabos rachados ou qualquer item que esquente. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 459,
+    "title": "Cabos: lembrete visivel",
+    "profession": "builder"
+  },
+  {
+    "id": 43,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: pendure um saquinho de rede no cesto para meias e pecas delicadas. Mantenha o lembrete em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 374,
+    "title": "Lavanderia: lugar fixo",
+    "profession": "builder"
+  },
+  {
+    "id": 44,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: pendure um saquinho de rede no cesto para meias e pecas delicadas. Depois olhe em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Mantenha tudo pequeno e repetivel. Nao encha demais o saco: o tecido ainda precisa enxaguar. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 419,
+    "title": "Lavanderia: checagem semanal",
+    "profession": "builder"
+  },
+  {
+    "id": 45,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: pendure um saquinho de rede no cesto para meias e pecas delicadas. Coloque o sinal em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Uma nota, etiqueta ou caixa ja basta para começar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 435,
+    "title": "Lavanderia: lembrete visivel",
+    "profession": "builder"
+  },
+  {
+    "id": 46,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Mantenha o lembrete em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Nao fotografe documentos perto de dados pessoais desnecessarios. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 432,
+    "title": "Recibos: lugar fixo",
+    "profession": "builder"
+  },
+  {
+    "id": 47,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Depois olhe em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Mantenha tudo pequeno e repetivel. Nao fotografe documentos perto de dados pessoais desnecessarios. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 477,
+    "title": "Recibos: checagem semanal",
+    "profession": "builder"
+  },
+  {
+    "id": 48,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Coloque o sinal em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Uma nota, etiqueta ou caixa ja basta para começar. Nao fotografe documentos perto de dados pessoais desnecessarios. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 493,
+    "title": "Recibos: lembrete visivel",
+    "profession": "builder"
+  },
+  {
+    "id": 49,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: reserve uma prateleira da geladeira para o que precisa ser usado logo. Mantenha o lembrete na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Nao deixe comida cozida fora por mais tempo do que e seguro. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 385,
+    "title": "Sobras: lugar fixo",
+    "profession": "builder"
+  },
+  {
+    "id": 50,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: reserve uma prateleira da geladeira para o que precisa ser usado logo. Depois olhe na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Mantenha tudo pequeno e repetivel. Nao deixe comida cozida fora por mais tempo do que e seguro. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 430,
+    "title": "Sobras: checagem semanal",
+    "profession": "builder"
+  },
+  {
+    "id": 51,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: reserve uma prateleira da geladeira para o que precisa ser usado logo. Coloque o sinal na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida cozida fora por mais tempo do que e seguro. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 446,
+    "title": "Sobras: lembrete visivel",
+    "profession": "builder"
+  },
+  {
+    "id": 52,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: de a cada cor de pano uma funcao e guarde a lista com os panos. Mantenha o lembrete dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 411,
+    "title": "Limpeza: lugar fixo",
+    "profession": "builder"
+  },
+  {
+    "id": 53,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: de a cada cor de pano uma funcao e guarde a lista com os panos. Depois olhe dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Mantenha tudo pequeno e repetivel. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 456,
+    "title": "Limpeza: checagem semanal",
+    "profession": "builder"
+  },
+  {
+    "id": 54,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: de a cada cor de pano uma funcao e guarde a lista com os panos. Coloque o sinal dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Uma nota, etiqueta ou caixa ja basta para começar. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 472,
+    "title": "Limpeza: lembrete visivel",
+    "profession": "builder"
+  },
+  {
+    "id": 55,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: adicione o horario de sair, nao so o horario do compromisso. Mantenha o lembrete no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Nao coloque codigos privados em notas de calendario compartilhadas. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 366,
+    "title": "Calendario: lugar fixo",
+    "profession": "builder"
+  },
+  {
+    "id": 56,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: adicione o horario de sair, nao so o horario do compromisso. Depois olhe no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Mantenha tudo pequeno e repetivel. Nao coloque codigos privados em notas de calendario compartilhadas. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 411,
+    "title": "Calendario: checagem semanal",
+    "profession": "builder"
+  },
+  {
+    "id": 57,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: adicione o horario de sair, nao so o horario do compromisso. Coloque o sinal no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Uma nota, etiqueta ou caixa ja basta para começar. Nao coloque codigos privados em notas de calendario compartilhadas. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 427,
+    "title": "Calendario: lembrete visivel",
+    "profession": "builder"
+  },
+  {
+    "id": 58,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: use um gerenciador e de uma senha unica a cada conta importante. Mantenha o lembrete no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 391,
+    "title": "Senhas: lugar fixo",
+    "profession": "builder"
+  },
+  {
+    "id": 59,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: use um gerenciador e de uma senha unica a cada conta importante. Depois olhe no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Mantenha tudo pequeno e repetivel. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 436,
+    "title": "Senhas: checagem semanal",
+    "profession": "builder"
+  },
+  {
+    "id": 60,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: use um gerenciador e de uma senha unica a cada conta importante. Coloque o sinal no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Uma nota, etiqueta ou caixa ja basta para começar. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Limpe primeiro o caminho fisico para a regra ficar facil de seguir.",
+    "chars": 452,
+    "title": "Senhas: lembrete visivel",
+    "profession": "builder"
+  },
+  {
+    "id": 61,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: anote nome do servico, data de cobranca e valor em uma lista unica. Mantenha o lembrete perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Nao guarde ali senhas, codigos ou numeros completos de cartao. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 405,
+    "title": "Assinaturas: lugar fixo",
+    "profession": "chef"
+  },
+  {
+    "id": 62,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: anote nome do servico, data de cobranca e valor em uma lista unica. Depois olhe perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Mantenha tudo pequeno e repetivel. Nao guarde ali senhas, codigos ou numeros completos de cartao. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 450,
+    "title": "Assinaturas: checagem semanal",
+    "profession": "chef"
+  },
+  {
+    "id": 63,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: anote nome do servico, data de cobranca e valor em uma lista unica. Coloque o sinal perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Uma nota, etiqueta ou caixa ja basta para começar. Nao guarde ali senhas, codigos ou numeros completos de cartao. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 466,
+    "title": "Assinaturas: lembrete visivel",
+    "profession": "chef"
+  },
+  {
+    "id": 64,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: deixe na frente os itens que vencem primeiro. Mantenha o lembrete em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Nao deixe comida aberta sem data ou pote fechado. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 367,
+    "title": "Despensa: lugar fixo",
+    "profession": "chef"
+  },
+  {
+    "id": 65,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: deixe na frente os itens que vencem primeiro. Depois olhe em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Mantenha tudo pequeno e repetivel. Nao deixe comida aberta sem data ou pote fechado. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 412,
+    "title": "Despensa: checagem semanal",
+    "profession": "chef"
+  },
+  {
+    "id": 66,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: deixe na frente os itens que vencem primeiro. Coloque o sinal em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida aberta sem data ou pote fechado. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 428,
+    "title": "Despensa: lembrete visivel",
+    "profession": "chef"
+  },
+  {
+    "id": 67,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: mantenha uma nota curta dizendo onde ficam originais e copias. Mantenha o lembrete em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Nao envie scans em chats compartilhados sem ocultar dados privados. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 441,
+    "title": "Documentos: lugar fixo",
+    "profession": "chef"
+  },
+  {
+    "id": 68,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: mantenha uma nota curta dizendo onde ficam originais e copias. Depois olhe em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Mantenha tudo pequeno e repetivel. Nao envie scans em chats compartilhados sem ocultar dados privados. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 486,
+    "title": "Documentos: checagem semanal",
+    "profession": "chef"
+  },
+  {
+    "id": 69,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: mantenha uma nota curta dizendo onde ficam originais e copias. Coloque o sinal em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Uma nota, etiqueta ou caixa ja basta para começar. Nao envie scans em chats compartilhados sem ocultar dados privados. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 502,
+    "title": "Documentos: lembrete visivel",
+    "profession": "chef"
+  },
+  {
+    "id": 70,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Mantenha o lembrete em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Nao use cabos rachados ou qualquer item que esquente. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 406,
+    "title": "Cabos: lugar fixo",
+    "profession": "chef"
+  },
+  {
+    "id": 71,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Depois olhe em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Mantenha tudo pequeno e repetivel. Nao use cabos rachados ou qualquer item que esquente. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 451,
+    "title": "Cabos: checagem semanal",
+    "profession": "chef"
+  },
+  {
+    "id": 72,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Coloque o sinal em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Uma nota, etiqueta ou caixa ja basta para começar. Nao use cabos rachados ou qualquer item que esquente. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 467,
+    "title": "Cabos: lembrete visivel",
+    "profession": "chef"
+  },
+  {
+    "id": 73,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: pendure um saquinho de rede no cesto para meias e pecas delicadas. Mantenha o lembrete em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 382,
+    "title": "Lavanderia: lugar fixo",
+    "profession": "chef"
+  },
+  {
+    "id": 74,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: pendure um saquinho de rede no cesto para meias e pecas delicadas. Depois olhe em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Mantenha tudo pequeno e repetivel. Nao encha demais o saco: o tecido ainda precisa enxaguar. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 427,
+    "title": "Lavanderia: checagem semanal",
+    "profession": "chef"
+  },
+  {
+    "id": 75,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: pendure um saquinho de rede no cesto para meias e pecas delicadas. Coloque o sinal em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Uma nota, etiqueta ou caixa ja basta para começar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 443,
+    "title": "Lavanderia: lembrete visivel",
+    "profession": "chef"
+  },
+  {
+    "id": 76,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Mantenha o lembrete em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Nao fotografe documentos perto de dados pessoais desnecessarios. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 440,
+    "title": "Recibos: lugar fixo",
+    "profession": "chef"
+  },
+  {
+    "id": 77,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Depois olhe em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Mantenha tudo pequeno e repetivel. Nao fotografe documentos perto de dados pessoais desnecessarios. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 485,
+    "title": "Recibos: checagem semanal",
+    "profession": "chef"
+  },
+  {
+    "id": 78,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Coloque o sinal em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Uma nota, etiqueta ou caixa ja basta para começar. Nao fotografe documentos perto de dados pessoais desnecessarios. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 501,
+    "title": "Recibos: lembrete visivel",
+    "profession": "chef"
+  },
+  {
+    "id": 79,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: reserve uma prateleira da geladeira para o que precisa ser usado logo. Mantenha o lembrete na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Nao deixe comida cozida fora por mais tempo do que e seguro. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 393,
+    "title": "Sobras: lugar fixo",
+    "profession": "chef"
+  },
+  {
+    "id": 80,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: reserve uma prateleira da geladeira para o que precisa ser usado logo. Depois olhe na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Mantenha tudo pequeno e repetivel. Nao deixe comida cozida fora por mais tempo do que e seguro. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 438,
+    "title": "Sobras: checagem semanal",
+    "profession": "chef"
+  },
+  {
+    "id": 81,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: reserve uma prateleira da geladeira para o que precisa ser usado logo. Coloque o sinal na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida cozida fora por mais tempo do que e seguro. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 454,
+    "title": "Sobras: lembrete visivel",
+    "profession": "chef"
+  },
+  {
+    "id": 82,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: de a cada cor de pano uma funcao e guarde a lista com os panos. Mantenha o lembrete dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 419,
+    "title": "Limpeza: lugar fixo",
+    "profession": "chef"
+  },
+  {
+    "id": 83,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: de a cada cor de pano uma funcao e guarde a lista com os panos. Depois olhe dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Mantenha tudo pequeno e repetivel. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 464,
+    "title": "Limpeza: checagem semanal",
+    "profession": "chef"
+  },
+  {
+    "id": 84,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: de a cada cor de pano uma funcao e guarde a lista com os panos. Coloque o sinal dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Uma nota, etiqueta ou caixa ja basta para começar. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 480,
+    "title": "Limpeza: lembrete visivel",
+    "profession": "chef"
+  },
+  {
+    "id": 85,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: adicione o horario de sair, nao so o horario do compromisso. Mantenha o lembrete no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Nao coloque codigos privados em notas de calendario compartilhadas. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 374,
+    "title": "Calendario: lugar fixo",
+    "profession": "chef"
+  },
+  {
+    "id": 86,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: adicione o horario de sair, nao so o horario do compromisso. Depois olhe no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Mantenha tudo pequeno e repetivel. Nao coloque codigos privados em notas de calendario compartilhadas. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 419,
+    "title": "Calendario: checagem semanal",
+    "profession": "chef"
+  },
+  {
+    "id": 87,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: adicione o horario de sair, nao so o horario do compromisso. Coloque o sinal no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Uma nota, etiqueta ou caixa ja basta para começar. Nao coloque codigos privados em notas de calendario compartilhadas. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 435,
+    "title": "Calendario: lembrete visivel",
+    "profession": "chef"
+  },
+  {
+    "id": 88,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: use um gerenciador e de uma senha unica a cada conta importante. Mantenha o lembrete no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 399,
+    "title": "Senhas: lugar fixo",
+    "profession": "chef"
+  },
+  {
+    "id": 89,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: use um gerenciador e de uma senha unica a cada conta importante. Depois olhe no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Mantenha tudo pequeno e repetivel. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 444,
+    "title": "Senhas: checagem semanal",
+    "profession": "chef"
+  },
+  {
+    "id": 90,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: use um gerenciador e de uma senha unica a cada conta importante. Coloque o sinal no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Uma nota, etiqueta ou caixa ja basta para começar. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Coloque a comida ou item de cozinha onde sera visto antes de ser esquecido.",
+    "chars": 460,
+    "title": "Senhas: lembrete visivel",
+    "profession": "chef"
+  },
+  {
+    "id": 91,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: anote nome do servico, data de cobranca e valor em uma lista unica. Mantenha o lembrete perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Nao guarde ali senhas, codigos ou numeros completos de cartao. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 390,
+    "title": "Assinaturas: lugar fixo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 92,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: anote nome do servico, data de cobranca e valor em uma lista unica. Depois olhe perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Mantenha tudo pequeno e repetivel. Nao guarde ali senhas, codigos ou numeros completos de cartao. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 435,
+    "title": "Assinaturas: checagem semanal",
+    "profession": "firefighter"
+  },
+  {
+    "id": 93,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: anote nome do servico, data de cobranca e valor em uma lista unica. Coloque o sinal perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Uma nota, etiqueta ou caixa ja basta para começar. Nao guarde ali senhas, codigos ou numeros completos de cartao. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 451,
+    "title": "Assinaturas: lembrete visivel",
+    "profession": "firefighter"
+  },
+  {
+    "id": 94,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: deixe na frente os itens que vencem primeiro. Mantenha o lembrete em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Nao deixe comida aberta sem data ou pote fechado. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 352,
+    "title": "Despensa: lugar fixo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 95,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: deixe na frente os itens que vencem primeiro. Depois olhe em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Mantenha tudo pequeno e repetivel. Nao deixe comida aberta sem data ou pote fechado. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 397,
+    "title": "Despensa: checagem semanal",
+    "profession": "firefighter"
+  },
+  {
+    "id": 96,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: deixe na frente os itens que vencem primeiro. Coloque o sinal em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida aberta sem data ou pote fechado. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 413,
+    "title": "Despensa: lembrete visivel",
+    "profession": "firefighter"
+  },
+  {
+    "id": 97,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: mantenha uma nota curta dizendo onde ficam originais e copias. Mantenha o lembrete em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Nao envie scans em chats compartilhados sem ocultar dados privados. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 426,
+    "title": "Documentos: lugar fixo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 98,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: mantenha uma nota curta dizendo onde ficam originais e copias. Depois olhe em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Mantenha tudo pequeno e repetivel. Nao envie scans em chats compartilhados sem ocultar dados privados. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 471,
+    "title": "Documentos: checagem semanal",
+    "profession": "firefighter"
+  },
+  {
+    "id": 99,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: mantenha uma nota curta dizendo onde ficam originais e copias. Coloque o sinal em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Uma nota, etiqueta ou caixa ja basta para começar. Nao envie scans em chats compartilhados sem ocultar dados privados. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 487,
+    "title": "Documentos: lembrete visivel",
+    "profession": "firefighter"
+  },
+  {
+    "id": 100,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Mantenha o lembrete em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Nao use cabos rachados ou qualquer item que esquente. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 391,
+    "title": "Cabos: lugar fixo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 101,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Depois olhe em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Mantenha tudo pequeno e repetivel. Nao use cabos rachados ou qualquer item que esquente. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 436,
+    "title": "Cabos: checagem semanal",
+    "profession": "firefighter"
+  },
+  {
+    "id": 102,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Coloque o sinal em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Uma nota, etiqueta ou caixa ja basta para começar. Nao use cabos rachados ou qualquer item que esquente. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 452,
+    "title": "Cabos: lembrete visivel",
+    "profession": "firefighter"
+  },
+  {
+    "id": 103,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: pendure um saquinho de rede no cesto para meias e pecas delicadas. Mantenha o lembrete em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 367,
+    "title": "Lavanderia: lugar fixo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 104,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: pendure um saquinho de rede no cesto para meias e pecas delicadas. Depois olhe em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Mantenha tudo pequeno e repetivel. Nao encha demais o saco: o tecido ainda precisa enxaguar. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 412,
+    "title": "Lavanderia: checagem semanal",
+    "profession": "firefighter"
+  },
+  {
+    "id": 105,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: pendure um saquinho de rede no cesto para meias e pecas delicadas. Coloque o sinal em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Uma nota, etiqueta ou caixa ja basta para começar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 428,
+    "title": "Lavanderia: lembrete visivel",
+    "profession": "firefighter"
+  },
+  {
+    "id": 106,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Mantenha o lembrete em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Nao fotografe documentos perto de dados pessoais desnecessarios. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 425,
+    "title": "Recibos: lugar fixo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 107,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Depois olhe em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Mantenha tudo pequeno e repetivel. Nao fotografe documentos perto de dados pessoais desnecessarios. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 470,
+    "title": "Recibos: checagem semanal",
+    "profession": "firefighter"
+  },
+  {
+    "id": 108,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Coloque o sinal em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Uma nota, etiqueta ou caixa ja basta para começar. Nao fotografe documentos perto de dados pessoais desnecessarios. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 486,
+    "title": "Recibos: lembrete visivel",
+    "profession": "firefighter"
+  },
+  {
+    "id": 109,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: reserve uma prateleira da geladeira para o que precisa ser usado logo. Mantenha o lembrete na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Nao deixe comida cozida fora por mais tempo do que e seguro. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 378,
+    "title": "Sobras: lugar fixo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 110,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: reserve uma prateleira da geladeira para o que precisa ser usado logo. Depois olhe na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Mantenha tudo pequeno e repetivel. Nao deixe comida cozida fora por mais tempo do que e seguro. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 423,
+    "title": "Sobras: checagem semanal",
+    "profession": "firefighter"
+  },
+  {
+    "id": 111,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: reserve uma prateleira da geladeira para o que precisa ser usado logo. Coloque o sinal na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida cozida fora por mais tempo do que e seguro. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 439,
+    "title": "Sobras: lembrete visivel",
+    "profession": "firefighter"
+  },
+  {
+    "id": 112,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: de a cada cor de pano uma funcao e guarde a lista com os panos. Mantenha o lembrete dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 404,
+    "title": "Limpeza: lugar fixo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 113,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: de a cada cor de pano uma funcao e guarde a lista com os panos. Depois olhe dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Mantenha tudo pequeno e repetivel. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 449,
+    "title": "Limpeza: checagem semanal",
+    "profession": "firefighter"
+  },
+  {
+    "id": 114,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: de a cada cor de pano uma funcao e guarde a lista com os panos. Coloque o sinal dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Uma nota, etiqueta ou caixa ja basta para começar. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 465,
+    "title": "Limpeza: lembrete visivel",
+    "profession": "firefighter"
+  },
+  {
+    "id": 115,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: adicione o horario de sair, nao so o horario do compromisso. Mantenha o lembrete no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Nao coloque codigos privados em notas de calendario compartilhadas. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 359,
+    "title": "Calendario: lugar fixo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 116,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: adicione o horario de sair, nao so o horario do compromisso. Depois olhe no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Mantenha tudo pequeno e repetivel. Nao coloque codigos privados em notas de calendario compartilhadas. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 404,
+    "title": "Calendario: checagem semanal",
+    "profession": "firefighter"
+  },
+  {
+    "id": 117,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: adicione o horario de sair, nao so o horario do compromisso. Coloque o sinal no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Uma nota, etiqueta ou caixa ja basta para começar. Nao coloque codigos privados em notas de calendario compartilhadas. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 420,
+    "title": "Calendario: lembrete visivel",
+    "profession": "firefighter"
+  },
+  {
+    "id": 118,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: use um gerenciador e de uma senha unica a cada conta importante. Mantenha o lembrete no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 384,
+    "title": "Senhas: lugar fixo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 119,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: use um gerenciador e de uma senha unica a cada conta importante. Depois olhe no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Mantenha tudo pequeno e repetivel. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 429,
+    "title": "Senhas: checagem semanal",
+    "profession": "firefighter"
+  },
+  {
+    "id": 120,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: use um gerenciador e de uma senha unica a cada conta importante. Coloque o sinal no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Uma nota, etiqueta ou caixa ja basta para começar. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Mantenha calor, bagunca e saidas bloqueadas fora da solucao.",
+    "chars": 445,
+    "title": "Senhas: lembrete visivel",
+    "profession": "firefighter"
+  },
+  {
+    "id": 121,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: anote nome do servico, data de cobranca e valor em uma lista unica. Mantenha o lembrete perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Nao guarde ali senhas, codigos ou numeros completos de cartao. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 396,
+    "title": "Assinaturas: lugar fixo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 122,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: anote nome do servico, data de cobranca e valor em uma lista unica. Depois olhe perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Mantenha tudo pequeno e repetivel. Nao guarde ali senhas, codigos ou numeros completos de cartao. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 441,
+    "title": "Assinaturas: checagem semanal",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 123,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: anote nome do servico, data de cobranca e valor em uma lista unica. Coloque o sinal perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Uma nota, etiqueta ou caixa ja basta para começar. Nao guarde ali senhas, codigos ou numeros completos de cartao. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 457,
+    "title": "Assinaturas: lembrete visivel",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 124,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: deixe na frente os itens que vencem primeiro. Mantenha o lembrete em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Nao deixe comida aberta sem data ou pote fechado. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 358,
+    "title": "Despensa: lugar fixo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 125,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: deixe na frente os itens que vencem primeiro. Depois olhe em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Mantenha tudo pequeno e repetivel. Nao deixe comida aberta sem data ou pote fechado. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 403,
+    "title": "Despensa: checagem semanal",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 126,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: deixe na frente os itens que vencem primeiro. Coloque o sinal em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida aberta sem data ou pote fechado. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 419,
+    "title": "Despensa: lembrete visivel",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 127,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: mantenha uma nota curta dizendo onde ficam originais e copias. Mantenha o lembrete em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Nao envie scans em chats compartilhados sem ocultar dados privados. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 432,
+    "title": "Documentos: lugar fixo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 128,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: mantenha uma nota curta dizendo onde ficam originais e copias. Depois olhe em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Mantenha tudo pequeno e repetivel. Nao envie scans em chats compartilhados sem ocultar dados privados. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 477,
+    "title": "Documentos: checagem semanal",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 129,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: mantenha uma nota curta dizendo onde ficam originais e copias. Coloque o sinal em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Uma nota, etiqueta ou caixa ja basta para começar. Nao envie scans em chats compartilhados sem ocultar dados privados. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 493,
+    "title": "Documentos: lembrete visivel",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 130,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Mantenha o lembrete em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Nao use cabos rachados ou qualquer item que esquente. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 397,
+    "title": "Cabos: lugar fixo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 131,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Depois olhe em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Mantenha tudo pequeno e repetivel. Nao use cabos rachados ou qualquer item que esquente. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 442,
+    "title": "Cabos: checagem semanal",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 132,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Coloque o sinal em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Uma nota, etiqueta ou caixa ja basta para começar. Nao use cabos rachados ou qualquer item que esquente. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 458,
+    "title": "Cabos: lembrete visivel",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 133,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: pendure um saquinho de rede no cesto para meias e pecas delicadas. Mantenha o lembrete em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 373,
+    "title": "Lavanderia: lugar fixo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 134,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: pendure um saquinho de rede no cesto para meias e pecas delicadas. Depois olhe em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Mantenha tudo pequeno e repetivel. Nao encha demais o saco: o tecido ainda precisa enxaguar. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 418,
+    "title": "Lavanderia: checagem semanal",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 135,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: pendure um saquinho de rede no cesto para meias e pecas delicadas. Coloque o sinal em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Uma nota, etiqueta ou caixa ja basta para começar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 434,
+    "title": "Lavanderia: lembrete visivel",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 136,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Mantenha o lembrete em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Nao fotografe documentos perto de dados pessoais desnecessarios. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 431,
+    "title": "Recibos: lugar fixo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 137,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Depois olhe em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Mantenha tudo pequeno e repetivel. Nao fotografe documentos perto de dados pessoais desnecessarios. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 476,
+    "title": "Recibos: checagem semanal",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 138,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Coloque o sinal em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Uma nota, etiqueta ou caixa ja basta para começar. Nao fotografe documentos perto de dados pessoais desnecessarios. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 492,
+    "title": "Recibos: lembrete visivel",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 139,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: reserve uma prateleira da geladeira para o que precisa ser usado logo. Mantenha o lembrete na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Nao deixe comida cozida fora por mais tempo do que e seguro. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 384,
+    "title": "Sobras: lugar fixo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 140,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: reserve uma prateleira da geladeira para o que precisa ser usado logo. Depois olhe na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Mantenha tudo pequeno e repetivel. Nao deixe comida cozida fora por mais tempo do que e seguro. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 429,
+    "title": "Sobras: checagem semanal",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 141,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: reserve uma prateleira da geladeira para o que precisa ser usado logo. Coloque o sinal na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida cozida fora por mais tempo do que e seguro. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 445,
+    "title": "Sobras: lembrete visivel",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 142,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: de a cada cor de pano uma funcao e guarde a lista com os panos. Mantenha o lembrete dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 410,
+    "title": "Limpeza: lugar fixo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 143,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: de a cada cor de pano uma funcao e guarde a lista com os panos. Depois olhe dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Mantenha tudo pequeno e repetivel. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 455,
+    "title": "Limpeza: checagem semanal",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 144,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: de a cada cor de pano uma funcao e guarde a lista com os panos. Coloque o sinal dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Uma nota, etiqueta ou caixa ja basta para começar. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 471,
+    "title": "Limpeza: lembrete visivel",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 145,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: adicione o horario de sair, nao so o horario do compromisso. Mantenha o lembrete no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Nao coloque codigos privados em notas de calendario compartilhadas. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 365,
+    "title": "Calendario: lugar fixo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 146,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: adicione o horario de sair, nao so o horario do compromisso. Depois olhe no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Mantenha tudo pequeno e repetivel. Nao coloque codigos privados em notas de calendario compartilhadas. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 410,
+    "title": "Calendario: checagem semanal",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 147,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: adicione o horario de sair, nao so o horario do compromisso. Coloque o sinal no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Uma nota, etiqueta ou caixa ja basta para começar. Nao coloque codigos privados em notas de calendario compartilhadas. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 426,
+    "title": "Calendario: lembrete visivel",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 148,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: use um gerenciador e de uma senha unica a cada conta importante. Mantenha o lembrete no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 390,
+    "title": "Senhas: lugar fixo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 149,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: use um gerenciador e de uma senha unica a cada conta importante. Depois olhe no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Mantenha tudo pequeno e repetivel. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 435,
+    "title": "Senhas: checagem semanal",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 150,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: use um gerenciador e de uma senha unica a cada conta importante. Coloque o sinal no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Uma nota, etiqueta ou caixa ja basta para começar. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Deixe o sinal visual claro o bastante para notar mesmo com pressa.",
+    "chars": 451,
+    "title": "Senhas: lembrete visivel",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 151,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: anote nome do servico, data de cobranca e valor em uma lista unica. Mantenha o lembrete perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Nao guarde ali senhas, codigos ou numeros completos de cartao. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 395,
+    "title": "Assinaturas: lugar fixo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 152,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: anote nome do servico, data de cobranca e valor em uma lista unica. Depois olhe perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Mantenha tudo pequeno e repetivel. Nao guarde ali senhas, codigos ou numeros completos de cartao. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 440,
+    "title": "Assinaturas: checagem semanal",
+    "profession": "lawyer"
+  },
+  {
+    "id": 153,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: anote nome do servico, data de cobranca e valor em uma lista unica. Coloque o sinal perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Uma nota, etiqueta ou caixa ja basta para começar. Nao guarde ali senhas, codigos ou numeros completos de cartao. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 456,
+    "title": "Assinaturas: lembrete visivel",
+    "profession": "lawyer"
+  },
+  {
+    "id": 154,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: deixe na frente os itens que vencem primeiro. Mantenha o lembrete em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Nao deixe comida aberta sem data ou pote fechado. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 357,
+    "title": "Despensa: lugar fixo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 155,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: deixe na frente os itens que vencem primeiro. Depois olhe em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Mantenha tudo pequeno e repetivel. Nao deixe comida aberta sem data ou pote fechado. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 402,
+    "title": "Despensa: checagem semanal",
+    "profession": "lawyer"
+  },
+  {
+    "id": 156,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: deixe na frente os itens que vencem primeiro. Coloque o sinal em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida aberta sem data ou pote fechado. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 418,
+    "title": "Despensa: lembrete visivel",
+    "profession": "lawyer"
+  },
+  {
+    "id": 157,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: mantenha uma nota curta dizendo onde ficam originais e copias. Mantenha o lembrete em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Nao envie scans em chats compartilhados sem ocultar dados privados. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 431,
+    "title": "Documentos: lugar fixo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 158,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: mantenha uma nota curta dizendo onde ficam originais e copias. Depois olhe em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Mantenha tudo pequeno e repetivel. Nao envie scans em chats compartilhados sem ocultar dados privados. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 476,
+    "title": "Documentos: checagem semanal",
+    "profession": "lawyer"
+  },
+  {
+    "id": 159,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: mantenha uma nota curta dizendo onde ficam originais e copias. Coloque o sinal em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Uma nota, etiqueta ou caixa ja basta para começar. Nao envie scans em chats compartilhados sem ocultar dados privados. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 492,
+    "title": "Documentos: lembrete visivel",
+    "profession": "lawyer"
+  },
+  {
+    "id": 160,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Mantenha o lembrete em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Nao use cabos rachados ou qualquer item que esquente. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 396,
+    "title": "Cabos: lugar fixo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 161,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Depois olhe em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Mantenha tudo pequeno e repetivel. Nao use cabos rachados ou qualquer item que esquente. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 441,
+    "title": "Cabos: checagem semanal",
+    "profession": "lawyer"
+  },
+  {
+    "id": 162,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Coloque o sinal em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Uma nota, etiqueta ou caixa ja basta para começar. Nao use cabos rachados ou qualquer item que esquente. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 457,
+    "title": "Cabos: lembrete visivel",
+    "profession": "lawyer"
+  },
+  {
+    "id": 163,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: pendure um saquinho de rede no cesto para meias e pecas delicadas. Mantenha o lembrete em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 372,
+    "title": "Lavanderia: lugar fixo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 164,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: pendure um saquinho de rede no cesto para meias e pecas delicadas. Depois olhe em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Mantenha tudo pequeno e repetivel. Nao encha demais o saco: o tecido ainda precisa enxaguar. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 417,
+    "title": "Lavanderia: checagem semanal",
+    "profession": "lawyer"
+  },
+  {
+    "id": 165,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: pendure um saquinho de rede no cesto para meias e pecas delicadas. Coloque o sinal em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Uma nota, etiqueta ou caixa ja basta para começar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 433,
+    "title": "Lavanderia: lembrete visivel",
+    "profession": "lawyer"
+  },
+  {
+    "id": 166,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Mantenha o lembrete em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Nao fotografe documentos perto de dados pessoais desnecessarios. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 430,
+    "title": "Recibos: lugar fixo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 167,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Depois olhe em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Mantenha tudo pequeno e repetivel. Nao fotografe documentos perto de dados pessoais desnecessarios. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 475,
+    "title": "Recibos: checagem semanal",
+    "profession": "lawyer"
+  },
+  {
+    "id": 168,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Coloque o sinal em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Uma nota, etiqueta ou caixa ja basta para começar. Nao fotografe documentos perto de dados pessoais desnecessarios. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 491,
+    "title": "Recibos: lembrete visivel",
+    "profession": "lawyer"
+  },
+  {
+    "id": 169,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: reserve uma prateleira da geladeira para o que precisa ser usado logo. Mantenha o lembrete na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Nao deixe comida cozida fora por mais tempo do que e seguro. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 383,
+    "title": "Sobras: lugar fixo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 170,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: reserve uma prateleira da geladeira para o que precisa ser usado logo. Depois olhe na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Mantenha tudo pequeno e repetivel. Nao deixe comida cozida fora por mais tempo do que e seguro. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 428,
+    "title": "Sobras: checagem semanal",
+    "profession": "lawyer"
+  },
+  {
+    "id": 171,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: reserve uma prateleira da geladeira para o que precisa ser usado logo. Coloque o sinal na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida cozida fora por mais tempo do que e seguro. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 444,
+    "title": "Sobras: lembrete visivel",
+    "profession": "lawyer"
+  },
+  {
+    "id": 172,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: de a cada cor de pano uma funcao e guarde a lista com os panos. Mantenha o lembrete dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 409,
+    "title": "Limpeza: lugar fixo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 173,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: de a cada cor de pano uma funcao e guarde a lista com os panos. Depois olhe dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Mantenha tudo pequeno e repetivel. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 454,
+    "title": "Limpeza: checagem semanal",
+    "profession": "lawyer"
+  },
+  {
+    "id": 174,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: de a cada cor de pano uma funcao e guarde a lista com os panos. Coloque o sinal dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Uma nota, etiqueta ou caixa ja basta para começar. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 470,
+    "title": "Limpeza: lembrete visivel",
+    "profession": "lawyer"
+  },
+  {
+    "id": 175,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: adicione o horario de sair, nao so o horario do compromisso. Mantenha o lembrete no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Nao coloque codigos privados em notas de calendario compartilhadas. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 364,
+    "title": "Calendario: lugar fixo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 176,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: adicione o horario de sair, nao so o horario do compromisso. Depois olhe no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Mantenha tudo pequeno e repetivel. Nao coloque codigos privados em notas de calendario compartilhadas. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 409,
+    "title": "Calendario: checagem semanal",
+    "profession": "lawyer"
+  },
+  {
+    "id": 177,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: adicione o horario de sair, nao so o horario do compromisso. Coloque o sinal no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Uma nota, etiqueta ou caixa ja basta para começar. Nao coloque codigos privados em notas de calendario compartilhadas. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 425,
+    "title": "Calendario: lembrete visivel",
+    "profession": "lawyer"
+  },
+  {
+    "id": 178,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: use um gerenciador e de uma senha unica a cada conta importante. Mantenha o lembrete no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 389,
+    "title": "Senhas: lugar fixo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 179,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: use um gerenciador e de uma senha unica a cada conta importante. Depois olhe no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Mantenha tudo pequeno e repetivel. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 434,
+    "title": "Senhas: checagem semanal",
+    "profession": "lawyer"
+  },
+  {
+    "id": 180,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: use um gerenciador e de uma senha unica a cada conta importante. Coloque o sinal no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Uma nota, etiqueta ou caixa ja basta para começar. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Deixe um pequeno registro escrito para entender a decisao depois.",
+    "chars": 450,
+    "title": "Senhas: lembrete visivel",
+    "profession": "lawyer"
+  },
+  {
+    "id": 181,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: anote nome do servico, data de cobranca e valor em uma lista unica. Mantenha o lembrete perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Nao guarde ali senhas, codigos ou numeros completos de cartao. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 397,
+    "title": "Assinaturas: lugar fixo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 182,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: anote nome do servico, data de cobranca e valor em uma lista unica. Depois olhe perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Mantenha tudo pequeno e repetivel. Nao guarde ali senhas, codigos ou numeros completos de cartao. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 442,
+    "title": "Assinaturas: checagem semanal",
+    "profession": "mechanic"
+  },
+  {
+    "id": 183,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: anote nome do servico, data de cobranca e valor em uma lista unica. Coloque o sinal perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Uma nota, etiqueta ou caixa ja basta para começar. Nao guarde ali senhas, codigos ou numeros completos de cartao. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 458,
+    "title": "Assinaturas: lembrete visivel",
+    "profession": "mechanic"
+  },
+  {
+    "id": 184,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: deixe na frente os itens que vencem primeiro. Mantenha o lembrete em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Nao deixe comida aberta sem data ou pote fechado. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 359,
+    "title": "Despensa: lugar fixo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 185,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: deixe na frente os itens que vencem primeiro. Depois olhe em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Mantenha tudo pequeno e repetivel. Nao deixe comida aberta sem data ou pote fechado. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 404,
+    "title": "Despensa: checagem semanal",
+    "profession": "mechanic"
+  },
+  {
+    "id": 186,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: deixe na frente os itens que vencem primeiro. Coloque o sinal em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida aberta sem data ou pote fechado. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 420,
+    "title": "Despensa: lembrete visivel",
+    "profession": "mechanic"
+  },
+  {
+    "id": 187,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: mantenha uma nota curta dizendo onde ficam originais e copias. Mantenha o lembrete em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Nao envie scans em chats compartilhados sem ocultar dados privados. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 433,
+    "title": "Documentos: lugar fixo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 188,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: mantenha uma nota curta dizendo onde ficam originais e copias. Depois olhe em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Mantenha tudo pequeno e repetivel. Nao envie scans em chats compartilhados sem ocultar dados privados. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 478,
+    "title": "Documentos: checagem semanal",
+    "profession": "mechanic"
+  },
+  {
+    "id": 189,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: mantenha uma nota curta dizendo onde ficam originais e copias. Coloque o sinal em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Uma nota, etiqueta ou caixa ja basta para começar. Nao envie scans em chats compartilhados sem ocultar dados privados. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 494,
+    "title": "Documentos: lembrete visivel",
+    "profession": "mechanic"
+  },
+  {
+    "id": 190,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Mantenha o lembrete em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Nao use cabos rachados ou qualquer item que esquente. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 398,
+    "title": "Cabos: lugar fixo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 191,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Depois olhe em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Mantenha tudo pequeno e repetivel. Nao use cabos rachados ou qualquer item que esquente. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 443,
+    "title": "Cabos: checagem semanal",
+    "profession": "mechanic"
+  },
+  {
+    "id": 192,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Coloque o sinal em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Uma nota, etiqueta ou caixa ja basta para começar. Nao use cabos rachados ou qualquer item que esquente. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 459,
+    "title": "Cabos: lembrete visivel",
+    "profession": "mechanic"
+  },
+  {
+    "id": 193,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: pendure um saquinho de rede no cesto para meias e pecas delicadas. Mantenha o lembrete em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 374,
+    "title": "Lavanderia: lugar fixo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 194,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: pendure um saquinho de rede no cesto para meias e pecas delicadas. Depois olhe em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Mantenha tudo pequeno e repetivel. Nao encha demais o saco: o tecido ainda precisa enxaguar. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 419,
+    "title": "Lavanderia: checagem semanal",
+    "profession": "mechanic"
+  },
+  {
+    "id": 195,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: pendure um saquinho de rede no cesto para meias e pecas delicadas. Coloque o sinal em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Uma nota, etiqueta ou caixa ja basta para começar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 435,
+    "title": "Lavanderia: lembrete visivel",
+    "profession": "mechanic"
+  },
+  {
+    "id": 196,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Mantenha o lembrete em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Nao fotografe documentos perto de dados pessoais desnecessarios. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 432,
+    "title": "Recibos: lugar fixo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 197,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Depois olhe em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Mantenha tudo pequeno e repetivel. Nao fotografe documentos perto de dados pessoais desnecessarios. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 477,
+    "title": "Recibos: checagem semanal",
+    "profession": "mechanic"
+  },
+  {
+    "id": 198,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Coloque o sinal em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Uma nota, etiqueta ou caixa ja basta para começar. Nao fotografe documentos perto de dados pessoais desnecessarios. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 493,
+    "title": "Recibos: lembrete visivel",
+    "profession": "mechanic"
+  },
+  {
+    "id": 199,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: reserve uma prateleira da geladeira para o que precisa ser usado logo. Mantenha o lembrete na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Nao deixe comida cozida fora por mais tempo do que e seguro. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 385,
+    "title": "Sobras: lugar fixo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 200,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: reserve uma prateleira da geladeira para o que precisa ser usado logo. Depois olhe na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Mantenha tudo pequeno e repetivel. Nao deixe comida cozida fora por mais tempo do que e seguro. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 430,
+    "title": "Sobras: checagem semanal",
+    "profession": "mechanic"
+  },
+  {
+    "id": 201,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: reserve uma prateleira da geladeira para o que precisa ser usado logo. Coloque o sinal na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida cozida fora por mais tempo do que e seguro. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 446,
+    "title": "Sobras: lembrete visivel",
+    "profession": "mechanic"
+  },
+  {
+    "id": 202,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: de a cada cor de pano uma funcao e guarde a lista com os panos. Mantenha o lembrete dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 411,
+    "title": "Limpeza: lugar fixo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 203,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: de a cada cor de pano uma funcao e guarde a lista com os panos. Depois olhe dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Mantenha tudo pequeno e repetivel. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 456,
+    "title": "Limpeza: checagem semanal",
+    "profession": "mechanic"
+  },
+  {
+    "id": 204,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: de a cada cor de pano uma funcao e guarde a lista com os panos. Coloque o sinal dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Uma nota, etiqueta ou caixa ja basta para começar. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 472,
+    "title": "Limpeza: lembrete visivel",
+    "profession": "mechanic"
+  },
+  {
+    "id": 205,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: adicione o horario de sair, nao so o horario do compromisso. Mantenha o lembrete no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Nao coloque codigos privados em notas de calendario compartilhadas. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 366,
+    "title": "Calendario: lugar fixo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 206,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: adicione o horario de sair, nao so o horario do compromisso. Depois olhe no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Mantenha tudo pequeno e repetivel. Nao coloque codigos privados em notas de calendario compartilhadas. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 411,
+    "title": "Calendario: checagem semanal",
+    "profession": "mechanic"
+  },
+  {
+    "id": 207,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: adicione o horario de sair, nao so o horario do compromisso. Coloque o sinal no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Uma nota, etiqueta ou caixa ja basta para começar. Nao coloque codigos privados em notas de calendario compartilhadas. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 427,
+    "title": "Calendario: lembrete visivel",
+    "profession": "mechanic"
+  },
+  {
+    "id": 208,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: use um gerenciador e de uma senha unica a cada conta importante. Mantenha o lembrete no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 391,
+    "title": "Senhas: lugar fixo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 209,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: use um gerenciador e de uma senha unica a cada conta importante. Depois olhe no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Mantenha tudo pequeno e repetivel. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 436,
+    "title": "Senhas: checagem semanal",
+    "profession": "mechanic"
+  },
+  {
+    "id": 210,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: use um gerenciador e de uma senha unica a cada conta importante. Coloque o sinal no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Uma nota, etiqueta ou caixa ja basta para começar. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Confira sinais simples de desgaste antes que o problema fique caro.",
+    "chars": 452,
+    "title": "Senhas: lembrete visivel",
+    "profession": "mechanic"
+  },
+  {
+    "id": 211,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: anote nome do servico, data de cobranca e valor em uma lista unica. Mantenha o lembrete perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Nao guarde ali senhas, codigos ou numeros completos de cartao. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 404,
+    "title": "Assinaturas: lugar fixo",
+    "profession": "police"
+  },
+  {
+    "id": 212,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: anote nome do servico, data de cobranca e valor em uma lista unica. Depois olhe perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Mantenha tudo pequeno e repetivel. Nao guarde ali senhas, codigos ou numeros completos de cartao. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 449,
+    "title": "Assinaturas: checagem semanal",
+    "profession": "police"
+  },
+  {
+    "id": 213,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: anote nome do servico, data de cobranca e valor em uma lista unica. Coloque o sinal perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Uma nota, etiqueta ou caixa ja basta para começar. Nao guarde ali senhas, codigos ou numeros completos de cartao. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 465,
+    "title": "Assinaturas: lembrete visivel",
+    "profession": "police"
+  },
+  {
+    "id": 214,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: deixe na frente os itens que vencem primeiro. Mantenha o lembrete em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Nao deixe comida aberta sem data ou pote fechado. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 366,
+    "title": "Despensa: lugar fixo",
+    "profession": "police"
+  },
+  {
+    "id": 215,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: deixe na frente os itens que vencem primeiro. Depois olhe em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Mantenha tudo pequeno e repetivel. Nao deixe comida aberta sem data ou pote fechado. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 411,
+    "title": "Despensa: checagem semanal",
+    "profession": "police"
+  },
+  {
+    "id": 216,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: deixe na frente os itens que vencem primeiro. Coloque o sinal em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida aberta sem data ou pote fechado. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 427,
+    "title": "Despensa: lembrete visivel",
+    "profession": "police"
+  },
+  {
+    "id": 217,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: mantenha uma nota curta dizendo onde ficam originais e copias. Mantenha o lembrete em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Nao envie scans em chats compartilhados sem ocultar dados privados. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 440,
+    "title": "Documentos: lugar fixo",
+    "profession": "police"
+  },
+  {
+    "id": 218,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: mantenha uma nota curta dizendo onde ficam originais e copias. Depois olhe em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Mantenha tudo pequeno e repetivel. Nao envie scans em chats compartilhados sem ocultar dados privados. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 485,
+    "title": "Documentos: checagem semanal",
+    "profession": "police"
+  },
+  {
+    "id": 219,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: mantenha uma nota curta dizendo onde ficam originais e copias. Coloque o sinal em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Uma nota, etiqueta ou caixa ja basta para começar. Nao envie scans em chats compartilhados sem ocultar dados privados. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 501,
+    "title": "Documentos: lembrete visivel",
+    "profession": "police"
+  },
+  {
+    "id": 220,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Mantenha o lembrete em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Nao use cabos rachados ou qualquer item que esquente. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 405,
+    "title": "Cabos: lugar fixo",
+    "profession": "police"
+  },
+  {
+    "id": 221,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Depois olhe em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Mantenha tudo pequeno e repetivel. Nao use cabos rachados ou qualquer item que esquente. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 450,
+    "title": "Cabos: checagem semanal",
+    "profession": "police"
+  },
+  {
+    "id": 222,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Coloque o sinal em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Uma nota, etiqueta ou caixa ja basta para começar. Nao use cabos rachados ou qualquer item que esquente. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 466,
+    "title": "Cabos: lembrete visivel",
+    "profession": "police"
+  },
+  {
+    "id": 223,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: pendure um saquinho de rede no cesto para meias e pecas delicadas. Mantenha o lembrete em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 381,
+    "title": "Lavanderia: lugar fixo",
+    "profession": "police"
+  },
+  {
+    "id": 224,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: pendure um saquinho de rede no cesto para meias e pecas delicadas. Depois olhe em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Mantenha tudo pequeno e repetivel. Nao encha demais o saco: o tecido ainda precisa enxaguar. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 426,
+    "title": "Lavanderia: checagem semanal",
+    "profession": "police"
+  },
+  {
+    "id": 225,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: pendure um saquinho de rede no cesto para meias e pecas delicadas. Coloque o sinal em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Uma nota, etiqueta ou caixa ja basta para começar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 442,
+    "title": "Lavanderia: lembrete visivel",
+    "profession": "police"
+  },
+  {
+    "id": 226,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Mantenha o lembrete em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Nao fotografe documentos perto de dados pessoais desnecessarios. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 439,
+    "title": "Recibos: lugar fixo",
+    "profession": "police"
+  },
+  {
+    "id": 227,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Depois olhe em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Mantenha tudo pequeno e repetivel. Nao fotografe documentos perto de dados pessoais desnecessarios. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 484,
+    "title": "Recibos: checagem semanal",
+    "profession": "police"
+  },
+  {
+    "id": 228,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Coloque o sinal em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Uma nota, etiqueta ou caixa ja basta para começar. Nao fotografe documentos perto de dados pessoais desnecessarios. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 500,
+    "title": "Recibos: lembrete visivel",
+    "profession": "police"
+  },
+  {
+    "id": 229,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: reserve uma prateleira da geladeira para o que precisa ser usado logo. Mantenha o lembrete na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Nao deixe comida cozida fora por mais tempo do que e seguro. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 392,
+    "title": "Sobras: lugar fixo",
+    "profession": "police"
+  },
+  {
+    "id": 230,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: reserve uma prateleira da geladeira para o que precisa ser usado logo. Depois olhe na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Mantenha tudo pequeno e repetivel. Nao deixe comida cozida fora por mais tempo do que e seguro. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 437,
+    "title": "Sobras: checagem semanal",
+    "profession": "police"
+  },
+  {
+    "id": 231,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: reserve uma prateleira da geladeira para o que precisa ser usado logo. Coloque o sinal na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida cozida fora por mais tempo do que e seguro. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 453,
+    "title": "Sobras: lembrete visivel",
+    "profession": "police"
+  },
+  {
+    "id": 232,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: de a cada cor de pano uma funcao e guarde a lista com os panos. Mantenha o lembrete dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 418,
+    "title": "Limpeza: lugar fixo",
+    "profession": "police"
+  },
+  {
+    "id": 233,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: de a cada cor de pano uma funcao e guarde a lista com os panos. Depois olhe dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Mantenha tudo pequeno e repetivel. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 463,
+    "title": "Limpeza: checagem semanal",
+    "profession": "police"
+  },
+  {
+    "id": 234,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: de a cada cor de pano uma funcao e guarde a lista com os panos. Coloque o sinal dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Uma nota, etiqueta ou caixa ja basta para começar. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 479,
+    "title": "Limpeza: lembrete visivel",
+    "profession": "police"
+  },
+  {
+    "id": 235,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: adicione o horario de sair, nao so o horario do compromisso. Mantenha o lembrete no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Nao coloque codigos privados em notas de calendario compartilhadas. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 373,
+    "title": "Calendario: lugar fixo",
+    "profession": "police"
+  },
+  {
+    "id": 236,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: adicione o horario de sair, nao so o horario do compromisso. Depois olhe no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Mantenha tudo pequeno e repetivel. Nao coloque codigos privados em notas de calendario compartilhadas. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 418,
+    "title": "Calendario: checagem semanal",
+    "profession": "police"
+  },
+  {
+    "id": 237,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: adicione o horario de sair, nao so o horario do compromisso. Coloque o sinal no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Uma nota, etiqueta ou caixa ja basta para começar. Nao coloque codigos privados em notas de calendario compartilhadas. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 434,
+    "title": "Calendario: lembrete visivel",
+    "profession": "police"
+  },
+  {
+    "id": 238,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: use um gerenciador e de uma senha unica a cada conta importante. Mantenha o lembrete no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 398,
+    "title": "Senhas: lugar fixo",
+    "profession": "police"
+  },
+  {
+    "id": 239,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: use um gerenciador e de uma senha unica a cada conta importante. Depois olhe no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Mantenha tudo pequeno e repetivel. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 443,
+    "title": "Senhas: checagem semanal",
+    "profession": "police"
+  },
+  {
+    "id": 240,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: use um gerenciador e de uma senha unica a cada conta importante. Coloque o sinal no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Uma nota, etiqueta ou caixa ja basta para começar. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Use um unico ponto de entrega para itens compartilhados nao virarem busca.",
+    "chars": 459,
+    "title": "Senhas: lembrete visivel",
+    "profession": "police"
+  },
+  {
+    "id": 241,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: anote nome do servico, data de cobranca e valor em uma lista unica. Mantenha o lembrete perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Nao guarde ali senhas, codigos ou numeros completos de cartao. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 407,
+    "title": "Assinaturas: lugar fixo",
+    "profession": "programmer"
+  },
+  {
+    "id": 242,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: anote nome do servico, data de cobranca e valor em uma lista unica. Depois olhe perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Mantenha tudo pequeno e repetivel. Nao guarde ali senhas, codigos ou numeros completos de cartao. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 452,
+    "title": "Assinaturas: checagem semanal",
+    "profession": "programmer"
+  },
+  {
+    "id": 243,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: anote nome do servico, data de cobranca e valor em uma lista unica. Coloque o sinal perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Uma nota, etiqueta ou caixa ja basta para começar. Nao guarde ali senhas, codigos ou numeros completos de cartao. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 468,
+    "title": "Assinaturas: lembrete visivel",
+    "profession": "programmer"
+  },
+  {
+    "id": 244,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: deixe na frente os itens que vencem primeiro. Mantenha o lembrete em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Nao deixe comida aberta sem data ou pote fechado. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 369,
+    "title": "Despensa: lugar fixo",
+    "profession": "programmer"
+  },
+  {
+    "id": 245,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: deixe na frente os itens que vencem primeiro. Depois olhe em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Mantenha tudo pequeno e repetivel. Nao deixe comida aberta sem data ou pote fechado. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 414,
+    "title": "Despensa: checagem semanal",
+    "profession": "programmer"
+  },
+  {
+    "id": 246,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: deixe na frente os itens que vencem primeiro. Coloque o sinal em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida aberta sem data ou pote fechado. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 430,
+    "title": "Despensa: lembrete visivel",
+    "profession": "programmer"
+  },
+  {
+    "id": 247,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: mantenha uma nota curta dizendo onde ficam originais e copias. Mantenha o lembrete em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Nao envie scans em chats compartilhados sem ocultar dados privados. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 443,
+    "title": "Documentos: lugar fixo",
+    "profession": "programmer"
+  },
+  {
+    "id": 248,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: mantenha uma nota curta dizendo onde ficam originais e copias. Depois olhe em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Mantenha tudo pequeno e repetivel. Nao envie scans em chats compartilhados sem ocultar dados privados. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 488,
+    "title": "Documentos: checagem semanal",
+    "profession": "programmer"
+  },
+  {
+    "id": 249,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: mantenha uma nota curta dizendo onde ficam originais e copias. Coloque o sinal em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Uma nota, etiqueta ou caixa ja basta para começar. Nao envie scans em chats compartilhados sem ocultar dados privados. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 504,
+    "title": "Documentos: lembrete visivel",
+    "profession": "programmer"
+  },
+  {
+    "id": 250,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Mantenha o lembrete em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Nao use cabos rachados ou qualquer item que esquente. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 408,
+    "title": "Cabos: lugar fixo",
+    "profession": "programmer"
+  },
+  {
+    "id": 251,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Depois olhe em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Mantenha tudo pequeno e repetivel. Nao use cabos rachados ou qualquer item que esquente. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 453,
+    "title": "Cabos: checagem semanal",
+    "profession": "programmer"
+  },
+  {
+    "id": 252,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Coloque o sinal em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Uma nota, etiqueta ou caixa ja basta para começar. Nao use cabos rachados ou qualquer item que esquente. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 469,
+    "title": "Cabos: lembrete visivel",
+    "profession": "programmer"
+  },
+  {
+    "id": 253,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: pendure um saquinho de rede no cesto para meias e pecas delicadas. Mantenha o lembrete em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 384,
+    "title": "Lavanderia: lugar fixo",
+    "profession": "programmer"
+  },
+  {
+    "id": 254,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: pendure um saquinho de rede no cesto para meias e pecas delicadas. Depois olhe em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Mantenha tudo pequeno e repetivel. Nao encha demais o saco: o tecido ainda precisa enxaguar. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 429,
+    "title": "Lavanderia: checagem semanal",
+    "profession": "programmer"
+  },
+  {
+    "id": 255,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: pendure um saquinho de rede no cesto para meias e pecas delicadas. Coloque o sinal em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Uma nota, etiqueta ou caixa ja basta para começar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 445,
+    "title": "Lavanderia: lembrete visivel",
+    "profession": "programmer"
+  },
+  {
+    "id": 256,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Mantenha o lembrete em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Nao fotografe documentos perto de dados pessoais desnecessarios. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 442,
+    "title": "Recibos: lugar fixo",
+    "profession": "programmer"
+  },
+  {
+    "id": 257,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Depois olhe em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Mantenha tudo pequeno e repetivel. Nao fotografe documentos perto de dados pessoais desnecessarios. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 487,
+    "title": "Recibos: checagem semanal",
+    "profession": "programmer"
+  },
+  {
+    "id": 258,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Coloque o sinal em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Uma nota, etiqueta ou caixa ja basta para começar. Nao fotografe documentos perto de dados pessoais desnecessarios. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 503,
+    "title": "Recibos: lembrete visivel",
+    "profession": "programmer"
+  },
+  {
+    "id": 259,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: reserve uma prateleira da geladeira para o que precisa ser usado logo. Mantenha o lembrete na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Nao deixe comida cozida fora por mais tempo do que e seguro. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 395,
+    "title": "Sobras: lugar fixo",
+    "profession": "programmer"
+  },
+  {
+    "id": 260,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: reserve uma prateleira da geladeira para o que precisa ser usado logo. Depois olhe na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Mantenha tudo pequeno e repetivel. Nao deixe comida cozida fora por mais tempo do que e seguro. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 440,
+    "title": "Sobras: checagem semanal",
+    "profession": "programmer"
+  },
+  {
+    "id": 261,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: reserve uma prateleira da geladeira para o que precisa ser usado logo. Coloque o sinal na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida cozida fora por mais tempo do que e seguro. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 456,
+    "title": "Sobras: lembrete visivel",
+    "profession": "programmer"
+  },
+  {
+    "id": 262,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: de a cada cor de pano uma funcao e guarde a lista com os panos. Mantenha o lembrete dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 421,
+    "title": "Limpeza: lugar fixo",
+    "profession": "programmer"
+  },
+  {
+    "id": 263,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: de a cada cor de pano uma funcao e guarde a lista com os panos. Depois olhe dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Mantenha tudo pequeno e repetivel. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 466,
+    "title": "Limpeza: checagem semanal",
+    "profession": "programmer"
+  },
+  {
+    "id": 264,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: de a cada cor de pano uma funcao e guarde a lista com os panos. Coloque o sinal dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Uma nota, etiqueta ou caixa ja basta para começar. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 482,
+    "title": "Limpeza: lembrete visivel",
+    "profession": "programmer"
+  },
+  {
+    "id": 265,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: adicione o horario de sair, nao so o horario do compromisso. Mantenha o lembrete no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Nao coloque codigos privados em notas de calendario compartilhadas. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 376,
+    "title": "Calendario: lugar fixo",
+    "profession": "programmer"
+  },
+  {
+    "id": 266,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: adicione o horario de sair, nao so o horario do compromisso. Depois olhe no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Mantenha tudo pequeno e repetivel. Nao coloque codigos privados em notas de calendario compartilhadas. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 421,
+    "title": "Calendario: checagem semanal",
+    "profession": "programmer"
+  },
+  {
+    "id": 267,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: adicione o horario de sair, nao so o horario do compromisso. Coloque o sinal no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Uma nota, etiqueta ou caixa ja basta para começar. Nao coloque codigos privados em notas de calendario compartilhadas. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 437,
+    "title": "Calendario: lembrete visivel",
+    "profession": "programmer"
+  },
+  {
+    "id": 268,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: use um gerenciador e de uma senha unica a cada conta importante. Mantenha o lembrete no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 401,
+    "title": "Senhas: lugar fixo",
+    "profession": "programmer"
+  },
+  {
+    "id": 269,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: use um gerenciador e de uma senha unica a cada conta importante. Depois olhe no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Mantenha tudo pequeno e repetivel. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 446,
+    "title": "Senhas: checagem semanal",
+    "profession": "programmer"
+  },
+  {
+    "id": 270,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: use um gerenciador e de uma senha unica a cada conta importante. Coloque o sinal no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Uma nota, etiqueta ou caixa ja basta para começar. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Deixe o lembrete pesquisavel e mantenha dados privados fora de notas abertas.",
+    "chars": 462,
+    "title": "Senhas: lembrete visivel",
+    "profession": "programmer"
+  },
+  {
+    "id": 271,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: anote nome do servico, data de cobranca e valor em uma lista unica. Mantenha o lembrete perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Nao guarde ali senhas, codigos ou numeros completos de cartao. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 398,
+    "title": "Assinaturas: lugar fixo",
+    "profession": "teacher"
+  },
+  {
+    "id": 272,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: anote nome do servico, data de cobranca e valor em uma lista unica. Depois olhe perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Mantenha tudo pequeno e repetivel. Nao guarde ali senhas, codigos ou numeros completos de cartao. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 443,
+    "title": "Assinaturas: checagem semanal",
+    "profession": "teacher"
+  },
+  {
+    "id": 273,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: anote nome do servico, data de cobranca e valor em uma lista unica. Coloque o sinal perto do app do banco ou da planilha de orçamento. Adicione uma linha logo apos cada cadastro. voce percebe cobrancas esquecidas antes da proxima fatura. Uma nota, etiqueta ou caixa ja basta para começar. Nao guarde ali senhas, codigos ou numeros completos de cartao. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 459,
+    "title": "Assinaturas: lembrete visivel",
+    "profession": "teacher"
+  },
+  {
+    "id": 274,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: deixe na frente os itens que vencem primeiro. Mantenha o lembrete em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Nao deixe comida aberta sem data ou pote fechado. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 360,
+    "title": "Despensa: lugar fixo",
+    "profession": "teacher"
+  },
+  {
+    "id": 275,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: deixe na frente os itens que vencem primeiro. Depois olhe em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Mantenha tudo pequeno e repetivel. Nao deixe comida aberta sem data ou pote fechado. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 405,
+    "title": "Despensa: checagem semanal",
+    "profession": "teacher"
+  },
+  {
+    "id": 276,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: deixe na frente os itens que vencem primeiro. Coloque o sinal em uma prateleira marcada usar primeiro. Confira essa fila antes de abrir uma embalagem nova. comida boa e usada antes de sumir atras de caixas novas. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida aberta sem data ou pote fechado. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 421,
+    "title": "Despensa: lembrete visivel",
+    "profession": "teacher"
+  },
+  {
+    "id": 277,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: mantenha uma nota curta dizendo onde ficam originais e copias. Mantenha o lembrete em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Nao envie scans em chats compartilhados sem ocultar dados privados. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 434,
+    "title": "Documentos: lugar fixo",
+    "profession": "teacher"
+  },
+  {
+    "id": 278,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: mantenha uma nota curta dizendo onde ficam originais e copias. Depois olhe em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Mantenha tudo pequeno e repetivel. Nao envie scans em chats compartilhados sem ocultar dados privados. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 479,
+    "title": "Documentos: checagem semanal",
+    "profession": "teacher"
+  },
+  {
+    "id": 279,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: mantenha uma nota curta dizendo onde ficam originais e copias. Coloque o sinal em uma pasta protegida e em um indice de papel simples. Depois de viagem ou renovacao, atualize apenas a linha alterada. a busca fica mais tranquila quando um papel especifico e necessario. Uma nota, etiqueta ou caixa ja basta para começar. Nao envie scans em chats compartilhados sem ocultar dados privados. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 495,
+    "title": "Documentos: lembrete visivel",
+    "profession": "teacher"
+  },
+  {
+    "id": 280,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Mantenha o lembrete em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Nao use cabos rachados ou qualquer item que esquente. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 399,
+    "title": "Cabos: lugar fixo",
+    "profession": "teacher"
+  },
+  {
+    "id": 281,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Depois olhe em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Mantenha tudo pequeno e repetivel. Nao use cabos rachados ou qualquer item que esquente. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 444,
+    "title": "Cabos: checagem semanal",
+    "profession": "teacher"
+  },
+  {
+    "id": 282,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: escolha um ponto de carregamento e tire adaptadores antigos das tomadas. Coloque o sinal em uma superficie limpa longe de papel e tecido. Antes de dormir, veja se nenhum cabo esta preso nos moveis. ha menos calor, bagunca e procura de ultima hora. Uma nota, etiqueta ou caixa ja basta para começar. Nao use cabos rachados ou qualquer item que esquente. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 460,
+    "title": "Cabos: lembrete visivel",
+    "profession": "teacher"
+  },
+  {
+    "id": 283,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: pendure um saquinho de rede no cesto para meias e pecas delicadas. Mantenha o lembrete em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 375,
+    "title": "Lavanderia: lugar fixo",
+    "profession": "teacher"
+  },
+  {
+    "id": 284,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: pendure um saquinho de rede no cesto para meias e pecas delicadas. Depois olhe em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Mantenha tudo pequeno e repetivel. Nao encha demais o saco: o tecido ainda precisa enxaguar. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 420,
+    "title": "Lavanderia: checagem semanal",
+    "profession": "teacher"
+  },
+  {
+    "id": 285,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: pendure um saquinho de rede no cesto para meias e pecas delicadas. Coloque o sinal em um gancho ou dentro do cesto. Feche o saco antes da lavagem e confira os bolsos. pecas pequenas param de sumir entre separar e secar. Uma nota, etiqueta ou caixa ja basta para começar. Nao encha demais o saco: o tecido ainda precisa enxaguar. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 436,
+    "title": "Lavanderia: lembrete visivel",
+    "profession": "teacher"
+  },
+  {
+    "id": 286,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Mantenha o lembrete em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Nao fotografe documentos perto de dados pessoais desnecessarios. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 433,
+    "title": "Recibos: lugar fixo",
+    "profession": "teacher"
+  },
+  {
+    "id": 287,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Depois olhe em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Mantenha tudo pequeno e repetivel. Nao fotografe documentos perto de dados pessoais desnecessarios. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 478,
+    "title": "Recibos: checagem semanal",
+    "profession": "teacher"
+  },
+  {
+    "id": 288,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: coloque recibos de papel em um envelope e marque os digitais com a mesma etiqueta. Coloque o sinal em uma gaveta da entrada ou pasta de email. No fim da semana, guarde apenas o que serve para troca ou garantia. pequenas compras deixam de se espalhar por bolsas e bolsos. Uma nota, etiqueta ou caixa ja basta para começar. Nao fotografe documentos perto de dados pessoais desnecessarios. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 494,
+    "title": "Recibos: lembrete visivel",
+    "profession": "teacher"
+  },
+  {
+    "id": 289,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: reserve uma prateleira da geladeira para o que precisa ser usado logo. Mantenha o lembrete na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Nao deixe comida cozida fora por mais tempo do que e seguro. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 386,
+    "title": "Sobras: lugar fixo",
+    "profession": "teacher"
+  },
+  {
+    "id": 290,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: reserve uma prateleira da geladeira para o que precisa ser usado logo. Depois olhe na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Mantenha tudo pequeno e repetivel. Nao deixe comida cozida fora por mais tempo do que e seguro. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 431,
+    "title": "Sobras: checagem semanal",
+    "profession": "teacher"
+  },
+  {
+    "id": 291,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: reserve uma prateleira da geladeira para o que precisa ser usado logo. Coloque o sinal na altura dos olhos com uma pequena etiqueta. Comece a cozinhar olhando esse ponto primeiro. sobras viram refeicao em vez de pote esquecido. Uma nota, etiqueta ou caixa ja basta para começar. Nao deixe comida cozida fora por mais tempo do que e seguro. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 447,
+    "title": "Sobras: lembrete visivel",
+    "profession": "teacher"
+  },
+  {
+    "id": 292,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: de a cada cor de pano uma funcao e guarde a lista com os panos. Mantenha o lembrete dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 412,
+    "title": "Limpeza: lugar fixo",
+    "profession": "teacher"
+  },
+  {
+    "id": 293,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: de a cada cor de pano uma funcao e guarde a lista com os panos. Depois olhe dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Mantenha tudo pequeno e repetivel. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 457,
+    "title": "Limpeza: checagem semanal",
+    "profession": "teacher"
+  },
+  {
+    "id": 294,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: de a cada cor de pano uma funcao e guarde a lista com os panos. Coloque o sinal dentro da tampa da caixa de limpeza. Lave ou troque os panos antes da proxima tarefa. as superficies ficam mais limpas porque banheiro, cozinha e po nao se misturam. Uma nota, etiqueta ou caixa ja basta para começar. Nao misture produtos de limpeza nem invente combinacoes mais fortes. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 473,
+    "title": "Limpeza: lembrete visivel",
+    "profession": "teacher"
+  },
+  {
+    "id": 295,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: adicione o horario de sair, nao so o horario do compromisso. Mantenha o lembrete no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Nao coloque codigos privados em notas de calendario compartilhadas. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 367,
+    "title": "Calendario: lugar fixo",
+    "profession": "teacher"
+  },
+  {
+    "id": 296,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: adicione o horario de sair, nao so o horario do compromisso. Depois olhe no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Mantenha tudo pequeno e repetivel. Nao coloque codigos privados em notas de calendario compartilhadas. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 412,
+    "title": "Calendario: checagem semanal",
+    "profession": "teacher"
+  },
+  {
+    "id": 297,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: adicione o horario de sair, nao so o horario do compromisso. Coloque o sinal no mesmo evento do calendario. Inclua trajeto, sapatos, bolsa e uma pequena folga. a manha vira uma rota em vez de surpresa. Uma nota, etiqueta ou caixa ja basta para começar. Nao coloque codigos privados em notas de calendario compartilhadas. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 428,
+    "title": "Calendario: lembrete visivel",
+    "profession": "teacher"
+  },
+  {
+    "id": 298,
+    "pack": 1,
+    "text": "Uma regra simples ajuda: use um gerenciador e de uma senha unica a cada conta importante. Mantenha o lembrete no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 392,
+    "title": "Senhas: lugar fixo",
+    "profession": "teacher"
+  },
+  {
+    "id": 299,
+    "pack": 1,
+    "text": "Use uma checagem semanal de cinco minutos: use um gerenciador e de uma senha unica a cada conta importante. Depois olhe no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Mantenha tudo pequeno e repetivel. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 437,
+    "title": "Senhas: checagem semanal",
+    "profession": "teacher"
+  },
+  {
+    "id": 300,
+    "pack": 1,
+    "text": "Deixe visivel antes de virar urgencia: use um gerenciador e de uma senha unica a cada conta importante. Coloque o sinal no gerenciador, nao em uma nota chamada senhas. Ative protecao multifator quando existir. uma senha vazada tem menos chance de abrir todo o resto. Uma nota, etiqueta ou caixa ja basta para começar. Nao reutilize codigos de recuperacao nem os guarde em screenshots. Transforme a regra em uma frase que todos em casa conseguem repetir.",
+    "chars": 453,
+    "title": "Senhas: lembrete visivel",
+    "profession": "teacher"
+  }
+]

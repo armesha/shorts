@@ -1,0 +1,2402 @@
+[
+  {
+    "id": 1,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: note le nom du service, la date de prelevement et le montant dans une seule liste. Garde le rappel pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 456,
+    "title": "Abonnements: place fixe",
+    "profession": "accountant"
+  },
+  {
+    "id": 2,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: note le nom du service, la date de prelevement et le montant dans une seule liste. Regarde ensuite pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Garde le systeme petit et repetable. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 515,
+    "title": "Abonnements: verification hebdo",
+    "profession": "accountant"
+  },
+  {
+    "id": 3,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: note le nom du service, la date de prelevement et le montant dans une seule liste. Place le repere pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 527,
+    "title": "Abonnements: repere visible",
+    "profession": "accountant"
+  },
+  {
+    "id": 4,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets devant les aliments qui expirent en premier. Garde le rappel sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 420,
+    "title": "Placard: place fixe",
+    "profession": "accountant"
+  },
+  {
+    "id": 5,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets devant les aliments qui expirent en premier. Regarde ensuite sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Garde le systeme petit et repetable. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 479,
+    "title": "Placard: verification hebdo",
+    "profession": "accountant"
+  },
+  {
+    "id": 6,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets devant les aliments qui expirent en premier. Place le repere sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 491,
+    "title": "Placard: repere visible",
+    "profession": "accountant"
+  },
+  {
+    "id": 7,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: tiens une note courte indiquant ou sont les originaux et les copies. Garde le rappel dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 465,
+    "title": "Documents: place fixe",
+    "profession": "accountant"
+  },
+  {
+    "id": 8,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: tiens une note courte indiquant ou sont les originaux et les copies. Regarde ensuite dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Garde le systeme petit et repetable. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 524,
+    "title": "Documents: verification hebdo",
+    "profession": "accountant"
+  },
+  {
+    "id": 9,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: tiens une note courte indiquant ou sont les originaux et les copies. Place le repere dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Une note, une etiquette ou une boite suffit pour commencer. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 536,
+    "title": "Documents: repere visible",
+    "profession": "accountant"
+  },
+  {
+    "id": 10,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Garde le rappel sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. N'utilise pas de cables abimes ou d'objets qui chauffent. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 450,
+    "title": "Cables: place fixe",
+    "profession": "accountant"
+  },
+  {
+    "id": 11,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Regarde ensuite sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Garde le systeme petit et repetable. N'utilise pas de cables abimes ou d'objets qui chauffent. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 509,
+    "title": "Cables: verification hebdo",
+    "profession": "accountant"
+  },
+  {
+    "id": 12,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Place le repere sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Une note, une etiquette ou une boite suffit pour commencer. N'utilise pas de cables abimes ou d'objets qui chauffent. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 521,
+    "title": "Cables: repere visible",
+    "profession": "accountant"
+  },
+  {
+    "id": 13,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: accroche un filet au panier pour les chaussettes et les pieces delicates. Garde le rappel sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Ne remplis pas trop le filet: le tissu doit encore se rincer. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 436,
+    "title": "Linge: place fixe",
+    "profession": "accountant"
+  },
+  {
+    "id": 14,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: accroche un filet au panier pour les chaussettes et les pieces delicates. Regarde ensuite sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Garde le systeme petit et repetable. Ne remplis pas trop le filet: le tissu doit encore se rincer. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 495,
+    "title": "Linge: verification hebdo",
+    "profession": "accountant"
+  },
+  {
+    "id": 15,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: accroche un filet au panier pour les chaussettes et les pieces delicates. Place le repere sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Une note, une etiquette ou une boite suffit pour commencer. Ne remplis pas trop le filet: le tissu doit encore se rincer. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 507,
+    "title": "Linge: repere visible",
+    "profession": "accountant"
+  },
+  {
+    "id": 16,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Garde le rappel dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 479,
+    "title": "Recus: place fixe",
+    "profession": "accountant"
+  },
+  {
+    "id": 17,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Regarde ensuite dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Garde le systeme petit et repetable. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 538,
+    "title": "Recus: verification hebdo",
+    "profession": "accountant"
+  },
+  {
+    "id": 18,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Place le repere dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Une note, une etiquette ou une boite suffit pour commencer. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 550,
+    "title": "Recus: repere visible",
+    "profession": "accountant"
+  },
+  {
+    "id": 19,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: reserve une etagere du frigo aux aliments a finir bientot. Garde le rappel a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 423,
+    "title": "Restes: place fixe",
+    "profession": "accountant"
+  },
+  {
+    "id": 20,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: reserve une etagere du frigo aux aliments a finir bientot. Regarde ensuite a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Garde le systeme petit et repetable. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 482,
+    "title": "Restes: verification hebdo",
+    "profession": "accountant"
+  },
+  {
+    "id": 21,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: reserve une etagere du frigo aux aliments a finir bientot. Place le repere a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Une note, une etiquette ou une boite suffit pour commencer. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 494,
+    "title": "Restes: repere visible",
+    "profession": "accountant"
+  },
+  {
+    "id": 22,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Garde le rappel dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Ne melange pas les produits et n'invente pas de formule plus forte. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 460,
+    "title": "Menage: place fixe",
+    "profession": "accountant"
+  },
+  {
+    "id": 23,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Regarde ensuite dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Garde le systeme petit et repetable. Ne melange pas les produits et n'invente pas de formule plus forte. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 519,
+    "title": "Menage: verification hebdo",
+    "profession": "accountant"
+  },
+  {
+    "id": 24,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Place le repere dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Une note, une etiquette ou une boite suffit pour commencer. Ne melange pas les produits et n'invente pas de formule plus forte. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 531,
+    "title": "Menage: repere visible",
+    "profession": "accountant"
+  },
+  {
+    "id": 25,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Garde le rappel dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Ne mets pas de codes prives dans des notes de calendrier partagees. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 414,
+    "title": "Calendrier: place fixe",
+    "profession": "accountant"
+  },
+  {
+    "id": 26,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Regarde ensuite dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Garde le systeme petit et repetable. Ne mets pas de codes prives dans des notes de calendrier partagees. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 473,
+    "title": "Calendrier: verification hebdo",
+    "profession": "accountant"
+  },
+  {
+    "id": 27,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Place le repere dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Une note, une etiquette ou une boite suffit pour commencer. Ne mets pas de codes prives dans des notes de calendrier partagees. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 485,
+    "title": "Calendrier: repere visible",
+    "profession": "accountant"
+  },
+  {
+    "id": 28,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Garde le rappel dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 456,
+    "title": "Mots de passe: place fixe",
+    "profession": "accountant"
+  },
+  {
+    "id": 29,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Regarde ensuite dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Garde le systeme petit et repetable. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 515,
+    "title": "Mots de passe: verification hebdo",
+    "profession": "accountant"
+  },
+  {
+    "id": 30,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Place le repere dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Une note, une etiquette ou une boite suffit pour commencer. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Rends-le mesurable: note la date, le montant ou le nombre pendant que c'est frais.",
+    "chars": 527,
+    "title": "Mots de passe: repere visible",
+    "profession": "accountant"
+  },
+  {
+    "id": 31,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: note le nom du service, la date de prelevement et le montant dans une seule liste. Garde le rappel pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 447,
+    "title": "Abonnements: place fixe",
+    "profession": "builder"
+  },
+  {
+    "id": 32,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: note le nom du service, la date de prelevement et le montant dans une seule liste. Regarde ensuite pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Garde le systeme petit et repetable. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 506,
+    "title": "Abonnements: verification hebdo",
+    "profession": "builder"
+  },
+  {
+    "id": 33,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: note le nom du service, la date de prelevement et le montant dans une seule liste. Place le repere pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 518,
+    "title": "Abonnements: repere visible",
+    "profession": "builder"
+  },
+  {
+    "id": 34,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets devant les aliments qui expirent en premier. Garde le rappel sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 411,
+    "title": "Placard: place fixe",
+    "profession": "builder"
+  },
+  {
+    "id": 35,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets devant les aliments qui expirent en premier. Regarde ensuite sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Garde le systeme petit et repetable. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 470,
+    "title": "Placard: verification hebdo",
+    "profession": "builder"
+  },
+  {
+    "id": 36,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets devant les aliments qui expirent en premier. Place le repere sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 482,
+    "title": "Placard: repere visible",
+    "profession": "builder"
+  },
+  {
+    "id": 37,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: tiens une note courte indiquant ou sont les originaux et les copies. Garde le rappel dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 456,
+    "title": "Documents: place fixe",
+    "profession": "builder"
+  },
+  {
+    "id": 38,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: tiens une note courte indiquant ou sont les originaux et les copies. Regarde ensuite dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Garde le systeme petit et repetable. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 515,
+    "title": "Documents: verification hebdo",
+    "profession": "builder"
+  },
+  {
+    "id": 39,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: tiens une note courte indiquant ou sont les originaux et les copies. Place le repere dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Une note, une etiquette ou une boite suffit pour commencer. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 527,
+    "title": "Documents: repere visible",
+    "profession": "builder"
+  },
+  {
+    "id": 40,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Garde le rappel sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. N'utilise pas de cables abimes ou d'objets qui chauffent. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 441,
+    "title": "Cables: place fixe",
+    "profession": "builder"
+  },
+  {
+    "id": 41,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Regarde ensuite sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Garde le systeme petit et repetable. N'utilise pas de cables abimes ou d'objets qui chauffent. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 500,
+    "title": "Cables: verification hebdo",
+    "profession": "builder"
+  },
+  {
+    "id": 42,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Place le repere sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Une note, une etiquette ou une boite suffit pour commencer. N'utilise pas de cables abimes ou d'objets qui chauffent. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 512,
+    "title": "Cables: repere visible",
+    "profession": "builder"
+  },
+  {
+    "id": 43,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: accroche un filet au panier pour les chaussettes et les pieces delicates. Garde le rappel sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Ne remplis pas trop le filet: le tissu doit encore se rincer. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 427,
+    "title": "Linge: place fixe",
+    "profession": "builder"
+  },
+  {
+    "id": 44,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: accroche un filet au panier pour les chaussettes et les pieces delicates. Regarde ensuite sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Garde le systeme petit et repetable. Ne remplis pas trop le filet: le tissu doit encore se rincer. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 486,
+    "title": "Linge: verification hebdo",
+    "profession": "builder"
+  },
+  {
+    "id": 45,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: accroche un filet au panier pour les chaussettes et les pieces delicates. Place le repere sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Une note, une etiquette ou une boite suffit pour commencer. Ne remplis pas trop le filet: le tissu doit encore se rincer. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 498,
+    "title": "Linge: repere visible",
+    "profession": "builder"
+  },
+  {
+    "id": 46,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Garde le rappel dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 470,
+    "title": "Recus: place fixe",
+    "profession": "builder"
+  },
+  {
+    "id": 47,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Regarde ensuite dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Garde le systeme petit et repetable. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 529,
+    "title": "Recus: verification hebdo",
+    "profession": "builder"
+  },
+  {
+    "id": 48,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Place le repere dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Une note, une etiquette ou une boite suffit pour commencer. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 541,
+    "title": "Recus: repere visible",
+    "profession": "builder"
+  },
+  {
+    "id": 49,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: reserve une etagere du frigo aux aliments a finir bientot. Garde le rappel a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 414,
+    "title": "Restes: place fixe",
+    "profession": "builder"
+  },
+  {
+    "id": 50,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: reserve une etagere du frigo aux aliments a finir bientot. Regarde ensuite a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Garde le systeme petit et repetable. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 473,
+    "title": "Restes: verification hebdo",
+    "profession": "builder"
+  },
+  {
+    "id": 51,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: reserve une etagere du frigo aux aliments a finir bientot. Place le repere a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Une note, une etiquette ou une boite suffit pour commencer. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 485,
+    "title": "Restes: repere visible",
+    "profession": "builder"
+  },
+  {
+    "id": 52,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Garde le rappel dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Ne melange pas les produits et n'invente pas de formule plus forte. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 451,
+    "title": "Menage: place fixe",
+    "profession": "builder"
+  },
+  {
+    "id": 53,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Regarde ensuite dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Garde le systeme petit et repetable. Ne melange pas les produits et n'invente pas de formule plus forte. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 510,
+    "title": "Menage: verification hebdo",
+    "profession": "builder"
+  },
+  {
+    "id": 54,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Place le repere dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Une note, une etiquette ou une boite suffit pour commencer. Ne melange pas les produits et n'invente pas de formule plus forte. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 522,
+    "title": "Menage: repere visible",
+    "profession": "builder"
+  },
+  {
+    "id": 55,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Garde le rappel dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Ne mets pas de codes prives dans des notes de calendrier partagees. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 405,
+    "title": "Calendrier: place fixe",
+    "profession": "builder"
+  },
+  {
+    "id": 56,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Regarde ensuite dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Garde le systeme petit et repetable. Ne mets pas de codes prives dans des notes de calendrier partagees. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 464,
+    "title": "Calendrier: verification hebdo",
+    "profession": "builder"
+  },
+  {
+    "id": 57,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Place le repere dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Une note, une etiquette ou une boite suffit pour commencer. Ne mets pas de codes prives dans des notes de calendrier partagees. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 476,
+    "title": "Calendrier: repere visible",
+    "profession": "builder"
+  },
+  {
+    "id": 58,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Garde le rappel dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 447,
+    "title": "Mots de passe: place fixe",
+    "profession": "builder"
+  },
+  {
+    "id": 59,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Regarde ensuite dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Garde le systeme petit et repetable. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 506,
+    "title": "Mots de passe: verification hebdo",
+    "profession": "builder"
+  },
+  {
+    "id": 60,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Place le repere dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Une note, une etiquette ou une boite suffit pour commencer. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Degage d'abord le chemin physique pour que la regle soit facile a suivre.",
+    "chars": 518,
+    "title": "Mots de passe: repere visible",
+    "profession": "builder"
+  },
+  {
+    "id": 61,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: note le nom du service, la date de prelevement et le montant dans une seule liste. Garde le rappel pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 449,
+    "title": "Abonnements: place fixe",
+    "profession": "chef"
+  },
+  {
+    "id": 62,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: note le nom du service, la date de prelevement et le montant dans une seule liste. Regarde ensuite pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Garde le systeme petit et repetable. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 508,
+    "title": "Abonnements: verification hebdo",
+    "profession": "chef"
+  },
+  {
+    "id": 63,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: note le nom du service, la date de prelevement et le montant dans une seule liste. Place le repere pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 520,
+    "title": "Abonnements: repere visible",
+    "profession": "chef"
+  },
+  {
+    "id": 64,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets devant les aliments qui expirent en premier. Garde le rappel sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 413,
+    "title": "Placard: place fixe",
+    "profession": "chef"
+  },
+  {
+    "id": 65,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets devant les aliments qui expirent en premier. Regarde ensuite sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Garde le systeme petit et repetable. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 472,
+    "title": "Placard: verification hebdo",
+    "profession": "chef"
+  },
+  {
+    "id": 66,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets devant les aliments qui expirent en premier. Place le repere sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 484,
+    "title": "Placard: repere visible",
+    "profession": "chef"
+  },
+  {
+    "id": 67,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: tiens une note courte indiquant ou sont les originaux et les copies. Garde le rappel dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 458,
+    "title": "Documents: place fixe",
+    "profession": "chef"
+  },
+  {
+    "id": 68,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: tiens une note courte indiquant ou sont les originaux et les copies. Regarde ensuite dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Garde le systeme petit et repetable. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 517,
+    "title": "Documents: verification hebdo",
+    "profession": "chef"
+  },
+  {
+    "id": 69,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: tiens une note courte indiquant ou sont les originaux et les copies. Place le repere dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Une note, une etiquette ou une boite suffit pour commencer. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 529,
+    "title": "Documents: repere visible",
+    "profession": "chef"
+  },
+  {
+    "id": 70,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Garde le rappel sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. N'utilise pas de cables abimes ou d'objets qui chauffent. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 443,
+    "title": "Cables: place fixe",
+    "profession": "chef"
+  },
+  {
+    "id": 71,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Regarde ensuite sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Garde le systeme petit et repetable. N'utilise pas de cables abimes ou d'objets qui chauffent. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 502,
+    "title": "Cables: verification hebdo",
+    "profession": "chef"
+  },
+  {
+    "id": 72,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Place le repere sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Une note, une etiquette ou une boite suffit pour commencer. N'utilise pas de cables abimes ou d'objets qui chauffent. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 514,
+    "title": "Cables: repere visible",
+    "profession": "chef"
+  },
+  {
+    "id": 73,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: accroche un filet au panier pour les chaussettes et les pieces delicates. Garde le rappel sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Ne remplis pas trop le filet: le tissu doit encore se rincer. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 429,
+    "title": "Linge: place fixe",
+    "profession": "chef"
+  },
+  {
+    "id": 74,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: accroche un filet au panier pour les chaussettes et les pieces delicates. Regarde ensuite sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Garde le systeme petit et repetable. Ne remplis pas trop le filet: le tissu doit encore se rincer. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 488,
+    "title": "Linge: verification hebdo",
+    "profession": "chef"
+  },
+  {
+    "id": 75,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: accroche un filet au panier pour les chaussettes et les pieces delicates. Place le repere sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Une note, une etiquette ou une boite suffit pour commencer. Ne remplis pas trop le filet: le tissu doit encore se rincer. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 500,
+    "title": "Linge: repere visible",
+    "profession": "chef"
+  },
+  {
+    "id": 76,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Garde le rappel dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 472,
+    "title": "Recus: place fixe",
+    "profession": "chef"
+  },
+  {
+    "id": 77,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Regarde ensuite dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Garde le systeme petit et repetable. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 531,
+    "title": "Recus: verification hebdo",
+    "profession": "chef"
+  },
+  {
+    "id": 78,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Place le repere dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Une note, une etiquette ou une boite suffit pour commencer. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 543,
+    "title": "Recus: repere visible",
+    "profession": "chef"
+  },
+  {
+    "id": 79,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: reserve une etagere du frigo aux aliments a finir bientot. Garde le rappel a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 416,
+    "title": "Restes: place fixe",
+    "profession": "chef"
+  },
+  {
+    "id": 80,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: reserve une etagere du frigo aux aliments a finir bientot. Regarde ensuite a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Garde le systeme petit et repetable. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 475,
+    "title": "Restes: verification hebdo",
+    "profession": "chef"
+  },
+  {
+    "id": 81,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: reserve une etagere du frigo aux aliments a finir bientot. Place le repere a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Une note, une etiquette ou une boite suffit pour commencer. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 487,
+    "title": "Restes: repere visible",
+    "profession": "chef"
+  },
+  {
+    "id": 82,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Garde le rappel dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Ne melange pas les produits et n'invente pas de formule plus forte. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 453,
+    "title": "Menage: place fixe",
+    "profession": "chef"
+  },
+  {
+    "id": 83,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Regarde ensuite dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Garde le systeme petit et repetable. Ne melange pas les produits et n'invente pas de formule plus forte. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 512,
+    "title": "Menage: verification hebdo",
+    "profession": "chef"
+  },
+  {
+    "id": 84,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Place le repere dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Une note, une etiquette ou une boite suffit pour commencer. Ne melange pas les produits et n'invente pas de formule plus forte. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 524,
+    "title": "Menage: repere visible",
+    "profession": "chef"
+  },
+  {
+    "id": 85,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Garde le rappel dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Ne mets pas de codes prives dans des notes de calendrier partagees. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 407,
+    "title": "Calendrier: place fixe",
+    "profession": "chef"
+  },
+  {
+    "id": 86,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Regarde ensuite dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Garde le systeme petit et repetable. Ne mets pas de codes prives dans des notes de calendrier partagees. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 466,
+    "title": "Calendrier: verification hebdo",
+    "profession": "chef"
+  },
+  {
+    "id": 87,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Place le repere dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Une note, une etiquette ou une boite suffit pour commencer. Ne mets pas de codes prives dans des notes de calendrier partagees. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 478,
+    "title": "Calendrier: repere visible",
+    "profession": "chef"
+  },
+  {
+    "id": 88,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Garde le rappel dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 449,
+    "title": "Mots de passe: place fixe",
+    "profession": "chef"
+  },
+  {
+    "id": 89,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Regarde ensuite dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Garde le systeme petit et repetable. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 508,
+    "title": "Mots de passe: verification hebdo",
+    "profession": "chef"
+  },
+  {
+    "id": 90,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Place le repere dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Une note, une etiquette ou une boite suffit pour commencer. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Place l'aliment ou l'objet de cuisine la ou il sera vu avant d'etre oublie.",
+    "chars": 520,
+    "title": "Mots de passe: repere visible",
+    "profession": "chef"
+  },
+  {
+    "id": 91,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: note le nom du service, la date de prelevement et le montant dans une seule liste. Garde le rappel pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 441,
+    "title": "Abonnements: place fixe",
+    "profession": "firefighter"
+  },
+  {
+    "id": 92,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: note le nom du service, la date de prelevement et le montant dans une seule liste. Regarde ensuite pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Garde le systeme petit et repetable. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 500,
+    "title": "Abonnements: verification hebdo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 93,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: note le nom du service, la date de prelevement et le montant dans une seule liste. Place le repere pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 512,
+    "title": "Abonnements: repere visible",
+    "profession": "firefighter"
+  },
+  {
+    "id": 94,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets devant les aliments qui expirent en premier. Garde le rappel sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 405,
+    "title": "Placard: place fixe",
+    "profession": "firefighter"
+  },
+  {
+    "id": 95,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets devant les aliments qui expirent en premier. Regarde ensuite sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Garde le systeme petit et repetable. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 464,
+    "title": "Placard: verification hebdo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 96,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets devant les aliments qui expirent en premier. Place le repere sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 476,
+    "title": "Placard: repere visible",
+    "profession": "firefighter"
+  },
+  {
+    "id": 97,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: tiens une note courte indiquant ou sont les originaux et les copies. Garde le rappel dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 450,
+    "title": "Documents: place fixe",
+    "profession": "firefighter"
+  },
+  {
+    "id": 98,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: tiens une note courte indiquant ou sont les originaux et les copies. Regarde ensuite dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Garde le systeme petit et repetable. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 509,
+    "title": "Documents: verification hebdo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 99,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: tiens une note courte indiquant ou sont les originaux et les copies. Place le repere dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Une note, une etiquette ou une boite suffit pour commencer. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 521,
+    "title": "Documents: repere visible",
+    "profession": "firefighter"
+  },
+  {
+    "id": 100,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Garde le rappel sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. N'utilise pas de cables abimes ou d'objets qui chauffent. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 435,
+    "title": "Cables: place fixe",
+    "profession": "firefighter"
+  },
+  {
+    "id": 101,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Regarde ensuite sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Garde le systeme petit et repetable. N'utilise pas de cables abimes ou d'objets qui chauffent. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 494,
+    "title": "Cables: verification hebdo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 102,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Place le repere sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Une note, une etiquette ou une boite suffit pour commencer. N'utilise pas de cables abimes ou d'objets qui chauffent. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 506,
+    "title": "Cables: repere visible",
+    "profession": "firefighter"
+  },
+  {
+    "id": 103,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: accroche un filet au panier pour les chaussettes et les pieces delicates. Garde le rappel sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Ne remplis pas trop le filet: le tissu doit encore se rincer. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 421,
+    "title": "Linge: place fixe",
+    "profession": "firefighter"
+  },
+  {
+    "id": 104,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: accroche un filet au panier pour les chaussettes et les pieces delicates. Regarde ensuite sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Garde le systeme petit et repetable. Ne remplis pas trop le filet: le tissu doit encore se rincer. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 480,
+    "title": "Linge: verification hebdo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 105,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: accroche un filet au panier pour les chaussettes et les pieces delicates. Place le repere sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Une note, une etiquette ou une boite suffit pour commencer. Ne remplis pas trop le filet: le tissu doit encore se rincer. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 492,
+    "title": "Linge: repere visible",
+    "profession": "firefighter"
+  },
+  {
+    "id": 106,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Garde le rappel dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 464,
+    "title": "Recus: place fixe",
+    "profession": "firefighter"
+  },
+  {
+    "id": 107,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Regarde ensuite dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Garde le systeme petit et repetable. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 523,
+    "title": "Recus: verification hebdo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 108,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Place le repere dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Une note, une etiquette ou une boite suffit pour commencer. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 535,
+    "title": "Recus: repere visible",
+    "profession": "firefighter"
+  },
+  {
+    "id": 109,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: reserve une etagere du frigo aux aliments a finir bientot. Garde le rappel a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 408,
+    "title": "Restes: place fixe",
+    "profession": "firefighter"
+  },
+  {
+    "id": 110,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: reserve une etagere du frigo aux aliments a finir bientot. Regarde ensuite a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Garde le systeme petit et repetable. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 467,
+    "title": "Restes: verification hebdo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 111,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: reserve une etagere du frigo aux aliments a finir bientot. Place le repere a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Une note, une etiquette ou une boite suffit pour commencer. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 479,
+    "title": "Restes: repere visible",
+    "profession": "firefighter"
+  },
+  {
+    "id": 112,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Garde le rappel dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Ne melange pas les produits et n'invente pas de formule plus forte. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 445,
+    "title": "Menage: place fixe",
+    "profession": "firefighter"
+  },
+  {
+    "id": 113,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Regarde ensuite dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Garde le systeme petit et repetable. Ne melange pas les produits et n'invente pas de formule plus forte. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 504,
+    "title": "Menage: verification hebdo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 114,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Place le repere dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Une note, une etiquette ou une boite suffit pour commencer. Ne melange pas les produits et n'invente pas de formule plus forte. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 516,
+    "title": "Menage: repere visible",
+    "profession": "firefighter"
+  },
+  {
+    "id": 115,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Garde le rappel dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Ne mets pas de codes prives dans des notes de calendrier partagees. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 399,
+    "title": "Calendrier: place fixe",
+    "profession": "firefighter"
+  },
+  {
+    "id": 116,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Regarde ensuite dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Garde le systeme petit et repetable. Ne mets pas de codes prives dans des notes de calendrier partagees. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 458,
+    "title": "Calendrier: verification hebdo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 117,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Place le repere dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Une note, une etiquette ou une boite suffit pour commencer. Ne mets pas de codes prives dans des notes de calendrier partagees. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 470,
+    "title": "Calendrier: repere visible",
+    "profession": "firefighter"
+  },
+  {
+    "id": 118,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Garde le rappel dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 441,
+    "title": "Mots de passe: place fixe",
+    "profession": "firefighter"
+  },
+  {
+    "id": 119,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Regarde ensuite dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Garde le systeme petit et repetable. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 500,
+    "title": "Mots de passe: verification hebdo",
+    "profession": "firefighter"
+  },
+  {
+    "id": 120,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Place le repere dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Une note, une etiquette ou une boite suffit pour commencer. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Garde chaleur, encombrement et sorties bloquees hors du dispositif.",
+    "chars": 512,
+    "title": "Mots de passe: repere visible",
+    "profession": "firefighter"
+  },
+  {
+    "id": 121,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: note le nom du service, la date de prelevement et le montant dans une seule liste. Garde le rappel pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 438,
+    "title": "Abonnements: place fixe",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 122,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: note le nom du service, la date de prelevement et le montant dans une seule liste. Regarde ensuite pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Garde le systeme petit et repetable. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 497,
+    "title": "Abonnements: verification hebdo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 123,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: note le nom du service, la date de prelevement et le montant dans une seule liste. Place le repere pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 509,
+    "title": "Abonnements: repere visible",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 124,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets devant les aliments qui expirent en premier. Garde le rappel sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 402,
+    "title": "Placard: place fixe",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 125,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets devant les aliments qui expirent en premier. Regarde ensuite sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Garde le systeme petit et repetable. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 461,
+    "title": "Placard: verification hebdo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 126,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets devant les aliments qui expirent en premier. Place le repere sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 473,
+    "title": "Placard: repere visible",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 127,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: tiens une note courte indiquant ou sont les originaux et les copies. Garde le rappel dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 447,
+    "title": "Documents: place fixe",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 128,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: tiens une note courte indiquant ou sont les originaux et les copies. Regarde ensuite dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Garde le systeme petit et repetable. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 506,
+    "title": "Documents: verification hebdo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 129,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: tiens une note courte indiquant ou sont les originaux et les copies. Place le repere dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Une note, une etiquette ou une boite suffit pour commencer. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 518,
+    "title": "Documents: repere visible",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 130,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Garde le rappel sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. N'utilise pas de cables abimes ou d'objets qui chauffent. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 432,
+    "title": "Cables: place fixe",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 131,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Regarde ensuite sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Garde le systeme petit et repetable. N'utilise pas de cables abimes ou d'objets qui chauffent. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 491,
+    "title": "Cables: verification hebdo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 132,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Place le repere sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Une note, une etiquette ou une boite suffit pour commencer. N'utilise pas de cables abimes ou d'objets qui chauffent. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 503,
+    "title": "Cables: repere visible",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 133,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: accroche un filet au panier pour les chaussettes et les pieces delicates. Garde le rappel sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Ne remplis pas trop le filet: le tissu doit encore se rincer. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 418,
+    "title": "Linge: place fixe",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 134,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: accroche un filet au panier pour les chaussettes et les pieces delicates. Regarde ensuite sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Garde le systeme petit et repetable. Ne remplis pas trop le filet: le tissu doit encore se rincer. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 477,
+    "title": "Linge: verification hebdo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 135,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: accroche un filet au panier pour les chaussettes et les pieces delicates. Place le repere sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Une note, une etiquette ou une boite suffit pour commencer. Ne remplis pas trop le filet: le tissu doit encore se rincer. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 489,
+    "title": "Linge: repere visible",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 136,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Garde le rappel dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 461,
+    "title": "Recus: place fixe",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 137,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Regarde ensuite dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Garde le systeme petit et repetable. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 520,
+    "title": "Recus: verification hebdo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 138,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Place le repere dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Une note, une etiquette ou une boite suffit pour commencer. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 532,
+    "title": "Recus: repere visible",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 139,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: reserve une etagere du frigo aux aliments a finir bientot. Garde le rappel a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 405,
+    "title": "Restes: place fixe",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 140,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: reserve une etagere du frigo aux aliments a finir bientot. Regarde ensuite a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Garde le systeme petit et repetable. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 464,
+    "title": "Restes: verification hebdo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 141,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: reserve une etagere du frigo aux aliments a finir bientot. Place le repere a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Une note, une etiquette ou une boite suffit pour commencer. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 476,
+    "title": "Restes: repere visible",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 142,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Garde le rappel dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Ne melange pas les produits et n'invente pas de formule plus forte. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 442,
+    "title": "Menage: place fixe",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 143,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Regarde ensuite dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Garde le systeme petit et repetable. Ne melange pas les produits et n'invente pas de formule plus forte. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 501,
+    "title": "Menage: verification hebdo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 144,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Place le repere dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Une note, une etiquette ou une boite suffit pour commencer. Ne melange pas les produits et n'invente pas de formule plus forte. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 513,
+    "title": "Menage: repere visible",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 145,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Garde le rappel dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Ne mets pas de codes prives dans des notes de calendrier partagees. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 396,
+    "title": "Calendrier: place fixe",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 146,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Regarde ensuite dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Garde le systeme petit et repetable. Ne mets pas de codes prives dans des notes de calendrier partagees. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 455,
+    "title": "Calendrier: verification hebdo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 147,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Place le repere dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Une note, une etiquette ou une boite suffit pour commencer. Ne mets pas de codes prives dans des notes de calendrier partagees. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 467,
+    "title": "Calendrier: repere visible",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 148,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Garde le rappel dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 438,
+    "title": "Mots de passe: place fixe",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 149,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Regarde ensuite dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Garde le systeme petit et repetable. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 497,
+    "title": "Mots de passe: verification hebdo",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 150,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Place le repere dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Une note, une etiquette ou une boite suffit pour commencer. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Rends le repere visuel assez clair pour le voir meme en vitesse.",
+    "chars": 509,
+    "title": "Mots de passe: repere visible",
+    "profession": "hairdresser"
+  },
+  {
+    "id": 151,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: note le nom du service, la date de prelevement et le montant dans une seule liste. Garde le rappel pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 443,
+    "title": "Abonnements: place fixe",
+    "profession": "lawyer"
+  },
+  {
+    "id": 152,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: note le nom du service, la date de prelevement et le montant dans une seule liste. Regarde ensuite pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Garde le systeme petit et repetable. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 502,
+    "title": "Abonnements: verification hebdo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 153,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: note le nom du service, la date de prelevement et le montant dans une seule liste. Place le repere pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 514,
+    "title": "Abonnements: repere visible",
+    "profession": "lawyer"
+  },
+  {
+    "id": 154,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets devant les aliments qui expirent en premier. Garde le rappel sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 407,
+    "title": "Placard: place fixe",
+    "profession": "lawyer"
+  },
+  {
+    "id": 155,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets devant les aliments qui expirent en premier. Regarde ensuite sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Garde le systeme petit et repetable. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 466,
+    "title": "Placard: verification hebdo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 156,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets devant les aliments qui expirent en premier. Place le repere sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 478,
+    "title": "Placard: repere visible",
+    "profession": "lawyer"
+  },
+  {
+    "id": 157,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: tiens une note courte indiquant ou sont les originaux et les copies. Garde le rappel dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 452,
+    "title": "Documents: place fixe",
+    "profession": "lawyer"
+  },
+  {
+    "id": 158,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: tiens une note courte indiquant ou sont les originaux et les copies. Regarde ensuite dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Garde le systeme petit et repetable. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 511,
+    "title": "Documents: verification hebdo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 159,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: tiens une note courte indiquant ou sont les originaux et les copies. Place le repere dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Une note, une etiquette ou une boite suffit pour commencer. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 523,
+    "title": "Documents: repere visible",
+    "profession": "lawyer"
+  },
+  {
+    "id": 160,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Garde le rappel sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. N'utilise pas de cables abimes ou d'objets qui chauffent. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 437,
+    "title": "Cables: place fixe",
+    "profession": "lawyer"
+  },
+  {
+    "id": 161,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Regarde ensuite sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Garde le systeme petit et repetable. N'utilise pas de cables abimes ou d'objets qui chauffent. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 496,
+    "title": "Cables: verification hebdo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 162,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Place le repere sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Une note, une etiquette ou une boite suffit pour commencer. N'utilise pas de cables abimes ou d'objets qui chauffent. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 508,
+    "title": "Cables: repere visible",
+    "profession": "lawyer"
+  },
+  {
+    "id": 163,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: accroche un filet au panier pour les chaussettes et les pieces delicates. Garde le rappel sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Ne remplis pas trop le filet: le tissu doit encore se rincer. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 423,
+    "title": "Linge: place fixe",
+    "profession": "lawyer"
+  },
+  {
+    "id": 164,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: accroche un filet au panier pour les chaussettes et les pieces delicates. Regarde ensuite sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Garde le systeme petit et repetable. Ne remplis pas trop le filet: le tissu doit encore se rincer. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 482,
+    "title": "Linge: verification hebdo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 165,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: accroche un filet au panier pour les chaussettes et les pieces delicates. Place le repere sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Une note, une etiquette ou une boite suffit pour commencer. Ne remplis pas trop le filet: le tissu doit encore se rincer. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 494,
+    "title": "Linge: repere visible",
+    "profession": "lawyer"
+  },
+  {
+    "id": 166,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Garde le rappel dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 466,
+    "title": "Recus: place fixe",
+    "profession": "lawyer"
+  },
+  {
+    "id": 167,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Regarde ensuite dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Garde le systeme petit et repetable. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 525,
+    "title": "Recus: verification hebdo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 168,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Place le repere dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Une note, une etiquette ou une boite suffit pour commencer. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 537,
+    "title": "Recus: repere visible",
+    "profession": "lawyer"
+  },
+  {
+    "id": 169,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: reserve une etagere du frigo aux aliments a finir bientot. Garde le rappel a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 410,
+    "title": "Restes: place fixe",
+    "profession": "lawyer"
+  },
+  {
+    "id": 170,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: reserve une etagere du frigo aux aliments a finir bientot. Regarde ensuite a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Garde le systeme petit et repetable. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 469,
+    "title": "Restes: verification hebdo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 171,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: reserve une etagere du frigo aux aliments a finir bientot. Place le repere a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Une note, une etiquette ou une boite suffit pour commencer. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 481,
+    "title": "Restes: repere visible",
+    "profession": "lawyer"
+  },
+  {
+    "id": 172,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Garde le rappel dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Ne melange pas les produits et n'invente pas de formule plus forte. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 447,
+    "title": "Menage: place fixe",
+    "profession": "lawyer"
+  },
+  {
+    "id": 173,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Regarde ensuite dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Garde le systeme petit et repetable. Ne melange pas les produits et n'invente pas de formule plus forte. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 506,
+    "title": "Menage: verification hebdo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 174,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Place le repere dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Une note, une etiquette ou une boite suffit pour commencer. Ne melange pas les produits et n'invente pas de formule plus forte. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 518,
+    "title": "Menage: repere visible",
+    "profession": "lawyer"
+  },
+  {
+    "id": 175,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Garde le rappel dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Ne mets pas de codes prives dans des notes de calendrier partagees. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 401,
+    "title": "Calendrier: place fixe",
+    "profession": "lawyer"
+  },
+  {
+    "id": 176,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Regarde ensuite dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Garde le systeme petit et repetable. Ne mets pas de codes prives dans des notes de calendrier partagees. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 460,
+    "title": "Calendrier: verification hebdo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 177,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Place le repere dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Une note, une etiquette ou une boite suffit pour commencer. Ne mets pas de codes prives dans des notes de calendrier partagees. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 472,
+    "title": "Calendrier: repere visible",
+    "profession": "lawyer"
+  },
+  {
+    "id": 178,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Garde le rappel dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 443,
+    "title": "Mots de passe: place fixe",
+    "profession": "lawyer"
+  },
+  {
+    "id": 179,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Regarde ensuite dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Garde le systeme petit et repetable. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 502,
+    "title": "Mots de passe: verification hebdo",
+    "profession": "lawyer"
+  },
+  {
+    "id": 180,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Place le repere dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Une note, une etiquette ou une boite suffit pour commencer. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Laisse une petite trace ecrite pour comprendre la decision plus tard.",
+    "chars": 514,
+    "title": "Mots de passe: repere visible",
+    "profession": "lawyer"
+  },
+  {
+    "id": 181,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: note le nom du service, la date de prelevement et le montant dans une seule liste. Garde le rappel pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 442,
+    "title": "Abonnements: place fixe",
+    "profession": "mechanic"
+  },
+  {
+    "id": 182,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: note le nom du service, la date de prelevement et le montant dans une seule liste. Regarde ensuite pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Garde le systeme petit et repetable. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 501,
+    "title": "Abonnements: verification hebdo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 183,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: note le nom du service, la date de prelevement et le montant dans une seule liste. Place le repere pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 513,
+    "title": "Abonnements: repere visible",
+    "profession": "mechanic"
+  },
+  {
+    "id": 184,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets devant les aliments qui expirent en premier. Garde le rappel sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 406,
+    "title": "Placard: place fixe",
+    "profession": "mechanic"
+  },
+  {
+    "id": 185,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets devant les aliments qui expirent en premier. Regarde ensuite sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Garde le systeme petit et repetable. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 465,
+    "title": "Placard: verification hebdo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 186,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets devant les aliments qui expirent en premier. Place le repere sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 477,
+    "title": "Placard: repere visible",
+    "profession": "mechanic"
+  },
+  {
+    "id": 187,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: tiens une note courte indiquant ou sont les originaux et les copies. Garde le rappel dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 451,
+    "title": "Documents: place fixe",
+    "profession": "mechanic"
+  },
+  {
+    "id": 188,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: tiens une note courte indiquant ou sont les originaux et les copies. Regarde ensuite dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Garde le systeme petit et repetable. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 510,
+    "title": "Documents: verification hebdo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 189,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: tiens une note courte indiquant ou sont les originaux et les copies. Place le repere dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Une note, une etiquette ou une boite suffit pour commencer. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 522,
+    "title": "Documents: repere visible",
+    "profession": "mechanic"
+  },
+  {
+    "id": 190,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Garde le rappel sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. N'utilise pas de cables abimes ou d'objets qui chauffent. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 436,
+    "title": "Cables: place fixe",
+    "profession": "mechanic"
+  },
+  {
+    "id": 191,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Regarde ensuite sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Garde le systeme petit et repetable. N'utilise pas de cables abimes ou d'objets qui chauffent. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 495,
+    "title": "Cables: verification hebdo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 192,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Place le repere sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Une note, une etiquette ou une boite suffit pour commencer. N'utilise pas de cables abimes ou d'objets qui chauffent. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 507,
+    "title": "Cables: repere visible",
+    "profession": "mechanic"
+  },
+  {
+    "id": 193,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: accroche un filet au panier pour les chaussettes et les pieces delicates. Garde le rappel sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Ne remplis pas trop le filet: le tissu doit encore se rincer. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 422,
+    "title": "Linge: place fixe",
+    "profession": "mechanic"
+  },
+  {
+    "id": 194,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: accroche un filet au panier pour les chaussettes et les pieces delicates. Regarde ensuite sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Garde le systeme petit et repetable. Ne remplis pas trop le filet: le tissu doit encore se rincer. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 481,
+    "title": "Linge: verification hebdo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 195,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: accroche un filet au panier pour les chaussettes et les pieces delicates. Place le repere sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Une note, une etiquette ou une boite suffit pour commencer. Ne remplis pas trop le filet: le tissu doit encore se rincer. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 493,
+    "title": "Linge: repere visible",
+    "profession": "mechanic"
+  },
+  {
+    "id": 196,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Garde le rappel dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 465,
+    "title": "Recus: place fixe",
+    "profession": "mechanic"
+  },
+  {
+    "id": 197,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Regarde ensuite dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Garde le systeme petit et repetable. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 524,
+    "title": "Recus: verification hebdo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 198,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Place le repere dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Une note, une etiquette ou une boite suffit pour commencer. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 536,
+    "title": "Recus: repere visible",
+    "profession": "mechanic"
+  },
+  {
+    "id": 199,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: reserve une etagere du frigo aux aliments a finir bientot. Garde le rappel a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 409,
+    "title": "Restes: place fixe",
+    "profession": "mechanic"
+  },
+  {
+    "id": 200,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: reserve une etagere du frigo aux aliments a finir bientot. Regarde ensuite a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Garde le systeme petit et repetable. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 468,
+    "title": "Restes: verification hebdo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 201,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: reserve une etagere du frigo aux aliments a finir bientot. Place le repere a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Une note, une etiquette ou une boite suffit pour commencer. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 480,
+    "title": "Restes: repere visible",
+    "profession": "mechanic"
+  },
+  {
+    "id": 202,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Garde le rappel dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Ne melange pas les produits et n'invente pas de formule plus forte. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 446,
+    "title": "Menage: place fixe",
+    "profession": "mechanic"
+  },
+  {
+    "id": 203,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Regarde ensuite dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Garde le systeme petit et repetable. Ne melange pas les produits et n'invente pas de formule plus forte. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 505,
+    "title": "Menage: verification hebdo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 204,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Place le repere dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Une note, une etiquette ou une boite suffit pour commencer. Ne melange pas les produits et n'invente pas de formule plus forte. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 517,
+    "title": "Menage: repere visible",
+    "profession": "mechanic"
+  },
+  {
+    "id": 205,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Garde le rappel dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Ne mets pas de codes prives dans des notes de calendrier partagees. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 400,
+    "title": "Calendrier: place fixe",
+    "profession": "mechanic"
+  },
+  {
+    "id": 206,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Regarde ensuite dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Garde le systeme petit et repetable. Ne mets pas de codes prives dans des notes de calendrier partagees. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 459,
+    "title": "Calendrier: verification hebdo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 207,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Place le repere dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Une note, une etiquette ou une boite suffit pour commencer. Ne mets pas de codes prives dans des notes de calendrier partagees. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 471,
+    "title": "Calendrier: repere visible",
+    "profession": "mechanic"
+  },
+  {
+    "id": 208,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Garde le rappel dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 442,
+    "title": "Mots de passe: place fixe",
+    "profession": "mechanic"
+  },
+  {
+    "id": 209,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Regarde ensuite dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Garde le systeme petit et repetable. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 501,
+    "title": "Mots de passe: verification hebdo",
+    "profession": "mechanic"
+  },
+  {
+    "id": 210,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Place le repere dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Une note, une etiquette ou une boite suffit pour commencer. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Verifie les signes simples d'usure avant que le probleme coute cher.",
+    "chars": 513,
+    "title": "Mots de passe: repere visible",
+    "profession": "mechanic"
+  },
+  {
+    "id": 211,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: note le nom du service, la date de prelevement et le montant dans une seule liste. Garde le rappel pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 468,
+    "title": "Abonnements: place fixe",
+    "profession": "police"
+  },
+  {
+    "id": 212,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: note le nom du service, la date de prelevement et le montant dans une seule liste. Regarde ensuite pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Garde le systeme petit et repetable. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 527,
+    "title": "Abonnements: verification hebdo",
+    "profession": "police"
+  },
+  {
+    "id": 213,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: note le nom du service, la date de prelevement et le montant dans une seule liste. Place le repere pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 539,
+    "title": "Abonnements: repere visible",
+    "profession": "police"
+  },
+  {
+    "id": 214,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets devant les aliments qui expirent en premier. Garde le rappel sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 432,
+    "title": "Placard: place fixe",
+    "profession": "police"
+  },
+  {
+    "id": 215,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets devant les aliments qui expirent en premier. Regarde ensuite sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Garde le systeme petit et repetable. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 491,
+    "title": "Placard: verification hebdo",
+    "profession": "police"
+  },
+  {
+    "id": 216,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets devant les aliments qui expirent en premier. Place le repere sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 503,
+    "title": "Placard: repere visible",
+    "profession": "police"
+  },
+  {
+    "id": 217,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: tiens une note courte indiquant ou sont les originaux et les copies. Garde le rappel dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 477,
+    "title": "Documents: place fixe",
+    "profession": "police"
+  },
+  {
+    "id": 218,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: tiens une note courte indiquant ou sont les originaux et les copies. Regarde ensuite dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Garde le systeme petit et repetable. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 536,
+    "title": "Documents: verification hebdo",
+    "profession": "police"
+  },
+  {
+    "id": 219,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: tiens une note courte indiquant ou sont les originaux et les copies. Place le repere dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Une note, une etiquette ou une boite suffit pour commencer. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 548,
+    "title": "Documents: repere visible",
+    "profession": "police"
+  },
+  {
+    "id": 220,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Garde le rappel sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. N'utilise pas de cables abimes ou d'objets qui chauffent. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 462,
+    "title": "Cables: place fixe",
+    "profession": "police"
+  },
+  {
+    "id": 221,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Regarde ensuite sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Garde le systeme petit et repetable. N'utilise pas de cables abimes ou d'objets qui chauffent. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 521,
+    "title": "Cables: verification hebdo",
+    "profession": "police"
+  },
+  {
+    "id": 222,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Place le repere sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Une note, une etiquette ou une boite suffit pour commencer. N'utilise pas de cables abimes ou d'objets qui chauffent. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 533,
+    "title": "Cables: repere visible",
+    "profession": "police"
+  },
+  {
+    "id": 223,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: accroche un filet au panier pour les chaussettes et les pieces delicates. Garde le rappel sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Ne remplis pas trop le filet: le tissu doit encore se rincer. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 448,
+    "title": "Linge: place fixe",
+    "profession": "police"
+  },
+  {
+    "id": 224,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: accroche un filet au panier pour les chaussettes et les pieces delicates. Regarde ensuite sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Garde le systeme petit et repetable. Ne remplis pas trop le filet: le tissu doit encore se rincer. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 507,
+    "title": "Linge: verification hebdo",
+    "profession": "police"
+  },
+  {
+    "id": 225,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: accroche un filet au panier pour les chaussettes et les pieces delicates. Place le repere sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Une note, une etiquette ou une boite suffit pour commencer. Ne remplis pas trop le filet: le tissu doit encore se rincer. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 519,
+    "title": "Linge: repere visible",
+    "profession": "police"
+  },
+  {
+    "id": 226,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Garde le rappel dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 491,
+    "title": "Recus: place fixe",
+    "profession": "police"
+  },
+  {
+    "id": 227,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Regarde ensuite dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Garde le systeme petit et repetable. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 550,
+    "title": "Recus: verification hebdo",
+    "profession": "police"
+  },
+  {
+    "id": 228,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Place le repere dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Une note, une etiquette ou une boite suffit pour commencer. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 562,
+    "title": "Recus: repere visible",
+    "profession": "police"
+  },
+  {
+    "id": 229,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: reserve une etagere du frigo aux aliments a finir bientot. Garde le rappel a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 435,
+    "title": "Restes: place fixe",
+    "profession": "police"
+  },
+  {
+    "id": 230,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: reserve une etagere du frigo aux aliments a finir bientot. Regarde ensuite a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Garde le systeme petit et repetable. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 494,
+    "title": "Restes: verification hebdo",
+    "profession": "police"
+  },
+  {
+    "id": 231,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: reserve une etagere du frigo aux aliments a finir bientot. Place le repere a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Une note, une etiquette ou une boite suffit pour commencer. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 506,
+    "title": "Restes: repere visible",
+    "profession": "police"
+  },
+  {
+    "id": 232,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Garde le rappel dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Ne melange pas les produits et n'invente pas de formule plus forte. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 472,
+    "title": "Menage: place fixe",
+    "profession": "police"
+  },
+  {
+    "id": 233,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Regarde ensuite dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Garde le systeme petit et repetable. Ne melange pas les produits et n'invente pas de formule plus forte. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 531,
+    "title": "Menage: verification hebdo",
+    "profession": "police"
+  },
+  {
+    "id": 234,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Place le repere dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Une note, une etiquette ou une boite suffit pour commencer. Ne melange pas les produits et n'invente pas de formule plus forte. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 543,
+    "title": "Menage: repere visible",
+    "profession": "police"
+  },
+  {
+    "id": 235,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Garde le rappel dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Ne mets pas de codes prives dans des notes de calendrier partagees. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 426,
+    "title": "Calendrier: place fixe",
+    "profession": "police"
+  },
+  {
+    "id": 236,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Regarde ensuite dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Garde le systeme petit et repetable. Ne mets pas de codes prives dans des notes de calendrier partagees. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 485,
+    "title": "Calendrier: verification hebdo",
+    "profession": "police"
+  },
+  {
+    "id": 237,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Place le repere dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Une note, une etiquette ou une boite suffit pour commencer. Ne mets pas de codes prives dans des notes de calendrier partagees. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 497,
+    "title": "Calendrier: repere visible",
+    "profession": "police"
+  },
+  {
+    "id": 238,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Garde le rappel dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 468,
+    "title": "Mots de passe: place fixe",
+    "profession": "police"
+  },
+  {
+    "id": 239,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Regarde ensuite dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Garde le systeme petit et repetable. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 527,
+    "title": "Mots de passe: verification hebdo",
+    "profession": "police"
+  },
+  {
+    "id": 240,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Place le repere dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Une note, une etiquette ou une boite suffit pour commencer. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Utilise un seul point de passage pour que les objets partages ne deviennent pas une recherche.",
+    "chars": 539,
+    "title": "Mots de passe: repere visible",
+    "profession": "police"
+  },
+  {
+    "id": 241,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: note le nom du service, la date de prelevement et le montant dans une seule liste. Garde le rappel pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 454,
+    "title": "Abonnements: place fixe",
+    "profession": "programmer"
+  },
+  {
+    "id": 242,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: note le nom du service, la date de prelevement et le montant dans une seule liste. Regarde ensuite pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Garde le systeme petit et repetable. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 513,
+    "title": "Abonnements: verification hebdo",
+    "profession": "programmer"
+  },
+  {
+    "id": 243,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: note le nom du service, la date de prelevement et le montant dans une seule liste. Place le repere pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 525,
+    "title": "Abonnements: repere visible",
+    "profession": "programmer"
+  },
+  {
+    "id": 244,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets devant les aliments qui expirent en premier. Garde le rappel sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 418,
+    "title": "Placard: place fixe",
+    "profession": "programmer"
+  },
+  {
+    "id": 245,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets devant les aliments qui expirent en premier. Regarde ensuite sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Garde le systeme petit et repetable. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 477,
+    "title": "Placard: verification hebdo",
+    "profession": "programmer"
+  },
+  {
+    "id": 246,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets devant les aliments qui expirent en premier. Place le repere sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 489,
+    "title": "Placard: repere visible",
+    "profession": "programmer"
+  },
+  {
+    "id": 247,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: tiens une note courte indiquant ou sont les originaux et les copies. Garde le rappel dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 463,
+    "title": "Documents: place fixe",
+    "profession": "programmer"
+  },
+  {
+    "id": 248,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: tiens une note courte indiquant ou sont les originaux et les copies. Regarde ensuite dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Garde le systeme petit et repetable. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 522,
+    "title": "Documents: verification hebdo",
+    "profession": "programmer"
+  },
+  {
+    "id": 249,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: tiens une note courte indiquant ou sont les originaux et les copies. Place le repere dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Une note, une etiquette ou une boite suffit pour commencer. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 534,
+    "title": "Documents: repere visible",
+    "profession": "programmer"
+  },
+  {
+    "id": 250,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Garde le rappel sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. N'utilise pas de cables abimes ou d'objets qui chauffent. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 448,
+    "title": "Cables: place fixe",
+    "profession": "programmer"
+  },
+  {
+    "id": 251,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Regarde ensuite sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Garde le systeme petit et repetable. N'utilise pas de cables abimes ou d'objets qui chauffent. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 507,
+    "title": "Cables: verification hebdo",
+    "profession": "programmer"
+  },
+  {
+    "id": 252,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Place le repere sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Une note, une etiquette ou une boite suffit pour commencer. N'utilise pas de cables abimes ou d'objets qui chauffent. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 519,
+    "title": "Cables: repere visible",
+    "profession": "programmer"
+  },
+  {
+    "id": 253,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: accroche un filet au panier pour les chaussettes et les pieces delicates. Garde le rappel sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Ne remplis pas trop le filet: le tissu doit encore se rincer. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 434,
+    "title": "Linge: place fixe",
+    "profession": "programmer"
+  },
+  {
+    "id": 254,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: accroche un filet au panier pour les chaussettes et les pieces delicates. Regarde ensuite sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Garde le systeme petit et repetable. Ne remplis pas trop le filet: le tissu doit encore se rincer. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 493,
+    "title": "Linge: verification hebdo",
+    "profession": "programmer"
+  },
+  {
+    "id": 255,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: accroche un filet au panier pour les chaussettes et les pieces delicates. Place le repere sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Une note, une etiquette ou une boite suffit pour commencer. Ne remplis pas trop le filet: le tissu doit encore se rincer. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 505,
+    "title": "Linge: repere visible",
+    "profession": "programmer"
+  },
+  {
+    "id": 256,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Garde le rappel dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 477,
+    "title": "Recus: place fixe",
+    "profession": "programmer"
+  },
+  {
+    "id": 257,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Regarde ensuite dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Garde le systeme petit et repetable. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 536,
+    "title": "Recus: verification hebdo",
+    "profession": "programmer"
+  },
+  {
+    "id": 258,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Place le repere dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Une note, une etiquette ou une boite suffit pour commencer. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 548,
+    "title": "Recus: repere visible",
+    "profession": "programmer"
+  },
+  {
+    "id": 259,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: reserve une etagere du frigo aux aliments a finir bientot. Garde le rappel a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 421,
+    "title": "Restes: place fixe",
+    "profession": "programmer"
+  },
+  {
+    "id": 260,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: reserve une etagere du frigo aux aliments a finir bientot. Regarde ensuite a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Garde le systeme petit et repetable. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 480,
+    "title": "Restes: verification hebdo",
+    "profession": "programmer"
+  },
+  {
+    "id": 261,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: reserve une etagere du frigo aux aliments a finir bientot. Place le repere a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Une note, une etiquette ou une boite suffit pour commencer. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 492,
+    "title": "Restes: repere visible",
+    "profession": "programmer"
+  },
+  {
+    "id": 262,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Garde le rappel dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Ne melange pas les produits et n'invente pas de formule plus forte. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 458,
+    "title": "Menage: place fixe",
+    "profession": "programmer"
+  },
+  {
+    "id": 263,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Regarde ensuite dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Garde le systeme petit et repetable. Ne melange pas les produits et n'invente pas de formule plus forte. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 517,
+    "title": "Menage: verification hebdo",
+    "profession": "programmer"
+  },
+  {
+    "id": 264,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Place le repere dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Une note, une etiquette ou une boite suffit pour commencer. Ne melange pas les produits et n'invente pas de formule plus forte. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 529,
+    "title": "Menage: repere visible",
+    "profession": "programmer"
+  },
+  {
+    "id": 265,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Garde le rappel dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Ne mets pas de codes prives dans des notes de calendrier partagees. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 412,
+    "title": "Calendrier: place fixe",
+    "profession": "programmer"
+  },
+  {
+    "id": 266,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Regarde ensuite dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Garde le systeme petit et repetable. Ne mets pas de codes prives dans des notes de calendrier partagees. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 471,
+    "title": "Calendrier: verification hebdo",
+    "profession": "programmer"
+  },
+  {
+    "id": 267,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Place le repere dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Une note, une etiquette ou une boite suffit pour commencer. Ne mets pas de codes prives dans des notes de calendrier partagees. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 483,
+    "title": "Calendrier: repere visible",
+    "profession": "programmer"
+  },
+  {
+    "id": 268,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Garde le rappel dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 454,
+    "title": "Mots de passe: place fixe",
+    "profession": "programmer"
+  },
+  {
+    "id": 269,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Regarde ensuite dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Garde le systeme petit et repetable. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 513,
+    "title": "Mots de passe: verification hebdo",
+    "profession": "programmer"
+  },
+  {
+    "id": 270,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Place le repere dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Une note, une etiquette ou une boite suffit pour commencer. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Rends le rappel cherchable et garde les donnees privees hors des notes ouvertes.",
+    "chars": 525,
+    "title": "Mots de passe: repere visible",
+    "profession": "programmer"
+  },
+  {
+    "id": 271,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: note le nom du service, la date de prelevement et le montant dans une seule liste. Garde le rappel pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 451,
+    "title": "Abonnements: place fixe",
+    "profession": "teacher"
+  },
+  {
+    "id": 272,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: note le nom du service, la date de prelevement et le montant dans une seule liste. Regarde ensuite pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Garde le systeme petit et repetable. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 510,
+    "title": "Abonnements: verification hebdo",
+    "profession": "teacher"
+  },
+  {
+    "id": 273,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: note le nom du service, la date de prelevement et le montant dans une seule liste. Place le repere pres de l'application bancaire ou du tableau de budget. Ajoute une ligne juste apres chaque inscription. tu reperes les frais oublies avant le prochain paiement. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas de mots de passe, codes ou numeros complets de carte a cet endroit. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 522,
+    "title": "Abonnements: repere visible",
+    "profession": "teacher"
+  },
+  {
+    "id": 274,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets devant les aliments qui expirent en premier. Garde le rappel sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 415,
+    "title": "Placard: place fixe",
+    "profession": "teacher"
+  },
+  {
+    "id": 275,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets devant les aliments qui expirent en premier. Regarde ensuite sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Garde le systeme petit et repetable. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 474,
+    "title": "Placard: verification hebdo",
+    "profession": "teacher"
+  },
+  {
+    "id": 276,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets devant les aliments qui expirent en premier. Place le repere sur une etagere marquee a utiliser d'abord. Regarde cette rangee avant d'ouvrir un nouveau paquet. les bons produits sont utilises avant de disparaitre derriere les boites neuves. Une note, une etiquette ou une boite suffit pour commencer. Ne garde pas d'aliment ouvert sans date ou contenant ferme. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 486,
+    "title": "Placard: repere visible",
+    "profession": "teacher"
+  },
+  {
+    "id": 277,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: tiens une note courte indiquant ou sont les originaux et les copies. Garde le rappel dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 460,
+    "title": "Documents: place fixe",
+    "profession": "teacher"
+  },
+  {
+    "id": 278,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: tiens une note courte indiquant ou sont les originaux et les copies. Regarde ensuite dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Garde le systeme petit et repetable. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 519,
+    "title": "Documents: verification hebdo",
+    "profession": "teacher"
+  },
+  {
+    "id": 279,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: tiens une note courte indiquant ou sont les originaux et les copies. Place le repere dans un dossier protege et un index papier simple. Apres un voyage ou un renouvellement, modifie seulement la ligne concernee. la recherche est plus calme quand il faut un papier precis. Une note, une etiquette ou une boite suffit pour commencer. N'envoie pas de scans en discussion partagee sans masquer les donnees privees. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 531,
+    "title": "Documents: repere visible",
+    "profession": "teacher"
+  },
+  {
+    "id": 280,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Garde le rappel sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. N'utilise pas de cables abimes ou d'objets qui chauffent. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 445,
+    "title": "Cables: place fixe",
+    "profession": "teacher"
+  },
+  {
+    "id": 281,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Regarde ensuite sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Garde le systeme petit et repetable. N'utilise pas de cables abimes ou d'objets qui chauffent. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 504,
+    "title": "Cables: verification hebdo",
+    "profession": "teacher"
+  },
+  {
+    "id": 282,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: choisis un seul coin de charge et retire les vieux adaptateurs des prises. Place le repere sur une surface degagee loin du papier et du tissu. Avant de dormir, verifie qu'aucun cable n'est coince par un meuble. il y a moins de chaleur, moins de fouillis et moins de recherches. Une note, une etiquette ou une boite suffit pour commencer. N'utilise pas de cables abimes ou d'objets qui chauffent. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 516,
+    "title": "Cables: repere visible",
+    "profession": "teacher"
+  },
+  {
+    "id": 283,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: accroche un filet au panier pour les chaussettes et les pieces delicates. Garde le rappel sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Ne remplis pas trop le filet: le tissu doit encore se rincer. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 431,
+    "title": "Linge: place fixe",
+    "profession": "teacher"
+  },
+  {
+    "id": 284,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: accroche un filet au panier pour les chaussettes et les pieces delicates. Regarde ensuite sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Garde le systeme petit et repetable. Ne remplis pas trop le filet: le tissu doit encore se rincer. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 490,
+    "title": "Linge: verification hebdo",
+    "profession": "teacher"
+  },
+  {
+    "id": 285,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: accroche un filet au panier pour les chaussettes et les pieces delicates. Place le repere sur un crochet ou a l'interieur du panier. Ferme le filet avant chaque lavage et verifie les poches. les petits objets cessent de disparaitre entre le tri et le sechage. Une note, une etiquette ou une boite suffit pour commencer. Ne remplis pas trop le filet: le tissu doit encore se rincer. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 502,
+    "title": "Linge: repere visible",
+    "profession": "teacher"
+  },
+  {
+    "id": 286,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Garde le rappel dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 474,
+    "title": "Recus: place fixe",
+    "profession": "teacher"
+  },
+  {
+    "id": 287,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Regarde ensuite dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Garde le systeme petit et repetable. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 533,
+    "title": "Recus: verification hebdo",
+    "profession": "teacher"
+  },
+  {
+    "id": 288,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: mets les recus papier dans une enveloppe et donne le meme tag aux recus numeriques. Place le repere dans un tiroir d'entree ou un dossier mail. En fin de semaine, garde seulement ce qui sert aux retours ou garanties. les petites depenses ne se dispersent plus dans les sacs et poches. Une note, une etiquette ou une boite suffit pour commencer. Ne photographie pas de documents avec des donnees personnelles inutiles autour. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 545,
+    "title": "Recus: repere visible",
+    "profession": "teacher"
+  },
+  {
+    "id": 289,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: reserve une etagere du frigo aux aliments a finir bientot. Garde le rappel a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 418,
+    "title": "Restes: place fixe",
+    "profession": "teacher"
+  },
+  {
+    "id": 290,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: reserve une etagere du frigo aux aliments a finir bientot. Regarde ensuite a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Garde le systeme petit et repetable. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 477,
+    "title": "Restes: verification hebdo",
+    "profession": "teacher"
+  },
+  {
+    "id": 291,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: reserve une etagere du frigo aux aliments a finir bientot. Place le repere a hauteur des yeux avec une petite etiquette. Commence a cuisiner en regardant d'abord cet endroit. les restes deviennent un repas au lieu d'un contenant oublie. Une note, une etiquette ou une boite suffit pour commencer. Ne laisse pas les plats cuits dehors plus longtemps que ce qui est sur. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 489,
+    "title": "Restes: repere visible",
+    "profession": "teacher"
+  },
+  {
+    "id": 292,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Garde le rappel dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Ne melange pas les produits et n'invente pas de formule plus forte. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 455,
+    "title": "Menage: place fixe",
+    "profession": "teacher"
+  },
+  {
+    "id": 293,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Regarde ensuite dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Garde le systeme petit et repetable. Ne melange pas les produits et n'invente pas de formule plus forte. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 514,
+    "title": "Menage: verification hebdo",
+    "profession": "teacher"
+  },
+  {
+    "id": 294,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: donne un usage a chaque couleur de chiffon et garde la liste avec eux. Place le repere dans le couvercle de la boite de menage. Lave ou remplace les chiffons avant la tache suivante. les surfaces restent plus propres car salle de bain, cuisine et poussiere ne se melangent pas. Une note, une etiquette ou une boite suffit pour commencer. Ne melange pas les produits et n'invente pas de formule plus forte. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 526,
+    "title": "Menage: repere visible",
+    "profession": "teacher"
+  },
+  {
+    "id": 295,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Garde le rappel dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Ne mets pas de codes prives dans des notes de calendrier partagees. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 409,
+    "title": "Calendrier: place fixe",
+    "profession": "teacher"
+  },
+  {
+    "id": 296,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Regarde ensuite dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Garde le systeme petit et repetable. Ne mets pas de codes prives dans des notes de calendrier partagees. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 468,
+    "title": "Calendrier: verification hebdo",
+    "profession": "teacher"
+  },
+  {
+    "id": 297,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: ajoute l'heure de depart, pas seulement l'heure du rendez-vous. Place le repere dans la meme entree de calendrier. Compte le trajet, les chaussures, le sac et une petite marge. le matin devient un itineraire au lieu d'une surprise. Une note, une etiquette ou une boite suffit pour commencer. Ne mets pas de codes prives dans des notes de calendrier partagees. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 480,
+    "title": "Calendrier: repere visible",
+    "profession": "teacher"
+  },
+  {
+    "id": 298,
+    "pack": 1,
+    "text": "Une regle simple aide beaucoup: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Garde le rappel dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 451,
+    "title": "Mots de passe: place fixe",
+    "profession": "teacher"
+  },
+  {
+    "id": 299,
+    "pack": 1,
+    "text": "Fais une verification de cinq minutes chaque semaine: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Regarde ensuite dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Garde le systeme petit et repetable. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 510,
+    "title": "Mots de passe: verification hebdo",
+    "profession": "teacher"
+  },
+  {
+    "id": 300,
+    "pack": 1,
+    "text": "Rends-le visible avant que ce soit urgent: utilise un gestionnaire et donne un mot de passe unique a chaque compte important. Place le repere dans le gestionnaire, pas dans une note appelee mots de passe. Active la protection multifactorielle quand elle existe. un mot de passe vole ouvre moins de comptes. Une note, une etiquette ou une boite suffit pour commencer. Ne reutilise pas les codes de secours et ne les garde pas en capture d'ecran. Transforme la regle en une phrase que tout le monde a la maison peut repeter.",
+    "chars": 522,
+    "title": "Mots de passe: repere visible",
+    "profession": "teacher"
+  }
+]
