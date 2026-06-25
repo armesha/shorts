@@ -391,35 +391,6 @@ function BlockDetail({
             <h2 className="text-base font-semibold">{t("channelBlocks.blockSettings")}</h2>
           </div>
           <div className="flex flex-wrap items-end gap-3">
-            {block.sourceGroups.length > 1 && (
-              <div className="flex flex-wrap items-end gap-2">
-                <div className="pb-2 text-xs font-semibold uppercase tracking-wide text-base-content/60">
-                  {t("channelBlocks.sourceRatio")}
-                </div>
-                {block.sourceGroups.map((group) => (
-                  <label key={group.id} className="form-control w-32">
-                    <span className="label py-1 pr-0">
-                      <span className="label-text truncate text-xs font-semibold uppercase tracking-wide text-base-content/60" title={group.title}>
-                        {group.title}
-                      </span>
-                    </span>
-                    <input
-                      type="number"
-                      min={0}
-                      max={20}
-                      className="input input-bordered input-sm w-full"
-                      value={sourceWeights[group.id] ?? group.weight}
-                      onChange={(e) =>
-                        setSourceWeights({
-                          ...sourceWeights,
-                          [group.id]: Math.max(0, Math.min(20, Number(e.target.value) || 0)),
-                        })
-                      }
-                    />
-                  </label>
-                ))}
-              </div>
-            )}
             <div className="flex flex-wrap items-end gap-2">
               <label className="form-control w-28">
                 <span className="label py-1 pr-0">
@@ -479,6 +450,10 @@ function BlockDetail({
           </div>
         </div>
       </section>
+
+      {block.sourceGroups.length > 1 && (
+        <SourceMixSettings block={block} sourceWeights={sourceWeights} setSourceWeights={setSourceWeights} />
+      )}
 
       {block.rules.length > 0 && (
         <section className="rounded-md border border-base-300 bg-base-100 p-4">
@@ -670,6 +645,66 @@ function MiniStat({ label, value }: { label: string; value: ReactNode }) {
       <div className="text-xl font-bold leading-none">{value}</div>
       <div className="mt-1 text-xs text-base-content/55">{label}</div>
     </div>
+  );
+}
+
+function SourceMixSettings({
+  block,
+  sourceWeights,
+  setSourceWeights,
+}: {
+  block: ChannelThemeBlock;
+  sourceWeights: Record<string, number>;
+  setSourceWeights: (value: Record<string, number>) => void;
+}) {
+  const { t } = useT();
+  const groups = block.sourceGroups;
+  const resolvedWeights = groups.map((group) => ({
+    ...group,
+    weight: Math.max(0, Math.min(20, Math.floor(Number(sourceWeights[group.id] ?? group.weight) || 0))),
+  }));
+  const total = resolvedWeights.reduce((sum, group) => sum + group.weight, 0);
+
+  return (
+    <section className="rounded-md border border-base-300 bg-base-100 p-4">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <h2 className="text-base font-semibold">{t("channelBlocks.sourceMix")}</h2>
+          <p className="mt-1 text-sm text-base-content/60">{t("channelBlocks.sourceMixHint")}</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {resolvedWeights.map((group) => {
+            const share = total > 0 ? Math.round((group.weight / total) * 100) : 0;
+            return (
+              <label key={group.id} className="form-control w-48">
+                <span className="label py-1 pr-0">
+                  <span className="label-text truncate text-xs font-semibold uppercase tracking-wide text-base-content/60" title={group.title}>
+                    {group.title}
+                  </span>
+                  <span className="label-text-alt whitespace-nowrap text-xs text-base-content/45">
+                    {share}%
+                  </span>
+                </span>
+                <input
+                  type="number"
+                  min={0}
+                  max={20}
+                  className="input input-bordered input-sm w-full"
+                  value={group.weight}
+                  aria-label={t("channelBlocks.sourceWeight", { name: group.title })}
+                  onChange={(e) =>
+                    setSourceWeights({
+                      ...sourceWeights,
+                      [group.id]: Math.max(0, Math.min(20, Number(e.target.value) || 0)),
+                    })
+                  }
+                />
+              </label>
+            );
+          })}
+        </div>
+      </div>
+    </section>
   );
 }
 

@@ -69,7 +69,7 @@ const QUOTE_SOURCE_GROUPS: SourceGroupDef[] = [
   },
   {
     id: "video",
-    title: "Видео-цитаты",
+    title: "Видео-цитаты с озвучкой",
     defaultWeight: 1,
     sources: QUOTE_VIDEO_DECK_BY_LANG,
   },
