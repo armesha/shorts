@@ -9,6 +9,7 @@ import type { RouteDeps } from "./deps.ts";
 import { packCardKey } from "../services/pack-gen.ts";
 import {
   enqueue as genEnqueue,
+  listStatuses as genListStatuses,
   queuedRemainingForOwnerDecks,
 } from "../services/gen-queue.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
@@ -648,7 +649,7 @@ function capDeckSequenceByFreeCards(db: Db, deps: RouteDeps, ownerId: number, se
   for (const deckId of unique(sequence)) {
     freeByDeck.set(
       deckId,
-      Math.max(0, deps.deckAccess.availableUnusedForDecks(ownerId, [deckId]) - queuedRemainingForOwnerDecks(ownerId, [deckId])),
+      Math.max(0, deps.deckAccess.availableUnusedForDecks(ownerId, [deckId]) - queuedRemainingForOwnerDeck(ownerId, deckId)),
     );
   }
   const out: string[] = [];
@@ -659,6 +660,25 @@ function capDeckSequenceByFreeCards(db: Db, deps: RouteDeps, ownerId: number, se
     freeByDeck.set(deckId, left - 1);
   }
   return out;
+}
+
+function queuedRemainingForOwnerDeck(ownerId: number, deckId: string): number {
+  let total = 0;
+  for (const job of genListStatuses()) {
+    if (job.ownerUserId !== ownerId) continue;
+    if (job.state !== "queued" && job.state !== "running") continue;
+    const remaining = Math.max(0, job.total - job.done);
+    if (remaining <= 0) continue;
+    const decks = job.deckIds ?? [];
+    if (!decks.length) {
+      total += remaining;
+      continue;
+    }
+    for (let index = job.done; index < job.total; index++) {
+      if (decks[index % decks.length] === deckId) total++;
+    }
+  }
+  return total;
 }
 
 function buildPayload(db: Db, deps: RouteDeps) {
