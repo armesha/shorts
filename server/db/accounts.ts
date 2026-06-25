@@ -40,7 +40,7 @@ export function accountMethods(db: DatabaseSync) {
       const avatarSource = input.avatarSource ?? (input.avatar ? "manual" : "random");
       const info = db
         .prepare(
-          "INSERT INTO accounts (user_id, channel_name, theme, lang, source_decks, channel_lang, schedule, template, status, avatar, avatar_source) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+          "INSERT INTO accounts (user_id, channel_name, theme, lang, source_decks, long_video_decks, channel_lang, schedule, template, status, avatar, avatar_source) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
         )
         .run(
           input.userId ?? null,
@@ -48,6 +48,7 @@ export function accountMethods(db: DatabaseSync) {
           input.theme ?? "",
           input.lang ?? "de",
           JSON.stringify(input.sourceDecks?.length ? input.sourceDecks : [input.lang ?? "de"]),
+          JSON.stringify(input.longVideoDecks ?? []),
           input.channelLang ?? input.lang ?? "de",
           JSON.stringify(input.schedule ?? ["12:00"]),
           input.template ?? "1 · Kraft Paper",
@@ -62,12 +63,13 @@ export function accountMethods(db: DatabaseSync) {
       if (!cur) return null;
       const hasAvatar = Object.prototype.hasOwnProperty.call(input, "avatar");
       db.prepare(
-        "UPDATE accounts SET channel_name=?, theme=?, lang=?, source_decks=?, channel_lang=?, schedule=?, template=?, enabled=?, slot_videos=?, slot_decks=?, avatar=?, avatar_source=? WHERE id=?",
+        "UPDATE accounts SET channel_name=?, theme=?, lang=?, source_decks=?, long_video_decks=?, channel_lang=?, schedule=?, template=?, enabled=?, slot_videos=?, slot_decks=?, avatar=?, avatar_source=? WHERE id=?",
       ).run(
         input.channelName ?? cur.channelName,
         input.theme ?? cur.theme,
         input.lang ?? cur.lang,
         JSON.stringify(input.sourceDecks ?? cur.sourceDecks),
+        JSON.stringify(input.longVideoDecks ?? cur.longVideoDecks),
         input.channelLang ?? cur.channelLang,
         JSON.stringify(input.schedule ?? cur.schedule),
         input.template ?? cur.template,

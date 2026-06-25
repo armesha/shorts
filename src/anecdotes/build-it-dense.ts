@@ -1,4 +1,4 @@
-// Aggregates the LLM-cleaned Italian jokes (corpora/it-gen/clean-*.json) into a dense, ready-to-use
+// Aggregates the LLM-cleaned Italian jokes (local-assets/corpora/it-gen/clean-*.json) into a dense, ready-to-use
 // deck: titled.json (the only pool the runtime uses) + index.json + pack-*.json. Replaces the old
 // short-skewed data/anecdotes-it. Run AFTER the it-clean workflow finishes:
 //   node --import tsx src/anecdotes/build-it-dense.ts
@@ -6,12 +6,12 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, unlink
 import { resolve } from "node:path";
 import { getDeck } from "./decks.ts";
 
-const GEN_DIR = resolve(process.cwd(), "corpora/it-gen");
+const GEN_DIR = resolve(process.cwd(), "local-assets/corpora/it-gen");
 const OUT_DIR = resolve(process.cwd(), getDeck("it").dir); // data/anecdotes-it
 
 const MIN = Number(process.env.IT_FINAL_MIN ?? 240);
 const MAX = Number(process.env.IT_FINAL_MAX ?? 640);
-const PACK = Number(process.env.IT_PACK ?? 1000);
+const PACK = Number(process.env.IT_PACK ?? 5000);
 const TITLE_MAX = 34;
 
 // Deterministic advertiser-safety net on TOP of the workflow's judgment (same philosophy as build-it.ts

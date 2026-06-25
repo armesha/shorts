@@ -1,0 +1,1344 @@
+{
+  "schemaVersion": "long-video-usage/v1",
+  "deck": "long-anecdotes-ru",
+  "sourceDeck": "ru",
+  "sourceFile": "data/anecdotes/titled.json",
+  "generatedAt": "2026-06-25T08:59:39.491Z",
+  "totalVideos": 4,
+  "totalScenes": 129,
+  "usedSourceIds": [
+    3,
+    6,
+    8,
+    10,
+    11,
+    15,
+    18,
+    19,
+    20,
+    25,
+    26,
+    27,
+    28,
+    30,
+    34,
+    35,
+    37,
+    38,
+    39,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    49,
+    50,
+    52,
+    54,
+    56,
+    58,
+    59,
+    61,
+    63,
+    64,
+    65,
+    66,
+    69,
+    70,
+    71,
+    72,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    83,
+    84,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    95,
+    98,
+    99,
+    100,
+    101,
+    103,
+    104,
+    105,
+    107,
+    108,
+    109,
+    110,
+    111,
+    112,
+    114,
+    116,
+    117,
+    119,
+    120,
+    123,
+    124,
+    127,
+    129,
+    130,
+    131,
+    132,
+    134,
+    135,
+    136,
+    138,
+    139,
+    140,
+    141,
+    143,
+    144,
+    145,
+    150,
+    152,
+    153,
+    154,
+    159,
+    160,
+    161,
+    162,
+    164,
+    165,
+    166,
+    167,
+    168,
+    169,
+    170,
+    171,
+    172,
+    173,
+    176,
+    177,
+    191,
+    197,
+    199,
+    205,
+    217,
+    218,
+    225,
+    245,
+    258,
+    263,
+    284,
+    285,
+    286,
+    288
+  ],
+  "selectionRule": "Every future long-video episode must exclude sourceIds already listed here unless that exact video is being intentionally rebuilt.",
+  "videos": [
+    {
+      "file": "long-anecdotes-ru/long-anecdotes-ru-001.mp4",
+      "title": "Русские анекдоты для легкого вечера",
+      "durationSec": 600,
+      "sceneCount": 33,
+      "sourceIds": [
+        3,
+        6,
+        8,
+        25,
+        30,
+        37,
+        44,
+        52,
+        59,
+        71,
+        89,
+        217,
+        92,
+        108,
+        116,
+        132,
+        135,
+        164,
+        176,
+        177,
+        191,
+        197,
+        199,
+        218,
+        225,
+        245,
+        258,
+        263,
+        205,
+        284,
+        285,
+        286,
+        288
+      ],
+      "scenes": [
+        {
+          "order": 1,
+          "sourceDeck": "ru",
+          "sourceId": 3,
+          "title": "Снять квартиру",
+          "chars": 306,
+          "durationSec": 17
+        },
+        {
+          "order": 2,
+          "sourceDeck": "ru",
+          "sourceId": 6,
+          "title": "На собеседовании",
+          "chars": 317,
+          "durationSec": 18
+        },
+        {
+          "order": 3,
+          "sourceDeck": "ru",
+          "sourceId": 8,
+          "title": "Про стирку",
+          "chars": 331,
+          "durationSec": 19
+        },
+        {
+          "order": 4,
+          "sourceDeck": "ru",
+          "sourceId": 25,
+          "title": "Домовой",
+          "chars": 314,
+          "durationSec": 18
+        },
+        {
+          "order": 5,
+          "sourceDeck": "ru",
+          "sourceId": 30,
+          "title": "Считали полоски",
+          "chars": 306,
+          "durationSec": 17
+        },
+        {
+          "order": 6,
+          "sourceDeck": "ru",
+          "sourceId": 37,
+          "title": "Антивирус",
+          "chars": 333,
+          "durationSec": 19
+        },
+        {
+          "order": 7,
+          "sourceDeck": "ru",
+          "sourceId": 44,
+          "title": "Биатлонист",
+          "chars": 307,
+          "durationSec": 17
+        },
+        {
+          "order": 8,
+          "sourceDeck": "ru",
+          "sourceId": 52,
+          "title": "На работе",
+          "chars": 301,
+          "durationSec": 17
+        },
+        {
+          "order": 9,
+          "sourceDeck": "ru",
+          "sourceId": 59,
+          "title": "О трости",
+          "chars": 313,
+          "durationSec": 18
+        },
+        {
+          "order": 10,
+          "sourceDeck": "ru",
+          "sourceId": 71,
+          "title": "Дорогой магазин",
+          "chars": 318,
+          "durationSec": 18
+        },
+        {
+          "order": 11,
+          "sourceDeck": "ru",
+          "sourceId": 89,
+          "title": "Носки",
+          "chars": 311,
+          "durationSec": 18
+        },
+        {
+          "order": 12,
+          "sourceDeck": "ru",
+          "sourceId": 217,
+          "title": "Розыгрыш с яйцами",
+          "chars": 310,
+          "durationSec": 18
+        },
+        {
+          "order": 13,
+          "sourceDeck": "ru",
+          "sourceId": 92,
+          "title": "Гомеопатия",
+          "chars": 310,
+          "durationSec": 18
+        },
+        {
+          "order": 14,
+          "sourceDeck": "ru",
+          "sourceId": 108,
+          "title": "Файерволл",
+          "chars": 316,
+          "durationSec": 18
+        },
+        {
+          "order": 15,
+          "sourceDeck": "ru",
+          "sourceId": 116,
+          "title": "О страхе",
+          "chars": 328,
+          "durationSec": 18
+        },
+        {
+          "order": 16,
+          "sourceDeck": "ru",
+          "sourceId": 132,
+          "title": "Жвачка в самолете",
+          "chars": 303,
+          "durationSec": 17
+        },
+        {
+          "order": 17,
+          "sourceDeck": "ru",
+          "sourceId": 135,
+          "title": "Кошка и холодильник",
+          "chars": 309,
+          "durationSec": 18
+        },
+        {
+          "order": 18,
+          "sourceDeck": "ru",
+          "sourceId": 164,
+          "title": "Деловое письмо",
+          "chars": 311,
+          "durationSec": 18
+        },
+        {
+          "order": 19,
+          "sourceDeck": "ru",
+          "sourceId": 176,
+          "title": "Про кота",
+          "chars": 314,
+          "durationSec": 18
+        },
+        {
+          "order": 20,
+          "sourceDeck": "ru",
+          "sourceId": 177,
+          "title": "Сосед с перфоратором",
+          "chars": 330,
+          "durationSec": 18
+        },
+        {
+          "order": 21,
+          "sourceDeck": "ru",
+          "sourceId": 191,
+          "title": "Шляпа в гардеробе",
+          "chars": 341,
+          "durationSec": 19
+        },
+        {
+          "order": 22,
+          "sourceDeck": "ru",
+          "sourceId": 197,
+          "title": "О сетках на окне",
+          "chars": 309,
+          "durationSec": 18
+        },
+        {
+          "order": 23,
+          "sourceDeck": "ru",
+          "sourceId": 199,
+          "title": "Теория про пумпоны",
+          "chars": 341,
+          "durationSec": 19
+        },
+        {
+          "order": 24,
+          "sourceDeck": "ru",
+          "sourceId": 218,
+          "title": "В кафе",
+          "chars": 318,
+          "durationSec": 18
+        },
+        {
+          "order": 25,
+          "sourceDeck": "ru",
+          "sourceId": 225,
+          "title": "О медведях",
+          "chars": 317,
+          "durationSec": 18
+        },
+        {
+          "order": 26,
+          "sourceDeck": "ru",
+          "sourceId": 245,
+          "title": "В полиции",
+          "chars": 312,
+          "durationSec": 18
+        },
+        {
+          "order": 27,
+          "sourceDeck": "ru",
+          "sourceId": 258,
+          "title": "Парашют",
+          "chars": 308,
+          "durationSec": 17
+        },
+        {
+          "order": 28,
+          "sourceDeck": "ru",
+          "sourceId": 263,
+          "title": "Дачники",
+          "chars": 329,
+          "durationSec": 18
+        },
+        {
+          "order": 29,
+          "sourceDeck": "ru",
+          "sourceId": 205,
+          "title": "Компьютерный холодильник",
+          "chars": 322,
+          "durationSec": 18
+        },
+        {
+          "order": 30,
+          "sourceDeck": "ru",
+          "sourceId": 284,
+          "title": "Рубашка и носки",
+          "chars": 397,
+          "durationSec": 20
+        },
+        {
+          "order": 31,
+          "sourceDeck": "ru",
+          "sourceId": 285,
+          "title": "Тараканы и гидра",
+          "chars": 397,
+          "durationSec": 20
+        },
+        {
+          "order": 32,
+          "sourceDeck": "ru",
+          "sourceId": 286,
+          "title": "Домашние дела",
+          "chars": 396,
+          "durationSec": 20
+        },
+        {
+          "order": 33,
+          "sourceDeck": "ru",
+          "sourceId": 288,
+          "title": "Компас и топор",
+          "chars": 397,
+          "durationSec": 20
+        }
+      ]
+    },
+    {
+      "file": "long-anecdotes-ru/long-anecdotes-ru-002.mp4",
+      "title": "Смешные истории на русском для отдыха",
+      "durationSec": 507,
+      "sceneCount": 32,
+      "sourceIds": [
+        10,
+        11,
+        15,
+        18,
+        19,
+        20,
+        26,
+        27,
+        28,
+        34,
+        35,
+        38,
+        39,
+        41,
+        42,
+        43,
+        45,
+        46,
+        49,
+        50,
+        54,
+        56,
+        58,
+        61,
+        63,
+        64,
+        65,
+        66,
+        69,
+        70,
+        72,
+        74
+      ],
+      "scenes": [
+        {
+          "order": 1,
+          "sourceDeck": "ru",
+          "sourceId": 10,
+          "title": "Брат и сестра",
+          "chars": 312,
+          "durationSec": 16
+        },
+        {
+          "order": 2,
+          "sourceDeck": "ru",
+          "sourceId": 11,
+          "title": "Совет детям",
+          "chars": 331,
+          "durationSec": 16
+        },
+        {
+          "order": 3,
+          "sourceDeck": "ru",
+          "sourceId": 15,
+          "title": "В магазине",
+          "chars": 307,
+          "durationSec": 15
+        },
+        {
+          "order": 4,
+          "sourceDeck": "ru",
+          "sourceId": 18,
+          "title": "Про юристов",
+          "chars": 315,
+          "durationSec": 16
+        },
+        {
+          "order": 5,
+          "sourceDeck": "ru",
+          "sourceId": 19,
+          "title": "После свадьбы",
+          "chars": 309,
+          "durationSec": 16
+        },
+        {
+          "order": 6,
+          "sourceDeck": "ru",
+          "sourceId": 20,
+          "title": "На приёме у психолога",
+          "chars": 305,
+          "durationSec": 15
+        },
+        {
+          "order": 7,
+          "sourceDeck": "ru",
+          "sourceId": 26,
+          "title": "Морской быт",
+          "chars": 319,
+          "durationSec": 16
+        },
+        {
+          "order": 8,
+          "sourceDeck": "ru",
+          "sourceId": 27,
+          "title": "Юный бизнесмен",
+          "chars": 332,
+          "durationSec": 16
+        },
+        {
+          "order": 9,
+          "sourceDeck": "ru",
+          "sourceId": 28,
+          "title": "Стирание следов",
+          "chars": 347,
+          "durationSec": 17
+        },
+        {
+          "order": 10,
+          "sourceDeck": "ru",
+          "sourceId": 34,
+          "title": "Косоглазая",
+          "chars": 311,
+          "durationSec": 16
+        },
+        {
+          "order": 11,
+          "sourceDeck": "ru",
+          "sourceId": 35,
+          "title": "Про операцию",
+          "chars": 319,
+          "durationSec": 16
+        },
+        {
+          "order": 12,
+          "sourceDeck": "ru",
+          "sourceId": 38,
+          "title": "Котовозка",
+          "chars": 303,
+          "durationSec": 15
+        },
+        {
+          "order": 13,
+          "sourceDeck": "ru",
+          "sourceId": 39,
+          "title": "У врача",
+          "chars": 316,
+          "durationSec": 16
+        },
+        {
+          "order": 14,
+          "sourceDeck": "ru",
+          "sourceId": 41,
+          "title": "Разное",
+          "chars": 304,
+          "durationSec": 15
+        },
+        {
+          "order": 15,
+          "sourceDeck": "ru",
+          "sourceId": 42,
+          "title": "Про детей",
+          "chars": 321,
+          "durationSec": 16
+        },
+        {
+          "order": 16,
+          "sourceDeck": "ru",
+          "sourceId": 43,
+          "title": "О технологиях",
+          "chars": 337,
+          "durationSec": 17
+        },
+        {
+          "order": 17,
+          "sourceDeck": "ru",
+          "sourceId": 45,
+          "title": "На дороге",
+          "chars": 301,
+          "durationSec": 15
+        },
+        {
+          "order": 18,
+          "sourceDeck": "ru",
+          "sourceId": 46,
+          "title": "В школе",
+          "chars": 346,
+          "durationSec": 17
+        },
+        {
+          "order": 19,
+          "sourceDeck": "ru",
+          "sourceId": 49,
+          "title": "Про загробное",
+          "chars": 305,
+          "durationSec": 15
+        },
+        {
+          "order": 20,
+          "sourceDeck": "ru",
+          "sourceId": 50,
+          "title": "У врача",
+          "chars": 318,
+          "durationSec": 16
+        },
+        {
+          "order": 21,
+          "sourceDeck": "ru",
+          "sourceId": 54,
+          "title": "О спорте",
+          "chars": 336,
+          "durationSec": 17
+        },
+        {
+          "order": 22,
+          "sourceDeck": "ru",
+          "sourceId": 56,
+          "title": "В поезде",
+          "chars": 316,
+          "durationSec": 16
+        },
+        {
+          "order": 23,
+          "sourceDeck": "ru",
+          "sourceId": 58,
+          "title": "О зарплате",
+          "chars": 313,
+          "durationSec": 16
+        },
+        {
+          "order": 24,
+          "sourceDeck": "ru",
+          "sourceId": 61,
+          "title": "Хитрая медсестра",
+          "chars": 316,
+          "durationSec": 16
+        },
+        {
+          "order": 25,
+          "sourceDeck": "ru",
+          "sourceId": 63,
+          "title": "Санки и телефон",
+          "chars": 303,
+          "durationSec": 15
+        },
+        {
+          "order": 26,
+          "sourceDeck": "ru",
+          "sourceId": 64,
+          "title": "Штирлиц в кафе",
+          "chars": 303,
+          "durationSec": 15
+        },
+        {
+          "order": 27,
+          "sourceDeck": "ru",
+          "sourceId": 65,
+          "title": "Свадебная годовщина",
+          "chars": 304,
+          "durationSec": 15
+        },
+        {
+          "order": 28,
+          "sourceDeck": "ru",
+          "sourceId": 66,
+          "title": "Новый магазин",
+          "chars": 300,
+          "durationSec": 15
+        },
+        {
+          "order": 29,
+          "sourceDeck": "ru",
+          "sourceId": 69,
+          "title": "Вилка и глаз",
+          "chars": 309,
+          "durationSec": 16
+        },
+        {
+          "order": 30,
+          "sourceDeck": "ru",
+          "sourceId": 70,
+          "title": "В троллейбусе",
+          "chars": 315,
+          "durationSec": 16
+        },
+        {
+          "order": 31,
+          "sourceDeck": "ru",
+          "sourceId": 72,
+          "title": "Цыпленок на рельсах",
+          "chars": 344,
+          "durationSec": 17
+        },
+        {
+          "order": 32,
+          "sourceDeck": "ru",
+          "sourceId": 74,
+          "title": "Конкуренция болячек",
+          "chars": 312,
+          "durationSec": 16
+        }
+      ]
+    },
+    {
+      "file": "long-anecdotes-ru/long-anecdotes-ru-003.mp4",
+      "title": "Большой сборник русских анекдотов",
+      "durationSec": 510,
+      "sceneCount": 32,
+      "sourceIds": [
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        83,
+        84,
+        86,
+        87,
+        88,
+        90,
+        91,
+        93,
+        95,
+        98,
+        99,
+        100,
+        101,
+        103,
+        104,
+        105,
+        107,
+        109,
+        110,
+        111,
+        112,
+        114,
+        117,
+        119,
+        120
+      ],
+      "scenes": [
+        {
+          "order": 1,
+          "sourceDeck": "ru",
+          "sourceId": 75,
+          "title": "Воспаление легких",
+          "chars": 323,
+          "durationSec": 16
+        },
+        {
+          "order": 2,
+          "sourceDeck": "ru",
+          "sourceId": 76,
+          "title": "Пьяный доярка",
+          "chars": 303,
+          "durationSec": 15
+        },
+        {
+          "order": 3,
+          "sourceDeck": "ru",
+          "sourceId": 77,
+          "title": "Здоров или болен",
+          "chars": 336,
+          "durationSec": 17
+        },
+        {
+          "order": 4,
+          "sourceDeck": "ru",
+          "sourceId": 78,
+          "title": "На газоне",
+          "chars": 309,
+          "durationSec": 16
+        },
+        {
+          "order": 5,
+          "sourceDeck": "ru",
+          "sourceId": 79,
+          "title": "Вовочка в машине",
+          "chars": 325,
+          "durationSec": 16
+        },
+        {
+          "order": 6,
+          "sourceDeck": "ru",
+          "sourceId": 80,
+          "title": "Ремень безопасности",
+          "chars": 347,
+          "durationSec": 17
+        },
+        {
+          "order": 7,
+          "sourceDeck": "ru",
+          "sourceId": 81,
+          "title": "Крем подруги",
+          "chars": 321,
+          "durationSec": 16
+        },
+        {
+          "order": 8,
+          "sourceDeck": "ru",
+          "sourceId": 83,
+          "title": "О философии жизни",
+          "chars": 305,
+          "durationSec": 15
+        },
+        {
+          "order": 9,
+          "sourceDeck": "ru",
+          "sourceId": 84,
+          "title": "Зарплата секретарши",
+          "chars": 300,
+          "durationSec": 15
+        },
+        {
+          "order": 10,
+          "sourceDeck": "ru",
+          "sourceId": 86,
+          "title": "Пластический хирург",
+          "chars": 305,
+          "durationSec": 15
+        },
+        {
+          "order": 11,
+          "sourceDeck": "ru",
+          "sourceId": 87,
+          "title": "В чуйской долине",
+          "chars": 312,
+          "durationSec": 16
+        },
+        {
+          "order": 12,
+          "sourceDeck": "ru",
+          "sourceId": 88,
+          "title": "После операции",
+          "chars": 308,
+          "durationSec": 15
+        },
+        {
+          "order": 13,
+          "sourceDeck": "ru",
+          "sourceId": 90,
+          "title": "Гинеколог",
+          "chars": 328,
+          "durationSec": 16
+        },
+        {
+          "order": 14,
+          "sourceDeck": "ru",
+          "sourceId": 91,
+          "title": "Психушка",
+          "chars": 307,
+          "durationSec": 15
+        },
+        {
+          "order": 15,
+          "sourceDeck": "ru",
+          "sourceId": 93,
+          "title": "Мухи",
+          "chars": 316,
+          "durationSec": 16
+        },
+        {
+          "order": 16,
+          "sourceDeck": "ru",
+          "sourceId": 95,
+          "title": "Врач ночью",
+          "chars": 311,
+          "durationSec": 16
+        },
+        {
+          "order": 17,
+          "sourceDeck": "ru",
+          "sourceId": 98,
+          "title": "Сестричка",
+          "chars": 326,
+          "durationSec": 16
+        },
+        {
+          "order": 18,
+          "sourceDeck": "ru",
+          "sourceId": 99,
+          "title": "В автобусе",
+          "chars": 324,
+          "durationSec": 16
+        },
+        {
+          "order": 19,
+          "sourceDeck": "ru",
+          "sourceId": 100,
+          "title": "Рояль",
+          "chars": 338,
+          "durationSec": 17
+        },
+        {
+          "order": 20,
+          "sourceDeck": "ru",
+          "sourceId": 101,
+          "title": "Выборы волка",
+          "chars": 337,
+          "durationSec": 17
+        },
+        {
+          "order": 21,
+          "sourceDeck": "ru",
+          "sourceId": 103,
+          "title": "Хэллоуин",
+          "chars": 329,
+          "durationSec": 16
+        },
+        {
+          "order": 22,
+          "sourceDeck": "ru",
+          "sourceId": 104,
+          "title": "Молодожены",
+          "chars": 336,
+          "durationSec": 17
+        },
+        {
+          "order": 23,
+          "sourceDeck": "ru",
+          "sourceId": 105,
+          "title": "20 лет спустя",
+          "chars": 327,
+          "durationSec": 16
+        },
+        {
+          "order": 24,
+          "sourceDeck": "ru",
+          "sourceId": 107,
+          "title": "Носки и масло",
+          "chars": 330,
+          "durationSec": 16
+        },
+        {
+          "order": 25,
+          "sourceDeck": "ru",
+          "sourceId": 109,
+          "title": "В тюрьме",
+          "chars": 321,
+          "durationSec": 16
+        },
+        {
+          "order": 26,
+          "sourceDeck": "ru",
+          "sourceId": 110,
+          "title": "В психбольнице",
+          "chars": 316,
+          "durationSec": 16
+        },
+        {
+          "order": 27,
+          "sourceDeck": "ru",
+          "sourceId": 111,
+          "title": "Форт Баярд",
+          "chars": 316,
+          "durationSec": 16
+        },
+        {
+          "order": 28,
+          "sourceDeck": "ru",
+          "sourceId": 112,
+          "title": "Лотерейка",
+          "chars": 316,
+          "durationSec": 16
+        },
+        {
+          "order": 29,
+          "sourceDeck": "ru",
+          "sourceId": 114,
+          "title": "О сёстрах",
+          "chars": 329,
+          "durationSec": 16
+        },
+        {
+          "order": 30,
+          "sourceDeck": "ru",
+          "sourceId": 117,
+          "title": "Кот",
+          "chars": 302,
+          "durationSec": 15
+        },
+        {
+          "order": 31,
+          "sourceDeck": "ru",
+          "sourceId": 119,
+          "title": "Жена",
+          "chars": 316,
+          "durationSec": 16
+        },
+        {
+          "order": 32,
+          "sourceDeck": "ru",
+          "sourceId": 120,
+          "title": "Дрожжи",
+          "chars": 312,
+          "durationSec": 16
+        }
+      ]
+    },
+    {
+      "file": "long-anecdotes-ru/long-anecdotes-ru-004.mp4",
+      "title": "Русские анекдоты без спешки",
+      "durationSec": 505,
+      "sceneCount": 32,
+      "sourceIds": [
+        123,
+        124,
+        127,
+        129,
+        130,
+        131,
+        134,
+        136,
+        138,
+        139,
+        140,
+        141,
+        143,
+        144,
+        145,
+        150,
+        152,
+        153,
+        154,
+        159,
+        160,
+        161,
+        162,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173
+      ],
+      "scenes": [
+        {
+          "order": 1,
+          "sourceDeck": "ru",
+          "sourceId": 123,
+          "title": "Выбор",
+          "chars": 349,
+          "durationSec": 17
+        },
+        {
+          "order": 2,
+          "sourceDeck": "ru",
+          "sourceId": 124,
+          "title": "Мороженое",
+          "chars": 332,
+          "durationSec": 16
+        },
+        {
+          "order": 3,
+          "sourceDeck": "ru",
+          "sourceId": 127,
+          "title": "В больнице",
+          "chars": 338,
+          "durationSec": 17
+        },
+        {
+          "order": 4,
+          "sourceDeck": "ru",
+          "sourceId": 129,
+          "title": "Долго идет очередное",
+          "chars": 308,
+          "durationSec": 15
+        },
+        {
+          "order": 5,
+          "sourceDeck": "ru",
+          "sourceId": 130,
+          "title": "Это уже потом я",
+          "chars": 306,
+          "durationSec": 15
+        },
+        {
+          "order": 6,
+          "sourceDeck": "ru",
+          "sourceId": 131,
+          "title": "Английский лорд,",
+          "chars": 312,
+          "durationSec": 16
+        },
+        {
+          "order": 7,
+          "sourceDeck": "ru",
+          "sourceId": 134,
+          "title": "Летят два воробья,",
+          "chars": 315,
+          "durationSec": 16
+        },
+        {
+          "order": 8,
+          "sourceDeck": "ru",
+          "sourceId": 136,
+          "title": "Программист Сеня",
+          "chars": 309,
+          "durationSec": 16
+        },
+        {
+          "order": 9,
+          "sourceDeck": "ru",
+          "sourceId": 138,
+          "title": "Мужик поселяется в",
+          "chars": 311,
+          "durationSec": 16
+        },
+        {
+          "order": 10,
+          "sourceDeck": "ru",
+          "sourceId": 139,
+          "title": "Подошел познакомиться",
+          "chars": 310,
+          "durationSec": 16
+        },
+        {
+          "order": 11,
+          "sourceDeck": "ru",
+          "sourceId": 140,
+          "title": "А я вам еще раз",
+          "chars": 300,
+          "durationSec": 15
+        },
+        {
+          "order": 12,
+          "sourceDeck": "ru",
+          "sourceId": 141,
+          "title": "Англичанин,",
+          "chars": 312,
+          "durationSec": 16
+        },
+        {
+          "order": 13,
+          "sourceDeck": "ru",
+          "sourceId": 143,
+          "title": "Мужик, собирающийся в",
+          "chars": 326,
+          "durationSec": 16
+        },
+        {
+          "order": 14,
+          "sourceDeck": "ru",
+          "sourceId": 144,
+          "title": "Стоят мужики, курят",
+          "chars": 306,
+          "durationSec": 15
+        },
+        {
+          "order": 15,
+          "sourceDeck": "ru",
+          "sourceId": 145,
+          "title": "Полицейский",
+          "chars": 301,
+          "durationSec": 15
+        },
+        {
+          "order": 16,
+          "sourceDeck": "ru",
+          "sourceId": 150,
+          "title": "Про старость",
+          "chars": 306,
+          "durationSec": 15
+        },
+        {
+          "order": 17,
+          "sourceDeck": "ru",
+          "sourceId": 152,
+          "title": "Про невест",
+          "chars": 330,
+          "durationSec": 16
+        },
+        {
+          "order": 18,
+          "sourceDeck": "ru",
+          "sourceId": 153,
+          "title": "Про футбол",
+          "chars": 338,
+          "durationSec": 17
+        },
+        {
+          "order": 19,
+          "sourceDeck": "ru",
+          "sourceId": 154,
+          "title": "Про учебу",
+          "chars": 330,
+          "durationSec": 16
+        },
+        {
+          "order": 20,
+          "sourceDeck": "ru",
+          "sourceId": 159,
+          "title": "Про животных",
+          "chars": 310,
+          "durationSec": 16
+        },
+        {
+          "order": 21,
+          "sourceDeck": "ru",
+          "sourceId": 160,
+          "title": "Супружеская жизнь",
+          "chars": 317,
+          "durationSec": 16
+        },
+        {
+          "order": 22,
+          "sourceDeck": "ru",
+          "sourceId": 161,
+          "title": "Супружеская жизнь",
+          "chars": 319,
+          "durationSec": 16
+        },
+        {
+          "order": 23,
+          "sourceDeck": "ru",
+          "sourceId": 162,
+          "title": "Про детей",
+          "chars": 323,
+          "durationSec": 16
+        },
+        {
+          "order": 24,
+          "sourceDeck": "ru",
+          "sourceId": 165,
+          "title": "Про учебу",
+          "chars": 300,
+          "durationSec": 15
+        },
+        {
+          "order": 25,
+          "sourceDeck": "ru",
+          "sourceId": 166,
+          "title": "Про медицину",
+          "chars": 300,
+          "durationSec": 15
+        },
+        {
+          "order": 26,
+          "sourceDeck": "ru",
+          "sourceId": 167,
+          "title": "Про медицину",
+          "chars": 301,
+          "durationSec": 15
+        },
+        {
+          "order": 27,
+          "sourceDeck": "ru",
+          "sourceId": 168,
+          "title": "Про бухгалтера",
+          "chars": 312,
+          "durationSec": 16
+        },
+        {
+          "order": 28,
+          "sourceDeck": "ru",
+          "sourceId": 169,
+          "title": "В магазине",
+          "chars": 305,
+          "durationSec": 15
+        },
+        {
+          "order": 29,
+          "sourceDeck": "ru",
+          "sourceId": 170,
+          "title": "Про жену",
+          "chars": 309,
+          "durationSec": 16
+        },
+        {
+          "order": 30,
+          "sourceDeck": "ru",
+          "sourceId": 171,
+          "title": "Про свиней",
+          "chars": 318,
+          "durationSec": 16
+        },
+        {
+          "order": 31,
+          "sourceDeck": "ru",
+          "sourceId": 172,
+          "title": "Про кота",
+          "chars": 309,
+          "durationSec": 16
+        },
+        {
+          "order": 32,
+          "sourceDeck": "ru",
+          "sourceId": 173,
+          "title": "Про мужа",
+          "chars": 316,
+          "durationSec": 16
+        }
+      ]
+    }
+  ]
+}

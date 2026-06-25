@@ -1,13 +1,13 @@
 // Майнинг коротких анекдотов под ПАРЫ (две шутки → карточка 350–450) для основной RU-деки.
 // Источник упёрся в 367 символов, поэтому длинных нет — берём короткие (их тысячи) и потом парим.
-// Чистка/дедуп/длина/BLOCK здесь; качество+безопасность+тему отдаём LLM-workflow (слайсы → corpora/ru-gen).
+// Чистка/дедуп/длина/BLOCK здесь; качество+безопасность+тему отдаём LLM-workflow (слайсы → local-assets/corpora/ru-gen).
 //   node --import tsx src/scripts/ru-mine.ts
 import { writeFileSync, mkdirSync, rmSync, existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadCleanAnecdotes } from "../anecdotes/build.ts";
 import { anecdoteKey } from "../anecdotes/library.ts";
 
-const OUT = resolve(process.cwd(), "corpora/ru-gen");
+const OUT = resolve(process.cwd(), "local-assets/corpora/ru-gen");
 const MINL = Number(process.env.MINL ?? 160);
 const MAXL = Number(process.env.MAXL ?? 240);
 const MAXLINES = Number(process.env.MAXLINES ?? 5);

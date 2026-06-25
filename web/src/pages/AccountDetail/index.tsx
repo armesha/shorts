@@ -1,17 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
-import { ArrowLeft, Save, Trash2, Check, Plus, Upload, Loader2, ChevronLeft, ChevronRight, RefreshCw, Play, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Save, Trash2, Check, Plus, RefreshCw, Loader2, Play, Upload } from "lucide-react";
 import { apiClient, type Account, type VideoItem, type Generator, type PackSummary, type OAuthClient, type AccountReadiness } from "../../lib/api";
 import { confirmDialog } from "../../lib/confirm";
 import { useAuth } from "../../lib/auth";
 import { useGenQueue } from "../../lib/genQueue";
 import { useT } from "../../lib/i18n";
 import { AppIcon } from "../../components/AppIcon";
-import { BrandIcon } from "../../components/BrandIcon";
-import { BUILTIN_DECKS, CONTENT_LANGS, DECK_LANG, langTag, type DeckGroup } from "../../lib/deck";
+import { BUILTIN_DECKS, CONTENT_LANGS, DECK_LANG, type DeckGroup } from "../../lib/deck";
 import { cleanDisplayText } from "../../lib/text";
-import { formatDateTime } from "../../lib/format";
 import { toMin, randomDayTimes, accountDailySlotCap, USER_DAILY_SLOT_CAP } from "./schedule";
 import {
   GENERATE_ALL_DECKS,
@@ -25,6 +22,10 @@ import {
 } from "./sources";
 import VideoPreviewModal from "./VideoPreviewModal";
 import AvatarPickerModal from "./AvatarPickerModal";
+import NoticeToast from "./NoticeToast";
+import YouTubeConnectionCard from "./YouTubeConnectionCard";
+import LibrarySection from "./LibrarySection";
+import SlotDeckAssignments from "./SlotDeckAssignments";
 
 function readDataUrl(file: File): Promise<string> {
   return new Promise((res, rej) => {
@@ -63,7 +64,14 @@ export default function AccountDetail() {
     sourceDecksRef.current = next;
     setSourceDecksState(next);
   };
+  const longVideoDecksRef = useRef<string[]>([]);
+  const [longVideoDecks, setLongVideoDecksState] = useState<string[]>([]);
+  const setLongVideoDecks = (next: string[]) => {
+    longVideoDecksRef.current = next;
+    setLongVideoDecksState(next);
+  };
   const [generateDeck, setGenerateDeck] = useState("");
+  const [addingLongVideoDeck, setAddingLongVideoDeck] = useState<string | null>(null);
   const [lastPosted, setLastPosted] = useState<{ title: string; url: string } | null>(null);
   const [preview, setPreview] = useState<VideoItem | null>(null);
   const [avatarOpen, setAvatarOpen] = useState(false);
@@ -189,6 +197,7 @@ export default function AccountDetail() {
           setSourceDecks(sources);
           setGenerateDeck(sources[0] || a.lang);
         }
+        setLongVideoDecks(a.longVideoDecks ?? []);
         setChannelLang(a.channelLang || DECK_LANG[a.lang] || "ru");
         setTimes(a.schedule);
         setSlotVideos(a.slotVideos || {});
@@ -275,6 +284,7 @@ export default function AccountDetail() {
     try {
       const latestSources = sourceDecksRef.current.length ? sourceDecksRef.current : sourceDecks;
       const cleanSources = [...new Set((latestSources.length ? latestSources : [lang]).filter(Boolean))];
+      const cleanLongVideoDecks = [...new Set(longVideoDecksRef.current.filter(Boolean))];
       const sourceLangs = [...new Set(cleanSources.map(contentLang).filter(Boolean))];
       const effectiveChannelLang = sourceLangs.length === 1 ? sourceLangs[0] : channelLangRef.current || channelLang;
       const cleanSlotDecks = Object.fromEntries(
@@ -301,6 +311,7 @@ export default function AccountDetail() {
         theme,
         lang: cleanSources[0] || lang,
         sourceDecks: cleanSources,
+        longVideoDecks: cleanLongVideoDecks,
         channelLang: effectiveChannelLang,
         schedule: times,
         slotVideos,
@@ -309,6 +320,7 @@ export default function AccountDetail() {
       setAccount(updated);
       setLang(updated.lang);
       setSourceDecks(updated.sourceDecks?.length ? updated.sourceDecks : [updated.lang]);
+      setLongVideoDecks(updated.longVideoDecks ?? []);
       setChannelLang(updated.channelLang || DECK_LANG[updated.lang] || channelLang);
       setSlotDecks(updated.slotDecks || {});
       setSaved(true);
@@ -418,6 +430,27 @@ export default function AccountDetail() {
     }
   }
 
+  async function addLongVideoToLibrary(deckId: string) {
+    if (!deckId) return;
+    if (!longVideoDecks.includes(deckId)) {
+      notify(t("account.longVideoEnableFirst"), "error");
+      return;
+    }
+    if ((sourcesDirty || longVideoDecksDirty) && !(await save())) return;
+    setAddingLongVideoDeck(deckId);
+    try {
+      const v = await apiClient.addLongVideoToLibrary(id!, deckId);
+      setVideos((cur) => [v, ...cur]);
+      setPage(1);
+      notify(t("account.longVideoAdded"), "success");
+      void reloadReadiness();
+      apiClient.generators().then(setGens).catch(() => {});
+    } catch (e) {
+      notify(t("account.longVideoAddFailed") + " " + String(e), "error");
+    } finally {
+      setAddingLongVideoDeck(null);
+    }
+  }
 
   async function removeVid(vid: number) {
     if (!(await confirmDialog(t("account.deleteVideoConfirm"), { confirmText: t("common.delete"), danger: true }))) return;
@@ -426,8 +459,8 @@ export default function AccountDetail() {
   }
 
   // Удалить все ролики, которые выкладывались больше одного раза (postCount > 1).
-  async function removePosted() {
-    const targets = videos.filter((v) => v.postCount > 1);
+  async function removePosted(candidates = videos) {
+    const targets = candidates.filter((v) => v.postCount > 1);
     if (targets.length === 0) return;
     if (!(await confirmDialog(t("account.deletePostedConfirm", { n: targets.length }), { confirmText: t("common.delete"), danger: true }))) return;
     for (const v of targets) await apiClient.deleteVideo(v.id);
@@ -435,12 +468,12 @@ export default function AccountDetail() {
   }
 
   // Очистить ВСЮ библиотеку канала (например, после смены пака — старый контент больше не подходит).
-  async function clearLibrary() {
-    if (videos.length === 0) return;
-    if (!(await confirmDialog(t("account.clearLibraryConfirm", { n: videos.length }), { title: t("account.clearLibraryTitle"), confirmText: t("account.deleteAll"), danger: true }))) return;
+  async function clearLibrary(targets = videos) {
+    if (targets.length === 0) return;
+    if (!(await confirmDialog(t("account.clearLibraryConfirm", { n: targets.length }), { title: t("account.clearLibraryTitle"), confirmText: t("account.deleteAll"), danger: true }))) return;
     setClearing(true);
     try {
-      for (const v of [...videos]) await apiClient.deleteVideo(v.id);
+      for (const v of [...targets]) await apiClient.deleteVideo(v.id);
       await reloadVideos();
     } catch (e) {
       notify(t("account.clearLibraryFailed") + " " + String(e), "error");
@@ -449,7 +482,14 @@ export default function AccountDetail() {
     }
   }
 
-  const sortedVideos = [...videos].sort((a, b) =>
+  const allLongVideoGens = gens.filter((g) => g.longVideo);
+  const longVideoGens = allLongVideoGens.filter((g) => !channelLang || (DECK_LANG[g.id] || g.id) === channelLang);
+  const normalGens = gens.filter((g) => !g.longVideo);
+  const longVideoDeckIds = new Set(allLongVideoGens.map((g) => g.id));
+  const isLongVideoDeck = (deckId: string) => longVideoDeckIds.has(deckId) || longVideoDecks.includes(deckId);
+  const regularVideos = videos.filter((v) => !isLongVideoDeck(v.deck));
+  const longLibraryVideos = videos.filter((v) => isLongVideoDeck(v.deck));
+  const sortedVideos = [...regularVideos].sort((a, b) =>
     sort === "title"
       ? a.title.localeCompare(b.title)
       : sort === "posts"
@@ -461,15 +501,15 @@ export default function AccountDetail() {
   const pageCount = Math.max(1, Math.ceil(sortedVideos.length / PAGE_SIZE));
   const clampedPage = Math.min(Math.max(1, page), pageCount);
   const pageVideos = sortedVideos.slice((clampedPage - 1) * PAGE_SIZE, clampedPage * PAGE_SIZE);
-  const postedTwicePlus = videos.filter((v) => v.postCount > 1).length;
+  const postedTwicePlus = regularVideos.filter((v) => v.postCount > 1).length;
 
   // Only offer packs (languages) the user is allowed to see — generators are filtered server-side.
   // While generators load, show all to avoid an empty dropdown; always keep the channel's current value.
   const currentDeckIds = new Set([lang, ...selectedSources]);
-  const gensIds = new Set(gens.map((g) => g.id));
+  const gensIds = new Set(normalGens.map((g) => g.id));
   const visibleLangs =
     gens.length === 0 ? BUILTIN_DECKS : BUILTIN_DECKS.filter(({ id }) => gensIds.has(id) || currentDeckIds.has(id));
-  const genById = (id: string) => srcGenById(gens, id);
+  const genById = (id: string) => srcGenById(normalGens, id);
   const hasVideoSources = visibleLangs.some(({ id }) => !!genById(id)?.preFact);
   const hasTextSources = visibleLangs.some(({ id }) => !genById(id)?.preFact) || packs.length > 0;
   const showPackKind = hasVideoSources && hasTextSources;
@@ -496,17 +536,34 @@ export default function AccountDetail() {
     );
     setSlotDecks((prev) => Object.fromEntries(Object.entries(prev).filter(([, deckId]) => fallback.includes(deckId) || deckId === "manual")));
   };
+  useEffect(() => {
+    if (longVideoDeckIds.size === 0) return;
+    const misplaced = selectedSources.filter((deckId) => longVideoDeckIds.has(deckId));
+    if (misplaced.length === 0) return;
+    const normalSources = selectedSources.filter((deckId) => !longVideoDeckIds.has(deckId));
+    const fallback = normalSources.length
+      ? normalSources
+      : [normalGens.find((g) => contentLang(g.id) === channelLang)?.id || normalGens[0]?.id || "ru"];
+    setSourceDecks(fallback);
+    setLang(fallback[0] || "ru");
+    setLongVideoDecks([...new Set([...longVideoDecks, ...misplaced])]);
+    setGenerateDeck((cur) => (fallback.includes(cur) ? cur : fallback[0] || ""));
+    setSlotDecks((prev) => Object.fromEntries(Object.entries(prev).filter(([, deckId]) => fallback.includes(deckId) || deckId === "manual")));
+  }, [channelLang, contentLang, longVideoDeckIds, longVideoDecks, normalGens, selectedSources]);
   const savedSources = account ? (account.sourceDecks?.length ? account.sourceDecks : [account.lang]) : selectedSources;
   const sourcesDirty = savedSources.join("") !== selectedSources.join("");
+  const savedLongVideoDecks = account?.longVideoDecks ?? [];
+  const longVideoDecksDirty = savedLongVideoDecks.join("") !== longVideoDecks.join("");
+  const updateLongVideoDecks = (next: string[]) => setLongVideoDecks([...new Set(next.filter(Boolean))]);
   // Единый пикер источников: встроенные деки + кастомные паки, сгруппированы только по языку.
   // Группы (данные) считает чистый хелпер sources.ts; здесь только JSX-рендер <optgroup>.
   const deckOptions = (excludeSelected = false) => {
-    const groups: DeckGroup[] = srcDeckGroups(packs, gens, visibleLangs, selectedSources, packIds, t, excludeSelected);
+    const groups: DeckGroup[] = srcDeckGroups(packs, normalGens, visibleLangs, selectedSources, packIds, t, excludeSelected);
     return groups.map((grp) => (
       <optgroup key={grp.key} label={grp.title}>
         {grp.items.map((it) => (
           <option key={it.id} value={it.id}>
-            {showPackKind ? `[${it.video ? t("packKind.video") : t("packKind.text")}] ` : ""}
+            {showPackKind ? `[${it.longVideo ? t("packKind.longVideo") : it.video ? t("packKind.video") : t("packKind.text")}] ` : ""}
             {it.label}
           </option>
         ))}
@@ -538,39 +595,6 @@ export default function AccountDetail() {
       "error",
       t("account.scheduleLimitToastTitle"),
     );
-
-  const noticeToast =
-    notice && typeof document !== "undefined"
-      ? createPortal(
-          <div className="toast toast-bottom toast-end z-[1000] pointer-events-none">
-            <div
-              role="alert"
-              className={`pointer-events-auto w-[min(22rem,calc(100vw-2rem))] rounded-md border px-3 py-2.5 shadow-2xl ring-1 ${
-                notice.kind === "error"
-                  ? "border-error/40 border-l-4 bg-error text-error-content ring-error/25"
-                  : notice.kind === "success"
-                    ? "border-success/40 border-l-4 bg-success text-success-content ring-success/25"
-                    : "border-info/40 border-l-4 bg-info text-info-content ring-info/25"
-              }`}
-            >
-              <div className="flex items-start gap-2">
-                {notice.kind === "success" ? (
-                  <Check size={18} className="mt-0.5 shrink-0" />
-                ) : (
-                  <AlertTriangle size={18} className="mt-0.5 shrink-0" />
-                )}
-                <div className="min-w-0">
-                  <div className="text-sm font-bold leading-tight">
-                    {notice.title ?? (notice.kind === "success" ? t("common.saved") : t("common.error"))}
-                  </div>
-                  <div className="mt-1 whitespace-normal break-words text-xs font-semibold leading-snug">{notice.text}</div>
-                </div>
-              </div>
-            </div>
-          </div>,
-          document.body,
-        )
-      : null;
 
   const readinessBadge =
     readiness?.status === "ready" ? "badge-success" : readiness?.status === "warning" ? "badge-warning" : "badge-error";
@@ -606,7 +630,7 @@ export default function AccountDetail() {
 
   return (
     <div className="space-y-6 max-w-screen-2xl">
-      {noticeToast}
+      <NoticeToast notice={notice} t={t} />
       <Link to="/accounts" className="btn btn-ghost btn-sm gap-2">
         <ArrowLeft size={16} /> {t("account.backToChannels")}
       </Link>
@@ -668,9 +692,11 @@ export default function AccountDetail() {
                       {readinessAction(action)}
                     </button>
                   ) : action === "open_queue" ? (
-                    <Link key={action} to="/queue" className="btn btn-sm btn-outline">
-                      {readinessAction(action)}
-                    </Link>
+                    user?.role === "admin" ? (
+                      <Link key={action} to="/queue" className="btn btn-sm btn-outline">
+                        {readinessAction(action)}
+                      </Link>
+                    ) : null
                   ) : (
                     <a
                       key={action}
@@ -684,7 +710,7 @@ export default function AccountDetail() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div className="grid grid-cols-3 gap-3">
               <div className="rounded-2xl bg-base-200 p-3">
                 <div className="text-2xl font-black">{readiness.queuedVideos}</div>
                 <div className="text-xs text-base-content/55">{t("account.cockpitQueued")}</div>
@@ -696,12 +722,6 @@ export default function AccountDetail() {
               <div className="rounded-2xl bg-base-200 p-3">
                 <div className="text-2xl font-black">{readinessRunway}</div>
                 <div className="text-xs text-base-content/55">{t("account.cockpitRunway")}</div>
-              </div>
-              <div className="rounded-2xl bg-base-200 p-3">
-                <div className="truncate text-sm font-bold">
-                  {readiness.nextSlotAt ? formatDateTime(readiness.nextSlotAt) : "—"}
-                </div>
-                <div className="text-xs text-base-content/55">{t("account.cockpitNextSlot")}</div>
               </div>
             </div>
 
@@ -946,416 +966,69 @@ export default function AccountDetail() {
         </div>
       </section>
 
-      <section className="card bg-base-100 border border-base-300">
-        <div className="card-body">
-          <h2 className="card-title text-base">{t("account.youtubeConnection")}</h2>
-          {account.authError && (
-            <div className="alert alert-error text-sm items-start py-2.5">
-              <AppIcon name="warning" size={16} className="shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <div className="font-semibold">{t("account.authErrorTitle")}</div>
-                <div className="opacity-90">{account.authError}</div>
-                {account.authFailedAt && (
-                  <div className="text-xs opacity-70 mt-0.5">
-                    {t("account.authErrorSince", { time: formatDateTime(account.authFailedAt) })}
-                  </div>
-                )}
-                <button className="btn btn-sm btn-neutral mt-2 gap-1" onClick={startConnect}>
-                  <RefreshCw size={14} /> {t("account.reconnect")}
-                </button>
-              </div>
-            </div>
-          )}
-          {account.ytChannelTitle ? (
-            <>
-            <div className="flex items-center gap-2 text-sm flex-wrap">
-              {account.authError ? (
-                <span className="badge badge-error gap-1">
-                  <AppIcon name="warning" size={12} /> {t("account.reconnectBadge")}
-                </span>
-              ) : (
-                <span className="badge badge-success">{t("account.connected")}</span>
-              )}
-              <span>
-                {t("account.channelColon")} <b>{account.ytChannelTitle}</b>
-              </span>
-              {account.ytChannelId && (
-                <a
-                  href={`https://www.youtube.com/channel/${account.ytChannelId}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="link link-primary inline-flex items-center gap-1"
-                >
-                  <BrandIcon name="youtube" size={14} />
-                  {t("account.openOnYouTube")}
-                  <AppIcon name="external" size={13} />
-                </a>
-              )}
-              <button
-                className="btn btn-ghost btn-xs gap-1"
-                onClick={startConnect}
-                title={t("account.reconnectTitle")}
-              >
-                <RefreshCw size={13} /> {t("account.reconnect")}
-              </button>
-            </div>
-            {clients.length > 1 && boundClient && (
-              <div className="mt-1.5 flex items-center gap-1.5 text-xs text-base-content/60 flex-wrap">
-                <BrandIcon name="youtube" size={12} />
-                <span>{t("account.connectedViaKey")}:</span>
-                <b className="truncate max-w-[14rem]">{boundClient.label}</b>
-                {boundClient.projectId && (
-                  <span className="text-base-content/45 truncate">· {boundClient.projectId}</span>
-                )}
-              </div>
-            )}
-            </>
-          ) : (
-            <>
-              <p className="text-sm text-base-content/60">
-                {t("account.connectIntro")}
-              </p>
-              {justConnected && (
-                <p className="text-success text-sm">{t("account.connectedRefresh")}</p>
-              )}
-              <div>
-                <button className="btn btn-primary btn-sm" onClick={startConnect}>
-                  {t("account.connectChannel")}
-                </button>
-              </div>
-            </>
-          )}
-
-          {/* Key picker — shown when the owner has more than one Google key (each channel binds to one). */}
-          {keyChoices && (
-            <div className="mt-2 rounded-lg border border-primary/30 bg-primary/5 p-3 space-y-2">
-              <div className="text-sm font-medium">{t("account.chooseKey")}</div>
-              <div className="flex flex-col gap-1.5">
-                {keyChoices.map((k) => (
-                  <button
-                    key={k.id}
-                    className="btn btn-sm btn-outline justify-start gap-2 normal-case"
-                    onClick={() => connect(k.id)}
-                  >
-                    <BrandIcon name="youtube" size={14} />
-                    <span className="truncate">{k.label}</span>
-                    {k.projectId && <span className="text-xs text-base-content/50 truncate">· {k.projectId}</span>}
-                  </button>
-                ))}
-              </div>
-              <button className="btn btn-ghost btn-xs" onClick={() => setKeyChoices(null)}>
-                {t("common.cancel")}
-              </button>
-            </div>
-          )}
-        </div>
-      </section>
+      <YouTubeConnectionCard
+        account={account}
+        clients={clients}
+        boundClient={boundClient}
+        keyChoices={keyChoices}
+        justConnected={justConnected}
+        startConnect={startConnect}
+        connect={connect}
+        setKeyChoices={setKeyChoices}
+        t={t}
+      />
       </div>
 
-      <section id="channel-content" className="card bg-base-100 border border-base-300">
-        <div className="card-body">
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <h2 className="card-title text-base">{t("account.libraryTitle", { n: videos.length })}</h2>
-            <div className="flex items-center gap-2">
-              {videos.length > 0 && (
-                <button
-                  className="btn btn-sm btn-error btn-outline gap-1"
-                  onClick={clearLibrary}
-                  disabled={clearing || q.running}
-                  title={t("account.clearAllTitle")}
-                >
-                  {clearing ? <Loader2 className="animate-spin" size={14} /> : <Trash2 size={14} />}
-                  {t("account.clearAll")}
-                </button>
-              )}
-              <select
-                className="select select-bordered select-sm"
-                value={sort}
-                onChange={(e) => setSort(e.target.value as "date" | "title" | "posts")}
-              >
-                <option value="date">{t("account.sortNewest")}</option>
-                <option value="title">{t("account.sortByTitle")}</option>
-                <option value="posts">{t("account.sortByPosts")}</option>
-              </select>
-            </div>
-          </div>
-          <div className="mt-3 pt-3 border-t border-base-300 grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.8fr)_minmax(300px,0.7fr)] gap-3 items-start">
-            <div className="rounded-md border border-base-300 bg-base-200/30 p-3 min-w-0">
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <div className="font-medium text-sm">{t("account.channelPacks")}</div>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {selectedSources.map((deckId, index) => (
-                  <span
-                    key={deckId}
-                    className={`inline-flex max-w-full items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm ${
-                      index === 0 ? "border-primary/50 bg-primary/10 text-primary" : "border-base-300 bg-base-100"
-                    }`}
-                  >
-                    <span className="min-w-0">
-                      <span className="block truncate font-semibold max-w-[15rem]" title={deckName(deckId)}>
-                        {deckName(deckId)}
-                      </span>
-                      <span className="block text-[11px] opacity-70 leading-tight">{deckMeta(deckId)}</span>
-                    </span>
-                    {selectedSources.length > 1 && (
-                      <button
-                        type="button"
-                        className="btn btn-ghost btn-xs btn-square shrink-0"
-                        title={t("account.removePack")}
-                        onClick={() => updateSources(selectedSources.filter((x) => x !== deckId))}
-                      >
-                        <AppIcon name="close" size={12} />
-                      </button>
-                    )}
-                  </span>
-                ))}
-              </div>
-              <select
-                className="select select-bordered select-sm w-full max-w-sm mt-2"
-                aria-label={t("account.addPack")}
-                value=""
-                onChange={(e) => {
-                  if (!e.target.value) return;
-                  updateSources([...selectedSources, e.target.value]);
-                  setGenerateDeck(e.target.value);
-                }}
-                title={t("account.channelPackTitle")}
-              >
-                <option value="">{t("account.addPack")}</option>
-                {deckOptions(true)}
-              </select>
-            </div>
-
-            <div className="rounded-md border border-base-300 bg-base-200/30 p-3">
-              <div className="font-medium text-sm mb-2">{t("account.generateToLibrary")}</div>
-              {!isConnected && (
-                <div className="text-xs text-warning mb-2 flex items-center gap-1.5">
-                  <AppIcon name="warning" size={13} /> {t("account.connectFirstHint")}
-                </div>
-              )}
-              <div className="flex flex-wrap items-center gap-2">
-                <select
-                  className="select select-bordered select-sm min-w-[12rem] flex-1"
-                  value={activeGenerateDeck}
-                  onChange={(e) => setGenerateDeck(e.target.value)}
-                  aria-label={t("account.generatePack")}
-                >
-                  {canGenerateAllSources && (
-                    <option value={GENERATE_ALL_DECKS}>{t("account.generateAll")}</option>
-                  )}
-                  {selectedSources.map((deckId) => (
-                    <option key={deckId} value={deckId}>
-                      {deckName(deckId)}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  type="number"
-                  min={1}
-                  max={Math.max(1, maxBatch)}
-                  className="input input-bordered input-sm w-[4.5rem]"
-                  value={batchN}
-                  disabled={maxBatch < 1}
-                  onChange={(e) => setBatchN(Math.max(1, Math.min(maxBatch, Number(e.target.value) || 1)))}
-                  aria-label={t("account.howManyVideosAria")}
-                />
-                <span className="text-xs text-base-content/50 shrink-0">
-                  {maxBatch < 1 ? t("account.noCards") : `1–${maxBatch}`}
-                </span>
-                <button
-                  className="btn btn-sm btn-primary gap-1"
-                  onClick={async () => {
-                    if (sourcesDirty && !(await save())) return;
-                    q.run(id!, Math.min(batchN, maxBatch), generateDeckIds);
-                  }}
-                  disabled={langMismatch || saving || maxBatch < 1 || !isConnected}
-                  title={langMismatch ? t("account.genTitleMismatch") : t("account.generateSelectedTitle")}
-                >
-                  <Plus size={14} /> {t("account.generateButton")}
-                </button>
-              </div>
-              <div className="flex flex-wrap justify-end gap-2 mt-2">
-                {q.running && (
-                  <button className="btn btn-sm btn-outline btn-error gap-1" onClick={q.cancel}>
-                    <Loader2 className="animate-spin" size={14} /> {t("account.stop")}
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <div className="rounded-md border border-base-300 bg-base-200/30 p-3">
-              <div className="font-medium text-sm mb-2">{t("account.manualUploadTitle")}</div>
-              {!isConnected && (
-                <div className="text-xs text-warning mb-2 flex items-center gap-1.5">
-                  <AppIcon name="warning" size={13} /> {t("account.connectFirstHint")}
-                </div>
-              )}
-              <p className="text-xs text-base-content/60 mb-3 leading-snug">
-                {t("account.manualUploadHint", {
-                  mb: manualMaxFileMb,
-                  sec: manualDurationSec,
-                  n: manualUploadsPerHour,
-                })}
-              </p>
-              <label className={`btn btn-sm btn-outline gap-1 w-full ${manualUploading || !isConnected ? "btn-disabled" : ""}`}>
-                {manualUploading ? <Loader2 className="animate-spin" size={14} /> : <Upload size={14} />}
-                {manualUploading ? t("account.manualUploading") : t("account.manualUploadButton")}
-                <input
-                  type="file"
-                  className="hidden"
-                  accept="video/mp4,.mp4"
-                  disabled={manualUploading || !isConnected}
-                  onChange={(e) => {
-                    const file = e.currentTarget.files?.[0] ?? null;
-                    e.currentTarget.value = "";
-                    void uploadManualVideo(file);
-                  }}
-                />
-              </label>
-            </div>
-
-            {/* Предупреждения и доп-действия — отдельными строками, тулбар не ломают */}
-            {langMismatch && (
-              <div
-                role="alert"
-                className="xl:col-span-3 flex items-start gap-2 rounded-md border border-error/40 bg-error/10 px-3 py-2 text-sm font-semibold text-error"
-              >
-                <AlertTriangle size={18} className="mt-0.5 shrink-0" />
-                <span>
-                  {t("account.langMismatchWarn", {
-                    content: mismatchedSources.map((x) => langTag(contentLang(x))).join(", ") || langTag(curContentLang),
-                    channel: langTag(channelLang),
-                  })}
-                </span>
-              </div>
-            )}
-            {sourcesDirty && videos.length > 0 && (
-              <span className="xl:col-span-3 text-xs text-warning">{t("account.oldVideosWarn")}</span>
-            )}
-            {postedTwicePlus > 0 && (
-              <div className="xl:col-span-3 flex justify-end">
-                <button
-                  className="btn btn-sm btn-ghost text-error gap-1"
-                  onClick={removePosted}
-                  disabled={q.running}
-                  title={t("account.removePostedTitle")}
-                >
-                  <Trash2 size={14} /> {t("account.postedTwicePlus", { n: postedTwicePlus })}
-                </button>
-              </div>
-            )}
-          </div>
-          {q.running && (
-            <div className="mt-1 text-xs text-base-content/60 flex items-center gap-1">
-              <Loader2 className="animate-spin" size={12} />
-              {t("account.genInBackground")}
-            </div>
-          )}
-          {lastPosted && (
-            <div className="alert alert-success py-2 text-sm mt-2">
-              <span>
-                {t("account.postedPrefix")} <b>{cleanDisplayText(lastPosted.title)}</b> —{" "}
-                <a href={lastPosted.url} target="_blank" rel="noreferrer" className="link font-medium">
-                  {lastPosted.url}
-                </a>
-              </span>
-            </div>
-          )}
-          {videos.length === 0 ? (
-            <div className="text-sm text-base-content/50 py-6 text-center">
-              {t("account.libraryEmpty")}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-3 gap-y-4 mt-3">
-              {pageVideos.map((v) => (
-                <div key={v.id} className="group min-w-0">
-                  <div className="relative mx-auto aspect-[9/16] w-full max-w-[280px] rounded-lg overflow-hidden border border-base-300 bg-base-200">
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => setPreview(v)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          setPreview(v);
-                        }
-                      }}
-                      title={t("account.openAndWatch")}
-                      className="absolute inset-0 cursor-pointer"
-                    >
-                      {v.imageRel ? (
-                        <img src={`/files/${v.imageRel}`} alt="" className="w-full h-full object-cover" loading="lazy" />
-                      ) : (
-                        <span className="absolute inset-0 flex items-center justify-center text-base-content/30">
-                          <Play size={28} />
-                        </span>
-                      )}
-                      <span className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/30 transition">
-                        <Play
-                          size={34}
-                          fill="currentColor"
-                          className="text-white opacity-0 group-hover:opacity-100 drop-shadow-lg transition"
-                        />
-                      </span>
-                      {v.postCount > 0 ? (
-                        <span className="absolute top-1 left-1 badge badge-success badge-sm">×{v.postCount}</span>
-                      ) : (
-                        <span className="absolute top-1 left-1 badge badge-ghost badge-sm">{t("account.newBadge")}</span>
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeVid(v.id)}
-                      title={t("account.removeFromLibrary")}
-                      className="absolute top-1 right-1 z-10 btn btn-xs btn-circle btn-error opacity-0 group-hover:opacity-100 transition"
-                    >
-                      <Trash2 size={12} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => postNow(v.id)}
-                      disabled={posting === v.id || account.status !== "connected"}
-                      title={account.status !== "connected" ? t("account.connectFirst") : t("account.postNowTitle")}
-                      className="absolute bottom-1.5 inset-x-1.5 z-10 btn btn-xs btn-primary gap-1 opacity-0 group-hover:opacity-100 transition"
-                    >
-                      {posting === v.id ? <Loader2 className="animate-spin" size={12} /> : <Upload size={12} />}
-                      {t("account.post")}
-                    </button>
-                  </div>
-                  <div className="mx-auto mt-1.5 max-w-[280px] text-sm font-medium leading-tight line-clamp-2" title={cleanDisplayText(v.title)}>
-                    {cleanDisplayText(v.title)}
-                  </div>
-                  <div className="mx-auto mt-1 max-w-[280px] text-[11px] text-base-content/50 truncate">
-                    {librarySourceName(v.deck)}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          {pageCount > 1 && (
-            <div className="flex items-center justify-center gap-3 mt-4">
-              <button
-                className="btn btn-xs btn-outline gap-1"
-                disabled={clampedPage <= 1}
-                onClick={() => setPage(clampedPage - 1)}
-              >
-                <ChevronLeft size={14} /> {t("common.back")}
-              </button>
-              <span className="text-sm text-base-content/60">
-                {t("common.page")} {clampedPage} {t("common.of")} {pageCount}
-              </span>
-              <button
-                className="btn btn-xs btn-outline gap-1"
-                disabled={clampedPage >= pageCount}
-                onClick={() => setPage(clampedPage + 1)}
-              >
-                {t("common.forward")} <ChevronRight size={14} />
-              </button>
-            </div>
-          )}
-        </div>
-      </section>
+      <LibrarySection
+        account={account}
+        accountId={id!}
+        videos={regularVideos}
+        pageVideos={pageVideos}
+        sort={sort}
+        setSort={setSort}
+        clearing={clearing}
+        clearLibrary={() => clearLibrary(regularVideos)}
+        selectedSources={selectedSources}
+        deckName={deckName}
+        deckMeta={deckMeta}
+        updateSources={updateSources}
+        deckOptions={deckOptions}
+        isConnected={isConnected}
+        activeGenerateDeck={activeGenerateDeck}
+        setGenerateDeck={setGenerateDeck}
+        canGenerateAllSources={canGenerateAllSources}
+        maxBatch={maxBatch}
+        batchN={batchN}
+        setBatchN={setBatchN}
+        sourcesDirty={sourcesDirty}
+        save={save}
+        queue={q}
+        generateDeckIds={generateDeckIds}
+        langMismatch={langMismatch}
+        saving={saving}
+        manualMaxFileMb={manualMaxFileMb}
+        manualDurationSec={manualDurationSec}
+        manualUploadsPerHour={manualUploadsPerHour}
+        manualUploading={manualUploading}
+        uploadManualVideo={uploadManualVideo}
+        mismatchedSources={mismatchedSources}
+        contentLang={contentLang}
+        curContentLang={curContentLang}
+        channelLang={channelLang}
+        postedTwicePlus={postedTwicePlus}
+        removePosted={() => removePosted(regularVideos)}
+        lastPosted={lastPosted}
+        setPreview={setPreview}
+        removeVid={removeVid}
+        posting={posting}
+        postNow={postNow}
+        isLongVideoDeck={isLongVideoDeck}
+        librarySourceName={librarySourceName}
+        pageCount={pageCount}
+        clampedPage={clampedPage}
+        setPage={setPage}
+        t={t}
+      />
 
       {preview && (
         <VideoPreviewModal
@@ -1381,48 +1054,153 @@ export default function AccountDetail() {
         />
       )}
 
-      {times.length > 0 && (
-        <section className="card bg-base-100 border border-base-300">
-          <div className="card-body">
-            <h2 className="card-title text-base">{t("account.slotVideoTitle")}</h2>
-            <p className="text-sm text-base-content/60">
-              {t("account.slotVideoHint")}
-            </p>
-            <div className="space-y-2 mt-2">
-              {[...times].sort().map((time) => (
-                <div key={time} className="grid grid-cols-[5rem_minmax(0,1fr)] items-center gap-2">
-                  <span className="badge badge-primary badge-lg w-20 justify-center">{time}</span>
-                  <select
-                    className="select select-bordered select-sm flex-1"
-                    value={slotDecks[time] ?? ""}
-                    onChange={(e) => {
-                      const v = e.target.value;
-                      setSlotVideos((prev) => {
-                        const n = { ...prev };
-                        delete n[time];
-                        return n;
-                      });
-                      setSlotDecks((prev) => {
-                        const n = { ...prev };
-                        if (v) n[time] = v;
-                        else delete n[time];
-                        return n;
-                      });
-                    }}
+      <SlotDeckAssignments
+        times={times}
+        slotDecks={slotDecks}
+        slotDeckOptions={slotDeckOptions}
+        libraryDeckCounts={libraryDeckCounts}
+        librarySourceName={librarySourceName}
+        setSlotVideos={setSlotVideos}
+        setSlotDecks={setSlotDecks}
+        t={t}
+      />
+
+      {(longVideoGens.length > 0 || longLibraryVideos.length > 0) && (
+        <section id="channel-long-content" className="card bg-base-100 border border-base-300">
+          <div className="card-body gap-4">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <h2 className="card-title text-base">{t("account.longContentTitle")}</h2>
+              <div className="flex items-center gap-2">
+                {longVideoDecksDirty && (
+                  <button className="btn btn-sm btn-outline gap-1" onClick={save} disabled={saving}>
+                    {saving ? <span className="loading loading-spinner loading-xs" /> : <Save size={14} />}
+                    {t("common.save")}
+                  </button>
+                )}
+                {longLibraryVideos.length > 0 && (
+                  <button
+                    className="btn btn-sm btn-error btn-outline gap-1"
+                    onClick={() => clearLibrary(longLibraryVideos)}
+                    disabled={clearing}
+                    title={t("account.clearAllTitle")}
                   >
-                    <option value="">{t("account.slotAuto")}</option>
-                    {slotDeckOptions.map((deckId) => (
-                      <option key={deckId} value={deckId}>
-                        {librarySourceName(deckId)} · {t("account.libraryVideosCount", { n: libraryDeckCounts.get(deckId) || 0 })}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ))}
+                    {clearing ? <Loader2 className="animate-spin" size={14} /> : <Trash2 size={14} />}
+                    {t("account.clearAll")}
+                  </button>
+                )}
+              </div>
             </div>
-            <p className="text-xs text-base-content/50 mt-1">
-              {slotDeckOptions.length === 0 ? t("account.slotNeedsLibrary") : t("account.slotSaveReminder")}
-            </p>
+
+            {longVideoGens.length > 0 && (
+              <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
+                {longVideoGens.map((opt) => {
+                  const checked = longVideoDecks.includes(opt.id);
+                  const inLibrary = longLibraryVideos.filter((v) => v.deck === opt.id).length;
+                  const total = opt.total ?? Math.max(opt.available ?? 0, inLibrary);
+                  const remaining = Math.min(opt.available ?? total, Math.max(0, total - inLibrary));
+                  const busy = addingLongVideoDeck === opt.id;
+                  return (
+                    <label key={opt.id} className="flex items-center gap-2 rounded-md border border-base-300 bg-base-200/30 p-2 text-sm">
+                      <input
+                        type="checkbox"
+                        className="checkbox checkbox-sm"
+                        checked={checked}
+                        onChange={(e) =>
+                          updateLongVideoDecks(
+                            e.target.checked ? [...longVideoDecks, opt.id] : longVideoDecks.filter((deckId) => deckId !== opt.id),
+                          )
+                        }
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-semibold" title={deckName(opt.id)}>
+                          {deckName(opt.id)}
+                        </span>
+                      </span>
+                      <span className="badge badge-ghost shrink-0">{remaining}</span>
+                      <button
+                        type="button"
+                        className="btn btn-xs btn-primary gap-1 shrink-0"
+                        disabled={!checked || !isConnected || busy || saving || remaining < 1}
+                        title={
+                          !checked
+                            ? t("account.longVideoEnableFirst")
+                            : remaining < 1
+                              ? t("account.longVideoNoFresh")
+                              : t("account.longVideoAddTitle")
+                        }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          void addLongVideoToLibrary(opt.id);
+                        }}
+                      >
+                        {busy ? <Loader2 className="animate-spin" size={12} /> : <Plus size={12} />}
+                        {t("account.longVideoAddButton")}
+                      </button>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+
+            {longLibraryVideos.length > 0 && (
+              <div className="grid grid-cols-1 gap-x-3 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
+                {longLibraryVideos.map((v) => (
+                  <div key={v.id} className="group min-w-0">
+                    <div className="relative mx-auto aspect-video w-full max-w-[360px] overflow-hidden rounded-lg border border-base-300 bg-base-200">
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => setPreview(v)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            setPreview(v);
+                          }
+                        }}
+                        title={t("account.openAndWatch")}
+                        className="absolute inset-0 cursor-pointer"
+                      >
+                        {v.imageRel ? (
+                          <img src={`/files/${v.imageRel}`} alt="" className="h-full w-full object-cover" loading="lazy" />
+                        ) : (
+                          <span className="absolute inset-0 flex items-center justify-center text-base-content/30">
+                            <Play size={28} />
+                          </span>
+                        )}
+                        <span className="absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover:bg-black/30">
+                          <Play size={34} fill="currentColor" className="text-white opacity-0 drop-shadow-lg transition group-hover:opacity-100" />
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeVid(v.id)}
+                        title={t("account.removeFromLibrary")}
+                        className="btn btn-error btn-xs btn-circle absolute right-1 top-1 z-10 opacity-0 transition group-hover:opacity-100"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => postNow(v.id)}
+                        disabled={posting === v.id || account.status !== "connected"}
+                        title={account.status !== "connected" ? t("account.connectFirst") : t("account.postNowTitle")}
+                        className="btn btn-primary btn-xs absolute inset-x-1.5 bottom-1.5 z-10 gap-1 opacity-0 transition group-hover:opacity-100"
+                      >
+                        {posting === v.id ? <Loader2 className="animate-spin" size={12} /> : <Upload size={12} />}
+                        {t("account.post")}
+                      </button>
+                    </div>
+                    <div className="mx-auto mt-1.5 max-w-[360px] text-sm font-medium leading-tight line-clamp-2" title={cleanDisplayText(v.title)}>
+                      {cleanDisplayText(v.title)}
+                    </div>
+                    <div className="mx-auto mt-1 max-w-[360px] truncate text-[11px] text-base-content/50">
+                      {librarySourceName(v.deck)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}

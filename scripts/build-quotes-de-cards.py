@@ -26,6 +26,7 @@ DECK_DIR = ROOT / "data" / "quotes-de"
 VIDEOS_JSON = DECK_DIR / "videos.json"
 INDEX_JSON = DECK_DIR / "index.json"
 SOURCES_JSON = DECK_DIR / "sources.json"
+AUTHORS_JSON = DECK_DIR / "authors.json"
 PORTRAIT_DIR = DECK_DIR / "portraits"
 MUSIC_DIR = DECK_DIR / "music"
 CACHE_DIR = DECK_DIR / "source-cache"
@@ -41,7 +42,7 @@ FONT_BOLD = "/usr/share/fonts/truetype/noto/NotoSansDisplay-Bold.ttf"
 FONT_REGULAR = "/usr/share/fonts/truetype/noto/NotoSansDisplay-Regular.ttf"
 FONT_ITALIC = "/usr/share/fonts/truetype/noto/NotoSansDisplay-Italic.ttf"
 
-AUTHORS: list[dict[str, str]] = [
+DEFAULT_AUTHORS: list[dict[str, str]] = [
     {"name": "Abraham Lincoln", "wikiquote": "Abraham Lincoln", "qid": "Q91"},
     {"name": "Franklin D. Roosevelt", "wikiquote": "Franklin D. Roosevelt", "qid": "Q8007"},
     {"name": "Theodore Roosevelt", "wikiquote": "Theodore Roosevelt", "qid": "Q33866"},
@@ -225,6 +226,13 @@ POLICY_BLOCKLIST = [
     "türken",
     "schweine",
     "parasiten",
+    "nationalsozialisten",
+    "bücherverbrennungen",
+    "volksgemeinschaft",
+    "feuerspruch",
+    "übergebe der flamme",
+    "flamme die schriften",
+    "zauberinnen getötet",
     "hängt",
     "erschießen",
     "erschossen",
@@ -352,6 +360,40 @@ def load_json(path: Path, default: Any) -> Any:
 def write_json(path: Path, data: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def display_path(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(ROOT))
+    except ValueError:
+        return str(path)
+
+
+def load_authors(path: Path) -> list[dict[str, str]]:
+    if not path.exists():
+        return copy.deepcopy(DEFAULT_AUTHORS)
+    data = load_json(path, None)
+    if not isinstance(data, list):
+        raise ValueError(f"{path} must contain a JSON array")
+    authors: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for index, item in enumerate(data, start=1):
+        if not isinstance(item, dict):
+            raise ValueError(f"{path} item {index} must be an object")
+        name = str(item.get("name") or "").strip()
+        wikiquote = str(item.get("wikiquote") or name).strip()
+        qid = str(item.get("qid") or "").strip()
+        if not name:
+            raise ValueError(f"{path} item {index} is missing name")
+        if not wikiquote:
+            raise ValueError(f"{path} item {index} is missing wikiquote")
+        if name in seen:
+            raise ValueError(f"{path} contains duplicate author name: {name}")
+        seen.add(name)
+        authors.append({"name": name, "wikiquote": wikiquote, "qid": qid})
+    if not authors:
+        raise ValueError(f"{path} must contain at least one author")
+    return authors
 
 
 def request_json(session: requests.Session, url: str, params: dict[str, str], wait: float) -> Any:
@@ -568,12 +610,13 @@ def existing_quote_keys(ignore_range: tuple[int, int] | None = None) -> set[str]
 def collect_candidates(args: argparse.Namespace) -> list[QuoteCandidate]:
     session = requests.Session()
     session.headers.update({"User-Agent": USER_AGENT})
+    authors = getattr(args, "authors", DEFAULT_AUTHORS)
     replace_start = getattr(args, "start_id", None)
     replace_count = getattr(args, "replace_count", args.count)
     ignore_range = (replace_start, replace_start + replace_count - 1) if replace_start else None
     existing = existing_quote_keys(ignore_range)
     all_by_author: dict[str, list[QuoteCandidate]] = {}
-    for author in AUTHORS:
+    for author in authors:
         try:
             wikitext, url = fetch_wikiquote_wikitext(session, author["wikiquote"], args.fetch_wait, args.refresh)
             if not wikitext:
@@ -731,8 +774,9 @@ def is_public_domainish(meta: dict[str, Any]) -> bool:
 def prepare_portraits(args: argparse.Namespace, required_authors: set[str] | None = None) -> dict[str, dict[str, Any]]:
     session = requests.Session()
     session.headers.update({"User-Agent": USER_AGENT})
+    authors = getattr(args, "authors", DEFAULT_AUTHORS)
     result: dict[str, dict[str, Any]] = {}
-    for author in AUTHORS:
+    for author in authors:
         if required_authors is not None and author["name"] not in required_authors:
             continue
         try:
@@ -1115,6 +1159,7 @@ def main() -> None:
     parser.add_argument("--hard-max-per-author", type=int, default=24)
     parser.add_argument("--min-authors", type=int, default=20)
     parser.add_argument("--extra-candidates", type=int, default=40)
+    parser.add_argument("--authors-json", type=Path, default=AUTHORS_JSON)
     parser.add_argument("--allow-attribution-portraits", action="store_true")
     parser.add_argument("--refresh", action="store_true")
     parser.add_argument("--force", action="store_true")
@@ -1123,6 +1168,12 @@ def main() -> None:
 
     for path in [DECK_DIR, ASSET_DIR, TEMP_CARD_DIR, MUSIC_DIR, PORTRAIT_DIR]:
         path.mkdir(parents=True, exist_ok=True)
+
+    args.authors = load_authors(args.authors_json)
+    if args.authors_json.exists():
+        print(f"loaded {len(args.authors)} authors from {display_path(args.authors_json)}")
+    else:
+        print(f"loaded {len(args.authors)} built-in authors; {display_path(args.authors_json)} not found")
 
     requested_count = args.count
     candidate_args = copy.copy(args)

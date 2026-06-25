@@ -6,9 +6,9 @@ import type { FastifyInstance } from "fastify";
 import type { Db } from "../db.ts";
 import { isSuperAdminUser } from "../auth.ts";
 import { DECKS, isPackDeckId } from "../../src/anecdotes/decks.ts";
-import { randomAnecdote, anecdoteKey } from "../../src/anecdotes/library.ts";
+import { randomAnecdote, firstAnecdote, anecdoteKey } from "../../src/anecdotes/library.ts";
 import { getPack } from "../../src/packs/store.ts";
-import { pickUnusedPackCard, buildPackLibraryVideo } from "../services/pack-gen.ts";
+import { pickUnusedPackCard, pickFixedPackCard, buildPackLibraryVideo } from "../services/pack-gen.ts";
 import { buildFactLibraryVideo } from "../services/fact-gen.ts";
 import {
   initGenQueue,
@@ -20,6 +20,7 @@ import {
   queuedRemainingForOwnerDecks as genQueuedRemainingForOwnerDecks,
 } from "../services/gen-queue.ts";
 import { uid } from "../infra/auth-session.ts";
+import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
 import type { RouteDeps } from "./deps.ts";
 
 const USER_GEN_QUEUE_CAP = 100;
@@ -36,6 +37,7 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
     if (!acc) throw new Error("Канал не найден");
     const ownerId = job.ownerUserId ?? job.userId;
     const seen = new Set<string>(db.usedAnecdoteKeys(ownerId)); // skip owner's already-used cards
+    const infinite = db.hasFeature(ownerId, INFINITE_PACKS_FEATURE);
     const sources = job.deckIds?.length ? job.deckIds : accountSourceDecks(acc);
     // Each candidate is CLAIMED (db.claimAnecdote) before its render so a concurrent run (another job,
     // the sync batch, or a co-owner) can't build the same card twice; a lost claim → re-pick; a render
@@ -46,15 +48,17 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
         const pack = getPack(sourceDeck.slice(5), ownerId, isSuperAdminUser(db.getUserById(ownerId)));
         if (!pack || !pack.templates.length) throw new Error(`Пак «${sourceDeck}» не найден или без шаблона`);
         for (;;) {
-          const picked = pickUnusedPackCard(pack, seen);
+          const picked = infinite ? pickFixedPackCard(pack) : pickUnusedPackCard(pack, seen);
           if (!picked) return "exhausted";
-          seen.add(picked.key);
-          if (!db.claimAnecdote(ownerId, picked.key)) continue; // taken by a concurrent run → pick another
+          if (!infinite) {
+            seen.add(picked.key);
+            if (!db.claimAnecdote(ownerId, picked.key)) continue; // taken by a concurrent run → pick another
+          }
           try {
             await buildPackLibraryVideo({ db, userId: ownerId, accountId: job.accountId, pack, picked });
             return "made";
           } catch (e) {
-            db.releaseAnecdote(ownerId, picked.key);
+            if (!infinite) db.releaseAnecdote(ownerId, picked.key);
             throw e;
           }
         }
@@ -64,11 +68,13 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
       if (db.getUserById(ownerId)?.role !== "admin" && !builtinDeckVisibleForUser(ownerId, channelDeck))
         throw new Error("Этот пак вам недоступен");
       for (;;) {
-        const a = randomAnecdote(channelDeck.id, seen);
+        const a = infinite ? firstAnecdote(channelDeck.id) : randomAnecdote(channelDeck.id, seen);
         if (!a) return "exhausted"; // deck has no unused cards left
         const key = anecdoteKey(a.text);
-        seen.add(key);
-        if (!db.claimAnecdote(ownerId, key)) continue; // taken by a concurrent run → pick another
+        if (!infinite) {
+          seen.add(key);
+          if (!db.claimAnecdote(ownerId, key)) continue; // taken by a concurrent run → pick another
+        }
         try {
           if (channelDeck.preFact) {
             await buildFactLibraryVideo({ db, userId: ownerId, accountId: job.accountId, deckId: channelDeck.id, picked: a });
@@ -84,7 +90,7 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
           }
           return "made";
         } catch (e) {
-          db.releaseAnecdote(ownerId, key);
+          if (!infinite) db.releaseAnecdote(ownerId, key);
           throw e;
         }
       }
@@ -132,16 +138,18 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
     // from an unused card, so any surplus would silently no-op ("exhausted"). Subtract cards already
     // claimed by the owner's in-flight jobs on these same decks so back-to-back batches can't
     // over-commit the pool. Applies to everyone (incl. admins) — this is accuracy, not a quota.
-    const free = Math.max(
-      0,
-      availableUnusedForDecks(ownerId, deckIds) - genQueuedRemainingForOwnerDecks(ownerId, deckIds),
-    );
-    if (free <= 0)
-      return reply.code(400).send({
-        error:
-          "Свободных карточек не осталось — все карточки выбранного контента уже использованы или стоят в очереди. Дождитесь окончания текущей генерации или сбросьте использованные карточки.",
-      });
-    total = Math.min(total, free);
+    if (!db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) {
+      const free = Math.max(
+        0,
+        availableUnusedForDecks(ownerId, deckIds) - genQueuedRemainingForOwnerDecks(ownerId, deckIds),
+      );
+      if (free <= 0)
+        return reply.code(400).send({
+          error:
+            "Свободных карточек не осталось — все карточки выбранного контента уже использованы или стоят в очереди. Дождитесь окончания текущей генерации или сбросьте использованные карточки.",
+        });
+      total = Math.min(total, free);
+    }
     const job = genEnqueue(uid(req), body.accountId, total, ownerId, deckIds);
     return { jobId: job.id, total: job.total };
   });

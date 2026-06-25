@@ -44,6 +44,14 @@ export function pickUnusedPackCard(pack: Pack, usedKeys: ReadonlySet<string>): P
   return { idx: pick.idx, values: pick.values, tpl: pack.templates[pick.idx % pack.templates.length], key: pick.key };
 }
 
+/** Fixed card for "infinite pack" mode: always the first card/template, regardless of used-history. */
+export function pickFixedPackCard(pack: Pack): PickedPackCard | null {
+  if (!pack.templates.length || !pack.cards.length) return null;
+  const idx = 0;
+  const values = pack.cards[idx].values;
+  return { idx, values, tpl: pack.templates[idx % pack.templates.length], key: packCardKey(values) };
+}
+
 /** Собрать ОДНО видео из заранее выбранной карточки пака в библиотеку канала + пометить использованной. */
 export async function buildPackLibraryVideo(input: {
   db: Db;

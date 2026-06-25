@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 
-export const SRC = resolve(process.cwd(), "Русские анекдоты/anek_djvu.txt");
+export const SRC = resolve(process.cwd(), "local-assets/Русские анекдоты/anek_djvu.txt");
 const OUT_DIR = resolve(process.cwd(), "data/anecdotes");
 
 // Profanity / NSFW blocklist (roots). Anything with @ or **-censoring is dropped too.

@@ -53,7 +53,7 @@ interface Post {
 
 /** Parse NDJSON → strip sig/quotes → fix mojibake → normalize → dedupe → drop NSFW/broken. */
 export function loadCleanBarzellette(): string[] {
-  const SRCS = ["corpora/it-barzellette.jsonl", "corpora/it-umorismo.jsonl"]
+  const SRCS = ["local-assets/corpora/it-barzellette.jsonl", "local-assets/corpora/it-umorismo.jsonl"]
     .map((p) => resolve(process.cwd(), p))
     .filter((p) => existsSync(p));
   const out: string[] = [];

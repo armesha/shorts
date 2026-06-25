@@ -5,9 +5,11 @@ import type { FastifyInstance } from "fastify";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Db, Account } from "../db.ts";
-import { MANUAL_VIDEO_DECK } from "../../src/anecdotes/decks.ts";
+import { DECKS, MANUAL_VIDEO_DECK } from "../../src/anecdotes/decks.ts";
 import { uid } from "../infra/auth-session.ts";
 import type { RouteDeps } from "./deps.ts";
+
+const isLongVideoDeckId = (deckId: string): boolean => !!DECKS.find((deck) => deck.id === deckId)?.longVideo;
 
 export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
   const {
@@ -18,7 +20,7 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
     visibleAccounts,
     outputDir,
   } = deps;
-  const { validateAccountSourceDeck, cleanDeckIds, accountSourceDecks, deckContentLang } = deps.deckAccess;
+  const { validateAccountSourceDeck, cleanDeckIds, accountSourceDecks, deckContentLang, deckExists, deckAllowed } = deps.deckAccess;
 
   // ---- Accounts ----
   // Regular users see/edit only their own channels. Admins may pass ?scope=all to list every user's
@@ -63,7 +65,42 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
     // avatar can only be one of our served paths (built-in /avatars/ or uploaded /files/avatars/)
     if (body.avatar != null && !/^\/(avatars|files)\//.test(body.avatar)) delete body.avatar;
     else if (body.avatar != null) body.avatarSource = "manual";
-    const requestedSources = cleanDeckIds((body as { sourceDecks?: unknown }).sourceDecks);
+    const validateLongVideoDecks = (deckIds: string[]): boolean => {
+      const channelLang = (body.channelLang ?? acc.channelLang ?? "") as string;
+      for (const deckId of deckIds) {
+        if (!deckExists(req, deckId)) {
+          reply.code(400).send({ error: `Неизвестный long-video пак «${deckId}».` });
+          return false;
+        }
+        if (!deckAllowed(req, deckId)) {
+          reply.code(403).send({ error: "Этот long-video пак вам недоступен." });
+          return false;
+        }
+        if (!isLongVideoDeckId(deckId)) {
+          reply.code(400).send({ error: `Пак «${deckId}» не является длинным видео.` });
+          return false;
+        }
+        const contentLang = deckContentLang(req, deckId);
+        if (channelLang && contentLang && contentLang !== channelLang) {
+          reply
+            .code(400)
+            .send({ error: `Язык long-video пака (${contentLang.toUpperCase()}) ≠ язык канала (${channelLang.toUpperCase()}) — выровняй их.` });
+          return false;
+        }
+      }
+      return true;
+    };
+    const requestedLongVideoDecks = cleanDeckIds((body as { longVideoDecks?: unknown }).longVideoDecks);
+    if (Array.isArray((body as { longVideoDecks?: unknown }).longVideoDecks)) {
+      body.longVideoDecks = requestedLongVideoDecks;
+    }
+    const rawRequestedSources = cleanDeckIds((body as { sourceDecks?: unknown }).sourceDecks);
+    const migratedLongVideoSources = rawRequestedSources.filter(isLongVideoDeckId);
+    const requestedSources = rawRequestedSources.filter((deckId) => !isLongVideoDeckId(deckId));
+    if (migratedLongVideoSources.length && !Array.isArray((body as { longVideoDecks?: unknown }).longVideoDecks)) {
+      body.longVideoDecks = [...new Set([...(acc.longVideoDecks ?? []), ...migratedLongVideoSources])];
+    }
+    if (body.longVideoDecks && !validateLongVideoDecks(body.longVideoDecks)) return;
     if (requestedSources.length) {
       const channelLang = (body.channelLang ?? acc.channelLang ?? "") as string;
       for (const deckId of requestedSources) {
@@ -73,9 +110,14 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
       body.sourceDecks = requestedSources;
       if (!body.lang || !requestedSources.includes(body.lang)) body.lang = requestedSources[0];
     } else if (body.lang) {
-      const err = validateAccountSourceDeck(req, body.lang, (body.channelLang ?? acc.channelLang ?? "") as string);
-      if (err) return reply.code(err.startsWith("Неизвестный") ? 400 : 403).send({ error: err });
-      body.sourceDecks = [body.lang];
+      if (isLongVideoDeckId(body.lang)) {
+        body.longVideoDecks = [...new Set([...(body.longVideoDecks ?? acc.longVideoDecks ?? []), body.lang])];
+        delete body.lang;
+      } else {
+        const err = validateAccountSourceDeck(req, body.lang, (body.channelLang ?? acc.channelLang ?? "") as string);
+        if (err) return reply.code(err.startsWith("Неизвестный") ? 400 : 403).send({ error: err });
+        body.sourceDecks = [body.lang];
+      }
     }
     // Бэкстоп языка: язык выбранного контента (деки/пака) обязан совпадать с языком канала.
     {

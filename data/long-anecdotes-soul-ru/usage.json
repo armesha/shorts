@@ -1,0 +1,5764 @@
+{
+  "schemaVersion": "long-video-usage/v1",
+  "deck": "long-anecdotes-soul-ru",
+  "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+  "sourceFile": "data/packs/анекдоты-ру-впн-mqe5ovw1.json",
+  "generatedAt": "2026-06-25T08:59:39.500Z",
+  "totalVideos": 12,
+  "totalScenes": 563,
+  "usedSourceIds": [
+    "1.1",
+    "1.2",
+    "2.1",
+    "2.2",
+    "4.1",
+    "5.1",
+    "5.2",
+    "7.2",
+    "8.1",
+    "8.2",
+    "9.2",
+    "11.2",
+    "12.1",
+    "12.2",
+    "13.2",
+    "14.2",
+    "15.2",
+    "16.1",
+    "17.1",
+    "17.2",
+    "18.1",
+    "18.2",
+    "19.1",
+    "20.1",
+    "21.2",
+    "22.2",
+    "23.2",
+    "24.1",
+    "24.2",
+    "25.1",
+    "25.2",
+    "26.1",
+    "27.1",
+    "27.2",
+    "28.2",
+    "29.1",
+    "30.1",
+    "30.2",
+    "31.1",
+    "31.2",
+    "32.1",
+    "33.1",
+    "34.2",
+    "35.1",
+    "35.2",
+    "36.1",
+    "36.2",
+    "37.1",
+    "37.2",
+    "38.1",
+    "38.2",
+    "39.2",
+    "40.2",
+    "41.1",
+    "42.2",
+    "43.1",
+    "43.2",
+    "44.1",
+    "44.2",
+    "45.1",
+    "45.2",
+    "46.1",
+    "46.2",
+    "47.1",
+    "48.1",
+    "49.2",
+    "50.1",
+    "50.2",
+    "51.1",
+    "52.1",
+    "52.2",
+    "53.1",
+    "54.1",
+    "54.2",
+    "55.1",
+    "55.2",
+    "56.1",
+    "57.1",
+    "57.2",
+    "58.1",
+    "58.2",
+    "59.1",
+    "60.1",
+    "60.2",
+    "61.1",
+    "62.1",
+    "62.2",
+    "63.1",
+    "63.2",
+    "64.1",
+    "64.2",
+    "65.1",
+    "66.1",
+    "66.2",
+    "67.1",
+    "67.2",
+    "68.2",
+    "69.1",
+    "70.1",
+    "70.2",
+    "71.1",
+    "71.2",
+    "72.1",
+    "72.2",
+    "73.1",
+    "74.1",
+    "75.1",
+    "76.2",
+    "77.2",
+    "78.1",
+    "79.1",
+    "79.2",
+    "80.2",
+    "81.2",
+    "82.1",
+    "82.2",
+    "83.1",
+    "83.2",
+    "84.1",
+    "84.2",
+    "85.1",
+    "85.2",
+    "86.1",
+    "87.2",
+    "88.1",
+    "88.2",
+    "89.1",
+    "89.2",
+    "90.1",
+    "91.2",
+    "92.1",
+    "92.2",
+    "93.2",
+    "94.1",
+    "94.2",
+    "95.1",
+    "95.2",
+    "96.1",
+    "96.2",
+    "97.1",
+    "97.2",
+    "98.1",
+    "98.2",
+    "99.1",
+    "100.1",
+    "100.2",
+    "101.1",
+    "101.2",
+    "102.2",
+    "103.1",
+    "103.2",
+    "104.1",
+    "104.2",
+    "105.1",
+    "106.1",
+    "106.2",
+    "107.1",
+    "107.2",
+    "108.1",
+    "108.2",
+    "109.1",
+    "109.2",
+    "110.1",
+    "111.1",
+    "112.1",
+    "112.2",
+    "113.1",
+    "113.2",
+    "114.1",
+    "114.2",
+    "115.1",
+    "115.2",
+    "116.1",
+    "117.1",
+    "117.2",
+    "118.1",
+    "119.1",
+    "119.2",
+    "120.1",
+    "121.2",
+    "122.1",
+    "122.2",
+    "123.1",
+    "123.2",
+    "124.2",
+    "125.1",
+    "125.2",
+    "126.1",
+    "126.2",
+    "127.1",
+    "127.2",
+    "128.1",
+    "128.2",
+    "129.1",
+    "129.2",
+    "130.1",
+    "130.2",
+    "131.1",
+    "131.2",
+    "133.1",
+    "133.2",
+    "134.2",
+    "135.1",
+    "135.2",
+    "136.1",
+    "136.2",
+    "137.1",
+    "137.2",
+    "138.2",
+    "139.1",
+    "139.2",
+    "140.1",
+    "140.2",
+    "141.1",
+    "141.2",
+    "142.1",
+    "142.2",
+    "143.1",
+    "143.2",
+    "144.1",
+    "144.2",
+    "145.2",
+    "146.1",
+    "146.2",
+    "147.1",
+    "147.2",
+    "148.1",
+    "148.2",
+    "149.1",
+    "149.2",
+    "150.1",
+    "150.2",
+    "151.1",
+    "151.2",
+    "152.1",
+    "152.2",
+    "153.1",
+    "153.2",
+    "154.1",
+    "154.2",
+    "155.1",
+    "155.2",
+    "156.1",
+    "156.2",
+    "158.1",
+    "158.2",
+    "159.1",
+    "160.1",
+    "160.2",
+    "161.2",
+    "162.2",
+    "163.1",
+    "163.2",
+    "164.1",
+    "164.2",
+    "165.2",
+    "166.1",
+    "166.2",
+    "167.1",
+    "169.1",
+    "169.2",
+    "170.1",
+    "171.2",
+    "172.2",
+    "173.1",
+    "173.2",
+    "174.1",
+    "174.2",
+    "175.1",
+    "175.2",
+    "176.1",
+    "177.1",
+    "177.2",
+    "178.1",
+    "178.2",
+    "179.1",
+    "179.2",
+    "180.1",
+    "180.2",
+    "181.1",
+    "182.1",
+    "183.1",
+    "183.2",
+    "184.2",
+    "185.1",
+    "185.2",
+    "186.1",
+    "186.2",
+    "187.1",
+    "187.2",
+    "188.2",
+    "189.1",
+    "189.2",
+    "190.1",
+    "190.2",
+    "191.2",
+    "192.2",
+    "193.1",
+    "193.2",
+    "194.2",
+    "195.1",
+    "195.2",
+    "196.1",
+    "196.2",
+    "197.1",
+    "198.1",
+    "199.1",
+    "199.2",
+    "200.1",
+    "201.1",
+    "201.2",
+    "202.1",
+    "202.2",
+    "203.2",
+    "204.1",
+    "204.2",
+    "205.1",
+    "205.2",
+    "206.2",
+    "207.1",
+    "207.2",
+    "209.1",
+    "209.2",
+    "210.1",
+    "210.2",
+    "211.1",
+    "211.2",
+    "212.2",
+    "213.1",
+    "213.2",
+    "214.1",
+    "214.2",
+    "215.1",
+    "215.2",
+    "216.1",
+    "217.1",
+    "217.2",
+    "218.1",
+    "218.2",
+    "219.1",
+    "219.2",
+    "221.1",
+    "221.2",
+    "222.1",
+    "223.1",
+    "223.2",
+    "225.1",
+    "225.2",
+    "226.2",
+    "227.2",
+    "228.1",
+    "228.2",
+    "229.1",
+    "229.2",
+    "230.1",
+    "230.2",
+    "231.1",
+    "231.2",
+    "232.2",
+    "233.1",
+    "235.2",
+    "236.1",
+    "236.2",
+    "237.1",
+    "237.2",
+    "238.1",
+    "238.2",
+    "239.1",
+    "240.2",
+    "241.1",
+    "242.1",
+    "243.1",
+    "243.2",
+    "244.1",
+    "245.1",
+    "245.2",
+    "246.1",
+    "246.2",
+    "247.2",
+    "249.1",
+    "249.2",
+    "250.2",
+    "251.1",
+    "251.2",
+    "252.1",
+    "252.2",
+    "253.1",
+    "254.1",
+    "255.1",
+    "255.2",
+    "256.1",
+    "257.1",
+    "257.2",
+    "258.1",
+    "258.2",
+    "259.1",
+    "259.2",
+    "260.1",
+    "260.2",
+    "261.2",
+    "262.1",
+    "262.2",
+    "263.1",
+    "263.2",
+    "264.1",
+    "264.2",
+    "265.1",
+    "265.2",
+    "266.1",
+    "266.2",
+    "267.1",
+    "267.2",
+    "268.1",
+    "268.2",
+    "269.1",
+    "269.2",
+    "270.1",
+    "270.2",
+    "271.1",
+    "271.2",
+    "272.1",
+    "272.2",
+    "273.1",
+    "273.2",
+    "274.1",
+    "274.2",
+    "275.1",
+    "275.2",
+    "276.1",
+    "276.2",
+    "277.1",
+    "277.2",
+    "278.1",
+    "278.2",
+    "279.1",
+    "279.2",
+    "280.1",
+    "280.2",
+    "281.1",
+    "281.2",
+    "282.1",
+    "282.2",
+    "283.2",
+    "284.1",
+    "284.2",
+    "285.1",
+    "285.2",
+    "286.1",
+    "286.2",
+    "287.1",
+    "288.2",
+    "289.1",
+    "289.2",
+    "290.1",
+    "290.2",
+    "291.1",
+    "291.2",
+    "292.1",
+    "292.2",
+    "293.1",
+    "293.2",
+    "294.2",
+    "295.2",
+    "296.1",
+    "296.2",
+    "297.1",
+    "297.2",
+    "298.1",
+    "300.2",
+    "301.2",
+    "302.1",
+    "302.2",
+    "303.1",
+    "303.2",
+    "304.1",
+    "304.2",
+    "305.1",
+    "305.2",
+    "306.2",
+    "307.1",
+    "307.2",
+    "308.1",
+    "308.2",
+    "309.1",
+    "309.2",
+    "310.2",
+    "311.1",
+    "312.1",
+    "312.2",
+    "313.1",
+    "313.2",
+    "314.2",
+    "315.1",
+    "316.2",
+    "317.2",
+    "318.1",
+    "318.2",
+    "319.2",
+    "321.1",
+    "321.2",
+    "322.2",
+    "323.1",
+    "323.2",
+    "324.1",
+    "324.2",
+    "325.1",
+    "325.2",
+    "326.1",
+    "326.2",
+    "327.2",
+    "328.1",
+    "328.2",
+    "329.1",
+    "329.2",
+    "330.1",
+    "331.1",
+    "331.2",
+    "332.1",
+    "333.1",
+    "333.2",
+    "334.2",
+    "335.1",
+    "335.2",
+    "336.1",
+    "336.2",
+    "337.1",
+    "337.2",
+    "338.1",
+    "339.1",
+    "339.2",
+    "340.1",
+    "341.1",
+    "341.2",
+    "342.1",
+    "342.2",
+    "343.1",
+    "343.2",
+    "344.2",
+    "345.1",
+    "345.2",
+    "346.1",
+    "346.2",
+    "347.1",
+    "347.2",
+    "348.1",
+    "348.2",
+    "349.1",
+    "349.2",
+    "350.1",
+    "351.1",
+    "351.2",
+    "352.1",
+    "352.2",
+    "353.1",
+    "353.2",
+    "354.1",
+    "355.2",
+    "356.1",
+    "357.1",
+    "357.2",
+    "358.1",
+    "358.2",
+    "359.1"
+  ],
+  "selectionRule": "Every future long-video episode must exclude sourceIds already listed here unless that exact video is being intentionally rebuilt.",
+  "videos": [
+    {
+      "file": "long-anecdotes-soul-ru/long-anecdotes-soul-ru-001.mp4",
+      "title": "Русские анекдоты: легкий вечерний сборник",
+      "durationSec": 506,
+      "sceneCount": 44,
+      "sourceIds": [
+        "1.1",
+        "1.2",
+        "2.1",
+        "2.2",
+        "4.1",
+        "5.1",
+        "5.2",
+        "7.2",
+        "8.1",
+        "8.2",
+        "9.2",
+        "11.2",
+        "12.1",
+        "12.2",
+        "13.2",
+        "14.2",
+        "15.2",
+        "16.1",
+        "17.1",
+        "17.2",
+        "18.1",
+        "18.2",
+        "19.1",
+        "20.1",
+        "21.2",
+        "22.2",
+        "23.2",
+        "24.1",
+        "24.2",
+        "25.1",
+        "25.2",
+        "26.1",
+        "27.1",
+        "27.2",
+        "28.2",
+        "29.1",
+        "30.1",
+        "30.2",
+        "31.1",
+        "31.2",
+        "32.1",
+        "33.1",
+        "34.2",
+        "35.1"
+      ],
+      "scenes": [
+        {
+          "order": 1,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "1.1",
+          "title": "Вовочка в ударе",
+          "chars": 196,
+          "durationSec": 11
+        },
+        {
+          "order": 2,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "1.2",
+          "title": "Вовочка в ударе",
+          "chars": 201,
+          "durationSec": 11
+        },
+        {
+          "order": 3,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "2.1",
+          "title": "У врача",
+          "chars": 207,
+          "durationSec": 11
+        },
+        {
+          "order": 4,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "2.2",
+          "title": "У врача",
+          "chars": 165,
+          "durationSec": 11
+        },
+        {
+          "order": 5,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "4.1",
+          "title": "Муж и жена",
+          "chars": 167,
+          "durationSec": 11
+        },
+        {
+          "order": 6,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "5.1",
+          "title": "Про деньги",
+          "chars": 179,
+          "durationSec": 11
+        },
+        {
+          "order": 7,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "5.2",
+          "title": "Про деньги",
+          "chars": 198,
+          "durationSec": 11
+        },
+        {
+          "order": 8,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "7.2",
+          "title": "На работе",
+          "chars": 226,
+          "durationSec": 12
+        },
+        {
+          "order": 9,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "8.1",
+          "title": "Про зверьё",
+          "chars": 166,
+          "durationSec": 11
+        },
+        {
+          "order": 10,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "8.2",
+          "title": "Про зверьё",
+          "chars": 217,
+          "durationSec": 12
+        },
+        {
+          "order": 11,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "9.2",
+          "title": "Про застолье",
+          "chars": 239,
+          "durationSec": 13
+        },
+        {
+          "order": 12,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "11.2",
+          "title": "Про застолье",
+          "chars": 214,
+          "durationSec": 12
+        },
+        {
+          "order": 13,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "12.1",
+          "title": "Про застолье",
+          "chars": 175,
+          "durationSec": 11
+        },
+        {
+          "order": 14,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "12.2",
+          "title": "Про застолье",
+          "chars": 212,
+          "durationSec": 12
+        },
+        {
+          "order": 15,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "13.2",
+          "title": "Про застолье",
+          "chars": 211,
+          "durationSec": 12
+        },
+        {
+          "order": 16,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "14.2",
+          "title": "Про застолье",
+          "chars": 207,
+          "durationSec": 11
+        },
+        {
+          "order": 17,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "15.2",
+          "title": "Про застолье",
+          "chars": 205,
+          "durationSec": 11
+        },
+        {
+          "order": 18,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "16.1",
+          "title": "Про застолье",
+          "chars": 187,
+          "durationSec": 11
+        },
+        {
+          "order": 19,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "17.1",
+          "title": "Про застолье",
+          "chars": 189,
+          "durationSec": 11
+        },
+        {
+          "order": 20,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "17.2",
+          "title": "Про застолье",
+          "chars": 196,
+          "durationSec": 11
+        },
+        {
+          "order": 21,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "18.1",
+          "title": "Анекдоты",
+          "chars": 161,
+          "durationSec": 11
+        },
+        {
+          "order": 22,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "18.2",
+          "title": "Анекдоты",
+          "chars": 242,
+          "durationSec": 13
+        },
+        {
+          "order": 23,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "19.1",
+          "title": "Анекдоты",
+          "chars": 160,
+          "durationSec": 11
+        },
+        {
+          "order": 24,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "20.1",
+          "title": "Анекдоты",
+          "chars": 161,
+          "durationSec": 11
+        },
+        {
+          "order": 25,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "21.2",
+          "title": "Анекдоты",
+          "chars": 238,
+          "durationSec": 13
+        },
+        {
+          "order": 26,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "22.2",
+          "title": "Анекдоты",
+          "chars": 238,
+          "durationSec": 13
+        },
+        {
+          "order": 27,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "23.2",
+          "title": "Анекдоты",
+          "chars": 233,
+          "durationSec": 12
+        },
+        {
+          "order": 28,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "24.1",
+          "title": "Анекдоты",
+          "chars": 162,
+          "durationSec": 11
+        },
+        {
+          "order": 29,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "24.2",
+          "title": "Анекдоты",
+          "chars": 238,
+          "durationSec": 13
+        },
+        {
+          "order": 30,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "25.1",
+          "title": "Анекдоты",
+          "chars": 163,
+          "durationSec": 11
+        },
+        {
+          "order": 31,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "25.2",
+          "title": "Анекдоты",
+          "chars": 233,
+          "durationSec": 12
+        },
+        {
+          "order": 32,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "26.1",
+          "title": "Анекдоты",
+          "chars": 162,
+          "durationSec": 11
+        },
+        {
+          "order": 33,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "27.1",
+          "title": "Анекдоты",
+          "chars": 162,
+          "durationSec": 11
+        },
+        {
+          "order": 34,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "27.2",
+          "title": "Анекдоты",
+          "chars": 234,
+          "durationSec": 12
+        },
+        {
+          "order": 35,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "28.2",
+          "title": "Анекдоты",
+          "chars": 231,
+          "durationSec": 12
+        },
+        {
+          "order": 36,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "29.1",
+          "title": "Анекдоты",
+          "chars": 163,
+          "durationSec": 11
+        },
+        {
+          "order": 37,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "30.1",
+          "title": "Анекдоты",
+          "chars": 165,
+          "durationSec": 11
+        },
+        {
+          "order": 38,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "30.2",
+          "title": "Анекдоты",
+          "chars": 230,
+          "durationSec": 12
+        },
+        {
+          "order": 39,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "31.1",
+          "title": "Анекдоты",
+          "chars": 166,
+          "durationSec": 11
+        },
+        {
+          "order": 40,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "31.2",
+          "title": "Анекдоты",
+          "chars": 227,
+          "durationSec": 12
+        },
+        {
+          "order": 41,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "32.1",
+          "title": "Анекдоты",
+          "chars": 167,
+          "durationSec": 11
+        },
+        {
+          "order": 42,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "33.1",
+          "title": "Анекдоты",
+          "chars": 168,
+          "durationSec": 11
+        },
+        {
+          "order": 43,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "34.2",
+          "title": "Анекдоты",
+          "chars": 226,
+          "durationSec": 12
+        },
+        {
+          "order": 44,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "35.1",
+          "title": "Анекдоты",
+          "chars": 165,
+          "durationSec": 11
+        }
+      ]
+    },
+    {
+      "file": "long-anecdotes-soul-ru/long-anecdotes-soul-ru-002.mp4",
+      "title": "Смешные истории для хорошего настроения",
+      "durationSec": 504,
+      "sceneCount": 44,
+      "sourceIds": [
+        "35.2",
+        "36.1",
+        "36.2",
+        "37.1",
+        "37.2",
+        "38.1",
+        "38.2",
+        "39.2",
+        "40.2",
+        "41.1",
+        "42.2",
+        "43.1",
+        "43.2",
+        "44.1",
+        "44.2",
+        "45.1",
+        "45.2",
+        "46.1",
+        "46.2",
+        "47.1",
+        "48.1",
+        "49.2",
+        "50.1",
+        "50.2",
+        "51.1",
+        "52.1",
+        "52.2",
+        "53.1",
+        "54.1",
+        "54.2",
+        "55.1",
+        "55.2",
+        "56.1",
+        "57.1",
+        "57.2",
+        "58.1",
+        "58.2",
+        "59.1",
+        "60.1",
+        "60.2",
+        "61.1",
+        "62.1",
+        "62.2",
+        "63.1"
+      ],
+      "scenes": [
+        {
+          "order": 1,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "35.2",
+          "title": "Анекдоты",
+          "chars": 226,
+          "durationSec": 12
+        },
+        {
+          "order": 2,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "36.1",
+          "title": "Анекдоты",
+          "chars": 165,
+          "durationSec": 11
+        },
+        {
+          "order": 3,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "36.2",
+          "title": "Анекдоты",
+          "chars": 230,
+          "durationSec": 12
+        },
+        {
+          "order": 4,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "37.1",
+          "title": "Анекдоты",
+          "chars": 166,
+          "durationSec": 11
+        },
+        {
+          "order": 5,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "37.2",
+          "title": "Анекдоты",
+          "chars": 227,
+          "durationSec": 12
+        },
+        {
+          "order": 6,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "38.1",
+          "title": "Анекдоты",
+          "chars": 167,
+          "durationSec": 11
+        },
+        {
+          "order": 7,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "38.2",
+          "title": "Анекдоты",
+          "chars": 229,
+          "durationSec": 12
+        },
+        {
+          "order": 8,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "39.2",
+          "title": "Анекдоты",
+          "chars": 224,
+          "durationSec": 12
+        },
+        {
+          "order": 9,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "40.2",
+          "title": "Анекдоты",
+          "chars": 224,
+          "durationSec": 12
+        },
+        {
+          "order": 10,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "41.1",
+          "title": "Анекдоты",
+          "chars": 166,
+          "durationSec": 11
+        },
+        {
+          "order": 11,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "42.2",
+          "title": "Анекдоты",
+          "chars": 225,
+          "durationSec": 12
+        },
+        {
+          "order": 12,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "43.1",
+          "title": "Анекдоты",
+          "chars": 168,
+          "durationSec": 11
+        },
+        {
+          "order": 13,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "43.2",
+          "title": "Анекдоты",
+          "chars": 226,
+          "durationSec": 12
+        },
+        {
+          "order": 14,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "44.1",
+          "title": "Анекдоты",
+          "chars": 167,
+          "durationSec": 11
+        },
+        {
+          "order": 15,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "44.2",
+          "title": "Анекдоты",
+          "chars": 223,
+          "durationSec": 12
+        },
+        {
+          "order": 16,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "45.1",
+          "title": "Анекдоты",
+          "chars": 167,
+          "durationSec": 11
+        },
+        {
+          "order": 17,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "45.2",
+          "title": "Анекдоты",
+          "chars": 222,
+          "durationSec": 12
+        },
+        {
+          "order": 18,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "46.1",
+          "title": "Анекдоты",
+          "chars": 168,
+          "durationSec": 11
+        },
+        {
+          "order": 19,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "46.2",
+          "title": "Анекдоты",
+          "chars": 223,
+          "durationSec": 12
+        },
+        {
+          "order": 20,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "47.1",
+          "title": "Анекдоты",
+          "chars": 169,
+          "durationSec": 11
+        },
+        {
+          "order": 21,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "48.1",
+          "title": "Анекдоты",
+          "chars": 168,
+          "durationSec": 11
+        },
+        {
+          "order": 22,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "49.2",
+          "title": "Анекдоты",
+          "chars": 221,
+          "durationSec": 12
+        },
+        {
+          "order": 23,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "50.1",
+          "title": "Анекдоты",
+          "chars": 168,
+          "durationSec": 11
+        },
+        {
+          "order": 24,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "50.2",
+          "title": "Анекдоты",
+          "chars": 222,
+          "durationSec": 12
+        },
+        {
+          "order": 25,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "51.1",
+          "title": "Анекдоты",
+          "chars": 168,
+          "durationSec": 11
+        },
+        {
+          "order": 26,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "52.1",
+          "title": "Анекдоты",
+          "chars": 169,
+          "durationSec": 11
+        },
+        {
+          "order": 27,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "52.2",
+          "title": "Анекдоты",
+          "chars": 220,
+          "durationSec": 12
+        },
+        {
+          "order": 28,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "53.1",
+          "title": "Анекдоты",
+          "chars": 169,
+          "durationSec": 11
+        },
+        {
+          "order": 29,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "54.1",
+          "title": "Анекдоты",
+          "chars": 169,
+          "durationSec": 11
+        },
+        {
+          "order": 30,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "54.2",
+          "title": "Анекдоты",
+          "chars": 220,
+          "durationSec": 12
+        },
+        {
+          "order": 31,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "55.1",
+          "title": "Анекдоты",
+          "chars": 171,
+          "durationSec": 11
+        },
+        {
+          "order": 32,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "55.2",
+          "title": "Анекдоты",
+          "chars": 219,
+          "durationSec": 12
+        },
+        {
+          "order": 33,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "56.1",
+          "title": "Анекдоты",
+          "chars": 169,
+          "durationSec": 11
+        },
+        {
+          "order": 34,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "57.1",
+          "title": "Анекдоты",
+          "chars": 174,
+          "durationSec": 11
+        },
+        {
+          "order": 35,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "57.2",
+          "title": "Анекдоты",
+          "chars": 218,
+          "durationSec": 12
+        },
+        {
+          "order": 36,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "58.1",
+          "title": "Анекдоты",
+          "chars": 173,
+          "durationSec": 11
+        },
+        {
+          "order": 37,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "58.2",
+          "title": "Анекдоты",
+          "chars": 219,
+          "durationSec": 12
+        },
+        {
+          "order": 38,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "59.1",
+          "title": "Анекдоты",
+          "chars": 170,
+          "durationSec": 11
+        },
+        {
+          "order": 39,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "60.1",
+          "title": "Анекдоты",
+          "chars": 171,
+          "durationSec": 11
+        },
+        {
+          "order": 40,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "60.2",
+          "title": "Анекдоты",
+          "chars": 217,
+          "durationSec": 12
+        },
+        {
+          "order": 41,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "61.1",
+          "title": "Анекдоты",
+          "chars": 172,
+          "durationSec": 11
+        },
+        {
+          "order": 42,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "62.1",
+          "title": "Анекдоты",
+          "chars": 173,
+          "durationSec": 11
+        },
+        {
+          "order": 43,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "62.2",
+          "title": "Анекдоты",
+          "chars": 219,
+          "durationSec": 12
+        },
+        {
+          "order": 44,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "63.1",
+          "title": "Анекдоты",
+          "chars": 174,
+          "durationSec": 11
+        }
+      ]
+    },
+    {
+      "file": "long-anecdotes-soul-ru/long-anecdotes-soul-ru-003.mp4",
+      "title": "Добрая подборка анекдотов для отдыха",
+      "durationSec": 423,
+      "sceneCount": 37,
+      "sourceIds": [
+        "63.2",
+        "64.1",
+        "64.2",
+        "65.1",
+        "66.1",
+        "66.2",
+        "67.1",
+        "67.2",
+        "68.2",
+        "69.1",
+        "70.1",
+        "70.2",
+        "71.1",
+        "71.2",
+        "72.1",
+        "72.2",
+        "73.1",
+        "74.1",
+        "75.1",
+        "76.2",
+        "77.2",
+        "78.1",
+        "79.1",
+        "79.2",
+        "80.2",
+        "81.2",
+        "82.1",
+        "82.2",
+        "83.1",
+        "83.2",
+        "84.1",
+        "84.2",
+        "85.1",
+        "85.2",
+        "86.1",
+        "87.2",
+        "88.1"
+      ],
+      "scenes": [
+        {
+          "order": 1,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "63.2",
+          "title": "Анекдоты",
+          "chars": 216,
+          "durationSec": 12
+        },
+        {
+          "order": 2,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "64.1",
+          "title": "Анекдоты",
+          "chars": 172,
+          "durationSec": 11
+        },
+        {
+          "order": 3,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "64.2",
+          "title": "Анекдоты",
+          "chars": 217,
+          "durationSec": 12
+        },
+        {
+          "order": 4,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "65.1",
+          "title": "Анекдоты",
+          "chars": 174,
+          "durationSec": 11
+        },
+        {
+          "order": 5,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "66.1",
+          "title": "Анекдоты",
+          "chars": 173,
+          "durationSec": 11
+        },
+        {
+          "order": 6,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "66.2",
+          "title": "Анекдоты",
+          "chars": 219,
+          "durationSec": 12
+        },
+        {
+          "order": 7,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "67.1",
+          "title": "Анекдоты",
+          "chars": 174,
+          "durationSec": 11
+        },
+        {
+          "order": 8,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "67.2",
+          "title": "Анекдоты",
+          "chars": 215,
+          "durationSec": 12
+        },
+        {
+          "order": 9,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "68.2",
+          "title": "Анекдоты",
+          "chars": 216,
+          "durationSec": 12
+        },
+        {
+          "order": 10,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "69.1",
+          "title": "Анекдоты",
+          "chars": 173,
+          "durationSec": 11
+        },
+        {
+          "order": 11,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "70.1",
+          "title": "Анекдоты",
+          "chars": 172,
+          "durationSec": 11
+        },
+        {
+          "order": 12,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "70.2",
+          "title": "Анекдоты",
+          "chars": 214,
+          "durationSec": 12
+        },
+        {
+          "order": 13,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "71.1",
+          "title": "Анекдоты",
+          "chars": 172,
+          "durationSec": 11
+        },
+        {
+          "order": 14,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "71.2",
+          "title": "Анекдоты",
+          "chars": 212,
+          "durationSec": 12
+        },
+        {
+          "order": 15,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "72.1",
+          "title": "Анекдоты",
+          "chars": 172,
+          "durationSec": 11
+        },
+        {
+          "order": 16,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "72.2",
+          "title": "Анекдоты",
+          "chars": 212,
+          "durationSec": 12
+        },
+        {
+          "order": 17,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "73.1",
+          "title": "Анекдоты",
+          "chars": 172,
+          "durationSec": 11
+        },
+        {
+          "order": 18,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "74.1",
+          "title": "Анекдоты",
+          "chars": 176,
+          "durationSec": 11
+        },
+        {
+          "order": 19,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "75.1",
+          "title": "Анекдоты",
+          "chars": 175,
+          "durationSec": 11
+        },
+        {
+          "order": 20,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "76.2",
+          "title": "Анекдоты",
+          "chars": 210,
+          "durationSec": 12
+        },
+        {
+          "order": 21,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "77.2",
+          "title": "Анекдоты",
+          "chars": 210,
+          "durationSec": 12
+        },
+        {
+          "order": 22,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "78.1",
+          "title": "Анекдоты",
+          "chars": 175,
+          "durationSec": 11
+        },
+        {
+          "order": 23,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "79.1",
+          "title": "Анекдоты",
+          "chars": 176,
+          "durationSec": 11
+        },
+        {
+          "order": 24,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "79.2",
+          "title": "Анекдоты",
+          "chars": 212,
+          "durationSec": 12
+        },
+        {
+          "order": 25,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "80.2",
+          "title": "Анекдоты",
+          "chars": 211,
+          "durationSec": 12
+        },
+        {
+          "order": 26,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "81.2",
+          "title": "Анекдоты",
+          "chars": 210,
+          "durationSec": 12
+        },
+        {
+          "order": 27,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "82.1",
+          "title": "Анекдоты",
+          "chars": 176,
+          "durationSec": 11
+        },
+        {
+          "order": 28,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "82.2",
+          "title": "Анекдоты",
+          "chars": 210,
+          "durationSec": 12
+        },
+        {
+          "order": 29,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "83.1",
+          "title": "Анекдоты",
+          "chars": 178,
+          "durationSec": 11
+        },
+        {
+          "order": 30,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "83.2",
+          "title": "Анекдоты",
+          "chars": 212,
+          "durationSec": 12
+        },
+        {
+          "order": 31,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "84.1",
+          "title": "Анекдоты",
+          "chars": 177,
+          "durationSec": 11
+        },
+        {
+          "order": 32,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "84.2",
+          "title": "Анекдоты",
+          "chars": 209,
+          "durationSec": 11
+        },
+        {
+          "order": 33,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "85.1",
+          "title": "Анекдоты",
+          "chars": 178,
+          "durationSec": 11
+        },
+        {
+          "order": 34,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "85.2",
+          "title": "Анекдоты",
+          "chars": 210,
+          "durationSec": 12
+        },
+        {
+          "order": 35,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "86.1",
+          "title": "Анекдоты",
+          "chars": 180,
+          "durationSec": 11
+        },
+        {
+          "order": 36,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "87.2",
+          "title": "Анекдоты",
+          "chars": 208,
+          "durationSec": 11
+        },
+        {
+          "order": 37,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "88.1",
+          "title": "Анекдоты",
+          "chars": 177,
+          "durationSec": 11
+        }
+      ]
+    },
+    {
+      "file": "long-anecdotes-soul-ru/long-anecdotes-soul-ru-004.mp4",
+      "title": "Русские анекдоты: новый спокойный выпуск",
+      "durationSec": 452,
+      "sceneCount": 41,
+      "sourceIds": [
+        "88.2",
+        "89.1",
+        "89.2",
+        "90.1",
+        "91.2",
+        "92.1",
+        "92.2",
+        "93.2",
+        "94.1",
+        "94.2",
+        "95.1",
+        "95.2",
+        "96.1",
+        "96.2",
+        "97.1",
+        "97.2",
+        "98.1",
+        "98.2",
+        "99.1",
+        "100.1",
+        "100.2",
+        "101.1",
+        "101.2",
+        "102.2",
+        "103.1",
+        "103.2",
+        "104.1",
+        "104.2",
+        "105.1",
+        "106.1",
+        "106.2",
+        "107.1",
+        "107.2",
+        "108.1",
+        "108.2",
+        "109.1",
+        "109.2",
+        "110.1",
+        "111.1",
+        "112.1",
+        "112.2"
+      ],
+      "scenes": [
+        {
+          "order": 1,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "88.2",
+          "title": "Анекдоты",
+          "chars": 209,
+          "durationSec": 11
+        },
+        {
+          "order": 2,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "89.1",
+          "title": "Анекдоты",
+          "chars": 178,
+          "durationSec": 11
+        },
+        {
+          "order": 3,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "89.2",
+          "title": "Анекдоты",
+          "chars": 207,
+          "durationSec": 11
+        },
+        {
+          "order": 4,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "90.1",
+          "title": "Анекдоты",
+          "chars": 179,
+          "durationSec": 11
+        },
+        {
+          "order": 5,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "91.2",
+          "title": "Анекдоты",
+          "chars": 210,
+          "durationSec": 12
+        },
+        {
+          "order": 6,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "92.1",
+          "title": "Анекдоты",
+          "chars": 178,
+          "durationSec": 11
+        },
+        {
+          "order": 7,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "92.2",
+          "title": "Анекдоты",
+          "chars": 208,
+          "durationSec": 11
+        },
+        {
+          "order": 8,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "93.2",
+          "title": "Анекдоты",
+          "chars": 207,
+          "durationSec": 11
+        },
+        {
+          "order": 9,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "94.1",
+          "title": "Анекдоты",
+          "chars": 180,
+          "durationSec": 11
+        },
+        {
+          "order": 10,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "94.2",
+          "title": "Анекдоты",
+          "chars": 206,
+          "durationSec": 11
+        },
+        {
+          "order": 11,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "95.1",
+          "title": "Анекдоты",
+          "chars": 180,
+          "durationSec": 11
+        },
+        {
+          "order": 12,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "95.2",
+          "title": "Анекдоты",
+          "chars": 205,
+          "durationSec": 11
+        },
+        {
+          "order": 13,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "96.1",
+          "title": "Анекдоты",
+          "chars": 179,
+          "durationSec": 11
+        },
+        {
+          "order": 14,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "96.2",
+          "title": "Анекдоты",
+          "chars": 204,
+          "durationSec": 11
+        },
+        {
+          "order": 15,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "97.1",
+          "title": "Анекдоты",
+          "chars": 180,
+          "durationSec": 11
+        },
+        {
+          "order": 16,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "97.2",
+          "title": "Анекдоты",
+          "chars": 204,
+          "durationSec": 11
+        },
+        {
+          "order": 17,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "98.1",
+          "title": "Анекдоты",
+          "chars": 178,
+          "durationSec": 11
+        },
+        {
+          "order": 18,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "98.2",
+          "title": "Анекдоты",
+          "chars": 203,
+          "durationSec": 11
+        },
+        {
+          "order": 19,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "99.1",
+          "title": "Анекдоты",
+          "chars": 179,
+          "durationSec": 11
+        },
+        {
+          "order": 20,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "100.1",
+          "title": "Анекдоты",
+          "chars": 181,
+          "durationSec": 11
+        },
+        {
+          "order": 21,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "100.2",
+          "title": "Анекдоты",
+          "chars": 204,
+          "durationSec": 11
+        },
+        {
+          "order": 22,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "101.1",
+          "title": "Анекдоты",
+          "chars": 179,
+          "durationSec": 11
+        },
+        {
+          "order": 23,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "101.2",
+          "title": "Анекдоты",
+          "chars": 204,
+          "durationSec": 11
+        },
+        {
+          "order": 24,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "102.2",
+          "title": "Анекдоты",
+          "chars": 203,
+          "durationSec": 11
+        },
+        {
+          "order": 25,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "103.1",
+          "title": "Анекдоты",
+          "chars": 179,
+          "durationSec": 11
+        },
+        {
+          "order": 26,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "103.2",
+          "title": "Анекдоты",
+          "chars": 202,
+          "durationSec": 11
+        },
+        {
+          "order": 27,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "104.1",
+          "title": "Анекдоты",
+          "chars": 182,
+          "durationSec": 11
+        },
+        {
+          "order": 28,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "104.2",
+          "title": "Анекдоты",
+          "chars": 198,
+          "durationSec": 11
+        },
+        {
+          "order": 29,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "105.1",
+          "title": "Анекдоты",
+          "chars": 180,
+          "durationSec": 11
+        },
+        {
+          "order": 30,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "106.1",
+          "title": "Анекдоты",
+          "chars": 181,
+          "durationSec": 11
+        },
+        {
+          "order": 31,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "106.2",
+          "title": "Анекдоты",
+          "chars": 197,
+          "durationSec": 11
+        },
+        {
+          "order": 32,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "107.1",
+          "title": "Анекдоты",
+          "chars": 182,
+          "durationSec": 11
+        },
+        {
+          "order": 33,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "107.2",
+          "title": "Анекдоты",
+          "chars": 199,
+          "durationSec": 11
+        },
+        {
+          "order": 34,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "108.1",
+          "title": "Анекдоты",
+          "chars": 180,
+          "durationSec": 11
+        },
+        {
+          "order": 35,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "108.2",
+          "title": "Анекдоты",
+          "chars": 199,
+          "durationSec": 11
+        },
+        {
+          "order": 36,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "109.1",
+          "title": "Анекдоты",
+          "chars": 181,
+          "durationSec": 11
+        },
+        {
+          "order": 37,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "109.2",
+          "title": "Анекдоты",
+          "chars": 199,
+          "durationSec": 11
+        },
+        {
+          "order": 38,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "110.1",
+          "title": "Анекдоты",
+          "chars": 181,
+          "durationSec": 11
+        },
+        {
+          "order": 39,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "111.1",
+          "title": "Анекдоты",
+          "chars": 181,
+          "durationSec": 11
+        },
+        {
+          "order": 40,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "112.1",
+          "title": "Анекдоты",
+          "chars": 182,
+          "durationSec": 11
+        },
+        {
+          "order": 41,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "112.2",
+          "title": "Анекдоты",
+          "chars": 196,
+          "durationSec": 11
+        }
+      ]
+    },
+    {
+      "file": "long-anecdotes-soul-ru/long-anecdotes-soul-ru-005.mp4",
+      "title": "Легкий юмор на вечер",
+      "durationSec": 473,
+      "sceneCount": 43,
+      "sourceIds": [
+        "113.1",
+        "113.2",
+        "114.1",
+        "114.2",
+        "115.1",
+        "115.2",
+        "116.1",
+        "117.1",
+        "117.2",
+        "118.1",
+        "119.1",
+        "119.2",
+        "120.1",
+        "121.2",
+        "122.1",
+        "122.2",
+        "123.1",
+        "123.2",
+        "124.2",
+        "125.1",
+        "125.2",
+        "126.1",
+        "126.2",
+        "127.1",
+        "127.2",
+        "128.1",
+        "128.2",
+        "129.1",
+        "129.2",
+        "130.1",
+        "130.2",
+        "131.1",
+        "131.2",
+        "133.1",
+        "133.2",
+        "134.2",
+        "135.1",
+        "135.2",
+        "136.1",
+        "136.2",
+        "137.1",
+        "137.2",
+        "138.2"
+      ],
+      "scenes": [
+        {
+          "order": 1,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "113.1",
+          "title": "Анекдоты",
+          "chars": 181,
+          "durationSec": 11
+        },
+        {
+          "order": 2,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "113.2",
+          "title": "Анекдоты",
+          "chars": 196,
+          "durationSec": 11
+        },
+        {
+          "order": 3,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "114.1",
+          "title": "Анекдоты",
+          "chars": 181,
+          "durationSec": 11
+        },
+        {
+          "order": 4,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "114.2",
+          "title": "Анекдоты",
+          "chars": 200,
+          "durationSec": 11
+        },
+        {
+          "order": 5,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "115.1",
+          "title": "Анекдоты",
+          "chars": 182,
+          "durationSec": 11
+        },
+        {
+          "order": 6,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "115.2",
+          "title": "Анекдоты",
+          "chars": 196,
+          "durationSec": 11
+        },
+        {
+          "order": 7,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "116.1",
+          "title": "Анекдоты",
+          "chars": 181,
+          "durationSec": 11
+        },
+        {
+          "order": 8,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "117.1",
+          "title": "Анекдоты",
+          "chars": 182,
+          "durationSec": 11
+        },
+        {
+          "order": 9,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "117.2",
+          "title": "Анекдоты",
+          "chars": 198,
+          "durationSec": 11
+        },
+        {
+          "order": 10,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "118.1",
+          "title": "Анекдоты",
+          "chars": 181,
+          "durationSec": 11
+        },
+        {
+          "order": 11,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "119.1",
+          "title": "Анекдоты",
+          "chars": 185,
+          "durationSec": 11
+        },
+        {
+          "order": 12,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "119.2",
+          "title": "Анекдоты",
+          "chars": 196,
+          "durationSec": 11
+        },
+        {
+          "order": 13,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "120.1",
+          "title": "Анекдоты",
+          "chars": 183,
+          "durationSec": 11
+        },
+        {
+          "order": 14,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "121.2",
+          "title": "Анекдоты",
+          "chars": 194,
+          "durationSec": 11
+        },
+        {
+          "order": 15,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "122.1",
+          "title": "Анекдоты",
+          "chars": 183,
+          "durationSec": 11
+        },
+        {
+          "order": 16,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "122.2",
+          "title": "Анекдоты",
+          "chars": 195,
+          "durationSec": 11
+        },
+        {
+          "order": 17,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "123.1",
+          "title": "Анекдоты",
+          "chars": 183,
+          "durationSec": 11
+        },
+        {
+          "order": 18,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "123.2",
+          "title": "Анекдоты",
+          "chars": 193,
+          "durationSec": 11
+        },
+        {
+          "order": 19,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "124.2",
+          "title": "Анекдоты",
+          "chars": 193,
+          "durationSec": 11
+        },
+        {
+          "order": 20,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "125.1",
+          "title": "Анекдоты",
+          "chars": 184,
+          "durationSec": 11
+        },
+        {
+          "order": 21,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "125.2",
+          "title": "Анекдоты",
+          "chars": 193,
+          "durationSec": 11
+        },
+        {
+          "order": 22,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "126.1",
+          "title": "Анекдоты",
+          "chars": 184,
+          "durationSec": 11
+        },
+        {
+          "order": 23,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "126.2",
+          "title": "Анекдоты",
+          "chars": 192,
+          "durationSec": 11
+        },
+        {
+          "order": 24,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "127.1",
+          "title": "Анекдоты",
+          "chars": 185,
+          "durationSec": 11
+        },
+        {
+          "order": 25,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "127.2",
+          "title": "Анекдоты",
+          "chars": 192,
+          "durationSec": 11
+        },
+        {
+          "order": 26,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "128.1",
+          "title": "Анекдоты",
+          "chars": 185,
+          "durationSec": 11
+        },
+        {
+          "order": 27,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "128.2",
+          "title": "Анекдоты",
+          "chars": 191,
+          "durationSec": 11
+        },
+        {
+          "order": 28,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "129.1",
+          "title": "Анекдоты",
+          "chars": 185,
+          "durationSec": 11
+        },
+        {
+          "order": 29,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "129.2",
+          "title": "Анекдоты",
+          "chars": 193,
+          "durationSec": 11
+        },
+        {
+          "order": 30,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "130.1",
+          "title": "Анекдоты",
+          "chars": 185,
+          "durationSec": 11
+        },
+        {
+          "order": 31,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "130.2",
+          "title": "Анекдоты",
+          "chars": 196,
+          "durationSec": 11
+        },
+        {
+          "order": 32,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "131.1",
+          "title": "Анекдоты",
+          "chars": 186,
+          "durationSec": 11
+        },
+        {
+          "order": 33,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "131.2",
+          "title": "Анекдоты",
+          "chars": 195,
+          "durationSec": 11
+        },
+        {
+          "order": 34,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "133.1",
+          "title": "Анекдоты",
+          "chars": 187,
+          "durationSec": 11
+        },
+        {
+          "order": 35,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "133.2",
+          "title": "Анекдоты",
+          "chars": 193,
+          "durationSec": 11
+        },
+        {
+          "order": 36,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "134.2",
+          "title": "Анекдоты",
+          "chars": 191,
+          "durationSec": 11
+        },
+        {
+          "order": 37,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "135.1",
+          "title": "Анекдоты",
+          "chars": 187,
+          "durationSec": 11
+        },
+        {
+          "order": 38,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "135.2",
+          "title": "Анекдоты",
+          "chars": 190,
+          "durationSec": 11
+        },
+        {
+          "order": 39,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "136.1",
+          "title": "Анекдоты",
+          "chars": 188,
+          "durationSec": 11
+        },
+        {
+          "order": 40,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "136.2",
+          "title": "Анекдоты",
+          "chars": 192,
+          "durationSec": 11
+        },
+        {
+          "order": 41,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "137.1",
+          "title": "Анекдоты",
+          "chars": 189,
+          "durationSec": 11
+        },
+        {
+          "order": 42,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "137.2",
+          "title": "Анекдоты",
+          "chars": 189,
+          "durationSec": 11
+        },
+        {
+          "order": 43,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "138.2",
+          "title": "Анекдоты",
+          "chars": 190,
+          "durationSec": 11
+        }
+      ]
+    },
+    {
+      "file": "long-anecdotes-soul-ru/long-anecdotes-soul-ru-006.mp4",
+      "title": "Смешные анекдоты без спешки",
+      "durationSec": 499,
+      "sceneCount": 44,
+      "sourceIds": [
+        "139.1",
+        "139.2",
+        "140.1",
+        "140.2",
+        "141.1",
+        "141.2",
+        "142.1",
+        "142.2",
+        "143.1",
+        "143.2",
+        "144.1",
+        "144.2",
+        "145.2",
+        "146.1",
+        "146.2",
+        "147.1",
+        "147.2",
+        "148.1",
+        "148.2",
+        "149.1",
+        "149.2",
+        "150.1",
+        "150.2",
+        "151.1",
+        "151.2",
+        "152.1",
+        "152.2",
+        "153.1",
+        "153.2",
+        "154.1",
+        "154.2",
+        "155.1",
+        "155.2",
+        "156.1",
+        "156.2",
+        "158.1",
+        "158.2",
+        "159.1",
+        "160.1",
+        "160.2",
+        "161.2",
+        "162.2",
+        "163.1",
+        "163.2"
+      ],
+      "scenes": [
+        {
+          "order": 1,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "139.1",
+          "title": "Анекдоты",
+          "chars": 187,
+          "durationSec": 11
+        },
+        {
+          "order": 2,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "139.2",
+          "title": "Анекдоты",
+          "chars": 188,
+          "durationSec": 11
+        },
+        {
+          "order": 3,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "140.1",
+          "title": "Анекдоты",
+          "chars": 188,
+          "durationSec": 11
+        },
+        {
+          "order": 4,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "140.2",
+          "title": "Анекдоты",
+          "chars": 189,
+          "durationSec": 11
+        },
+        {
+          "order": 5,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "141.1",
+          "title": "Анекдоты",
+          "chars": 188,
+          "durationSec": 11
+        },
+        {
+          "order": 6,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "141.2",
+          "title": "Анекдоты",
+          "chars": 192,
+          "durationSec": 11
+        },
+        {
+          "order": 7,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "142.1",
+          "title": "У врача",
+          "chars": 162,
+          "durationSec": 11
+        },
+        {
+          "order": 8,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "142.2",
+          "title": "У врача",
+          "chars": 240,
+          "durationSec": 13
+        },
+        {
+          "order": 9,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "143.1",
+          "title": "У врача",
+          "chars": 161,
+          "durationSec": 11
+        },
+        {
+          "order": 10,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "143.2",
+          "title": "У врача",
+          "chars": 236,
+          "durationSec": 13
+        },
+        {
+          "order": 11,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "144.1",
+          "title": "У врача",
+          "chars": 164,
+          "durationSec": 11
+        },
+        {
+          "order": 12,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "144.2",
+          "title": "У врача",
+          "chars": 238,
+          "durationSec": 13
+        },
+        {
+          "order": 13,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "145.2",
+          "title": "У врача",
+          "chars": 236,
+          "durationSec": 13
+        },
+        {
+          "order": 14,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "146.1",
+          "title": "У врача",
+          "chars": 167,
+          "durationSec": 11
+        },
+        {
+          "order": 15,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "146.2",
+          "title": "У врача",
+          "chars": 225,
+          "durationSec": 12
+        },
+        {
+          "order": 16,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "147.1",
+          "title": "У врача",
+          "chars": 170,
+          "durationSec": 11
+        },
+        {
+          "order": 17,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "147.2",
+          "title": "У врача",
+          "chars": 215,
+          "durationSec": 12
+        },
+        {
+          "order": 18,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "148.1",
+          "title": "У врача",
+          "chars": 174,
+          "durationSec": 11
+        },
+        {
+          "order": 19,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "148.2",
+          "title": "У врача",
+          "chars": 213,
+          "durationSec": 12
+        },
+        {
+          "order": 20,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "149.1",
+          "title": "У врача",
+          "chars": 170,
+          "durationSec": 11
+        },
+        {
+          "order": 21,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "149.2",
+          "title": "У врача",
+          "chars": 214,
+          "durationSec": 12
+        },
+        {
+          "order": 22,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "150.1",
+          "title": "У врача",
+          "chars": 171,
+          "durationSec": 11
+        },
+        {
+          "order": 23,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "150.2",
+          "title": "У врача",
+          "chars": 206,
+          "durationSec": 11
+        },
+        {
+          "order": 24,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "151.1",
+          "title": "У врача",
+          "chars": 172,
+          "durationSec": 11
+        },
+        {
+          "order": 25,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "151.2",
+          "title": "У врача",
+          "chars": 202,
+          "durationSec": 11
+        },
+        {
+          "order": 26,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "152.1",
+          "title": "У врача",
+          "chars": 174,
+          "durationSec": 11
+        },
+        {
+          "order": 27,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "152.2",
+          "title": "У врача",
+          "chars": 204,
+          "durationSec": 11
+        },
+        {
+          "order": 28,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "153.1",
+          "title": "У врача",
+          "chars": 177,
+          "durationSec": 11
+        },
+        {
+          "order": 29,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "153.2",
+          "title": "У врача",
+          "chars": 202,
+          "durationSec": 11
+        },
+        {
+          "order": 30,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "154.1",
+          "title": "У врача",
+          "chars": 177,
+          "durationSec": 11
+        },
+        {
+          "order": 31,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "154.2",
+          "title": "У врача",
+          "chars": 200,
+          "durationSec": 11
+        },
+        {
+          "order": 32,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "155.1",
+          "title": "У врача",
+          "chars": 177,
+          "durationSec": 11
+        },
+        {
+          "order": 33,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "155.2",
+          "title": "У врача",
+          "chars": 199,
+          "durationSec": 11
+        },
+        {
+          "order": 34,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "156.1",
+          "title": "У врача",
+          "chars": 179,
+          "durationSec": 11
+        },
+        {
+          "order": 35,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "156.2",
+          "title": "У врача",
+          "chars": 198,
+          "durationSec": 11
+        },
+        {
+          "order": 36,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "158.1",
+          "title": "Цифровая жизнь",
+          "chars": 163,
+          "durationSec": 11
+        },
+        {
+          "order": 37,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "158.2",
+          "title": "Цифровая жизнь",
+          "chars": 235,
+          "durationSec": 13
+        },
+        {
+          "order": 38,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "159.1",
+          "title": "Цифровая жизнь",
+          "chars": 163,
+          "durationSec": 11
+        },
+        {
+          "order": 39,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "160.1",
+          "title": "Цифровая жизнь",
+          "chars": 163,
+          "durationSec": 11
+        },
+        {
+          "order": 40,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "160.2",
+          "title": "Цифровая жизнь",
+          "chars": 212,
+          "durationSec": 12
+        },
+        {
+          "order": 41,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "161.2",
+          "title": "Цифровая жизнь",
+          "chars": 207,
+          "durationSec": 11
+        },
+        {
+          "order": 42,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "162.2",
+          "title": "Цифровая жизнь",
+          "chars": 201,
+          "durationSec": 11
+        },
+        {
+          "order": 43,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "163.1",
+          "title": "Цифровая жизнь",
+          "chars": 170,
+          "durationSec": 11
+        },
+        {
+          "order": 44,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "163.2",
+          "title": "Цифровая жизнь",
+          "chars": 205,
+          "durationSec": 11
+        }
+      ]
+    },
+    {
+      "file": "long-anecdotes-soul-ru/long-anecdotes-soul-ru-007.mp4",
+      "title": "Русские анекдоты: теплая подборка",
+      "durationSec": 524,
+      "sceneCount": 46,
+      "sourceIds": [
+        "164.1",
+        "164.2",
+        "165.2",
+        "166.1",
+        "166.2",
+        "167.1",
+        "169.1",
+        "169.2",
+        "170.1",
+        "171.2",
+        "172.2",
+        "173.1",
+        "173.2",
+        "174.1",
+        "174.2",
+        "175.1",
+        "175.2",
+        "176.1",
+        "177.1",
+        "177.2",
+        "178.1",
+        "178.2",
+        "179.1",
+        "179.2",
+        "180.1",
+        "180.2",
+        "181.1",
+        "182.1",
+        "183.1",
+        "183.2",
+        "184.2",
+        "185.1",
+        "185.2",
+        "186.1",
+        "186.2",
+        "187.1",
+        "187.2",
+        "188.2",
+        "189.1",
+        "189.2",
+        "190.1",
+        "190.2",
+        "191.2",
+        "192.2",
+        "193.1",
+        "193.2"
+      ],
+      "scenes": [
+        {
+          "order": 1,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "164.1",
+          "title": "Цифровая жизнь",
+          "chars": 172,
+          "durationSec": 11
+        },
+        {
+          "order": 2,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "164.2",
+          "title": "Цифровая жизнь",
+          "chars": 201,
+          "durationSec": 11
+        },
+        {
+          "order": 3,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "165.2",
+          "title": "Цифровая жизнь",
+          "chars": 201,
+          "durationSec": 11
+        },
+        {
+          "order": 4,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "166.1",
+          "title": "Цифровая жизнь",
+          "chars": 174,
+          "durationSec": 11
+        },
+        {
+          "order": 5,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "166.2",
+          "title": "Цифровая жизнь",
+          "chars": 196,
+          "durationSec": 11
+        },
+        {
+          "order": 6,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "167.1",
+          "title": "Цифровая жизнь",
+          "chars": 177,
+          "durationSec": 11
+        },
+        {
+          "order": 7,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "169.1",
+          "title": "Цифровая жизнь",
+          "chars": 176,
+          "durationSec": 11
+        },
+        {
+          "order": 8,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "169.2",
+          "title": "Цифровая жизнь",
+          "chars": 182,
+          "durationSec": 11
+        },
+        {
+          "order": 9,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "170.1",
+          "title": "Цифровая жизнь",
+          "chars": 179,
+          "durationSec": 11
+        },
+        {
+          "order": 10,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "171.2",
+          "title": "Про деньги",
+          "chars": 227,
+          "durationSec": 12
+        },
+        {
+          "order": 11,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "172.2",
+          "title": "Про деньги",
+          "chars": 217,
+          "durationSec": 12
+        },
+        {
+          "order": 12,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "173.1",
+          "title": "Про деньги",
+          "chars": 164,
+          "durationSec": 11
+        },
+        {
+          "order": 13,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "173.2",
+          "title": "Про деньги",
+          "chars": 216,
+          "durationSec": 12
+        },
+        {
+          "order": 14,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "174.1",
+          "title": "Про деньги",
+          "chars": 161,
+          "durationSec": 11
+        },
+        {
+          "order": 15,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "174.2",
+          "title": "Про деньги",
+          "chars": 215,
+          "durationSec": 12
+        },
+        {
+          "order": 16,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "175.1",
+          "title": "Про деньги",
+          "chars": 166,
+          "durationSec": 11
+        },
+        {
+          "order": 17,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "175.2",
+          "title": "Про деньги",
+          "chars": 209,
+          "durationSec": 11
+        },
+        {
+          "order": 18,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "176.1",
+          "title": "Про деньги",
+          "chars": 170,
+          "durationSec": 11
+        },
+        {
+          "order": 19,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "177.1",
+          "title": "Про деньги",
+          "chars": 170,
+          "durationSec": 11
+        },
+        {
+          "order": 20,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "177.2",
+          "title": "Про деньги",
+          "chars": 207,
+          "durationSec": 11
+        },
+        {
+          "order": 21,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "178.1",
+          "title": "Про деньги",
+          "chars": 172,
+          "durationSec": 11
+        },
+        {
+          "order": 22,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "178.2",
+          "title": "Про деньги",
+          "chars": 211,
+          "durationSec": 12
+        },
+        {
+          "order": 23,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "179.1",
+          "title": "Про деньги",
+          "chars": 177,
+          "durationSec": 11
+        },
+        {
+          "order": 24,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "179.2",
+          "title": "Про деньги",
+          "chars": 204,
+          "durationSec": 11
+        },
+        {
+          "order": 25,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "180.1",
+          "title": "Про деньги",
+          "chars": 177,
+          "durationSec": 11
+        },
+        {
+          "order": 26,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "180.2",
+          "title": "Про деньги",
+          "chars": 198,
+          "durationSec": 11
+        },
+        {
+          "order": 27,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "181.1",
+          "title": "Про деньги",
+          "chars": 179,
+          "durationSec": 11
+        },
+        {
+          "order": 28,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "182.1",
+          "title": "Про деньги",
+          "chars": 180,
+          "durationSec": 11
+        },
+        {
+          "order": 29,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "183.1",
+          "title": "Про деньги",
+          "chars": 180,
+          "durationSec": 11
+        },
+        {
+          "order": 30,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "183.2",
+          "title": "Про деньги",
+          "chars": 196,
+          "durationSec": 11
+        },
+        {
+          "order": 31,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "184.2",
+          "title": "Про деньги",
+          "chars": 187,
+          "durationSec": 11
+        },
+        {
+          "order": 32,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "185.1",
+          "title": "Про деньги",
+          "chars": 183,
+          "durationSec": 11
+        },
+        {
+          "order": 33,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "185.2",
+          "title": "Про деньги",
+          "chars": 190,
+          "durationSec": 11
+        },
+        {
+          "order": 34,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "186.1",
+          "title": "Про семью",
+          "chars": 161,
+          "durationSec": 11
+        },
+        {
+          "order": 35,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "186.2",
+          "title": "Про семью",
+          "chars": 242,
+          "durationSec": 13
+        },
+        {
+          "order": 36,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "187.1",
+          "title": "Про семью",
+          "chars": 162,
+          "durationSec": 11
+        },
+        {
+          "order": 37,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "187.2",
+          "title": "Про семью",
+          "chars": 241,
+          "durationSec": 13
+        },
+        {
+          "order": 38,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "188.2",
+          "title": "Про семью",
+          "chars": 243,
+          "durationSec": 13
+        },
+        {
+          "order": 39,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "189.1",
+          "title": "Про семью",
+          "chars": 163,
+          "durationSec": 11
+        },
+        {
+          "order": 40,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "189.2",
+          "title": "Про семью",
+          "chars": 235,
+          "durationSec": 13
+        },
+        {
+          "order": 41,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "190.1",
+          "title": "Про семью",
+          "chars": 161,
+          "durationSec": 11
+        },
+        {
+          "order": 42,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "190.2",
+          "title": "Про семью",
+          "chars": 240,
+          "durationSec": 13
+        },
+        {
+          "order": 43,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "191.2",
+          "title": "Про семью",
+          "chars": 233,
+          "durationSec": 12
+        },
+        {
+          "order": 44,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "192.2",
+          "title": "Про семью",
+          "chars": 227,
+          "durationSec": 12
+        },
+        {
+          "order": 45,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "193.1",
+          "title": "Про семью",
+          "chars": 165,
+          "durationSec": 11
+        },
+        {
+          "order": 46,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "193.2",
+          "title": "Про семью",
+          "chars": 226,
+          "durationSec": 12
+        }
+      ]
+    },
+    {
+      "file": "long-anecdotes-soul-ru/long-anecdotes-soul-ru-008.mp4",
+      "title": "Истории для улыбки и отдыха",
+      "durationSec": 544,
+      "sceneCount": 48,
+      "sourceIds": [
+        "194.2",
+        "195.1",
+        "195.2",
+        "196.1",
+        "196.2",
+        "197.1",
+        "198.1",
+        "199.1",
+        "199.2",
+        "200.1",
+        "201.1",
+        "201.2",
+        "202.1",
+        "202.2",
+        "203.2",
+        "204.1",
+        "204.2",
+        "205.1",
+        "205.2",
+        "206.2",
+        "207.1",
+        "207.2",
+        "209.1",
+        "209.2",
+        "210.1",
+        "210.2",
+        "211.1",
+        "211.2",
+        "212.2",
+        "213.1",
+        "213.2",
+        "214.1",
+        "214.2",
+        "215.1",
+        "215.2",
+        "216.1",
+        "217.1",
+        "217.2",
+        "218.1",
+        "218.2",
+        "219.1",
+        "219.2",
+        "221.1",
+        "221.2",
+        "222.1",
+        "223.1",
+        "223.2",
+        "225.1"
+      ],
+      "scenes": [
+        {
+          "order": 1,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "194.2",
+          "title": "Про семью",
+          "chars": 229,
+          "durationSec": 12
+        },
+        {
+          "order": 2,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "195.1",
+          "title": "Про семью",
+          "chars": 165,
+          "durationSec": 11
+        },
+        {
+          "order": 3,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "195.2",
+          "title": "Про семью",
+          "chars": 225,
+          "durationSec": 12
+        },
+        {
+          "order": 4,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "196.1",
+          "title": "Про семью",
+          "chars": 164,
+          "durationSec": 11
+        },
+        {
+          "order": 5,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "196.2",
+          "title": "Про семью",
+          "chars": 226,
+          "durationSec": 12
+        },
+        {
+          "order": 6,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "197.1",
+          "title": "Про семью",
+          "chars": 164,
+          "durationSec": 11
+        },
+        {
+          "order": 7,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "198.1",
+          "title": "Про семью",
+          "chars": 165,
+          "durationSec": 11
+        },
+        {
+          "order": 8,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "199.1",
+          "title": "Про семью",
+          "chars": 164,
+          "durationSec": 11
+        },
+        {
+          "order": 9,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "199.2",
+          "title": "Про семью",
+          "chars": 218,
+          "durationSec": 12
+        },
+        {
+          "order": 10,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "200.1",
+          "title": "Про семью",
+          "chars": 166,
+          "durationSec": 11
+        },
+        {
+          "order": 11,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "201.1",
+          "title": "Про семью",
+          "chars": 165,
+          "durationSec": 11
+        },
+        {
+          "order": 12,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "201.2",
+          "title": "Про семью",
+          "chars": 220,
+          "durationSec": 12
+        },
+        {
+          "order": 13,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "202.1",
+          "title": "Про семью",
+          "chars": 165,
+          "durationSec": 11
+        },
+        {
+          "order": 14,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "202.2",
+          "title": "Про семью",
+          "chars": 214,
+          "durationSec": 12
+        },
+        {
+          "order": 15,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "203.2",
+          "title": "Про семью",
+          "chars": 217,
+          "durationSec": 12
+        },
+        {
+          "order": 16,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "204.1",
+          "title": "Про семью",
+          "chars": 165,
+          "durationSec": 11
+        },
+        {
+          "order": 17,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "204.2",
+          "title": "Про семью",
+          "chars": 215,
+          "durationSec": 12
+        },
+        {
+          "order": 18,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "205.1",
+          "title": "Про семью",
+          "chars": 165,
+          "durationSec": 11
+        },
+        {
+          "order": 19,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "205.2",
+          "title": "Про семью",
+          "chars": 215,
+          "durationSec": 12
+        },
+        {
+          "order": 20,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "206.2",
+          "title": "Про семью",
+          "chars": 212,
+          "durationSec": 12
+        },
+        {
+          "order": 21,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "207.1",
+          "title": "Про семью",
+          "chars": 167,
+          "durationSec": 11
+        },
+        {
+          "order": 22,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "207.2",
+          "title": "Про семью",
+          "chars": 213,
+          "durationSec": 12
+        },
+        {
+          "order": 23,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "209.1",
+          "title": "Про семью",
+          "chars": 165,
+          "durationSec": 11
+        },
+        {
+          "order": 24,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "209.2",
+          "title": "Про семью",
+          "chars": 214,
+          "durationSec": 12
+        },
+        {
+          "order": 25,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "210.1",
+          "title": "Про семью",
+          "chars": 167,
+          "durationSec": 11
+        },
+        {
+          "order": 26,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "210.2",
+          "title": "Про семью",
+          "chars": 212,
+          "durationSec": 12
+        },
+        {
+          "order": 27,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "211.1",
+          "title": "Про семью",
+          "chars": 170,
+          "durationSec": 11
+        },
+        {
+          "order": 28,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "211.2",
+          "title": "Про семью",
+          "chars": 213,
+          "durationSec": 12
+        },
+        {
+          "order": 29,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "212.2",
+          "title": "Про семью",
+          "chars": 209,
+          "durationSec": 11
+        },
+        {
+          "order": 30,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "213.1",
+          "title": "Про семью",
+          "chars": 167,
+          "durationSec": 11
+        },
+        {
+          "order": 31,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "213.2",
+          "title": "Про семью",
+          "chars": 209,
+          "durationSec": 11
+        },
+        {
+          "order": 32,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "214.1",
+          "title": "Про семью",
+          "chars": 170,
+          "durationSec": 11
+        },
+        {
+          "order": 33,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "214.2",
+          "title": "Про семью",
+          "chars": 212,
+          "durationSec": 12
+        },
+        {
+          "order": 34,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "215.1",
+          "title": "Про семью",
+          "chars": 169,
+          "durationSec": 11
+        },
+        {
+          "order": 35,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "215.2",
+          "title": "Про семью",
+          "chars": 210,
+          "durationSec": 12
+        },
+        {
+          "order": 36,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "216.1",
+          "title": "Про семью",
+          "chars": 171,
+          "durationSec": 11
+        },
+        {
+          "order": 37,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "217.1",
+          "title": "Про семью",
+          "chars": 170,
+          "durationSec": 11
+        },
+        {
+          "order": 38,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "217.2",
+          "title": "Про семью",
+          "chars": 205,
+          "durationSec": 11
+        },
+        {
+          "order": 39,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "218.1",
+          "title": "Про семью",
+          "chars": 171,
+          "durationSec": 11
+        },
+        {
+          "order": 40,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "218.2",
+          "title": "Про семью",
+          "chars": 204,
+          "durationSec": 11
+        },
+        {
+          "order": 41,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "219.1",
+          "title": "Про семью",
+          "chars": 171,
+          "durationSec": 11
+        },
+        {
+          "order": 42,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "219.2",
+          "title": "Про семью",
+          "chars": 207,
+          "durationSec": 11
+        },
+        {
+          "order": 43,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "221.1",
+          "title": "Про семью",
+          "chars": 172,
+          "durationSec": 11
+        },
+        {
+          "order": 44,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "221.2",
+          "title": "Про семью",
+          "chars": 206,
+          "durationSec": 11
+        },
+        {
+          "order": 45,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "222.1",
+          "title": "Про семью",
+          "chars": 174,
+          "durationSec": 11
+        },
+        {
+          "order": 46,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "223.1",
+          "title": "Про семью",
+          "chars": 172,
+          "durationSec": 11
+        },
+        {
+          "order": 47,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "223.2",
+          "title": "Про семью",
+          "chars": 204,
+          "durationSec": 11
+        },
+        {
+          "order": 48,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "225.1",
+          "title": "Про семью",
+          "chars": 174,
+          "durationSec": 11
+        }
+      ]
+    },
+    {
+      "file": "long-anecdotes-soul-ru/long-anecdotes-soul-ru-009.mp4",
+      "title": "Большой выпуск анекдотов для настроения",
+      "durationSec": 572,
+      "sceneCount": 51,
+      "sourceIds": [
+        "225.2",
+        "226.2",
+        "227.2",
+        "228.1",
+        "228.2",
+        "229.1",
+        "229.2",
+        "230.1",
+        "230.2",
+        "231.1",
+        "231.2",
+        "232.2",
+        "233.1",
+        "235.2",
+        "236.1",
+        "236.2",
+        "237.1",
+        "237.2",
+        "238.1",
+        "238.2",
+        "239.1",
+        "240.2",
+        "241.1",
+        "242.1",
+        "243.1",
+        "243.2",
+        "244.1",
+        "245.1",
+        "245.2",
+        "246.1",
+        "246.2",
+        "247.2",
+        "249.1",
+        "249.2",
+        "250.2",
+        "251.1",
+        "251.2",
+        "252.1",
+        "252.2",
+        "253.1",
+        "254.1",
+        "255.1",
+        "255.2",
+        "256.1",
+        "257.1",
+        "257.2",
+        "258.1",
+        "258.2",
+        "259.1",
+        "259.2",
+        "260.1"
+      ],
+      "scenes": [
+        {
+          "order": 1,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "225.2",
+          "title": "Про семью",
+          "chars": 205,
+          "durationSec": 11
+        },
+        {
+          "order": 2,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "226.2",
+          "title": "Про семью",
+          "chars": 205,
+          "durationSec": 11
+        },
+        {
+          "order": 3,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "227.2",
+          "title": "Про семью",
+          "chars": 202,
+          "durationSec": 11
+        },
+        {
+          "order": 4,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "228.1",
+          "title": "Про семью",
+          "chars": 175,
+          "durationSec": 11
+        },
+        {
+          "order": 5,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "228.2",
+          "title": "Про семью",
+          "chars": 202,
+          "durationSec": 11
+        },
+        {
+          "order": 6,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "229.1",
+          "title": "Про семью",
+          "chars": 176,
+          "durationSec": 11
+        },
+        {
+          "order": 7,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "229.2",
+          "title": "Про семью",
+          "chars": 200,
+          "durationSec": 11
+        },
+        {
+          "order": 8,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "230.1",
+          "title": "Про семью",
+          "chars": 176,
+          "durationSec": 11
+        },
+        {
+          "order": 9,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "230.2",
+          "title": "Про семью",
+          "chars": 198,
+          "durationSec": 11
+        },
+        {
+          "order": 10,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "231.1",
+          "title": "Про семью",
+          "chars": 176,
+          "durationSec": 11
+        },
+        {
+          "order": 11,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "231.2",
+          "title": "Про семью",
+          "chars": 196,
+          "durationSec": 11
+        },
+        {
+          "order": 12,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "232.2",
+          "title": "Про семью",
+          "chars": 197,
+          "durationSec": 11
+        },
+        {
+          "order": 13,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "233.1",
+          "title": "Про семью",
+          "chars": 176,
+          "durationSec": 11
+        },
+        {
+          "order": 14,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "235.2",
+          "title": "Про семью",
+          "chars": 194,
+          "durationSec": 11
+        },
+        {
+          "order": 15,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "236.1",
+          "title": "Про семью",
+          "chars": 180,
+          "durationSec": 11
+        },
+        {
+          "order": 16,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "236.2",
+          "title": "Про семью",
+          "chars": 196,
+          "durationSec": 11
+        },
+        {
+          "order": 17,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "237.1",
+          "title": "Про семью",
+          "chars": 180,
+          "durationSec": 11
+        },
+        {
+          "order": 18,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "237.2",
+          "title": "Про семью",
+          "chars": 191,
+          "durationSec": 11
+        },
+        {
+          "order": 19,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "238.1",
+          "title": "Про семью",
+          "chars": 179,
+          "durationSec": 11
+        },
+        {
+          "order": 20,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "238.2",
+          "title": "Про семью",
+          "chars": 192,
+          "durationSec": 11
+        },
+        {
+          "order": 21,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "239.1",
+          "title": "Про семью",
+          "chars": 181,
+          "durationSec": 11
+        },
+        {
+          "order": 22,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "240.2",
+          "title": "Про семью",
+          "chars": 191,
+          "durationSec": 11
+        },
+        {
+          "order": 23,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "241.1",
+          "title": "Про семью",
+          "chars": 182,
+          "durationSec": 11
+        },
+        {
+          "order": 24,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "242.1",
+          "title": "Про семью",
+          "chars": 185,
+          "durationSec": 11
+        },
+        {
+          "order": 25,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "243.1",
+          "title": "Про семью",
+          "chars": 184,
+          "durationSec": 11
+        },
+        {
+          "order": 26,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "243.2",
+          "title": "Про семью",
+          "chars": 187,
+          "durationSec": 11
+        },
+        {
+          "order": 27,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "244.1",
+          "title": "Про семью",
+          "chars": 185,
+          "durationSec": 11
+        },
+        {
+          "order": 28,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "245.1",
+          "title": "Про семью",
+          "chars": 184,
+          "durationSec": 11
+        },
+        {
+          "order": 29,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "245.2",
+          "title": "Про семью",
+          "chars": 186,
+          "durationSec": 11
+        },
+        {
+          "order": 30,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "246.1",
+          "title": "Про семью",
+          "chars": 186,
+          "durationSec": 11
+        },
+        {
+          "order": 31,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "246.2",
+          "title": "Про семью",
+          "chars": 188,
+          "durationSec": 11
+        },
+        {
+          "order": 32,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "247.2",
+          "title": "Про возраст",
+          "chars": 211,
+          "durationSec": 12
+        },
+        {
+          "order": 33,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "249.1",
+          "title": "Про возраст",
+          "chars": 198,
+          "durationSec": 11
+        },
+        {
+          "order": 34,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "249.2",
+          "title": "Про возраст",
+          "chars": 199,
+          "durationSec": 11
+        },
+        {
+          "order": 35,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "250.2",
+          "title": "Про работу",
+          "chars": 241,
+          "durationSec": 13
+        },
+        {
+          "order": 36,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "251.1",
+          "title": "Про работу",
+          "chars": 165,
+          "durationSec": 11
+        },
+        {
+          "order": 37,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "251.2",
+          "title": "Про работу",
+          "chars": 239,
+          "durationSec": 13
+        },
+        {
+          "order": 38,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "252.1",
+          "title": "Про работу",
+          "chars": 168,
+          "durationSec": 11
+        },
+        {
+          "order": 39,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "252.2",
+          "title": "Про работу",
+          "chars": 235,
+          "durationSec": 13
+        },
+        {
+          "order": 40,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "253.1",
+          "title": "Про работу",
+          "chars": 165,
+          "durationSec": 11
+        },
+        {
+          "order": 41,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "254.1",
+          "title": "Про работу",
+          "chars": 167,
+          "durationSec": 11
+        },
+        {
+          "order": 42,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "255.1",
+          "title": "Про работу",
+          "chars": 172,
+          "durationSec": 11
+        },
+        {
+          "order": 43,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "255.2",
+          "title": "Про работу",
+          "chars": 230,
+          "durationSec": 12
+        },
+        {
+          "order": 44,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "256.1",
+          "title": "Про работу",
+          "chars": 170,
+          "durationSec": 11
+        },
+        {
+          "order": 45,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "257.1",
+          "title": "Про работу",
+          "chars": 173,
+          "durationSec": 11
+        },
+        {
+          "order": 46,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "257.2",
+          "title": "Про работу",
+          "chars": 224,
+          "durationSec": 12
+        },
+        {
+          "order": 47,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "258.1",
+          "title": "Про работу",
+          "chars": 172,
+          "durationSec": 11
+        },
+        {
+          "order": 48,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "258.2",
+          "title": "Про работу",
+          "chars": 223,
+          "durationSec": 12
+        },
+        {
+          "order": 49,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "259.1",
+          "title": "Про работу",
+          "chars": 171,
+          "durationSec": 11
+        },
+        {
+          "order": 50,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "259.2",
+          "title": "Про работу",
+          "chars": 223,
+          "durationSec": 12
+        },
+        {
+          "order": 51,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "260.1",
+          "title": "Про работу",
+          "chars": 175,
+          "durationSec": 11
+        }
+      ]
+    },
+    {
+      "file": "long-anecdotes-soul-ru/long-anecdotes-soul-ru-010.mp4",
+      "title": "Русские анекдоты: вечерний юмор",
+      "durationSec": 601,
+      "sceneCount": 53,
+      "sourceIds": [
+        "260.2",
+        "261.2",
+        "262.1",
+        "262.2",
+        "263.1",
+        "263.2",
+        "264.1",
+        "264.2",
+        "265.1",
+        "265.2",
+        "266.1",
+        "266.2",
+        "267.1",
+        "267.2",
+        "268.1",
+        "268.2",
+        "269.1",
+        "269.2",
+        "270.1",
+        "270.2",
+        "271.1",
+        "271.2",
+        "272.1",
+        "272.2",
+        "273.1",
+        "273.2",
+        "274.1",
+        "274.2",
+        "275.1",
+        "275.2",
+        "276.1",
+        "276.2",
+        "277.1",
+        "277.2",
+        "278.1",
+        "278.2",
+        "279.1",
+        "279.2",
+        "280.1",
+        "280.2",
+        "281.1",
+        "281.2",
+        "282.1",
+        "282.2",
+        "283.2",
+        "284.1",
+        "284.2",
+        "285.1",
+        "285.2",
+        "286.1",
+        "286.2",
+        "287.1",
+        "288.2"
+      ],
+      "scenes": [
+        {
+          "order": 1,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "260.2",
+          "title": "Про работу",
+          "chars": 220,
+          "durationSec": 12
+        },
+        {
+          "order": 2,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "261.2",
+          "title": "Про работу",
+          "chars": 216,
+          "durationSec": 12
+        },
+        {
+          "order": 3,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "262.1",
+          "title": "Про работу",
+          "chars": 173,
+          "durationSec": 11
+        },
+        {
+          "order": 4,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "262.2",
+          "title": "Про работу",
+          "chars": 215,
+          "durationSec": 12
+        },
+        {
+          "order": 5,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "263.1",
+          "title": "Про работу",
+          "chars": 173,
+          "durationSec": 11
+        },
+        {
+          "order": 6,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "263.2",
+          "title": "Про работу",
+          "chars": 215,
+          "durationSec": 12
+        },
+        {
+          "order": 7,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "264.1",
+          "title": "Про работу",
+          "chars": 176,
+          "durationSec": 11
+        },
+        {
+          "order": 8,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "264.2",
+          "title": "Про работу",
+          "chars": 211,
+          "durationSec": 12
+        },
+        {
+          "order": 9,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "265.1",
+          "title": "Про работу",
+          "chars": 177,
+          "durationSec": 11
+        },
+        {
+          "order": 10,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "265.2",
+          "title": "Про работу",
+          "chars": 209,
+          "durationSec": 11
+        },
+        {
+          "order": 11,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "266.1",
+          "title": "Про работу",
+          "chars": 178,
+          "durationSec": 11
+        },
+        {
+          "order": 12,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "266.2",
+          "title": "Про работу",
+          "chars": 208,
+          "durationSec": 11
+        },
+        {
+          "order": 13,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "267.1",
+          "title": "Про работу",
+          "chars": 179,
+          "durationSec": 11
+        },
+        {
+          "order": 14,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "267.2",
+          "title": "Про работу",
+          "chars": 207,
+          "durationSec": 11
+        },
+        {
+          "order": 15,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "268.1",
+          "title": "Про работу",
+          "chars": 180,
+          "durationSec": 11
+        },
+        {
+          "order": 16,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "268.2",
+          "title": "Про работу",
+          "chars": 206,
+          "durationSec": 11
+        },
+        {
+          "order": 17,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "269.1",
+          "title": "Про работу",
+          "chars": 182,
+          "durationSec": 11
+        },
+        {
+          "order": 18,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "269.2",
+          "title": "Про работу",
+          "chars": 206,
+          "durationSec": 11
+        },
+        {
+          "order": 19,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "270.1",
+          "title": "Про работу",
+          "chars": 182,
+          "durationSec": 11
+        },
+        {
+          "order": 20,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "270.2",
+          "title": "Про работу",
+          "chars": 208,
+          "durationSec": 11
+        },
+        {
+          "order": 21,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "271.1",
+          "title": "Про работу",
+          "chars": 183,
+          "durationSec": 11
+        },
+        {
+          "order": 22,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "271.2",
+          "title": "Про работу",
+          "chars": 202,
+          "durationSec": 11
+        },
+        {
+          "order": 23,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "272.1",
+          "title": "Про работу",
+          "chars": 185,
+          "durationSec": 11
+        },
+        {
+          "order": 24,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "272.2",
+          "title": "Про работу",
+          "chars": 202,
+          "durationSec": 11
+        },
+        {
+          "order": 25,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "273.1",
+          "title": "Про работу",
+          "chars": 188,
+          "durationSec": 11
+        },
+        {
+          "order": 26,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "273.2",
+          "title": "Про работу",
+          "chars": 192,
+          "durationSec": 11
+        },
+        {
+          "order": 27,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "274.1",
+          "title": "Про работу",
+          "chars": 189,
+          "durationSec": 11
+        },
+        {
+          "order": 28,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "274.2",
+          "title": "Про работу",
+          "chars": 192,
+          "durationSec": 11
+        },
+        {
+          "order": 29,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "275.1",
+          "title": "Про работу",
+          "chars": 190,
+          "durationSec": 11
+        },
+        {
+          "order": 30,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "275.2",
+          "title": "Про работу",
+          "chars": 192,
+          "durationSec": 11
+        },
+        {
+          "order": 31,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "276.1",
+          "title": "Про детей",
+          "chars": 162,
+          "durationSec": 11
+        },
+        {
+          "order": 32,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "276.2",
+          "title": "Про детей",
+          "chars": 236,
+          "durationSec": 13
+        },
+        {
+          "order": 33,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "277.1",
+          "title": "Про детей",
+          "chars": 166,
+          "durationSec": 11
+        },
+        {
+          "order": 34,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "277.2",
+          "title": "Про детей",
+          "chars": 236,
+          "durationSec": 13
+        },
+        {
+          "order": 35,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "278.1",
+          "title": "Про детей",
+          "chars": 166,
+          "durationSec": 11
+        },
+        {
+          "order": 36,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "278.2",
+          "title": "Про детей",
+          "chars": 236,
+          "durationSec": 13
+        },
+        {
+          "order": 37,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "279.1",
+          "title": "Про детей",
+          "chars": 169,
+          "durationSec": 11
+        },
+        {
+          "order": 38,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "279.2",
+          "title": "Про детей",
+          "chars": 234,
+          "durationSec": 12
+        },
+        {
+          "order": 39,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "280.1",
+          "title": "Про детей",
+          "chars": 173,
+          "durationSec": 11
+        },
+        {
+          "order": 40,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "280.2",
+          "title": "Про детей",
+          "chars": 231,
+          "durationSec": 12
+        },
+        {
+          "order": 41,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "281.1",
+          "title": "Про детей",
+          "chars": 170,
+          "durationSec": 11
+        },
+        {
+          "order": 42,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "281.2",
+          "title": "Про детей",
+          "chars": 232,
+          "durationSec": 12
+        },
+        {
+          "order": 43,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "282.1",
+          "title": "Про детей",
+          "chars": 173,
+          "durationSec": 11
+        },
+        {
+          "order": 44,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "282.2",
+          "title": "Про детей",
+          "chars": 232,
+          "durationSec": 12
+        },
+        {
+          "order": 45,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "283.2",
+          "title": "Про детей",
+          "chars": 231,
+          "durationSec": 12
+        },
+        {
+          "order": 46,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "284.1",
+          "title": "Про детей",
+          "chars": 179,
+          "durationSec": 11
+        },
+        {
+          "order": 47,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "284.2",
+          "title": "Про детей",
+          "chars": 217,
+          "durationSec": 12
+        },
+        {
+          "order": 48,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "285.1",
+          "title": "Про детей",
+          "chars": 181,
+          "durationSec": 11
+        },
+        {
+          "order": 49,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "285.2",
+          "title": "Про детей",
+          "chars": 215,
+          "durationSec": 12
+        },
+        {
+          "order": 50,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "286.1",
+          "title": "Про детей",
+          "chars": 187,
+          "durationSec": 11
+        },
+        {
+          "order": 51,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "286.2",
+          "title": "Про детей",
+          "chars": 209,
+          "durationSec": 11
+        },
+        {
+          "order": 52,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "287.1",
+          "title": "Про детей",
+          "chars": 187,
+          "durationSec": 11
+        },
+        {
+          "order": 53,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "288.2",
+          "title": "Про детей",
+          "chars": 198,
+          "durationSec": 11
+        }
+      ]
+    },
+    {
+      "file": "long-anecdotes-soul-ru/long-anecdotes-soul-ru-011.mp4",
+      "title": "Смешной сборник для спокойного просмотра",
+      "durationSec": 624,
+      "sceneCount": 55,
+      "sourceIds": [
+        "289.1",
+        "289.2",
+        "290.1",
+        "290.2",
+        "291.1",
+        "291.2",
+        "292.1",
+        "292.2",
+        "293.1",
+        "293.2",
+        "294.2",
+        "295.2",
+        "296.1",
+        "296.2",
+        "297.1",
+        "297.2",
+        "298.1",
+        "300.2",
+        "301.2",
+        "302.1",
+        "302.2",
+        "303.1",
+        "303.2",
+        "304.1",
+        "304.2",
+        "305.1",
+        "305.2",
+        "306.2",
+        "307.1",
+        "307.2",
+        "308.1",
+        "308.2",
+        "309.1",
+        "309.2",
+        "310.2",
+        "311.1",
+        "312.1",
+        "312.2",
+        "313.1",
+        "313.2",
+        "314.2",
+        "315.1",
+        "316.2",
+        "317.2",
+        "318.1",
+        "318.2",
+        "319.2",
+        "321.1",
+        "321.2",
+        "322.2",
+        "323.1",
+        "323.2",
+        "324.1",
+        "324.2",
+        "325.1"
+      ],
+      "scenes": [
+        {
+          "order": 1,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "289.1",
+          "title": "Про детей",
+          "chars": 190,
+          "durationSec": 11
+        },
+        {
+          "order": 2,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "289.2",
+          "title": "Про детей",
+          "chars": 196,
+          "durationSec": 11
+        },
+        {
+          "order": 3,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "290.1",
+          "title": "Про детей",
+          "chars": 192,
+          "durationSec": 11
+        },
+        {
+          "order": 4,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "290.2",
+          "title": "Про детей",
+          "chars": 196,
+          "durationSec": 11
+        },
+        {
+          "order": 5,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "291.1",
+          "title": "Про детей",
+          "chars": 192,
+          "durationSec": 11
+        },
+        {
+          "order": 6,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "291.2",
+          "title": "Про детей",
+          "chars": 193,
+          "durationSec": 11
+        },
+        {
+          "order": 7,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "292.1",
+          "title": "Про спорт",
+          "chars": 167,
+          "durationSec": 11
+        },
+        {
+          "order": 8,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "292.2",
+          "title": "Про спорт",
+          "chars": 231,
+          "durationSec": 12
+        },
+        {
+          "order": 9,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "293.1",
+          "title": "Про спорт",
+          "chars": 167,
+          "durationSec": 11
+        },
+        {
+          "order": 10,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "293.2",
+          "title": "Про спорт",
+          "chars": 218,
+          "durationSec": 12
+        },
+        {
+          "order": 11,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "294.2",
+          "title": "Про спорт",
+          "chars": 207,
+          "durationSec": 11
+        },
+        {
+          "order": 12,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "295.2",
+          "title": "Про спорт",
+          "chars": 204,
+          "durationSec": 11
+        },
+        {
+          "order": 13,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "296.1",
+          "title": "Студенческое",
+          "chars": 161,
+          "durationSec": 11
+        },
+        {
+          "order": 14,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "296.2",
+          "title": "Студенческое",
+          "chars": 239,
+          "durationSec": 13
+        },
+        {
+          "order": 15,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "297.1",
+          "title": "Студенческое",
+          "chars": 164,
+          "durationSec": 11
+        },
+        {
+          "order": 16,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "297.2",
+          "title": "Студенческое",
+          "chars": 230,
+          "durationSec": 12
+        },
+        {
+          "order": 17,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "298.1",
+          "title": "Студенческое",
+          "chars": 166,
+          "durationSec": 11
+        },
+        {
+          "order": 18,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "300.2",
+          "title": "Студенческое",
+          "chars": 214,
+          "durationSec": 12
+        },
+        {
+          "order": 19,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "301.2",
+          "title": "Студенческое",
+          "chars": 217,
+          "durationSec": 12
+        },
+        {
+          "order": 20,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "302.1",
+          "title": "Студенческое",
+          "chars": 169,
+          "durationSec": 11
+        },
+        {
+          "order": 21,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "302.2",
+          "title": "Студенческое",
+          "chars": 212,
+          "durationSec": 12
+        },
+        {
+          "order": 22,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "303.1",
+          "title": "Студенческое",
+          "chars": 178,
+          "durationSec": 11
+        },
+        {
+          "order": 23,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "303.2",
+          "title": "Студенческое",
+          "chars": 210,
+          "durationSec": 12
+        },
+        {
+          "order": 24,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "304.1",
+          "title": "Студенческое",
+          "chars": 183,
+          "durationSec": 11
+        },
+        {
+          "order": 25,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "304.2",
+          "title": "Студенческое",
+          "chars": 206,
+          "durationSec": 11
+        },
+        {
+          "order": 26,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "305.1",
+          "title": "Студенческое",
+          "chars": 184,
+          "durationSec": 11
+        },
+        {
+          "order": 27,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "305.2",
+          "title": "Студенческое",
+          "chars": 207,
+          "durationSec": 11
+        },
+        {
+          "order": 28,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "306.2",
+          "title": "Студенческое",
+          "chars": 203,
+          "durationSec": 11
+        },
+        {
+          "order": 29,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "307.1",
+          "title": "Студенческое",
+          "chars": 186,
+          "durationSec": 11
+        },
+        {
+          "order": 30,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "307.2",
+          "title": "Студенческое",
+          "chars": 203,
+          "durationSec": 11
+        },
+        {
+          "order": 31,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "308.1",
+          "title": "Студенческое",
+          "chars": 196,
+          "durationSec": 11
+        },
+        {
+          "order": 32,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "308.2",
+          "title": "Студенческое",
+          "chars": 198,
+          "durationSec": 11
+        },
+        {
+          "order": 33,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "309.1",
+          "title": "Гаишник и Ко",
+          "chars": 162,
+          "durationSec": 11
+        },
+        {
+          "order": 34,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "309.2",
+          "title": "Гаишник и Ко",
+          "chars": 209,
+          "durationSec": 11
+        },
+        {
+          "order": 35,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "310.2",
+          "title": "Гаишник и Ко",
+          "chars": 201,
+          "durationSec": 11
+        },
+        {
+          "order": 36,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "311.1",
+          "title": "Гаишник и Ко",
+          "chars": 179,
+          "durationSec": 11
+        },
+        {
+          "order": 37,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "312.1",
+          "title": "Гаишник и Ко",
+          "chars": 187,
+          "durationSec": 11
+        },
+        {
+          "order": 38,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "312.2",
+          "title": "Гаишник и Ко",
+          "chars": 186,
+          "durationSec": 11
+        },
+        {
+          "order": 39,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "313.1",
+          "title": "Про зверьё",
+          "chars": 162,
+          "durationSec": 11
+        },
+        {
+          "order": 40,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "313.2",
+          "title": "Про зверьё",
+          "chars": 237,
+          "durationSec": 13
+        },
+        {
+          "order": 41,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "314.2",
+          "title": "Про зверьё",
+          "chars": 237,
+          "durationSec": 13
+        },
+        {
+          "order": 42,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "315.1",
+          "title": "Про зверьё",
+          "chars": 166,
+          "durationSec": 11
+        },
+        {
+          "order": 43,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "316.2",
+          "title": "Про зверьё",
+          "chars": 226,
+          "durationSec": 12
+        },
+        {
+          "order": 44,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "317.2",
+          "title": "Про зверьё",
+          "chars": 230,
+          "durationSec": 12
+        },
+        {
+          "order": 45,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "318.1",
+          "title": "Про зверьё",
+          "chars": 172,
+          "durationSec": 11
+        },
+        {
+          "order": 46,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "318.2",
+          "title": "Про зверьё",
+          "chars": 226,
+          "durationSec": 12
+        },
+        {
+          "order": 47,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "319.2",
+          "title": "Про зверьё",
+          "chars": 222,
+          "durationSec": 12
+        },
+        {
+          "order": 48,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "321.1",
+          "title": "Про зверьё",
+          "chars": 179,
+          "durationSec": 11
+        },
+        {
+          "order": 49,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "321.2",
+          "title": "Про зверьё",
+          "chars": 220,
+          "durationSec": 12
+        },
+        {
+          "order": 50,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "322.2",
+          "title": "Про зверьё",
+          "chars": 210,
+          "durationSec": 12
+        },
+        {
+          "order": 51,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "323.1",
+          "title": "Про зверьё",
+          "chars": 179,
+          "durationSec": 11
+        },
+        {
+          "order": 52,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "323.2",
+          "title": "Про зверьё",
+          "chars": 205,
+          "durationSec": 11
+        },
+        {
+          "order": 53,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "324.1",
+          "title": "Про зверьё",
+          "chars": 182,
+          "durationSec": 11
+        },
+        {
+          "order": 54,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "324.2",
+          "title": "Про зверьё",
+          "chars": 203,
+          "durationSec": 11
+        },
+        {
+          "order": 55,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "325.1",
+          "title": "Про зверьё",
+          "chars": 184,
+          "durationSec": 11
+        }
+      ]
+    },
+    {
+      "file": "long-anecdotes-soul-ru/long-anecdotes-soul-ru-012.mp4",
+      "title": "Русские анекдоты: еще один хороший выпуск",
+      "durationSec": 646,
+      "sceneCount": 57,
+      "sourceIds": [
+        "325.2",
+        "326.1",
+        "326.2",
+        "327.2",
+        "328.1",
+        "328.2",
+        "329.1",
+        "329.2",
+        "330.1",
+        "331.1",
+        "331.2",
+        "332.1",
+        "333.1",
+        "333.2",
+        "334.2",
+        "335.1",
+        "335.2",
+        "336.1",
+        "336.2",
+        "337.1",
+        "337.2",
+        "338.1",
+        "339.1",
+        "339.2",
+        "340.1",
+        "341.1",
+        "341.2",
+        "342.1",
+        "342.2",
+        "343.1",
+        "343.2",
+        "344.2",
+        "345.1",
+        "345.2",
+        "346.1",
+        "346.2",
+        "347.1",
+        "347.2",
+        "348.1",
+        "348.2",
+        "349.1",
+        "349.2",
+        "350.1",
+        "351.1",
+        "351.2",
+        "352.1",
+        "352.2",
+        "353.1",
+        "353.2",
+        "354.1",
+        "355.2",
+        "356.1",
+        "357.1",
+        "357.2",
+        "358.1",
+        "358.2",
+        "359.1"
+      ],
+      "scenes": [
+        {
+          "order": 1,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "325.2",
+          "title": "Про зверьё",
+          "chars": 206,
+          "durationSec": 11
+        },
+        {
+          "order": 2,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "326.1",
+          "title": "Про зверьё",
+          "chars": 186,
+          "durationSec": 11
+        },
+        {
+          "order": 3,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "326.2",
+          "title": "Про зверьё",
+          "chars": 205,
+          "durationSec": 11
+        },
+        {
+          "order": 4,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "327.2",
+          "title": "Про зверьё",
+          "chars": 200,
+          "durationSec": 11
+        },
+        {
+          "order": 5,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "328.1",
+          "title": "Про зверьё",
+          "chars": 189,
+          "durationSec": 11
+        },
+        {
+          "order": 6,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "328.2",
+          "title": "Про зверьё",
+          "chars": 199,
+          "durationSec": 11
+        },
+        {
+          "order": 7,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "329.1",
+          "title": "Про зверьё",
+          "chars": 191,
+          "durationSec": 11
+        },
+        {
+          "order": 8,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "329.2",
+          "title": "Про зверьё",
+          "chars": 198,
+          "durationSec": 11
+        },
+        {
+          "order": 9,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "330.1",
+          "title": "Про зверьё",
+          "chars": 199,
+          "durationSec": 11
+        },
+        {
+          "order": 10,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "331.1",
+          "title": "Школьное",
+          "chars": 160,
+          "durationSec": 11
+        },
+        {
+          "order": 11,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "331.2",
+          "title": "Школьное",
+          "chars": 240,
+          "durationSec": 13
+        },
+        {
+          "order": 12,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "332.1",
+          "title": "Школьное",
+          "chars": 162,
+          "durationSec": 11
+        },
+        {
+          "order": 13,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "333.1",
+          "title": "Школьное",
+          "chars": 165,
+          "durationSec": 11
+        },
+        {
+          "order": 14,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "333.2",
+          "title": "Школьное",
+          "chars": 237,
+          "durationSec": 13
+        },
+        {
+          "order": 15,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "334.2",
+          "title": "Школьное",
+          "chars": 233,
+          "durationSec": 12
+        },
+        {
+          "order": 16,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "335.1",
+          "title": "Школьное",
+          "chars": 167,
+          "durationSec": 11
+        },
+        {
+          "order": 17,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "335.2",
+          "title": "Школьное",
+          "chars": 220,
+          "durationSec": 12
+        },
+        {
+          "order": 18,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "336.1",
+          "title": "Школьное",
+          "chars": 170,
+          "durationSec": 11
+        },
+        {
+          "order": 19,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "336.2",
+          "title": "Школьное",
+          "chars": 221,
+          "durationSec": 12
+        },
+        {
+          "order": 20,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "337.1",
+          "title": "Школьное",
+          "chars": 166,
+          "durationSec": 11
+        },
+        {
+          "order": 21,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "337.2",
+          "title": "Школьное",
+          "chars": 218,
+          "durationSec": 12
+        },
+        {
+          "order": 22,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "338.1",
+          "title": "Школьное",
+          "chars": 171,
+          "durationSec": 11
+        },
+        {
+          "order": 23,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "339.1",
+          "title": "Школьное",
+          "chars": 169,
+          "durationSec": 11
+        },
+        {
+          "order": 24,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "339.2",
+          "title": "Школьное",
+          "chars": 211,
+          "durationSec": 12
+        },
+        {
+          "order": 25,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "340.1",
+          "title": "Школьное",
+          "chars": 174,
+          "durationSec": 11
+        },
+        {
+          "order": 26,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "341.1",
+          "title": "Школьное",
+          "chars": 173,
+          "durationSec": 11
+        },
+        {
+          "order": 27,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "341.2",
+          "title": "Школьное",
+          "chars": 196,
+          "durationSec": 11
+        },
+        {
+          "order": 28,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "342.1",
+          "title": "Школьное",
+          "chars": 173,
+          "durationSec": 11
+        },
+        {
+          "order": 29,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "342.2",
+          "title": "Школьное",
+          "chars": 194,
+          "durationSec": 11
+        },
+        {
+          "order": 30,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "343.1",
+          "title": "Школьное",
+          "chars": 177,
+          "durationSec": 11
+        },
+        {
+          "order": 31,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "343.2",
+          "title": "Школьное",
+          "chars": 183,
+          "durationSec": 11
+        },
+        {
+          "order": 32,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "344.2",
+          "title": "Школьное",
+          "chars": 179,
+          "durationSec": 11
+        },
+        {
+          "order": 33,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "345.1",
+          "title": "Про тёщу",
+          "chars": 172,
+          "durationSec": 11
+        },
+        {
+          "order": 34,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "345.2",
+          "title": "Про тёщу",
+          "chars": 231,
+          "durationSec": 12
+        },
+        {
+          "order": 35,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "346.1",
+          "title": "Про тёщу",
+          "chars": 171,
+          "durationSec": 11
+        },
+        {
+          "order": 36,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "346.2",
+          "title": "Про тёщу",
+          "chars": 228,
+          "durationSec": 12
+        },
+        {
+          "order": 37,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "347.1",
+          "title": "Про тёщу",
+          "chars": 188,
+          "durationSec": 11
+        },
+        {
+          "order": 38,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "347.2",
+          "title": "Про тёщу",
+          "chars": 221,
+          "durationSec": 12
+        },
+        {
+          "order": 39,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "348.1",
+          "title": "Про тёщу",
+          "chars": 192,
+          "durationSec": 11
+        },
+        {
+          "order": 40,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "348.2",
+          "title": "Про тёщу",
+          "chars": 215,
+          "durationSec": 12
+        },
+        {
+          "order": 41,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "349.1",
+          "title": "Про тёщу",
+          "chars": 189,
+          "durationSec": 11
+        },
+        {
+          "order": 42,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "349.2",
+          "title": "Про тёщу",
+          "chars": 211,
+          "durationSec": 12
+        },
+        {
+          "order": 43,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "350.1",
+          "title": "Про тёщу",
+          "chars": 198,
+          "durationSec": 11
+        },
+        {
+          "order": 44,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "351.1",
+          "title": "Армейское",
+          "chars": 161,
+          "durationSec": 11
+        },
+        {
+          "order": 45,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "351.2",
+          "title": "Армейское",
+          "chars": 243,
+          "durationSec": 13
+        },
+        {
+          "order": 46,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "352.1",
+          "title": "Армейское",
+          "chars": 166,
+          "durationSec": 11
+        },
+        {
+          "order": 47,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "352.2",
+          "title": "Армейское",
+          "chars": 224,
+          "durationSec": 12
+        },
+        {
+          "order": 48,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "353.1",
+          "title": "Армейское",
+          "chars": 167,
+          "durationSec": 11
+        },
+        {
+          "order": 49,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "353.2",
+          "title": "Армейское",
+          "chars": 222,
+          "durationSec": 12
+        },
+        {
+          "order": 50,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "354.1",
+          "title": "Армейское",
+          "chars": 169,
+          "durationSec": 11
+        },
+        {
+          "order": 51,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "355.2",
+          "title": "Армейское",
+          "chars": 220,
+          "durationSec": 12
+        },
+        {
+          "order": 52,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "356.1",
+          "title": "Армейское",
+          "chars": 174,
+          "durationSec": 11
+        },
+        {
+          "order": 53,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "357.1",
+          "title": "Армейское",
+          "chars": 177,
+          "durationSec": 11
+        },
+        {
+          "order": 54,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "357.2",
+          "title": "Армейское",
+          "chars": 203,
+          "durationSec": 11
+        },
+        {
+          "order": 55,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "358.1",
+          "title": "Армейское",
+          "chars": 181,
+          "durationSec": 11
+        },
+        {
+          "order": 56,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "358.2",
+          "title": "Армейское",
+          "chars": 204,
+          "durationSec": 11
+        },
+        {
+          "order": 57,
+          "sourceDeck": "pack:анекдоты-ру-впн-mqe5ovw1",
+          "sourceId": "359.1",
+          "title": "Армейское",
+          "chars": 181,
+          "durationSec": 11
+        }
+      ]
+    }
+  ]
+}

@@ -1,11 +1,11 @@
-// Assemble the final deck from the agents' selections. Reads corpora/islamic/sel/*.jsonl
+// Assemble the final deck from the agents' selections. Reads local-assets/corpora/islamic/sel/*.jsonl
 // (ids + theme chosen by workflow agents) and the exact-Arabic pool, dedups, length-bands,
 // balances by section, applies a family-safe devotional filter, caps at CAP
 // → writes data/islamic/cards.json (+ index.json).
 import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from "node:fs";
 
 const REPO = "/home/davtian/Documents/shorts";
-const OUT = `${REPO}/corpora/islamic`;
+const OUT = `${REPO}/local-assets/corpora/islamic`;
 const SEL = `${OUT}/sel`;
 const CAP = Number(process.env.ISLAMIC_PACK_CAP || 800);
 

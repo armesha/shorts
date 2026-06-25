@@ -9,6 +9,25 @@ export function ytMeta(
   title: string,
   text: string,
 ): { title: string; description: string; tags: string[] } {
+  if (deck.longVideo) {
+    const cleanTitle = (title || deck.genericTitles?.[0] || deck.name).trim();
+    const body = (text || deck.name).trim();
+    return {
+      title: `${cleanTitle} ${deck.emoji}`.slice(0, 100),
+      description: `${body}\n\n${deck.hashtags}`,
+      tags: deck.tags,
+    };
+  }
+  if (deck.quote) {
+    const cleanAuthor = (title || deck.genericTitles?.[0] || deck.name).trim();
+    const cleanQuote = (text || "").replace(/\s+/g, " ").trim();
+    const preview = cleanQuote.length > 74 ? cleanQuote.slice(0, 73).trim() + "…" : cleanQuote;
+    return {
+      title: `${preview || cleanAuthor} ${deck.emoji} #shorts`.slice(0, 100),
+      description: `${cleanQuote}\n\n— ${cleanAuthor}\n\n${deck.hashtags}`,
+      tags: deck.tags,
+    };
+  }
   // Islamic cards: title = the Arabic reference, body = the exact Arabic text (+ reference).
   if (deck.islamic) {
     let ar = text,

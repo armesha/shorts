@@ -4,7 +4,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import puppeteer from "puppeteer-core";
 import { chromePath } from "../render.ts";
-import { getDeck } from "./decks.ts";
+import { deckLang, getDeck } from "./decks.ts";
 import { buildPsychHtml } from "../psych/render.ts";
 import { buildIslamicHtml, pickIslamicBg } from "../islamic/render.ts";
 import { buildChristianHtml, pickChristianBg } from "../christian/render.ts";
@@ -54,12 +54,24 @@ export function backgroundCss(name?: string | null): string {
 }
 
 /**
- * Pick a lifehack background by profession key. A deck variant (e.g. "chaplin") selects the
- * `profession_<key>_<variant>.jpg` set (men with a moustache); no variant → the plain
- * `profession_<key>.jpg`. Falls back to the plain bg, then a random one of the right style.
+ * Pick a lifehack background. New lifehack cards prefer neutral editorial backgrounds so text
+ * and lower social UI do not fight old person/photo compositions. Profession backgrounds remain
+ * as a fallback for older installs without the generated editorial asset.
  */
-function lifehackBgFile(profession?: string | null, variant?: string | null): string | null {
+function stableIndex(seed: string, size: number): number {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i += 1) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h % size;
+}
+
+function lifehackBgFile(profession?: string | null, variant?: string | null, seed = ""): string | null {
   if (!existsSync(LIFEHACK_BG_DIR)) return null;
+  const editorial = readdirSync(LIFEHACK_BG_DIR).filter((f) => /^editorial-clean-\d+\.(png|jpe?g)$/i.test(f)).sort();
+  if (editorial.length > 0) return editorial[stableIndex(seed || `${profession ?? ""}|${variant ?? ""}`, editorial.length)];
+
   const all = readdirSync(LIFEHACK_BG_DIR).filter((f) => /^profession_.*\.(jpe?g|png)$/i.test(f));
   if (all.length === 0) return null;
   const v = (variant ?? "").toLowerCase();
@@ -80,8 +92,8 @@ function lifehackBgFile(profession?: string | null, variant?: string | null): st
 }
 
 /** Resolve a profession (+ deck variant) to a CSS background (inlined data-URI) + the file name used. */
-function lifehackBgCss(profession?: string | null, variant?: string | null): { css: string; name: string } {
-  const file = lifehackBgFile(profession, variant);
+function lifehackBgCss(profession?: string | null, variant?: string | null, seed = ""): { css: string; name: string } {
+  const file = lifehackBgFile(profession, variant, seed);
   if (!file) return { css: "#ffffff", name: "" };
   const buf = readFileSync(resolve(LIFEHACK_BG_DIR, file));
   const mime = /\.png$/i.test(file) ? "image/png" : "image/jpeg";
@@ -99,9 +111,9 @@ export interface Anecdote {
   bg?: string;
   /** Best-effort exclusion for random background selection. */
   avoidBg?: string;
-  /** Deck id — for lifehack decks (tips, tips-de) the profession layout is used instead. */
+  /** Deck id — lifehack decks use the dedicated editorial template. */
   deck?: string;
-  /** Profession key for the lifehack background (tips deck only); random if omitted. */
+  /** Legacy profession key retained for source stats/template seeding. */
   profession?: string;
 }
 
@@ -139,6 +151,7 @@ export async function renderAnecdote(
   a: Anecdote,
   outPath: string,
 ): Promise<{ path: string; fontPx: number; bg: string }> {
+  if (getDeck(a.deck).quote) return renderQuote(a, outPath);
   if (getDeck(a.deck).islamic) return renderIslamic(a, outPath);
   if (getDeck(a.deck).christian) return renderChristian(a, outPath);
   if (getDeck(a.deck).psych) return renderPsych(a, outPath);
@@ -157,6 +170,139 @@ export async function renderAnecdote(
     .replaceAll("{{BG}}", bgCss);
   const fontPx = await captureCard(html, outPath);
   return { path: outPath, fontPx, bg: bgName };
+}
+
+function quoteHtml(input: { quote: string; author: string; lang: string; channel: string }): string {
+  const lang = input.lang || "en";
+  const rtl = lang === "ar";
+  const q = esc(input.quote);
+  const author = esc(input.author);
+  const channel = esc(input.channel);
+  return `<!doctype html>
+<html lang="${esc(lang)}" dir="${rtl ? "rtl" : "ltr"}">
+<head>
+<meta charset="utf-8" />
+<style>
+  * { box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; margin: 0; overflow: hidden; }
+  body {
+    font-family: "Noto Serif Display", "Noto Serif", "Noto Naskh Arabic", "Noto Serif Devanagari", "Noto Sans", serif;
+    color: #121212;
+    background:
+      linear-gradient(135deg, rgba(177, 33, 33, 0.08), transparent 35%),
+      linear-gradient(315deg, rgba(18, 87, 94, 0.10), transparent 38%),
+      #f7f3e8;
+  }
+  .card {
+    width: 100%;
+    height: 100%;
+    padding: 108px 86px 92px;
+    display: flex;
+    flex-direction: column;
+  }
+  .kicker {
+    font: 800 32px/1 "Noto Sans", "Noto Naskh Arabic", sans-serif;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: #7b1f1f;
+  }
+  .rule {
+    width: 132px;
+    height: 10px;
+    margin-top: 28px;
+    background: #12616a;
+  }
+  .body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+  }
+  .quote {
+    width: 100%;
+    white-space: pre-wrap;
+    font-weight: 800;
+    line-height: 1.18;
+    text-align: ${rtl ? "right" : "left"};
+    overflow-wrap: anywhere;
+  }
+  .author {
+    margin-top: 44px;
+    font: 800 46px/1.15 "Noto Sans", "Noto Naskh Arabic", sans-serif;
+    color: #12616a;
+    text-align: ${rtl ? "right" : "left"};
+  }
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: end;
+    font: 700 28px/1.2 "Noto Sans", "Noto Naskh Arabic", sans-serif;
+    color: rgba(18,18,18,.58);
+  }
+  .mark {
+    font-size: 120px;
+    line-height: .7;
+    color: rgba(123,31,31,.22);
+  }
+</style>
+</head>
+<body>
+  <main class="card">
+    <div>
+      <div class="kicker">${channel}</div>
+      <div class="rule"></div>
+    </div>
+    <section class="body">
+      <div>
+        <div class="mark">${rtl ? "”" : "“"}</div>
+        <div class="quote">${q}</div>
+        <div class="author">— ${author}</div>
+      </div>
+    </section>
+    <footer class="footer">
+      <span>${lang.toUpperCase()}</span>
+      <span>SHORTS</span>
+    </footer>
+  </main>
+  <script>
+    (function () {
+      function fit() {
+        var body = document.querySelector('.body');
+        var text = document.querySelector('.quote');
+        var min = 38, max = 78, best = min;
+        while (min <= max) {
+          var mid = (min + max) >> 1;
+          text.style.fontSize = mid + 'px';
+          var fits = text.scrollHeight <= body.clientHeight * 0.72 && text.scrollWidth <= text.clientWidth + 2;
+          if (fits) { best = mid; min = mid + 1; }
+          else max = mid - 1;
+        }
+        text.style.fontSize = best + 'px';
+        window.__fitFontPx = best;
+        window.__fitted = true;
+      }
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+      else fit();
+      setTimeout(function () { if (!window.__fitted) fit(); }, 1200);
+    })();
+  </script>
+</body>
+</html>`;
+}
+
+async function renderQuote(
+  a: Anecdote,
+  outPath: string,
+): Promise<{ path: string; fontPx: number; bg: string }> {
+  const html = quoteHtml({
+    quote: a.text,
+    author: a.title || getDeck(a.deck).name,
+    lang: deckLang(a.deck || "") || "en",
+    channel: getDeck(a.deck).name,
+  });
+  const fontPx = await captureCard(html, outPath);
+  return { path: outPath, fontPx, bg: "quote" };
 }
 
 /** Render one psychology card (the whole card is stored as JSON in a.text) via templates/psych.html. */
@@ -273,12 +419,12 @@ async function renderChoose(
   return { path: outPath, fontPx, bg: "choose" };
 }
 
-/** Render one lifehack/tip onto its profession template (title → red banner, text → the paper). */
+/** Render one lifehack/tip onto the editorial top-safe template. */
 async function renderLifehack(
   a: Anecdote,
   outPath: string,
 ): Promise<{ path: string; fontPx: number; bg: string }> {
-  const { css, name } = lifehackBgCss(a.profession, getDeck(a.deck).lifehackVariant);
+  const { css, name } = lifehackBgCss(a.profession, getDeck(a.deck).lifehackVariant, `${a.deck}|${a.title}|${a.text}`);
   const template = pickLifehackTemplate({ deck: a.deck, profession: a.profession, title: a.title, text: a.text });
   let html = await readFile(LIFEHACK_TEMPLATE, "utf8");
   html = html

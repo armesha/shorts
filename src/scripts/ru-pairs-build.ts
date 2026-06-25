@@ -7,7 +7,7 @@ import { readFileSync, writeFileSync, renameSync, copyFileSync, cpSync, readdirS
 import { resolve } from "node:path";
 import { anecdoteKey } from "../anecdotes/library.ts";
 
-const DIR = resolve(process.cwd(), "corpora/ru-gen");
+const DIR = resolve(process.cwd(), "local-assets/corpora/ru-gen");
 const PACK_FILE = resolve(process.cwd(), "data/packs/анекдоты-ру-впн-mqe5ovw1.json");
 const DECK_DIR = resolve(process.cwd(), "data/anecdotes");
 

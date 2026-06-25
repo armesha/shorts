@@ -28,6 +28,10 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   const { emitNotificationChange } = deps.notifier;
   const { isGrantableBuiltinDeck, isGrantableBuiltinDeckId, builtinDeckVisibleForUser, visibleDecksForUser } =
     deps.deckAccess;
+  const isGrantableLongVideoDeckId = (deckId: string): boolean => {
+    const deck = DECKS.find((d) => d.id === deckId);
+    return !!deck?.longVideo && isGrantableBuiltinDeck(deck);
+  };
 
   // ---- Admin: user management (admin creates accounts for friends) ----
   app.get("/api/admin/users", async (req, reply) => {
@@ -182,7 +186,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   app.put("/api/admin/readiness-limits", async (req, reply) => {
     if (!requireAdmin(req, reply)) return;
     const body = (req.body as { minRunwayDays?: unknown }) ?? {};
-    return setReadinessLimits(db, body);
+    return setReadinessLimits(db, { minRunwayDays: body.minRunwayDays == null ? undefined : Number(body.minRunwayDays) });
   });
 
   // ---- Admin: per-user pack (deck) visibility ----
@@ -199,6 +203,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
         pack: false,
         grantable: !!(d.adminOnly && d.grantable),
         adminOnly: !!d.adminOnly,
+        longVideo: !!d.longVideo,
       })),
       ...listAllPacks().map((p) => ({ id: `pack:${p.id}`, name: p.name, pack: true, grantable: false, adminOnly: false })),
     ];
@@ -216,6 +221,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     if (!requireAdmin(req, reply)) return;
     const hidden = db.hiddenDecksByUser();
     const grantedBuiltins = db.grantedDecksByUser();
+    const grantedLongVideos = db.grantedLongVideoDecksByUser();
     const used = db.usedDecksByUser();
     const posted = db.postedByUserDeck();
     const allPacks = listAllPacks();
@@ -241,6 +247,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
             .filter((p) => userIsSuperAdmin || p.owners.includes(u.id) || p.grants.includes(u.id))
             .map((p) => `pack:${p.id}`),
         ],
+        grantedLongVideos: grantedLongVideos[u.id] ?? [],
         used: used[u.id] ?? [],
         scheduled: db.scheduleSlotsForUser(u.id), // posts/day planned across all their channels
         library: db.countVideosByUser(u.id), // videos queued in their libraries
@@ -256,7 +263,11 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const id = Number((req.params as { id: string }).id);
     const target = db.getUserById(id);
     if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
-    const body = (req.body as { hidden?: string[]; grants?: string[] }) ?? {};
+    const body = (req.body as { hidden?: string[]; grants?: string[]; longVideoGrants?: string[] }) ?? {};
+    const rawGrants = Array.isArray(body.grants) ? body.grants.map((g) => String(g || "").trim()).filter(Boolean) : [];
+    const rawLongVideoGrants = Array.isArray(body.longVideoGrants)
+      ? body.longVideoGrants.map((g) => String(g || "").trim()).filter(Boolean)
+      : rawGrants.filter(isGrantableLongVideoDeckId);
 
     // ГЛАВНЫЙ АДМИН: видит всё по умолчанию → hidden работает как opt-out и может содержать
     // ЛЮБУЮ встроенную деку (вкл. admin-only) и кастомный пак "pack:<id>". Гранты админу не нужны.
@@ -271,6 +282,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       ];
       db.setHiddenDecks(id, adminHidden);
       db.setGrantedDecks(id, []); // у админа полный доступ — гранты не используются
+      db.setGrantedLongVideoDecks(id, []); // long-video гранты живут отдельно и админу тоже не нужны
       return { ok: true, hidden: adminHidden };
     }
 
@@ -287,7 +299,8 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       ];
       db.setHiddenDecks(id, adminHidden);
       db.setGrantedDecks(id, []);
-      const grants = Array.isArray(body.grants) ? body.grants.map((g) => String(g || "").trim()).filter(Boolean) : [];
+      db.setGrantedLongVideoDecks(id, []);
+      const grants = rawGrants.filter((g) => !isGrantableLongVideoDeckId(g));
       const want = new Set(grants.filter((g) => g.startsWith("pack:")).map((g) => g.replace(/^pack:/, "")));
       for (const p of listAllPacks()) {
         if (p.owners.includes(id)) continue;
@@ -302,9 +315,11 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       ? body.hidden.filter((d) => DECKS.some((x) => x.id === d && !isGrantableBuiltinDeck(x)))
       : [];
     db.setHiddenDecks(id, valid);
-    const grants = Array.isArray(body.grants) ? body.grants.map((g) => String(g || "").trim()).filter(Boolean) : [];
+    const grants = rawGrants.filter((g) => !isGrantableLongVideoDeckId(g));
     const builtInGrants = grants.filter((deckId) => isGrantableBuiltinDeckId(deckId));
     db.setGrantedDecks(id, builtInGrants);
+    const longVideoGrants = rawLongVideoGrants.filter(isGrantableLongVideoDeckId);
+    db.setGrantedLongVideoDecks(id, longVideoGrants);
     // Кастомные паки (opt-in): выдать/снять доступ этому юзеру по body.grants (id вида "pack:<id>").
     // Владельца не трогаем.
     const want = new Set(grants.filter((g) => g.startsWith("pack:")).map((g) => g.replace(/^pack:/, "")));
@@ -316,10 +331,10 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   });
 
   // Admin: toggle the "infinite packs" simulation for a user (his personal request — see
-  // services/infinite-packs.ts). ON → that user's built-in decks report a constant 1000 free cards
+  // services/infinite-packs.ts). ON → that user's decks/packs report their full size as free
   // everywhere he looks (Studio / channel sources / «Паки»), AND the scheduler recycles his
-  // already-queued videos round-robin forever instead of deleting them after each post. Visibility +
-  // queue recycle only; real used-card accounting and deck access are untouched.
+  // already-queued videos round-robin forever instead of deleting them after each post. Fresh generation
+  // repeats the same fixed card; real used-card accounting and deck access are untouched.
   app.put("/api/admin/users/:id/infinite-packs", async (req, reply) => {
     if (!requireSuperAdmin(req, reply)) return;
     const id = Number((req.params as { id: string }).id);
@@ -414,12 +429,12 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
     const usedKeys = new Set(db.usedAnecdoteKeys(targetId));
     const posted = db.postedByUserDeck()[targetId] ?? {};
-    // «Бесконечный пак»: это «вид паков самого юзера» (его страница «Паки») → показываем 1000/0/1000,
+    // «Бесконечный пак»: это «вид паков самого юзера» (его страница «Паки») → показываем весь пак,
     // как и в /api/generators. Админ-обзор (матрица/low-decks/pack-usage) остаётся с реальными числами.
     const infinite = db.hasFeature(targetId, INFINITE_PACKS_FEATURE);
     const decks = visibleDecksForUser(targetId).map((d) => {
       const s = libraryStats(d.id, usedKeys);
-      const c = infinite ? infiniteCounts() : { total: s.total, used: s.used, available: s.available };
+      const c = infinite ? infiniteCounts(s.total) : { total: s.total, used: s.used, available: s.available };
       return { id: d.id, name: d.name, total: c.total, used: c.used, available: c.available, posted: posted[d.id] ?? 0 };
     });
     return { userId: targetId, username: target.username, decks };

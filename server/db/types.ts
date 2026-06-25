@@ -13,6 +13,7 @@ export interface Account {
   theme: string;
   lang: string; // выбор КОНТЕНТА канала: встроенная дека (ru/de/…) или пак ("pack:<id>")
   sourceDecks: string[]; // все паки/деки, из которых канал может генерировать и выкладывать
+  longVideoDecks: string[]; // длинные видео-паки: только ручное добавление в библиотеку + ручная выкладка
   channelLang: string; // ЯЗЫК канала (ru/de/it/fr/en/ar) — стабилен; пак должен совпадать по языку
   schedule: string[];
   template: string;

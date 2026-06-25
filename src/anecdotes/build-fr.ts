@@ -6,7 +6,7 @@ import { getDeck } from "./decks.ts";
 // Builds the French "Blagues françaises" deck from Blagues-API (MIT, ~2.7k jokes, Q&A format).
 // Source: https://github.com/Blagues-API/blagues-api (blagues.json). Keep only safe categories.
 const deck = getDeck("fr");
-const SRC = resolve(process.cwd(), deck.source); // corpora/blagues.json
+const SRC = resolve(process.cwd(), deck.source); // local-assets/corpora/blagues.json
 const OUT_DIR = resolve(process.cwd(), deck.dir); // data/anecdotes-fr
 
 // Monetization-safe categories only — drop dark / limit / beauf / blondes.

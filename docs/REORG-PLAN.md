@@ -33,7 +33,7 @@
 | корень репо | — | ~18 одноразовых артефактов (5 `.py`, 6 `strike-audit-*`, `temp/ images/ .playwright-mcp/`) |
 
 **Реальный баг (не косметика):** папка `local-assets/Генератор мемов/` (**214 МБ** бинарей) **НЕ в `.gitignore`**,
-хотя сосед `Русские анекдоты/` — в нём. Кодом не читается. `git add -A` (его же рекомендует CLAUDE.md)
+хотя сосед `local-assets/Русские анекдоты/` — в нём. Кодом не читается. `git add -A` (его же рекомендует CLAUDE.md)
 затащит 214 МБ в историю. **Чинится первой строкой.**
 
 ## Железное правило проверки — гейт после КАЖДОЙ фазы
@@ -79,10 +79,10 @@
 ## DO-NOT-TOUCH (читается кодом по фикс-пути или особое)
 
 - `server/index.ts` и `server/db.ts` **как файлы** не двигать — вынимать СОДЕРЖИМОЕ.
-- `data/**`, `assets/**`, `templates/*.html`, `web/dist`, `.env`, `corpora/**` — таргеты хардкод-литералов
+- `data/**`, `assets/**`, `templates/*.html`, `web/dist`, `.env`, `local-assets/corpora/**` — таргеты хардкод-литералов
   (`decks.ts` dir/source, `render.ts` шаблоны, `index.ts` static-roots, `config.ts` .env).
 - `data/quotes-de-{1,2,3}` — **не дубликаты**, а живые tracked-деки (`decks.ts`).
-- `Русские анекдоты/anek_djvu.txt` — читается `build.ts` по литералу, уже gitignored.
+- `local-assets/Русские анекдоты/anek_djvu.txt` — читается `build.ts` по литералу, уже gitignored.
 - НЕ создавать новый top-level код-каталог (`lib/`, `core/` в корне) под backend — он не в tsconfig
   `include ['src/**','server/**']` → молча выпадет из typecheck+тестов. Перемещения держать под `src/**`/`server/**`.
 - `client_secret_*.json` — не читать (security-правило). `web/src/locales/{ru,en}.ts` — оставить (таблицы переводов).
@@ -93,7 +93,7 @@
 
 Ничего из этого не читается кодом → нулевой runtime-риск.
 
-- [ ] **Фикс бага:** добавить `local-assets/Генератор мемов/` в `.gitignore` рядом с `Русские анекдоты/`.
+- [ ] **Фикс бага:** добавить `local-assets/Генератор мемов/` в `.gitignore` рядом с `local-assets/Русские анекдоты/`.
 - [ ] `mkdir audits/`, перенести 6 `strike-audit-*` туда; в `.gitignore` заменить `strike-audit-*.{md,json}` → `audits/`.
 - [ ] Удалить мёртвое: 5 `process_anecdotes*.py`, каталоги `images/` `temp/` `.playwright-mcp/` (все ignored, ~19 МБ).
 - [ ] Прибрать `data/`-корень (НЕ трогая деки и `data/app.db`/`data/output`): scratch-БД

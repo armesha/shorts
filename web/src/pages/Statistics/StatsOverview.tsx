@@ -210,8 +210,12 @@ export function MiniStat({ label, value, title }: { label: string; value: ReactN
   );
 }
 
-export function TopVideosPanel({ videos }: { videos: OverviewTopVideo[] }) {
+const TOP_VIDEOS_CAP = 100;
+
+export function TopVideosPanel({ videos: allVideos }: { videos: OverviewTopVideo[] }) {
   const { t } = useT();
+  // Показываем максимум 100 лучших роликов (overview.topVideos уже отсортирован по просмотрам).
+  const videos = allVideos.length > TOP_VIDEOS_CAP ? allVideos.slice(0, TOP_VIDEOS_CAP) : allVideos;
   const [visible, setVisible] = useState(10);
   const listRef = useRef<HTMLDivElement | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -351,8 +355,8 @@ export function TopChannelsPanel({ rows }: { rows: OverviewTopChannel[] }) {
                     <div className="flex items-center gap-2 min-w-0">
                       <Link
                         to={`/accounts/${r.accountId}`}
-                        className="font-medium truncate block link-hover"
-                        title={t("stats.openChannel")}
+                        className="font-medium line-clamp-2 break-words link-hover"
+                        title={r.channelTitle}
                       >
                         {r.channelTitle}
                       </Link>
@@ -429,8 +433,8 @@ export function Breakdown({ title, rows }: { title: string; rows: YoutubeBreakdo
   return (
     <div className="rounded-lg bg-base-200/60 p-3">
       <div className="font-semibold text-sm mb-2">{title}</div>
-      <div className="space-y-2">
-        {rows.slice(0, 5).map((r) => {
+      <div className="space-y-2 max-h-[18rem] overflow-auto pr-1">
+        {rows.map((r) => {
           const pct = total > 0 ? Math.round((r.views / total) * 100) : 0;
           return (
             <div key={r.key} className="rounded-md border border-base-300/70 bg-base-100/65 px-3 py-2">

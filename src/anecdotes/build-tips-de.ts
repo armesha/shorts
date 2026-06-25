@@ -1,17 +1,18 @@
-// Build the "tips-de" (Deutsche Lifehacks) deck from LLM batches in corpora/tips-de-gen/.
-// Each batch file is <profession>-<n>.json = a JSON array of {title, text} (German).
-// New mixed batches may also carry item.profession; that wins over the file name.
+// Build the "tips-de" (Deutsche Lifehacks) deck from source-backed batches in local-assets/corpora/tips-de-gen/.
+// Active batch files are source-backed surprising-<n>.json arrays of {title, text, profession}.
+// Legacy <profession>-<n>.json files are intentionally ignored.
 // Output: data/tips-de/titled.json (ready items w/ profession) + index.json (stats).
 // Mirrors build-tips.ts; German text runs a touch longer, so the length band is 300..500.
 //   node --import tsx src/anecdotes/build-tips-de.ts
 import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 
-const SRC_DIR = resolve(process.cwd(), "corpora/tips-de-gen");
+const SRC_DIR = resolve(process.cwd(), "local-assets/corpora/tips-de-gen");
 const OUT_DIR = resolve(process.cwd(), "data/tips-de");
 const MIN = 300;
 const MAX = 500;
 const PACK_SIZE = 300;
+const SOURCE_BATCH_RE = /^surprising-\d+\.json$/;
 // Backgrounds are shared with the Russian deck (profession_<key>.jpg) — keep keys English.
 const PROFS = new Set([
   "chef", "mechanic", "firefighter", "lawyer", "accountant",
@@ -62,7 +63,7 @@ if (!existsSync(SRC_DIR)) {
   process.exit(1);
 }
 
-const files = readdirSync(SRC_DIR).filter((f) => f.endsWith(".json")).sort();
+const files = readdirSync(SRC_DIR).filter((f) => SOURCE_BATCH_RE.test(f)).sort();
 const seen = new Set<string>();
 const byProf = new Map<string, number>();
 const lens: number[] = [];

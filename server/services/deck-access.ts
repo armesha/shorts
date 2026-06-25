@@ -8,6 +8,7 @@ import { DECKS, isPackDeckId, deckLang } from "../../src/anecdotes/decks.ts";
 import { getPack } from "../../src/packs/store.ts";
 import { libraryStats } from "../../src/anecdotes/library.ts";
 import { packCardKey } from "./pack-gen.ts";
+import { INFINITE_PACKS_FEATURE } from "./infinite-packs.ts";
 
 type Replyish = { code: (n: number) => { send: (b: unknown) => unknown } };
 const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
@@ -46,6 +47,7 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
     // Админки). Это только ВИДИМОСТЬ (списки/пикеры): право генерить у админа остаётся (deckAllowed),
     // поэтому уже настроенный автопостинг канала не ломается.
     if (db.getUserById(userId)?.role === "admin") return !db.isDeckHiddenFor(userId, deck.id);
+    if (deck.adminOnly && deck.longVideo) return isGrantableBuiltinDeck(deck) && db.isLongVideoDeckGrantedFor(userId, deck.id);
     if (deck.adminOnly) return isGrantableBuiltinDeck(deck) && db.isDeckGrantedFor(userId, deck.id);
     return !db.isDeckHiddenFor(userId, deck.id);
   }
@@ -77,13 +79,31 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
 
   function accountSourceDecks(account: Account): string[] {
     const ids = account.sourceDecks?.length ? account.sourceDecks : [account.lang];
-    return [...new Set(ids.map((x) => String(x || "").trim()).filter(Boolean))];
+    return [
+      ...new Set(
+        ids
+          .map((x) => String(x || "").trim())
+          .filter((deckId) => deckId && !DECKS.find((deck) => deck.id === deckId)?.longVideo),
+      ),
+    ];
   }
 
   // How many UNUSED cards the content owner still has across the given decks/packs (free pool).
   // Cards are unique per deck, so summing across decks never double-counts. Used to keep generation
   // from queueing more videos than there are fresh cards (a job can't make a video from a used card).
   function availableUnusedForDecks(ownerId: number, deckIds: string[]): number {
+    if (db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) {
+      const ownerIsSuperAdmin = isSuperAdminUser(db.getUserById(ownerId));
+      let total = 0;
+      for (const deckId of [...new Set(deckIds)].filter(Boolean)) {
+        if (isPackDeckId(deckId)) {
+          total += getPack(deckId.slice(5), ownerId, ownerIsSuperAdmin)?.cards.length ?? 0;
+        } else {
+          total += libraryStats(deckId, new Set()).total;
+        }
+      }
+      return total;
+    }
     const usedKeys = db.usedAnecdoteKeys(ownerId);
       const ownerIsSuperAdmin = isSuperAdminUser(db.getUserById(ownerId));
       let total = 0;
@@ -114,6 +134,8 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
   function validateAccountSourceDeck(req: unknown, deckId: string, channelLang: string): string | null {
     if (!deckExists(req, deckId)) return `Неизвестный пак «${deckId}».`;
     if (!deckAllowed(req, deckId)) return "Этот пак вам недоступен — нельзя поставить его источником канала.";
+    if (DECKS.find((deck) => deck.id === deckId)?.longVideo)
+      return "Длинные видео не ставятся в расписание — включите их отдельной галочкой и добавляйте в библиотеку вручную.";
     const contentLang = deckContentLang(req, deckId);
     if (channelLang && contentLang && contentLang !== channelLang)
       return `Язык контента (${contentLang.toUpperCase()}) ≠ язык канала (${channelLang.toUpperCase()}) — выровняй их.`;

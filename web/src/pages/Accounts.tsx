@@ -1,20 +1,33 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { apiClient, type Account, type AppStatus, type OAuthClient } from "../lib/api";
+import { apiClient, type Account, type AppStatus, type ContentCatalogItem, type OAuthClient } from "../lib/api";
 import { AppIcon } from "../components/AppIcon";
 import { BrandIcon } from "../components/BrandIcon";
 import { useT } from "../lib/i18n";
 import { fmtCacheTime, readCache, writeCache } from "../lib/cache";
+import { useAuth } from "../lib/auth";
+import { isMainAdmin } from "../lib/authz";
+import { langTag } from "../lib/deck";
+import ChannelBlocks from "./ChannelBlocks";
 
 const ACCOUNTS_CACHE_KEY = "sf.accounts.v1";
 const DAILY_KEY_CAP = 92; // YouTube upload quota per Google project/key (held under the ~100/day ceiling)
+type AccountSourceStat = {
+  id: string;
+  title: string;
+  lang: string | null;
+  available: number | null;
+  total: number | null;
+  queued: number;
+};
 type AccountsCache = {
   accounts: Account[];
   status: AppStatus | null;
   queue: Record<number, number>;
+  queueByDeck?: Record<number, Record<string, number>>;
 };
 
-export default function Accounts() {
+function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
   const { t } = useT();
   const cached = readCache<AccountsCache>(ACCOUNTS_CACHE_KEY);
   const [accounts, setAccounts] = useState<Account[]>(cached?.value.accounts ?? []);
@@ -24,6 +37,8 @@ export default function Accounts() {
   const [creating, setCreating] = useState(false);
   const [actionErr, setActionErr] = useState("");
   const [queue, setQueue] = useState<Record<number, number>>(cached?.value.queue ?? {});
+  const [queueByDeck, setQueueByDeck] = useState<Record<number, Record<string, number>>>(cached?.value.queueByDeck ?? {});
+  const [catalog, setCatalog] = useState<ContentCatalogItem[]>([]);
   const [clients, setClients] = useState<OAuthClient[]>([]); // user's Google keys — show/group channels by key when >1
   // Sort channels by remaining-video runway (days left); direction remembered between visits.
   const [sortDir, setSortDir] = useState<"asc" | "desc">(() =>
@@ -52,7 +67,16 @@ export default function Accounts() {
         a.forEach((acc) =>
           apiClient
             .videos(acc.id)
-            .then((v) => setQueue((q) => ({ ...q, [acc.id]: v.length })))
+            .then((v) => {
+              setQueue((q) => ({ ...q, [acc.id]: v.length }));
+              setQueueByDeck((prev) => ({
+                ...prev,
+                [acc.id]: v.reduce<Record<string, number>>((map, item) => {
+                  map[item.deck] = (map[item.deck] ?? 0) + 1;
+                  return map;
+                }, {}),
+              }));
+            })
             .catch(() => {}),
         );
       })
@@ -65,13 +89,14 @@ export default function Accounts() {
 
   useEffect(() => {
     apiClient.youtubeClients().then((r) => setClients(r.clients)).catch(() => {});
+    apiClient.contentCatalog().then((r) => setCatalog(r.items)).catch(() => {});
   }, []);
 
   useEffect(() => {
     if (!accounts.length && !status && !Object.keys(queue).length) return;
-    writeCache(ACCOUNTS_CACHE_KEY, { accounts, status, queue });
+    writeCache(ACCOUNTS_CACHE_KEY, { accounts, status, queue, queueByDeck });
     setCacheSavedAt(new Date().toISOString());
-  }, [accounts, status, queue]);
+  }, [accounts, status, queue, queueByDeck]);
 
   async function addAccount() {
     setCreating(true);
@@ -151,6 +176,22 @@ export default function Accounts() {
   // Channels whose YouTube token got rejected (revoked/expired/401) — posting is dead until the user
   // reconnects. Driven by the backend `authError` flag set on the upload paths, not by history.
   const disconnectedChannels = accounts.filter((a) => a.authError);
+  const catalogById = useMemo(() => new Map(catalog.map((item) => [item.id, item] as const)), [catalog]);
+  const accountSourceStats = (account: Account): AccountSourceStat[] => {
+    const ids = account.sourceDecks?.length ? account.sourceDecks : [account.lang].filter(Boolean);
+    const queued = queueByDeck[account.id] ?? {};
+    return ids.map((id) => {
+      const item = catalogById.get(id);
+      return {
+        id,
+        title: item?.title ?? id.replace(/^pack:/, ""),
+        lang: item?.lang ?? account.channelLang ?? account.lang,
+        available: item?.available ?? null,
+        total: item?.total ?? null,
+        queued: queued[id] ?? 0,
+      };
+    });
+  };
 
   // Always sorted by days-of-video-left; the arrow button flips direction. No-schedule/loading last.
   const shownAccounts = [...accounts].sort((a, b) => {
@@ -317,6 +358,12 @@ export default function Accounts() {
               >
                 <AppIcon name="chevron-right" size={16} className={sortDir === "asc" ? "-rotate-90" : "rotate-90"} />
               </button>
+              {onShowBlocks && (
+                <button className="btn btn-sm btn-outline gap-1" onClick={onShowBlocks}>
+                  <AppIcon name="deck" size={15} />
+                  {t("channelBlocks.blocksView")}
+                </button>
+              )}
             </div>
             <button className="btn btn-primary gap-2 w-full sm:w-auto" onClick={addAccount} disabled={creating}>
               {creating ? <span className="loading loading-spinner loading-sm" /> : <AppIcon name="plus" size={18} />}
@@ -377,6 +424,7 @@ export default function Accounts() {
                   <span className="font-medium text-base-content">{a.schedule.join(", ")}</span>
                 </div>
                 <QueueInfo count={queue[a.id]} schedule={a.schedule} enabled={a.enabled} />
+                <SourceInfo sources={accountSourceStats(a)} schedule={a.schedule} enabled={a.enabled} />
                 {multiKey && a.oauthClientId && clientById.get(a.oauthClientId) && (
                   <div className="mt-2 text-xs text-base-content/45 flex items-center gap-1.5">
                     <BrandIcon name="youtube" size={12} className="shrink-0" />
@@ -410,6 +458,13 @@ export default function Accounts() {
   );
 }
 
+export default function Accounts() {
+  const { user } = useAuth();
+  const [classic, setClassic] = useState(false);
+  if (isMainAdmin(user) && !classic) return <ChannelBlocks onShowClassic={() => setClassic(true)} />;
+  return <AccountsList onShowBlocks={isMainAdmin(user) ? () => setClassic(false) : undefined} />;
+}
+
 // Per-channel queue size + runway (how many days the library lasts at its posting rate).
 function QueueInfo({ count, schedule, enabled }: { count?: number; schedule: string[]; enabled: boolean }) {
   const { t } = useT();
@@ -436,6 +491,38 @@ function QueueInfo({ count, schedule, enabled }: { count?: number; schedule: str
           );
         })()
       )}
+    </div>
+  );
+}
+
+function SourceInfo({ sources, schedule, enabled }: { sources: AccountSourceStat[]; schedule: string[]; enabled: boolean }) {
+  const { t } = useT();
+  if (!sources.length) return null;
+  const perDay = enabled ? schedule.length : 0;
+  return (
+    <div className="mt-3 rounded-md border border-base-200 bg-base-200/35 px-2.5 py-2">
+      <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-base-content/45">
+        <AppIcon name="packs" size={12} />
+        {t("accounts.sourcesTitle")}
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {sources.map((source) => {
+          const days = perDay > 0 && source.available != null ? Math.ceil(source.available / perDay) : null;
+          return (
+            <span key={source.id} className="badge badge-outline badge-sm max-w-full gap-1 py-3" title={source.title}>
+              {source.lang && <span className="badge badge-ghost badge-xs">{langTag(source.lang)}</span>}
+              <span className="max-w-36 truncate">{source.title}</span>
+              <span className="opacity-60">
+                · {t("accounts.sourceQueued", { n: source.queued })} ·{" "}
+                {source.available == null
+                  ? t("accounts.sourceAvailableUnknown")
+                  : t("accounts.sourceAvailable", { n: source.available, total: source.total ?? "?" })}
+                {days != null ? ` · ${t("accounts.sourceDays", { n: days })}` : ""}
+              </span>
+            </span>
+          );
+        })}
+      </div>
     </div>
   );
 }

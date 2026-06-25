@@ -228,6 +228,18 @@ export default function Statistics() {
           <p className="text-base-content/60">{t("stats.subtitle")}</p>
         </div>
         <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+          <div className="join" role="group" aria-label={t("stats.period")}>
+            {DAYS_OPTIONS.map((d) => (
+              <button
+                key={d}
+                className={`btn btn-sm join-item ${days === d ? "btn-primary" : "btn-ghost"}`}
+                onClick={() => setDays(d)}
+                title={t("stats.periodDaysTitle", { n: d })}
+              >
+                {t("stats.daysShort", { n: d })}
+              </button>
+            ))}
+          </div>
           <div className="join">
             <button
               className={`btn btn-sm join-item ${view === "mine" ? "btn-primary" : "btn-ghost"}`}
@@ -367,18 +379,6 @@ export default function Statistics() {
           {/* Controls: search / sort / direction / owner filter / only-connected */}
           <div className="card bg-base-100 border border-base-300">
             <div className="card-body py-3 flex-row flex-wrap items-center gap-2">
-              <div className="join" role="group" aria-label={t("stats.period")}>
-                {DAYS_OPTIONS.map((d) => (
-                  <button
-                    key={d}
-                    className={`btn btn-sm join-item ${days === d ? "btn-primary" : "btn-ghost"}`}
-                    onClick={() => setDays(d)}
-                    title={t("stats.periodDaysTitle", { n: d })}
-                  >
-                    {t("stats.daysShort", { n: d })}
-                  </button>
-                ))}
-              </div>
               <input
                 className="input input-bordered input-sm w-full sm:w-56"
                 placeholder={t("stats.searchPlaceholder")}

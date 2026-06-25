@@ -22,6 +22,15 @@ function removeVideoFiles(outputDir: string, v: Video): void {
   }
 }
 
+function isLongVideoDeckId(deckId: string): boolean {
+  return !!DECKS.find((deck) => deck.id === deckId)?.longVideo;
+}
+
+function isSchedulerSourceDeck(deckId: string): boolean {
+  if (isLongVideoDeckId(deckId)) return false;
+  return DECKS.some((deck) => deck.id === deckId) || isPackDeckId(deckId);
+}
+
 export interface SchedulerOpts {
   db: Db;
   outputDir: string;
@@ -68,9 +77,7 @@ export function startScheduler(opts: SchedulerOpts) {
       try {
         opts.log(`[sched] account ${acc.id} (${acc.channelName}) firing at ${hhmm}`);
 
-        const sources = (acc.sourceDecks?.length ? acc.sourceDecks : [acc.lang]).filter(
-          (d) => DECKS.some((deck) => deck.id === d) || isPackDeckId(d),
-        );
+        const sources = (acc.sourceDecks?.length ? acc.sourceDecks : [acc.lang]).filter(isSchedulerSourceDeck);
         const slotDeck = acc.slotDecks?.[hhmm];
         const allowedDecks =
           slotDeck === MANUAL_VIDEO_DECK

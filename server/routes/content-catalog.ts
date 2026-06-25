@@ -8,6 +8,7 @@ import type { RouteDeps } from "./deps.ts";
 import { MANUAL_VIDEO_DECK, deckLang, isPackDeckId } from "../../src/anecdotes/decks.ts";
 import { libraryStats } from "../../src/anecdotes/library.ts";
 import { listPacks } from "../../src/packs/store.ts";
+import { INFINITE_PACKS_FEATURE, infiniteCounts } from "../services/infinite-packs.ts";
 
 type CatalogKind = "builtin" | "custom_pack" | "manual" | "clip_demo";
 
@@ -81,20 +82,22 @@ export function registerContentCatalogRoutes(app: FastifyInstance, db: Db, deps:
     const accounts = isSuperAdmin ? db.listAccounts() : db.listAccountsByUser(userId);
     const queued = queuedByDeck(accounts, db);
     const usedKeys = db.usedAnecdoteKeys(userId);
+    const infinite = db.hasFeature(userId, INFINITE_PACKS_FEATURE);
     const demos = clipDemoCounts(req, deps);
     const items: CatalogItem[] = [];
     const seen = new Set<string>();
 
     for (const deck of deps.deckAccess.visibleDecksForUser(userId)) {
       const stats = libraryStats(deck.id, usedKeys);
+      const counts = infinite ? infiniteCounts(stats.total) : stats;
       const demo = demos.get(deck.id);
       items.push({
         id: deck.id,
         kind: "builtin",
         title: deck.name,
         lang: deckLang(deck.id) || null,
-        total: stats.total,
-        available: stats.available,
+        total: counts.total,
+        available: counts.available,
         queued: queued.get(deck.id) ?? 0,
         demoCount: demo?.count ?? 0,
         usedByAccounts: accountsUsingDeck(accounts, deps, deck.id),

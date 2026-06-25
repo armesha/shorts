@@ -2,7 +2,7 @@
 // on the first stdout line) to pass as Workflow `args`. Each workflow agent reads ONE slice file.
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 
-const OUT = "/home/davtian/Documents/shorts/corpora/islamic";
+const OUT = "/home/davtian/Documents/shorts/local-assets/corpora/islamic";
 const SL = `${OUT}/slices`;
 mkdirSync(SL, { recursive: true });
 mkdirSync(`${OUT}/sel`, { recursive: true });
@@ -17,7 +17,7 @@ const manifest = [];
 function emit(label, section, items, target) {
   const slim = items.map((x) => ({ id: x.id, type: x.type, ref_en: x.ref_en, ref_ar: x.ref_ar, len: x.len, arabic: x.arabic }));
   writeFileSync(`${SL}/${label}.jsonl`, slim.map((x) => JSON.stringify(x)).join("\n") + "\n");
-  manifest.push({ label, section, file: `corpora/islamic/slices/${label}.jsonl`, count: items.length, target });
+  manifest.push({ label, section, file: `local-assets/corpora/islamic/slices/${label}.jsonl`, count: items.length, target });
 }
 const chunk = (a, n) => { const r = []; for (let i = 0; i < a.length; i += n) r.push(a.slice(i, i + n)); return r; };
 

@@ -1,12 +1,12 @@
 // Assemble the final Christian deck from the workflow agents' selection.
-// Reads corpora/christian/selection.json (ids + theme) + cand-pool.json (exact passages),
+// Reads local-assets/corpora/christian/selection.json (ids + theme) + cand-pool.json (exact passages),
 // dedups (by id + verse-overlap), applies a family-safe devotional filter, tops up to CAP
 // from remaining high-yield books, sorts canonically → data/christian/cards.json (+ index.json).
 // Card = {type, text, ref, theme, book, testament}.
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 
 const REPO = "/home/davtian/Documents/shorts";
-const OUT = `${REPO}/corpora/christian`;
+const OUT = `${REPO}/local-assets/corpora/christian`;
 const CAP = Number(process.env.CHRISTIAN_PACK_CAP || 1500);
 
 const pool = JSON.parse(readFileSync(`${OUT}/cand-pool.json`, "utf8")); // id -> passage

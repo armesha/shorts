@@ -50,6 +50,7 @@ import {
   savePackMusicUploads,
   type PackMusicUploadInput,
 } from "../services/pack-audio.ts";
+import { INFINITE_PACKS_FEATURE, infiniteCounts } from "../services/infinite-packs.ts";
 
 const OUTPUT_DIR = loadBaseConfig().outputDir;
 const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
@@ -138,11 +139,16 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const includeHidden = adminReq(req) && (req.query as { all?: unknown })?.all != null;
     const all = isSuperAdmin && includeHidden;
     const usedKeys = db.usedAnecdoteKeys(userId);
+    const infinite = db.hasFeature(userId, INFINITE_PACKS_FEATURE);
     const base = all ? listAllPacks() : listPacks(userId, isSuperAdmin);
     const visible = includeHidden ? base : base.filter((s) => !db.isDeckHiddenFor(userId, `pack:${s.id}`));
     return visible.map((s) => {
       const pack = getPack(s.id, userId, isSuperAdmin);
       if (!pack) return { ...s, used: 0, available: s.cards };
+      if (infinite && pack.cards.length > 0) {
+        const c = infiniteCounts(pack.cards.length);
+        return { ...s, used: c.used, available: c.available };
+      }
       let used = 0;
       for (const c of pack.cards) if (usedKeys.has(packCardKey(c.values))) used++;
       return { ...s, used, available: Math.max(0, pack.cards.length - used) };
@@ -318,7 +324,8 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     if (!enforceWindow(reply, userId, isAdmin, "pack-preview", PACK_PREVIEW_LIMIT)) return;
     const p = getPack((req.params as { id: string }).id, uid(req), superAdminReq(req));
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
-    const i = Math.max(0, Math.floor(Number((req.query as Record<string, string>)?.i) || 0));
+    const requestedIndex = Math.max(0, Math.floor(Number((req.query as Record<string, string>)?.i) || 0));
+    const i = db.hasFeature(userId, INFINITE_PACKS_FEATURE) ? 0 : requestedIndex;
     const card = p.cards[i];
     if (!card) return reply.code(404).send({ error: "Нет такой карточки" });
     if (!p.templates.length) return reply.code(400).send({ error: "У пака нет шаблона" });
@@ -334,7 +341,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
       if (msg) return reply.code(400).send({ error: msg });
       return reply.code(500).send({ error: "Не удалось отрисовать: " + String(e).slice(0, 120) });
     }
-    return { imageUrl: `/files/${rel}?v=${Date.now()}` };
+    return { imageUrl: `/files/${rel}?v=${Date.now()}`, index: i };
   });
 
   // Собрать видео из карточки #i (рендер мостом + assembleStillVideo). Если передан accountId —
@@ -347,7 +354,8 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     if (!enforceWindow(reply, userId, isAdmin, "pack-video", PACK_VIDEO_LIMIT)) return;
     const p = getPack(id, userId, superAdminReq(req));
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
-    const idx = Math.max(0, Math.floor(Number(i) || 0));
+    const requestedIndex = Math.max(0, Math.floor(Number(i) || 0));
+    const idx = db.hasFeature(userId, INFINITE_PACKS_FEATURE) ? 0 : requestedIndex;
     const card = p.cards[idx];
     if (!card) return reply.code(404).send({ error: "Нет такой карточки" });
     if (!p.templates.length) return reply.code(400).send({ error: "У пака нет шаблона" });

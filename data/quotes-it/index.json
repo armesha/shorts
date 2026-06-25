@@ -1,0 +1,13 @@
+{
+  "language": "it",
+  "total": 1000,
+  "packs": 10,
+  "packSize": 100,
+  "range": [
+    35,
+    280
+  ],
+  "target": 1000,
+  "source": "Wikiquote",
+  "generator": "scripts/build-multilang-quote-decks.py"
+}

@@ -50,7 +50,9 @@ function nextSlots(accounts: Account[], deps: RouteDeps, limit = 40) {
 }
 
 export function registerQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
-  app.get("/api/queue", async (req) => {
+  app.get("/api/queue", async (req, reply) => {
+    // Очередь — только для админов (и главного админа): регулярным пользователям недоступна.
+    if (!deps.auth.requireAdmin(req, reply)) return;
     const query = (req.query ?? {}) as QueueQuery;
     const userId = uid(req);
     const all = query.scope === "all" && deps.auth.isAdminReq(req);

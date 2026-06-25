@@ -5,6 +5,7 @@ export interface Account {
   theme: string;
   lang: string; // выбор контента: встроенный пак (ru/de/…) или свой пак ("pack:<id>")
   sourceDecks?: string[]; // выбранные источники канала; старые аккаунты используют lang
+  longVideoDecks?: string[]; // длинные видео-паки: только ручное добавление в библиотеку + ручная выкладка
   channelLang?: string; // язык канала (ru/de/it/fr/en/ar) — пак должен совпадать по языку
   schedule: string[];
   template: string;
@@ -57,6 +58,7 @@ export interface Generator {
   name: string;
   ai: boolean;
   preFact?: boolean; // pre-built video pack — Studio shows a random video instead of a text card
+  longVideo?: boolean; // long pre-built compilation assembled from many short scenes
   gallery?: boolean; // static deck (deterministic per-card render) — browsable in the Gallery page
   total: number;
   titled: number;
@@ -157,6 +159,7 @@ export interface DeckInfo {
   pack?: boolean; // кастомный пак (id вида "pack:<id>"); доступ — opt-in (гранты), а не hidden
   grantable?: boolean; // встроенный admin-only deck, который админ выдает opt-in галочкой
   adminOnly?: boolean; // admin-only дека: юзеру недоступна («—» в матрице), но админ может скрыть её у себя
+  longVideo?: boolean; // длинный video-pack: отдельная таблица выдачи в админке
 }
 /** One row of the admin pack-visibility matrix: a user + which packs are hidden / actually used. */
 export interface UserDeckRow {
@@ -166,11 +169,12 @@ export interface UserDeckRow {
   isSuperAdmin?: boolean;
   hidden: string[];
   grantedPacks: string[]; // id opt-in паков: кастомные "pack:<id>" + grantable built-in deck ids
+  grantedLongVideos: string[]; // id opt-in long-video паков, отдельная таблица прав на backend
   used: string[];
   scheduled: number; // posts/day planned across all the user's channels
   library: number; // videos queued in the user's libraries
   usedTotal: number; // всего использованных карточек (встроенные + кастомные паки) — бейдж в панели сброса
-  infiniteSim?: boolean; // «бесконечный пак» (имитация): юзер видит 1000 карточек, очередь крутится по кругу
+  infiniteSim?: boolean; // «бесконечный пак» (имитация): весь пак свободен, очередь крутится по кругу
   // Per-deck remaining/used/total/posted for the decks the user uses (admin "when does a pack run out").
   deckStats?: Record<string, { used: number; available: number; total: number; posted: number }>;
 }
@@ -229,6 +233,35 @@ export interface GeneratedVideo {
   chars: number;
   bg: string;
   music: string;
+}
+
+export interface LongVideoItem {
+  id: string;
+  deckId: string;
+  deckName: string;
+  title: string;
+  text: string;
+  videoUrl: string;
+  file: string;
+  durationSec: number | null;
+  plannedDurationSec: number | null;
+  sceneCount: number | null;
+  music: string | null;
+  source: string | null;
+  builtAt: string | null;
+}
+
+export interface LongVideoPack {
+  id: string;
+  title: string;
+  lang: string | null;
+  count: number;
+  items: LongVideoItem[];
+}
+
+export interface LongVideoCatalog {
+  packs: LongVideoPack[];
+  total: number;
 }
 
 export interface VideoItem {
@@ -797,6 +830,77 @@ export interface ContentCatalogItem {
 
 export interface ContentCatalogResponse {
   items: ContentCatalogItem[];
+}
+
+export interface ChannelThemeBlockDeck {
+  id: string;
+  name: string;
+  lang: string | null;
+  available: number;
+  queued: number;
+  total: number | null;
+}
+
+export interface ChannelThemeBlockAccount {
+  id: number;
+  userId?: number | null;
+  channelName: string;
+  theme: string;
+  channelLang: string;
+  enabled: boolean;
+  connected: boolean;
+  status: string;
+  authError?: string | null;
+  schedule: string[];
+  avatar?: string | null;
+  ytChannelId?: string | null;
+  queued: number;
+  queuedByDeck: Record<string, number>;
+  shortAvailable: number;
+  sourceDecks: ChannelThemeBlockDeck[];
+}
+
+export interface ChannelThemeBlockCell {
+  lang: string;
+  label: string;
+  accounts: ChannelThemeBlockAccount[];
+  defaultSourceDecks: string[];
+}
+
+export interface ChannelThemeBlock {
+  id: string;
+  title: string;
+  description: string;
+  rules: string[];
+  cells: ChannelThemeBlockCell[];
+  totalAccounts: number;
+  queued: number;
+  shortAvailable: number;
+  postsPerDay: number;
+  runwayDays: number | null;
+  totalQueued: number;
+  totalShortAvailable: number;
+  totalPostsPerDay: number;
+}
+
+export interface ChannelThemeBlocksResponse {
+  languages: { code: string; label: string }[];
+  blocks: ChannelThemeBlock[];
+  unassignedAccounts: ChannelThemeBlockAccount[];
+}
+
+export interface ChannelThemeBlockGenerateResult {
+  blockId: string;
+  requestedPerChannel: number;
+  jobs: { accountId: number; channelName: string; deckIds: string[]; jobId: string; total: number }[];
+  skipped: { accountId: number; channelName: string; reason: string }[];
+}
+
+export interface ChannelThemeBlockScheduleResult {
+  blockId: string;
+  perDay: number;
+  updated: { accountId: number; channelName: string; schedule: string[] }[];
+  skipped: { accountId: number; channelName: string; reason: string; cap?: number; available?: number }[];
 }
 
 export type AccountReadinessStatus = "ready" | "warning" | "blocked";

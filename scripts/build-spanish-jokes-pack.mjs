@@ -9,7 +9,7 @@ const LONG_TARGET_TEMPLATES = LONG_BASE_TEMPLATES + LONG_SCENE_TEMPLATES;
 const LONG_SCENE_CARDS = LONG_SCENE_TEMPLATES;
 const NOW = "2026-06-23T09:20:00.000Z";
 
-const CORPUS_DIR = resolve(ROOT, "corpora/spanish-jokes-public-domain");
+const CORPUS_DIR = resolve(ROOT, "local-assets/corpora/spanish-jokes-public-domain");
 const RAW_DIR = resolve(CORPUS_DIR, "raw");
 const ASSET_DIR = resolve(ROOT, "assets/template-packs/spanish-jokes");
 const TEMPLATE_DIR = resolve(ASSET_DIR, "templates");

@@ -112,7 +112,7 @@ Repo layout + SOLID monolith-split / cleanup plan: `docs/REORG-PLAN.md`.
   **ТОЛЬКО ОБЩИЕ ФИЧИ (MANDATORY):** CHANGELOG («Обновления») виден всем — пиши ТОЛЬКО фичи для всех
   пользователей. Admin-only фичи (вкладка «Сервер», Админка, admin-only деки, пороги/отчёты у админа
   и т.п.) в CHANGELOG НЕ упоминай; из общих пунктов убирай скобки вида «(только админ)».
-- NEVER commit secrets — `client_secret_*.json`, `.env`, tokens, `corpora/`, `data/output`, DBs are gitignored. Verify staging before committing.
+- NEVER commit secrets — `client_secret_*.json`, `.env`, tokens, `local-assets/corpora/`, `data/output`, DBs are gitignored. Verify staging before committing.
 - Cross-platform: code must run on Windows + macOS + Linux. One-command start = `npm start`.
 - End commit messages with: `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`.
 - **Параллельные агенты (MANDATORY):** коммитить можно файлы **целиком** — даже общие
@@ -159,6 +159,23 @@ Repo layout + SOLID monolith-split / cleanup plan: `docs/REORG-PLAN.md`.
 - **Pack generation docs:** detailed source/generation/replenishment instructions for every built-in deck and template-pack live in `docs/pack-generation.md`. Read it before touching `data/anecdotes*`, `data/tips*`, `data/islamic`, `data/christian`, `data/*/videos.json`, `assets/template-packs/*`, or `data/packs/*`.
 - **New/manual pack rule:** whenever you create a new built-in deck, prebuilt video pack, template-pack, or live `data/packs/*` pack manually, also add/update `docs/pack-generation.md` with how to create it, how content is generated, how to add new cards/videos later, and how to verify it. Future agents must be able to replenish the pack from docs without reverse-engineering the code.
 - **Новый пак = сразу РАБОЧИЙ в проекте (MANDATORY — прямое требование пользователя 2026-06-23):** если добавляешь любой новый пак/деку — **даже 2–3 карточки «для примера»** — за тот же заход доведи его до полностью интегрированного, **запускаемого в проекте** состояния: виден в Студии / `/api/generators` (или как живой `data/packs/*`), реально рендерится и генерится с канала, фронт пересобран (`npm run web:build`), бэкенд перезапущен при серверных правках. **НЕ оставляй пак как «превью-картинки на диске» (`data/output/*`)** — пользователь должен видеть и использовать его на сайте (`https://shareboard.live/`). Для встроенной деки полный путь: `decks.ts` (запись+флаг+`DECK_LANG`) → `library.ts` (загрузчик `cards.json`) → `render.ts` (диспетч+рендер) → `yt-meta.ts` → `web/src/lib/deck.ts`. Полный чек-лист — в `docs/pack-generation.md` («Обязательное правило для новых ручных паков»). Образец такой деки — `choose` («Что выберешь?»).
+- **Long-video pack rule:** any `longVideo` / длинный сборник is standard horizontal video, not Shorts:
+  `1920x1080`, static readable image/card per anecdote (no zoompan/camera motion), smooth fades between
+  anecdotes, and one continuous no-copyright music bed for the whole video from `assets/audio/long-videos/`.
+  Islamic long-video packs are the exception: do not use ordinary music or instruments; use one continuous
+  quiet non-melodic ambient bed from `assets/audio/islamic/` or silence.
+  Do not restart or swap music on each scene. Scene durations must be calculated from character count so
+  the viewer has time to read. YouTube title/description/tags must be ready in the pack metadata and must
+  not inherit `#shorts`. The YouTube description must be natural audience-facing copy, not internal build
+  notes: never write things like "from the built-in deck", exact scene counts, or "public-domain music"
+  unless legally required attribution belongs there. Use varied human titles per episode; do not leave
+  monotonous `Episode N` / `Выпуск N` titles as the final long-video metadata. Long-video packs are not scheduler sources: enable
+  them on a channel separately, copy a ready MP4 into the library, then publish manually with the library
+  button. Track used source content in the pack ledger, for example
+  `data/long-anecdotes-ru/usage.json`: future long-video episodes must not reuse a source anecdote/card
+  whose `sourceId` was already used in another long-video MP4. If the user asks for a long-video pack
+  "for a channel", create a separate long-video deck (for example `long-anecdotes-soul-ru`) from that
+  channel's source pack; do not pre-add its MP4s into the channel library unless explicitly requested.
 - **Shorts safe-zone rule:** for every 1080x1920 Shorts/Reels/TikTok-style render, never place important
   readable text in the bottom UI area. Keep body text/subtitles/logos above roughly `y=1520` (bottom
   `400px` clear), avoid the right action-column area (target right edge `<=960px`), and verify dense
@@ -202,13 +219,15 @@ Repo layout + SOLID monolith-split / cleanup plan: `docs/REORG-PLAN.md`.
   паков» в Админке (`Users.tsx`).
   TODO: привязка шаблона к паку прямо из /editor (сейчас вставкой JSON); расписание-автопостинг паков
   идёт через сохранение видео в библиотеку (синтет-дека → generic YouTube-метаданные).
-- First generator = **Русские анекдоты (base no-AI parser + current paired pipeline)**: `src/anecdotes/build.ts` parses `Русские анекдоты/anek_djvu.txt` (split on `<|startoftext|>`; drop mat/@-censored/dupes) for baseline analysis/builds. Current dense RU deck also uses `src/scripts/ru-mine.ts` → LLM-workflow keep/theme files in `corpora/ru-gen` (ask user which model first) → `ru-partition.ts` → `ru-pairs-build.ts`, which writes `data/anecdotes/` and one live `data/packs/...` pack. Details: `docs/pack-generation.md`. Runtime picks random via `src/anecdotes/library.ts`.
+- First generator = **Русские анекдоты (base no-AI parser + current paired pipeline)**: `src/anecdotes/build.ts` parses `local-assets/Русские анекдоты/anek_djvu.txt` (split on `<|startoftext|>`; drop mat/@-censored/dupes) for baseline analysis/builds. Current dense RU deck also uses `src/scripts/ru-mine.ts` → LLM-workflow keep/theme files in `local-assets/corpora/ru-gen` (ask user which model first) → `ru-partition.ts` → `ru-pairs-build.ts`, which writes `data/anecdotes/` and one live `data/packs/...` pack. Details: `docs/pack-generation.md`. Runtime picks random via `src/anecdotes/library.ts`.
+  For any new joke/anecdote localization, do not invent jokes with AI: start from external license-checked sources
+  (public-domain/open corpus with evidence), then use AI only for cleanup/titles/localization/safety if needed.
 - Anecdote render: `templates/anecdote.html` + `src/anecdotes/render.ts` — binary-search auto-fit fills the frame and checks BOTH vertical AND horizontal overflow (long words must never clip — that's a hard user requirement). Random light bg from `BACKGROUNDS`. Font ≤72px, line-height grow capped ≤1.9 (no big gaps), title auto-shrinks to one line.
-- **IT-дека — плотная:** `src/anecdotes/it-mine.ts` (добыча длинных 330–620 из `corpora/it-*.jsonl`, источник ~152k) → LLM-workflow чистки (модель сначала спросить у пользователя; чистка акцентов `e'→è`, usenet-мусора, mojibake, не-шуток) → `src/anecdotes/build-it-dense.ts` (NSFW-фильтр + дедуп + паки) → `data/anecdotes-it/`. Ещё ~3k в полосе не использовано.
+- **IT-дека — плотная:** `src/anecdotes/it-mine.ts` (добыча длинных 330–620 из `local-assets/corpora/it-*.jsonl`, источник ~152k) → LLM-workflow чистки (модель сначала спросить у пользователя; чистка акцентов `e'→è`, usenet-мусора, mojibake, не-шуток) → `src/anecdotes/build-it-dense.ts` (NSFW-фильтр + дедуп + паки) → `data/anecdotes-it/`. Ещё ~3k в полосе не использовано.
 - Studio: `POST /api/generate/anecdote {text?,title?}` → preview PNG served at `/files/...`; frontend `web/src/pages/Studio.tsx`. Anecdote title one-line limit ≈ 28 Cyrillic chars.
 - E2E: `node --import tsx src/scripts/e2e.ts` (Playwright via `channel:'chrome'`) drives the live site; needs `npm run server` + `npm run web` up.
 - **Лайфхаки (дека `tips`):** 979 русских советов по 10 профессиям, сгенерированы LLM-workflow
-  (60 партий → `corpora/tips-gen/<prof>-<n>.json` → `src/anecdotes/build-tips.ts` → `data/tips/titled.json` + `index.json`).
+  (60 партий → `local-assets/corpora/tips-gen/<prof>-<n>.json` → `src/anecdotes/build-tips.ts` → `data/tips/titled.json` + `index.json`).
   Свой рендер: `templates/lifehack.html` + `renderLifehack()` в `render.ts` (диспетч по флагу `deck.lifehack`);
   фон = `assets/backgrounds/lifehacks/profession_<key>.jpg`, заголовок в красную плашку, текст Г-образно
   обтекает фигуру через `shape-outside` (без «растягивания» межстрочного — оно ломало низ). `item.profession`
@@ -216,8 +235,8 @@ Repo layout + SOLID monolith-split / cleanup plan: `docs/REORG-PLAN.md`.
   (язык `tips` в `LANGS`, генераторы из `/api/generators`). Перед перегенерацией спроси пользователя,
   какой моделью запускать workflow. Тесты: `src/scripts/render-lifehack-test.ts`, `src/scripts/tips-e2e.ts`.
 - **Немецкие лайфхаки (дека `tips-de`, «Deutsche Lifehacks»):** 1319 советов, та же структура.
-  Фоны — усатый вариант `profession_<key>_chaplin.jpg` (поле `lifehackVariant: "chaplin"` в `decks.ts`;
-  русская `tips` — без усов, `profession_<key>.jpg`); `lifehackBgFile(profession, variant)` в `render.ts`.
+  Фоны — обычный вариант без усов `profession_<key>.jpg`, как у русской `tips`; старый `chaplin`-вариант
+  для `tips-de` больше не используется. `lifehackBgFile(profession, variant)` в `render.ts`.
   Ключи англ. Сборка `src/anecdotes/build-tips-de.ts`
   (длина 300–500; `parseItems` чинит немецкие кавычки `„…"` с прямой `"`). Любая lifehack-дека
   помечается `lifehack: true` в `decks.ts` → один диспетч на все. Серверных правок не нужно.
@@ -234,10 +253,10 @@ Repo layout + SOLID monolith-split / cleanup plan: `docs/REORG-PLAN.md`.
 - **Исламская дека (`islamic`, «آيات وأذكار» / Ислам · Коран и хадисы):** 500 карточек на арабском
   (аяты Корана + хадисы ан-Навави/кудси + дуа Хиснуль-Муслим), **точный** текст. Пайплайн добычи:
   `src/scripts/islamic-fetch-corpus.mjs` (тянет точный арабский из `api.alquran.cloud`,
-  `cdn.jsdelivr.net/gh/fawazahmed0/hadith-api`, `hisnmuslim.com` → `corpora/islamic/*` — gitignored) →
+  `cdn.jsdelivr.net/gh/fawazahmed0/hadith-api`, `hisnmuslim.com` → `local-assets/corpora/islamic/*` — gitignored) →
   `islamic-split.mjs` (слайсы) → LLM-workflow выбирает важные id из локальных файлов (не из гугла);
   модель workflow сначала спросить у пользователя →
-  `islamic-assemble.mjs` подставляет точный арабский по id из `corpora/islamic/pool.json` →
+  `islamic-assemble.mjs` подставляет точный арабский по id из `local-assets/corpora/islamic/pool.json` →
   `data/islamic/cards.json` (+ index.json). Карточка = `{type,arabic,ref,ref_en,theme}` (как psych —
   весь объект JSON в `text`). Рендер: `templates/islamic.html` + `src/islamic/render.ts`, диспетч по
   флагу `islamic:true` в `decks.ts`; фоны `assets/backgrounds/islamic_templates/` (10 тёмно-золотых),
@@ -256,7 +275,7 @@ Repo layout + SOLID monolith-split / cleanup plan: `docs/REORG-PLAN.md`.
   (явный «none» = тишина уважается). Викисклад давал только CC BY (атрибуция) — поэтому сгенерировали.
 - **Христианская дека (`christian`, «Holy Bible · KJV», admin-only):** 1000 карточек на английском —
   точные стихи **KJV** (public domain), отрывки по 2–3 стиха ~350–400 симв. Пайплайн добычи (всё в
-  `corpora/christian/`, gitignored): `christian-fetch-corpus.mjs` (полный KJV из `aruljohn/Bible-kjv`
+  `local-assets/corpora/christian/`, gitignored): `christian-fetch-corpus.mjs` (полный KJV из `aruljohn/Bible-kjv`
   через jsDelivr → `pool.json`/`verses.jsonl`) → `christian-build-candidates.mjs` (окна стихов внутри
   главы, банд 320–450, дроп генеалогий/списков; тайлит «богатые» книги + FAMOUS-ссылки из остальных →
   `cand-pool.json` + слайсы + `manifest.json`) → LLM-workflow (модель сначала спросить у пользователя;

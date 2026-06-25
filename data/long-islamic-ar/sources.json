@@ -1,0 +1,58 @@
+{
+  "deck": "long-islamic-ar",
+  "mode": "longVideoCompilation",
+  "sourceDeck": "islamic",
+  "sourceFile": "data/islamic/cards.json",
+  "sourceSelection": "Deterministic top slice from the exact Islamic Arabic deck, without rewriting Quran, hadith, or dua text.",
+  "audio": {
+    "file": "assets/audio/islamic/ambient-long-wind-11m.mp3",
+    "mode": "single continuous non-instrumental synthesized wind/rain ambient bed for the whole long video; no instruments, no melody, no per-scene restarts",
+    "licenseNote": "Generated locally with ffmpeg noise sources; no external copyrighted music and no attribution required."
+  },
+  "output": {
+    "videos": [
+      "long-islamic-ar/long-islamic-ar-001.mp4",
+      "long-islamic-ar/long-islamic-ar-002.mp4",
+      "long-islamic-ar/long-islamic-ar-003.mp4",
+      "long-islamic-ar/long-islamic-ar-004.mp4",
+      "long-islamic-ar/long-islamic-ar-005.mp4"
+    ],
+    "contactSheets": [
+      "data/output/long-islamic-ar/contact-long-islamic-ar-001.jpg",
+      "data/output/long-islamic-ar/contact-long-islamic-ar-002.jpg",
+      "data/output/long-islamic-ar/contact-long-islamic-ar-003.jpg",
+      "data/output/long-islamic-ar/contact-long-islamic-ar-004.jpg",
+      "data/output/long-islamic-ar/contact-long-islamic-ar-005.jpg"
+    ],
+    "builtAt": "2026-06-24T15:54:13.830Z",
+    "format": "1920x1080"
+  },
+  "timing": {
+    "episodeTargets": [
+      {
+        "file": "long-islamic-ar/long-islamic-ar-001.mp4",
+        "targetSec": 430
+      },
+      {
+        "file": "long-islamic-ar/long-islamic-ar-002.mp4",
+        "targetSec": 505
+      },
+      {
+        "file": "long-islamic-ar/long-islamic-ar-003.mp4",
+        "targetSec": 560
+      },
+      {
+        "file": "long-islamic-ar/long-islamic-ar-004.mp4",
+        "targetSec": 610
+      },
+      {
+        "file": "long-islamic-ar/long-islamic-ar-005.mp4",
+        "targetSec": 650
+      }
+    ],
+    "formula": "clamp(16, 48, ceil(chars / 18 + 9))",
+    "fadeSec": 0.8,
+    "fps": 30,
+    "staticScenes": true
+  }
+}

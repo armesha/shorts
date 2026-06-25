@@ -1,0 +1,38 @@
+{
+  "deck": "long-anecdotes-ru",
+  "mode": "longVideoCompilation",
+  "sourceDeck": "ru",
+  "sourceFile": "data/anecdotes/titled.json",
+  "sourceSelection": "Deterministic first-series allow-list from the existing RU anecdote deck, with future fallback candidates filtered by local safety terms.",
+  "music": {
+    "file": "assets/audio/long-videos/fats-waller-swingin-the-operas-1939.opus",
+    "title": "Swingin' the Operas",
+    "author": "Fats Waller",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Swingin%27_the_Operas_by_Fats_Waller_(1939,_Jazz_piano).opus",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/9/96/Swingin%27_the_Operas_by_Fats_Waller_%281939%2C_Jazz_piano%29.opus",
+    "mode": "single downloaded public-domain composition for the whole long video; no loop and no per-scene restarts",
+    "licenseNote": "Wikimedia Commons marks the file as Public Domain / free of known copyright restrictions."
+  },
+  "output": {
+    "videos": [
+      "long-anecdotes-ru/long-anecdotes-ru-001.mp4",
+      "long-anecdotes-ru/long-anecdotes-ru-002.mp4",
+      "long-anecdotes-ru/long-anecdotes-ru-003.mp4",
+      "long-anecdotes-ru/long-anecdotes-ru-004.mp4"
+    ],
+    "contactSheets": [
+      "data/output/long-anecdotes-ru/contact-long-anecdotes-ru-002.jpg",
+      "data/output/long-anecdotes-ru/contact-long-anecdotes-ru-003.jpg",
+      "data/output/long-anecdotes-ru/contact-long-anecdotes-ru-004.jpg"
+    ],
+    "builtAt": "2026-06-24T14:02:18.431Z",
+    "format": "1920x1080"
+  },
+  "timing": {
+    "targetSec": 510,
+    "formula": "clamp(11, 18, ceil((chars / 22 + 3) * 0.88))",
+    "fadeSec": 0.8,
+    "fps": 30,
+    "staticScenes": true
+  }
+}

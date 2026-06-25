@@ -1,0 +1,322 @@
+[
+  {
+    "order": 1,
+    "sourceDeck": "christian",
+    "sourceId": 72,
+    "type": "verse",
+    "title": "Psalm 34:1-5",
+    "text": "I will bless the LORD at all times: his praise shall continually be in my mouth. My soul shall make her boast in the LORD: the humble shall hear thereof, and be glad. O magnify the LORD with me, and let us exalt his name together. I sought the LORD, and he heard me, and delivered me from all my fears. They looked unto him, and were lightened: and their faces were not ashamed.",
+    "ref": "Psalm 34:1-5",
+    "theme": "praise",
+    "book": "Psalms",
+    "testament": "OT",
+    "chars": 378,
+    "durationSec": 34,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 2,
+    "sourceDeck": "christian",
+    "sourceId": 73,
+    "type": "verse",
+    "title": "Psalm 34:6-10",
+    "text": "This poor man cried, and the LORD heard him, and saved him out of all his troubles. The angel of the LORD encampeth round about them that fear him, and delivereth them. O taste and see that the LORD is good: blessed is the man that trusteth in him. O fear the LORD, ye his saints: for there is no want to them that fear him. The young lions do lack, and suffer hunger: but they that seek the LORD shall not want any good thing.",
+    "ref": "Psalm 34:6-10",
+    "theme": "trust",
+    "book": "Psalms",
+    "testament": "OT",
+    "chars": 427,
+    "durationSec": 37,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 3,
+    "sourceDeck": "christian",
+    "sourceId": 74,
+    "type": "verse",
+    "title": "Psalm 34:11-15",
+    "text": "Come, ye children, hearken unto me: I will teach you the fear of the LORD. What man is he that desireth life, and loveth many days, that he may see good? Keep thy tongue from evil, and thy lips from speaking guile. Depart from evil, and do good; seek peace, and pursue it. The eyes of the LORD are upon the righteous, and his ears are open unto their cry.",
+    "ref": "Psalm 34:11-15",
+    "theme": "wisdom",
+    "book": "Psalms",
+    "testament": "OT",
+    "chars": 355,
+    "durationSec": 32,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 4,
+    "sourceDeck": "christian",
+    "sourceId": 75,
+    "type": "verse",
+    "title": "Psalm 34:16-19",
+    "text": "The face of the LORD is against them that do evil, to cut off the remembrance of them from the earth. The righteous cry, and the LORD heareth, and delivereth them out of all their troubles. The LORD is nigh unto them that are of a broken heart; and saveth such as be of a contrite spirit. Many are the afflictions of the righteous: but the LORD delivereth him out of them all.",
+    "ref": "Psalm 34:16-19",
+    "theme": "comfort",
+    "book": "Psalms",
+    "testament": "OT",
+    "chars": 376,
+    "durationSec": 34,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 5,
+    "sourceDeck": "christian",
+    "sourceId": 76,
+    "type": "verse",
+    "title": "Psalm 35:1-4",
+    "text": "Plead my cause, O LORD, with them that strive with me: fight against them that fight against me. Take hold of shield and buckler, and stand up for mine help. Draw out also the spear, and stop the way against them that persecute me: say unto my soul, I am thy salvation. Let them be confounded and put to shame that seek after my soul: let them be turned back and brought to confusion that devise my hurt.",
+    "ref": "Psalm 35:1-4",
+    "theme": "guidance",
+    "book": "Psalms",
+    "testament": "OT",
+    "chars": 404,
+    "durationSec": 35,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 6,
+    "sourceDeck": "christian",
+    "sourceId": 77,
+    "type": "verse",
+    "title": "Psalm 35:13-15",
+    "text": "But as for me, when they were sick, my clothing was sackcloth: I humbled my soul with fasting; and my prayer returned into mine own bosom. I behaved myself as though he had been my friend or brother: I bowed down heavily, as one that mourneth for his mother. But in mine adversity they rejoiced, and gathered themselves together: yea, the abjects gathered themselves together against me, and I knew it not; they did tear me, and ceased not:",
+    "ref": "Psalm 35:13-15",
+    "theme": "prayer",
+    "book": "Psalms",
+    "testament": "OT",
+    "chars": 440,
+    "durationSec": 38,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 7,
+    "sourceDeck": "christian",
+    "sourceId": 78,
+    "type": "verse",
+    "title": "Psalm 35:20-24",
+    "text": "For they speak not peace: but they devise deceitful matters against them that are quiet in the land. Yea, they opened their mouth wide against me, and said, Aha, aha, our eye hath seen it. This thou hast seen, O LORD: keep not silence: O Lord, be not far from me. Stir up thyself, and awake to my judgment, even unto my cause, my God and my Lord. Judge me, O LORD my God, according to thy righteousness; and let them not rejoice over me.",
+    "ref": "Psalm 35:20-24",
+    "theme": "peace",
+    "book": "Psalms",
+    "testament": "OT",
+    "chars": 437,
+    "durationSec": 38,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 8,
+    "sourceDeck": "christian",
+    "sourceId": 79,
+    "type": "verse",
+    "title": "Psalm 35:25-27",
+    "text": "Let them not say in their hearts, Ah, so would we have it: let them not say, We have swallowed him up. Let them be ashamed and brought to confusion together that rejoice at mine hurt: let them be clothed with shame and dishonour that magnify themselves against me. Let them shout for joy, and be glad, that favour my righteous cause: yea, let them say continually, Let the LORD be magnified, which hath pleasure in the prosperity of his servant.",
+    "ref": "Psalm 35:25-27",
+    "theme": "joy",
+    "book": "Psalms",
+    "testament": "OT",
+    "chars": 445,
+    "durationSec": 38,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 9,
+    "sourceDeck": "christian",
+    "sourceId": 80,
+    "type": "verse",
+    "title": "Psalm 36:1-4",
+    "text": "The transgression of the wicked saith within my heart, that there is no fear of God before his eyes. For he flattereth himself in his own eyes, until his iniquity be found to be hateful. The words of his mouth are iniquity and deceit: he hath left off to be wise, and to do good. He deviseth mischief upon his bed; he setteth himself in a way that is not good; he abhorreth not evil.",
+    "ref": "Psalm 36:1-4",
+    "theme": "guidance",
+    "book": "Psalms",
+    "testament": "OT",
+    "chars": 383,
+    "durationSec": 34,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 10,
+    "sourceDeck": "christian",
+    "sourceId": 81,
+    "type": "verse",
+    "title": "Psalm 36:9-12",
+    "text": "For with thee is the fountain of life: in thy light shall we see light. O continue thy lovingkindness unto them that know thee; and thy righteousness to the upright in heart. Let not the foot of pride come against me, and let not the hand of the wicked remove me. There are the workers of iniquity fallen: they are cast down, and shall not be able to rise.",
+    "ref": "Psalm 36:9-12",
+    "theme": "grace",
+    "book": "Psalms",
+    "testament": "OT",
+    "chars": 356,
+    "durationSec": 32,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 11,
+    "sourceDeck": "christian",
+    "sourceId": 82,
+    "type": "verse",
+    "title": "Psalm 37:1-4",
+    "text": "Fret not thyself because of evildoers, neither be thou envious against the workers of iniquity. For they shall soon be cut down like the grass, and wither as the green herb. Trust in the LORD, and do good; so shalt thou dwell in the land, and verily thou shalt be fed. Delight thyself also in the LORD: and he shall give thee the desires of thine heart.",
+    "ref": "Psalm 37:1-4",
+    "theme": "trust",
+    "book": "Psalms",
+    "testament": "OT",
+    "chars": 353,
+    "durationSec": 32,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 12,
+    "sourceDeck": "christian",
+    "sourceId": 83,
+    "type": "verse",
+    "title": "Psalm 37:9-12",
+    "text": "For evildoers shall be cut off: but those that wait upon the LORD, they shall inherit the earth. For yet a little while, and the wicked shall not be: yea, thou shalt diligently consider his place, and it shall not be. But the meek shall inherit the earth; and shall delight themselves in the abundance of peace. The wicked plotteth against the just, and gnasheth upon him with his teeth.",
+    "ref": "Psalm 37:9-12",
+    "theme": "peace",
+    "book": "Psalms",
+    "testament": "OT",
+    "chars": 387,
+    "durationSec": 34,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 13,
+    "sourceDeck": "christian",
+    "sourceId": 84,
+    "type": "verse",
+    "title": "Psalm 37:25-28",
+    "text": "I have been young, and now am old; yet have I not seen the righteous forsaken, nor his seed begging bread. He is ever merciful, and lendeth; and his seed is blessed. Depart from evil, and do good; and dwell for evermore. For the LORD loveth judgment, and forsaketh not his saints; they are preserved for ever: but the seed of the wicked shall be cut off.",
+    "ref": "Psalm 37:25-28",
+    "theme": "trust",
+    "book": "Psalms",
+    "testament": "OT",
+    "chars": 354,
+    "durationSec": 32,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 14,
+    "sourceDeck": "christian",
+    "sourceId": 85,
+    "type": "verse",
+    "title": "Psalm 37:34-37",
+    "text": "Wait on the LORD, and keep his way, and he shall exalt thee to inherit the land: when the wicked are cut off, thou shalt see it. I have seen the wicked in great power, and spreading himself like a green bay tree. Yet he passed away, and, lo, he was not: yea, I sought him, but he could not be found. Mark the perfect man, and behold the upright: for the end of that man is peace.",
+    "ref": "Psalm 37:34-37",
+    "theme": "trust",
+    "book": "Psalms",
+    "testament": "OT",
+    "chars": 379,
+    "durationSec": 34,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 15,
+    "sourceDeck": "christian",
+    "sourceId": 86,
+    "type": "verse",
+    "title": "Psalm 38:5-9",
+    "text": "My wounds stink and are corrupt because of my foolishness. I am troubled; I am bowed down greatly; I go mourning all the day long. For my loins are filled with a loathsome disease: and there is no soundness in my flesh. I am feeble and sore broken: I have roared by reason of the disquietness of my heart. Lord, all my desire is before thee; and my groaning is not hid from thee.",
+    "ref": "Psalm 38:5-9",
+    "theme": "devotional",
+    "book": "Psalms",
+    "testament": "OT",
+    "chars": 379,
+    "durationSec": 34,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 16,
+    "sourceDeck": "christian",
+    "sourceId": 87,
+    "type": "verse",
+    "title": "Psalm 38:10-13",
+    "text": "My heart panteth, my strength faileth me: as for the light of mine eyes, it also is gone from me. My lovers and my friends stand aloof from my sore; and my kinsmen stand afar off. They also that seek after my life lay snares for me: and they that seek my hurt speak mischievous things, and imagine deceits all the day long. But I, as a deaf man, heard not; and I was as a dumb man that openeth not his mouth.",
+    "ref": "Psalm 38:10-13",
+    "theme": "love",
+    "book": "Psalms",
+    "testament": "OT",
+    "chars": 408,
+    "durationSec": 36,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  }
+]

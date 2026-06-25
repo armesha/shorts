@@ -42,18 +42,39 @@ export interface Deck {
    *  (voiceover + stock footage + subtitles) listed in <dir>/videos.json, files in assets/fact-videos/.
    *  Generation copies the chosen mp4 into the library instead of rendering a card (see server/fact-gen.ts). */
   preFact?: boolean;
+  /** Multilingual sourced quote cards rendered dynamically from titled.json (not pre-built MP4). */
+  quote?: boolean;
+  /** Pre-built long compilation assembled from many short readable scenes into one 5-15 minute video. */
+  longVideo?: boolean;
   /** When true, generation picks the first unused item by videos.json order instead of random. */
   sequential?: boolean;
 }
 
 export const MANUAL_VIDEO_DECK = "manual";
 
+function quoteDeck(input: { id: string; name: string; lang: string; hashtags: string; tags: string[]; titles: string[] }): Deck {
+  return {
+    id: input.id,
+    name: input.name,
+    dir: `data/${input.id}`,
+    source: "Wikiquote API source ledger in sources.json",
+    emoji: "💬",
+    hashtags: input.hashtags,
+    tags: input.tags,
+    genericTitles: input.titles,
+    adminOnly: true,
+    grantable: true,
+    quote: true,
+    gallery: true,
+  };
+}
+
 export const DECKS: Deck[] = [
   {
     id: "ru",
     name: "Русские анекдоты",
     dir: "data/anecdotes",
-    source: "Русские анекдоты/anek_djvu.txt",
+    source: "local-assets/Русские анекдоты/anek_djvu.txt",
     emoji: "😂",
     hashtags: "#анекдоты #юмор #приколы #смех #shorts",
     tags: ["анекдоты", "юмор", "приколы", "смешное", "смех", "анекдот", "ржака", "shorts"],
@@ -64,7 +85,7 @@ export const DECKS: Deck[] = [
     id: "de",
     name: "Deutsche Witze",
     dir: "data/anecdotes-de",
-    source: "corpora/witze.sql",
+    source: "local-assets/corpora/witze.sql",
     emoji: "😂",
     hashtags: "#Witze #Humor #lustig #comedy #shorts",
     tags: ["Witze", "Humor", "lustig", "Comedy", "Witz", "Spaß", "shorts"],
@@ -74,7 +95,7 @@ export const DECKS: Deck[] = [
     id: "it",
     name: "Barzellette Italiane",
     dir: "data/anecdotes-it",
-    source: "corpora/it-barzellette.jsonl",
+    source: "local-assets/corpora/it-barzellette.jsonl",
     emoji: "😂",
     hashtags: "#barzellette #umorismo #divertente #comico #shorts",
     tags: ["barzellette", "umorismo", "divertente", "comico", "ridere", "barzelletta", "shorts"],
@@ -84,7 +105,7 @@ export const DECKS: Deck[] = [
     id: "fr",
     name: "Blagues françaises",
     dir: "data/anecdotes-fr",
-    source: "corpora/blagues.json",
+    source: "local-assets/corpora/blagues.json",
     emoji: "😂",
     hashtags: "#blagues #humour #drôle #rire #shorts",
     tags: ["blagues", "humour", "drôle", "rire", "blague", "comédie", "shorts"],
@@ -94,7 +115,7 @@ export const DECKS: Deck[] = [
     id: "tips",
     name: "Народные лайфхаки",
     dir: "data/tips",
-    source: "corpora/tips.json",
+    source: "local-assets/corpora/tips.json",
     emoji: "💡",
     hashtags: "#лайфхаки #советы #полезное #лайфхак #shorts",
     tags: ["лайфхаки", "советы", "полезное", "лайфхак", "быт", "хитрости", "shorts"],
@@ -106,20 +127,19 @@ export const DECKS: Deck[] = [
     id: "tips-de",
     name: "Deutsche Lifehacks",
     dir: "data/tips-de",
-    source: "corpora/tips-de.json",
+    source: "local-assets/corpora/tips-de.json",
     emoji: "💡",
     hashtags: "#lifehacks #tipps #alltag #lifehack #shorts",
     tags: ["lifehacks", "tipps", "alltagstipps", "lifehack", "haushalt", "tricks", "shorts"],
     genericTitles: ["Lifehack", "Nützlicher Tipp", "Gut zu wissen", "Profi-Trick", "Tipp des Tages", "Merk dir das"],
     lifehack: true,
     gallery: true,
-    lifehackVariant: "chaplin", // мужчины с усами Чаплина (немецкая дека)
   },
   {
     id: "tips-es",
     name: "Trucos utiles",
     dir: "data/tips-es",
-    source: "corpora/tips-es.json",
+    source: "local-assets/corpora/tips-es.json",
     emoji: "💡",
     hashtags: "#trucos #lifehacks #consejos #util #shorts",
     tags: ["trucos", "lifehacks", "consejos utiles", "vida diaria", "ahorro", "seguridad", "shorts"],
@@ -257,6 +277,78 @@ export const DECKS: Deck[] = [
     adminOnly: true, // pre-built video pack — admin-only
     preFact: true,
   },
+  quoteDeck({
+    id: "quotes-ru",
+    name: "Цитаты великих людей",
+    lang: "ru",
+    hashtags: "#цитаты #мудрость #мотивация #история #shorts",
+    tags: ["цитаты", "мудрость", "мотивация", "история", "великие люди", "shorts"],
+    titles: ["Цитата", "Мудрые слова", "Великие слова", "Мысль дня"],
+  }),
+  quoteDeck({
+    id: "quotes-ar",
+    name: "اقتباسات ملهمة",
+    lang: "ar",
+    hashtags: "#اقتباسات #حكمة #تحفيز #تاريخ #shorts",
+    tags: ["اقتباسات", "حكمة", "تحفيز", "تاريخ", "shorts"],
+    titles: ["اقتباس", "كلمات خالدة", "حكمة اليوم"],
+  }),
+  quoteDeck({
+    id: "quotes-en",
+    name: "Great Quotes",
+    lang: "en",
+    hashtags: "#quotes #wisdom #motivation #history #shorts",
+    tags: ["quotes", "wisdom", "motivation", "history", "famous quotes", "shorts"],
+    titles: ["Quote", "Words of Wisdom", "Great Quote", "Thought of the Day"],
+  }),
+  quoteDeck({
+    id: "quotes-it",
+    name: "Citazioni famose",
+    lang: "it",
+    hashtags: "#citazioni #saggezza #motivazione #storia #shorts",
+    tags: ["citazioni", "saggezza", "motivazione", "storia", "aforismi", "shorts"],
+    titles: ["Citazione", "Parole di saggezza", "Pensiero del giorno"],
+  }),
+  quoteDeck({
+    id: "quotes-es",
+    name: "Citas famosas",
+    lang: "es",
+    hashtags: "#citas #sabiduria #motivacion #historia #shorts",
+    tags: ["citas", "sabiduria", "motivacion", "historia", "frases celebres", "shorts"],
+    titles: ["Cita", "Palabras de sabiduría", "Pensamiento del día"],
+  }),
+  quoteDeck({
+    id: "quotes-fr",
+    name: "Citations celebres",
+    lang: "fr",
+    hashtags: "#citations #sagesse #motivation #histoire #shorts",
+    tags: ["citations", "sagesse", "motivation", "histoire", "phrases celebres", "shorts"],
+    titles: ["Citation", "Mots de sagesse", "Pensée du jour"],
+  }),
+  quoteDeck({
+    id: "quotes-pt",
+    name: "Citações famosas",
+    lang: "pt",
+    hashtags: "#citacoes #sabedoria #motivacao #historia #shorts",
+    tags: ["citacoes", "sabedoria", "motivacao", "historia", "frases famosas", "shorts"],
+    titles: ["Citação", "Palavras de sabedoria", "Pensamento do dia"],
+  }),
+  quoteDeck({
+    id: "quotes-hi",
+    name: "प्रेरक उद्धरण",
+    lang: "hi",
+    hashtags: "#उद्धरण #ज्ञान #प्रेरणा #इतिहास #shorts",
+    tags: ["उद्धरण", "ज्ञान", "प्रेरणा", "इतिहास", "shorts"],
+    titles: ["उद्धरण", "ज्ञान के शब्द", "आज का विचार"],
+  }),
+  quoteDeck({
+    id: "quotes-id",
+    name: "Kutipan Terkenal",
+    lang: "id",
+    hashtags: "#kutipan #kebijaksanaan #motivasi #sejarah #shorts",
+    tags: ["kutipan", "kebijaksanaan", "motivasi", "sejarah", "shorts"],
+    titles: ["Kutipan", "Kata Bijak", "Pemikiran Hari Ini"],
+  }),
   {
     id: "quotes-de-1",
     name: "Politiker-Zitate (DE) 1",
@@ -335,6 +427,66 @@ export const DECKS: Deck[] = [
     adminOnly: true, // pre-built visual riddle pack — admin grants it to regular users from /users
     grantable: true,
     preFact: true,
+  },
+  {
+    id: "long-anecdotes-ru",
+    name: "Русские анекдоты",
+    dir: "data/long-anecdotes-ru", // videos.json = one long MP4 assembled from many RU joke scenes
+    source: "data/anecdotes/titled.json",
+    emoji: "😂",
+    hashtags: "#анекдоты #юмор #русскиеанекдоты #сборниканекдотов #длинноевидео",
+    tags: ["анекдоты", "юмор", "русские анекдоты", "сборник анекдотов", "длинное видео", "смешное"],
+    genericTitles: ["Русские анекдоты", "Большой сборник русских анекдотов", "Сборник анекдотов"],
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+    longVideo: true,
+    sequential: true,
+  },
+  {
+    id: "long-anecdotes-soul-ru",
+    name: "Русские анекдоты",
+    dir: "data/long-anecdotes-soul-ru", // videos.json = long MP4s assembled from the channel custom joke pack
+    source: "data/packs/анекдоты-ру-впн-mqe5ovw1.json",
+    emoji: "😂",
+    hashtags: "#анекдоты #юмор #русскиеанекдоты #сборниканекдотов #длинноевидео",
+    tags: ["анекдоты", "юмор", "русские анекдоты", "сборник анекдотов", "длинное видео", "смешное"],
+    genericTitles: ["Русские анекдоты", "Большой выпуск анекдотов", "Смешные анекдоты для отдыха"],
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+    longVideo: true,
+    sequential: true,
+  },
+  {
+    id: "long-islamic-ar",
+    name: "القرآن والحديث والدعاء",
+    dir: "data/long-islamic-ar", // videos.json = long MP4s assembled from exact Islamic Arabic cards
+    source: "data/islamic/cards.json",
+    emoji: "🕌",
+    hashtags: "#قرآن #حديث #دعاء #ذكر #اسلام #ديني",
+    tags: ["قرآن", "حديث", "دعاء", "ذكر", "اسلام", "ديني", "quran", "hadith", "dua"],
+    genericTitles: ["القرآن والحديث والدعاء", "آيات وأحاديث وأدعية", "ذكر ودعاء"],
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+    longVideo: true,
+    sequential: true,
+  },
+  {
+    id: "long-christian-en",
+    name: "The Faithful Journey",
+    dir: "data/long-christian-en", // videos.json = long MP4s assembled from exact KJV Bible passages
+    source: "data/christian/cards.json",
+    emoji: "✝️",
+    hashtags: "#bible #kjv #scripture #faith #prayer #christian",
+    tags: ["bible", "kjv", "scripture", "faith", "prayer", "christian", "bible verses", "quiet time"],
+    genericTitles: ["The Faithful Journey", "Peaceful KJV Scripture", "Bible Verses for Quiet Time"],
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+    longVideo: true,
+    sequential: true,
   },
   {
     id: "visual-riddles-de",
@@ -481,7 +633,7 @@ export function isPackDeckId(id?: string | null): boolean {
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en", choose: "ru",
-  tips: "ru", "tips-de": "de", "tips-es": "es", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "visual-riddles-de": "de", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru",
+  tips: "ru", "tips-de": "de", "tips-es": "es", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-ru": "ru", "quotes-ar": "ar", "quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it",
 };
 export function deckLang(id: string): string {

@@ -145,6 +145,18 @@ export function randomAnecdote(deckId: string, used?: ReadonlySet<string>): Pack
   return items[Math.floor(Math.random() * items.length)] ?? null;
 }
 
+/** Deterministic first READY card for "infinite pack" mode: ignores used-history by design. */
+export function firstAnecdote(deckId: string): PackItem | null {
+  const t = titledItems(deckId);
+  if (t.length > 0) return t[0] ?? null;
+  const dir = deckDir(deckId);
+  if (!existsSync(dir)) return null;
+  const file = readdirSync(dir).filter((f) => f.startsWith("pack-") && f.endsWith(".json")).sort()[0];
+  if (!file) return null;
+  const items = JSON.parse(readFileSync(resolve(dir, file), "utf8")) as PackItem[];
+  return items[0] ?? null;
+}
+
 /** All cards of a deck in stable index order (the titled pool) — for the Gallery (browse + pick a specific card). */
 export function deckCards(deckId: string): PackItem[] {
   return titledItems(deckId);

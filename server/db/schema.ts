@@ -160,6 +160,11 @@ export function applySchema(db: DatabaseSync): void {
       deck_id TEXT NOT NULL,
       PRIMARY KEY (user_id, deck_id)
     );
+    CREATE TABLE IF NOT EXISTS user_granted_long_video_decks (
+      user_id INTEGER NOT NULL,
+      deck_id TEXT NOT NULL,
+      PRIMARY KEY (user_id, deck_id)
+    );
     CREATE TABLE IF NOT EXISTS user_feature_access (
       user_id INTEGER NOT NULL,
       feature TEXT NOT NULL,
@@ -208,6 +213,11 @@ export function applySchema(db: DatabaseSync): void {
   addColumn("accounts", "slot_videos TEXT DEFAULT '{}'");
   addColumn("accounts", "slot_decks TEXT DEFAULT '{}'");
   addColumn("accounts", "source_decks TEXT DEFAULT '[]'");
+  addColumn("accounts", "long_video_decks TEXT DEFAULT '[]'");
+  db.prepare(
+    "INSERT OR IGNORE INTO user_granted_long_video_decks (user_id, deck_id) SELECT user_id, deck_id FROM user_granted_decks WHERE deck_id LIKE 'long-%'",
+  ).run();
+  db.prepare("DELETE FROM user_granted_decks WHERE deck_id LIKE 'long-%'").run();
   db.prepare("UPDATE accounts SET source_decks = json_array(lang) WHERE source_decks IS NULL OR source_decks = '[]'").run();
   addColumn("accounts", "channel_lang TEXT DEFAULT ''");
   addColumn("accounts", "avatar TEXT");

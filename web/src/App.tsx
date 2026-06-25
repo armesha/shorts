@@ -17,6 +17,7 @@ import System from "./pages/System";
 import Settings from "./pages/Settings";
 import Users from "./pages/Users";
 import ClipDemos from "./pages/ClipDemos";
+import LongVideos from "./pages/LongVideos";
 import Limits from "./pages/Limits";
 import TemplateEditor from "./pages/TemplateEditor";
 import Login from "./pages/Login";
@@ -42,7 +43,7 @@ function Gate() {
         <Route path="/gallery" element={user.role === "admin" ? <Gallery /> : <Navigate to="/" replace />} />
         <Route path="/cards" element={<Cards />} />
         <Route path="/packs" element={<Packs />} />
-        <Route path="/queue" element={<QueuePage />} />
+        <Route path="/queue" element={user.role === "admin" ? <QueuePage /> : <Navigate to="/" replace />} />
         <Route path="/notifications" element={user.role === "admin" ? <Notifications /> : <Navigate to="/" replace />} />
         <Route path="/accounts" element={<Navigate to={user.role === "admin" ? "/channels" : "/"} replace />} />
         <Route path="/accounts/:id" element={<AccountDetail />} />
@@ -51,6 +52,7 @@ function Gate() {
         {/* Аналитика-сводка переехала во вкладку «Сводка» на /statistics (только админ). */}
         <Route path="/admin/analytics" element={<Navigate to="/statistics" replace />} />
         <Route path="/clip-demos" element={<ClipDemos />} />
+        <Route path="/long-videos" element={<LongVideos />} />
         <Route path="/limits" element={user.role === "admin" ? <Limits /> : <Navigate to="/" replace />} />
         <Route path="/changelog" element={<Changelog />} />
         <Route path="/errors" element={<Errors />} />

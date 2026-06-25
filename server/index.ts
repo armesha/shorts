@@ -47,9 +47,11 @@ import { registerVideosRoutes } from "./routes/videos.ts";
 import { registerGenQueueRoutes } from "./routes/gen-queue.ts";
 import { registerStudioGalleryRoutes } from "./routes/studio-gallery.ts";
 import { registerClipDemosRoutes } from "./routes/clip-demos.ts";
+import { registerLongVideosRoutes } from "./routes/long-videos.ts";
 import { registerContentCatalogRoutes } from "./routes/content-catalog.ts";
 import { registerQueueRoutes } from "./routes/queue.ts";
 import { registerAccountReadinessRoutes } from "./routes/account-readiness.ts";
+import { registerSuperAdminChannelBlockRoutes } from "./routes/super-admin-channel-blocks.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -325,9 +327,11 @@ registerVideosRoutes(app, db, deps);
 registerGenQueueRoutes(app, db, deps);
 registerStudioGalleryRoutes(app, db, deps);
 registerClipDemosRoutes(app, db, deps);
+registerLongVideosRoutes(app, db, deps);
 registerContentCatalogRoutes(app, db, deps);
 registerQueueRoutes(app, db, deps);
 registerAccountReadinessRoutes(app, db, deps);
+registerSuperAdminChannelBlockRoutes(app, db, deps);
 
 app
   .listen({ port: base.port, host: "0.0.0.0" })

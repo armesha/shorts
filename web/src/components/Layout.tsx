@@ -259,7 +259,7 @@ function AdminLayout({
           <Link
             to="/"
             onClick={closeDrawer}
-            className="px-5 h-16 flex items-center gap-2 border-b border-base-300 font-bold text-lg tracking-tight hover:bg-base-200/60 transition-colors"
+            className="px-5 h-14 flex items-center gap-2 border-b border-base-300 font-bold text-lg tracking-tight hover:bg-base-200/60 transition-colors"
           >
             <AppIcon name="clips" className="text-primary" size={26} />
             <span>{t("layout.brand")}</span>

@@ -20,6 +20,7 @@ export interface GenQueueUI {
   accountId: number | null; // which channel this batch fills (for in-place refresh)
   completions: number; // bumps each time a job reaches a terminal state
   run: (accountId: number | string, count: number, deckIds?: string[]) => Promise<void>;
+  trackJobs: (jobs: { jobId: string; accountId?: number | null; total?: number }[]) => void;
   cancel: () => void;
   dismiss: () => void; // hide the finished-message toast
 }
@@ -184,6 +185,18 @@ function useProvideGenQueue(): GenQueueUI {
     }
   }
 
+  function trackJobs(jobs: { jobId: string; accountId?: number | null; total?: number }[]) {
+    const valid = jobs.filter((job) => job.jobId);
+    if (!valid.length) return;
+    setRunning(true);
+    setMsg(null);
+    setState("queued");
+    setAccountId(valid.find((job) => job.accountId != null)?.accountId ?? null);
+    setTotal((t) => t + valid.reduce((sum, job) => sum + Math.max(0, Number(job.total) || 0), 0));
+    setActiveJobIds([...activeJobIdsRef.current, ...valid.map((job) => job.jobId)]);
+    startPolling();
+  }
+
   function cancel() {
     for (const id of activeJobIdsRef.current) apiClient.cancelGen(id).catch(() => {});
   }
@@ -192,7 +205,7 @@ function useProvideGenQueue(): GenQueueUI {
     setMsg(null);
   }
 
-  return { running, total, done, ahead, position, state, msg, accountId, completions, run, cancel, dismiss };
+  return { running, total, done, ahead, position, state, msg, accountId, completions, run, trackJobs, cancel, dismiss };
 }
 
 export function GenQueueProvider({ children }: { children: ReactNode }) {

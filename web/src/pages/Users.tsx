@@ -122,10 +122,13 @@ function AdminUsers() {
         ? userDecks.filter((d) => !d.pack && !d.grantable && !newVisible.has(d.id)).map((d) => d.id)
         : [];
       const grants = canManageRights && nextRole !== "admin"
-        ? userDecks.filter((d) => (d.pack || d.grantable) && newVisible.has(d.id)).map((d) => d.id)
+        ? userAccessDecks.filter((d) => (d.pack || d.grantable) && newVisible.has(d.id)).map((d) => d.id)
+        : [];
+      const longVideoGrants = canManageRights && nextRole !== "admin"
+        ? userLongVideoDecks.filter((d) => d.grantable && newVisible.has(d.id)).map((d) => d.id)
         : [];
       const u = await apiClient.createUser(username.trim(), password, nextRole, hidden);
-      if (canManageRights && grants.length) await apiClient.setUserDecks(u.id, hidden, grants);
+      if (canManageRights && (grants.length || longVideoGrants.length)) await apiClient.setUserDecks(u.id, hidden, grants, longVideoGrants);
       setCreated(t("users.created", { name: u.username, role: u.role === "admin" ? t("users.roleAdmin") : t("users.roleUser") }));
       setUsername("");
       setPassword("");
@@ -147,8 +150,9 @@ function AdminUsers() {
     const isAdminRow = row.role === "admin";
     const deck = decks.find((d) => d.id === deckId);
     const customPack = !!deck?.pack || deckId.startsWith("pack:");
-    const byGrant = !row.isSuperAdmin && (customPack || (!isAdminRow && !!deck?.grantable));
-    const nextHidden = byGrant
+    const longVideoGrant = !row.isSuperAdmin && !isAdminRow && !!deck?.longVideo;
+    const byGrant = !row.isSuperAdmin && !longVideoGrant && (customPack || (!isAdminRow && !!deck?.grantable));
+    const nextHidden = byGrant || longVideoGrant
       ? row.hidden
       : visible
         ? row.hidden.filter((d) => d !== deckId)
@@ -158,11 +162,20 @@ function AdminUsers() {
         ? [...new Set([...row.grantedPacks, deckId])]
         : row.grantedPacks.filter((d) => d !== deckId)
       : row.grantedPacks;
+    const nextLongVideoGrants = longVideoGrant
+      ? visible
+        ? [...new Set([...(row.grantedLongVideos ?? []), deckId])]
+        : (row.grantedLongVideos ?? []).filter((d) => d !== deckId)
+      : (row.grantedLongVideos ?? []);
     setSavingCell(`${row.userId}:${deckId}`);
     setSaveState("saving");
-    setRows((rs) => rs.map((r) => (r.userId === row.userId ? { ...r, hidden: nextHidden, grantedPacks: nextGrants } : r)));
+    setRows((rs) =>
+      rs.map((r) =>
+        r.userId === row.userId ? { ...r, hidden: nextHidden, grantedPacks: nextGrants, grantedLongVideos: nextLongVideoGrants } : r,
+      ),
+    );
     try {
-      await apiClient.setUserDecks(row.userId, nextHidden, nextGrants);
+      await apiClient.setUserDecks(row.userId, nextHidden, nextGrants, nextLongVideoGrants);
       setSaveState("saved");
       window.setTimeout(() => setSaveState((s) => (s === "saved" ? "idle" : s)), 1800);
     } catch {
@@ -259,14 +272,15 @@ function AdminUsers() {
   }
 
   // «Бесконечный пак» (имитация) — вкл/выкл для юзера. Оптимистично; откат к серверу при ошибке.
-  // ON → у юзера ВЕЗДЕ 1000 свободных карточек, а планировщик крутит его очередь роликов по кругу.
+  // ON → у юзера весь пак свободен, а планировщик крутит его очередь роликов по кругу.
   async function toggleInfinite(row: UserDeckRow) {
     const next = !row.infiniteSim;
     setTogglingInfinite(row.userId);
     setSaveState("saving");
     setRows((rs) => rs.map((r) => (r.userId === row.userId ? { ...r, infiniteSim: next } : r)));
     try {
-      await apiClient.setUserInfinitePacks(row.userId, next);
+      const res = await apiClient.setUserInfinitePacks(row.userId, next);
+      setRows((rs) => rs.map((r) => (r.userId === row.userId ? { ...r, infiniteSim: res.enabled } : r)));
       setSaveState("saved");
       window.setTimeout(() => setSaveState((s) => (s === "saved" ? "idle" : s)), 1800);
     } catch {
@@ -306,6 +320,61 @@ function AdminUsers() {
   }
 
   const resetRows = canManageRights ? rows : rows.filter((r) => !r.isSuperAdmin);
+  const accessDecks = decks.filter((d) => !d.longVideo);
+  const longVideoAccessDecks = decks.filter((d) => d.longVideo);
+  const userAccessDecks = userDecks.filter((d) => !d.longVideo);
+  const userLongVideoDecks = userDecks.filter((d) => d.longVideo);
+
+  const isCellVisible = (row: UserDeckRow, d: DeckInfo): boolean => {
+    const isAdminRow = row.role === "admin";
+    return row.isSuperAdmin
+      ? !row.hidden.includes(d.id)
+      : d.longVideo && !isAdminRow
+        ? (row.grantedLongVideos ?? []).includes(d.id)
+      : d.pack || (!isAdminRow && d.grantable)
+        ? row.grantedPacks.includes(d.id)
+        : !row.hidden.includes(d.id);
+  };
+
+  const renderAccessCells = (row: UserDeckRow, list: DeckInfo[]) =>
+    list.map((d) => {
+      const isAdminRow = row.role === "admin";
+      if (!isAdminRow && d.adminOnly && !d.grantable && !d.pack)
+        return (
+          <td key={d.id} className="text-center text-base-content/25" title={t("users.cellAdminOnly")}>
+            —
+          </td>
+        );
+      const visible = isCellVisible(row, d);
+      const used = row.used.includes(d.id);
+      const st = row.deckStats?.[d.id];
+      return (
+        <td key={d.id} className="text-center align-middle">
+          <label className="inline-flex flex-col items-center gap-0.5 cursor-pointer">
+            <input
+              type="checkbox"
+              className="checkbox checkbox-sm checkbox-primary"
+              checked={visible}
+              disabled={!canManagePackVisibility || savingCell === `${row.userId}:${d.id}`}
+              onChange={(e) => toggle(row, d.id, e.target.checked)}
+            />
+            {used &&
+              (st ? (
+                <span
+                  className={`text-[10px] leading-none ${st.available < 50 ? "text-error font-semibold" : "text-base-content/60"}`}
+                  title={t("users.statTooltip", { available: st.available, total: st.total, posted: st.posted, used: st.used })}
+                >
+                  {st.available}
+                </span>
+              ) : (
+                <span className="text-[10px] leading-none text-success" title={t("users.inUse")}>
+                  {t("users.usedShort")}
+                </span>
+              ))}
+          </label>
+        </td>
+      );
+    });
 
   return (
     <>
@@ -372,7 +441,7 @@ function AdminUsers() {
                 <b>{t("users.newUserPacksHintNothing")}</b> {t("users.newUserPacksHint3")}
               </span>
               <div className="flex flex-wrap gap-1.5 mt-1">
-                {userDecks.map((d) => {
+                {userAccessDecks.map((d) => {
                   const granted = newVisible.has(d.id);
                   return (
                     <button
@@ -394,6 +463,34 @@ function AdminUsers() {
                   );
                 })}
               </div>
+              {userLongVideoDecks.length > 0 && (
+                <>
+                  <div className="mt-2 text-xs font-medium text-base-content/60">{t("users.longVideoMatrixHeading")}</div>
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    {userLongVideoDecks.map((d) => {
+                      const granted = newVisible.has(d.id);
+                      return (
+                        <button
+                          key={d.id}
+                          type="button"
+                          title={granted ? t("users.newPackVisibleTitle") : t("users.newPackHiddenTitle")}
+                          className={`btn btn-xs gap-1 ${granted ? "btn-primary" : "btn-ghost border border-base-300 line-through opacity-60"}`}
+                          onClick={() =>
+                            setNewVisible((s) => {
+                              const n = new Set(s);
+                              if (granted) n.delete(d.id);
+                              else n.add(d.id);
+                              return n;
+                            })
+                          }
+                        >
+                          {granted ? <Check size={11} /> : null} {d.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
             </div>
           )}
 
@@ -520,7 +617,7 @@ function AdminUsers() {
         </div>
 
         {/* Visibility matrix: users × packs (checkbox = visible; «исп.» = already used) */}
-        {canManagePackVisibility && rows.length > 0 && decks.length > 0 && (
+        {canManagePackVisibility && rows.length > 0 && accessDecks.length > 0 && (
           <div className="border-t border-base-300 pt-3">
             <p className="text-sm font-medium mb-2 flex items-center gap-2">
               {t("users.matrixHeading")}
@@ -545,7 +642,7 @@ function AdminUsers() {
                 <thead>
                   <tr>
                     <th className="sticky left-0 z-20 bg-base-100 border-r border-base-300">{t("users.colUser")}</th>
-                    {decks.map((d) => (
+                    {accessDecks.map((d) => (
                       <th key={d.id} className="text-center whitespace-nowrap font-normal">
                         <span className="inline-flex items-center gap-1">
                           {d.adminOnly && !d.grantable && (
@@ -559,7 +656,6 @@ function AdminUsers() {
                 </thead>
                 <tbody>
                   {rows.map((row) => {
-                    const canEditMatrixRow = canManagePackVisibility;
                     return (
                       <tr key={row.userId}>
                         <td className="font-medium whitespace-nowrap sticky left-0 z-10 bg-base-100 border-r border-base-300">
@@ -632,50 +728,7 @@ function AdminUsers() {
                             </button>
                           )}
                         </td>
-                        {decks.map((d) => {
-                          const isAdminRow = row.role === "admin";
-                          // Обычному юзеру чисто admin-only дека недоступна в принципе → «—» (не чекбокс).
-                          if (!isAdminRow && d.adminOnly && !d.grantable && !d.pack)
-                            return (
-                              <td key={d.id} className="text-center text-base-content/25" title={t("users.cellAdminOnly")}>
-                                —
-                              </td>
-                            );
-                          // Главный админ видит всё по умолчанию; обычный админ получает custom-паки грантом/владением.
-                          const visible = row.isSuperAdmin
-                            ? !row.hidden.includes(d.id)
-                            : d.pack || (!isAdminRow && d.grantable)
-                              ? row.grantedPacks.includes(d.id)
-                              : !row.hidden.includes(d.id);
-                          const used = row.used.includes(d.id);
-                          const st = row.deckStats?.[d.id];
-                          return (
-                            <td key={d.id} className="text-center align-middle">
-                              <label className="inline-flex flex-col items-center gap-0.5 cursor-pointer">
-                                <input
-                                  type="checkbox"
-                                  className="checkbox checkbox-sm checkbox-primary"
-                                  checked={visible}
-                                  disabled={!canEditMatrixRow || savingCell === `${row.userId}:${d.id}`}
-                                  onChange={(e) => toggle(row, d.id, e.target.checked)}
-                                />
-                                {used &&
-                                  (st ? (
-                                    <span
-                                      className={`text-[10px] leading-none ${st.available < 50 ? "text-error font-semibold" : "text-base-content/60"}`}
-                                      title={t("users.statTooltip", { available: st.available, total: st.total, posted: st.posted, used: st.used })}
-                                    >
-                                      {st.available}
-                                    </span>
-                                  ) : (
-                                    <span className="text-[10px] leading-none text-success" title={t("users.inUse")}>
-                                      {t("users.usedShort")}
-                                    </span>
-                                  ))}
-                              </label>
-                            </td>
-                          );
-                        })}
+                        {renderAccessCells(row, accessDecks)}
                       </tr>
                     );
                   })}
@@ -685,6 +738,48 @@ function AdminUsers() {
             <p className="text-xs text-base-content/50 mt-1">
               {t("users.matrixFooter")}
             </p>
+          </div>
+        )}
+
+        {canManagePackVisibility && rows.length > 0 && longVideoAccessDecks.length > 0 && (
+          <div className="border-t border-base-300 pt-3">
+            <p className="text-sm font-medium mb-2 flex items-center gap-2">
+              {t("users.longVideoMatrixHeading")}
+            </p>
+            <div className="overflow-x-auto rounded-lg border border-base-300">
+              <table className="table table-xs">
+                <thead>
+                  <tr>
+                    <th className="sticky left-0 z-20 bg-base-100 border-r border-base-300">{t("users.colUser")}</th>
+                    {longVideoAccessDecks.map((d) => (
+                      <th key={d.id} className="text-center whitespace-nowrap font-normal">
+                        <span className="inline-flex items-center gap-1">
+                          {d.adminOnly && !d.grantable && (
+                            <AppIcon name="admin" size={11} className="text-primary/70" title={t("users.colAdminOnly")} />
+                          )}
+                          {d.name}
+                        </span>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((row) => (
+                    <tr key={row.userId}>
+                      <td className="font-medium whitespace-nowrap sticky left-0 z-10 bg-base-100 border-r border-base-300">
+                        <div className="flex items-center gap-1.5">
+                          {row.role === "admin" && <AppIcon name="admin" size={13} className="text-primary" />}
+                          {row.username}
+                          {row.isSuperAdmin && <span className="badge badge-primary badge-xs">{t("users.superAdmin")}</span>}
+                        </div>
+                      </td>
+                      {renderAccessCells(row, longVideoAccessDecks)}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-xs text-base-content/50 mt-1">{t("users.longVideoMatrixFooter")}</p>
           </div>
         )}
 

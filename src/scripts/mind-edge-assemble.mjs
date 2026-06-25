@@ -1,12 +1,12 @@
 // Сборка карточек пака «The Mind Edge» из батчей LLM-workflow.
-// Читает corpora/mind-edge-gen/*.json → нормализует → фильтрует по длине (тело 350–450, заголовок 16–80)
+// Читает local-assets/corpora/mind-edge-gen/*.json → нормализует → фильтрует по длине (тело 350–450, заголовок 16–80)
 // → дедуп (по нормализованному телу + заголовку) → балансный round-robin по дорожкам → ровно 1000
 // → assets/template-packs/the-mind-edge/cards.json. Печатает статистику и сколько ещё не хватает.
 // Запуск: node src/scripts/mind-edge-assemble.mjs
 import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 
-const GEN_DIR = resolve(process.cwd(), "corpora/mind-edge-gen");
+const GEN_DIR = resolve(process.cwd(), "local-assets/corpora/mind-edge-gen");
 const OUT_DIR = resolve(process.cwd(), "assets/template-packs/the-mind-edge");
 const OUT_FILE = resolve(OUT_DIR, "cards.json");
 const TARGET = 1000;

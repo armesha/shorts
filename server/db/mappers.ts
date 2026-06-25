@@ -62,6 +62,7 @@ export const rowToAccount = (r: Row): Account => ({
   theme: r.theme,
   lang: r.lang,
   sourceDecks: parseStringArray(r.source_decks, r.lang ? [r.lang] : []),
+  longVideoDecks: parseStringArray(r.long_video_decks, []),
   channelLang: r.channel_lang ?? "",
   schedule: JSON.parse(r.schedule),
   template: r.template,

@@ -6,7 +6,7 @@ import { createReadStream, existsSync, unlinkSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Db } from "../db.ts";
 import { getDeck, pickGenericTitle } from "../../src/anecdotes/decks.ts";
-import { randomAnecdote, libraryStats, anecdoteKey, deckCards } from "../../src/anecdotes/library.ts";
+import { randomAnecdote, firstAnecdote, libraryStats, anecdoteKey, deckCards } from "../../src/anecdotes/library.ts";
 import { renderAnecdote, listBackgrounds } from "../../src/anecdotes/render.ts";
 import { assembleStillVideo, listAudio, pickLifehackMotionOverlay, resolveAudio, downscaleImage } from "../../src/video.ts";
 import { INFINITE_PACKS_FEATURE, infiniteCounts } from "../services/infinite-packs.ts";
@@ -27,17 +27,18 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
   app.get("/api/generators", async (req) => {
     const userId = uid(req);
     const used = db.usedAnecdoteKeys(userId);
-    // «Бесконечный пак»: у этого юзера все встроенные деки показывают фиксированные 1000 свободных
-    // карточек (used=0) — иллюзия неисчерпаемого контента. Реальный учёт не трогаем (см. infinite-packs.ts).
+    // «Бесконечный пак»: у этого юзера деки показывают полный размер свободным.
+    // Реальный учёт не трогаем (см. infinite-packs.ts).
     const infinite = db.hasFeature(userId, INFINITE_PACKS_FEATURE);
     const base = visibleDecksForUser(userId).map((d) => {
       const s = libraryStats(d.id, used);
-      const c = infinite ? infiniteCounts() : { total: s.total, used: s.used, available: s.available };
+      const c = infinite ? infiniteCounts(s.total) : { total: s.total, used: s.used, available: s.available };
       return {
         id: d.id,
         name: d.name,
         ai: false,
         preFact: !!d.preFact, // pre-built video pack (no text render) — Studio shows a random video
+        longVideo: !!d.longVideo, // long compilation built from many short scenes
         gallery: !!d.gallery, // static deck (deterministic per-card render) — browsable in the Gallery page
         total: c.total,
         titled: infinite ? c.total : s.titled,
@@ -112,7 +113,7 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
     const deck = getDeck(deckId);
     if (!deck.preFact) return reply.code(400).send({ error: "Это не видео-пак." });
     if (!deckAllowed(req, deck.id)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
-    const a = randomAnecdote(deck.id); // preview may repeat — don't exclude used
+    const a = db.hasFeature(uid(req), INFINITE_PACKS_FEATURE) ? firstAnecdote(deck.id) : randomAnecdote(deck.id);
     if (!a?.videoFile) return { error: "В этом паке пока нет видео." };
     return { videoUrl: `/fact-videos/${a.videoFile}`, title: a.title, text: a.text };
   });
@@ -128,12 +129,13 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
       let title = body.title;
       let profession: string | undefined;
       if (!text) {
-        const a = randomAnecdote(deck.id, db.usedAnecdoteKeys(uid(req)));
+        const infinite = db.hasFeature(uid(req), INFINITE_PACKS_FEATURE);
+        const a = infinite ? firstAnecdote(deck.id) : randomAnecdote(deck.id, db.usedAnecdoteKeys(uid(req)));
         if (!a) return { error: "Нет свободных анекдотов (все уже использованы)" };
         text = a.text;
         title = a.title || undefined;
         profession = a.profession;
-        db.markAnecdoteUsed(uid(req), anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот
+        if (!infinite) db.markAnecdoteUsed(uid(req), anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот
       }
       if (!title) title = pickGenericTitle(deck);
 
@@ -165,12 +167,13 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
       let title = body.title;
       let profession: string | undefined;
       if (!text) {
-        const a = randomAnecdote(deck.id, db.usedAnecdoteKeys(uid(req)));
+        const infinite = db.hasFeature(uid(req), INFINITE_PACKS_FEATURE);
+        const a = infinite ? firstAnecdote(deck.id) : randomAnecdote(deck.id, db.usedAnecdoteKeys(uid(req)));
         if (!a) return { error: "Нет свободных анекдотов (все уже использованы)" };
         text = a.text;
         title = a.title || undefined;
         profession = a.profession;
-        db.markAnecdoteUsed(uid(req), anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот
+        if (!infinite) db.markAnecdoteUsed(uid(req), anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот
       }
       if (!title) title = pickGenericTitle(deck);
 

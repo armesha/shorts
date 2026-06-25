@@ -1,21 +1,21 @@
 {
-  "total": 1344,
-  "packs": 5,
+  "total": 25,
+  "packs": 1,
   "packSize": 300,
   "range": [
-    300,
-    500
+    301,
+    336
   ],
   "byProfession": {
-    "accountant": 131,
-    "builder": 137,
-    "chef": 119,
-    "firefighter": 126,
-    "hairdresser": 130,
-    "lawyer": 143,
-    "mechanic": 156,
-    "police": 144,
-    "programmer": 110,
-    "teacher": 148
+    "accountant": 3,
+    "builder": 4,
+    "chef": 3,
+    "firefighter": 3,
+    "hairdresser": 2,
+    "lawyer": 2,
+    "mechanic": 2,
+    "police": 1,
+    "programmer": 4,
+    "teacher": 1
   }
 }

@@ -10,7 +10,7 @@ import { writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadCleanBarzellette } from "./build-it.ts";
 
-const GEN_DIR = resolve(process.cwd(), "corpora/it-gen");
+const GEN_DIR = resolve(process.cwd(), "local-assets/corpora/it-gen");
 
 // Candidate band (RAW cleaned length, before accent-fix which slightly shortens text).
 // Floor high enough that the joke fills the frame; ceiling so it still fits at a readable font.

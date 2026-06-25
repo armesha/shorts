@@ -6,7 +6,7 @@ import { getDeck } from "./decks.ts";
 // Builds the German "Deutsche Witze" deck from the Schlechtewitzefront SQL dump (MIT, ~162k jokes).
 // Source: https://github.com/JohannesBauer97/Schlechtewitzefront (witze.sql). NSFW-heavy → filter hard.
 const deck = getDeck("de");
-const SRC = resolve(process.cwd(), deck.source); // corpora/witze.sql
+const SRC = resolve(process.cwd(), deck.source); // local-assets/corpora/witze.sql
 const OUT_DIR = resolve(process.cwd(), deck.dir); // data/anecdotes-de
 
 // Aggressive German profanity / NSFW / slur blocklist (roots). Advertiser-safety first.

@@ -1,11 +1,11 @@
 // Pre-download the FULL King James Version (exact, public-domain English) into local files,
 // so the passage-windowing + selection workflow reads from disk instead of hitting the net.
 // Source: aruljohn/Bible-kjv via jsDelivr CDN — clean {book, chapters:[{chapter, verses:[{verse,text}]}]},
-// no Strong's markup. Output (gitignored): corpora/christian/verses.jsonl + pool.json (id -> verse).
+// no Strong's markup. Output (gitignored): local-assets/corpora/christian/verses.jsonl + pool.json (id -> verse).
 import { writeFileSync, mkdirSync } from "node:fs";
 
 const REPO = "/home/davtian/Documents/shorts";
-const OUT = `${REPO}/corpora/christian`;
+const OUT = `${REPO}/local-assets/corpora/christian`;
 mkdirSync(OUT, { recursive: true });
 
 const CDN = "https://cdn.jsdelivr.net/gh/aruljohn/Bible-kjv@master";

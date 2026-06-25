@@ -17,15 +17,19 @@ import { AppIcon } from "../components/AppIcon";
 const bgLabel = (f: string) => f.replace(/\.(jpe?g|png)$/i, "");
 const musicLabel = (f: string) => f.split("/").pop()!.replace(/\.\w+$/, "");
 
-function PackKindBadge({ video }: { video: boolean }) {
+function PackKindBadge({ video, longVideo }: { video: boolean; longVideo?: boolean }) {
   const { t } = useT();
+  const label = longVideo ? t("packKind.longVideo") : video ? t("packKind.video") : t("packKind.text");
   return (
     <span className={`badge badge-sm gap-1 ${video ? "badge-primary" : "badge-ghost"}`}>
       <AppIcon name={video ? "video" : "cards"} size={12} />
-      {video ? t("packKind.video") : t("packKind.text")}
+      {label}
     </span>
   );
 }
+
+const packKindLabel = (t: ReturnType<typeof useT>["t"], item: { video?: boolean; longVideo?: boolean }) =>
+  item.longVideo ? t("packKind.longVideo") : item.video ? t("packKind.video") : t("packKind.text");
 
 export default function Studio() {
   const { t } = useT();
@@ -60,6 +64,7 @@ export default function Studio() {
   const hasTextSources = gens.some((x) => x.total > 0 && !x.preFact) || packs.length > 0;
   const showPackKind = hasVideoSources && hasTextSources;
   const selectedIsVideo = !isPack && !!g?.preFact;
+  const selectedIsLongVideo = !isPack && !!g?.longVideo;
   // «За раз» не больше, чем осталось СВОБОДНЫХ (неиспользованных) карточек в выбранной деке/паке —
   // для всех (и юзеров, и админов). Для пака берём available (cards − used), не общее число карточек.
   const remaining = isPack ? curPack?.available ?? curPack?.cards ?? 0 : g?.available ?? 0;
@@ -150,8 +155,8 @@ export default function Studio() {
         const n = curPack?.cards ?? 0;
         if (!n) { setErr(t("studio.noCardsInPack")); return; }
         const idx = Math.floor(Math.random() * n);
-        setPackIdx(idx);
         const r = await apiClient.packPreview(packId, idx);
+        setPackIdx(r.index ?? idx);
         setPreview({ imageUrl: r.imageUrl, text: "", title: "", bg: "", fontPx: 0 } as GeneratedPreview);
         return;
       }
@@ -239,7 +244,7 @@ export default function Studio() {
                       <optgroup key={grp.key} label={grp.title}>
                         {grp.items.map((it) => (
                           <option key={it.id} value={it.id}>
-                            {showPackKind ? `[${it.video ? t("packKind.video") : t("packKind.text")}] ` : ""}
+                            {showPackKind ? `[${packKindLabel(t, it)}] ` : ""}
                             {it.label}
                           </option>
                         ))}
@@ -258,7 +263,7 @@ export default function Studio() {
                   ) : (
                     g && (
                       <div className="text-sm text-base-content/60 mt-1 flex flex-wrap items-center gap-1.5">
-                        {showPackKind && <PackKindBadge video={selectedIsVideo} />}
+                        {showPackKind && <PackKindBadge video={selectedIsVideo} longVideo={selectedIsLongVideo} />}
                         <span className="text-success font-medium">{t("studio.availableCount", { n: g.available })}</span>
                         {g.used > 0 && <> · {t("studio.usedCount", { n: g.used })}</>}
                       </div>

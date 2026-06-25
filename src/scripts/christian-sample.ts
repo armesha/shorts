@@ -1,11 +1,11 @@
 // Render 15 sample KJV passages — ONE per background — for the visual QA loop.
-// Pulls exact text from corpora/christian/pool.json (built by christian-fetch-corpus.mjs).
+// Pulls exact text from local-assets/corpora/christian/pool.json (built by christian-fetch-corpus.mjs).
 // Run: node --import tsx src/scripts/christian-sample.ts   → /tmp/christian-prev/*.png
 import { readFileSync, mkdirSync } from "node:fs";
 import { renderChristianCard, type ChristianCard } from "../christian/render.ts";
 
 const pool: Record<string, { book: string; ch: number; v: number; text: string; len: number; testament: string }> =
-  JSON.parse(readFileSync("corpora/christian/pool.json", "utf8"));
+  JSON.parse(readFileSync("local-assets/corpora/christian/pool.json", "utf8"));
 
 // Build a passage starting at book/ch/v, accumulating consecutive verses (same chapter) to ~target chars.
 function passage(book: string, ch: number, v: number, floor = 330, cap = 470): ChristianCard & { len: number } {

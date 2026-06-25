@@ -1,11 +1,11 @@
 // Pre-download the FULL Islamic source corpus (exact Arabic) into local files, so the
 // selection workflow reads from disk instead of hitting the internet per item.
 // Sources: Quran = api.alquran.cloud (quran-uthmani), Hadith = fawazahmed0/hadith-api,
-// Dua = hisnmuslim.com. Output (gitignored): corpora/islamic/*.jsonl + pool.json (id→item map).
+// Dua = hisnmuslim.com. Output (gitignored): local-assets/corpora/islamic/*.jsonl + pool.json (id→item map).
 import { writeFileSync, mkdirSync } from "node:fs";
 
 const REPO = "/home/davtian/Documents/shorts";
-const OUT = `${REPO}/corpora/islamic`;
+const OUT = `${REPO}/local-assets/corpora/islamic`;
 mkdirSync(OUT, { recursive: true });
 
 const toAr = (n) => String(n).replace(/[0-9]/g, (d) => "٠١٢٣٤٥٦٧٨٩"[+d]);

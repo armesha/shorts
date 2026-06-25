@@ -1,0 +1,262 @@
+[
+  {
+    "order": 1,
+    "sourceDeck": "christian",
+    "sourceId": 1,
+    "type": "verse",
+    "title": "Genesis 1:3-6",
+    "text": "And God said, Let there be light: and there was light. And God saw the light, that it was good: and God divided the light from the darkness. And God called the light Day, and the darkness he called Night. And the evening and the morning were the first day. And God said, Let there be a firmament in the midst of the waters, and let it divide the waters from the waters.",
+    "ref": "Genesis 1:3-6",
+    "theme": "faith",
+    "book": "Genesis",
+    "testament": "OT",
+    "chars": 369,
+    "durationSec": 33,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 2,
+    "sourceDeck": "christian",
+    "sourceId": 2,
+    "type": "verse",
+    "title": "Genesis 1:27-28",
+    "text": "So God created man in his own image, in the image of God created he him; male and female created he them. And God blessed them, and God said unto them, Be fruitful, and multiply, and replenish the earth, and subdue it: and have dominion over the fish of the sea, and over the fowl of the air, and over every living thing that moveth upon the earth.",
+    "ref": "Genesis 1:27-28",
+    "theme": "grace",
+    "book": "Genesis",
+    "testament": "OT",
+    "chars": 348,
+    "durationSec": 32,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 3,
+    "sourceDeck": "christian",
+    "sourceId": 3,
+    "type": "verse",
+    "title": "Genesis 9:13-15",
+    "text": "I do set my bow in the cloud, and it shall be for a token of a covenant between me and the earth. And it shall come to pass, when I bring a cloud over the earth, that the bow shall be seen in the cloud: And I will remember my covenant, which is between me and you and every living creature of all flesh; and the waters shall no more become a flood to destroy all flesh.",
+    "ref": "Genesis 9:13-15",
+    "theme": "trust",
+    "book": "Genesis",
+    "testament": "OT",
+    "chars": 369,
+    "durationSec": 33,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 4,
+    "sourceDeck": "christian",
+    "sourceId": 4,
+    "type": "verse",
+    "title": "Genesis 28:15-17",
+    "text": "And, behold, I am with thee, and will keep thee in all places whither thou goest, and will bring thee again into this land; for I will not leave thee, until I have done that which I have spoken to thee of. And Jacob awaked out of his sleep, and he said, Surely the LORD is in this place; and I knew it not. And he was afraid, and said, How dreadful is this place! this is none other but the house of God, and this is the gate of heaven.",
+    "ref": "Genesis 28:15-17",
+    "theme": "comfort",
+    "book": "Genesis",
+    "testament": "OT",
+    "chars": 436,
+    "durationSec": 38,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 5,
+    "sourceDeck": "christian",
+    "sourceId": 5,
+    "type": "verse",
+    "title": "Genesis 50:20-22",
+    "text": "But as for you, ye thought evil against me; but God meant it unto good, to bring to pass, as it is this day, to save much people alive. Now therefore fear ye not: I will nourish you, and your little ones. And he comforted them, and spake kindly unto them. And Joseph dwelt in Egypt, he, and his father’s house: and Joseph lived an hundred and ten years.",
+    "ref": "Genesis 50:20-22",
+    "theme": "hope",
+    "book": "Genesis",
+    "testament": "OT",
+    "chars": 353,
+    "durationSec": 32,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 6,
+    "sourceDeck": "christian",
+    "sourceId": 6,
+    "type": "verse",
+    "title": "Exodus 3:14-15",
+    "text": "And God said unto Moses, I AM THAT I AM: and he said, Thus shalt thou say unto the children of Israel, I AM hath sent me unto you. And God said moreover unto Moses, Thus shalt thou say unto the children of Israel, The LORD God of your fathers, the God of Abraham, the God of Isaac, and the God of Jacob, hath sent me unto you: this is my name for ever, and this is my memorial unto all generations.",
+    "ref": "Exodus 3:14-15",
+    "theme": "faith",
+    "book": "Exodus",
+    "testament": "OT",
+    "chars": 398,
+    "durationSec": 35,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 7,
+    "sourceDeck": "christian",
+    "sourceId": 7,
+    "type": "verse",
+    "title": "Exodus 20:3-5",
+    "text": "Thou shalt have no other gods before me. Thou shalt not make unto thee any graven image, or any likeness of any thing that is in heaven above, or that is in the earth beneath, or that is in the water under the earth: Thou shalt not bow down thyself to them, nor serve them: for I the LORD thy God am a jealous God, visiting the iniquity of the fathers upon the children unto the third and fourth generation of them that hate me;",
+    "ref": "Exodus 20:3-5",
+    "theme": "faith",
+    "book": "Exodus",
+    "testament": "OT",
+    "chars": 428,
+    "durationSec": 37,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 8,
+    "sourceDeck": "christian",
+    "sourceId": 8,
+    "type": "verse",
+    "title": "Exodus 33:14-16",
+    "text": "And he said, My presence shall go with thee, and I will give thee rest. And he said unto him, If thy presence go not with me, carry us not up hence. For wherein shall it be known here that I and thy people have found grace in thy sight? is it not in that thou goest with us? so shall we be separated, I and thy people, from all the people that are upon the face of the earth.",
+    "ref": "Exodus 33:14-16",
+    "theme": "peace",
+    "book": "Exodus",
+    "testament": "OT",
+    "chars": 375,
+    "durationSec": 33,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 9,
+    "sourceDeck": "christian",
+    "sourceId": 9,
+    "type": "verse",
+    "title": "Exodus 34:6-7",
+    "text": "And the LORD passed by before him, and proclaimed, The LORD, The LORD God, merciful and gracious, longsuffering, and abundant in goodness and truth, Keeping mercy for thousands, forgiving iniquity and transgression and sin, and that will by no means clear the guilty; visiting the iniquity of the fathers upon the children, and upon the children’s children, unto the third and to the fourth generation.",
+    "ref": "Exodus 34:6-7",
+    "theme": "mercy",
+    "book": "Exodus",
+    "testament": "OT",
+    "chars": 402,
+    "durationSec": 35,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 10,
+    "sourceDeck": "christian",
+    "sourceId": 10,
+    "type": "verse",
+    "title": "Numbers 23:19-21",
+    "text": "God is not a man, that he should lie; neither the son of man, that he should repent: hath he said, and shall he not do it? or hath he spoken, and shall he not make it good? Behold, I have received commandment to bless: and he hath blessed; and I cannot reverse it. He hath not beheld iniquity in Jacob, neither hath he seen perverseness in Israel: the LORD his God is with him, and the shout of a king is among them.",
+    "ref": "Numbers 23:19-21",
+    "theme": "trust",
+    "book": "Numbers",
+    "testament": "OT",
+    "chars": 416,
+    "durationSec": 36,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 11,
+    "sourceDeck": "christian",
+    "sourceId": 11,
+    "type": "verse",
+    "title": "Deuteronomy 6:4-7",
+    "text": "Hear, O Israel: The LORD our God is one LORD: And thou shalt love the LORD thy God with all thine heart, and with all thy soul, and with all thy might. And these words, which I command thee this day, shall be in thine heart: And thou shalt teach them diligently unto thy children, and shalt talk of them when thou sittest in thine house, and when thou walkest by the way, and when thou liest down, and when thou risest up.",
+    "ref": "Deuteronomy 6:4-7",
+    "theme": "love",
+    "book": "Deuteronomy",
+    "testament": "OT",
+    "chars": 422,
+    "durationSec": 37,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 12,
+    "sourceDeck": "christian",
+    "sourceId": 12,
+    "type": "verse",
+    "title": "Deuteronomy 8:3-4",
+    "text": "And he humbled thee, and suffered thee to hunger, and fed thee with manna, which thou knewest not, neither did thy fathers know; that he might make thee know that man doth not live by bread only, but by every word that proceedeth out of the mouth of the LORD doth man live. Thy raiment waxed not old upon thee, neither did thy foot swell, these forty years.",
+    "ref": "Deuteronomy 8:3-4",
+    "theme": "faith",
+    "book": "Deuteronomy",
+    "testament": "OT",
+    "chars": 357,
+    "durationSec": 32,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  },
+  {
+    "order": 13,
+    "sourceDeck": "christian",
+    "sourceId": 13,
+    "type": "verse",
+    "title": "Deuteronomy 31:6-7",
+    "text": "Be strong and of a good courage, fear not, nor be afraid of them: for the LORD thy God, he it is that doth go with thee; he will not fail thee, nor forsake thee. And Moses called unto Joshua, and said unto him in the sight of all Israel, Be strong and of a good courage: for thou must go with this people unto the land which the LORD hath sworn unto their fathers to give them; and thou shalt cause them to inherit it.",
+    "ref": "Deuteronomy 31:6-7",
+    "theme": "courage",
+    "book": "Deuteronomy",
+    "testament": "OT",
+    "chars": 418,
+    "durationSec": 36,
+    "readModel": {
+      "charsPerSec": 15,
+      "extraSec": 8,
+      "minSec": 24,
+      "maxSec": 44
+    }
+  }
+]

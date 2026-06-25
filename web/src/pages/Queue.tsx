@@ -127,45 +127,49 @@ export default function QueuePage() {
         </div>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
-        <div className="rounded-3xl border border-base-300 bg-base-100 p-5 shadow-sm">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <h2 className="text-xl font-black">{t("queue.jobsTitle")}</h2>
-            <span className="badge badge-outline">{activeJobs.length}</span>
-          </div>
-          <div className="space-y-3">
-            {activeJobs.map((job) => (
-              <article key={job.id} className="rounded-2xl border border-base-300 p-4">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <Link className="font-bold hover:underline" to={`/accounts/${job.accountId}`}>
-                      {job.channelName}
-                    </Link>
-                    <div className="mt-1 text-xs text-base-content/55">
-                      {job.state} · {job.done}/{job.total} · {job.deckIds?.join(", ") || t("queue.channelSources")}
+      <section className={`grid gap-4 ${activeJobs.length ? "xl:grid-cols-[1.1fr_0.9fr]" : ""}`}>
+        {!!activeJobs.length && (
+          <div className="rounded-3xl border border-base-300 bg-base-100 p-5 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h2 className="text-xl font-black">{t("queue.jobsTitle")}</h2>
+              <span className="badge badge-outline">{activeJobs.length}</span>
+            </div>
+            <div className="space-y-3">
+              {activeJobs.map((job) => (
+                <article key={job.id} className="rounded-2xl border border-base-300 p-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <Link className="font-bold hover:underline" to={`/accounts/${job.accountId}`}>
+                        {job.channelName}
+                      </Link>
+                      <div className="mt-1 text-xs text-base-content/55">
+                        {job.state} · {job.done}/{job.total} · {job.deckIds?.join(", ") || t("queue.channelSources")}
+                      </div>
                     </div>
+                    <button
+                      className={`btn btn-xs btn-outline ${canceling === job.id ? "loading" : ""}`}
+                      disabled={canceling === job.id}
+                      onClick={() => void cancelJob(job.id)}
+                    >
+                      {t("queue.cancel")}
+                    </button>
                   </div>
-                  <button
-                    className={`btn btn-xs btn-outline ${canceling === job.id ? "loading" : ""}`}
-                    disabled={canceling === job.id}
-                    onClick={() => void cancelJob(job.id)}
-                  >
-                    {t("queue.cancel")}
-                  </button>
-                </div>
-                <progress className="progress progress-primary mt-4 w-full" max={100} value={pct(job)} />
-                <div className="mt-2 text-xs text-base-content/50">
-                  {job.position > 0 ? t("queue.ahead").replace("{n}", String(job.ahead)) : t("queue.runningNow")}
-                </div>
-              </article>
-            ))}
-            {!activeJobs.length && <div className="rounded-2xl bg-base-200 p-4 text-sm text-base-content/60">{t("queue.noJobs")}</div>}
+                  <progress className="progress progress-primary mt-4 w-full" max={100} value={pct(job)} />
+                  <div className="mt-2 text-xs text-base-content/50">
+                    {job.position > 0 ? t("queue.ahead").replace("{n}", String(job.ahead)) : t("queue.runningNow")}
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="rounded-3xl border border-base-300 bg-base-100 p-5 shadow-sm">
-          <h2 className="mb-4 text-xl font-black">{t("queue.slotsTitle")}</h2>
-          <div className="space-y-2">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h2 className="text-xl font-black">{t("queue.slotsTitle")}</h2>
+            <span className="badge badge-outline">{data?.upcomingSlots.length ?? 0}</span>
+          </div>
+          <div className="max-h-96 space-y-2 overflow-auto pr-1">
             {data?.upcomingSlots.map((slot) => (
               <Link
                 key={`${slot.accountId}-${slot.at}-${slot.time}`}

@@ -1,4 +1,4 @@
-// Спот-чек раскладки на РЕАЛЬНЫХ сгенерированных карточках (из corpora/mind-edge-gen/w1-*.json).
+// Спот-чек раскладки на РЕАЛЬНЫХ сгенерированных карточках (из local-assets/corpora/mind-edge-gen/w1-*.json).
 // Берёт самые «тяжёлые» (макс. длина тела и заголовка) + случайные, рендерит по одной на каждый из
 // 6 фонов → PNG в data/output/mind-edge-spotcheck/. Проверяем, что текст не выходит за зоны.
 // Запуск: node --import tsx src/scripts/mind-edge-spotcheck.ts
@@ -7,7 +7,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { renderTemplateCard } from "../template/render.ts";
 import { buildTemplates } from "./mind-edge-templates.ts";
 
-const GEN = resolve(process.cwd(), "corpora/mind-edge-gen");
+const GEN = resolve(process.cwd(), "local-assets/corpora/mind-edge-gen");
 const OUT = resolve(process.cwd(), "data/output/mind-edge-spotcheck");
 const collapse = (s: string) => String(s ?? "").replace(/\s+/g, " ").trim();
 

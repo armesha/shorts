@@ -10,7 +10,9 @@ import type {
   PsychSchema, PsychCardList, PackSummary, PackFull, PackMusic, PackMusicUploadFile,
   PackMusicUploadResult, MusicTrack, StatRow, ChannelTotals, PlatformSummary, StatPoint,
   AdminAnalytics, UserAnalytics, ErrorLogItem, NotificationItem, NotificationCounts, SystemStatus,
-  ContentCatalogResponse, AccountReadiness, QueueOverview,
+  ContentCatalogResponse, AccountReadiness, QueueOverview, LongVideoCatalog,
+  ChannelThemeBlockAccount, ChannelThemeBlocksResponse, ChannelThemeBlockGenerateResult,
+  ChannelThemeBlockScheduleResult,
 } from "./types";
 
 export const apiClient = {
@@ -76,9 +78,9 @@ export const apiClient = {
   updateAdminReadinessLimits: (body: { minRunwayDays: number }) =>
     send<ReadinessLimits>("/admin/readiness-limits", "PUT", body),
   manualVideoLimits: () => get<ManualVideoLimits>("/videos/manual-limits"),
-  setUserDecks: (userId: number, hidden: string[], grants?: string[]) =>
-    send<{ ok: boolean; hidden: string[] }>(`/admin/users/${userId}/decks`, "PUT", { hidden, grants }),
-  // «Бесконечный пак» (имитация) — вкл/выкл для юзера: 1000 карточек везде + рецикл очереди по кругу.
+  setUserDecks: (userId: number, hidden: string[], grants?: string[], longVideoGrants?: string[]) =>
+    send<{ ok: boolean; hidden: string[] }>(`/admin/users/${userId}/decks`, "PUT", { hidden, grants, longVideoGrants }),
+  // «Бесконечный пак» (имитация) — вкл/выкл для юзера: весь пак свободен + рецикл очереди.
   setUserInfinitePacks: (userId: number, enabled: boolean) =>
     send<{ ok: boolean; enabled: boolean }>(`/admin/users/${userId}/infinite-packs`, "PUT", { enabled }),
   resetUserDeck: (userId: number, deckId: string) =>
@@ -87,6 +89,26 @@ export const apiClient = {
     get<{ userId: number; username: string; items: PackUsageItem[] }>(`/admin/users/${userId}/pack-usage`),
   myDecks: (userId?: number) => get<MyDecks>(`/my-decks${userId != null ? `?userId=${userId}` : ""}`),
   contentCatalog: () => get<ContentCatalogResponse>("/content-catalog"),
+  channelThemeBlocks: () => get<ChannelThemeBlocksResponse>("/super-admin/channel-blocks"),
+  createChannelThemeBlockAccount: (blockId: string, lang: string) =>
+    send<ChannelThemeBlockAccount>(
+      `/super-admin/channel-blocks/${encodeURIComponent(blockId)}/accounts`,
+      "POST",
+      { lang },
+    ),
+  generateChannelThemeBlock: (blockId: string, count: number, accountIds?: number[]) =>
+    send<ChannelThemeBlockGenerateResult>(
+      `/super-admin/channel-blocks/${encodeURIComponent(blockId)}/generate`,
+      "POST",
+      { count, ...(accountIds ? { accountIds } : {}) },
+    ),
+  setChannelThemeBlockSchedule: (blockId: string, perDay: number, accountIds?: number[]) =>
+    send<ChannelThemeBlockScheduleResult>(
+      `/super-admin/channel-blocks/${encodeURIComponent(blockId)}/schedule`,
+      "POST",
+      { perDay, ...(accountIds ? { accountIds } : {}) },
+    ),
+  longVideos: (cacheBust?: number) => get<LongVideoCatalog>(`/long-videos${cacheBust ? `?t=${cacheBust}` : ""}`),
   adminLowDecks: () => get<LowDeckRow[]>("/admin/low-decks"),
   accounts: (scope?: "all") => get<Account[]>(`/accounts${scope === "all" ? "?scope=all" : ""}`),
   account: (id: number | string) => get<Account>(`/accounts/${id}`),
@@ -95,6 +117,8 @@ export const apiClient = {
   updateAccount: (id: number | string, data: Partial<Account>) =>
     send<Account>(`/accounts/${id}`, "PUT", data),
   deleteAccount: (id: number | string) => send<{ ok: boolean }>(`/accounts/${id}`, "DELETE"),
+  addLongVideoToLibrary: (accountId: number | string, deck: string) =>
+    send<VideoItem>("/videos/long", "POST", { accountId: Number(accountId), deck }),
   avatars: () => get<string[]>("/avatars"),
   uploadAvatar: (id: number | string, dataUrl: string) =>
     send<Account>(`/accounts/${id}/avatar`, "POST", { dataUrl }),
@@ -168,7 +192,7 @@ export const apiClient = {
       `/packs/${id}/music/${encodeURIComponent(fileName)}`,
       "DELETE",
     ),
-  packPreview: (id: string, i: number) => get<{ imageUrl: string }>(`/packs/${id}/preview?i=${i}`),
+  packPreview: (id: string, i: number) => get<{ imageUrl: string; index?: number }>(`/packs/${id}/preview?i=${i}`),
   packBuildVideo: (id: string, i: number, opts?: { accountId?: number; music?: string }) =>
     send<{ videoUrl: string; music: string; saved: boolean }>(`/packs/${id}/cards/${i}/video`, "POST", opts ?? {}),
   generateAnecdote: (body?: { text?: string; title?: string; bg?: string; avoidBg?: string; deck?: string }) =>

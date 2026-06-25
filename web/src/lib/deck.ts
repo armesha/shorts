@@ -31,12 +31,25 @@ export const DECK_GLOSS_RU: Record<string, string> = {
   islamic: "Ислам · арабский",
   christian: "Библия · англ.",
   "fact-en": "Интересные факты · видео",
+  "quotes-ru": "Цитаты · рус.",
+  "quotes-ar": "Цитаты · араб.",
+  "quotes-en": "Цитаты · англ.",
+  "quotes-it": "Цитаты · итал.",
+  "quotes-es": "Цитаты · исп.",
+  "quotes-fr": "Цитаты · фр.",
+  "quotes-pt": "Цитаты · порт.",
+  "quotes-hi": "Цитаты · хинди",
+  "quotes-id": "Цитаты · индон.",
   "quotes-de-1": "Цитаты политиков · нем.",
   "quotes-de-2": "Цитаты политиков · нем.",
   "quotes-de-3": "Цитаты политиков · нем.",
   "prayers-de": "Молитвы · нем.",
   space: "Космос · видео",
   "visual-riddles": "Визуальные загадки · видео",
+  "long-anecdotes-ru": "Русские анекдоты · длинное видео",
+  "long-anecdotes-soul-ru": "Русские анекдоты · длинное видео",
+  "long-islamic-ar": "Ислам · длинное видео · арабский",
+  "long-christian-en": "Христианство · длинное видео · англ.",
   "visual-riddles-de": "Sieh die Antwort · видео (DE)",
   "animal-superheroes": "ЗвероГерои · видео",
   "animal-superheroes-en": "ЗвероГерои · видео · англ.",
@@ -60,23 +73,37 @@ export const deckLabel = (id: string, name: string): string =>
 /** Content language of each built-in deck (deck id → 2-letter lang). Custom packs carry their own lang. */
 export const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en", choose: "ru",
-  tips: "ru", "tips-de": "de", "tips-es": "es", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "visual-riddles-de": "de", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru",
+  tips: "ru", "tips-de": "de", "tips-es": "es", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-ru": "ru", "quotes-ar": "ar", "quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it",
 };
 
 /** Uppercase 2-letter tag for a language code. */
-export const LANG_TAG: Record<string, string> = { ru: "RU", de: "DE", it: "IT", fr: "FR", en: "EN", es: "ES", ar: "AR" };
+export const LANG_TAG: Record<string, string> = {
+  ru: "RU",
+  de: "DE",
+  it: "IT",
+  fr: "FR",
+  en: "EN",
+  es: "ES",
+  ar: "AR",
+  pt: "PT",
+  hi: "HI",
+  id: "ID",
+};
 export const langTag = (code: string): string => LANG_TAG[code] || (code || "").toUpperCase();
 
 /** The content/channel languages a pack or channel can carry (code → human label). */
 export const CONTENT_LANGS: { code: string; label: string }[] = [
   { code: "ru", label: "Русский" },
-  { code: "de", label: "Немецкий" },
-  { code: "it", label: "Итальянский" },
-  { code: "fr", label: "Французский" },
-  { code: "en", label: "Английский" },
-  { code: "es", label: "Испанский" },
   { code: "ar", label: "Арабский" },
+  { code: "en", label: "Английский" },
+  { code: "it", label: "Итальянский" },
+  { code: "es", label: "Испанский" },
+  { code: "de", label: "Немецкий" },
+  { code: "pt", label: "Португальский" },
+  { code: "hi", label: "Хинди" },
+  { code: "id", label: "Индонезийский" },
+  { code: "fr", label: "Французский" },
 ];
 
 /** Built-in content decks selectable as a channel's source (deck id → label shown in the dropdown). */
@@ -94,12 +121,25 @@ export const BUILTIN_DECKS: { id: string; label: string }[] = [
   { id: "islamic", label: "Ислам · арабский (Коран и хадисы)" },
   { id: "christian", label: "Христианство · Библия (англ., KJV)" },
   { id: "fact-en", label: "Интересные факты (видео, EN)" },
+  { id: "quotes-ru", label: "Цитаты великих людей (RU)" },
+  { id: "quotes-ar", label: "اقتباسات ملهمة (AR)" },
+  { id: "quotes-en", label: "Great Quotes (EN)" },
+  { id: "quotes-it", label: "Citazioni famose (IT)" },
+  { id: "quotes-es", label: "Citas famosas (ES)" },
+  { id: "quotes-fr", label: "Citations celebres (FR)" },
+  { id: "quotes-pt", label: "Citações famosas (PT)" },
+  { id: "quotes-hi", label: "प्रेरक उद्धरण (HI)" },
+  { id: "quotes-id", label: "Kutipan Terkenal (ID)" },
   { id: "quotes-de-1", label: "Цитаты политиков 1 (видео, DE)" },
   { id: "quotes-de-2", label: "Цитаты политиков 2 (видео, DE)" },
   { id: "quotes-de-3", label: "Цитаты политиков 3 (видео, DE)" },
   { id: "prayers-de", label: "Gebete (видео, DE)" },
   { id: "space", label: "Космос (видео, EN)" },
   { id: "visual-riddles", label: "Вижу Ответ (видео, RU)" },
+  { id: "long-anecdotes-ru", label: "Русские анекдоты (длинное видео, RU)" },
+  { id: "long-anecdotes-soul-ru", label: "Русские анекдоты (длинное видео, RU)" },
+  { id: "long-islamic-ar", label: "القرآن والحديث والدعاء (длинное видео, AR)" },
+  { id: "long-christian-en", label: "The Faithful Journey (длинное видео, EN)" },
   { id: "visual-riddles-de", label: "Sieh die Antwort (видео, DE)" },
   { id: "animal-superheroes", label: "ЗвероГерои (видео, RU)" },
   { id: "animal-superheroes-en", label: "Animal Heroes (видео, EN)" },
@@ -120,7 +160,7 @@ export const BUILTIN_DECKS: { id: string; label: string }[] = [
 // ─────────────────────────────────────────────────────────────────────────────
 // Unified deck/pack picker model.
 // Built-in decks (generators) and custom packs are merged into ONE list, grouped
-// purely by content language (RU/DE/IT/FR/EN/AR) — a custom pack sits in its own
+// purely by content language — a custom pack sits in its own
 // language group next to the built-ins. There is no built-in-vs-custom split for
 // the user — both are just "a content source". Shared by Studio and AccountDetail.
 // ─────────────────────────────────────────────────────────────────────────────
@@ -130,16 +170,17 @@ export type DeckPickItem = {
   label: string; // display text (without the [видео]/[текст] kind prefix)
   lang: string; // content language code
   video: boolean; // prebuilt-video deck (preFact)
+  longVideo?: boolean; // long prebuilt compilation
 };
 
 export type DeckGroup = { key: string; title: string; items: DeckPickItem[] };
 
-type GenLike = { id: string; name: string; total?: number; preFact?: boolean };
+type GenLike = { id: string; name: string; total?: number; preFact?: boolean; longVideo?: boolean };
 type PackLike = { id: string; name: string; lang: string };
 
 /**
  * Merge generators + custom packs into ONE list, grouped purely by content
- * language (RU/DE/IT/FR/EN/AR, order from CONTENT_LANGS). A custom pack lands in
+ * language (order from CONTENT_LANGS). A custom pack lands in
  * its own language group right next to the built-in decks — there is no
  * built-in-vs-custom split. Within a group, built-in decks come first, then packs.
  */
@@ -166,7 +207,7 @@ export function buildDeckGroups(
     if (opts.requireTotal && !(g.total && g.total > 0)) continue;
     if (exclude.has(g.id)) continue;
     const lang = DECK_LANG[g.id] || "en";
-    push(lang, { id: g.id, label: deckLabel(g.id, g.name), lang, video: !!g.preFact });
+    push(lang, { id: g.id, label: deckLabel(g.id, g.name), lang, video: !!g.preFact, longVideo: !!g.longVideo });
   }
   for (const p of packs) {
     const id = `pack:${p.id}`;

@@ -1,11 +1,11 @@
 // Build passage CANDIDATES (~350-400 chars) from the KJV corpus for the selection workflow.
 // Tiles within-chapter verse windows over the verse-rich books, plus famous passages from the rest.
-// Drops genealogy/census/list noise. Output (gitignored): corpora/christian/cand-pool.json (id->passage),
+// Drops genealogy/census/list noise. Output (gitignored): local-assets/corpora/christian/cand-pool.json (id->passage),
 // candidates.jsonl, slices/*.jsonl (one per agent), manifest.json (printed as JSON line for Workflow args).
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 
 const REPO = "/home/davtian/Documents/shorts";
-const OUT = `${REPO}/corpora/christian`;
+const OUT = `${REPO}/local-assets/corpora/christian`;
 const SL = `${OUT}/slices`;
 mkdirSync(SL, { recursive: true });
 
@@ -162,7 +162,7 @@ for (const [sec, arr] of bySec) {
     // slim payload the agent reads: id, ref, len, text
     const slim = chunk.map((c) => ({ id: c.id, ref: c.ref, len: c.len, text: c.text }));
     writeFileSync(`${SL}/${label}.jsonl`, slim.map((x) => JSON.stringify(x)).join("\n") + "\n");
-    manifest.push({ label, section: sec, file: `corpora/christian/slices/${label}.jsonl`, count: chunk.length });
+    manifest.push({ label, section: sec, file: `local-assets/corpora/christian/slices/${label}.jsonl`, count: chunk.length });
   }
 }
 writeFileSync(`${OUT}/manifest.json`, JSON.stringify(manifest, null, 1));

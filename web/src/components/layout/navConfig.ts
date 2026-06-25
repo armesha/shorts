@@ -22,7 +22,7 @@ export const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
       { to: "/channels", labelKey: "nav.channels", icon: "accounts", end: false, adminOnly: true },
       { to: "/", labelKey: "nav.overview", icon: "home", end: true, adminOnly: true, adminBadge: true },
       { to: "/studio", labelKey: "nav.studio", icon: "studio", end: false },
-      { to: "/queue", labelKey: "nav.queue", icon: "queue", end: false },
+      { to: "/queue", labelKey: "nav.queue", icon: "queue", end: false, adminOnly: true, adminBadge: true },
       { to: "/history", labelKey: "nav.history", icon: "history", end: false },
       { to: "/clip-demos", labelKey: "nav.clipdemos", icon: "clips", end: false, clipDemos: true },
     ],
@@ -31,6 +31,7 @@ export const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
     labelKey: "layout.groupContent",
     items: [
       { to: "/packs", labelKey: "nav.packs", icon: "packs", end: false },
+      { to: "/long-videos", labelKey: "nav.longVideos", icon: "video", end: false },
       { to: "/cards", labelKey: "nav.cards", icon: "cards", end: false },
       { to: "/gallery", labelKey: "nav.gallery", icon: "library", end: false, adminOnly: true, adminBadge: true },
       // Редактор шаблонов НЕ выносим отдельной вкладкой: на него уже есть переход из «Паки и карточки»
@@ -74,7 +75,6 @@ export const ADMIN_BOTTOM_NAV: NavItem[] = [
 export const USER_BOTTOM_NAV: NavItem[] = [
   { to: "/", labelKey: "nav.channels", icon: "accounts", end: true },
   { to: "/studio", labelKey: "nav.studio", icon: "studio", end: false },
-  { to: "/queue", labelKey: "nav.queue", icon: "queue", end: false },
   { to: "/packs", labelKey: "nav.packs", icon: "packs", end: false },
   { to: "/statistics", labelKey: "nav.statistics", icon: "analytics", end: false },
 ];

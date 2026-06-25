@@ -15,17 +15,27 @@
 Для интернет-источников отдельно проверяй лицензию и происхождение данных перед скачиванием или
 пополнением. Не называй источник свободным только потому, что файл доступен в сети.
 
+## Общее правило анекдотов и шуток
+
+Новые анекдотные/joke-паки не генерируй "с нуля" через ИИ. Для них сначала ищи внешний корпус:
+public-domain книги, Wikisource/Internet Archive/Gutenberg, open-source датасеты с явной лицензией
+или другой проверяемый источник, где можно записать evidence в `sources.json`/ledger. ИИ допустим
+только как вспомогательный этап после этого: очистка мусора, разметка, заголовки, локализация уже
+легального текста и safety-фильтр. Если права или происхождение текста неясны, такой источник не
+использовать.
+
 ## Общее правило озвучки
 
-Если новый или пересобираемый ролик требует голос, используй ElevenLabs. Ключи уже лежат в окружении
-проекта: `ELEVENLABS_API_KEYS`, `ELEVENLABS_API_KEY` или `ELEVENLABS_API_KEY_1`, `ELEVENLABS_API_KEY_2`
-и т.д. Загружать их можно из `.env` / `.env.local`, но нельзя печатать реальные ключи в логи,
-markdown, код, frontend, БД или git diff. В логах допустимы только номер ключа и last4/hint.
+Если новый или пересобираемый ролик требует голос, по текущему правилу пользователя используй
+бесплатный `edge-tts` в `.venv-tts/` (Microsoft Edge neural voices), потому что ElevenLabs-квота
+исчерпана. Не запускай ElevenLabs для новых voiceover-паков без отдельного подтверждения.
 
-Скрипты должны перебирать ключи: `401`/invalid key - следующий ключ; `402`/quota exceeded - считать
-ключ исчерпанным до reset; `429` - backoff + повтор. ElevenLabs - единственный TTS: локальные/офлайн
-движки (`edge-tts`, Piper, Coqui, espeak) не использовать вообще, даже для чернового preview. Тайминги
-слов/субтитров брать из ElevenLabs (endpoint `with-timestamps` / поле `alignment`), а не локальным `whisper`.
+Старые ElevenLabs-кэши и скрипты можно читать/переиспользовать, если они уже лежат на диске, но нельзя
+печатать реальные ключи в логи, markdown, код, frontend, БД или git diff. В логах допустимы только
+номер ключа и last4/hint. Если всё-таки отдельно согласован ElevenLabs-запуск: `401`/invalid key -
+следующий ключ; `402`/quota exceeded - считать ключ исчерпанным до reset; `429` - backoff + повтор.
+Для `edge-tts` word-level alignment нет, поэтому субтитры таймить по длительности mp3/скорости чтения
+или использовать pack-specific caption timing; не подменяй это Whisper без отдельной причины.
 
 Немое кино не считать приоритетным рутинным форматом: пользователь отклонил это направление как слабое.
 Если когда-нибудь оно понадобится отдельно, брать только public-domain source, удалять исходный звук и
@@ -101,17 +111,44 @@ Prebuilt MP4 допустимы как исключение для готовы�
 индивидуальных визуальных MP4 или уже существующих legacy prebuilt decks. Для нового статичного пака
 prebuilt MP4 считается исключением и требует явного запроса пользователя.
 
+## Общее правило для длинных видео
+
+`longVideo` / длинные сборники не делаются как Shorts. По умолчанию это обычное горизонтальное видео:
+
+- размер кадра строго `1920x1080`;
+- картинка каждой сцены статичная: один читаемый PNG/card на весь анекдот, без zoompan, camera motion и
+  прочего движения внутри сцены;
+- между анекдотами нужны плавные переходы (`fade`), чтобы смена карточек не била по глазам;
+- музыка должна быть одной цельной дорожкой на весь ролик, без рестарта/смены на каждом анекдоте;
+- для длинных видео держи отдельную музыку в `assets/audio/long-videos/`, только license-safe /
+  no-copyright;
+- исключение для исламских long-video: не ставь обычную музыку и инструменты. Используй только
+  тихий немелодический фон без инструментов из `assets/audio/islamic/` или тишину; фон тоже должен
+  идти одной цельной дорожкой на весь ролик;
+- громкость музыки низкая, чтобы не мешать чтению;
+- длительность сцен считай по символам, чтобы человек успел спокойно прочитать текст.
+- у long-video пака сразу должны быть готовые YouTube `title`, `description`, `hashtags` и `tags`;
+  не наследуй `#shorts` в названии/описании/тегах;
+- `description` должен быть зрительским и естественным: что это за выпуск, зачем смотреть, какой тон /
+  настроение. Не пиши внутренние детали сборки вроде "из встроенной деки", "33 анекдота",
+  "public-domain музыка", "читабельный видеосборник"; такие сведения держи в `sources.json`, а не в
+  описании для YouTube;
+- использованные исходные элементы нужно вести в отдельном ledger/usage-файле пака. Для длинных
+  выпусков нельзя повторно брать анекдот/карточку, чей `sourceId` уже был в предыдущем длинном ролике;
+- long-video паки не являются источниками расписания канала: канал включает их отдельной галочкой,
+  готовый MP4 добавляется в библиотеку вручную, а публикация идет отдельной кнопкой «Выложить».
+
 ## Быстрая карта паков
 
 | Пак / deck | Где результат | Как появляется контент | LLM нужен |
 |---|---|---|---|
-| `ru` Русские анекдоты | `data/anecdotes/` | локальный текст `Русские анекдоты/anek_djvu.txt`; текущая плотная дека дополнена pipeline пар коротких шуток | да, если отбирать/тематизировать пары |
-| `de` Deutsche Witze | `data/anecdotes-de/` | локальный SQL-корпус `corpora/witze.sql` -> фильтр/дедуп | нет для сборки; нужен только workflow заголовков |
-| `fr` Blagues françaises | `data/anecdotes-fr/` | локальный JSON `corpora/blagues.json` -> safe categories | нет для сборки; нужен только workflow заголовков |
-| `it` Barzellette Italiane | `data/anecdotes-it/` | текущий плотный вариант из `corpora/it-gen/clean-*.json` | да, для чистки кандидатов; сборка локальная |
-| `tips` Народные лайфхаки | `data/tips/` | LLM-батчи `corpora/tips-gen/*.json` -> локальная сборка | да, для новых батчей |
-| `tips-de` Deutsche Lifehacks | `data/tips-de/` | LLM-батчи `corpora/tips-de-gen/*.json` -> локальная сборка | да, для новых батчей |
-| `tips-es` Trucos utiles | `data/tips-es/` | source-backed батчи `corpora/tips-es-gen/*.json` -> локальная сборка | да, для новых батчей |
+| `ru` Русские анекдоты | `data/anecdotes/` | локальный текст `local-assets/Русские анекдоты/anek_djvu.txt`; текущая плотная дека дополнена pipeline пар коротких шуток | да, если отбирать/тематизировать пары |
+| `de` Deutsche Witze | `data/anecdotes-de/` | локальный SQL-корпус `local-assets/corpora/witze.sql` -> фильтр/дедуп | нет для сборки; нужен только workflow заголовков |
+| `fr` Blagues françaises | `data/anecdotes-fr/` | локальный JSON `local-assets/corpora/blagues.json` -> safe categories | нет для сборки; нужен только workflow заголовков |
+| `it` Barzellette Italiane | `data/anecdotes-it/` | текущий плотный вариант из `local-assets/corpora/it-gen/clean-*.json` | да, для чистки кандидатов; сборка локальная |
+| `tips` Народные лайфхаки | `data/tips/` | source-backed батчи `local-assets/corpora/tips-gen/surprising-*.json` -> локальная сборка | да, для новых батчей |
+| `tips-de` Deutsche Lifehacks | `data/tips-de/` | source-backed батчи `local-assets/corpora/tips-de-gen/surprising-*.json` -> локальная сборка | да, для новых батчей |
+| `tips-es` Trucos utiles | `data/tips-es/` | source-backed батчи `local-assets/corpora/tips-es-gen/surprising-*.json` -> локальная сборка | да, для новых батчей |
 | `psych` Psychologie (DE) | `data/psych/cards.json` | структурные карточки по `docs/psych-cards-standard.md` | обычно да, но можно загрузить вручную |
 | `islamic` آيات وأذكار | `data/islamic/cards.json` | точные интернет-корпусы -> локальные slices -> workflow выбора id -> assemble | да, только для выбора id/theme |
 | `christian` Holy Bible KJV | `data/christian/cards.json` | KJV public domain -> candidates/slices -> workflow выбора id -> assemble | да, только для выбора id/theme |
@@ -120,10 +157,14 @@ prebuilt MP4 считается исключением и требует явн�
 | `prayers-de` Gebete | `data/prayers-de/videos.json` + `assets/fact-videos/prayers-de/` | 1000 готовых немецких молитвенных card-style MP4 без тега: примерно 250 про детей/семью и 750 общих молитв | нет |
 | `space` Space | `data/space/videos.json` + `assets/fact-videos/space/` | готовые MP4 | не в рантайме |
 | `animal-superheroes` / `animal-superheroes-en` ЗвероГерои / Animal Heroes | `data/output/admin-demos/manifest.json` + `data/animal-superheroes*/videos.json` + `assets/fact-videos/animal-superheroes*/` | сериальные MP4-комиксы RU/EN с одинаковым визуалом, ElevenLabs-озвучкой и safe-zone karaoke-субтитрами | нет |
+| `long-anecdotes-ru` Русские анекдоты | `data/long-anecdotes-ru/videos.json` + `assets/fact-videos/long-anecdotes-ru/` | длинный MP4-сборник из коротких читаемых сцен RU-анекдотов под музыку | нет |
+| `long-anecdotes-soul-ru` Русские анекдоты | `data/long-anecdotes-soul-ru/videos.json` + `assets/fact-videos/long-anecdotes-soul-ru/` | отдельный длинный MP4-пак из custom pack `data/packs/анекдоты-ру-впн-mqe5ovw1.json` | нет |
+| `long-islamic-ar` القرآن والحديث والدعاء | `data/long-islamic-ar/videos.json` + `assets/fact-videos/long-islamic-ar/` | отдельный длинный MP4-пак для исламского канала из точных карточек `data/islamic/cards.json`, с немелодическим фоном без инструментов | нет |
+| `long-christian-en` The Faithful Journey | `data/long-christian-en/videos.json` + `assets/fact-videos/long-christian-en/` | отдельный длинный MP4-пак для английского христианского канала из точных KJV-карточек `data/christian/cards.json` | нет |
 | `The Mind Edge` template-pack | `assets/template-packs/the-mind-edge/` -> `data/packs/` seed | LLM-батчи -> `cards.json`, шаблоны из кода | да, для новых карточек |
 | `psychology-mgs` template-pack | `assets/template-packs/psychology-mgs/` -> `data/packs/` seed | карточки + 40 шаблонов | зависит от источника новых карточек |
 | `Curiosaurs English Facts` template-pack | `assets/template-packs/curiosaurs-english/` -> `data/packs/` seed | локальный набор kid-safe facts + PNG-шаблоны | нет |
-| `Chistes ES` template-pack | `corpora/spanish-jokes-public-domain/` + `assets/template-packs/spanish-jokes*/` -> `data/packs/chistes-es-public-domain.json`, `data/packs/chistes-es-long.json` | public-domain Spanish joke books -> local safety/quality filter -> фактическое число safe-карточек + 30 short templates + 42 length-aware long templates | нет для локальной сборки; да, спросить модель перед LLM-чисткой/адаптацией |
+| `Chistes ES` template-pack | `local-assets/corpora/spanish-jokes-public-domain/` + `assets/template-packs/spanish-jokes*/` -> `data/packs/chistes-es-public-domain.json`, `data/packs/chistes-es-long.json` | public-domain Spanish joke books -> local safety/quality filter -> фактическое число safe-карточек + 30 short templates + 42 length-aware long templates | нет для локальной сборки; да, спросить модель перед LLM-чисткой/адаптацией |
 | `visual-riddles` Вижу Ответ | `data/output/admin-demos/manifest.json` + `data/visual-riddles/videos.json` + `assets/fact-videos/visual-riddles/` | индивидуальные визуальные MP4 для `/clip-demos` и selectable `preFact` deck для каналов | нет |
 | `choose` Что выберешь? | `data/choose/cards.json` + `data/choose/photos/` | дилеммы «A или B» (RU) + реальные фото Pexels (без апскейла); статичная card-style дека | да — генерация дилемм + VISION-отбраковка неверных фото (спросить модель) |
 
@@ -153,6 +194,176 @@ payload, а не как правило генерации контента.
 5. После правок `src/**` или `server/**` серверу нужен перезапуск, но не перезапускай общий сервер без
    разрешения пользователя. Чистые изменения `docs/**` перезапуска не требуют.
 
+## Long video pack: `long-anecdotes-ru`
+
+Это новый тип встроенного видео-пака: `preFact + longVideo`. Он виден как отдельный длинный видеотип,
+но использует тот же безопасный runtime-контракт, что и другие prebuilt-деки: генерация не рендерит
+текст заново, а копирует готовый MP4 из `assets/fact-videos/long-anecdotes-ru/` в библиотеку канала.
+
+Где что лежит:
+
+- исходные тексты: существующая RU-дека `data/anecdotes/titled.json`;
+- сборщик: `scripts/build-long-anecdotes-ru.mjs`;
+- расчет сцен: `data/long-anecdotes-ru/scenes.json` для выпуска 1 и `scenes-00N.json` для следующих;
+- общий ledger использованных анекдотов: `data/long-anecdotes-ru/usage.json`;
+- регистрация для runtime: `data/long-anecdotes-ru/videos.json` и `data/long-anecdotes-ru/index.json`;
+- source/music ledger: `data/long-anecdotes-ru/sources.json`;
+- финальный локальный MP4: `assets/fact-videos/long-anecdotes-ru/long-anecdotes-ru-001.mp4`;
+- контакт-лист проверки: `data/output/long-anecdotes-ru/contact.jpg`.
+
+Названия выпусков в `videos.json` должны быть разнообразными и человеческими. Не оставляй однотипные
+`Выпуск N` / `Episode N` как финальный YouTube title, если только это не часть нормального названия.
+
+Пересборка:
+
+```bash
+node --import tsx scripts/build-long-anecdotes-ru.mjs --dry-run
+node --import tsx scripts/build-long-anecdotes-ru.mjs
+# без повторного рендера MP4: пересобрать только usage.json из готовых scenes/videos
+node --import tsx scripts/build-long-anecdotes-ru.mjs --write-usage
+
+# отдельный long-video пак «Русские анекдоты», не добавляет выпуски в библиотеку канала
+LONG_VIDEO_PROFILE=soul EPISODE_START=1 EPISODE_COUNT=2 node --import tsx scripts/build-long-anecdotes-ru.mjs --dry-run
+LONG_VIDEO_PROFILE=soul EPISODE_START=1 EPISODE_COUNT=2 node --import tsx scripts/build-long-anecdotes-ru.mjs
+```
+
+Скрипт не запускает LLM и не скачивает интернет-источники. Первый выпуск использует фиксированный
+allow-list id из `data/anecdotes/titled.json`, потому что в общей RU-деке есть взрослые/политические
+и токсичные шутки. Если пополняешь выпуск вручную, сначала проверь тексты глазами и только потом меняй
+`FIRST_SERIES_IDS`. Если нужно именно интернет-ранжирование "топ популярных", сначала отдельно проверь
+лицензию источника; не копируй тексты с сайтов анекдотов без понятных прав.
+
+Учёт использованных анекдотов обязателен. `usage.json` содержит все `sourceId`, которые уже попали в
+длинные MP4, с привязкой к конкретному ролику и порядку сцены. Скрипт сверяет новые выпуски с уже
+готовыми `videos.json`/`scenes*.json` и падает при повторе, если это не намеренная пересборка того же
+самого файла. Перед добавлением новых выпусков проверь:
+
+```bash
+node --import tsx scripts/build-long-anecdotes-ru.mjs --write-usage
+node --input-type=module -e 'import fs from "node:fs"; const u=JSON.parse(fs.readFileSync("data/long-anecdotes-ru/usage.json","utf8")); console.log(u.totalVideos, u.totalScenes, new Set(u.usedSourceIds).size)'
+```
+
+Профиль `LONG_VIDEO_PROFILE=soul` пишет отдельный deck `long-anecdotes-soul-ru`:
+
+- источник: `data/packs/анекдоты-ру-впн-mqe5ovw1.json` — custom pack русских анекдотов;
+- каждая карточка пакa разбивается на отдельные сцены по элементам массива `values.text`;
+- результат: два готовых MP4 в `assets/fact-videos/long-anecdotes-soul-ru/`;
+- runtime-регистрация: `data/long-anecdotes-soul-ru/videos.json`;
+- ledger: `data/long-anecdotes-soul-ru/usage.json`;
+- это именно отдельный long-video pack. Не добавляй эти MP4 в библиотеку канала автоматически: канал
+  должен видеть пак с доступными роликами, а добавление в библиотеку выполняется отдельной кнопкой.
+
+Формат и визуальные правила этого пака следуют общему правилу длинных видео:
+
+- финальный MP4: обычный горизонтальный `1920x1080`, не вертикальный Shorts;
+- каждая сцена рендерится как статичная landscape-карточка, без zoom/pan;
+- между анекдотами стоит мягкий fade-in/fade-out;
+- музыка берётся из отдельной папки `assets/audio/long-videos/`;
+- текущая музыка: `assets/audio/long-videos/fats-waller-swingin-the-operas-1939.opus`;
+- источник: Wikimedia Commons, `File:Swingin' the Operas by Fats Waller (1939, Jazz piano).opus`;
+- Commons помечает файл как Public Domain / free of known copyright restrictions, длительность около
+  `10:01`;
+- финальный MP4 мапит эту длинную композицию как одну дорожку на весь ролик, без лупа и без
+  перезапуска музыки на сценах.
+
+Тайминг сцены считается по символам:
+
+```text
+durationSec = clamp(11, 18, ceil((chars / 22 + 3) * 0.88))
+```
+
+Это текущий сокращённый на ~12% режим чтения. Зритель получает примерно 11-18 секунд на карточку,
+а новые выпуски собираются примерно в 7-10 минут.
+Переходы делаются через мягкий fade-in/fade-out `0.8s`. README исходной папки
+`assets/audio/anekdoty/` помечает текущие джазовые фрагменты как Public Domain.
+
+Проверка после сборки:
+
+```bash
+node --input-type=module -e 'import fs from "node:fs"; for (const p of ["data/long-anecdotes-ru/videos.json","data/long-anecdotes-ru/usage.json","data/long-anecdotes-ru/sources.json"]) console.log(p, Array.isArray(JSON.parse(fs.readFileSync(p,"utf8"))) ? JSON.parse(fs.readFileSync(p,"utf8")).length : "ok")'
+for f in assets/fact-videos/long-anecdotes-ru/long-anecdotes-ru-00*.mp4; do ffprobe -hide_banner -v error -show_entries format=duration -of default=nw=1:nk=1 "$f"; done
+ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0:s=x assets/fact-videos/long-anecdotes-ru/long-anecdotes-ru-001.mp4
+```
+
+### Long Islamic (`long-islamic-ar`)
+
+Отдельный long-video pack для канала `القرآن والحديث والدعاء`.
+
+- источник точного текста: `data/islamic/cards.json`;
+- сборщик: `scripts/build-long-islamic-ar.mjs`;
+- результат: `assets/fact-videos/long-islamic-ar/long-islamic-ar-00N.mp4`;
+- runtime-регистрация: `data/long-islamic-ar/videos.json`;
+- ledger использованных карточек: `data/long-islamic-ar/usage.json`;
+- контакт-листы: `data/output/long-islamic-ar/contact-long-islamic-ar-00N.jpg`.
+
+Исламские длинные видео не используют обычную музыку и инструменты. Сборщик создаёт/использует одну
+длинную немелодическую ambient-дорожку:
+
+```text
+assets/audio/islamic/ambient-long-wind-11m.mp3
+```
+
+Это локально сгенерированный шумовой фон (ветер/дождь), без мелодии, без инструментов, без внешней
+лицензии и атрибуции. Не заменяй его на инструментальную музыку.
+
+Пересборка 5 выпусков по 7-11 минут:
+
+```bash
+node --import tsx scripts/build-long-islamic-ar.mjs --dry-run
+node --import tsx scripts/build-long-islamic-ar.mjs
+node --import tsx scripts/build-long-islamic-ar.mjs --write-usage
+```
+
+Тайминг сцены считается по арабским символам:
+
+```text
+durationSec = clamp(16, 48, ceil(chars / 18 + 9))
+```
+
+Как и в остальных long-video паках, не добавляй MP4 в библиотеку канала автоматически: канал включает
+пак отдельной галочкой, затем вручную забирает нужный готовый ролик в библиотеку.
+
+### Long Christian (`long-christian-en`)
+
+Отдельный long-video pack для английского христианского канала `The Faithful Journey`.
+
+- источник точного текста: `data/christian/cards.json` (KJV);
+- сборщик: `scripts/build-long-christian-en.mjs`;
+- результат: `assets/fact-videos/long-christian-en/long-christian-en-00N.mp4`;
+- runtime-регистрация: `data/long-christian-en/videos.json`;
+- ledger использованных карточек: `data/long-christian-en/usage.json`;
+- контакт-листы: `data/output/long-christian-en/contact-long-christian-en-00N.jpg`.
+
+Сборщик не переписывает Bible text и не запускает LLM: он берёт готовые KJV-карточки, рассчитывает
+время чтения по символам, рендерит статичные landscape-карточки `1920x1080` и добавляет мягкие fades.
+YouTube title/description/tags берутся из метаданных пака и должны звучать естественно для зрителя.
+
+Звук:
+
+```text
+assets/audio/christian/pad-long-sanctuary-11m.mp3
+```
+
+Это одна длинная локально синтезированная спокойная pad-дорожка для всего ролика. Она не скачана из
+интернета и не перезапускается между сценами.
+
+Пересборка 10 выпусков по 7-11 минут:
+
+```bash
+node --import tsx scripts/build-long-christian-en.mjs --dry-run
+node --import tsx scripts/build-long-christian-en.mjs
+node --import tsx scripts/build-long-christian-en.mjs --write-usage
+```
+
+Тайминг сцены считается по английским символам:
+
+```text
+durationSec = clamp(24, 44, ceil(chars / 15 + 8))
+```
+
+Как и в остальных long-video паках, не добавляй MP4 в библиотеку канала автоматически: канал включает
+пак отдельной галочкой, затем вручную забирает нужный готовый ролик в библиотеку.
+
 ## Chistes ES: испанские анекдоты без API
 
 Это живой template-pack для страницы «Карточки». Он не держится за фиксированные 1000 штук: сборщик
@@ -162,10 +373,10 @@ payload, а не как правило генерации контента.
 
 Источники и права:
 
-- сырые тексты лежат в `corpora/spanish-jokes-public-domain/raw/*.txt`;
-- ledger источников: `corpora/spanish-jokes-public-domain/sources.json`;
-- safety-report основного пака: `corpora/spanish-jokes-public-domain/safety-report.json`;
-- safety-report длинного пака: `corpora/spanish-jokes-public-domain/safety-report-long.json`;
+- сырые тексты лежат в `local-assets/corpora/spanish-jokes-public-domain/raw/*.txt`;
+- ledger источников: `local-assets/corpora/spanish-jokes-public-domain/sources.json`;
+- safety-report основного пака: `local-assets/corpora/spanish-jokes-public-domain/safety-report.json`;
+- safety-report длинного пака: `local-assets/corpora/spanish-jokes-public-domain/safety-report-long.json`;
 - основные источники: Internet Archive scans of `El Tesoro de los chistes` (1847), `Museo cómico`
   (1863), `El libro de los cuentos` Rafael Boira (1862);
 - IA/Wikisource evidence указывает public-domain/`NOT_IN_COPYRIGHT` там, где источник это отдаёт, но
@@ -597,12 +808,12 @@ preFact читает `videos.json` свежим → ДОЗАЛИВКА роли�
 
 ## Русские анекдоты (`ru`)
 
-Источник: `Русские анекдоты/anek_djvu.txt`. Базовый сборщик `src/anecdotes/build.ts` режет файл по
+Источник: `local-assets/Русские анекдоты/anek_djvu.txt`. Базовый сборщик `src/anecdotes/build.ts` режет файл по
 `<|startoftext|>`, нормализует пробелы, удаляет дубли, мат, `@`, цензурные артефакты и может писать
 `data/anecdotes/pack-*.json` + `index.json`.
 
 Важно: текущая плотная RU-дека не восстанавливается одним `build.ts`. Она включает pipeline пар коротких
-анекдотов из `corpora/ru-gen`: короткие шутки майнятся, workflow выбирает/тематизирует лучшие, затем
+анекдотов из `local-assets/corpora/ru-gen`: короткие шутки майнятся, workflow выбирает/тематизирует лучшие, затем
 `ru-pairs-build.ts` собирает две шутки в одну карточку.
 
 Для анализа базового корпуса без перезаписи:
@@ -624,7 +835,7 @@ ANEK_MIN=300 ANEK_MAX=425 node --import tsx src/anecdotes/build.ts --build
    node --import tsx src/scripts/ru-mine.ts
    ```
 2. Спросить пользователя модель workflow.
-3. Workflow читает `corpora/ru-gen/cand-*.json` и пишет `keep-*.json` с `{id,theme}`.
+3. Workflow читает `local-assets/corpora/ru-gen/cand-*.json` и пишет `keep-*.json` с `{id,theme}`.
 4. Разделить отобранный пул:
    ```bash
    FRIEND_N=820 node --import tsx src/scripts/ru-partition.ts
@@ -656,7 +867,7 @@ node --input-type=module -e 'import fs from "node:fs"; const idx=JSON.parse(fs.r
 
 ## Немецкие анекдоты (`de`)
 
-Источник: `corpora/witze.sql`, SQL dump Schlechtewitzefront. Перед обновлением корпуса проверь лицензию
+Источник: `local-assets/corpora/witze.sql`, SQL dump Schlechtewitzefront. Перед обновлением корпуса проверь лицензию
 источника заново. Сборщик: `src/anecdotes/build-de.ts`.
 
 Анализ:
@@ -680,7 +891,7 @@ node --import tsx src/anecdotes/apply-titles.ts
 
 ## Французские анекдоты (`fr`)
 
-Источник: `corpora/blagues.json`, Blagues-API JSON. Сборщик оставляет только safe categories
+Источник: `local-assets/corpora/blagues.json`, Blagues-API JSON. Сборщик оставляет только safe categories
 `global` и `dev`.
 
 Анализ:
@@ -702,14 +913,14 @@ ANEK_MIN=60 ANEK_MAX=400 node --import tsx src/anecdotes/build-fr.ts --build
 
 Есть два пути:
 
-- быстрый корпусный парсер `src/anecdotes/build-it.ts` читает `corpora/it-barzellette.jsonl` и
-  `corpora/it-umorismo.jsonl`;
-- текущая плотная дека строится из LLM-очищенных файлов `corpora/it-gen/clean-*.json` через
+- быстрый корпусный парсер `src/anecdotes/build-it.ts` читает `local-assets/corpora/it-barzellette.jsonl` и
+  `local-assets/corpora/it-umorismo.jsonl`;
+- текущая плотная дека строится из LLM-очищенных файлов `local-assets/corpora/it-gen/clean-*.json` через
   `src/anecdotes/build-it-dense.ts`.
 
 Для текущего качества используй плотный путь. Сначала спроси пользователя модель workflow для чистки
 кандидатов. Workflow должен читать локальные кандидаты, чистить мусор Usenet/mojibake/не-шутки и писать
-массивы `{title,text}` в `corpora/it-gen/clean-<n>.json`.
+массивы `{title,text}` в `local-assets/corpora/it-gen/clean-<n>.json`.
 
 Сборка после workflow:
 
@@ -731,22 +942,28 @@ node --input-type=module -e 'import fs from "node:fs"; const idx=JSON.parse(fs.r
 
 ## Лайфхаки (`tips`, `tips-de`, `tips-es`)
 
-Контент генерируется/пополняется батчами в `corpora/tips-gen/`, `corpora/tips-de-gen/` и
-`corpora/tips-es-gen/`, затем локально валидируется, дедупится и складывается в
-`data/tips*/titled.json`. Mixed batch может держать `profession` в каждом item; если его нет,
-профессия берётся из имени файла.
+Контент собирается только из source-backed батчей `surprising-*.json` в
+`local-assets/corpora/tips-gen/`, `local-assets/corpora/tips-de-gen/` и
+`local-assets/corpora/tips-es-gen/`, затем локально валидируется, дедупится и складывается в
+`data/tips*/titled.json`. Старые `<profession>-*.json` остаются как архивный сырец, но сборщики их
+намеренно игнорируют, чтобы слабые legacy-карточки не возвращались в генерацию. Mixed batch может
+держать `profession` в каждом item; если его нет, профессия берётся из имени файла.
 
 2026-06-24 добавлен source-backed набор `surprising-lifehacks-2026-06`: RU/DE/ES локализации по
-25 карточек, источники в `corpora/tips-sources/surprising-lifehacks-2026-06.json`.
+25 карточек, источники в `local-assets/corpora/tips-sources/surprising-lifehacks-2026-06.json`.
 Визуальный рендер обновлён: `src/anecdotes/lifehack-templates.ts` содержит 25 детерминированных
-вариантов, `templates/lifehack.html` держит спокойную текстовую панель и свободную нижнюю зону.
+вариантов, `templates/lifehack.html` использует верхнюю текстовую область примерно на 70% кадра,
+а `assets/backgrounds/lifehacks/editorial-clean-0*.png` дают нейтральные сгенерированные фоны без
+людей, логотипов и слов. Нижняя часть кадра намеренно остаётся свободной под CTA/UI Shorts и
+маленький motion-оверлей.
 MP4 для `lifehack`-дек получают маленький синтезированный GIF-оверлей из
 `assets/motion/lifehacks/` и отдельную синтезированную музыку из `assets/audio/lifehacks/`
 (оба набора без скачанных ассетов, пересборка скриптами `src/scripts/lifehack-gen-motion.mjs` и
 `src/scripts/lifehack-gen-audio.mjs`).
 
-Перед генерацией новых батчей спроси пользователя модель workflow. Имена файлов должны быть
-`<profession>-<n>.json`, где profession - один из:
+Перед генерацией новых батчей спроси пользователя модель workflow. Для активной сборки имена файлов
+должны быть `surprising-<n>.json`; старый формат `<profession>-<n>.json` не участвует в сборке
+lifehack-дек. `profession` внутри item должен быть один из:
 
 ```text
 chef, mechanic, firefighter, lawyer, accountant, teacher, programmer, builder, police, hairdresser
@@ -815,7 +1032,7 @@ node --test --import tsx src/psych/cards-store.ts
 
 Пайплайн:
 
-1. Скачивание корпусов в `corpora/islamic/`:
+1. Скачивание корпусов в `local-assets/corpora/islamic/`:
    ```bash
    node src/scripts/islamic-fetch-corpus.mjs
    ```
@@ -824,8 +1041,8 @@ node --test --import tsx src/psych/cards-store.ts
    node src/scripts/islamic-split.mjs
    ```
 3. Спросить пользователя модель workflow.
-4. Запустить workflow: каждый агент читает свой `corpora/islamic/slices/*.jsonl` и пишет выбранные
-   строки JSONL `{ "id": "...", "theme": "..." }` в `corpora/islamic/sel/<slice>.jsonl`.
+4. Запустить workflow: каждый агент читает свой `local-assets/corpora/islamic/slices/*.jsonl` и пишет выбранные
+   строки JSONL `{ "id": "...", "theme": "..." }` в `local-assets/corpora/islamic/sel/<slice>.jsonl`.
 5. Собрать точный финальный пак:
    ```bash
    node src/scripts/islamic-assemble.mjs
@@ -853,7 +1070,7 @@ node --input-type=module -e 'import fs from "node:fs"; const cards=JSON.parse(fs
    node src/scripts/christian-build-candidates.mjs
    ```
 3. Спросить пользователя модель workflow.
-4. Workflow читает `corpora/christian/slices/*.jsonl` и формирует `corpora/christian/selection.json`
+4. Workflow читает `local-assets/corpora/christian/slices/*.jsonl` и формирует `local-assets/corpora/christian/selection.json`
    как массив `{ "id": "...", "theme": "..." }`.
 5. Собрать финальный пак:
    ```bash
@@ -1149,7 +1366,7 @@ rebuild/restart, чтобы новая selectable deck появилась в UI.
 
 Исходные карточки собираются из LLM-батчей:
 
-- вход: `corpora/mind-edge-gen/*.json`;
+- вход: `local-assets/corpora/mind-edge-gen/*.json`;
 - сборщик: `src/scripts/mind-edge-assemble.mjs`;
 - результат: `assets/template-packs/the-mind-edge/cards.json`;
 - шаблоны: `src/scripts/mind-edge-templates.ts`;

@@ -336,9 +336,11 @@ export default function Packs() {
                     {!item.usedByAccounts.length && <span className="badge badge-ghost">{t("packs.catalogUnused")}</span>}
                   </div>
                   <div className="mt-4 flex flex-wrap gap-2">
-                    <Link to="/queue" className="btn btn-xs btn-outline">
-                      {t("packs.catalogOpenQueue")}
-                    </Link>
+                    {isAdmin && (
+                      <Link to="/queue" className="btn btn-xs btn-outline">
+                        {t("packs.catalogOpenQueue")}
+                      </Link>
+                    )}
                     {item.kind === "custom_pack" && (
                       <Link to="/cards" className="btn btn-xs btn-outline">
                         {t("packs.catalogEditCards")}
