@@ -189,6 +189,24 @@
       "note": "Existing local space deck item predates permanent source ledger."
     },
     {
+      "id": "black_hole_inspiral",
+      "file": "space/black_hole_inspiral.mp4",
+      "title": "A Small Black Hole Spirals In",
+      "text": "A Small Black Hole Spirals In",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "black_hole_inspiral.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a000000/a005500/a005586/two_lobe_bigscreen_HD.mp4",
+      "nasaId": "svs-5586",
+      "nasaTitle": "Extreme Mass Ratio Black Hole Inspirals",
+      "subject": "A compact object spiraling around a massive black hole",
+      "credit": "NASA SVS / Scott Noble",
+      "center": "NASA Scientific Visualization Studio",
+      "licenseNote": "NASA/SVS public media source recorded for manual rights review before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T20:18:52.887Z"
+    },
+    {
       "id": "black_hole_jets_light_up_the_c",
       "file": "space/black_hole_jets_light_up_the_c.mp4",
       "title": "Black-hole jets light up the cosmos",
@@ -271,6 +289,24 @@
       "title": "Asteroid, Comet, Meteor: The Difference",
       "provenanceStatus": "legacy_missing_source_ledger",
       "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "co2_atmosphere",
+      "file": "space/co2_atmosphere.mp4",
+      "title": "Carbon Dioxide Drawn in the Air",
+      "text": "Carbon Dioxide Drawn in the Air",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "co2_atmosphere.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a000000/a005400/a005436/soscomp_1-29-2025a_1024p30.mp4",
+      "nasaId": "svs-5436",
+      "nasaTitle": "DYAMOND Global Carbon Dioxide",
+      "subject": "Modeled carbon dioxide moving through the atmosphere",
+      "credit": "NASA SVS / GEOS",
+      "center": "NASA Scientific Visualization Studio",
+      "licenseNote": "NASA/SVS public media source recorded for manual rights review before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T20:18:52.887Z"
     },
     {
       "id": "comet_sungrazer",
@@ -465,6 +501,24 @@
       "note": "Existing local space deck item predates permanent source ledger."
     },
     {
+      "id": "geos_aerosols",
+      "file": "space/geos_aerosols.mp4",
+      "title": "Dust and Smoke Ride the Winds",
+      "text": "Dust and Smoke Ride the Winds",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "geos_aerosols.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a000000/a005500/a005572/Aerosols_EarthRotating_1080x1440.mp4",
+      "nasaId": "svs-5572",
+      "nasaTitle": "GEOS Aerosols",
+      "subject": "Dust, sea salt, and smoke aerosol streams around Earth",
+      "credit": "NASA SVS / GEOS",
+      "center": "NASA Scientific Visualization Studio",
+      "licenseNote": "NASA/SVS public media source recorded for manual rights review before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T20:18:52.887Z"
+    },
+    {
       "id": "gravity_so_strong_it_bends_spa",
       "file": "space/gravity_so_strong_it_bends_spa.mp4",
       "title": "Gravity So Strong It Bends Space-Time",
@@ -577,6 +631,24 @@
       "note": "Existing local space deck item predates permanent source ledger."
     },
     {
+      "id": "long_gamma_burst",
+      "file": "space/long_gamma_burst.mp4",
+      "title": "A Black Hole Eats a Star for Months",
+      "text": "A Black Hole Eats a Star for Months",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "long_gamma_burst.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a010000/a014900/a014916/NASA_GRB_Sequence_Final_v01.mp4",
+      "nasaId": "svs-14916",
+      "nasaTitle": "Black Hole Eats Star: The Longest GRB Ever Seen",
+      "subject": "A black hole tearing apart a star and producing a long gamma ray burst",
+      "credit": "NASA SVS / Goddard",
+      "center": "NASA Scientific Visualization Studio",
+      "licenseNote": "NASA/SVS public media source recorded for manual rights review before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T20:18:52.887Z"
+    },
+    {
       "id": "lucy_trojans",
       "file": "space/lucy_trojans.mp4",
       "title": "Fossils Sharing Jupiter's Orbit",
@@ -665,6 +737,26 @@
       "note": "Existing local space deck item predates permanent source ledger."
     },
     {
+      "id": "mars_magnetosphere_flight",
+      "file": "space/mars_magnetosphere_flight.mp4",
+      "title": "Mars Has a Broken Magnetic Shield",
+      "text": "Mars Has a Broken Magnetic Shield",
+      "provenanceStatus": "rejected_after_qa",
+      "sourceType": "nasa_svs",
+      "sourceFile": "mars_magnetosphere_flight.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a000000/a005500/a005503/marsMagnetosphere_VelTracersExtended_9-6-2024a_jmag_slow_side_campaignA_noArrow_4k_1080p30.mp4",
+      "nasaId": "svs-5503",
+      "nasaTitle": "ESCAPADE Theoretical Flight Through Active Mars Magnetosphere",
+      "subject": "Solar wind interaction with Mars' weak magnetic environment",
+      "credit": "NASA SVS / GSFC",
+      "center": "NASA Scientific Visualization Studio",
+      "licenseNote": "NASA/SVS public media source recorded for manual rights review before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T20:18:52.887Z",
+      "rejectedAt": "2026-06-25T20:21:10.962Z",
+      "rejectionReason": "Final QA rejected: too dark for most of the short; visual action appears too late."
+    },
+    {
       "id": "mercury",
       "file": "space/mercury.mp4",
       "title": "Scorched and Battered by the Sun",
@@ -691,6 +783,24 @@
       "title": "The Moon Was Born From A Crash",
       "provenanceStatus": "legacy_missing_source_ledger",
       "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "moon_libration_2026",
+      "file": "space/moon_libration_2026.mp4",
+      "title": "The Moon Never Shows the Same Face Twice",
+      "text": "The Moon Never Shows the Same Face Twice",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "moon_libration_2026.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a000000/a005500/a005587/phases_2026_plain_v_1920p30.mp4",
+      "nasaId": "svs-5587",
+      "nasaTitle": "Moon Phase and Libration, 2026",
+      "subject": "The Moon phase cycle and libration through 2026",
+      "credit": "NASA SVS / Ernie Wright",
+      "center": "NASA Scientific Visualization Studio",
+      "licenseNote": "NASA/SVS public media source recorded for manual rights review before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T20:18:52.887Z"
     },
     {
       "id": "moon_tidal_brake",
@@ -784,6 +894,24 @@
       "note": "Existing local space deck item predates permanent source ledger."
     },
     {
+      "id": "night_lights_change",
+      "file": "space/night_lights_change.mp4",
+      "title": "Earth's Cities Glow From Space",
+      "text": "Earth's Cities Glow From Space",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "night_lights_change.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a000000/a005600/a005634/nightlights_cumulative_change_vert_1920p60.mp4",
+      "nasaId": "svs-5634",
+      "nasaTitle": "Global Nighttime Lights Change (2014-2022)",
+      "subject": "How nighttime lights changed across Earth from 2014 to 2022",
+      "credit": "NASA SVS / Earth Observatory",
+      "center": "NASA Scientific Visualization Studio",
+      "licenseNote": "NASA/SVS public media source recorded for manual rights review before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T20:18:52.887Z"
+    },
+    {
       "id": "ns_densest_object_universe",
       "file": "space/ns_densest_object_universe.mp4",
       "title": "The Densest Object We Can Actually See",
@@ -803,6 +931,24 @@
       "title": "Nutrition in the vastness of space",
       "provenanceStatus": "legacy_missing_source_ledger",
       "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "ocean_current_rivers",
+      "file": "space/ocean_current_rivers.mp4",
+      "title": "Rivers Hidden Inside the Ocean",
+      "text": "Rivers Hidden Inside the Ocean",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "ocean_current_rivers.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a000000/a005400/a005479/perpetual_ocean2_EQUIREC_072_FINAL15_SOS_temperature_1024p30.mp4",
+      "nasaId": "svs-5479",
+      "nasaTitle": "Ocean Currents in equirectangular projection",
+      "subject": "Ocean current flow patterns around Earth",
+      "credit": "NASA SVS / ECCO",
+      "center": "NASA Scientific Visualization Studio",
+      "licenseNote": "NASA/SVS public media source recorded for manual rights review before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T20:18:52.887Z"
     },
     {
       "id": "one_small_step_50_years_on",
@@ -858,6 +1004,24 @@
       "note": "Existing local space deck item predates permanent source ledger."
     },
     {
+      "id": "ring_current_magnetosphere",
+      "file": "space/ring_current_magnetosphere.mp4",
+      "title": "A Hidden Ring of Charged Particles",
+      "text": "A Hidden Ring of Charged Particles",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "ring_current_magnetosphere.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a000000/a005600/a005643/ringCurrent_5-9-2026a_ringCurrent_orbit_1080p30.mp4",
+      "nasaId": "svs-5643",
+      "nasaTitle": "The Ring Current in Earth's Magnetosphere",
+      "subject": "Charged particles forming a ring current inside Earth's magnetosphere",
+      "credit": "NASA SVS",
+      "center": "NASA Scientific Visualization Studio",
+      "licenseNote": "NASA/SVS public media source recorded for manual rights review before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T20:18:52.887Z"
+    },
+    {
       "id": "saturn_cassini",
       "file": "space/saturn_cassini.mp4",
       "title": "The Crown of the Solar System",
@@ -890,6 +1054,42 @@
       "title": "Saturn's Rings Will Be Gone in 300M Years",
       "provenanceStatus": "legacy_missing_source_ledger",
       "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "sea_ice_extent_2025",
+      "file": "space/sea_ice_extent_2025.mp4",
+      "title": "Sea Ice Breathes With the Seasons",
+      "text": "Sea Ice Breathes With the Seasons",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "sea_ice_extent_2025.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a000000/a005500/a005521/seaIce_2025.mp4",
+      "nasaId": "svs-5521",
+      "nasaTitle": "Sea Ice Extent 1978-2025",
+      "subject": "Satellite record of changing polar sea ice extent",
+      "credit": "NASA SVS / NSIDC",
+      "center": "NASA Scientific Visualization Studio",
+      "licenseNote": "NASA/SVS public media source recorded for manual rights review before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T20:18:52.887Z"
+    },
+    {
+      "id": "sea_surface_temperature",
+      "file": "space/sea_surface_temperature.mp4",
+      "title": "The Ocean Keeps Earth's Heat",
+      "text": "The Ocean Keeps Earth's Heat",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "sea_surface_temperature.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a000000/a005600/a005600/sst_mur_2002-2025_2k_2x1_1024p60.mp4",
+      "nasaId": "svs-5600",
+      "nasaTitle": "23 Years of Sea Surface Temperature (2002-2025)",
+      "subject": "Sea surface temperature changes measured across the ocean",
+      "credit": "NASA SVS / MUR SST",
+      "center": "NASA Scientific Visualization Studio",
+      "licenseNote": "NASA/SVS public media source recorded for manual rights review before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T20:18:52.887Z"
     },
     {
       "id": "sn_astronomers_predicted_it",
@@ -927,11 +1127,47 @@
       "note": "Existing local space deck item predates permanent source ledger."
     },
     {
+      "id": "solar_flare_2024",
+      "file": "space/solar_flare_2024.mp4",
+      "title": "A Flare Explodes From One Sunspot",
+      "text": "A Flare Explodes From One Sunspot",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "solar_flare_2024.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a000000/a005300/a005346/20240729_AR13764X15_AIA.0171A_PSF_stamped_1024p30.mp4",
+      "nasaId": "svs-5346",
+      "nasaTitle": "An X1.5 flare from Active Region 13764",
+      "subject": "A strong solar flare observed in ultraviolet light",
+      "credit": "NASA SVS / SDO",
+      "center": "NASA Scientific Visualization Studio",
+      "licenseNote": "NASA/SVS public media source recorded for manual rights review before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T20:18:52.887Z"
+    },
+    {
       "id": "solar_wind_smacks_into_earth_s",
       "file": "space/solar_wind_smacks_into_earth_s.mp4",
       "title": "Solar wind smacks into Earth's shield",
       "provenanceStatus": "legacy_missing_source_ledger",
       "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "spinning_earth_at_night",
+      "file": "space/spinning_earth_at_night.mp4",
+      "title": "A Thin Blue World in the Dark",
+      "text": "A Thin Blue World in the Dark",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "spinning_earth_at_night.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a000000/a005500/a005570/Earth_wAtmos_spin_02_1080p60.mp4",
+      "nasaId": "svs-5570",
+      "nasaTitle": "Spinning Earth with clouds, atmosphere, and night lights",
+      "subject": "A rotating Earth view with clouds, atmosphere, and night lights",
+      "credit": "NASA SVS / Blue Marble",
+      "center": "NASA Scientific Visualization Studio",
+      "licenseNote": "NASA/SVS public media source recorded for manual rights review before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T20:18:52.887Z"
     },
     {
       "id": "star_formation",
@@ -1078,6 +1314,24 @@
       "note": "Existing local space deck item predates permanent source ledger."
     },
     {
+      "id": "water_cycle_extremes",
+      "file": "space/water_cycle_extremes.mp4",
+      "title": "Water Moves Like a Planetary Pulse",
+      "text": "Water Moves Like a Planetary Pulse",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "water_cycle_extremes.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a000000/a005500/a005565/water_extremes_morph_2002-2024_1080p30.mp4",
+      "nasaId": "svs-5565",
+      "nasaTitle": "Water Cycle Extremes 2002-2024",
+      "subject": "Satellite-observed drought and wetness extremes in the water cycle",
+      "credit": "NASA SVS / GRACE-FO",
+      "center": "NASA Scientific Visualization Studio",
+      "licenseNote": "NASA/SVS public media source recorded for manual rights review before mass publication.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-25T20:18:52.887Z"
+    },
+    {
       "id": "webb_deepfield",
       "file": "space/webb_deepfield.mp4",
       "title": "Seeing the First Galaxies",
@@ -1155,6 +1409,6 @@
       "note": "Existing local space deck item predates permanent source ledger."
     }
   ],
-  "updatedAt": "2026-06-25T19:47:29.764Z",
+  "updatedAt": "2026-06-25T20:21:10.962Z",
   "createdAt": "2026-06-25T19:33:07.938Z"
 }

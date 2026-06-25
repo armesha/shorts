@@ -913,8 +913,28 @@ export interface ChannelThemeBlockGenerateResult {
 export interface ChannelThemeBlockNormalizeResult {
   blockId: string;
   targetQueued: number;
-  jobs: { accountId: number; channelName: string; deckIds: string[]; jobId: string; total: number; currentQueued: number; targetQueued: number; rawQueued?: number }[];
-  skipped: { accountId: number; channelName: string; reason: string; currentQueued?: number; targetQueued?: number }[];
+  targetRunwayDays?: number;
+  jobs: {
+    accountId: number;
+    channelName: string;
+    deckIds: string[];
+    jobId: string;
+    total: number;
+    currentQueued: number;
+    targetQueued: number;
+    currentRunwayDays?: number;
+    targetRunwayDays?: number;
+    rawQueued?: number;
+  }[];
+  skipped: {
+    accountId: number;
+    channelName: string;
+    reason: string;
+    currentQueued?: number;
+    targetQueued?: number;
+    currentRunwayDays?: number;
+    targetRunwayDays?: number;
+  }[];
 }
 
 export interface ChannelThemeBlockScheduleResult {

@@ -876,33 +876,57 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
 
     const queuedByAccountDeck = new Map<number, Record<string, number>>();
     const queuedTotals = new Map<number, number>();
-    const effectiveQueued = new Map<number, number>();
+    const coverageByAccount = new Map<number, { effective: number; runwayDays: number | null }>();
     for (const account of accounts) {
       const queuedByDeck = videosByDeck(db.listVideos(account.id));
       const sourceDecks = deps.deckAccess.accountSourceDecks(account);
       const total = sumCounts(queuedByDeck);
       queuedByAccountDeck.set(account.id, queuedByDeck);
       queuedTotals.set(account.id, total);
-      effectiveQueued.set(account.id, effectiveCapacityForSchedule(account, sourceDecks, queuedByDeck, total).effective);
+      coverageByAccount.set(account.id, effectiveCapacityForSchedule(account, sourceDecks, queuedByDeck, total));
     }
-    const targetQueued = Math.max(...queuedTotals.values());
+    const targetRunwayDays = Math.max(
+      0,
+      ...accounts.map((account) => {
+        const coverage = coverageByAccount.get(account.id);
+        if (coverage?.runwayDays != null) return coverage.runwayDays;
+        const perDay = scheduledDeckOrder(account, deps.deckAccess.accountSourceDecks(account)).length;
+        return perDay > 0 ? (coverage?.effective ?? 0) / perDay : 0;
+      }),
+    );
+    const targetQueued = Math.max(
+      0,
+      ...accounts.map((account) => Math.ceil(targetRunwayDays * scheduledDeckOrder(account, deps.deckAccess.accountSourceDecks(account)).length)),
+    );
     const jobs: unknown[] = [];
     const skipped: unknown[] = [];
     for (const account of accounts) {
-      const currentQueued = effectiveQueued.get(account.id) ?? 0;
-      const missing = targetQueued - currentQueued;
+      const deckIds = deps.deckAccess.accountSourceDecks(account);
+      const perDay = scheduledDeckOrder(account, deckIds).length;
+      const accountTargetQueued = Math.ceil(targetRunwayDays * perDay);
+      const coverage = coverageByAccount.get(account.id);
+      const currentQueued = coverage?.effective ?? 0;
+      const currentRunwayDays = coverage?.runwayDays ?? (perDay > 0 ? currentQueued / perDay : 0);
+      const missing = accountTargetQueued - currentQueued;
       if (missing <= 0) {
-        skipped.push({ accountId: account.id, channelName: account.channelName, reason: "already_at_target", currentQueued, targetQueued });
+        skipped.push({
+          accountId: account.id,
+          channelName: account.channelName,
+          reason: "already_at_target",
+          currentQueued,
+          targetQueued: accountTargetQueued,
+          currentRunwayDays,
+          targetRunwayDays,
+        });
         continue;
       }
       const ownerId = account.userId ?? uid(req);
-      const deckIds = deps.deckAccess.accountSourceDecks(account);
       if (!deckIds.length) {
-        skipped.push({ accountId: account.id, channelName: account.channelName, reason: "no_sources", currentQueued, targetQueued });
+        skipped.push({ accountId: account.id, channelName: account.channelName, reason: "no_sources", currentQueued, targetQueued: accountTargetQueued });
         continue;
       }
       const queuedByDeck = queuedByAccountDeck.get(account.id) ?? {};
-      const exactDeficit = deckDeficitSequence(account, deckIds, queuedByDeck, targetQueued);
+      const exactDeficit = deckDeficitSequence(account, deckIds, queuedByDeck, accountTargetQueued);
       const baseJobDeckIds = exactDeficit.length ? exactDeficit : weightedDeckSlots(block, account, deckIds, sourceWeights, missing);
       const jobDeckIds = capDeckSequenceByFreeCards(db, deps, ownerId, baseJobDeckIds);
       let total = jobDeckIds.length;
@@ -912,7 +936,7 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
           deps.deckAccess.availableUnusedForDecks(ownerId, deckIds) - queuedRemainingForOwnerDecks(ownerId, deckIds),
         );
         if (free <= 0) {
-          skipped.push({ accountId: account.id, channelName: account.channelName, reason: "no_free_cards", currentQueued, targetQueued });
+          skipped.push({ accountId: account.id, channelName: account.channelName, reason: "no_free_cards", currentQueued, targetQueued: accountTargetQueued });
           continue;
         }
         total = Math.min(total, free);
@@ -923,7 +947,7 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
           channelName: account.channelName,
           reason: "no_free_cards",
           currentQueued,
-          targetQueued,
+          targetQueued: accountTargetQueued,
         });
         continue;
       }
@@ -935,11 +959,13 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
         jobId: job.id,
         total: job.total,
         currentQueued,
-        targetQueued,
+        targetQueued: accountTargetQueued,
+        currentRunwayDays,
+        targetRunwayDays,
         rawQueued: queuedTotals.get(account.id) ?? 0,
       });
     }
-    return { blockId, targetQueued, jobs, skipped };
+    return { blockId, targetQueued, targetRunwayDays, jobs, skipped };
   });
 
   app.post("/api/super-admin/channel-blocks/:id/schedule", async (req, reply) => {

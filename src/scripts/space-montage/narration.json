@@ -313,5 +313,80 @@
     "id": "einstein_ring",
     "title": "Gravity Turns Light Into a Ring",
     "narration": "A perfect ring of light can form when gravity bends the universe into a lens. If a massive galaxy lines up with a more distant galaxy behind it, spacetime curves the background light around the foreground object. The result is an Einstein ring, a prediction of relativity made visible."
+  },
+  {
+    "id": "moon_libration_2026",
+    "title": "The Moon Never Shows the Same Face Twice",
+    "narration": "The Moon seems still, but it slowly nods and rocks in our sky. That motion is called libration, and it lets us peek around the edges of the near side over time. Phase by phase, the familiar lunar face is always shifting."
+  },
+  {
+    "id": "solar_flares_2026",
+    "title": "The Sun Throws Fire in Minutes",
+    "narration": "A solar flare is a sudden release of magnetic energy on the Sun. In minutes, twisted fields snap and blast radiation across space. The flash can disturb radio signals near Earth, but it also reveals the Sun as a restless magnetic engine."
+  },
+  {
+    "id": "night_lights_change",
+    "title": "Earth's Cities Glow From Space",
+    "narration": "At night, human activity becomes visible from orbit. City lights trace coastlines, roads, and growing towns, while dark regions reveal oceans, deserts, forests, and protected skies. NASA maps these changes to watch how our planet's surface is being used."
+  },
+  {
+    "id": "spinning_earth_at_night",
+    "title": "A Thin Blue World in the Dark",
+    "narration": "From space, Earth is a bright sphere wrapped in a fragile atmosphere. Clouds swirl, city lights flicker, and a thin blue rim marks the air every living thing depends on. Against the black background, our planet looks both huge and delicate."
+  },
+  {
+    "id": "water_cycle_extremes",
+    "title": "Water Moves Like a Planetary Pulse",
+    "narration": "Earth's water cycle is not gentle everywhere. Satellites can see droughts intensify, wet regions swell, and stored water shift across continents. These maps turn invisible changes in groundwater, ice, and soil moisture into a global picture of extremes."
+  },
+  {
+    "id": "sea_surface_temperature",
+    "title": "The Ocean Keeps Earth's Heat",
+    "narration": "The ocean stores most of the extra heat in Earth's climate system. Sea surface temperature maps show warm currents, cold upwelling, and year to year changes sweeping across basins. From orbit, the ocean becomes a moving heat map."
+  },
+  {
+    "id": "ocean_current_rivers",
+    "title": "Rivers Hidden Inside the Ocean",
+    "narration": "The sea is threaded with powerful currents. Warm and cold water stream around continents, spin into eddies, and carry heat across the planet. These invisible rivers help shape weather, climate, and the life that depends on nutrients rising from below."
+  },
+  {
+    "id": "co2_atmosphere",
+    "title": "Carbon Dioxide Drawn in the Air",
+    "narration": "Carbon dioxide is invisible to our eyes, but satellites and models can reveal how it moves. The gas swirls with winds, rises from fires and cities, and spreads around the globe. Seeing it makes the atmosphere feel alive and connected."
+  },
+  {
+    "id": "black_hole_inspiral",
+    "title": "A Small Black Hole Spirals In",
+    "narration": "When a small compact object falls around a giant black hole, it does not simply drop straight in. It spirals through warped spacetime, tracing loops that can last for years. Future observatories may read those motions as gravitational waves."
+  },
+  {
+    "id": "long_gamma_burst",
+    "title": "A Black Hole Eats a Star for Months",
+    "narration": "Some gamma ray bursts fade quickly, but this event lasted far longer. Astronomers think a black hole tore apart a star and kept feeding, producing an unusually long high energy signal. It is a reminder that cosmic explosions can unfold on many timescales."
+  },
+  {
+    "id": "solar_flare_2024",
+    "title": "A Flare Explodes From One Sunspot",
+    "narration": "Active regions on the Sun are tangled magnetic knots. When they snap, a flare can erupt brighter than the surrounding surface in ultraviolet light. Space telescopes watch these flashes because the same region can fire again and again."
+  },
+  {
+    "id": "geos_aerosols",
+    "title": "Dust and Smoke Ride the Winds",
+    "narration": "Tiny particles travel through the atmosphere every day. Dust crosses oceans, sea salt sprays from storms, and smoke can circle far from its source. NASA aerosol models show these hidden streams moving with the winds around Earth."
+  },
+  {
+    "id": "sea_ice_extent_2025",
+    "title": "Sea Ice Breathes With the Seasons",
+    "narration": "Polar sea ice expands in winter and retreats in summer like a frozen heartbeat. Satellites have tracked that rhythm for decades, measuring how much ocean remains covered. The changing edge of the ice is one of Earth's clearest climate signals."
+  },
+  {
+    "id": "ring_current_magnetosphere",
+    "title": "A Hidden Ring of Charged Particles",
+    "narration": "Earth's magnetic field traps charged particles in space around the planet. During geomagnetic storms, a ring current can strengthen and disturb the magnetic field measured on the ground. It is one more way the Sun and Earth stay connected."
+  },
+  {
+    "id": "mars_magnetosphere_flight",
+    "title": "Mars Has a Broken Magnetic Shield",
+    "narration": "Mars no longer has a global magnetic field like Earth. Instead, the solar wind interacts directly with its upper atmosphere and scattered crustal magnetism. Visualizing that flow helps scientists understand how Mars lost much of its air over time."
   }
 ]
