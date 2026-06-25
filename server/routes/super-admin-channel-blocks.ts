@@ -51,6 +51,7 @@ const JOKE_TEXT_DECK_BY_LANG: Record<string, string[]> = {
   es: ["pack:chistes-es-public-domain", "pack:chistes-es-long"],
   fr: ["fr"],
   en: ["en"],
+  pt: ["pt"],
 };
 
 const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {

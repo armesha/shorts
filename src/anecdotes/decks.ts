@@ -149,6 +149,19 @@ export const DECKS: Deck[] = [
     genericTitles: ["Joke", "Quick Joke", "Funny Story", "A Little Laugh", "Classic Joke", "One More Joke"],
   },
   {
+    id: "pt",
+    name: "Contos engraçados",
+    dir: "data/anecdotes-pt",
+    source: "Public-domain Portuguese Wikisource books; see data/anecdotes-pt/sources.json",
+    emoji: "😂",
+    hashtags: "#piadas #humor #contos #rir #shorts",
+    tags: ["piadas", "humor", "contos", "anedotas", "rir", "shorts"],
+    genericTitles: ["Conto curto", "Piada clássica", "Para rir", "História curta", "Conto popular"],
+    adminOnly: true,
+    grantable: true,
+    gallery: true,
+  },
+  {
     id: "tips",
     name: "Народные лайфхаки",
     dir: "data/tips",
@@ -889,7 +902,7 @@ export function isPackDeckId(id?: string | null): boolean {
 }
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
-  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", choose: "ru",
+  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", choose: "ru",
   tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-ru": "ru", "quotes-ar": "ar", "quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it",
 };

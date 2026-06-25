@@ -1,0 +1,48 @@
+{
+  "licenseNote": "Original source books are public-domain by age. Text was extracted from Portuguese Wikisource pages; retain attribution/source URLs in the ledger and descriptions when publishing outside this app.",
+  "generatedAt": "2026-06-25T22:39:28.342Z",
+  "sourceCounts": [
+    {
+      "id": "contos-populares-portuguezes-1879",
+      "title": "Contos Populares Portuguezes",
+      "pages": 65,
+      "selected": 23
+    },
+    {
+      "id": "contos-tradicionaes-povo-portuguez-1883",
+      "title": "Contos Tradicionaes do Povo Portuguez",
+      "pages": 212,
+      "selected": 48
+    }
+  ],
+  "sources": [
+    {
+      "id": "contos-populares-portuguezes-1879",
+      "prefix": "Contos Populares Portuguezes/",
+      "title": "Contos Populares Portuguezes",
+      "author": "F. Adolpho Coelho",
+      "year": 1879,
+      "sourceUrl": "https://pt.wikisource.org/wiki/Contos_Populares_Portuguezes",
+      "rights": "Original public-domain by age (1879). Text extracted from Portuguese Wikisource pages; keep attribution ledger."
+    },
+    {
+      "id": "contos-tradicionaes-povo-portuguez-1883",
+      "prefix": "Contos Tradicionaes do Povo Portuguez/",
+      "title": "Contos Tradicionaes do Povo Portuguez",
+      "author": "Teofilo Braga",
+      "year": 1883,
+      "sourceUrl": "https://pt.wikisource.org/wiki/Contos_Tradicionaes_do_Povo_Portuguez",
+      "rights": "Original public-domain by age (1883). Text extracted from Portuguese Wikisource pages; keep attribution ledger."
+    },
+    {
+      "disabled": true,
+      "id": "livro-de-esopo-1906",
+      "prefix": "O Livro de Esopo/",
+      "title": "O Livro de Esopo",
+      "author": "Medieval fables; 1906 edition",
+      "year": 1906,
+      "sourceUrl": "https://pt.wikisource.org/wiki/O_Livro_de_Esopo",
+      "rights": "Original/public-domain edition by age. Text extracted from Portuguese Wikisource pages; keep attribution ledger."
+    }
+  ]
+}
