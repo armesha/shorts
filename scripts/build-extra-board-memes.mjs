@@ -7,6 +7,54 @@ const SOURCE = resolve(ROOT, "data/memes-en/cards.json");
 const PER_TEMPLATE = 10;
 
 const common = {
+  es: {
+    name: "Memes (ES)",
+    hashtags: "#memes #humor #gracioso #relatable #shorts",
+    subjects: [
+      "Yo", "Mi cerebro", "Mi paciencia", "Mi plan", "Mi productividad", "Mi presupuesto",
+      "Mi sueño", "Mi motivación", "El grupo", "La reunión", "El lunes", "La fecha límite",
+      "Internet", "La aplicación", "Mi lista de tareas", "Mi lado responsable", "Mi lado impulsivo",
+      "Mi concentración", "El café", "La notificación", "El Wi-Fi", "La conversación", "Mi rutina", "Mi humor",
+    ],
+    situations: [
+      "intentando parecer normal", "después de oír \"es rapidito\"", "cuando falta un detalle",
+      "antes del primer café", "cuando cambian el plan", "abriendo la agenda de la semana",
+      "prometiendo dormir temprano", "leyendo el mismo mensaje otra vez", "cuando la llamada podía ser un texto",
+      "viendo la batería al 1%", "intentando ahorrar", "cuando la página por fin carga",
+      "recibiendo otra tarea sencilla", "cuando el silencio se pone raro", "intentando responder con calma",
+      "después de cinco minutos de foco", "cuando todo parecía resuelto", "mirando el carrito de compras",
+      "cuando aparece la actualización", "intentando no abrir otra pestaña", "cuando el plan B se vuelve plan A",
+      "después de decir \"yo me encargo\"", "cuando aparece el recordatorio", "intentando mantener la elegancia",
+    ],
+    outcomes: [
+      "y por dentro ya hay 20 pestañas", "pero la energía salió a descansar", "con energía de viernes lluvioso",
+      "fingiendo que entendí todo", "calculando la salida en silencio", "con tres ideas y cero valor",
+      "y llamando a eso organización", "mientras el caos hace fila", "con confianza prestada",
+      "y el reloj corre más rápido", "pero el sofá ganó por puntos", "y la contraseña se olvidó otra vez",
+      "con cara de tener un método", "pero el método era suerte", "pero la nevera llamó primero",
+      "con una paz claramente temporal", "preparando otra excusa", "y nadie tenía que saberlo",
+      "con sonrisa de aceptar el destino", "pero sin aceptarlo de verdad", "la última neurona pidió vacaciones",
+      "con drama para toda una temporada", "al menos se ve bonito", "ahora parece problema de mañana",
+    ],
+    closers: [
+      "vida adulta en una imagen", "pequeñas victorias, gran cansancio", "todo bajo control, según mi cara",
+      "el plan era simple hasta empezar", "a esto le llamo equilibrio", "funcionó en mi cabeza",
+      "nadie avisó que era hoy", "la teoría estaba perfecta", "la práctica pidió descanso",
+      "no tenía que sentirse tan real", "un minuto de silencio por el orden", "parecía fácil en el tutorial",
+      "lo importante es mantener la pose", "foco, café y pestañas abiertas", "el guion cambió solo",
+      "respira y finge naturalidad", "modo supervivencia activado", "casi profesional",
+      "mucho concepto, poca batería", "el pensamiento ganó a la acción",
+    ],
+    flavors: [
+      "sin manual", "por dentro", "con estilo", "en teoría", "casi bien", "en silencio",
+      "sin público", "versión beta", "modo turbo", "de repente", "con retraso", "sin guion",
+      "de puntillas", "bastante digno", "modo prueba", "con pose", "improvisando",
+      "mini crisis", "con suspenso", "muy discreto", "calma falsa", "medio oficial",
+      "cara seria", "baja energía", "cero preparación", "a puro valor", "modo avión",
+      "en automático", "con mucha opinión", "sin garantía", "pantalla completa",
+    ],
+    banned: [/\b(dios|cristo|santo|santa|iglesia|religión|pecado|infierno)\b/i, /\b(matar|muere|muerte|sangre|arma|guerra|bomba|odio|robo|ladrón)\b/i, /\b(sexo|desnudo|borracho|vino|cerveza)\b/i, /\b(loco|idiota|tonto|ciego|sordo|discapacitado)\b/i],
+  },
   id: {
     name: "Memes (ID)",
     hashtags: "#meme #humor #lucu #relatable #shorts",

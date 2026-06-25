@@ -11,7 +11,7 @@ import { mkdirSync } from "node:fs";
 const OUT = "/tmp/meme-verify";
 mkdirSync(OUT, { recursive: true });
 
-const DECKS = ["memes-ru", "memes-en", "memes-de", "memes-fr", "memes-it", "memes-pt", "memes-hi", "memes-id", "memes-ar"];
+const DECKS = ["memes-ru", "memes-en", "memes-de", "memes-fr", "memes-it", "memes-pt", "memes-es", "memes-hi", "memes-id", "memes-ar"];
 
 const run = async () => {
   for (const id of DECKS) {
