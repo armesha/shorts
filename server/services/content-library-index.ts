@@ -4,7 +4,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 
 import { DECKS, deckLang, getDeck, type Deck } from "../../src/anecdotes/decks.ts";
-import { anecdoteKey, type PackItem } from "../../src/anecdotes/library.ts";
+import { packItemKey, withStableItemKeys, type PackItem } from "../../src/anecdotes/library.ts";
 
 type SourceRead = { path: string; body: string };
 
@@ -36,14 +36,14 @@ function loadDeckItems(deck: Deck): { items: PackItem[]; hash: string } {
 
   if (deck.preFact) {
     const rows = readJson<{ file: string; title?: string; text?: string }[]>(resolve(dir, "videos.json"), sources, []);
-    items = rows.map((c, i) => ({
+    items = withStableItemKeys(rows.map((c, i) => ({
       id: i,
       pack: 1,
       text: c.text ?? "",
       chars: (c.text ?? "").length,
       title: c.title ?? "",
       videoFile: c.file,
-    }));
+    })));
   } else if (deck.psych) {
     const cards = readJson<{ title_lines?: string[] }[]>(resolve(dir, "cards.json"), sources, []);
     items = cards.map((c, i) => {
@@ -137,7 +137,7 @@ export function syncContentLibraryIndex(db: DatabaseSync): { decks: number; item
         itemStmt.run(
           deck.id,
           index,
-          anecdoteKey(normalized.text),
+          packItemKey(normalized),
           normalized.pack,
           normalized.title,
           normalized.text,

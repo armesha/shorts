@@ -6,6 +6,8 @@ import { getDeck } from "./decks.ts";
 export interface PackItem {
   id: number;
   pack: number;
+  /** Stable per-card identity. Used when visible text is shared by several prebuilt videos. */
+  itemKey?: string;
   text: string;
   chars: number;
   title: string;
@@ -98,14 +100,14 @@ function titledItems(deckId: string): PackItem[] {
     const arr = existsSync(file)
       ? (JSON.parse(readFileSync(file, "utf8")) as { file: string; title?: string; text?: string }[])
       : [];
-    return arr.map((c, i) => ({
+    return withStableItemKeys(arr.map((c, i) => ({
       id: i,
       pack: 1,
       text: c.text ?? "",
       chars: (c.text ?? "").length,
       title: c.title ?? "",
       videoFile: c.file,
-    }));
+    })));
   }
   const hit = _titledCache.get(deckId);
   if (hit) return hit;
@@ -186,8 +188,27 @@ export function anecdoteKey(text: string): string {
   return `a${h.toString(36)}-${s.length}`;
 }
 
+export function packItemKey(item: Pick<PackItem, "text" | "itemKey">): string {
+  return item.itemKey || anecdoteKey(item.text);
+}
+
+export function withStableItemKeys(items: PackItem[]): PackItem[] {
+  const textKeyCounts = new Map<string, number>();
+  for (const item of items) {
+    if (!item.videoFile) continue;
+    const key = anecdoteKey(item.text);
+    textKeyCounts.set(key, (textKeyCounts.get(key) ?? 0) + 1);
+  }
+  return items.map((item) => {
+    if (!item.videoFile) return item;
+    const textKey = anecdoteKey(item.text);
+    if ((textKeyCounts.get(textKey) ?? 0) <= 1) return item;
+    return { ...item, itemKey: anecdoteKey(`video:${item.videoFile}`) };
+  });
+}
+
 export function deckAnecdoteKeys(deckId: string): string[] {
-  return [...new Set(poolItems(deckId).map((it) => anecdoteKey(it.text)))];
+  return [...new Set(poolItems(deckId).map((it) => packItemKey(it)))];
 }
 
 /**
@@ -200,7 +221,7 @@ export function randomAnecdote(deckId: string, used?: ReadonlySet<string>): Pack
   const deck = getDeck(deckId);
   const t = titledItems(deckId);
   if (t.length > 0) {
-    const pool = skip ? t.filter((it) => !skip.has(anecdoteKey(it.text))) : t;
+    const pool = skip ? t.filter((it) => !skip.has(packItemKey(it))) : t;
     if (pool.length === 0) return null; // every titled anecdote already used
     if (deck.sequential) return pool[0];
     return pool[Math.floor(Math.random() * pool.length)];
@@ -212,7 +233,7 @@ export function randomAnecdote(deckId: string, used?: ReadonlySet<string>): Pack
   if (packs.length === 0) return null;
   const file = deck.sequential ? packs[0] : packs[Math.floor(Math.random() * packs.length)];
   let items = JSON.parse(readFileSync(resolve(dir, file), "utf8")) as PackItem[];
-  if (skip) items = items.filter((it) => !skip.has(anecdoteKey(it.text)));
+  if (skip) items = items.filter((it) => !skip.has(packItemKey(it)));
   if (deck.sequential) return items[0] ?? null;
   return items[Math.floor(Math.random() * items.length)] ?? null;
 }
@@ -273,7 +294,7 @@ export function libraryStats(deckId: string, used?: ReadonlySet<string>) {
     : { total: 0, packs: 0, packSize: 300, range: [0, 0] };
   const t = titledItems(deckId);
   const pool = poolItems(deckId); // titled if present, else raw packs
-  const usedCount = used && used.size ? pool.filter((it) => used.has(anecdoteKey(it.text))).length : 0;
+  const usedCount = used && used.size ? pool.filter((it) => used.has(packItemKey(it))).length : 0;
   const byPack = new Map<number, number>();
   for (const it of t) byPack.set(it.pack, (byPack.get(it.pack) ?? 0) + 1);
   const readyPacks = [...byPack.entries()]

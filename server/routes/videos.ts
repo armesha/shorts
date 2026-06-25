@@ -8,7 +8,7 @@ import { unlinkSync } from "node:fs";
 import type { Db } from "../db.ts";
 import { DECKS, getDeck, isPackDeckId } from "../../src/anecdotes/decks.ts";
 import { ytMeta } from "../../src/anecdotes/yt-meta.ts";
-import { randomAnecdote, firstAnecdote, anecdoteKey } from "../../src/anecdotes/library.ts";
+import { randomAnecdote, firstAnecdote, anecdoteKey, packItemKey } from "../../src/anecdotes/library.ts";
 import { getPack } from "../../src/packs/store.ts";
 import { pickUnusedPackCard, pickFixedPackCard, buildPackLibraryVideo } from "../services/pack-gen.ts";
 import { buildFactLibraryVideo } from "../services/fact-gen.ts";
@@ -211,7 +211,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
       while (created.length < requested) {
         const a = infinite ? firstAnecdote(deckId) : randomAnecdote(deckId, seen);
         if (!a) break; // no unused anecdotes left
-        const key = anecdoteKey(a.text);
+        const key = packItemKey(a);
         if (!infinite) {
           seen.add(key);
           if (!db.claimAnecdote(ownerId, key)) continue; // a concurrent run already took this card

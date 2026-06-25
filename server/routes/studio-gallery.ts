@@ -6,7 +6,7 @@ import { createReadStream, existsSync, unlinkSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Db } from "../db.ts";
 import { getDeck, pickGenericTitle } from "../../src/anecdotes/decks.ts";
-import { randomAnecdote, firstAnecdote, libraryStats, anecdoteKey, deckCards } from "../../src/anecdotes/library.ts";
+import { randomAnecdote, firstAnecdote, libraryStats, anecdoteKey, packItemKey, deckCards } from "../../src/anecdotes/library.ts";
 import type { PackItem } from "../../src/anecdotes/library.ts";
 import { renderAnecdote, listBackgrounds } from "../../src/anecdotes/render.ts";
 import { assembleStillVideo, listAudio, pickLifehackMotionOverlay, resolveAudio, downscaleImage } from "../../src/video.ts";
@@ -138,7 +138,7 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
         title = a.title || undefined;
         profession = a.profession;
         pickedItem = a;
-        if (!infinite) db.markAnecdoteUsed(uid(req), anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот
+        if (!infinite) db.markAnecdoteUsed(uid(req), pickedItem ? packItemKey(pickedItem) : anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот
       }
       if (!title) title = pickGenericTitle(deck);
 
@@ -179,7 +179,7 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
         title = a.title || undefined;
         profession = a.profession;
         pickedItem = a;
-        if (!infinite) db.markAnecdoteUsed(uid(req), anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот
+        if (!infinite) db.markAnecdoteUsed(uid(req), pickedItem ? packItemKey(pickedItem) : anecdoteKey(text)); // студийная генерация тоже «вычёркивает» анекдот
       }
       if (!title) title = pickGenericTitle(deck);
 

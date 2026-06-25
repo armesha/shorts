@@ -1,5 +1,5 @@
 import { DECKS } from "../../src/anecdotes/decks.ts";
-import { firstAnecdote, randomAnecdote, anecdoteKey } from "../../src/anecdotes/library.ts";
+import { firstAnecdote, randomAnecdote, packItemKey } from "../../src/anecdotes/library.ts";
 import type { Account, Db, Video } from "../db.ts";
 import { buildFactLibraryVideo } from "./fact-gen.ts";
 import { INFINITE_PACKS_FEATURE } from "./infinite-packs.ts";
@@ -43,7 +43,7 @@ export async function addLongVideoToLibrary(input: {
   const seen = new Set<string>(db.usedAnecdoteKeys(ownerId));
   const picked = infinite ? firstAnecdote(deckId) : randomAnecdote(deckId, seen);
   if (!picked) throw new LongVideoLibraryError(409, "В этом long-video паке не осталось новых видео для библиотеки.");
-  const key = anecdoteKey(picked.text);
+  const key = packItemKey(picked);
   if (!infinite && !db.claimAnecdote(ownerId, key))
     throw new LongVideoLibraryError(409, "Это длинное видео уже забрано другим запуском — обновите страницу.");
   try {

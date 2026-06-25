@@ -1020,6 +1020,18 @@
     "author": "Rubygloria"
   },
   {
+    "id": "vry_025",
+    "type": "visual-riddles-counting",
+    "title": "Counting triangles 4",
+    "category": "COUNTING",
+    "question": "How many triangles can you count?",
+    "answer": "Count every triangle formed by the colored lines, including overlapping and intersecting triangles.",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Counting_triangles_4.png",
+    "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Counting%20triangles%204.png",
+    "license": "CC0",
+    "author": "Rubygloria"
+  },
+  {
     "id": "vry_026",
     "type": "",
     "title": "Two square counting puzzles",
@@ -1054,6 +1066,18 @@
     "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Mushrooms%20of%20America%20%28Plate%20II%29%20%288596718043%29.jpg",
     "license": "Public domain",
     "author": "Julius A. Palmer (Mushrooms of America, 1885)"
+  },
+  {
+    "id": "vry_030",
+    "type": "visual-riddles-counting",
+    "title": "The Eggs of European Birds",
+    "category": "COUNTING",
+    "question": "How many bird eggs can you see?",
+    "answer": "There are 7 eggs shown on the lithograph plate.",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:The_eggs_of_European_birds_(1906)_(14748239454).jpg",
+    "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/The%20eggs%20of%20European%20birds%20%281906%29%20%2814748239454%29.jpg",
+    "license": "Public domain",
+    "author": "F. C. R. Jourdain (The Eggs of European Birds, 1906)"
   },
   {
     "id": "vry_031",
@@ -1200,6 +1224,78 @@
     "author": "AnonMoos"
   },
   {
+    "id": "vry_044",
+    "type": "image-candidates",
+    "title": "Water, by Arcimboldo",
+    "category": "HIDDEN IMAGE",
+    "question": "How many sea creatures can you find in the face?",
+    "answer": "The profile is built from sea creatures: fish, crabs, lobster, turtle, octopus, rays, eel, shark, shellfish, coral, and more.",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Giuseppe_Arcimboldo_-_Water_-_WGA00826.jpg",
+    "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Giuseppe_Arcimboldo_-_Water_-_WGA00826.jpg",
+    "license": "Public domain",
+    "author": "Giuseppe Arcimboldo (Джузеппе Арчимбольдо), ок. 1566"
+  },
+  {
+    "id": "vry_045",
+    "type": "image-candidates",
+    "title": "Earth, by Arcimboldo",
+    "category": "HIDDEN IMAGE",
+    "question": "How many land animals can you find in the face?",
+    "answer": "The head is assembled from land animals including deer, lion, ram, elephant, monkey, boar, leopard, hare, fox, goat, wolf, and cattle.",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Arcimboldo_Earth.jpg",
+    "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Arcimboldo_Earth.jpg",
+    "license": "Public domain",
+    "author": "Giuseppe Arcimboldo (Джузеппе Арчимбольдо), ок. 1566"
+  },
+  {
+    "id": "vry_046",
+    "type": "image-candidates",
+    "title": "Air, by Arcimboldo",
+    "category": "HIDDEN IMAGE",
+    "question": "How many birds can you find in the face?",
+    "answer": "The face is made from birds including peacock, parrot, rooster, owl, ducks, turkey, eagles, doves, and many other birds.",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Giuseppe_Arcimboldo_-_Air_-_WGA0822.jpg",
+    "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Giuseppe_Arcimboldo_-_Air_-_WGA0822.jpg",
+    "license": "Public domain",
+    "author": "Giuseppe Arcimboldo (Джузеппе Арчимбольдо), ок. 1566"
+  },
+  {
+    "id": "vry_047",
+    "type": "image-candidates",
+    "title": "Summer, by Arcimboldo",
+    "category": "HIDDEN IMAGE",
+    "question": "Which face is hidden in the fruit?",
+    "answer": "A human profile is assembled from summer fruit, vegetables, grain, and flowers.",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Arcimboldo_Summer_1563.jpg",
+    "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Arcimboldo_Summer_1563.jpg",
+    "license": "Public domain",
+    "author": "Giuseppe Arcimboldo (Джузеппе Арчимбольдо), 1563"
+  },
+  {
+    "id": "vry_048",
+    "type": "image-candidates",
+    "title": "Winter, by Arcimboldo",
+    "category": "HIDDEN IMAGE",
+    "question": "What face is hidden in the old tree?",
+    "answer": "A human profile is formed from a gnarled trunk, ivy, bark, mushrooms, and winter fruit.",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Arcimboldo_Winter_1563.jpg",
+    "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Arcimboldo_Winter_1563.jpg",
+    "license": "Public domain",
+    "author": "Giuseppe Arcimboldo (Джузеппе Арчимбольдо), 1563"
+  },
+  {
+    "id": "vry_049",
+    "type": "image-candidates",
+    "title": "Spring, by Arcimboldo",
+    "category": "HIDDEN IMAGE",
+    "question": "What face is hidden in the bouquet?",
+    "answer": "One human profile is built from flowers, leaves, and spring plants.",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Arcimboldo_Primavera.jpg",
+    "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Arcimboldo_Primavera.jpg",
+    "license": "Public domain",
+    "author": "Giuseppe Arcimboldo (Джузеппе Арчимбольдо), 1563"
+  },
+  {
     "id": "vry_050",
     "type": "",
     "title": "Vertumnus, by Arcimboldo",
@@ -1210,6 +1306,18 @@
     "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Arcimboldovertemnus.jpeg",
     "license": "Public domain",
     "author": "Giuseppe Arcimboldo (Джузеппе Арчимбольдо), ок. 1590"
+  },
+  {
+    "id": "vry_051",
+    "type": "image-candidates",
+    "title": "The Librarian, by Arcimboldo",
+    "category": "HIDDEN IMAGE",
+    "question": "Where is the face hidden, and what is the figure made from?",
+    "answer": "The whole figure is made from books: open pages, bindings, bookmarks, and book edges form the face, body, and hands.",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Arcimboldo_Librarian_Stokholm.jpg",
+    "downloadUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Arcimboldo_Librarian_Stokholm.jpg",
+    "license": "Public domain",
+    "author": "Giuseppe Arcimboldo (Джузеппе Арчимбольдо), ок. 1566"
   },
   {
     "id": "vry_052",

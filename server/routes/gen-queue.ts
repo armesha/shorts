@@ -6,7 +6,7 @@ import type { FastifyInstance } from "fastify";
 import type { Db } from "../db.ts";
 import { isSuperAdminUser } from "../auth.ts";
 import { DECKS, isPackDeckId } from "../../src/anecdotes/decks.ts";
-import { randomAnecdote, firstAnecdote, anecdoteKey } from "../../src/anecdotes/library.ts";
+import { randomAnecdote, firstAnecdote, packItemKey } from "../../src/anecdotes/library.ts";
 import { getPack } from "../../src/packs/store.ts";
 import { pickUnusedPackCard, pickFixedPackCard, buildPackLibraryVideo } from "../services/pack-gen.ts";
 import { buildFactLibraryVideo } from "../services/fact-gen.ts";
@@ -70,7 +70,7 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
       for (;;) {
         const a = infinite ? firstAnecdote(channelDeck.id) : randomAnecdote(channelDeck.id, seen);
         if (!a) return "exhausted"; // deck has no unused cards left
-        const key = anecdoteKey(a.text);
+        const key = packItemKey(a);
         if (!infinite) {
           seen.add(key);
           if (!db.claimAnecdote(ownerId, key)) continue; // taken by a concurrent run → pick another

@@ -112,6 +112,9 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
 
   const selectedBlockId = searchParams.get("block");
   const selectedBlock = data?.blocks.find((block) => block.id === selectedBlockId) ?? null;
+  useEffect(() => {
+    if (selectedBlock) setPerDay(Math.max(0, Math.min(20, selectedBlock.postsPerDay)));
+  }, [selectedBlock?.id, selectedBlock?.postsPerDay]);
   const operationalAccounts = useMemo<OperationalAccount[]>(() => {
     if (!selectedBlock) return accounts;
     const fullById = new Map(accounts.map((account) => [account.id, account]));

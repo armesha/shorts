@@ -1,5 +1,5 @@
 import { resolve } from "node:path";
-import { randomAnecdote, anecdoteKey } from "./library.ts";
+import { randomAnecdote, packItemKey } from "./library.ts";
 import { getDeck } from "./decks.ts";
 import { ytMeta } from "./yt-meta.ts";
 import { renderAnecdote } from "./render.ts";
@@ -43,7 +43,7 @@ export async function produceAnecdoteVideo(
     title: a.title,
     text: a.text,
     bg: r.bg,
-    key: anecdoteKey(a.text),
+    key: packItemKey(a),
     ytTitle: meta.title,
     ytDescription: meta.description,
     ytTags: meta.tags,
