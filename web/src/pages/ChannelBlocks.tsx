@@ -19,6 +19,8 @@ type BlockDeckSummary = {
   id: string;
   name: string;
   lang: string | null;
+  groupId?: string | null;
+  groupTitle?: string | null;
   available: number;
   queued: number;
   channels: number;
@@ -38,16 +40,19 @@ function deckSummaries(block: ChannelThemeBlock): BlockDeckSummary[] {
   const map = new Map<string, BlockDeckSummary>();
   for (const account of accountsInBlock(block)) {
     for (const deck of account.sourceDecks) {
-      const cur = map.get(deck.id);
+      const key = deck.groupId ? `group:${deck.groupId}` : deck.id;
+      const cur = map.get(key);
       if (cur) {
         cur.available += deck.available;
         cur.queued += deck.queued;
         cur.channels += 1;
       } else {
-        map.set(deck.id, {
-          id: deck.id,
-          name: deck.name,
+        map.set(key, {
+          id: key,
+          name: deck.groupTitle || deck.name,
           lang: deck.lang,
+          groupId: deck.groupId,
+          groupTitle: deck.groupTitle,
           available: deck.available,
           queued: deck.queued,
           channels: 1,
@@ -81,6 +86,7 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
   const [err, setErr] = useState("");
   const [shortCount, setShortCount] = useState(1);
   const [perDay, setPerDay] = useState(12);
+  const [sourceWeights, setSourceWeights] = useState<Record<string, number>>({});
   const [busy, setBusy] = useState<BusyState>(null);
   const [notice, setNotice] = useState("");
 
@@ -115,6 +121,10 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
   useEffect(() => {
     if (selectedBlock) setPerDay(Math.max(0, Math.min(20, selectedBlock.postsPerDay)));
   }, [selectedBlock?.id, selectedBlock?.postsPerDay]);
+  useEffect(() => {
+    if (!selectedBlock) return;
+    setSourceWeights(Object.fromEntries((selectedBlock.sourceGroups ?? []).map((group) => [group.id, group.weight])));
+  }, [selectedBlock?.id, selectedBlock?.sourceGroups]);
   const operationalAccounts = useMemo<OperationalAccount[]>(() => {
     if (!selectedBlock) return accounts;
     const fullById = new Map(accounts.map((account) => [account.id, account]));
@@ -133,7 +143,7 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
     setBusy({ blockId: block.id, kind: "short" });
     setNotice("");
     try {
-      const res = await apiClient.generateChannelThemeBlock(block.id, shortCount);
+      const res = await apiClient.generateChannelThemeBlock(block.id, shortCount, undefined, block.sourceGroups.length ? sourceWeights : undefined);
       queue.trackJobs(res.jobs);
       setNotice(
         t("channelBlocks.shortQueued", {
@@ -154,7 +164,7 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
     setBusy({ blockId: block.id, kind: "normalize" });
     setNotice("");
     try {
-      const res = await apiClient.normalizeChannelThemeBlock(block.id);
+      const res = await apiClient.normalizeChannelThemeBlock(block.id, undefined, block.sourceGroups.length ? sourceWeights : undefined);
       queue.trackJobs(res.jobs);
       setNotice(
         t("channelBlocks.normalizeQueued", {
@@ -176,7 +186,7 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
     setBusy({ blockId: block.id, kind: "schedule" });
     setNotice("");
     try {
-      const res = await apiClient.setChannelThemeBlockSchedule(block.id, perDay);
+      const res = await apiClient.setChannelThemeBlockSchedule(block.id, perDay, undefined, block.sourceGroups.length ? sourceWeights : undefined);
       setNotice(t("channelBlocks.scheduleApplied", { updated: res.updated.length, skipped: res.skipped.length }));
       await load();
     } catch (e) {
@@ -277,6 +287,8 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
           perDay={perDay}
           setPerDay={setPerDay}
           busy={busy}
+          sourceWeights={sourceWeights}
+          setSourceWeights={setSourceWeights}
           generateShort={generateShort}
           normalizeQueue={normalizeQueue}
           applySchedule={applySchedule}
@@ -335,6 +347,8 @@ function BlockDetail({
   perDay,
   setPerDay,
   busy,
+  sourceWeights,
+  setSourceWeights,
   generateShort,
   normalizeQueue,
   applySchedule,
@@ -347,6 +361,8 @@ function BlockDetail({
   perDay: number;
   setPerDay: (value: number) => void;
   busy: BusyState;
+  sourceWeights: Record<string, number>;
+  setSourceWeights: (value: Record<string, number>) => void;
   generateShort: (block: ChannelThemeBlock) => Promise<void>;
   normalizeQueue: (block: ChannelThemeBlock) => Promise<void>;
   applySchedule: (block: ChannelThemeBlock) => Promise<void>;
@@ -375,6 +391,35 @@ function BlockDetail({
             <h2 className="text-base font-semibold">{t("channelBlocks.blockSettings")}</h2>
           </div>
           <div className="flex flex-wrap items-end gap-3">
+            {block.sourceGroups.length > 1 && (
+              <div className="flex flex-wrap items-end gap-2">
+                <div className="pb-2 text-xs font-semibold uppercase tracking-wide text-base-content/60">
+                  {t("channelBlocks.sourceRatio")}
+                </div>
+                {block.sourceGroups.map((group) => (
+                  <label key={group.id} className="form-control w-32">
+                    <span className="label py-1 pr-0">
+                      <span className="label-text truncate text-xs font-semibold uppercase tracking-wide text-base-content/60" title={group.title}>
+                        {group.title}
+                      </span>
+                    </span>
+                    <input
+                      type="number"
+                      min={0}
+                      max={20}
+                      className="input input-bordered input-sm w-full"
+                      value={sourceWeights[group.id] ?? group.weight}
+                      onChange={(e) =>
+                        setSourceWeights({
+                          ...sourceWeights,
+                          [group.id]: Math.max(0, Math.min(20, Number(e.target.value) || 0)),
+                        })
+                      }
+                    />
+                  </label>
+                ))}
+              </div>
+            )}
             <div className="flex flex-wrap items-end gap-2">
               <label className="form-control w-28">
                 <span className="label py-1 pr-0">
@@ -676,11 +721,22 @@ function Metric({ value, label }: { value: ReactNode; label: string }) {
 
 function DeckLine({ label, decks }: { label: string; decks: ChannelThemeBlockAccount["sourceDecks"] }) {
   if (!decks.length) return null;
+  const visibleDecks = [...decks.reduce((map, deck) => {
+    const key = deck.groupId ? `group:${deck.groupId}` : deck.id;
+    const cur = map.get(key);
+    if (cur) {
+      cur.available += deck.available;
+      cur.queued += deck.queued;
+    } else {
+      map.set(key, { ...deck, id: key, name: deck.groupTitle || deck.name });
+    }
+    return map;
+  }, new Map<string, ChannelThemeBlockAccount["sourceDecks"][number]>()).values()];
   return (
     <div className="mt-2">
       <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-base-content/40">{label}</div>
       <div className="grid gap-1">
-        {decks.map((deck) => (
+        {visibleDecks.map((deck) => (
           <span key={deck.id} className="flex min-w-0 items-center justify-between gap-2 border border-base-300 bg-base-100 px-2 py-1 text-[11px] leading-none" title={`${deck.name}: ${deck.available}`}>
             <span className="truncate font-semibold uppercase">{deck.name}</span>
             <span className="shrink-0 text-base-content/55">· {deck.available}</span>

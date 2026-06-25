@@ -89,33 +89,59 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
   }
 
   // How many UNUSED cards the content owner still has across the given decks/packs (free pool).
-  // Cards are unique per deck, so summing across decks never double-counts. Used to keep generation
-  // from queueing more videos than there are fresh cards (a job can't make a video from a used card).
+  // Built-in decks are counted by DISTINCT item_key so aggregate decks plus legacy split decks do not
+  // inflate the same quote/card pool.
   function availableUnusedForDecks(ownerId: number, deckIds: string[]): number {
+    const clean = [...new Set(deckIds.map((deckId) => String(deckId || "").trim()).filter(Boolean))];
+    const builtinIds = clean.filter((deckId) => !isPackDeckId(deckId));
+    const packIds = clean.filter((deckId) => isPackDeckId(deckId));
     if (db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) {
       const ownerIsSuperAdmin = isSuperAdminUser(db.getUserById(ownerId));
       let total = 0;
-      for (const deckId of [...new Set(deckIds)].filter(Boolean)) {
+      if (builtinIds.length) {
+        try {
+          const ph = builtinIds.map(() => "?").join(",");
+          const row = db.db
+            .prepare(`SELECT COUNT(DISTINCT item_key) AS n FROM content_items WHERE deck_id IN (${ph})`)
+            .get(...builtinIds) as { n?: number } | undefined;
+          total += Number(row?.n) || 0;
+        } catch {
+          for (const deckId of builtinIds) total += libraryStats(deckId, new Set()).total;
+        }
+      }
+      for (const deckId of packIds) {
         if (isPackDeckId(deckId)) {
           total += getPack(deckId.slice(5), ownerId, ownerIsSuperAdmin)?.cards.length ?? 0;
-        } else {
-          total += libraryStats(deckId, new Set()).total;
         }
       }
       return total;
     }
     const usedKeys = db.usedAnecdoteKeys(ownerId);
-      const ownerIsSuperAdmin = isSuperAdminUser(db.getUserById(ownerId));
-      let total = 0;
-      for (const deckId of deckIds) {
-        if (isPackDeckId(deckId)) {
-          const pack = getPack(deckId.slice(5), ownerId, ownerIsSuperAdmin);
+    const ownerIsSuperAdmin = isSuperAdminUser(db.getUserById(ownerId));
+    let total = 0;
+    if (builtinIds.length) {
+      try {
+        const ph = builtinIds.map(() => "?").join(",");
+        const row = db.db
+          .prepare(
+            `SELECT COUNT(DISTINCT ci.item_key) AS n
+               FROM content_items ci
+               LEFT JOIN user_used_anecdotes used ON used.user_id = ? AND used.key = ci.item_key
+              WHERE ci.deck_id IN (${ph}) AND used.key IS NULL`,
+          )
+          .get(ownerId, ...builtinIds) as { n?: number } | undefined;
+        total += Number(row?.n) || 0;
+      } catch {
+        for (const deckId of builtinIds) total += libraryStats(deckId, usedKeys).available;
+      }
+    }
+    for (const deckId of packIds) {
+      if (isPackDeckId(deckId)) {
+        const pack = getPack(deckId.slice(5), ownerId, ownerIsSuperAdmin);
         if (!pack) continue;
         let used = 0;
         for (const c of pack.cards) if (usedKeys.has(packCardKey(c.values))) used++;
         total += Math.max(0, pack.cards.length - used);
-      } else {
-        total += libraryStats(deckId, usedKeys).available;
       }
     }
     return total;

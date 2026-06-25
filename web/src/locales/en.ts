@@ -461,6 +461,7 @@ export const en: Record<string, string> = {
   "channelBlocks.shortCount": "Short per channel",
   "channelBlocks.shortLeft": "Short/channel",
   "channelBlocks.shortQueued": "Queued jobs: {jobs}; videos: {videos}; skipped: {skipped}.",
+  "channelBlocks.sourceRatio": "Ratio",
   "channelBlocks.skipNoFreeCards": "no free cards",
   "channelBlocks.skipNoLongDecks": "long packs are not enabled",
   "channelBlocks.skipNoSources": "no sources",

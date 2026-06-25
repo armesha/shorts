@@ -96,23 +96,23 @@ export const apiClient = {
       "POST",
       { lang },
     ),
-  generateChannelThemeBlock: (blockId: string, count: number, accountIds?: number[]) =>
+  generateChannelThemeBlock: (blockId: string, count: number, accountIds?: number[], sourceWeights?: Record<string, number>) =>
     send<ChannelThemeBlockGenerateResult>(
       `/super-admin/channel-blocks/${encodeURIComponent(blockId)}/generate`,
       "POST",
-      { count, ...(accountIds ? { accountIds } : {}) },
+      { count, ...(accountIds ? { accountIds } : {}), ...(sourceWeights ? { sourceWeights } : {}) },
     ),
-  normalizeChannelThemeBlock: (blockId: string, accountIds?: number[]) =>
+  normalizeChannelThemeBlock: (blockId: string, accountIds?: number[], sourceWeights?: Record<string, number>) =>
     send<ChannelThemeBlockNormalizeResult>(
       `/super-admin/channel-blocks/${encodeURIComponent(blockId)}/normalize`,
       "POST",
-      { ...(accountIds ? { accountIds } : {}) },
+      { ...(accountIds ? { accountIds } : {}), ...(sourceWeights ? { sourceWeights } : {}) },
     ),
-  setChannelThemeBlockSchedule: (blockId: string, perDay: number, accountIds?: number[]) =>
+  setChannelThemeBlockSchedule: (blockId: string, perDay: number, accountIds?: number[], sourceWeights?: Record<string, number>) =>
     send<ChannelThemeBlockScheduleResult>(
       `/super-admin/channel-blocks/${encodeURIComponent(blockId)}/schedule`,
       "POST",
-      { perDay, ...(accountIds ? { accountIds } : {}) },
+      { perDay, ...(accountIds ? { accountIds } : {}), ...(sourceWeights ? { sourceWeights } : {}) },
     ),
   longVideos: (cacheBust?: number) => get<LongVideoCatalog>(`/long-videos${cacheBust ? `?t=${cacheBust}` : ""}`),
   adminLowDecks: () => get<LowDeckRow[]>("/admin/low-decks"),

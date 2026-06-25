@@ -465,6 +465,7 @@ export const ru: Record<string, string> = {
   "channelBlocks.shortCount": "Short на канал",
   "channelBlocks.shortLeft": "Short/канал",
   "channelBlocks.shortQueued": "Поставлено задач: {jobs}; видео: {videos}; пропущено: {skipped}.",
+  "channelBlocks.sourceRatio": "Пропорция",
   "channelBlocks.skipNoFreeCards": "нет свободных карточек",
   "channelBlocks.skipNoLongDecks": "long-паки не включены",
   "channelBlocks.skipNoSources": "нет источников",

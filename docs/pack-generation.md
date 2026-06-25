@@ -1251,6 +1251,12 @@ node --input-type=module -e 'import fs from "node:fs"; import path from "node:pa
 
 ### `quotes-de` static quote-card expansion
 
+2026-06-25 активный deck `quotes-de` вынесен в tracked-папку `data/quotes-de-combined/` как единый
+статичный немецкий цитатный пак для thematic block `quotes`. Рабочая папка `data/quotes-de/` остается
+игнорируемым aggregate/source-cache. Numbered-деки `quotes-de-1`, `quotes-de-2`, `quotes-de-3` оставлены
+как отдельные немецкие video-source деки; их не локализировать и не смешивать с RU/EN/ES portrait quote
+decks. В блоке цитат расписание по умолчанию пинит источники весом `static:video = 4:1`.
+
 2026-06-21 добавлен статичный card-style batch `q244..q543` (+300 MP4) без озвучки: портрет +
 цитата + процедурная фоновая музыка. Builder:
 

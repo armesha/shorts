@@ -33,20 +33,47 @@ type BlockDef = {
   description: string;
   rules: string[];
   accountIds: number[];
+  sourceGroups?: SourceGroupDef[];
 };
 
-const QUOTE_DECK_BY_LANG: Record<string, string[]> = {
+type SourceGroupDef = {
+  id: string;
+  title: string;
+  defaultWeight: number;
+  sources: Record<string, string[]>;
+};
+
+const QUOTE_STATIC_DECK_BY_LANG: Record<string, string[]> = {
   ru: ["quotes-ru"],
   ar: ["quotes-ar"],
   en: ["quotes-en"],
   it: ["quotes-it"],
   es: ["quotes-es"],
-  de: ["quotes-de-1", "quotes-de-2", "quotes-de-3"],
+  de: ["quotes-de"],
   fr: ["quotes-fr"],
   pt: ["quotes-pt"],
   hi: ["quotes-hi"],
   id: ["quotes-id"],
 };
+
+const QUOTE_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
+  de: ["quotes-de-1", "quotes-de-2", "quotes-de-3"],
+};
+
+const QUOTE_SOURCE_GROUPS: SourceGroupDef[] = [
+  {
+    id: "static",
+    title: "Статичные цитаты",
+    defaultWeight: 4,
+    sources: QUOTE_STATIC_DECK_BY_LANG,
+  },
+  {
+    id: "video",
+    title: "Видео-цитаты",
+    defaultWeight: 1,
+    sources: QUOTE_VIDEO_DECK_BY_LANG,
+  },
+];
 
 const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
   jokes_memes: {
@@ -73,7 +100,7 @@ const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
     ar: ["islamic"],
     en: ["christian"],
   },
-  quotes: QUOTE_DECK_BY_LANG,
+  quotes: QUOTE_STATIC_DECK_BY_LANG,
   psychology: {
     de: ["psych"],
   },
@@ -137,6 +164,7 @@ const BLOCKS: BlockDef[] = [
       "Перед публикацией прогонять quote validator и ручной spot-check по авторам/портретам.",
     ],
     accountIds: [43, 65],
+    sourceGroups: QUOTE_SOURCE_GROUPS,
   },
   {
     id: "psychology",
@@ -257,6 +285,13 @@ function availableForDecks(db: Db, deps: RouteDeps, ctx: BlockContext | undefine
   const key = `${ownerId}|${clean.slice().sort().join("\u0001")}`;
   const cached = ctx?.availableCache.get(key);
   if (cached != null) return cached;
+  try {
+    const total = deps.deckAccess.availableUnusedForDecks(ownerId, clean);
+    ctx?.availableCache.set(key, total);
+    return total;
+  } catch {
+    /* fall back to local counters below */
+  }
 
   let total = 0;
   try {
@@ -292,18 +327,22 @@ function deckSummaries(input: {
   db: Db;
   deps: RouteDeps;
   ctx?: BlockContext;
+  blockId?: string;
   ownerId: number;
   deckIds: string[];
   queuedByDeck: Record<string, number>;
 }) {
-  const { db, deps, ctx, ownerId, deckIds, queuedByDeck } = input;
+  const { db, deps, ctx, blockId, ownerId, deckIds, queuedByDeck } = input;
   return deckIds.map((deckId) => {
     const title = deckTitle(deckId, ownerId);
+    const group = blockId && title.lang ? sourceGroupForDeck(blockId, title.lang, deckId) : null;
     const available = availableForDecks(db, deps, ctx, ownerId, [deckId]);
     return {
       id: deckId,
       name: title.name,
       lang: title.lang,
+      groupId: group?.id ?? null,
+      groupTitle: group?.title ?? null,
       available,
       queued: queuedByDeck[deckId] ?? 0,
       total: db.hasFeature(ownerId, INFINITE_PACKS_FEATURE) ? available : null,
@@ -311,7 +350,24 @@ function deckSummaries(input: {
   });
 }
 
+function unique(values: string[]): string[] {
+  return [...new Set(values.map((value) => String(value || "").trim()).filter(Boolean))];
+}
+
+function sourceGroupsForBlock(blockId: string): SourceGroupDef[] {
+  return BLOCKS.find((block) => block.id === blockId)?.sourceGroups ?? [];
+}
+
+function sourceGroupForDeck(blockId: string, lang: string, deckId: string): SourceGroupDef | null {
+  for (const group of sourceGroupsForBlock(blockId)) {
+    if ((group.sources[lang] ?? []).includes(deckId)) return group;
+  }
+  return null;
+}
+
 function blockDefaultSources(blockId: string, lang: string): string[] {
+  const groups = sourceGroupsForBlock(blockId);
+  if (groups.length) return unique(groups.flatMap((group) => group.sources[lang] ?? []));
   return BLOCK_DEFAULT_SOURCES[blockId]?.[lang] ?? [];
 }
 
@@ -329,7 +385,7 @@ function accountBelongsToBlock(deps: RouteDeps, block: BlockDef, account: Accoun
   return sameDeckSet(deps.deckAccess.accountSourceDecks(account), defaults);
 }
 
-function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockContext) {
+function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockContext, blockId?: string) {
   const ownerId = account.userId ?? 0;
   const sourceDecks = deps.deckAccess.accountSourceDecks(account);
   const queuedByDeck = ctx?.queuedByAccountDeck.get(account.id) ?? videosByDeck(db.listVideos(account.id));
@@ -349,7 +405,7 @@ function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockCo
     queued: ctx?.queuedByAccount.get(account.id) ?? db.listVideos(account.id).length,
     queuedByDeck,
     shortAvailable: availableForDecks(db, deps, ctx, ownerId, sourceDecks),
-    sourceDecks: deckSummaries({ db, deps, ctx, ownerId, deckIds: sourceDecks, queuedByDeck }),
+    sourceDecks: deckSummaries({ db, deps, ctx, blockId, ownerId, deckIds: sourceDecks, queuedByDeck }),
   };
 }
 
@@ -375,6 +431,101 @@ function blockSyncMetrics(accounts: BlockAccountSummary[]) {
   };
 }
 
+const sourceWeightSettingKey = (blockId: string): string => `superAdmin.channelBlock.${blockId}.sourceWeights`;
+
+function sanitizeSourceWeights(block: BlockDef, raw: unknown): Record<string, number> {
+  const groups = block.sourceGroups ?? [];
+  const obj = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
+  const out: Record<string, number> = {};
+  for (const group of groups) {
+    const n = Math.floor(Number(obj[group.id]));
+    out[group.id] = Number.isFinite(n) ? Math.max(0, Math.min(20, n)) : group.defaultWeight;
+  }
+  return out;
+}
+
+function readSourceWeights(db: Db, block: BlockDef): Record<string, number> {
+  if (!block.sourceGroups?.length) return {};
+  const raw = db.getSetting(sourceWeightSettingKey(block.id));
+  if (!raw) return sanitizeSourceWeights(block, {});
+  try {
+    return sanitizeSourceWeights(block, JSON.parse(raw));
+  } catch {
+    return sanitizeSourceWeights(block, {});
+  }
+}
+
+function requestedSourceWeights(db: Db, block: BlockDef, body: unknown): Record<string, number> {
+  if (!block.sourceGroups?.length) return {};
+  const raw = (body as { sourceWeights?: unknown } | null)?.sourceWeights;
+  if (raw == null) return readSourceWeights(db, block);
+  const weights = sanitizeSourceWeights(block, raw);
+  db.setSetting(sourceWeightSettingKey(block.id), JSON.stringify(weights));
+  return weights;
+}
+
+function publicSourceGroups(db: Db, block: BlockDef) {
+  const weights = readSourceWeights(db, block);
+  return (block.sourceGroups ?? []).map((group) => ({
+    id: group.id,
+    title: group.title,
+    defaultWeight: group.defaultWeight,
+    weight: weights[group.id] ?? group.defaultWeight,
+  }));
+}
+
+function activeSourceGroups(block: BlockDef, account: Account, sourceDecks: string[], weights: Record<string, number>) {
+  const groups = block.sourceGroups ?? [];
+  if (!groups.length) return [];
+  const selected = new Set(sourceDecks);
+  return groups
+    .map((group) => ({
+      ...group,
+      weight: Math.max(0, Math.floor(Number(weights[group.id] ?? group.defaultWeight) || 0)),
+      deckIds: (group.sources[account.channelLang] ?? []).filter((deckId) => selected.has(deckId)),
+    }))
+    .filter((group) => group.weight > 0 && group.deckIds.length > 0);
+}
+
+function weightedDeckSlots(block: BlockDef, account: Account, sourceDecks: string[], weights: Record<string, number>, count: number): string[] {
+  const active = activeSourceGroups(block, account, sourceDecks, weights);
+  if (!active.length) return sourceDecks;
+  const totalWeight = active.reduce((sum, group) => sum + group.weight, 0);
+  const scores = new Map(active.map((group) => [group.id, 0]));
+  const cursors = new Map(active.map((group) => [group.id, 0]));
+  const sequence: string[] = [];
+  for (let index = 0; index < count; index++) {
+    for (const group of active) scores.set(group.id, (scores.get(group.id) ?? 0) + group.weight);
+    const group = active.reduce((best, candidate) =>
+      (scores.get(candidate.id) ?? 0) > (scores.get(best.id) ?? 0) ? candidate : best,
+    );
+    scores.set(group.id, (scores.get(group.id) ?? 0) - totalWeight);
+    const cursor = cursors.get(group.id) ?? 0;
+    sequence.push(group.deckIds[cursor % group.deckIds.length]);
+    cursors.set(group.id, cursor + 1);
+  }
+  return sequence.length ? sequence : sourceDecks;
+}
+
+function weightedDeckSequence(block: BlockDef, account: Account, sourceDecks: string[], weights: Record<string, number>): string[] {
+  const active = activeSourceGroups(block, account, sourceDecks, weights);
+  if (!active.length) return sourceDecks;
+  const totalWeight = active.reduce((sum, group) => sum + group.weight, 0);
+  const cycles = Math.max(1, ...active.map((group) => group.deckIds.length));
+  return weightedDeckSlots(block, account, sourceDecks, weights, Math.max(1, totalWeight * cycles));
+}
+
+function slotDecksForSchedule(block: BlockDef, account: Account, schedule: string[], sourceDecks: string[], weights: Record<string, number>): Record<string, string> {
+  if (!schedule.length) return {};
+  const sequence = weightedDeckSlots(block, account, sourceDecks, weights, schedule.length);
+  if (!sequence.length) return {};
+  const out: Record<string, string> = {};
+  [...schedule].sort().forEach((time, index) => {
+    out[time] = sequence[index % sequence.length];
+  });
+  return out;
+}
+
 function buildPayload(db: Db, deps: RouteDeps) {
   const ownerId = armenId(db);
   if (ownerId == null) return { languages: BLOCK_LANGS, blocks: [], unassignedAccounts: [] };
@@ -396,7 +547,7 @@ function buildPayload(db: Db, deps: RouteDeps) {
         .filter((account): account is Account => !!account && account.channelLang === lang.code)
         .map((account) => {
           assigned.add(account.id);
-          return accountSummary(db, deps, account, ctx);
+          return accountSummary(db, deps, account, ctx, block.id);
         });
       return {
         lang: lang.code,
@@ -412,6 +563,7 @@ function buildPayload(db: Db, deps: RouteDeps) {
       title: block.title,
       description: block.description,
       rules: block.rules,
+      sourceGroups: publicSourceGroups(db, block),
       cells,
       totalAccounts: allAccounts.length,
       queued: sync.queued,
@@ -523,16 +675,19 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
   app.post("/api/super-admin/channel-blocks/:id/generate", async (req, reply) => {
     if (!requireSuperAdmin(req, reply, deps)) return;
     const blockId = (req.params as { id: string }).id;
+    const block = BLOCKS.find((candidate) => candidate.id === blockId);
     const count = Math.max(1, Math.floor(Number((req.body as { count?: unknown } | null)?.count) || 1));
     const only = requestedAccountIds(req.body);
     const accounts = blockAccounts(db, deps, blockId).filter((account) => !only || only.has(account.id));
-    if (!accounts.length) return reply.code(404).send({ error: "Тематический блок не найден или пуст." });
+    if (!block || !accounts.length) return reply.code(404).send({ error: "Тематический блок не найден или пуст." });
+    const sourceWeights = requestedSourceWeights(db, block, req.body);
 
     const jobs: unknown[] = [];
     const skipped: unknown[] = [];
     for (const account of accounts) {
       const ownerId = account.userId ?? uid(req);
       const deckIds = deps.deckAccess.accountSourceDecks(account);
+      const jobDeckIds = weightedDeckSequence(block, account, deckIds, sourceWeights);
       if (!deckIds.length) {
         skipped.push({ accountId: account.id, channelName: account.channelName, reason: "no_sources" });
         continue;
@@ -549,8 +704,8 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
         }
         total = Math.min(total, free);
       }
-      const job = genEnqueue(uid(req), account.id, total, ownerId, deckIds);
-      jobs.push({ accountId: account.id, channelName: account.channelName, deckIds, jobId: job.id, total: job.total });
+      const job = genEnqueue(uid(req), account.id, total, ownerId, jobDeckIds);
+      jobs.push({ accountId: account.id, channelName: account.channelName, deckIds: jobDeckIds, jobId: job.id, total: job.total });
     }
     return { blockId, requestedPerChannel: count, jobs, skipped };
   });
@@ -558,9 +713,11 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
   app.post("/api/super-admin/channel-blocks/:id/normalize", async (req, reply) => {
     if (!requireSuperAdmin(req, reply, deps)) return;
     const blockId = (req.params as { id: string }).id;
+    const block = BLOCKS.find((candidate) => candidate.id === blockId);
     const only = requestedAccountIds(req.body);
     const accounts = blockAccounts(db, deps, blockId).filter((account) => !only || only.has(account.id));
-    if (!accounts.length) return reply.code(404).send({ error: "Тематический блок не найден или пуст." });
+    if (!block || !accounts.length) return reply.code(404).send({ error: "Тематический блок не найден или пуст." });
+    const sourceWeights = requestedSourceWeights(db, block, req.body);
 
     const queuedByAccount = new Map(accounts.map((account) => [account.id, db.listVideos(account.id).length]));
     const targetQueued = Math.max(...queuedByAccount.values());
@@ -575,6 +732,7 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
       }
       const ownerId = account.userId ?? uid(req);
       const deckIds = deps.deckAccess.accountSourceDecks(account);
+      const jobDeckIds = weightedDeckSequence(block, account, deckIds, sourceWeights);
       if (!deckIds.length) {
         skipped.push({ accountId: account.id, channelName: account.channelName, reason: "no_sources", currentQueued, targetQueued });
         continue;
@@ -591,11 +749,11 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
         }
         total = Math.min(total, free);
       }
-      const job = genEnqueue(uid(req), account.id, total, ownerId, deckIds);
+      const job = genEnqueue(uid(req), account.id, total, ownerId, jobDeckIds);
       jobs.push({
         accountId: account.id,
         channelName: account.channelName,
-        deckIds,
+        deckIds: jobDeckIds,
         jobId: job.id,
         total: job.total,
         currentQueued,
@@ -608,11 +766,13 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
   app.post("/api/super-admin/channel-blocks/:id/schedule", async (req, reply) => {
     if (!requireSuperAdmin(req, reply, deps)) return;
     const blockId = (req.params as { id: string }).id;
+    const block = BLOCKS.find((candidate) => candidate.id === blockId);
     const perDay = Math.max(0, Math.floor(Number((req.body as { perDay?: unknown } | null)?.perDay) || 0));
     if (perDay > 20) return reply.code(400).send({ error: "Максимум 20 публикаций в сутки на канал." });
     const only = requestedAccountIds(req.body);
     const accounts = blockAccounts(db, deps, blockId).filter((account) => !only || only.has(account.id));
-    if (!accounts.length) return reply.code(404).send({ error: "Тематический блок не найден или пуст." });
+    if (!block || !accounts.length) return reply.code(404).send({ error: "Тематический блок не найден или пуст." });
+    const sourceWeights = requestedSourceWeights(db, block, req.body);
 
     const taken = new Set<number>();
     const updated: unknown[] = [];
@@ -639,7 +799,8 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
       }
       const schedule = randomDayTimes(perDay, taken);
       for (const time of schedule) taken.add(toMin(time));
-      const next = db.updateAccount(account.id, { schedule });
+      const sourceDecks = deps.deckAccess.accountSourceDecks(account);
+      const next = db.updateAccount(account.id, { schedule, slotDecks: slotDecksForSchedule(block, account, schedule, sourceDecks, sourceWeights) });
       if (next) updated.push({ accountId: next.id, channelName: next.channelName, schedule: next.schedule });
     }
     return { blockId, perDay, updated, skipped };

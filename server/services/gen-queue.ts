@@ -135,7 +135,7 @@ export function createGenQueue(): GenQueue {
         userId,
         ownerUserId,
         accountId,
-        deckIds: cleanDeckIds?.length ? [...new Set(cleanDeckIds)] : undefined,
+        deckIds: cleanDeckIds?.length ? cleanDeckIds : undefined,
         total,
         done: 0,
         state: "queued",

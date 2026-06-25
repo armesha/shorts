@@ -837,9 +837,18 @@ export interface ChannelThemeBlockDeck {
   id: string;
   name: string;
   lang: string | null;
+  groupId?: string | null;
+  groupTitle?: string | null;
   available: number;
   queued: number;
   total: number | null;
+}
+
+export interface ChannelThemeBlockSourceGroup {
+  id: string;
+  title: string;
+  defaultWeight: number;
+  weight: number;
 }
 
 export interface ChannelThemeBlockAccount {
@@ -873,6 +882,7 @@ export interface ChannelThemeBlock {
   title: string;
   description: string;
   rules: string[];
+  sourceGroups: ChannelThemeBlockSourceGroup[];
   cells: ChannelThemeBlockCell[];
   totalAccounts: number;
   queued: number;
