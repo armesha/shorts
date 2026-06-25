@@ -173,8 +173,13 @@ export async function renderAnecdote(
   if (getDeck(a.deck).choose) return renderChoose(a, outPath);
   const bgName = a.bg ?? randomDifferent(listBackgrounds(), a.avoidBg) ?? "";
   const bgCss = backgroundCss(bgName);
+  const lang = deckLang(a.deck ?? "") || "ru";
+  const rtl = lang === "ar";
   let html = await readFile(TEMPLATE, "utf8");
   html = html
+    .replaceAll("{{LANG}}", esc(lang))
+    .replaceAll("{{DIR}}", rtl ? "rtl" : "ltr")
+    .replaceAll("{{TEXT_ALIGN}}", rtl ? "right" : "left")
     .replaceAll("{{TITLE}}", esc(a.title))
     .replace("{{TEXT}}", esc(a.text))
     .replaceAll("{{CHANNEL}}", esc(a.channel))

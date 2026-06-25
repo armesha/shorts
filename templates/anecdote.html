@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="{{LANG}}" dir="{{DIR}}">
 <head>
 <meta charset="utf-8" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -19,7 +19,7 @@
     background: var(--bg);
     padding: 150px 86px 104px;
     display: flex; flex-direction: column;
-    font-family: 'PT Serif', Georgia, 'DejaVu Serif', serif;
+    font-family: 'PT Serif', 'Noto Naskh Arabic', 'Noto Sans Arabic', Georgia, 'DejaVu Serif', serif;
     color: var(--ink);
   }
 
@@ -50,7 +50,7 @@
   }
   .text {
     width: 100%;
-    text-align: left;
+    text-align: {{TEXT_ALIGN}};
     line-height: 1.55;
     white-space: pre-wrap;
     font-size: 64px;
