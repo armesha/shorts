@@ -21,6 +21,7 @@ const CAP_DIR = path.join(BUILD, "cap");
 const ADMIN = path.join(ROOT, "data/output/admin-demos");
 const SPACE_FACT = path.join(ROOT, "assets/fact-videos/space");
 const SPACE_DECK = path.join(ROOT, "data/space/videos.json");
+const SPACE_SOURCES = path.join(ROOT, "data/space/sources.json");
 for (const d of [CAP_DIR, ADMIN, SPACE_FACT]) fs.mkdirSync(d, { recursive: true });
 const args = process.argv.slice(2);
 const onlyId = (() => { const i = args.indexOf("--only"); return i >= 0 ? args[i + 1] : null; })();
@@ -210,6 +211,7 @@ function syncDeck(built) {
   const byF = new Map(deck.map((v) => [v.file, v]));
   for (const b of built) byF.set(b.file, { file: b.file, title: b.title, text: b.text });
   fs.writeFileSync(SPACE_DECK, JSON.stringify([...byF.values()], null, 2));
+  syncSourceLedger(built);
   const manPath = path.join(ADMIN, "manifest.json");
   const man = fs.existsSync(manPath) ? JSON.parse(fs.readFileSync(manPath, "utf8")) : { packs: [] };
   let pack = man.packs.find((p) => p.id === "space"); if (!pack) { pack = { id: "space", items: [] }; man.packs.push(pack); }
@@ -217,6 +219,63 @@ function syncDeck(built) {
   for (const b of built) { const ex = items.get(b.id); items.set(b.id, { id: b.id, title: b.title, theme: "space", dur: b.dur, createdAt: ex?.createdAt || now, updatedAt: now }); }
   pack.items = [...items.values()]; fs.writeFileSync(manPath, JSON.stringify(man, null, 2));
   console.log(`\nsynced ${built.length} doc clips (deck total ${[...byF.values()].length})`);
+}
+
+function loadSpaceSourceLedger() {
+  if (fs.existsSync(SPACE_SOURCES)) {
+    const parsed = JSON.parse(fs.readFileSync(SPACE_SOURCES, "utf8"));
+    return {
+      version: 1,
+      deck: "space",
+      policy: parsed.policy || "NASA/SVS/ESA/Commons-style source ledger. Verify each item before publication.",
+      items: Array.isArray(parsed.items) ? parsed.items : [],
+    };
+  }
+  const legacyDeck = fs.existsSync(SPACE_DECK) ? JSON.parse(fs.readFileSync(SPACE_DECK, "utf8")) : [];
+  return {
+    version: 1,
+    deck: "space",
+    policy: "NASA/SVS/ESA/Commons-style source ledger. Legacy entries without provenance must not be treated as rights-cleared proof.",
+    items: legacyDeck.map((item) => ({
+      id: path.basename(String(item.file || ""), path.extname(String(item.file || ""))),
+      file: item.file,
+      title: item.title || item.text || "",
+      provenanceStatus: "legacy_missing_source_ledger",
+      note: "Existing local space deck item predates permanent source ledger.",
+    })),
+  };
+}
+
+function syncSourceLedger(built) {
+  const ledger = loadSpaceSourceLedger();
+  const byFile = new Map(ledger.items.map((item) => [item.file, item]));
+  const byId = new Map(specs.map((spec) => [spec.id, spec]));
+  const now = new Date().toISOString();
+  for (const b of built) {
+    const spec = byId.get(b.id) || {};
+    byFile.set(b.file, {
+      id: b.id,
+      file: b.file,
+      title: b.title,
+      text: b.text,
+      provenanceStatus: "source_recorded",
+      sourceType: spec.sourceType || "narrated_documentary_cut",
+      sourceFile: spec.src || null,
+      subtitleFile: spec.srt || null,
+      sourceUrl: spec.sourceUrl || spec.url || null,
+      credit: spec.credit || spec.corner || null,
+      licenseNote:
+        spec.license ||
+        "Documentary source recorded by the builder; perform per-item manual rights spot-check before mass publication.",
+      clipStart: spec.start ?? null,
+      clipEnd: spec.end ?? null,
+      generatedBy: "src/scripts/space-montage/build-doc.mjs",
+      updatedAt: now,
+    });
+  }
+  ledger.items = [...byFile.values()].sort((a, b) => String(a.file).localeCompare(String(b.file)));
+  ledger.updatedAt = now;
+  fs.writeFileSync(SPACE_SOURCES, JSON.stringify(ledger, null, 2));
 }
 
 if (args.includes("--sync-only")) {

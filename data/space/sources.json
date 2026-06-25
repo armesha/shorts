@@ -1,0 +1,1010 @@
+{
+  "version": 1,
+  "deck": "space",
+  "policy": "NASA/SVS/ESA/Commons-style source ledger. Legacy entries without provenance must not be treated as rights-cleared proof.",
+  "createdAt": "2026-06-25T19:33:07.938Z",
+  "updatedAt": "2026-06-25T19:33:07.938Z",
+  "items": [
+    {
+      "id": "37_miles_a_second_into_jupiter",
+      "file": "space/37_miles_a_second_into_jupiter.mp4",
+      "title": "37 Miles a Second Into Jupiter",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "8_years_in_orbit_140_billion_c",
+      "file": "space/8_years_in_orbit_140_billion_c.mp4",
+      "title": "8 years in orbit, 140 billion cosmic rays",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "95_of_the_universe_is_invisibl",
+      "file": "space/95_of_the_universe_is_invisibl.mp4",
+      "title": "95% of the universe is invisible",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "a_detector_floated_to_earth_s_",
+      "file": "space/a_detector_floated_to_earth_s_.mp4",
+      "title": "A Detector Floated to Earth's Edge",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "a_lab_grown_human_organ_within",
+      "file": "space/a_lab_grown_human_organ_within.mp4",
+      "title": "A lab-grown human organ within a decade?",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "a_pulsar_spins_1000s_of_times_",
+      "file": "space/a_pulsar_spins_1000s_of_times_.mp4",
+      "title": "A Pulsar Spins 1000s of Times a Second",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "a_storm_that_wrapped_around_sa",
+      "file": "space/a_storm_that_wrapped_around_sa.mp4",
+      "title": "A Storm That Wrapped Around Saturn",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "asteroid_belt",
+      "file": "space/asteroid_belt.mp4",
+      "title": "Leftovers From the Planets' Birth",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "aurora_with_the_energy_of_an_e",
+      "file": "space/aurora_with_the_energy_of_an_e.mp4",
+      "title": "Aurora With the Energy of an Earthquake",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "aurora",
+      "file": "space/aurora.mp4",
+      "title": "When the Sun Strikes the Sky",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "bennu",
+      "file": "space/bennu.mp4",
+      "title": "Touching an Asteroid to Steal Dust",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "bh_four_types",
+      "file": "space/bh_four_types.mp4",
+      "title": "Four Kinds Of Black Holes",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "bh1_jets",
+      "file": "space/bh1_jets.mp4",
+      "title": "Jets longer than 140 galaxies",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "bh2_size",
+      "file": "space/bh2_size.mp4",
+      "title": "Bigger than the entire solar system",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "bh3_unseen",
+      "file": "space/bh3_unseen.mp4",
+      "title": "We will never see inside one",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "bh4_burp",
+      "file": "space/bh4_burp.mp4",
+      "title": "Yes, black holes burp",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "bh5_agn",
+      "file": "space/bh5_agn.mp4",
+      "title": "Black holes that sing in every color",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "bh6_torus",
+      "file": "space/bh6_torus.mp4",
+      "title": "Hidden behind a cosmic bagel",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "bh7_jets",
+      "file": "space/bh7_jets.mp4",
+      "title": "How a black hole fires a jet",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "black_hole_binary",
+      "file": "space/black_hole_binary.mp4",
+      "title": "Two Giants Dance to the End",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "black_hole_disk",
+      "file": "space/black_hole_disk.mp4",
+      "title": "Light Bends Around the Abyss",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "black_hole_jets_light_up_the_c",
+      "file": "space/black_hole_jets_light_up_the_c.mp4",
+      "title": "Black-hole jets light up the cosmos",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "built_for_3_years_still_runnin",
+      "file": "space/built_for_3_years_still_runnin.mp4",
+      "title": "Built for 3 years, still running at 8",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "cd_big_bang_confirmed",
+      "file": "space/cd_big_bang_confirmed.mp4",
+      "title": "They Proved The Big Bang In Weeks",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "cd_hawking_greatest",
+      "file": "space/cd_hawking_greatest.mp4",
+      "title": "Hawking Called It The Greatest Discovery",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "cd_infrared_first_galaxies",
+      "file": "space/cd_infrared_first_galaxies.mp4",
+      "title": "Seeing Stars Being Born Right Now",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "cd_no_stars_yet",
+      "file": "space/cd_no_stars_yet.mp4",
+      "title": "The Universe Once Had Zero Stars",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "cd_rock_concert_ovation",
+      "file": "space/cd_rock_concert_ovation.mp4",
+      "title": "Why Scientists Cheered Like Rock Fans",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "cd_why_we_exist",
+      "file": "space/cd_why_we_exist.mp4",
+      "title": "You Exist Because Of Cosmic Spots",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "cm_comet_secret_ice",
+      "file": "space/cm_comet_secret_ice.mp4",
+      "title": "Why Comets Grow A Tail",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "cm_meteorite_survivor",
+      "file": "space/cm_meteorite_survivor.mp4",
+      "title": "The Shooting Star That Survives",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "cm_shooting_star_survivor",
+      "file": "space/cm_shooting_star_survivor.mp4",
+      "title": "The Wish That Hits The Ground",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "cm_three_space_rocks",
+      "file": "space/cm_three_space_rocks.mp4",
+      "title": "Asteroid, Comet, Meteor: The Difference",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "comet_sungrazer",
+      "file": "space/comet_sungrazer.mp4",
+      "title": "A Frozen Wanderer Wakes Up",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "cosmic_rays_from_dying_stars_h",
+      "file": "space/cosmic_rays_from_dying_stars_h.mp4",
+      "title": "Cosmic rays from dying stars hit Earth",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "cosmic_web",
+      "file": "space/cosmic_web.mp4",
+      "title": "Every Galaxy on Invisible Threads",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "crab_nebula",
+      "file": "space/crab_nebula.mp4",
+      "title": "The Corpse of an Exploded Star",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "dm_bullets_crossfire",
+      "file": "space/dm_bullets_crossfire.mp4",
+      "title": "Two Bullets Meeting In A Crossfire",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "dm_elusive_poetry",
+      "file": "space/dm_elusive_poetry.mp4",
+      "title": "Two Ghosts That Explain Each Other",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "dm_speed_of_light_orbit",
+      "file": "space/dm_speed_of_light_orbit.mp4",
+      "title": "What Orbits At The Speed Of Light?",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "enceladus",
+      "file": "space/enceladus.mp4",
+      "title": "A Moon That Sprays the Sky",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "europa",
+      "file": "space/europa.mp4",
+      "title": "An Ocean Under Cracked Ice",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "exo_dust_x",
+      "file": "space/exo_dust_x.mp4",
+      "title": "The X Shape Around Another Star",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "exo_tilted_disk",
+      "file": "space/exo_tilted_disk.mp4",
+      "title": "A Tilted Planet Warps Its Star System",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "exo1_hidden",
+      "file": "space/exo1_hidden.mp4",
+      "title": "A hidden planet, found by its ripple",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "exo2_oceanwave",
+      "file": "space/exo2_oceanwave.mp4",
+      "title": "Planets make waves like the ocean",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "exoplanet_transit",
+      "file": "space/exoplanet_transit.mp4",
+      "title": "How We Find Hidden Worlds",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "gaia_milkyway",
+      "file": "space/gaia_milkyway.mp4",
+      "title": "Mapping a Billion Stars",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "gal_bar_star_trap",
+      "file": "space/gal_bar_star_trap.mp4",
+      "title": "A Bar Made Of Trapped Stars",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "gal_lenticular_lens",
+      "file": "space/gal_lenticular_lens.mp4",
+      "title": "The Galaxy That Looks Like A Lens",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "gal1_trafficjam",
+      "file": "space/gal1_trafficjam.mp4",
+      "title": "Galaxies build stars like a traffic jam",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "gal2_threetypes",
+      "file": "space/gal2_threetypes.mp4",
+      "title": "Every galaxy is one of three shapes",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "gal3_deepfield",
+      "file": "space/gal3_deepfield.mp4",
+      "title": "A grain of sky, thousands of galaxies",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "galaxy_merger",
+      "file": "space/galaxy_merger.mp4",
+      "title": "Andromeda Is Coming for Us",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "gamma_ray_burst",
+      "file": "space/gamma_ray_burst.mp4",
+      "title": "The Universe's Deadliest Blast",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "gravity_so_strong_it_bends_spa",
+      "file": "space/gravity_so_strong_it_bends_spa.mp4",
+      "title": "Gravity So Strong It Bends Space-Time",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "gw_hear_spacetime",
+      "file": "space/gw_hear_spacetime.mp4",
+      "title": "Can We Hear Spacetime Itself?",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "gw_kilonova",
+      "file": "space/gw_kilonova.mp4",
+      "title": "Brighter Than A Nova, Darker Than Death",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "gw_the_chirp",
+      "file": "space/gw_the_chirp.mp4",
+      "title": "The Signal That Sounded Like A Chirp",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "helio_solarwind",
+      "file": "space/helio_solarwind.mp4",
+      "title": "A Storm Across the Solar System",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "hot_jupiter",
+      "file": "space/hot_jupiter.mp4",
+      "title": "A Planet Hotter Than Stars",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "how_a_spacecraft_grabs_an_aste",
+      "file": "space/how_a_spacecraft_grabs_an_aste.mp4",
+      "title": "How a spacecraft grabs an asteroid in seconds",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "how_nasa_grows_a_garden_in_spa",
+      "file": "space/how_nasa_grows_a_garden_in_spa.mp4",
+      "title": "How NASA grows a garden in space",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "how_nasa_will_grab_a_piece_of_",
+      "file": "space/how_nasa_will_grab_a_piece_of_.mp4",
+      "title": "How NASA will grab a piece of an asteroid",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "how_saturn_is_raining_its_ring",
+      "file": "space/how_saturn_is_raining_its_ring.mp4",
+      "title": "How Saturn Is Raining Its Rings Away",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "how_we_hunt_invisible_cosmic_m",
+      "file": "space/how_we_hunt_invisible_cosmic_m.mp4",
+      "title": "How we hunt invisible cosmic monsters",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "inside_the_milky_way_s_black_h",
+      "file": "space/inside_the_milky_way_s_black_h.mp4",
+      "title": "Inside the Milky Way's Black-Hole Heart",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "io_volcanoes",
+      "file": "space/io_volcanoes.mp4",
+      "title": "The Most Volcanic World",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "iss_earth",
+      "file": "space/iss_earth.mp4",
+      "title": "Racing Earth at 17,500 mph",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "jupiter_juno",
+      "file": "space/jupiter_juno.mp4",
+      "title": "Diving Into Jupiter's Storms",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "lightning_that_shoots_up_and_g",
+      "file": "space/lightning_that_shoots_up_and_g.mp4",
+      "title": "Lightning that shoots UP and glows red",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "m1_rocket",
+      "file": "space/m1_rocket.mp4",
+      "title": "The real reason they board a rocket",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "m2_reentry",
+      "file": "space/m2_reentry.mp4",
+      "title": "The most dangerous 19 minutes",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "m3_moonmoving",
+      "file": "space/m3_moonmoving.mp4",
+      "title": "The Moon is a moving target",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "m4_whyback",
+      "file": "space/m4_whyback.mp4",
+      "title": "Why we are going back to the Moon",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "m5_problem",
+      "file": "space/m5_problem.mp4",
+      "title": "The problem they KNOW is coming",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "m6_minielanth",
+      "file": "space/m6_minielanth.mp4",
+      "title": "The spaceship that becomes a tiny planet",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "m7_science",
+      "file": "space/m7_science.mp4",
+      "title": "Science only humans can do",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "magnetar",
+      "file": "space/magnetar.mp4",
+      "title": "The Strongest Magnet in Existence",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "mars_flyover",
+      "file": "space/mars_flyover.mp4",
+      "title": "A Canyon to Swallow Continents",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "mars_hills_so_stunning_they_d_",
+      "file": "space/mars_hills_so_stunning_they_d_.mp4",
+      "title": "Mars Hills So Stunning They'd Be a Park",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "mercury",
+      "file": "space/mercury.mp4",
+      "title": "Scorched and Battered by the Sun",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "mining_the_moon_the_next_space",
+      "file": "space/mining_the_moon_the_next_space.mp4",
+      "title": "Mining the Moon: the next space business",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "moon_drifting_away",
+      "file": "space/moon_drifting_away.mp4",
+      "title": "The Moon Is Leaving Us",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "moon_giant_impact",
+      "file": "space/moon_giant_impact.mp4",
+      "title": "The Moon Was Born From A Crash",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "moon_tidal_brake",
+      "file": "space/moon_tidal_brake.mp4",
+      "title": "The Moon Is Slowing Earth Down",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "mw_andromeda_merger",
+      "file": "space/mw_andromeda_merger.mp4",
+      "title": "The Galaxy Headed Toward Us",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "mw_barred_spiral_home",
+      "file": "space/mw_barred_spiral_home.mp4",
+      "title": "Our Galaxy Is Not A Flat Disk",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "mw_center_monster",
+      "file": "space/mw_center_monster.mp4",
+      "title": "The Monster At Our Galaxy's Center",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "nasa_s_new_infrared_look_at_ou",
+      "file": "space/nasa_s_new_infrared_look_at_ou.mp4",
+      "title": "NASA's New Infrared Look at Our Galaxy",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "nasa_s_target_a_crater_3_parki",
+      "file": "space/nasa_s_target_a_crater_3_parki.mp4",
+      "title": "NASA's target: a crater 3 parking spaces wide",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "neb_clouds_between_stars",
+      "file": "space/neb_clouds_between_stars.mp4",
+      "title": "Clouds That Hold The Secrets Of Stars",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "neb_cygnus_loop",
+      "file": "space/neb_cygnus_loop.mp4",
+      "title": "An Explosion 110 Light-Years Wide",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "neb_dark_nebulae",
+      "file": "space/neb_dark_nebulae.mp4",
+      "title": "The Clouds You Cannot See",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "neb_mystic_mountain",
+      "file": "space/neb_mystic_mountain.mp4",
+      "title": "A Mountain Three Light-Years Tall",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "neb_orion_trapezium",
+      "file": "space/neb_orion_trapezium.mp4",
+      "title": "Four Giant Stars Light A Whole Nebula",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "neb_planetary_necklace",
+      "file": "space/neb_planetary_necklace.mp4",
+      "title": "How A Dying Star Becomes Jewelry",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "neptune_uranus",
+      "file": "space/neptune_uranus.mp4",
+      "title": "Worlds at the Cold Frontier",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "ns_densest_object_universe",
+      "file": "space/ns_densest_object_universe.mp4",
+      "title": "The Densest Object We Can Actually See",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "ns_teaspoon_billion_tons",
+      "file": "space/ns_teaspoon_billion_tons.mp4",
+      "title": "A Teaspoon That Weighs A Billion Tons",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "nutrition_in_the_vastness_of_s",
+      "file": "space/nutrition_in_the_vastness_of_s.mp4",
+      "title": "Nutrition in the vastness of space",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "one_small_step_50_years_on",
+      "file": "space/one_small_step_50_years_on.mp4",
+      "title": "One small step, 50 years on",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "pluto",
+      "file": "space/pluto.mp4",
+      "title": "Pluto's Frozen Heart",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "protoplanet_disk",
+      "file": "space/protoplanet_disk.mp4",
+      "title": "Watch Planets Being Born",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "pulsar",
+      "file": "space/pulsar.mp4",
+      "title": "A Lighthouse of the Cosmos",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "quasar",
+      "file": "space/quasar.mp4",
+      "title": "Brighter Than a Trillion Suns",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "saturn_cassini",
+      "file": "space/saturn_cassini.mp4",
+      "title": "The Crown of the Solar System",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "saturn_s_rings_will_be_gone_in",
+      "file": "space/saturn_s_rings_will_be_gone_in.mp4",
+      "title": "Saturn's Rings Will Be Gone in 300M Years",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "sn_astronomers_predicted_it",
+      "file": "space/sn_astronomers_predicted_it.mp4",
+      "title": "They Predicted A Star Would Explode Again",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "sn_measuring_universe",
+      "file": "space/sn_measuring_universe.mp4",
+      "title": "One Star That Measures The Universe",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "sn_same_star_dies_twice",
+      "file": "space/sn_same_star_dies_twice.mp4",
+      "title": "This Star Exploded Four Times At Once",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "sn_space_is_a_lens",
+      "file": "space/sn_space_is_a_lens.mp4",
+      "title": "Gravity Turns Empty Space Into Glass",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "solar_arrays_that_roll_out_in_",
+      "file": "space/solar_arrays_that_roll_out_in_.mp4",
+      "title": "Solar arrays that roll out in space",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "solar_wind_smacks_into_earth_s",
+      "file": "space/solar_wind_smacks_into_earth_s.mp4",
+      "title": "Solar wind smacks into Earth's shield",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "star_formation",
+      "file": "space/star_formation.mp4",
+      "title": "Towers Where Stars Are Born",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "stars_forged_the_universe_s_ir",
+      "file": "space/stars_forged_the_universe_s_ir.mp4",
+      "title": "Stars forged the universe's iron",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "sun_green_line",
+      "file": "space/sun_green_line.mp4",
+      "title": "The Green Line That Fooled Scientists",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "sun_magnetic_bombs",
+      "file": "space/sun_magnetic_bombs.mp4",
+      "title": "Tiny Explosions May Heat The Corona",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "sun_magnetic_heartbeat",
+      "file": "space/sun_magnetic_heartbeat.mp4",
+      "title": "The Sun Has A Magnetic Heartbeat",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "sun_probe_touched_corona",
+      "file": "space/sun_probe_touched_corona.mp4",
+      "title": "The Probe That Touched The Sun",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "sun_storms_hit_earth",
+      "file": "space/sun_storms_hit_earth.mp4",
+      "title": "Solar Storms Can Hit Earth",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "sun1_corona",
+      "file": "space/sun1_corona.mp4",
+      "title": "The Sun's atmosphere makes no sense",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "sun2_coronium",
+      "file": "space/sun2_coronium.mp4",
+      "title": "The element that didn't exist",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "the_asteroid_site_with_a_myste",
+      "file": "space/the_asteroid_site_with_a_myste.mp4",
+      "title": "The asteroid site with a mysterious dark patch",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "the_cosmic_wall_where_light_hi",
+      "file": "space/the_cosmic_wall_where_light_hi.mp4",
+      "title": "The Cosmic Wall Where Light Hits Its Limit",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "the_moon_remembers_what_earth_",
+      "file": "space/the_moon_remembers_what_earth_.mp4",
+      "title": "The Moon remembers what Earth forgot",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "tidal_disruption",
+      "file": "space/tidal_disruption.mp4",
+      "title": "A Star Torn Into Spaghetti",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "titan",
+      "file": "space/titan.mp4",
+      "title": "Rivers of Liquid Methane",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "trappist1",
+      "file": "space/trappist1.mp4",
+      "title": "Seven Earths Around One Star",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "two_black_holes_locked_in_a_de",
+      "file": "space/two_black_holes_locked_in_a_de.mp4",
+      "title": "Two Black Holes Locked in a Death Spiral",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "venus",
+      "file": "space/venus.mp4",
+      "title": "A Furnace That Melts Lead",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "voyager",
+      "file": "space/voyager.mp4",
+      "title": "Humanity's Farthest Traveler",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "webb_deepfield",
+      "file": "space/webb_deepfield.mp4",
+      "title": "Seeing the First Galaxies",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "webb_micro_motors",
+      "file": "space/webb_micro_motors.mp4",
+      "title": "Eighteen Mirrors Become One",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "webb_sunshield",
+      "file": "space/webb_sunshield.mp4",
+      "title": "A Tennis Court Shield In Space",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "webb1_cold",
+      "file": "space/webb1_cold.mp4",
+      "title": "Colder than Pluto, on purpose",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "webb2_origami",
+      "file": "space/webb2_origami.mp4",
+      "title": "A telescope folded like origami",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "webb3_life",
+      "file": "space/webb3_life.mp4",
+      "title": "A telescope built to find life",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "what_bennu_really_looked_like_",
+      "file": "space/what_bennu_really_looked_like_.mp4",
+      "title": "What Bennu Really Looked Like Up Close",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "what_the_accretion_disk_really",
+      "file": "space/what_the_accretion_disk_really.mp4",
+      "title": "What the accretion disk really is",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "white_dwarf",
+      "file": "space/white_dwarf.mp4",
+      "title": "A Dead Sun Devours Worlds",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "why_nasa_flew_a_probe_into_the",
+      "file": "space/why_nasa_flew_a_probe_into_the.mp4",
+      "title": "Why NASA flew a probe into the Sun",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "why_the_sun_triggers_earth_s_a",
+      "file": "space/why_the_sun_triggers_earth_s_a.mp4",
+      "title": "Why the Sun triggers Earth's auroras",
+      "provenanceStatus": "legacy_missing_source_ledger",
+      "note": "Existing local space deck item predates permanent source ledger."
+    }
+  ]
+}

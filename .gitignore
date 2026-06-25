@@ -27,7 +27,9 @@ local-assets/
 assets/fact-videos/
 data/fact-videos/
 data/quotes-de/
-data/space/
+data/space/*
+!data/space/
+!data/space/sources.json
 data/funny-animals/
 data/memes/photos/
 
