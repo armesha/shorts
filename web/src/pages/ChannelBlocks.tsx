@@ -71,7 +71,7 @@ function formatRunwayDays(days: number | null): string {
 }
 
 function queueRange(block: ChannelThemeBlock): { min: number; max: number } {
-  const values = accountsInBlock(block).map((account) => account.queued);
+  const values = accountsInBlock(block).map((account) => account.effectiveQueued ?? account.queued);
   if (!values.length) return { min: 0, max: 0 };
   return { min: Math.min(...values), max: Math.max(...values) };
 }
