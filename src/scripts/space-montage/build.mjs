@@ -1,8 +1,8 @@
 // Build space montage Shorts: NASA/SVS source clip -> reframe to 1080x1920 with blurred
-// pad (no black bars) -> ElevenLabs (Matilda) voiceover -> per-word karaoke captions
+// pad (no black bars) -> edge-tts voiceover by default -> per-word karaoke captions
 // rendered as transparent PNGs via puppeteer in the Animal-Heroes style (heavy white text,
 // thick dark outline, active word in a gold rounded box) -> source credit -> sync into the
-// `space` deck. Public-domain visualization footage; ElevenLabs is the only TTS.
+// `space` deck. Public-domain visualization footage; ElevenLabs is optional fallback only.
 //
 //   node src/scripts/space-montage/build.mjs                 # build all ready ids
 //   node src/scripts/space-montage/build.mjs --only black_hole_disk --no-sync
@@ -42,9 +42,12 @@ const narration = Object.fromEntries(narrationArr.map((n) => [n.id, n]));
 const VOICE_ID = process.env.ELEVENLABS_VOICE_ID || "XrExE9yKIg1WjnnlVkGX"; // Matilda
 const MODEL_ID = process.env.ELEVENLABS_MODEL_ID || "eleven_multilingual_v2";
 const OUT_FMT = "mp3_44100_128";
+const VENV_PY = path.join(ROOT, ".venv-tts/bin/python");
+const SPACE_TTS = (process.env.SPACE_TTS || process.env.SPACE_TTS_ENGINE || "edge").toLowerCase();
+const EDGE_VOICE = process.env.SPACE_EDGE_VOICE || "en-US-JennyNeural";
 const CHROME = ["/usr/bin/google-chrome", "/usr/bin/google-chrome-stable", "/usr/bin/chromium", "/usr/bin/chromium-browser"].find((p) => fs.existsSync(p));
 
-// ---------- ElevenLabs ----------
+// ---------- TTS ----------
 function readKeys() {
   const raw = [process.env.ELEVENLABS_API_KEYS || "", process.env.ELEVENLABS_API_KEY || "",
     ...Object.entries(process.env).filter(([n]) => /^ELEVENLABS_API_KEY_\d+$/.test(n)).map(([, v]) => v || "")].join(",");
@@ -53,10 +56,29 @@ function readKeys() {
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const scrub = (s, key) => String(s).split(key).join("[secret]").replace(/sk_[A-Za-z0-9_]+/g, "[secret]").slice(0, 200);
 
-async function tts(id, text, force = false) {
+async function ttsEdge(id, text, force = false) {
+  const mp3 = path.join(VOICE_DIR, `${id}.mp3`);
+  if (!force && fs.existsSync(mp3) && ffdur(mp3) > 0) return { mp3, alignment: null, engine: "edge", cached: true };
+  if (!fs.existsSync(VENV_PY)) throw new Error(`edge-tts python venv not found: ${VENV_PY}`);
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    const r = spawnSync(VENV_PY, ["-m", "edge_tts", "--voice", EDGE_VOICE, "--text", text, "--write-media", mp3], {
+      encoding: "utf8",
+      maxBuffer: 16 * 1024 * 1024,
+      timeout: 90_000,
+    });
+    if (r.status === 0 && fs.existsSync(mp3) && ffdur(mp3) > 0) {
+      console.log(`  tts ${id}: edge ${EDGE_VOICE} (${text.length} chars)`);
+      return { mp3, alignment: null, engine: "edge", cached: false };
+    }
+    if (attempt < 3) await sleep(attempt * 2000);
+  }
+  throw new Error(`edge-tts failed for ${id}`);
+}
+
+async function ttsEleven(id, text, force = false) {
   const mp3 = path.join(VOICE_DIR, `${id}.mp3`);
   const al = path.join(VOICE_DIR, `${id}.alignment.json`);
-  if (!force && fs.existsSync(mp3) && fs.existsSync(al)) return { mp3, alignment: JSON.parse(fs.readFileSync(al, "utf8")), cached: true };
+  if (!force && fs.existsSync(mp3) && fs.existsSync(al)) return { mp3, alignment: JSON.parse(fs.readFileSync(al, "utf8")), engine: "elevenlabs", cached: true };
   const keys = readKeys();
   if (!keys.length) throw new Error("no ElevenLabs keys");
   const body = { text, model_id: MODEL_ID, language_code: "en",
@@ -78,7 +100,7 @@ async function tts(id, text, force = false) {
         const alignment = j.normalized_alignment || j.alignment || null;
         fs.writeFileSync(al, JSON.stringify(alignment, null, 2));
         console.log(`  tts ${id}: key#${ki + 1} ...${key.slice(-4)} (${text.length} chars)`);
-        return { mp3, alignment, cached: false };
+        return { mp3, alignment, engine: "elevenlabs", cached: false };
       }
       last = `${res.status} ${scrub(txt, key)}`;
       if (res.status === 429) { await sleep(900 + attempt * 1500); continue; }
@@ -87,6 +109,17 @@ async function tts(id, text, force = false) {
     }
   }
   throw new Error(`TTS failed for ${id}: ${last}`);
+}
+
+async function tts(id, text, force = false) {
+  if (SPACE_TTS === "elevenlabs" || SPACE_TTS === "eleven") return ttsEleven(id, text, force);
+  if (SPACE_TTS === "edge") return ttsEdge(id, text, force);
+  try {
+    return await ttsEleven(id, text, force);
+  } catch (e) {
+    console.warn(`  ElevenLabs unavailable for ${id}; falling back to edge-tts: ${(e?.message || e).toString().slice(0, 160)}`);
+    return ttsEdge(id, text, force);
+  }
 }
 
 // ---------- words from EL alignment ----------
@@ -116,6 +149,12 @@ function wordsFromText(text, perWord = READ_PER_WORD) {
   let t = 0; const out = [];
   for (const w of ws) { out.push({ text: w, start: t, end: t + perWord }); t += perWord; }
   return out;
+}
+function wordsFromTextDuration(text, duration) {
+  const ws = (text || "").trim().split(/\s+/).filter(Boolean);
+  if (!ws.length) return [];
+  const perWord = Math.max(0.22, Math.min(0.7, duration / ws.length));
+  return wordsFromText(text, perWord);
 }
 // short source label for the top-left corner credit
 function shortSource(src) {
@@ -301,7 +340,7 @@ async function buildClip(browser, id) {
     const r = await tts(id, nar.narration);
     mp3 = r.mp3;
     totalDur = Math.min(58, ffdur(mp3) + 0.5);
-    words = wordsFromAlignment(r.alignment, nar.narration);
+    words = r.alignment ? wordsFromAlignment(r.alignment, nar.narration) : wordsFromTextDuration(nar.narration, Math.max(1, totalDur - 0.5));
   }
   const pages = paginate(words);
   const corner = shortSource(src);
