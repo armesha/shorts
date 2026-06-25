@@ -1492,13 +1492,6 @@
       "quoteChars": 68
     },
     {
-      "fontSize": 60,
-      "lines": 7,
-      "template": "high-contrast",
-      "file": "q2463.mp4",
-      "quoteChars": 152
-    },
-    {
       "fontSize": 76,
       "lines": 5,
       "template": "statesman-note",
@@ -3499,6 +3492,881 @@
       "template": "statesman-note",
       "file": "q2749.mp4",
       "quoteChars": 170
+    },
+    {
+      "fontSize": 70,
+      "lines": 5,
+      "template": "statesman-note",
+      "file": "q2950.mp4",
+      "quoteChars": 99
+    },
+    {
+      "fontSize": 70,
+      "lines": 4,
+      "template": "classic-archive",
+      "file": "q2951.mp4",
+      "quoteChars": 84
+    },
+    {
+      "fontSize": 64,
+      "lines": 7,
+      "template": "cream-history",
+      "file": "q2952.mp4",
+      "quoteChars": 147
+    },
+    {
+      "fontSize": 76,
+      "lines": 4,
+      "template": "cold-editorial",
+      "file": "q2953.mp4",
+      "quoteChars": 62
+    },
+    {
+      "fontSize": 54,
+      "lines": 8,
+      "template": "high-contrast",
+      "file": "q2954.mp4",
+      "quoteChars": 188
+    },
+    {
+      "fontSize": 72,
+      "lines": 6,
+      "template": "statesman-note",
+      "file": "q2955.mp4",
+      "quoteChars": 118
+    },
+    {
+      "fontSize": 64,
+      "lines": 6,
+      "template": "classic-archive",
+      "file": "q2956.mp4",
+      "quoteChars": 139
+    },
+    {
+      "fontSize": 70,
+      "lines": 4,
+      "template": "cream-history",
+      "file": "q2957.mp4",
+      "quoteChars": 68
+    },
+    {
+      "fontSize": 58,
+      "lines": 7,
+      "template": "cold-editorial",
+      "file": "q2958.mp4",
+      "quoteChars": 184
+    },
+    {
+      "fontSize": 56,
+      "lines": 7,
+      "template": "high-contrast",
+      "file": "q2959.mp4",
+      "quoteChars": 188
+    },
+    {
+      "fontSize": 70,
+      "lines": 5,
+      "template": "statesman-note",
+      "file": "q2960.mp4",
+      "quoteChars": 113
+    },
+    {
+      "fontSize": 64,
+      "lines": 7,
+      "template": "classic-archive",
+      "file": "q2961.mp4",
+      "quoteChars": 144
+    },
+    {
+      "fontSize": 64,
+      "lines": 6,
+      "template": "cream-history",
+      "file": "q2962.mp4",
+      "quoteChars": 134
+    },
+    {
+      "fontSize": 62,
+      "lines": 7,
+      "template": "cold-editorial",
+      "file": "q2963.mp4",
+      "quoteChars": 146
+    },
+    {
+      "fontSize": 50,
+      "lines": 8,
+      "template": "high-contrast",
+      "file": "q2964.mp4",
+      "quoteChars": 217
+    },
+    {
+      "fontSize": 48,
+      "lines": 8,
+      "template": "statesman-note",
+      "file": "q2965.mp4",
+      "quoteChars": 210
+    },
+    {
+      "fontSize": 68,
+      "lines": 6,
+      "template": "classic-archive",
+      "file": "q2966.mp4",
+      "quoteChars": 130
+    },
+    {
+      "fontSize": 72,
+      "lines": 5,
+      "template": "cream-history",
+      "file": "q2967.mp4",
+      "quoteChars": 73
+    },
+    {
+      "fontSize": 76,
+      "lines": 3,
+      "template": "cold-editorial",
+      "file": "q2968.mp4",
+      "quoteChars": 58
+    },
+    {
+      "fontSize": 70,
+      "lines": 4,
+      "template": "high-contrast",
+      "file": "q2969.mp4",
+      "quoteChars": 72
+    },
+    {
+      "fontSize": 64,
+      "lines": 6,
+      "template": "statesman-note",
+      "file": "q2970.mp4",
+      "quoteChars": 134
+    },
+    {
+      "fontSize": 76,
+      "lines": 5,
+      "template": "classic-archive",
+      "file": "q2971.mp4",
+      "quoteChars": 88
+    },
+    {
+      "fontSize": 54,
+      "lines": 8,
+      "template": "cream-history",
+      "file": "q2972.mp4",
+      "quoteChars": 193
+    },
+    {
+      "fontSize": 64,
+      "lines": 6,
+      "template": "cold-editorial",
+      "file": "q2973.mp4",
+      "quoteChars": 138
+    },
+    {
+      "fontSize": 76,
+      "lines": 3,
+      "template": "high-contrast",
+      "file": "q2974.mp4",
+      "quoteChars": 55
+    },
+    {
+      "fontSize": 70,
+      "lines": 6,
+      "template": "statesman-note",
+      "file": "q2975.mp4",
+      "quoteChars": 119
+    },
+    {
+      "fontSize": 72,
+      "lines": 3,
+      "template": "classic-archive",
+      "file": "q2976.mp4",
+      "quoteChars": 55
+    },
+    {
+      "fontSize": 76,
+      "lines": 4,
+      "template": "cream-history",
+      "file": "q2977.mp4",
+      "quoteChars": 65
+    },
+    {
+      "fontSize": 70,
+      "lines": 4,
+      "template": "cold-editorial",
+      "file": "q2978.mp4",
+      "quoteChars": 68
+    },
+    {
+      "fontSize": 72,
+      "lines": 4,
+      "template": "high-contrast",
+      "file": "q2979.mp4",
+      "quoteChars": 71
+    },
+    {
+      "fontSize": 70,
+      "lines": 5,
+      "template": "statesman-note",
+      "file": "q2980.mp4",
+      "quoteChars": 106
+    },
+    {
+      "fontSize": 70,
+      "lines": 6,
+      "template": "classic-archive",
+      "file": "q2981.mp4",
+      "quoteChars": 111
+    },
+    {
+      "fontSize": 72,
+      "lines": 5,
+      "template": "cream-history",
+      "file": "q2982.mp4",
+      "quoteChars": 93
+    },
+    {
+      "fontSize": 64,
+      "lines": 6,
+      "template": "cold-editorial",
+      "file": "q2983.mp4",
+      "quoteChars": 122
+    },
+    {
+      "fontSize": 70,
+      "lines": 4,
+      "template": "high-contrast",
+      "file": "q2984.mp4",
+      "quoteChars": 69
+    },
+    {
+      "fontSize": 72,
+      "lines": 6,
+      "template": "statesman-note",
+      "file": "q2985.mp4",
+      "quoteChars": 108
+    },
+    {
+      "fontSize": 60,
+      "lines": 6,
+      "template": "classic-archive",
+      "file": "q2986.mp4",
+      "quoteChars": 155
+    },
+    {
+      "fontSize": 70,
+      "lines": 3,
+      "template": "cream-history",
+      "file": "q2987.mp4",
+      "quoteChars": 59
+    },
+    {
+      "fontSize": 72,
+      "lines": 3,
+      "template": "cold-editorial",
+      "file": "q2988.mp4",
+      "quoteChars": 59
+    },
+    {
+      "fontSize": 54,
+      "lines": 7,
+      "template": "high-contrast",
+      "file": "q2989.mp4",
+      "quoteChars": 178
+    },
+    {
+      "fontSize": 70,
+      "lines": 5,
+      "template": "statesman-note",
+      "file": "q2990.mp4",
+      "quoteChars": 85
+    },
+    {
+      "fontSize": 64,
+      "lines": 7,
+      "template": "classic-archive",
+      "file": "q2991.mp4",
+      "quoteChars": 119
+    },
+    {
+      "fontSize": 64,
+      "lines": 6,
+      "template": "cream-history",
+      "file": "q2992.mp4",
+      "quoteChars": 145
+    },
+    {
+      "fontSize": 70,
+      "lines": 6,
+      "template": "cold-editorial",
+      "file": "q2993.mp4",
+      "quoteChars": 119
+    },
+    {
+      "fontSize": 72,
+      "lines": 3,
+      "template": "high-contrast",
+      "file": "q2994.mp4",
+      "quoteChars": 60
+    },
+    {
+      "fontSize": 66,
+      "lines": 5,
+      "template": "statesman-note",
+      "file": "q2995.mp4",
+      "quoteChars": 114
+    },
+    {
+      "fontSize": 70,
+      "lines": 4,
+      "template": "classic-archive",
+      "file": "q2996.mp4",
+      "quoteChars": 68
+    },
+    {
+      "fontSize": 72,
+      "lines": 4,
+      "template": "cream-history",
+      "file": "q2997.mp4",
+      "quoteChars": 68
+    },
+    {
+      "fontSize": 56,
+      "lines": 6,
+      "template": "cold-editorial",
+      "file": "q2998.mp4",
+      "quoteChars": 165
+    },
+    {
+      "fontSize": 56,
+      "lines": 7,
+      "template": "high-contrast",
+      "file": "q2999.mp4",
+      "quoteChars": 183
+    },
+    {
+      "fontSize": 72,
+      "lines": 5,
+      "template": "statesman-note",
+      "file": "q3000.mp4",
+      "quoteChars": 96
+    },
+    {
+      "fontSize": 76,
+      "lines": 5,
+      "template": "classic-archive",
+      "file": "q3001.mp4",
+      "quoteChars": 100
+    },
+    {
+      "fontSize": 62,
+      "lines": 7,
+      "template": "cream-history",
+      "file": "q3002.mp4",
+      "quoteChars": 153
+    },
+    {
+      "fontSize": 56,
+      "lines": 8,
+      "template": "cold-editorial",
+      "file": "q3003.mp4",
+      "quoteChars": 190
+    },
+    {
+      "fontSize": 76,
+      "lines": 4,
+      "template": "high-contrast",
+      "file": "q3004.mp4",
+      "quoteChars": 71
+    },
+    {
+      "fontSize": 56,
+      "lines": 7,
+      "template": "statesman-note",
+      "file": "q3005.mp4",
+      "quoteChars": 187
+    },
+    {
+      "fontSize": 60,
+      "lines": 7,
+      "template": "classic-archive",
+      "file": "q3006.mp4",
+      "quoteChars": 173
+    },
+    {
+      "fontSize": 76,
+      "lines": 4,
+      "template": "cream-history",
+      "file": "q3007.mp4",
+      "quoteChars": 71
+    },
+    {
+      "fontSize": 60,
+      "lines": 7,
+      "template": "cold-editorial",
+      "file": "q3008.mp4",
+      "quoteChars": 181
+    },
+    {
+      "fontSize": 64,
+      "lines": 7,
+      "template": "high-contrast",
+      "file": "q3009.mp4",
+      "quoteChars": 170
+    },
+    {
+      "fontSize": 64,
+      "lines": 6,
+      "template": "statesman-note",
+      "file": "q3010.mp4",
+      "quoteChars": 124
+    },
+    {
+      "fontSize": 70,
+      "lines": 5,
+      "template": "classic-archive",
+      "file": "q3011.mp4",
+      "quoteChars": 90
+    },
+    {
+      "fontSize": 58,
+      "lines": 7,
+      "template": "cream-history",
+      "file": "q3012.mp4",
+      "quoteChars": 166
+    },
+    {
+      "fontSize": 76,
+      "lines": 4,
+      "template": "cold-editorial",
+      "file": "q3013.mp4",
+      "quoteChars": 66
+    },
+    {
+      "fontSize": 70,
+      "lines": 6,
+      "template": "high-contrast",
+      "file": "q3014.mp4",
+      "quoteChars": 133
+    },
+    {
+      "fontSize": 72,
+      "lines": 3,
+      "template": "statesman-note",
+      "file": "q3015.mp4",
+      "quoteChars": 66
+    },
+    {
+      "fontSize": 76,
+      "lines": 4,
+      "template": "classic-archive",
+      "file": "q3016.mp4",
+      "quoteChars": 62
+    },
+    {
+      "fontSize": 70,
+      "lines": 3,
+      "template": "cream-history",
+      "file": "q3017.mp4",
+      "quoteChars": 57
+    },
+    {
+      "fontSize": 66,
+      "lines": 6,
+      "template": "cold-editorial",
+      "file": "q3018.mp4",
+      "quoteChars": 135
+    },
+    {
+      "fontSize": 64,
+      "lines": 6,
+      "template": "high-contrast",
+      "file": "q3019.mp4",
+      "quoteChars": 119
+    },
+    {
+      "fontSize": 70,
+      "lines": 6,
+      "template": "statesman-note",
+      "file": "q3020.mp4",
+      "quoteChars": 121
+    },
+    {
+      "fontSize": 56,
+      "lines": 7,
+      "template": "classic-archive",
+      "file": "q3021.mp4",
+      "quoteChars": 171
+    },
+    {
+      "fontSize": 56,
+      "lines": 6,
+      "template": "cream-history",
+      "file": "q3022.mp4",
+      "quoteChars": 164
+    },
+    {
+      "fontSize": 62,
+      "lines": 7,
+      "template": "cold-editorial",
+      "file": "q3023.mp4",
+      "quoteChars": 157
+    },
+    {
+      "fontSize": 72,
+      "lines": 4,
+      "template": "high-contrast",
+      "file": "q3024.mp4",
+      "quoteChars": 71
+    },
+    {
+      "fontSize": 76,
+      "lines": 4,
+      "template": "statesman-note",
+      "file": "q3025.mp4",
+      "quoteChars": 67
+    },
+    {
+      "fontSize": 70,
+      "lines": 4,
+      "template": "classic-archive",
+      "file": "q3026.mp4",
+      "quoteChars": 74
+    },
+    {
+      "fontSize": 64,
+      "lines": 7,
+      "template": "cream-history",
+      "file": "q3027.mp4",
+      "quoteChars": 150
+    },
+    {
+      "fontSize": 66,
+      "lines": 5,
+      "template": "cold-editorial",
+      "file": "q3028.mp4",
+      "quoteChars": 124
+    },
+    {
+      "fontSize": 64,
+      "lines": 6,
+      "template": "high-contrast",
+      "file": "q3029.mp4",
+      "quoteChars": 142
+    },
+    {
+      "fontSize": 72,
+      "lines": 3,
+      "template": "statesman-note",
+      "file": "q3030.mp4",
+      "quoteChars": 63
+    },
+    {
+      "fontSize": 52,
+      "lines": 7,
+      "template": "classic-archive",
+      "file": "q3031.mp4",
+      "quoteChars": 201
+    },
+    {
+      "fontSize": 58,
+      "lines": 7,
+      "template": "cream-history",
+      "file": "q3032.mp4",
+      "quoteChars": 160
+    },
+    {
+      "fontSize": 62,
+      "lines": 7,
+      "template": "cold-editorial",
+      "file": "q3033.mp4",
+      "quoteChars": 164
+    },
+    {
+      "fontSize": 56,
+      "lines": 7,
+      "template": "high-contrast",
+      "file": "q3034.mp4",
+      "quoteChars": 182
+    },
+    {
+      "fontSize": 70,
+      "lines": 3,
+      "template": "statesman-note",
+      "file": "q3035.mp4",
+      "quoteChars": 66
+    },
+    {
+      "fontSize": 72,
+      "lines": 6,
+      "template": "classic-archive",
+      "file": "q3036.mp4",
+      "quoteChars": 110
+    },
+    {
+      "fontSize": 76,
+      "lines": 5,
+      "template": "cream-history",
+      "file": "q3037.mp4",
+      "quoteChars": 88
+    },
+    {
+      "fontSize": 70,
+      "lines": 4,
+      "template": "cold-editorial",
+      "file": "q3038.mp4",
+      "quoteChars": 88
+    },
+    {
+      "fontSize": 72,
+      "lines": 4,
+      "template": "high-contrast",
+      "file": "q3039.mp4",
+      "quoteChars": 65
+    },
+    {
+      "fontSize": 56,
+      "lines": 6,
+      "template": "statesman-note",
+      "file": "q3040.mp4",
+      "quoteChars": 176
+    },
+    {
+      "fontSize": 70,
+      "lines": 3,
+      "template": "classic-archive",
+      "file": "q3041.mp4",
+      "quoteChars": 68
+    },
+    {
+      "fontSize": 56,
+      "lines": 8,
+      "template": "cream-history",
+      "file": "q3042.mp4",
+      "quoteChars": 164
+    },
+    {
+      "fontSize": 76,
+      "lines": 5,
+      "template": "cold-editorial",
+      "file": "q3043.mp4",
+      "quoteChars": 97
+    },
+    {
+      "fontSize": 70,
+      "lines": 4,
+      "template": "high-contrast",
+      "file": "q3044.mp4",
+      "quoteChars": 80
+    },
+    {
+      "fontSize": 72,
+      "lines": 5,
+      "template": "statesman-note",
+      "file": "q3045.mp4",
+      "quoteChars": 77
+    },
+    {
+      "fontSize": 76,
+      "lines": 3,
+      "template": "classic-archive",
+      "file": "q3046.mp4",
+      "quoteChars": 56
+    },
+    {
+      "fontSize": 54,
+      "lines": 8,
+      "template": "cream-history",
+      "file": "q3047.mp4",
+      "quoteChars": 180
+    },
+    {
+      "fontSize": 54,
+      "lines": 8,
+      "template": "cold-editorial",
+      "file": "q3048.mp4",
+      "quoteChars": 198
+    },
+    {
+      "fontSize": 76,
+      "lines": 4,
+      "template": "high-contrast",
+      "file": "q3049.mp4",
+      "quoteChars": 66
+    },
+    {
+      "fontSize": 70,
+      "lines": 5,
+      "template": "statesman-note",
+      "file": "q3050.mp4",
+      "quoteChars": 88
+    },
+    {
+      "fontSize": 72,
+      "lines": 6,
+      "template": "classic-archive",
+      "file": "q3051.mp4",
+      "quoteChars": 100
+    },
+    {
+      "fontSize": 76,
+      "lines": 4,
+      "template": "cream-history",
+      "file": "q3052.mp4",
+      "quoteChars": 68
+    },
+    {
+      "fontSize": 70,
+      "lines": 4,
+      "template": "cold-editorial",
+      "file": "q3053.mp4",
+      "quoteChars": 67
+    },
+    {
+      "fontSize": 56,
+      "lines": 8,
+      "template": "high-contrast",
+      "file": "q3054.mp4",
+      "quoteChars": 188
+    },
+    {
+      "fontSize": 76,
+      "lines": 4,
+      "template": "statesman-note",
+      "file": "q3055.mp4",
+      "quoteChars": 72
+    },
+    {
+      "fontSize": 70,
+      "lines": 4,
+      "template": "classic-archive",
+      "file": "q3056.mp4",
+      "quoteChars": 66
+    },
+    {
+      "fontSize": 72,
+      "lines": 5,
+      "template": "cream-history",
+      "file": "q3057.mp4",
+      "quoteChars": 106
+    },
+    {
+      "fontSize": 64,
+      "lines": 6,
+      "template": "cold-editorial",
+      "file": "q3058.mp4",
+      "quoteChars": 131
+    },
+    {
+      "fontSize": 62,
+      "lines": 7,
+      "template": "high-contrast",
+      "file": "q3059.mp4",
+      "quoteChars": 159
+    },
+    {
+      "fontSize": 54,
+      "lines": 3,
+      "template": "statesman-note",
+      "file": "q3060.mp4",
+      "quoteChars": 71
+    },
+    {
+      "fontSize": 76,
+      "lines": 4,
+      "template": "classic-archive",
+      "file": "q3061.mp4",
+      "quoteChars": 72
+    },
+    {
+      "fontSize": 52,
+      "lines": 8,
+      "template": "cream-history",
+      "file": "q3062.mp4",
+      "quoteChars": 209
+    },
+    {
+      "fontSize": 64,
+      "lines": 7,
+      "template": "cold-editorial",
+      "file": "q3063.mp4",
+      "quoteChars": 157
+    },
+    {
+      "fontSize": 76,
+      "lines": 5,
+      "template": "high-contrast",
+      "file": "q3064.mp4",
+      "quoteChars": 88
+    },
+    {
+      "fontSize": 70,
+      "lines": 5,
+      "template": "statesman-note",
+      "file": "q3065.mp4",
+      "quoteChars": 98
+    },
+    {
+      "fontSize": 72,
+      "lines": 5,
+      "template": "classic-archive",
+      "file": "q3066.mp4",
+      "quoteChars": 102
+    },
+    {
+      "fontSize": 76,
+      "lines": 4,
+      "template": "cream-history",
+      "file": "q3067.mp4",
+      "quoteChars": 66
+    },
+    {
+      "fontSize": 62,
+      "lines": 7,
+      "template": "cold-editorial",
+      "file": "q3068.mp4",
+      "quoteChars": 165
+    },
+    {
+      "fontSize": 52,
+      "lines": 8,
+      "template": "high-contrast",
+      "file": "q3069.mp4",
+      "quoteChars": 213
+    },
+    {
+      "fontSize": 76,
+      "lines": 4,
+      "template": "statesman-note",
+      "file": "q3070.mp4",
+      "quoteChars": 69
+    },
+    {
+      "fontSize": 70,
+      "lines": 6,
+      "template": "classic-archive",
+      "file": "q3071.mp4",
+      "quoteChars": 128
+    },
+    {
+      "fontSize": 72,
+      "lines": 6,
+      "template": "cream-history",
+      "file": "q3072.mp4",
+      "quoteChars": 99
+    },
+    {
+      "fontSize": 56,
+      "lines": 7,
+      "template": "cold-editorial",
+      "file": "q3073.mp4",
+      "quoteChars": 148
+    },
+    {
+      "fontSize": 70,
+      "lines": 3,
+      "template": "high-contrast",
+      "file": "q3074.mp4",
+      "quoteChars": 61
     }
   ]
 }
