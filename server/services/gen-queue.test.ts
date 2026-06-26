@@ -109,6 +109,25 @@ test("queuedRemainingForOwnerDecks: counts per OWNER and only overlapping deck-s
   q.drain();
 });
 
+test("queuedRemainingForAccount: sums unfinished videos per CHANNEL across its jobs", async () => {
+  const q = createGenQueue();
+  q.initWorker(async () => {
+    await sleep(40);
+    return "made";
+  });
+  // The "top up to N days re-clicked" shape: two batches piled onto the SAME channel (account 1) plus
+  // an unrelated channel (account 2). The helper must see BOTH batches of channel 1 as still-in-flight,
+  // which is exactly what stops the top-up planner from stacking a third batch on top.
+  q.enqueue(1, 1, 3);
+  q.enqueue(1, 1, 4);
+  q.enqueue(1, 2, 5);
+  await sleep(5); // first job running (done=0), rest queued — all remaining = their totals
+  assert.equal(q.queuedRemainingForAccount(1), 7, "both batches for channel 1 (3 + 4)");
+  assert.equal(q.queuedRemainingForAccount(2), 5);
+  assert.equal(q.queuedRemainingForAccount(99), 0, "unknown channel → 0");
+  q.drain();
+});
+
 test("exhausted: worker reporting 'exhausted' stops the job softly", async () => {
   const q = createGenQueue();
   let calls = 0;

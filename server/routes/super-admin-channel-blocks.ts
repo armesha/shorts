@@ -11,6 +11,7 @@ import {
   enqueue as genEnqueue,
   listStatuses as genListStatuses,
   queuedRemainingForOwnerDecks,
+  queuedRemainingForAccount,
 } from "../services/gen-queue.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
 import { USER_DAILY_SCHEDULE_CAP, accountDailyScheduleCap } from "../infra/account-limits.ts";
@@ -1177,12 +1178,17 @@ function planChannelBlockNormalize(input: {
     const coverage = coverageByAccount.get(account.id);
     const currentQueued = coverage?.effective ?? 0;
     const currentRunwayDays = coverage?.runwayDays ?? (perDay > 0 ? currentQueued / perDay : 0);
-    const missing = accountTargetQueued - currentQueued;
+    // Count videos already being generated for THIS channel (queued/running gen jobs) toward the target:
+    // they aren't in db.listVideos yet, so without this a "top up to N days" re-click while a batch is
+    // still generating would stack a second full batch on top and overshoot N days.
+    const inFlightQueued = queuedRemainingForAccount(account.id);
+    const readyDeficit = accountTargetQueued - currentQueued;
+    const missing = readyDeficit - inFlightQueued;
     if (missing <= 0) {
       skipped.push({
         accountId: account.id,
         channelName: account.ytChannelTitle || account.channelName,
-        reason: "already_at_target",
+        reason: readyDeficit > 0 ? "generation_in_progress" : "already_at_target",
         currentQueued,
         targetQueued: accountTargetQueued,
         currentRunwayDays,
@@ -1205,7 +1211,10 @@ function planChannelBlockNormalize(input: {
     const exactDeficit = activeSourceGroups(block, account, deckIds, sourceWeights).length
       ? weightedDeckDeficitSequence(block, account, deckIds, sourceWeights, queuedByDeck, accountTargetQueued)
       : deckDeficitSequence(account, deckIds, queuedByDeck, accountTargetQueued);
-    const baseJobDeckIds = exactDeficit.length ? exactDeficit : weightedDeckSlots(block, account, deckIds, sourceWeights, missing);
+    // exactDeficit fills the READY deficit (target − ready); trim to `missing` so the in-flight videos
+    // already on the way aren't generated again. The deficit sequence is round-robin, so a prefix stays
+    // balanced across decks.
+    const baseJobDeckIds = (exactDeficit.length ? exactDeficit : weightedDeckSlots(block, account, deckIds, sourceWeights, missing)).slice(0, missing);
     const requestedByDeck = countDeckSequence(baseJobDeckIds);
     const allowedByDeck = new Map<string, number>();
     for (const [deckId, needed] of Object.entries(requestedByDeck)) {

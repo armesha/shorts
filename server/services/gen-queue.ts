@@ -44,6 +44,10 @@ export interface GenQueue {
   /** Videos still to be made for one CONTENT OWNER, counting only jobs that draw from the given
    *  decks (deck-sets overlapping `deckIds`). Used to not enqueue more than the owner's free cards. */
   queuedRemainingForOwnerDecks(ownerUserId: number, deckIds: string[]): number;
+  /** Videos still to be made for one CHANNEL (account) across its active jobs. Used so a "top up to N
+   *  days" re-click doesn't stack a second batch on top of one already generating (those in-flight
+   *  videos aren't in the saved-videos table yet, so they'd otherwise be counted as still missing). */
+  queuedRemainingForAccount(accountId: number): number;
   /** Stop taking NEW videos/jobs; the in-flight video is allowed to finish. For graceful shutdown. */
   drain(): void;
   isDraining(): boolean;
@@ -202,6 +206,17 @@ export function createGenQueue(): GenQueue {
       }
       return total;
     },
+    queuedRemainingForAccount(accountId) {
+      prune();
+      let total = 0;
+      for (const id of pending) {
+        const j = jobs.get(id);
+        if (!j || j.accountId !== accountId) continue;
+        if (j.state !== "queued" && j.state !== "running") continue;
+        total += Math.max(0, j.total - j.done);
+      }
+      return total;
+    },
     drain() {
       draining = true;
     },
@@ -225,4 +240,5 @@ export const listStatuses = (userId?: number): JobStatus[] => _queue.listStatuse
 export const queuedRemainingForUser = (userId: number): number => _queue.queuedRemainingForUser(userId);
 export const queuedRemainingForOwnerDecks = (ownerUserId: number, deckIds: string[]): number =>
   _queue.queuedRemainingForOwnerDecks(ownerUserId, deckIds);
+export const queuedRemainingForAccount = (accountId: number): number => _queue.queuedRemainingForAccount(accountId);
 export const drainQueue = (): void => _queue.drain();
