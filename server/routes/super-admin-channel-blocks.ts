@@ -169,11 +169,16 @@ const QUOTE_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
   id: ["quote-video-id"],
 };
 
+const PSYCHOLOGY_DECK_BY_LANG: Record<string, string[]> = {
+  ru: ["pack:psychology-ru-superadmin"],
+  de: ["pack:психология-mgs-mqe2kfjv"],
+};
+
 const QUOTE_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "static",
     title: "Статичные цитаты",
-    defaultWeight: 4,
+    defaultWeight: 3,
     sources: QUOTE_STATIC_DECK_BY_LANG,
   },
   ...(Object.keys(QUOTE_VIDEO_DECK_BY_LANG).length
@@ -186,6 +191,12 @@ const QUOTE_SOURCE_GROUPS: SourceGroupDef[] = [
         },
       ]
     : []),
+  {
+    id: "psychology",
+    title: "Психология",
+    defaultWeight: 6,
+    sources: PSYCHOLOGY_DECK_BY_LANG,
+  },
 ];
 
 const STATIC_FACT_DECK_BY_LANG: Record<string, string[]> = {
@@ -255,10 +266,6 @@ const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
     en: ["christian"],
   },
   quotes: QUOTE_STATIC_DECK_BY_LANG,
-  psychology: {
-    ru: ["pack:psychology-ru-superadmin"],
-    de: ["psych"],
-  },
   facts_space: {
     en: ["pack:static-facts-en-superadmin", "space", "fact-en"],
     es: ["pack:static-facts-es-superadmin", "space-es", "fact-es"],
@@ -315,25 +322,17 @@ const BLOCKS: BlockDef[] = [
   },
   {
     id: "quotes",
-    title: "Цитаты",
-    description: "Готовые видео-паки с цитатами.",
+    title: "Цитаты и Психология",
+    description: "Цитаты и психологические карточки в одном тематическом блоке.",
     rules: [
       "Цитаты расширять только через проверенные источники; для портретов нужен Wikimedia/аналогичный rights ledger.",
       "Запрещены AP/неясные фото, misattribution, экстремистские/насильственные цитаты и protected-class hate.",
       "Перед публикацией прогонять quote validator и ручной spot-check по авторам/портретам.",
-    ],
-    accountIds: [43, 65],
-    sourceGroups: QUOTE_SOURCE_GROUPS,
-  },
-  {
-    id: "psychology",
-    title: "Психология",
-    description: "Психологические карточки и связанные источники.",
-    rules: [
       "Не давать медицинских диагнозов/обещаний лечения; формулировать как общие наблюдения и self-help.",
       "Локализации должны сохранять осторожный тон и избегать травматичных/опасных советов.",
     ],
-    accountIds: [44],
+    accountIds: [43, 44, 65, 81],
+    sourceGroups: QUOTE_SOURCE_GROUPS,
   },
   {
     id: "facts_space",
