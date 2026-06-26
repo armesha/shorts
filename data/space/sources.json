@@ -92,6 +92,24 @@
       "note": "Existing local space deck item predates permanent source ledger."
     },
     {
+      "id": "bennu_asteroid",
+      "file": "space/bennu_asteroid.mp4",
+      "title": "A Sample From Before Earth",
+      "text": "A Sample From Before Earth",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "bennu_asteroid.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a030000/a031200/a031244/osiris-rex-tag_1080p30.mp4",
+      "nasaId": "31244",
+      "nasaTitle": "OSIRIS-REx Tags Asteroid Bennu Videos",
+      "subject": "Asteroid Bennu and the sample brought back to Earth",
+      "credit": "NASA/Goddard/University of Arizona/Lockheed Martin",
+      "center": "NASA SVS",
+      "licenseNote": "NASA SVS public-domain media; source page and direct MP4 recorded.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-26T02:08:31.634Z"
+    },
+    {
       "id": "bennu",
       "file": "space/bennu.mp4",
       "title": "Touching an Asteroid to Steal Dust",
@@ -354,6 +372,24 @@
       "licenseNote": "NASA media source recorded by the builder; perform per-item manual rights spot-check before mass publication.",
       "generatedBy": "src/scripts/space-montage/build.mjs",
       "updatedAt": "2026-06-25T19:44:38.545Z"
+    },
+    {
+      "id": "enceladus_geysers",
+      "file": "space/enceladus_geysers.mp4",
+      "title": "A Moon Spraying Its Ocean",
+      "text": "A Moon Spraying Its Ocean",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "enceladus_geysers.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a020000/a020300/a020384/EnceladusGeyser_web.mp4",
+      "nasaId": "20384",
+      "nasaTitle": "Enceladus",
+      "subject": "Enceladus firing geysers of water into space",
+      "credit": "NASA, ESA, CSA, STScI, Leah Hustak (STScI)",
+      "center": "NASA SVS",
+      "licenseNote": "NASA SVS/Webb outreach media; source page and direct MP4 recorded.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-26T02:08:31.634Z"
     },
     {
       "id": "enceladus",
@@ -906,6 +942,24 @@
       "note": "Existing local space deck item predates permanent source ledger."
     },
     {
+      "id": "neptune_winds",
+      "file": "space/neptune_winds.mp4",
+      "title": "The Fastest Winds Around a Planet",
+      "text": "The Fastest Winds Around a Planet",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "neptune_winds.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a010000/a011300/a011349/NeptuneVoyager-540-MASTER_high.mp4",
+      "nasaId": "11349",
+      "nasaTitle": "Supersonic Wind",
+      "subject": "Neptune's supersonic winds on the farthest planet",
+      "credit": "NASA/Goddard Space Flight Center",
+      "center": "NASA SVS",
+      "licenseNote": "NASA SVS public-domain media; source page and direct MP4 recorded.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-26T02:08:31.634Z"
+    },
+    {
       "id": "night_lights_change",
       "file": "space/night_lights_change.mp4",
       "title": "Earth's Cities Glow From Space",
@@ -986,6 +1040,24 @@
       "licenseNote": "NASA media source recorded by the builder; perform per-item manual rights spot-check before mass publication.",
       "generatedBy": "src/scripts/space-montage/build.mjs",
       "updatedAt": "2026-06-25T19:44:38.545Z"
+    },
+    {
+      "id": "pluto_flyby",
+      "file": "space/pluto_flyby.mp4",
+      "title": "Flying Over Pluto's Heart",
+      "text": "Flying Over Pluto's Heart",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "pluto_flyby.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a010000/a012000/a012080/SputnikPlanum-1920viz-MASTER_high.mp4",
+      "nasaId": "12080",
+      "nasaTitle": "A Close Look At Pluto",
+      "subject": "Pluto's frozen heart revealed by New Horizons",
+      "credit": "NASA/JHUAPL/SwRI",
+      "center": "NASA SVS",
+      "licenseNote": "NASA SVS public-domain media; source page and direct MP4 recorded.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-26T02:08:31.634Z"
     },
     {
       "id": "pluto",
@@ -1310,11 +1382,47 @@
       "updatedAt": "2026-06-25T21:38:31.393Z"
     },
     {
+      "id": "venus_hell",
+      "file": "space/venus_hell.mp4",
+      "title": "The Planet That Became a Furnace",
+      "text": "The Planet That Became a Furnace",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "venus_hell.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a010000/a014000/a014095/WISPR_Magellan_3rdFlyby.mp4",
+      "nasaId": "14095",
+      "nasaTitle": "NASA's New Views of Venus' Surface From Space",
+      "subject": "Venus, a crushing furnace hot enough to melt lead",
+      "credit": "NASA/APL/NRL/Magellan Team/JPL/USGS",
+      "center": "NASA SVS",
+      "licenseNote": "NASA SVS public-domain media; source page and direct MP4 recorded.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-26T02:08:31.634Z"
+    },
+    {
       "id": "venus",
       "file": "space/venus.mp4",
       "title": "A Furnace That Melts Lead",
       "provenanceStatus": "legacy_missing_source_ledger",
       "note": "Existing local space deck item predates permanent source ledger."
+    },
+    {
+      "id": "voyager_interstellar",
+      "file": "space/voyager_interstellar.mp4",
+      "title": "Beyond the Sun's Bubble",
+      "text": "Beyond the Sun's Bubble",
+      "provenanceStatus": "source_recorded",
+      "sourceType": "nasa_svs",
+      "sourceFile": "voyager_interstellar.mp4",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/vis/a020000/a020100/a020107/a010149_Heliosphere_NTSC.mp4",
+      "nasaId": "20107",
+      "nasaTitle": "Journey to the Heliopause",
+      "subject": "Voyager leaving the solar system into interstellar space",
+      "credit": "NASA/Goddard Space Flight Center/Walt Feimer",
+      "center": "NASA SVS",
+      "licenseNote": "NASA SVS public-domain media; source page and direct MP4 recorded.",
+      "generatedBy": "src/scripts/space-montage/build.mjs",
+      "updatedAt": "2026-06-26T02:08:31.634Z"
     },
     {
       "id": "voyager",
@@ -1419,6 +1527,6 @@
       "note": "Existing local space deck item predates permanent source ledger."
     }
   ],
-  "updatedAt": "2026-06-25T21:42:23.802Z",
+  "updatedAt": "2026-06-26T02:08:31.634Z",
   "createdAt": "2026-06-25T19:33:07.938Z"
 }
