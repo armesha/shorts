@@ -56,12 +56,12 @@ ingestion/safety проход:
   помечены PD India / public domain in the USA и дают чистый HTML/export. Но это не современные
   `चुटकुले`; если делать pack, честно называй его "классические остроумные истории/नीति-कथाएँ" и
   не подключай как обычные анекдоты без такого позиционирования.
-- `id`: перспективны public-domain Malay/Indonesian witty tales (`Hikayat Abu Nawas`,
-  `Hikayat Pelanduk Jenaka`), но часть текста на Wikisource лежит в jawi/старом Malay. Не
-  транслитерировать/модернизировать автоматически без отдельной проверки качества; сначала получить
-  латинский текст/OCR, затем сделать source ledger и safety pass. Commons PDF для `Hikayat Abu Nawas`
-  и `Hikayat Pelanduk Jenaka` проверены: `pdftotext` не извлекает содержимое, нужен OCR/Jawi-проход,
-  иначе pack будет гаданием по картинкам.
+- `id`: лучший найденный стартовый кандидат - public-domain-by-age `Tjerita Aboe Nawas dengan Radja
+  Haroenarrasid di Negri Bagdad` (1894), Commons PDF/Google Books. `pdftotext -raw` извлекает
+  латинский OCR в старой Malay/Indonesian орфографии; использовать `scripts/prepare-indonesian-abunawas-source.mjs`
+  для временного source ledger, глав, candidate excerpts и safety-report в `temp/id-abunawas/`. Не
+  подключать raw OCR как live-deck: в тексте есть религиозные, насильственные, gross/adult и
+  protected-class фрагменты, плюс старое написание требует clean/localization workflow.
 
 ### Backlog по недостающим joke-языкам
 
@@ -71,12 +71,21 @@ ingestion/safety проход:
 
 Проверенные тупики/кандидаты на 2026-06-26:
 
-- `id`: книга `Cherita Jenaka` / `Cerita Jenaka` про Pa' Kadok, Pa' Pandir, Lebai Malang,
-  Pa' Belalang, Si-Lunchai - лучший тематический кандидат, но нужен именно старый public-domain
-  скан/текст. NLB Singapore показывает издание 1957 как `All rights reserved`, его не использовать.
-  Internet Archive по `Cherita Jenaka`/`Cerita Jenaka` не дал готового full-text результата; item
-  `biostor-176273` для `Pa' Pandir` помечен `CC BY-NC 3.0`, поэтому для YouTube/монетизации не
-  подходит. `ms.wikisource.org`/`id.wikisource.org` не содержат готовую страницу этих рассказов.
+- `id`: для первого source-backed прохода использовать `Tjerita Aboe Nawas dengan Radja
+  Haroenarrasid di Negri Bagdad` (1894): Commons file
+  `https://commons.wikimedia.org/wiki/File:Tjerita_Aboe_Nawas_dengan_Radja_Haroenarrasid_di_Negri_Bagdad.pdf`
+  и Google Books metadata
+  `https://books.google.com/books/about/Tjerita_Aboe_Nawas_dengan_Radja_Haroenar.html?hl=id&id=LtWpHDQB6fsC`.
+  Подготовка: `node scripts/prepare-indonesian-abunawas-source.mjs`; результат только в `temp/`, не
+  live-pack. На текущем прогоне получилось 18 глав и 134 OCR-фрагмента-кандидата, но report пометил
+  много safety/OCR-флагов, поэтому перед `data/anecdotes-id` нужен отдельный cleanup/localization
+  workflow с вопросом пользователю о модели. `Cherita Jenaka` / `Cerita Jenaka` про Pa' Kadok,
+  Pa' Pandir, Lebai Malang, Pa' Belalang, Si-Lunchai остается лучшим тематическим кандидатом, но
+  нужен именно старый public-domain скан/текст. NLB Singapore показывает издание 1957 как
+  `All rights reserved`, его не использовать. Internet Archive по `Cherita Jenaka`/`Cerita Jenaka`
+  не дал готового full-text результата; item `biostor-176273` для `Pa' Pandir` помечен `CC BY-NC 3.0`,
+  поэтому для YouTube/монетизации не подходит. `ms.wikisource.org`/`id.wikisource.org` не содержат
+  готовую страницу этих рассказов.
 - `hi`: `लतायफ़ हिंदी` описывается в `प्रेमसागर`/Wikisource как сборник 100 коротких историй и
   чуткулов на урду/хинди/брадж, но пока найдено только упоминание, не сам текст. Internet Archive
   по `लतायफ़ हिंदी`, `लतायफ हिंदी`, `Latayif Hindi`, `Latayif-i Hindi` не дал готового текста.
