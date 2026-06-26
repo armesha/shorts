@@ -85,6 +85,34 @@ const JOKE_SOURCE_GROUPS: SourceGroupDef[] = [
   },
 ];
 
+const LIFEHACK_DECK_BY_LANG: Record<string, string[]> = {
+  ru: ["tips"],
+  ar: ["tips-ar"],
+  en: ["tips-en"],
+  it: ["tips-it"],
+  de: ["tips-de"],
+  es: ["tips-es"],
+  fr: ["tips-fr"],
+  pt: ["tips-pt"],
+  hi: ["tips-hi"],
+  id: ["tips-id"],
+};
+
+const LIFEHACK_SOURCE_GROUPS: SourceGroupDef[] = [
+  {
+    id: "lifehacks",
+    title: "Лайфхаки",
+    defaultWeight: 4,
+    sources: LIFEHACK_DECK_BY_LANG,
+  },
+  {
+    id: "jokes",
+    title: "Анекдоты",
+    defaultWeight: 1,
+    sources: JOKE_TEXT_DECK_BY_LANG,
+  },
+];
+
 const RIDDLE_VISUAL_DECK_BY_LANG: Record<string, string[]> = {
   ru: ["visual-riddles"],
   de: ["visual-riddles-de"],
@@ -214,11 +242,44 @@ const FACT_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
   es: ["fact-es"],
 };
 
+const RELIGION_ISLAM_DECK_BY_LANG: Record<string, string[]> = {
+  ar: ["islamic"],
+};
+
+const RELIGION_KJV_DECK_BY_LANG: Record<string, string[]> = {
+  en: ["christian"],
+};
+
+const RELIGION_PRAYER_DECK_BY_LANG: Record<string, string[]> = {
+  de: ["prayers-de"],
+};
+
+const RELIGION_SOURCE_GROUPS: SourceGroupDef[] = [
+  {
+    id: "islam",
+    title: "Ислам",
+    defaultWeight: 1,
+    sources: RELIGION_ISLAM_DECK_BY_LANG,
+  },
+  {
+    id: "kjv_bible",
+    title: "Библия KJV",
+    defaultWeight: 1,
+    sources: RELIGION_KJV_DECK_BY_LANG,
+  },
+  {
+    id: "christian_prayers",
+    title: "Христианские молитвы",
+    defaultWeight: 1,
+    sources: RELIGION_PRAYER_DECK_BY_LANG,
+  },
+];
+
 const FACT_SPACE_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "static_facts",
     title: "Статичные факты",
-    defaultWeight: 8,
+    defaultWeight: 4,
     sources: STATIC_FACT_DECK_BY_LANG,
   },
   {
@@ -233,22 +294,23 @@ const FACT_SPACE_SOURCE_GROUPS: SourceGroupDef[] = [
     defaultWeight: 1,
     sources: FACT_VIDEO_DECK_BY_LANG,
   },
+  {
+    id: "mind_flip",
+    title: "Обмани свой мозг",
+    defaultWeight: 1,
+    sources: RIDDLE_MIND_FLIP_DECK_BY_LANG,
+  },
+  {
+    id: "optical_illusions",
+    title: "Оптические иллюзии",
+    defaultWeight: 1,
+    sources: RIDDLE_OPTICAL_DECK_BY_LANG,
+  },
 ];
 
 const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
   jokes_memes: JOKE_TEXT_DECK_BY_LANG,
-  lifehacks: {
-    ru: ["tips"],
-    ar: ["tips-ar"],
-    en: ["tips-en"],
-    it: ["tips-it"],
-    de: ["tips-de"],
-    es: ["tips-es"],
-    fr: ["tips-fr"],
-    pt: ["tips-pt"],
-    hi: ["tips-hi"],
-    id: ["tips-id"],
-  },
+  lifehacks: LIFEHACK_DECK_BY_LANG,
   riddles_illusions: {
     ru: ["visual-riddles", "illusions-ru", "illusions-3d", "ru", "memes-ru"],
     ar: ["illusions-ar", "ar", "memes-ar"],
@@ -264,6 +326,7 @@ const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
   religion: {
     ar: ["islamic"],
     en: ["christian"],
+    de: ["prayers-de"],
   },
   quotes: QUOTE_STATIC_DECK_BY_LANG,
   facts_space: {
@@ -293,8 +356,10 @@ const BLOCKS: BlockDef[] = [
       "Это хороший кандидат для полной локализации RU/AR/EN/IT/ES/DE/PT/HI/ID на одном наборе идей.",
       "Шаблоны можно переиспользовать, но текст и бытовые реалии нужно локализовать под язык.",
       "Если появится озвучка, новые voiceover-паки собирать через edge-tts, не ElevenLabs.",
+      "Анекдоты внутри блока остаются отдельным источником микса; не смешивать бытовые советы и шутки внутри одной карточки.",
     ],
     accountIds: [16, 18],
+    sourceGroups: LIFEHACK_SOURCE_GROUPS,
   },
   {
     id: "riddles_illusions",
@@ -315,10 +380,12 @@ const BLOCKS: BlockDef[] = [
     rules: [
       "Один блок управления, но исламские, KJV, православные и католические источники не смешиваются между каналами.",
       "Для каждого религиозного пака нужен отдельный source ledger и ручная проверка переводов/формулировок.",
-      "Перед массовой публикацией проверять title/description/thumbnails на спорный, оскорбительный или политизированный контекст.",
+      "Перед массовой публикацией проверять title/description/thumbnails на спорный, оскорбительный, межрелигиозно-агрессивный или политизированный контекст.",
       "Музыка/звук подбирается отдельно под религию; для исламских паков использовать немелодический фон или тишину.",
+      "Не использовать религиозные тексты для нападок на защищённые группы, оправдания насилия, экстремизма или обещаний медицинских чудес.",
     ],
     accountIds: [23, 31],
+    sourceGroups: RELIGION_SOURCE_GROUPS,
   },
   {
     id: "quotes",
@@ -341,6 +408,7 @@ const BLOCKS: BlockDef[] = [
     rules: [
       "Факты требуют проверяемого источника; для космических медиа проверять NASA/ESA/Commons license/provenance.",
       "Один факт-пак можно локализовать по языкам, но численные данные и названия нужно перепроверять.",
+      "Иллюзии внутри блока подставлять только на языке канала; не смешивать RU-видео в EN/DE-каналах.",
     ],
     accountIds: [38, 45],
     sourceGroups: FACT_SPACE_SOURCE_GROUPS,
@@ -671,7 +739,9 @@ function activeSourceGroups(block: BlockDef, account: Account, sourceDecks: stri
 }
 
 function weightedDeckSlots(block: BlockDef, account: Account, sourceDecks: string[], weights: Record<string, number>, count: number): string[] {
-  const active = activeSourceGroups(block, account, sourceDecks, weights);
+  const rawActive = activeSourceGroups(block, account, sourceDecks, weights);
+  const offset = rawActive.length ? Math.abs(account.id) % rawActive.length : 0;
+  const active = offset ? [...rawActive.slice(offset), ...rawActive.slice(0, offset)] : rawActive;
   if (!active.length) return sourceDecks;
   const totalWeight = active.reduce((sum, group) => sum + group.weight, 0);
   const scores = new Map(active.map((group) => [group.id, 0]));
@@ -704,8 +774,6 @@ function weightedDeckSequence(block: BlockDef, account: Account, sourceDecks: st
 
 function slotDecksForSchedule(block: BlockDef, account: Account, schedule: string[], sourceDecks: string[], weights: Record<string, number>): Record<string, string> {
   if (!schedule.length) return {};
-  const totalWeight = activeSourceWeightTotal(block, account, sourceDecks, weights);
-  if (totalWeight > 0 && schedule.length < totalWeight) return {};
   const sequence = weightedDeckSlots(block, account, sourceDecks, weights, schedule.length);
   if (!sequence.length) return {};
   const out: Record<string, string> = {};
