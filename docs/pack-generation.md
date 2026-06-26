@@ -232,7 +232,9 @@ prebuilt MP4 считается исключением и требует явн�
 | `islamic` آيات وأذكار | `data/islamic/cards.json` | точные интернет-корпусы -> локальные slices -> workflow выбора id -> assemble | да, только для выбора id/theme |
 | `christian` Holy Bible KJV | `data/christian/cards.json` | KJV public domain -> candidates/slices -> workflow выбора id -> assemble | да, только для выбора id/theme |
 | `fact-en` Interesting Facts | `data/fact-videos/videos.json` + `assets/fact-videos/` | готовые MP4 | не в рантайме; новые ролики собираются вне этого конвейера |
-| `quotes-de` Politiker-Zitate | `data/quotes-de/videos.json` + `assets/fact-videos/` | готовые MP4 | не в рантайме |
+| `quotes-de` Politiker-Zitate | `data/quotes-de-combined/videos.json` + `assets/fact-videos/` | единый статичный немецкий quote-card MP4 deck | не в рантайме |
+| `quotes-ru` / `quotes-en` / `quotes-es` / `quotes-*` static quote decks | `data/quotes-*/titled.json` | sourced Wikiquote/Wikimedia portrait quote cards, rendered dynamically | нет для рантайма; да, для новых curated batches |
+| `quote-video-*` voiced quote decks | `data/quotes-*/titled.json`, `data/quote-video-de/titled.json` | те же sourced quote cards, но runtime собирает ролик с voiceover через edge-tts | нет для выбора карточки; да, если расширять/чистить источники |
 | `prayers-de` Gebete | `data/prayers-de/videos.json` + `assets/fact-videos/prayers-de/` | 1000 готовых немецких молитвенных card-style MP4 без тега: примерно 250 про детей/семью и 750 общих молитв | нет |
 | `space` Space | `data/space/videos.json` + `assets/fact-videos/space/` | готовые MP4 | не в рантайме |
 | `animal-superheroes` / `animal-superheroes-en` ЗвероГерои / Animal Heroes | `data/output/admin-demos/manifest.json` + `data/animal-superheroes*/videos.json` + `assets/fact-videos/animal-superheroes*/` | сериальные MP4-комиксы RU/EN с одинаковым визуалом, ElevenLabs-озвучкой и safe-zone karaoke-субтитрами | нет |
@@ -1335,6 +1337,14 @@ node --input-type=module -e 'import fs from "node:fs"; import path from "node:pa
 игнорируемым aggregate/source-cache. Numbered-деки `quotes-de-1`, `quotes-de-2`, `quotes-de-3` оставлены
 как отдельные немецкие video-source деки; их не локализировать и не смешивать с RU/EN/ES portrait quote
 decks. В блоке цитат расписание по умолчанию пинит источники весом `static:video = 4:1`.
+
+Статичные quote decks `quotes-ru`, `quotes-en`, `quotes-es`, `quotes-it`, `quotes-fr`, `quotes-pt`,
+`quotes-hi`, `quotes-id`, `quotes-ar` лежат в `data/quotes-*/titled.json` и используют Wikiquote +
+Wikimedia/Commons portrait ledger. Их voiced-версии `quote-video-*` не являются отдельным корпусом:
+для всех языков, кроме DE, они читают тот же `data/quotes-*`; DE использует отдельный tracked
+`data/quote-video-de/`, собранный из `data/quotes-de-combined/sources.json`. На 2026-06-26 в live БД
+у цитатных каналов armen источники стоят как `quotes-de + quote-video-de` и `quotes-ru +
+quote-video-ru`, а `slotDecks` дают 8 статичных и 2 voiced слота на 10 публикаций.
 
 2026-06-21 добавлен статичный card-style batch `q244..q543` (+300 MP4) без озвучки: портрет +
 цитата + процедурная фоновая музыка. Builder:
