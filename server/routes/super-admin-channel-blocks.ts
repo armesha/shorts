@@ -53,6 +53,7 @@ const JOKE_TEXT_DECK_BY_LANG: Record<string, string[]> = {
   en: ["en"],
   pt: ["pt"],
   ar: ["ar"],
+  hi: ["hi"],
 };
 
 const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {

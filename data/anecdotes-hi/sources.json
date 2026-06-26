@@ -1,0 +1,35 @@
+{
+  "licenseNote": "Underlying works are public-domain by author age. Text was sourced from Hindi Wikisource; retain source URLs and attribution in the ledger when publishing outside this app.",
+  "generatedAt": "2026-06-26T03:41:15.604Z",
+  "sourceCounts": [
+    {
+      "id": "premchand-bade-bhai-sahab-wikisource",
+      "title": "बड़े भाई साहब",
+      "selected": 12
+    },
+    {
+      "id": "bharatendu-parihasini-wikisource",
+      "title": "परिहासिनी",
+      "selected": 7
+    }
+  ],
+  "sources": [
+    {
+      "id": "premchand-bade-bhai-sahab-wikisource",
+      "title": "बड़े भाई साहब",
+      "author": "प्रेमचंद",
+      "authorDied": 1936,
+      "sourceUrl": "https://hi.wikisource.org/wiki/प्रेमचंद_की_सर्वश्रेष्ठ_कहानियां/_बड़े_भाई_साहब",
+      "rights": "Premchand died in 1936; the work is public-domain by author age. Text is sourced from Hindi Wikisource; keep attribution/source URL."
+    },
+    {
+      "id": "bharatendu-parihasini-wikisource",
+      "title": "परिहासिनी",
+      "author": "भारतेंदु हरिश्चंद्र",
+      "authorDied": 1885,
+      "sourceUrl": "https://hi.wikisource.org/wiki/पृष्ठ:भारतेंदु_समग्र.pdf/१११०",
+      "rights": "Bharatendu Harishchandra died in 1885; the underlying text is public-domain by author age. Text is sourced from Hindi Wikisource pages; keep attribution/source URLs."
+    }
+  ],
+  "blockedPolicy": "Rejected religion, politics/authority-heavy setups, protected-class/caste/disability jokes, adult/family/sexist setups, violence/crime, coarse insults, OCR/navigation noise, and non-standalone excerpts."
+}

@@ -12,6 +12,7 @@ test("deckLang maps built-in decks; '' for packs/unknown", () => {
   assert.equal(deckLang("tips-es"), "es");
   assert.equal(deckLang("pt"), "pt");
   assert.equal(deckLang("ar"), "ar");
+  assert.equal(deckLang("hi"), "hi");
   assert.equal(deckLang("islamic"), "ar");
   assert.equal(deckLang("quotes-de-1"), "de");
   assert.equal(deckLang("quotes-de-2"), "de");
