@@ -114,7 +114,7 @@ function deckSummaries(block: ChannelThemeBlock): BlockDeckSummary[] {
   const map = new Map<string, BlockDeckSummary>();
   for (const account of accountsInBlock(block)) {
     for (const deck of account.sourceDecks) {
-      const key = deck.groupId ? `group:${deck.groupId}` : deck.id;
+      const key = deck.id;
       const cur = map.get(key);
       if (cur) {
         cur.available += deck.available;
@@ -232,7 +232,8 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
     loadOps();
   }, []);
 
-  const selectedBlockId = searchParams.get("block");
+  const selectedBlockParam = searchParams.get("block");
+  const selectedBlockId = selectedBlockParam === "lifehacks" ? "quotes" : selectedBlockParam;
   const selectedBlock = data?.blocks.find((block) => block.id === selectedBlockId) ?? null;
   useEffect(() => {
     if (selectedBlock) setPerDay(Math.max(0, Math.min(20, selectedBlock.postsPerDay)));

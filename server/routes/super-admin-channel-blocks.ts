@@ -244,14 +244,14 @@ const QUOTE_SOURCE_GROUPS: SourceGroupDef[] = [
   },
 ];
 
+const LITERATURE_SOURCE_GROUPS: SourceGroupDef[] = [
+  ...LIFEHACK_SOURCE_GROUPS,
+  ...QUOTE_SOURCE_GROUPS,
+];
+
 const STATIC_FACT_DECK_BY_LANG: Record<string, string[]> = {
   en: ["pack:static-facts-en-superadmin"],
   es: ["pack:static-facts-es-superadmin"],
-};
-
-const SPACE_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
-  en: ["space"],
-  es: ["space-es"],
 };
 
 const FACT_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
@@ -271,13 +271,16 @@ const RELIGION_PRAYER_DECK_BY_LANG: Record<string, string[]> = {
   de: ["prayers-de"],
 };
 
-const RELIGION_SOURCE_GROUPS: SourceGroupDef[] = [
+const ISLAM_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "islam",
     title: "Ислам",
     defaultWeight: 1,
     sources: RELIGION_ISLAM_DECK_BY_LANG,
   },
+];
+
+const CHRISTIANITY_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "kjv_bible",
     title: "Библия KJV",
@@ -298,12 +301,6 @@ const FACT_SPACE_SOURCE_GROUPS: SourceGroupDef[] = [
     title: "Статичные факты",
     defaultWeight: 4,
     sources: STATIC_FACT_DECK_BY_LANG,
-  },
-  {
-    id: "space_video",
-    title: "Видео про космос",
-    defaultWeight: 1,
-    sources: SPACE_VIDEO_DECK_BY_LANG,
   },
   {
     id: "fact_video",
@@ -327,7 +324,6 @@ const FACT_SPACE_SOURCE_GROUPS: SourceGroupDef[] = [
 
 const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
   jokes_memes: JOKE_TEXT_DECK_BY_LANG,
-  lifehacks: LIFEHACK_DECK_BY_LANG,
   riddles_illusions: {
     ru: ["visual-riddles", "illusions-ru", "illusions-3d", "ru", "memes-ru"],
     ar: ["illusions-ar", "ar", "memes-ar"],
@@ -340,15 +336,17 @@ const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
     hi: ["illusions-hi", "hi", "memes-hi"],
     id: ["illusions-id", "id", "memes-id"],
   },
-  religion: {
+  islam: {
     ar: ["islamic"],
+  },
+  christianity: {
     en: ["christian"],
     de: ["prayers-de"],
   },
   quotes: QUOTE_STATIC_DECK_BY_LANG,
   facts_space: {
-    en: ["pack:static-facts-en-superadmin", "space", "fact-en"],
-    es: ["pack:static-facts-es-superadmin", "space-es", "fact-es"],
+    en: ["pack:static-facts-en-superadmin", "fact-en"],
+    es: ["pack:static-facts-es-superadmin", "fact-es"],
   },
 };
 
@@ -366,19 +364,6 @@ const BLOCKS: BlockDef[] = [
     sourceGroups: JOKE_SOURCE_GROUPS,
   },
   {
-    id: "lifehacks",
-    title: "Лайфхаки",
-    description: "Практические советы в локализациях.",
-    rules: [
-      "Это хороший кандидат для полной локализации RU/AR/EN/IT/ES/DE/PT/HI/ID на одном наборе идей.",
-      "Шаблоны можно переиспользовать, но текст и бытовые реалии нужно локализовать под язык.",
-      "Если появится озвучка, новые voiceover-паки собирать через edge-tts, не ElevenLabs.",
-      "Анекдоты внутри блока остаются отдельным источником микса; не смешивать бытовые советы и шутки внутри одной карточки.",
-    ],
-    accountIds: [16, 18],
-    sourceGroups: LIFEHACK_SOURCE_GROUPS,
-  },
-  {
     id: "riddles_illusions",
     title: "Загадки и иллюзии",
     description: "Визуальные загадки и оптические иллюзии.",
@@ -391,40 +376,56 @@ const BLOCKS: BlockDef[] = [
     sourceGroups: RIDDLE_SOURCE_GROUPS,
   },
   {
-    id: "religion",
-    title: "Религия",
-    description: "Религиозные каналы в одном блоке; паки остаются разными по религии, языку и конфессии.",
+    id: "islam",
+    title: "Ислам",
+    description: "Исламские религиозные источники без смешивания с христианскими каналами.",
     rules: [
-      "Один блок управления, но исламские, KJV, православные и католические источники не смешиваются между каналами.",
+      "Исламские тексты и молитвенные формулировки не смешивать с христианскими источниками.",
       "Для каждого религиозного пака нужен отдельный source ledger и ручная проверка переводов/формулировок.",
-      "Перед массовой публикацией проверять title/description/thumbnails на спорный, оскорбительный, межрелигиозно-агрессивный или политизированный контекст.",
+      "Перед массовой публикацией проверять title/description/thumbnails на спорный, оскорбительный или политизированный контекст.",
       "Музыка/звук подбирается отдельно под религию; для исламских паков использовать немелодический фон или тишину.",
       "Не использовать религиозные тексты для нападок на защищённые группы, оправдания насилия, экстремизма или обещаний медицинских чудес.",
     ],
-    accountIds: [23, 31],
-    sourceGroups: RELIGION_SOURCE_GROUPS,
+    accountIds: [23],
+    sourceGroups: ISLAM_SOURCE_GROUPS,
+  },
+  {
+    id: "christianity",
+    title: "Христианство",
+    description: "Христианские источники отдельно от исламских каналов.",
+    rules: [
+      "Христианские KJV/молитвенные источники не смешивать с исламскими каналами.",
+      "Для каждого религиозного пака нужен отдельный source ledger и ручная проверка переводов/формулировок.",
+      "Перед массовой публикацией проверять title/description/thumbnails на спорный, оскорбительный или политизированный контекст.",
+      "Не использовать религиозные тексты для нападок на защищённые группы, оправдания насилия, экстремизма или обещаний медицинских чудес.",
+    ],
+    accountIds: [31],
+    sourceGroups: CHRISTIANITY_SOURCE_GROUPS,
   },
   {
     id: "quotes",
-    title: "Цитаты и Психология",
-    description: "Цитаты и психологические карточки в одном тематическом блоке.",
+    title: "Литература",
+    description: "Лайфхаки, анекдоты, цитаты и психологические карточки в одном тематическом блоке.",
     rules: [
+      "Лайфхаки локализовать на одном наборе идей, но бытовые реалии адаптировать под язык.",
+      "Если появится озвучка для лайфхаков, новые voiceover-паки собирать через edge-tts, не ElevenLabs.",
+      "Анекдоты внутри блока остаются отдельным источником микса; не смешивать бытовые советы и шутки внутри одной карточки.",
       "Цитаты расширять только через проверенные источники; для портретов нужен Wikimedia/аналогичный rights ledger.",
       "Запрещены AP/неясные фото, misattribution, экстремистские/насильственные цитаты и protected-class hate.",
       "Перед публикацией прогонять quote validator и ручной spot-check по авторам/портретам.",
       "Не давать медицинских диагнозов/обещаний лечения; формулировать как общие наблюдения и self-help.",
       "Локализации должны сохранять осторожный тон и избегать травматичных/опасных советов.",
     ],
-    accountIds: [43, 44, 65, 81],
-    sourceGroups: QUOTE_SOURCE_GROUPS,
+    accountIds: [16, 18, 43, 44, 65, 81],
+    sourceGroups: LITERATURE_SOURCE_GROUPS,
   },
   {
     id: "facts_space",
-    title: "Факты и космос",
-    description: "Готовые факты и космические видео.",
+    title: "Факты",
+    description: "Готовые факты и визуальные факт-паки.",
     rules: [
-      "Факты требуют проверяемого источника; для космических медиа проверять NASA/ESA/Commons license/provenance.",
-      "Один факт-пак можно локализовать по языкам, но численные данные и названия нужно перепроверять.",
+      "Факты требуют проверяемого источника; численные данные и названия нужно перепроверять.",
+      "Один факт-пак можно локализовать по языкам, но локализацию нужно проверять отдельно.",
       "Иллюзии внутри блока подставлять только на языке канала; не смешивать RU-видео в EN/DE-каналах.",
     ],
     accountIds: [38, 45],
