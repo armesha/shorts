@@ -71,6 +71,16 @@ const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
   ar: ["memes-ar"],
 };
 
+const FUNNY_QUOTE_DECK_BY_LANG: Record<string, string[]> = {
+  ru: ["funny-quotes-ru"],
+  de: ["funny-quotes-de"],
+  it: ["funny-quotes-it"],
+  fr: ["funny-quotes-fr"],
+  en: ["funny-quotes-en"],
+  es: ["funny-quotes-es"],
+  pt: ["funny-quotes-pt"],
+};
+
 const JOKE_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "jokes",
@@ -81,8 +91,14 @@ const JOKE_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "memes",
     title: "Мемы",
-    defaultWeight: 1,
+    defaultWeight: 2,
     sources: JOKE_MEME_DECK_BY_LANG,
+  },
+  {
+    id: "funny_quotes",
+    title: "Смешные цитаты",
+    defaultWeight: 2,
+    sources: FUNNY_QUOTE_DECK_BY_LANG,
   },
 ];
 
@@ -346,7 +362,7 @@ const BLOCKS: BlockDef[] = [
       "Мемы публиковать массово только после проверки прав на шаблоны/фото и отсутствия оскорбительного контекста.",
       "Локализации считаются одним тематическим семейством, но unsafe-языки или отсутствующие мем-паки не подставляются автоматически.",
     ],
-    accountIds: [7, 14, 15, 62, 64, 68, 70, 79],
+    accountIds: [7, 14, 15, 62, 64, 68, 70, 79, 82],
     sourceGroups: JOKE_SOURCE_GROUPS,
   },
   {
@@ -745,15 +761,18 @@ function weightedDeckSlots(block: BlockDef, account: Account, sourceDecks: strin
   const active = offset ? [...rawActive.slice(offset), ...rawActive.slice(0, offset)] : rawActive;
   if (!active.length) return sourceDecks;
   const totalWeight = active.reduce((sum, group) => sum + group.weight, 0);
-  const scores = new Map(active.map((group) => [group.id, 0]));
   const cursors = new Map(active.map((group) => [group.id, 0]));
   const sequence: string[] = [];
   for (let index = 0; index < count; index++) {
-    for (const group of active) scores.set(group.id, (scores.get(group.id) ?? 0) + group.weight);
-    const group = active.reduce((best, candidate) =>
-      (scores.get(candidate.id) ?? 0) > (scores.get(best.id) ?? 0) ? candidate : best,
-    );
-    scores.set(group.id, (scores.get(group.id) ?? 0) - totalWeight);
+    let roll = Math.random() * totalWeight;
+    let group = active[active.length - 1];
+    for (const candidate of active) {
+      roll -= candidate.weight;
+      if (roll < 0) {
+        group = candidate;
+        break;
+      }
+    }
     const cursor = cursors.get(group.id) ?? 0;
     sequence.push(group.deckIds[cursor % group.deckIds.length]);
     cursors.set(group.id, cursor + 1);
@@ -761,21 +780,64 @@ function weightedDeckSlots(block: BlockDef, account: Account, sourceDecks: strin
   return sequence.length ? sequence : sourceDecks;
 }
 
+function weightedDeckSlotsBalanced(block: BlockDef, account: Account, sourceDecks: string[], weights: Record<string, number>, count: number): string[] {
+  const rawActive = activeSourceGroups(block, account, sourceDecks, weights);
+  const offset = rawActive.length ? Math.abs(account.id) % rawActive.length : 0;
+  const active = offset ? [...rawActive.slice(offset), ...rawActive.slice(0, offset)] : rawActive;
+  if (!active.length || count <= 0) return sourceDecks.slice(0, Math.max(0, count));
+  const totalWeight = active.reduce((sum, group) => sum + group.weight, 0);
+  const quotas = active.map((group) => {
+    const exact = (count * group.weight) / totalWeight;
+    return { group, exact, n: Math.floor(exact) };
+  });
+  let remaining = count - quotas.reduce((sum, q) => sum + q.n, 0);
+  for (const quota of quotas.sort((a, b) => b.exact - b.n - (a.exact - a.n))) {
+    if (remaining <= 0) break;
+    quota.n += 1;
+    remaining -= 1;
+  }
+  if (count >= active.length) {
+    for (const quota of quotas) {
+      if (quota.n > 0) continue;
+      const donor = quotas
+        .filter((candidate) => candidate.n > 1)
+        .sort((a, b) => b.n - a.n)[0];
+      if (!donor) break;
+      donor.n -= 1;
+      quota.n = 1;
+    }
+  }
+  const cursors = new Map(active.map((group) => [group.id, 0]));
+  const sequence: string[] = [];
+  for (const { group, n } of quotas) {
+    for (let index = 0; index < n; index++) {
+      const cursor = cursors.get(group.id) ?? 0;
+      sequence.push(group.deckIds[cursor % group.deckIds.length]);
+      cursors.set(group.id, cursor + 1);
+    }
+  }
+  for (let i = sequence.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [sequence[i], sequence[j]] = [sequence[j], sequence[i]];
+  }
+  return sequence;
+}
+
 function activeSourceWeightTotal(block: BlockDef, account: Account, sourceDecks: string[], weights: Record<string, number>): number {
   return activeSourceGroups(block, account, sourceDecks, weights).reduce((sum, group) => sum + group.weight, 0);
 }
 
-function weightedDeckSequence(block: BlockDef, account: Account, sourceDecks: string[], weights: Record<string, number>): string[] {
+function weightedDeckSequence(block: BlockDef, account: Account, sourceDecks: string[], weights: Record<string, number>, count?: number): string[] {
   const active = activeSourceGroups(block, account, sourceDecks, weights);
   if (!active.length) return sourceDecks;
   const totalWeight = active.reduce((sum, group) => sum + group.weight, 0);
   const cycles = Math.max(1, ...active.map((group) => group.deckIds.length));
-  return weightedDeckSlots(block, account, sourceDecks, weights, Math.max(1, totalWeight * cycles));
+  return weightedDeckSlots(block, account, sourceDecks, weights, Math.max(1, count ?? totalWeight * cycles));
 }
 
 function slotDecksForSchedule(block: BlockDef, account: Account, schedule: string[], sourceDecks: string[], weights: Record<string, number>): Record<string, string> {
   if (!schedule.length) return {};
-  const sequence = weightedDeckSlots(block, account, sourceDecks, weights, schedule.length);
+  const sequence = weightedDeckSlotsBalanced(block, account, sourceDecks, weights, schedule.length);
   if (!sequence.length) return {};
   const out: Record<string, string> = {};
   [...schedule].sort().forEach((time, index) => {
@@ -858,7 +920,7 @@ function weightedDeckDeficitSequence(
   targetQueued: number,
 ): string[] {
   if (targetQueued <= 0) return [];
-  const targetSequence = weightedDeckSlots(block, account, sourceDecks, weights, targetQueued);
+  const targetSequence = weightedDeckSlotsBalanced(block, account, sourceDecks, weights, targetQueued);
   const targetByDeck = countDeckSequence(targetSequence);
   const deficits = new Map<string, number>();
   for (const [deckId, target] of Object.entries(targetByDeck)) {
@@ -1336,7 +1398,6 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
     for (const account of accounts) {
       const ownerId = account.userId ?? uid(req);
       const deckIds = deps.deckAccess.accountSourceDecks(account);
-      const jobDeckIds = weightedDeckSequence(block, account, deckIds, sourceWeights);
       if (!deckIds.length) {
         skipped.push({ accountId: account.id, channelName: account.channelName, reason: "no_sources" });
         continue;
@@ -1353,6 +1414,7 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
         }
         total = Math.min(total, free);
       }
+      const jobDeckIds = weightedDeckSequence(block, account, deckIds, sourceWeights, total);
       const job = genEnqueue(uid(req), account.id, total, ownerId, jobDeckIds);
       jobs.push({ accountId: account.id, channelName: account.channelName, deckIds: jobDeckIds, jobId: job.id, total: job.total });
     }

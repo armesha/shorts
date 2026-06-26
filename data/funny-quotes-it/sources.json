@@ -1,0 +1,21 @@
+{
+  "language": "it",
+  "generator": "src/scripts/build-funny-quotes-decks.mjs",
+  "license": {
+    "quoteSource": "Original generated template corpus in this repository",
+    "quoteSpdx": "CC0-1.0 project-owned corpus",
+    "note": "Cards are neutral original humorous aphorisms and are not attributed to real people. No AP/news images or unclear third-party portraits are used."
+  },
+  "safety": {
+    "policy": "Avoids protected-class insults, politics, religion, sexual content, violence, drugs/alcohol, and real-person attribution. Still suitable for random spot-check before very large publication."
+  },
+  "target": 1000,
+  "count": 1000,
+  "authors": [
+    "Filosofo d'ufficio",
+    "Saggezza da cucina",
+    "Stratega del divano",
+    "Esperto del lunedì",
+    "Ottimista anonimo"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "language": "es",
+  "total": 1000,
+  "packs": 10,
+  "packSize": 100,
+  "range": [
+    102,
+    135
+  ],
+  "target": 1000,
+  "source": "Original safe humorous aphorism templates",
+  "generator": "src/scripts/build-funny-quotes-decks.mjs"
+}
