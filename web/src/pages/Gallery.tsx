@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Images, Loader2, Film, Save, Check } from "lucide-react";
 import {
   apiClient,
@@ -7,7 +7,7 @@ import {
   type GeneratedPreview,
   type GeneratedVideo,
 } from "../lib/api";
-import { deckLabel } from "../lib/deck";
+import { CONTENT_LANGS, DECK_LANG, deckLabel, langTag } from "../lib/deck";
 import { useT } from "../lib/i18n";
 
 type GCard = { i: number; title: string; caption: string; text: string };
@@ -35,6 +35,23 @@ export default function Gallery() {
   const [page, setPage] = useState(0);
 
   const galleryGens = gens.filter((g) => g.gallery && g.total > 0);
+  const galleryGroups = useMemo(() => {
+    const byLang = new Map<string, Generator[]>();
+    for (const gen of galleryGens) {
+      const lang = DECK_LANG[gen.id] || "en";
+      byLang.set(lang, [...(byLang.get(lang) ?? []), gen]);
+    }
+    const groups: { code: string; label: string; items: Generator[] }[] = [];
+    for (const lang of CONTENT_LANGS) {
+      const items = byLang.get(lang.code);
+      if (items?.length) groups.push({ code: lang.code, label: lang.label, items });
+      byLang.delete(lang.code);
+    }
+    for (const [code, items] of byLang) {
+      if (items.length) groups.push({ code, label: langTag(code), items });
+    }
+    return groups;
+  }, [galleryGens]);
 
   useEffect(() => {
     apiClient
@@ -152,10 +169,14 @@ export default function Gallery() {
           onChange={(e) => setDeck(e.target.value)}
         >
           {galleryGens.length === 0 && <option value="">{t("common.loading")}</option>}
-          {galleryGens.map((g) => (
-            <option key={g.id} value={g.id}>
-              {deckLabel(g.id, g.name)}
-            </option>
+          {galleryGroups.map((group) => (
+            <optgroup key={group.code} label={group.label}>
+              {group.items.map((g) => (
+                <option key={g.id} value={g.id}>
+                  {deckLabel(g.id, g.name)}
+                </option>
+              ))}
+            </optgroup>
           ))}
         </select>
         {deck && <span className="text-sm text-base-content/60">{t("gallery.cardsCount", { n: cards.length })}</span>}

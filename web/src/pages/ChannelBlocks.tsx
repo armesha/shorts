@@ -139,6 +139,7 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
   const [shortCount, setShortCount] = useState(1);
   const [topUpDays, setTopUpDays] = useState(7);
   const [topUpShortages, setTopUpShortages] = useState<NormalizeShortage[]>([]);
+  const [topUpPreviewBusy, setTopUpPreviewBusy] = useState(false);
   const [perDay, setPerDay] = useState(12);
   const [sourceWeights, setSourceWeights] = useState<Record<string, number>>({});
   const [busy, setBusy] = useState<BusyState>(null);
@@ -179,6 +180,7 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
     if (!selectedBlock) return;
     setSourceWeights(Object.fromEntries((selectedBlock.sourceGroups ?? []).map((group) => [group.id, group.weight])));
   }, [selectedBlock?.id, selectedBlock?.sourceGroups]);
+  const sourceWeightsKey = useMemo(() => JSON.stringify(sourceWeights), [sourceWeights]);
   const operationalAccounts = useMemo<OperationalAccount[]>(() => {
     if (!selectedBlock) return accounts;
     const fullById = new Map(accounts.map((account) => [account.id, account]));
@@ -192,6 +194,39 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
       };
     });
   }, [accounts, selectedBlock]);
+
+  useEffect(() => {
+    if (!data) return;
+    const blocks = selectedBlock ? [selectedBlock] : data.blocks.filter((block) => block.totalAccounts > 0);
+    if (!blocks.length) {
+      setTopUpShortages([]);
+      setTopUpPreviewBusy(false);
+      return;
+    }
+
+    let cancelled = false;
+    const timer = window.setTimeout(async () => {
+      setTopUpPreviewBusy(true);
+      try {
+        const shortages: NormalizeShortage[] = [];
+        for (const block of blocks) {
+          const weights = selectedBlock && block.sourceGroups.length ? sourceWeights : undefined;
+          const res = await apiClient.previewChannelThemeBlockNormalize(block.id, undefined, weights, topUpDays);
+          shortages.push(...(res.shortages ?? []).map((shortage) => ({ ...shortage, blockTitle: block.title })));
+        }
+        if (!cancelled) setTopUpShortages(shortages);
+      } catch {
+        if (!cancelled) setTopUpShortages([]);
+      } finally {
+        if (!cancelled) setTopUpPreviewBusy(false);
+      }
+    }, 350);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [data, selectedBlock, topUpDays, sourceWeightsKey]);
 
   async function generateShort(block: ChannelThemeBlock) {
     setBusy({ blockId: block.id, kind: "short" });
@@ -347,6 +382,7 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
             days={topUpDays}
             setDays={setTopUpDays}
             busy={busy?.kind === "normalize_all"}
+            previewBusy={topUpPreviewBusy}
             shortages={topUpShortages}
             onTopUp={() => void normalizeAllBlocks()}
           />
@@ -381,6 +417,7 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
           setShortCount={setShortCount}
           topUpDays={topUpDays}
           setTopUpDays={setTopUpDays}
+          topUpPreviewBusy={topUpPreviewBusy}
           topUpShortages={topUpShortages}
           perDay={perDay}
           setPerDay={setPerDay}
@@ -401,12 +438,14 @@ function TopUpPanel({
   days,
   setDays,
   busy,
+  previewBusy,
   shortages,
   onTopUp,
 }: {
   days: number;
   setDays: (value: number) => void;
   busy: boolean;
+  previewBusy: boolean;
   shortages: NormalizeShortage[];
   onTopUp: () => void;
 }) {
@@ -438,7 +477,12 @@ function TopUpPanel({
           </button>
         </div>
       </div>
-      {shortages.length > 0 ? (
+      {previewBusy ? (
+        <div className="mt-3 flex items-center gap-2 text-xs text-base-content/50">
+          <span className="loading loading-spinner loading-xs" />
+          {t("channelBlocks.shortagesChecking")}
+        </div>
+      ) : shortages.length > 0 ? (
         <div className="mt-3 rounded-md border border-warning/30 bg-warning/10 p-3">
           <div className="text-sm font-semibold text-warning-content">{t("channelBlocks.shortagesTitle")}</div>
           <div className="mt-2 grid gap-1.5">
@@ -515,6 +559,7 @@ function BlockDetail({
   setShortCount,
   topUpDays,
   setTopUpDays,
+  topUpPreviewBusy,
   topUpShortages,
   perDay,
   setPerDay,
@@ -532,6 +577,7 @@ function BlockDetail({
   setShortCount: (value: number) => void;
   topUpDays: number;
   setTopUpDays: (value: number) => void;
+  topUpPreviewBusy: boolean;
   topUpShortages: NormalizeShortage[];
   perDay: number;
   setPerDay: (value: number) => void;
@@ -582,6 +628,7 @@ function BlockDetail({
         days={topUpDays}
         setDays={setTopUpDays}
         busy={normalizeBusy}
+        previewBusy={topUpPreviewBusy}
         shortages={blockShortages}
         onTopUp={() => void normalizeQueue(block, topUpDays)}
       />

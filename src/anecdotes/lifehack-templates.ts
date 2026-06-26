@@ -154,6 +154,67 @@ export const LIFEHACK_TEMPLATES: LifehackTemplate[] = [
     "--body-bg": "rgba(255, 250, 245, 0.95)", "--ink": "#21100f", "--body-left": "285px", "--body-width": "650px",
     "--rule": "rgba(220, 38, 38, 0.16)",
   }),
+  tpl("sage-file", "ledger", {
+    "--accent": "#3f7d58", "--accent-2": "#ffb703", "--title-bg": "#315c45", "--title-fg": "#f8fff8",
+    "--body-bg": "rgba(247, 252, 244, 0.95)", "--ink": "#142219", "--body-top": "462px", "--body-height": "850px",
+    "--title-left": "128px", "--title-top": "118px", "--title-width": "760px", "--rule": "rgba(63, 125, 88, 0.2)",
+  }),
+  tpl("paper-blue", "note", {
+    "--accent": "#2563eb", "--accent-2": "#ef4444", "--title-bg": "#eff6ff", "--title-fg": "#172554",
+    "--body-bg": "rgba(248, 251, 255, 0.95)", "--ink": "#13213d", "--body-left": "112px", "--body-width": "820px",
+    "--body-top": "430px", "--body-height": "900px", "--rule": "rgba(37, 99, 235, 0.17)",
+  }),
+  tpl("citrus-label", "label", {
+    "--accent": "#f97316", "--accent-2": "#10b981", "--title-bg": "#fff7ed", "--title-fg": "#7c2d12",
+    "--body-bg": "rgba(255, 251, 242, 0.95)", "--ink": "#25180f", "--body-left": "150px", "--body-width": "760px",
+    "--label-body-top": "412px", "--label-body-height": "900px", "--rule": "rgba(249, 115, 22, 0.18)",
+  }),
+  tpl("marine-poster", "poster", {
+    "--accent": "#0f4c81", "--accent-2": "#f2a65a", "--title-bg": "#0f4c81", "--title-fg": "#f8fbff",
+    "--body-bg": "rgba(244, 250, 252, 0.95)", "--ink": "#102433", "--body-left": "120px", "--body-width": "800px",
+    "--body-top": "470px", "--body-height": "820px", "--rule": "rgba(15, 76, 129, 0.2)",
+  }),
+  tpl("orchid-split", "split", {
+    "--accent": "#9333ea", "--accent-2": "#14b8a6", "--title-bg": "#faf5ff", "--title-fg": "#3b0764",
+    "--body-bg": "rgba(253, 248, 255, 0.95)", "--ink": "#231432", "--body-left": "305px", "--body-width": "620px",
+    "--split-body-top": "392px", "--split-body-height": "910px", "--rule": "rgba(147, 51, 234, 0.16)",
+  }),
+  tpl("crimson-file", "ledger", {
+    "--accent": "#b91c1c", "--accent-2": "#0ea5e9", "--title-bg": "#fee2e2", "--title-fg": "#7f1d1d",
+    "--body-bg": "rgba(255, 248, 248, 0.95)", "--ink": "#251313", "--stage-inset": "74px 66px 330px 66px",
+    "--body-top": "484px", "--body-height": "805px", "--rule": "rgba(185, 28, 28, 0.17)",
+  }),
+  tpl("linen-note", "note", {
+    "--accent": "#8b5e34", "--accent-2": "#0f766e", "--title-bg": "#f8ead8", "--title-fg": "#4a2d17",
+    "--body-bg": "rgba(255, 251, 244, 0.96)", "--ink": "#241a12", "--title-width": "740px", "--title-left": "170px",
+    "--body-left": "136px", "--body-width": "808px", "--body-top": "440px", "--rule": "rgba(139, 94, 52, 0.2)",
+  }),
+  tpl("electric-ticket", "label", {
+    "--accent": "#0ea5e9", "--accent-2": "#f43f5e", "--title-bg": "#082f49", "--title-fg": "#f0f9ff",
+    "--body-bg": "rgba(241, 249, 255, 0.95)", "--ink": "#102033", "--body-left": "126px", "--body-width": "800px",
+    "--label-title-height": "142px", "--label-body-top": "424px", "--rule": "rgba(14, 165, 233, 0.18)",
+  }),
+  tpl("forest-poster", "poster", {
+    "--accent": "#15803d", "--accent-2": "#f97316", "--title-bg": "#bbf7d0", "--title-fg": "#14532d",
+    "--body-bg": "rgba(244, 252, 244, 0.95)", "--ink": "#122016", "--stage-angle": "20deg",
+    "--body-top": "452px", "--body-height": "850px", "--rule": "rgba(21, 128, 61, 0.18)",
+  }),
+  tpl("slate-split", "split", {
+    "--accent": "#475569", "--accent-2": "#fbbf24", "--title-bg": "#f8fafc", "--title-fg": "#1e293b",
+    "--body-bg": "rgba(248, 250, 252, 0.95)", "--ink": "#111827", "--body-left": "320px", "--body-width": "605px",
+    "--split-title-width": "390px", "--split-body-top": "410px", "--split-body-height": "870px",
+    "--rule": "rgba(71, 85, 105, 0.16)",
+  }),
+  tpl("peach-ledger", "ledger", {
+    "--accent": "#ea580c", "--accent-2": "#0891b2", "--title-bg": "#fed7aa", "--title-fg": "#7c2d12",
+    "--body-bg": "rgba(255, 249, 242, 0.95)", "--ink": "#24150f", "--title-left": "132px", "--title-width": "816px",
+    "--body-left": "118px", "--body-width": "830px", "--body-top": "458px", "--rule": "rgba(234, 88, 12, 0.18)",
+  }),
+  tpl("midnight-label", "label", {
+    "--accent": "#172554", "--accent-2": "#22c55e", "--title-bg": "#172554", "--title-fg": "#eff6ff",
+    "--body-bg": "rgba(247, 250, 255, 0.95)", "--ink": "#101827", "--body-left": "144px", "--body-width": "772px",
+    "--label-body-top": "430px", "--label-body-height": "870px", "--rule": "rgba(23, 37, 84, 0.16)",
+  }),
 ];
 
 function hash(s: string): number {

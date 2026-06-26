@@ -21,41 +21,39 @@
   .card::before {
     content: "";
     position: absolute;
-    left: 50px;
-    top: 58px;
-    width: 980px;
-    height: 1262px;
-    border-radius: 44px;
+    inset: var(--stage-inset);
+    border-radius: var(--stage-radius);
     background:
-      linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.78)),
-      linear-gradient(135deg, color-mix(in srgb, var(--accent) 9%, transparent), color-mix(in srgb, var(--accent-2) 8%, transparent));
+      linear-gradient(var(--stage-angle), color-mix(in srgb, var(--stage-bg) 92%, white), var(--stage-bg)),
+      linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), color-mix(in srgb, var(--accent-2) 7%, transparent));
     border: 2px solid rgba(255, 255, 255, 0.75);
-    box-shadow: 0 26px 90px rgba(21, 28, 34, 0.16);
+    box-shadow: var(--panel-shadow);
     opacity: 1;
     pointer-events: none;
   }
   .card::after {
     content: "";
     position: absolute;
-    left: 70px;
-    right: 70px;
-    top: 1304px;
+    left: var(--rule-left, 78px);
+    right: var(--rule-right, 78px);
+    top: var(--rule-top, 1324px);
     height: 2px;
     border-radius: 999px;
-    background:
-      linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 28%, transparent), transparent);
+    background: linear-gradient(90deg, transparent, var(--rule), transparent);
     border: 0;
     opacity: 0.62;
     pointer-events: none;
   }
   .title {
     position: absolute;
-    left: 92px; top: 96px;
-    width: 896px; height: 176px;
+    left: var(--title-left);
+    top: var(--title-top);
+    width: var(--title-width);
+    height: var(--title-height);
     display: flex; align-items: center; justify-content: center;
     z-index: 2;
-    padding: 24px 44px;
-    border-radius: 30px;
+    padding: var(--title-pad-y, 24px) var(--title-pad-x, 44px);
+    border-radius: var(--title-radius);
     background:
       linear-gradient(135deg, color-mix(in srgb, var(--title-bg) 78%, white), var(--title-bg)),
       var(--title-bg);
@@ -74,7 +72,9 @@
   .title::before {
     content: "";
     position: absolute;
-    left: 34px; right: 34px; bottom: 20px;
+    left: var(--title-rule-left, 34px);
+    right: var(--title-rule-right, 34px);
+    bottom: var(--title-rule-bottom, 20px);
     height: 8px;
     border-radius: 999px;
     background: var(--accent-2);
@@ -82,11 +82,13 @@
   }
   .body {
     position: absolute;
-    left: 92px; top: 318px;
-    width: 896px; height: 930px;
+    left: var(--body-left);
+    top: var(--body-top);
+    width: var(--body-width);
+    height: var(--body-height);
     z-index: 2;
-    padding: 64px 66px 58px 66px;
-    border-radius: 34px;
+    padding: var(--body-pad-y) var(--body-pad-x);
+    border-radius: var(--body-radius);
     background:
       linear-gradient(180deg, rgba(255,255,255,0.48), rgba(255,255,255,0.12)),
       color-mix(in srgb, var(--body-bg) 88%, white);
@@ -98,7 +100,9 @@
   .body::before {
     content: "";
     position: absolute;
-    left: 66px; right: 66px; top: 34px;
+    left: var(--body-rule-left, 66px);
+    right: var(--body-rule-right, 66px);
+    top: var(--body-rule-top, 34px);
     height: 10px;
     border-radius: 999px;
     background: linear-gradient(90deg, var(--accent), var(--accent-2));
@@ -134,6 +138,20 @@
   .layout-note .title { border-radius: 999px; }
   .layout-poster .title { border-radius: 22px; }
   .layout-poster .body { border-radius: 22px 48px 22px 48px; }
+  .layout-split .title {
+    width: var(--split-title-width);
+    height: var(--split-title-height);
+    font-size: var(--split-title-size);
+  }
+  .layout-split .body {
+    top: var(--split-body-top);
+    height: var(--split-body-height);
+  }
+  .layout-label .title { height: var(--label-title-height); }
+  .layout-label .body {
+    top: var(--label-body-top);
+    height: var(--label-body-height);
+  }
 </style>
 </head>
 <body>

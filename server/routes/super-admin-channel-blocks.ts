@@ -162,6 +162,7 @@ const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
   },
   quotes: QUOTE_STATIC_DECK_BY_LANG,
   psychology: {
+    ru: ["pack:psychology-ru-superadmin"],
     de: ["psych"],
   },
   facts_space: {
@@ -533,13 +534,21 @@ function readSourceWeights(db: Db, block: BlockDef): Record<string, number> {
   }
 }
 
-function requestedSourceWeights(db: Db, block: BlockDef, body: unknown): Record<string, number> {
+function resolveSourceWeights(db: Db, block: BlockDef, body: unknown, persist: boolean): Record<string, number> {
   if (!block.sourceGroups?.length) return {};
   const raw = (body as { sourceWeights?: unknown } | null)?.sourceWeights;
   if (raw == null) return readSourceWeights(db, block);
   const weights = sanitizeSourceWeights(block, raw);
-  db.setSetting(sourceWeightSettingKey(block.id), JSON.stringify(weights));
+  if (persist) db.setSetting(sourceWeightSettingKey(block.id), JSON.stringify(weights));
   return weights;
+}
+
+function requestedSourceWeights(db: Db, block: BlockDef, body: unknown): Record<string, number> {
+  return resolveSourceWeights(db, block, body, true);
+}
+
+function previewSourceWeights(db: Db, block: BlockDef, body: unknown): Record<string, number> {
+  return resolveSourceWeights(db, block, body, false);
 }
 
 function publicSourceGroups(db: Db, block: BlockDef) {
@@ -842,6 +851,204 @@ function requestedAccountIds(body: unknown): Set<number> | null {
   return new Set(ids.map((id) => Number(id)).filter((id) => Number.isFinite(id)));
 }
 
+type NormalizeShortage = {
+  ownerId: number;
+  accountId: number;
+  channelName: string;
+  deckId: string;
+  deckName: string;
+  missing: number;
+  available: number;
+  needed: number;
+};
+
+type NormalizeSkip = {
+  accountId: number;
+  channelName: string;
+  reason: string;
+  currentQueued?: number;
+  targetQueued?: number;
+  currentRunwayDays?: number;
+  targetRunwayDays?: number;
+  rawQueued?: number;
+};
+
+type NormalizePlannedJob = {
+  accountId: number;
+  channelName: string;
+  ownerId: number;
+  deckIds: string[];
+  total: number;
+  currentQueued: number;
+  targetQueued: number;
+  currentRunwayDays: number;
+  targetRunwayDays: number;
+  rawQueued: number;
+};
+
+type NormalizePlan = {
+  blockId: string;
+  targetQueued: number;
+  targetRunwayDays: number;
+  jobs: NormalizePlannedJob[];
+  skipped: NormalizeSkip[];
+  shortages: NormalizeShortage[];
+};
+
+function planChannelBlockNormalize(input: {
+  db: Db;
+  deps: RouteDeps;
+  block: BlockDef;
+  blockId: string;
+  accounts: Account[];
+  sourceWeights: Record<string, number>;
+  requestedTargetRunwayDays: number;
+  fallbackOwnerId: number;
+}): NormalizePlan {
+  const { db, deps, block, blockId, accounts, sourceWeights, requestedTargetRunwayDays, fallbackOwnerId } = input;
+  const queuedByAccountDeck = new Map<number, Record<string, number>>();
+  const queuedTotals = new Map<number, number>();
+  const coverageByAccount = new Map<number, { effective: number; runwayDays: number | null }>();
+  for (const account of accounts) {
+    const queuedByDeck = videosByDeck(db.listVideos(account.id));
+    const sourceDecks = deps.deckAccess.accountSourceDecks(account);
+    const total = sumCounts(queuedByDeck);
+    queuedByAccountDeck.set(account.id, queuedByDeck);
+    queuedTotals.set(account.id, total);
+    coverageByAccount.set(account.id, effectiveCapacityForSchedule(account, sourceDecks, queuedByDeck, total));
+  }
+
+  const currentMaxRunwayDays = Math.max(
+    0,
+    ...accounts.map((account) => {
+      const coverage = coverageByAccount.get(account.id);
+      if (coverage?.runwayDays != null) return coverage.runwayDays;
+      const perDay = scheduledDeckOrder(account, deps.deckAccess.accountSourceDecks(account)).length;
+      return perDay > 0 ? (coverage?.effective ?? 0) / perDay : 0;
+    }),
+  );
+  const targetRunwayDays =
+    Number.isFinite(requestedTargetRunwayDays) && requestedTargetRunwayDays > 0
+      ? Math.min(365, Math.max(1, requestedTargetRunwayDays))
+      : currentMaxRunwayDays;
+  const targetQueued = Math.max(
+    0,
+    ...accounts.map((account) => Math.ceil(targetRunwayDays * scheduledDeckOrder(account, deps.deckAccess.accountSourceDecks(account)).length)),
+  );
+  const jobs: NormalizePlannedJob[] = [];
+  const skipped: NormalizeSkip[] = [];
+  const shortages = new Map<string, NormalizeShortage>();
+  const freeRemaining = new Map<string, number>();
+  const takeFree = (ownerId: number, deckId: string, deckName: string, needed: number, account: Account): number => {
+    if (needed <= 0 || db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) return needed;
+    const key = `${ownerId}|${deckId}`;
+    if (!freeRemaining.has(key)) {
+      freeRemaining.set(
+        key,
+        Math.max(0, deps.deckAccess.availableUnusedForDecks(ownerId, [deckId]) - queuedRemainingForOwnerDeck(ownerId, deckId)),
+      );
+    }
+    const available = freeRemaining.get(key) ?? 0;
+    const taken = Math.min(needed, available);
+    freeRemaining.set(key, available - taken);
+    const missing = needed - taken;
+    if (missing > 0) {
+      const shortageKey = `${key}|${account.id}`;
+      const cur = shortages.get(shortageKey);
+      if (cur) {
+        cur.missing += missing;
+        cur.needed += needed;
+        cur.available = Math.max(0, cur.available - taken);
+      } else {
+        shortages.set(shortageKey, {
+          ownerId,
+          accountId: account.id,
+          channelName: account.ytChannelTitle || account.channelName,
+          deckId,
+          deckName,
+          missing,
+          available,
+          needed,
+        });
+      }
+    }
+    return taken;
+  };
+
+  for (const account of accounts) {
+    const deckIds = deps.deckAccess.accountSourceDecks(account);
+    const perDay = scheduledDeckOrder(account, deckIds).length;
+    const accountTargetQueued = Math.ceil(targetRunwayDays * perDay);
+    const coverage = coverageByAccount.get(account.id);
+    const currentQueued = coverage?.effective ?? 0;
+    const currentRunwayDays = coverage?.runwayDays ?? (perDay > 0 ? currentQueued / perDay : 0);
+    const missing = accountTargetQueued - currentQueued;
+    if (missing <= 0) {
+      skipped.push({
+        accountId: account.id,
+        channelName: account.ytChannelTitle || account.channelName,
+        reason: "already_at_target",
+        currentQueued,
+        targetQueued: accountTargetQueued,
+        currentRunwayDays,
+        targetRunwayDays,
+      });
+      continue;
+    }
+    const ownerId = account.userId ?? fallbackOwnerId;
+    if (!deckIds.length) {
+      skipped.push({
+        accountId: account.id,
+        channelName: account.ytChannelTitle || account.channelName,
+        reason: "no_sources",
+        currentQueued,
+        targetQueued: accountTargetQueued,
+      });
+      continue;
+    }
+    const queuedByDeck = queuedByAccountDeck.get(account.id) ?? {};
+    const exactDeficit = deckDeficitSequence(account, deckIds, queuedByDeck, accountTargetQueued);
+    const baseJobDeckIds = exactDeficit.length ? exactDeficit : weightedDeckSlots(block, account, deckIds, sourceWeights, missing);
+    const requestedByDeck = countDeckSequence(baseJobDeckIds);
+    const allowedByDeck = new Map<string, number>();
+    for (const [deckId, needed] of Object.entries(requestedByDeck)) {
+      const deckName = deckTitle(deckId, ownerId).name;
+      allowedByDeck.set(deckId, takeFree(ownerId, deckId, deckName, needed, account));
+    }
+    const jobDeckIds = baseJobDeckIds.filter((deckId) => {
+      const left = allowedByDeck.get(deckId) ?? 0;
+      if (left <= 0) return false;
+      allowedByDeck.set(deckId, left - 1);
+      return true;
+    });
+    const total = jobDeckIds.length;
+    if (total <= 0) {
+      skipped.push({
+        accountId: account.id,
+        channelName: account.ytChannelTitle || account.channelName,
+        reason: "no_free_cards",
+        currentQueued,
+        targetQueued: accountTargetQueued,
+      });
+      continue;
+    }
+    jobs.push({
+      accountId: account.id,
+      channelName: account.ytChannelTitle || account.channelName,
+      ownerId,
+      deckIds: jobDeckIds,
+      total,
+      currentQueued,
+      targetQueued: accountTargetQueued,
+      currentRunwayDays,
+      targetRunwayDays,
+      rawQueued: queuedTotals.get(account.id) ?? 0,
+    });
+  }
+
+  return { blockId, targetQueued, targetRunwayDays, jobs, skipped, shortages: [...shortages.values()] };
+}
+
 function toMin(time: string): number {
   const [h, m] = time.split(":").map(Number);
   return h * 60 + m;
@@ -955,149 +1162,55 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
     const accounts = blockAccounts(db, deps, blockId).filter((account) => !only || only.has(account.id));
     if (!block || !accounts.length) return reply.code(404).send({ error: "Тематический блок не найден или пуст." });
     const sourceWeights = requestedSourceWeights(db, block, req.body);
-
-    const queuedByAccountDeck = new Map<number, Record<string, number>>();
-    const queuedTotals = new Map<number, number>();
-    const coverageByAccount = new Map<number, { effective: number; runwayDays: number | null }>();
-    for (const account of accounts) {
-      const queuedByDeck = videosByDeck(db.listVideos(account.id));
-      const sourceDecks = deps.deckAccess.accountSourceDecks(account);
-      const total = sumCounts(queuedByDeck);
-      queuedByAccountDeck.set(account.id, queuedByDeck);
-      queuedTotals.set(account.id, total);
-      coverageByAccount.set(account.id, effectiveCapacityForSchedule(account, sourceDecks, queuedByDeck, total));
-    }
-    const currentMaxRunwayDays = Math.max(
-      0,
-      ...accounts.map((account) => {
-        const coverage = coverageByAccount.get(account.id);
-        if (coverage?.runwayDays != null) return coverage.runwayDays;
-        const perDay = scheduledDeckOrder(account, deps.deckAccess.accountSourceDecks(account)).length;
-        return perDay > 0 ? (coverage?.effective ?? 0) / perDay : 0;
-      }),
-    );
-    const targetRunwayDays =
-      Number.isFinite(requestedTargetRunwayDays) && requestedTargetRunwayDays > 0
-        ? Math.min(365, requestedTargetRunwayDays)
-        : currentMaxRunwayDays;
-    const targetQueued = Math.max(
-      0,
-      ...accounts.map((account) => Math.ceil(targetRunwayDays * scheduledDeckOrder(account, deps.deckAccess.accountSourceDecks(account)).length)),
-    );
-    const jobs: unknown[] = [];
-    const skipped: unknown[] = [];
-    const shortages = new Map<string, {
-      ownerId: number;
-      accountId: number;
-      channelName: string;
-      deckId: string;
-      deckName: string;
-      missing: number;
-      available: number;
-      needed: number;
-    }>();
-    const freeRemaining = new Map<string, number>();
-    const takeFree = (ownerId: number, deckId: string, deckName: string, needed: number, account: Account): number => {
-      if (needed <= 0 || db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) return needed;
-      const key = `${ownerId}|${deckId}`;
-      if (!freeRemaining.has(key)) {
-        freeRemaining.set(
-          key,
-          Math.max(0, deps.deckAccess.availableUnusedForDecks(ownerId, [deckId]) - queuedRemainingForOwnerDeck(ownerId, deckId)),
-        );
-      }
-      const available = freeRemaining.get(key) ?? 0;
-      const taken = Math.min(needed, available);
-      freeRemaining.set(key, available - taken);
-      const missing = needed - taken;
-      if (missing > 0) {
-        const shortageKey = `${key}|${account.id}`;
-        const cur = shortages.get(shortageKey);
-        if (cur) {
-          cur.missing += missing;
-          cur.needed += needed;
-          cur.available = Math.max(0, cur.available - taken);
-        } else {
-          shortages.set(shortageKey, {
-            ownerId,
-            accountId: account.id,
-            channelName: account.channelName,
-            deckId,
-            deckName,
-            missing,
-            available,
-            needed,
-          });
-        }
-      }
-      return taken;
-    };
-    for (const account of accounts) {
-      const deckIds = deps.deckAccess.accountSourceDecks(account);
-      const perDay = scheduledDeckOrder(account, deckIds).length;
-      const accountTargetQueued = Math.ceil(targetRunwayDays * perDay);
-      const coverage = coverageByAccount.get(account.id);
-      const currentQueued = coverage?.effective ?? 0;
-      const currentRunwayDays = coverage?.runwayDays ?? (perDay > 0 ? currentQueued / perDay : 0);
-      const missing = accountTargetQueued - currentQueued;
-      if (missing <= 0) {
-        skipped.push({
-          accountId: account.id,
-          channelName: account.channelName,
-          reason: "already_at_target",
-          currentQueued,
-          targetQueued: accountTargetQueued,
-          currentRunwayDays,
-          targetRunwayDays,
-        });
-        continue;
-      }
-      const ownerId = account.userId ?? uid(req);
-      if (!deckIds.length) {
-        skipped.push({ accountId: account.id, channelName: account.channelName, reason: "no_sources", currentQueued, targetQueued: accountTargetQueued });
-        continue;
-      }
-      const queuedByDeck = queuedByAccountDeck.get(account.id) ?? {};
-      const exactDeficit = deckDeficitSequence(account, deckIds, queuedByDeck, accountTargetQueued);
-      const baseJobDeckIds = exactDeficit.length ? exactDeficit : weightedDeckSlots(block, account, deckIds, sourceWeights, missing);
-      const requestedByDeck = countDeckSequence(baseJobDeckIds);
-      const allowedByDeck = new Map<string, number>();
-      for (const [deckId, needed] of Object.entries(requestedByDeck)) {
-        const deckName = deckTitle(deckId, ownerId).name;
-        allowedByDeck.set(deckId, takeFree(ownerId, deckId, deckName, needed, account));
-      }
-      const jobDeckIds = baseJobDeckIds.filter((deckId) => {
-        const left = allowedByDeck.get(deckId) ?? 0;
-        if (left <= 0) return false;
-        allowedByDeck.set(deckId, left - 1);
-        return true;
-      });
-      const total = jobDeckIds.length;
-      if (total <= 0) {
-        skipped.push({
-          accountId: account.id,
-          channelName: account.channelName,
-          reason: "no_free_cards",
-          currentQueued,
-          targetQueued: accountTargetQueued,
-        });
-        continue;
-      }
-      const job = genEnqueue(uid(req), account.id, total, ownerId, jobDeckIds);
-      jobs.push({
-        accountId: account.id,
-        channelName: account.channelName,
-        deckIds: jobDeckIds,
+    const requesterId = uid(req);
+    const plan = planChannelBlockNormalize({
+      db,
+      deps,
+      block,
+      blockId,
+      accounts,
+      sourceWeights,
+      requestedTargetRunwayDays,
+      fallbackOwnerId: requesterId,
+    });
+    const jobs = plan.jobs.map((planned) => {
+      const job = genEnqueue(requesterId, planned.accountId, planned.total, planned.ownerId, planned.deckIds);
+      return {
+        accountId: planned.accountId,
+        channelName: planned.channelName,
+        deckIds: planned.deckIds,
         jobId: job.id,
         total: job.total,
-        currentQueued,
-        targetQueued: accountTargetQueued,
-        currentRunwayDays,
-        targetRunwayDays,
-        rawQueued: queuedTotals.get(account.id) ?? 0,
-      });
-    }
-    return { blockId, targetQueued, targetRunwayDays, jobs, skipped, shortages: [...shortages.values()] };
+        currentQueued: planned.currentQueued,
+        targetQueued: planned.targetQueued,
+        currentRunwayDays: planned.currentRunwayDays,
+        targetRunwayDays: planned.targetRunwayDays,
+        rawQueued: planned.rawQueued,
+      };
+    });
+    return { blockId, targetQueued: plan.targetQueued, targetRunwayDays: plan.targetRunwayDays, jobs, skipped: plan.skipped, shortages: plan.shortages };
+  });
+
+  app.post("/api/super-admin/channel-blocks/:id/normalize-preview", async (req, reply) => {
+    if (!requireSuperAdmin(req, reply, deps)) return;
+    const blockId = (req.params as { id: string }).id;
+    const block = BLOCKS.find((candidate) => candidate.id === blockId);
+    const requestedTargetRunwayDays = Number((req.body as { targetRunwayDays?: unknown } | null)?.targetRunwayDays);
+    const only = requestedAccountIds(req.body);
+    const accounts = blockAccounts(db, deps, blockId).filter((account) => !only || only.has(account.id));
+    if (!block || !accounts.length) return reply.code(404).send({ error: "Тематический блок не найден или пуст." });
+    const sourceWeights = previewSourceWeights(db, block, req.body);
+    const plan = planChannelBlockNormalize({
+      db,
+      deps,
+      block,
+      blockId,
+      accounts,
+      sourceWeights,
+      requestedTargetRunwayDays,
+      fallbackOwnerId: uid(req),
+    });
+    return { blockId, targetQueued: plan.targetQueued, targetRunwayDays: plan.targetRunwayDays, jobs: [], skipped: plan.skipped, shortages: plan.shortages };
   });
 
   app.post("/api/super-admin/channel-blocks/:id/schedule", async (req, reply) => {

@@ -63,11 +63,7 @@ export function backgroundCss(name?: string | null): string {
   return `url('data:${mime};base64,${buf.toString("base64")}') center/cover no-repeat`;
 }
 
-/**
- * Pick a lifehack background. New lifehack cards prefer neutral editorial backgrounds so text
- * and lower social UI do not fight old person/photo compositions. Profession backgrounds remain
- * as a fallback for older installs without the generated editorial asset.
- */
+/** Pick a deterministic lifehack background from generated/editorial/profession pools. */
 function stableIndex(seed: string, size: number): number {
   let h = 2166136261;
   for (let i = 0; i < seed.length; i += 1) {
@@ -79,26 +75,24 @@ function stableIndex(seed: string, size: number): number {
 
 function lifehackBgFile(profession?: string | null, variant?: string | null, seed = ""): string | null {
   if (!existsSync(LIFEHACK_BG_DIR)) return null;
-  const editorial = readdirSync(LIFEHACK_BG_DIR).filter((f) => /^editorial-clean-\d+\.(png|jpe?g)$/i.test(f)).sort();
-  if (editorial.length > 0) return editorial[stableIndex(seed || `${profession ?? ""}|${variant ?? ""}`, editorial.length)];
-
-  const all = readdirSync(LIFEHACK_BG_DIR).filter((f) => /^profession_.*\.(jpe?g|png)$/i.test(f));
-  if (all.length === 0) return null;
+  const files = readdirSync(LIFEHACK_BG_DIR)
+    .filter((f) => /^(editorial-clean-\d+|generated-[a-z0-9-]+|profession_.*)\.(png|jpe?g)$/i.test(f))
+    .sort();
+  if (files.length === 0) return null;
   const v = (variant ?? "").toLowerCase();
-  // Style pool: variant → profession_<key>_<variant>.* ; plain → bare profession_<key>.* (no suffix).
-  const styled = v
-    ? all.filter((f) => new RegExp(`^profession_[a-z0-9]+_${v}\\.(jpe?g|png)$`, "i").test(f))
-    : all.filter((f) => /^profession_[a-z0-9]+\.(jpe?g|png)$/i.test(f));
-  const pool = styled.length ? styled : all;
+  const professionFiles = files.filter((f) => /^profession_.*\.(jpe?g|png)$/i.test(f));
+  const generatedFiles = files.filter((f) => /^generated-[a-z0-9-]+\.(png|jpe?g)$/i.test(f));
   if (profession) {
     const key = profession.toLowerCase();
-    const prefix = v ? `profession_${key}_${v}.` : `profession_${key}.`;
-    const want =
-      pool.find((f) => f.toLowerCase().startsWith(prefix)) ??
-      all.find((f) => f.toLowerCase().startsWith(`profession_${key}.`)); // missing variant → plain
-    if (want) return want;
+    const exact = [
+      v ? `profession_${key}_${v}` : "",
+      `profession_${key}`,
+    ].filter(Boolean);
+    const candidates = professionFiles.filter((f) => exact.some((prefix) => f.toLowerCase().startsWith(`${prefix}.`)));
+    if (candidates.length) return candidates[stableIndex(seed || `${profession}|${variant}`, candidates.length)];
+    if (generatedFiles.length) return generatedFiles[stableIndex(seed || `${profession}|${variant}`, generatedFiles.length)];
   }
-  return pool[Math.floor(Math.random() * pool.length)];
+  return files[stableIndex(seed || `${profession ?? ""}|${variant ?? ""}`, files.length)];
 }
 
 /** Resolve a profession (+ deck variant) to a CSS background (inlined data-URI) + the file name used. */
