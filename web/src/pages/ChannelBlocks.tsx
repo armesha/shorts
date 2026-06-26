@@ -845,6 +845,26 @@ function BlockDetail({
   const canNormalize = block.totalAccounts > 1 && range.max > range.min;
   const bottleneck = blockBottleneck(block);
   const blockShortages = topUpShortages.filter((shortage) => !shortage.blockTitle || shortage.blockTitle === block.title);
+  // Only languages that actually have channels are shown (no rows of empty "пусто" cells just to keep the
+  // grid full). Languages with prepared block packs can still be added via the picker, including ones not
+  // present yet — so hiding the empty cells doesn't take away the ability to add a new language.
+  const [addLang, setAddLang] = useState("");
+  const visibleLangs = languages.filter((lang) => {
+    const cell = block.cells.find((candidate) => candidate.lang === lang.code);
+    return (cell?.accounts.length ?? 0) > 0;
+  });
+  const addableLangs = languages.filter((lang) => {
+    const cell = block.cells.find((candidate) => candidate.lang === lang.code);
+    return (cell?.defaultSourceDecks.length ?? 0) > 0;
+  });
+  // Default the picker to a language with no channel yet (the usual "add a new language" intent), then
+  // fall back to the user's explicit pick, then to the first addable language.
+  const defaultAddLang =
+    addableLangs.find((lang) => !visibleLangs.some((vis) => vis.code === lang.code))?.code ??
+    addableLangs[0]?.code ??
+    "";
+  const selectedAddLang = addableLangs.some((lang) => lang.code === addLang) ? addLang : defaultAddLang;
+  const addSelectedBusy = busy?.blockId === block.id && busy.kind === "account" && busy.lang === selectedAddLang;
   return (
     <>
       <div className="grid gap-3 lg:grid-cols-[220px_minmax(0,1fr)_220px]">
@@ -981,46 +1001,78 @@ function BlockDetail({
       </section>
 
       <section className="rounded-md border border-base-300 bg-base-100 p-4">
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
-          {languages.map((lang) => {
-            const cell = block.cells.find((candidate) => candidate.lang === lang.code);
-            const canAdd = (cell?.defaultSourceDecks.length ?? 0) > 0;
-            const addBusy = busy?.blockId === block.id && busy.kind === "account" && busy.lang === lang.code;
-            return (
-              <div key={lang.code} className="flex min-h-44 flex-col rounded-md border border-base-300 bg-base-100">
-                <div className="flex items-center justify-between gap-2 border-b border-base-300 bg-base-200/60 px-3 py-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-base-content/65">{lang.label}</span>
-                    <span className="text-xs text-base-content/40">{cell?.accounts.length ?? 0}</span>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-base font-semibold">{t("channelBlocks.channelsTitle")}</h2>
+          {addableLangs.length > 0 && (
+            <div className="flex items-end gap-2">
+              <select
+                className="select select-bordered select-sm"
+                value={selectedAddLang}
+                onChange={(event) => setAddLang(event.target.value)}
+                aria-label={t("channelBlocks.addChannelDo")}
+              >
+                {addableLangs.map((lang) => {
+                  const count = block.cells.find((candidate) => candidate.lang === lang.code)?.accounts.length ?? 0;
+                  return (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.label}
+                      {count > 0 ? ` · ${count}` : ""}
+                    </option>
+                  );
+                })}
+              </select>
+              <button
+                type="button"
+                className="btn btn-sm btn-primary gap-1 whitespace-nowrap"
+                disabled={!selectedAddLang || addSelectedBusy}
+                onClick={() => selectedAddLang && void addBlockAccount(block, selectedAddLang)}
+                title={t("channelBlocks.addChannelTitle")}
+              >
+                {addSelectedBusy ? <span className="loading loading-spinner loading-xs" /> : <AppIcon name="plus" size={14} />}
+                {t("channelBlocks.addChannelDo")}
+              </button>
+            </div>
+          )}
+        </div>
+        {visibleLangs.length === 0 ? (
+          <div className="rounded-md border border-dashed border-base-300 p-8 text-center text-sm text-base-content/45">
+            {t("channelBlocks.noChannelsYet")}
+          </div>
+        ) : (
+          <div className="columns-[260px] gap-3">
+            {visibleLangs.map((lang) => {
+              const cell = block.cells.find((candidate) => candidate.lang === lang.code);
+              if (!cell) return null;
+              const canAdd = cell.defaultSourceDecks.length > 0;
+              const addBusy = busy?.blockId === block.id && busy.kind === "account" && busy.lang === lang.code;
+              return (
+                <div key={lang.code} className="mb-3 break-inside-avoid rounded-md border border-base-300 bg-base-100">
+                  <div className="flex items-center justify-between gap-2 border-b border-base-300 bg-base-200/60 px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-base-content/65">{lang.label}</span>
+                      <span className="text-xs text-base-content/40">{cell.accounts.length}</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-xs btn-ghost gap-1"
+                      disabled={!canAdd || addBusy}
+                      onClick={() => void addBlockAccount(block, lang.code)}
+                      title={canAdd ? t("channelBlocks.addChannelTitle") : t("channelBlocks.noDefaultSources")}
+                    >
+                      {addBusy ? <span className="loading loading-spinner loading-xs" /> : <AppIcon name="plus" size={12} />}
+                      {t("channelBlocks.addChannel")}
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    className="btn btn-xs btn-outline gap-1"
-                    disabled={!canAdd || addBusy}
-                    onClick={() => void addBlockAccount(block, lang.code)}
-                    title={canAdd ? t("channelBlocks.addChannelTitle") : t("channelBlocks.noDefaultSources")}
-                  >
-                    {addBusy ? <span className="loading loading-spinner loading-xs" /> : <AppIcon name="plus" size={12} />}
-                    {t("channelBlocks.addChannel")}
-                  </button>
-                </div>
-                <div className="flex-1 p-2">
-                {!cell || cell.accounts.length === 0 ? (
-                  <div className="flex h-full min-h-28 items-center justify-center text-xs text-base-content/35">
-                    {t("channelBlocks.emptyCell")}
-                  </div>
-                ) : (
-                  <div className="space-y-2">
+                  <div className="space-y-2 p-2">
                     {cell.accounts.map((account) => (
                       <ChannelCell key={account.id} account={account} t={t} />
                     ))}
                   </div>
-                )}
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </section>
     </>
   );
@@ -1159,11 +1211,8 @@ function SourceMixSettings({
 
   return (
     <section className="rounded-md border border-base-300 bg-base-100 p-4">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <h2 className="text-base font-semibold">{t("channelBlocks.sourceMix")}</h2>
-          <p className="mt-1 text-sm text-base-content/60">{t("channelBlocks.sourceMixHint")}</p>
-        </div>
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <h2 className="text-base font-semibold lg:min-w-52">{t("channelBlocks.sourceMix")}</h2>
         <div className="flex flex-wrap gap-2">
           {resolvedWeights.map((group) => {
             const share = total > 0 ? Math.round((group.weight / total) * 100) : 0;
