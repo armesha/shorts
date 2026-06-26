@@ -1,9 +1,9 @@
 import { resolve } from "node:path";
 import { randomAnecdote, packItemKey } from "./library.ts";
-import { getDeck } from "./decks.ts";
+import { getDeck, isPlainAnecdoteDeck } from "./decks.ts";
 import { ytMeta } from "./yt-meta.ts";
 import { renderAnecdote } from "./render.ts";
-import { assembleStillVideo, pickLifehackMotionOverlay, resolveAudio } from "../video.ts";
+import { assembleStillVideo, pickJokeMotionOverlay, pickLifehackMotionOverlay, resolveAudio } from "../video.ts";
 
 export interface ProducedVideo {
   videoPath: string;
@@ -33,7 +33,11 @@ export async function produceAnecdoteVideo(
     { title: a.title, text: a.text, channel: deck.name, deck: deck.id, profession: a.profession },
     imagePath,
   );
-  const motionOverlay = deck.lifehack ? pickLifehackMotionOverlay(`${deck.id}|${a.profession ?? ""}|${a.title}|${a.text}`) : null;
+  const motionOverlay = deck.lifehack
+    ? pickLifehackMotionOverlay(`${deck.id}|${a.profession ?? ""}|${a.title}|${a.text}`)
+    : isPlainAnecdoteDeck(deck)
+      ? pickJokeMotionOverlay(`${deck.id}|${a.title}|${a.text}`, a.text.length)
+      : null;
   const audio = resolveAudio(undefined, deck);
   await assembleStillVideo(imagePath, videoPath, { durationSec: 6, audioPath: audio.audioPath, motionOverlay });
   const meta = ytMeta(deck, a.title, a.text);

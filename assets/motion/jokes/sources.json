@@ -1,0 +1,10 @@
+{
+  "createdAt": "2026-06-26T18:57:28.365Z",
+  "license": "Project-owned generated CSS sticker animations; no external imagery.",
+  "files": [
+    "laugh-bounce.gif",
+    "laugh-wiggle.gif",
+    "laugh-pop.gif"
+  ],
+  "generator": "src/scripts/build-joke-motion-assets.mjs"
+}

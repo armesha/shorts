@@ -4,7 +4,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import puppeteer from "puppeteer-core";
 import { chromePath } from "../render.ts";
-import { deckLang, getDeck } from "./decks.ts";
+import { deckLang, getDeck, isPlainAnecdoteDeck } from "./decks.ts";
 import { buildPsychHtml } from "../psych/render.ts";
 import { buildIslamicHtml, pickIslamicBg } from "../islamic/render.ts";
 import { buildChristianHtml, pickChristianBg } from "../christian/render.ts";
@@ -17,6 +17,7 @@ import type { PackItem } from "./library.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATE = resolve(__dirname, "../../templates/anecdote.html");
+const POP_JOKE_TEMPLATE = resolve(__dirname, "../../templates/anecdote-pop.html");
 const BG_DIR = resolve(process.cwd(), "assets/backgrounds");
 const LIFEHACK_TEMPLATE = resolve(__dirname, "../../templates/lifehack.html");
 const LIFEHACK_BG_DIR = resolve(process.cwd(), "assets/backgrounds/lifehacks");
@@ -119,6 +120,8 @@ export interface Anecdote {
   deck?: string;
   /** Legacy profession key retained for source stats/template seeding. */
   profession?: string;
+  /** QA/testing hook: force one of the pop joke template variants. */
+  visualVariant?: string;
 }
 
 /** Shared Chrome capture: load HTML, wait for the auto-fit, screenshot a 1080x1920 PNG. */
@@ -156,15 +159,17 @@ export async function renderAnecdote(
   outPath: string,
   item?: PackItem,
 ): Promise<{ path: string; fontPx: number; bg: string }> {
-  if (getDeck(a.deck).quote || getDeck(a.deck).quoteVideo) return renderQuote(a, outPath, item);
-  if (getDeck(a.deck).islamic) return renderIslamic(a, outPath);
-  if (getDeck(a.deck).christian) return renderChristian(a, outPath);
-  if (getDeck(a.deck).psych) return renderPsych(a, outPath);
-  if (getDeck(a.deck).lifehack) return renderLifehack(a, outPath);
-  if (getDeck(a.deck).russianBg) return renderRussian(a, outPath);
-  if (getDeck(a.deck).memeBoard) return renderMemeBoard(a, outPath);
-  if (getDeck(a.deck).meme) return renderMeme(a, outPath);
-  if (getDeck(a.deck).choose) return renderChoose(a, outPath);
+  const deck = getDeck(a.deck);
+  if (deck.quote || deck.quoteVideo) return renderQuote(a, outPath, item);
+  if (deck.islamic) return renderIslamic(a, outPath);
+  if (deck.christian) return renderChristian(a, outPath);
+  if (deck.psych) return renderPsych(a, outPath);
+  if (deck.lifehack) return renderLifehack(a, outPath);
+  if (deck.russianBg) return renderRussian(a, outPath);
+  if (deck.memeBoard) return renderMemeBoard(a, outPath);
+  if (deck.meme) return renderMeme(a, outPath);
+  if (deck.choose) return renderChoose(a, outPath);
+  if (isPlainAnecdoteDeck(deck) && !a.bg) return renderJokePop(a, outPath);
   const bgName = a.bg ?? randomDifferent(listBackgrounds(), a.avoidBg) ?? "";
   const bgCss = backgroundCss(bgName);
   const lang = deckLang(a.deck ?? "") || "ru";
@@ -180,6 +185,89 @@ export async function renderAnecdote(
     .replaceAll("{{BG}}", bgCss);
   const fontPx = await captureCard(html, outPath);
   return { path: outPath, fontPx, bg: bgName };
+}
+
+export const JOKE_POP_VARIANTS = [
+  "v-orange-card",
+  "v-lemon-blob",
+  "v-yellow-doodle",
+  "v-blue-note",
+  "v-mint-chat",
+  "v-rose-ticket",
+  "v-purple-stage",
+  "v-green-board",
+  "v-kraft-sticky",
+  "v-comic-red",
+  "v-cyan-phone",
+  "v-peach-sticky",
+  "v-graphite",
+  "v-notebook",
+  "v-confetti",
+] as const;
+
+const JOKE_EMOJIS = ["😂", "🤣", "😆", "😹", "😁"];
+const JOKE_LABELS: Record<string, string> = {
+  ru: "СМЕХ",
+  de: "LACHEN",
+  it: "RISATE",
+  fr: "RIRE",
+  en: "LAUGH",
+  pt: "RISOS",
+  es: "RISAS",
+  ar: "ضحك",
+  hi: "हँसी",
+  id: "TAWA",
+};
+const JOKE_DOODLES = ["HA!", "LOL", "WOW", ":-)", "!!", "HEH", "FUN"];
+
+function stableHashString(seed: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i += 1) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h >>> 0;
+}
+
+function jokeVariant(input: Anecdote): string {
+  if (input.visualVariant && JOKE_POP_VARIANTS.includes(input.visualVariant as (typeof JOKE_POP_VARIANTS)[number]))
+    return input.visualVariant;
+  const h = stableHashString(`${input.deck}|${input.title}|${input.text}`);
+  return JOKE_POP_VARIANTS[h % JOKE_POP_VARIANTS.length];
+}
+
+function buildJokePopHtml(input: { title: string; text: string; deckId?: string; visualVariant?: string }): { html: string; variant: string } {
+  const deck = getDeck(input.deckId);
+  const lang = deckLang(deck.id) || "ru";
+  const rtl = lang === "ar";
+  const seed = `${deck.id}|${input.title}|${input.text}`;
+  const h = stableHashString(seed);
+  const variant = jokeVariant({ title: input.title, text: input.text, channel: deck.name, deck: deck.id, visualVariant: input.visualVariant });
+  const dense = input.text.length > 430 || /\n(?:.*\n){7,}/.test(input.text);
+  const emoji = JOKE_EMOJIS[(h >>> 3) % JOKE_EMOJIS.length];
+  const label = JOKE_LABELS[lang] ?? "FUN";
+  const doodle = JOKE_DOODLES[(h >>> 7) % JOKE_DOODLES.length];
+  const tpl = readFileSync(POP_JOKE_TEMPLATE, "utf8");
+  return {
+    variant,
+    html: tpl
+      .replaceAll("{{LANG}}", esc(lang))
+      .replaceAll("{{DIR}}", rtl ? "rtl" : "ltr")
+      .replaceAll("{{TEXT_ALIGN}}", rtl ? "right" : "center")
+      .replaceAll("{{VARIANT}}", variant)
+      .replaceAll("{{DENSE}}", dense ? "dense" : "")
+      .replaceAll("{{EMOJI}}", emoji)
+      .replaceAll("{{DOODLE}}", esc(doodle))
+      .replaceAll("{{LABEL}}", esc(label))
+      .replaceAll("{{TITLE}}", esc(input.title || deck.name))
+      .replace("{{TEXT}}", esc(input.text)),
+  };
+}
+
+async function renderJokePop(a: Anecdote, outPath: string): Promise<{ path: string; fontPx: number; bg: string }> {
+  const { html, variant } = buildJokePopHtml({ title: a.title, text: a.text, deckId: a.deck, visualVariant: a.visualVariant });
+  const fontPx = await captureCard(html, outPath);
+  return { path: outPath, fontPx, bg: `pop:${variant}` };
 }
 
 function quoteHtml(input: { quote: string; author: string; lang: string; channel: string; portraitDataUri?: string | null }): string {
@@ -395,6 +483,7 @@ async function renderRussian(
   a: Anecdote,
   outPath: string,
 ): Promise<{ path: string; fontPx: number; bg: string }> {
+  if (!a.bg) return renderJokePop(a, outPath);
   const bg = pickRussianBg(a.bg, (a.text || "").length, a.avoidBg);
   const html = buildRussianHtml({ title: a.title, text: a.text, channel: a.channel }, bg);
   const fontPx = await captureCard(html, outPath);

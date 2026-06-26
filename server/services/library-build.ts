@@ -5,10 +5,10 @@
 // here). index.ts builds ONE bound copy via makeBuildLibraryVideo(...) and passes it to the videos
 // routes AND the gen-queue worker registration.
 import type { Db } from "../db.ts";
-import { DECKS, getDeck, pickGenericTitle } from "../../src/anecdotes/decks.ts";
+import { DECKS, getDeck, isPlainAnecdoteDeck, pickGenericTitle } from "../../src/anecdotes/decks.ts";
 import type { PackItem } from "../../src/anecdotes/library.ts";
 import { renderAnecdote } from "../../src/anecdotes/render.ts";
-import { pickLifehackMotionOverlay, resolveAudio } from "../../src/video.ts";
+import { pickJokeMotionOverlay, pickLifehackMotionOverlay, resolveAudio } from "../../src/video.ts";
 import { buildStillVideoFiles } from "../infra/media.ts";
 import { quoteVoiceover } from "./quote-voiceover.ts";
 
@@ -48,6 +48,8 @@ export function makeBuildLibraryVideo(deps: {
       : { ...resolveAudio(input.music, deck), durationSec: undefined as number | undefined };
     const motionOverlay = deck.lifehack
       ? pickLifehackMotionOverlay(`${deck.id}|${input.profession ?? ""}|${title}|${input.text}`)
+      : isPlainAnecdoteDeck(deck)
+        ? pickJokeMotionOverlay(`${deck.id}|${title}|${input.text}`, input.text.length)
       : null;
     const { imgRel, vidRel, render: r } = await buildStillVideoFiles({
       prefix: "vid",

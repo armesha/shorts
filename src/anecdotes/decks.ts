@@ -1127,5 +1127,22 @@ export function pickGenericTitle(deck: Deck): string {
   return deck.genericTitles[Math.floor(Math.random() * deck.genericTitles.length)];
 }
 
+export function isPlainAnecdoteDeck(deck: Deck): boolean {
+  return (
+    deck.emoji === "😂" &&
+    !deck.lifehack &&
+    !deck.psych &&
+    !deck.islamic &&
+    !deck.christian &&
+    !deck.meme &&
+    !deck.memeBoard &&
+    !deck.choose &&
+    !deck.preFact &&
+    !deck.quote &&
+    !deck.quoteVideo &&
+    !deck.longVideo
+  );
+}
+
 // ytMeta() + psychDescription() (YouTube-метаданные / распаковка карточек-JSON) вынесены в ./yt-meta.ts,
 // чтобы этот файл остался чистым реестром дек. Импортируй их оттуда (а не отсюда), иначе будет цикл.

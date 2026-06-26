@@ -9,6 +9,7 @@ const pexec = promisify(execFile);
 const FFMPEG = ffmpegPath as unknown as string;
 const AUDIO_DIR = resolve(process.cwd(), "assets/audio");
 const LIFEHACK_MOTION_DIR = resolve(process.cwd(), "assets/motion/lifehacks");
+const JOKE_MOTION_DIR = resolve(process.cwd(), "assets/motion/jokes");
 export const AUDIO_EXT = new Set([".mp3", ".m4a", ".aac", ".wav", ".ogg", ".opus"]);
 export const PACK_AUDIO_PREFIX = "pack-audio/";
 export const PACK_AUDIO_DIR = resolve(process.cwd(), "data/pack-audio");
@@ -272,6 +273,28 @@ export function pickLifehackMotionOverlay(seed: string): MotionOverlay | null {
     width: 235,
     x: "main_w-overlay_w-70",
     y: "main_h-overlay_h-86",
+  };
+}
+
+export function pickJokeMotionOverlay(seed: string, textLen = 0): MotionOverlay | null {
+  if (textLen > 560 || !existsSync(JOKE_MOTION_DIR)) return null;
+  const files = readdirSync(JOKE_MOTION_DIR)
+    .map((f) => f.toString())
+    .filter((f) => /\.gif$/i.test(f))
+    .sort();
+  if (files.length === 0) return null;
+  const h = stableHash(seed);
+  const positions = [
+    { x: "main_w-overlay_w-56", y: "main_h-overlay_h-58" },
+    { x: "56", y: "main_h-overlay_h-58" },
+    { x: "main_w-overlay_w-64", y: "64" },
+  ];
+  const pos = positions[(h >>> 4) % positions.length];
+  return {
+    path: resolve(JOKE_MOTION_DIR, files[h % files.length]),
+    width: textLen > 420 ? 132 : 172,
+    x: pos.x,
+    y: pos.y,
   };
 }
 

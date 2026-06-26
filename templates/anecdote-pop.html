@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="{{LANG}}">
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=Noto+Serif+Devanagari:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700&family=Noto+Naskh+Arabic:wght@700&family=Nunito:wght@700;900&family=Montserrat:wght@700;900&family=Noto+Color+Emoji&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #ff8a00;
+    --bg2: #ffb000;
+    --panel: #fffaf1;
+    --panel2: #ffffff;
+    --ink: #101010;
+    --muted: rgba(16,16,16,.56);
+    --accent: #111111;
+    --accent2: #ffcf2e;
+    --radius: 30px;
+    --title-font: 'Nunito', 'Montserrat', 'Noto Sans Devanagari', 'Noto Naskh Arabic', system-ui, sans-serif;
+    --body-font: 'Nunito', 'Montserrat', 'Noto Serif Devanagari', 'Noto Naskh Arabic', system-ui, sans-serif;
+    --title-size: 58px;
+    --body-size: 58px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; }
+  body { background: transparent; }
+  .card {
+    position: relative;
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    padding: 74px 70px 72px;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 10% 12%, rgba(255,255,255,.32), transparent 22%),
+      radial-gradient(circle at 92% 88%, rgba(255,255,255,.28), transparent 24%),
+      linear-gradient(160deg, var(--bg), var(--bg2));
+    font-family: var(--body-font);
+  }
+  .card::before,
+  .card::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    border-radius: 999px;
+    opacity: .26;
+  }
+  .card::before {
+    width: 340px;
+    height: 340px;
+    right: -92px;
+    top: -86px;
+    border: 38px solid rgba(255,255,255,.72);
+  }
+  .card::after {
+    width: 260px;
+    height: 260px;
+    left: -100px;
+    bottom: 210px;
+    background: rgba(255,255,255,.46);
+  }
+  .panel {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: var(--radius);
+    padding: 56px 62px 42px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.48)),
+      linear-gradient(180deg, var(--panel), var(--panel2));
+    box-shadow: 0 22px 54px rgba(0,0,0,.18);
+  }
+  .art {
+    flex: 0 0 auto;
+    min-height: 92px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 22px;
+    color: var(--accent);
+    font-family: 'Noto Color Emoji', var(--title-font);
+    font-size: 76px;
+    line-height: 1;
+  }
+  .art .doodle {
+    font-family: var(--title-font);
+    font-size: 42px;
+    font-weight: 900;
+    color: var(--accent);
+    border: 5px solid currentColor;
+    border-radius: 999px;
+    padding: 12px 24px;
+    transform: rotate(-3deg);
+  }
+  .title {
+    flex: 0 0 auto;
+    direction: {{DIR}};
+    unicode-bidi: plaintext;
+    text-align: center;
+    font-family: var(--title-font);
+    font-size: var(--title-size);
+    line-height: 1.08;
+    font-weight: 900;
+    color: var(--accent);
+    margin: 0 auto 24px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+  .body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 0 10px;
+  }
+  .text {
+    width: 100%;
+    direction: {{DIR}};
+    unicode-bidi: plaintext;
+    text-align: {{TEXT_ALIGN}};
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-family: var(--body-font);
+    font-weight: 900;
+    font-size: var(--body-size);
+    line-height: 1.22;
+    color: var(--ink);
+  }
+  .footer {
+    flex: 0 0 auto;
+    min-height: 170px;
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    padding-top: 20px;
+  }
+  .emoji {
+    font-family: 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
+    font-size: 122px;
+    line-height: 1;
+    filter: drop-shadow(0 10px 18px rgba(0,0,0,.18));
+  }
+  .caption {
+    min-width: 190px;
+    border-radius: 999px;
+    padding: 18px 24px;
+    background: var(--accent);
+    color: var(--panel);
+    font: 900 30px/1 var(--title-font);
+    text-align: center;
+  }
+  .dense .art { display: none; }
+  .dense .panel { padding-top: 48px; }
+  .dense .title { margin-bottom: 16px; }
+  .dense .footer { min-height: 84px; padding-top: 8px; }
+  .dense .emoji { font-size: 72px; }
+  .dense .caption { font-size: 24px; padding: 12px 18px; }
+
+  .v-orange-card { --bg:#ff8800; --bg2:#ff9f1c; --panel:#fffdf8; --panel2:#ffffff; --accent:#101010; --accent2:#ffe066; --radius:28px; }
+  .v-orange-card .panel { border: 0; }
+
+  .v-lemon-blob { --bg:#fff1a8; --bg2:#ffe05c; --panel:#ffd900; --panel2:#ffeb4a; --accent:#111; --radius:96px; }
+  .v-lemon-blob .panel { box-shadow: inset 0 0 0 10px rgba(255,255,255,.76), 0 20px 46px rgba(0,0,0,.12); }
+
+  .v-yellow-doodle { --bg:#ffdf5b; --bg2:#ffd33d; --panel:#ffdf5b; --panel2:#ffdf5b; --accent:#050505; --radius:12px; }
+  .v-yellow-doodle .panel { box-shadow: none; border: 0; padding-left: 52px; padding-right: 52px; }
+  .v-yellow-doodle .title { text-transform: uppercase; }
+
+  .v-blue-note { --bg:#1b75bb; --bg2:#42c6ff; --panel:#f5fbff; --panel2:#ffffff; --accent:#0b3f6f; --accent2:#ffcf2e; --radius:22px; }
+  .v-blue-note .panel { border-left: 18px solid var(--accent2); }
+
+  .v-mint-chat { --bg:#0f9f8f; --bg2:#95f0cf; --panel:#f3fff8; --panel2:#ffffff; --accent:#075c52; --accent2:#ff6f59; --radius:44px; }
+  .v-mint-chat .panel { border-bottom-right-radius: 120px; }
+
+  .v-rose-ticket { --bg:#ff4f7b; --bg2:#ffc0cb; --panel:#fff4f7; --panel2:#ffffff; --accent:#7c1230; --accent2:#111111; --radius:18px; }
+  .v-rose-ticket .panel { border: 7px dashed rgba(124,18,48,.55); }
+
+  .v-purple-stage { --bg:#4b2bbf; --bg2:#d46cff; --panel:#fbf7ff; --panel2:#ffffff; --accent:#341487; --accent2:#ffe166; --radius:34px; }
+  .v-purple-stage .title { color: #fff; background: var(--accent); border-radius: 18px; padding: 12px 24px; }
+
+  .v-green-board { --bg:#114b3b; --bg2:#2c7a5e; --panel:#f6f3e9; --panel2:#ffffff; --accent:#114b3b; --accent2:#ffcf2e; --radius:16px; }
+  .v-green-board .panel { border: 12px solid #114b3b; }
+
+  .v-kraft-sticky { --bg:#c98239; --bg2:#f1c27d; --panel:#fff0bd; --panel2:#fff8dc; --accent:#5f3514; --accent2:#e4572e; --radius:8px; }
+  .v-kraft-sticky .panel { transform: rotate(-1deg); box-shadow: 0 24px 48px rgba(64,38,13,.22); }
+
+  .v-comic-red { --bg:#e63946; --bg2:#ff9f1c; --panel:#fffdf5; --panel2:#fff4d6; --accent:#111; --accent2:#e63946; --radius:26px; }
+  .v-comic-red .panel { border: 8px solid #111; }
+  .v-comic-red .title { text-transform: uppercase; }
+
+  .v-cyan-phone { --bg:#00b4d8; --bg2:#90e0ef; --panel:#ffffff; --panel2:#eefcff; --accent:#023e8a; --accent2:#ffb703; --radius:54px; }
+  .v-cyan-phone .panel { border: 14px solid #023e8a; }
+
+  .v-peach-sticky { --bg:#ffb085; --bg2:#ffd6a5; --panel:#fff7ed; --panel2:#ffffff; --accent:#713f12; --accent2:#fb7185; --radius:24px; }
+  .v-peach-sticky .art .doodle { border-radius: 12px; transform: rotate(2deg); }
+
+  .v-graphite { --bg:#202124; --bg2:#424242; --panel:#fff8df; --panel2:#fffef5; --accent:#151515; --accent2:#ffcf2e; --radius:20px; }
+  .v-graphite .panel { box-shadow: 0 22px 54px rgba(0,0,0,.36); }
+
+  .v-notebook { --bg:#e0f2fe; --bg2:#bae6fd; --panel:#ffffff; --panel2:#f8fbff; --accent:#1d4ed8; --accent2:#ef4444; --radius:6px; }
+  .v-notebook .panel {
+    background:
+      repeating-linear-gradient(180deg, transparent 0, transparent 67px, rgba(29,78,216,.14) 68px, transparent 69px),
+      linear-gradient(180deg, var(--panel), var(--panel2));
+    border-left: 11px solid #ef4444;
+  }
+
+  .v-confetti { --bg:#fef3c7; --bg2:#fde68a; --panel:#ffffff; --panel2:#fffaf0; --accent:#111827; --accent2:#16a34a; --radius:36px; }
+  .v-confetti::before { border-color: rgba(22,163,74,.35); }
+  .v-confetti::after { background: rgba(239,68,68,.26); }
+</style>
+</head>
+<body>
+  <div class="card {{VARIANT}} {{DENSE}}">
+    <main class="panel">
+      <div class="art"><span>{{EMOJI}}</span><span class="doodle">{{DOODLE}}</span></div>
+      <div class="title">{{TITLE}}</div>
+      <section class="body"><div class="text">{{TEXT}}</div></section>
+      <footer class="footer">
+        <span class="emoji">{{EMOJI}}</span>
+        <span class="caption">{{LABEL}}</span>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      function fit() {
+        var body = document.querySelector('.body');
+        var text = document.querySelector('.text');
+        var titleEl = document.querySelector('.title');
+        if (titleEl) {
+          var ts = 58;
+          titleEl.style.fontSize = ts + 'px';
+          while (ts > 30 && titleEl.scrollHeight > 142) {
+            ts -= 2;
+            titleEl.style.fontSize = ts + 'px';
+          }
+        }
+        var min = 24, max = document.querySelector('.card').classList.contains('dense') ? 56 : 68, best = min;
+        while (min <= max) {
+          var mid = (min + max) >> 1;
+          text.style.fontSize = mid + 'px';
+          text.style.lineHeight = mid <= 34 ? '1.16' : '1.22';
+          var fitsV = text.scrollHeight <= body.clientHeight;
+          var fitsH = text.scrollWidth <= text.clientWidth + 2;
+          if (fitsV && fitsH) { best = mid; min = mid + 1; }
+          else { max = mid - 1; }
+        }
+        text.style.fontSize = best + 'px';
+        text.style.lineHeight = best <= 34 ? '1.16' : '1.22';
+        window.__fitOverflow = text.scrollHeight > body.clientHeight + 1 || text.scrollWidth > text.clientWidth + 2;
+        window.__fitFontPx = best;
+        window.__fitted = true;
+      }
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+      else fit();
+      setTimeout(function () { if (!window.__fitted) fit(); }, 1500);
+    })();
+  </script>
+</body>
+</html>
