@@ -1,16 +1,16 @@
 {
   "licenseNote": "Wikibooks text is CC BY-SA. Abu Nawas PDF/index is tracked through Commons public-domain notice and Indonesian Wikisource CC BY-SA text. Retain source URLs and attribution when publishing outside this app.",
-  "generatedAt": "2026-06-26T03:51:15.747Z",
+  "generatedAt": "2026-06-26T04:19:36.548Z",
   "sourceCounts": [
     {
       "id": "wikibooks-humor-id",
       "title": "Humor",
-      "selected": 8
+      "selected": 9
     },
     {
       "id": "tjerita-aboe-nawas-wikisource-commons",
       "title": "Tjerita Aboe Nawas dengan Radja Haroenarrasid di Negri Bagdad",
-      "selected": 16
+      "selected": 25
     }
   ],
   "sources": [

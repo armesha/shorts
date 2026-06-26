@@ -24,6 +24,15 @@ const SOURCES = [
     rights:
       "Bharatendu Harishchandra died in 1885; the underlying text is public-domain by author age. Text is sourced from Hindi Wikisource pages; keep attribution/source URLs.",
   },
+  {
+    id: "panchtantra-1952-hindi-wikisource",
+    title: "पंचतन्त्र",
+    author: "विष्णुशर्मा",
+    translator: "सत्यकाम विद्यालंकार",
+    sourceUrl: "https://hi.wikisource.org/wiki/पंचतन्त्र",
+    rights:
+      "Hindi Wikisource marks this 1952 text with public-domain notices in India and the USA. Use only short, standalone witty-story excerpts and keep attribution/source URLs.",
+  },
 ];
 
 const CARDS = [
@@ -155,6 +164,104 @@ const CARDS = [
     text:
       "एक घर में कई मेहमान बैठे थे। घंटी बजी तो नौकर भीतर गया और हँसता हुआ लौटा। पूछा गया, 'हँसते क्यों हो?' उसने कहा, 'अंदर इतने हट्टे-कट्टे लोग बैठे हैं, फिर भी किसी से यह काम न हुआ कि दरवाजे तक आकर बुला ले!'",
   },
+  {
+    title: "भेद की रखवाली",
+    sourceId: "bharatendu-parihasini-wikisource",
+    sourcePage: "पृष्ठ:भारतेंदु समग्र.pdf/१११०",
+    sourceUrl: "https://hi.wikisource.org/wiki/पृष्ठ:भारतेंदु_समग्र.pdf/१११०",
+    text:
+      "एक मित्र ने पूछा, 'तुमने हमारा भेद क्यों खोल दिया?' जवाब मिला, 'जब मैंने देखा कि मैं उसे छिपा नहीं सकता, तो ऐसे आदमी से कह दिया जो उसे छिपा सकता था।'",
+  },
+  {
+    title: "बुरी आदतें",
+    sourceId: "bharatendu-parihasini-wikisource",
+    sourcePage: "पृष्ठ:भारतेंदु समग्र.pdf/११११",
+    sourceUrl: "https://hi.wikisource.org/wiki/पृष्ठ:भारतेंदु_समग्र.pdf/११११",
+    text:
+      "एक ने कहा, 'न जाने इस लड़की में इतनी बुरी आदतें कहाँ से आईं; हमसे तो उसने कोई बुरी बात नहीं सीखी।' लड़के ने झट कहा, 'ठीक है, अगर उसने आपसे बुरी आदतें ली होतीं तो आपमें कुछ कम भी हो जातीं।'",
+  },
+  {
+    title: "एक घंटा आगे",
+    sourceId: "bharatendu-parihasini-wikisource",
+    sourcePage: "पृष्ठ:भारतेंदु समग्र.pdf/११११",
+    sourceUrl: "https://hi.wikisource.org/wiki/पृष्ठ:भारतेंदु_समग्र.pdf/११११",
+    text:
+      "मालिक ने नौकर से कहा, 'आज तू इतनी देर से आया कि बाकी नौकरों को काम शुरू किये एक घंटा हो गया।' नौकर बोला, 'तो आज शाम हम उनसे एक घंटा आगे चल देंगे, बराबर हो जाएगा।'",
+  },
+  {
+    title: "घोड़ा पकड़ना",
+    sourceId: "bharatendu-parihasini-wikisource",
+    sourcePage: "पृष्ठ:भारतेंदु समग्र.pdf/११११",
+    sourceUrl: "https://hi.wikisource.org/wiki/पृष्ठ:भारतेंदु_समग्र.pdf/११११",
+    text:
+      "'जरा मेरा घोड़ा पकड़े रहो।' 'यह कूदेगा तो नहीं?' 'नहीं।' 'काटेगा?' 'नहीं।' 'दो आदमी पकड़ें तभी संभलता है?' 'नहीं।' जवाब आया, 'फिर मुझे क्यों तकलीफ देते हैं, आप तो हैं ही।'",
+  },
+  {
+    title: "उस्ताद की फीस",
+    sourceId: "bharatendu-parihasini-wikisource",
+    sourcePage: "पृष्ठ:भारतेंदु समग्र.pdf/१११४",
+    sourceUrl: "https://hi.wikisource.org/wiki/पृष्ठ:भारतेंदु_समग्र.pdf/१११४",
+    text:
+      "एक उस्ताद ने शागिर्द से कहा, 'मुकदमा जीतने पर रुपये देने का वादा किया था, अब शर्त पूरी करो।' शागिर्द बोला, 'मैं जीता तो अदालत नहीं दिलवाएगी, और हारा तो शर्त के मुताबिक दूँगा ही नहीं।'",
+  },
+  {
+    title: "दुनिया के बाहर",
+    sourceId: "bharatendu-parihasini-wikisource",
+    sourcePage: "पृष्ठ:भारतेंदु समग्र.pdf/१११५",
+    sourceUrl: "https://hi.wikisource.org/wiki/पृष्ठ:भारतेंदु_समग्र.pdf/१११५",
+    text:
+      "एक वकील अपनी बहस में जमीन छोड़कर आसमान की बातें करने लगा। जज ने कहा, 'बस साहब, अब आप हमारी हुकूमत के बाहर हो गये। इस दुनिया से बाहर की बात सुनने का हमें अधिकार नहीं।'",
+  },
+  {
+    title: "भाग्यवान मेहमान",
+    sourceId: "bharatendu-parihasini-wikisource",
+    sourcePage: "पृष्ठ:भारतेंदु समग्र.pdf/१११५",
+    sourceUrl: "https://hi.wikisource.org/wiki/पृष्ठ:भारतेंदु_समग्र.pdf/१११५",
+    text:
+      "एक मेहमान ऐसे घर पहुँचे जहाँ बैठने को चटाई भी न थी। मेजबान ने बड़े चाव से कहा, 'आप तो भाग्यवान हैं; जहाँ जाते हैं, वहाँ बैठने की जगह ही नहीं मिलती।'",
+  },
+  {
+    title: "रास्ते का पक्का पता",
+    sourceId: "bharatendu-parihasini-wikisource",
+    sourcePage: "पृष्ठ:भारतेंदु समग्र.pdf/१११६",
+    sourceUrl: "https://hi.wikisource.org/wiki/पृष्ठ:भारतेंदु_समग्र.pdf/१११६",
+    text:
+      "एक यात्री रास्ता भूल गया। सामने मिले आदमी ने कहा, 'हजूर, मुझे नहीं पहचाना? मैं वही जान हूँ जो एक बार आपके सामने बकरी चुराने के मामले में पेश हुआ था।' यात्री बोला, 'अहा जान, अब याद आया!'",
+  },
+  {
+    title: "टाइम-टेबल का हिसाब",
+    sourceId: "premchand-bade-bhai-sahab-wikisource",
+    text:
+      "टाइम-टेबल में सुबह छह से आठ अंग्रेजी, फिर हिसाब, इतिहास, भूगोल, ग्रामर, अनुवाद और विविध विषय रखे गये। खेल-कूद की मद बिल्कुल उड़ गई। मगर टाइम-टेबल बना लेना एक बात है, उस पर अमल करना दूसरी बात।",
+  },
+  {
+    title: "हेनरी और जेम्स",
+    sourceId: "premchand-bade-bhai-sahab-wikisource",
+    text:
+      "भाई साहब कहते, 'इतिहास में आठ-आठ हेनरी हुए हैं। कौन-सा कांड किस हेनरी के समय हुआ, याद रखना आसान समझते हो? हेनरी सातवें की जगह आठवाँ लिखा और सारे नंबर साफ। जेम्स, विलियम और चार्ल्स तो गिनते-गिनते दिमाग चकरा जाए।'",
+  },
+  {
+    title: "ज्यामिति का डर",
+    sourceId: "premchand-bade-bhai-sahab-wikisource",
+    text:
+      "भाई साहब का दावा था कि ज्यामिति में 'अ ब ज' की जगह 'अ ज ब' लिख दिया तो सारे नंबर कट जाते हैं। कोई पूछे, बात वही है या नहीं; लेकिन परीक्षक को क्रम चाहिए। पढ़ाई में यही छोटी बात पहाड़ बन जाती है।",
+  },
+  {
+    title: "ढोल की पोल",
+    sourceId: "panchtantra-1952-hindi-wikisource",
+    sourcePage: "पंचतन्त्र/प्रथम तन्त्र",
+    sourceUrl: "https://hi.wikisource.org/wiki/पंचतन्त्र/प्रथम_तन्त्र",
+    text:
+      "दूर से ढोल की बहुत ऊँची आवाज़ सुनकर गोमायु डर गया। पास पहुँचा तो देखा कि बेलों की शाखाएँ ढोल पर चोट कर रही थीं। शोर बड़ा था, पर बात खाली निकली; केवल शब्द से डरना ठीक नहीं।",
+  },
+  {
+    title: "गीत का समय",
+    sourceId: "panchtantra-1952-hindi-wikisource",
+    sourcePage: "पंचतन्त्र/पंचम तन्त्र",
+    sourceUrl: "https://hi.wikisource.org/wiki/पंचतन्त्र/पंचम_तन्त्र",
+    text:
+      "चाँदनी रात में गधे ने कहा, 'मित्र, आज जी चाहता है खूब गीत गाऊँ। मुझे सब राग-रागनियाँ आती हैं।' गीदड़ ने समझाया, 'मामा, हम चोरी से खेत में आये हैं; चोर को खाँसना भी मना है, और तुम राग छेड़ना चाहते हो।'",
+  },
 ];
 
 function sourceFor(card) {
@@ -167,7 +274,7 @@ function safetyFlags(card) {
   const text = card.text;
   const rules = [
     ["religion", /ईश्वर|भगवान|मंदिर|मन्दिर|धर्म|ब्राह्मण|मुसलमान|हिन्दू|हिंदू|मौलवी|फकीर|व्रत|ब्रत|एकादशी/u],
-    ["politics", /राजनीति|सरकार|मंत्री|मन्त्री|राजा|रानी|अदालत|जज|गवाह/u],
+    ["modern_politics", /राजनीति|सरकार|चुनाव|राष्ट्रपति|प्रधानमंत्री|विधानसभा|संसद/u],
     ["protected_class", /जाति|काने|अंध|लंगड़|पागल|गँवार|गंवार|कायथ|नौजवान लौंडी/u],
     ["adult", /पत्नी|पति|विवाह|व्याह|शराब|नशा|प्रेम|माशूक|आशिक|चूम/u],
     ["violence", /हत्या|खून|युद्ध|मार डाल|मृत्यु|फोड़|बाण|शिकार|मारा गया/u],

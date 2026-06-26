@@ -1,16 +1,21 @@
 {
   "licenseNote": "Underlying works are public-domain by author age. Text was sourced from Hindi Wikisource; retain source URLs and attribution in the ledger when publishing outside this app.",
-  "generatedAt": "2026-06-26T03:41:15.604Z",
+  "generatedAt": "2026-06-26T04:19:36.435Z",
   "sourceCounts": [
     {
       "id": "premchand-bade-bhai-sahab-wikisource",
       "title": "बड़े भाई साहब",
-      "selected": 12
+      "selected": 15
     },
     {
       "id": "bharatendu-parihasini-wikisource",
       "title": "परिहासिनी",
-      "selected": 7
+      "selected": 15
+    },
+    {
+      "id": "panchtantra-1952-hindi-wikisource",
+      "title": "पंचतन्त्र",
+      "selected": 2
     }
   ],
   "sources": [
@@ -29,6 +34,14 @@
       "authorDied": 1885,
       "sourceUrl": "https://hi.wikisource.org/wiki/पृष्ठ:भारतेंदु_समग्र.pdf/१११०",
       "rights": "Bharatendu Harishchandra died in 1885; the underlying text is public-domain by author age. Text is sourced from Hindi Wikisource pages; keep attribution/source URLs."
+    },
+    {
+      "id": "panchtantra-1952-hindi-wikisource",
+      "title": "पंचतन्त्र",
+      "author": "विष्णुशर्मा",
+      "translator": "सत्यकाम विद्यालंकार",
+      "sourceUrl": "https://hi.wikisource.org/wiki/पंचतन्त्र",
+      "rights": "Hindi Wikisource marks this 1952 text with public-domain notices in India and the USA. Use only short, standalone witty-story excerpts and keep attribution/source URLs."
     }
   ],
   "blockedPolicy": "Rejected religion, politics/authority-heavy setups, protected-class/caste/disability jokes, adult/family/sexist setups, violence/crime, coarse insults, OCR/navigation noise, and non-standalone excerpts."

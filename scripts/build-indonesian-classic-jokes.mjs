@@ -203,6 +203,77 @@ const CARDS = [
     text:
       "Pria yang berendam semalam tidak meminta lebih dari janji awal. Abu Nawas pun tidak perlu marah. Ia cukup membuat contoh yang lucu, lalu membiarkan semua orang sampai pada kesimpulan yang sama: janji harus dibayar.",
   },
+  {
+    title: "Salam dari Echa",
+    sourceId: "wikibooks-humor-id",
+    sourcePage: "Humor/Cape Deh",
+    sourceUrl: "https://id.wikibooks.org/wiki/Humor/Cape_Deh",
+    text:
+      "Guru berkata, 'Bu Guru dapat salam dari Echa.'\n\nMurid-murid menunggu sebentar, lalu ada yang menyambung, 'E-Chape deh.'\n\nPelajaran selesai, tetapi permainan katanya masih ikut pulang.",
+  },
+  {
+    title: "Batu yang Retak",
+    sourceId: "tjerita-aboe-nawas-wikisource-commons",
+    evidenceIds: ["abunawas-id-02-excerpt-01"],
+    text:
+      "Raja menunjukkan lumpang batu yang retak dan meminta Abu Nawas menjahitnya kembali. Semua orang menunggu jawaban, sebab batu sebesar itu tentu bukan kain yang bisa disulam begitu saja.",
+  },
+  {
+    title: "Benang dari Batu",
+    sourceId: "tjerita-aboe-nawas-wikisource-commons",
+    evidenceIds: ["abunawas-id-02-excerpt-02"],
+    text:
+      "Abu Nawas datang membawa sekeranjang batu kecil. Ia berkata, 'Kalau batu besar harus dijahit, batu kecil ini tolong dipintal dulu menjadi benang.' Raja terdiam; syaratnya berbalik kepada pemberi perintah.",
+  },
+  {
+    title: "Tukang Jahit Batu",
+    sourceId: "tjerita-aboe-nawas-wikisource-commons",
+    evidenceIds: ["abunawas-id-02-excerpt-01", "abunawas-id-02-excerpt-02"],
+    text:
+      "Orang bisa menjahit kain karena ada benangnya. Abu Nawas membuat perkara itu tampak sederhana: sebelum ia menjahit lumpang, istana harus menyediakan benang batu. Permintaan yang mustahil dijawab dengan bahan yang sama mustahilnya.",
+  },
+  {
+    title: "Suara Pipa Air",
+    sourceId: "tjerita-aboe-nawas-wikisource-commons",
+    evidenceIds: ["abunawas-id-15-excerpt-01"],
+    text:
+      "Raja bertanya kepada para pembesar, 'Apa arti bunyi air dalam pipa ini?' Tidak ada yang menjawab. Abu Nawas dipanggil, mendengar suaranya, lalu berkata bahwa air itu sedang bertanya kabar kepada api di atasnya.",
+  },
+  {
+    title: "Air Menyapa Api",
+    sourceId: "tjerita-aboe-nawas-wikisource-commons",
+    evidenceIds: ["abunawas-id-15-excerpt-01"],
+    text:
+      "Jawaban Abu Nawas ringan sekali: bunyi pipa bukan rahasia besar, melainkan percakapan kecil antara air dan api. Setelah itu raja masuk ke istana tanpa membantah, dan orang-orang bubar sambil menyimpan senyum.",
+  },
+  {
+    title: "Perintah yang Aneh",
+    sourceId: "tjerita-aboe-nawas-wikisource-commons",
+    evidenceIds: ["abunawas-id-16-excerpt-01"],
+    text:
+      "Abu Nawas mendapat pesan: datanglah, tetapi jangan berjalan di tanah, jangan naik kendaraan, jangan kepanasan, dan jangan pula berteduh. Perintahnya terdengar seperti teka-teki yang sengaja dibuat tanpa jalan keluar.",
+  },
+  {
+    title: "Kuda dan Payung",
+    sourceId: "tjerita-aboe-nawas-wikisource-commons",
+    evidenceIds: ["abunawas-id-16-excerpt-01"],
+    text:
+      "Abu Nawas mengikat kudanya erat-erat, membawa payung, lalu duduk dengan satu kaki tergantung. Ia tidak berjalan di tanah, tidak benar-benar naik kendaraan, tidak kena panas, dan juga tidak sepenuhnya berteduh.",
+  },
+  {
+    title: "Tidak Melanggar",
+    sourceId: "tjerita-aboe-nawas-wikisource-commons",
+    evidenceIds: ["abunawas-id-16-excerpt-01"],
+    text:
+      "Ketika Abu Nawas tiba, raja melihat tingkahnya dan heran. Semua larangan telah dipatuhi dengan cara yang tidak terpikirkan sebelumnya. Kadang jawaban paling rapi muncul dari membaca perintah terlalu harfiah.",
+  },
+  {
+    title: "Teka-teki Istana",
+    sourceId: "tjerita-aboe-nawas-wikisource-commons",
+    evidenceIds: ["abunawas-id-16-excerpt-01"],
+    text:
+      "Perintah istana bermaksud menjebak Abu Nawas. Ia justru mengubahnya menjadi teka-teki gerak: separuh naik, separuh tidak, separuh berteduh, separuh tidak. Raja akhirnya hanya bisa mengakui kecerdikannya.",
+  },
 ];
 
 function sourceFor(card) {

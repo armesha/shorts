@@ -378,5 +378,164 @@
     "curation": {
       "edits": "manual cleanup/adaptation from Abu Nawas OCR excerpts; old spelling normalized; unsafe religious/violence/adult/protected-class material excluded"
     }
+  },
+  {
+    "id": 25,
+    "pack": 1,
+    "text": "Guru berkata, 'Bu Guru dapat salam dari Echa.'\n\nMurid-murid menunggu sebentar, lalu ada yang menyambung, 'E-Chape deh.'\n\nPelajaran selesai, tetapi permainan katanya masih ikut pulang.",
+    "chars": 183,
+    "title": "Salam dari Echa",
+    "sourceId": "wikibooks-humor-id",
+    "sourcePage": "Humor/Cape Deh",
+    "sourceUrl": "https://id.wikibooks.org/wiki/Humor/Cape_Deh",
+    "evidenceIds": [],
+    "curation": {
+      "edits": "trimmed and lightly rewritten from Wikibooks CC BY-SA page; unsafe punchlines removed"
+    }
+  },
+  {
+    "id": 26,
+    "pack": 1,
+    "text": "Raja menunjukkan lumpang batu yang retak dan meminta Abu Nawas menjahitnya kembali. Semua orang menunggu jawaban, sebab batu sebesar itu tentu bukan kain yang bisa disulam begitu saja.",
+    "chars": 184,
+    "title": "Batu yang Retak",
+    "sourceId": "tjerita-aboe-nawas-wikisource-commons",
+    "sourcePage": "Tjerita Aboe Nawas dengan Radja Haroenarrasid di Negri Bagdad",
+    "sourceUrl": "https://id.wikisource.org/wiki/Indeks:Tjerita_Aboe_Nawas_dengan_Radja_Haroenarrasid_di_Negri_Bagdad.pdf",
+    "evidenceIds": [
+      "abunawas-id-02-excerpt-01"
+    ],
+    "curation": {
+      "edits": "manual cleanup/adaptation from Abu Nawas OCR excerpts; old spelling normalized; unsafe religious/violence/adult/protected-class material excluded"
+    }
+  },
+  {
+    "id": 27,
+    "pack": 1,
+    "text": "Abu Nawas datang membawa sekeranjang batu kecil. Ia berkata, 'Kalau batu besar harus dijahit, batu kecil ini tolong dipintal dulu menjadi benang.' Raja terdiam; syaratnya berbalik kepada pemberi perintah.",
+    "chars": 204,
+    "title": "Benang dari Batu",
+    "sourceId": "tjerita-aboe-nawas-wikisource-commons",
+    "sourcePage": "Tjerita Aboe Nawas dengan Radja Haroenarrasid di Negri Bagdad",
+    "sourceUrl": "https://id.wikisource.org/wiki/Indeks:Tjerita_Aboe_Nawas_dengan_Radja_Haroenarrasid_di_Negri_Bagdad.pdf",
+    "evidenceIds": [
+      "abunawas-id-02-excerpt-02"
+    ],
+    "curation": {
+      "edits": "manual cleanup/adaptation from Abu Nawas OCR excerpts; old spelling normalized; unsafe religious/violence/adult/protected-class material excluded"
+    }
+  },
+  {
+    "id": 28,
+    "pack": 1,
+    "text": "Orang bisa menjahit kain karena ada benangnya. Abu Nawas membuat perkara itu tampak sederhana: sebelum ia menjahit lumpang, istana harus menyediakan benang batu. Permintaan yang mustahil dijawab dengan bahan yang sama mustahilnya.",
+    "chars": 230,
+    "title": "Tukang Jahit Batu",
+    "sourceId": "tjerita-aboe-nawas-wikisource-commons",
+    "sourcePage": "Tjerita Aboe Nawas dengan Radja Haroenarrasid di Negri Bagdad",
+    "sourceUrl": "https://id.wikisource.org/wiki/Indeks:Tjerita_Aboe_Nawas_dengan_Radja_Haroenarrasid_di_Negri_Bagdad.pdf",
+    "evidenceIds": [
+      "abunawas-id-02-excerpt-01",
+      "abunawas-id-02-excerpt-02"
+    ],
+    "curation": {
+      "edits": "manual cleanup/adaptation from Abu Nawas OCR excerpts; old spelling normalized; unsafe religious/violence/adult/protected-class material excluded"
+    }
+  },
+  {
+    "id": 29,
+    "pack": 1,
+    "text": "Raja bertanya kepada para pembesar, 'Apa arti bunyi air dalam pipa ini?' Tidak ada yang menjawab. Abu Nawas dipanggil, mendengar suaranya, lalu berkata bahwa air itu sedang bertanya kabar kepada api di atasnya.",
+    "chars": 210,
+    "title": "Suara Pipa Air",
+    "sourceId": "tjerita-aboe-nawas-wikisource-commons",
+    "sourcePage": "Tjerita Aboe Nawas dengan Radja Haroenarrasid di Negri Bagdad",
+    "sourceUrl": "https://id.wikisource.org/wiki/Indeks:Tjerita_Aboe_Nawas_dengan_Radja_Haroenarrasid_di_Negri_Bagdad.pdf",
+    "evidenceIds": [
+      "abunawas-id-15-excerpt-01"
+    ],
+    "curation": {
+      "edits": "manual cleanup/adaptation from Abu Nawas OCR excerpts; old spelling normalized; unsafe religious/violence/adult/protected-class material excluded"
+    }
+  },
+  {
+    "id": 30,
+    "pack": 1,
+    "text": "Jawaban Abu Nawas ringan sekali: bunyi pipa bukan rahasia besar, melainkan percakapan kecil antara air dan api. Setelah itu raja masuk ke istana tanpa membantah, dan orang-orang bubar sambil menyimpan senyum.",
+    "chars": 208,
+    "title": "Air Menyapa Api",
+    "sourceId": "tjerita-aboe-nawas-wikisource-commons",
+    "sourcePage": "Tjerita Aboe Nawas dengan Radja Haroenarrasid di Negri Bagdad",
+    "sourceUrl": "https://id.wikisource.org/wiki/Indeks:Tjerita_Aboe_Nawas_dengan_Radja_Haroenarrasid_di_Negri_Bagdad.pdf",
+    "evidenceIds": [
+      "abunawas-id-15-excerpt-01"
+    ],
+    "curation": {
+      "edits": "manual cleanup/adaptation from Abu Nawas OCR excerpts; old spelling normalized; unsafe religious/violence/adult/protected-class material excluded"
+    }
+  },
+  {
+    "id": 31,
+    "pack": 1,
+    "text": "Abu Nawas mendapat pesan: datanglah, tetapi jangan berjalan di tanah, jangan naik kendaraan, jangan kepanasan, dan jangan pula berteduh. Perintahnya terdengar seperti teka-teki yang sengaja dibuat tanpa jalan keluar.",
+    "chars": 216,
+    "title": "Perintah yang Aneh",
+    "sourceId": "tjerita-aboe-nawas-wikisource-commons",
+    "sourcePage": "Tjerita Aboe Nawas dengan Radja Haroenarrasid di Negri Bagdad",
+    "sourceUrl": "https://id.wikisource.org/wiki/Indeks:Tjerita_Aboe_Nawas_dengan_Radja_Haroenarrasid_di_Negri_Bagdad.pdf",
+    "evidenceIds": [
+      "abunawas-id-16-excerpt-01"
+    ],
+    "curation": {
+      "edits": "manual cleanup/adaptation from Abu Nawas OCR excerpts; old spelling normalized; unsafe religious/violence/adult/protected-class material excluded"
+    }
+  },
+  {
+    "id": 32,
+    "pack": 1,
+    "text": "Abu Nawas mengikat kudanya erat-erat, membawa payung, lalu duduk dengan satu kaki tergantung. Ia tidak berjalan di tanah, tidak benar-benar naik kendaraan, tidak kena panas, dan juga tidak sepenuhnya berteduh.",
+    "chars": 209,
+    "title": "Kuda dan Payung",
+    "sourceId": "tjerita-aboe-nawas-wikisource-commons",
+    "sourcePage": "Tjerita Aboe Nawas dengan Radja Haroenarrasid di Negri Bagdad",
+    "sourceUrl": "https://id.wikisource.org/wiki/Indeks:Tjerita_Aboe_Nawas_dengan_Radja_Haroenarrasid_di_Negri_Bagdad.pdf",
+    "evidenceIds": [
+      "abunawas-id-16-excerpt-01"
+    ],
+    "curation": {
+      "edits": "manual cleanup/adaptation from Abu Nawas OCR excerpts; old spelling normalized; unsafe religious/violence/adult/protected-class material excluded"
+    }
+  },
+  {
+    "id": 33,
+    "pack": 1,
+    "text": "Ketika Abu Nawas tiba, raja melihat tingkahnya dan heran. Semua larangan telah dipatuhi dengan cara yang tidak terpikirkan sebelumnya. Kadang jawaban paling rapi muncul dari membaca perintah terlalu harfiah.",
+    "chars": 207,
+    "title": "Tidak Melanggar",
+    "sourceId": "tjerita-aboe-nawas-wikisource-commons",
+    "sourcePage": "Tjerita Aboe Nawas dengan Radja Haroenarrasid di Negri Bagdad",
+    "sourceUrl": "https://id.wikisource.org/wiki/Indeks:Tjerita_Aboe_Nawas_dengan_Radja_Haroenarrasid_di_Negri_Bagdad.pdf",
+    "evidenceIds": [
+      "abunawas-id-16-excerpt-01"
+    ],
+    "curation": {
+      "edits": "manual cleanup/adaptation from Abu Nawas OCR excerpts; old spelling normalized; unsafe religious/violence/adult/protected-class material excluded"
+    }
+  },
+  {
+    "id": 34,
+    "pack": 1,
+    "text": "Perintah istana bermaksud menjebak Abu Nawas. Ia justru mengubahnya menjadi teka-teki gerak: separuh naik, separuh tidak, separuh berteduh, separuh tidak. Raja akhirnya hanya bisa mengakui kecerdikannya.",
+    "chars": 203,
+    "title": "Teka-teki Istana",
+    "sourceId": "tjerita-aboe-nawas-wikisource-commons",
+    "sourcePage": "Tjerita Aboe Nawas dengan Radja Haroenarrasid di Negri Bagdad",
+    "sourceUrl": "https://id.wikisource.org/wiki/Indeks:Tjerita_Aboe_Nawas_dengan_Radja_Haroenarrasid_di_Negri_Bagdad.pdf",
+    "evidenceIds": [
+      "abunawas-id-16-excerpt-01"
+    ],
+    "curation": {
+      "edits": "manual cleanup/adaptation from Abu Nawas OCR excerpts; old spelling normalized; unsafe religious/violence/adult/protected-class material excluded"
+    }
   }
 ]
