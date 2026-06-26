@@ -12,6 +12,16 @@
   {
     "id": 2,
     "pack": 1,
+    "text": "Recebeu o rei um presente de um boi muito formoso, a que chamavam o boi Cardil; o rei tinha-o em tanta estimação que o mandou para uma das suas tapadas, acompanhado do criado fiel para tratar d'ele.",
+    "chars": 198,
+    "title": "boi Cardil",
+    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
+    "sourcePage": "Contos Tradicionaes do Povo Portuguez/O boi Cardil",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/O%20boi%20Cardil"
+  },
+  {
+    "id": 3,
+    "pack": 1,
     "text": "Havia n'outros tempos um rei que tinha uma filha, que dizia que só casaria com o homem que fosse capaz de inventar uma adivinhação que ela não adivinhasse.  Correram ao palacio muitos principes e fidalgos, mas todos se foram sem que as suas adivinhações ficassem por adivinhar.",
     "chars": 277,
     "title": "tres lebres",
@@ -20,34 +30,24 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/As%20tres%20lebres"
   },
   {
-    "id": 3,
-    "pack": 1,
-    "text": "Havia um rei, e na sua côrte andavam dois cavalleiros; um fallava nas suas trez filhas, que eram muito devotas e que não se importavam com as vaidades do mundo; o outro tinha uma filha só, que era muito alegre e divertida.",
-    "chars": 222,
-    "title": "Havia côrte andavam dois",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/As sonsas",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/As%20sonsas"
-  },
-  {
     "id": 4,
     "pack": 1,
-    "text": "Foi o ministro para casa, muito afflicto, como era de esperar, e contou as suas tristezas á filha.  ela como esperta, disse: - Deixe estar, meu pae, que eu já sei qual é o pensamento do rei, e d'esta lhe juro que o hei-de salvar.",
-    "chars": 229,
-    "title": "adivinha rei",
+    "text": "Havia um principe, que foi passear; no meio de uma estrada encontrou uma velhinha, e o principe pediu á velha a sua benção.  ela deu-lhe trez nozes, e lhe disse: - Meu principe, não partas estas nozes senão perto de agua.",
+    "chars": 221,
+    "title": "Havia principe passear meio",
     "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/A adivinha do rei",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20adivinha%20do%20rei"
+    "sourcePage": "Contos Tradicionaes do Povo Portuguez/As nozes",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/As%20nozes"
   },
   {
     "id": 5,
     "pack": 1,
-    "text": "Havia uma rapariga, que morava com sua avó, e esta a mandou vender trez vintens de linhas.  A netinha foi e entrou n'um palacio e viu em cima de uma meza trez vintens; deixou lá ficar as linhas, e quando ia para sahir achou as portas todas fechadas.",
-    "chars": 249,
-    "title": "sete encantados",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Os sete encantados",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Os%20sete%20encantados"
+    "text": "Era uma vez uma mulher muito bonita e dava estalagem e a todos os almocreves que lá iam perguntava se tinham visto uma mulher mais bonita do que ela.  ela tinha uma filha mais bonita do que ela e tinha-a fechada para ninguem a ver.",
+    "chars": 231,
+    "title": "sapatinhos encantados",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/Os sapatinhos encantados",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Os%20sapatinhos%20encantados"
   },
   {
     "id": 6,
@@ -72,15 +72,35 @@
   {
     "id": 8,
     "pack": 1,
-    "text": "Havia um mercador, que morava perto do palacio real, e tinha trez filhas.  Maria era a mais moça e a mais formosa.  O mercador era viuvo, e o rei mandou-o fazer uma viagem.  Logo que o rei o mandou chamar foi, e voltou muito triste para casa, por deixar as filhas sós; mas deu-lhes tres vasos de manjaricão, e disse: - Minhas queridas filhas!",
-    "chars": 342,
-    "title": "Maria Subtil",
+    "text": "Era uma vez um homem, que não pôde pagar a renda ao fidalgo de quem era caseiro, e foi-lhe pedir perdoança; o fidalgo pensou que o que ele estava era a mentir, e disse-lhe: - Só te perdôo as medidas da renda se me disseres uma mentira do tamanho de hoje e amanhã.",
+    "chars": 263,
+    "title": "enfiada petas",
     "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Maria Subtil",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Maria%20Subtil"
+    "sourcePage": "Contos Tradicionaes do Povo Portuguez/A enfiada de petas",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20enfiada%20de%20petas"
   },
   {
     "id": 9,
+    "pack": 1,
+    "text": "Um pae tinha trez filhos, que foram pelo mundo correr sua ventura; tomou cada um para sua banda.  O mais velho encontrou-se com um viandante, e foi conversando com ele; chegados lá muito longe o viandante disse: - Paremos aqui para comer.",
+    "chars": 238,
+    "title": "Desanda cacheira",
+    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
+    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Desanda cacheira",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Desanda%20cacheira"
+  },
+  {
+    "id": 10,
+    "pack": 1,
+    "text": "Uma virtuosa dona de boa vida tinha uma filha de tão má inclinação que não queria tomar os nobres conselhos da mãe, nem aprendia seus louvados costumes; mas em tudo seguia seu proprio parecer sem obediencia de pessoa alguma, nem correição de visinha nem parenta, porque era preguiçosa, golosa, andeja, muito falladeira e de outras feias manhas.",
+    "chars": 344,
+    "title": "D'aquellas sete dia",
+    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
+    "sourcePage": "Contos Tradicionaes do Povo Portuguez/D'aquellas sete ao dia",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/D'aquellas%20sete%20ao%20dia"
+  },
+  {
+    "id": 11,
     "pack": 1,
     "text": "A ovelha, o gallo, o porco, o gato, o pato e o perú foram fazer uma viagem, e recolheram-se de um temporal n'um casebre em que luzia o buraco.  Não estava ali ninguem, e o porco foi para o cortêlho, a ovelha e o pato puzeram-se de traz da porta, o gato acocorou-se na borralheira, e o gallo com o perú pousaram-se no caibro do tecto.",
     "chars": 333,
@@ -90,7 +110,7 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/As%20vozes%20dos%20animaes"
   },
   {
-    "id": 10,
+    "id": 12,
     "pack": 1,
     "text": "De uma vez andava uma gallinha a esgravatar no chão, e caiu-lhe um bocado de caliça em cima da cabeça; a gallinha espantada botou a fugir, e encontrou um gallo que lhe perguntou: - Para onde vaes a fugir, comadre gallinha?",
     "chars": 222,
@@ -100,17 +120,7 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Cahiu-me%20na%20minha%20catulinha"
   },
   {
-    "id": 11,
-    "pack": 1,
-    "text": "O pequeno acordou a irmãsinha, contou-lhe tudo e botaram a fugir de casa.  Foram andando noite e dia, e já muito longe o rapazinho cansado deitou-se no chão e adormeceu com a cabeça no regaço da irmã.",
-    "chars": 200,
-    "title": "Cabellos ouro",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Cabellos de ouro",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Cabellos%20de%20ouro"
-  },
-  {
-    "id": 12,
+    "id": 13,
     "pack": 1,
     "text": "Uma formiga prendeu o pé na neve.  \"Oh neve!  tu és tão forte, que o meu pé prendes! \" Responde a neve: \"Tão forte sou eu que o sol me derrete. \" \"Oh sol!  tu és tão forte que derretes a neve que o meu pé prende!",
     "chars": 212,
@@ -120,7 +130,17 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/A%20formiga%20e%20a%20neve"
   },
   {
-    "id": 13,
+    "id": 14,
+    "pack": 1,
+    "text": "Disse um: - O cuco cantou mas foi para ti.  - Nada, isso não póde ser.  Para ti é que ele cantou.  Pegam de teimar, e como nenhum cedia resolveram ir consultar um letrado.  Chegaram lá, o letrado ouviu-os, e depois de botar a livraria abaixo, disse: - Deposite cada um dois pintos antes de tudo.",
+    "chars": 295,
+    "title": "quem canta cuco?",
+    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
+    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Para quem canta o cuco?",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Para%20quem%20canta%20o%20cuco%3F"
+  },
+  {
+    "id": 15,
     "pack": 1,
     "text": "Era uma mulher que tinha uma filha e uma engeitada em casa.  A engeitada era muito bonita e a filha muito mona; a mãe queria muito á filha e á engeitada atirava-lhe muito.  Tinha ela uma vaca; mandava a engeitada guardar a vaca; dava-lhe um peso de estopa e ela havia de lh'o trazer fiado e dobado.",
     "chars": 298,
@@ -130,7 +150,17 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/A%20engeitada"
   },
   {
-    "id": 14,
+    "id": 16,
+    "pack": 1,
+    "text": "Comeu á larga e como o comer fosse bom, deixou-se lá ficar; á noite deitou-se, e depois de deitada veiu ter com ela uma pessoa que não viu.  Alli esteve bastante tempo, repetindo-se todas as noites o mesmo, e um dia disse á pessoa que dormia com ela que desejava ir aonde a mãe levar-lhe alguma coisa de comer.",
+    "chars": 310,
+    "title": "principe Palmas verdes",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/O principe das Palmas-verdes",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/O%20principe%20das%20Palmas-verdes"
+  },
+  {
+    "id": 17,
     "pack": 1,
     "text": "Mandou-a deitar para uns campos e disse aos homens que a foram deitar, que lhe cortassem a lingoa e que lh'a trouxessem.  eles tiveram dó de lhe cortarem a lingoa e como levavam uma cadella cortáram-lhe a lingoa e trouxeram-n'a ao rei.",
     "chars": 235,
@@ -140,27 +170,47 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/A%20princeza%20abandonada"
   },
   {
-    "id": 15,
+    "id": 18,
     "pack": 1,
-    "text": "Dizia o Senhor: - A cadeira é minha, emprestei-t'a, não t'a dei.  Luz-Vella ateimava muito e poz uma demanda com o Senhor.  O Senhor apresentou a Lua, a Agua e o Sol como testemunhas de que tinha emprestado e não dado a cadeira.",
-    "chars": 228,
-    "title": "Lenda Lua Agua",
+    "text": "Um rei quiz experimentar o juizo de trez conselheiros que tinha, e indo a passear com eles encontrou um velho a trabalhar n'um campo, e saudou-o: - Muita neve vae na serra!  Respondeu o velho com a cara alegre: - Já, senhor, é tempo d'ela.",
+    "chars": 239,
+    "title": "adivinhas anexins",
     "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Lenda da Lua e da Agua",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Lenda%20da%20Lua%20e%20da%20Agua"
+    "sourcePage": "Contos Tradicionaes do Povo Portuguez/As adivinhas em anexins",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/As%20adivinhas%20em%20anexins"
   },
   {
-    "id": 16,
+    "id": 19,
     "pack": 1,
-    "text": "Houve em Italia, e em um dos mais conhecidos logares d'ela, um honrado pai de familias, nobilissimo por geração, rico de bens procedidos da herança e nobreza antiga de seus passados, dotado de muitas partes e graças naturaes, e tão liberal do que possuia, que mais parecia dispenseiro das riquezas, que carcereiro d'ellas.",
-    "chars": 322,
-    "title": "poderes ouro",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Os poderes do ouro",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Os%20poderes%20do%20ouro"
+    "text": "Eram uma vez um gato e um coelho que se combinaram pr'a ir passear.  Ao depois chegaram á beira do mato e disse o gato para o coelho se queria passear o mato; pegaram e foram.  Viram um pinheiro e disse o coelho: - \"Ó gato, tens-te por muito forçante; vamos a ver qual de nós trepa primeiro acima d'este pinheiro.",
+    "chars": 313,
+    "title": "coelho gato",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/O coelho e o gato",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/O%20coelho%20e%20o%20gato"
   },
   {
-    "id": 17,
+    "id": 20,
+    "pack": 1,
+    "text": "\" ele mandou-lhe o creado e o creado de volta disse: \"Oh senhor!  não me dá a sua filha que quero casar com ela? \" E ele disse-lhe: \"Sempre és muito malcreado!  Se não fôra eu ter-te amizade punha-te já fóra da porta com uma carregadeira de pau.",
+    "chars": 245,
+    "title": "ovo partido",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/O ovo partido",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/O%20ovo%20partido"
+  },
+  {
+    "id": 21,
+    "pack": 1,
+    "text": "\" Então o principe riu-se d'aquellas palavras e disse: \"Veremos se isso ha de acontecer. \" Depois procurou, procurou, até que encontrou uma creança que brincava na relva; tomou-a do chão, marcou-a na testa com um ferro em brasa e cortou-lhe o dedo minimo da mão direita e foi deital-a em uma silva.",
+    "chars": 298,
+    "title": "Maria Silva",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/Maria Silva",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Maria%20Silva"
+  },
+  {
+    "id": 22,
     "pack": 1,
     "text": "\" Foi a mulher á adega, e ia-se passando muito tempo sem que ela voltasse.  Então o camponez levantou-se da mesa e foi ver se tinha succedido alguma cousa á mulher.  Chegado á adega, viu a mulher parada a olhar para uma machadinha que estava pendurada no tecto, e perguntou-lhe: \"Oh mulher!",
     "chars": 290,
@@ -170,7 +220,7 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/A%20machadinha"
   },
   {
-    "id": 18,
+    "id": 23,
     "pack": 1,
     "text": "A BICHA DE SETE CABEÇAS Era uma vez um homem que vivia com uma sua irmã em muito boa amizade; vem uma má d'uma vizinha e disse-lhe: \"Você aqui cheiinha de trabalho e seu irmão para ali a comer na venda mais uma amiga.",
     "chars": 217,
@@ -180,7 +230,7 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/A%20bicha%20de%20sete%20cabe%C3%A7as"
   },
   {
-    "id": 19,
+    "id": 24,
     "pack": 1,
     "text": "Era um rei, que tinha trez filhos.  Um dia disse: - Pois, filhos, vão correr o mundo, e aquelle que trouxer a mulher mais formosa é que hade ficar com o reino.  Partiram todos; os dois mais velhos acharam logo duas raparigas muito formosas, com quem se casaram.",
     "chars": 261,
@@ -190,17 +240,27 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20cara%20de%20boi"
   },
   {
-    "id": 20,
+    "id": 25,
     "pack": 1,
-    "text": "que os sabios deram a este mancebo, que se foi logo assentar vida com um senhor cidadão d'aquella cidade, ao qual sempre foi leal e sem lisonja como lhe foi aconselhado.  Aconteceu, que vindo el Rey áquella terra, quiz este senhor por fruta nova (que então o era) mandar-lhe alguns figos, que os tinha, em certas figueiras temporãs muito boas; e mandou a ellas tres pagens, cada um com seu açafate, que os enchessem de figos, encommendando-lhes a limpeza e bom tratamento d'eles, porque eram para levar a ElRey.",
-    "chars": 511,
-    "title": "tres conselhos",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Os tres conselhos",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Os%20tres%20conselhos"
+    "text": "\" Foi-se o colhereiro para sua casa, aonde tinha tres filhas muito lindas, e uma cadellinha que sempre o vinha esperar á entrada da porta.  N'esse dia, porém, contra o seu costume quem lhe appareceu á entrada da porta foi a filha mais velha.",
+    "chars": 241,
+    "title": "colhereiro casa aonde tinha",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/O colhereiro",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/O%20colhereiro"
   },
   {
-    "id": 21,
+    "id": 26,
+    "pack": 1,
+    "text": "\" O coelhinho respondeu: \"Sou eu, o coelhinho Que venho da horta E vou fazer um caldinho.  Responderam-lhe de dentro: \"E eu sou a cabra cabrez Que te salto em cima E te faço em tres.",
+    "chars": 182,
+    "title": "coelhinho branco",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/O coelhinho branco",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/O%20coelhinho%20branco"
+  },
+  {
+    "id": 27,
     "pack": 1,
     "text": "Então a velha disse-lhe um dia que a rainha havia de ter uma creança, mas que se essa creança fosse menino, quando fosse homem seria tão mao que faria a desgraça de seus paes, e que se fosse menina teria má sorte, mas que escolhessem eles o que queriam.",
     "chars": 253,
@@ -210,37 +270,17 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/O%20menino%20assafroado"
   },
   {
-    "id": 22,
+    "id": 28,
     "pack": 1,
-    "text": "Quando os animaes fallavam, a pulga disse: Que a matassem Mas que a não estorcegassem.  (Oliveira de Azemeis - Leite de Vasconcellos, Tradições, p.  139. ) Dizia a gallinha, referindo-se ao milho: - Que muito se medisse, e nenhum se vendesse.",
-    "chars": 242,
-    "title": "Lendas animaes",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Lendas dos animaes",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Lendas%20dos%20animaes"
+    "text": "Foi-se passando tempo e o pequeno não crescia nada, de sorte que ficou sempre do mesmo tamanho.  O pae era lavrador e, quando andava a trabalhar no campo, era o Grão-de-milho que lhe ia levar o jantar n'uma cesta; mas como era tão pequeno ninguem via o que fazia correr aquella cesta pela rua abaixo.",
+    "chars": 300,
+    "title": "Historia grão milho",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/Historia do grão-de-milho",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Historia%20do%20gr%C3%A3o-de-milho"
   },
   {
-    "id": 23,
-    "pack": 1,
-    "text": "Um homem muito abastado veiu a cahir em pobreza pelos seus desvarios; como tinha dado uma boa educação ao filho, este sabia tocar muitos instrumentos e para ganhar a sua vida foi por esse mundo além.",
-    "chars": 199,
-    "title": "rosa branca bocca",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/A rosa branca na bocca",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20rosa%20branca%20na%20bocca"
-  },
-  {
-    "id": 24,
-    "pack": 1,
-    "text": "Levaram-no ao rei para que fizesse d'ele o que quizesse.  Tinha o rei trez filhas, todas trez muito formosas, que pediram ao pae que o deixasse ficar prisioneiro no castello até que o viessem resgatar.",
-    "chars": 201,
-    "title": "cavallinho sete côres",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/O cavallinho das sete côres",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/O%20cavallinho%20das%20sete%20c%C3%B4res"
-  },
-  {
-    "id": 25,
+    "id": 29,
     "pack": 1,
     "text": "Uma raposa viu um gallo pousado em cima de um palheiro, e não podendo agarral-o começou-lhe a fallar cá de baixo: - Oh gallo, não sabes?  Veiu agora uma ordem para todos os bichos serem amigos uns dos outros.",
     "chars": 208,
@@ -250,87 +290,107 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20raposa%20e%20o%20gallo"
   },
   {
-    "id": 26,
-    "pack": 1,
-    "text": "Ha dois rios ao pé de Mirandella, chamados Tudella e Robaçal. No tempo em que os rios fallavam, dizia o rio Tudella: Arreda, arreda, Rio Tudella; Se não quizeres arredar Ahi vem o Robaçal Que ele te fará arredar. Porque o rio Robaçal leva mais agua do que o Tudella. (Torre de. Chama.)",
-    "chars": 285,
-    "title": "Lenda rios",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Lenda dos rios",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Lenda%20dos%20rios"
-  },
-  {
-    "id": 27,
-    "pack": 1,
-    "text": "147.  O REY E OS CORTESÃOS Huum Rey andava en huum carro dourado, e hiam com ele seus cavalleyros.  E encontrou com huuns homeens vestidos de vestiduras velhas e viis, e eram magros e desfeytos.",
-    "chars": 194,
-    "title": "rey cortezãos",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/O rey e os cortezãos",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/O%20rey%20e%20os%20cortez%C3%A3os"
-  },
-  {
-    "id": 28,
-    "pack": 1,
-    "text": "Ao outro dia ele perguntou o mesmo, e ela o mesmo respondeu, e ele disse assim: - Deixa, que ahi vem o Março Marçagão que ele t'o dirá.  - E eu pego n'umas poucas de esteiras e boto-as no primeiro de Março a córar.",
-    "chars": 214,
-    "title": "Março Marçagão",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Março Marçagão",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Mar%C3%A7o%20Mar%C3%A7ag%C3%A3o"
-  },
-  {
-    "id": 29,
-    "pack": 1,
-    "text": "Nem sempre estas duas correntes se communicam, havendo comtudo uma epoca em que os escriptores deram fórma litteraria aos themas tradicionaes ou os imitaram, e em que os contos escriptos por seu turno vieram a influir na imaginação popular pelo emprego da parabola na prédica religiosa e do exemplo na doutrinação concreta da moral.",
-    "chars": 332,
-    "title": "Litteratura Contos populares Portugal",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Litteratura dos Contos populares em Portugal",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Litteratura%20dos%20Contos%20populares%20em%20Portugal"
-  },
-  {
     "id": 30,
     "pack": 1,
-    "text": "Esteve até setembro á espera do fructo, pois é n'este mez que a amendoeira o dá.  Como n'esse mez não estivessem maduras ainda as amendoas, cansado já de esperar foi espreitar as outras arvores.",
-    "chars": 194,
-    "title": "Lenda amendoeira",
+    "text": "A venda das gallinhas.  - Esta anedocta acha-se extremamente vulgarisada: nas Facetieuses journées, p.  107; nas Repues franches, de Villon; nas Facetie di Poncino, na Arcadia di Brenta, p.  152; nos Nouveaux Contes à rire, p.",
+    "chars": 226,
+    "title": "venda gallinhas",
     "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Lenda da amendoeira",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Lenda%20da%20amendoeira"
+    "sourcePage": "Contos Tradicionaes do Povo Portuguez/A venda das gallinhas",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20venda%20das%20gallinhas"
   },
   {
     "id": 31,
     "pack": 1,
-    "text": "Um rei tinha trez filhas; perguntou a cada uma d'ellas por sua vez, qual era mais sua amiga?  A mais velha respondeu: - Quero mais a meu pae, do que á luz do sol.  Respondeu a do meio: - Gosto mais de meu pae do que de mim mesmo.",
-    "chars": 229,
-    "title": "sal agua",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/O sal e a agua",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/O%20sal%20e%20a%20agua"
+    "text": "Um dia disseram eles ao lobo e á raposa: - \"Olhem, compadres, é preciso fazer uma grande festa cá em casa e por isso vê tu, compadre, se me trazes alguns carneiros e ovelhas para o jantar; e tu, comadre raposa, arranja gallinhas e patos, pois nós queremos que o banquete seja fallado em toda á vizinhança.",
+    "chars": 305,
+    "title": "compadre lobo comadre raposa",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/O compadre lobo e a comadre raposa",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/O%20compadre%20lobo%20e%20a%20comadre%20raposa"
   },
   {
     "id": 32,
     "pack": 1,
-    "text": "Quando morreu a mãe de Sam Pedro, o filho quiz mettel-a no céo mas não havia motivo.  - Ainda se ela tivesse dado alguma coisa em meu louvor.  Sam Pedro ouvindo estas palavras do senhor, lembrou-se da rama de cebolla caida no caminho, e apoiou-se n'esta offerta.",
-    "chars": 262,
-    "title": "Lenda mãe Sam Pedro",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Lenda da mãe de Sam Pedro",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Lenda%20da%20m%C3%A3e%20de%20Sam%20Pedro"
+    "text": "Depois a raposa encontrou um lobo e disse-lhe: - \" Ó compadre, queres tu?  vamos tomar um afilhado.  Foram para deante e encontraram uma gente que estava a fazer um molho de centeio e vae ela disse-lhe: - \"Olha, ó compadre, chega-te ali pr'a o pé d'aquelles homens da malha que eles dão atraz de ti e em-no entanto, pilho-lhes eu a panella do arroz.",
+    "chars": 349,
+    "title": "raposa lobo",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/A raposa e o lobo",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/A%20raposa%20e%20o%20lobo"
   },
   {
     "id": 33,
     "pack": 1,
-    "text": "Havia um homem muito rico, que era viuvo e tinha uma filha muito formosa chamada Linda Branca; tinha ela muita pena de ser tão bonita, porque todos a queriam.  Pediu ao pae que lhe désse um vestido azul e cinzento; o pae deu-lh'o.",
-    "chars": 230,
-    "title": "Linda Branca",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Linda Branca",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Linda%20Branca"
+    "text": "Houve por esta occasião uma festa e a mulher do conde disse para este, que visse se podia arranjar alguma maneira de a filha poder vêr a festa, porque ela estava muito triste, e talvez assim se distrahisse alguma cousa.",
+    "chars": 219,
+    "title": "Comêra bocadinho tivera limão",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/Comêra um bocadinho se tivera limão",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Com%C3%AAra%20um%20bocadinho%20se%20tivera%20lim%C3%A3o"
   },
   {
     "id": 34,
+    "pack": 1,
+    "text": "Houve de ter um filhinho como um sapo; depois botaram ás folhas a ver se havia quem o queria crear, mas ninguem se animava a vir.  O rei vendo que o sapito do filho não havia quem o queria crear annunciou que se houvesse alguma mulher que o quizesse crear lh'o dava em casamento e lhe dava o reino.",
+    "chars": 298,
+    "title": "principe sapo",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/O principe sapo",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/O%20principe%20sapo"
+  },
+  {
+    "id": 35,
+    "pack": 1,
+    "text": "Um pae tinha um filho e uma filha, e costumava mandal-os ao mato buscar lenha: um dia os meninos foram e perderam-se no caminho.  Depois de terem caminhado muito, avistaram uma luz; foram-se aproximando, e viram junto da luz uma casa; entraram, e viram uma bruxa, que estava fritando filhozes; a bruxa tinha só um olho, no meio da testa, e por isso não viu logo os meninos.",
+    "chars": 373,
+    "title": "meninos perdidos",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/Os meninos perdidos",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Os%20meninos%20perdidos"
+  },
+  {
+    "id": 36,
+    "pack": 1,
+    "text": "Era de uma vez um gato que foi ao barbeiro para que lhe fizesse a barba.  O barbeiro disse ao gato: - \"Se tu tivesses o rabo mais curto ficarias muito mais bonito. \" Disse-lhe o gato: - \"Pois corta-lhe um bocado.",
+    "chars": 212,
+    "title": "rabo gato",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/O rabo do gato",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/O%20rabo%20do%20gato"
+  },
+  {
+    "id": 37,
+    "pack": 1,
+    "text": "Uns homens começaram a fallar ao pé d'ela, e disse um: - Está ha tantos annos com a bocca aberta, sem ninguem lhe dar de comer.  - Pois se ela quizer de comer, que venha á minha casa.",
+    "chars": 183,
+    "title": "estatua come",
+    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
+    "sourcePage": "Contos Tradicionaes do Povo Portuguez/A estatua que come",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20estatua%20que%20come"
+  },
+  {
+    "id": 38,
+    "pack": 1,
+    "text": "Havia n'outros tempos um principe chamado Pedro que tinha um irmão de leite chamado Pedrito.  Viviam os dous como se fossem verdadeiros irmãos e tinham jurado valerem sempre um ao outro nos trabalhos que a sorte lhes destinasse.",
+    "chars": 228,
+    "title": "Pedro Pedrito",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/Pedro e Pedrito",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Pedro%20e%20Pedrito"
+  },
+  {
+    "id": 39,
+    "pack": 1,
+    "text": "No dia seguinte, quando o rico deu pela falta do porco, correu a casa do compadre pobre e muito afllicto contou-lhe o acontecido.  Este, fazendo-se desentendido, dizia-lhe: \"Assim, compadre!  bravo!",
+    "chars": 198,
+    "title": "Historia compadre pobre compadre rico",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/Historia do compadre pobre e do compadre rico",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Historia%20do%20compadre%20pobre%20e%20do%20compadre%20rico"
+  },
+  {
+    "id": 40,
     "pack": 1,
     "text": "Era uma vez um pescador que tinha tres filhas.  Um dia estando ele a tirar a rede do mar achou que ela vinha muito pesada, mas muito admirado ficou ao ver que ela só trazia um enorme peixe.",
     "chars": 189,
@@ -340,27 +400,27 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/A%20torre%20de%20Babylonia"
   },
   {
-    "id": 35,
+    "id": 41,
     "pack": 1,
-    "text": "A coruja encontrou a aguia, e disse-lhe: Oh aguia, se vires uns passarinhos muito lindos em um ninho, com uns biquinhos muito bem feitos, olha lá não m'os comas, que são os meus filhos.",
-    "chars": 185,
-    "title": "aguia coruja",
+    "text": "Um fidalgo, tomou por materia de riso calçar todo o anno sem pagar nenhum par de obra aos sapateiros, que vieram a dar-lhe na trilha, levantando-se ás maiores com palavras, que correu entre todos que nenhum se fiasse d'ele, nem lhe desse calçado sem lhe pagar primeiro.",
+    "chars": 269,
+    "title": "botas fiadas",
     "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/A aguia e a coruja",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20aguia%20e%20a%20coruja"
+    "sourcePage": "Contos Tradicionaes do Povo Portuguez/As botas fiadas",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/As%20botas%20fiadas"
   },
   {
-    "id": 36,
+    "id": 42,
     "pack": 1,
-    "text": "E este rey Leyr nom ouve filho, mas ouve tres filhas muy fermosas e amavaas muito.  E huum dia ouve sas razoões com ellas e disselhes - Que lhe dissessem verdade quall dellas o amava mais.",
-    "chars": 188,
-    "title": "rey Leir",
+    "text": "Era uma vez um rei que tinha por costume andar de noite escutando pelas portas para saber o que se passava.  Viu luzir por um buraco da fechadura, chegou o ouvido á escuta, e estavam uns sujeitos conversando.",
+    "chars": 208,
+    "title": "tinha costume andar noite",
     "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/O rey Leir",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/O%20rey%20Leir"
+    "sourcePage": "Contos Tradicionaes do Povo Portuguez/As favas",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/As%20favas"
   },
   {
-    "id": 37,
+    "id": 43,
     "pack": 1,
     "text": "Era d'uma vez um pinto borrachudo que andava a gravetar em um monte de terra e achou lá uma bolsa de moedas e disse: - \"Vou levar esta bolsa ao rei. \" Poz-se a caminho com a bolsa no bico, mas como tivesse de atravessar um rio e não podesse disse: - \"Oh rio!",
     "chars": 258,
@@ -370,7 +430,7 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/O%20pinto%20borrachudo"
   },
   {
-    "id": 38,
+    "id": 44,
     "pack": 1,
     "text": "Uma madrasta tinha uma enteada muito linda e com uns cabellinhos muito loiros; e costumava mandal-a para o quintal guardar um figo que tinha na figueira, recomendando-lhe que não o deixasse comer pelos passaros, pois se tal succedesse, a matava.",
     "chars": 245,
@@ -380,7 +440,7 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/A%20menina%20e%20o%20figo"
   },
   {
-    "id": 39,
+    "id": 45,
     "pack": 1,
     "text": "Era uma vez um pae que tinha um filho que desde muito pequenino costumava ir para o alto d'um monte olhar para a lua.  Um dia o pae foi ter com ele e perguntou-lhe para que estava ele olhando para a lua.",
     "chars": 203,
@@ -390,7 +450,7 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/O%20menino%20e%20a%20lua"
   },
   {
-    "id": 40,
+    "id": 46,
     "pack": 1,
     "text": "Era de uma vez um rei que era muito jogador e tinha por costume jogar com o seu creado particular.  Um dia em que já tinha perdido muito ao jogo, jogou a propria coroa e o creado ganhou-a.",
     "chars": 188,
@@ -400,7 +460,27 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Branca-flor"
   },
   {
-    "id": 41,
+    "id": 47,
+    "pack": 1,
+    "text": "Havia uma rainha, que vivia muito desgostosa por não ter filhos; tinha ela muita devoção com uma Senhora da Encarnação que tinha no oratorio, e costumava muitas vezes ir pedir-lhe que lhe désse um filho, e dizia: \"Senhora da Encarnação; Dae-me um filho Ainda que seja um leão.",
+    "chars": 276,
+    "title": "Carneirinho branco",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/Carneirinho branco",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Carneirinho%20branco"
+  },
+  {
+    "id": 48,
+    "pack": 1,
+    "text": "\" Combinaram as mentiras que haviam de dizer, e partiram, para a mesma terra, indo sempre um adeante.  Chegado o primeiro a certa terra começou a botar fama que trazia uma grande novidade, mas que só a daria por dinheiro; juntou-se logo muito povo, para saber a novidade, e o homem então disse: \"Em tal terra acaba agora de nascer um menino com sete braços.",
+    "chars": 357,
+    "title": "dois mentirosos",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/Os dois mentirosos",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Os%20dois%20mentirosos"
+  },
+  {
+    "id": 49,
     "pack": 1,
     "text": "Depois que se acharam seguros, deitaram-se a comer, mas só poderam comer um, e o outro ficou inteiro.  Diz a raposa: - Compadre, é melhor enterrarmos este carneiro, e vimos cá amanhã comel-o juntos.",
     "chars": 198,
@@ -410,7 +490,7 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20raposa%20e%20o%20lobo"
   },
   {
-    "id": 42,
+    "id": 50,
     "pack": 1,
     "text": "O rei ficou muito triste com esta sorte e para os livrar d'ela mandou fazer uma torre onde não entrasse a luz do dia e metteu n'ela a filha com uma aia a guardal-a e ao filho mandou fazer um caixãosinho de pao todo forrado de seda e velludo por dentro e por fóra e foi ele deital-o a um rio que passava muito longe de palacio.",
     "chars": 326,
@@ -420,27 +500,17 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/A%20sina"
   },
   {
-    "id": 43,
+    "id": 51,
     "pack": 1,
-    "text": "E falaronse quatro ribaldos que estevessem em quatro lugares en a carreyra per hu avia de hir aquelle aldeaão, e que cada hum lhe dissesse que aquel carneyro era cam, por tal que o deitasse de ssy, e que o ouvessem eles.",
-    "chars": 220,
-    "title": "quatro ribaldos",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Os quatro ribaldos",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Os%20quatro%20ribaldos"
+    "text": "\"Não tenho fuso. \" \"Deixa estar que eu hei de ir á cidade e hei de comprar um fuso. \" Ao depois então foi á cidade e trouxe-lhe um fuso; ela fez-se toda contente na presença do homem; mas mal ele voltou costas quebrou-o, mas era para não fiar.",
+    "chars": 243,
+    "title": "Conto fuso",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/Conto do fuso",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Conto%20do%20fuso"
   },
   {
-    "id": 44,
-    "pack": 1,
-    "text": "Um pobre homem estava a trabalhar no mato, a cortar lenha para ir vender pela villa e assim sustentar mulher e filhos.  De repente viu ao pé de si dois sujeitos, bem vestidos, que lhe disseram: - Nós sômos a Fortuna e a Riqueza.",
-    "chars": 228,
-    "title": "Riqueza Fortuna",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/A Riqueza e a Fortuna",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20Riqueza%20e%20a%20Fortuna"
-  },
-  {
-    "id": 45,
+    "id": 52,
     "pack": 1,
     "text": "Era de uma vez um homem, que tinha muitos filhos, e era muito pobre, e como não tivesse em que ganhar pão para lhes dar, foi para creado de certo rei, para ver se assim podia sustentar melhor os filhos.",
     "chars": 202,
@@ -450,7 +520,7 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/A%20cacheirinha"
   },
   {
-    "id": 46,
+    "id": 53,
     "pack": 1,
     "text": "Era uma vez um rapaz que foi procurar amo.  Chegou a uma casa onde lhe perguntaram se ele sabia lêr e tendo ele respondido que sim disseram-lhe que o não queriam.  Foi a outra casa e tendo-lhe feito a mesma pergunta, respondeu que não e lá acceitaram-n'o.",
     "chars": 255,
@@ -460,7 +530,7 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/O%20creado%20do%20estrujeitante"
   },
   {
-    "id": 47,
+    "id": 54,
     "pack": 1,
     "text": "Uma velha tinha muitos netos um dos quaes estava ainda por baptisar.  Um dia a boa velhinha saiu a procurar um padrinho para o seu netinho e no caminho encontrou um lobo, que lhe perguntou: - \"Onde vaes tu velha?",
     "chars": 212,
@@ -470,17 +540,27 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/A%20velha%20e%20os%20lobos"
   },
   {
-    "id": 48,
+    "id": 55,
     "pack": 1,
-    "text": "No principio do mundo, a ovelha fallava. ela estava presa, mas queria que lhe abrissem a porta, porque tinha chegado Março e já havia que comer; e disse então: No Março, onde quer eu passo; No Abril, abre a porta e deixa-me ir; Em Maio, onde quer eu caio",
-    "chars": 254,
-    "title": "Lenda Ovelha",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Lenda da Ovelha",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Lenda%20da%20Ovelha"
+    "text": "Havia um lavrador muito rico que tinha um creado muito fiel, de quem confiava todos os haveres que possuia.  Entre os bois da manada que o creado guardava havia um chamado Rabil, que o seu dono muito estimava e um dia para experimentar a fidelidade do creado disse o lavrador a uma filha que tinha que fosse ter com o creado e lhe disse que se ele matasse o boi Rabil casaria com ele.",
+    "chars": 384,
+    "title": "Havia lavrador muito rico",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/O Rabil",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/O%20Rabil"
   },
   {
-    "id": 49,
+    "id": 56,
+    "pack": 1,
+    "text": "Vivia a menina muito feliz no palacio; até que ele disse-lhe um dia que se sentia muito doente, e por isso que ia para casa de sua mãe para se tractar; que de vez em quando a viria visitar, mas que era preciso que ela posesse na janella uma bacia com agua para ele se lavar, e uma toalha para se limpar; e recomendou muito á menina que não chegasse á janella porque podia passar algum homem da terra d'ela e ir dizer á avó que a tinha visto.",
+    "chars": 441,
+    "title": "conde encantado",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/O conde encantado",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/O%20conde%20encantado"
+  },
+  {
+    "id": 57,
     "pack": 1,
     "text": "O PREÇO DOS OVOS Era uma vez um rapaz que foi embarcar não sei agora para onde; chegou a uma estalagem; perguntou se havia que comer; a dona da estalagem disse-lhe que não tinha senão ovos cozidos e ele respondeu-lhe: \"Pois ponha cá um vintem d'eles.",
     "chars": 250,
@@ -490,27 +570,27 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/O%20pre%C3%A7o%20dos%20ovos"
   },
   {
-    "id": 50,
+    "id": 58,
     "pack": 1,
-    "text": "De noite ouviu o rei um grande alarido, e chóros, e uma voz que dizia: - Esta, que agora acaba de nascer Ainda ha de ser tua mulher; E por mais que a sorte lhe seja mesquinha Sempre comtigo virá a ser rainha.",
-    "chars": 208,
-    "title": "Maria Silva",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Maria da Silva",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Maria%20da%20Silva"
+    "text": "JOÃO MANDRIÃO Era uma vez uma mãe que tinha um filho que tinha quinze annos e ainda andava ao collo; até que lhe botaram o nome de João Mandrião.  Passaram lá uns poucos de rapazes e convidaram-no para ele ir á lenha; ele disse que sim, que se eles o levassem a cavallo que ia; eles pegaram, e levaram-no ás costas.",
+    "chars": 315,
+    "title": "João Mandrião",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/João Mandrião",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Jo%C3%A3o%20Mandri%C3%A3o"
   },
   {
-    "id": 51,
+    "id": 59,
     "pack": 1,
-    "text": "73.  OS TREZ IRMÃOS Um homem tinha trez filhos, um seu e dois que a mulher lhe mettera em casa.  O pae puchava para o seu filho, e a mulher puchava para os outros dois, e cada um promettera que havia de deixar os bens áquelle a quem mais amava.",
-    "chars": 244,
-    "title": "trez irmãos",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Os trez irmãos",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Os%20trez%20irm%C3%A3os"
+    "text": "Tinha ele por costume ir pescar para se distrahir de suas penas.  Succedeu que um dia lhe viesse na rede só um peixe e quando lhe ia tocar disse-lhe o peixe: \"Não me mates. \" O bom homem tornou a deitar o peixe na agua, mas no dia seguinte succedeu-lhe o mesmo quando foi pescar.",
+    "chars": 279,
+    "title": "Tinha costume pescar distrahir",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/S. Jorge",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/S.%20Jorge"
   },
   {
-    "id": 52,
+    "id": 60,
     "pack": 1,
     "text": "Era uma vez um ferreiro, que tratava muito mal a mulher com pancadas, e de uma vez tantas lhe deu, que sem se importar que ela andava occupada de mezes a pôz fóra de casa.  A pobre da mulher foi para os montes, e coitadinha, lá se agasalhou n'uma lapa e comia ervinhas do campo.",
     "chars": 278,
@@ -520,37 +600,57 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20bengala%20de%20dezeseis%20quintaes"
   },
   {
-    "id": 53,
+    "id": 61,
     "pack": 1,
-    "text": "164.  A RAINHA VIRTUOSA E AS DUAS IRMÃS Um rei mancebo, que não tinha conversação de mulher alguma, requerido dos seus que se casasse, com desejo de achar na sua propria terra mulher para isso, refusava o casamento de muitas princezas forasteiras que lhe traziam.",
-    "chars": 263,
-    "title": "rainha virtuosa duas irmãs",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/A rainha virtuosa e as duas irmãs",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20rainha%20virtuosa%20e%20as%20duas%20irm%C3%A3s"
+    "text": "Como, porém, debaixo da janella houvesse um telhado, a velha ficou presa pela camisa a uma telha e alli esteve toda a noite.  De manhã passáram duas fadas e olhando para a pobre velha disseram: \"Coitada!",
+    "chars": 203,
+    "title": "velha fadada",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/A velha fadada",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/A%20velha%20fadada"
   },
   {
-    "id": 54,
+    "id": 62,
     "pack": 1,
-    "text": "110.  OS TREZ PATRÕES Um rapaz foi offerecer-se para criado a casa de um lavrador; á noite, quando foram ceiar, deram-lhe uma tigella de caldo.  Diz ele: - Oh meu amo, o caldo está muito quente.",
-    "chars": 194,
-    "title": "trez patrões",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Os trez patrões",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Os%20trez%20patr%C3%B5es"
+    "text": "A raposa tomou tal fartadela que nem podia andar, e como tivesse de fazer uma jornada, pediu ao compadre lobo que a levasse ás costas, pois estava muito doente.  O lobo isso lhe fez e a raposa ia dizendo pelo caminho.",
+    "chars": 217,
+    "title": "Raposinha gaiteira",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/Raposinha gaiteira",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Raposinha%20gaiteira"
   },
   {
-    "id": 55,
+    "id": 63,
     "pack": 1,
-    "text": "Não se importou com isso, e foi mais para diante e viu á beira da capellinha de um ermitão um breviario esquecido, e pegou n'ele, petiscou fogo e assou com as folhas do livro a coelha, comeu e foi andando sempre.",
-    "chars": 212,
-    "title": "princeza adivinha",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/A princeza que adivinha",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20princeza%20que%20adivinha"
+    "text": "Foi pedir uma vez á melra para irem ambas pedirem ás formigas se lhes davam algum soccorro e as formigas disseram para a melra: - \"Emquanto tu andaste de silveira em silveira - chelro, merlo, merlo, merlo, chelro - ganháras pão para o inverno.",
+    "chars": 243,
+    "title": "cuco popa",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/O cuco e a popa",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/O%20cuco%20e%20a%20popa"
   },
   {
-    "id": 56,
+    "id": 64,
+    "pack": 1,
+    "text": "Era uma vez um principe que não achava mulher que lhe agradasse.  Um dia foi a uma feira e viu lá o retrato d'uma menina tão lindo, tão lindo que mal póde imaginar-se; perguntando de quem era, responderam-lhe que era da princeza de tal, mas ele custou-lhe a crêr que houvesse uma dama tão formosa.",
+    "chars": 297,
+    "title": "retrato princeza",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/O retrato da princeza",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/O%20retrato%20da%20princeza"
+  },
+  {
+    "id": 65,
+    "pack": 1,
+    "text": "Era uma vez um rei que tinha uma filha doente que desejava figos verdes da figueira no mez de janeiro.  O rei disse: \"Quem trouxer figos verdes á minha filha se fôr moço casa com ela, se fôr velho dou-lhe bens.",
+    "chars": 210,
+    "title": "figos verdes",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/Os figos verdes",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Os%20figos%20verdes"
+  },
+  {
+    "id": 66,
     "pack": 1,
     "text": "MOFINA MENDES: Vou-me á feira de Trancoso Logo; nome de Jesu, E farei dinheiro grosso; Do que este azeite render Comprarei ovos de pata, Que é a cousa mais barata, Que eu de lá posso trazer.",
     "chars": 190,
@@ -560,7 +660,7 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20bilha%20de%20azeite"
   },
   {
-    "id": 57,
+    "id": 67,
     "pack": 1,
     "text": "Era uma vez um macaco que estava emcima de uma oliveira a comer uma romã; succedeu que caiu um grão da romã para a terra em que estava a oliveira e passado pouco tempo nasceu uma romanzeira.",
     "chars": 190,
@@ -570,7 +670,7 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/A%20romanzeira%20do%20macaco"
   },
   {
-    "id": 58,
+    "id": 68,
     "pack": 1,
     "text": "A barata sahiu de baixo de umas pedras com os filhos e disse-lhes em quanto eles ainda pequenos estavam ao sol: - Passeae, flores! passeae, flores! 'aqui vem ditado: \"Quem o feio ama, bonito lhe parece.\" (Ilha de S. Miguel.)",
     "chars": 224,
@@ -580,27 +680,27 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20barata%20e%20os%20filhos"
   },
   {
-    "id": 59,
+    "id": 69,
     "pack": 1,
-    "text": "Chegou-se um pobre ao pé de um individuo que parecia aceiado, e reparando-lhe para o pescoço, disse: - ê-me licença de lhe tirar uma pulga.  O outro consentiu, e assim que viu a pulga, metteu a mão na algibeira e deu um pinto ao pobre em recompensa.",
-    "chars": 249,
-    "title": "signal Nobreza",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/O signal da Nobreza",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/O%20signal%20da%20Nobreza"
+    "text": "\" O mais novo, porém, não o quiz attender e um bello dia fugiu.  Caminhou, caminhou sem encontrar que comer até que foi ter á porta d'uma grande quinta onde avistou um formoso pomar em que as laranjeiras vergavam ao peso das laranjas.",
+    "chars": 234,
+    "title": "dois irmãos",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/Os dois irmãos",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Os%20dois%20irm%C3%A3os"
   },
   {
-    "id": 60,
+    "id": 70,
     "pack": 1,
-    "text": "Entom ele vistyose em outra vestidura fremosa, e logo o leixarom entrar.  E quando chegou ante o princepe começou de beijar a sua vestidura meesma que ele trazia e fezelhe reverença.",
-    "chars": 182,
-    "title": "vistiduras honradas",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/As vistiduras honradas",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/As%20vistiduras%20honradas"
+    "text": "Havia um rei que tinha uma filha em edade de casar, e tractou-lhe o casamento com o conde de Paris.  Convidou o rei o conde um dia para jantar, e quando estavam á mesa, o rei, a princeza, o conde, e a corte toda, começou o jantar que foi muito animado, fallando-se muito do proximo casamento da princeza.",
+    "chars": 304,
+    "title": "Conde Paris",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/O Conde de Paris",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/O%20Conde%20de%20Paris"
   },
   {
-    "id": 61,
+    "id": 71,
     "pack": 1,
     "text": "A HERANÇA PATERNA Era d'uma vez um pae que tinha dois filhos, dos quaes o mais novo lhe disse um dia: - \"Meu pae, dê-me a minha tença, que eu quero ir correr terras a ver se junto fortuna.",
     "chars": 188,
@@ -610,27 +710,17 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/A%20heran%C3%A7a%20paterna"
   },
   {
-    "id": 62,
+    "id": 72,
     "pack": 1,
-    "text": "Era uma vez um homem que tornou a casar, e tinha uma filha do primeiro casamento que era tratada pela madrasta mal a mais não poder.  Tinham uma figueira lampa no quintal, para onde a madrasta mandava a enteada guardar os figos por causa da passarada.",
-    "chars": 251,
-    "title": "figuinho figueira",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/O figuinho da figueira",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/O%20figuinho%20da%20figueira"
+    "text": "Era um rei que tinha uma filha que costumava catal-o e um dia encontrou-lhe um piolho na cabeça e disse: \"Meu pae e senhor, vossa magestade tem aqui um piolho. \" Então o rei respondeu: \"Deixa-o ficar, pois quero que ele cresça.",
+    "chars": 227,
+    "title": "pelle piolho",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/A pelle do piolho",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/A%20pelle%20do%20piolho"
   },
   {
-    "id": 63,
-    "pack": 1,
-    "text": "Um rei tinha um filho, e como era o unico, queria que ele casasse; mas o principe respondia-lhe sempre, que não casaria senão com uma filha do rei de Napoles se ele tivesse alguma.",
-    "chars": 180,
-    "title": "rei Napoles",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/O rei de Napoles",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/O%20rei%20de%20Napoles"
-  },
-  {
-    "id": 64,
+    "id": 73,
     "pack": 1,
     "text": "Um tabalião foi de publico e judicial em um logar de Senhorio, e chegando a edade que não podia servir o officio, pediu ao senhor da terra, que lhe fizesse mercê d'ele para um filho, que tinha tres já homens, e que cada um d'eles era sufficiente para o servir.",
     "chars": 260,
@@ -640,57 +730,67 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20prova%20das%20laranjas"
   },
   {
-    "id": 65,
+    "id": 74,
     "pack": 1,
-    "text": "Um nobre cavalleiro, virtuoso e muito rico, o qual chegando por velhice á ultima hora da vida, chamou ante si um só filho que tinha: - Rogo-te que pera minha consolação, antes que morra me promettas de fazer o que te deixar por conselho; que segredo que revelar honra ou vida não no descubras a ninguem, porque se tu não guardas o que tanto te releva a ti proprio, como esperas que t'o guardará outra pessoa alguma?",
-    "chars": 415,
-    "title": "segredo revelado",
+    "text": "Havia uma velha, que estava sempre ao postigo até que horas.  As filhas perguntavam-lhe: - O que é que a mãe faz ahi ao postigo por essa noite adiante?  - Deixem-se lá, filhas, que é do postigo que as heide casar.",
+    "chars": 213,
+    "title": "velha gallinhas",
     "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/O segredo revelado",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/O%20segredo%20revelado"
+    "sourcePage": "Contos Tradicionaes do Povo Portuguez/A velha das gallinhas",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20velha%20das%20gallinhas"
   },
   {
-    "id": 66,
+    "id": 75,
     "pack": 1,
-    "text": "Havia um sapateiro, que trabalhava á porta de casa e todo o santissimo dia cantava; tinha muitos filhos, que andavam rotinhos pela rua, pela muita pobreza, e á noite emquanto a mulher fazia a ceia, o homem puchava da viola e tocava os seus batuques muito contente.",
-    "chars": 264,
-    "title": "sapateiro pobre",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/O sapateiro pobre",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/O%20sapateiro%20pobre"
+    "text": "Havia um conde ao pé do palacio e tractou logo de conversar a filha mais velha; seccou-se o ramo que o pae lhe tinha entregado.  N'isto começou a namorar a chegante á mais velha e o ramo d'ela seccou tambem.",
+    "chars": 207,
+    "title": "Havia conde palacio tractou",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/Esvintola",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Esvintola"
   },
   {
-    "id": 67,
+    "id": 76,
     "pack": 1,
-    "text": "Havia um passaro sem pennas, chamado o pito-nú.  A coruja ficou por fiadora para que todas as outras aves emprestassem ao pito-nú pennas para ele se vestir.  Mas o pito-nú, assim que se agarrou vestido, fugiu.",
-    "chars": 209,
-    "title": "Lenda Coruja",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Lenda da Coruja",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Lenda%20da%20Coruja"
+    "text": "Quando os rapazes já iam muito longe, disse o João Pequenito: - \"Agora é preciso separarmo-nos e cada qual busque a sua vida. \" O João Pequenito foi ao palacio de certo rei e pediu para que o tomassem para creado; o rei nomeou-o seu jardineiro e ele de tal maneira se soube haver que o rei estimava-o mais que todos os outros creados.",
+    "chars": 334,
+    "title": "João Pequenito",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/João Pequenito",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Jo%C3%A3o%20Pequenito"
   },
   {
-    "id": 68,
+    "id": 77,
     "pack": 1,
-    "text": "Era uma vez um homem viuvo e tinha uma filha; mandava-a á escola de uma mestra que a tratava muito bem e lhe dava sopinhas de mel.  Quando a pequenita vinha para casa, pedia ao pae que casasse com a mestra, porque ela era muito sua amiga.",
-    "chars": 238,
-    "title": "sapatinho setim",
-    "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/O sapatinho de setim",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/O%20sapatinho%20de%20setim"
+    "text": "Era um rei que tinha tres filhas e estava viuvo e queria casar outra vez; fallou a uma dama para casar com ele e ela disse-lhe: \"E as suas filhas, que rumo se lhes ha de dar? \" \"As minhas filhas, se isso é duvida, eu hoje vou-as arrumar.",
+    "chars": 237,
+    "title": "Pelle Cavallo",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/Pelle-de-Cavallo",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Pelle-de-Cavallo"
   },
   {
-    "id": 69,
+    "id": 78,
     "pack": 1,
-    "text": "- O mesmo sob n. º 605, ampliando a lenda com as seguintes: \"Os pinhões tambem foram amaldiçoados por denunciarem a passagem da Senhora com barulho.  Os fetos egualmente foram amaldiçoados pelo mesmo motivo; e esses então ficaram com as mãos na cabeça (as folhas voltadas para cima).",
-    "chars": 283,
-    "title": "Lenda tremoços",
+    "text": "Uma mulher tinha trez filhas; foi com duas para o trabalho, e ficou em casa a mais nova para tratar da comida.  Comprou dez reis de sardinhas, e foi assal-as na grêlha.  Quando estavam nas brazas, saltou uma das sardinhas para o chão; a rapariga pegou n'ela e tornou a pol-a na grêlha.",
+    "chars": 285,
+    "title": "mulher tinha trez filhas",
     "sourceId": "contos-tradicionaes-povo-portuguez-1883",
-    "sourcePage": "Contos Tradicionaes do Povo Portuguez/Lenda dos tremoços",
-    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/Lenda%20dos%20tremo%C3%A7os"
+    "sourcePage": "Contos Tradicionaes do Povo Portuguez/A sardinhinha",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20sardinhinha"
   },
   {
-    "id": 70,
+    "id": 79,
+    "pack": 1,
+    "text": "Era de uma vez uma carochinha que andava a varrer a casa e achou cinco reis e foi logo ter com uma vizinha e perguntou-lhe: \"Oh vizinha, que hei de eu fazer a estes cinco reis? \" Respondeu-lhe a vizinha: \"Compra doces.",
+    "chars": 218,
+    "title": "Historia carochinha",
+    "sourceId": "contos-populares-portuguezes-1879",
+    "sourcePage": "Contos Populares Portuguezes/Historia da carochinha",
+    "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Populares%20Portuguezes/Historia%20da%20carochinha"
+  },
+  {
+    "id": 80,
     "pack": 1,
     "text": "De uma vez uma raposa apanhou um buraquinho n'um gallinheiro, entrou para dentro fazendo-se muito esguia, e depois que se viu lá, comeu gallinhas á farta.  Quando foi para sahir estava com a barriga muito cheia, e por mais que fez não pôde passar pelo buraco.",
     "chars": 259,
@@ -700,7 +800,7 @@
     "sourceUrl": "https://pt.wikisource.org/wiki/Contos%20Tradicionaes%20do%20Povo%20Portuguez/A%20raposa%20no%20gallinheiro"
   },
   {
-    "id": 71,
+    "id": 81,
     "pack": 1,
     "text": "Era um homem; vivia n'uma cidade e trazia navegações no mar, e depois foi ele e deu em decadencia por se lhe perderem as navegações.  ele teve o seu pesar e não podia viver com aquella decencia com que vivia no povoado e tinha umas terrinhas na aldeia e disse-lhes para a mulher e para as filhas: \"Não temos remedio senão irmos para as nossas terrinhas; se vivemos com menos decencia que até aqui somos pregoados dos nossos inimigos.",
     "chars": 433,

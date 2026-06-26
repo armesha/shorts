@@ -1,10 +1,10 @@
 {
-  "total": 71,
+  "total": 81,
   "packs": 1,
   "packSize": 300,
   "range": [
-    180,
-    511
+    182,
+    441
   ],
   "safety": {
     "filters": "Wikisource/public-domain source ledger + adult/religion/politics/violence/protected-class blocklist + short-card length checks"

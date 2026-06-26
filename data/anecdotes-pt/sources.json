@@ -1,18 +1,18 @@
 {
   "licenseNote": "Original source books are public-domain by age. Text was extracted from Portuguese Wikisource pages; retain attribution/source URLs in the ledger and descriptions when publishing outside this app.",
-  "generatedAt": "2026-06-25T22:39:28.342Z",
+  "generatedAt": "2026-06-26T00:17:04.936Z",
   "sourceCounts": [
     {
       "id": "contos-populares-portuguezes-1879",
       "title": "Contos Populares Portuguezes",
       "pages": 65,
-      "selected": 23
+      "selected": 58
     },
     {
       "id": "contos-tradicionaes-povo-portuguez-1883",
       "title": "Contos Tradicionaes do Povo Portuguez",
-      "pages": 212,
-      "selected": 48
+      "pages": 26,
+      "selected": 23
     }
   ],
   "sources": [
@@ -32,7 +32,36 @@
       "author": "Teofilo Braga",
       "year": 1883,
       "sourceUrl": "https://pt.wikisource.org/wiki/Contos_Tradicionaes_do_Povo_Portuguez",
-      "rights": "Original public-domain by age (1883). Text extracted from Portuguese Wikisource pages; keep attribution ledger."
+      "curatedOnly": true,
+      "rights": "Original public-domain by age (1883). Text extracted from Portuguese Wikisource pages; keep attribution ledger.",
+      "pageTitles": [
+        "A barata e os filhos",
+        "A bengala de dezeseis quintaes",
+        "A bilha de azeite",
+        "A cara de boi",
+        "A enfiada de petas",
+        "A estatua que come",
+        "A prova das laranjas",
+        "A raposa e o gallo",
+        "A raposa e o lobo",
+        "A raposa no gallinheiro",
+        "A sardinhinha",
+        "A velha das gallinhas",
+        "A venda das gallinhas",
+        "As adivinhas em anexins",
+        "As botas fiadas",
+        "As favas",
+        "As nozes",
+        "As orelhas do burro",
+        "As vozes dos animaes",
+        "Cahiu-me na minha catulinha",
+        "D'aquellas sete ao dia",
+        "Desanda cacheira",
+        "O boi Cardil",
+        "O tolo e as moscas",
+        "Para quem canta o cuco?",
+        "Tudo andaremos"
+      ]
     },
     {
       "disabled": true,
@@ -42,7 +71,32 @@
       "author": "Medieval fables; 1906 edition",
       "year": 1906,
       "sourceUrl": "https://pt.wikisource.org/wiki/O_Livro_de_Esopo",
-      "rights": "Original/public-domain edition by age. Text extracted from Portuguese Wikisource pages; keep attribution ledger."
+      "curatedOnly": true,
+      "rights": "Original/public-domain edition by age. Text extracted from Portuguese Wikisource pages; keep attribution ledger.",
+      "pageTitles": [
+        "A aguia e o cágado",
+        "A cabra, o filho e o lobo",
+        "A formiga e a mosca",
+        "A raposa e a cegonha",
+        "A rã e o boi",
+        "A terra que pare um rato",
+        "A vibora e a lima",
+        "As lebres e as rãs",
+        "O asno e o cavallo loução",
+        "O asno e o porco",
+        "O calvo e a mosca",
+        "O cão e a posta de carne",
+        "O corvo e a raposa",
+        "O gallo e a pedra preciosa",
+        "O leão e o rato",
+        "O lobo e a grua",
+        "O lobo e o cão nedio",
+        "O machado e o bosque",
+        "O pastor e o lobo",
+        "O rato da cidade e o da aldeia",
+        "O senhor e o cão velho",
+        "Os lobos e as ovelhas"
+      ]
     }
   ]
 }

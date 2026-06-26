@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 
 const OUT_DIR = resolve(process.cwd(), "data/anecdotes-pt");
 const PACK_SIZE = 300;
-const TARGET = 100;
+const TARGET = 140;
 
 const SOURCE_SETS = [
   {
@@ -49,6 +49,7 @@ const SOURCE_SETS = [
     author: "Teofilo Braga",
     year: 1883,
     sourceUrl: "https://pt.wikisource.org/wiki/Contos_Tradicionaes_do_Povo_Portuguez",
+    curatedOnly: true,
     rights:
       "Original public-domain by age (1883). Text extracted from Portuguese Wikisource pages; keep attribution ledger.",
     pageTitles: [
@@ -88,6 +89,7 @@ const SOURCE_SETS = [
     author: "Medieval fables; 1906 edition",
     year: 1906,
     sourceUrl: "https://pt.wikisource.org/wiki/O_Livro_de_Esopo",
+    curatedOnly: true,
     rights:
       "Original/public-domain edition by age. Text extracted from Portuguese Wikisource pages; keep attribution ledger.",
     pageTitles: [
