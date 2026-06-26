@@ -32,6 +32,7 @@ public-domain книги, Wikisource/Internet Archive/Gutenberg, open-source д�
 
 Текущие подготовленные текстовые joke/anecdote источники: `ru`, `de`, `it`, `fr`, `en`, `pt`, а для
 испанского канала живые template packs `pack:chistes-es-public-domain` и `pack:chistes-es-long`.
+`pt` сейчас рассчитан как недельный минимум под пропорцию 80/20: 81 текстовая карточка + `memes-pt`.
 Текущие подготовленные meme decks: `memes-ru`, `memes-en`, `memes-de`, `memes-fr`, `memes-it`,
 `memes-es`, `memes-pt`, `memes-ar`, `memes-hi`, `memes-id`. Meme decks сделаны как оригинальные
 локализованные подписи поверх уже существующего локального набора meme-board шаблонов; новые внешние
@@ -44,14 +45,18 @@ ingestion/safety проход:
   `https://aco.dlib.nyu.edu/book/columbia_aco000613/1` и related ACO Arabic wit and humor records.
   Не брать сразу `البخلاء` как массовый short-joke corpus: после фильтрации он дает много тяжелой
   философской прозы, а не короткие анекдоты. Нужна ручная выборка 50-100 cards + религия/оскорбления
-  safety pass.
+  safety pass. Сухой прогон `أخبار الحمقى والمغفلين`/`التطفيل` по raw Wikisource оставил мало
+  кандидатов, и среди них остались религиозные, грубые или protected-class риски; не подключать их
+  к `JOKE_TEXT_DECK_BY_LANG` без отдельной ручной ревизии.
 - `hi`: пока не найден чистый современный Hindi joke corpus с понятной лицензией. Возможен только
   отдельный пилот "classic fables / witty moral stories" из public-domain `Hitopadesha`/`Panchatantra`
   или Hindi Wikisource, но это не называть полноценным паком "анекдоты" без ручного отбора.
 - `id`: перспективны public-domain Malay/Indonesian witty tales (`Hikayat Abu Nawas`,
   `Hikayat Pelanduk Jenaka`), но часть текста на Wikisource лежит в jawi/старом Malay. Не
   транслитерировать/модернизировать автоматически без отдельной проверки качества; сначала получить
-  латинский текст/OCR, затем сделать source ledger и safety pass.
+  латинский текст/OCR, затем сделать source ledger и safety pass. Commons PDF для `Hikayat Abu Nawas`
+  и `Hikayat Pelanduk Jenaka` проверены: `pdftotext` не извлекает содержимое, нужен OCR/Jawi-проход,
+  иначе pack будет гаданием по картинкам.
 
 ## Общее правило озвучки
 
