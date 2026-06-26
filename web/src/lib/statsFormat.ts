@@ -29,6 +29,18 @@ export function trimTrailingEmptyDays<T>(rows: readonly T[], isEmpty: (row: T) =
   return rows.slice(0, end);
 }
 
+// In an AGGREGATE chart (all of a user's / all users' channels), a leading run of all-zero days is
+// pre-history — the window simply predates any channel producing views (a real "every channel got 0
+// views" day does not occur once there's activity). That flat strip wastes width, so trim it — but keep
+// ONE zero day before the first active day so the "grew from zero" start stays visible. Interior zeros
+// are untouched (only the contiguous head is removed). Returns [] when every day is empty.
+// Same contract as trimTrailingEmptyDays: `isEmpty` must read per-day deltas only, never cumulative totals.
+export function trimLeadingEmptyDays<T>(rows: readonly T[], isEmpty: (row: T) => boolean): T[] {
+  const firstActive = rows.findIndex((r) => !isEmpty(r));
+  if (firstActive < 0) return [];
+  return rows.slice(Math.max(0, firstActive - 1));
+}
+
 // Watch time from minutes → "12h" / "1.5 h" / "30 m". Keeps one decimal in the 1..100 h band:
 // compactNumber() integer-rounds values <1000, which would turn 1.5 h into "2 h", so the hours are
 // formatted directly there instead of routing through compactNumber.

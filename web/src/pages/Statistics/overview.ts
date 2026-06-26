@@ -1,5 +1,5 @@
 import type { StatRow, YoutubeBreakdownRow, YoutubeTopVideo } from "../../lib/api";
-import { trimTrailingEmptyDays } from "../../lib/statsFormat";
+import { trimLeadingEmptyDays, trimTrailingEmptyDays } from "../../lib/statsFormat";
 
 export interface OverviewDailyPoint {
   date: string;
@@ -172,14 +172,18 @@ export function buildOverview(rows: StatRow[]): StatsOverviewData {
     overview.avgViewPercentage = percentageWeighted / overview.analyticsViews;
   }
 
-  overview.daily = trimTrailingEmptyDays(
-    [...daily.values()].sort((a, b) => a.date.localeCompare(b.date)),
-    (p) =>
-      p.views === 0 &&
-      p.watchMinutes === 0 &&
-      p.engagedViews === 0 &&
-      p.subscribersGained === 0 &&
-      p.subscribersLost === 0,
+  // A day is "empty" only when every per-day delta is 0 (cumulative totals aren't in OverviewDailyPoint).
+  // Trim the unfinalized trailing tail (fake zeros) fully, and the pre-history leading run (real zeros)
+  // down to a single anchor — both ends are dead flat space; interior zeros and the totals stay intact.
+  const isEmptyDay = (p: OverviewDailyPoint) =>
+    p.views === 0 &&
+    p.watchMinutes === 0 &&
+    p.engagedViews === 0 &&
+    p.subscribersGained === 0 &&
+    p.subscribersLost === 0;
+  overview.daily = trimLeadingEmptyDays(
+    trimTrailingEmptyDays([...daily.values()].sort((a, b) => a.date.localeCompare(b.date)), isEmptyDay),
+    isEmptyDay,
   );
   overview.topVideos = topVideos.sort((a, b) => b.views - a.views);
   overview.topChannels = topChannels
