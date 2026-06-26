@@ -247,7 +247,11 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
   const sourceWeightsKey = useMemo(() => JSON.stringify(sourceWeights), [sourceWeights]);
   // Auto-save the source mix whenever the user edits it (debounced), so it persists on reload.
   useEffect(() => {
-    if (!selectedBlockId) return;
+    if (!selectedBlock || !selectedBlockId) return;
+    const groups = selectedBlock.sourceGroups ?? [];
+    if (!groups.length) return;
+    const weightsReady = groups.every((group) => Object.prototype.hasOwnProperty.call(sourceWeights, group.id));
+    if (!weightsReady) return;
     if (sourceWeightsKey === savedWeightsKey.current) return;
     const blockId = selectedBlockId;
     const weights = sourceWeights;
@@ -269,7 +273,7 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
         .catch((e) => setErr(e instanceof Error ? e.message : String(e)));
     }, 500);
     return () => clearTimeout(handle);
-  }, [sourceWeightsKey, selectedBlockId, sourceWeights]);
+  }, [sourceWeightsKey, selectedBlockId, selectedBlock, sourceWeights]);
   const operationalAccounts = useMemo<OperationalAccount[]>(() => {
     if (!selectedBlock) return accounts;
     const fullById = new Map(accounts.map((account) => [account.id, account]));
