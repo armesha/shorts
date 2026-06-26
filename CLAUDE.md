@@ -69,6 +69,10 @@ Repo layout + SOLID monolith-split / cleanup plan: `docs/REORG-PLAN.md`.
   `ExecStart=/usr/bin/node --import tsx --experimental-sqlite server/index.ts` (= то же, что `npm run server`),
   **`Restart=always` + `RestartSec=5` + `enabled`** → сам поднимается после краха и после ребута.
   `.env`/`.env.local` грузит само приложение из WorkingDirectory; креды — `server/config.ts`. Логи — в journal.
+- **Стандартная команда для агентов:** после frontend/build-visible правок запускай
+  `npm run deploy:restart` (делает `web:build`, безопасно останавливает зависшие shorts-процессы на :8080,
+  стартует `shorts.service`, проверяет `/api/health` и ровно один listener). Если пересборка фронта не нужна —
+  `npm run server:restart`. Это предпочтительнее ручных `kill`/`setsid`/`npm run server`.
 - **Перезапуск (passwordless sudo):** `sudo systemctl restart shorts.service`
   (пока приложение поднимается, Caddy отдаёт страницу «Обновляемся» — это норм, тоннель не рвётся).
 - **Проверить после рестарта:**
@@ -162,6 +166,8 @@ Repo layout + SOLID monolith-split / cleanup plan: `docs/REORG-PLAN.md`.
 - `npm test` — unit tests (node:test)
 - `npm run render:preview` / `npm run gen:preview` — pipeline smoke tests (HTML→image, Claude→image)
 - `npm run server` — Fastify API on :8080 (uses `--experimental-sqlite`). Creds path is hardcoded in `server/config.ts` (`DEFAULT_CLIENT_SECRET_FILE`); env `GOOGLE_CLIENT_SECRET_FILE` overrides. Fails fast if the file is missing.
+- `npm run server:restart` — безопасный рестарт prod `shorts.service` с очисткой зависших shorts-pid на :8080 и health-check.
+- `npm run deploy:restart` — `web:build` + безопасный рестарт prod; стандарт после видимых frontend-правок.
 - `npm run web` — Vite dev (frontend on :5173, proxies `/api` → :8080)
 - Verify the UI headlessly: `npm run server` + `npm run web`, then `tsx src/scripts/screenshot-url.ts <url> <out.png>`.
 

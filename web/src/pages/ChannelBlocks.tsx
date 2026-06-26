@@ -138,7 +138,8 @@ function deckSummaries(block: ChannelThemeBlock): BlockDeckSummary[] {
 }
 
 function blockPackCount(block: ChannelThemeBlock): number {
-  return deckSummaries(block).length;
+  if (block.sourceGroups.length) return block.sourceGroups.length;
+  return Math.max(0, ...accountsInBlock(block).map((account) => account.sourceDecks.length));
 }
 
 function formatRunwayDays(days: number | null): string {

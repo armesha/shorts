@@ -14,6 +14,8 @@ npm start          # API (:8080) + web dev (:5173) together
 npm run server     # Fastify API on :8080  (needs the Google client-secret file present)
 npm run web        # Vite dev server on :5173 (proxies /api → :8080)
 npm run web:build  # build the dashboard into web/dist (served by the API in prod)
+npm run server:restart  # safe prod restart: stop stale :8080 pids, start shorts.service, health-check
+npm run deploy:restart  # web:build + safe prod restart for shareboard.live
 ```
 
 Checks: `npm test` (node:test) · `npm run typecheck` (tsc --noEmit, src + server).
