@@ -1,0 +1,74 @@
+<!doctype html>
+<!-- Meme "insert-slot" card: the template image fills the frame; the caption is auto-fit INTO a blank
+     slot region of the image (slot = {x,y,w,h} as fractions 0..1 of the image's natural size). Caption
+     is composited over the slot (dark bold text + soft white halo for legibility on light signs/paper/
+     screens). Binary-search font fit to the slot box (height + width). Bottom safe margin for Shorts UI. -->
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:1080px;height:1920px;overflow:hidden;background:#fff;}
+  #frame{position:relative;width:1080px;height:1920px;background:#fff;}
+  #imgwrap{position:absolute;left:0;top:0;width:1080px;height:1724px;
+    display:flex;align-items:center;justify-content:center;}
+  #imgwrap img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;}
+  #cap{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;
+    font-family:"Noto Sans","Noto Sans Devanagari","Noto Sans Arabic","Noto Naskh Arabic","Liberation Sans","DejaVu Sans",Arial,sans-serif;
+    font-weight:800;color:{{INK}};line-height:1.08;overflow:hidden;unicode-bidi:plaintext;
+    text-shadow:0 0 7px rgba(255,255,255,.92),0 0 3px rgba(255,255,255,.95),0 1px 1px rgba(255,255,255,.9);}
+  #caps{display:block;width:100%;word-wrap:break-word;overflow-wrap:break-word;}
+</style>
+</head>
+<body>
+  <div id="frame">
+    <div id="imgwrap"><img id="pic" src="{{IMG}}" alt=""></div>
+    <div id="cap"><span id="caps">{{TEXT}}</span></div>
+  </div>
+<script>
+  var SLOT={{SLOT}};
+  var cap=document.getElementById('cap'),caps=document.getElementById('caps'),pic=document.getElementById('pic');
+  var FMAX=130,FMIN=12;
+  var meas=document.createElement('span');
+  meas.style.cssText='position:absolute;visibility:hidden;white-space:nowrap;left:-9999px;top:0;font-weight:800;';
+  document.body.appendChild(meas);
+  function maxWordW(fs){
+    var cs=getComputedStyle(caps); meas.style.fontFamily=cs.fontFamily; meas.style.fontSize=fs+'px';
+    meas.style.fontWeight=cs.fontWeight; meas.style.letterSpacing=cs.letterSpacing;
+    var words=(caps.innerText||'').split(/\s+/), m=0;
+    for(var i=0;i<words.length;i++){ if(!words[i]) continue; meas.textContent=words[i]; if(meas.offsetWidth>m) m=meas.offsetWidth; }
+    return m;
+  }
+  function fits(mid,bh){ caps.style.fontSize=mid+'px'; return caps.scrollHeight<=bh && maxWordW(mid)<=caps.clientWidth+1; }
+  function fit(bh){
+    var lo=FMIN,hi=FMAX,best=FMIN;
+    while(lo<=hi){ var mid=(lo+hi>>1); if(fits(mid,bh)){ best=mid; lo=mid+1; } else { hi=mid-1; } }
+    // if even FMIN breaks a very long word, fall back to height-only so it stays as big as possible
+    if(best===FMIN && !fits(FMIN,bh)){
+      var lo2=FMIN,hi2=FMAX,b2=FMIN;
+      while(lo2<=hi2){ var m2=(lo2+hi2>>1); caps.style.fontSize=m2+'px'; if(caps.scrollHeight<=bh){b2=m2;lo2=m2+1;}else{hi2=m2-1;} }
+      best=b2;
+    }
+    caps.style.fontSize=best+'px';
+    window.__fitFontPx=best; window.__fitted=true;
+  }
+  function place(){
+    var natW=pic.naturalWidth||1080, natH=pic.naturalHeight||1724;
+    var CW=1080, CH=1724;
+    var scale=Math.min(CW/natW, CH/natH);
+    var dW=natW*scale, dH=natH*scale, offX=(CW-dW)/2, offY=(CH-dH)/2;
+    var pad=Math.max(8, SLOT.w*dW*0.05);
+    var bx=offX+SLOT.x*dW+pad, by=offY+SLOT.y*dH+pad, bw=SLOT.w*dW-2*pad, bh=SLOT.h*dH-2*pad;
+    cap.style.left=bx+'px'; cap.style.top=by+'px'; cap.style.width=bw+'px'; cap.style.height=bh+'px';
+    fit(bh);
+  }
+  function go(){
+    if(pic.complete && pic.naturalWidth){ place(); }
+    else { pic.addEventListener('load', place); pic.addEventListener('error', place); }
+    if(document.fonts && document.fonts.ready){ document.fonts.ready.then(place); }
+  }
+  go();
+  setTimeout(function(){ if(!window.__fitted) place(); }, 1800);
+</script>
+</body>
+</html>

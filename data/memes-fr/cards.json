@@ -14523,5 +14523,389 @@
     "format": "board",
     "theme": "обречённость",
     "srcFile": "wife vs wave femme vague.jpg"
+  },
+  {
+    "caption": "Moi quand le vendredi arrive",
+    "photoFile": "board-158.jpg",
+    "format": "board",
+    "theme": "person holding blank whiteboard",
+    "slot": {
+      "x": 0.2342,
+      "y": 0.3131,
+      "w": 0.5009,
+      "h": 0.5462
+    }
+  },
+  {
+    "caption": "Plan: manger, dormir, recommencer",
+    "photoFile": "board-158.jpg",
+    "format": "board",
+    "theme": "person holding blank whiteboard",
+    "slot": {
+      "x": 0.2342,
+      "y": 0.3131,
+      "w": 0.5009,
+      "h": 0.5462
+    }
+  },
+  {
+    "caption": "POV: en retard sur tout",
+    "photoFile": "board-159.jpg",
+    "format": "board",
+    "theme": "person holding blank whiteboard",
+    "slot": {
+      "x": 0.1991,
+      "y": 0.2049,
+      "w": 0.6634,
+      "h": 0.5235
+    }
+  },
+  {
+    "caption": "Faire semblant de travailler",
+    "photoFile": "board-159.jpg",
+    "format": "board",
+    "theme": "person holding blank whiteboard",
+    "slot": {
+      "x": 0.1991,
+      "y": 0.2049,
+      "w": 0.6634,
+      "h": 0.5235
+    }
+  },
+  {
+    "caption": "À partir de lundi je suis sérieux",
+    "photoFile": "board-160.jpg",
+    "format": "board",
+    "theme": "blank white billboard",
+    "slot": {
+      "x": 0.1886,
+      "y": 0.3034,
+      "w": 0.6228,
+      "h": 0.4046
+    }
+  },
+  {
+    "caption": "L'argent part, les regrets restent",
+    "photoFile": "board-160.jpg",
+    "format": "board",
+    "theme": "blank white billboard",
+    "slot": {
+      "x": 0.1886,
+      "y": 0.3034,
+      "w": 0.6228,
+      "h": 0.4046
+    }
+  },
+  {
+    "caption": "Moi face à mes responsabilités",
+    "photoFile": "board-161.jpg",
+    "format": "board",
+    "theme": "hands holding empty white paper",
+    "slot": {
+      "x": 0.3354,
+      "y": 0.1563,
+      "w": 0.4062,
+      "h": 0.6069
+    }
+  },
+  {
+    "caption": "Personne n'a vu. C'était pas moi.",
+    "photoFile": "board-161.jpg",
+    "format": "board",
+    "theme": "hands holding empty white paper",
+    "slot": {
+      "x": 0.3354,
+      "y": 0.1563,
+      "w": 0.4062,
+      "h": 0.6069
+    }
+  },
+  {
+    "caption": "Rapport urgent:\nj'ai rien compris",
+    "photoFile": "board-162.jpg",
+    "format": "board",
+    "theme": "person showing blank sheet of paper",
+    "slot": {
+      "x": 0.1802,
+      "y": 0.174,
+      "w": 0.3858,
+      "h": 0.6979
+    }
+  },
+  {
+    "caption": "Mon plan de travail: exister",
+    "photoFile": "board-162.jpg",
+    "format": "board",
+    "theme": "person showing blank sheet of paper",
+    "slot": {
+      "x": 0.1802,
+      "y": 0.174,
+      "w": 0.3858,
+      "h": 0.6979
+    }
+  },
+  {
+    "caption": "Onglet 52: toujours des mèmes",
+    "photoFile": "board-163.jpg",
+    "format": "board",
+    "theme": "blank laptop screen on desk",
+    "slot": {
+      "x": 0.1669,
+      "y": 0.2387,
+      "w": 0.6431,
+      "h": 0.2663
+    }
+  },
+  {
+    "caption": "Mode travail: on. Cerveau: non.",
+    "photoFile": "board-163.jpg",
+    "format": "board",
+    "theme": "blank laptop screen on desk",
+    "slot": {
+      "x": 0.1669,
+      "y": 0.2387,
+      "w": 0.6431,
+      "h": 0.2663
+    }
+  },
+  {
+    "caption": "La sieste\nc'est sacré",
+    "photoFile": "board-164.jpg",
+    "format": "board",
+    "theme": "blank cardboard protest sign person",
+    "slot": {
+      "x": 0.156,
+      "y": 0.4759,
+      "w": 0.5957,
+      "h": 0.361
+    }
+  },
+  {
+    "caption": "Lundi optionnel\ns'il vous plaît",
+    "photoFile": "board-164.jpg",
+    "format": "board",
+    "theme": "blank cardboard protest sign person",
+    "slot": {
+      "x": 0.156,
+      "y": 0.4759,
+      "w": 0.5957,
+      "h": 0.361
+    }
+  },
+  {
+    "caption": "Moi à 17h01\nle vendredi",
+    "photoFile": "board-165.jpg",
+    "format": "board",
+    "theme": "empty white picture frame held",
+    "slot": {
+      "x": 0.4082,
+      "y": 0.3211,
+      "w": 0.3452,
+      "h": 0.4956
+    }
+  },
+  {
+    "caption": "Mon cerveau\nà 3h du mat",
+    "photoFile": "board-165.jpg",
+    "format": "board",
+    "theme": "empty white picture frame held",
+    "slot": {
+      "x": 0.4082,
+      "y": 0.3211,
+      "w": 0.3452,
+      "h": 0.4956
+    }
+  },
+  {
+    "caption": "Objectif du jour:\nsurvive jusqu'à midi",
+    "photoFile": "board-166.jpg",
+    "format": "board",
+    "theme": "person holding blank whiteboard",
+    "slot": {
+      "x": 0.3702,
+      "y": 0.2982,
+      "w": 0.352,
+      "h": 0.4956
+    }
+  },
+  {
+    "caption": "Réunion qui aurait\npu être un mail",
+    "photoFile": "board-166.jpg",
+    "format": "board",
+    "theme": "person holding blank whiteboard",
+    "slot": {
+      "x": 0.3702,
+      "y": 0.2982,
+      "w": 0.352,
+      "h": 0.4956
+    }
+  },
+  {
+    "caption": "Le café:\ncarburant officiel",
+    "photoFile": "board-168.jpg",
+    "format": "board",
+    "theme": "blank white poster on wall",
+    "slot": {
+      "x": 0.3888,
+      "y": 0.2207,
+      "w": 0.3994,
+      "h": 0.3791
+    }
+  },
+  {
+    "caption": "Procrastiner avec\nstyle depuis 1989",
+    "photoFile": "board-168.jpg",
+    "format": "board",
+    "theme": "blank white poster on wall",
+    "slot": {
+      "x": 0.3888,
+      "y": 0.2207,
+      "w": 0.3994,
+      "h": 0.3791
+    }
+  },
+  {
+    "caption": "Onglet 1: travail\nOnglets 2-44: non",
+    "photoFile": "board-169.jpg",
+    "format": "board",
+    "theme": "blank laptop screen on desk",
+    "slot": {
+      "x": 0.1112,
+      "y": 0.2744,
+      "w": 0.616,
+      "h": 0.3385
+    }
+  },
+  {
+    "caption": "Erreur: motivation\nintrouvable",
+    "photoFile": "board-169.jpg",
+    "format": "board",
+    "theme": "blank laptop screen on desk",
+    "slot": {
+      "x": 0.1112,
+      "y": 0.2744,
+      "w": 0.616,
+      "h": 0.3385
+    }
+  },
+  {
+    "caption": "78 onglets ouverts\npourquoi pas 79",
+    "photoFile": "board-170.jpg",
+    "format": "board",
+    "theme": "blank laptop screen on desk",
+    "slot": {
+      "x": 0.2697,
+      "y": 0.0265,
+      "w": 0.6837,
+      "h": 0.3888
+    }
+  },
+  {
+    "caption": "Version finale v9\nversion FINALE v10",
+    "photoFile": "board-170.jpg",
+    "format": "board",
+    "theme": "blank laptop screen on desk",
+    "slot": {
+      "x": 0.2697,
+      "y": 0.0265,
+      "w": 0.6837,
+      "h": 0.3888
+    }
+  },
+  {
+    "caption": "POV: t'as dit bonne nuit\nil y a deux heures",
+    "photoFile": "board-171.jpg",
+    "format": "board",
+    "theme": "hand holding phone blank white screen",
+    "slot": {
+      "x": 0.2708,
+      "y": 0.2871,
+      "w": 0.4738,
+      "h": 0.3338
+    }
+  },
+  {
+    "caption": "Mon cerveau a 3h:\ncommande quelque chose",
+    "photoFile": "board-171.jpg",
+    "format": "board",
+    "theme": "hand holding phone blank white screen",
+    "slot": {
+      "x": 0.2708,
+      "y": 0.2871,
+      "w": 0.4738,
+      "h": 0.3338
+    }
+  },
+  {
+    "caption": "Mon compte en banque\naprès le week-end",
+    "photoFile": "board-172.jpg",
+    "format": "board",
+    "theme": "hand holding phone blank white screen",
+    "slot": {
+      "x": 0.3918,
+      "y": 0.1623,
+      "w": 0.3317,
+      "h": 0.4242
+    }
+  },
+  {
+    "caption": "POV: le frigo\npour la 5e fois",
+    "photoFile": "board-172.jpg",
+    "format": "board",
+    "theme": "hand holding phone blank white screen",
+    "slot": {
+      "x": 0.3918,
+      "y": 0.1623,
+      "w": 0.3317,
+      "h": 0.4242
+    }
+  },
+  {
+    "caption": "La procrastination:\nc'est de l'optimisme",
+    "photoFile": "board-173.jpg",
+    "format": "board",
+    "theme": "blank white poster on wall",
+    "slot": {
+      "x": 0.3245,
+      "y": 0.3923,
+      "w": 0.3588,
+      "h": 0.3385
+    }
+  },
+  {
+    "caption": "Lundi:\nannulé jusqu'à nouvel ordre",
+    "photoFile": "board-173.jpg",
+    "format": "board",
+    "theme": "blank white poster on wall",
+    "slot": {
+      "x": 0.3245,
+      "y": 0.3923,
+      "w": 0.3588,
+      "h": 0.3385
+    }
+  },
+  {
+    "caption": "Plus de vendredi\nmoins de lundi",
+    "photoFile": "board-174.jpg",
+    "format": "board",
+    "theme": "woman holding blank placard",
+    "slot": {
+      "x": 0.3797,
+      "y": 0.2285,
+      "w": 0.3791,
+      "h": 0.343
+    }
+  },
+  {
+    "caption": "Augmentez les salaires\nmaintenant",
+    "photoFile": "board-174.jpg",
+    "format": "board",
+    "theme": "woman holding blank placard",
+    "slot": {
+      "x": 0.3797,
+      "y": 0.2285,
+      "w": 0.3791,
+      "h": 0.343
+    }
   }
 ]

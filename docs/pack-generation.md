@@ -1718,6 +1718,41 @@ node --input-type=module -e 'import fs from "node:fs"; const manifest=JSON.parse
 - Контактный лист RU-выборки — `temp/meme-recheck/contact-sheet.png`.
 - Бэкенд-правки (decks/render/photos) → **рестарт сервера**; фронт (дропдаун) → `npm run web:build`; `data/` gitignored.
 
+## Мем-слот-шаблоны — «текст В слоте» (`memes-*`, no-copyright Pexels)
+
+Развитие board-мемов: подпись вписывается ВНУТРЬ пустой зоны самой картинки (табличка/лист/билборд/
+экран телефона-ноута-ТВ/рамка), а не плашкой сверху — это «готовый шаблон с местом для вставки», как
+просил пользователь, но 100% **«без ап»** (только Pexels License; никаких чужих мем-картинок/IP/лиц —
+готовые мем-паки из интернета это ~90% копирайт, см. [[no-copyright-assets-only]]). Карточка = обычная
+board-карточка + поле **`slot:{x,y,w,h}`** (доли 0..1 картинки) → рендер уходит в слот-режим.
+
+Рендер: `templates/meme-slot.html` + `buildMemeSlotHtml` в `src/memes/render.ts` (диспетч из
+`buildMemeBoardHtml`, если у карточки есть `slot`). Картинка `object-fit:contain` на весь кадр; подпись
+авто-вписывается в слот-бокс (JS маппит natural→displayed по contain-rect), **целыми словами**
+(whole-word fit, без переноса посреди слова), тёмный текст + белый ореол для читаемости на светлых
+табличках; нижние 196px — safe-зона Shorts.
+
+Конвейер (всё в `temp/meme-recheck/`; `PEXELS_API_KEY` в `.env`):
+1. **Сбор:** `node temp/meme-recheck/pull-slots.mjs` — Pexels по insert-slot темам (человек с пустой
+   табличкой/листом, билборд, пустой экран, рамка) → `newimg/slots/*.jpg` + `manifest.jsonl`.
+2. **Авто-детект слота (чистый PIL, без numpy):** находит крупную яркую ровную прямоугольную область =
+   слот (BFS по downscale-маске V>0.72 & S<0.18; score = площадь×заполненность×(1−border)). Пишет
+   `newimg/slots-detect.json` + рисует проверочные монтажи с красными рамками (смотреть глазами).
+3. **Отбор:** топ по score, дедуп по теме (cap 3), инсет 6% от краёв → `newimg/slots-selection.json`
+   (boardIdx с 158, `photoFile=board-<idx>.jpg` в `data/memes/photos/`, `slot`). Масштаб ≤1600px.
+   Дропать слоты с `w<0.32` (узкие ломают русские длинные слова) и где текст не попал на сам слот.
+4. **Рендер-проверка:** `node --import tsx src/scripts/slot-render-test.ts` (тест-подписи) и
+   `slot-verify.ts` (реальные) → монтаж → глазами. E2E через сервер: `temp/meme-recheck/e2e-slot.ts`.
+5. **Подписи (СНАЧАЛА спросить модель у пользователя; были Sonnet):** агенты ВИДЯТ картинку →
+   `4 RU + 2 EN + 2 DE + 2 FR + 2 IT` на шаблон, короткие под слот, нативные (не перевод), YouTube-safe →
+   `newimg/cap-out/slotcap-NN.json` (батчи `cap-batches/slotbatch-NN.json`).
+6. **Сборка:** `node temp/meme-recheck/assemble-slots.mjs` — дописывает карточки
+   `{caption, photoFile, format:"board", theme, slot}` в `data/memes-<lang>/cards.json` (бэкап
+   `.bak-preslot`). **Рестарт сервера** (правка `src/memes/render.ts` + deck-кэш).
+
+`data/memes/photos/board-*.jpg` и `cards.json` — gitignored (как все memes-данные); воспроизводимо
+повтором pull→detect→select. Деки `memes-*` admin-only → в CHANGELOG не писать.
+
 ## Оптические иллюзии — `illusions-{en,de,it,es,ru}` (admin-only, 77×5, видео)
 
 Анимированные оптические иллюзии (вдохновлено [[illusions-3d]], но НЕ копия: там один класс — крутящиеся

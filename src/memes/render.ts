@@ -9,6 +9,7 @@ import { chromePath } from "../render.ts";
 
 const TEMPLATE = resolve(process.cwd(), "templates/meme.html");
 const BOARD_TEMPLATE = resolve(process.cwd(), "templates/meme-board.html");
+const SLOT_TEMPLATE = resolve(process.cwd(), "templates/meme-slot.html");
 const TEXTURE_DIR = resolve(process.cwd(), "assets/backgrounds");
 
 export interface MemeCard {
@@ -32,6 +33,10 @@ export interface MemeCard {
   bg?: string;
   lang?: string;
   theme?: string;
+  /** Insert-slot region (fractions 0..1 of the image): caption is auto-fit INTO this blank area. */
+  slot?: { x: number; y: number; w: number; h: number };
+  /** Caption ink colour for slot mode (default dark). */
+  ink?: string;
 }
 
 // Dark, license-free generated backdrops (solids + gradients) → white caption always pops.
@@ -127,10 +132,23 @@ export function buildMemeHtml(card: MemeCard, bg: MemeBg): string {
  *  data-URI <img>, object-fit:contain so reaction images / comic panels are never cropped). The
  *  caption auto-fits a height-capped band; the image keeps the rest of the 1080x1920 frame. */
 export function buildMemeBoardHtml(card: MemeCard, imgDataUri: string): string {
+  if (card.slot) return buildMemeSlotHtml(card, imgDataUri);
   const tpl = readFileSync(BOARD_TEMPLATE, "utf8");
   return tpl
     .replace("{{IMG}}", imgDataUri || "")
     .replace("{{TEXT}}", textHtml(captionOf(card)));
+}
+
+/** Insert-slot layout (templates/meme-slot.html): caption auto-fit INTO a blank region of the image
+ *  (card.slot = {x,y,w,h} as fractions of the image). For "fill the sign/screen/billboard" templates. */
+export function buildMemeSlotHtml(card: MemeCard, imgDataUri: string): string {
+  const tpl = readFileSync(SLOT_TEMPLATE, "utf8");
+  const slot = card.slot ?? { x: 0.1, y: 0.6, w: 0.8, h: 0.32 };
+  return tpl
+    .replace("{{IMG}}", imgDataUri || "")
+    .replace("{{TEXT}}", textHtml(captionOf(card)))
+    .replace("{{SLOT}}", JSON.stringify(slot))
+    .replace("{{INK}}", esc(card.ink || "#141414"));
 }
 
 /** Standalone preview render (used by scripts). The pipeline uses src/anecdotes/render.ts dispatch. */

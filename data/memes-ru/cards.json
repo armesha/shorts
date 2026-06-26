@@ -14628,5 +14628,773 @@
     "format": "board",
     "theme": "обречённость",
     "srcFile": "wife vs wave femme vague.jpg"
+  },
+  {
+    "caption": "Мой план на неделю:\nспать и не думать",
+    "photoFile": "board-158.jpg",
+    "format": "board",
+    "theme": "person holding blank whiteboard",
+    "slot": {
+      "x": 0.2342,
+      "y": 0.3131,
+      "w": 0.5009,
+      "h": 0.5462
+    }
+  },
+  {
+    "caption": "Никто:\nЯ в 3 ночи: ем и листаю мемы",
+    "photoFile": "board-158.jpg",
+    "format": "board",
+    "theme": "person holding blank whiteboard",
+    "slot": {
+      "x": 0.2342,
+      "y": 0.3131,
+      "w": 0.5009,
+      "h": 0.5462
+    }
+  },
+  {
+    "caption": "POV: пятница наконец наступила",
+    "photoFile": "board-158.jpg",
+    "format": "board",
+    "theme": "person holding blank whiteboard",
+    "slot": {
+      "x": 0.2342,
+      "y": 0.3131,
+      "w": 0.5009,
+      "h": 0.5462
+    }
+  },
+  {
+    "caption": "Зарплата пришла — и сразу ушла",
+    "photoFile": "board-158.jpg",
+    "format": "board",
+    "theme": "person holding blank whiteboard",
+    "slot": {
+      "x": 0.2342,
+      "y": 0.3131,
+      "w": 0.5009,
+      "h": 0.5462
+    }
+  },
+  {
+    "caption": "Когда дедлайн завтра,\nа ты только начал",
+    "photoFile": "board-159.jpg",
+    "format": "board",
+    "theme": "person holding blank whiteboard",
+    "slot": {
+      "x": 0.1991,
+      "y": 0.2049,
+      "w": 0.6634,
+      "h": 0.5235
+    }
+  },
+  {
+    "caption": "Мой мозг в 3 ночи:\nпочему небо синее?",
+    "photoFile": "board-159.jpg",
+    "format": "board",
+    "theme": "person holding blank whiteboard",
+    "slot": {
+      "x": 0.1991,
+      "y": 0.2049,
+      "w": 0.6634,
+      "h": 0.5235
+    }
+  },
+  {
+    "caption": "Работаю много.\nПолучаю мало.",
+    "photoFile": "board-159.jpg",
+    "format": "board",
+    "theme": "person holding blank whiteboard",
+    "slot": {
+      "x": 0.1991,
+      "y": 0.2049,
+      "w": 0.6634,
+      "h": 0.5235
+    }
+  },
+  {
+    "caption": "Прокрастинирую профессионально",
+    "photoFile": "board-159.jpg",
+    "format": "board",
+    "theme": "person holding blank whiteboard",
+    "slot": {
+      "x": 0.1991,
+      "y": 0.2049,
+      "w": 0.6634,
+      "h": 0.5235
+    }
+  },
+  {
+    "caption": "С понедельника новая жизнь. Точно.",
+    "photoFile": "board-160.jpg",
+    "format": "board",
+    "theme": "blank white billboard",
+    "slot": {
+      "x": 0.1886,
+      "y": 0.3034,
+      "w": 0.6228,
+      "h": 0.4046
+    }
+  },
+  {
+    "caption": "Зарплата пришла — куда ушла, неясно",
+    "photoFile": "board-160.jpg",
+    "format": "board",
+    "theme": "blank white billboard",
+    "slot": {
+      "x": 0.1886,
+      "y": 0.3034,
+      "w": 0.6228,
+      "h": 0.4046
+    }
+  },
+  {
+    "caption": "Пятница — единственный смысл недели",
+    "photoFile": "board-160.jpg",
+    "format": "board",
+    "theme": "blank white billboard",
+    "slot": {
+      "x": 0.1886,
+      "y": 0.3034,
+      "w": 0.6228,
+      "h": 0.4046
+    }
+  },
+  {
+    "caption": "Работа работой, а кушать хочется",
+    "photoFile": "board-160.jpg",
+    "format": "board",
+    "theme": "blank white billboard",
+    "slot": {
+      "x": 0.1886,
+      "y": 0.3034,
+      "w": 0.6228,
+      "h": 0.4046
+    }
+  },
+  {
+    "caption": "Я когда вижу понедельник\nв расписании",
+    "photoFile": "board-161.jpg",
+    "format": "board",
+    "theme": "hands holding empty white paper",
+    "slot": {
+      "x": 0.3354,
+      "y": 0.1563,
+      "w": 0.4062,
+      "h": 0.6069
+    }
+  },
+  {
+    "caption": "Спрятался от дедлайна",
+    "photoFile": "board-161.jpg",
+    "format": "board",
+    "theme": "hands holding empty white paper",
+    "slot": {
+      "x": 0.3354,
+      "y": 0.1563,
+      "w": 0.4062,
+      "h": 0.6069
+    }
+  },
+  {
+    "caption": "Никто не знает,\nчто я съел весь торт",
+    "photoFile": "board-161.jpg",
+    "format": "board",
+    "theme": "hands holding empty white paper",
+    "slot": {
+      "x": 0.3354,
+      "y": 0.1563,
+      "w": 0.4062,
+      "h": 0.6069
+    }
+  },
+  {
+    "caption": "Мой мозг увидел еду — всё",
+    "photoFile": "board-161.jpg",
+    "format": "board",
+    "theme": "hands holding empty white paper",
+    "slot": {
+      "x": 0.3354,
+      "y": 0.1563,
+      "w": 0.4062,
+      "h": 0.6069
+    }
+  },
+  {
+    "caption": "Список дел:\n1. Подумать о делах",
+    "photoFile": "board-162.jpg",
+    "format": "board",
+    "theme": "person showing blank sheet of paper",
+    "slot": {
+      "x": 0.1802,
+      "y": 0.174,
+      "w": 0.3858,
+      "h": 0.6979
+    }
+  },
+  {
+    "caption": "Отчёт готов. Смысл не найден.",
+    "photoFile": "board-162.jpg",
+    "format": "board",
+    "theme": "person showing blank sheet of paper",
+    "slot": {
+      "x": 0.1802,
+      "y": 0.174,
+      "w": 0.3858,
+      "h": 0.6979
+    }
+  },
+  {
+    "caption": "POV: снова притворяюсь занятым",
+    "photoFile": "board-162.jpg",
+    "format": "board",
+    "theme": "person showing blank sheet of paper",
+    "slot": {
+      "x": 0.1802,
+      "y": 0.174,
+      "w": 0.3858,
+      "h": 0.6979
+    }
+  },
+  {
+    "caption": "Документ важный.\nСодержание: мемы",
+    "photoFile": "board-162.jpg",
+    "format": "board",
+    "theme": "person showing blank sheet of paper",
+    "slot": {
+      "x": 0.1802,
+      "y": 0.174,
+      "w": 0.3858,
+      "h": 0.6979
+    }
+  },
+  {
+    "caption": "Открыл 50 вкладок и закрыл ноут",
+    "photoFile": "board-163.jpg",
+    "format": "board",
+    "theme": "blank laptop screen on desk",
+    "slot": {
+      "x": 0.1669,
+      "y": 0.2387,
+      "w": 0.6431,
+      "h": 0.2663
+    }
+  },
+  {
+    "caption": "Работа: открыта. Желание: нет.",
+    "photoFile": "board-163.jpg",
+    "format": "board",
+    "theme": "blank laptop screen on desk",
+    "slot": {
+      "x": 0.1669,
+      "y": 0.2387,
+      "w": 0.6431,
+      "h": 0.2663
+    }
+  },
+  {
+    "caption": "Вкладка 47: всё ещё мемы",
+    "photoFile": "board-163.jpg",
+    "format": "board",
+    "theme": "blank laptop screen on desk",
+    "slot": {
+      "x": 0.1669,
+      "y": 0.2387,
+      "w": 0.6431,
+      "h": 0.2663
+    }
+  },
+  {
+    "caption": "YouTube на 5 минут — 3 часа спустя",
+    "photoFile": "board-163.jpg",
+    "format": "board",
+    "theme": "blank laptop screen on desk",
+    "slot": {
+      "x": 0.1669,
+      "y": 0.2387,
+      "w": 0.6431,
+      "h": 0.2663
+    }
+  },
+  {
+    "caption": "Нет работе до кофе",
+    "photoFile": "board-164.jpg",
+    "format": "board",
+    "theme": "blank cardboard protest sign person",
+    "slot": {
+      "x": 0.156,
+      "y": 0.4759,
+      "w": 0.5957,
+      "h": 0.361
+    }
+  },
+  {
+    "caption": "Требуем 4-дневную\nрабочую неделю",
+    "photoFile": "board-164.jpg",
+    "format": "board",
+    "theme": "blank cardboard protest sign person",
+    "slot": {
+      "x": 0.156,
+      "y": 0.4759,
+      "w": 0.5957,
+      "h": 0.361
+    }
+  },
+  {
+    "caption": "Обед — наше право,\nне привилегия",
+    "photoFile": "board-164.jpg",
+    "format": "board",
+    "theme": "blank cardboard protest sign person",
+    "slot": {
+      "x": 0.156,
+      "y": 0.4759,
+      "w": 0.5957,
+      "h": 0.361
+    }
+  },
+  {
+    "caption": "Верните сон\nв рабочий день",
+    "photoFile": "board-164.jpg",
+    "format": "board",
+    "theme": "blank cardboard protest sign person",
+    "slot": {
+      "x": 0.156,
+      "y": 0.4759,
+      "w": 0.5957,
+      "h": 0.361
+    }
+  },
+  {
+    "caption": "Я в пятницу в 18:01",
+    "photoFile": "board-165.jpg",
+    "format": "board",
+    "theme": "empty white picture frame held",
+    "slot": {
+      "x": 0.4082,
+      "y": 0.3211,
+      "w": 0.3452,
+      "h": 0.4956
+    }
+  },
+  {
+    "caption": "Мой кошелёк\nпосле выходных",
+    "photoFile": "board-165.jpg",
+    "format": "board",
+    "theme": "empty white picture frame held",
+    "slot": {
+      "x": 0.4082,
+      "y": 0.3211,
+      "w": 0.3452,
+      "h": 0.4956
+    }
+  },
+  {
+    "caption": "Я в воскресенье\nв 23:59",
+    "photoFile": "board-165.jpg",
+    "format": "board",
+    "theme": "empty white picture frame held",
+    "slot": {
+      "x": 0.4082,
+      "y": 0.3211,
+      "w": 0.3452,
+      "h": 0.4956
+    }
+  },
+  {
+    "caption": "Мозг в 3 ночи\nс важными вопросами",
+    "photoFile": "board-165.jpg",
+    "format": "board",
+    "theme": "empty white picture frame held",
+    "slot": {
+      "x": 0.4082,
+      "y": 0.3211,
+      "w": 0.3452,
+      "h": 0.4956
+    }
+  },
+  {
+    "caption": "Задача:\nпережить до обеда",
+    "photoFile": "board-166.jpg",
+    "format": "board",
+    "theme": "person holding blank whiteboard",
+    "slot": {
+      "x": 0.3702,
+      "y": 0.2982,
+      "w": 0.352,
+      "h": 0.4956
+    }
+  },
+  {
+    "caption": "Повестка:\nничего важного",
+    "photoFile": "board-166.jpg",
+    "format": "board",
+    "theme": "person holding blank whiteboard",
+    "slot": {
+      "x": 0.3702,
+      "y": 0.2982,
+      "w": 0.352,
+      "h": 0.4956
+    }
+  },
+  {
+    "caption": "ВАЖНО:\nобед в 13:00",
+    "photoFile": "board-166.jpg",
+    "format": "board",
+    "theme": "person holding blank whiteboard",
+    "slot": {
+      "x": 0.3702,
+      "y": 0.2982,
+      "w": 0.352,
+      "h": 0.4956
+    }
+  },
+  {
+    "caption": "TODO:\n1. Кофе  2. Кофе",
+    "photoFile": "board-166.jpg",
+    "format": "board",
+    "theme": "person holding blank whiteboard",
+    "slot": {
+      "x": 0.3702,
+      "y": 0.2982,
+      "w": 0.352,
+      "h": 0.4956
+    }
+  },
+  {
+    "caption": "Мотивация:\nкофе и дедлайн",
+    "photoFile": "board-168.jpg",
+    "format": "board",
+    "theme": "blank white poster on wall",
+    "slot": {
+      "x": 0.3888,
+      "y": 0.2207,
+      "w": 0.3994,
+      "h": 0.3791
+    }
+  },
+  {
+    "caption": "Успех — это\n5 чашек кофе",
+    "photoFile": "board-168.jpg",
+    "format": "board",
+    "theme": "blank white poster on wall",
+    "slot": {
+      "x": 0.3888,
+      "y": 0.2207,
+      "w": 0.3994,
+      "h": 0.3791
+    }
+  },
+  {
+    "caption": "Работай много,\nспи мало",
+    "photoFile": "board-168.jpg",
+    "format": "board",
+    "theme": "blank white poster on wall",
+    "slot": {
+      "x": 0.3888,
+      "y": 0.2207,
+      "w": 0.3994,
+      "h": 0.3791
+    }
+  },
+  {
+    "caption": "Главное — вид\nчто работаешь",
+    "photoFile": "board-168.jpg",
+    "format": "board",
+    "theme": "blank white poster on wall",
+    "slot": {
+      "x": 0.3888,
+      "y": 0.2207,
+      "w": 0.3994,
+      "h": 0.3791
+    }
+  },
+  {
+    "caption": "Вкладка 1: работа\nВкладки 2-47: нет",
+    "photoFile": "board-169.jpg",
+    "format": "board",
+    "theme": "blank laptop screen on desk",
+    "slot": {
+      "x": 0.1112,
+      "y": 0.2744,
+      "w": 0.616,
+      "h": 0.3385
+    }
+  },
+  {
+    "caption": "404: мотивация\nне найдена",
+    "photoFile": "board-169.jpg",
+    "format": "board",
+    "theme": "blank laptop screen on desk",
+    "slot": {
+      "x": 0.1112,
+      "y": 0.2744,
+      "w": 0.616,
+      "h": 0.3385
+    }
+  },
+  {
+    "caption": "Сохранить изменения?\nНет",
+    "photoFile": "board-169.jpg",
+    "format": "board",
+    "theme": "blank laptop screen on desk",
+    "slot": {
+      "x": 0.1112,
+      "y": 0.2744,
+      "w": 0.616,
+      "h": 0.3385
+    }
+  },
+  {
+    "caption": "Это последняя\nвкладка с котами",
+    "photoFile": "board-169.jpg",
+    "format": "board",
+    "theme": "blank laptop screen on desk",
+    "slot": {
+      "x": 0.1112,
+      "y": 0.2744,
+      "w": 0.616,
+      "h": 0.3385
+    }
+  },
+  {
+    "caption": "Это последний раз,\nкогда я откладываю",
+    "photoFile": "board-170.jpg",
+    "format": "board",
+    "theme": "blank laptop screen on desk",
+    "slot": {
+      "x": 0.2697,
+      "y": 0.0265,
+      "w": 0.6837,
+      "h": 0.3888
+    }
+  },
+  {
+    "caption": "Открыто 78 вкладок\nни одна не нужна",
+    "photoFile": "board-170.jpg",
+    "format": "board",
+    "theme": "blank laptop screen on desk",
+    "slot": {
+      "x": 0.2697,
+      "y": 0.0265,
+      "w": 0.6837,
+      "h": 0.3888
+    }
+  },
+  {
+    "caption": "Рабочий файл:\nне сохранён",
+    "photoFile": "board-170.jpg",
+    "format": "board",
+    "theme": "blank laptop screen on desk",
+    "slot": {
+      "x": 0.2697,
+      "y": 0.0265,
+      "w": 0.6837,
+      "h": 0.3888
+    }
+  },
+  {
+    "caption": "Новая вкладка:\na зачем я сюда зашёл",
+    "photoFile": "board-170.jpg",
+    "format": "board",
+    "theme": "blank laptop screen on desk",
+    "slot": {
+      "x": 0.2697,
+      "y": 0.0265,
+      "w": 0.6837,
+      "h": 0.3888
+    }
+  },
+  {
+    "caption": "Мой мозг в 3 ночи:\nкупи это",
+    "photoFile": "board-171.jpg",
+    "format": "board",
+    "theme": "hand holding phone blank white screen",
+    "slot": {
+      "x": 0.2708,
+      "y": 0.2871,
+      "w": 0.4738,
+      "h": 0.3338
+    }
+  },
+  {
+    "caption": "POV: написал «уже выхожу»\nи сижу дальше",
+    "photoFile": "board-171.jpg",
+    "format": "board",
+    "theme": "hand holding phone blank white screen",
+    "slot": {
+      "x": 0.2708,
+      "y": 0.2871,
+      "w": 0.4738,
+      "h": 0.3338
+    }
+  },
+  {
+    "caption": "Я когда снова открыл\nхолодильник",
+    "photoFile": "board-171.jpg",
+    "format": "board",
+    "theme": "hand holding phone blank white screen",
+    "slot": {
+      "x": 0.2708,
+      "y": 0.2871,
+      "w": 0.4738,
+      "h": 0.3338
+    }
+  },
+  {
+    "caption": "Никто:\nМой экран в пятницу вечером:",
+    "photoFile": "board-171.jpg",
+    "format": "board",
+    "theme": "hand holding phone blank white screen",
+    "slot": {
+      "x": 0.2708,
+      "y": 0.2871,
+      "w": 0.4738,
+      "h": 0.3338
+    }
+  },
+  {
+    "caption": "Никто:\nМоя зарплата в конце месяца:",
+    "photoFile": "board-172.jpg",
+    "format": "board",
+    "theme": "hand holding phone blank white screen",
+    "slot": {
+      "x": 0.3918,
+      "y": 0.1623,
+      "w": 0.3317,
+      "h": 0.4242
+    }
+  },
+  {
+    "caption": "POV: открыл холодильник\nшестой раз за час",
+    "photoFile": "board-172.jpg",
+    "format": "board",
+    "theme": "hand holding phone blank white screen",
+    "slot": {
+      "x": 0.3918,
+      "y": 0.1623,
+      "w": 0.3317,
+      "h": 0.4242
+    }
+  },
+  {
+    "caption": "Мой список задач:\nсоставить список задач",
+    "photoFile": "board-172.jpg",
+    "format": "board",
+    "theme": "hand holding phone blank white screen",
+    "slot": {
+      "x": 0.3918,
+      "y": 0.1623,
+      "w": 0.3317,
+      "h": 0.4242
+    }
+  },
+  {
+    "caption": "Я когда показываю маме\nчто меня веселит",
+    "photoFile": "board-172.jpg",
+    "format": "board",
+    "theme": "hand holding phone blank white screen",
+    "slot": {
+      "x": 0.3918,
+      "y": 0.1623,
+      "w": 0.3317,
+      "h": 0.4242
+    }
+  },
+  {
+    "caption": "Прокрастинация — это\nне баг, а фича",
+    "photoFile": "board-173.jpg",
+    "format": "board",
+    "theme": "blank white poster on wall",
+    "slot": {
+      "x": 0.3245,
+      "y": 0.3923,
+      "w": 0.3588,
+      "h": 0.3385
+    }
+  },
+  {
+    "caption": "Понедельник отменяется.\nВсегда.",
+    "photoFile": "board-173.jpg",
+    "format": "board",
+    "theme": "blank white poster on wall",
+    "slot": {
+      "x": 0.3245,
+      "y": 0.3923,
+      "w": 0.3588,
+      "h": 0.3385
+    }
+  },
+  {
+    "caption": "Рабочий настрой:\nприбудет позже",
+    "photoFile": "board-173.jpg",
+    "format": "board",
+    "theme": "blank white poster on wall",
+    "slot": {
+      "x": 0.3245,
+      "y": 0.3923,
+      "w": 0.3588,
+      "h": 0.3385
+    }
+  },
+  {
+    "caption": "Мотивация:\nнедоступна до пятницы",
+    "photoFile": "board-173.jpg",
+    "format": "board",
+    "theme": "blank white poster on wall",
+    "slot": {
+      "x": 0.3245,
+      "y": 0.3923,
+      "w": 0.3588,
+      "h": 0.3385
+    }
+  },
+  {
+    "caption": "Хочу спать\nа не работать",
+    "photoFile": "board-174.jpg",
+    "format": "board",
+    "theme": "woman holding blank placard",
+    "slot": {
+      "x": 0.3797,
+      "y": 0.2285,
+      "w": 0.3791,
+      "h": 0.343
+    }
+  },
+  {
+    "caption": "Верните мне\nпятницу",
+    "photoFile": "board-174.jpg",
+    "format": "board",
+    "theme": "woman holding blank placard",
+    "slot": {
+      "x": 0.3797,
+      "y": 0.2285,
+      "w": 0.3791,
+      "h": 0.343
+    }
+  },
+  {
+    "caption": "Повысьте зарплату\nили уберите понедельник",
+    "photoFile": "board-174.jpg",
+    "format": "board",
+    "theme": "woman holding blank placard",
+    "slot": {
+      "x": 0.3797,
+      "y": 0.2285,
+      "w": 0.3791,
+      "h": 0.343
+    }
+  },
+  {
+    "caption": "Я пришла на работу.\nЭтого достаточно.",
+    "photoFile": "board-174.jpg",
+    "format": "board",
+    "theme": "woman holding blank placard",
+    "slot": {
+      "x": 0.3797,
+      "y": 0.2285,
+      "w": 0.3791,
+      "h": 0.343
+    }
   }
 ]
