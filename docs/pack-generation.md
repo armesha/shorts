@@ -46,16 +46,21 @@ ingestion/safety проход:
   Страница датасета говорит, что OCR сделан из out-of-copyright works, QNL не заявляет copyright на
   scans/reproductions, metadata CC0. В metadata есть `البخلاء` (`i15827203`, `i15832326`) и
   `المستطرف`; для source ledger сохраняй и URL датасета, и конкретные QNL repository item URLs.
-  Прямой BookReader OCR endpoint у item-страниц доступен, но spot-check `QNL:00005095` дал сильно
-  шумный постраничный текст; лучше извлекать из `QNL_ArabicOCR_Corpus-v2.zip` или делать ручную
-  корректуру. ACO/Wikisource Juha/نوادر источники остаются кандидатами, но ACO-сканы требуют OCR, а
-  raw Wikisource `أخبار الحمقى والمغفلين`/`التطفيل` уже давал религиозные, грубые или
-  protected-class риски; не подключать их к `JOKE_TEXT_DECK_BY_LANG` без отдельной ручной ревизии.
+  Быстрая подготовка metadata-кандидатов: `node scripts/prepare-arabic-qnl-joke-source.mjs` пишет
+  `temp/qnl-arabic-jokes/metadata-candidates.json`, `sources.json`, `report.md` и ранжирует старые
+  издания до 1929 года выше поздних. Прямой BookReader OCR endpoint у item-страниц доступен, но
+  spot-check `QNL:00005095` дал сильно шумный постраничный текст; лучше извлекать из
+  `QNL_ArabicOCR_Corpus-v2.zip` только нужные `.txt` во временную папку или делать ручную корректуру.
+  ACO/Wikisource Juha/نوادر источники остаются кандидатами, но ACO-сканы требуют OCR, а raw Wikisource
+  `أخبار الحمقى والمغفلين`/`التطفيل` уже давал религиозные, грубые или protected-class риски; не
+  подключать их к `JOKE_TEXT_DECK_BY_LANG` без отдельной ручной ревизии.
 - `hi`: пока не найден чистый современный Hindi joke corpus с понятной лицензией. Usable-now путь -
   Hindi Wikisource `पंचतन्त्र` и отдельные Premchand stories (`बड़े भाई साहब`, `नशा`): страницы
   помечены PD India / public domain in the USA и дают чистый HTML/export. Но это не современные
-  `चुटकुले`; если делать pack, честно называй его "классические остроумные истории/नीति-कथाएँ" и
-  не подключай как обычные анекдоты без такого позиционирования.
+  `चुटकुले`; source-prep: `node scripts/prepare-hindi-witty-source.mjs` пишет
+  `temp/hi-witty-sources/pages.json`, `candidate-excerpts.json`, `sources.json`, `report.md`. Если
+  делать pack, честно называй его "классические остроумные истории/नीति-कथाएँ" и не подключай как
+  обычные анекдоты без такого позиционирования.
 - `id`: лучший найденный стартовый кандидат - public-domain-by-age `Tjerita Aboe Nawas dengan Radja
   Haroenarrasid di Negri Bagdad` (1894), Commons PDF/Google Books. `pdftotext -raw` извлекает
   латинский OCR в старой Malay/Indonesian орфографии; использовать `scripts/prepare-indonesian-abunawas-source.mjs`
@@ -90,13 +95,17 @@ ingestion/safety проход:
   чуткулов на урду/хинди/брадж, но пока найдено только упоминание, не сам текст. Internet Archive
   по `लतायफ़ हिंदी`, `लतायफ हिंदी`, `Latayif Hindi`, `Latayif-i Hindi` не дал готового текста.
   Не брать современные сайты "Hindi jokes" без лицензии. Допустимый fallback - отдельный HI pack из
-  `पंचतन्त्र`/Premchand как witty stories, с честным названием и source ledger.
+  `पंचतन्त्र`/Premchand как witty stories, с честным названием и source ledger. Текущий source-prep
+  прогон дал 6 страниц и 204 фрагмента-кандидата, но с большим количеством violence/religion/adult/
+  protected-class/politics флагов; без clean/abridgement workflow live-deck не делать.
 - `ar`: QNL Arabic OCR Corpus v2 - лучший технический кандидат для первого source-backed pack:
   metadata скачивается маленьким CSV, OCR zip большой (~1 GB), поэтому скачивай временно только если
-  реально строишь pack и удаляй после извлечения нужных `.txt`. Random IA Juha/community uploads без
-  rights/license не использовать. Arabic Wikisource содержит `أخبار الحمقى والمغفلين`, `التطفيل` и
-  related `جحا`/`نوادر`, но raw automatic extraction уже давал protected-class, adult/gross и
-  религиозные риски; допустим только отдельный ручной curated pack с safety pass.
+  реально строишь pack и удаляй после извлечения нужных `.txt`. `prepare-arabic-qnl-joke-source.mjs`
+  сейчас находит 60 metadata-кандидатов; топ после age-safe ранжирования - старые издания
+  `المستطرف` 1851/1883/1894 и `البخلاء` 1907/1900. Random IA Juha/community uploads без rights/license
+  не использовать. Arabic Wikisource содержит `أخبار الحمقى والمغفلين`, `التطفيل` и related
+  `جحا`/`نوادر`, но raw automatic extraction уже давал protected-class, adult/gross и религиозные
+  риски; допустим только отдельный ручной curated pack с safety pass.
 - общий переводной вариант: Project Gutenberg `The Turkish Jester; or, The Pleasantries of Cogia
   Nasr Eddin Effendi` (`https://www.gutenberg.org/ebooks/16244`) помечен как not copyrighted /
   public-domain in the USA и подходит как legal source base для будущих localized Nasreddin/Juha-style
