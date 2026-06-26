@@ -1,9 +1,11 @@
 {
-  "total": 1102,
+  "total": 864,
   "packs": 1,
-  "packSize": 1102,
+  "packSize": 5000,
   "range": [
-    240,
+    246,
     620
-  ]
+  ],
+  "safetyPrunedAt": "2026-06-26T05:14:59.967Z",
+  "safetyPrunedRemoved": 238
 }

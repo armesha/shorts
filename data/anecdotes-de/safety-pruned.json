@@ -1,0 +1,258 @@
+{
+  "generatedAt": "2026-06-26T05:14:59.945Z",
+  "sourceTotal": 2435,
+  "kept": 1978,
+  "removed": 457,
+  "removedSample": [
+    {
+      "id": 1,
+      "title": "Manieren bei Schwiegereltern",
+      "chars": 324
+    },
+    {
+      "id": 25,
+      "title": "Therapeut vergisst Namen",
+      "chars": 316
+    },
+    {
+      "id": 43,
+      "title": "Adam Eva gegen Affen",
+      "chars": 321
+    },
+    {
+      "id": 47,
+      "title": "Körbchen wie Bier Männer",
+      "chars": 319
+    },
+    {
+      "id": 49,
+      "title": "Treffen Gewehr Missverständnis",
+      "chars": 318
+    },
+    {
+      "id": 73,
+      "title": "28 Messerstiche Unfall",
+      "chars": 325
+    },
+    {
+      "id": 123,
+      "title": "Horatio-Zombie",
+      "chars": 315
+    },
+    {
+      "id": 137,
+      "title": "Duschgel-Gefängnis",
+      "chars": 316
+    },
+    {
+      "id": 139,
+      "title": "Teddy-Ehestreit",
+      "chars": 323
+    },
+    {
+      "id": 141,
+      "title": "Klopapier-Spannung",
+      "chars": 319
+    },
+    {
+      "id": 157,
+      "title": "Zapfenstreich-Telefon",
+      "chars": 318
+    },
+    {
+      "id": 161,
+      "title": "Lego-Schmerz-König",
+      "chars": 318
+    },
+    {
+      "id": 165,
+      "title": "Alkohol-Diagnose",
+      "chars": 318
+    },
+    {
+      "id": 181,
+      "title": "Pferd-Gesichtspolish",
+      "chars": 318
+    },
+    {
+      "id": 187,
+      "title": "Nike-Kindernähte",
+      "chars": 318
+    },
+    {
+      "id": 219,
+      "title": "Spagat für Witze app",
+      "chars": 317
+    },
+    {
+      "id": 229,
+      "title": "Frankreich Italien Krieg",
+      "chars": 317
+    },
+    {
+      "id": 245,
+      "title": "Kirche Chips Prostitution",
+      "chars": 326
+    },
+    {
+      "id": 257,
+      "title": "Gott Wunsch ignoriert",
+      "chars": 321
+    },
+    {
+      "id": 259,
+      "title": "Oma Überfall gutes Licht",
+      "chars": 323
+    },
+    {
+      "id": 263,
+      "title": "Mathe Kamele Sonne Sand",
+      "chars": 316
+    },
+    {
+      "id": 265,
+      "title": "Chuck Norris Autounfall",
+      "chars": 313
+    },
+    {
+      "id": 321,
+      "title": "Opa-Überraschung",
+      "chars": 317
+    },
+    {
+      "id": 329,
+      "title": "Überraschungs-Säurefass",
+      "chars": 319
+    },
+    {
+      "id": 333,
+      "title": "Nur im Schlaf",
+      "chars": 326
+    },
+    {
+      "id": 361,
+      "title": "Professor-Vorsicht-Tipp",
+      "chars": 326
+    },
+    {
+      "id": 365,
+      "title": "Frau-Rückwärts-Parkerin",
+      "chars": 320
+    },
+    {
+      "id": 409,
+      "title": "Bauchnadel-Technik",
+      "chars": 315
+    },
+    {
+      "id": 417,
+      "title": "Chef-Besen",
+      "chars": 319
+    },
+    {
+      "id": 419,
+      "title": "Like-Großzügigkeit",
+      "chars": 316
+    },
+    {
+      "id": 429,
+      "title": "Rangliste der Tiere",
+      "chars": 325
+    },
+    {
+      "id": 435,
+      "title": "Holland-Kinderheim",
+      "chars": 318
+    },
+    {
+      "id": 445,
+      "title": "Finanzamt-Rettung",
+      "chars": 325
+    },
+    {
+      "id": 449,
+      "title": "Android-Update",
+      "chars": 315
+    },
+    {
+      "id": 457,
+      "title": "Montag-Rasiermesser",
+      "chars": 320
+    },
+    {
+      "id": 463,
+      "title": "Baum-Tag-und-Nacht",
+      "chars": 324
+    },
+    {
+      "id": 469,
+      "title": "iPhone-Generation",
+      "chars": 320
+    },
+    {
+      "id": 473,
+      "title": "Blutspender-Verhandlung",
+      "chars": 326
+    },
+    {
+      "id": 477,
+      "title": "Lied-Zufallsfund",
+      "chars": 332
+    },
+    {
+      "id": 483,
+      "title": "Timmy's-Dad-News",
+      "chars": 321
+    },
+    {
+      "id": 487,
+      "title": "Cornflakes-Ecken",
+      "chars": 320
+    },
+    {
+      "id": 501,
+      "title": "Fliege trifft Anton",
+      "chars": 314
+    },
+    {
+      "id": 515,
+      "title": "Gamer Unfair Spiel",
+      "chars": 336
+    },
+    {
+      "id": 519,
+      "title": "Nachbar-Hobbits-Gold",
+      "chars": 317
+    },
+    {
+      "id": 521,
+      "title": "Jugend Altern Formeln",
+      "chars": 341
+    },
+    {
+      "id": 527,
+      "title": "Nach-Arbeit Bettwonne",
+      "chars": 344
+    },
+    {
+      "id": 531,
+      "title": "Public Viewing Missverständ",
+      "chars": 315
+    },
+    {
+      "id": 533,
+      "title": "Scheintod Grabung tiefer",
+      "chars": 322
+    },
+    {
+      "id": 543,
+      "title": "Fremde Anrufe erschrecken",
+      "chars": 315
+    },
+    {
+      "id": 549,
+      "title": "Wasserflasche Hölle verdient",
+      "chars": 318
+    }
+  ]
+}

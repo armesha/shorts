@@ -1,0 +1,258 @@
+{
+  "generatedAt": "2026-06-26T05:14:59.967Z",
+  "sourceTotal": 1102,
+  "kept": 864,
+  "removed": 238,
+  "removedSample": [
+    {
+      "id": 2,
+      "title": "Il tenente e i cattivi annunci",
+      "chars": 590
+    },
+    {
+      "id": 18,
+      "title": "Il terremoto cinese",
+      "chars": 492
+    },
+    {
+      "id": 23,
+      "title": "La guerra in Kuwait",
+      "chars": 456
+    },
+    {
+      "id": 24,
+      "title": "Non di solo pane",
+      "chars": 255
+    },
+    {
+      "id": 29,
+      "title": "La teoria della bimba",
+      "chars": 435
+    },
+    {
+      "id": 35,
+      "title": "L'artista e il dottore",
+      "chars": 437
+    },
+    {
+      "id": 40,
+      "title": "La lavanderia",
+      "chars": 397
+    },
+    {
+      "id": 43,
+      "title": "Il gattino strizzato",
+      "chars": 462
+    },
+    {
+      "id": 44,
+      "title": "La tenda di Sherlock",
+      "chars": 496
+    },
+    {
+      "id": 47,
+      "title": "Gesù frettoloso",
+      "chars": 349
+    },
+    {
+      "id": 63,
+      "title": "La pesca domenicale",
+      "chars": 503
+    },
+    {
+      "id": 67,
+      "title": "Il posto al derby",
+      "chars": 539
+    },
+    {
+      "id": 70,
+      "title": "Il cameriere devoto",
+      "chars": 538
+    },
+    {
+      "id": 88,
+      "title": "Il frate e la bionda",
+      "chars": 283
+    },
+    {
+      "id": 101,
+      "title": "Metropolitana affollata",
+      "chars": 374
+    },
+    {
+      "id": 104,
+      "title": "Incidente dell'avvocato",
+      "chars": 439
+    },
+    {
+      "id": 106,
+      "title": "Asino e ragioniere",
+      "chars": 375
+    },
+    {
+      "id": 108,
+      "title": "Al cimitero",
+      "chars": 524
+    },
+    {
+      "id": 110,
+      "title": "Il nonno e il viagra",
+      "chars": 384
+    },
+    {
+      "id": 113,
+      "title": "L'ubriaco in chiesa",
+      "chars": 369
+    },
+    {
+      "id": 114,
+      "title": "Il dottore e la mamma",
+      "chars": 459
+    },
+    {
+      "id": 116,
+      "title": "Il ricatto della madre",
+      "chars": 387
+    },
+    {
+      "id": 120,
+      "title": "Il soldato e l'affitto",
+      "chars": 486
+    },
+    {
+      "id": 122,
+      "title": "L'ultimo desiderio",
+      "chars": 457
+    },
+    {
+      "id": 124,
+      "title": "L'assorbente del fattore",
+      "chars": 572
+    },
+    {
+      "id": 132,
+      "title": "Il necrologio a basso costo",
+      "chars": 345
+    },
+    {
+      "id": 133,
+      "title": "La sentenza di Saddam",
+      "chars": 343
+    },
+    {
+      "id": 143,
+      "title": "L'ultima cena",
+      "chars": 444
+    },
+    {
+      "id": 147,
+      "title": "Il fratello al semaforo",
+      "chars": 580
+    },
+    {
+      "id": 155,
+      "title": "La ricetta del farmacista",
+      "chars": 503
+    },
+    {
+      "id": 159,
+      "title": "Il vino del neonato",
+      "chars": 404
+    },
+    {
+      "id": 165,
+      "title": "A che serve papà",
+      "chars": 277
+    },
+    {
+      "id": 175,
+      "title": "Lo yoga del Presidente",
+      "chars": 407
+    },
+    {
+      "id": 188,
+      "title": "La lista nozze dei nonni",
+      "chars": 601
+    },
+    {
+      "id": 191,
+      "title": "L'amico morto",
+      "chars": 296
+    },
+    {
+      "id": 192,
+      "title": "La gara di programmazione",
+      "chars": 448
+    },
+    {
+      "id": 193,
+      "title": "Il furto della macchina",
+      "chars": 473
+    },
+    {
+      "id": 195,
+      "title": "La piaga dell'Inter",
+      "chars": 444
+    },
+    {
+      "id": 200,
+      "title": "Tre fratelli strani",
+      "chars": 385
+    },
+    {
+      "id": 202,
+      "title": "Pierino e il cielo",
+      "chars": 506
+    },
+    {
+      "id": 204,
+      "title": "Dio guarda le mele",
+      "chars": 398
+    },
+    {
+      "id": 209,
+      "title": "Topolino e giraffa",
+      "chars": 577
+    },
+    {
+      "id": 215,
+      "title": "Totti e l'esame",
+      "chars": 364
+    },
+    {
+      "id": 217,
+      "title": "Consiglio medico",
+      "chars": 465
+    },
+    {
+      "id": 218,
+      "title": "Il vampiro e il tè",
+      "chars": 454
+    },
+    {
+      "id": 227,
+      "title": "Dio e il backup",
+      "chars": 469
+    },
+    {
+      "id": 228,
+      "title": "L'esperimento genetico",
+      "chars": 292
+    },
+    {
+      "id": 244,
+      "title": "La guardia di Berlusconi",
+      "chars": 593
+    },
+    {
+      "id": 246,
+      "title": "Mea Kohlpa",
+      "chars": 265
+    },
+    {
+      "id": 249,
+      "title": "Il cervello dei carabinieri",
+      "chars": 351
+    }
+  ]
+}
