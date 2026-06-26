@@ -10,7 +10,7 @@ import { isMainAdmin } from "../lib/authz";
 import { langTag } from "../lib/deck";
 import ChannelBlocks from "./ChannelBlocks";
 
-const ACCOUNTS_CACHE_KEY = "sf.accounts.v1";
+const ACCOUNTS_CACHE_KEY = "sf.accounts.v2";
 const DAILY_KEY_CAP = 92; // YouTube upload quota per Google project/key (held under the ~100/day ceiling)
 type AccountSourceStat = {
   id: string;
@@ -19,6 +19,8 @@ type AccountSourceStat = {
   available: number | null;
   total: number | null;
   queued: number;
+  postsPerDay: number;
+  runwayDays: number | null;
 };
 type AccountsCache = {
   accounts: Account[];
@@ -143,13 +145,29 @@ function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
     };
   })();
 
-  // Days of video left = count / posts-per-day (continuous; <1 → runs dry within a day).
+  const scheduledCountsByDeck = (a: Account): Record<string, number> => {
+    const sources = a.sourceDecks?.length ? a.sourceDecks : [a.lang].filter(Boolean);
+    const counts: Record<string, number> = Object.fromEntries(sources.map((id) => [id, 0]));
+    for (const [index, time] of (a.schedule ?? []).entries()) {
+      const explicit = a.slotDecks?.[time];
+      const deckId = explicit && sources.includes(explicit) ? explicit : sources[index % Math.max(1, sources.length)];
+      if (deckId) counts[deckId] = (counts[deckId] ?? 0) + 1;
+    }
+    return counts;
+  };
+
+  // Days of video left = the first scheduled pack that will run dry.
   // null = not applicable (no schedule, or counts still loading) → never flagged as low.
   const runwayDays = (a: Account): number | null => {
-    const slots = a.enabled ? a.schedule.length : 0;
-    const count = queue[a.id];
-    if (slots === 0 || count == null) return null;
-    return count / slots;
+    if (!a.enabled || !a.schedule.length || queue[a.id] == null) return null;
+    if (!queueByDeck[a.id]) return null;
+    const scheduled = scheduledCountsByDeck(a);
+    const queued = queueByDeck[a.id] ?? {};
+    const values = Object.entries(scheduled)
+      .filter(([, perDay]) => perDay > 0)
+      .map(([deckId, perDay]) => (queued[deckId] ?? 0) / perDay)
+      .filter((value) => Number.isFinite(value));
+    return values.length ? Math.min(...values) : queue[a.id] / a.schedule.length;
   };
 
   // Channels about to run dry (< 1 day) — drives the alert and the «< 1 дня» filter.
@@ -179,16 +197,21 @@ function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
   const catalogById = useMemo(() => new Map(catalog.map((item) => [item.id, item] as const)), [catalog]);
   const accountSourceStats = (account: Account): AccountSourceStat[] => {
     const ids = account.sourceDecks?.length ? account.sourceDecks : [account.lang].filter(Boolean);
-    const queued = queueByDeck[account.id] ?? {};
+    const queued = queueByDeck[account.id];
+    const scheduled = scheduledCountsByDeck(account);
     return ids.map((id) => {
       const item = catalogById.get(id);
+      const postsPerDay = account.enabled ? scheduled[id] ?? 0 : 0;
+      const sourceQueued = queued?.[id] ?? 0;
       return {
         id,
         title: item?.title ?? id.replace(/^pack:/, ""),
         lang: item?.lang ?? account.channelLang ?? account.lang,
         available: item?.available ?? null,
         total: item?.total ?? null,
-        queued: queued[id] ?? 0,
+        queued: sourceQueued,
+        postsPerDay,
+        runwayDays: queued && postsPerDay > 0 ? sourceQueued / postsPerDay : null,
       };
     });
   };
@@ -440,8 +463,8 @@ function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
                   {t("accounts.schedule")}{" "}
                   <span className="font-medium text-base-content">{a.schedule.join(", ")}</span>
                 </div>
-                <QueueInfo count={queue[a.id]} schedule={a.schedule} enabled={a.enabled} />
-                <SourceInfo sources={accountSourceStats(a)} schedule={a.schedule} enabled={a.enabled} />
+                <QueueInfo count={queue[a.id]} runwayDays={runwayDays(a)} schedule={a.schedule} enabled={a.enabled} />
+                <SourceInfo sources={accountSourceStats(a)} />
                 {multiKey && a.oauthClientId && clientById.get(a.oauthClientId) && (
                   <div className="mt-2 text-xs text-base-content/45 flex items-center gap-1.5">
                     <BrandIcon name="youtube" size={12} className="shrink-0" />
@@ -483,7 +506,7 @@ export default function Accounts() {
 }
 
 // Per-channel queue size + runway (how many days the library lasts at its posting rate).
-function QueueInfo({ count, schedule, enabled }: { count?: number; schedule: string[]; enabled: boolean }) {
+function QueueInfo({ count, runwayDays, schedule, enabled }: { count?: number; runwayDays: number | null; schedule: string[]; enabled: boolean }) {
   const { t } = useT();
   if (count == null) return <div className="mt-2 text-xs text-base-content/40">{t("accounts.queueLoading")}</div>;
   const perDay = enabled ? schedule.length : 0;
@@ -497,7 +520,8 @@ function QueueInfo({ count, schedule, enabled }: { count?: number; schedule: str
         <span className="text-base-content/50">{t("accounts.noSchedule")}</span>
       ) : (
         (() => {
-          const days = Math.ceil(count / perDay);
+          const days = runwayDays == null ? null : Math.ceil(runwayDays);
+          if (days == null) return null;
           const cls = days <= 0 ? "text-error" : days < 3 ? "text-warning" : "text-success";
           return (
             <span className={`inline-flex items-center gap-1.5 ${cls}`}>
@@ -512,10 +536,9 @@ function QueueInfo({ count, schedule, enabled }: { count?: number; schedule: str
   );
 }
 
-function SourceInfo({ sources, schedule, enabled }: { sources: AccountSourceStat[]; schedule: string[]; enabled: boolean }) {
+function SourceInfo({ sources }: { sources: AccountSourceStat[] }) {
   const { t } = useT();
   if (!sources.length) return null;
-  const perDay = enabled ? schedule.length : 0;
   return (
     <div className="mt-3 rounded-md border border-base-200 bg-base-200/35 px-2.5 py-2">
       <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-base-content/45">
@@ -524,7 +547,7 @@ function SourceInfo({ sources, schedule, enabled }: { sources: AccountSourceStat
       </div>
       <div className="flex flex-wrap gap-1.5">
         {sources.map((source) => {
-          const days = perDay > 0 && source.available != null ? Math.ceil(source.available / perDay) : null;
+          const days = source.runwayDays == null ? null : Math.ceil(source.runwayDays);
           return (
             <span key={source.id} className="badge badge-outline badge-sm max-w-full gap-1 py-3" title={source.title}>
               {source.lang && <span className="badge badge-ghost badge-xs">{langTag(source.lang)}</span>}

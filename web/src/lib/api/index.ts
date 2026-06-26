@@ -102,11 +102,11 @@ export const apiClient = {
       "POST",
       { count, ...(accountIds ? { accountIds } : {}), ...(sourceWeights ? { sourceWeights } : {}) },
     ),
-  normalizeChannelThemeBlock: (blockId: string, accountIds?: number[], sourceWeights?: Record<string, number>) =>
+  normalizeChannelThemeBlock: (blockId: string, accountIds?: number[], sourceWeights?: Record<string, number>, targetRunwayDays?: number) =>
     send<ChannelThemeBlockNormalizeResult>(
       `/super-admin/channel-blocks/${encodeURIComponent(blockId)}/normalize`,
       "POST",
-      { ...(accountIds ? { accountIds } : {}), ...(sourceWeights ? { sourceWeights } : {}) },
+      { ...(accountIds ? { accountIds } : {}), ...(sourceWeights ? { sourceWeights } : {}), ...(targetRunwayDays ? { targetRunwayDays } : {}) },
     ),
   setChannelThemeBlockSchedule: (blockId: string, perDay: number, accountIds?: number[], sourceWeights?: Record<string, number>) =>
     send<ChannelThemeBlockScheduleResult>(

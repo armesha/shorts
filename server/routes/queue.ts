@@ -13,6 +13,26 @@ function deckCounts(db: Db, account: Account): Record<string, number> {
   return counts;
 }
 
+function scheduledCountsByDeck(account: Account, deps: RouteDeps): Record<string, number> {
+  const sources = deps.deckAccess.accountSourceDecks(account);
+  const counts: Record<string, number> = Object.fromEntries(sources.map((deckId) => [deckId, 0]));
+  for (const [index, time] of (account.schedule ?? []).entries()) {
+    const explicit = account.slotDecks?.[time];
+    const deckId = explicit || sources[index % Math.max(1, sources.length)] || account.lang;
+    if (deckId) counts[deckId] = (counts[deckId] ?? 0) + 1;
+  }
+  return counts;
+}
+
+function runwayDays(byDeck: Record<string, number>, scheduledByDeck: Record<string, number>, queued: number, postsPerDay: number): number | null {
+  if (postsPerDay <= 0) return null;
+  const values = Object.entries(scheduledByDeck)
+    .filter(([, perDay]) => perDay > 0)
+    .map(([deckId, perDay]) => Math.max(0, byDeck[deckId] ?? 0) / perDay)
+    .filter((value) => Number.isFinite(value));
+  return values.length ? Math.min(...values) : queued / postsPerDay;
+}
+
 function nextSlots(accounts: Account[], deps: RouteDeps, limit = 40) {
   const now = new Date();
   const horizonMs = 48 * 60 * 60 * 1000;
@@ -76,6 +96,7 @@ export function registerQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       const byDeck = deckCounts(db, account);
       const queued = Object.values(byDeck).reduce((sum, n) => sum + n, 0);
       const postsPerDay = account.schedule?.length ?? 0;
+      const scheduledByDeck = scheduledCountsByDeck(account, deps);
       return {
         accountId: account.id,
         channelName: account.channelName,
@@ -85,9 +106,10 @@ export function registerQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDep
         schedule: account.schedule ?? [],
         sourceDecks: deps.deckAccess.accountSourceDecks(account),
         byDeck,
+        scheduledByDeck,
         queued,
         postsPerDay,
-        runwayDays: postsPerDay > 0 ? queued / postsPerDay : null,
+        runwayDays: runwayDays(byDeck, scheduledByDeck, queued, postsPerDay),
       };
     });
 

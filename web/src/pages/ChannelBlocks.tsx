@@ -1,6 +1,14 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { apiClient, type Account, type ChannelThemeBlock, type ChannelThemeBlockAccount, type ChannelThemeBlocksResponse, type OAuthClient } from "../lib/api";
+import {
+  apiClient,
+  type Account,
+  type ChannelThemeBlock,
+  type ChannelThemeBlockAccount,
+  type ChannelThemeBlockNormalizeResult,
+  type ChannelThemeBlocksResponse,
+  type OAuthClient,
+} from "../lib/api";
 import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
 import { BrandIcon } from "../components/BrandIcon";
@@ -13,7 +21,8 @@ type Props = {
 
 const DAILY_KEY_CAP = 92;
 
-type BusyState = { blockId: string; kind: "short" | "normalize" | "schedule" | "account"; lang?: string } | null;
+type BusyState = { blockId: string; kind: "short" | "normalize" | "normalize_all" | "schedule" | "account"; lang?: string } | null;
+type NormalizeShortage = NonNullable<ChannelThemeBlockNormalizeResult["shortages"]>[number] & { blockTitle?: string };
 
 type BlockDeckSummary = {
   id: string;
@@ -128,6 +137,8 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [err, setErr] = useState("");
   const [shortCount, setShortCount] = useState(1);
+  const [topUpDays, setTopUpDays] = useState(7);
+  const [topUpShortages, setTopUpShortages] = useState<NormalizeShortage[]>([]);
   const [perDay, setPerDay] = useState(12);
   const [sourceWeights, setSourceWeights] = useState<Record<string, number>>({});
   const [busy, setBusy] = useState<BusyState>(null);
@@ -203,18 +214,51 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
     }
   }
 
-  async function normalizeQueue(block: ChannelThemeBlock) {
+  async function normalizeQueue(block: ChannelThemeBlock, targetDays = topUpDays) {
     setBusy({ blockId: block.id, kind: "normalize" });
     setNotice("");
+    setTopUpShortages([]);
     try {
-      const res = await apiClient.normalizeChannelThemeBlock(block.id, undefined, block.sourceGroups.length ? sourceWeights : undefined);
+      const res = await apiClient.normalizeChannelThemeBlock(block.id, undefined, block.sourceGroups.length ? sourceWeights : undefined, targetDays);
       queue.trackJobs(res.jobs);
+      setTopUpShortages((res.shortages ?? []).map((shortage) => ({ ...shortage, blockTitle: block.title })));
       setNotice(
         t("channelBlocks.normalizeQueued", {
           jobs: res.jobs.length,
           videos: res.jobs.reduce((sum, job) => sum + job.total, 0),
           target: res.targetQueued,
           skipped: res.skipped.length,
+          shortages: res.shortages?.length ?? 0,
+        }),
+      );
+      await load();
+    } catch (e) {
+      setNotice(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function normalizeAllBlocks() {
+    if (!data) return;
+    setBusy({ blockId: "__all", kind: "normalize_all" });
+    setNotice("");
+    setTopUpShortages([]);
+    try {
+      const results: { block: ChannelThemeBlock; res: ChannelThemeBlockNormalizeResult }[] = [];
+      for (const block of data.blocks.filter((candidate) => candidate.totalAccounts > 0)) {
+        const res = await apiClient.normalizeChannelThemeBlock(block.id, undefined, undefined, topUpDays);
+        results.push({ block, res });
+        queue.trackJobs(res.jobs);
+      }
+      const shortages = results.flatMap(({ block, res }) => (res.shortages ?? []).map((shortage) => ({ ...shortage, blockTitle: block.title })));
+      setTopUpShortages(shortages);
+      setNotice(
+        t("channelBlocks.normalizeAllQueued", {
+          blocks: results.length,
+          jobs: results.reduce((sum, item) => sum + item.res.jobs.length, 0),
+          videos: results.reduce((sum, item) => sum + item.res.jobs.reduce((inner, job) => inner + job.total, 0), 0),
+          shortages: shortages.length,
         }),
       );
       await load();
@@ -299,6 +343,14 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
 
       {data && !selectedBlock && (
         <>
+          <TopUpPanel
+            days={topUpDays}
+            setDays={setTopUpDays}
+            busy={busy?.kind === "normalize_all"}
+            shortages={topUpShortages}
+            onTopUp={() => void normalizeAllBlocks()}
+          />
+
           <div className="grid gap-3">
             {data.blocks.map((block) => (
               <BlockCard key={block.id} block={block} onOpen={() => setSearchParams({ block: block.id })} />
@@ -327,6 +379,9 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
           languages={data.languages}
           shortCount={shortCount}
           setShortCount={setShortCount}
+          topUpDays={topUpDays}
+          setTopUpDays={setTopUpDays}
+          topUpShortages={topUpShortages}
           perDay={perDay}
           setPerDay={setPerDay}
           busy={busy}
@@ -339,6 +394,70 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
         />
       )}
     </div>
+  );
+}
+
+function TopUpPanel({
+  days,
+  setDays,
+  busy,
+  shortages,
+  onTopUp,
+}: {
+  days: number;
+  setDays: (value: number) => void;
+  busy: boolean;
+  shortages: NormalizeShortage[];
+  onTopUp: () => void;
+}) {
+  const { t } = useT();
+  return (
+    <section className="rounded-md border border-base-300 bg-base-100 p-4">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <h2 className="text-base font-semibold">{t("channelBlocks.topUpTitle")}</h2>
+          <p className="mt-1 text-sm text-base-content/60">{t("channelBlocks.topUpHint")}</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="flex items-center gap-2">
+            <span className="whitespace-nowrap text-xs font-semibold uppercase tracking-wide text-base-content/60">
+              {t("channelBlocks.topUpDays")}
+            </span>
+            <input
+              type="number"
+              min={1}
+              max={365}
+              className="input input-bordered input-sm w-24"
+              value={days}
+              onChange={(e) => setDays(Math.max(1, Math.min(365, Number(e.target.value) || 1)))}
+            />
+          </label>
+          <button className="btn btn-sm btn-outline gap-1 whitespace-nowrap" disabled={busy} onClick={onTopUp}>
+            {busy ? <span className="loading loading-spinner loading-xs" /> : <AppIcon name="refresh" size={14} />}
+            {t("channelBlocks.topUpButton")}
+          </button>
+        </div>
+      </div>
+      {shortages.length > 0 ? (
+        <div className="mt-3 rounded-md border border-warning/30 bg-warning/10 p-3">
+          <div className="text-sm font-semibold text-warning-content">{t("channelBlocks.shortagesTitle")}</div>
+          <div className="mt-2 grid gap-1.5">
+            {shortages.slice(0, 8).map((shortage) => (
+              <div key={`${shortage.blockTitle}-${shortage.accountId}-${shortage.deckId}`} className="text-sm text-base-content/75">
+                <span className="font-semibold">{shortage.blockTitle ? `${shortage.blockTitle} · ` : ""}{shortage.channelName}</span>
+                {" → "}
+                <span>{shortage.deckName}</span>
+                {" · "}
+                <span className="font-semibold">{t("channelBlocks.shortageMissing", { n: shortage.missing })}</span>
+              </div>
+            ))}
+            {shortages.length > 8 && <div className="text-xs text-base-content/50">+{shortages.length - 8}</div>}
+          </div>
+        </div>
+      ) : (
+        <div className="mt-3 text-xs text-base-content/45">{t("channelBlocks.shortagesNone")}</div>
+      )}
+    </section>
   );
 }
 
@@ -382,7 +501,7 @@ function BlockCard({ block, onOpen }: { block: ChannelThemeBlock; onOpen: () => 
       </div>
       <div className="grid grid-cols-2 gap-2 text-center text-xs">
         <Metric value={block.totalAccounts} label={t("channelBlocks.channels")} />
-        <Metric value={block.totalPostsPerDay} label={t("channelBlocks.postsPerDayTotal")} />
+        <Metric value={block.postsPerDay} label={t("channelBlocks.postsPerDayTotal")} />
       </div>
       <AppIcon name="chevron-right" size={18} className="justify-self-end text-base-content/40" />
     </button>
@@ -394,6 +513,9 @@ function BlockDetail({
   languages,
   shortCount,
   setShortCount,
+  topUpDays,
+  setTopUpDays,
+  topUpShortages,
   perDay,
   setPerDay,
   busy,
@@ -408,13 +530,16 @@ function BlockDetail({
   languages: ChannelThemeBlocksResponse["languages"];
   shortCount: number;
   setShortCount: (value: number) => void;
+  topUpDays: number;
+  setTopUpDays: (value: number) => void;
+  topUpShortages: NormalizeShortage[];
   perDay: number;
   setPerDay: (value: number) => void;
   busy: BusyState;
   sourceWeights: Record<string, number>;
   setSourceWeights: (value: Record<string, number>) => void;
   generateShort: (block: ChannelThemeBlock) => Promise<void>;
-  normalizeQueue: (block: ChannelThemeBlock) => Promise<void>;
+  normalizeQueue: (block: ChannelThemeBlock, targetDays?: number) => Promise<void>;
   applySchedule: (block: ChannelThemeBlock) => Promise<void>;
   addBlockAccount: (block: ChannelThemeBlock, lang: string) => Promise<void>;
 }) {
@@ -426,6 +551,7 @@ function BlockDetail({
   const range = queueRange(block);
   const canNormalize = block.totalAccounts > 1 && range.max > range.min;
   const bottleneck = blockBottleneck(block);
+  const blockShortages = topUpShortages.filter((shortage) => !shortage.blockTitle || shortage.blockTitle === block.title);
   return (
     <>
       <div className="grid gap-3 lg:grid-cols-[220px_minmax(0,1fr)_220px]">
@@ -449,8 +575,16 @@ function BlockDetail({
             <div className="mt-1 text-sm text-base-content/45">{t("channelBlocks.bottleneckNone")}</div>
           )}
         </section>
-        <MiniStat label={t("channelBlocks.postsPerDayTotal")} value={block.totalPostsPerDay} />
+        <MiniStat label={t("channelBlocks.postsPerDayTotal")} value={block.postsPerDay} />
       </div>
+
+      <TopUpPanel
+        days={topUpDays}
+        setDays={setTopUpDays}
+        busy={normalizeBusy}
+        shortages={blockShortages}
+        onTopUp={() => void normalizeQueue(block, topUpDays)}
+      />
 
       <section className="rounded-md border border-base-300 bg-base-100 p-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
@@ -486,7 +620,7 @@ function BlockDetail({
               <button
                 className="btn btn-sm btn-outline gap-1 whitespace-nowrap"
                 disabled={normalizeBusy || !canNormalize}
-                onClick={() => void normalizeQueue(block)}
+                onClick={() => void normalizeQueue(block, topUpDays)}
                 title={canNormalize ? t("channelBlocks.normalizeTitle", { target: range.max }) : t("channelBlocks.normalizeAlready")}
               >
                 {normalizeBusy ? <span className="loading loading-spinner loading-xs" /> : <AppIcon name="refresh" size={14} />}
@@ -829,9 +963,9 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
 
 function Metric({ value, label }: { value: ReactNode; label: string }) {
   return (
-    <div className="rounded bg-base-200 px-1.5 py-1">
-      <div className="font-bold leading-none">{value}</div>
-      <div className="mt-0.5 text-base-content/50">{label}</div>
+    <div className="rounded bg-base-200 px-2 py-2">
+      <div className="text-lg font-black leading-none">{value}</div>
+      <div className="mt-1 text-[11px] leading-tight text-base-content/55">{label}</div>
     </div>
   );
 }

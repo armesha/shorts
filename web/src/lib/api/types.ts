@@ -936,6 +936,16 @@ export interface ChannelThemeBlockNormalizeResult {
     currentRunwayDays?: number;
     targetRunwayDays?: number;
   }[];
+  shortages?: {
+    ownerId: number;
+    accountId: number;
+    channelName: string;
+    deckId: string;
+    deckName: string;
+    missing: number;
+    available: number;
+    needed: number;
+  }[];
 }
 
 export interface ChannelThemeBlockScheduleResult {
@@ -982,6 +992,7 @@ export interface QueueChannel {
   schedule: string[];
   sourceDecks: string[];
   byDeck: Record<string, number>;
+  scheduledByDeck?: Record<string, number>;
   queued: number;
   postsPerDay: number;
   runwayDays: number | null;
