@@ -868,6 +868,7 @@ export interface ChannelThemeBlockAccount {
   effectiveQueued?: number;
   effectiveRunwayDays?: number | null;
   queuedByDeck: Record<string, number>;
+  scheduledByDeck?: Record<string, number>;
   shortAvailable: number;
   rawShortAvailable?: number;
   sourceDecks: ChannelThemeBlockDeck[];

@@ -6,6 +6,7 @@ import type { Db, Account } from "../db.ts";
 import { DECKS, MANUAL_VIDEO_DECK } from "../../src/anecdotes/decks.ts";
 import { uid } from "../infra/auth-session.ts";
 import type { RouteDeps } from "./deps.ts";
+import { thematicBlockSlotDecksForAccount } from "./super-admin-channel-blocks.ts";
 
 const isLongVideoDeckId = (deckId: string): boolean => !!DECKS.find((deck) => deck.id === deckId)?.longVideo;
 
@@ -118,6 +119,19 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
             .send({ error: `Язык контента (${cl.toUpperCase()}) ≠ язык канала (${newChannelLang.toUpperCase()}) — выровняй их.` });
       }
       if (!sources.includes(newLang)) body.lang = sources[0] ?? newLang;
+    }
+    {
+      const schedule = Array.isArray(body.schedule) ? body.schedule : acc.schedule ?? [];
+      const sources = body.sourceDecks?.length ? body.sourceDecks : accountSourceDecks(acc);
+      const mixedAccount = {
+        ...acc,
+        ...body,
+        sourceDecks: sources,
+        schedule,
+        channelLang: (body.channelLang ?? acc.channelLang) as string,
+      } as Account;
+      const mixedSlotDecks = thematicBlockSlotDecksForAccount(db, deps, mixedAccount, schedule, sources);
+      if (mixedSlotDecks) body.slotDecks = mixedSlotDecks;
     }
     if (body.slotDecks && typeof body.slotDecks === "object" && !Array.isArray(body.slotDecks)) {
       const allowed = new Set(body.sourceDecks?.length ? body.sourceDecks : accountSourceDecks(acc));

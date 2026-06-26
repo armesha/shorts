@@ -22,6 +22,7 @@ import {
 import { uid } from "../infra/auth-session.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
 import type { RouteDeps } from "./deps.ts";
+import { thematicBlockDeckSequenceForGeneration } from "./super-admin-channel-blocks.ts";
 
 const USER_GEN_QUEUE_CAP = 100;
 
@@ -114,7 +115,7 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
     const ownerId = accountOwnerId(req, acc);
     const requestedDecks = cleanDeckIds(body.deckIds);
     const sources = accountSourceDecks(acc);
-    const deckIds = requestedDecks.length ? requestedDecks : [acc.lang];
+    let deckIds = requestedDecks.length ? requestedDecks : [acc.lang];
     for (const deckId of deckIds) {
       if (!sources.includes(deckId))
         return reply.code(400).send({ error: "Этот пак не выбран источником канала — сначала добавьте его в «Паки канала»." });
@@ -150,6 +151,16 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
             "Свободных карточек не осталось — все карточки выбранного контента уже использованы или стоят в очереди. Дождитесь окончания текущей генерации или сбросьте использованные карточки.",
         });
       total = Math.min(total, free);
+    }
+    const mixedDeckIds = thematicBlockDeckSequenceForGeneration(db, deps, ownerId, acc, deckIds, total);
+    if (mixedDeckIds) {
+      if (!mixedDeckIds.length)
+        return reply.code(400).send({
+          error:
+            "Свободных карточек для нужной пропорции блока не осталось — добейте конкретный пак или измените микс источников.",
+        });
+      deckIds = mixedDeckIds;
+      total = Math.min(total, mixedDeckIds.length);
     }
     const job = genEnqueue(uid(req), body.accountId, total, ownerId, deckIds);
     return { jobId: job.id, total: job.total };

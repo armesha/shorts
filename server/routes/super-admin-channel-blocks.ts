@@ -458,6 +458,7 @@ function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockCo
   const availableByDeck = Object.fromEntries(decks.map((deck) => [deck.id, deck.available]));
   const queuedCoverage = effectiveCapacityForSchedule(account, sourceDecks, queuedByDeck, ctx?.queuedByAccount.get(account.id) ?? sumCounts(queuedByDeck));
   const availableCoverage = effectiveCapacityForSchedule(account, sourceDecks, availableByDeck, availableForDecks(db, deps, ctx, ownerId, sourceDecks));
+  const scheduledByDeck = Object.fromEntries(scheduledCountsByDeck(account, sourceDecks));
   return {
     id: account.id,
     userId: account.userId,
@@ -475,6 +476,7 @@ function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockCo
     effectiveQueued: queuedCoverage.effective,
     effectiveRunwayDays: queuedCoverage.runwayDays,
     queuedByDeck,
+    scheduledByDeck,
     shortAvailable: availableCoverage.effective,
     rawShortAvailable: availableForDecks(db, deps, ctx, ownerId, sourceDecks),
     sourceDecks: decks,
@@ -702,6 +704,55 @@ function queuedRemainingForOwnerDeck(ownerId: number, deckId: string): number {
     }
   }
   return total;
+}
+
+function mixedBlockForAccount(deps: RouteDeps, account: Account): BlockDef | null {
+  return BLOCKS.find((block) => !!block.sourceGroups?.length && accountBelongsToBlock(deps, block, account)) ?? null;
+}
+
+export function thematicBlockSlotDecksForAccount(
+  db: Db,
+  deps: RouteDeps,
+  account: Account,
+  schedule: string[],
+  sourceDecks?: string[],
+): Record<string, string> | null {
+  const block = mixedBlockForAccount(deps, account);
+  if (!block) return null;
+  const decks = sourceDecks?.length ? sourceDecks : deps.deckAccess.accountSourceDecks(account);
+  const weights = readSourceWeights(db, block);
+  if (!activeSourceGroups(block, account, decks, weights).length) return null;
+  return slotDecksForSchedule(block, account, schedule, decks, weights);
+}
+
+export function thematicBlockDeckSequenceForGeneration(
+  db: Db,
+  deps: RouteDeps,
+  ownerId: number,
+  account: Account,
+  requestedDecks: string[],
+  count: number,
+): string[] | null {
+  const block = mixedBlockForAccount(deps, account);
+  if (!block || requestedDecks.length <= 1 || count <= 0) return null;
+  const selectedSources = deps.deckAccess.accountSourceDecks(account);
+  const requestedSet = new Set(requestedDecks);
+  const sourceDecks = selectedSources.filter((deckId) => requestedSet.has(deckId));
+  if (sourceDecks.length <= 1 || !sameDeckSet(unique(sourceDecks), unique(requestedDecks))) return null;
+
+  const weights = readSourceWeights(db, block);
+  if (!activeSourceGroups(block, account, sourceDecks, weights).length) return null;
+
+  const queuedByDeck = videosByDeck(db.listVideos(account.id));
+  const normalizedSlotDecks =
+    account.schedule?.length ? slotDecksForSchedule(block, account, account.schedule, sourceDecks, weights) : account.slotDecks;
+  const plannedAccount = { ...account, slotDecks: normalizedSlotDecks };
+  const targetQueued = sumCounts(queuedByDeck) + count;
+  let sequence = account.schedule?.length ? deckDeficitSequence(plannedAccount, sourceDecks, queuedByDeck, targetQueued) : [];
+  if (sequence.length < count) sequence = [...sequence, ...weightedDeckSlots(block, account, sourceDecks, weights, count - sequence.length)];
+  sequence = sequence.slice(0, count);
+  const capped = capDeckSequenceByFreeCards(db, deps, ownerId, sequence);
+  return capped;
 }
 
 function buildPayload(db: Db, deps: RouteDeps) {

@@ -57,7 +57,6 @@ export function registerAccountReadinessRoutes(app: FastifyInstance, db: Db, dep
     const readinessLimits = getReadinessLimits(db);
     const postsPerDay = account.schedule?.length ?? 0;
     const queuedVideos = videos.length;
-    const runwayDays = postsPerDay > 0 ? queuedVideos / postsPerDay : null;
     const queuedByDeck = videoCountsByDeck(db, account);
     const scheduledByDeck = scheduledCountsByDeck(account, sourceDecks);
     const deckIds = unique([
@@ -86,6 +85,10 @@ export function registerAccountReadinessRoutes(app: FastifyInstance, db: Db, dep
         status,
       };
     });
+    const scheduledRunwayDays = decks
+      .filter((deck) => deck.postsPerDay > 0 && deck.runwayDays != null && Number.isFinite(deck.runwayDays))
+      .map((deck) => deck.runwayDays as number);
+    const runwayDays = scheduledRunwayDays.length ? Math.min(...scheduledRunwayDays) : postsPerDay > 0 ? queuedVideos / postsPerDay : null;
     const blockers: string[] = [];
     const warnings: string[] = [];
 

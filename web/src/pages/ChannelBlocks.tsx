@@ -26,6 +26,14 @@ type BlockDeckSummary = {
   channels: number;
 };
 
+type DeckRunway = {
+  account: ChannelThemeBlockAccount;
+  deck: ChannelThemeBlockAccount["sourceDecks"][number];
+  queued: number;
+  postsPerDay: number;
+  days: number;
+};
+
 type OperationalAccount = Pick<Account, "enabled" | "schedule" | "uploadsToday" | "oauthClientId">;
 
 let channelBlocksCache: ChannelThemeBlocksResponse | null = null;
@@ -77,6 +85,38 @@ function queueRange(block: ChannelThemeBlock): { min: number; max: number } {
     min: Math.min(...accounts.map((account) => account.effectiveQueued ?? account.queued)),
     max: Math.max(...accounts.map((account) => account.queued)),
   };
+}
+
+function deckRunways(account: ChannelThemeBlockAccount): DeckRunway[] {
+  return account.sourceDecks
+    .map((deck) => {
+      const postsPerDay = Number(account.scheduledByDeck?.[deck.id] ?? 0);
+      if (postsPerDay <= 0) return null;
+      const queued = Number(account.queuedByDeck?.[deck.id] ?? deck.queued ?? 0);
+      return {
+        account,
+        deck,
+        queued,
+        postsPerDay,
+        days: queued / postsPerDay,
+      };
+    })
+    .filter((item): item is DeckRunway => !!item && Number.isFinite(item.days))
+    .sort((a, b) => a.days - b.days || a.deck.name.localeCompare(b.deck.name));
+}
+
+function accountBottleneck(account: ChannelThemeBlockAccount): DeckRunway | null {
+  return deckRunways(account)[0] ?? null;
+}
+
+function blockBottleneck(block: ChannelThemeBlock): DeckRunway | null {
+  return accountsInBlock(block)
+    .flatMap((account) => deckRunways(account))
+    .sort((a, b) => a.days - b.days || a.account.channelName.localeCompare(b.account.channelName))[0] ?? null;
+}
+
+function deckDisplayName(deck: ChannelThemeBlockAccount["sourceDecks"][number]): string {
+  return deck.groupTitle || deck.name;
 }
 
 export default function ChannelBlocks({ onShowClassic }: Props) {
@@ -304,11 +344,11 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
 
 function BlockCard({ block, onOpen }: { block: ChannelThemeBlock; onOpen: () => void }) {
   const { t } = useT();
-  const decks = deckSummaries(block);
+  const bottleneck = blockBottleneck(block);
   return (
     <button
       type="button"
-      className="grid gap-3 rounded-md border border-base-300 bg-base-100 p-4 text-left transition-colors hover:border-primary/50 hover:bg-base-200/30 md:grid-cols-[minmax(220px,1fr)_440px_minmax(260px,1.4fr)_24px] md:items-center"
+      className="grid gap-3 rounded-md border border-base-300 bg-base-100 p-4 text-left transition-colors hover:border-primary/50 hover:bg-base-200/30 lg:grid-cols-[minmax(220px,1fr)_190px_minmax(280px,1.5fr)_220px_24px] lg:items-center"
       onClick={onOpen}
     >
       <div className="min-w-0">
@@ -317,25 +357,32 @@ function BlockCard({ block, onOpen }: { block: ChannelThemeBlock; onOpen: () => 
           <span className="badge badge-ghost badge-sm">{block.totalAccounts}</span>
         </div>
       </div>
-      <div className="grid grid-cols-4 gap-2 text-center text-xs">
-        <Metric value={block.queued} label={t("channelBlocks.metricQueued")} />
-        <Metric value={block.shortAvailable} label={t("channelBlocks.metricShort")} />
-        <Metric value={block.postsPerDay} label={t("channelBlocks.postsPerDay")} />
-        <Metric value={formatRunwayDays(block.runwayDays)} label={t("channelBlocks.runwayDays")} />
+      <div className="rounded bg-base-200 px-3 py-2">
+        <div className="text-2xl font-bold leading-none">{formatRunwayDays(block.runwayDays)}</div>
+        <div className="mt-1 text-xs text-base-content/55">{t("channelBlocks.runwayNoGeneration")}</div>
       </div>
-      <div className="flex min-w-0 flex-wrap gap-1">
-        {decks.length === 0 ? (
-          <span className="text-xs text-base-content/35">{t("channelBlocks.noDecks")}</span>
+      <div className="min-w-0">
+        <div className="text-xs font-semibold uppercase tracking-wide text-base-content/45">{t("channelBlocks.bottleneck")}</div>
+        {bottleneck ? (
+          <>
+            <div className="mt-1 truncate text-sm font-semibold" title={`${bottleneck.account.channelName} → ${deckDisplayName(bottleneck.deck)}`}>
+              {bottleneck.account.channelName} → {deckDisplayName(bottleneck.deck)}
+            </div>
+            <div className="mt-1 text-xs text-base-content/60">
+              {t("channelBlocks.bottleneckMeta", {
+                queued: bottleneck.queued,
+                perDay: bottleneck.postsPerDay,
+                days: formatRunwayDays(bottleneck.days),
+              })}
+            </div>
+          </>
         ) : (
-          decks.slice(0, 5).map((deck) => (
-            <span key={deck.id} className="inline-flex max-w-full items-center gap-1 border border-base-300 bg-base-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase leading-none">
-              {deck.lang && <span className="shrink-0 text-base-content/45">{langTag(deck.lang)}</span>}
-              <span className="truncate">{deck.name}</span>
-              <span className="shrink-0 text-base-content/50">· {deck.available}</span>
-            </span>
-          ))
+          <div className="mt-1 text-sm text-base-content/45">{t("channelBlocks.bottleneckNone")}</div>
         )}
-        {decks.length > 5 && <span className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold text-base-content/50">+{decks.length - 5}</span>}
+      </div>
+      <div className="grid grid-cols-2 gap-2 text-center text-xs">
+        <Metric value={block.totalAccounts} label={t("channelBlocks.channels")} />
+        <Metric value={block.totalPostsPerDay} label={t("channelBlocks.postsPerDayTotal")} />
       </div>
       <AppIcon name="chevron-right" size={18} className="justify-self-end text-base-content/40" />
     </button>
@@ -378,14 +425,31 @@ function BlockDetail({
   const decks = deckSummaries(block);
   const range = queueRange(block);
   const canNormalize = block.totalAccounts > 1 && range.max > range.min;
+  const bottleneck = blockBottleneck(block);
   return (
     <>
-      <div className="grid gap-3 md:grid-cols-5">
-        <MiniStat label={t("channelBlocks.channels")} value={block.totalAccounts} />
-        <MiniStat label={t("channelBlocks.queued")} value={block.queued} />
-        <MiniStat label={t("channelBlocks.shortLeft")} value={block.shortAvailable} />
-        <MiniStat label={t("channelBlocks.postsPerDay")} value={block.postsPerDay} />
-        <MiniStat label={t("channelBlocks.runwayDays")} value={formatRunwayDays(block.runwayDays)} />
+      <div className="grid gap-3 lg:grid-cols-[220px_minmax(0,1fr)_220px]">
+        <MiniStat label={t("channelBlocks.runwayNoGeneration")} value={formatRunwayDays(block.runwayDays)} />
+        <section className="rounded-md border border-base-300 bg-base-100 px-4 py-3">
+          <div className="text-xs font-semibold uppercase tracking-wide text-base-content/45">{t("channelBlocks.bottleneck")}</div>
+          {bottleneck ? (
+            <div className="mt-1 min-w-0">
+              <div className="truncate text-lg font-semibold" title={`${bottleneck.account.channelName} → ${deckDisplayName(bottleneck.deck)}`}>
+                {bottleneck.account.channelName} → {deckDisplayName(bottleneck.deck)}
+              </div>
+              <div className="mt-1 text-sm text-base-content/60">
+                {t("channelBlocks.bottleneckMeta", {
+                  queued: bottleneck.queued,
+                  perDay: bottleneck.postsPerDay,
+                  days: formatRunwayDays(bottleneck.days),
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="mt-1 text-sm text-base-content/45">{t("channelBlocks.bottleneckNone")}</div>
+          )}
+        </section>
+        <MiniStat label={t("channelBlocks.postsPerDayTotal")} value={block.totalPostsPerDay} />
       </div>
 
       <section className="rounded-md border border-base-300 bg-base-100 p-4">
@@ -482,9 +546,6 @@ function BlockDetail({
               <span key={deck.id} className="badge badge-outline gap-1 py-3">
                 {deck.lang && <span className="badge badge-ghost badge-xs">{langTag(deck.lang)}</span>}
                 <span>{deck.name}</span>
-                <span className="opacity-60">
-                  · {deck.available} / {deck.queued}
-                </span>
               </span>
             ))
           )}
@@ -712,6 +773,7 @@ function SourceMixSettings({
 }
 
 function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: ReturnType<typeof useT>["t"] }) {
+  const bottleneck = accountBottleneck(account);
   return (
     <Link to={`/accounts/${account.id}`} className="block rounded-md border border-base-300 bg-base-100 p-3 transition-colors hover:border-primary/50 hover:bg-base-200/30">
       <div className="flex items-start gap-2">
@@ -737,7 +799,24 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
         </div>
       </div>
 
-      <DeckLine label={t("channelBlocks.sources")} decks={account.sourceDecks} />
+      <div className="mt-3 rounded bg-base-200/70 px-2 py-2">
+        <div className="flex items-baseline justify-between gap-2">
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-base-content/45">{t("channelBlocks.runwayNoGeneration")}</span>
+          <span className="text-sm font-bold">{formatRunwayDays(account.effectiveRunwayDays ?? null)}</span>
+        </div>
+        {bottleneck ? (
+          <div className="mt-1 text-[11px] leading-snug text-base-content/60">
+            {t("channelBlocks.channelBottleneck", {
+              deck: deckDisplayName(bottleneck.deck),
+              queued: bottleneck.queued,
+              perDay: bottleneck.postsPerDay,
+              days: formatRunwayDays(bottleneck.days),
+            })}
+          </div>
+        ) : (
+          <div className="mt-1 text-[11px] text-base-content/40">{t("channelBlocks.bottleneckNone")}</div>
+        )}
+      </div>
       {account.authError && (
         <div className="mt-2 flex items-start gap-1 text-[11px] leading-snug text-error">
           <AppIcon name="warning" size={12} className="mt-0.5 shrink-0" />
@@ -753,34 +832,6 @@ function Metric({ value, label }: { value: ReactNode; label: string }) {
     <div className="rounded bg-base-200 px-1.5 py-1">
       <div className="font-bold leading-none">{value}</div>
       <div className="mt-0.5 text-base-content/50">{label}</div>
-    </div>
-  );
-}
-
-function DeckLine({ label, decks }: { label: string; decks: ChannelThemeBlockAccount["sourceDecks"] }) {
-  if (!decks.length) return null;
-  const visibleDecks = [...decks.reduce((map, deck) => {
-    const key = deck.groupId ? `group:${deck.groupId}` : deck.id;
-    const cur = map.get(key);
-    if (cur) {
-      cur.available += deck.available;
-      cur.queued += deck.queued;
-    } else {
-      map.set(key, { ...deck, id: key, name: deck.groupTitle || deck.name });
-    }
-    return map;
-  }, new Map<string, ChannelThemeBlockAccount["sourceDecks"][number]>()).values()];
-  return (
-    <div className="mt-2">
-      <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-base-content/40">{label}</div>
-      <div className="grid gap-1">
-        {visibleDecks.map((deck) => (
-          <span key={deck.id} className="flex min-w-0 items-center justify-between gap-2 border border-base-300 bg-base-100 px-2 py-1 text-[11px] leading-none" title={`${deck.name}: ${deck.available}`}>
-            <span className="truncate font-semibold uppercase">{deck.name}</span>
-            <span className="shrink-0 text-base-content/55">· {deck.available}</span>
-          </span>
-        ))}
-      </div>
     </div>
   );
 }
