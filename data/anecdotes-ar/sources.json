@@ -1,18 +1,34 @@
 {
   "licenseNote": "Underlying works are public-domain by author age. Text was extracted from Arabic Wikisource; keep source URLs and Wikisource CC BY-SA attribution/share-alike notice when publishing outside this app.",
-  "generatedAt": "2026-06-26T03:14:12.485Z",
+  "generatedAt": "2026-06-26T05:01:21.161Z",
   "sourceCounts": [
     {
       "id": "al-bukhala-wikisource",
       "title": "البخلاء",
+      "pages": 1,
       "bases": 380,
-      "selected": 60
+      "selected": 63
     },
     {
       "id": "al-tatfil-wikisource",
       "title": "التطفيل وحكايات الطفيليين وأخبارهم ونوادر كلامهم وأشعارهم",
+      "pages": 1,
       "bases": 219,
-      "selected": 11
+      "selected": 12
+    },
+    {
+      "id": "al-iqd-al-farid-part-2-wikisource",
+      "title": "العقد الفريد - الجزء الثاني",
+      "pages": 31,
+      "bases": 1025,
+      "selected": 18
+    },
+    {
+      "id": "al-bayan-wa-al-tabyin-wikisource",
+      "title": "البيان والتبيين",
+      "pages": 1,
+      "bases": 313,
+      "selected": 1
     }
   ],
   "sources": [
@@ -32,6 +48,57 @@
       "author": "الخطيب البغدادي",
       "authorDied": "1071",
       "sourceUrl": "https://ar.wikisource.org/wiki/%D8%A7%D9%84%D8%AA%D8%B7%D9%81%D9%8A%D9%84_%D9%88%D8%AD%D9%83%D8%A7%D9%8A%D8%A7%D8%AA_%D8%A7%D9%84%D8%B7%D9%81%D9%8A%D9%84%D9%8A%D9%8A%D9%86_%D9%88%D8%A3%D8%AE%D8%A8%D8%A7%D8%B1%D9%87%D9%85_%D9%88%D9%86%D9%88%D8%A7%D8%AF%D8%B1_%D9%83%D9%84%D8%A7%D9%85%D9%87%D9%85_%D9%88%D8%A3%D8%B4%D8%B9%D8%A7%D8%B1%D9%87%D9%85",
+      "rights": "Original author is public-domain by age. Text extracted from Arabic Wikisource; keep attribution/source URL and CC BY-SA notice from Wikisource."
+    },
+    {
+      "id": "al-iqd-al-farid-part-2-wikisource",
+      "page": "العقد الفريد/الجزء الثاني",
+      "pages": [
+        "العقد الفريد/الجزء الثاني/1",
+        "العقد الفريد/الجزء الثاني/2",
+        "العقد الفريد/الجزء الثاني/3",
+        "العقد الفريد/الجزء الثاني/4",
+        "العقد الفريد/الجزء الثاني/5",
+        "العقد الفريد/الجزء الثاني/6",
+        "العقد الفريد/الجزء الثاني/7",
+        "العقد الفريد/الجزء الثاني/8",
+        "العقد الفريد/الجزء الثاني/9",
+        "العقد الفريد/الجزء الثاني/10",
+        "العقد الفريد/الجزء الثاني/11",
+        "العقد الفريد/الجزء الثاني/12",
+        "العقد الفريد/الجزء الثاني/13",
+        "العقد الفريد/الجزء الثاني/14",
+        "العقد الفريد/الجزء الثاني/15",
+        "العقد الفريد/الجزء الثاني/16",
+        "العقد الفريد/الجزء الثاني/17",
+        "العقد الفريد/الجزء الثاني/18",
+        "العقد الفريد/الجزء الثاني/19",
+        "العقد الفريد/الجزء الثاني/20",
+        "العقد الفريد/الجزء الثاني/21",
+        "العقد الفريد/الجزء الثاني/22",
+        "العقد الفريد/الجزء الثاني/23",
+        "العقد الفريد/الجزء الثاني/24",
+        "العقد الفريد/الجزء الثاني/25",
+        "العقد الفريد/الجزء الثاني/26",
+        "العقد الفريد/الجزء الثاني/27",
+        "العقد الفريد/الجزء الثاني/28",
+        "العقد الفريد/الجزء الثاني/29",
+        "العقد الفريد/الجزء الثاني/30",
+        "العقد الفريد/الجزء الثاني/31"
+      ],
+      "title": "العقد الفريد - الجزء الثاني",
+      "author": "ابن عبد ربه",
+      "authorDied": "940",
+      "sourceUrl": "https://ar.wikisource.org/wiki/%D8%A7%D9%84%D8%B9%D9%82%D8%AF_%D8%A7%D9%84%D9%81%D8%B1%D9%8A%D8%AF/%D8%A7%D9%84%D8%AC%D8%B2%D8%A1_%D8%A7%D9%84%D8%AB%D8%A7%D9%86%D9%8A",
+      "rights": "Original author is public-domain by age. Text extracted from Arabic Wikisource subpages; keep attribution/source URLs and CC BY-SA notice from Wikisource."
+    },
+    {
+      "id": "al-bayan-wa-al-tabyin-wikisource",
+      "page": "البيان والتبيين",
+      "title": "البيان والتبيين",
+      "author": "الجاحظ",
+      "authorDied": "868/869",
+      "sourceUrl": "https://ar.wikisource.org/wiki/%D8%A7%D9%84%D8%A8%D9%8A%D8%A7%D9%86_%D9%88%D8%A7%D9%84%D8%AA%D8%A8%D9%8A%D9%8A%D9%86",
       "rights": "Original author is public-domain by age. Text extracted from Arabic Wikisource; keep attribution/source URL and CC BY-SA notice from Wikisource."
     }
   ],

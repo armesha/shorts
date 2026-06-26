@@ -4,7 +4,8 @@ import { resolve } from "node:path";
 
 const OUT_DIR = resolve(process.cwd(), "data/anecdotes-ar");
 const PACK_SIZE = 300;
-const TARGET = 90;
+const TARGET = 120;
+const MAX_CARDS_PER_BASE = 2;
 
 const SOURCES = [
   {
@@ -25,6 +26,28 @@ const SOURCES = [
     authorDied: "1071",
     sourceUrl:
       "https://ar.wikisource.org/wiki/%D8%A7%D9%84%D8%AA%D8%B7%D9%81%D9%8A%D9%84_%D9%88%D8%AD%D9%83%D8%A7%D9%8A%D8%A7%D8%AA_%D8%A7%D9%84%D8%B7%D9%81%D9%8A%D9%84%D9%8A%D9%8A%D9%86_%D9%88%D8%A3%D8%AE%D8%A8%D8%A7%D8%B1%D9%87%D9%85_%D9%88%D9%86%D9%88%D8%A7%D8%AF%D8%B1_%D9%83%D9%84%D8%A7%D9%85%D9%87%D9%85_%D9%88%D8%A3%D8%B4%D8%B9%D8%A7%D8%B1%D9%87%D9%85",
+    rights:
+      "Original author is public-domain by age. Text extracted from Arabic Wikisource; keep attribution/source URL and CC BY-SA notice from Wikisource.",
+  },
+  {
+    id: "al-iqd-al-farid-part-2-wikisource",
+    page: "العقد الفريد/الجزء الثاني",
+    pages: Array.from({ length: 31 }, (_, index) => `العقد الفريد/الجزء الثاني/${index + 1}`),
+    title: "العقد الفريد - الجزء الثاني",
+    author: "ابن عبد ربه",
+    authorDied: "940",
+    sourceUrl:
+      "https://ar.wikisource.org/wiki/%D8%A7%D9%84%D8%B9%D9%82%D8%AF_%D8%A7%D9%84%D9%81%D8%B1%D9%8A%D8%AF/%D8%A7%D9%84%D8%AC%D8%B2%D8%A1_%D8%A7%D9%84%D8%AB%D8%A7%D9%86%D9%8A",
+    rights:
+      "Original author is public-domain by age. Text extracted from Arabic Wikisource subpages; keep attribution/source URLs and CC BY-SA notice from Wikisource.",
+  },
+  {
+    id: "al-bayan-wa-al-tabyin-wikisource",
+    page: "البيان والتبيين",
+    title: "البيان والتبيين",
+    author: "الجاحظ",
+    authorDied: "868/869",
+    sourceUrl: "https://ar.wikisource.org/wiki/%D8%A7%D9%84%D8%A8%D9%8A%D8%A7%D9%86_%D9%88%D8%A7%D9%84%D8%AA%D8%A8%D9%8A%D9%8A%D9%86",
     rights:
       "Original author is public-domain by age. Text extracted from Arabic Wikisource; keep attribution/source URL and CC BY-SA notice from Wikisource.",
   },
@@ -86,6 +109,11 @@ const BLOCKED_TERMS = [
   "سوره",
   "ايه",
   "عباده",
+  "سجد",
+  "سجود",
+  "اغفر",
+  "ذنب",
+  "المعاد",
   "المومن",
   "خليفه",
   "خلافه",
@@ -144,6 +172,10 @@ const BLOCKED_TERMS = [
   "بنت",
   "فتاه",
   "عرس",
+  "زفاف",
+  "امك",
+  "ابيك",
+  "ابوك",
   "خمر",
   "نبيذ",
   "سكر",
@@ -217,6 +249,15 @@ const NON_CARD_TERMS = [
   "مذهب",
   "اذا مدحوا",
   "اذا قالوا",
+  "وقالوا",
+  "ومنه",
+  "معناه",
+  "يعنون",
+  "تصغير",
+  "بالفتح",
+  "تصديق المثل",
+  "الانصراف بحاجه",
+  "مداراه الناس",
   "وللمزح",
   "العيوب",
   "الفتنه",
@@ -265,6 +306,8 @@ const TITLE_WORDS = [
   "نادرة قصيرة",
   "ضحكة قديمة",
 ];
+
+const sleep = (ms) => new Promise((resolvePromise) => setTimeout(resolvePromise, ms));
 
 function normalizeArabic(text) {
   return text
@@ -317,7 +360,7 @@ async function fetchWikisourceText(page) {
   })) {
     url.searchParams.set(key, value);
   }
-  for (let attempt = 1; attempt <= 6; attempt++) {
+  for (let attempt = 1; attempt <= 10; attempt++) {
     const res = await fetch(url, {
       headers: { "user-agent": "shareboard-arabic-jokes-builder/1.0" },
       signal: AbortSignal.timeout(25_000),
@@ -326,10 +369,11 @@ async function fetchWikisourceText(page) {
       const json = await res.json();
       return decodeHtml(json.parse?.text?.["*"] ?? "");
     }
-    if (![429, 500, 502, 503, 504].includes(res.status) || attempt === 6) {
+    if (![429, 500, 502, 503, 504].includes(res.status) || attempt === 10) {
       throw new Error(`Wikisource ${page}: ${res.status}`);
     }
-    await new Promise((resolvePromise) => setTimeout(resolvePromise, 1_500 * attempt));
+    const retryAfter = Number(res.headers.get("retry-after"));
+    await sleep(Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter * 1000 : (res.status === 429 ? 8_000 : 1_500) * attempt);
   }
   throw new Error(`Wikisource ${page}: exhausted retries`);
 }
@@ -428,6 +472,20 @@ function isSafeCard(text) {
   return true;
 }
 
+function tooSimilar(a, b) {
+  const first = stableKey(a);
+  const second = stableKey(b);
+  if (first.includes(second) || second.includes(first)) return true;
+  const firstWords = new Set(first.split(/\s+/).filter((word) => word.length > 2));
+  const secondWords = new Set(second.split(/\s+/).filter((word) => word.length > 2));
+  if (firstWords.size === 0 || secondWords.size === 0) return true;
+  let shared = 0;
+  for (const word of firstWords) {
+    if (secondWords.has(word)) shared++;
+  }
+  return shared / Math.min(firstWords.size, secondWords.size) > 0.65;
+}
+
 function stableKey(text) {
   return normalizeArabic(text)
     .replace(/[^\p{L}\p{N}]+/gu, " ")
@@ -448,22 +506,48 @@ function titleFor(index) {
   return `${TITLE_WORDS[index % TITLE_WORDS.length]} ${String(index + 1).padStart(2, "0")}`;
 }
 
+function pagesForSource(source) {
+  return Array.isArray(source.pages) && source.pages.length ? source.pages : [source.page];
+}
+
+function pageUrl(page) {
+  return `https://ar.wikisource.org/wiki/${encodeURIComponent(page).replace(/%2F/g, "/")}`;
+}
+
 const sourceCounts = [];
 const cards = [];
 for (const source of SOURCES) {
-  console.log(`fetch ${source.page}`);
-  const bases = basePieces(await fetchWikisourceText(source.page));
+  const sourcePages = pagesForSource(source);
+  let baseCount = 0;
   let selected = 0;
-  for (const [baseIndex, base] of bases.entries()) {
-    const candidates = candidateWindows(base)
-      .filter(isSafeCard)
-      .map((text) => ({ text, source, baseIndex, score: scoreCard(text) }))
-      .sort((a, b) => b.score - a.score || a.text.length - b.text.length || stableScore(a.text) - stableScore(b.text));
-    if (!candidates[0]) continue;
-    cards.push(candidates[0]);
-    selected++;
+  for (const [pageIndex, page] of sourcePages.entries()) {
+    console.log(`fetch ${source.id} ${pageIndex + 1}/${sourcePages.length}: ${page}`);
+    const bases = basePieces(await fetchWikisourceText(page));
+    baseCount += bases.length;
+    for (const [baseIndex, base] of bases.entries()) {
+      const candidates = candidateWindows(base)
+        .filter(isSafeCard)
+        .map((text) => ({
+          text,
+          source,
+          sourcePage: page,
+          sourceUrl: page === source.page ? source.sourceUrl : pageUrl(page),
+          baseIndex,
+          score: scoreCard(text),
+        }))
+        .sort((a, b) => b.score - a.score || a.text.length - b.text.length || stableScore(a.text) - stableScore(b.text));
+      const chosen = [];
+      for (const candidate of candidates) {
+        if (chosen.some((existing) => tooSimilar(existing.text, candidate.text))) continue;
+        cards.push(candidate);
+        chosen.push(candidate);
+        selected++;
+        if (chosen.length >= MAX_CARDS_PER_BASE) break;
+      }
+    }
+    await sleep(1_500);
   }
-  sourceCounts.push({ id: source.id, title: source.title, bases: bases.length, selected });
+  sourceCounts.push({ id: source.id, title: source.title, pages: sourcePages.length, bases: baseCount, selected });
 }
 
 const seen = new Set();
@@ -483,8 +567,8 @@ const titled = selected.map((card, index) => ({
   chars: card.text.length,
   title: titleFor(index),
   sourceId: card.source.id,
-  sourcePage: card.source.page,
-  sourceUrl: card.source.sourceUrl,
+  sourcePage: card.sourcePage,
+  sourceUrl: card.sourceUrl,
   curation: {
     baseIndex: card.baseIndex,
     score: card.score,
