@@ -13,6 +13,7 @@ import {
   ExternalLink,
   FileText,
   Globe2,
+  GripVertical,
   History,
   House,
   KeyRound,
@@ -51,6 +52,7 @@ export type AppIconName =
   | "clips"
   | "close"
   | "deck"
+  | "drag"
   | "errors"
   | "external"
   | "globe"
@@ -96,6 +98,7 @@ const ICONS: Record<AppIconName, LucideIcon> = {
   clips: Clapperboard,
   close: X,
   deck: BookOpen,
+  drag: GripVertical,
   errors: AlertTriangle,
   external: ExternalLink,
   globe: Globe2,

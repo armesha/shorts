@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   apiClient,
@@ -20,6 +20,63 @@ type Props = {
 };
 
 const DAILY_KEY_CAP = 92;
+const BLOCK_ORDER_KEY = "channelBlocksOrder";
+
+function readBlockOrder(): string[] {
+  try {
+    const raw = JSON.parse(localStorage.getItem(BLOCK_ORDER_KEY) || "[]");
+    return Array.isArray(raw) ? raw.filter((id): id is string => typeof id === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+// --- Pointer-based sortable for the block list ---------------------------------
+// We freeze the slot geometry at drag start, then translate the non-dragged cards
+// into the gap live (so reordering is visible in real time) while the dragged card
+// stays fully opaque and follows the cursor. Order is committed once, on drop.
+type DragSlot = { id: string; top: number; height: number; center: number };
+type DragState = {
+  id: string;
+  pointerStartY: number;
+  pointerY: number;
+  slots: DragSlot[];
+  order: string[];
+  dropping?: { finalDelta: number; newOrder: string[] };
+};
+type DragView = { newOrder: string[]; delta: number; topByIndex: number[]; order: string[]; dropping: boolean };
+
+function computeDrag(d: DragState): DragView {
+  const di = d.order.indexOf(d.id);
+  const delta = d.pointerY - d.pointerStartY;
+  const draggedCenter = (d.slots[di]?.center ?? 0) + delta;
+  const centerById = new Map(d.slots.map((s) => [s.id, s.center]));
+  const others = d.order.filter((id) => id !== d.id);
+  let insert = others.length;
+  for (let k = 0; k < others.length; k++) {
+    if (draggedCenter < (centerById.get(others[k]) ?? 0)) {
+      insert = k;
+      break;
+    }
+  }
+  const newOrder = [...others.slice(0, insert), d.id, ...others.slice(insert)];
+  return { newOrder, delta, topByIndex: d.slots.map((s) => s.top), order: d.order, dropping: false };
+}
+
+// Order server blocks by the saved drag order; unknown/new blocks keep their server position at the end.
+function orderBlocks(blocks: ChannelThemeBlock[], order: string[]): ChannelThemeBlock[] {
+  const byId = new Map(blocks.map((block) => [block.id, block]));
+  const result: ChannelThemeBlock[] = [];
+  for (const id of order) {
+    const block = byId.get(id);
+    if (block) {
+      result.push(block);
+      byId.delete(id);
+    }
+  }
+  for (const block of blocks) if (byId.has(block.id)) result.push(block);
+  return result;
+}
 
 type BusyState = { blockId: string; kind: "short" | "normalize" | "normalize_all" | "schedule" | "account"; lang?: string } | null;
 type NormalizeShortage = NonNullable<ChannelThemeBlockNormalizeResult["shortages"]>[number] & { blockTitle?: string };
@@ -144,6 +201,10 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
   const [sourceWeights, setSourceWeights] = useState<Record<string, number>>({});
   const [busy, setBusy] = useState<BusyState>(null);
   const [notice, setNotice] = useState("");
+  const [blockOrder, setBlockOrder] = useState<string[]>(readBlockOrder);
+  const [drag, setDrag] = useState<DragState | null>(null);
+  const dragRef = useRef<DragState | null>(null);
+  const itemRefs = useRef(new Map<string, HTMLDivElement>());
 
   const load = () =>
     apiClient
@@ -194,6 +255,105 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
       };
     });
   }, [accounts, selectedBlock]);
+
+  const orderedBlocks = useMemo(() => (data ? orderBlocks(data.blocks, blockOrder) : []), [data, blockOrder]);
+
+  function commitOrder(ids: string[]) {
+    setBlockOrder(ids);
+    try {
+      localStorage.setItem(BLOCK_ORDER_KEY, JSON.stringify(ids));
+    } catch {
+      /* ignore quota / privacy-mode errors */
+    }
+  }
+
+  const setItemRef = (id: string) => (el: HTMLDivElement | null) => {
+    if (el) itemRefs.current.set(id, el);
+    else itemRefs.current.delete(id);
+  };
+
+  const dragView = useMemo<DragView | null>(() => {
+    if (!drag) return null;
+    if (drag.dropping) {
+      return {
+        newOrder: drag.dropping.newOrder,
+        delta: drag.dropping.finalDelta,
+        topByIndex: drag.slots.map((s) => s.top),
+        order: drag.order,
+        dropping: true,
+      };
+    }
+    return computeDrag(drag);
+  }, [drag]);
+
+  function startDrag(e: ReactPointerEvent<HTMLElement>, blockId: string) {
+    if (e.button !== 0) return; // left button / primary touch only
+    e.preventDefault();
+    const ids = orderedBlocks.map((block) => block.id);
+    const slots: DragSlot[] = ids.map((id) => {
+      const rect = itemRefs.current.get(id)?.getBoundingClientRect();
+      const top = rect?.top ?? 0;
+      const height = rect?.height ?? 0;
+      return { id, top, height, center: top + height / 2 };
+    });
+    const next: DragState = { id: blockId, pointerStartY: e.clientY, pointerY: e.clientY, slots, order: ids };
+    dragRef.current = next;
+    setDrag(next);
+
+    const onMove = (ev: PointerEvent) => {
+      const cur = dragRef.current;
+      if (!cur || cur.dropping) return;
+      const updated = { ...cur, pointerY: ev.clientY };
+      dragRef.current = updated;
+      setDrag(updated);
+    };
+    const finish = () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+      const cur = dragRef.current;
+      if (!cur) return;
+      const view = computeDrag(cur);
+      const di = cur.order.indexOf(cur.id);
+      const ni = view.newOrder.indexOf(cur.id);
+      const finalDelta = (view.topByIndex[ni] ?? 0) - (view.topByIndex[di] ?? 0);
+      const dropState: DragState = { ...cur, dropping: { finalDelta, newOrder: view.newOrder } };
+      dragRef.current = dropState;
+      setDrag(dropState);
+      window.setTimeout(() => {
+        commitOrder(view.newOrder);
+        dragRef.current = null;
+        setDrag(null);
+      }, 190);
+    };
+    const onUp = () => finish();
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+  }
+
+  function styleFor(blockId: string): CSSProperties {
+    if (!drag || !dragView) return {};
+    if (blockId === drag.id) {
+      return {
+        transform: `translateY(${dragView.delta}px) scale(${dragView.dropping ? 1 : 1.015})`,
+        transition: dragView.dropping ? "transform 190ms cubic-bezier(0.2, 0.8, 0.2, 1)" : "none",
+        zIndex: 30,
+        position: "relative",
+        boxShadow: "0 14px 30px -10px rgba(15, 23, 42, 0.35)",
+        cursor: "grabbing",
+      };
+    }
+    const oi = dragView.order.indexOf(blockId);
+    const ni = dragView.newOrder.indexOf(blockId);
+    const ty = (dragView.topByIndex[ni] ?? 0) - (dragView.topByIndex[oi] ?? 0);
+    return {
+      transform: `translateY(${ty}px)`,
+      transition: "transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1)",
+      position: "relative",
+      zIndex: 1,
+    };
+  }
 
   useEffect(() => {
     if (!data) return;
@@ -309,7 +469,19 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
     setNotice("");
     try {
       const res = await apiClient.setChannelThemeBlockSchedule(block.id, perDay, undefined, block.sourceGroups.length ? sourceWeights : undefined);
-      setNotice(t("channelBlocks.scheduleApplied", { updated: res.updated.length, skipped: res.skipped.length }));
+      const details = res.skipped.length
+        ? " (" +
+          res.skipped
+            .map((s) => {
+              const reasonKey = `channelBlocks.skipReason.${s.reason}`;
+              let reason = t(reasonKey, { cap: s.cap ?? 0, available: s.available ?? 0 });
+              if (reason === reasonKey) reason = t("channelBlocks.skipReason.unknown", { cap: s.cap ?? 0, available: s.available ?? 0 });
+              return `${s.channelName} — ${reason}`;
+            })
+            .join("; ") +
+          ")"
+        : "";
+      setNotice(t("channelBlocks.scheduleApplied", { updated: res.updated.length, skipped: res.skipped.length, details }));
       await load();
     } catch (e) {
       setNotice(e instanceof Error ? e.message : String(e));
@@ -387,10 +559,20 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
             onTopUp={() => void normalizeAllBlocks()}
           />
 
-          <div className="grid gap-3">
-            {data.blocks.map((block) => (
-              <BlockCard key={block.id} block={block} onOpen={() => setSearchParams({ block: block.id })} />
-            ))}
+          <div className={`grid gap-3 ${drag ? "select-none" : ""}`}>
+            {orderedBlocks.map((block) => {
+              const dragging = drag?.id === block.id;
+              return (
+                <div key={block.id} ref={setItemRef(block.id)} style={styleFor(block.id)} className={blockWrapperClass(dragging)}>
+                  <BlockCard
+                    block={block}
+                    onOpen={() => setSearchParams({ block: block.id })}
+                    dragging={dragging}
+                    onHandlePointerDown={(e) => startDrag(e, block.id)}
+                  />
+                </div>
+              );
+            })}
           </div>
 
           {data.unassignedAccounts.length > 0 && (
@@ -505,15 +687,47 @@ function TopUpPanel({
   );
 }
 
-function BlockCard({ block, onOpen }: { block: ChannelThemeBlock; onOpen: () => void }) {
+// The flex row, border/lift visuals, geometry ref and transform live on the parent wrapper
+// (it owns the drag state); BlockCard is purely the handle + card content.
+function blockWrapperClass(dragging: boolean): string {
+  return [
+    "flex items-stretch overflow-hidden rounded-md border bg-base-100",
+    dragging
+      ? "border-primary/60 ring-2 ring-primary/25"
+      : "border-base-300 transition-[border-color] hover:border-primary/50",
+  ].join(" ");
+}
+
+function BlockCard({
+  block,
+  onOpen,
+  dragging,
+  onHandlePointerDown,
+}: {
+  block: ChannelThemeBlock;
+  onOpen: () => void;
+  dragging: boolean;
+  onHandlePointerDown: (e: ReactPointerEvent<HTMLElement>) => void;
+}) {
   const { t } = useT();
   const bottleneck = blockBottleneck(block);
   return (
-    <button
-      type="button"
-      className="grid gap-3 rounded-md border border-base-300 bg-base-100 p-4 text-left transition-colors hover:border-primary/50 hover:bg-base-200/30 lg:grid-cols-[minmax(220px,1fr)_190px_minmax(280px,1.5fr)_220px_24px] lg:items-center"
-      onClick={onOpen}
-    >
+    <>
+      <span
+        aria-label={t("channelBlocks.dragHandle")}
+        title={t("channelBlocks.dragHandle")}
+        onPointerDown={onHandlePointerDown}
+        className={`flex w-9 shrink-0 touch-none select-none items-center justify-center text-base-content/30 transition-colors hover:bg-base-200 hover:text-base-content/60 ${
+          dragging ? "cursor-grabbing bg-base-200 text-base-content/60" : "cursor-grab"
+        }`}
+      >
+        <AppIcon name="drag" size={16} />
+      </span>
+      <button
+        type="button"
+        className="grid min-w-0 flex-1 gap-3 p-4 text-left transition-colors hover:bg-base-200/30 lg:grid-cols-[minmax(200px,1fr)_190px_minmax(280px,1.5fr)_220px_24px] lg:items-center"
+        onClick={onOpen}
+      >
       <div className="min-w-0">
         <div className="flex items-center gap-2">
           <h2 className="truncate text-base font-semibold">{block.title}</h2>
@@ -548,7 +762,8 @@ function BlockCard({ block, onOpen }: { block: ChannelThemeBlock; onOpen: () => 
         <Metric value={block.postsPerDay} label={t("channelBlocks.postsPerDayTotal")} />
       </div>
       <AppIcon name="chevron-right" size={18} className="justify-self-end text-base-content/40" />
-    </button>
+      </button>
+    </>
   );
 }
 
