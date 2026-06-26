@@ -85,6 +85,64 @@ const JOKE_SOURCE_GROUPS: SourceGroupDef[] = [
   },
 ];
 
+const RIDDLE_VISUAL_DECK_BY_LANG: Record<string, string[]> = {
+  ru: ["visual-riddles"],
+  de: ["visual-riddles-de"],
+  en: ["visual-riddles-en"],
+};
+
+const RIDDLE_OPTICAL_DECK_BY_LANG: Record<string, string[]> = {
+  ru: ["illusions-ru"],
+  ar: ["illusions-ar"],
+  de: ["illusions-de"],
+  en: ["illusions-en"],
+  it: ["illusions-it"],
+  es: ["illusions-es"],
+  fr: ["illusions-fr"],
+  pt: ["illusions-pt"],
+  hi: ["illusions-hi"],
+  id: ["illusions-id"],
+};
+
+const RIDDLE_MIND_FLIP_DECK_BY_LANG: Record<string, string[]> = {
+  ru: ["illusions-3d"],
+  de: ["illusions-3d-de"],
+  en: ["illusions-3d-en"],
+};
+
+const RIDDLE_SOURCE_GROUPS: SourceGroupDef[] = [
+  {
+    id: "visual_riddles",
+    title: "Вижу ответ",
+    defaultWeight: 1,
+    sources: RIDDLE_VISUAL_DECK_BY_LANG,
+  },
+  {
+    id: "optical_illusions",
+    title: "Оптические иллюзии",
+    defaultWeight: 1,
+    sources: RIDDLE_OPTICAL_DECK_BY_LANG,
+  },
+  {
+    id: "mind_flip",
+    title: "Обмани свой мозг",
+    defaultWeight: 1,
+    sources: RIDDLE_MIND_FLIP_DECK_BY_LANG,
+  },
+  {
+    id: "jokes",
+    title: "Анекдоты",
+    defaultWeight: 1,
+    sources: JOKE_TEXT_DECK_BY_LANG,
+  },
+  {
+    id: "memes",
+    title: "Мемы",
+    defaultWeight: 1,
+    sources: JOKE_MEME_DECK_BY_LANG,
+  },
+];
+
 const QUOTE_STATIC_DECK_BY_LANG: Record<string, string[]> = {
   ru: ["quotes-ru"],
   ar: ["quotes-ar"],
@@ -181,16 +239,16 @@ const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
     id: ["tips-id"],
   },
   riddles_illusions: {
-    ru: ["visual-riddles", "illusions-ru", "illusions-3d"],
-    ar: ["illusions-ar"],
-    de: ["visual-riddles-de", "illusions-de", "illusions-3d-de"],
-    en: ["visual-riddles-en", "illusions-en", "illusions-3d-en"],
-    it: ["illusions-it"],
-    es: ["illusions-es"],
-    fr: ["illusions-fr"],
-    pt: ["illusions-pt"],
-    hi: ["illusions-hi"],
-    id: ["illusions-id"],
+    ru: ["visual-riddles", "illusions-ru", "illusions-3d", "ru", "memes-ru"],
+    ar: ["illusions-ar", "ar", "memes-ar"],
+    de: ["visual-riddles-de", "illusions-de", "illusions-3d-de", "de", "memes-de"],
+    en: ["visual-riddles-en", "illusions-en", "illusions-3d-en", "en", "memes-en"],
+    it: ["illusions-it", "it", "memes-it"],
+    es: ["illusions-es", "pack:chistes-es-public-domain", "memes-es"],
+    fr: ["illusions-fr", "fr", "memes-fr"],
+    pt: ["illusions-pt", "pt", "memes-pt"],
+    hi: ["illusions-hi", "hi", "memes-hi"],
+    id: ["illusions-id", "id", "memes-id"],
   },
   religion: {
     ar: ["islamic"],
@@ -238,8 +296,10 @@ const BLOCKS: BlockDef[] = [
     rules: [
       "Один визуальный ассет можно локализовать через текстовые overlays, если права на исходник проверены.",
       "Для новых языков готовить отдельные titles/labels, а не смешивать языки внутри одного ролика.",
+      "Анекдоты и мемы в этом блоке остаются отдельными источниками с настраиваемым весом, чтобы не ломать основной визуальный микс.",
     ],
     accountIds: [52, 72, 78],
+    sourceGroups: RIDDLE_SOURCE_GROUPS,
   },
   {
     id: "religion",
