@@ -1208,6 +1208,16 @@ function main() {
     createdAt: NOW,
     grants: [3, 4, 5, 7],
   };
+  const combinedSelected = [...standard.selected, ...longSelected];
+  const combinedPack = {
+    ...pack,
+    name: `Chistes ES ${combinedSelected.length}`,
+    // Custom packs render card i with template i % templates.length. Use only the roomier
+    // base long templates for the combined pack so former long jokes never land on a compact
+    // scene layout.
+    templates: longTemplates.slice(0, LONG_BASE_TEMPLATES),
+    cards: packCards(combinedSelected),
+  };
   const longReport = buildReport({
     selected: longSelected,
     targetTemplates: LONG_TARGET_TEMPLATES,
@@ -1225,7 +1235,7 @@ function main() {
   writeFileSync(resolve(LONG_ASSET_DIR, "selected-cards.json"), JSON.stringify(longSelected, null, 2));
   templates.forEach((tpl, i) => writeFileSync(resolve(TEMPLATE_DIR, `${String(i + 1).padStart(2, "0")}-${tpl.name}.json`), JSON.stringify(tpl, null, 2)));
   longTemplates.forEach((tpl, i) => writeFileSync(resolve(LONG_TEMPLATE_DIR, `${String(i + 1).padStart(2, "0")}-${tpl.name}.json`), JSON.stringify(tpl, null, 2)));
-  writeFileSync(PACK_FILE, JSON.stringify(pack, null, 2));
+  writeFileSync(PACK_FILE, JSON.stringify(combinedPack, null, 2));
   writeFileSync(LONG_PACK_FILE, JSON.stringify(longPack, null, 2));
   if (existsSync(LEGACY_PREVIEW_PACK_FILE)) unlinkSync(LEGACY_PREVIEW_PACK_FILE);
   if (existsSync(LEGACY_1000_PACK_FILE)) unlinkSync(LEGACY_1000_PACK_FILE);
@@ -1235,8 +1245,8 @@ function main() {
   console.log(`raw unsafe hits: ${report.rawStats.reduce((n, source) => n + source.unsafeHits, 0)}`);
   console.log(`accepted candidate windows: ${standard.acceptedCount}`);
   console.log(`deduped candidate windows: ${standard.dedupedCount}`);
-  console.log(`cards: ${pack.cards.length}`);
-  console.log(`templates: ${pack.templates.length}`);
+  console.log(`cards: ${combinedPack.cards.length}`);
+  console.log(`templates: ${combinedPack.templates.length}`);
   console.log(`pack: ${PACK_FILE}`);
   console.log(`long accepted candidate windows: ${long.acceptedCount}`);
   console.log(`long deduped candidate windows: ${long.dedupedCount}`);

@@ -48,7 +48,7 @@ const JOKE_TEXT_DECK_BY_LANG: Record<string, string[]> = {
   ru: ["ru"],
   de: ["de"],
   it: ["it"],
-  es: ["pack:chistes-es-public-domain", "pack:chistes-es-long"],
+  es: ["pack:chistes-es-public-domain"],
   fr: ["fr"],
   en: ["en"],
   pt: ["pt"],
