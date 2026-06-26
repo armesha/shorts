@@ -627,7 +627,8 @@ function effectiveCapacityForSchedule(
   if (totalPerDay <= 0) return { effective: Math.max(0, Math.floor(fallbackTotal)), runwayDays: null };
   const days = Math.min(...scheduled.map(([deckId, perDay]) => Math.max(0, Number(countsByDeck[deckId] ?? 0)) / perDay));
   const safeDays = Number.isFinite(days) ? days : 0;
-  return { effective: Math.floor(safeDays * totalPerDay), runwayDays: safeDays };
+  const effective = Math.floor(safeDays * totalPerDay);
+  return { effective: Math.min(effective, Math.max(0, Math.floor(fallbackTotal))), runwayDays: safeDays };
 }
 
 function deckDeficitSequence(account: Account, sourceDecks: string[], queuedByDeck: Record<string, number>, targetQueued: number): string[] {
