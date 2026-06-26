@@ -1,0 +1,38 @@
+{
+  "packFamily": "static-facts",
+  "createdAt": "2026-06-26",
+  "facts": [
+    {
+      "deck": "static-facts-en-superadmin",
+      "source": "data/fact-videos/videos.json",
+      "note": "Static card version of the existing Interesting Facts video corpus."
+    },
+    {
+      "deck": "static-facts-es-superadmin",
+      "source": "data/fact-videos-es/videos.json",
+      "note": "Static card version of the existing Spanish localized Interesting Facts video corpus."
+    }
+  ],
+  "backgrounds": [
+    {
+      "file": "assets/template-packs/static-facts/backgrounds/facts-observatory.png",
+      "type": "generated",
+      "promptSummary": "Observatory control room, star field, clean central safe zone, no text/logos."
+    },
+    {
+      "file": "assets/template-packs/static-facts/backgrounds/facts-studio.png",
+      "type": "generated",
+      "promptSummary": "Bright science studio with instruments around the edges, clean central safe zone, no text/logos."
+    },
+    {
+      "file": "assets/template-packs/static-facts/backgrounds/facts-desk.jpg",
+      "type": "generated",
+      "promptSummary": "Editorial facts still life with globe/map/technology details around the edges, clean central safe zone, no text/logos."
+    }
+  ],
+  "safetyNotes": [
+    "No external web images were imported for the backgrounds.",
+    "Backgrounds intentionally contain no readable text, logos, or watermark-like marks.",
+    "Facts are inherited from the existing fact video datasets; new factual claims were not invented for this pack."
+  ]
+}

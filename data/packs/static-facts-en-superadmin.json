@@ -1,0 +1,3792 @@
+{
+  "id": "static-facts-en-superadmin",
+  "owners": [
+    1
+  ],
+  "createdBy": 1,
+  "name": "Static Facts",
+  "lang": "en",
+  "templates": [
+    {
+      "version": 1,
+      "name": "static-facts-en-1-classic",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#091222"
+      },
+      "elements": [
+        {
+          "id": "bg",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/static-facts/backgrounds/facts-observatory.png",
+          "fit": "cover",
+          "opacity": 1
+        },
+        {
+          "id": "scrim",
+          "type": "text",
+          "x": 74,
+          "y": 108,
+          "w": 932,
+          "h": 1660,
+          "rot": 0,
+          "text": "",
+          "align": "left",
+          "bg": "rgba(7,18,36,.74)",
+          "border": "2px solid rgba(246,184,93,.48)",
+          "radius": 42,
+          "shadow": "0 28px 90px rgba(0,0,0,.42)",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          }
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 118,
+          "y": 158,
+          "w": 240,
+          "h": 58,
+          "rot": 0,
+          "text": "FACT",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 32,
+            "weight": 850,
+            "color": "#f6b85d",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 118,
+          "y": 210,
+          "w": 330,
+          "h": 36,
+          "rot": 0,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 850,
+            "color": "#f6b85d",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 112,
+          "y": 304,
+          "w": 856,
+          "h": 330,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 76,
+            "weight": 850,
+            "color": "#f8fbff",
+            "lineHeight": 1.08
+          },
+          "fitMin": 44,
+          "fitMax": 84,
+          "maxChars": 110,
+          "bullet": false,
+          "placeholder": "title"
+        },
+        {
+          "id": "text",
+          "type": "killbox",
+          "x": 128,
+          "y": 724,
+          "w": 824,
+          "h": 760,
+          "rot": 0,
+          "role": "text",
+          "padX": 42,
+          "padY": 42,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 47,
+            "weight": 650,
+            "color": "#f8fbff",
+            "lineHeight": 1.34
+          },
+          "fitMin": 28,
+          "fitMax": 52,
+          "maxChars": 820,
+          "bullet": false,
+          "placeholder": "text",
+          "bg": "rgba(2,8,20,.36)",
+          "border": "1px solid rgba(255,255,255,.16)",
+          "radius": 28,
+          "shadow": "0 18px 54px rgba(0,0,0,.25)"
+        },
+        {
+          "id": "footer",
+          "type": "text",
+          "x": 118,
+          "y": 1606,
+          "w": 844,
+          "h": 48,
+          "rot": 0,
+          "text": "source-backed fact card",
+          "align": "center",
+          "font": {
+            "family": "Inter",
+            "size": 25,
+            "weight": 650,
+            "color": "#c9d7ea",
+            "lineHeight": 1.08
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "static-facts-en-1-panel",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#091222"
+      },
+      "elements": [
+        {
+          "id": "bg",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/static-facts/backgrounds/facts-observatory.png",
+          "fit": "cover",
+          "opacity": 1
+        },
+        {
+          "id": "scrim",
+          "type": "text",
+          "x": 58,
+          "y": 132,
+          "w": 964,
+          "h": 1574,
+          "rot": 0,
+          "text": "",
+          "align": "left",
+          "bg": "rgba(7,18,36,.74)",
+          "border": "2px solid rgba(246,184,93,.48)",
+          "radius": 54,
+          "shadow": "0 28px 90px rgba(0,0,0,.42)",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          }
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 134,
+          "y": 190,
+          "w": 260,
+          "h": 58,
+          "rot": 0,
+          "text": "FACT",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 30,
+            "weight": 850,
+            "color": "#f6b85d",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 134,
+          "y": 300,
+          "w": 812,
+          "h": 258,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 70,
+            "weight": 850,
+            "color": "#f8fbff",
+            "lineHeight": 1.08
+          },
+          "fitMin": 42,
+          "fitMax": 78,
+          "maxChars": 100,
+          "bullet": false,
+          "placeholder": "title"
+        },
+        {
+          "id": "body-panel",
+          "type": "text",
+          "x": 116,
+          "y": 650,
+          "w": 848,
+          "h": 720,
+          "rot": 0,
+          "text": "",
+          "align": "left",
+          "bg": "rgba(4,12,28,.46)",
+          "border": "1px solid rgba(255,255,255,.18)",
+          "radius": 36,
+          "shadow": "0 18px 60px rgba(0,0,0,.32)",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          }
+        },
+        {
+          "id": "text",
+          "type": "killbox",
+          "x": 152,
+          "y": 704,
+          "w": 776,
+          "h": 590,
+          "rot": 0,
+          "role": "text",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 50,
+            "weight": 650,
+            "color": "#f8fbff",
+            "lineHeight": 1.3
+          },
+          "fitMin": 29,
+          "fitMax": 54,
+          "maxChars": 760,
+          "bullet": false,
+          "placeholder": "text"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 152,
+          "y": 1414,
+          "w": 776,
+          "h": 44,
+          "rot": 0,
+          "text": "━━━━━━━━━━━━",
+          "align": "center",
+          "font": {
+            "family": "Inter",
+            "size": 28,
+            "weight": 850,
+            "color": "#f6b85d",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "footer",
+          "type": "text",
+          "x": 118,
+          "y": 1540,
+          "w": 844,
+          "h": 48,
+          "rot": 0,
+          "text": "source-backed fact card",
+          "align": "center",
+          "font": {
+            "family": "Inter",
+            "size": 25,
+            "weight": 650,
+            "color": "#c9d7ea",
+            "lineHeight": 1.08
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "static-facts-en-2-classic",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#f8fafc"
+      },
+      "elements": [
+        {
+          "id": "bg",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/static-facts/backgrounds/facts-studio.png",
+          "fit": "cover",
+          "opacity": 1
+        },
+        {
+          "id": "scrim",
+          "type": "text",
+          "x": 74,
+          "y": 108,
+          "w": 932,
+          "h": 1660,
+          "rot": 0,
+          "text": "",
+          "align": "left",
+          "bg": "rgba(255,255,255,.82)",
+          "border": "2px solid rgba(15,24,39,.12)",
+          "radius": 42,
+          "shadow": "0 28px 80px rgba(20,24,34,.16)",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          }
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 118,
+          "y": 158,
+          "w": 240,
+          "h": 58,
+          "rot": 0,
+          "text": "FACT",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 32,
+            "weight": 850,
+            "color": "#0f9d8a",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 118,
+          "y": 210,
+          "w": 330,
+          "h": 36,
+          "rot": 0,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 850,
+            "color": "#0f9d8a",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 112,
+          "y": 304,
+          "w": 856,
+          "h": 330,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 76,
+            "weight": 850,
+            "color": "#101827",
+            "lineHeight": 1.08
+          },
+          "fitMin": 44,
+          "fitMax": 84,
+          "maxChars": 110,
+          "bullet": false,
+          "placeholder": "title"
+        },
+        {
+          "id": "text",
+          "type": "killbox",
+          "x": 128,
+          "y": 724,
+          "w": 824,
+          "h": 760,
+          "rot": 0,
+          "role": "text",
+          "padX": 42,
+          "padY": 42,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 47,
+            "weight": 650,
+            "color": "#101827",
+            "lineHeight": 1.34
+          },
+          "fitMin": 28,
+          "fitMax": 52,
+          "maxChars": 820,
+          "bullet": false,
+          "placeholder": "text",
+          "bg": "rgba(255,255,255,.58)",
+          "border": "1px solid rgba(15,24,39,.08)",
+          "radius": 28,
+          "shadow": "0 18px 54px rgba(20,24,34,.10)"
+        },
+        {
+          "id": "footer",
+          "type": "text",
+          "x": 118,
+          "y": 1606,
+          "w": 844,
+          "h": 48,
+          "rot": 0,
+          "text": "source-backed fact card",
+          "align": "center",
+          "font": {
+            "family": "Inter",
+            "size": 25,
+            "weight": 650,
+            "color": "#556070",
+            "lineHeight": 1.08
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "static-facts-en-2-panel",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#f8fafc"
+      },
+      "elements": [
+        {
+          "id": "bg",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/static-facts/backgrounds/facts-studio.png",
+          "fit": "cover",
+          "opacity": 1
+        },
+        {
+          "id": "scrim",
+          "type": "text",
+          "x": 58,
+          "y": 132,
+          "w": 964,
+          "h": 1574,
+          "rot": 0,
+          "text": "",
+          "align": "left",
+          "bg": "rgba(255,255,255,.82)",
+          "border": "2px solid rgba(15,24,39,.12)",
+          "radius": 54,
+          "shadow": "0 28px 80px rgba(20,24,34,.16)",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          }
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 134,
+          "y": 190,
+          "w": 260,
+          "h": 58,
+          "rot": 0,
+          "text": "FACT",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 30,
+            "weight": 850,
+            "color": "#e14f7b",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 134,
+          "y": 300,
+          "w": 812,
+          "h": 258,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 70,
+            "weight": 850,
+            "color": "#101827",
+            "lineHeight": 1.08
+          },
+          "fitMin": 42,
+          "fitMax": 78,
+          "maxChars": 100,
+          "bullet": false,
+          "placeholder": "title"
+        },
+        {
+          "id": "body-panel",
+          "type": "text",
+          "x": 116,
+          "y": 650,
+          "w": 848,
+          "h": 720,
+          "rot": 0,
+          "text": "",
+          "align": "left",
+          "bg": "rgba(255,255,255,.66)",
+          "border": "1px solid rgba(15,24,39,.10)",
+          "radius": 36,
+          "shadow": "0 18px 60px rgba(20,24,34,.12)",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          }
+        },
+        {
+          "id": "text",
+          "type": "killbox",
+          "x": 152,
+          "y": 704,
+          "w": 776,
+          "h": 590,
+          "rot": 0,
+          "role": "text",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 50,
+            "weight": 650,
+            "color": "#101827",
+            "lineHeight": 1.3
+          },
+          "fitMin": 29,
+          "fitMax": 54,
+          "maxChars": 760,
+          "bullet": false,
+          "placeholder": "text"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 152,
+          "y": 1414,
+          "w": 776,
+          "h": 44,
+          "rot": 0,
+          "text": "━━━━━━━━━━━━",
+          "align": "center",
+          "font": {
+            "family": "Inter",
+            "size": 28,
+            "weight": 850,
+            "color": "#e14f7b",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "footer",
+          "type": "text",
+          "x": 118,
+          "y": 1540,
+          "w": 844,
+          "h": 48,
+          "rot": 0,
+          "text": "source-backed fact card",
+          "align": "center",
+          "font": {
+            "family": "Inter",
+            "size": 25,
+            "weight": 650,
+            "color": "#556070",
+            "lineHeight": 1.08
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "static-facts-en-3-classic",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#f8fafc"
+      },
+      "elements": [
+        {
+          "id": "bg",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/static-facts/backgrounds/facts-desk.jpg",
+          "fit": "cover",
+          "opacity": 1
+        },
+        {
+          "id": "scrim",
+          "type": "text",
+          "x": 74,
+          "y": 108,
+          "w": 932,
+          "h": 1660,
+          "rot": 0,
+          "text": "",
+          "align": "left",
+          "bg": "rgba(255,255,255,.82)",
+          "border": "2px solid rgba(15,24,39,.12)",
+          "radius": 42,
+          "shadow": "0 28px 80px rgba(20,24,34,.16)",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          }
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 118,
+          "y": 158,
+          "w": 240,
+          "h": 58,
+          "rot": 0,
+          "text": "FACT",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 32,
+            "weight": 850,
+            "color": "#0f9d8a",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 118,
+          "y": 210,
+          "w": 330,
+          "h": 36,
+          "rot": 0,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 850,
+            "color": "#0f9d8a",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 112,
+          "y": 304,
+          "w": 856,
+          "h": 330,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 76,
+            "weight": 850,
+            "color": "#101827",
+            "lineHeight": 1.08
+          },
+          "fitMin": 44,
+          "fitMax": 84,
+          "maxChars": 110,
+          "bullet": false,
+          "placeholder": "title"
+        },
+        {
+          "id": "text",
+          "type": "killbox",
+          "x": 128,
+          "y": 724,
+          "w": 824,
+          "h": 760,
+          "rot": 0,
+          "role": "text",
+          "padX": 42,
+          "padY": 42,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 47,
+            "weight": 650,
+            "color": "#101827",
+            "lineHeight": 1.34
+          },
+          "fitMin": 28,
+          "fitMax": 52,
+          "maxChars": 820,
+          "bullet": false,
+          "placeholder": "text",
+          "bg": "rgba(255,255,255,.58)",
+          "border": "1px solid rgba(15,24,39,.08)",
+          "radius": 28,
+          "shadow": "0 18px 54px rgba(20,24,34,.10)"
+        },
+        {
+          "id": "footer",
+          "type": "text",
+          "x": 118,
+          "y": 1606,
+          "w": 844,
+          "h": 48,
+          "rot": 0,
+          "text": "source-backed fact card",
+          "align": "center",
+          "font": {
+            "family": "Inter",
+            "size": 25,
+            "weight": 650,
+            "color": "#556070",
+            "lineHeight": 1.08
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "static-facts-en-3-panel",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#f8fafc"
+      },
+      "elements": [
+        {
+          "id": "bg",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/static-facts/backgrounds/facts-desk.jpg",
+          "fit": "cover",
+          "opacity": 1
+        },
+        {
+          "id": "scrim",
+          "type": "text",
+          "x": 58,
+          "y": 132,
+          "w": 964,
+          "h": 1574,
+          "rot": 0,
+          "text": "",
+          "align": "left",
+          "bg": "rgba(255,255,255,.82)",
+          "border": "2px solid rgba(15,24,39,.12)",
+          "radius": 54,
+          "shadow": "0 28px 80px rgba(20,24,34,.16)",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          }
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 134,
+          "y": 190,
+          "w": 260,
+          "h": 58,
+          "rot": 0,
+          "text": "FACT",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 30,
+            "weight": 850,
+            "color": "#e14f7b",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 134,
+          "y": 300,
+          "w": 812,
+          "h": 258,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 70,
+            "weight": 850,
+            "color": "#101827",
+            "lineHeight": 1.08
+          },
+          "fitMin": 42,
+          "fitMax": 78,
+          "maxChars": 100,
+          "bullet": false,
+          "placeholder": "title"
+        },
+        {
+          "id": "body-panel",
+          "type": "text",
+          "x": 116,
+          "y": 650,
+          "w": 848,
+          "h": 720,
+          "rot": 0,
+          "text": "",
+          "align": "left",
+          "bg": "rgba(255,255,255,.66)",
+          "border": "1px solid rgba(15,24,39,.10)",
+          "radius": 36,
+          "shadow": "0 18px 60px rgba(20,24,34,.12)",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          }
+        },
+        {
+          "id": "text",
+          "type": "killbox",
+          "x": 152,
+          "y": 704,
+          "w": 776,
+          "h": 590,
+          "rot": 0,
+          "role": "text",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 50,
+            "weight": 650,
+            "color": "#101827",
+            "lineHeight": 1.3
+          },
+          "fitMin": 29,
+          "fitMax": 54,
+          "maxChars": 760,
+          "bullet": false,
+          "placeholder": "text"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 152,
+          "y": 1414,
+          "w": 776,
+          "h": 44,
+          "rot": 0,
+          "text": "━━━━━━━━━━━━",
+          "align": "center",
+          "font": {
+            "family": "Inter",
+            "size": 28,
+            "weight": 850,
+            "color": "#e14f7b",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "footer",
+          "type": "text",
+          "x": 118,
+          "y": 1540,
+          "w": 844,
+          "h": 48,
+          "rot": 0,
+          "text": "source-backed fact card",
+          "align": "center",
+          "font": {
+            "family": "Inter",
+            "size": 25,
+            "weight": 650,
+            "color": "#556070",
+            "lineHeight": 1.08
+          }
+        }
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "values": {
+        "title": "The Sun is so massive that one million Earths could fit inside it",
+        "text": "Every second, the Sun converts six hundred million tons of hydrogen into helium through nuclear fusion. This enormous power output has been sustaining life on Earth for the past four and a half billion years."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A day on Venus is longer than a year on Venus",
+        "text": "Venus takes two hundred and forty-three Earth days to rotate on its axis. But it only takes two hundred and twenty-five days to orbit the Sun."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Jupiter's Great Red Spot is a storm that has been raging for at least three hund",
+        "text": "red and fifty years. This giant hurricane is so enormous that three Earths could fit inside it. Wind speeds in the storm reach speeds of four hundred miles per hour."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Saturn's rings are made almost entirely of water ice particles ranging from dust",
+        "text": "sized to house-sized. These rings stretch across a distance wider than the distance from Earth to the Moon. Yet they are so thin, just ten meters thick on average, that if Saturn were the size of a marble, the rings would be invisible to the human eye."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Moon is moving away from Earth at about one and a half inches per year",
+        "text": "In about fifty billion years, the Moon will be so far away that total solar eclipses will no longer be possible. This gradual retreat has been happening since the Moon formed over four and a half billion years ago."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A black hole is so dense that not even light can escape its gravitational pull",
+        "text": "If you fell into a black hole feet-first, the gravitational difference between your feet and head would stretch you like spaghetti in a process called spaghettification. This would happen long before you actually crossed the event horizon."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Neutron stars are so dense that a teaspoon of their material would weigh as much",
+        "text": "as all of Earth's population combined. They can spin up to seven hundred times per second while maintaining their shape. Some neutron stars produce beams of radiation that sweep across space like a cosmic lighthouse."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Andromeda Galaxy is on a collision course with the Milky Way",
+        "text": "In about four and a half billion years, the two galaxies will merge to form a new elliptical galaxy. When this happens, Earth and our solar system will likely be ejected far out into space."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A year on Neptune lasts one hundred and sixty-five Earth years",
+        "text": "This ice giant orbits the Sun at an average distance of thirty times farther than Earth's distance from the Sun. Despite this great distance, strong winds in Neptune's atmosphere reach speeds of twelve hundred miles per hour."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Mars has two moons named Phobos and Deimos, which mean fear and panic in Greek",
+        "text": "Phobos is slowly spiraling closer to Mars and will eventually crash into the planet or break apart into a ring system. This catastrophic event will likely occur within the next thirty to fifty million years."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Hubble Space Telescope has discovered that the universe is not just expandin",
+        "text": "g but expanding at an accelerating rate. This acceleration is driven by a mysterious force called dark energy that makes up about sixty-eight percent of all matter and energy in the universe. Dark energy remains one of the greatest unsolved mysteries in physics."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Mercury is the closest planet to the Sun, but it is not the hottest planet in ou",
+        "text": "r solar system. Venus, which is farther from the Sun, is actually hotter because its thick atmosphere traps heat through a runaway greenhouse effect. Surface temperatures on Venus can reach nine hundred degrees Fahrenheit, hot enough to melt lead."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A supernova explosion can briefly outshine an entire galaxy containing hundreds",
+        "text": "of billions of stars. Some supernovae are so bright that they can be seen from Earth during the daytime with the naked eye. The light from these cosmic explosions can travel across billions of light-years to reach us on Earth."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The International Space Station orbits Earth every ninety minutes, meaning astro",
+        "text": "nauts experience sixteen sunrises and sixteen sunsets every twenty-four hours. The station moves at seventeen thousand five hundred miles per hour around the planet. Astronauts aboard the station are in a constant state of free fall, which is what creates the sensation of weightlessness."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Uranus rotates on its side, with a tilt of ninety-eight degrees relative to the",
+        "text": "plane of its orbit. Scientists believe that early in its history, Uranus was struck by an Earth-sized object that knocked it over. As a result, Uranus has extreme seasons that last twenty-one years each."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The observable universe contains an estimated two trillion galaxies, each with b",
+        "text": "illions or trillions of stars. This number has increased tenfold from previous estimates thanks to data from the Hubble Space Telescope. If you tried to count all these stars at one per second, it would take longer than the current age of the universe."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A parsec is the distance at which one astronomical unit subtends an angle of one",
+        "text": "arcsecond, equivalent to about three point two-six light-years. This unit is commonly used in astronomy to measure distances to nearby stars. The nearest star to Earth, Proxima Centauri, is about one point three parsecs away."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Sun's corona, its outer atmosphere, is paradoxically hotter than its surface",
+        "text": "The surface of the Sun is about ten thousand degrees Fahrenheit, but the corona can reach millions of degrees. Scientists still do not fully understand why the corona is so much hotter than the surface beneath it."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "If you were standing on the Moon, you could see Earth in the sky and watch it go",
+        "text": "through phases just like we watch the Moon go through phases. From the Moon, Earth would look like a bright blue dot about the size of a pea held at arm's length. The curvature of Earth would be clearly visible from the Moon's surface."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A light-year is the distance that light travels in one year through the vacuum o",
+        "text": "f space, equivalent to about five point nine trillion miles. When you look at a star that is one hundred light-years away, you are seeing that star as it was one hundred years ago. The oldest light we can detect from the universe has been traveling for over thirteen billion years."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Great Red Spot on Jupiter has been shrinking over the past century and is no",
+        "text": "w smaller than it was when Galileo first observed it through a telescope. This massive storm has decreased in size from about eighty thousand kilometers across to just ten thousand kilometers. Scientists are unsure whether the storm will eventually disappear completely or stabilize at its current size."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A solar flare from the Sun can release energy equivalent to millions of nuclear",
+        "text": "weapons exploding simultaneously. These powerful outbursts can disrupt power grids, damage satellites, and trigger beautiful auroras on Earth. The largest recorded solar flare occurred in September of eighteen fifty-nine and was bright enough to damage telegraph systems around the world."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Europa, one of Jupiter's moons, is covered in a thick layer of ice that may conc",
+        "text": "eal a vast ocean of liquid water beneath it. This subsurface ocean could contain more water than all of Earth's oceans combined. Scientists believe this ocean could potentially harbor extraterrestrial life forms similar to those found in Earth's deep sea vents."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Big Bang did not occur at a location in space but rather created all of spac",
+        "text": "e itself as part of the event. Time itself is thought to have begun with the Big Bang, making it meaningless to ask what happened before it. The universe has been expanding and cooling ever since this initial event roughly thirteen point eight billion years ago."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Olympus Mons on Mars is the largest volcano in the solar system, nearly three ti",
+        "text": "mes taller than Mount Everest. This massive shield volcano is so large that if you stood at its base, you could not see its summit due to the curvature of Mars. The volcano is believed to be geologically active, though it has not erupted in recent geological time."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The ocean produces more oxygen than all the rainforests combined",
+        "text": "Tiny phytoplankton in the sea are responsible for this incredible feat. Without these microscopic organisms, life on Earth would not exist."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Sperm whales can dive deeper than two miles below the surface",
+        "text": "They hunt giant squid in complete darkness down there. Their echolocation clicks are the loudest sounds made by any animal."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Octopuses have three hearts pumping blue blood through their bodies",
+        "text": "Two hearts push blood to the gills, one pumps it to the body. When an octopus swims, the heart that serves the body actually stops."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Coral reefs are among Earth's most vibrant ecosystems",
+        "text": "Despite covering less than one percent of the ocean floor, they house twenty-five percent of all marine species. A single reef can be thousands of years old."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Anglerfish live in the pitch-black depths where sunlight never reaches",
+        "text": "The females have a glowing lure dangling from their heads to attract prey. Males are so much smaller they literally fuse to the female's body."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A hammerhead shark's head is shaped like a metal detector",
+        "text": "This unique shape gives it sensory organs spread across a wider area. It can sense electrical fields from prey buried under sand."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Seahorses are the only species where the males get pregnant and give birth",
+        "text": "The female deposits her eggs into a pouch on the male's belly. He carries and nurtures them until they are ready to survive alone."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Pacific Ocean is so vast it covers an area larger than all of Earth's land c",
+        "text": "ombined. You could fit all seven continents inside its waters. It contains nearly half of all the water on our planet."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Jellyfish have existed for over five hundred million years",
+        "text": "They predate dinosaurs by two hundred million years. Some species are biologically immortal and can live forever."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Blue whales are the largest animals to ever exist on Earth",
+        "text": "Their hearts weigh as much as a car. A baby blue whale drinks fifty gallons of milk per day and gains two tons monthly."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The ocean's deepest point is the Mariana Trench at nearly thirty-seven thousand",
+        "text": "feet down. The pressure there would crush a human instantly. Fewer people have been to the bottom than have walked on the moon."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Clownfish start their lives as males, but when the dominant female dies, one mal",
+        "text": "e transforms into a female. The new female then leads the group. This remarkable sex change takes only a few weeks."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Sea turtles can navigate across entire oceans using Earth's magnetic field",
+        "text": "They return to the exact beach where they were born to lay eggs. Some migrate over twelve thousand miles throughout their lives."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Dolphins sleep with only one half of their brain at a time",
+        "text": "This lets them keep one eye open and continue breathing consciously. They must surface for air regularly unlike fish with gills."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Giant squid have eyes as large as dinner plates, the biggest eyes in the animal",
+        "text": "kingdom. They live in the deep sea and rarely encounter humans. For centuries, stories about them were considered myths."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Seahorse populations have declined by ninety-five percent due to overharvesting",
+        "text": "and pollution. Hundreds of thousands are caught annually for aquariums and traditional medicine. Many conservation efforts are now working to protect these fragile creatures."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Bioluminescence lights up the ocean like an underwater galaxy",
+        "text": "Ninety percent of deep-sea creatures produce their own light. They use it for communication, hunting, and defense against predators."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Mangrove forests are nurseries for countless fish and crustacean species",
+        "text": "They grow in shallow coastal waters and act as natural barriers to storms. Yet fifty percent of the world's mangroves have been destroyed."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Arctic terns have the longest migration of any bird, traveling forty-four thousa",
+        "text": "nd miles yearly. They fly from the North Pole to the South Pole and back annually. This journey takes them across nearly every ocean on the planet."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Moray eels have a second jaw in their throat that shoots out to grab prey",
+        "text": "This extra jaw moves independently of their main mouth. It's a unique adaptation found nowhere else in the fish world."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Cuttlefish can change their skin color and texture in milliseconds",
+        "text": "They're colorblind yet somehow match their surroundings perfectly. Scientists believe they can sense color through their skin itself."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Killer whales are the ocean's apex predators and hunt nearly every other marine",
+        "text": "mammal. Different pods have their own unique hunting techniques passed down through generations. They're the only animal that hunts great white sharks."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Sargasso Sea is a region with no land borders, bounded only by ocean current",
+        "text": "s. Sargassum seaweed floats on the surface creating floating islands of life. Millions of eels migrate there from across the Atlantic to spawn."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nudibranchs are sea slugs that steal stinging cells from their prey for their ow",
+        "text": "n defense. They come in brilliant colors warning predators of their toxicity. Some species are hermaphrodites that shoot love darts at each other before mating."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The ocean produces twenty percent of all oxygen on Earth through photosynthesis",
+        "text": "Most of this comes from microscopic algae, not seaweed or plants. We owe our every other breath to the ocean's invisible life."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your body replaces about two hundred billion red blood cells every single day",
+        "text": "That's enough new cells to fill a coffee cup. Your heart will beat roughly three billion times in your lifetime."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The human brain uses twenty percent of your body's energy despite being only two",
+        "text": "percent of your weight. That's the same power draw as a twenty-five watt light bulb running inside your skull. Your brain burns about three hundred calories per day just thinking."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "You have more bacteria living in your gut than there are stars in the Milky Way",
+        "text": "galaxy. These tiny microbes actually help you digest food and fight off infections. They weigh about as much as your entire brain."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your fingernails grow faster in the summer than in winter",
+        "text": "Cold weather slows down cell growth in your extremities by up to fifty percent. By your seventies your nails grow at only half the speed they did in childhood."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A single human hair can support the weight of an apple without breaking",
+        "text": "But a bundle of one hundred thousand hairs could support a small car. Hair is actually stronger than steel of the same thickness."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "You lose about thirty thousand skin cells every single minute",
+        "text": "That's roughly nine pounds of dead skin per year shed from your body. The dust in your house is partly made of your own dead skin cells."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The human nose can smell over one trillion different odors",
+        "text": "That's way more than the eye can see or the ear can hear. Yet we've only named about ten thousand distinct scents in all human languages."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your liver regenerates itself so completely that you can live with just twenty p",
+        "text": "ercent of it remaining. It's the only organ that can grow back to full size in just a few months. A liver removes toxins so efficiently it can process alcohol almost immediately."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The electric signals in your brain travel at speeds up to two hundred seventy mi",
+        "text": "les per hour. That's faster than a Formula One race car accelerating. When you react to danger your brain sends signals to your muscles in just one hundredth of a second."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "You are about one centimeter taller when you wake up than when you go to bed",
+        "text": "Gravity compresses the discs in your spine throughout the day. By evening you've shrunk back to normal size."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your bones are constantly breaking down and rebuilding themselves every ten year",
+        "text": "s. Your skeleton is almost completely replaced with fresh bone material. This renewal process requires calcium which your body pulls from your diet."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The human eye can detect a single photon of light in a pitch black room",
+        "text": "That's the smallest possible particle of light that exists. Your eyes can process one hundred million bits of information per second from the world around you."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "When you sleep your brain actually grows by about ten percent",
+        "text": "New neural connections form while you dream strengthening your memories and skills. Without sleep your brain starts to malfunction within just four days."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your heart pumps enough blood to fill about four thousand bathtubs every single",
+        "text": "day. If you laid out all the blood vessels in your body end to end they'd stretch sixty thousand miles. That's enough to circle the Earth two and a half times."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The human stomach produces a new lining every three to five days",
+        "text": "Stomach acid is strong enough to dissolve steel but the stomach protects itself with a special mucus coating. Your stomach makes this mucus layer constantly so it doesn't digest itself."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A newborn baby has about three hundred bones but an adult only has two hundred s",
+        "text": "ix. Some bones fuse together as you grow making the skeleton stronger but less flexible. Your smallest bone the stapes in your ear is the size of a grain of rice."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your eyes move more than one hundred thousand times per day",
+        "text": "They're constantly scanning and focusing on different objects. During each eye movement your brain creates a seamless image even though your vision technically pauses."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The cells in your tongue renewal every three days making it one of the fastest r",
+        "text": "egenerating tissues. You have about ten thousand taste buds on your tongue and throat combined. These cells send taste signals to your brain in just milliseconds."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your muscles actually get stronger while you're resting not while you're exercis",
+        "text": "ing. When you work out you create tiny tears in muscle fibers. During recovery your body repairs these tears with extra protein making muscles larger and stronger."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The human immune system produces about two million white blood cells every singl",
+        "text": "e second. These soldiers of your body fight off viruses bacteria and other invaders constantly. You're only aware of this war when you get sick enough to notice symptoms."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your hair grows about six inches per year but only on your scalp",
+        "text": "The hair on your arms and legs grows much slower at just a fraction of that speed. All the hair on your body serves to regulate temperature and protect sensitive skin."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "When you learn something new your brain physically rewires itself creating new n",
+        "text": "eural pathways. This process called neuroplasticity continues throughout your entire life. Even at age seventy your brain can form new connections and learn completely new skills."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The human body contains enough iron to make a single nail",
+        "text": "The potassium in your body is so much it could power a light bulb if you could harness it. You're literally made of the same elements found in stars and the earth."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your left lung is smaller than your right lung to make room for your heart",
+        "text": "When you breathe in and out your lungs expand and contract about twenty thousand times per day. A single breath exchanges fresh oxygen for carbon dioxide in split seconds."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The human body has a natural sleep cycle that repeats roughly every ninety minut",
+        "text": "es throughout the day. This is why you feel tired at certain times even if you slept well the night before. Understanding this rhythm helps explain why some people naturally wake up without an alarm."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Octopuses have three hearts and blue blood",
+        "text": "Two hearts pump blood to the gills, one to the body. Their blue blood contains copper instead of iron, making them smarter in cold water."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A honey badger can eat a cobra and survive the venom",
+        "text": "They have incredibly thick skin that resists snake fangs. These fearless animals will attack animals ten times their size."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Tardigrades can survive in space without protection",
+        "text": "They can withstand extreme radiation and absolute zero temperatures. These tiny creatures are tougher than any animal on Earth."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A giraffe's tongue is twenty-one inches long and black",
+        "text": "They use it to grab leaves from the tallest acacia trees. Their necks have the same number of bones as human necks."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Dolphins sleep with only half their brain at a time",
+        "text": "One side of their brain stays alert for predators and breathing. This is called unihemispheric sleep and lets them rest safely."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Mantis shrimp can see colors humans cannot even imagine",
+        "text": "They have sixteen color receptors versus our measly three. They can punch with the force of a bullet and stun prey instantly."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A sloth only poops once a week and loses thirty percent of body weight",
+        "text": "They descend from trees to the ground to defecate. This bizarre ritual puts them at risk from predators every single time."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Crows can recognize individual human faces and hold grudges",
+        "text": "They remember which people fed or threatened them. They even warn other crows about dangerous humans they've never met."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A platypus is one of the only mammals that lays eggs",
+        "text": "It also has venom, electroreception, and fluorescent fur. Scientists still don't fully understand how this creature evolved."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Sloths only come down from trees once a week to poop",
+        "text": "They move so slowly that algae grows on their fur. This green coating helps them blend into the rainforest canopy."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A chameleon's eyes move independently of each other",
+        "text": "It can see in two directions at once. They change color not for camouflage but to communicate emotions."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Hummingbirds have a heart rate of twelve hundred beats per minute",
+        "text": "Their wings flap eighty times per second. They must eat half their body weight in nectar every single day."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "An elephant can recognize itself in a mirror, a sign of true self-awareness",
+        "text": "They mourn their dead and visit graveyards of their ancestors. Elephants have incredible memories and never forget a water source."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ants can lift fifty times their own body weight",
+        "text": "A single ant is basically useless alone. But together, millions of ants build underground cities more complex than human towns."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A parrot can live seventy years in captivity and remember hundreds of words",
+        "text": "Some species can understand concepts like color and number. They form lifelong bonds with their mates like humans do."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Snakes can unhinge their jaws to swallow prey much larger than their heads",
+        "text": "Some pythons can go a full year without eating. Their teeth are replaced throughout their entire lives."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A dolphin's echolocation is so precise it can detect a fish the size of a grain",
+        "text": "of rice. They communicate with clicks and whistles in a language we still don't understand. Dolphins are one of the few animals that recognize themselves in mirrors."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Giraffes don't sleep more than two minutes at a time",
+        "text": "They only need around thirty minutes of sleep in a twenty-four hour period. Their height makes them vulnerable, so they stay alert almost constantly."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A raven can plan for the future and make tools to solve problems",
+        "text": "They are considered as smart as a seven-year-old child. Ravens will hold 'grudge ceremonies' where they harass humans they dislike."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Penguins propose to their mates with a pebble, not a ring",
+        "text": "They are one of the few animal species that practice monogamy. A penguin can swim up to twenty-two miles per hour underwater."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A blue whale's heart weighs four hundred pounds and is the size of a car",
+        "text": "Its tongue alone weighs as much as an entire elephant. Despite being the largest animal on Earth, it eats only tiny krill."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Koalas have fingerprints nearly identical to human fingerprints",
+        "text": "They sleep twenty-two hours a day because eucalyptus leaves are toxic and exhausting to digest. No other animal has such similar fingerprints to us."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A cockroach can survive for a week with its head cut off",
+        "text": "It only dies because it cannot drink water without a mouth. They've survived every mass extinction event for three hundred million years."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A woodpecker's tongue wraps around its brain to cushion impact",
+        "text": "It can peck up to twenty times per second without getting a headache. Their skulls are reinforced with special bone to handle the constant pounding."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A horse can see almost three hundred and sixty degrees around itself",
+        "text": "The only blind spot is directly in front and directly behind its nose. They can see color but not as vividly as humans do."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Roman Empire had over eight million people living in its capital city at its",
+        "text": "peak. Most of them worked jobs that still exist today: doctors, lawyers, teachers, and accountants. Rome even had fast food restaurants where workers grabbed quick meals on their way."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Cleopatra lived closer in time to the moon landing than to the building of the G",
+        "text": "reat Pyramid. The pyramid was built around twenty-six hundred BC, and Cleopatra was born in sixty-nine BC. That's a gap of two thousand five hundred years separating them in history."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ancient Egyptians invented toothpaste three thousand five hundred years ago",
+        "text": "They mixed together mint, dry flowers, pepper, and rock salt to clean their teeth. Wealthy Egyptians even had special servants called tooth cleaners who worked daily."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Great Wall of China took over two thousand years to fully build",
+        "text": "Millions of workers died during its construction across mountains and deserts. Yet from space, you cannot actually see it without zooming in closely."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Hannibal, a Carthaginian general, famously marched war elephants across the Alps",
+        "text": "to fight Rome. This route took him through snow-covered mountains for nearly six months. Most of his elephants died, but it shocked the Romans completely unprepared."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ancient Greeks invented the vending machine around two thousand years ago",
+        "text": "You dropped a coin into a slot, and it dispensed holy water at temples. The same mechanical principle powers vending machines in your city today."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "King Tutankhamun became pharaoh of Egypt when he was only nine years old",
+        "text": "He died mysteriously at eighteen, and his tomb remained hidden for three thousand years. His death mask is one of the most famous ancient artifacts ever discovered."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Roman soldiers were fed a sour wine drink called posca that they shared like wat",
+        "text": "er. It was cheap, refreshing, and thought to prevent diseases during long marches. Officers drank better wine, but posca kept the legions marching strong."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Library of Alexandria could hold nearly one million ancient scrolls and text",
+        "text": "s. When it burned down, humanity lost countless works of science, medicine, and philosophy. We will never know what knowledge disappeared when those flames consumed it."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nefertiti was an Egyptian queen whose beauty became legendary across the ancient",
+        "text": "world. Her name literally means the beautiful one has come, and she ruled alongside her husband. Statues of her face were so striking that artists copied her image everywhere."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Colosseum in Rome could hold fifty thousand spectators for gladiator fights",
+        "text": "Trapdoors underneath released wild animals, and the floor could even flood for fake sea battles. Blood and sand soaked that ground for nearly four hundred years of shows."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ancient Egyptians worshipped cats so much that killing one was punishable by dea",
+        "text": "th. When a family cat died, they shaved their eyebrows in mourning and held funerals. Cats were mummified and buried with treasure for their journey to the afterlife."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Persian Empire at its largest covered two million square miles of territory",
+        "text": "It stretched from Egypt and Greece all the way to India and Central Asia. No empire before or after controlled such a vast, diverse population."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Julius Caesar was stabbed twenty-three times by senators he trusted, including h",
+        "text": "is best friend. His final words were supposedly Et tu Brute, betrayed by those closest to him. He bled to death on the Senate floor in full view of dozens of people."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Hanging Gardens of Babylon were said to have cascading plants and waterfalls",
+        "text": "A king built them to remind his homesick wife of her mountain homeland. Nobody knows for certain if they actually existed or were just legend."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Socrates refused to escape prison even though his friends could have freed him e",
+        "text": "asily. He drank poison rather than abandon his beliefs about justice and philosophy. His death made him the most influential thinker in western civilization."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The oldest known written laws are the Code of Hammurabi from Babylon",
+        "text": "It introduced the concept of an eye for an eye, four thousand years ago. These laws showed that even ancient rulers believed in justice and order."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Cleopatra spoke nine languages fluently and was incredibly educated for her time",
+        "text": "Most Egyptian rulers before her actually could not read or write well. She was smarter and better spoken than almost any leader in the ancient world."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Roman concrete, called opus caementicium, is still stronger than modern concrete",
+        "text": "today. The formula was lost for over a thousand years and had to be rediscovered. That is why Roman aqueducts and buildings still stand perfectly intact."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Spartacus led a slave revolt against Rome with nearly one hundred thousand follo",
+        "text": "wers. He defeated Roman armies repeatedly before being hunted down and captured. Rome crucified all the survivors along a highway as a brutal warning."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Egyptian pyramids were originally white and shiny, covered in polished limes",
+        "text": "tone. Over centuries, earthquakes and stone thieves stripped the white coating away. That gleaming white surface was visible from miles away across the desert."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Archimedes ran naked through the streets after discovering the principle of buoy",
+        "text": "ancy. He was so excited by his scientific discovery that he forgot to get dressed. That moment of pure joy has been remembered for over two thousand years."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Roman emperors often fought in gladiator matches themselves to impress the crowd",
+        "text": "s. They were protected by only symbolic opponents, but it was thrilling theater. The power to literally risk your life proved your authority to the people."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Rosetta Stone allowed us to finally decode Egyptian hieroglyphics after cent",
+        "text": "uries. Without it, all knowledge of the Egyptian writing system would have been lost forever. One discovery unlocked an entire forgotten civilization's secrets."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Cleopatra was actually of Greek descent, not ethnically Egyptian like people ass",
+        "text": "ume. Her ancestors were generals of Alexander the Great who ruled after his death. Yet she became the most iconic Egyptian ruler in all of history."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Mount Everest grows about four millimeters every single year due to tectonic pla",
+        "text": "te collision between India and Asia. That's the height of a grain of rice annually. This growth happens because the Indian tectonic plate is still pushing northward at three centimeters per year. Scientists use GPS satellites to measure this tiny, ongoing growth. In about fifty thousand years, it will grow one more meter tall."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Sahara Desert used to be a lush, green grassland with lakes and rivers just",
+        "text": "six thousand years ago. Humans lived there, hunted animals, and left behind rock art showing giraffes, elephants, and hippos. Climate shifted. Monsoon rains moved south. The desert expanded across millions of square kilometers in just a few thousand years."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Iceland is literally building itself. New volcanic rock forms there every single",
+        "text": "year as the Mid-Atlantic Ridge pulls the island apart. The island sits on two tectonic plates moving away from each other at two centimeters annually. Geothermal heat from this process heats most Icelandic homes for free using hot springs and underground steam."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Lake Baikal in Russia is so deep that if you dumped all the world's rivers into",
+        "text": "it, the lake would take one hundred years to overflow. It contains twenty-three percent of Earth's fresh water, yet covers less than one percent of the planet's lake surface. This ancient lake is over twenty-five million years old and holds more water than all the Great Lakes combined."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Atacama Desert is the driest place on Earth. Some weather stations there hav",
+        "text": "e never recorded a single drop of rain in recorded history. A NASA scientist said the soil there is so dry it resembles Mars more than anywhere else on our planet. Yet when rare rains come, the barren ground erupts with flowers in what locals call the flowering of the desert."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Underwater, the Mid-Ocean Ridge system forms the longest mountain range on Earth",
+        "text": ", stretching forty-thousand miles across ocean floors. These underwater volcanoes are still actively erupting, creating new oceanic crust where tectonic plates spread apart. We've explored less than five percent of the ocean floor, so countless underwater mountains remain completely unknown to science."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Himalayas are still rising, pushed upward by tectonic collisions, yet they'r",
+        "text": "e also eroding about three millimeters every year. This erosion sends millions of tons of sediment downstream, slowly flattening the world's tallest mountains grain by grain. In twenty million years, erosion will push mountains down, but collision will push them back up, in an endless geological dance."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Death Valley holds the record for the highest temperature ever reliably recorded",
+        "text": "on Earth: fifty-four point nine degrees Celsius. The ground temperature there can exceed seventy degrees Celsius, hot enough to fry an egg in seconds without a pan. Yet just eighty kilometers away, the Sierra Nevada mountains have snow, creating one of Earth's most extreme climate contrasts."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Amazon Rainforest produces about twenty percent of Earth's oxygen through ph",
+        "text": "otosynthesis, earning it the nickname 'the planet's lungs.' It also stores one hundred twenty billion tons of carbon, which helps regulate global climate and prevent warming. Amazonian trees pump water from soil into the atmosphere, creating rain clouds that travel thousands of kilometers downwind to other countries."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Krakatoa volcano exploded in eighteen eighty-three with such force that the blas",
+        "text": "t was heard three thousand kilometers away in Mauritius. The explosion was the loudest sound in recorded human history, and the shockwave circled Earth in just over thirty-four hours. The explosion created tsunamis forty meters tall that killed over thirty-six thousand people across Indonesia and the surrounding ocean."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Grand Canyon's layers are like a geological history book, with rocks showing",
+        "text": "one point seven billion years of Earth's story stacked vertically. Scientists read these layers like pages, finding fossils of ancient life, evidence of ancient seas, and records of volcanic activity. Water from the Colorado River carved this massive canyon, removing over one cubic kilometer of rock over millions of years."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Tornado winds can reach four hundred eighty-four kilometers per hour, making the",
+        "text": "m Earth's fastest winds outside of laboratory settings. The most powerful tornadoes can lift a loaded train off its tracks, snap wooden telephone poles, and strip bark from trees. A tornado's path typically lasts just minutes, but in that brief time it can destroy everything in a path several kilometers long."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Mariana Trench is so deep that if Mount Everest stood on its ocean floor, th",
+        "text": "e peak would be covered by water one point six kilometers deep. At the bottom, pressure is one thousand times greater than at sea level, crushing most objects instantly. Humans have visited the moon more times than they've visited the deepest point in this ocean, the Challenger Deep."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Flash floods in deserts can appear from nowhere when rare storms hit mountains n",
+        "text": "earby, transforming dry washes into raging rivers in minutes. A wall of water thirty meters tall can sweep through a canyon, destroying anything in its path and then vanishing completely. Desert visitors have drowned in water sources that flow for only a few minutes before the ground absorbs them all."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Great Rift Valley in East Africa is so massive that if the plates continue s",
+        "text": "preading, the region will eventually split into a new ocean. In five million years, Somalia might become an island separated from the African continent by a new inland sea. This same process created the Red Sea, which was once dry land before tectonic plates pulled it open and flooded it."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Hurricane winds can rotate at speeds over two hundred fifty kilometers per hour,",
+        "text": "with the most powerful hurricanes packing even greater winds. The eye of a hurricane can be perfectly calm and clear, surrounded by the most violent weather on Earth. A single hurricane can release energy equivalent to hundreds of atomic bombs, making it one of nature's most powerful phenomena."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Antarctica holds ninety percent of Earth's ice, and that ice has been accumulati",
+        "text": "ng for three million years under layers of snow. If all Antarctic ice melted, global sea levels would rise sixty meters, flooding major cities and completely reshaping world geography. Scientists drill ice cores to read atmospheric history: trapped air bubbles show what Earth's air contained eight hundred thousand years ago."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Dead Sea is so salty that humans float effortlessly without swimming, yet al",
+        "text": "most no fish or aquatic life survives in its waters. At four hundred thirty meters below sea level, it's the lowest point on Earth's land surface, and it's still sinking. Ancient salts were deposited when the Mediterranean Sea repeatedly flooded the area over millions of years before evaporating."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Niagara Falls drops water over fifty-one meters at a rate of seven hundred fifty",
+        "text": "thousand gallons per second, enough to fill an Olympic pool in seconds. The falling water has eroded the limestone bedrock, moving the falls upstream at about thirty centimeters per year. Thousands of tons of ice jam up behind the falls every winter, and people once walked across the frozen river for festivals."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Atacama Desert produces almost no rain, yet it hosts vast deposits of nitrat",
+        "text": "es and other minerals that never get washed away by water. These minerals accumulated over millions of years of perfect preservation, making the Atacama a window into ancient geological chemistry. Without these minerals, early gunpowder production would have been impossible, changing the course of human history."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Mount Vesuvius buried the Roman city of Pompeii under four meters of ash and pum",
+        "text": "ice in just hours during its eruption in seventy-nine AD. The extreme heat instantly killed people, preserving their final moments as plaster casts we can still see today. Pompeii lay buried for seventeen centuries, giving us a perfect snapshot of Roman life frozen in time by geological catastrophe."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Atacama Desert sits in a rain shadow created by the Andes Mountains, which b",
+        "text": "lock clouds moving in from the Pacific Ocean. Without this geographic accident, this region might receive regular rainfall like areas just a few hundred kilometers away. Rain shadows create deserts all across Earth wherever mountains force moist air upward and dry it out before it reaches the far side."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Aurora Borealis happens when solar wind particles collide with Earth's upper atm",
+        "text": "osphere, creating colors from red to green to purple. These lights are strongest near the magnetic poles because Earth's magnetic field funnels particles toward the Arctic and Antarctic regions. The same process creates auroras on other planets, with Jupiter's auroras being thousands of times more powerful than Earth's."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Colorado Plateau contains geological layers that tell the story of ancient o",
+        "text": "ceans, deserts, and river systems spanning over one billion years. Fossils in the rock show dinosaurs, trilobites, and organisms that existed in dramatically different climates across incomprehensible stretches of time. Standing on the plateau, you're literally standing on a timeline of Earth's entire biological and geological history stacked beneath your feet."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Permafrost covers one quarter of all land in the Northern Hemisphere, storing ma",
+        "text": "ssive amounts of frozen organic matter beneath the surface. As global temperatures rise and permafrost melts, this releases methane gas that accelerates warming in a dangerous feedback loop. Some frozen animals like woolly mammoths preserved in permafrost are so well preserved that scientists have recovered their DNA."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Honey never spoils. Archaeologists found 3000-year-old honey in Egyptian tombs t",
+        "text": "hat was still perfectly edible. Most honey is actually bee vomit, regurgitated from one bee to another until it's thick enough to store. The enzyme in honey that makes it antimicrobial is the same one bees produce to age honey."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Carrots weren't originally orange. Until the 1600s, most carrots were purple, re",
+        "text": "d, or white. Dutch growers bred orange carrots to honor their royal family, the House of Orange. This color had no nutritional advantage, just patriotic pride."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Coffee is actually a berry. The bean you grind is the seed from inside a red fru",
+        "text": "it. Only two types of coffee beans dominate the world: Arabica and Robusta. The caffeine in coffee evolved to kill insects on the plant, making it a natural pesticide."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Peanuts don't grow on trees. They grow underground in pods attached to the plant",
+        "text": "'s roots. Peanut plants flower above ground, then the stem bends down to push the developing pod into the soil. This makes peanuts a legume, not a true nut."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Vanilla is the second most expensive spice after saffron. A single vanilla pod c",
+        "text": "osts two to three dollars. Vanilla requires hand-pollination because its natural pollinator, a specific bee, doesn't exist outside Madagascar. Most vanilla flavoring in food is not real vanilla but vanillin, a synthetic copy."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Tomatoes were considered poisonous in Europe for 200 years after arriving from t",
+        "text": "he Americas. People only ate tomatoes in 1800s after the poor started growing and eating them without dying. The acidic fruit was also thought to cause cancer due to acidity alone."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Watermelon is ninety-two percent water, yet contains more lycopene than raw toma",
+        "text": "toes. Each seed in a watermelon is viable and contains oil and protein. The red color deepens after picking because the fruit continues producing lycopene for days."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Milk was the only food thought to cure arsenic poisoning in the 1800s because pr",
+        "text": "otein binds to arsenic. This gave birth to the old saying that milk cures all poisons. Modern medicine proved certain proteins do slow arsenic absorption, so the belief had a grain of truth."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Apples float because they are twenty-five percent air inside",
+        "text": "Apples will sink in saltwater but float in freshwater due to their low density. This is why apple bobbing works and why apples were traditionally stored in water cellars."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Black pepper is the most traded spice in the world and sparked the age of explor",
+        "text": "ation. European rulers once valued black pepper as currency and kept it in locked safes. Medieval merchants paid fortunes for peppercorns because they believed pepper cured plague."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Bananas are berries, but strawberries are not. Botanically, strawberries are agg",
+        "text": "regate fruits. Bananas are one of the few fruits that ripen and sweeten after being picked. This is because bananas produce ethylene gas, the ripening hormone that all fruits use."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Cinnamon comes from stripping bark off cinnamon tree branches, then letting it d",
+        "text": "ry and curl. Ceylon cinnamon is more expensive and milder than Cassia cinnamon, which is found in most supermarkets. Cinnamon was once worth its weight in gold and conquistadors hunted for it across oceans."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nutmeg is toxic in large amounts because it contains a compound that causes hall",
+        "text": "ucinations. Prisoners and sailors historically ate nutmeg to get high because it was cheaper than alcohol. A small pinch is safe, but more than two tablespoons can cause serious poisoning."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Olive oil from the first pressing is called extra virgin and is the least proces",
+        "text": "sed. Most olive oils labeled virgin or extra virgin are rancid by the time they reach you because they oxidize quickly. The industry is so rife with fraud that nearly half of commercial oils are mislabeled."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Saffron is the stigma of a single crocus flower, and each flower produces only o",
+        "text": "ne stigma. It takes seventy-five thousand flowers to produce one pound of dried saffron. This makes saffron more expensive than gold, costing up to fifteen dollars per gram."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Salt was once so valuable that Roman soldiers received it as part of their wages",
+        "text": "The word salary comes from the Latin word for salt. Salt remains the most universally traded commodity in human history."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Garlic and onions contain sulfur compounds that make your breath smell but also",
+        "text": "kill certain cancer cells. Raw garlic is more potent medicinally because cooking destroys the active sulfur compounds. The smell on your breath after eating garlic comes from your lungs, not your mouth."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ginger root is actually a rhizome, an underground stem, not a root",
+        "text": "Ginger has been used medicinally for over four thousand years and reduces nausea better than many drugs. The more you peel ginger, the hotter it becomes because heat oils concentrate in the thinner flesh."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Chili peppers burn your mouth because capsaicin tricks your brain into thinking",
+        "text": "there's actual heat. Capsaicin bonds to pain receptors in your mouth, creating the sensation of burning. Milk works to soothe the burn because capsaicin is fat-soluble, and fat washes it away."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Beets get their red color from betalains, compounds so unique that almost no oth",
+        "text": "er plant produces them. Eating beets can turn your urine and stool red or purple, which alarmed people before modern science. This harmless side effect led many to fear beets were poisonous for centuries."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Rice is the staple food for over half the world's population",
+        "text": "A single cup of uncooked rice can feed ten people, making it one of the most efficient crops. Rice is one of the few foods that never spoils if stored in cool, dry conditions."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Potatoes were so important to Europe after arriving from the Americas that they",
+        "text": "doubled Europe's population over two hundred years. Green potatoes contain solanine, a toxic alkaloid that can cause serious illness. Potatoes are more nutritious than most people think, containing vitamins and minerals second only to spinach."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Cheese is created when enzymes called rennet separate milk into curds and whey",
+        "text": "There are over eighteen hundred varieties of cheese in the world, more than any other fermented food. The older cheese gets, the more it develops crystals of umami, making it taste sharper and more delicious."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Wine gets better with age because tannins in the wine soften and the flavors dev",
+        "text": "elop over decades. Red wine contains resveratrol, a compound that some research suggests extends lifespan in animals. Most wine reaches peak flavor between five and twenty years old, not longer."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Light from the Sun takes eight minutes to reach Earth, so we're always seeing th",
+        "text": "e Sun as it was eight minutes ago. When the Sun sets, you're actually watching refracted light bending through the atmosphere. Gold is so dense that one cubic meter of it weighs as much as three elephants."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Gravity doesn't pull downward; it pulls toward the center of mass, which is why",
+        "text": "you don't fall off the bottom of Earth. Astronauts floating in space aren't weightless—they're in free fall around the planet. A bowling ball and a feather fall at the same speed in a vacuum, proving mass doesn't affect falling speed."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Diamonds are made of carbon squeezed under extreme pressure deep in the Earth's",
+        "text": "mantle. Graphite and diamond are both pure carbon, yet one is soft and one is the hardest natural mineral. When you write with a pencil, you're actually leaving layers of graphite on the paper."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Hot water boils faster than cold water when you heat it, contradicting the Mpemb",
+        "text": "a effect. Water is one of the only substances that expands when it freezes, which is why ice floats. Water molecules constantly rotate and vibrate, even at room temperature."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Lightning is hotter than the surface of the Sun, reaching forty thousand Kelvin",
+        "text": "The reason lightning is bright is because it superheats the air around it, making it glow. Thunder is the sound of air molecules violently expanding from the lightning's heat."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Electricity always takes the path of least resistance, spreading through conduct",
+        "text": "ors and around insulators. Copper is such a good conductor that it's used in nearly all electrical wiring worldwide. Your body conducts electricity because it's mostly water, which contains dissolved salts."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Sound travels four times faster through water than through air",
+        "text": "The speed of sound changes with temperature; on hotter days, sound travels faster. Echoes happen because sound bounces off solid surfaces and travels back to your ear."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Fire is a chemical reaction between fuel, oxygen, and heat, not a physical subst",
+        "text": "ance. Blue flames burn hotter than orange flames because blue indicates more complete combustion. Flames point upward because hot gases are less dense and rise away from the heat source."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Atoms are so small that a single grain of sand contains billions of atoms",
+        "text": "The nucleus of an atom is surrounded by electrons in electron shells, like planets around the Sun. Most of an atom is empty space; the electrons are incredibly far from the nucleus."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Energy cannot be created or destroyed, only transferred from one form to another",
+        "text": "A single kilogram of mass can be converted into the energy equivalent of two hundred fifty kilotons of TNT. All the energy in the world comes ultimately from the Sun or radioactive elements in the Earth."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Magnets have a north and south pole, and opposite poles attract while same poles",
+        "text": "repel. The Earth itself is a giant magnet, which is why compass needles always point north. Magnets can't exist with only one pole; if you break one in half, you get two smaller magnets."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Steel is much stronger than pure iron because it's iron mixed with carbon and ot",
+        "text": "her elements. Rust is iron oxide, a chemical compound that forms when iron reacts with oxygen and water. Stainless steel doesn't rust because it contains chromium, which forms a protective oxide layer."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Temperature and heat are different; temperature measures molecular movement whil",
+        "text": "e heat is energy transfer. Absolute zero is minus four hundred seventy-three degrees Celsius, where all molecular motion theoretically stops. At extremely cold temperatures, some metals become superconductors and conduct electricity with zero resistance."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Glass is actually a liquid, not a solid, but it moves so slowly you can't see it",
+        "text": "flowing. Sand is mostly silicon dioxide, the same compound that makes up glass. When you heat glass, it becomes workable and can be shaped into any form before it hardens."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Friction is caused by tiny imperfections on surfaces grinding against each other",
+        "text": "Friction always produces heat, which is why rubbing your hands together makes them warm. Ice has less friction than almost any other natural material, which is why skates glide so easily."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Pressure is force spread over an area, so a sharp needle pokes through fabric wh",
+        "text": "ile your palm can't. Water pressure increases with depth, and at the ocean floor it's strong enough to crush a submarine. Atmospheric pressure pushes on your body with the force of about one thousand kilograms, but you don't feel it."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Oxygen is necessary for fire to burn, which is why fires are smothered with blan",
+        "text": "kets or foam. Helium is the only element that doesn't solidify even at absolute zero under normal pressure. Hydrogen is the most abundant element in the universe, making up about seventy-five percent of all atoms."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Reflection happens when light bounces off an opaque surface, while refraction be",
+        "text": "nds light through a transparent material. A prism splits white light into a rainbow by bending different wavelengths at slightly different angles. You see colors because your eyes detect different wavelengths of light from red to violet."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Entropy is the tendency of everything to become more disordered over time, which",
+        "text": "is why rooms get messy. A closed system always moves toward greater entropy, never toward more order on its own. Death and decay are entropy in action, as organized life becomes disorganized matter."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Crystals form when atoms or molecules arrange themselves in a highly organized,",
+        "text": "repeating pattern. Salt crystals grow in perfect geometric cubes because of how sodium and chloride atoms bond together. Snowflakes are ice crystals that form with six-sided symmetry, and no two are exactly identical."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Rubber bounces because it has elasticity, allowing it to deform and return to it",
+        "text": "s original shape. The higher you drop a rubber ball, the higher it bounces back, up to a maximum height. Bouncing stops when friction gradually converts the ball's energy into heat."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Density is how much mass is packed into a given volume, and denser objects sink",
+        "text": "in less dense fluids. Lead is incredibly dense, making a small lead weight heavier than a large block of wood. Mercury is a liquid metal so dense that iron floats on top of it."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Static electricity builds up when electrons transfer between materials that don'",
+        "text": "t conduct well. That shock you feel touching a doorknob is static electricity seeking a path to the ground. Lightning rods protect buildings by providing a safe path for lightning to reach the ground."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ultraviolet light is invisible to humans but can burn your skin and cause damage",
+        "text": "over time. Sunscreen blocks ultraviolet rays by absorbing or reflecting them before they reach your skin. Some insects can see ultraviolet light, allowing them to find flowers and mates we cannot see."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Kinetic energy is the energy of motion, and doubling your speed actually quadrup",
+        "text": "les your kinetic energy. Potential energy is stored energy, like water held behind a dam waiting to flow. A car driving down a hill converts potential energy into kinetic energy."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your brain deletes 99 percent of what you see each second. You only notice thing",
+        "text": "s that match your expectations or grab attention. Right now your visual cortex is filtering out most of the world around you. This selective attention is why you miss obvious changes. Your brain rewires itself constantly based on what you practice. This is called neuroplasticity and it works even in adults."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "You make seventy percent of your decisions emotionally first, then justify them",
+        "text": "with logic after the fact. Your prefrontal cortex that handles logic shuts down when you feel strong emotions. Fear literally makes you less rational. Anxiety is your brain predicting future threats that statistically almost never happen. It evolved to keep you alive from predators."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your brain cannot store true memories. Every time you remember something you act",
+        "text": "ually reconstruct and slightly alter it. This means your earliest childhood memories are probably fiction. Your brain filled in gaps with logic and emotion over decades. Memory is less like a video recording and more like a story your brain tells itself about the past."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The dopamine hit you get from checking your phone is real but tiny. Your brain c",
+        "text": "raves the uncertainty, not the actual content. Notification sounds trigger a dopamine release before you even read the message. The unpredictability is what addicts you. Your brain is wired to hunt for information the same way our ancestors hunted for food. Technology exploits this ancient instinct."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "When you stay awake too long your brain literally cannot clean out its own toxic",
+        "text": "proteins. Sleep deprivation ages your brain. Dreams happen during REM sleep when your brain disconnects from reality to consolidate memories and process emotions. During deep sleep your brain shrinks by ten percent to flush out metabolic waste. This is why you feel foggy without sleep."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "You cannot force yourself to make a good decision when hungry. Low blood sugar h",
+        "text": "ijacks your prefrontal cortex. The phrase hangry is literally true. Hunger directly reduces glucose to the brain region that controls impulse and logic. Even small hunger levels measurably impair your judgment and increase aggression. It is a biochemical effect not a personality flaw."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "If you believe a fake medicine will work it often does work. This placebo effect",
+        "text": "is so strong it changes your actual brain chemistry. The placebo effect activates real dopamine and serotonin release in your brain. Belief literally changes your biology. Even if you know something is a placebo it still works on you. Your conscious mind cannot override your brain's chemical response."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "You are naturally biased to assume you are more objective than others. This is c",
+        "text": "alled the bias blind spot. Almost every person thinks they are above average in intelligence and morality. Statistically this is obviously impossible. Your brain protects your ego by making you forget evidence that contradicts your beliefs. This is called motivated forgetting."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The more choices you have the less satisfied you become with your choice. This i",
+        "text": "s called the paradox of choice. Too many options paralyzes your decision making and increases regret afterward. Your brain actually prefers constraints. Studies show people prefer fewer high quality options over unlimited mediocre ones. Less choice makes you happier."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your brain is lazy and will default to whatever option requires least effort. Th",
+        "text": "is is called cognitive ease. Information you encounter first disproportionately shapes your opinion. This is called the anchoring effect. Even knowing about cognitive biases does not protect you from them. Your brain overrides your conscious awareness."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Loneliness triggers the same brain response as physical pain. Social rejection l",
+        "text": "iterally hurts. Your brain is a social prediction machine that reads other minds. When you feel rejected your brain predicts more rejection coming. Chronic loneliness changes your threat detection system permanently. Lonely people perceive danger even when none exists."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "You are wired to care far more about losses than equivalent gains. Losing ten do",
+        "text": "llars hurts twice as much as finding ten dollars feels good. This loss aversion bias made you evolutionarily. Animals that feared losing food survived better than those hunting for more. Because of loss aversion you hold onto bad relationships and bad jobs longer than you should. Fear of loss paralyzes change."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your personality is largely shaped by random childhood events you will never rem",
+        "text": "ember. Personality becomes mostly stable by age thirty. Your brain has literally hardwired its patterns. Even knowing your own psychological patterns does not change your automatic reactions. Awareness is not the same as change."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Stress causes your hippocampus to shrink which makes you worse at learning and r",
+        "text": "emembering. Anxiety literally shrinks your memory brain. Chronic stress kills neurons in your prefrontal cortex and strengthens your amygdala. This makes you more emotional and less rational. The stress of modern life triggers ancient threat responses designed for tigers not emails. Your body does not know the difference."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your brain predicts what you will perceive before sensory information even arriv",
+        "text": "es. You see what you expect to see not reality. Magicians and optical illusions exploit this predictive perception. Your brain fills in what it expects rather than what is there. This is why eyewitness testimony is unreliable. People confidently remember details their brains invented to match expectations."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Confidence and competence are completely unrelated. The worst performers are mos",
+        "text": "t confident in their abilities. This is called the Dunning Kruger effect. Lack of knowledge prevents you from realizing you lack knowledge. Even experts underestimate how much they still do not know. Intelligence often means knowing how much is still unknown."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Humans are not rational actors. We are emotional creatures that use logic to jus",
+        "text": "tify our emotional impulses afterward. Your amygdala processes threats faster than your prefrontal cortex processes logic. Emotion always beats reason in a race. Even physics professors cannot keep emotions from hijacking their decisions when stakes feel personal and high."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your brain creates a unified sense of self but you are actually multiple competi",
+        "text": "ng neural systems fighting for control. When your corpus callosum is severed your left and right hemispheres literally disagree about your beliefs and memories. You are not a unified self. You are a crowd of neural processes that learned to talk to each other."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "You cannot focus on two things at once no matter how hard you try. Multitasking",
+        "text": "is a myth that makes you dumber. Task switching costs your brain real energy and time to refocus. Each switch drops your IQ temporarily by ten points. People who multitask the most are worst at it. They have trained their brains to be scattered."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Smiling actually makes you feel happier even if you are faking it. Your face sen",
+        "text": "ds signals to your brain that alter your mood. Your body posture changes your hormones. Standing tall increases testosterone and confidence while slouching does the opposite. This is why fake it till you make it actually works. Your body physiology directly influences your psychology."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "You cannot have the same thought twice. Each time you think something your brain",
+        "text": "makes new neural connections. This means you are literally different every moment. Your identity is just a story your brain tells about a constantly changing system. The you from ten years ago would be unrecognizable to your current self. You have completely different neural patterns now."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Fear and excitement activate almost the same brain regions and neurotransmitters",
+        "text": "Your body cannot tell them apart. Reframing fear as excitement actually works because your brain uses the same physical arousal for both emotions. Athletes visualize success because your brain processes imagination and reality in similar ways. Mental practice builds real skills."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "People are far more likely to comply with requests if you give a reason even if",
+        "text": "the reason is meaningless. Even saying because I want to is enough to increase compliance rates significantly. Your brain craves explanations not logic. This is called the Milgram effect. Humans are wired to obey authority and explanations even when they should question."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your ability to regulate emotion is exhausted by willpower use. After hard self",
+        "text": "control you are more likely to lose your temper. Ego depletion is real. Mental exertion empties the same resource that impulse control needs. This is why you become irritable when hungry tired or overworked. Your prefrontal cortex literally runs out of fuel."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Humans are intensely tribal and unconsciously biased toward people who look like",
+        "text": "them. This happens automatically before conscious thought. You literally perceive the faces of your own race as more varied and different. Other races look more similar to your brain. Implicit bias is not a character flaw. Your brain evolved to prioritize tribe safety which makes modern diversity harder to process."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The first webcam was invented at Cambridge University not to monitor people, but",
+        "text": "to watch a coffee pot. Scientists wanted to see if there was coffee available before walking downstairs. This led to one of the earliest internet video feeds in nineteen ninety-three."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The '@' symbol in email addresses is called 'at' in English, but 'snail' in Ital",
+        "text": "ian and French. Ray Tomlinson chose it because it was rarely used on keyboards. No other symbol had a safer bet of not appearing in anyone's actual name."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Wi-Fi was invented by accident while trying to detect black holes",
+        "text": "Australian scientist John O'Sullivan was working on extraterrestrial signals in nineteen ninety-two. The technique bounced signals off metal walls, which became the foundation for wireless internet."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The computer mouse was named after the animal because of its cord tail",
+        "text": "Douglas Engelbart created it at Stanford in nineteen sixty-four. Early designs literally looked like small furry rodents with cables attached."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The 'save' icon is a floppy disk that almost nobody under twenty-five has ever u",
+        "text": "sed. It's been obsolete for over two decades but remains the universal save symbol. We're still using a twenty-year-old design for a technology nobody remembers."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Bluetooth technology is named after Harald Bluetooth, a tenth-century Danish kin",
+        "text": "g. Inventors chose the name because Harald united Denmark, just like their wireless tech unified devices. His initials H and B are encoded as runes in the Bluetooth logo."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The first computer bug was literally a bug—a moth stuck in a computer in ninetee",
+        "text": "n forty-seven. Grace Hopper found it in Harvard's Mark Two computer and taped it to a logbook. That moth became the origin of the term 'debugging' in software development."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Velcro was invented by a Swiss engineer named George de Mestral after a hunting",
+        "text": "trip. Burrs kept sticking to his clothes, so he examined them under a microscope. Today velcro is used everywhere from space suits to NASA equipment."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The first item ever sold on eBay was a broken laser pointer for fourteen dollars",
+        "text": "The buyer specifically wanted a non-working one for his collection of broken laser pointers. This absurd sale launched what became the world's largest online marketplace."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your smartphone is more powerful than the computer that sent humans to the moon",
+        "text": "The Apollo Guidance Computer had less processing power than a nineteen-nineties calculator. We're carrying around technology that would have seemed like science fiction fifty years ago."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The internet was designed to survive nuclear war by having no central control po",
+        "text": "int. ARPANET creators built it so that if any part was destroyed, information could still route around it. This is why the internet has no 'off switch' and no single owner."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Microwave ovens were invented by accident when a scientist's chocolate bar melte",
+        "text": "d near radar equipment. Percy Spencer was walking past a magnetron in nineteen forty-five when he noticed a candy in his pocket was warm. This accidental discovery revolutionized how billions of people cook food today."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The first photograph ever taken took eight hours of exposure time",
+        "text": "Modern smartphones can capture images in less than a thousandth of a second. The speed of photography has increased over a million times in less than two hundred years."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Thousands of websites have disappeared completely because their owners forgot to",
+        "text": "renew the domain. Digital information is far less permanent than ancient stone carvings. We think of the internet as forever, but it's actually incredibly fragile."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "YouTube uploads more video content in one day than existed on all of television",
+        "text": "in the nineteen eighties. The platform handles over five hundred hours of video uploads every single minute. The sheer scale of digital content creation is nearly impossible to comprehend."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Rubber duckies help programmers debug code by explaining their logic to a rubber",
+        "text": "duck. Programmers literally talk through their problems with inanimate objects and it actually works. This technique is so effective that many software companies encourage it in their offices."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The QWERTY keyboard layout was designed to prevent mechanical typewriter jams by",
+        "text": "spreading common letters apart. It has nothing to do with efficiency or ease of typing. We've been using a one-hundred-fifty-year-old anti-jam solution even though mechanical typewriters don't exist anymore."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Batteries were accidentally invented by ancient people who buried copper and iro",
+        "text": "n in acid over two thousand years ago. The Baghdad Battery can still produce small amounts of electric current today. Scientists debate whether ancient people actually used them or just accidentally created them."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The first video call between two cities was accomplished in nineteen twenty-seve",
+        "text": "n using television equipment. Engineers had no idea that visual communication over distance would become the foundation of the internet. What seemed like science fiction is now something children use daily."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Some of the first computer viruses were created by their own programmers as joke",
+        "text": "s or experiments. The first major virus outbreak came from a nineteen ninety-eight game disk that researchers created. These playful accidents taught us that digital security would become a serious global challenge."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The word 'pixel' comes from combining 'picture' and 'element' but hardly anyone",
+        "text": "knows where it came from. Your screen displays millions of tiny pixels so small your eye blends them together. The illusion of smooth images is just thousands of tiny dots changing colors rapidly."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Amazon started in a garage as an online bookstore called Cadabra before being re",
+        "text": "named Amazon. The founder wanted a name starting with A so it would appear first in alphabetical listings. This alphabetical trick is now completely irrelevant, but the name stuck permanently."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "USB stands for Universal Serial Bus, and the name came from actual buses that ca",
+        "text": "rry data on computer streets. It's a perfect metaphor since USB ports carry data the same way buses carry passengers. Most people use USB every day without understanding why it's called a bus."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The world's first webcam broadcast a coffee pot continuously from nineteen ninet",
+        "text": "y-three until two zero zero one. Millions of people logged into the internet specifically to check if coffee was brewing. This absurd experiment proved that people would watch anything if it was broadcast online."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Touchscreen technology was invented in nineteen sixty-five, forty-two years befo",
+        "text": "re the first iPhone existed. The concept sat largely unused for decades because nobody knew how to make it practical. Steve Jobs' innovation wasn't inventing touchscreens but making them something people actually wanted."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Trees can talk to each other underground through a fungal network called the woo",
+        "text": "d wide web, sharing nutrients and warnings about pests. This communication happens through threadlike structures called mycelium that connect roots of different trees. A mother tree can even send more nutrients to her struggling offspring through these underground highways."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Bamboo is the fastest growing plant on Earth, sprouting up to three feet in a si",
+        "text": "ngle day. Some species can grow so fast you can literally watch them stretch if you sit still and observe. It's technically a grass, not a tree, yet it's strong enough to be used in construction."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Flowers evolved specifically to trick insects into doing their work by offering",
+        "text": "fake sex signals and sweet nectar. The orchid is so deceptive that male bees will try to mate with it instead of actual females. This evolutionary arms race has created some of Earth's most beautiful and bizarre flowers."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A single sunflower head can contain up to two thousand individual flowers, each",
+        "text": "one capable of becoming a seed. They follow the sun throughout the day, a behavior called heliotropism that maximizes light exposure. When it's cloudy, they still track the sun's position beneath the clouds using ultraviolet light."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Venus flytraps can count, snapping shut only when they detect two triggers from",
+        "text": "prey in quick succession. This prevents them from wasting energy on false alarms like raindrops or debris. They're also one of the few plants that move fast enough for humans to see with the naked eye."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Mushrooms aren't actually plants—they're more closely related to animals than to",
+        "text": "plants in terms of DNA. Fungi break down dead matter and return nutrients to soil, making all plant growth possible. A single fungal network underground can span thousands of acres and weigh as much as an elephant."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Some plants cry when they're hungry or thirsty, releasing water droplets through",
+        "text": "their leaves called guttation. This isn't sweat but rather excess water being pushed out through tiny pores in the leaf tips. It happens most noticeably at night when the plant can't evaporate water into the air."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The oldest living organism on Earth is a 5,000-year-old tree called Methuselah,",
+        "text": "found in California. It was already ancient when the pyramids were built in Egypt thousands of years ago. Scientists keep its exact location secret to protect it from visitors."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Photosynthesis is actually much less efficient than solar panels, converting onl",
+        "text": "y about three to six percent of sunlight into energy. Yet plants have been doing this for billions of years, supplying all the oxygen we breathe. Evolution hasn't found a better way because plants don't need to be efficient—they're just patient."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Seeds can stay dormant for thousands of years and still germinate, like ancient",
+        "text": "lotus seeds found in Asia. A lotus seed buried for 1,300 years in a Chinese lake was germinated and bloomed perfectly. This is nature's ultimate patience, waiting for the perfect conditions to grow."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Poison ivy doesn't need to touch you—it releases an oil called urushiol into the",
+        "text": "air that sticks to your skin. Even if you've never touched the plant directly, you can get a rash just by walking near it. The plant evolved this as a defense mechanism, and it works so well that even smoke from burning it causes reactions."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Roses have been cultivated so intensely that wild roses and their ancient ancest",
+        "text": "ors are almost extinct. Every rose in a florist shop is essentially a clone, genetically identical to thousands of others. We've bred them so heavily for beauty that many roses no longer have any scent."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Amazon rainforest produces twenty percent of the world's oxygen and is calle",
+        "text": "d the lungs of the planet. Despite this, the forest actually consumes most of its own oxygen through decomposition and respiration. We depend on it more for climate regulation and carbon storage than for oxygen production."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Certain plants like the passion flower evolved specifically to be poisoned by ca",
+        "text": "terpillars, forcing the insects to eat only them. The caterpillar then becomes toxic to predators because of the plant's poison it consumed. This creates a tag team where the plant and insect protect each other through chemistry."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Mold spores are everywhere in the air, and you're constantly breathing them in b",
+        "text": "y the millions. A single fungus can release billions of spores in one day, spreading across entire continents on wind currents. Yet most of these never find the conditions they need to grow and simply drift harmlessly through the atmosphere."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Cork oak trees can regenerate their entire bark after being stripped, making the",
+        "text": "m one of nature's most renewable resources. A single cork tree can be harvested every nine years without harming it, for up to two hundred years of its life. The bark naturally repels fire and insects, which is why it's been used for thousands of years."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Spruce and pine trees produce resin specifically to trap and kill insects that t",
+        "text": "ry to bore into their wood. This amber-colored resin hardens over millions of years and can preserve insects perfectly inside it. Amber was once treasured as jewelry, but it's actually just ancient tree blood."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ginger, turmeric, and galangal are all underground stems called rhizomes that gr",
+        "text": "ow horizontally beneath the soil surface. They're not roots at all—they're actually modified stems that can sprout new plants from any point along their length. This is why you can plant a piece of ginger and grow an entire new plant from a small chunk."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Lichens are not a single organism but a partnership between fungi and algae livi",
+        "text": "ng so closely they became one. The algae produces food through photosynthesis while the fungus provides structure and protection. This is such a successful partnership that lichens can survive in outer space and on the Moon's surface."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Carnivorous plants developed their insect-trapping abilities because they grew i",
+        "text": "n nutrient-poor soil where normal feeding wasn't enough. Rather than evolve bigger roots, they evolved to hunt instead—it was an easier adaptation. Over millions of years, plants and insects engaged in an evolutionary duel that created some of nature's strangest organisms."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Mangrove forests are flooded with saltwater yet somehow thrive by filtering out",
+        "text": "salt through their roots and leaves. They have aerial roots called prop roots that stick up out of the water to breathe in air directly. These forests create underwater nurseries where countless fish and crustaceans grow before heading to the open ocean."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Conifers like pines and spruces keep their needles year-round because they're de",
+        "text": "signed to be more efficient in cold climates. Broad leaves would freeze and crack in winter snow, so needles are a better adaptation for survival in extreme cold. This is why tropical forests are deciduous while frozen forests are always green."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ferns reproduce using spores instead of seeds, a technology so ancient it predat",
+        "text": "es flowering plants by over three hundred million years. A single fern frond can release billions of microscopic spores into the air in a single day. These spores drift on the wind and can regenerate into new plants if they land in moist conditions."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Tree rings don't just tell age—they're a record of weather patterns, droughts, a",
+        "text": "nd harsh conditions from centuries past. Scientists can read them like a history book, determining exact years of major droughts and volcanic eruptions. A thick ring means a good growing year with plenty of rain, while thin rings show years of hardship."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The roots of a single tree can spread farther underground than its branches spre",
+        "text": "ad above ground in all directions. Some trees send down roots deeper than a ten-story building is tall to find water far underground. This hidden network is so extensive that a tree's true size is often completely invisible to us."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The word \"sandwich\" comes from the Earl of Sandwich, who invented it to eat whil",
+        "text": "e gambling without getting cards greasy. He was so obsessed with the game that he didn't want to stop eating. Now it's the only food named after a person on every menu worldwide."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The dot over the letter \"i\" is called a tittle",
+        "text": "Medieval scribes added it to distinguish the letter from nearby marks. This tiny mark saved centuries of mistakes in handwritten documents."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Money comes from Juno Moneta, the Roman goddess of wealth",
+        "text": "Her temple housed the empire's mint and was called the moneta. Her name literally became the word for currency across dozens of languages."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Clocks move clockwise because that's how sundial shadows move in the Northern He",
+        "text": "misphere. Ancient clockmakers copied the sun's natural motion. So every clock you've ever seen follows the sun's path."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The word \"checkmate\" in chess comes from Persian, meaning \"the king is dead.\"",
+        "text": "It's a military term that invaded the game centuries ago. You're literally declaring your opponent's defeat in another language."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A \"quiz\" has no known origin—the word appeared suddenly in 1781 Dublin with no e",
+        "text": "xplanation. Scholars still debate whether it was invented by a theater owner on a bet. It's one of English's greatest unsolved mysteries hiding in plain sight."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The ampersand (&) symbol is actually a squashed Latin word \"et,\" meaning \"and.\"",
+        "text": "Medieval scribes squeezed the two letters together for speed. You use a thousand-year-old abbreviation every time you type it."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Bananas were unnamed for 2000 years—the word \"banana\" wasn't invented until 1600",
+        "text": "Arab traders called them \"finger fruit,\" but Europeans needed a real name. It might be the most recently named common fruit in existence."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The word \"infant\" literally means \"someone who cannot speak.\"",
+        "text": "In comes from Latin for \"in-able,\" a person without speech. By definition, once you can speak, you're no longer an infant."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Pencils aren't made of lead—they're made of graphite, a form of pure carbon",
+        "text": "Medieval miners thought the material was lead ore and never corrected the mistake. We've called them lead pencils for 500 years despite being completely wrong."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The letter J is the newest addition to the English alphabet, arriving only 500 y",
+        "text": "ears ago. Before that, people used I for both the vowel and the consonant sound. I and J were literally the same letter until someone invented J for speed."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Lemon sharks aren't named for being sour—they're called lemons because of their",
+        "text": "color. The yellow shade matches the citrus fruit perfectly. Fishermen spotted the unusual coloring and named them without any wordplay."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Thursday comes from Thor, the Nordic god of thunder and storms",
+        "text": "The Norse god's name was so popular in English that we never switched to a Roman alternative. You're worshipping a Viking deity every time you say the word Thursday."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The word \"breakfast\" was invented to describe \"breaking the fast\" of your sleep",
+        "text": "Before sleep was called a fast, people just said \"morning meal.\" Medieval monks fasted overnight, making the morning meal literally a break from fasting."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A \"kaput\" item is broken because of German soldiers in World War One",
+        "text": "They used the slang word \"kaput\" so often that English speakers adopted it. Now millions use a German military slang term without knowing its wartime origins."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Oranges are the only common fruit named after their color, not the other way aro",
+        "text": "und. The fruit came before the color word; both came from Arabic origins. Color names usually come first in other languages, making oranges uniquely backwards."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your pinky finger gets its name from Dutch settlers calling it the \"pinkje,\" mea",
+        "text": "ning tiny. The Dutch word traveled to English and never got translated or changed. You speak Dutch every time you call your smallest finger by its official name."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The word \"salary\" comes from salt, because Roman soldiers were paid in salt rati",
+        "text": "ons. Salt was so valuable that wages were literally measured in salt blocks. Your paycheck exists because salt was once worth more than gold."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Sarcasm comes from Greek words meaning to \"tear the flesh.\"",
+        "text": "The name describes how biting sarcasm wounds like teeth. You're using an ancient battle metaphor for every sarcastic comment you make."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Toilet comes from French \"toilette,\" a fancy word for a dressing table with clot",
+        "text": "h cover. The name shifted to the actual fixture because both served the same private purpose. Your bathroom appliance is named after decorative furniture from 300 years ago."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "September, October, November, and December are named wrong—they should be months",
+        "text": "7, 8, 9, and 10. The Roman calendar was reorganized, but the names were never updated. You count wrong every time you say December, using a name meaning \"the tenth month.\""
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The word \"boycott\" comes from Charles Boycott, an Irish landlord everyone refuse",
+        "text": "d to trade with. His name became so linked to the action that it became a verb. You honor an unpopular 1880s landlord by naming every refusal-to-trade action after him."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Whisper comes from Old English meaning to hiss like wind through trees",
+        "text": "The word mimics the actual sound ancient people associated with secrets. Onomatopoeia hid in plain sight—whisper sounds like what it describes."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The word \"assassin\" comes from \"hashish,\" because of medieval Syrian fighters wh",
+        "text": "o used it before battle. European crusaders named the enemy group based on their fighting ritual. You're calling someone a drug user every time you use the word assassin."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Barbarian comes from Greek \"barbaros,\" meaning someone who doesn't speak Greek c",
+        "text": "learly. To Greeks, anyone speaking another language sounded like \"bar-bar-bar.\" Racist contempt for foreign languages is hidden inside one of our oldest insult words."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "There is a giant cloud of alcohol floating in space near the center of our galax",
+        "text": "y, billions of kilometers across. This cloud, called Sagittarius B2, contains enough ethyl alcohol to fill quadrillions of bottles, though it is far too sparse to drink. Astronomers detect it by the unique radio signals its molecules emit as they drift through interstellar space."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Saturn is the only planet in our solar system that is less dense than water, mea",
+        "text": "ning it would float in a giant bathtub. Its density is so low that the entire planet is about thirty percent lighter than an equal volume of water. This is because Saturn is made almost entirely of hydrogen and helium, the two lightest elements in the universe."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A single day on Mercury, from one sunrise to the next, lasts about one hundred a",
+        "text": "nd seventy-six Earth days. This is because Mercury rotates very slowly while it races around the Sun in just eighty-eight days. The result is that two of Mercury's years pass during a single one of its days."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Footprints left by astronauts on the Moon will likely remain undisturbed for mil",
+        "text": "lions of years. With no wind or liquid water to erode them, only a rare micrometeorite impact can ever wipe them away. The Apollo bootprints from nineteen sixty-nine are essentially permanent monuments on the lunar dust."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The largest known star, Stephenson 2-18, is so enormous that ten billion Suns co",
+        "text": "uld fit inside its volume. If it replaced our Sun, its surface would extend out past the orbit of Saturn. Despite this colossal size, it is a relatively cool red supergiant nearing the end of its life."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "It rains diamonds on Neptune and Uranus, where extreme pressure crushes carbon i",
+        "text": "nto solid gemstones deep inside. These diamonds form from methane and slowly sink through the planets' interiors like a precious hailstorm. Scientists have recreated this diamond rain in laboratories using powerful lasers to mimic the crushing pressure."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Space is completely silent because sound needs a medium like air or water to tra",
+        "text": "vel, and a vacuum has neither. No matter how powerful an explosion is in space, no one nearby would ever hear it. Astronauts communicate using radio waves, which are electromagnetic and travel perfectly through the vacuum."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "There are more trees on Earth than there are stars in the entire Milky Way galax",
+        "text": "y. Earth has roughly three trillion trees, while our galaxy holds an estimated one hundred to four hundred billion stars. You would need to combine several galaxies' worth of stars just to match the trees on our single planet."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The blue-ringed octopus is small enough to fit in your palm yet carries enough v",
+        "text": "enom to kill twenty-six adult humans. Its venom is a thousand times more potent than cyanide, and there is no known antidote. The vivid blue rings only flash brightly as a warning when the animal feels threatened."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "More than eighty percent of the ocean has never been mapped, explored, or even s",
+        "text": "een by human eyes. We have better maps of the surface of Mars and the Moon than we do of our own ocean floor. The deep sea remains one of the least understood frontiers left on planet Earth."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A type of jellyfish called Turritopsis dohrnii can revert to its juvenile form a",
+        "text": "nd is considered biologically immortal. When injured or starving, it reverses its life cycle and starts over, theoretically forever. This tiny creature is the only known animal that can effectively escape death from old age."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The largest waterfall on Earth is hidden underwater, located beneath the Denmark",
+        "text": "Strait in the North Atlantic. This underwater cataract drops cold, dense water more than three thousand meters, far taller than any waterfall on land. It moves an estimated five million cubic meters of water every single second."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Some sharks predate trees, having existed for over four hundred million years be",
+        "text": "fore the first tree ever grew. Sharks have survived all five of Earth's mass extinction events, including the one that wiped out the dinosaurs. The Greenland shark can live for over four hundred years, making it the longest-lived vertebrate on Earth."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Atlantic Ocean is growing wider by about two and a half centimeters every ye",
+        "text": "ar as tectonic plates drift apart. This means the distance between America and Europe increases by roughly the length of your fingernails annually. Over millions of years, this slow spread completely reshapes the size and position of the continents."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Sea otters hold hands while they sleep so they don't drift apart on the ocean cu",
+        "text": "rrents. They also wrap themselves in kelp to anchor in place, sometimes forming floating rafts of dozens of otters. A single otter has up to one million hairs per square inch, the densest fur of any animal on Earth."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Whale songs can travel thousands of kilometers across the ocean, allowing whales",
+        "text": "to communicate over enormous distances. A blue whale's call can reach one hundred and eighty-eight decibels, louder than a jet engine at takeoff. These low-frequency sounds travel so far that whales on opposite sides of an ocean basin may hear each other."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your stomach acid is strong enough to dissolve metal, with a pH similar to batte",
+        "text": "ry acid. It is so corrosive that your stomach must build a brand-new protective lining every few days to avoid digesting itself. This powerful acid kills most of the harmful bacteria you swallow with your food."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "If you uncoiled all the blood vessels in your body, they would stretch about one",
+        "text": "hundred thousand kilometers. That is enough to wrap around the entire Earth nearly two and a half times. This vast network delivers oxygen and nutrients to every one of your trillions of cells."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The strongest muscle in your body relative to its size is the masseter, the musc",
+        "text": "le that lets you chew. It can clench your back teeth together with a force of over two hundred pounds. This jaw muscle generates more pressure for its weight than any other muscle you have."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your brain generates enough electricity while you are awake to power a small lig",
+        "text": "ht bulb. This electrical activity comes from billions of neurons firing tiny signals back and forth constantly. The brain produces roughly twenty watts of power, even while you are simply daydreaming."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The acid in your stomach and the enzymes in your saliva mean digestion actually",
+        "text": "begins in your mouth. An enzyme called amylase in your spit starts breaking down starches before you even swallow. This is why a piece of bread can start tasting sweet if you hold it in your mouth long enough."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "No two people have the same tongue print, just as no two people share the same f",
+        "text": "ingerprints. The unique pattern of ridges and textures on your tongue is yours alone. Some researchers believe tongue prints could one day be used for secure identification."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your ears and nose never stop growing throughout your entire life, even when the",
+        "text": "rest of you has stopped. This happens because they are made of cartilage, which continues to slowly expand and sag with age. Gravity also pulls on the soft tissue over decades, making them appear even larger."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Humans are the only animals known to blush, an involuntary reaction triggered by",
+        "text": "social emotions. When you feel embarrassed, adrenaline widens the blood vessels in your cheeks, flushing them red. Charles Darwin called blushing the most peculiar and most human of all expressions."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Wombats produce cube-shaped poop, the only animal on Earth known to make square",
+        "text": "droppings. Their intestines have varying stiffness that molds the waste into neat cubes so it won't roll away. The cubes help wombats stack their droppings to mark territory without them tumbling off rocks."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A group of flamingos is called a flamboyance, and their pink color comes entirel",
+        "text": "y from their diet. They are born grey and only turn pink after eating shrimp and algae rich in pigments called carotenoids. A flamingo that stops eating these foods will gradually fade back to a pale white."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Reindeer eyes change color with the seasons, shifting from golden in summer to d",
+        "text": "eep blue in winter. The blue color helps them see better in the dim, perpetual twilight of the Arctic winter. This is the only known example of a mammal changing its eye color to adapt to the seasons."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A shrimp's heart is located in its head, not in its chest like most animals",
+        "text": "Its other major organs, including the stomach, are also packed into the head region. This unusual layout leaves the long tail free for the powerful muscles it uses to dart backward."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Pistol shrimp can snap their claw so fast it creates a bubble hotter than the su",
+        "text": "rface of the Sun. The snap produces a shockwave loud enough to stun or kill nearby prey instantly. For a fraction of a second, the collapsing bubble flashes with light and reaches thousands of degrees."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A tiger's skin is striped, not just its fur, with the dark pattern printed direc",
+        "text": "tly onto the skin underneath. If you shaved a tiger completely, you would still see its unique stripe pattern on its bare skin. Like human fingerprints, no two tigers share exactly the same arrangement of stripes."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Cows have best friends and become visibly stressed when they are separated from",
+        "text": "them. Studies show a cow's heart rate rises and it produces stress hormones when kept apart from its companion. When reunited with a preferred partner, cows are noticeably calmer and more content."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "An octopus can taste with its arms, sensing chemicals through the suckers coveri",
+        "text": "ng each tentacle. Each of its eight arms contains its own cluster of neurons, allowing them to act almost independently. This means an octopus can effectively touch and taste an object at the very same moment."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Goats have rectangular pupils that give them a nearly three hundred and forty de",
+        "text": "gree field of vision. This wide, panoramic view helps them spot predators sneaking up from almost any direction. Many grazing animals like sheep and horses share this same horizontal slit-shaped pupil."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Oxford University is older than the Aztec Empire, with teaching there beginning",
+        "text": "around the year ten ninety-six. The Aztec city of Tenochtitlan was not founded until thirteen twenty-five, more than two centuries later. This means students were attending lectures at Oxford long before the Aztecs built their famous capital."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Napoleon was once attacked by a horde of wild rabbits during a hunting trip arra",
+        "text": "nged in his honor. Hundreds of rabbits, mistaking him for the source of food, swarmed and overwhelmed the emperor's party. The supposedly tame rabbits had been raised in captivity and rushed toward people expecting to be fed."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The shortest war in recorded history lasted under forty minutes, between Britain",
+        "text": "and Zanzibar in eighteen ninety-six. The Zanzibar forces surrendered after British ships bombarded the palace for less than an hour. The conflict ended so quickly that the exact duration is debated to be around thirty-eight minutes."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "For thousands of years, the spice cinnamon was worth more than gold by weight",
+        "text": "Ancient traders kept its source a closely guarded secret, inventing wild myths to protect their monopoly. Roman emperors and Egyptian pharaohs prized it for everything from perfume to embalming the dead."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ancient Romans used crushed mouse brains as a form of toothpaste to freshen thei",
+        "text": "r breath. They also experimented with using human and animal urine as a mouthwash because its ammonia whitened teeth. The practice of using urine to whiten teeth was so common that it became a taxed commodity."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "In ancient Egypt, servants were sometimes covered in honey to attract flies away",
+        "text": "from the pharaoh. These human fly-traps were stationed near the ruler so the insects would swarm them instead. The sweet honey lured the flies, keeping the royal presence free of buzzing pests."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The Eiffel Tower can grow more than fifteen centimeters taller during hot summer",
+        "text": "days. The iron structure expands as it heats up in the sun, then shrinks back when temperatures cool. This thermal expansion also causes the very top of the tower to lean slightly away from the sun."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Vikings used the melted fat of slaughtered animals and bog deposits to light the",
+        "text": "ir long winter nights. They navigated vast open seas without compasses, possibly using sunstones to locate the Sun on cloudy days. A genuine Viking helmet had no horns at all, a myth invented by nineteenth-century opera costumes."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Coca-Cola was originally green-tinted in some early bottles, but it was never na",
+        "text": "turally that color. The drink itself has always been brown, getting its dark hue from added caramel coloring. The myth of green Coke comes from the green-tinted glass bottles it was once sold in."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "There is a lake in Africa that turns animals into stone-like statues by preservi",
+        "text": "ng their bodies. Lake Natron in Tanzania is so alkaline and salty that it calcifies creatures that die in its waters. The lake's caustic chemistry comes from volcanic ash and reaches temperatures of up to sixty degrees Celsius."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A single bolt of lightning contains enough energy to toast around one hundred th",
+        "text": "ousand slices of bread. The air inside a lightning channel heats up to nearly thirty thousand Kelvin in a fraction of a second. That is roughly five times hotter than the visible surface of the Sun."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Earth is not a perfect sphere but bulges outward at the equator, making it sligh",
+        "text": "tly squashed. This means the summit of Mount Chimborazo in Ecuador is actually the point closest to outer space. Because of the bulge, Chimborazo's peak beats Everest's when measured from the planet's exact center."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Some of the sand in the Amazon rainforest is blown across the entire Atlantic Oc",
+        "text": "ean from the Sahara Desert. Each year, winds carry millions of tons of dust thousands of kilometers from Africa to South America. This dust is rich in phosphorus, acting as a vital natural fertilizer for the rainforest soil."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "There is enough water frozen in Antarctica's ice sheet to raise global sea level",
+        "text": "s by about sixty meters. The ice in some places is over four kilometers thick, pressing the land beneath it far below sea level. This single continent holds roughly seventy percent of all the fresh water on the entire planet."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A place in Antarctica called the Dry Valleys has seen no rain or snowfall for po",
+        "text": "ssibly two million years. These valleys are so cold, dry, and windy that they are the closest environment on Earth to the surface of Mars. Scientists study them to understand how life might survive in similarly harsh conditions on other planets."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The center of the Earth is roughly as hot as the surface of the Sun, reaching ab",
+        "text": "out six thousand degrees Celsius. This intense heat is left over from the planet's violent formation and from radioactive elements decaying inside. The solid inner core stays solid only because the crushing pressure at the center prevents it from melting."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A day on Earth is gradually getting longer because the Moon is slowly slowing do",
+        "text": "wn our planet's spin. Around six hundred million years ago, a single day lasted only about twenty-one hours. Each century, the length of a day increases by a tiny fraction, adding up over hundreds of millions of years."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Helium is the only element on Earth that was first discovered in space before it",
+        "text": "was ever found on our planet. Astronomers spotted it in the Sun's spectrum during an 1868 eclipse, decades before anyone isolated it on Earth. Its name comes from Helios, the ancient Greek word for the Sun."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "If you removed all the empty space from the atoms in every human, the entire pop",
+        "text": "ulation would fit inside a single sugar cube. Atoms are almost entirely empty, with their nucleus thousands of times smaller than the atom itself. The solidity you feel is really just electric fields pushing back against each other."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A single bolt of lightning carries enough energy to toast around one hundred tho",
+        "text": "usand slices of bread. The channel of air it rips through is heated to roughly five times the temperature of the Sun's surface. That sudden heating is what creates the explosive shockwave we hear as thunder."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Hot water can actually freeze faster than cold water under certain conditions, a",
+        "text": "puzzle known as the Mpemba effect. The phenomenon is named after a Tanzanian student who noticed his hot ice cream mix froze first. Scientists still debate exactly why it happens, involving evaporation and dissolved gases."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Glass is transparent because visible light does not carry enough energy to bump",
+        "text": "its electrons to a higher level. The light passes straight through instead of being absorbed, so the material looks clear. Ultraviolet light has more energy, which is why ordinary glass blocks much of a sunburn."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Sound cannot travel through the vacuum of space because there are no molecules t",
+        "text": "o carry the vibration. On Earth, sound is just a wave of air molecules bumping into their neighbors. This is why an explosion in space would happen in total, perfect silence."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The center of the Earth is about as hot as the surface of the Sun, near six thou",
+        "text": "sand degrees Celsius. This heat is left over from the planet's violent formation plus the decay of radioactive elements. That inner furnace is what keeps our protective magnetic field alive."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A rainbow is technically a full circle, but the ground usually cuts off the lowe",
+        "text": "r half from our view. From a high enough airplane, pilots can sometimes see a rainbow as a complete ring. Each person actually sees their own unique rainbow, made by different raindrops."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A piece of paper cannot be folded in half more than about seven times by hand, n",
+        "text": "o matter its size. Each fold doubles the thickness, so after ten folds it would be as thick as your hand. After forty-two theoretical folds, the stack would reach all the way to the Moon."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "You cannot tickle yourself because your brain predicts the sensation and cancels",
+        "text": "out the surprise. The cerebellum sends a signal that dampens self-generated touch before you even feel it. This same prediction system helps you tell apart your own movements from the outside world."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The brain treats a song stuck in your head, called an earworm, as an unfinished",
+        "text": "task it keeps trying to complete. Studies show that chewing gum can actually break the loop by occupying the same mental machinery. Earworms are usually simple, repetitive tunes with an easy-to-sing melody."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Just hearing your own name in a noisy room instantly grabs your attention, an ef",
+        "text": "fect named after a cocktail party. Your brain constantly monitors background noise for personally relevant words even when you ignore it. This is why a distant whisper of your name can pull your focus across a loud room."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "People consistently rate a statement as more true simply because they have heard",
+        "text": "it before, even if it is false. This illusory truth effect means repetition can feel like evidence to the brain. Familiarity is processed so easily that the mind mistakes that ease for accuracy."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Your eyes make tiny jumps called saccades, and your brain goes briefly blind dur",
+        "text": "ing each one to hide the blur. You make tens of thousands of these jumps a day yet never notice a single gap. The brain stitches the still snapshots together into one seamless picture of the world."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A goal feels far more achievable once you tell someone else about it, but braggi",
+        "text": "ng can also trick the brain into feeling done. Announcing a plan can give a premature sense of completion that drains your motivation to act. Psychologists found that staying quiet about big goals often makes people work harder."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The brain remembers the peak and the ending of an experience far more than its o",
+        "text": "verall length. This peak-end rule means a short painful moment can color the memory of an entire pleasant day. It explains why a great final scene can rescue your opinion of a slow movie."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Looking at the color red has been shown to make people physically stronger but w",
+        "text": "orse at careful thinking tasks. Red appears to trigger an avoidance response linked to danger and caution in the brain. Studies even found students scored lower on tests when their ID number was printed in red."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The very first message ever sent over the internet's ancestor crashed the system",
+        "text": "after just two letters. Engineers tried to type the word login in 1969 but the network froze after L and O. So the first thing the internet ever transmitted was simply the message lo."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A single Google search quietly uses the computing power of more than a thousand",
+        "text": "machines to answer you in under a second. Those servers race through billions of web pages to rank the best results almost instantly. The whole journey often happens in about two tenths of a second."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The world's first one-gigabyte hard drive, released in 1980, weighed over five h",
+        "text": "undred pounds and cost a small fortune. It was the size of a refrigerator and had to be moved with a forklift. Today that same storage fits invisibly on a chip smaller than a fingernail."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Every QR code has three large squares in its corners that tell a scanner how the",
+        "text": "code is oriented. This lets a phone read the code correctly from any angle, even upside down. Up to thirty percent of a QR code can be damaged and it will still scan perfectly."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The original PlayStation used music CDs and game discs that, when scratched in a",
+        "text": "certain way, could be copied at the time. Sony's machine helped make the compact disc the dominant format for home gaming. The first model launched in Japan in late 1994 and sold over a hundred million units."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The cursor on your screen is slightly tilted because early low-resolution monito",
+        "text": "rs made a straight arrow hard to see. A designer angled it at about thirty degrees so the pixels formed a crisp, readable point. That tilted arrow stuck around and is still the default pointer decades later."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A modern car can contain more lines of computer code than a fighter jet or even",
+        "text": "a passenger airplane. High-end vehicles now run on over a hundred million lines of software code. Much of that code controls the engine, brakes, and entertainment systems."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The shutter sound your phone makes when taking a photo is a fake recording, sinc",
+        "text": "e digital cameras have no moving shutter. In some countries the sound is required by law and cannot be turned off, to discourage secret photos. The noise is purely a leftover comfort from the age of mechanical film cameras."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A pineapple is not a single fruit but dozens of separate berries that fuse toget",
+        "text": "her around a central core. Each little segment on its rough skin was once its own individual flower. The plant takes up to two years to produce just one of these fused fruits."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The resurrection plant can survive for years completely dried up and then spring",
+        "text": "back to life with a single splash of water. It curls into a brittle brown ball during drought, appearing utterly dead. Within hours of rain it unfurls and turns green again as if reborn."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Strawberries are not true berries, yet bananas, watermelons, and pumpkins techni",
+        "text": "cally are. A botanical berry must develop from a single flower with seeds inside, which strawberries fail. A strawberry is actually a swollen flower stem dotted with tiny separate fruits."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Cashews grow on the bottom of a bright fruit and are surrounded by a shell conta",
+        "text": "ining the same irritant as poison ivy. This is why raw cashews must be carefully roasted before they are ever safe to eat. A truly raw cashew, still in its caustic shell, never reaches a grocery store."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Some bamboo species flower only once every sixty to one hundred and twenty years",
+        "text": ", then die almost all at once. Every plant from the same parent stock blooms simultaneously, even across different continents. This rare mass flowering can trigger plagues of rats that feast on the sudden seeds."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The world's largest flower can grow three feet wide and smells like rotting fles",
+        "text": "h to attract flies. This giant bloom, found in Southeast Asian jungles, has no leaves, stems, or roots of its own. It survives as a parasite hidden inside a vine until it suddenly bursts into bloom."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Avocados are stuck in evolutionary time, since the giant animals that once swall",
+        "text": "owed and spread their huge seeds went extinct. Creatures like ground sloths once ate the whole fruit and scattered the pits in their droppings. Without them, the wild avocado would have struggled to spread on its own."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The seeds of an apple contain a compound that releases a tiny amount of cyanide",
+        "text": "when crushed and digested. You would need to chew and swallow the seeds from many apples to feel any effect. Swallowing a few whole seeds is harmless because the hard coating passes through intact."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nutmeg and mace are two different spices that come from the very same fruit of o",
+        "text": "ne tropical tree. Nutmeg is the inner seed, while mace is the bright red lacy covering wrapped around it. For centuries these spices were so valuable that wars were fought over the islands that grew them."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The longest word you can type using only the left hand on a standard keyboard is",
+        "text": "stewardesses. The QWERTY layout places a surprising cluster of common letters under the left fingers. By contrast, the right hand alone can only manage shorter words like lollipop."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The word nightmare originally had nothing to do with horses and instead referred",
+        "text": "to an evil spirit that crushed sleepers. The mare in nightmare comes from an old word for a demon believed to sit on your chest. This spirit was blamed for the feeling of being paralyzed and suffocated in sleep."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "English has no proper word that rhymes with orange, month, silver, or purple",
+        "text": "These stubborn words have frustrated poets and songwriters for centuries. The closest near-rhyme for orange is a hill in Wales spelled Blorenge."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The word goodbye is actually a worn-down contraction of the old phrase God be wi",
+        "text": "th you. Over centuries of fast speech the long blessing collapsed into a single short word. Many everyday greetings began as religious or formal phrases that eroded over time."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A pangram is a sentence that uses every letter of the alphabet at least once",
+        "text": "The famous example about a quick brown fox jumping over a lazy dog packs all twenty-six letters in. Typists and font designers use pangrams to display every character at a glance."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The hashtag symbol has a formal name almost no one uses, the octothorpe",
+        "text": "The thorpe part may have been a playful invention by telephone engineers in the 1960s. The eight points sticking out of the symbol explain the octo at the start."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The phrase mind your p's and q's may come from old pubs tracking customers' pint",
+        "text": "s and quarts on a tab. A bartender chalked up the count, so drinkers were told to watch their p's and q's. The saying survives today as a warning to mind your manners and behavior."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The word avocado traces back to an ancient Aztec word that also meant a part of",
+        "text": "the male body. Spanish settlers reshaped the tricky Aztec term into a word that sounded like advocate. The related sauce guacamole keeps that same Aztec root in its name today."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ketchup began as a fermented fish sauce in Asia and contained no tomatoes at all",
+        "text": "for hundreds of years. Early English versions were made from mushrooms, walnuts, or oysters instead. Tomatoes only became the main ingredient in the early nineteenth century."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The bubbles in Swiss cheese are made by bacteria that release carbon dioxide gas",
+        "text": "as the cheese ages. Cheesemakers actually control the hole size, and the holes are officially called eyes. Cleaner modern milk has made the famous holes smaller than they were a century ago."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Almonds are not true nuts but the seeds of a fruit closely related to peaches an",
+        "text": "d plums. The almond grows inside a leathery green hull that splits open as it ripens. This makes the almond a botanical cousin of the cherry and the apricot."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Chocolate was once so precious that the Aztecs used cacao beans as a form of mon",
+        "text": "ey. A person could reportedly buy a turkey for around a hundred beans. The Aztecs drank chocolate bitter and spiced, never sweet like modern bars."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "A fresh egg sinks in water while an old egg floats, because the air pocket insid",
+        "text": "e grows as it ages. The shell is porous, so moisture slowly escapes and is replaced by air over weeks. This simple float test is an easy way to check whether an egg is still good."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Pistachios are sometimes called the smiling nut because their shells naturally s",
+        "text": "plit open with a grin as they ripen. The seed swells inside until the pressure cracks the hard shell along a seam. A pistachio that fails to split open is usually discarded as immature."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "The fear of peanut butter sticking to the roof of your mouth has its own tongue-",
+        "text": "twisting name, arachibutyrophobia. The word combines the Greek terms for peanut and butter into one mouthful. For most people the sticky sensation is just a harmless quirk of the thick paste."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Real wasabi is so difficult to grow that most sushi restaurants serve dyed horse",
+        "text": "radish instead. The genuine plant takes years to mature and demands cold, flowing mountain water. Authentic wasabi loses its sharp kick within minutes of being grated fresh."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    }
+  ],
+  "createdAt": "2026-06-26T00:00:00.000Z",
+  "grants": []
+}

@@ -237,11 +237,39 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
   useEffect(() => {
     if (selectedBlock) setPerDay(Math.max(0, Math.min(20, selectedBlock.postsPerDay)));
   }, [selectedBlock?.id, selectedBlock?.postsPerDay]);
+  const savedWeightsKey = useRef<string>("");
   useEffect(() => {
     if (!selectedBlock) return;
-    setSourceWeights(Object.fromEntries((selectedBlock.sourceGroups ?? []).map((group) => [group.id, group.weight])));
+    const loaded = Object.fromEntries((selectedBlock.sourceGroups ?? []).map((group) => [group.id, group.weight]));
+    savedWeightsKey.current = JSON.stringify(loaded);
+    setSourceWeights(loaded);
   }, [selectedBlock?.id, selectedBlock?.sourceGroups]);
   const sourceWeightsKey = useMemo(() => JSON.stringify(sourceWeights), [sourceWeights]);
+  // Auto-save the source mix whenever the user edits it (debounced), so it persists on reload.
+  useEffect(() => {
+    if (!selectedBlockId) return;
+    if (sourceWeightsKey === savedWeightsKey.current) return;
+    const blockId = selectedBlockId;
+    const weights = sourceWeights;
+    const handle = setTimeout(() => {
+      apiClient
+        .saveChannelThemeBlockSourceWeights(blockId, weights)
+        .then((res) => {
+          savedWeightsKey.current = JSON.stringify(weights);
+          if (channelBlocksCache) {
+            channelBlocksCache = {
+              ...channelBlocksCache,
+              blocks: channelBlocksCache.blocks.map((b) =>
+                b.id === blockId ? { ...b, sourceGroups: res.sourceGroups } : b,
+              ),
+            };
+            setData(channelBlocksCache);
+          }
+        })
+        .catch((e) => setErr(e instanceof Error ? e.message : String(e)));
+    }, 500);
+    return () => clearTimeout(handle);
+  }, [sourceWeightsKey, selectedBlockId, sourceWeights]);
   const operationalAccounts = useMemo<OperationalAccount[]>(() => {
     if (!selectedBlock) return accounts;
     const fullById = new Map(accounts.map((account) => [account.id, account]));

@@ -12,7 +12,7 @@ import type {
   AdminAnalytics, UserAnalytics, ErrorLogItem, NotificationItem, NotificationCounts, SystemStatus,
   ContentCatalogResponse, AccountReadiness, QueueOverview, LongVideoCatalog,
   ChannelThemeBlockAccount, ChannelThemeBlocksResponse, ChannelThemeBlockGenerateResult,
-  ChannelThemeBlockNormalizeResult, ChannelThemeBlockScheduleResult,
+  ChannelThemeBlockNormalizeResult, ChannelThemeBlockScheduleResult, ChannelThemeBlockSourceGroup,
 } from "./types";
 
 export const apiClient = {
@@ -119,6 +119,12 @@ export const apiClient = {
       `/super-admin/channel-blocks/${encodeURIComponent(blockId)}/schedule`,
       "POST",
       { perDay, ...(accountIds ? { accountIds } : {}), ...(sourceWeights ? { sourceWeights } : {}) },
+    ),
+  saveChannelThemeBlockSourceWeights: (blockId: string, sourceWeights: Record<string, number>) =>
+    send<{ blockId: string; sourceGroups: ChannelThemeBlockSourceGroup[]; sourceWeights: Record<string, number> }>(
+      `/super-admin/channel-blocks/${encodeURIComponent(blockId)}/source-weights`,
+      "POST",
+      { sourceWeights },
     ),
   longVideos: (cacheBust?: number) => get<LongVideoCatalog>(`/long-videos${cacheBust ? `?t=${cacheBust}` : ""}`),
   adminLowDecks: () => get<LowDeckRow[]>("/admin/low-decks"),
