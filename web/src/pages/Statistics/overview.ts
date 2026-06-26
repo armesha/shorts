@@ -1,4 +1,5 @@
 import type { StatRow, YoutubeBreakdownRow, YoutubeTopVideo } from "../../lib/api";
+import { trimTrailingEmptyDays } from "../../lib/statsFormat";
 
 export interface OverviewDailyPoint {
   date: string;
@@ -171,7 +172,15 @@ export function buildOverview(rows: StatRow[]): StatsOverviewData {
     overview.avgViewPercentage = percentageWeighted / overview.analyticsViews;
   }
 
-  overview.daily = [...daily.values()].sort((a, b) => a.date.localeCompare(b.date));
+  overview.daily = trimTrailingEmptyDays(
+    [...daily.values()].sort((a, b) => a.date.localeCompare(b.date)),
+    (p) =>
+      p.views === 0 &&
+      p.watchMinutes === 0 &&
+      p.engagedViews === 0 &&
+      p.subscribersGained === 0 &&
+      p.subscribersLost === 0,
+  );
   overview.topVideos = topVideos.sort((a, b) => b.views - a.views);
   overview.topChannels = topChannels
     .sort((a, b) => (b.analyticsViews || b.publicViews) - (a.analyticsViews || a.publicViews));

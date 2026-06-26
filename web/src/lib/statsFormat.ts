@@ -19,6 +19,16 @@ export function shortDate(s: string): string {
   return new Date(`${s}T00:00:00`).toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" });
 }
 
+// YouTube Analytics finalizes per-day metrics with a ~2–3 day lag, so the most recent day(s) come back
+// all-zero and draw a misleading vertical cliff to 0 at the right edge of a daily chart. Strip only the
+// trailing empty days (interior zeros are real data and stay) so the line ends on the last real day.
+// `isEmpty` must look at per-day delta metrics only (views/watch/…), never cumulative totals.
+export function trimTrailingEmptyDays<T>(rows: readonly T[], isEmpty: (row: T) => boolean): T[] {
+  let end = rows.length;
+  while (end > 0 && isEmpty(rows[end - 1] as T)) end -= 1;
+  return rows.slice(0, end);
+}
+
 // Watch time from minutes → "12h" / "1.5 h" / "30 m". Keeps one decimal in the 1..100 h band:
 // compactNumber() integer-rounds values <1000, which would turn 1.5 h into "2 h", so the hours are
 // formatted directly there instead of routing through compactNumber.

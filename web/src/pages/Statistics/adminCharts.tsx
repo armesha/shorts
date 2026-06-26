@@ -24,7 +24,7 @@ import {
 import type { AdminAnalytics as AdminAnalyticsData } from "../../lib/api";
 import { compactNumber } from "../../lib/format";
 import { useT } from "../../lib/i18n";
-import { fmt, signed, shortDate, formatSeconds } from "../../lib/statsFormat";
+import { fmt, signed, shortDate, formatSeconds, trimTrailingEmptyDays } from "../../lib/statsFormat";
 
 const CHART_COLORS = {
   published: "#2563eb",
@@ -146,7 +146,17 @@ export function DailyChart({ data }: { data: AdminAnalyticsData["daily"] }) {
 
 export function YoutubeChart({ data }: { data: AdminAnalyticsData["youtubeSeries"] }) {
   const { t } = useT();
-  if (data.length < 2) {
+  // Drop the unfinalized trailing day(s) so the line doesn't crash to 0 at the right edge.
+  const series = trimTrailingEmptyDays(
+    data,
+    (p) =>
+      p.views === 0 &&
+      p.watchMinutes === 0 &&
+      p.engagedViews === 0 &&
+      p.subscribersGained === 0 &&
+      p.subscribersLost === 0,
+  );
+  if (series.length < 2) {
     return (
       <section className="card bg-base-100 border border-base-300 border-dashed">
         <div className="card-body items-center text-center py-12">
@@ -160,7 +170,7 @@ export function YoutubeChart({ data }: { data: AdminAnalyticsData["youtubeSeries
   }
   const kViews = t("analytics.seriesViews");
   const kWatch = t("analytics.seriesWatchHours");
-  const chart = data.map((p) => ({
+  const chart = series.map((p) => ({
     date: shortDate(p.date),
     [kViews]: p.views,
     [kWatch]: Math.round((p.watchMinutes / 60) * 10) / 10,
