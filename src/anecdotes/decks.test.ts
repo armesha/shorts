@@ -18,6 +18,12 @@ test("deckLang maps built-in decks; '' for packs/unknown", () => {
   assert.equal(deckLang("quote-video-ru"), "ru");
   assert.equal(deckLang("quote-video-en"), "en");
   assert.equal(deckLang("quote-video-es"), "es");
+  assert.equal(deckLang("quote-video-it"), "it");
+  assert.equal(deckLang("quote-video-fr"), "fr");
+  assert.equal(deckLang("quote-video-pt"), "pt");
+  assert.equal(deckLang("quote-video-hi"), "hi");
+  assert.equal(deckLang("quote-video-id"), "id");
+  assert.equal(deckLang("quote-video-ar"), "ar");
   assert.equal(deckLang("quote-video-de"), "de");
   assert.equal(deckLang("memes-pt"), "pt");
   assert.equal(deckLang("memes-es"), "es");

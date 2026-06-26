@@ -96,10 +96,16 @@ const QUOTE_STATIC_DECK_BY_LANG: Record<string, string[]> = {
 };
 
 const QUOTE_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
+  ar: ["quote-video-ar"],
   ru: ["quote-video-ru"],
   en: ["quote-video-en"],
+  it: ["quote-video-it"],
   es: ["quote-video-es"],
   de: ["quote-video-de"],
+  fr: ["quote-video-fr"],
+  pt: ["quote-video-pt"],
+  hi: ["quote-video-hi"],
+  id: ["quote-video-id"],
 };
 
 const QUOTE_SOURCE_GROUPS: SourceGroupDef[] = [

@@ -12,9 +12,15 @@ const TTS_PYTHON = resolve(process.cwd(), ".venv-tts/bin/python");
 const CACHE_DIR = resolve(process.cwd(), "temp/quote-tts");
 
 const VOICE_BY_LANG: Record<string, string> = {
+  ar: "ar-SA-ZariyahNeural",
   de: "de-DE-KatjaNeural",
   en: "en-US-JennyNeural",
   es: "es-ES-ElviraNeural",
+  fr: "fr-FR-DeniseNeural",
+  hi: "hi-IN-SwaraNeural",
+  id: "id-ID-GadisNeural",
+  it: "it-IT-IsabellaNeural",
+  pt: "pt-PT-RaquelNeural",
   ru: "ru-RU-SvetlanaNeural",
 };
 
