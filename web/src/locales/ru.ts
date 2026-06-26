@@ -442,6 +442,7 @@ export const ru: Record<string, string> = {
   "channelBlocks.bottleneckNone": "нет активного расписания",
   "channelBlocks.channelBottleneck": "{deck}: {queued} в очереди · {perDay} в день · {days} дн.",
   "channelBlocks.channels": "кан.",
+  "channelBlocks.packs": "паков",
   "channelBlocks.channelCreated": "Канал {lang} создан и подключён к пакам блока.",
   "channelBlocks.classicView": "Обычный список",
   "channelBlocks.dragHandle": "Перетащите, чтобы изменить порядок блоков",

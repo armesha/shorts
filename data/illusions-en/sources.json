@@ -1,0 +1,9 @@
+{
+  "deckId": "illusions-en",
+  "generatedExpansion": {
+    "count": 100,
+    "files": [],
+    "rights": "Original local variants generated from the project's existing optical-illusion pack; no external media added.",
+    "tool": "ffmpeg transform variants"
+  }
+}

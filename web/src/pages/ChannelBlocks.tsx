@@ -137,6 +137,10 @@ function deckSummaries(block: ChannelThemeBlock): BlockDeckSummary[] {
   return [...map.values()].sort((a, b) => (a.lang || "").localeCompare(b.lang || "") || a.name.localeCompare(b.name));
 }
 
+function blockPackCount(block: ChannelThemeBlock): number {
+  return deckSummaries(block).length;
+}
+
 function formatRunwayDays(days: number | null): string {
   if (days == null) return "—";
   if (days <= 0) return "0";
@@ -744,6 +748,7 @@ function BlockCard({
 }) {
   const { t } = useT();
   const bottleneck = blockBottleneck(block);
+  const packs = blockPackCount(block);
   return (
     <>
       <span
@@ -791,7 +796,7 @@ function BlockCard({
         )}
       </div>
       <div className="grid grid-cols-2 gap-2 text-center text-xs">
-        <Metric value={block.totalAccounts} label={t("channelBlocks.channels")} />
+        <Metric value={packs} label={t("channelBlocks.packs")} />
         <Metric value={block.postsPerDay} label={t("channelBlocks.postsPerDayTotal")} />
       </div>
       <AppIcon name="chevron-right" size={18} className="justify-self-end text-base-content/40" />
@@ -1126,6 +1131,17 @@ function OperationalSummary({ accounts, clients }: { accounts: OperationalAccoun
       })
     : [];
   const noKeyChannels = multiKey ? accounts.filter((account) => !account.oauthClientId).length : 0;
+  const keyTileCount = perKeyStats.length + (noKeyChannels > 0 ? 1 : 0);
+  const keyGridClass =
+    keyTileCount <= 1
+      ? "grid gap-3"
+      : keyTileCount === 2
+        ? "grid gap-3 sm:grid-cols-2"
+        : keyTileCount === 3
+          ? "grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
+          : keyTileCount === 4
+            ? "grid gap-3 sm:grid-cols-2"
+            : "grid gap-3 sm:grid-cols-2 xl:grid-cols-3";
 
   return (
     <div className="space-y-3">
@@ -1146,23 +1162,35 @@ function OperationalSummary({ accounts, clients }: { accounts: OperationalAccoun
             <BrandIcon name="youtube" size={16} />
             {t("accounts.byKeyTitle")}
           </div>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+          <div className={`mt-3 ${keyGridClass}`}>
             {perKeyStats.map((key) => (
-              <div key={key.id} className="rounded-md border border-base-300 px-3 py-2">
-                <div className="truncate text-sm font-medium">{key.label}</div>
-                {key.projectId && <div className="truncate text-xs text-base-content/45">{key.projectId}</div>}
-                <div className="mt-1 text-xs text-base-content/60">
-                  {t("accounts.byKeyChannels", { n: key.channels })} ·{" "}
-                  <span className={key.perDay > DAILY_KEY_CAP ? "font-medium text-error" : key.perDay > DAILY_KEY_CAP * 0.85 ? "text-warning" : ""}>
-                    {t("accounts.byKeyPerDay", { used: key.perDay, cap: DAILY_KEY_CAP })}
-                  </span>
+              <div key={key.id} className="rounded-md border border-base-300 bg-base-100 px-4 py-3">
+                <div className="truncate text-sm font-semibold" title={key.label}>{key.label}</div>
+                <div className="mt-3 grid grid-cols-2 gap-3">
+                  <div>
+                    <div className="text-2xl font-bold leading-none">{key.channels}</div>
+                    <div className="mt-1 text-xs text-base-content/55">{t("channelBlocks.channels")}</div>
+                  </div>
+                  <div>
+                    <div
+                      className={`text-2xl font-bold leading-none ${
+                        key.perDay > DAILY_KEY_CAP ? "text-error" : key.perDay > DAILY_KEY_CAP * 0.85 ? "text-warning" : ""
+                      }`}
+                    >
+                      {key.perDay}/{DAILY_KEY_CAP}
+                    </div>
+                    <div className="mt-1 text-xs text-base-content/55">{t("channelBlocks.postsPerDayTotal")}</div>
+                  </div>
                 </div>
               </div>
             ))}
             {noKeyChannels > 0 && (
-              <div className="rounded-md border border-dashed border-base-300 px-3 py-2">
-                <div className="text-sm font-medium text-base-content/60">{t("accounts.byKeyNoKey")}</div>
-                <div className="mt-1 text-xs text-base-content/60">{t("accounts.byKeyChannels", { n: noKeyChannels })}</div>
+              <div className="rounded-md border border-dashed border-base-300 bg-base-100 px-4 py-3">
+                <div className="truncate text-sm font-semibold text-base-content/70">{t("accounts.byKeyNoKey")}</div>
+                <div className="mt-3">
+                  <div className="text-2xl font-bold leading-none">{noKeyChannels}</div>
+                  <div className="mt-1 text-xs text-base-content/55">{t("channelBlocks.channels")}</div>
+                </div>
               </div>
             )}
           </div>
