@@ -1,0 +1,13 @@
+{
+  "total": 24,
+  "packs": 1,
+  "packSize": 300,
+  "range": [
+    169,
+    276
+  ],
+  "safety": {
+    "filters": "Indonesian Wikibooks/Abu Nawas source ledger + manual curation + religion/protected-class/modern-politics/adult/violence/gross/coarse blocklist.",
+    "note": "Small starter ID text layer for jokes_memes. It is intentionally source-backed and conservative; it is not a large modern joke corpus."
+  }
+}

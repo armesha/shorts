@@ -1,0 +1,33 @@
+{
+  "licenseNote": "Wikibooks text is CC BY-SA. Abu Nawas PDF/index is tracked through Commons public-domain notice and Indonesian Wikisource CC BY-SA text. Retain source URLs and attribution when publishing outside this app.",
+  "generatedAt": "2026-06-26T03:51:15.747Z",
+  "sourceCounts": [
+    {
+      "id": "wikibooks-humor-id",
+      "title": "Humor",
+      "selected": 8
+    },
+    {
+      "id": "tjerita-aboe-nawas-wikisource-commons",
+      "title": "Tjerita Aboe Nawas dengan Radja Haroenarrasid di Negri Bagdad",
+      "selected": 16
+    }
+  ],
+  "sources": [
+    {
+      "id": "wikibooks-humor-id",
+      "title": "Humor",
+      "sourceUrl": "https://id.wikibooks.org/wiki/Humor",
+      "rights": "Indonesian Wikibooks footer marks text as Creative Commons Attribution-ShareAlike; keep page URLs and attribution."
+    },
+    {
+      "id": "tjerita-aboe-nawas-wikisource-commons",
+      "title": "Tjerita Aboe Nawas dengan Radja Haroenarrasid di Negri Bagdad",
+      "sourceUrl": "https://id.wikisource.org/wiki/Indeks:Tjerita_Aboe_Nawas_dengan_Radja_Haroenarrasid_di_Negri_Bagdad.pdf",
+      "commonsUrl": "https://commons.wikimedia.org/wiki/File:Tjerita_Aboe_Nawas_dengan_Radja_Haroenarrasid_di_Negri_Bagdad.pdf",
+      "rights": "Wikimedia Commons marks the PDF public-domain in Indonesia; Indonesian Wikisource index text is under CC BY-SA. Keep both URLs and attribution.",
+      "metadataNote": "The Commons file page and Indonesian Wikisource index disagree on author/year metadata. Treat this deck as source-backed adapted excerpts from the linked PDF/index, not as definitive bibliographic metadata."
+    }
+  ],
+  "blockedPolicy": "Rejected religion, protected-class/ethnicity/disability jokes, modern political/legal setups, adult/family-bedroom setups, violence/death/punishment, gross-out, coarse insults, OCR noise, and non-standalone excerpts."
+}
