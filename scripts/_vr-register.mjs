@@ -47,10 +47,12 @@ const srcById = Object.fromEntries(srcSources.map((s) => [s.id, s]));
 
 const videos = existsSync(VIDEOS_JSON) ? JSON.parse(readFileSync(VIDEOS_JSON, 'utf8')) : [];
 const haveVideo = new Set(videos.map((v) => v.file));
+const videoByFile = new Map(videos.map((v) => [v.file, v]));
 const manifest = JSON.parse(readFileSync(MANIFEST, 'utf8'));
 let pack = manifest.packs.find((p) => p.id === DECK);
 if (!pack) { pack = { id: DECK, title: TITLE, lang: LANG, items: [] }; manifest.packs.push(pack); }
 const haveItem = new Set(pack.items.map((it) => it.id));
+const itemById = new Map(pack.items.map((it) => [it.id, it]));
 
 const kept = [];
 const sourcesOut = [];
@@ -70,8 +72,33 @@ for (const card of buildManifest) {
   execFileSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', '-i', png, '-q:v', '3', join(ADMIN, `${posterId}.jpg`)]);
   copyFileSync(mp4, join(ADMIN, `${posterId}.mp4`));
   const rel = `${DECK}/${id}.mp4`;
-  if (!haveVideo.has(rel)) { videos.push({ file: rel, title: card.title || 'Загадка', text: card.title || 'Загадка' }); haveVideo.add(rel); }
-  if (!haveItem.has(posterId)) { pack.items.push({ id: posterId, title: card.title || 'Загадка', theme: 'visual-riddle', dur: dur(mp4), createdAt: now, updatedAt: now }); haveItem.add(posterId); }
+  const title = card.title || 'Загадка';
+  if (!haveVideo.has(rel)) {
+    const row = { file: rel, title, text: title };
+    videos.push(row);
+    haveVideo.add(rel);
+    videoByFile.set(rel, row);
+  } else {
+    const row = videoByFile.get(rel);
+    if (row) {
+      row.title = title;
+      row.text = title;
+    }
+  }
+  const itemDur = dur(mp4);
+  if (!haveItem.has(posterId)) {
+    const item = { id: posterId, title, theme: 'visual-riddle', dur: itemDur, createdAt: now, updatedAt: now };
+    pack.items.push(item);
+    haveItem.add(posterId);
+    itemById.set(posterId, item);
+  } else {
+    const item = itemById.get(posterId);
+    if (item) {
+      item.title = title;
+      item.dur = itemDur;
+      item.updatedAt = now;
+    }
+  }
   const s = srcById[id] || {};
   sourcesOut.push({ id, type: card.type || '', title: card.title || '', category: card.category || '', question: card.question || '', answer: card.answer || '', sourceUrl: s.sourceUrl || '', downloadUrl: s.downloadUrl || '', license: s.license || '', author: s.author || '' });
   kept.push(id);
@@ -87,8 +114,12 @@ if (manifest.packs.length < before) {
 
 // Merge sources.json (append new ids; never drop earlier batches' license records).
 const existingOut = existsSync(OUT_SOURCES) ? JSON.parse(readFileSync(OUT_SOURCES, 'utf8')) : [];
-const haveSrc = new Set(existingOut.map((s) => s.id));
-for (const s of sourcesOut) if (!haveSrc.has(s.id)) existingOut.push(s);
+const srcOutById = new Map(existingOut.map((s, i) => [s.id, { s, i }]));
+for (const s of sourcesOut) {
+  const hit = srcOutById.get(s.id);
+  if (hit) existingOut[hit.i] = { ...hit.s, ...s };
+  else existingOut.push(s);
+}
 
 writeFileSync(VIDEOS_JSON, JSON.stringify(videos, null, 2) + '\n');
 writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2) + '\n');

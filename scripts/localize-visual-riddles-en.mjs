@@ -16,6 +16,7 @@ const WORK = resolve(ROOT, 'temp/visual-riddles-en');
 const SRC_DIR = resolve(WORK, 'src');
 const MANIFEST = resolve(WORK, 'build-manifest.json');
 const SOURCES = resolve(WORK, 'sources.json');
+const ONLY_IDS = new Set(String(process.env.VR_ONLY || '').split(',').map((s) => s.trim()).filter(Boolean));
 const SKIP_IDS = new Set([
   'vry_025',
   'vry_030',
@@ -68,6 +69,24 @@ const EXACT_TITLES = {
   'Der Frühling, Arcimboldo': 'Spring, by Arcimboldo',
   'Vertumnus, Arcimboldo': 'Vertumnus, by Arcimboldo',
   'Der Bibliothekar, Arcimboldo': 'The Librarian, by Arcimboldo',
+  'Labyrinth mit Spiralen': 'Spiral Maze',
+  'Labyrinth mit Halle in der Mitte': 'Maze with a Center Hall',
+  'Quadrate und Linien': 'Squares and Lines',
+  'Mehrere Würfelnetze': 'Several Cube Nets',
+  'Bogen mit Würfelnetzen': 'Sheet of Cube Nets',
+  'Würfelnetz zum Ausdrucken': 'Printable Cube Net',
+  'Die schlaue Acht': 'The Clever Eight',
+  'Die sibirischen Kerker': 'The Siberian Cells',
+  'Magisches Quadrat aus Karten': 'Magic Square with Cards',
+  'Kreuze aus Spielsteinen': 'Crosses with Counters',
+  'Rahmen aus Karten': 'Frame of Cards',
+  'Rot auf Grau: welche Zahl?': 'Red on Gray: What Number?',
+  'Versteckte Zahlen aus Punkten': 'Hidden Numbers in Dots',
+  'Finde die Zahl in den Punkten': 'Find the Number in the Dots',
+  'Farbsehtest: Zahl aus Punkten': 'Color Vision Test: Number in Dots',
+  'Alte Farbenblind-Tafel (1883)': 'Historic Color Blindness Plate (1883)',
+  'Eichhörnchen und Eichel': 'Squirrel and Acorn',
+  'Katzen-Labyrinth': 'Cat Maze',
 };
 
 function shell(url, out) {
@@ -217,6 +236,7 @@ const sources = [];
 let ok = 0;
 let failed = 0;
 for (const src of rows) {
+  if (ONLY_IDS.size && !ONLY_IDS.has(src.id)) continue;
   if (SKIP_IDS.has(src.id)) {
     console.log(`SKIP ${src.id}: slow/unreliable Commons source`);
     failed++;
