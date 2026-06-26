@@ -1,0 +1,1722 @@
+[
+  {
+    "file": "space/m1_rocket.mp4",
+    "title": "La verdadera razón por la que abordan un cohete",
+    "text": "La verdadera razón por la que abordan un cohete",
+    "sourceDeck": "space",
+    "sourceIndex": 0,
+    "sourceTitle": "The real reason they board a rocket",
+    "sourceText": "The real reason they board a rocket",
+    "localization": "es"
+  },
+  {
+    "file": "space/m2_reentry.mp4",
+    "title": "Los 19 minutos más peligrosos",
+    "text": "Los 19 minutos más peligrosos",
+    "sourceDeck": "space",
+    "sourceIndex": 1,
+    "sourceTitle": "The most dangerous 19 minutes",
+    "sourceText": "The most dangerous 19 minutes",
+    "localization": "es"
+  },
+  {
+    "file": "space/m3_moonmoving.mp4",
+    "title": "La Luna es un objetivo en movimiento.",
+    "text": "La Luna es un objetivo en movimiento.",
+    "sourceDeck": "space",
+    "sourceIndex": 2,
+    "sourceTitle": "The Moon is a moving target",
+    "sourceText": "The Moon is a moving target",
+    "localization": "es"
+  },
+  {
+    "file": "space/m4_whyback.mp4",
+    "title": "Por qué volvemos a la Luna",
+    "text": "Por qué volvemos a la Luna",
+    "sourceDeck": "space",
+    "sourceIndex": 3,
+    "sourceTitle": "Why we are going back to the Moon",
+    "sourceText": "Why we are going back to the Moon",
+    "localization": "es"
+  },
+  {
+    "file": "space/m5_problem.mp4",
+    "title": "El problema que SABEN viene",
+    "text": "El problema que SABEN viene",
+    "sourceDeck": "space",
+    "sourceIndex": 4,
+    "sourceTitle": "The problem they KNOW is coming",
+    "sourceText": "The problem they KNOW is coming",
+    "localization": "es"
+  },
+  {
+    "file": "space/m6_minielanth.mp4",
+    "title": "La nave espacial que se convierte en un planeta diminuto",
+    "text": "La nave espacial que se convierte en un planeta diminuto",
+    "sourceDeck": "space",
+    "sourceIndex": 5,
+    "sourceTitle": "The spaceship that becomes a tiny planet",
+    "sourceText": "The spaceship that becomes a tiny planet",
+    "localization": "es"
+  },
+  {
+    "file": "space/m7_science.mp4",
+    "title": "Ciencia que solo los humanos pueden hacer",
+    "text": "Ciencia que solo los humanos pueden hacer",
+    "sourceDeck": "space",
+    "sourceIndex": 6,
+    "sourceTitle": "Science only humans can do",
+    "sourceText": "Science only humans can do",
+    "localization": "es"
+  },
+  {
+    "file": "space/bh1_jets.mp4",
+    "title": "Jets de más de 140 galaxias",
+    "text": "Jets de más de 140 galaxias",
+    "sourceDeck": "space",
+    "sourceIndex": 7,
+    "sourceTitle": "Jets longer than 140 galaxies",
+    "sourceText": "Jets longer than 140 galaxies",
+    "localization": "es"
+  },
+  {
+    "file": "space/bh2_size.mp4",
+    "title": "Más grande que todo el sistema solar",
+    "text": "Más grande que todo el sistema solar",
+    "sourceDeck": "space",
+    "sourceIndex": 8,
+    "sourceTitle": "Bigger than the entire solar system",
+    "sourceText": "Bigger than the entire solar system",
+    "localization": "es"
+  },
+  {
+    "file": "space/bh3_unseen.mp4",
+    "title": "Nunca veremos el interior de uno.",
+    "text": "Nunca veremos el interior de uno.",
+    "sourceDeck": "space",
+    "sourceIndex": 9,
+    "sourceTitle": "We will never see inside one",
+    "sourceText": "We will never see inside one",
+    "localization": "es"
+  },
+  {
+    "file": "space/bh4_burp.mp4",
+    "title": "Sí, los agujeros negros eructan",
+    "text": "Sí, los agujeros negros eructan",
+    "sourceDeck": "space",
+    "sourceIndex": 10,
+    "sourceTitle": "Yes, black holes burp",
+    "sourceText": "Yes, black holes burp",
+    "localization": "es"
+  },
+  {
+    "file": "space/bh5_agn.mp4",
+    "title": "Agujeros negros que cantan en todos los colores.",
+    "text": "Agujeros negros que cantan en todos los colores.",
+    "sourceDeck": "space",
+    "sourceIndex": 11,
+    "sourceTitle": "Black holes that sing in every color",
+    "sourceText": "Black holes that sing in every color",
+    "localization": "es"
+  },
+  {
+    "file": "space/bh6_torus.mp4",
+    "title": "Escondido detrás de un panecillo cósmico",
+    "text": "Escondido detrás de un panecillo cósmico",
+    "sourceDeck": "space",
+    "sourceIndex": 12,
+    "sourceTitle": "Hidden behind a cosmic bagel",
+    "sourceText": "Hidden behind a cosmic bagel",
+    "localization": "es"
+  },
+  {
+    "file": "space/bh7_jets.mp4",
+    "title": "Cómo un agujero negro dispara un chorro",
+    "text": "Cómo un agujero negro dispara un chorro",
+    "sourceDeck": "space",
+    "sourceIndex": 13,
+    "sourceTitle": "How a black hole fires a jet",
+    "sourceText": "How a black hole fires a jet",
+    "localization": "es"
+  },
+  {
+    "file": "space/sun1_corona.mp4",
+    "title": "La atmósfera del Sol no tiene sentido",
+    "text": "La atmósfera del Sol no tiene sentido",
+    "sourceDeck": "space",
+    "sourceIndex": 14,
+    "sourceTitle": "The Sun's atmosphere makes no sense",
+    "sourceText": "The Sun's atmosphere makes no sense",
+    "localization": "es"
+  },
+  {
+    "file": "space/sun2_coronium.mp4",
+    "title": "El elemento que no existía.",
+    "text": "El elemento que no existía.",
+    "sourceDeck": "space",
+    "sourceIndex": 15,
+    "sourceTitle": "The element that didn't exist",
+    "sourceText": "The element that didn't exist",
+    "localization": "es"
+  },
+  {
+    "file": "space/gal1_trafficjam.mp4",
+    "title": "Las galaxias forman estrellas como un atasco de tráfico",
+    "text": "Las galaxias forman estrellas como un atasco de tráfico",
+    "sourceDeck": "space",
+    "sourceIndex": 16,
+    "sourceTitle": "Galaxies build stars like a traffic jam",
+    "sourceText": "Galaxies build stars like a traffic jam",
+    "localization": "es"
+  },
+  {
+    "file": "space/gal2_threetypes.mp4",
+    "title": "Cada galaxia tiene una de tres formas.",
+    "text": "Cada galaxia tiene una de tres formas.",
+    "sourceDeck": "space",
+    "sourceIndex": 17,
+    "sourceTitle": "Every galaxy is one of three shapes",
+    "sourceText": "Every galaxy is one of three shapes",
+    "localization": "es"
+  },
+  {
+    "file": "space/gal3_deepfield.mp4",
+    "title": "Un grano de cielo, miles de galaxias.",
+    "text": "Un grano de cielo, miles de galaxias.",
+    "sourceDeck": "space",
+    "sourceIndex": 18,
+    "sourceTitle": "A grain of sky, thousands of galaxies",
+    "sourceText": "A grain of sky, thousands of galaxies",
+    "localization": "es"
+  },
+  {
+    "file": "space/webb1_cold.mp4",
+    "title": "Más frío que Plutón, a propósito",
+    "text": "Más frío que Plutón, a propósito",
+    "sourceDeck": "space",
+    "sourceIndex": 19,
+    "sourceTitle": "Colder than Pluto, on purpose",
+    "sourceText": "Colder than Pluto, on purpose",
+    "localization": "es"
+  },
+  {
+    "file": "space/webb2_origami.mp4",
+    "title": "Un telescopio doblado como origami",
+    "text": "Un telescopio doblado como origami",
+    "sourceDeck": "space",
+    "sourceIndex": 20,
+    "sourceTitle": "A telescope folded like origami",
+    "sourceText": "A telescope folded like origami",
+    "localization": "es"
+  },
+  {
+    "file": "space/webb3_life.mp4",
+    "title": "Un telescopio construido para encontrar vida",
+    "text": "Un telescopio construido para encontrar vida",
+    "sourceDeck": "space",
+    "sourceIndex": 21,
+    "sourceTitle": "A telescope built to find life",
+    "sourceText": "A telescope built to find life",
+    "localization": "es"
+  },
+  {
+    "file": "space/exo1_hidden.mp4",
+    "title": "Un planeta oculto, encontrado por su onda",
+    "text": "Un planeta oculto, encontrado por su onda",
+    "sourceDeck": "space",
+    "sourceIndex": 22,
+    "sourceTitle": "A hidden planet, found by its ripple",
+    "sourceText": "A hidden planet, found by its ripple",
+    "localization": "es"
+  },
+  {
+    "file": "space/exo2_oceanwave.mp4",
+    "title": "Los planetas hacen olas como el océano.",
+    "text": "Los planetas hacen olas como el océano.",
+    "sourceDeck": "space",
+    "sourceIndex": 23,
+    "sourceTitle": "Planets make waves like the ocean",
+    "sourceText": "Planets make waves like the ocean",
+    "localization": "es"
+  },
+  {
+    "file": "space/sn_same_star_dies_twice.mp4",
+    "title": "Esta estrella explotó cuatro veces a la vez",
+    "text": "Esta estrella explotó cuatro veces a la vez",
+    "sourceDeck": "space",
+    "sourceIndex": 24,
+    "sourceTitle": "This Star Exploded Four Times At Once",
+    "sourceText": "This Star Exploded Four Times At Once",
+    "localization": "es"
+  },
+  {
+    "file": "space/sn_space_is_a_lens.mp4",
+    "title": "La gravedad convierte el espacio vacío en vidrio",
+    "text": "La gravedad convierte el espacio vacío en vidrio",
+    "sourceDeck": "space",
+    "sourceIndex": 25,
+    "sourceTitle": "Gravity Turns Empty Space Into Glass",
+    "sourceText": "Gravity Turns Empty Space Into Glass",
+    "localization": "es"
+  },
+  {
+    "file": "space/sn_astronomers_predicted_it.mp4",
+    "title": "Predijeron que una estrella volvería a explotar",
+    "text": "Predijeron que una estrella volvería a explotar",
+    "sourceDeck": "space",
+    "sourceIndex": 26,
+    "sourceTitle": "They Predicted A Star Would Explode Again",
+    "sourceText": "They Predicted A Star Would Explode Again",
+    "localization": "es"
+  },
+  {
+    "file": "space/cm_comet_secret_ice.mp4",
+    "title": "Por qué a los cometas les crece una cola",
+    "text": "Por qué a los cometas les crece una cola",
+    "sourceDeck": "space",
+    "sourceIndex": 27,
+    "sourceTitle": "Why Comets Grow A Tail",
+    "sourceText": "Why Comets Grow A Tail",
+    "localization": "es"
+  },
+  {
+    "file": "space/cm_shooting_star_survivor.mp4",
+    "title": "El deseo que toca el suelo",
+    "text": "El deseo que toca el suelo",
+    "sourceDeck": "space",
+    "sourceIndex": 28,
+    "sourceTitle": "The Wish That Hits The Ground",
+    "sourceText": "The Wish That Hits The Ground",
+    "localization": "es"
+  },
+  {
+    "file": "space/neb_mystic_mountain.mp4",
+    "title": "Una montaña de tres años luz de altura",
+    "text": "Una montaña de tres años luz de altura",
+    "sourceDeck": "space",
+    "sourceIndex": 29,
+    "sourceTitle": "A Mountain Three Light-Years Tall",
+    "sourceText": "A Mountain Three Light-Years Tall",
+    "localization": "es"
+  },
+  {
+    "file": "space/neb_dark_nebulae.mp4",
+    "title": "Las nubes que no puedes ver",
+    "text": "Las nubes que no puedes ver",
+    "sourceDeck": "space",
+    "sourceIndex": 30,
+    "sourceTitle": "The Clouds You Cannot See",
+    "sourceText": "The Clouds You Cannot See",
+    "localization": "es"
+  },
+  {
+    "file": "space/neb_planetary_necklace.mp4",
+    "title": "Cómo una estrella moribunda se convierte en joyería",
+    "text": "Cómo una estrella moribunda se convierte en joyería",
+    "sourceDeck": "space",
+    "sourceIndex": 31,
+    "sourceTitle": "How A Dying Star Becomes Jewelry",
+    "sourceText": "How A Dying Star Becomes Jewelry",
+    "localization": "es"
+  },
+  {
+    "file": "space/neb_cygnus_loop.mp4",
+    "title": "Una explosión de 110 años luz de ancho",
+    "text": "Una explosión de 110 años luz de ancho",
+    "sourceDeck": "space",
+    "sourceIndex": 32,
+    "sourceTitle": "An Explosion 110 Light-Years Wide",
+    "sourceText": "An Explosion 110 Light-Years Wide",
+    "localization": "es"
+  },
+  {
+    "file": "space/cd_no_stars_yet.mp4",
+    "title": "El universo alguna vez tuvo cero estrellas",
+    "text": "El universo alguna vez tuvo cero estrellas",
+    "sourceDeck": "space",
+    "sourceIndex": 33,
+    "sourceTitle": "The Universe Once Had Zero Stars",
+    "sourceText": "The Universe Once Had Zero Stars",
+    "localization": "es"
+  },
+  {
+    "file": "space/cd_rock_concert_ovation.mp4",
+    "title": "Por qué los científicos aplaudieron como fanáticos del rock",
+    "text": "Por qué los científicos aplaudieron como fanáticos del rock",
+    "sourceDeck": "space",
+    "sourceIndex": 34,
+    "sourceTitle": "Why Scientists Cheered Like Rock Fans",
+    "sourceText": "Why Scientists Cheered Like Rock Fans",
+    "localization": "es"
+  },
+  {
+    "file": "space/cd_big_bang_confirmed.mp4",
+    "title": "Demostraron el Big Bang en semanas",
+    "text": "Demostraron el Big Bang en semanas",
+    "sourceDeck": "space",
+    "sourceIndex": 35,
+    "sourceTitle": "They Proved The Big Bang In Weeks",
+    "sourceText": "They Proved The Big Bang In Weeks",
+    "localization": "es"
+  },
+  {
+    "file": "space/cd_hawking_greatest.mp4",
+    "title": "Hawking lo llamó el mayor descubrimiento",
+    "text": "Hawking lo llamó el mayor descubrimiento",
+    "sourceDeck": "space",
+    "sourceIndex": 36,
+    "sourceTitle": "Hawking Called It The Greatest Discovery",
+    "sourceText": "Hawking Called It The Greatest Discovery",
+    "localization": "es"
+  },
+  {
+    "file": "space/cd_why_we_exist.mp4",
+    "title": "Existes gracias a las manchas cósmicas",
+    "text": "Existes gracias a las manchas cósmicas",
+    "sourceDeck": "space",
+    "sourceIndex": 37,
+    "sourceTitle": "You Exist Because Of Cosmic Spots",
+    "sourceText": "You Exist Because Of Cosmic Spots",
+    "localization": "es"
+  },
+  {
+    "file": "space/cd_infrared_first_galaxies.mp4",
+    "title": "Ver estrellas nacer ahora mismo",
+    "text": "Ver estrellas nacer ahora mismo",
+    "sourceDeck": "space",
+    "sourceIndex": 38,
+    "sourceTitle": "Seeing Stars Being Born Right Now",
+    "sourceText": "Seeing Stars Being Born Right Now",
+    "localization": "es"
+  },
+  {
+    "file": "space/ns_teaspoon_billion_tons.mp4",
+    "title": "Una cucharadita que pesa mil millones de toneladas",
+    "text": "Una cucharadita que pesa mil millones de toneladas",
+    "sourceDeck": "space",
+    "sourceIndex": 39,
+    "sourceTitle": "A Teaspoon That Weighs A Billion Tons",
+    "sourceText": "A Teaspoon That Weighs A Billion Tons",
+    "localization": "es"
+  },
+  {
+    "file": "space/ns_densest_object_universe.mp4",
+    "title": "El objeto más denso que podemos ver",
+    "text": "El objeto más denso que podemos ver",
+    "sourceDeck": "space",
+    "sourceIndex": 40,
+    "sourceTitle": "The Densest Object We Can Actually See",
+    "sourceText": "The Densest Object We Can Actually See",
+    "localization": "es"
+  },
+  {
+    "file": "space/dm_bullets_crossfire.mp4",
+    "title": "Dos balas se encuentran en un fuego cruzado",
+    "text": "Dos balas se encuentran en un fuego cruzado",
+    "sourceDeck": "space",
+    "sourceIndex": 41,
+    "sourceTitle": "Two Bullets Meeting In A Crossfire",
+    "sourceText": "Two Bullets Meeting In A Crossfire",
+    "localization": "es"
+  },
+  {
+    "file": "space/dm_speed_of_light_orbit.mp4",
+    "title": "¿Qué orbita a la velocidad de la luz?",
+    "text": "¿Qué orbita a la velocidad de la luz?",
+    "sourceDeck": "space",
+    "sourceIndex": 42,
+    "sourceTitle": "What Orbits At The Speed Of Light?",
+    "sourceText": "What Orbits At The Speed Of Light?",
+    "localization": "es"
+  },
+  {
+    "file": "space/dm_elusive_poetry.mp4",
+    "title": "Dos fantasmas que se explican",
+    "text": "Dos fantasmas que se explican",
+    "sourceDeck": "space",
+    "sourceIndex": 43,
+    "sourceTitle": "Two Ghosts That Explain Each Other",
+    "sourceText": "Two Ghosts That Explain Each Other",
+    "localization": "es"
+  },
+  {
+    "file": "space/gw_hear_spacetime.mp4",
+    "title": "¿Podemos oír el espacio-tiempo mismo?",
+    "text": "¿Podemos oír el espacio-tiempo mismo?",
+    "sourceDeck": "space",
+    "sourceIndex": 44,
+    "sourceTitle": "Can We Hear Spacetime Itself?",
+    "sourceText": "Can We Hear Spacetime Itself?",
+    "localization": "es"
+  },
+  {
+    "file": "space/gw_the_chirp.mp4",
+    "title": "La señal que sonó como un chirrido",
+    "text": "La señal que sonó como un chirrido",
+    "sourceDeck": "space",
+    "sourceIndex": 45,
+    "sourceTitle": "The Signal That Sounded Like A Chirp",
+    "sourceText": "The Signal That Sounded Like A Chirp",
+    "localization": "es"
+  },
+  {
+    "file": "space/gw_kilonova.mp4",
+    "title": "Más brillante que una nova, más oscura que la muerte",
+    "text": "Más brillante que una nova, más oscura que la muerte",
+    "sourceDeck": "space",
+    "sourceIndex": 46,
+    "sourceTitle": "Brighter Than A Nova, Darker Than Death",
+    "sourceText": "Brighter Than A Nova, Darker Than Death",
+    "localization": "es"
+  },
+  {
+    "file": "space/neb_clouds_between_stars.mp4",
+    "title": "Nubes que guardan los secretos de las estrellas",
+    "text": "Nubes que guardan los secretos de las estrellas",
+    "sourceDeck": "space",
+    "sourceIndex": 47,
+    "sourceTitle": "Clouds That Hold The Secrets Of Stars",
+    "sourceText": "Clouds That Hold The Secrets Of Stars",
+    "localization": "es"
+  },
+  {
+    "file": "space/neb_orion_trapezium.mp4",
+    "title": "Cuatro estrellas gigantes iluminan una nebulosa entera",
+    "text": "Cuatro estrellas gigantes iluminan una nebulosa entera",
+    "sourceDeck": "space",
+    "sourceIndex": 48,
+    "sourceTitle": "Four Giant Stars Light A Whole Nebula",
+    "sourceText": "Four Giant Stars Light A Whole Nebula",
+    "localization": "es"
+  },
+  {
+    "file": "space/sn_measuring_universe.mp4",
+    "title": "Una estrella que mide el universo",
+    "text": "Una estrella que mide el universo",
+    "sourceDeck": "space",
+    "sourceIndex": 49,
+    "sourceTitle": "One Star That Measures The Universe",
+    "sourceText": "One Star That Measures The Universe",
+    "localization": "es"
+  },
+  {
+    "file": "space/mw_barred_spiral_home.mp4",
+    "title": "Nuestra galaxia no es un disco plano",
+    "text": "Nuestra galaxia no es un disco plano",
+    "sourceDeck": "space",
+    "sourceIndex": 50,
+    "sourceTitle": "Our Galaxy Is Not A Flat Disk",
+    "sourceText": "Our Galaxy Is Not A Flat Disk",
+    "localization": "es"
+  },
+  {
+    "file": "space/mw_center_monster.mp4",
+    "title": "El monstruo en el centro de nuestra galaxia",
+    "text": "El monstruo en el centro de nuestra galaxia",
+    "sourceDeck": "space",
+    "sourceIndex": 51,
+    "sourceTitle": "The Monster At Our Galaxy's Center",
+    "sourceText": "The Monster At Our Galaxy's Center",
+    "localization": "es"
+  },
+  {
+    "file": "space/mw_andromeda_merger.mp4",
+    "title": "La galaxia se dirige hacia nosotros",
+    "text": "La galaxia se dirige hacia nosotros",
+    "sourceDeck": "space",
+    "sourceIndex": 52,
+    "sourceTitle": "The Galaxy Headed Toward Us",
+    "sourceText": "The Galaxy Headed Toward Us",
+    "localization": "es"
+  },
+  {
+    "file": "space/moon_giant_impact.mp4",
+    "title": "La luna nació de un accidente",
+    "text": "La luna nació de un accidente",
+    "sourceDeck": "space",
+    "sourceIndex": 53,
+    "sourceTitle": "The Moon Was Born From A Crash",
+    "sourceText": "The Moon Was Born From A Crash",
+    "localization": "es"
+  },
+  {
+    "file": "space/moon_tidal_brake.mp4",
+    "title": "La Luna está frenando a la Tierra",
+    "text": "La Luna está frenando a la Tierra",
+    "sourceDeck": "space",
+    "sourceIndex": 54,
+    "sourceTitle": "The Moon Is Slowing Earth Down",
+    "sourceText": "The Moon Is Slowing Earth Down",
+    "localization": "es"
+  },
+  {
+    "file": "space/moon_drifting_away.mp4",
+    "title": "La luna nos está dejando",
+    "text": "La luna nos está dejando",
+    "sourceDeck": "space",
+    "sourceIndex": 55,
+    "sourceTitle": "The Moon Is Leaving Us",
+    "sourceText": "The Moon Is Leaving Us",
+    "localization": "es"
+  },
+  {
+    "file": "space/sun_magnetic_heartbeat.mp4",
+    "title": "El sol tiene un latido magnético",
+    "text": "El sol tiene un latido magnético",
+    "sourceDeck": "space",
+    "sourceIndex": 56,
+    "sourceTitle": "The Sun Has A Magnetic Heartbeat",
+    "sourceText": "The Sun Has A Magnetic Heartbeat",
+    "localization": "es"
+  },
+  {
+    "file": "space/sun_storms_hit_earth.mp4",
+    "title": "Las tormentas solares pueden golpear la Tierra",
+    "text": "Las tormentas solares pueden golpear la Tierra",
+    "sourceDeck": "space",
+    "sourceIndex": 57,
+    "sourceTitle": "Solar Storms Can Hit Earth",
+    "sourceText": "Solar Storms Can Hit Earth",
+    "localization": "es"
+  },
+  {
+    "file": "space/sun_probe_touched_corona.mp4",
+    "title": "La sonda que tocó el sol",
+    "text": "La sonda que tocó el sol",
+    "sourceDeck": "space",
+    "sourceIndex": 58,
+    "sourceTitle": "The Probe That Touched The Sun",
+    "sourceText": "The Probe That Touched The Sun",
+    "localization": "es"
+  },
+  {
+    "file": "space/exo_tilted_disk.mp4",
+    "title": "Un planeta inclinado deforma su sistema estelar",
+    "text": "Un planeta inclinado deforma su sistema estelar",
+    "sourceDeck": "space",
+    "sourceIndex": 59,
+    "sourceTitle": "A Tilted Planet Warps Its Star System",
+    "sourceText": "A Tilted Planet Warps Its Star System",
+    "localization": "es"
+  },
+  {
+    "file": "space/exo_dust_x.mp4",
+    "title": "La forma de X alrededor de otra estrella",
+    "text": "La forma de X alrededor de otra estrella",
+    "sourceDeck": "space",
+    "sourceIndex": 60,
+    "sourceTitle": "The X Shape Around Another Star",
+    "sourceText": "The X Shape Around Another Star",
+    "localization": "es"
+  },
+  {
+    "file": "space/gal_bar_star_trap.mp4",
+    "title": "Una barra hecha de estrellas atrapadas",
+    "text": "Una barra hecha de estrellas atrapadas",
+    "sourceDeck": "space",
+    "sourceIndex": 61,
+    "sourceTitle": "A Bar Made Of Trapped Stars",
+    "sourceText": "A Bar Made Of Trapped Stars",
+    "localization": "es"
+  },
+  {
+    "file": "space/gal_lenticular_lens.mp4",
+    "title": "La galaxia que parece una lente",
+    "text": "La galaxia que parece una lente",
+    "sourceDeck": "space",
+    "sourceIndex": 62,
+    "sourceTitle": "The Galaxy That Looks Like A Lens",
+    "sourceText": "The Galaxy That Looks Like A Lens",
+    "localization": "es"
+  },
+  {
+    "file": "space/cm_three_space_rocks.mp4",
+    "title": "Asteroide, cometa, meteorito: la diferencia",
+    "text": "Asteroide, cometa, meteorito: la diferencia",
+    "sourceDeck": "space",
+    "sourceIndex": 63,
+    "sourceTitle": "Asteroid, Comet, Meteor: The Difference",
+    "sourceText": "Asteroid, Comet, Meteor: The Difference",
+    "localization": "es"
+  },
+  {
+    "file": "space/cm_meteorite_survivor.mp4",
+    "title": "La estrella fugaz que sobrevive",
+    "text": "La estrella fugaz que sobrevive",
+    "sourceDeck": "space",
+    "sourceIndex": 64,
+    "sourceTitle": "The Shooting Star That Survives",
+    "sourceText": "The Shooting Star That Survives",
+    "localization": "es"
+  },
+  {
+    "file": "space/webb_sunshield.mp4",
+    "title": "Un escudo de cancha de tenis en el espacio",
+    "text": "Un escudo de cancha de tenis en el espacio",
+    "sourceDeck": "space",
+    "sourceIndex": 65,
+    "sourceTitle": "A Tennis Court Shield In Space",
+    "sourceText": "A Tennis Court Shield In Space",
+    "localization": "es"
+  },
+  {
+    "file": "space/webb_micro_motors.mp4",
+    "title": "Dieciocho espejos se convierten en uno",
+    "text": "Dieciocho espejos se convierten en uno",
+    "sourceDeck": "space",
+    "sourceIndex": 66,
+    "sourceTitle": "Eighteen Mirrors Become One",
+    "sourceText": "Eighteen Mirrors Become One",
+    "localization": "es"
+  },
+  {
+    "file": "space/sun_green_line.mp4",
+    "title": "La línea verde que engañó a los científicos",
+    "text": "La línea verde que engañó a los científicos",
+    "sourceDeck": "space",
+    "sourceIndex": 67,
+    "sourceTitle": "The Green Line That Fooled Scientists",
+    "sourceText": "The Green Line That Fooled Scientists",
+    "localization": "es"
+  },
+  {
+    "file": "space/sun_magnetic_bombs.mp4",
+    "title": "Pequeñas explosiones pueden calentar la corona",
+    "text": "Pequeñas explosiones pueden calentar la corona",
+    "sourceDeck": "space",
+    "sourceIndex": 68,
+    "sourceTitle": "Tiny Explosions May Heat The Corona",
+    "sourceText": "Tiny Explosions May Heat The Corona",
+    "localization": "es"
+  },
+  {
+    "file": "space/bh_four_types.mp4",
+    "title": "Cuatro tipos de agujeros negros",
+    "text": "Cuatro tipos de agujeros negros",
+    "sourceDeck": "space",
+    "sourceIndex": 69,
+    "sourceTitle": "Four Kinds Of Black Holes",
+    "sourceText": "Four Kinds Of Black Holes",
+    "localization": "es"
+  },
+  {
+    "file": "space/black_hole_disk.mp4",
+    "title": "La luz gira alrededor del abismo",
+    "text": "La luz gira alrededor del abismo",
+    "sourceDeck": "space",
+    "sourceIndex": 70,
+    "sourceTitle": "Light Bends Around the Abyss",
+    "sourceText": "Light Bends Around the Abyss",
+    "localization": "es"
+  },
+  {
+    "file": "space/black_hole_binary.mp4",
+    "title": "Dos gigantes bailan hasta el final",
+    "text": "Dos gigantes bailan hasta el final",
+    "sourceDeck": "space",
+    "sourceIndex": 71,
+    "sourceTitle": "Two Giants Dance to the End",
+    "sourceText": "Two Giants Dance to the End",
+    "localization": "es"
+  },
+  {
+    "file": "space/magnetar.mp4",
+    "title": "El imán más fuerte que existe",
+    "text": "El imán más fuerte que existe",
+    "sourceDeck": "space",
+    "sourceIndex": 72,
+    "sourceTitle": "The Strongest Magnet in Existence",
+    "sourceText": "The Strongest Magnet in Existence",
+    "localization": "es"
+  },
+  {
+    "file": "space/pulsar.mp4",
+    "title": "Un faro del cosmos",
+    "text": "Un faro del cosmos",
+    "sourceDeck": "space",
+    "sourceIndex": 73,
+    "sourceTitle": "A Lighthouse of the Cosmos",
+    "sourceText": "A Lighthouse of the Cosmos",
+    "localization": "es"
+  },
+  {
+    "file": "space/quasar.mp4",
+    "title": "Más brillante que un billón de soles",
+    "text": "Más brillante que un billón de soles",
+    "sourceDeck": "space",
+    "sourceIndex": 74,
+    "sourceTitle": "Brighter Than a Trillion Suns",
+    "sourceText": "Brighter Than a Trillion Suns",
+    "localization": "es"
+  },
+  {
+    "file": "space/tidal_disruption.mp4",
+    "title": "Una estrella hecha espaguetis",
+    "text": "Una estrella hecha espaguetis",
+    "sourceDeck": "space",
+    "sourceIndex": 75,
+    "sourceTitle": "A Star Torn Into Spaghetti",
+    "sourceText": "A Star Torn Into Spaghetti",
+    "localization": "es"
+  },
+  {
+    "file": "space/gamma_ray_burst.mp4",
+    "title": "La explosión más mortífera del universo",
+    "text": "La explosión más mortífera del universo",
+    "sourceDeck": "space",
+    "sourceIndex": 76,
+    "sourceTitle": "The Universe's Deadliest Blast",
+    "sourceText": "The Universe's Deadliest Blast",
+    "localization": "es"
+  },
+  {
+    "file": "space/white_dwarf.mp4",
+    "title": "Un sol muerto devora mundos",
+    "text": "Un sol muerto devora mundos",
+    "sourceDeck": "space",
+    "sourceIndex": 77,
+    "sourceTitle": "A Dead Sun Devours Worlds",
+    "sourceText": "A Dead Sun Devours Worlds",
+    "localization": "es"
+  },
+  {
+    "file": "space/galaxy_merger.mp4",
+    "title": "Andrómeda viene por nosotros",
+    "text": "Andrómeda viene por nosotros",
+    "sourceDeck": "space",
+    "sourceIndex": 78,
+    "sourceTitle": "Andromeda Is Coming for Us",
+    "sourceText": "Andromeda Is Coming for Us",
+    "localization": "es"
+  },
+  {
+    "file": "space/cosmic_web.mp4",
+    "title": "Cada galaxia en hilos invisibles",
+    "text": "Cada galaxia en hilos invisibles",
+    "sourceDeck": "space",
+    "sourceIndex": 79,
+    "sourceTitle": "Every Galaxy on Invisible Threads",
+    "sourceText": "Every Galaxy on Invisible Threads",
+    "localization": "es"
+  },
+  {
+    "file": "space/gaia_milkyway.mp4",
+    "title": "Mapeando mil millones de estrellas",
+    "text": "Mapeando mil millones de estrellas",
+    "sourceDeck": "space",
+    "sourceIndex": 80,
+    "sourceTitle": "Mapping a Billion Stars",
+    "sourceText": "Mapping a Billion Stars",
+    "localization": "es"
+  },
+  {
+    "file": "space/protoplanet_disk.mp4",
+    "title": "Mira cómo nacen los planetas",
+    "text": "Mira cómo nacen los planetas",
+    "sourceDeck": "space",
+    "sourceIndex": 81,
+    "sourceTitle": "Watch Planets Being Born",
+    "sourceText": "Watch Planets Being Born",
+    "localization": "es"
+  },
+  {
+    "file": "space/exoplanet_transit.mp4",
+    "title": "Cómo encontramos mundos ocultos",
+    "text": "Cómo encontramos mundos ocultos",
+    "sourceDeck": "space",
+    "sourceIndex": 82,
+    "sourceTitle": "How We Find Hidden Worlds",
+    "sourceText": "How We Find Hidden Worlds",
+    "localization": "es"
+  },
+  {
+    "file": "space/trappist1.mp4",
+    "title": "Siete Tierras alrededor de una estrella",
+    "text": "Siete Tierras alrededor de una estrella",
+    "sourceDeck": "space",
+    "sourceIndex": 83,
+    "sourceTitle": "Seven Earths Around One Star",
+    "sourceText": "Seven Earths Around One Star",
+    "localization": "es"
+  },
+  {
+    "file": "space/hot_jupiter.mp4",
+    "title": "Un planeta más caliente que las estrellas",
+    "text": "Un planeta más caliente que las estrellas",
+    "sourceDeck": "space",
+    "sourceIndex": 84,
+    "sourceTitle": "A Planet Hotter Than Stars",
+    "sourceText": "A Planet Hotter Than Stars",
+    "localization": "es"
+  },
+  {
+    "file": "space/crab_nebula.mp4",
+    "title": "El cadáver de una estrella que explotó",
+    "text": "El cadáver de una estrella que explotó",
+    "sourceDeck": "space",
+    "sourceIndex": 85,
+    "sourceTitle": "The Corpse of an Exploded Star",
+    "sourceText": "The Corpse of an Exploded Star",
+    "localization": "es"
+  },
+  {
+    "file": "space/star_formation.mp4",
+    "title": "Torres donde nacen las estrellas",
+    "text": "Torres donde nacen las estrellas",
+    "sourceDeck": "space",
+    "sourceIndex": 86,
+    "sourceTitle": "Towers Where Stars Are Born",
+    "sourceText": "Towers Where Stars Are Born",
+    "localization": "es"
+  },
+  {
+    "file": "space/mars_flyover.mp4",
+    "title": "Un cañón para tragar continentes",
+    "text": "Un cañón para tragar continentes",
+    "sourceDeck": "space",
+    "sourceIndex": 87,
+    "sourceTitle": "A Canyon to Swallow Continents",
+    "sourceText": "A Canyon to Swallow Continents",
+    "localization": "es"
+  },
+  {
+    "file": "space/jupiter_juno.mp4",
+    "title": "Bucear en las tormentas de Júpiter",
+    "text": "Bucear en las tormentas de Júpiter",
+    "sourceDeck": "space",
+    "sourceIndex": 88,
+    "sourceTitle": "Diving Into Jupiter's Storms",
+    "sourceText": "Diving Into Jupiter's Storms",
+    "localization": "es"
+  },
+  {
+    "file": "space/saturn_cassini.mp4",
+    "title": "La corona del sistema solar",
+    "text": "La corona del sistema solar",
+    "sourceDeck": "space",
+    "sourceIndex": 89,
+    "sourceTitle": "The Crown of the Solar System",
+    "sourceText": "The Crown of the Solar System",
+    "localization": "es"
+  },
+  {
+    "file": "space/europa.mp4",
+    "title": "Un océano bajo hielo agrietado",
+    "text": "Un océano bajo hielo agrietado",
+    "sourceDeck": "space",
+    "sourceIndex": 90,
+    "sourceTitle": "An Ocean Under Cracked Ice",
+    "sourceText": "An Ocean Under Cracked Ice",
+    "localization": "es"
+  },
+  {
+    "file": "space/titan.mp4",
+    "title": "Ríos de metano líquido",
+    "text": "Ríos de metano líquido",
+    "sourceDeck": "space",
+    "sourceIndex": 91,
+    "sourceTitle": "Rivers of Liquid Methane",
+    "sourceText": "Rivers of Liquid Methane",
+    "localization": "es"
+  },
+  {
+    "file": "space/enceladus.mp4",
+    "title": "Una luna que rocía el cielo",
+    "text": "Una luna que rocía el cielo",
+    "sourceDeck": "space",
+    "sourceIndex": 92,
+    "sourceTitle": "A Moon That Sprays the Sky",
+    "sourceText": "A Moon That Sprays the Sky",
+    "localization": "es"
+  },
+  {
+    "file": "space/io_volcanoes.mp4",
+    "title": "El mundo más volcánico",
+    "text": "El mundo más volcánico",
+    "sourceDeck": "space",
+    "sourceIndex": 93,
+    "sourceTitle": "The Most Volcanic World",
+    "sourceText": "The Most Volcanic World",
+    "localization": "es"
+  },
+  {
+    "file": "space/pluto.mp4",
+    "title": "El corazón helado de Plutón",
+    "text": "El corazón helado de Plutón",
+    "sourceDeck": "space",
+    "sourceIndex": 94,
+    "sourceTitle": "Pluto's Frozen Heart",
+    "sourceText": "Pluto's Frozen Heart",
+    "localization": "es"
+  },
+  {
+    "file": "space/mercury.mp4",
+    "title": "Quemados y maltratados por el sol",
+    "text": "Quemados y maltratados por el sol",
+    "sourceDeck": "space",
+    "sourceIndex": 95,
+    "sourceTitle": "Scorched and Battered by the Sun",
+    "sourceText": "Scorched and Battered by the Sun",
+    "localization": "es"
+  },
+  {
+    "file": "space/venus.mp4",
+    "title": "Un horno que derrite plomo",
+    "text": "Un horno que derrite plomo",
+    "sourceDeck": "space",
+    "sourceIndex": 96,
+    "sourceTitle": "A Furnace That Melts Lead",
+    "sourceText": "A Furnace That Melts Lead",
+    "localization": "es"
+  },
+  {
+    "file": "space/neptune_uranus.mp4",
+    "title": "Mundos en la frontera fría",
+    "text": "Mundos en la frontera fría",
+    "sourceDeck": "space",
+    "sourceIndex": 97,
+    "sourceTitle": "Worlds at the Cold Frontier",
+    "sourceText": "Worlds at the Cold Frontier",
+    "localization": "es"
+  },
+  {
+    "file": "space/bennu.mp4",
+    "title": "Tocar un asteroide para robar polvo",
+    "text": "Tocar un asteroide para robar polvo",
+    "sourceDeck": "space",
+    "sourceIndex": 98,
+    "sourceTitle": "Touching an Asteroid to Steal Dust",
+    "sourceText": "Touching an Asteroid to Steal Dust",
+    "localization": "es"
+  },
+  {
+    "file": "space/asteroid_belt.mp4",
+    "title": "Restos del nacimiento de los planetas",
+    "text": "Restos del nacimiento de los planetas",
+    "sourceDeck": "space",
+    "sourceIndex": 99,
+    "sourceTitle": "Leftovers From the Planets' Birth",
+    "sourceText": "Leftovers From the Planets' Birth",
+    "localization": "es"
+  },
+  {
+    "file": "space/aurora.mp4",
+    "title": "Cuando el sol golpea el cielo",
+    "text": "Cuando el sol golpea el cielo",
+    "sourceDeck": "space",
+    "sourceIndex": 100,
+    "sourceTitle": "When the Sun Strikes the Sky",
+    "sourceText": "When the Sun Strikes the Sky",
+    "localization": "es"
+  },
+  {
+    "file": "space/iss_earth.mp4",
+    "title": "Compitiendo con la Tierra a 17,500 mph",
+    "text": "Compitiendo con la Tierra a 17,500 mph",
+    "sourceDeck": "space",
+    "sourceIndex": 101,
+    "sourceTitle": "Racing Earth at 17,500 mph",
+    "sourceText": "Racing Earth at 17,500 mph",
+    "localization": "es"
+  },
+  {
+    "file": "space/voyager.mp4",
+    "title": "El viajero más lejano de la humanidad",
+    "text": "El viajero más lejano de la humanidad",
+    "sourceDeck": "space",
+    "sourceIndex": 102,
+    "sourceTitle": "Humanity's Farthest Traveler",
+    "sourceText": "Humanity's Farthest Traveler",
+    "localization": "es"
+  },
+  {
+    "file": "space/comet_sungrazer.mp4",
+    "title": "Un vagabundo congelado se despierta",
+    "text": "Un vagabundo congelado se despierta",
+    "sourceDeck": "space",
+    "sourceIndex": 103,
+    "sourceTitle": "A Frozen Wanderer Wakes Up",
+    "sourceText": "A Frozen Wanderer Wakes Up",
+    "localization": "es"
+  },
+  {
+    "file": "space/webb_deepfield.mp4",
+    "title": "Viendo las primeras galaxias",
+    "text": "Viendo las primeras galaxias",
+    "sourceDeck": "space",
+    "sourceIndex": 104,
+    "sourceTitle": "Seeing the First Galaxies",
+    "sourceText": "Seeing the First Galaxies",
+    "localization": "es"
+  },
+  {
+    "file": "space/helio_solarwind.mp4",
+    "title": "Una tormenta en todo el sistema solar",
+    "text": "Una tormenta en todo el sistema solar",
+    "sourceDeck": "space",
+    "sourceIndex": 105,
+    "sourceTitle": "A Storm Across the Solar System",
+    "sourceText": "A Storm Across the Solar System",
+    "localization": "es"
+  },
+  {
+    "file": "space/what_the_accretion_disk_really.mp4",
+    "title": "¿Qué es realmente el disco de acreción?",
+    "text": "¿Qué es realmente el disco de acreción?",
+    "sourceDeck": "space",
+    "sourceIndex": 106,
+    "sourceTitle": "What the accretion disk really is",
+    "sourceText": "What the accretion disk really is",
+    "localization": "es"
+  },
+  {
+    "file": "space/a_detector_floated_to_earth_s_.mp4",
+    "title": "Un detector flotó hasta el borde de la Tierra",
+    "text": "Un detector flotó hasta el borde de la Tierra",
+    "sourceDeck": "space",
+    "sourceIndex": 107,
+    "sourceTitle": "A Detector Floated to Earth's Edge",
+    "sourceText": "A Detector Floated to Earth's Edge",
+    "localization": "es"
+  },
+  {
+    "file": "space/95_of_the_universe_is_invisibl.mp4",
+    "title": "El 95% del universo es invisible.",
+    "text": "El 95% del universo es invisible.",
+    "sourceDeck": "space",
+    "sourceIndex": 108,
+    "sourceTitle": "95% of the universe is invisible",
+    "sourceText": "95% of the universe is invisible",
+    "localization": "es"
+  },
+  {
+    "file": "space/built_for_3_years_still_runnin.mp4",
+    "title": "Construido durante 3 años, todavía funcionando a los 8.",
+    "text": "Construido durante 3 años, todavía funcionando a los 8.",
+    "sourceDeck": "space",
+    "sourceIndex": 109,
+    "sourceTitle": "Built for 3 years, still running at 8",
+    "sourceText": "Built for 3 years, still running at 8",
+    "localization": "es"
+  },
+  {
+    "file": "space/why_the_sun_triggers_earth_s_a.mp4",
+    "title": "Por qué el Sol provoca las auroras de la Tierra",
+    "text": "Por qué el Sol provoca las auroras de la Tierra",
+    "sourceDeck": "space",
+    "sourceIndex": 110,
+    "sourceTitle": "Why the Sun triggers Earth's auroras",
+    "sourceText": "Why the Sun triggers Earth's auroras",
+    "localization": "es"
+  },
+  {
+    "file": "space/solar_wind_smacks_into_earth_s.mp4",
+    "title": "El viento solar choca contra el escudo de la Tierra",
+    "text": "El viento solar choca contra el escudo de la Tierra",
+    "sourceDeck": "space",
+    "sourceIndex": 111,
+    "sourceTitle": "Solar wind smacks into Earth's shield",
+    "sourceText": "Solar wind smacks into Earth's shield",
+    "localization": "es"
+  },
+  {
+    "file": "space/why_nasa_flew_a_probe_into_the.mp4",
+    "title": "Por qué la NASA lanzó una sonda al Sol",
+    "text": "Por qué la NASA lanzó una sonda al Sol",
+    "sourceDeck": "space",
+    "sourceIndex": 112,
+    "sourceTitle": "Why NASA flew a probe into the Sun",
+    "sourceText": "Why NASA flew a probe into the Sun",
+    "localization": "es"
+  },
+  {
+    "file": "space/cosmic_rays_from_dying_stars_h.mp4",
+    "title": "Los rayos cósmicos de estrellas moribundas llegan a la Tierra",
+    "text": "Los rayos cósmicos de estrellas moribundas llegan a la Tierra",
+    "sourceDeck": "space",
+    "sourceIndex": 113,
+    "sourceTitle": "Cosmic rays from dying stars hit Earth",
+    "sourceText": "Cosmic rays from dying stars hit Earth",
+    "localization": "es"
+  },
+  {
+    "file": "space/nutrition_in_the_vastness_of_s.mp4",
+    "title": "Nutrición en la inmensidad del espacio.",
+    "text": "Nutrición en la inmensidad del espacio.",
+    "sourceDeck": "space",
+    "sourceIndex": 114,
+    "sourceTitle": "Nutrition in the vastness of space",
+    "sourceText": "Nutrition in the vastness of space",
+    "localization": "es"
+  },
+  {
+    "file": "space/the_moon_remembers_what_earth_.mp4",
+    "title": "La Luna recuerda lo que la Tierra olvidó",
+    "text": "La Luna recuerda lo que la Tierra olvidó",
+    "sourceDeck": "space",
+    "sourceIndex": 115,
+    "sourceTitle": "The Moon remembers what Earth forgot",
+    "sourceText": "The Moon remembers what Earth forgot",
+    "localization": "es"
+  },
+  {
+    "file": "space/one_small_step_50_years_on.mp4",
+    "title": "Un pequeño paso, 50 años después",
+    "text": "Un pequeño paso, 50 años después",
+    "sourceDeck": "space",
+    "sourceIndex": 116,
+    "sourceTitle": "One small step, 50 years on",
+    "sourceText": "One small step, 50 years on",
+    "localization": "es"
+  },
+  {
+    "file": "space/mining_the_moon_the_next_space.mp4",
+    "title": "Minería de la Luna: el próximo negocio espacial",
+    "text": "Minería de la Luna: el próximo negocio espacial",
+    "sourceDeck": "space",
+    "sourceIndex": 117,
+    "sourceTitle": "Mining the Moon: the next space business",
+    "sourceText": "Mining the Moon: the next space business",
+    "localization": "es"
+  },
+  {
+    "file": "space/solar_arrays_that_roll_out_in_.mp4",
+    "title": "Paneles solares que se despliegan en el espacio",
+    "text": "Paneles solares que se despliegan en el espacio",
+    "sourceDeck": "space",
+    "sourceIndex": 118,
+    "sourceTitle": "Solar arrays that roll out in space",
+    "sourceText": "Solar arrays that roll out in space",
+    "localization": "es"
+  },
+  {
+    "file": "space/how_nasa_grows_a_garden_in_spa.mp4",
+    "title": "Cómo la NASA cultiva un jardín en el espacio",
+    "text": "Cómo la NASA cultiva un jardín en el espacio",
+    "sourceDeck": "space",
+    "sourceIndex": 119,
+    "sourceTitle": "How NASA grows a garden in space",
+    "sourceText": "How NASA grows a garden in space",
+    "localization": "es"
+  },
+  {
+    "file": "space/a_lab_grown_human_organ_within.mp4",
+    "title": "¿Un órgano humano cultivado en laboratorio en una década?",
+    "text": "¿Un órgano humano cultivado en laboratorio en una década?",
+    "sourceDeck": "space",
+    "sourceIndex": 120,
+    "sourceTitle": "A lab-grown human organ within a decade?",
+    "sourceText": "A lab-grown human organ within a decade?",
+    "localization": "es"
+  },
+  {
+    "file": "space/lightning_that_shoots_up_and_g.mp4",
+    "title": "Rayo que se dispara hacia ARRIBA y se ilumina en rojo",
+    "text": "Rayo que se dispara hacia ARRIBA y se ilumina en rojo",
+    "sourceDeck": "space",
+    "sourceIndex": 121,
+    "sourceTitle": "Lightning that shoots UP and glows red",
+    "sourceText": "Lightning that shoots UP and glows red",
+    "localization": "es"
+  },
+  {
+    "file": "space/two_black_holes_locked_in_a_de.mp4",
+    "title": "Dos agujeros negros atrapados en una espiral de muerte",
+    "text": "Dos agujeros negros atrapados en una espiral de muerte",
+    "sourceDeck": "space",
+    "sourceIndex": 122,
+    "sourceTitle": "Two Black Holes Locked in a Death Spiral",
+    "sourceText": "Two Black Holes Locked in a Death Spiral",
+    "localization": "es"
+  },
+  {
+    "file": "space/gravity_so_strong_it_bends_spa.mp4",
+    "title": "Gravedad tan fuerte que dobla el espacio-tiempo",
+    "text": "Gravedad tan fuerte que dobla el espacio-tiempo",
+    "sourceDeck": "space",
+    "sourceIndex": 123,
+    "sourceTitle": "Gravity So Strong It Bends Space-Time",
+    "sourceText": "Gravity So Strong It Bends Space-Time",
+    "localization": "es"
+  },
+  {
+    "file": "space/how_we_hunt_invisible_cosmic_m.mp4",
+    "title": "Cómo cazamos monstruos cósmicos invisibles",
+    "text": "Cómo cazamos monstruos cósmicos invisibles",
+    "sourceDeck": "space",
+    "sourceIndex": 124,
+    "sourceTitle": "How we hunt invisible cosmic monsters",
+    "sourceText": "How we hunt invisible cosmic monsters",
+    "localization": "es"
+  },
+  {
+    "file": "space/a_pulsar_spins_1000s_of_times_.mp4",
+    "title": "Un púlsar gira miles de veces por segundo",
+    "text": "Un púlsar gira miles de veces por segundo",
+    "sourceDeck": "space",
+    "sourceIndex": 125,
+    "sourceTitle": "A Pulsar Spins 1000s of Times a Second",
+    "sourceText": "A Pulsar Spins 1000s of Times a Second",
+    "localization": "es"
+  },
+  {
+    "file": "space/the_cosmic_wall_where_light_hi.mp4",
+    "title": "El muro cósmico donde la luz alcanza su límite",
+    "text": "El muro cósmico donde la luz alcanza su límite",
+    "sourceDeck": "space",
+    "sourceIndex": 126,
+    "sourceTitle": "The Cosmic Wall Where Light Hits Its Limit",
+    "sourceText": "The Cosmic Wall Where Light Hits Its Limit",
+    "localization": "es"
+  },
+  {
+    "file": "space/black_hole_jets_light_up_the_c.mp4",
+    "title": "Los chorros de agujeros negros iluminan el cosmos",
+    "text": "Los chorros de agujeros negros iluminan el cosmos",
+    "sourceDeck": "space",
+    "sourceIndex": 127,
+    "sourceTitle": "Black-hole jets light up the cosmos",
+    "sourceText": "Black-hole jets light up the cosmos",
+    "localization": "es"
+  },
+  {
+    "file": "space/stars_forged_the_universe_s_ir.mp4",
+    "title": "Las estrellas forjaron el hierro del universo",
+    "text": "Las estrellas forjaron el hierro del universo",
+    "sourceDeck": "space",
+    "sourceIndex": 128,
+    "sourceTitle": "Stars forged the universe's iron",
+    "sourceText": "Stars forged the universe's iron",
+    "localization": "es"
+  },
+  {
+    "file": "space/nasa_s_new_infrared_look_at_ou.mp4",
+    "title": "La nueva mirada infrarroja de la NASA a nuestra galaxia",
+    "text": "La nueva mirada infrarroja de la NASA a nuestra galaxia",
+    "sourceDeck": "space",
+    "sourceIndex": 129,
+    "sourceTitle": "NASA's New Infrared Look at Our Galaxy",
+    "sourceText": "NASA's New Infrared Look at Our Galaxy",
+    "localization": "es"
+  },
+  {
+    "file": "space/inside_the_milky_way_s_black_h.mp4",
+    "title": "Dentro del corazón del agujero negro de la Vía Láctea",
+    "text": "Dentro del corazón del agujero negro de la Vía Láctea",
+    "sourceDeck": "space",
+    "sourceIndex": 130,
+    "sourceTitle": "Inside the Milky Way's Black-Hole Heart",
+    "sourceText": "Inside the Milky Way's Black-Hole Heart",
+    "localization": "es"
+  },
+  {
+    "file": "space/how_saturn_is_raining_its_ring.mp4",
+    "title": "Cómo Saturno está haciendo llover sus anillos",
+    "text": "Cómo Saturno está haciendo llover sus anillos",
+    "sourceDeck": "space",
+    "sourceIndex": 131,
+    "sourceTitle": "How Saturn Is Raining Its Rings Away",
+    "sourceText": "How Saturn Is Raining Its Rings Away",
+    "localization": "es"
+  },
+  {
+    "file": "space/saturn_s_rings_will_be_gone_in.mp4",
+    "title": "Los anillos de Saturno desaparecerán en 300 millones de años",
+    "text": "Los anillos de Saturno desaparecerán en 300 millones de años",
+    "sourceDeck": "space",
+    "sourceIndex": 132,
+    "sourceTitle": "Saturn's Rings Will Be Gone in 300M Years",
+    "sourceText": "Saturn's Rings Will Be Gone in 300M Years",
+    "localization": "es"
+  },
+  {
+    "file": "space/a_storm_that_wrapped_around_sa.mp4",
+    "title": "Una tormenta que envolvió a Saturno",
+    "text": "Una tormenta que envolvió a Saturno",
+    "sourceDeck": "space",
+    "sourceIndex": 133,
+    "sourceTitle": "A Storm That Wrapped Around Saturn",
+    "sourceText": "A Storm That Wrapped Around Saturn",
+    "localization": "es"
+  },
+  {
+    "file": "space/8_years_in_orbit_140_billion_c.mp4",
+    "title": "8 años en órbita, 140 mil millones de rayos cósmicos",
+    "text": "8 años en órbita, 140 mil millones de rayos cósmicos",
+    "sourceDeck": "space",
+    "sourceIndex": 134,
+    "sourceTitle": "8 years in orbit, 140 billion cosmic rays",
+    "sourceText": "8 years in orbit, 140 billion cosmic rays",
+    "localization": "es"
+  },
+  {
+    "file": "space/mars_hills_so_stunning_they_d_.mp4",
+    "title": "Mars Hills es tan impresionante que sería un parque",
+    "text": "Mars Hills es tan impresionante que sería un parque",
+    "sourceDeck": "space",
+    "sourceIndex": 135,
+    "sourceTitle": "Mars Hills So Stunning They'd Be a Park",
+    "sourceText": "Mars Hills So Stunning They'd Be a Park",
+    "localization": "es"
+  },
+  {
+    "file": "space/nasa_s_target_a_crater_3_parki.mp4",
+    "title": "El objetivo de la NASA: un cráter de 3 plazas de ancho",
+    "text": "El objetivo de la NASA: un cráter de 3 plazas de ancho",
+    "sourceDeck": "space",
+    "sourceIndex": 136,
+    "sourceTitle": "NASA's target: a crater 3 parking spaces wide",
+    "sourceText": "NASA's target: a crater 3 parking spaces wide",
+    "localization": "es"
+  },
+  {
+    "file": "space/how_a_spacecraft_grabs_an_aste.mp4",
+    "title": "Cómo una nave espacial atrapa un asteroide en segundos",
+    "text": "Cómo una nave espacial atrapa un asteroide en segundos",
+    "sourceDeck": "space",
+    "sourceIndex": 137,
+    "sourceTitle": "How a spacecraft grabs an asteroid in seconds",
+    "sourceText": "How a spacecraft grabs an asteroid in seconds",
+    "localization": "es"
+  },
+  {
+    "file": "space/how_nasa_will_grab_a_piece_of_.mp4",
+    "title": "Cómo la NASA agarrará un trozo de asteroide",
+    "text": "Cómo la NASA agarrará un trozo de asteroide",
+    "sourceDeck": "space",
+    "sourceIndex": 138,
+    "sourceTitle": "How NASA will grab a piece of an asteroid",
+    "sourceText": "How NASA will grab a piece of an asteroid",
+    "localization": "es"
+  },
+  {
+    "file": "space/the_asteroid_site_with_a_myste.mp4",
+    "title": "El sitio del asteroide con una misteriosa mancha oscura",
+    "text": "El sitio del asteroide con una misteriosa mancha oscura",
+    "sourceDeck": "space",
+    "sourceIndex": 139,
+    "sourceTitle": "The asteroid site with a mysterious dark patch",
+    "sourceText": "The asteroid site with a mysterious dark patch",
+    "localization": "es"
+  },
+  {
+    "file": "space/what_bennu_really_looked_like_.mp4",
+    "title": "Cómo se veía realmente Bennu de cerca",
+    "text": "Cómo se veía realmente Bennu de cerca",
+    "sourceDeck": "space",
+    "sourceIndex": 140,
+    "sourceTitle": "What Bennu Really Looked Like Up Close",
+    "sourceText": "What Bennu Really Looked Like Up Close",
+    "localization": "es"
+  },
+  {
+    "file": "space/aurora_with_the_energy_of_an_e.mp4",
+    "title": "Aurora con la energía de un terremoto",
+    "text": "Aurora con la energía de un terremoto",
+    "sourceDeck": "space",
+    "sourceIndex": 141,
+    "sourceTitle": "Aurora With the Energy of an Earthquake",
+    "sourceText": "Aurora With the Energy of an Earthquake",
+    "localization": "es"
+  },
+  {
+    "file": "space/37_miles_a_second_into_jupiter.mp4",
+    "title": "37 millas por segundo hacia Júpiter",
+    "text": "37 millas por segundo hacia Júpiter",
+    "sourceDeck": "space",
+    "sourceIndex": 142,
+    "sourceTitle": "37 Miles a Second Into Jupiter",
+    "sourceText": "37 Miles a Second Into Jupiter",
+    "localization": "es"
+  },
+  {
+    "file": "space/titan_lakes.mp4",
+    "title": "Lagos hechos de metano líquido",
+    "text": "Lagos hechos de metano líquido",
+    "sourceDeck": "space",
+    "sourceIndex": 143,
+    "sourceTitle": "Lakes Made of Liquid Methane",
+    "sourceText": "Lakes Made of Liquid Methane",
+    "localization": "es"
+  },
+  {
+    "file": "space/lucy_trojans.mp4",
+    "title": "Fósiles que comparten la órbita de Júpiter",
+    "text": "Fósiles que comparten la órbita de Júpiter",
+    "sourceDeck": "space",
+    "sourceIndex": 144,
+    "sourceTitle": "Fossils Sharing Jupiter's Orbit",
+    "sourceText": "Fossils Sharing Jupiter's Orbit",
+    "localization": "es"
+  },
+  {
+    "file": "space/aurora_orbit.mp4",
+    "title": "Auroras vistas desde arriba",
+    "text": "Auroras vistas desde arriba",
+    "sourceDeck": "space",
+    "sourceIndex": 145,
+    "sourceTitle": "Auroras Seen From Above",
+    "sourceText": "Auroras Seen From Above",
+    "localization": "es"
+  },
+  {
+    "file": "space/earth_magnetosphere.mp4",
+    "title": "El escudo invisible de la Tierra",
+    "text": "El escudo invisible de la Tierra",
+    "sourceDeck": "space",
+    "sourceIndex": 146,
+    "sourceTitle": "Earth's Invisible Shield",
+    "sourceText": "Earth's Invisible Shield",
+    "localization": "es"
+  },
+  {
+    "file": "space/oort_cloud.mp4",
+    "title": "El caparazón del cometa alrededor del sol",
+    "text": "El caparazón del cometa alrededor del sol",
+    "sourceDeck": "space",
+    "sourceIndex": 147,
+    "sourceTitle": "The Comet Shell Around the Sun",
+    "sourceText": "The Comet Shell Around the Sun",
+    "localization": "es"
+  },
+  {
+    "file": "space/moon_libration_2026.mp4",
+    "title": "La Luna nunca muestra la misma cara dos veces",
+    "text": "La Luna nunca muestra la misma cara dos veces",
+    "sourceDeck": "space",
+    "sourceIndex": 148,
+    "sourceTitle": "The Moon Never Shows the Same Face Twice",
+    "sourceText": "The Moon Never Shows the Same Face Twice",
+    "localization": "es"
+  },
+  {
+    "file": "space/night_lights_change.mp4",
+    "title": "Las ciudades de la Tierra brillan desde el espacio",
+    "text": "Las ciudades de la Tierra brillan desde el espacio",
+    "sourceDeck": "space",
+    "sourceIndex": 149,
+    "sourceTitle": "Earth's Cities Glow From Space",
+    "sourceText": "Earth's Cities Glow From Space",
+    "localization": "es"
+  },
+  {
+    "file": "space/spinning_earth_at_night.mp4",
+    "title": "Un delgado mundo azul en la oscuridad",
+    "text": "Un delgado mundo azul en la oscuridad",
+    "sourceDeck": "space",
+    "sourceIndex": 150,
+    "sourceTitle": "A Thin Blue World in the Dark",
+    "sourceText": "A Thin Blue World in the Dark",
+    "localization": "es"
+  },
+  {
+    "file": "space/water_cycle_extremes.mp4",
+    "title": "El agua se mueve como un pulso planetario",
+    "text": "El agua se mueve como un pulso planetario",
+    "sourceDeck": "space",
+    "sourceIndex": 151,
+    "sourceTitle": "Water Moves Like a Planetary Pulse",
+    "sourceText": "Water Moves Like a Planetary Pulse",
+    "localization": "es"
+  },
+  {
+    "file": "space/sea_surface_temperature.mp4",
+    "title": "El océano mantiene el calor de la Tierra",
+    "text": "El océano mantiene el calor de la Tierra",
+    "sourceDeck": "space",
+    "sourceIndex": 152,
+    "sourceTitle": "The Ocean Keeps Earth's Heat",
+    "sourceText": "The Ocean Keeps Earth's Heat",
+    "localization": "es"
+  },
+  {
+    "file": "space/ocean_current_rivers.mp4",
+    "title": "Ríos escondidos dentro del océano",
+    "text": "Ríos escondidos dentro del océano",
+    "sourceDeck": "space",
+    "sourceIndex": 153,
+    "sourceTitle": "Rivers Hidden Inside the Ocean",
+    "sourceText": "Rivers Hidden Inside the Ocean",
+    "localization": "es"
+  },
+  {
+    "file": "space/co2_atmosphere.mp4",
+    "title": "Dióxido de carbono extraído en el aire",
+    "text": "Dióxido de carbono extraído en el aire",
+    "sourceDeck": "space",
+    "sourceIndex": 154,
+    "sourceTitle": "Carbon Dioxide Drawn in the Air",
+    "sourceText": "Carbon Dioxide Drawn in the Air",
+    "localization": "es"
+  },
+  {
+    "file": "space/black_hole_inspiral.mp4",
+    "title": "Un pequeño agujero negro gira en espiral",
+    "text": "Un pequeño agujero negro gira en espiral",
+    "sourceDeck": "space",
+    "sourceIndex": 155,
+    "sourceTitle": "A Small Black Hole Spirals In",
+    "sourceText": "A Small Black Hole Spirals In",
+    "localization": "es"
+  },
+  {
+    "file": "space/long_gamma_burst.mp4",
+    "title": "Un agujero negro se come una estrella durante meses",
+    "text": "Un agujero negro se come una estrella durante meses",
+    "sourceDeck": "space",
+    "sourceIndex": 156,
+    "sourceTitle": "A Black Hole Eats a Star for Months",
+    "sourceText": "A Black Hole Eats a Star for Months",
+    "localization": "es"
+  },
+  {
+    "file": "space/solar_flare_2024.mp4",
+    "title": "Una llamarada explota desde una mancha solar",
+    "text": "Una llamarada explota desde una mancha solar",
+    "sourceDeck": "space",
+    "sourceIndex": 157,
+    "sourceTitle": "A Flare Explodes From One Sunspot",
+    "sourceText": "A Flare Explodes From One Sunspot",
+    "localization": "es"
+  },
+  {
+    "file": "space/geos_aerosols.mp4",
+    "title": "El polvo y el humo cabalgan sobre los vientos",
+    "text": "El polvo y el humo cabalgan sobre los vientos",
+    "sourceDeck": "space",
+    "sourceIndex": 158,
+    "sourceTitle": "Dust and Smoke Ride the Winds",
+    "sourceText": "Dust and Smoke Ride the Winds",
+    "localization": "es"
+  },
+  {
+    "file": "space/sea_ice_extent_2025.mp4",
+    "title": "El hielo marino respira con las estaciones",
+    "text": "El hielo marino respira con las estaciones",
+    "sourceDeck": "space",
+    "sourceIndex": 159,
+    "sourceTitle": "Sea Ice Breathes With the Seasons",
+    "sourceText": "Sea Ice Breathes With the Seasons",
+    "localization": "es"
+  },
+  {
+    "file": "space/ring_current_magnetosphere.mp4",
+    "title": "Un anillo oculto de partículas cargadas",
+    "text": "Un anillo oculto de partículas cargadas",
+    "sourceDeck": "space",
+    "sourceIndex": 160,
+    "sourceTitle": "A Hidden Ring of Charged Particles",
+    "sourceText": "A Hidden Ring of Charged Particles",
+    "localization": "es"
+  },
+  {
+    "file": "space/europa_ocean.mp4",
+    "title": "Un océano encerrado bajo el hielo",
+    "text": "Un océano encerrado bajo el hielo",
+    "sourceDeck": "space",
+    "sourceIndex": 161,
+    "sourceTitle": "An Ocean Locked Under Ice",
+    "sourceText": "An Ocean Locked Under Ice",
+    "localization": "es"
+  },
+  {
+    "file": "space/mercury_messenger.mp4",
+    "title": "Mercurio, chamuscado y congelado",
+    "text": "Mercurio, chamuscado y congelado",
+    "sourceDeck": "space",
+    "sourceIndex": 162,
+    "sourceTitle": "Mercury, Scorched and Frozen",
+    "sourceText": "Mercury, Scorched and Frozen",
+    "localization": "es"
+  },
+  {
+    "file": "space/uranus_tilt.mp4",
+    "title": "El planeta golpeado de lado",
+    "text": "El planeta golpeado de lado",
+    "sourceDeck": "space",
+    "sourceIndex": 163,
+    "sourceTitle": "The Planet Knocked Sideways",
+    "sourceText": "The Planet Knocked Sideways",
+    "localization": "es"
+  },
+  {
+    "file": "space/globular_cluster.mp4",
+    "title": "Un millón de estrellas antiguas",
+    "text": "Un millón de estrellas antiguas",
+    "sourceDeck": "space",
+    "sourceIndex": 164,
+    "sourceTitle": "A Million Ancient Stars",
+    "sourceText": "A Million Ancient Stars",
+    "localization": "es"
+  },
+  {
+    "file": "space/kuiper_belt.mp4",
+    "title": "El anillo helado más allá de Neptuno",
+    "text": "El anillo helado más allá de Neptuno",
+    "sourceDeck": "space",
+    "sourceIndex": 165,
+    "sourceTitle": "The Frozen Ring Beyond Neptune",
+    "sourceText": "The Frozen Ring Beyond Neptune",
+    "localization": "es"
+  },
+  {
+    "file": "space/pluto_flyby.mp4",
+    "title": "Volando sobre el corazón de Plutón",
+    "text": "Volando sobre el corazón de Plutón",
+    "sourceDeck": "space",
+    "sourceIndex": 166,
+    "sourceTitle": "Flying Over Pluto's Heart",
+    "sourceText": "Flying Over Pluto's Heart",
+    "localization": "es"
+  },
+  {
+    "file": "space/enceladus_geysers.mp4",
+    "title": "Una luna rociando su océano",
+    "text": "Una luna rociando su océano",
+    "sourceDeck": "space",
+    "sourceIndex": 167,
+    "sourceTitle": "A Moon Spraying Its Ocean",
+    "sourceText": "A Moon Spraying Its Ocean",
+    "localization": "es"
+  },
+  {
+    "file": "space/venus_hell.mp4",
+    "title": "El planeta que se convirtió en horno",
+    "text": "El planeta que se convirtió en horno",
+    "sourceDeck": "space",
+    "sourceIndex": 168,
+    "sourceTitle": "The Planet That Became a Furnace",
+    "sourceText": "The Planet That Became a Furnace",
+    "localization": "es"
+  },
+  {
+    "file": "space/voyager_interstellar.mp4",
+    "title": "Más allá de la burbuja del sol",
+    "text": "Más allá de la burbuja del sol",
+    "sourceDeck": "space",
+    "sourceIndex": 169,
+    "sourceTitle": "Beyond the Sun's Bubble",
+    "sourceText": "Beyond the Sun's Bubble",
+    "localization": "es"
+  },
+  {
+    "file": "space/bennu_asteroid.mp4",
+    "title": "Una muestra anterior a la Tierra",
+    "text": "Una muestra anterior a la Tierra",
+    "sourceDeck": "space",
+    "sourceIndex": 170,
+    "sourceTitle": "A Sample From Before Earth",
+    "sourceText": "A Sample From Before Earth",
+    "localization": "es"
+  },
+  {
+    "file": "space/neptune_winds.mp4",
+    "title": "Los vientos más rápidos alrededor de un planeta",
+    "text": "Los vientos más rápidos alrededor de un planeta",
+    "sourceDeck": "space",
+    "sourceIndex": 171,
+    "sourceTitle": "The Fastest Winds Around a Planet",
+    "sourceText": "The Fastest Winds Around a Planet",
+    "localization": "es"
+  }
+]

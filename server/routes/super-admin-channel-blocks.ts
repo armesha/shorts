@@ -166,6 +166,7 @@ const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
   },
   facts_space: {
     en: ["fact-en", "space"],
+    es: ["fact-es", "space-es"],
   },
 };
 

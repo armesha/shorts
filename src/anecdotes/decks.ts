@@ -520,6 +520,18 @@ export const DECKS: Deck[] = [
     adminOnly: true, // pre-built video pack — admin-only
     preFact: true,
   },
+  {
+    id: "fact-es",
+    name: "Datos curiosos",
+    dir: "data/fact-videos-es", // Spanish title/text; generation rebuilds source footage with ES overlay + edge-tts
+    source: "Localized from data/fact-videos/videos.json; see data/fact-videos-es/sources.json",
+    emoji: "🤯",
+    hashtags: "#datoscuriosos #sabiasque #curiosidades #hechosasombrosos #shorts",
+    tags: ["datos curiosos", "sabias que", "curiosidades", "hechos asombrosos", "ciencia", "shorts"],
+    genericTitles: ["¿Sabías que?", "Dato curioso", "Hecho asombroso", "No lo vas a creer"],
+    adminOnly: true,
+    preFact: true,
+  },
   quoteDeck({
     id: "quotes-ru",
     name: "Цитаты великих людей",
@@ -748,6 +760,19 @@ export const DECKS: Deck[] = [
     tags: ["space", "nasa", "astronomy", "universe", "cosmos", "science", "shorts"],
     genericTitles: ["Space", "The Universe", "Cosmos", "Deep Space"],
     adminOnly: true, // pre-built montage pack — admin grants it to regular users from /users
+    grantable: true,
+    preFact: true,
+  },
+  {
+    id: "space-es",
+    name: "Espacio",
+    dir: "data/space-es", // Spanish title/text; generation rebuilds source footage with ES overlay + edge-tts
+    source: "Localized from data/space/videos.json; see data/space-es/sources.json",
+    emoji: "🚀",
+    hashtags: "#espacio #nasa #astronomia #universo #cosmos #shorts",
+    tags: ["espacio", "nasa", "astronomia", "universo", "cosmos", "ciencia", "shorts"],
+    genericTitles: ["Espacio", "El universo", "Cosmos", "Espacio profundo"],
+    adminOnly: true,
     grantable: true,
     preFact: true,
   },
@@ -1060,7 +1085,7 @@ export function isPackDeckId(id?: string | null): boolean {
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ar: "ar", hi: "hi", id: "id", choose: "ru",
-  tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "quotes-ru": "ru", "quotes-ar": "ar", "quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
+  tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-es": "es", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar",
 };
 export function deckLang(id: string): string {

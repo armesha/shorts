@@ -28,6 +28,8 @@ test("deckLang maps built-in decks; '' for packs/unknown", () => {
   assert.equal(deckLang("quote-video-id"), "id");
   assert.equal(deckLang("quote-video-ar"), "ar");
   assert.equal(deckLang("quote-video-de"), "de");
+  assert.equal(deckLang("fact-es"), "es");
+  assert.equal(deckLang("space-es"), "es");
   assert.equal(deckLang("memes-pt"), "pt");
   assert.equal(deckLang("memes-es"), "es");
   assert.equal(deckLang("memes-hi"), "hi");

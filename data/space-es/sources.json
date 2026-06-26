@@ -1,0 +1,8 @@
+{
+  "generatedAt": "2026-06-26T08:19:33.804Z",
+  "deck": "space-es",
+  "sourceDeck": "space",
+  "sourceFile": "data/space/videos.json",
+  "note": "Spanish title/text localization of Space. Generation rebuilds the chosen source video with Spanish overlay and edge-tts voiceover.",
+  "rights": "Uses existing local pre-built videos as source footage. Live generation rebuilds the selected video with Spanish overlay text and edge-tts voiceover instead of publishing the English audio/caption track."
+}

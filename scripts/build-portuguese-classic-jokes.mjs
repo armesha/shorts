@@ -4,7 +4,9 @@ import { resolve } from "node:path";
 
 const OUT_DIR = resolve(process.cwd(), "data/anecdotes-pt");
 const PACK_SIZE = 300;
-const TARGET = 140;
+const TARGET = 210;
+const FETCH_CONCURRENCY = 4;
+const MAX_CARDS_PER_PAGE = 3;
 
 const SOURCE_SETS = [
   {
@@ -14,31 +16,74 @@ const SOURCE_SETS = [
     author: "F. Adolpho Coelho",
     year: 1879,
     sourceUrl: "https://pt.wikisource.org/wiki/Contos_Populares_Portuguezes",
+    curatedOnly: true,
     rights:
       "Original public-domain by age (1879). Text extracted from Portuguese Wikisource pages; keep attribution ledger.",
     pageTitles: [
+      "A Bella-menina",
+      "A bicha de sete cabeças",
+      "A cacheirinha",
+      "A engeitada",
       "A formiga e a neve",
+      "A herança paterna",
+      "A machadinha",
+      "A menina e o figo",
+      "A pelle de piolho",
+      "A pelle do piolho",
+      "A princeza abandonada",
       "A raposa e o lobo",
+      "A romanzeira do macaco",
+      "A sina",
+      "A torre de Babylonia",
+      "A velha e os lobos",
+      "A velha fadada",
+      "As filhas dos dois validos",
       "As tres lebres",
+      "Branca-flor",
+      "Carneirinho branco",
+      "Comera um bocadinho se tivera limão",
       "Comêra um bocadinho se tivera limão",
+      "Conto do fuso",
+      "Esvintola",
       "Historia da carochinha",
+      "Historia do compadre pobre e do compadre rico",
       "Historia do grão-de-milho",
       "João Mandrião",
       "João Pequenito",
+      "Maria Silva",
+      "O Conde de Paris",
+      "O Rabil",
       "O burro do azeiteiro",
       "O coelhinho branco",
       "O coelho e o gato",
+      "O colhereiro",
       "O compadre lobo e a comadre raposa",
+      "O conde encantado",
+      "O creado do estrujeitante",
       "O cuco e a popa",
       "O gallo e o pinto",
+      "O homem que busca estremecer",
+      "O menino assafroado",
+      "O menino e a lua",
       "O ovo partido",
       "O pinto borrachudo",
       "O preço dos ovos",
+      "O principe com orelhas de burro",
+      "O principe das Palmas-verdes",
+      "O principe sapo",
       "O rabo do gato",
+      "O retrato da princeza",
+      "Os dois irmãos",
       "Os dois mentirosos",
       "Os figos verdes",
+      "Os meninos perdidos",
+      "Os sapatinhos encantados",
+      "Os simplorios",
       "Patranha",
+      "Pedro e Pedrito",
+      "Pelle-de-Cavallo",
       "Raposinha gaiteira",
+      "S. Jorge",
       "Sciencia, sabedoria e capacidade",
     ],
   },
@@ -120,27 +165,52 @@ const SOURCE_SETS = [
     rights:
       "Original/public-domain edition by age. Text extracted from Portuguese Wikisource pages; keep attribution ledger.",
     pageTitles: [
-      "I - O gallo e a pedra preciosa",
-      "V - O cão e a posta de carne",
-      "VIII - O lobo e a grua",
-      "XI - O asno e o porco",
-      "XII - O rato da cidade e o da aldeia",
-      "XIV - A aguia e o cágado",
-      "XV - O corvo e a raposa",
-      "XVIII - O calvo e a mosca",
-      "XIX - A raposa e a cegonha",
-      "XXIII - A formiga e a mosca",
-      "XXVI - A rã e o boi",
-      "XXIX - O asno e o cavallo loução",
-      "XXXVII - A vibora e a lima",
-      "XXXIX - O machado e o bosque",
-      "XL - O lobo e o cão nedio",
-      "XLVI - O leão e o rato",
-      "LIV - A terra que pare um rato",
-      "LVI - O senhor e o cão velho",
-      "LVII - As lebres e as rãs",
-      "LVIII - A cabra, o filho e o lobo",
-      "LXIII - O pastor e o lobo",
+      "A aguia e o cágado",
+      "A aguia que arrebata o filho da raposa",
+      "A bugia que pede á raposa um pedaço da cauda",
+      "A cabra, o filho e o lobo",
+      "A cadella que pediu a casa a outra",
+      "A doninha e o homem",
+      "A formiga e a mosca",
+      "A porca prenhe e o lobo",
+      "A rã e o boi",
+      "A terra que pare um rato",
+      "A vibora e a lima",
+      "As lebres e as rãs",
+      "As pombas, o gavião e o minhoto",
+      "Batalha entre as aves e as animalias",
+      "O asno e o cavallo loução",
+      "O asno e o porco",
+      "O azemel, a mosca e a mula",
+      "O calvo e a mosca",
+      "O camponês e o filho",
+      "O cavallo e o leão que se fingia medico",
+      "O cervo e o cabrão",
+      "O cervo e os bois",
+      "O cervo e os seus galhos",
+      "O cordeiro que pasce e o lobo",
+      "O corvo e a raposa",
+      "O corvo enfeitado com as pennas do pavão",
+      "O cão e a posta de carne",
+      "O cão que cita o carneiro em juizo",
+      "O gallo e a pedra preciosa",
+      "O gavião e o rouxinol",
+      "O lavrador e a andorinha",
+      "O leão e o pastor que lhe tira do pé uma espinha",
+      "O leão e o rato",
+      "O leão que vai com outros animaes á caça",
+      "O lobo, o bode e a raposa",
+      "O lobo e a grua",
+      "O lobo e o cordeiro",
+      "O lobo e o cão nedio",
+      "O lobo que accusa a raposa perante o bogio",
+      "O machado e o bosque",
+      "O minhoto doente",
+      "O pastor e o lobo",
+      "O rato, a rã e o minhoto",
+      "O rato da cidade e o da aldeia",
+      "O villão que vae com o asno á feira",
+      "Os membros do corpo e o ventre",
     ],
   },
 ];
@@ -232,8 +302,26 @@ function curatedPages(source) {
 }
 
 async function renderedPage(title) {
-  const j = await api({ action: "parse", prop: "text", page: title });
-  let html = j.parse?.text?.["*"] ?? "";
+  const url = new URL("https://pt.wikisource.org/w/index.php");
+  url.searchParams.set("title", title);
+  url.searchParams.set("action", "render");
+  let html = "";
+  for (let attempt = 1; attempt <= 4; attempt++) {
+    const res = await fetch(url, {
+      headers: { "user-agent": "shareboard-pack-builder/1.0" },
+      signal: AbortSignal.timeout(20_000),
+    });
+    if (res.ok) {
+      html = await res.text();
+      break;
+    }
+    if (![429, 500, 502, 503, 504].includes(res.status) || attempt === 4) {
+      const j = await api({ action: "parse", prop: "text", page: title });
+      html = j.parse?.text?.["*"] ?? "";
+      break;
+    }
+    await sleep(res.status === 429 ? 4_000 * attempt : 1_200 * attempt);
+  }
   const firstPage = html.search(/<span><span[^>]+class="[^"]*\bws-pagenum\b/i);
   const proofreadBody = html.indexOf('<div class="prp-pages-output"');
   if (firstPage >= 0) {
@@ -331,6 +419,15 @@ function stableScore(text) {
   return h >>> 0;
 }
 
+function tooSimilar(a, b) {
+  const aWords = new Set(key(a).split(/\s+/).filter(Boolean));
+  const bWords = new Set(key(b).split(/\s+/).filter(Boolean));
+  if (!aWords.size || !bWords.size) return false;
+  let shared = 0;
+  for (const word of aWords) if (bWords.has(word)) shared++;
+  return shared / Math.min(aWords.size, bWords.size) > 0.45;
+}
+
 function titleFor(pageTitle, text) {
   const leaf = pageTitle.split("/").pop() ?? "Conto clássico";
   const words = leaf
@@ -347,33 +444,51 @@ function titleFor(pageTitle, text) {
   return (textWords.join(" ") || "Conto clássico").slice(0, 56);
 }
 
+async function mapLimit(items, limit, mapper) {
+  const results = new Array(items.length);
+  let nextIndex = 0;
+
+  async function worker() {
+    while (nextIndex < items.length) {
+      const index = nextIndex++;
+      results[index] = await mapper(items[index], index);
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return results;
+}
+
 const sourceCounts = [];
 const cards = [];
 for (const source of SOURCE_SETS) {
   if (source.disabled) continue;
   const pages = curatedPages(source) ?? (await allPages(source.prefix));
-  let selected = 0;
-  for (const [pageIndex, page] of pages.entries()) {
+  const sourceCards = await mapLimit(pages, FETCH_CONCURRENCY, async (page, pageIndex) => {
     console.log(`fetch ${source.id} ${pageIndex + 1}/${pages.length}: ${page}`);
     let text = "";
     try {
       text = stripChrome(await renderedPage(page), page);
       await sleep(120);
     } catch {
-      continue;
+      return [];
     }
+    const pageCards = [];
     for (const piece of candidatePieces(text)) {
       if (!ok(piece, page)) continue;
-      cards.push({
+      if (pageCards.some((card) => tooSimilar(piece, card.text))) continue;
+      pageCards.push({
         text: piece,
         sourceId: source.id,
         sourcePage: page,
         sourceUrl: `https://pt.wikisource.org/wiki/${encodeURIComponent(page).replace(/%2F/g, "/")}`,
       });
-      selected++;
-      break;
+      if (pageCards.length >= MAX_CARDS_PER_PAGE) break;
     }
-  }
+    return pageCards;
+  });
+  const selected = sourceCards.reduce((sum, pageCards) => sum + pageCards.length, 0);
+  cards.push(...sourceCards.flat());
   sourceCounts.push({ id: source.id, title: source.title, pages: pages.length, selected });
 }
 
@@ -397,6 +512,12 @@ const titled = selected.map((card, index) => ({
   sourcePage: card.sourcePage,
   sourceUrl: card.sourceUrl,
 }));
+const finalSourceCounts = Object.entries(
+  titled.reduce((acc, item) => {
+    acc[item.sourceId] = (acc[item.sourceId] ?? 0) + 1;
+    return acc;
+  }, {}),
+).map(([id, selected]) => ({ id, selected }));
 
 mkdirSync(OUT_DIR, { recursive: true });
 for (let i = 0; i < Math.ceil(titled.length / PACK_SIZE); i++) {
@@ -432,6 +553,7 @@ writeFileSync(
         "Original source books are public-domain by age. Text was extracted from Portuguese Wikisource pages; retain attribution/source URLs in the ledger and descriptions when publishing outside this app.",
       generatedAt: new Date().toISOString(),
       sourceCounts,
+      finalSourceCounts,
       sources: SOURCE_SETS.map(({ pageTitles, ...source }) => (source.curatedOnly ? { ...source, pageTitles } : source)),
     },
     null,
@@ -440,4 +562,4 @@ writeFileSync(
 );
 
 console.log(`Portuguese classic humor deck ready: ${titled.length} cards`);
-console.log(JSON.stringify({ sourceCounts }, null, 2));
+console.log(JSON.stringify({ sourceCounts, finalSourceCounts }, null, 2));
