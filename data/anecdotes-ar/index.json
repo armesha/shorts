@@ -1,0 +1,14 @@
+{
+  "total": 71,
+  "packs": 1,
+  "packSize": 300,
+  "target": 90,
+  "range": [
+    151,
+    274
+  ],
+  "safety": {
+    "filters": "Arabic Wikisource source ledger + religion/politics/violence/adult/protected-class/regional-stereotype blocklists + card length/readability checks.",
+    "normalization": "Diacritics, source chains, old scan markers, and named-group/regional labels are mechanically removed or neutralized before selection."
+  }
+}

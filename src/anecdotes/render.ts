@@ -196,7 +196,7 @@ function quoteHtml(input: { quote: string; author: string; lang: string; channel
   const channel = esc(input.channel);
   const portrait = input.portraitDataUri;
   return `<!doctype html>
-<html lang="${esc(lang)}" dir="${rtl ? "rtl" : "ltr"}">
+<html lang="${esc(lang)}">
 <head>
 <meta charset="utf-8" />
 <style>
@@ -230,10 +230,12 @@ function quoteHtml(input: { quote: string; author: string; lang: string; channel
     flex-direction: column;
   }
   .kicker {
+    direction: ${rtl ? "rtl" : "ltr"};
     font: 800 32px/1 "Noto Sans", "Noto Naskh Arabic", sans-serif;
     letter-spacing: 0;
     text-transform: uppercase;
     color: #7b1f1f;
+    text-align: ${rtl ? "right" : "left"};
   }
   .rule {
     width: 132px;
@@ -249,6 +251,8 @@ function quoteHtml(input: { quote: string; author: string; lang: string; channel
   }
   .quote {
     width: 100%;
+    direction: ${rtl ? "rtl" : "ltr"};
+    unicode-bidi: plaintext;
     white-space: pre-wrap;
     font-weight: 800;
     line-height: 1.18;
@@ -257,6 +261,8 @@ function quoteHtml(input: { quote: string; author: string; lang: string; channel
   }
   .author {
     margin-top: 44px;
+    direction: ${rtl ? "rtl" : "ltr"};
+    unicode-bidi: plaintext;
     font: 800 46px/1.15 "Noto Sans", "Noto Naskh Arabic", sans-serif;
     color: #12616a;
     text-align: ${rtl ? "right" : "left"};

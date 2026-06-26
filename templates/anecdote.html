@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{LANG}}" dir="{{DIR}}">
+<html lang="{{LANG}}">
 <head>
 <meta charset="utf-8" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -28,6 +28,8 @@
   .title {
     display: inline-block;
     max-width: 100%;
+    direction: {{DIR}};
+    unicode-bidi: plaintext;
     font-weight: 700;
     font-size: var(--title-size);
     line-height: 1.2;
@@ -50,6 +52,8 @@
   }
   .text {
     width: 100%;
+    direction: {{DIR}};
+    unicode-bidi: plaintext;
     text-align: {{TEXT_ALIGN}};
     line-height: 1.55;
     white-space: pre-wrap;
