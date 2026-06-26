@@ -41,24 +41,58 @@ public-domain книги, Wikisource/Internet Archive/Gutenberg, open-source д�
 Не подставляй автоматически fake text deck для `ar`, `hi`, `id`. Для этих языков нужен отдельный
 ingestion/safety проход:
 
-- `ar`: лучший стартовый кандидат - ACO/Wikisource классические Juha/نوادر источники, например
-  `https://aco.dlib.nyu.edu/book/columbia_aco000613/1` и related ACO Arabic wit and humor records.
-  Не брать сразу `البخلاء` как массовый short-joke corpus: после фильтрации он дает много тяжелой
-  философской прозы, а не короткие анекдоты. Нужна ручная выборка 50-100 cards + религия/оскорбления
-  safety pass. Сухой прогон `أخبار الحمقى والمغفلين`/`التطفيل` по raw Wikisource оставил мало
-  кандидатов, и среди них остались религиозные, грубые или protected-class риски; не подключать их
-  к `JOKE_TEXT_DECK_BY_LANG` без отдельной ручной ревизии. OCR ACO Juha через `tesseract-ocr-ara`
-  на пробных страницах дает частично читаемый, но шумный текст; использовать только как черновик для
-  ручной корректуры, не как автоматический pack builder.
-- `hi`: пока не найден чистый современный Hindi joke corpus с понятной лицензией. Возможен только
-  отдельный пилот "classic fables / witty moral stories" из public-domain `Hitopadesha`/`Panchatantra`
-  или Hindi Wikisource, но это не называть полноценным паком "анекдоты" без ручного отбора.
+- `ar`: лучший стартовый кандидат - QNL Arabic OCR Corpus v2:
+  `https://manara.qnl.qa/articles/dataset/Arabic_OCR_Corpus_2_894_items_from_QNL_Collection_/26984785`.
+  Страница датасета говорит, что OCR сделан из out-of-copyright works, QNL не заявляет copyright на
+  scans/reproductions, metadata CC0. В metadata есть `البخلاء` (`i15827203`, `i15832326`) и
+  `المستطرف`; для source ledger сохраняй и URL датасета, и конкретные QNL repository item URLs.
+  Прямой BookReader OCR endpoint у item-страниц доступен, но spot-check `QNL:00005095` дал сильно
+  шумный постраничный текст; лучше извлекать из `QNL_ArabicOCR_Corpus-v2.zip` или делать ручную
+  корректуру. ACO/Wikisource Juha/نوادر источники остаются кандидатами, но ACO-сканы требуют OCR, а
+  raw Wikisource `أخبار الحمقى والمغفلين`/`التطفيل` уже давал религиозные, грубые или
+  protected-class риски; не подключать их к `JOKE_TEXT_DECK_BY_LANG` без отдельной ручной ревизии.
+- `hi`: пока не найден чистый современный Hindi joke corpus с понятной лицензией. Usable-now путь -
+  Hindi Wikisource `पंचतन्त्र` и отдельные Premchand stories (`बड़े भाई साहब`, `नशा`): страницы
+  помечены PD India / public domain in the USA и дают чистый HTML/export. Но это не современные
+  `चुटकुले`; если делать pack, честно называй его "классические остроумные истории/नीति-कथाएँ" и
+  не подключай как обычные анекдоты без такого позиционирования.
 - `id`: перспективны public-domain Malay/Indonesian witty tales (`Hikayat Abu Nawas`,
   `Hikayat Pelanduk Jenaka`), но часть текста на Wikisource лежит в jawi/старом Malay. Не
   транслитерировать/модернизировать автоматически без отдельной проверки качества; сначала получить
   латинский текст/OCR, затем сделать source ledger и safety pass. Commons PDF для `Hikayat Abu Nawas`
   и `Hikayat Pelanduk Jenaka` проверены: `pdftotext` не извлекает содержимое, нужен OCR/Jawi-проход,
   иначе pack будет гаданием по картинкам.
+
+### Backlog по недостающим joke-языкам
+
+Цель для первого подключения нового joke-языка в блок `jokes_memes` - не "тысячи любой ценой", а
+минимум на неделю публикации при текущем темпе блока и пропорции 80/20. После подключения можно
+расширять, но только тем же source-backed способом.
+
+Проверенные тупики/кандидаты на 2026-06-26:
+
+- `id`: книга `Cherita Jenaka` / `Cerita Jenaka` про Pa' Kadok, Pa' Pandir, Lebai Malang,
+  Pa' Belalang, Si-Lunchai - лучший тематический кандидат, но нужен именно старый public-domain
+  скан/текст. NLB Singapore показывает издание 1957 как `All rights reserved`, его не использовать.
+  Internet Archive по `Cherita Jenaka`/`Cerita Jenaka` не дал готового full-text результата; item
+  `biostor-176273` для `Pa' Pandir` помечен `CC BY-NC 3.0`, поэтому для YouTube/монетизации не
+  подходит. `ms.wikisource.org`/`id.wikisource.org` не содержат готовую страницу этих рассказов.
+- `hi`: `लतायफ़ हिंदी` описывается в `प्रेमसागर`/Wikisource как сборник 100 коротких историй и
+  чуткулов на урду/хинди/брадж, но пока найдено только упоминание, не сам текст. Internet Archive
+  по `लतायफ़ हिंदी`, `लतायफ हिंदी`, `Latayif Hindi`, `Latayif-i Hindi` не дал готового текста.
+  Не брать современные сайты "Hindi jokes" без лицензии. Допустимый fallback - отдельный HI pack из
+  `पंचतन्त्र`/Premchand как witty stories, с честным названием и source ledger.
+- `ar`: QNL Arabic OCR Corpus v2 - лучший технический кандидат для первого source-backed pack:
+  metadata скачивается маленьким CSV, OCR zip большой (~1 GB), поэтому скачивай временно только если
+  реально строишь pack и удаляй после извлечения нужных `.txt`. Random IA Juha/community uploads без
+  rights/license не использовать. Arabic Wikisource содержит `أخبار الحمقى والمغفلين`, `التطفيل` и
+  related `جحا`/`نوادر`, но raw automatic extraction уже давал protected-class, adult/gross и
+  религиозные риски; допустим только отдельный ручной curated pack с safety pass.
+- общий переводной вариант: Project Gutenberg `The Turkish Jester; or, The Pleasantries of Cogia
+  Nasr Eddin Effendi` (`https://www.gutenberg.org/ebooks/16244`) помечен как not copyrighted /
+  public-domain in the USA и подходит как legal source base для будущих localized Nasreddin/Juha-style
+  joke packs. Это не "готовый локальный корпус": перед переводом/адаптацией на `ar`/`hi`/`id` нужен
+  отдельный LLM/localization workflow с вопросом пользователю о модели, source ledger и safety pass.
 
 ## Общее правило озвучки
 
