@@ -35,6 +35,37 @@ test("claimVideoForPost: at-most-once, release re-enables", () => {
   assert.equal(db.claimVideoForPost(v.id), true, "after release it can be claimed again");
 });
 
+test("nextUnpostedVideoForDecks: seeded pick spreads identical queues", () => {
+  const db = openDb(":memory:");
+  const ids: number[] = [];
+  for (let i = 0; i < 8; i += 1) {
+    ids.push(
+      db.createVideo({
+        accountId: 11,
+        title: `t${i}`,
+        text: `x${i}`,
+        bg: "",
+        music: "",
+        deck: "ru",
+        videoRel: `a${i}.mp4`,
+        imageRel: null,
+      }).id,
+    );
+  }
+
+  assert.equal(db.nextUnpostedVideoForDecks(11, ["ru"])?.id, ids[0], "unseeded keeps the old FIFO pick");
+  assert.equal(
+    db.nextUnpostedVideoForDecks(11, ["ru"], "slot-a")?.id,
+    db.nextUnpostedVideoForDecks(11, ["ru"], "slot-a")?.id,
+    "same seed is stable",
+  );
+
+  const picked = new Set(
+    Array.from({ length: 50 }, (_, i) => db.nextUnpostedVideoForDecks(11, ["ru"], `slot-${i}`)?.id).filter(Boolean),
+  );
+  assert.ok(picked.size > 1, "different slot/channel seeds should not collapse to the same FIFO item");
+});
+
 // Per-key daily upload counter (H5) — zero when there is no upload history for the key.
 test("uploadsTodayForKey: zero without any upload history", () => {
   const db = openDb(":memory:");

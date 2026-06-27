@@ -17,7 +17,6 @@ const PACKS = [
     lang: "en",
     src: "data/fact-videos/videos.json",
     label: "FACT",
-    footer: "source-backed fact card",
   },
   {
     id: "static-facts-es-superadmin",
@@ -25,7 +24,6 @@ const PACKS = [
     lang: "es",
     src: "data/fact-videos-es/videos.json",
     label: "DATO",
-    footer: "tarjeta basada en fuente",
   },
 ];
 
@@ -126,10 +124,9 @@ function image(id, src, opacity = 1) {
   return { id, type: "image", x: 0, y: 0, w: 1080, h: 1920, rot: 0, src, fit: "cover", opacity };
 }
 
-function template(name, bg, variant, label, footer) {
+function template(name, bg, variant, label) {
   const dark = bg.includes("observatory");
   const ink = dark ? "#f8fbff" : "#101827";
-  const muted = dark ? "#c9d7ea" : "#556070";
   const accent = dark ? "#f6b85d" : variant % 2 ? "#e14f7b" : "#0f9d8a";
   const panelBg = dark ? "rgba(7,18,36,.74)" : "rgba(255,255,255,.82)";
   const panelBorder = dark ? "2px solid rgba(246,184,93,.48)" : "2px solid rgba(15,24,39,.12)";
@@ -169,7 +166,6 @@ function template(name, bg, variant, label, footer) {
           padX: 42,
           padY: 42,
         }),
-        textElement("footer", 118, 1606, 844, 48, footer, muted, 25, 650, "center"),
       ],
     };
   }
@@ -212,7 +208,6 @@ function template(name, bg, variant, label, footer) {
         lineHeight: 1.3,
       }),
       textElement("rule", 152, 1414, 776, 44, "━━━━━━━━━━━━", accent, 28, 850, "center"),
-      textElement("footer", 118, 1540, 844, 48, footer, muted, 25, 650, "center"),
     ],
   };
 }
@@ -220,8 +215,8 @@ function template(name, bg, variant, label, footer) {
 function buildPack(def) {
   const raw = JSON.parse(readFileSync(resolve(ROOT, def.src), "utf8"));
   const templates = BACKGROUNDS.flatMap((bg, index) => [
-    template(`static-facts-${def.lang}-${index + 1}-classic`, bg, index * 2, def.label, def.footer),
-    template(`static-facts-${def.lang}-${index + 1}-panel`, bg, index * 2 + 1, def.label, def.footer),
+    template(`static-facts-${def.lang}-${index + 1}-classic`, bg, index * 2, def.label),
+    template(`static-facts-${def.lang}-${index + 1}-panel`, bg, index * 2 + 1, def.label),
   ]);
   const cards = raw
     .map((item) => ({

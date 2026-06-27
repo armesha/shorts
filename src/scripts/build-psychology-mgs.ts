@@ -354,7 +354,6 @@ function makeTemplate(spec: (typeof TEMPLATE_SPECS)[number]): TemplateDoc {
         maxChars: 760,
         bullet: spec.key !== "ai-journal",
       }),
-      textEl("footer", "psychologie im alltag", 118, 1586, 820, 48, 27, spec.muted ?? spec.ink, 800, "center"),
     ],
   };
 }

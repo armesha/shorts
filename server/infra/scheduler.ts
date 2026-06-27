@@ -85,13 +85,14 @@ export function startScheduler(opts: SchedulerOpts) {
             : slotDeck && sources.includes(slotDeck)
               ? [slotDeck]
               : [...sources, MANUAL_VIDEO_DECK];
+        const slotSeed = `${day}|${hhmm}|account:${acc.id}|decks:${allowedDecks.join(",")}`;
         // Post-once queue: a pinned video (legacy, if present and still valid), else the next
         // unposted video from the slot's selected pack or any selected channel pack.
         const pinnedId = acc.slotVideos?.[hhmm];
         const pinned = pinnedId ? opts.db.getVideo(pinnedId) : null;
         const lib =
           (pinned && pinned.postCount === 0 && allowedDecks.includes(pinned.deck) ? pinned : null) ??
-          opts.db.nextUnpostedVideoForDecks(acc.id, allowedDecks);
+          opts.db.nextUnpostedVideoForDecks(acc.id, allowedDecks, slotSeed);
         if (!lib) {
           opts.log(`[sched] account ${acc.id}: нет роликов в библиотеке для паков «${allowedDecks.join(", ")}» — нечего постить`);
           continue;

@@ -1,258 +1,258 @@
 {
-  "generatedAt": "2026-06-26T05:14:59.945Z",
-  "sourceTotal": 2435,
-  "kept": 1978,
-  "removed": 457,
+  "generatedAt": "2026-06-27T03:40:30.781Z",
+  "sourceTotal": 1978,
+  "kept": 1887,
+  "removed": 91,
   "removedSample": [
     {
-      "id": 1,
-      "title": "Manieren bei Schwiegereltern",
-      "chars": 324
-    },
-    {
-      "id": 25,
-      "title": "Therapeut vergisst Namen",
-      "chars": 316
-    },
-    {
-      "id": 43,
-      "title": "Adam Eva gegen Affen",
-      "chars": 321
-    },
-    {
-      "id": 47,
-      "title": "Körbchen wie Bier Männer",
-      "chars": 319
-    },
-    {
-      "id": 49,
-      "title": "Treffen Gewehr Missverständnis",
-      "chars": 318
-    },
-    {
-      "id": 73,
-      "title": "28 Messerstiche Unfall",
-      "chars": 325
-    },
-    {
-      "id": 123,
-      "title": "Horatio-Zombie",
-      "chars": 315
-    },
-    {
-      "id": 137,
-      "title": "Duschgel-Gefängnis",
-      "chars": 316
-    },
-    {
-      "id": 139,
-      "title": "Teddy-Ehestreit",
+      "id": 52,
+      "title": "Telefonnummer-Schiller",
       "chars": 323
     },
     {
-      "id": 141,
-      "title": "Klopapier-Spannung",
-      "chars": 319
-    },
-    {
-      "id": 157,
-      "title": "Zapfenstreich-Telefon",
-      "chars": 318
-    },
-    {
-      "id": 161,
-      "title": "Lego-Schmerz-König",
-      "chars": 318
-    },
-    {
-      "id": 165,
-      "title": "Alkohol-Diagnose",
-      "chars": 318
-    },
-    {
-      "id": 181,
-      "title": "Pferd-Gesichtspolish",
-      "chars": 318
-    },
-    {
-      "id": 187,
-      "title": "Nike-Kindernähte",
-      "chars": 318
-    },
-    {
-      "id": 219,
-      "title": "Spagat für Witze app",
-      "chars": 317
-    },
-    {
-      "id": 229,
-      "title": "Frankreich Italien Krieg",
-      "chars": 317
-    },
-    {
-      "id": 245,
-      "title": "Kirche Chips Prostitution",
-      "chars": 326
-    },
-    {
-      "id": 257,
-      "title": "Gott Wunsch ignoriert",
-      "chars": 321
-    },
-    {
-      "id": 259,
-      "title": "Oma Überfall gutes Licht",
-      "chars": 323
-    },
-    {
-      "id": 263,
-      "title": "Mathe Kamele Sonne Sand",
-      "chars": 316
-    },
-    {
-      "id": 265,
-      "title": "Chuck Norris Autounfall",
-      "chars": 313
-    },
-    {
-      "id": 321,
-      "title": "Opa-Überraschung",
-      "chars": 317
-    },
-    {
-      "id": 329,
-      "title": "Überraschungs-Säurefass",
-      "chars": 319
-    },
-    {
-      "id": 333,
-      "title": "Nur im Schlaf",
-      "chars": 326
-    },
-    {
-      "id": 361,
-      "title": "Professor-Vorsicht-Tipp",
-      "chars": 326
-    },
-    {
-      "id": 365,
-      "title": "Frau-Rückwärts-Parkerin",
-      "chars": 320
-    },
-    {
-      "id": 409,
-      "title": "Bauchnadel-Technik",
-      "chars": 315
-    },
-    {
-      "id": 417,
-      "title": "Chef-Besen",
-      "chars": 319
-    },
-    {
-      "id": 419,
-      "title": "Like-Großzügigkeit",
-      "chars": 316
-    },
-    {
-      "id": 429,
-      "title": "Rangliste der Tiere",
-      "chars": 325
-    },
-    {
-      "id": 435,
-      "title": "Holland-Kinderheim",
-      "chars": 318
-    },
-    {
-      "id": 445,
-      "title": "Finanzamt-Rettung",
-      "chars": 325
-    },
-    {
-      "id": 449,
-      "title": "Android-Update",
-      "chars": 315
-    },
-    {
-      "id": 457,
-      "title": "Montag-Rasiermesser",
-      "chars": 320
-    },
-    {
-      "id": 463,
-      "title": "Baum-Tag-und-Nacht",
-      "chars": 324
-    },
-    {
-      "id": 469,
-      "title": "iPhone-Generation",
-      "chars": 320
-    },
-    {
-      "id": 473,
-      "title": "Blutspender-Verhandlung",
-      "chars": 326
-    },
-    {
-      "id": 477,
-      "title": "Lied-Zufallsfund",
-      "chars": 332
-    },
-    {
-      "id": 483,
-      "title": "Timmy's-Dad-News",
-      "chars": 321
-    },
-    {
-      "id": 487,
-      "title": "Cornflakes-Ecken",
-      "chars": 320
-    },
-    {
-      "id": 501,
-      "title": "Fliege trifft Anton",
+      "id": 97,
+      "title": "App Witze Schlaf App",
       "chars": 314
     },
     {
-      "id": 515,
-      "title": "Gamer Unfair Spiel",
-      "chars": 336
+      "id": 175,
+      "title": "Problem-Lösungen",
+      "chars": 324
     },
     {
-      "id": 519,
-      "title": "Nachbar-Hobbits-Gold",
+      "id": 192,
+      "title": "Gleicher Hund Horror",
+      "chars": 320
+    },
+    {
+      "id": 198,
+      "title": "Gift nach Obduktion",
+      "chars": 332
+    },
+    {
+      "id": 231,
+      "title": "90er Sex Unsicherheit",
       "chars": 317
     },
     {
-      "id": 521,
-      "title": "Jugend Altern Formeln",
-      "chars": 341
+      "id": 249,
+      "title": "25 Jahre ausgefallen",
+      "chars": 314
     },
     {
-      "id": 527,
-      "title": "Nach-Arbeit Bettwonne",
-      "chars": 344
-    },
-    {
-      "id": 531,
-      "title": "Public Viewing Missverständ",
+      "id": 250,
+      "title": "Dobby verstümmeln",
       "chars": 315
     },
     {
-      "id": 533,
-      "title": "Scheintod Grabung tiefer",
+      "id": 283,
+      "title": "Pokemon Schulalltag",
+      "chars": 319
+    },
+    {
+      "id": 286,
+      "title": "Oma und Heavy Metal",
+      "chars": 319
+    },
+    {
+      "id": 291,
+      "title": "Sex und Ziege",
+      "chars": 317
+    },
+    {
+      "id": 293,
+      "title": "Die vier Wörter",
+      "chars": 316
+    },
+    {
+      "id": 326,
+      "title": "Video-Knopf-Frage",
+      "chars": 323
+    },
+    {
+      "id": 330,
+      "title": "Kratzig ohne Verhütung",
+      "chars": 319
+    },
+    {
+      "id": 356,
+      "title": "Nach Sex vier Worte",
+      "chars": 312
+    },
+    {
+      "id": 364,
+      "title": "Männer Sex Perversling",
+      "chars": 313
+    },
+    {
+      "id": 366,
+      "title": "26 Millionen Menschen Langweilig",
+      "chars": 321
+    },
+    {
+      "id": 367,
+      "title": "Kasse Kratzen Best Friends",
+      "chars": 321
+    },
+    {
+      "id": 392,
+      "title": "Zwergen Gestaendnis",
+      "chars": 323
+    },
+    {
+      "id": 450,
+      "title": "Latte Aufnahme",
+      "chars": 314
+    },
+    {
+      "id": 451,
+      "title": "Profi Hilfe",
+      "chars": 324
+    },
+    {
+      "id": 462,
+      "title": "Silvester Chinese",
+      "chars": 319
+    },
+    {
+      "id": 502,
+      "title": "Augen-Befehl",
+      "chars": 320
+    },
+    {
+      "id": 517,
+      "title": "Negativ-Mathematik",
       "chars": 322
     },
     {
-      "id": 543,
-      "title": "Fremde Anrufe erschrecken",
-      "chars": 315
+      "id": 584,
+      "title": "Conchita macht Österreich merkwürdig",
+      "chars": 322
     },
     {
-      "id": 549,
-      "title": "Wasserflasche Hölle verdient",
+      "id": 590,
+      "title": "Spinnen-Entfernungstaktik",
+      "chars": 320
+    },
+    {
+      "id": 613,
+      "title": "Jodeln Radio Holdudiladio",
+      "chars": 322
+    },
+    {
+      "id": 684,
+      "title": "RTL Show Jury Klischees",
+      "chars": 322
+    },
+    {
+      "id": 690,
+      "title": "Betrunken Gefriertruhe",
+      "chars": 320
+    },
+    {
+      "id": 702,
+      "title": "90er Sex Problem",
+      "chars": 349
+    },
+    {
+      "id": 714,
+      "title": "Italiener Heimfahrt",
+      "chars": 321
+    },
+    {
+      "id": 715,
+      "title": "Schildkröte Geschichte",
       "chars": 318
+    },
+    {
+      "id": 765,
+      "title": "Oberst-Bett",
+      "chars": 319
+    },
+    {
+      "id": 767,
+      "title": "Mannliche Opfer",
+      "chars": 316
+    },
+    {
+      "id": 811,
+      "title": "Sekretärin Morgen-Nuance",
+      "chars": 314
+    },
+    {
+      "id": 813,
+      "title": "Wasserstoffbombe!",
+      "chars": 329
+    },
+    {
+      "id": 895,
+      "title": "Wokpfanne Hemd bügeln",
+      "chars": 322
+    },
+    {
+      "id": 906,
+      "title": "Claudia Schiffer Merkel",
+      "chars": 322
+    },
+    {
+      "id": 951,
+      "title": "Ballerin-Geruch",
+      "chars": 317
+    },
+    {
+      "id": 971,
+      "title": "Sterne im Park holen",
+      "chars": 320
+    },
+    {
+      "id": 974,
+      "title": "Mann Held staubsaugen",
+      "chars": 322
+    },
+    {
+      "id": 977,
+      "title": "Fünfter Chinese Eric",
+      "chars": 321
+    },
+    {
+      "id": 995,
+      "title": "Frau Gartentür Ölen Singen",
+      "chars": 325
+    },
+    {
+      "id": 997,
+      "title": "Handschuhe Schaumstoff Beerdigung",
+      "chars": 320
+    },
+    {
+      "id": 1037,
+      "title": "Bio-Lehrer Unbehagen",
+      "chars": 322
+    },
+    {
+      "id": 1093,
+      "title": "Sex nach der Hochzeit",
+      "chars": 320
+    },
+    {
+      "id": 1112,
+      "title": "Ketchup-Witz",
+      "chars": 323
+    },
+    {
+      "id": 1117,
+      "title": "Ohr-Geschichte",
+      "chars": 316
+    },
+    {
+      "id": 1172,
+      "title": "Serienkiller Plan",
+      "chars": 313
+    },
+    {
+      "id": 1187,
+      "title": "Jagdschein-Philosophie",
+      "chars": 317
     }
   ]
 }

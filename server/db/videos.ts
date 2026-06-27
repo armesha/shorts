@@ -5,6 +5,32 @@ import type { DatabaseSync } from "node:sqlite";
 import { rowToVideo, type Row } from "./mappers.ts";
 import type { Video } from "./types.ts";
 
+function stableHash(seed: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i += 1) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h >>> 0;
+}
+
+function pickSeededVideo(rows: Row[], seed?: string): Row | undefined {
+  if (!rows.length) return undefined;
+  if (!seed) return rows[0];
+  const oldestPostedAt = String(rows[0].last_posted_at ?? "");
+  const cohort = rows.filter((row) => String(row.last_posted_at ?? "") === oldestPostedAt);
+  let best = cohort[0];
+  let bestScore = Number.POSITIVE_INFINITY;
+  for (const row of cohort) {
+    const score = stableHash(`${seed}|${row.account_id}|${row.deck ?? ""}|${row.id}|${row.created_at ?? ""}`);
+    if (score < bestScore) {
+      best = row;
+      bestScore = score;
+    }
+  }
+  return best;
+}
+
 export function videoMethods(db: DatabaseSync) {
   return {
     createVideo(v: {
@@ -92,41 +118,41 @@ export function videoMethods(db: DatabaseSync) {
       return r ? rowToVideo(r) : null;
     },
     // Next claimable video (post_count 0) for the post-once queue, optionally restricted to a deck.
-    // Ordering: last_posted_at ASC (SQLite sorts NULL first → never-posted come first), then id. For
-    // normal channels nothing is ever recycled, so every queued row has last_posted_at = NULL and this
-    // is identical to the old FIFO `ORDER BY id`. For infinite-pack channels (recycleVideoForRepost
-    // keeps the row with its post time) it rotates: oldest-posted next → round-robin over the queue.
-    nextUnpostedVideo(accountId: number, deck?: string): Video | null {
-      const r = (
+    // last_posted_at still defines the age cohort (infinite-pack rotation stays oldest-first). Inside
+    // that cohort the optional seed spreads otherwise-identical queues across channels/slots/days.
+    nextUnpostedVideo(accountId: number, deck?: string, seed?: string): Video | null {
+      const rows = (
         deck
           ? db
               .prepare(
-                "SELECT * FROM videos WHERE account_id = ? AND post_count = 0 AND deck = ? ORDER BY last_posted_at ASC, id ASC LIMIT 1",
+                "SELECT * FROM videos WHERE account_id = ? AND post_count = 0 AND deck = ? ORDER BY last_posted_at ASC, id ASC",
               )
-              .get(accountId, deck)
+              .all(accountId, deck)
           : db
               .prepare(
-                "SELECT * FROM videos WHERE account_id = ? AND post_count = 0 ORDER BY last_posted_at ASC, id ASC LIMIT 1",
+                "SELECT * FROM videos WHERE account_id = ? AND post_count = 0 ORDER BY last_posted_at ASC, id ASC",
               )
-              .get(accountId)
-      ) as Row | undefined;
+              .all(accountId)
+      ) as Row[];
+      const r = pickSeededVideo(rows, seed);
       return r ? rowToVideo(r) : null;
     },
     // Next never-posted video from any allowed deck/source. The scheduler uses this for
     // multi-pack channels; it still only uploads videos already present in the library.
-    nextUnpostedVideoForDecks(accountId: number, decks: string[]): Video | null {
+    nextUnpostedVideoForDecks(accountId: number, decks: string[], seed?: string): Video | null {
       const ids = [...new Set(decks.map((d) => String(d || "").trim()).filter(Boolean))];
-      if (ids.length === 0) return this.nextUnpostedVideo(accountId);
-      if (ids.length === 1) return this.nextUnpostedVideo(accountId, ids[0]);
+      if (ids.length === 0) return this.nextUnpostedVideo(accountId, undefined, seed);
+      if (ids.length === 1) return this.nextUnpostedVideo(accountId, ids[0], seed);
       const placeholders = ids.map(() => "?").join(",");
-      const r = db
+      const rows = db
         .prepare(
           `SELECT * FROM videos
            WHERE account_id = ? AND post_count = 0 AND deck IN (${placeholders})
            ORDER BY post_count ASC, last_posted_at ASC, id ASC
-           LIMIT 1`,
+          `,
         )
-        .get(accountId, ...ids) as Row | undefined;
+        .all(accountId, ...ids) as Row[];
+      const r = pickSeededVideo(rows, seed);
       return r ? rowToVideo(r) : null;
     },
     // Total library videos (queued, not yet posted) across a user's channels.

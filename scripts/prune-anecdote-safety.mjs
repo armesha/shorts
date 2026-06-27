@@ -8,11 +8,23 @@ const CONFIGS = [
     dir: "data/anecdotes-de",
     packSize: 100,
     patterns: [
-      /fick|arsch|schei[sß]|kacke|kotz|pisse|pinkel|fotze|muschi|schwanz|penis|vagina|titt|möse|moese|hure|nutte|schlampe|bordell|wichs|sperma|porno|orgasm|bums|poppen|blasen|geil|\banal|blowjob|sextreff|kondom|fremdgeh|geschlafen|\bpuff\b/i,
-      /nazi|hitler|judensau|\bjud|neger|nigg|schwuchtel|spasti|behindert|krüppel|krueppel|\bmongo|missgeburt|kanake|zigeuner/i,
-      /vergewaltig|selbstmord|suizid|tötet|toetet|getötet|getoetet|\btod\b|\btot\b|tote\b|sterb|mord|blut|krieg|waffe|messer|schieß|schiess|schuss|erschoss/i,
+      /fick|arsch|schei[sß]|kacke|kotz|pisse|pinkel|fotze|muschi|schwanz|penis|vagina|titt|möse|moese|hure|nutte|schlampe|bordell|wichs|sperma|porno|\bsex\b|sexuell|sexual|homosex|transsex|orgasm|bums|poppen|blasen|geil|\banal|blowjob|sextreff|kondom|fremdgeh|geschlafen|\bpuff\b/i,
+      /nazi|hitler|judensau|\bjud|neger|nigg|schwuchtel|spasti|behindert|krüppel|krueppel|\bmongo|missgeburt|kanake|zigeuner|chines|äthiop|aethiop/i,
+      /vergewaltig|selbstmord|suizid|tötet|toetet|töten|toeten|getötet|getoetet|umbringen|killer|auftragskiller|\btod\b|\btot\b|tote\b|sterb|mord|blut|krieg|waffe|messer|schieß|schiess|schuss|erschoss/i,
       /jesus|\bgott\b|kirche|pfarrer|priester|papst|bibel|teufel|hölle|hoelle/i,
       /führer|fuehrer|ukraine|russland|politiker|präsident|praesident|minister|polizei|richter|gericht/i,
+    ],
+  },
+  {
+    id: "ru",
+    dir: "data/anecdotes",
+    packSize: 100,
+    patterns: [
+      /гомосек|пидор|педик|транссек|пенис|член|минет|проститут|шлюх|оргазм|дроч|секс|сиськ|гол[ао]й|сперма/i,
+      /чукч|китаец|китайц|евре|жид|хач|негр|даун|дебил|кретин|урод|инвалид/i,
+      /изнасил|самоуб|суицид|убил|убить|убивал|убью|убий|съесть|сожрать|кровь|нож|пистолет|оруж|террор|гитлер|наци/i,
+      /ислам|мусульман|христиан|иисус|бог|церк|поп|священ|библи|коран|аллах|ад|дьявол/i,
+      /украин|росси|путин|зеленск|политик|президент|министр|полици|судья|суд\b/i,
     ],
   },
   {

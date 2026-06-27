@@ -41,7 +41,6 @@ const textMap = new Map([
   ["ein anderer rahmen verändert die reaktion", "новая рамка меняет реакцию"],
   ["klein genug, um heute zu starten", "достаточно маленько, чтобы начать сегодня"],
   ["beobachten statt bewerten", "наблюдать, а не оценивать"],
-  ["psychologie im alltag", "психология каждый день"],
 ]);
 
 const topics = [
@@ -201,7 +200,11 @@ function localizeTemplates(templates) {
   return templates.map((template, index) => {
     const copy = JSON.parse(JSON.stringify(template));
     copy.name = String(copy.name || `psychology-ru-${index + 1}`).replace("psychology-mgs", "psychology-ru");
-    for (const el of copy.elements || []) {
+    copy.elements = (copy.elements || []).filter((el) => {
+      const value = typeof el.text === "string" ? el.text.trim().toLowerCase() : "";
+      return value !== "psychologie im alltag" && value !== "психология каждый день";
+    });
+    for (const el of copy.elements) {
       if (typeof el.text === "string" && textMap.has(el.text)) el.text = textMap.get(el.text);
       if (el.font?.family === "Montserrat") el.font.family = "Inter";
     }
