@@ -214,7 +214,9 @@ const PSYCHOLOGY_DECK_BY_LANG: Record<string, string[]> = {
 };
 
 const STATIC_FACT_DECK_BY_LANG: Record<string, string[]> = {
+  ru: ["pack:static-facts-ru-superadmin"],
   en: ["pack:static-facts-en-superadmin"],
+  de: ["pack:static-facts-de-superadmin"],
   es: ["pack:static-facts-es-superadmin"],
 };
 
@@ -301,6 +303,12 @@ const CHRISTIANITY_SOURCE_GROUPS: SourceGroupDef[] = [
 ];
 
 const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
+  {
+    id: "static_facts",
+    title: "Статичные факты",
+    defaultWeight: 2,
+    sources: STATIC_FACT_DECK_BY_LANG,
+  },
   {
     id: "fact_video",
     title: "Интересный факт",

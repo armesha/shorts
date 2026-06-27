@@ -11,6 +11,16 @@
       "deck": "static-facts-es-superadmin",
       "source": "data/fact-videos-es/videos.json",
       "note": "Static card version of the existing Spanish localized Interesting Facts video corpus."
+    },
+    {
+      "deck": "static-facts-ru-superadmin",
+      "source": "data/fact-videos-ru/videos.json",
+      "note": "Static card version of the existing Russian localized Interesting Facts corpus."
+    },
+    {
+      "deck": "static-facts-de-superadmin",
+      "source": "data/fact-videos-de/videos.json",
+      "note": "Static card version of the existing German localized Interesting Facts corpus."
     }
   ],
   "backgrounds": [

@@ -1,0 +1,2022 @@
+{
+  "id": "static-facts-de-superadmin",
+  "owners": [
+    1
+  ],
+  "createdBy": 1,
+  "name": "Statische Fakten",
+  "lang": "de",
+  "templates": [
+    {
+      "version": 1,
+      "name": "static-facts-de-1-classic",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#091222"
+      },
+      "elements": [
+        {
+          "id": "bg",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/static-facts/backgrounds/facts-observatory.png",
+          "fit": "cover",
+          "opacity": 1
+        },
+        {
+          "id": "scrim",
+          "type": "text",
+          "x": 74,
+          "y": 108,
+          "w": 932,
+          "h": 1660,
+          "rot": 0,
+          "text": "",
+          "align": "left",
+          "bg": "rgba(7,18,36,.74)",
+          "border": "2px solid rgba(246,184,93,.48)",
+          "radius": 42,
+          "shadow": "0 28px 90px rgba(0,0,0,.42)",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          }
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 118,
+          "y": 158,
+          "w": 240,
+          "h": 58,
+          "rot": 0,
+          "text": "FAKT",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 32,
+            "weight": 850,
+            "color": "#f6b85d",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 118,
+          "y": 210,
+          "w": 330,
+          "h": 36,
+          "rot": 0,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 850,
+            "color": "#f6b85d",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 112,
+          "y": 304,
+          "w": 856,
+          "h": 330,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 76,
+            "weight": 850,
+            "color": "#f8fbff",
+            "lineHeight": 1.08
+          },
+          "fitMin": 44,
+          "fitMax": 84,
+          "maxChars": 110,
+          "bullet": false,
+          "placeholder": "title"
+        },
+        {
+          "id": "text",
+          "type": "killbox",
+          "x": 128,
+          "y": 724,
+          "w": 824,
+          "h": 760,
+          "rot": 0,
+          "role": "text",
+          "padX": 42,
+          "padY": 42,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 47,
+            "weight": 650,
+            "color": "#f8fbff",
+            "lineHeight": 1.34
+          },
+          "fitMin": 28,
+          "fitMax": 52,
+          "maxChars": 820,
+          "bullet": false,
+          "placeholder": "text",
+          "bg": "rgba(2,8,20,.36)",
+          "border": "1px solid rgba(255,255,255,.16)",
+          "radius": 28,
+          "shadow": "0 18px 54px rgba(0,0,0,.25)"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "static-facts-de-1-panel",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#091222"
+      },
+      "elements": [
+        {
+          "id": "bg",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/static-facts/backgrounds/facts-observatory.png",
+          "fit": "cover",
+          "opacity": 1
+        },
+        {
+          "id": "scrim",
+          "type": "text",
+          "x": 58,
+          "y": 132,
+          "w": 964,
+          "h": 1574,
+          "rot": 0,
+          "text": "",
+          "align": "left",
+          "bg": "rgba(7,18,36,.74)",
+          "border": "2px solid rgba(246,184,93,.48)",
+          "radius": 54,
+          "shadow": "0 28px 90px rgba(0,0,0,.42)",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          }
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 134,
+          "y": 190,
+          "w": 260,
+          "h": 58,
+          "rot": 0,
+          "text": "FAKT",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 30,
+            "weight": 850,
+            "color": "#f6b85d",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 134,
+          "y": 300,
+          "w": 812,
+          "h": 258,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 70,
+            "weight": 850,
+            "color": "#f8fbff",
+            "lineHeight": 1.08
+          },
+          "fitMin": 42,
+          "fitMax": 78,
+          "maxChars": 100,
+          "bullet": false,
+          "placeholder": "title"
+        },
+        {
+          "id": "body-panel",
+          "type": "text",
+          "x": 116,
+          "y": 650,
+          "w": 848,
+          "h": 720,
+          "rot": 0,
+          "text": "",
+          "align": "left",
+          "bg": "rgba(4,12,28,.46)",
+          "border": "1px solid rgba(255,255,255,.18)",
+          "radius": 36,
+          "shadow": "0 18px 60px rgba(0,0,0,.32)",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          }
+        },
+        {
+          "id": "text",
+          "type": "killbox",
+          "x": 152,
+          "y": 704,
+          "w": 776,
+          "h": 590,
+          "rot": 0,
+          "role": "text",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 50,
+            "weight": 650,
+            "color": "#f8fbff",
+            "lineHeight": 1.3
+          },
+          "fitMin": 29,
+          "fitMax": 54,
+          "maxChars": 760,
+          "bullet": false,
+          "placeholder": "text"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 152,
+          "y": 1414,
+          "w": 776,
+          "h": 44,
+          "rot": 0,
+          "text": "━━━━━━━━━━━━",
+          "align": "center",
+          "font": {
+            "family": "Inter",
+            "size": 28,
+            "weight": 850,
+            "color": "#f6b85d",
+            "lineHeight": 1.08
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "static-facts-de-2-classic",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#f8fafc"
+      },
+      "elements": [
+        {
+          "id": "bg",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/static-facts/backgrounds/facts-studio.png",
+          "fit": "cover",
+          "opacity": 1
+        },
+        {
+          "id": "scrim",
+          "type": "text",
+          "x": 74,
+          "y": 108,
+          "w": 932,
+          "h": 1660,
+          "rot": 0,
+          "text": "",
+          "align": "left",
+          "bg": "rgba(255,255,255,.82)",
+          "border": "2px solid rgba(15,24,39,.12)",
+          "radius": 42,
+          "shadow": "0 28px 80px rgba(20,24,34,.16)",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          }
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 118,
+          "y": 158,
+          "w": 240,
+          "h": 58,
+          "rot": 0,
+          "text": "FAKT",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 32,
+            "weight": 850,
+            "color": "#0f9d8a",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 118,
+          "y": 210,
+          "w": 330,
+          "h": 36,
+          "rot": 0,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 850,
+            "color": "#0f9d8a",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 112,
+          "y": 304,
+          "w": 856,
+          "h": 330,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 76,
+            "weight": 850,
+            "color": "#101827",
+            "lineHeight": 1.08
+          },
+          "fitMin": 44,
+          "fitMax": 84,
+          "maxChars": 110,
+          "bullet": false,
+          "placeholder": "title"
+        },
+        {
+          "id": "text",
+          "type": "killbox",
+          "x": 128,
+          "y": 724,
+          "w": 824,
+          "h": 760,
+          "rot": 0,
+          "role": "text",
+          "padX": 42,
+          "padY": 42,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 47,
+            "weight": 650,
+            "color": "#101827",
+            "lineHeight": 1.34
+          },
+          "fitMin": 28,
+          "fitMax": 52,
+          "maxChars": 820,
+          "bullet": false,
+          "placeholder": "text",
+          "bg": "rgba(255,255,255,.58)",
+          "border": "1px solid rgba(15,24,39,.08)",
+          "radius": 28,
+          "shadow": "0 18px 54px rgba(20,24,34,.10)"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "static-facts-de-2-panel",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#f8fafc"
+      },
+      "elements": [
+        {
+          "id": "bg",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/static-facts/backgrounds/facts-studio.png",
+          "fit": "cover",
+          "opacity": 1
+        },
+        {
+          "id": "scrim",
+          "type": "text",
+          "x": 58,
+          "y": 132,
+          "w": 964,
+          "h": 1574,
+          "rot": 0,
+          "text": "",
+          "align": "left",
+          "bg": "rgba(255,255,255,.82)",
+          "border": "2px solid rgba(15,24,39,.12)",
+          "radius": 54,
+          "shadow": "0 28px 80px rgba(20,24,34,.16)",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          }
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 134,
+          "y": 190,
+          "w": 260,
+          "h": 58,
+          "rot": 0,
+          "text": "FAKT",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 30,
+            "weight": 850,
+            "color": "#e14f7b",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 134,
+          "y": 300,
+          "w": 812,
+          "h": 258,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 70,
+            "weight": 850,
+            "color": "#101827",
+            "lineHeight": 1.08
+          },
+          "fitMin": 42,
+          "fitMax": 78,
+          "maxChars": 100,
+          "bullet": false,
+          "placeholder": "title"
+        },
+        {
+          "id": "body-panel",
+          "type": "text",
+          "x": 116,
+          "y": 650,
+          "w": 848,
+          "h": 720,
+          "rot": 0,
+          "text": "",
+          "align": "left",
+          "bg": "rgba(255,255,255,.66)",
+          "border": "1px solid rgba(15,24,39,.10)",
+          "radius": 36,
+          "shadow": "0 18px 60px rgba(20,24,34,.12)",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          }
+        },
+        {
+          "id": "text",
+          "type": "killbox",
+          "x": 152,
+          "y": 704,
+          "w": 776,
+          "h": 590,
+          "rot": 0,
+          "role": "text",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 50,
+            "weight": 650,
+            "color": "#101827",
+            "lineHeight": 1.3
+          },
+          "fitMin": 29,
+          "fitMax": 54,
+          "maxChars": 760,
+          "bullet": false,
+          "placeholder": "text"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 152,
+          "y": 1414,
+          "w": 776,
+          "h": 44,
+          "rot": 0,
+          "text": "━━━━━━━━━━━━",
+          "align": "center",
+          "font": {
+            "family": "Inter",
+            "size": 28,
+            "weight": 850,
+            "color": "#e14f7b",
+            "lineHeight": 1.08
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "static-facts-de-3-classic",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#f8fafc"
+      },
+      "elements": [
+        {
+          "id": "bg",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/static-facts/backgrounds/facts-desk.jpg",
+          "fit": "cover",
+          "opacity": 1
+        },
+        {
+          "id": "scrim",
+          "type": "text",
+          "x": 74,
+          "y": 108,
+          "w": 932,
+          "h": 1660,
+          "rot": 0,
+          "text": "",
+          "align": "left",
+          "bg": "rgba(255,255,255,.82)",
+          "border": "2px solid rgba(15,24,39,.12)",
+          "radius": 42,
+          "shadow": "0 28px 80px rgba(20,24,34,.16)",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          }
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 118,
+          "y": 158,
+          "w": 240,
+          "h": 58,
+          "rot": 0,
+          "text": "FAKT",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 32,
+            "weight": 850,
+            "color": "#0f9d8a",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 118,
+          "y": 210,
+          "w": 330,
+          "h": 36,
+          "rot": 0,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 850,
+            "color": "#0f9d8a",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 112,
+          "y": 304,
+          "w": 856,
+          "h": 330,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 76,
+            "weight": 850,
+            "color": "#101827",
+            "lineHeight": 1.08
+          },
+          "fitMin": 44,
+          "fitMax": 84,
+          "maxChars": 110,
+          "bullet": false,
+          "placeholder": "title"
+        },
+        {
+          "id": "text",
+          "type": "killbox",
+          "x": 128,
+          "y": 724,
+          "w": 824,
+          "h": 760,
+          "rot": 0,
+          "role": "text",
+          "padX": 42,
+          "padY": 42,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 47,
+            "weight": 650,
+            "color": "#101827",
+            "lineHeight": 1.34
+          },
+          "fitMin": 28,
+          "fitMax": 52,
+          "maxChars": 820,
+          "bullet": false,
+          "placeholder": "text",
+          "bg": "rgba(255,255,255,.58)",
+          "border": "1px solid rgba(15,24,39,.08)",
+          "radius": 28,
+          "shadow": "0 18px 54px rgba(20,24,34,.10)"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "static-facts-de-3-panel",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#f8fafc"
+      },
+      "elements": [
+        {
+          "id": "bg",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/static-facts/backgrounds/facts-desk.jpg",
+          "fit": "cover",
+          "opacity": 1
+        },
+        {
+          "id": "scrim",
+          "type": "text",
+          "x": 58,
+          "y": 132,
+          "w": 964,
+          "h": 1574,
+          "rot": 0,
+          "text": "",
+          "align": "left",
+          "bg": "rgba(255,255,255,.82)",
+          "border": "2px solid rgba(15,24,39,.12)",
+          "radius": 54,
+          "shadow": "0 28px 80px rgba(20,24,34,.16)",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          }
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 134,
+          "y": 190,
+          "w": 260,
+          "h": 58,
+          "rot": 0,
+          "text": "FAKT",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 30,
+            "weight": 850,
+            "color": "#e14f7b",
+            "lineHeight": 1.08
+          }
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 134,
+          "y": 300,
+          "w": 812,
+          "h": 258,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 70,
+            "weight": 850,
+            "color": "#101827",
+            "lineHeight": 1.08
+          },
+          "fitMin": 42,
+          "fitMax": 78,
+          "maxChars": 100,
+          "bullet": false,
+          "placeholder": "title"
+        },
+        {
+          "id": "body-panel",
+          "type": "text",
+          "x": 116,
+          "y": 650,
+          "w": 848,
+          "h": 720,
+          "rot": 0,
+          "text": "",
+          "align": "left",
+          "bg": "rgba(255,255,255,.66)",
+          "border": "1px solid rgba(15,24,39,.10)",
+          "radius": 36,
+          "shadow": "0 18px 60px rgba(20,24,34,.12)",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          }
+        },
+        {
+          "id": "text",
+          "type": "killbox",
+          "x": 152,
+          "y": 704,
+          "w": 776,
+          "h": 590,
+          "rot": 0,
+          "role": "text",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 50,
+            "weight": 650,
+            "color": "#101827",
+            "lineHeight": 1.3
+          },
+          "fitMin": 29,
+          "fitMax": 54,
+          "maxChars": 760,
+          "bullet": false,
+          "placeholder": "text"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 152,
+          "y": 1414,
+          "w": 776,
+          "h": 44,
+          "rot": 0,
+          "text": "━━━━━━━━━━━━",
+          "align": "center",
+          "font": {
+            "family": "Inter",
+            "size": 28,
+            "weight": 850,
+            "color": "#e14f7b",
+            "lineHeight": 1.08
+          }
+        }
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "values": {
+        "title": "Die Sonne ist so massiv, dass eine Million Erden darin Platz hätten",
+        "text": "Jede Sekunde wandelt die Sonne durch Kernfusion sechshundert Millionen Tonnen Wasserstoff in Helium um. Diese enorme Energieleistung hat in den letzten viereinhalb Milliarden Jahren das Leben auf der Erde erhalten."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ein Tag auf der Venus ist länger als ein Jahr auf der Venus",
+        "text": "Die Venus braucht zweihundertdreiundvierzig Erdentage, um sich um ihre Achse zu drehen. Für einen Umlauf um die Sonne dauert es jedoch nur zweihundertfünfundzwanzig Tage."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Jupiters Großer Roter Fleck ist ein Sturm, der seit mindestens dreihundertfünfzig Jahren...",
+        "text": "Dieser riesige Hurrikan ist so riesig, dass drei Erden darin Platz hätten. Die Windgeschwindigkeiten im Sturm erreichen Geschwindigkeiten von 600 Kilometern pro Stunde."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Saturnringe bestehen fast ausschließlich aus Wassereispartikeln, die von Staubgröße bis...",
+        "text": "Diese Ringe erstrecken sich über eine Distanz, die größer ist als die Entfernung von der Erde zum Mond. Dabei sind sie so dünn, im Durchschnitt nur zehn Meter dick, dass die Ringe für das menschliche Auge unsichtbar wären, wenn Saturn die Größe einer Murmel hätte."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der Mond entfernt sich etwa eineinhalb Zoll pro Jahr von der Erde",
+        "text": "In etwa fünfzig Milliarden Jahren wird der Mond so weit entfernt sein, dass totale Sonnenfinsternisse nicht mehr möglich sind. Dieser allmähliche Rückzug findet seit der Entstehung des Mondes vor über viereinhalb Milliarden Jahren statt."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ein Schwarzes Loch ist so dicht, dass nicht einmal Licht seiner Anziehungskraft entkommen...",
+        "text": "Wenn Sie mit den Füßen voran in ein Schwarzes Loch fallen würden, würden Sie sich durch den Gravitationsunterschied zwischen Ihren Füßen und Ihrem Kopf wie Spaghetti dehnen, ein Prozess, der Spaghettiifizierung genannt wird. Dies würde passieren, lange bevor Sie den Ereignishorizont tatsächlich überschritten haben."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Neutronensterne sind so dicht, dass ein Teelöffel ihrer Materie so viel wiegen würde wie...",
+        "text": "Sie können sich bis zu siebenhundert Mal pro Sekunde drehen und behalten dabei ihre Form. Einige Neutronensterne erzeugen Strahlungsstrahlen, die wie ein kosmischer Leuchtturm durch den Weltraum fegen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die Andromedagalaxie befindet sich auf Kollisionskurs mit der Milchstraße",
+        "text": "In etwa viereinhalb Milliarden Jahren werden die beiden Galaxien zu einer neuen elliptischen Galaxie verschmelzen. Wenn dies geschieht, werden die Erde und unser Sonnensystem wahrscheinlich weit in den Weltraum geschleudert."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ein Jahr auf Neptun dauert einhundertfünfundsechzig Erdenjahre",
+        "text": "Dieser Eisriese umkreist die Sonne in einer durchschnittlichen Entfernung, die dreißigmal größer ist als die Entfernung der Erde von der Sonne. Trotz dieser großen Entfernung erreichen starke Winde in Neptuns Atmosphäre Geschwindigkeiten von 1200 Meilen pro Stunde."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der Mars hat zwei Monde namens Phobos und Deimos, was auf Griechisch Angst und Panik...",
+        "text": "Phobos nähert sich langsam spiralförmig dem Mars und wird schließlich auf den Planeten stürzen oder in ein Ringsystem zerfallen. Dieses katastrophale Ereignis wird wahrscheinlich innerhalb der nächsten dreißig bis fünfzig Millionen Jahre eintreten."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Das Hubble-Weltraumteleskop hat herausgefunden, dass sich das Universum nicht nur ausdehnt,...",
+        "text": "Diese Beschleunigung wird von einer mysteriösen Kraft namens Dunkler Energie angetrieben, die etwa 68 Prozent aller Materie und Energie im Universum ausmacht. Dunkle Energie bleibt eines der größten ungelösten Rätsel der Physik."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Merkur ist der sonnennächste Planet, aber nicht der heißeste Planet in unserem Sonnensystem",
+        "text": "Die Venus, die weiter von der Sonne entfernt ist, ist tatsächlich heißer, weil ihre dichte Atmosphäre durch einen außer Kontrolle geratenen Treibhauseffekt Wärme speichert. Die Oberflächentemperaturen auf der Venus können bis zu 900 Grad Fahrenheit erreichen, heiß genug, um Blei zu schmelzen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Eine Supernova-Explosion kann eine ganze Galaxie mit Hunderten Milliarden Sternen...",
+        "text": "Manche Supernovae sind so hell, dass sie tagsüber von der Erde aus mit bloßem Auge gesehen werden können. Das Licht dieser kosmischen Explosionen kann Milliarden von Lichtjahren zurücklegen, um uns auf der Erde zu erreichen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die Internationale Raumstation umkreist die Erde alle neunzig Minuten, was bedeutet, dass...",
+        "text": "Die Station bewegt sich mit einer Geschwindigkeit von siebzehntausendfünfhundert Meilen pro Stunde um den Planeten. Die Astronauten an Bord der Station befinden sich ständig im freien Fall, wodurch das Gefühl der Schwerelosigkeit entsteht."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Uranus dreht sich auf der Seite mit einer Neigung von 98 Grad relativ zur Ebene seiner...",
+        "text": "Wissenschaftler glauben, dass Uranus zu Beginn seiner Geschichte von einem erdgroßen Objekt getroffen wurde, das ihn umschlug. Infolgedessen gibt es auf Uranus extreme Jahreszeiten, die jeweils einundzwanzig Jahre dauern."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Das beobachtbare Universum enthält schätzungsweise zwei Billionen Galaxien mit jeweils...",
+        "text": "Dank Daten des Hubble-Weltraumteleskops hat sich diese Zahl gegenüber früheren Schätzungen verzehnfacht. Wenn man versuchen würde, alle diese Sterne einen pro Sekunde zu zählen, würde das länger dauern als das aktuelle Alter des Universums."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ein Parsec ist die Entfernung, in der eine astronomische Einheit einen Winkel von einer...",
+        "text": "Diese Einheit wird in der Astronomie häufig verwendet, um Entfernungen zu nahegelegenen Sternen zu messen. Der der Erde am nächsten gelegene Stern, Proxima Centauri, ist etwa einen Komma drei Parsec entfernt."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die Korona der Sonne, ihre äußere Atmosphäre, ist paradoxerweise heißer als ihre Oberfläche",
+        "text": "Die Oberfläche der Sonne hat eine Temperatur von etwa zehntausend Grad Fahrenheit, aber die Korona kann Millionen von Grad erreichen. Wissenschaftler verstehen immer noch nicht vollständig, warum die Korona so viel heißer ist als die Oberfläche darunter."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Wenn Sie auf dem Mond stünden, könnten Sie die Erde am Himmel sehen und zusehen, wie sie...",
+        "text": "Vom Mond aus würde die Erde wie ein leuchtend blauer Punkt von der Größe einer Erbse aussehen, wenn man ihn mit ausgestrecktem Arm hält. Die Krümmung der Erde wäre von der Mondoberfläche aus deutlich sichtbar."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ein Lichtjahr ist die Entfernung, die Licht in einem Jahr durch das Vakuum des Weltraums...",
+        "text": "Wenn Sie einen Stern betrachten, der hundert Lichtjahre entfernt ist, sehen Sie diesen Stern so, wie er vor hundert Jahren war. Das älteste Licht, das wir im Universum beobachten können, ist seit über dreizehn Milliarden Jahren unterwegs."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der Große Rote Fleck auf Jupiter ist im letzten Jahrhundert kleiner geworden und ist jetzt...",
+        "text": "Die Größe dieses gewaltigen Sturms ist von etwa 80.000 Kilometern Durchmesser auf nur noch 10.000 Kilometer zurückgegangen. Wissenschaftler sind sich nicht sicher, ob der Sturm irgendwann vollständig verschwinden oder sich auf seiner aktuellen Größe stabilisieren wird."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Eine Sonneneruption kann die Energie freisetzen, die der gleichzeitigen Explosion von...",
+        "text": "Diese starken Ausbrüche können Stromnetze stören, Satelliten beschädigen und wunderschöne Polarlichter auf der Erde auslösen. Die größte aufgezeichnete Sonneneruption ereignete sich im September 1859 und war hell genug, um Telegraphensysteme auf der ganzen Welt zu beschädigen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Europa, einer der Jupitermonde, ist mit einer dicken Eisschicht bedeckt, unter der sich...",
+        "text": "Dieser unterirdische Ozean könnte mehr Wasser enthalten als alle Ozeane der Erde zusammen. Wissenschaftler gehen davon aus, dass dieser Ozean möglicherweise außerirdische Lebensformen beherbergen könnte, die denen in den Tiefseequellen der Erde ähneln."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der Urknall ereignete sich nicht an einem Ort im Weltraum, sondern erschuf als Teil des...",
+        "text": "Man geht davon aus, dass die Zeit selbst mit dem Urknall begann, weshalb es keinen Sinn macht, zu fragen, was davor geschah. Seit diesem ersten Ereignis vor etwa dreizehn Komma acht Milliarden Jahren dehnt sich das Universum aus und kühlt sich ab."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Olympus Mons auf dem Mars ist der größte Vulkan im Sonnensystem, fast dreimal höher als der...",
+        "text": "Dieser massive Schildvulkan ist so groß, dass man seinen Gipfel aufgrund der Krümmung des Mars nicht sehen konnte, wenn man an seiner Basis stand. Es wird angenommen, dass der Vulkan geologisch aktiv ist, obwohl er in jüngster geologischer Zeit nicht ausgebrochen ist."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der Ozean produziert mehr Sauerstoff als alle Regenwälder zusammen",
+        "text": "Verantwortlich für diese unglaubliche Leistung sind winzige Phytoplanktonreste im Meer. Ohne diese mikroskopisch kleinen Organismen gäbe es kein Leben auf der Erde."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Pottwale können tiefer als zwei Meilen unter der Oberfläche tauchen",
+        "text": "Dort unten jagen sie in völliger Dunkelheit Riesenkalmare. Ihre Echoortungsklicks sind die lautesten Geräusche, die ein Tier macht."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Kraken haben drei Herzen, die blaues Blut durch ihren Körper pumpen",
+        "text": "Zwei Herzen drücken das Blut zu den Kiemen, eines pumpt es in den Körper. Wenn ein Oktopus schwimmt, bleibt das Herz, das dem Körper dient, tatsächlich stehen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Korallenriffe gehören zu den lebendigsten Ökosystemen der Erde",
+        "text": "Obwohl sie weniger als ein Prozent des Meeresbodens bedecken, beherbergen sie 25 Prozent aller Meeresarten. Ein einzelnes Riff kann Tausende von Jahren alt sein."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Seeteufel leben in pechschwarzen Tiefen, wo das Sonnenlicht nie hinkommt",
+        "text": "Die Weibchen haben einen leuchtenden Köder am Kopf, um Beute anzulocken. Männchen sind so viel kleiner, dass sie buchstäblich mit dem Körper des Weibchens verschmelzen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der Kopf eines Hammerhais hat die Form eines Metalldetektors",
+        "text": "Durch diese einzigartige Form sind die Sinnesorgane über einen größeren Bereich verteilt. Es kann elektrische Felder von unter Sand vergrabener Beute wahrnehmen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Seepferdchen sind die einzigen Arten, bei denen die Männchen schwanger werden und ein Kind...",
+        "text": "Das Weibchen legt seine Eier in eine Tasche am Bauch des Männchens. Er trägt und pflegt sie, bis sie bereit sind, alleine zu überleben."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der Pazifische Ozean ist so groß, dass er eine Fläche bedeckt, die größer ist als die...",
+        "text": "In seinen Gewässern könnten alle sieben Kontinente untergebracht werden. Es enthält fast die Hälfte des gesamten Wassers auf unserem Planeten."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Quallen gibt es seit über fünfhundert Millionen Jahren",
+        "text": "Sie sind zweihundert Millionen Jahre älter als die Dinosaurier. Einige Arten sind biologisch unsterblich und können ewig leben."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Blauwale sind die größten Tiere, die jemals auf der Erde existierten",
+        "text": "Ihre Herzen wiegen so viel wie ein Auto. Ein Blauwalbaby trinkt täglich 50 Gallonen Milch und nimmt monatlich zwei Tonnen zu."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der tiefste Punkt des Ozeans ist der Marianengraben mit einer Tiefe von fast 37.000 Fuß",
+        "text": "Der dortige Druck würde einen Menschen sofort zerquetschen. Es waren weniger Menschen auf dem Boden als auf dem Mond."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Clownfische beginnen ihr Leben als Männchen, aber wenn das dominierende Weibchen stirbt,...",
+        "text": "Das neue Weibchen führt dann die Gruppe an. Diese bemerkenswerte Geschlechtsumwandlung dauert nur wenige Wochen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Meeresschildkröten können mithilfe des Erdmagnetfelds ganze Ozeane durchqueren",
+        "text": "Sie kehren genau an den Strand zurück, an dem sie geboren wurden, um Eier zu legen. Manche wandern im Laufe ihres Lebens über zwölftausend Meilen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Delfine schlafen jeweils nur mit einer Gehirnhälfte",
+        "text": "Dadurch können sie ein Auge offen halten und bewusst weiter atmen. Im Gegensatz zu Fischen mit Kiemen müssen sie regelmäßig an die Oberfläche kommen, um Luft zu schnappen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Riesenkalmare haben Augen so groß wie Teller, die größten Augen im Tierreich",
+        "text": "Sie leben in der Tiefsee und treffen selten auf Menschen. Jahrhundertelang galten Geschichten über sie als Mythen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die Seepferdchenpopulationen sind aufgrund von Überfischung und Umweltverschmutzung um 95...",
+        "text": "Jährlich werden Hunderttausende für Aquarien und die traditionelle Medizin gefangen. Viele Naturschutzbemühungen arbeiten jetzt daran, diese fragilen Kreaturen zu schützen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Biolumineszenz erleuchtet den Ozean wie eine Unterwassergalaxie",
+        "text": "Neunzig Prozent der Tiefseelebewesen erzeugen ihr eigenes Licht. Sie nutzen es zur Kommunikation, Jagd und Verteidigung gegen Raubtiere."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Mangrovenwälder sind Kinderstube für unzählige Fisch- und Krebstierarten",
+        "text": "Sie wachsen in flachen Küstengewässern und wirken als natürliche Barrieren gegen Stürme. Dennoch wurden fünfzig Prozent der Mangroven der Welt zerstört."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Küstenseeschwalben haben die längste Wanderung aller Vögel und legen jährlich 44.000 Meilen...",
+        "text": "Sie fliegen jährlich vom Nordpol zum Südpol und zurück. Diese Reise führt sie über fast jeden Ozean der Erde."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Muränen haben einen zweiten Kiefer im Hals, der nach vorne schießt, um Beute zu schnappen",
+        "text": "Dieser zusätzliche Kiefer bewegt sich unabhängig von ihrem Hauptmaul. Es handelt sich um eine einzigartige Adaption, die es sonst nirgends in der Fischwelt gibt."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Tintenfische können ihre Hautfarbe und -struktur innerhalb von Millisekunden ändern",
+        "text": "Sie sind farbenblind und passen dennoch irgendwie perfekt zu ihrer Umgebung. Wissenschaftler glauben, dass sie Farben über ihre Haut selbst wahrnehmen können."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Schwertwale sind die größten Raubtiere der Ozeane und jagen nahezu jedes andere...",
+        "text": "Verschiedene Schoten verfügen über ihre eigenen, einzigartigen Jagdtechniken, die über Generationen weitergegeben werden. Sie sind das einzige Tier, das Weiße Haie jagt."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die Sargassosee ist eine Region ohne Landgrenzen, die nur durch Meeresströmungen begrenzt...",
+        "text": "Sargassum-Algen schwimmen an der Oberfläche und bilden schwimmende Inseln des Lebens. Millionen Aale wandern zum Laichen von der anderen Seite des Atlantiks dorthin."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nacktschnecken sind Meeresschnecken, die zu ihrer eigenen Verteidigung Nesselzellen von...",
+        "text": "Sie sind in leuchtenden Farben erhältlich und warnen Raubtiere vor ihrer Giftigkeit. Einige Arten sind Hermaphroditen, die vor der Paarung Liebespfeile aufeinander schießen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der Ozean produziert durch Photosynthese zwanzig Prozent des gesamten Sauerstoffs auf der...",
+        "text": "Der Großteil davon stammt von mikroskopisch kleinen Algen, nicht von Algen oder Pflanzen. Wir verdanken jeden zweiten Atemzug dem unsichtbaren Leben des Ozeans."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ihr Körper ersetzt jeden Tag etwa zweihundert Milliarden rote Blutkörperchen",
+        "text": "Das sind genug neue Zellen, um eine Kaffeetasse zu füllen. Ihr Herz wird im Laufe Ihres Lebens etwa drei Milliarden Mal schlagen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Das menschliche Gehirn verbraucht zwanzig Prozent der Energie Ihres Körpers, obwohl es nur...",
+        "text": "Das entspricht dem Stromverbrauch einer 25-Watt-Glühbirne in Ihrem Schädel. Allein beim Nachdenken verbrennt Ihr Gehirn etwa dreihundert Kalorien pro Tag."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "In Ihrem Darm leben mehr Bakterien, als es Sterne in der Milchstraße gibt",
+        "text": "Diese winzigen Mikroben helfen Ihnen tatsächlich, Nahrung zu verdauen und Infektionen abzuwehren. Sie wiegen ungefähr so ​​viel wie Ihr gesamtes Gehirn."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ihre Fingernägel wachsen im Sommer schneller als im Winter",
+        "text": "Kaltes Wetter verlangsamt das Zellwachstum in Ihren Extremitäten um bis zu fünfzig Prozent. Mit 70 wachsen die Nägel nur noch halb so schnell wie in der Kindheit."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ein einzelnes menschliches Haar kann das Gewicht eines Apfels tragen, ohne zu brechen",
+        "text": "Aber ein Bündel aus hunderttausend Haaren könnte ein kleines Auto tragen. Haare sind tatsächlich stärker als Stahl gleicher Dicke."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Pro Minute verlieren Sie etwa dreißigtausend Hautzellen",
+        "text": "Das sind ungefähr neun Pfund abgestorbene Haut pro Jahr, die Ihr Körper verliert. Der Staub in Ihrem Haus besteht zum Teil aus Ihren eigenen abgestorbenen Hautzellen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die menschliche Nase kann über eine Billion verschiedene Gerüche riechen",
+        "text": "Das ist viel mehr, als das Auge sehen oder das Ohr hören kann. Dennoch haben wir in allen menschlichen Sprachen nur etwa zehntausend verschiedene Düfte benannt."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ihre Leber regeneriert sich so vollständig, dass Sie mit nur noch zwanzig Prozent davon...",
+        "text": "Es ist das einzige Organ, das innerhalb weniger Monate wieder seine volle Größe erreichen kann. Eine Leber entfernt Giftstoffe so effizient, dass sie Alkohol fast sofort verarbeiten kann."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die elektrischen Signale in Ihrem Gehirn bewegen sich mit einer Geschwindigkeit von bis zu...",
+        "text": "Das ist schneller, als ein Formel-1-Rennwagen beschleunigt. Wenn Sie auf eine Gefahr reagieren, sendet Ihr Gehirn in nur einer Hundertstelsekunde Signale an Ihre Muskeln."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Beim Aufwachen ist man etwa einen Zentimeter größer als beim Zubettgehen",
+        "text": "Die Schwerkraft komprimiert die Bandscheiben in Ihrer Wirbelsäule den ganzen Tag über. Am Abend sind Sie wieder auf die normale Größe geschrumpft."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ihre Knochen werden ständig abgebaut und alle zehn Jahre neu aufgebaut",
+        "text": "Ihr Skelett wird fast vollständig durch frisches Knochenmaterial ersetzt. Für diesen Erneuerungsprozess ist Kalzium erforderlich, das Ihr Körper über die Nahrung aufnimmt."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Das menschliche Auge kann ein einzelnes Lichtphoton in einem stockfinsteren Raum erkennen",
+        "text": "Das ist das kleinstmögliche Lichtteilchen, das es gibt. Ihre Augen können pro Sekunde hundert Millionen Bits an Informationen aus der Welt um Sie herum verarbeiten."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Wenn Sie schlafen, wächst Ihr Gehirn tatsächlich um etwa zehn Prozent",
+        "text": "Während Sie träumen, bilden sich neue neuronale Verbindungen, die Ihre Erinnerungen und Fähigkeiten stärken. Ohne Schlaf beginnt Ihr Gehirn innerhalb von nur vier Tagen zu versagen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ihr Herz pumpt genug Blut, um jeden Tag etwa viertausend Badewannen zu füllen",
+        "text": "Wenn Sie alle Blutgefäße in Ihrem Körper aneinanderreihen würden, würden sie sich über eine Länge von 60.000 Meilen erstrecken. Das reicht aus, um die Erde zweieinhalb Mal zu umrunden."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der menschliche Magen produziert alle drei bis fünf Tage eine neue Schleimhaut",
+        "text": "Magensäure ist stark genug, um Stahl aufzulösen, aber der Magen schützt sich durch eine spezielle Schleimschicht. Ihr Magen bildet diese Schleimschicht ständig, sodass er sich nicht selbst verdaut."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ein Neugeborenes hat etwa dreihundert Knochen, ein Erwachsener jedoch nur zweihundertsechs",
+        "text": "Während des Wachstums verschmelzen einige Knochen miteinander, wodurch das Skelett stärker, aber weniger flexibel wird. Ihr kleinster Knochen, der Steigbügel in Ihrem Ohr, hat die Größe eines Reiskorns."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ihre Augen bewegen sich mehr als hunderttausend Mal am Tag",
+        "text": "Sie scannen und fokussieren ständig verschiedene Objekte. Bei jeder Augenbewegung erzeugt Ihr Gehirn ein nahtloses Bild, auch wenn Ihr Sehvermögen technisch unterbrochen ist."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die Zellen in Ihrer Zunge erneuern sich alle drei Tage, was sie zu einem der am schnellsten...",
+        "text": "Sie haben zusammen etwa zehntausend Geschmacksknospen auf Ihrer Zunge und Ihrem Rachen. Diese Zellen senden innerhalb von Millisekunden Geschmackssignale an Ihr Gehirn."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ihre Muskeln werden tatsächlich stärker, wenn Sie sich ausruhen, nicht während Sie...",
+        "text": "Beim Training entstehen winzige Risse in den Muskelfasern. Während der Erholung repariert Ihr Körper diese Risse mit zusätzlichem Protein, wodurch die Muskeln größer und stärker werden."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Das menschliche Immunsystem produziert jede Sekunde etwa zwei Millionen weiße Blutkörperchen",
+        "text": "Diese Soldaten Ihres Körpers bekämpfen ständig Viren, Bakterien und andere Eindringlinge. Sie werden sich dieses Krieges erst bewusst, wenn Sie krank genug werden, um Symptome zu bemerken."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ihr Haar wächst etwa 15 cm pro Jahr, allerdings nur auf der Kopfhaut",
+        "text": "Die Haare an Ihren Armen und Beinen wachsen viel langsamer, nämlich nur einen Bruchteil dieser Geschwindigkeit. Alle Haare an Ihrem Körper dienen der Temperaturregulierung und dem Schutz empfindlicher Haut."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Wenn Sie etwas Neues lernen, verdrahtet sich Ihr Gehirn physisch neu und schafft neue...",
+        "text": "Dieser als Neuroplastizität bezeichnete Prozess setzt sich ein Leben lang fort. Auch im Alter von siebzig Jahren kann Ihr Gehirn neue Verbindungen knüpfen und völlig neue Fähigkeiten erlernen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der menschliche Körper enthält genug Eisen, um einen einzigen Nagel zu bilden",
+        "text": "Der Kaliumgehalt in Ihrem Körper ist so groß, dass er eine Glühbirne mit Strom versorgen könnte, wenn Sie ihn nutzen könnten. Sie bestehen buchstäblich aus denselben Elementen, die auch in Sternen und auf der Erde vorkommen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ihre linke Lunge ist kleiner als Ihre rechte Lunge, um Platz für Ihr Herz zu schaffen",
+        "text": "Wenn Sie ein- und ausatmen, dehnen sich Ihre Lungen etwa zwanzigtausend Mal pro Tag aus und wieder zusammen. Ein einziger Atemzug tauscht in Sekundenbruchteilen frischen Sauerstoff gegen Kohlendioxid aus."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der menschliche Körper hat einen natürlichen Schlafzyklus, der sich den ganzen Tag über...",
+        "text": "Aus diesem Grund fühlen Sie sich zu bestimmten Zeiten müde, auch wenn Sie in der Nacht zuvor gut geschlafen haben. Das Verständnis dieses Rhythmus hilft zu erklären, warum manche Menschen auf natürliche Weise ohne Alarm aufwachen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Kraken haben drei Herzen und blaues Blut",
+        "text": "Zwei Herzen pumpen Blut zu den Kiemen, eines zum Körper. Ihr blaues Blut enthält Kupfer statt Eisen, was sie in kaltem Wasser intelligenter macht."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ein Honigdachs kann eine Kobra fressen und das Gift überleben",
+        "text": "Sie haben eine unglaublich dicke Haut, die Schlangenzähnen widersteht. Diese furchtlosen Tiere greifen Tiere an, die zehnmal so groß sind wie sie."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Bärtierchen können ohne Schutz im Weltraum überleben",
+        "text": "Sie halten extremer Strahlung und absoluten Nulltemperaturen stand. Diese winzigen Kreaturen sind härter als jedes Tier auf der Erde."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die Zunge einer Giraffe ist 21 Zoll lang und schwarz",
+        "text": "Damit schnappen sie sich Blätter von den höchsten Akazienbäumen. Ihre Hälse haben die gleiche Anzahl an Knochen wie menschliche Hälse."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Delfine schlafen jeweils nur mit der Hälfte ihres Gehirns",
+        "text": "Eine Seite ihres Gehirns bleibt auf Raubtiere und die Atmung aufmerksam. Dies wird als unihemisphärischer Schlaf bezeichnet und sorgt dafür, dass sie sicher ruhen können."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Fangschreckenkrebse können Farben sehen, die sich Menschen nicht einmal vorstellen können",
+        "text": "Sie haben sechzehn Farbrezeptoren im Vergleich zu unseren dürftigen drei. Sie können mit der Kraft einer Kugel zuschlagen und Beute sofort betäuben."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ein Faultier kackt nur einmal pro Woche und verliert dreißig Prozent seines Körpergewichts",
+        "text": "Sie steigen von Bäumen auf den Boden, um ihre Notdurft zu verrichten. Dieses bizarre Ritual setzt sie jedes Mal der Gefahr durch Raubtiere aus."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Krähen können einzelne menschliche Gesichter erkennen und Groll hegen",
+        "text": "Sie erinnern sich, welche Menschen sie gefüttert oder bedroht haben. Sie warnen sogar andere Krähen vor gefährlichen Menschen, denen sie noch nie begegnet sind."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ein Schnabeltier ist eines der wenigen Säugetiere, das Eier legt",
+        "text": "Es verfügt außerdem über Gift, Elektrorezeption und fluoreszierendes Fell. Wissenschaftler verstehen immer noch nicht vollständig, wie sich diese Kreatur entwickelt hat."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Faultiere kommen nur einmal pro Woche von den Bäumen herunter, um zu kacken",
+        "text": "Sie bewegen sich so langsam, dass auf ihrem Fell Algen wachsen. Diese grüne Beschichtung hilft ihnen, sich in das Blätterdach des Regenwaldes einzufügen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die Augen eines Chamäleons bewegen sich unabhängig voneinander",
+        "text": "Es kann gleichzeitig in zwei Richtungen sehen. Sie ändern ihre Farbe nicht zur Tarnung, sondern um Emotionen zu kommunizieren."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Kolibris haben eine Herzfrequenz von zwölfhundert Schlägen pro Minute",
+        "text": "Ihre Flügel schlagen achtzig Mal pro Sekunde. Sie müssen jeden Tag die Hälfte ihres Körpergewichts an Nektar zu sich nehmen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ein Elefant kann sich selbst im Spiegel erkennen, ein Zeichen wahrer Selbsterkenntnis",
+        "text": "Sie trauern um ihre Toten und besuchen die Friedhöfe ihrer Vorfahren. Elefanten haben ein unglaubliches Gedächtnis und vergessen nie eine Wasserquelle."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ameisen können das Fünfzigfache ihres eigenen Körpergewichts heben",
+        "text": "Eine einzelne Ameise ist für sich genommen grundsätzlich nutzlos. Aber zusammen bauen Millionen von Ameisen unterirdische Städte, die komplexer sind als menschliche Städte."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ein Papagei kann siebzig Jahre in Gefangenschaft leben und sich Hunderte von Wörtern merken",
+        "text": "Einige Arten können Konzepte wie Farbe und Zahl verstehen. Sie gehen wie Menschen lebenslange Bindungen zu ihren Partnern ein."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Schlangen können ihre Kiefer öffnen, um Beute zu verschlingen, die viel größer als ihr Kopf...",
+        "text": "Manche Pythons können ein ganzes Jahr ohne Nahrung auskommen. Ihre Zähne werden ein Leben lang ersetzt."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die Echoortung eines Delfins ist so präzise, ​​dass er einen Fisch von der Größe eines...",
+        "text": "Sie kommunizieren mit Klicks und Pfiffen in einer Sprache, die wir immer noch nicht verstehen. Delfine gehören zu den wenigen Tieren, die sich im Spiegel erkennen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Giraffen schlafen nicht länger als zwei Minuten am Stück",
+        "text": "Sie brauchen innerhalb von 24 Stunden nur etwa dreißig Minuten Schlaf. Aufgrund ihrer Größe sind sie verwundbar, sodass sie fast ständig wachsam bleiben."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ein Rabe kann für die Zukunft planen und Werkzeuge zur Lösung von Problemen herstellen",
+        "text": "Sie gelten als so schlau wie ein siebenjähriges Kind. Raben halten „Grollzeremonien“ ab, bei denen sie Menschen belästigen, die sie nicht mögen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Pinguine machen ihren Partnern einen Heiratsantrag mit einem Kieselstein, nicht mit einem...",
+        "text": "Sie gehören zu den wenigen Tierarten, die Monogamie praktizieren. Ein Pinguin kann unter Wasser bis zu 22 Meilen pro Stunde schwimmen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Das Herz eines Blauwals wiegt vierhundert Pfund und hat die Größe eines Autos",
+        "text": "Allein seine Zunge wiegt so viel wie ein ganzer Elefant. Obwohl es das größte Tier der Erde ist, frisst es nur winzigen Krill."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Koalas haben Fingerabdrücke, die fast identisch mit menschlichen Fingerabdrücken sind",
+        "text": "Sie schlafen zweiundzwanzig Stunden am Tag, weil Eukalyptusblätter giftig und anstrengend für die Verdauung sind. Kein anderes Tier hat so ähnliche Fingerabdrücke wie wir."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Eine Kakerlake kann mit abgeschnittenem Kopf eine Woche überleben",
+        "text": "Es stirbt nur, weil es ohne Mund kein Wasser trinken kann. Sie haben seit dreihundert Millionen Jahren jedes Massenaussterben überlebt."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die Zunge eines Spechts umschließt sein Gehirn, um den Aufprall abzufedern",
+        "text": "Es kann bis zu zwanzig Mal pro Sekunde picken, ohne Kopfschmerzen zu bekommen. Ihre Schädel sind mit Spezialknochen verstärkt, um den ständigen Schlägen standzuhalten."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Ein Pferd kann fast dreihundertsechzig Grad um sich herum sehen",
+        "text": "Der einzige tote Winkel befindet sich direkt vor und direkt hinter seiner Nase. Sie können Farben sehen, aber nicht so deutlich wie Menschen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Auf dem Höhepunkt des Römischen Reiches lebten in seiner Hauptstadt über acht Millionen...",
+        "text": "Die meisten von ihnen hatten Berufe, die es heute noch gibt: Ärzte, Anwälte, Lehrer und Buchhalter. In Rom gab es sogar Fast-Food-Restaurants, in denen die Arbeiter unterwegs schnelle Mahlzeiten zu sich nahmen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Kleopatra lebte zeitlich näher an der Mondlandung als am Bau der Großen Pyramide",
+        "text": "Die Pyramide wurde um das Jahr 2600 v. Chr. erbaut und Kleopatra wurde im Jahr 69 v. Chr. geboren. Das ist eine Lücke von zweitausendfünfhundert Jahren, die sie in der Geschichte trennt."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die alten Ägypter erfanden vor dreitausendfünfhundert Jahren die Zahnpasta",
+        "text": "Sie mischten Minze, Trockenblumen, Pfeffer und Steinsalz, um ihre Zähne zu reinigen. Wohlhabende Ägypter hatten sogar spezielle Bedienstete, sogenannte Zahnreiniger, die täglich arbeiteten."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der vollständige Bau der Chinesischen Mauer dauerte über zweitausend Jahre",
+        "text": "Millionen von Arbeitern starben während des Baus in Bergen und Wüsten. Doch vom Weltraum aus kann man es nicht wirklich sehen, ohne genau hineinzuzoomen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Hannibal, ein karthagischer General, marschierte bekanntlich mit Kriegselefanten über die...",
+        "text": "Diese Route führte ihn fast sechs Monate lang durch schneebedeckte Berge. Die meisten seiner Elefanten starben, doch die Römer waren völlig unvorbereitet davon betroffen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die alten Griechen erfanden den Verkaufsautomaten vor etwa zweitausend Jahren",
+        "text": "Man warf eine Münze in einen Schlitz und sie spendete Weihwasser in Tempeln. Das gleiche mechanische Prinzip treibt heute die Verkaufsautomaten in Ihrer Stadt an."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "König Tutanchamun wurde im Alter von nur neun Jahren Pharao von Ägypten",
+        "text": "Er starb auf mysteriöse Weise im Alter von achtzehn Jahren und sein Grab blieb dreitausend Jahre lang verborgen. Seine Totenmaske ist eines der berühmtesten antiken Artefakte, die jemals entdeckt wurden."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Römische Soldaten erhielten ein saures Weingetränk namens Posca, das sie wie Wasser teilten",
+        "text": "Es war günstig, erfrischend und sollte bei langen Märschen Krankheiten vorbeugen. Offiziere tranken besseren Wein, aber Posca sorgte dafür, dass die Legionen stark marschierten."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die Bibliothek von Alexandria könnte fast eine Million antike Schriftrollen und Texte...",
+        "text": "Als es abbrannte, verlor die Menschheit unzählige Werke der Wissenschaft, Medizin und Philosophie. Wir werden nie erfahren, welches Wissen verschwand, als diese Flammen es verzehrten."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nofretete war eine ägyptische Königin, deren Schönheit in der gesamten Antike legendär war",
+        "text": "Ihr Name bedeutet wörtlich: „Die Schöne ist gekommen, und sie herrschte an der Seite ihres Mannes.“ Die Statuen ihres Gesichts waren so beeindruckend, dass Künstler ihr Bild überall kopierten."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Das Kolosseum in Rom bot Platz für fünfzigtausend Zuschauer bei Gladiatorenkämpfen",
+        "text": "Durch Falltüren darunter konnten wilde Tiere freigelassen werden, und der Boden konnte sogar für vorgetäuschte Seeschlachten überschwemmt werden. Blut und Sand durchnässten diesen Boden für fast vierhundert Jahre voller Shows."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die alten Ägypter verehrten Katzen so sehr, dass das Töten einer Katze mit dem Tod bestraft...",
+        "text": "Als eine Familienkatze starb, rasierten sie sich aus Trauer die Augenbrauen und hielten Beerdigungen ab. Katzen wurden mumifiziert und mit Schätzen für ihre Reise ins Jenseits begraben."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Das Persische Reich umfasste zu seiner größten Zeit ein Territorium von zwei Millionen...",
+        "text": "Es erstreckte sich von Ägypten und Griechenland bis nach Indien und Zentralasien. Kein Imperium davor oder danach kontrollierte eine so große, vielfältige Bevölkerung."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Julius Cäsar wurde 23 Mal von Senatoren, denen er vertraute, erstochen, darunter auch sein...",
+        "text": "Seine letzten Worte waren angeblich „Et tu Brute“, verraten von denen, die ihm am nächsten standen. Er verblutete im Senat vor den Augen Dutzender Menschen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "In den Hängenden Gärten von Babylon gab es angeblich Kaskadenpflanzen und Wasserfälle",
+        "text": "Ein König baute sie, um seine heimwehkranke Frau an ihre Heimat in den Bergen zu erinnern. Niemand weiß mit Sicherheit, ob sie tatsächlich existierten oder nur eine Legende waren."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Sokrates weigerte sich, dem Gefängnis zu entkommen, obwohl seine Freunde ihn leicht hätten...",
+        "text": "Er trank lieber Gift, als seinen Glauben an Gerechtigkeit und Philosophie aufzugeben. Sein Tod machte ihn zum einflussreichsten Denker der westlichen Zivilisation."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die ältesten bekannten schriftlichen Gesetze sind der Kodex von Hammurabi aus Babylon",
+        "text": "Es führte vor viertausend Jahren das Konzept „Auge um Auge“ ein. Diese Gesetze zeigten, dass schon die alten Herrscher an Gerechtigkeit und Ordnung glaubten."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Kleopatra sprach neun Sprachen fließend und war für ihre Zeit unglaublich gebildet",
+        "text": "Die meisten ägyptischen Herrscher vor ihr konnten tatsächlich weder gut lesen noch schreiben. Sie war klüger und sprachkundiger als fast jeder Anführer der Antike."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Römischer Beton, Opus caementicium genannt, ist auch heute noch fester als moderner Beton",
+        "text": "Die Formel war über tausend Jahre lang verschollen und musste wiederentdeckt werden. Deshalb sind römische Aquädukte und Gebäude noch vollkommen intakt."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Spartacus führte einen Sklavenaufstand gegen Rom mit fast hunderttausend Anhängern an",
+        "text": "Er besiegte wiederholt römische Armeen, bevor er gejagt und gefangen genommen wurde. Als brutale Warnung kreuzigte Rom alle Überlebenden entlang einer Autobahn."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die ägyptischen Pyramiden waren ursprünglich weiß und glänzend und mit poliertem Kalkstein...",
+        "text": "Im Laufe der Jahrhunderte haben Erdbeben und Steindiebe den weißen Belag abgetragen. Diese strahlend weiße Oberfläche war kilometerweit in der Wüste sichtbar."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Archimedes rannte nackt durch die Straßen, nachdem er das Prinzip des Auftriebs entdeckt...",
+        "text": "Er war so begeistert von seiner wissenschaftlichen Entdeckung, dass er vergaß, sich anzuziehen. Dieser Moment purer Freude ist seit über zweitausend Jahren in Erinnerung geblieben."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Römische Kaiser kämpften oft selbst in Gladiatorenkämpfen, um die Menge zu beeindrucken",
+        "text": "Sie wurden nur von symbolischen Gegnern beschützt, aber es war ein spannendes Theater. Die Macht, buchstäblich Ihr Leben zu riskieren, bewies Ihre Autorität gegenüber den Menschen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der Rosetta-Stein ermöglichte es uns nach Jahrhunderten endlich, ägyptische Hieroglyphen zu...",
+        "text": "Ohne sie wäre jegliches Wissen über das ägyptische Schriftsystem für immer verloren gegangen. Eine Entdeckung enthüllte die Geheimnisse einer ganzen vergessenen Zivilisation."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Kleopatra war tatsächlich griechischer Abstammung und nicht ethnisch ägyptisch, wie die...",
+        "text": "Ihre Vorfahren waren Generäle Alexanders des Großen, die nach seinem Tod regierten. Dennoch wurde sie zur berühmtesten ägyptischen Herrscherin der Geschichte."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Aufgrund der tektonischen Plattenkollision zwischen Indien und Asien wächst der Mount...",
+        "text": "Das ist die Höhe eines Reiskorns pro Jahr. Dieses Wachstum geschieht, weil die indische tektonische Platte immer noch um drei Zentimeter pro Jahr nach Norden drückt. Wissenschaftler nutzen GPS-Satelliten, um dieses winzige, kontinuierliche Wachstum zu messen. In etwa fünfzigtausend Jahren wird es noch einen Meter höher werden."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Noch vor sechstausend Jahren war die Sahara ein üppiges, grünes Grasland mit Seen und...",
+        "text": "Dort lebten Menschen, jagten Tiere und hinterließen Felszeichnungen mit Giraffen, Elefanten und Flusspferden. Das Klima hat sich verändert. Monsunregen verlagerten sich nach Süden. Die Wüste dehnte sich in nur wenigen tausend Jahren über Millionen von Quadratkilometern aus."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Island baut sich buchstäblich selbst auf",
+        "text": "Jedes Jahr bildet sich dort neues Vulkangestein, während der Mittelatlantische Rücken die Insel auseinanderreißt. Die Insel liegt auf zwei tektonischen Platten, die sich jährlich um zwei Zentimeter voneinander entfernen. Erdwärme aus diesem Prozess heizt die meisten isländischen Häuser kostenlos mit heißen Quellen und unterirdischem Dampf."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der Baikalsee in Russland ist so tief, dass es hundert Jahre dauern würde, bis der See...",
+        "text": "Es enthält 23 Prozent des Süßwassers der Erde, bedeckt jedoch weniger als ein Prozent der Seeoberfläche des Planeten. Dieser uralte See ist über 25 Millionen Jahre alt und enthält mehr Wasser als alle Großen Seen zusammen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die Atacama-Wüste ist der trockenste Ort der Erde",
+        "text": "Einige Wetterstationen dort haben in der Geschichte noch nie einen einzigen Regentropfen registriert. Ein NASA-Wissenschaftler sagte, der Boden dort sei so trocken, dass er mehr als irgendwo sonst auf unserem Planeten dem Mars ähnelt. Doch wenn es selten regnet, erblühen auf dem kargen Boden Blumen – die Einheimischen nennen das „Blüten der Wüste“."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Unter Wasser bildet das Mittelozeanische Rückensystem die längste Gebirgskette der Erde,...",
+        "text": "Diese Unterwasservulkane brechen immer noch aktiv aus und bilden dort, wo sich tektonische Platten ausbreiten, neue ozeanische Kruste. Wir haben weniger als fünf Prozent des Meeresbodens erforscht, daher sind unzählige Unterwasserberge der Wissenschaft noch völlig unbekannt."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Durch tektonische Kollisionen steigt der Himalaya immer noch an, erodiert aber auch jedes...",
+        "text": "Durch diese Erosion werden Millionen Tonnen Sediment flussabwärts geschleudert, wodurch die höchsten Berge der Welt Schritt für Schritt abgeflacht werden. In zwanzig Millionen Jahren wird die Erosion Berge in die Tiefe treiben, aber durch Kollisionen werden sie in einem endlosen geologischen Tanz wieder nach oben getrieben."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Das Death Valley hält den Rekord für die höchste Temperatur, die jemals zuverlässig auf der...",
+        "text": "Die Bodentemperatur dort kann bis zu siebzig Grad Celsius überschreiten, heiß genug, um in Sekundenschnelle ein Ei ohne Pfanne zu braten. Doch nur achtzig Kilometer entfernt liegt in den Bergen der Sierra Nevada Schnee, was zu einem der extremsten Klimakontraste der Erde führt."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der Amazonas-Regenwald produziert durch Photosynthese etwa zwanzig Prozent des Sauerstoffs...",
+        "text": "Außerdem speichert es 120 Milliarden Tonnen Kohlenstoff, was dazu beiträgt, das globale Klima zu regulieren und die Erwärmung zu verhindern. Amazonasbäume pumpen Wasser aus dem Boden in die Atmosphäre und erzeugen Regenwolken, die Tausende von Kilometern windabwärts in andere Länder reisen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der Krakatoa-Vulkan explodierte im Jahr 1883 mit einer solchen Wucht, dass die Explosion...",
+        "text": "Die Explosion war das lauteste Geräusch in der Geschichte der Menschheit und die Schockwelle umkreiste die Erde in etwas mehr als vierunddreißig Stunden. Die Explosion löste 40 Meter hohe Tsunamis aus, die in ganz Indonesien und den umliegenden Ozeanen über 36.000 Menschen töteten."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die Schichten des Grand Canyon sind wie ein geologisches Geschichtsbuch, mit vertikal...",
+        "text": "Wissenschaftler lesen diese Schichten wie Seiten und finden Fossilien des antiken Lebens, Beweise für antike Meere und Aufzeichnungen über vulkanische Aktivitäten. Wasser aus dem Colorado River hat diesen riesigen Canyon geformt und im Laufe von Millionen von Jahren über einen Kubikkilometer Gestein abgetragen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Tornadowinde können eine Geschwindigkeit von 484 Kilometern pro Stunde erreichen und sind...",
+        "text": "Die stärksten Tornados können einen beladenen Zug von den Gleisen heben, hölzerne Telefonmasten zerbrechen und Bäume entrinden. Der Weg eines Tornados dauert normalerweise nur wenige Minuten, aber in dieser kurzen Zeit kann er alles auf einem mehrere Kilometer langen Weg zerstören."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der Marianengraben ist so tief, dass, wenn der Mount Everest auf seinem Meeresboden stünde,...",
+        "text": "Am Boden ist der Druck tausendmal größer als auf Meereshöhe und zerquetscht die meisten Objekte sofort. Menschen haben den Mond öfter besucht als den tiefsten Punkt dieses Ozeans, das Challenger Deep."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Sturzfluten in Wüsten können aus dem Nichts auftreten, wenn seltene Stürme nahegelegene...",
+        "text": "Eine dreißig Meter hohe Wasserwand kann durch eine Schlucht fegen, alles zerstören, was sich ihr in den Weg stellt, und dann völlig verschwinden. Wüstenbesucher sind in Wasserquellen ertrunken, die nur wenige Minuten lang fließen, bevor der Boden sie alle aufnimmt."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Der Große Afrikanische Grabenbruch in Ostafrika ist so riesig, dass sich die Region...",
+        "text": "In fünf Millionen Jahren könnte Somalia zu einer Insel werden, die durch ein neues Binnenmeer vom afrikanischen Kontinent getrennt ist. Durch denselben Prozess entstand das Rote Meer, das einst trockenes Land war, bevor tektonische Platten es öffneten und überfluteten."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Hurrikanwinde können Geschwindigkeiten von über zweihundertfünfzig Kilometern pro Stunde...",
+        "text": "Das Auge eines Hurrikans kann völlig ruhig und klar sein, umgeben vom heftigsten Wetter auf der Erde. Ein einzelner Hurrikan kann die Energie von Hunderten Atombomben freisetzen und ist damit eines der stärksten Naturphänomene."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die Antarktis beherbergt neunzig Prozent des Eises der Erde, und dieses Eis hat sich seit...",
+        "text": "Wenn das gesamte antarktische Eis schmelzen würde, würde der globale Meeresspiegel um 60 Meter ansteigen, Großstädte überschwemmen und die Geographie der Welt völlig verändern. Wissenschaftler bohren Eiskerne, um die Geschichte der Atmosphäre zu lesen: Eingeschlossene Luftblasen zeigen, was die Luft der Erde vor achthunderttausend Jahren enthielt."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Das Tote Meer ist so salzig, dass Menschen mühelos schwimmen können, ohne zu schwimmen,...",
+        "text": "Mit 430 Metern unter dem Meeresspiegel ist es der tiefste Punkt der Landoberfläche der Erde und er sinkt immer noch. Uralte Salze wurden abgelagert, als das Mittelmeer das Gebiet über Millionen von Jahren immer wieder überschwemmte, bevor es verdunstete."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die Niagarafälle lassen über 51 Meter Wasser mit einer Geschwindigkeit von 750.000 Gallonen...",
+        "text": "Das fallende Wasser hat das Kalksteingrundgestein erodiert und die Wasserfälle mit einer Geschwindigkeit von etwa dreißig Zentimetern pro Jahr flussaufwärts bewegt. Tausende Tonnen Eis stauen sich jeden Winter hinter den Wasserfällen auf, und einst gingen die Menschen zu Festen über den zugefrorenen Fluss."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die Atacama-Wüste produziert fast keinen Regen, beherbergt aber dennoch riesige Vorkommen...",
+        "text": "Diese Mineralien haben sich über Millionen von Jahren in perfekter Erhaltung angesammelt und machen die Atacama zu einem Fenster in die antike geologische Chemie. Ohne diese Mineralien wäre die frühe Schießpulverproduktion unmöglich gewesen und hätte den Lauf der Menschheitsgeschichte verändert."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Bei seinem Ausbruch im Jahr 79 n",
+        "text": "Chr. begrub der Vesuv die römische Stadt Pompeji in nur wenigen Stunden unter vier Metern Asche und Bimsstein. Die extreme Hitze tötete die Menschen sofort und ihre letzten Momente blieben als Gipsabdrücke erhalten, die wir noch heute sehen können. Pompeji lag siebzehn Jahrhunderte lang begraben und bietet uns eine perfekte Momentaufnahme des römischen Lebens, das durch eine geologische Katastrophe in der Zeit eingefroren war."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Die Atacama-Wüste liegt im Regenschatten der Anden, der den vom Pazifischen Ozean...",
+        "text": "Ohne diesen geografischen Zufall könnte es in dieser Region zu regelmäßigen Niederschlägen kommen, wie in Gebieten, die nur wenige hundert Kilometer entfernt liegen. Regenschatten erzeugen überall auf der Erde Wüsten, wo Berge feuchte Luft nach oben drücken und austrocknen, bevor sie die andere Seite erreicht."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Aurora Borealis entsteht, wenn Sonnenwindteilchen mit der oberen Erdatmosphäre kollidieren...",
+        "text": "Diese Lichter sind in der Nähe der Magnetpole am stärksten, da das Erdmagnetfeld Partikel in Richtung der arktischen und antarktischen Regionen lenkt. Durch den gleichen Prozess entstehen Polarlichter auf anderen Planeten, wobei die Polarlichter des Jupiter tausendmal stärker sind als die der Erde."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Das Colorado-Plateau enthält geologische Schichten, die die Geschichte uralter Ozeane,...",
+        "text": "Fossilien im Gestein zeigen Dinosaurier, Trilobiten und Organismen, die über unvorstellbare Zeiträume hinweg in völlig unterschiedlichen Klimazonen existierten. Wenn Sie auf dem Plateau stehen, stehen Sie buchstäblich auf einer Zeitleiste der gesamten biologischen und geologischen Geschichte der Erde, die unter Ihren Füßen aufgestapelt ist."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Permafrost bedeckt ein Viertel des gesamten Landes auf der Nordhalbkugel und speichert...",
+        "text": "Wenn die globalen Temperaturen steigen und der Permafrost schmilzt, wird Methangas freigesetzt, das die Erwärmung in einer gefährlichen Rückkopplungsschleife beschleunigt. Einige gefrorene Tiere wie im Permafrost konservierte Wollhaarmammuts sind so gut erhalten, dass Wissenschaftler ihre DNA geborgen haben."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Honig verdirbt nie",
+        "text": "Archäologen fanden in ägyptischen Gräbern 3000 Jahre alten Honig, der noch vollkommen essbar war. Der meiste Honig ist eigentlich Bienenkot, der von einer Biene zur nächsten ausgespuckt wird, bis er dick genug ist, um ihn aufzubewahren. Das Enzym im Honig, das ihn antimikrobiell macht, ist das gleiche, das Bienen produzieren, um Honig altern zu lassen."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Karotten waren ursprünglich nicht orange",
+        "text": "Bis zum 16. Jahrhundert waren die meisten Karotten lila, rot oder weiß. Niederländische Züchter züchteten Orangenkarotten zu Ehren ihrer königlichen Familie, dem Haus Oranien. Diese Farbe hatte keinen ernährungsphysiologischen Vorteil, sondern nur patriotischen Stolz."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Kaffee ist eigentlich eine Beere",
+        "text": "Die Bohne, die Sie mahlen, ist der Samen aus dem Inneren einer roten Frucht. Auf der Welt dominieren nur zwei Kaffeesorten: Arabica und Robusta. Das Koffein im Kaffee hat sich entwickelt, um Insekten auf der Pflanze abzutöten, was ihn zu einem natürlichen Pestizid macht."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Erdnüsse wachsen nicht auf Bäumen",
+        "text": "Sie wachsen unter der Erde in Hülsen, die an den Wurzeln der Pflanze befestigt sind. Erdnusspflanzen blühen oberirdisch, dann beugt sich der Stängel nach unten, um die sich entwickelnde Schote in den Boden zu drücken. Dies macht Erdnüsse zu einer Hülsenfrucht und nicht zu einer echten Nuss."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Vanille ist nach Safran das zweitteuerste Gewürz",
+        "text": "Eine einzelne Vanilleschote kostet zwei bis drei Dollar. Vanille muss von Hand bestäubt werden, da ihr natürlicher Bestäuber, eine bestimmte Biene, außerhalb Madagaskars nicht existiert. Bei den meisten Vanillearomen in Lebensmitteln handelt es sich nicht um echte Vanille, sondern um Vanillin, eine synthetische Kopie."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nach ihrer Ankunft aus Amerika galten Tomaten in Europa 200 Jahre lang als giftig",
+        "text": "Erst im 19. Jahrhundert aßen die Menschen Tomaten, nachdem die Armen begonnen hatten, sie anzubauen und zu essen, ohne zu sterben. Es wurde auch angenommen, dass die saure Frucht allein aufgrund ihres Säuregehalts Krebs verursacht."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Wassermelone besteht zu 92 Prozent aus Wasser, enthält jedoch mehr Lycopin als rohe Tomaten",
+        "text": "Jeder Samen einer Wassermelone ist lebensfähig und enthält Öl und Protein. Die rote Farbe wird nach der Ernte intensiver, da die Frucht noch tagelang Lycopin produziert."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Im 19",
+        "text": "Jahrhundert galt Milch als einziges Lebensmittel, das eine Arsenvergiftung heilen konnte, da Eiweiß an Arsen bindet. Daraus entstand das alte Sprichwort, dass Milch alle Gifte heilt. Die moderne Medizin hat bewiesen, dass bestimmte Proteine ​​die Arsenabsorption verlangsamen, sodass dieser Glaube ein Körnchen Wahrheit enthält."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Äpfel schweben, weil ihr Inneres zu 25 Prozent aus Luft besteht",
+        "text": "Äpfel sinken im Salzwasser, schwimmen aber aufgrund ihrer geringen Dichte im Süßwasser. Aus diesem Grund funktioniert das Apfelschütten und aus diesem Grund wurden Äpfel traditionell in Wasserkellern gelagert."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Schwarzer Pfeffer ist das meistgehandelte Gewürz der Welt und löste das Zeitalter der...",
+        "text": "Einst schätzten europäische Herrscher schwarzen Pfeffer als Zahlungsmittel und bewahrten ihn in verschlossenen Tresoren auf. Mittelalterliche Kaufleute zahlten ein Vermögen für Pfefferkörner, weil sie glaubten, Pfeffer heilte die Pest."
+      },
+      "addedAt": "2026-06-26T00:00:00.000Z"
+    }
+  ],
+  "createdAt": "2026-06-26T00:00:00.000Z",
+  "grants": [],
+  "rightsLedger": {
+    "status": "project_owned_text_with_fact_check_required",
+    "addedAt": "2026-06-27T07:55:00.000Z",
+    "note": "German static fact cards are localized from the existing Interesting Facts corpus; factual claims need spot-checking before large expansions.",
+    "templateAssets": "assets/template-packs/static-facts/backgrounds/* local project assets",
+    "rules": [
+      "No AP/news imagery or unlicensed photos.",
+      "Facts should be source-backed before large publication batches.",
+      "Avoid medical/legal/financial instructions and unsafe experiments."
+    ]
+  }
+}

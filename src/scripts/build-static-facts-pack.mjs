@@ -25,6 +25,20 @@ const PACKS = [
     src: "data/fact-videos-es/videos.json",
     label: "DATO",
   },
+  {
+    id: "static-facts-ru-superadmin",
+    name: "Статичные факты",
+    lang: "ru",
+    src: "data/fact-videos-ru/videos.json",
+    label: "ФАКТ",
+  },
+  {
+    id: "static-facts-de-superadmin",
+    name: "Statische Fakten",
+    lang: "de",
+    src: "data/fact-videos-de/videos.json",
+    label: "FAKT",
+  },
 ];
 
 function cleanText(value) {
@@ -258,6 +272,10 @@ function buildPack(def) {
       note:
         def.lang === "es"
           ? "Spanish static fact card prose and templates are local/project-generated; factual claims need spot-checking before large expansions."
+          : def.lang === "ru"
+            ? "Russian static fact cards are localized from the existing Interesting Facts corpus; factual claims need spot-checking before large expansions."
+            : def.lang === "de"
+              ? "German static fact cards are localized from the existing Interesting Facts corpus; factual claims need spot-checking before large expansions."
           : "Static fact card prose and templates are local/project-generated; factual claims need spot-checking before large expansions.",
       templateAssets: "assets/template-packs/static-facts/backgrounds/* local project assets",
       rules: [

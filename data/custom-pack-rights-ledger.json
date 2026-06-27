@@ -52,6 +52,28 @@
         "Avoid medical/legal/financial instructions and unsafe experiments."
       ]
     },
+    "static-facts-ru-superadmin": {
+      "status": "localized_existing_fact_corpus_with_fact_check_required",
+      "livePath": "data/packs/static-facts-ru-superadmin.json",
+      "note": "Russian static fact cards are localized from the existing Interesting Facts corpus; factual claims need spot-checking before large expansions.",
+      "templateAssets": "assets/template-packs/static-facts/backgrounds/* local project assets",
+      "rules": [
+        "No AP/news imagery or unlicensed photos.",
+        "Facts should be source-backed before large publication batches.",
+        "Avoid medical/legal/financial instructions and unsafe experiments."
+      ]
+    },
+    "static-facts-de-superadmin": {
+      "status": "localized_existing_fact_corpus_with_fact_check_required",
+      "livePath": "data/packs/static-facts-de-superadmin.json",
+      "note": "German static fact cards are localized from the existing Interesting Facts corpus; factual claims need spot-checking before large expansions.",
+      "templateAssets": "assets/template-packs/static-facts/backgrounds/* local project assets",
+      "rules": [
+        "No AP/news imagery or unlicensed photos.",
+        "Facts should be source-backed before large publication batches.",
+        "Avoid medical/legal/financial instructions and unsafe experiments."
+      ]
+    },
     "психология-mgs-mqe2kfjv": {
       "status": "custom_pack_manual_provenance_review",
       "livePath": "data/packs/психология-mgs-mqe2kfjv.json",

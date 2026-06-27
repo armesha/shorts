@@ -1,0 +1,8 @@
+{
+  "generatedAt": "2026-06-27T14:23:52.824Z",
+  "sourceDeck": "fact-en",
+  "sourceFile": "data/fact-videos/videos.json",
+  "localization": "de",
+  "note": "German title/text localization of the existing Interesting Facts corpus for static card packs.",
+  "rights": "Static card localization of existing local fact text. No external web images or AP/news imagery are imported; factual claims require spot-checking before broad expansion."
+}
