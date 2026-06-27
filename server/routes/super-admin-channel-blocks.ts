@@ -80,24 +80,36 @@ const FUNNY_QUOTE_DECK_BY_LANG: Record<string, string[]> = {
   pt: ["funny-quotes-pt"],
 };
 
+const RIDDLE_VISUAL_DECK_BY_LANG: Record<string, string[]> = {
+  ru: ["visual-riddles"],
+  de: ["visual-riddles-de"],
+  en: ["visual-riddles-en"],
+};
+
 const JOKE_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "jokes",
     title: "Анекдоты",
-    defaultWeight: 4,
+    defaultWeight: 5,
     sources: JOKE_TEXT_DECK_BY_LANG,
   },
   {
     id: "memes",
     title: "Мемы",
-    defaultWeight: 2,
+    defaultWeight: 3,
     sources: JOKE_MEME_DECK_BY_LANG,
   },
   {
     id: "funny_quotes",
     title: "Смешные цитаты",
-    defaultWeight: 2,
+    defaultWeight: 1,
     sources: FUNNY_QUOTE_DECK_BY_LANG,
+  },
+  {
+    id: "visual_riddles",
+    title: "Вижу Ответ",
+    defaultWeight: 1,
+    sources: RIDDLE_VISUAL_DECK_BY_LANG,
   },
 ];
 
@@ -112,12 +124,6 @@ const LIFEHACK_DECK_BY_LANG: Record<string, string[]> = {
   pt: ["tips-pt"],
   hi: ["tips-hi"],
   id: ["tips-id"],
-};
-
-const RIDDLE_VISUAL_DECK_BY_LANG: Record<string, string[]> = {
-  ru: ["visual-riddles"],
-  de: ["visual-riddles-de"],
-  en: ["visual-riddles-en"],
 };
 
 const RIDDLE_OPTICAL_DECK_BY_LANG: Record<string, string[]> = {
