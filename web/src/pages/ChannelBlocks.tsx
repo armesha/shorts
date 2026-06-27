@@ -763,7 +763,7 @@ function BlockCard({
       </span>
       <button
         type="button"
-        className="grid min-w-0 flex-1 gap-3 p-4 text-left transition-colors hover:bg-base-200/30 lg:grid-cols-[minmax(200px,1fr)_190px_minmax(280px,1.5fr)_220px_24px] lg:items-center"
+        className="grid min-w-0 flex-1 gap-3 p-4 text-left transition-colors hover:bg-base-200/30 lg:grid-cols-[minmax(220px,1fr)_190px_minmax(280px,1.5fr)_220px_24px] lg:items-center"
         onClick={onOpen}
       >
       <div className="min-w-0">
@@ -795,7 +795,7 @@ function BlockCard({
           <div className="mt-1 text-sm text-base-content/45">{t("channelBlocks.bottleneckNone")}</div>
         )}
       </div>
-      <div className="grid grid-cols-2 gap-2 text-center text-xs">
+      <div className="grid grid-cols-2 gap-2 text-center">
         <Metric value={packs} label={t("channelBlocks.packs")} />
         <Metric value={block.postsPerDay} label={t("channelBlocks.postsPerDayTotal")} />
       </div>
@@ -1168,21 +1168,21 @@ function OperationalSummary({ accounts, clients }: { accounts: OperationalAccoun
           <div className={`mt-3 ${keyGridClass}`}>
             {perKeyStats.map((key) => (
               <div key={key.id} className="rounded-md border border-base-300 bg-base-100 px-4 py-3">
-                <div className="truncate text-sm font-semibold" title={key.label}>{key.label}</div>
+                <div className="truncate text-base font-semibold" title={key.label}>{key.label}</div>
                 <div className="mt-3 grid grid-cols-2 gap-3">
                   <div>
-                    <div className="text-2xl font-bold leading-none">{key.channels}</div>
+                    <div className="text-3xl font-bold leading-none">{key.channels}</div>
                     <div className="mt-1 text-xs text-base-content/55">{t("channelBlocks.channels")}</div>
                   </div>
                   <div>
                     <div
-                      className={`text-2xl font-bold leading-none ${
+                      className={`text-3xl font-bold leading-none ${
                         key.perDay > DAILY_KEY_CAP ? "text-error" : key.perDay > DAILY_KEY_CAP * 0.85 ? "text-warning" : ""
                       }`}
                     >
                       {key.perDay}/{DAILY_KEY_CAP}
                     </div>
-                    <div className="mt-1 text-xs text-base-content/55">{t("channelBlocks.postsPerDayTotal")}</div>
+                    <div className="mt-1 text-xs text-base-content/55">{t("channelBlocks.postsPerDayLimit")}</div>
                   </div>
                 </div>
               </div>
@@ -1352,9 +1352,9 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
 
 function Metric({ value, label }: { value: ReactNode; label: string }) {
   return (
-    <div className="rounded bg-base-200 px-2 py-2">
-      <div className="text-lg font-black leading-none">{value}</div>
-      <div className="mt-1 text-[11px] leading-tight text-base-content/55">{label}</div>
+    <div className="rounded bg-base-200 px-3 py-2">
+      <div className="text-2xl font-black leading-none">{value}</div>
+      <div className="mt-1 text-xs leading-tight text-base-content/55">{label}</div>
     </div>
   );
 }
