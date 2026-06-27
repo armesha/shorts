@@ -1,0 +1,25 @@
+{
+  "deckId": "christian-facts-en",
+  "language": "en",
+  "total": 500,
+  "packs": 5,
+  "packSize": 100,
+  "range": [
+    138,
+    243
+  ],
+  "sourceDeck": "christian",
+  "generator": "src/scripts/build-religious-facts-decks.mjs",
+  "themes": [
+    "bible",
+    "calendar",
+    "culture",
+    "gospels",
+    "history",
+    "practice",
+    "prayer",
+    "symbol",
+    "wisdom"
+  ],
+  "visualPolicy": "Use public-domain/clearly licensed Christian artwork or symbolic backgrounds."
+}

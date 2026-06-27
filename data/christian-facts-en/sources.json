@@ -1,0 +1,13 @@
+{
+  "deckId": "christian-facts-en",
+  "language": "en",
+  "generator": "src/scripts/build-religious-facts-decks.mjs",
+  "status": "manual_review_required",
+  "licenseNote": "Original short educational prose generated for this project from stable general Christian/Bible literacy topics. Do not add modern copyrighted commentary without a source/license note.",
+  "safety": [
+    "No attacks on other religions or protected classes.",
+    "No guaranteed healing, medical, legal, or political claims.",
+    "Use public-domain or clearly licensed Christian artworks only when adding portraits/art backgrounds."
+  ],
+  "count": 500
+}

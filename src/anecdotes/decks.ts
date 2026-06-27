@@ -570,6 +570,15 @@ export const DECKS: Deck[] = [
     titles: ["اقتباس إسلامي", "كلمات إيمانية", "حكمة إسلامية"],
   }),
   quoteDeck({
+    id: "islamic-facts-ar",
+    name: "معلومات عن الإسلام",
+    lang: "ar",
+    source: "Original educational Islamic fact cards; see data/islamic-facts-ar/sources.json",
+    hashtags: "#الإسلام #معلومات_إسلامية #ثقافة_إسلامية #القرآن #shorts",
+    tags: ["معلومات إسلامية", "الإسلام", "ثقافة إسلامية", "القرآن", "حديث", "shorts"],
+    titles: ["معلومة إسلامية", "ثقافة إسلامية", "هل تعلم؟"],
+  }),
+  quoteDeck({
     id: "quotes-en",
     name: "Great Quotes",
     lang: "en",
@@ -585,6 +594,15 @@ export const DECKS: Deck[] = [
     hashtags: "#christianquotes #bible #faith #wisdom #prayer #shorts",
     tags: ["christian quotes", "bible", "faith", "wisdom", "prayer", "shorts"],
     titles: ["Christian Quote", "Bible Wisdom", "Words of Faith", "Thought of the Day"],
+  }),
+  quoteDeck({
+    id: "christian-facts-en",
+    name: "Christian Facts",
+    lang: "en",
+    source: "Original educational Christian fact cards; see data/christian-facts-en/sources.json",
+    hashtags: "#christianfacts #bible #faith #christianity #shorts",
+    tags: ["christian facts", "bible facts", "christianity", "faith", "church history", "shorts"],
+    titles: ["Christian Fact", "Bible Context", "Faith Fact"],
   }),
   quoteDeck({
     id: "quotes-it",
@@ -1188,7 +1206,7 @@ export function isPackDeckId(id?: string | null): boolean {
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ar: "ar", hi: "hi", id: "id", choose: "ru",
-  tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "funny-quotes-ru": "ru", "funny-quotes-en": "en", "funny-quotes-it": "it", "funny-quotes-es": "es", "funny-quotes-fr": "fr", "funny-quotes-pt": "pt", "funny-quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
+  tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "funny-quotes-ru": "ru", "funny-quotes-en": "en", "funny-quotes-it": "it", "funny-quotes-es": "es", "funny-quotes-fr": "fr", "funny-quotes-pt": "pt", "funny-quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-es": "es", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar",
 };
 export function deckLang(id: string): string {

@@ -1,0 +1,23 @@
+{
+  "deckId": "islamic-facts-ar",
+  "language": "ar",
+  "total": 500,
+  "packs": 5,
+  "packSize": 100,
+  "range": [
+    120,
+    181
+  ],
+  "sourceDeck": "islamic",
+  "generator": "src/scripts/build-religious-facts-decks.mjs",
+  "themes": [
+    "architecture",
+    "calendar",
+    "culture",
+    "dua",
+    "hadith",
+    "practice",
+    "quran"
+  ],
+  "visualPolicy": "No faces or portraits; use calligraphy, mosques, books, lanterns, ornaments."
+}

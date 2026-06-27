@@ -1,0 +1,13 @@
+{
+  "deckId": "islamic-facts-ar",
+  "language": "ar",
+  "generator": "src/scripts/build-religious-facts-decks.mjs",
+  "status": "manual_review_required",
+  "licenseNote": "Original short educational prose generated for this project from stable general Islamic literacy topics. No portraits or modern copyrighted source text are copied.",
+  "safety": [
+    "No human faces, prophets, companions, scholars, or modern people in visuals.",
+    "No extremist, sectarian, anti-protected-class, political, medical, or miracle-claim framing.",
+    "Use as educational facts only; detailed rulings require qualified human review."
+  ],
+  "count": 500
+}

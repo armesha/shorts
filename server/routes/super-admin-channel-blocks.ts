@@ -221,6 +221,10 @@ const RELIGION_ISLAM_QUOTE_DECK_BY_LANG: Record<string, string[]> = {
   ar: ["islamic-quotes-ar"],
 };
 
+const RELIGION_ISLAM_FACT_DECK_BY_LANG: Record<string, string[]> = {
+  ar: ["islamic-facts-ar"],
+};
+
 const RELIGION_KJV_DECK_BY_LANG: Record<string, string[]> = {
   en: ["christian"],
 };
@@ -234,11 +238,15 @@ const RELIGION_CHRISTIAN_QUOTE_DECK_BY_LANG: Record<string, string[]> = {
   en: ["christian-quotes-en"],
 };
 
+const RELIGION_CHRISTIAN_FACT_DECK_BY_LANG: Record<string, string[]> = {
+  en: ["christian-facts-en"],
+};
+
 const ISLAM_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "islam",
     title: "Ислам",
-    defaultWeight: 1,
+    defaultWeight: 3,
     sources: RELIGION_ISLAM_DECK_BY_LANG,
   },
   {
@@ -247,13 +255,19 @@ const ISLAM_SOURCE_GROUPS: SourceGroupDef[] = [
     defaultWeight: 1,
     sources: RELIGION_ISLAM_QUOTE_DECK_BY_LANG,
   },
+  {
+    id: "islamic_facts",
+    title: "Факты об исламе",
+    defaultWeight: 1,
+    sources: RELIGION_ISLAM_FACT_DECK_BY_LANG,
+  },
 ];
 
 const CHRISTIANITY_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "kjv_bible",
     title: "Библия KJV",
-    defaultWeight: 1,
+    defaultWeight: 2,
     sources: RELIGION_KJV_DECK_BY_LANG,
   },
   {
@@ -267,6 +281,12 @@ const CHRISTIANITY_SOURCE_GROUPS: SourceGroupDef[] = [
     title: "Христианские цитаты",
     defaultWeight: 1,
     sources: RELIGION_CHRISTIAN_QUOTE_DECK_BY_LANG,
+  },
+  {
+    id: "christian_facts",
+    title: "Факты о христианстве",
+    defaultWeight: 1,
+    sources: RELIGION_CHRISTIAN_FACT_DECK_BY_LANG,
   },
 ];
 
@@ -342,10 +362,10 @@ const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
     id: ["illusions-id", "id", "memes-id"],
   },
   islam: {
-    ar: ["islamic", "islamic-quotes-ar"],
+    ar: ["islamic", "islamic-quotes-ar", "islamic-facts-ar"],
   },
   christianity: {
-    en: ["christian", "prayers-en", "christian-quotes-en"],
+    en: ["christian", "prayers-en", "christian-quotes-en", "christian-facts-en"],
     de: ["prayers-de"],
   },
 };

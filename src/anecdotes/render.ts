@@ -274,9 +274,17 @@ const CHRISTIAN_QUOTE_BACKGROUNDS = [
   "assets/backgrounds/christian_protestant_templates/protestant_candle_cross.jpg",
 ];
 
+function isIslamicQuoteDeck(deckId: string): boolean {
+  return deckId === "islamic-quotes-ar" || deckId === "islamic-facts-ar";
+}
+
+function isChristianQuoteDeck(deckId: string): boolean {
+  return deckId === "christian-quotes-en" || deckId === "christian-facts-en";
+}
+
 function quoteFallbackBg(deckId: string, seed: string): string | null {
   const files =
-    deckId === "islamic-quotes-ar" ? ISLAMIC_QUOTE_BACKGROUNDS : deckId === "christian-quotes-en" ? CHRISTIAN_QUOTE_BACKGROUNDS : [];
+    isIslamicQuoteDeck(deckId) ? ISLAMIC_QUOTE_BACKGROUNDS : isChristianQuoteDeck(deckId) ? CHRISTIAN_QUOTE_BACKGROUNDS : [];
   const existing = files.filter((file) => existsSync(resolve(process.cwd(), file)));
   if (!existing.length) return null;
   return dataUriFromRootRel(existing[stableIndex(seed || deckId, existing.length)]);
@@ -290,8 +298,8 @@ function quoteHtml(input: { quote: string; author: string; lang: string; deckId?
   const portrait = input.portraitDataUri;
   const deckId = input.deckId || "";
   const funny = deckId.startsWith("funny-quotes-");
-  const islamic = deckId === "islamic-quotes-ar";
-  const christian = deckId === "christian-quotes-en";
+  const islamic = isIslamicQuoteDeck(deckId);
+  const christian = isChristianQuoteDeck(deckId);
   const themedBg = portrait ? null : quoteFallbackBg(deckId, `${input.quote}|${input.author}`);
   const themeClass = funny ? "funny" : islamic ? "islamic" : christian ? "christian" : themedBg ? "themed" : "classic";
   const pageBg = themedBg
