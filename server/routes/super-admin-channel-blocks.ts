@@ -980,21 +980,15 @@ function deckDeficitSequence(account: Account, sourceDecks: string[], queuedByDe
   return out;
 }
 
-function targetRunwayDeckSequence(
-  block: BlockDef,
-  account: Account,
-  sourceDecks: string[],
-  weights: Record<string, number>,
-  targetRunwayDays: number,
-  seed: string,
-): string[] {
+function targetRunwayDeckSequence(account: Account, sourceDecks: string[], targetRunwayDays: number): string[] {
   const scheduleOrder = scheduledDeckOrder(account, sourceDecks);
   const perDay = scheduleOrder.length;
   if (perDay <= 0 || targetRunwayDays <= 0) return [];
   const total = Math.ceil(targetRunwayDays * perDay);
-  const dailySequence = activeSourceGroups(block, account, sourceDecks, weights).length
-    ? weightedDeckSlotsBalanced(block, account, sourceDecks, weights, perDay, `${seed}|daily`)
-    : scheduleOrder;
+  // Runway means "how long the currently saved scheduler slots can keep posting".
+  // Source weights drive newly generated batches and re-applied schedules, but top-up-to-days must
+  // match the persisted slotDecks or a source scheduled twice per day can stay underfilled.
+  const dailySequence = scheduleOrder;
   const day = dailySequence.filter((deckId) => sourceDecks.includes(deckId));
   if (!day.length) return [];
   const out: string[] = [];
@@ -1393,7 +1387,7 @@ function planChannelBlockNormalize(input: {
       sourceWeights,
       `normalize:${accountTargetQueued}:${targetRunwayDays}`,
     );
-    const targetSequence = targetRunwayDeckSequence(block, account, deckIds, sourceWeights, targetRunwayDays, sequenceSeed);
+    const targetSequence = targetRunwayDeckSequence(account, deckIds, targetRunwayDays);
     const exactDeficit =
       targetSequence.length > 0
         ? deckDeficitFromTargetSequence(targetSequence, countedByDeck)
