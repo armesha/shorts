@@ -46,6 +46,14 @@ function safeCp(n: number): string {
   }
 }
 
+function stripTextArtifacts(s: string): string {
+  return s
+    .replace(/\[\^[-_^ ]*\]/g, "")
+    .replace(/\s+([.,!?;:])/g, "$1")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+}
+
 // The joke text stores characters as HTML entities (&#252;=ü …); decode (twice, in case double-encoded).
 function decodeEntities(s: string): string {
   let out = s;
@@ -73,7 +81,7 @@ export function loadCleanWitze(src = SRC): string[] {
   const seen = new Set<string>();
   let m: RegExpExecArray | null;
   while ((m = re.exec(raw))) {
-    const t = normalize(decodeEntities(sqlUnescape(m[1])));
+    const t = stripTextArtifacts(normalize(decodeEntities(sqlUnescape(m[1]))));
     if (!t) continue;
     if (/[<>{}]|https?:|www\./i.test(t)) continue; // markup / links
     if (BLOCK.test(t) || META.test(t)) continue;
