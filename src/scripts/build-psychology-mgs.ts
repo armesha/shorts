@@ -220,7 +220,6 @@ function makeTemplate(spec: (typeof TEMPLATE_SPECS)[number]): TemplateDoc {
           radius: 28,
           shadow: "0 24px 60px rgba(0,0,0,.10)",
         }),
-        textEl("footer", "deine gedanken sind daten, keine beweise", 92, 1732, 880, 44, 26, spec.muted ?? spec.ink, 600, "center"),
       ],
     };
   }
@@ -246,7 +245,6 @@ function makeTemplate(spec: (typeof TEMPLATE_SPECS)[number]): TemplateDoc {
           bullet: false,
           align: "center",
         }),
-        textEl("footer", "kurz innehalten · ehrlich antworten", 128, 1690, 824, 48, 28, spec.muted ?? spec.ink, 700, "center"),
       ],
     };
   }
@@ -274,7 +272,6 @@ function makeTemplate(spec: (typeof TEMPLATE_SPECS)[number]): TemplateDoc {
           border: `1px solid ${spec.hl}55`,
           radius: 24,
         }),
-        textEl("footer", "ein anderer rahmen verändert die reaktion", 86, 1690, 908, 44, 27, spec.muted ?? spec.ink, 700, "center"),
       ],
     };
   }
@@ -300,7 +297,6 @@ function makeTemplate(spec: (typeof TEMPLATE_SPECS)[number]): TemplateDoc {
           bg: "#ffffff00",
         }),
         textEl("bar", "━━━━━━━━━━━━━━━━━━━━", 88, 1640, 904, 44, 28, spec.hl, 900, "center"),
-        textEl("footer", "klein genug, um heute zu starten", 88, 1704, 904, 46, 28, spec.muted ?? spec.ink, 700, "center"),
       ],
     };
   }
@@ -329,7 +325,6 @@ function makeTemplate(spec: (typeof TEMPLATE_SPECS)[number]): TemplateDoc {
           border: `1px solid ${spec.hl}66`,
           radius: 24,
         }),
-        textEl("footer", "beobachten statt bewerten", 86, 1688, 908, 54, 30, spec.hl, 800, "center"),
       ],
     };
   }

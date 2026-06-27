@@ -36,11 +36,6 @@ const textMap = new Map([
   ["EMOTION", "ЭМОЦИЯ"],
   ["PSYCHOLOGIE", "ПСИХОЛОГИЯ"],
   ["DENKMUSTER", "ШАБЛОН МЫСЛИ"],
-  ["deine gedanken sind daten, keine beweise", "мысли — данные, не доказательства"],
-  ["kurz innehalten · ehrlich antworten", "остановись на минуту · ответь честно"],
-  ["ein anderer rahmen verändert die reaktion", "новая рамка меняет реакцию"],
-  ["klein genug, um heute zu starten", "достаточно маленько, чтобы начать сегодня"],
-  ["beobachten statt bewerten", "наблюдать, а не оценивать"],
 ]);
 
 const topics = [
@@ -202,7 +197,7 @@ function localizeTemplates(templates) {
     copy.name = String(copy.name || `psychology-ru-${index + 1}`).replace("psychology-mgs", "psychology-ru");
     copy.elements = (copy.elements || []).filter((el) => {
       const value = typeof el.text === "string" ? el.text.trim().toLowerCase() : "";
-      return value !== "psychologie im alltag" && value !== "психология каждый день";
+      return el.id !== "footer" && value !== "psychologie im alltag" && value !== "психология каждый день";
     });
     for (const el of copy.elements) {
       if (typeof el.text === "string" && textMap.has(el.text)) el.text = textMap.get(el.text);
