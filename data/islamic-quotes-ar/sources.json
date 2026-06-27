@@ -2,6 +2,10 @@
   "deckId": "islamic-quotes-ar",
   "language": "ar",
   "generator": "src/scripts/build-religious-quotes-decks.mjs",
+  "status": "source_backed_manual_spot_check",
+  "rightsNote": "Arabic religious text is derived from the existing curated Islamic source ledger in data/islamic/cards.json and data/islamic/sources.json. Keep human review for religious accuracy and tone before broad expansions.",
+  "sourceLedger": "data/islamic/sources.json",
+  "visualPolicy": "No human faces, portraits of prophets, companions, scholars, modern people, celebrity likenesses, or ambiguous person imagery are used in this Islamic quote pack.",
   "license": {
     "quoteSource": "Arabic Quran, hadith and dua texts already curated in data/islamic/cards.json from local source ledger",
     "portraitSource": "none",
