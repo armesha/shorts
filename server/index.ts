@@ -340,6 +340,7 @@ app
       credsForAccount: (account) => accountCreds(account),
       redirectUri: REDIRECT_URI,
       log: (m) => app.log.info(m),
+      notifier, // alert the channel owner (inbox + Telegram) when a token dies mid-schedule
     });
     metrics.startSampler(resolve(process.cwd(), base.outputDir));
 

@@ -5,6 +5,7 @@ import type { Account, Db, Video } from "../db.ts";
 import { DECKS, MANUAL_VIDEO_DECK, getDeck, isPackDeckId } from "../../src/anecdotes/decks.ts";
 import { ytMeta } from "../../src/anecdotes/yt-meta.ts";
 import { uploadShort, ytErrorReason, isYtAuthError, type ClientCreds } from "../services/youtube.ts";
+import type { Notifier } from "../services/notify-stream.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
 import { googleKeyDailyScheduleCap } from "./account-limits.ts";
 import { isSuperAdminUser } from "../auth.ts";
@@ -39,6 +40,8 @@ export interface SchedulerOpts {
   credsForAccount: (account: Account) => ClientCreds | null;
   redirectUri: string;
   log: (msg: string) => void;
+  /** Shared SSE/Telegram notifier — used to alert the owner when a channel's token dies mid-schedule. */
+  notifier: Notifier;
 }
 
 /**
@@ -160,7 +163,9 @@ export function startScheduler(opts: SchedulerOpts) {
         if (claimedVideoId != null) opts.db.releaseVideoPost(claimedVideoId); // un-claim on upload error
         const reason = ytErrorReason(err);
         // Dead/revoked token → flag the channel so /channels shows "needs reconnect" (not just a history line).
-        if (isYtAuthError(err)) opts.db.markAuthError(acc.id, reason, new Date().toISOString());
+        // On the first failure (healthy→broken edge) alert the owner once: inbox + Telegram DM if linked.
+        if (isYtAuthError(err) && opts.db.markAuthError(acc.id, reason, new Date().toISOString()))
+          void opts.notifier.notifyChannelDisconnected(acc, reason);
         opts.db.addHistory({
           accountId: acc.id,
           title: "ошибка автозагрузки",

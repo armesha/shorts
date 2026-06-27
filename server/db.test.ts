@@ -82,3 +82,20 @@ test("account mapper treats auth_error as needing reconnect even when a token ex
   assert.equal(current?.status, "needs_auth");
   assert.equal(current?.authError, "Доступ канала отозван");
 });
+
+// markAuthError returns the healthy→broken EDGE so the owner is alerted (inbox + Telegram) exactly once.
+test("markAuthError fires only on the healthy→broken edge", () => {
+  const db = openDb(":memory:");
+  const acc = db.createAccount({ userId: 1, channelName: "Edge", lang: "en", channelLang: "en" });
+  db.setYouTube(acc.id, { refreshToken: "tok", channelId: "UCy", channelTitle: "Edge" });
+
+  // First failure on a clean channel → edge (notify).
+  assert.equal(db.markAuthError(acc.id, "Доступ отозван", "2026-06-27T10:00:00.000Z"), true);
+  // Already broken → no new edge (no re-notify on retries).
+  assert.equal(db.markAuthError(acc.id, "Доступ отозван", "2026-06-27T10:01:00.000Z"), false);
+  // Reconnect clears the flag → the next failure is a fresh edge again.
+  db.clearAuthError(acc.id);
+  assert.equal(db.markAuthError(acc.id, "Снова отозван", "2026-06-27T11:00:00.000Z"), true);
+  // Unknown channel → never an edge.
+  assert.equal(db.markAuthError(999_999, "—", "2026-06-27T11:00:00.000Z"), false);
+});

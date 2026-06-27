@@ -47,6 +47,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     runHeavyGenerationLimited,
     redirectUri,
     outputDir,
+    notifier,
   } = deps;
   const { isAdminReq } = deps.auth;
   const { deckAllowed, resolveAccountSourceDeck, accountSourceDecks, deckContentLang } = deps.deckAccess;
@@ -337,7 +338,13 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
       db.releaseVideoPost(v.id); // upload threw → un-claim so the video stays postable
       app.log.error(err);
       // Dead/revoked token → flag the channel so /channels shows "needs reconnect", not just history.
-      if (isYtAuthError(err)) db.markAuthError(v.accountId, ytErrorReason(err), new Date().toISOString());
+      // First failure (healthy→broken edge) → alert the owner once: inbox + Telegram DM if linked.
+      if (isYtAuthError(err)) {
+        const reason = ytErrorReason(err);
+        const acc = db.getAccount(v.accountId);
+        if (db.markAuthError(v.accountId, reason, new Date().toISOString()) && acc)
+          void notifier.notifyChannelDisconnected(acc, reason);
+      }
       db.addError({
         source: "server",
         message: "Загрузка видео: " + String((err as Error)?.message ?? err),

@@ -126,14 +126,20 @@ export function accountMethods(db: DatabaseSync) {
      * Flag a channel as having a dead/rejected token (YouTube returned a definitive auth error on
      * upload). Surfaced as "needs reconnect" on /channels. Keeps the FIRST failure time so the UI can
      * show "disconnected since …", but always refreshes the human reason to the latest one.
+     * Returns TRUE only on the healthy→broken EDGE (the channel was clean before this call) so callers
+     * can alert the owner exactly once per disconnect episode (in-app + Telegram), never on every retry.
      */
-    markAuthError(id: number, reason: string, at: string): void {
+    markAuthError(id: number, reason: string, at: string): boolean {
+      const before = db.prepare("SELECT auth_error FROM accounts WHERE id = ?").get(id) as Row | undefined;
+      if (!before) return false; // no such channel → nothing to flag/notify
+      const wasHealthy = before.auth_error == null;
       db.prepare(
         `UPDATE accounts
             SET auth_error = ?,
                 auth_failed_at = COALESCE(auth_failed_at, ?)
           WHERE id = ?`,
       ).run(reason.slice(0, 300), at, id);
+      return wasHealthy;
     },
     /** Clear the auth-error flag (token works again / channel reconnected). No-op if already clean. */
     clearAuthError(id: number): void {
