@@ -1300,16 +1300,16 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
     <div className="relative rounded-md border border-base-300 bg-base-100 p-3 transition-colors hover:border-primary/50 hover:bg-base-200/30">
       <Link
         to={`/accounts/${account.id}`}
-        className="absolute inset-0 rounded-md"
+        className="absolute inset-0 z-0 rounded-md"
         aria-label={account.channelName}
       />
-      <div className="relative z-10 flex items-start gap-2">
+      <div className="pointer-events-none relative z-10 flex items-start gap-2">
         {youtubeUrl ? (
           <a
             href={youtubeUrl}
             target="_blank"
             rel="noreferrer"
-            className="shrink-0 rounded-md transition-opacity hover:opacity-80"
+            className="pointer-events-auto shrink-0 rounded-md transition-opacity hover:opacity-80"
             title="YouTube"
           >
             {avatar}
@@ -1317,7 +1317,7 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
         ) : (
           <div className="shrink-0">{avatar}</div>
         )}
-        <Link to={`/accounts/${account.id}`} className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1">
           <div className="line-clamp-2 text-sm font-semibold leading-snug" title={account.channelName}>
             {account.channelName}
           </div>
@@ -1329,10 +1329,10 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
               <span className="badge badge-warning badge-xs">{t("accounts.needsAuth")}</span>
             )}
           </div>
-        </Link>
+        </div>
       </div>
 
-      <Link to={`/accounts/${account.id}`} className="relative z-10 mt-3 block rounded bg-base-200/70 px-2 py-2 transition-colors hover:bg-base-200">
+      <div className="pointer-events-none relative z-10 mt-3 block rounded bg-base-200/70 px-2 py-2">
         <div className="flex items-baseline justify-between gap-2">
           <span className="text-[11px] font-semibold uppercase tracking-wide text-base-content/45">{t("channelBlocks.runwayNoGeneration")}</span>
           <span className="text-sm font-bold">{formatRunwayDays(account.effectiveRunwayDays ?? null)}</span>
@@ -1349,9 +1349,9 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
         ) : (
           <div className="mt-1 text-[11px] text-base-content/40">{t("channelBlocks.bottleneckNone")}</div>
         )}
-      </Link>
+      </div>
       {account.authError && (
-        <div className="relative z-10 mt-2 flex items-start gap-1 text-[11px] leading-snug text-error">
+        <div className="pointer-events-none relative z-10 mt-2 flex items-start gap-1 text-[11px] leading-snug text-error">
           <AppIcon name="warning" size={12} className="mt-0.5 shrink-0" />
           <span>{account.authError}</span>
         </div>
