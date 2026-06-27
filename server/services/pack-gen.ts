@@ -35,6 +35,21 @@ function stableHash(seed: string): number {
   return h >>> 0;
 }
 
+function seededPick<T>(items: T[], seed: string, keyOf: (item: T, index: number) => string): T | null {
+  if (!items.length) return null;
+  let best = items[0];
+  let bestScore = Number.POSITIVE_INFINITY;
+  for (let index = 0; index < items.length; index += 1) {
+    const item = items[index];
+    const score = stableHash(`${seed}|${keyOf(item, index)}`);
+    if (score < bestScore) {
+      best = item;
+      bestScore = score;
+    }
+  }
+  return best;
+}
+
 export interface PickedPackCard {
   idx: number;
   values: CardValues;
@@ -49,7 +64,8 @@ export function pickUnusedPackCard(pack: Pack, usedKeys: ReadonlySet<string>, se
     .map((c, idx) => ({ idx, values: c.values, key: packCardKey(c.values) }))
     .filter((x) => !usedKeys.has(x.key));
   if (!fresh.length) return null;
-  const pick = seed ? fresh[stableHash(`${pack.id}|${seed}|${fresh.length}`) % fresh.length] : fresh[Math.floor(Math.random() * fresh.length)];
+  const pick = seed ? seededPick(fresh, `${pack.id}|${seed}`, (card) => card.key) : fresh[Math.floor(Math.random() * fresh.length)];
+  if (!pick) return null;
   return { idx: pick.idx, values: pick.values, tpl: pack.templates[pick.idx % pack.templates.length], key: pick.key };
 }
 

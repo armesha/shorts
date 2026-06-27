@@ -78,6 +78,7 @@ function lifehackBgFile(profession?: string | null, variant?: string | null, see
   if (!existsSync(LIFEHACK_BG_DIR)) return null;
   const files = readdirSync(LIFEHACK_BG_DIR)
     .filter((f) => /^(editorial-clean-\d+|generated-[a-z0-9-]+|profession_.*)\.(png|jpe?g)$/i.test(f))
+    .filter((f) => !/_chaplin\.(png|jpe?g)$/i.test(f))
     .sort();
   if (files.length === 0) return null;
   const v = (variant ?? "").toLowerCase();
@@ -256,12 +257,48 @@ async function renderJokePop(a: Anecdote, outPath: string): Promise<{ path: stri
   return { path: outPath, fontPx, bg: `pop:${variant}` };
 }
 
-function quoteHtml(input: { quote: string; author: string; lang: string; portraitDataUri?: string | null }): string {
+const ISLAMIC_QUOTE_BACKGROUNDS = [
+  "assets/backgrounds/islamic_templates/islamic_mosque_arch.jpg",
+  "assets/backgrounds/islamic_templates/islamic_open_book.jpg",
+  "assets/backgrounds/islamic_templates/islamic_lantern_beads.jpg",
+  "assets/backgrounds/islamic_templates/islamic_ai_emerald_arch.jpg",
+  "assets/backgrounds/islamic_templates/islamic_ai_sapphire_mihrab.jpg",
+  "assets/backgrounds/islamic_templates/islamic_ai_turquoise_mosaic.jpg",
+];
+const CHRISTIAN_QUOTE_BACKGROUNDS = [
+  "assets/backgrounds/christian_protestant_templates/protestant_open_bible.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_stained_glass.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_wooden_cross.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_ai_open_bible_glow.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_ai_stained_glow.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_candle_cross.jpg",
+];
+
+function quoteFallbackBg(deckId: string, seed: string): string | null {
+  const files =
+    deckId === "islamic-quotes-ar" ? ISLAMIC_QUOTE_BACKGROUNDS : deckId === "christian-quotes-en" ? CHRISTIAN_QUOTE_BACKGROUNDS : [];
+  const existing = files.filter((file) => existsSync(resolve(process.cwd(), file)));
+  if (!existing.length) return null;
+  return dataUriFromRootRel(existing[stableIndex(seed || deckId, existing.length)]);
+}
+
+function quoteHtml(input: { quote: string; author: string; lang: string; deckId?: string; portraitDataUri?: string | null }): string {
   const lang = input.lang || "en";
   const rtl = lang === "ar";
   const q = esc(input.quote);
   const author = esc(input.author);
   const portrait = input.portraitDataUri;
+  const deckId = input.deckId || "";
+  const funny = deckId.startsWith("funny-quotes-");
+  const islamic = deckId === "islamic-quotes-ar";
+  const christian = deckId === "christian-quotes-en";
+  const themedBg = portrait ? null : quoteFallbackBg(deckId, `${input.quote}|${input.author}`);
+  const themeClass = funny ? "funny" : islamic ? "islamic" : christian ? "christian" : themedBg ? "themed" : "classic";
+  const pageBg = themedBg
+    ? `linear-gradient(180deg, rgba(10, 9, 7, 0.36), rgba(10, 9, 7, 0.50)), url("${themedBg}") center/cover no-repeat`
+    : funny
+      ? "radial-gradient(circle at 18% 12%, rgba(255,255,255,.55), transparent 18%), linear-gradient(135deg, #ffb703 0%, #fb8500 48%, #e63946 100%)"
+      : "linear-gradient(135deg, rgba(177, 33, 33, 0.08), transparent 35%), linear-gradient(315deg, rgba(18, 87, 94, 0.10), transparent 38%), #f7f3e8";
   return `<!doctype html>
 <html lang="${esc(lang)}">
 <head>
@@ -272,10 +309,7 @@ function quoteHtml(input: { quote: string; author: string; lang: string; portrai
   body {
     font-family: "Noto Serif Display", "Noto Serif", "Noto Naskh Arabic", "Noto Serif Devanagari", "Noto Sans", serif;
     color: #121212;
-    background:
-      linear-gradient(135deg, rgba(177, 33, 33, 0.08), transparent 35%),
-      linear-gradient(315deg, rgba(18, 87, 94, 0.10), transparent 38%),
-      #f7f3e8;
+    background: ${pageBg};
   }
   .card {
     width: 100%;
@@ -296,11 +330,36 @@ function quoteHtml(input: { quote: string; author: string; lang: string; portrai
     display: flex;
     flex-direction: column;
   }
+  body.funny .quote-panel,
+  body.islamic .quote-panel,
+  body.christian .quote-panel,
+  body.themed .quote-panel {
+    padding: 78px 78px 86px;
+    border-radius: 34px;
+    background: rgba(255, 250, 240, .91);
+    border: 5px solid rgba(20, 16, 10, .78);
+    box-shadow: 0 26px 70px rgba(0,0,0,.30);
+  }
+  body.funny .quote-panel {
+    background: rgba(255, 255, 255, .93);
+    border-color: #141414;
+  }
+  body.islamic .quote-panel {
+    background: rgba(247, 244, 225, .92);
+    border-color: rgba(202, 169, 84, .90);
+  }
+  body.christian .quote-panel {
+    background: rgba(250, 247, 239, .92);
+    border-color: rgba(210, 180, 110, .86);
+  }
   .rule {
     width: 132px;
     height: 10px;
     background: #12616a;
   }
+  body.funny .rule { background: #fb8500; width: 180px; }
+  body.islamic .rule { background: #b99a46; width: 168px; }
+  body.christian .rule { background: #8a6a2e; width: 168px; }
   .body {
     flex: 1;
     min-height: 0;
@@ -325,14 +384,27 @@ function quoteHtml(input: { quote: string; author: string; lang: string; portrai
     color: #12616a;
     text-align: ${rtl ? "right" : "left"};
   }
+  body.funny .author { color: #b45309; }
+  body.islamic .author { color: #6b5a20; }
+  body.christian .author { color: #6f5521; }
   .mark {
     font-size: 120px;
     line-height: .7;
     color: rgba(123,31,31,.22);
   }
+  body.funny .mark { color: rgba(251, 133, 0, .34); }
+  body.islamic .mark { color: rgba(148, 119, 42, .26); }
+  body.christian .mark { color: rgba(111, 85, 33, .24); }
+  .badge {
+    position: absolute;
+    right: 78px;
+    bottom: 72px;
+    font: 900 54px/1 "Noto Sans", sans-serif;
+    opacity: .92;
+  }
 </style>
 </head>
-<body>
+<body class="${themeClass}">
   <main class="card">
     ${portrait ? '<div class="portrait"></div>' : ""}
     <div class="quote-panel">
@@ -347,6 +419,7 @@ function quoteHtml(input: { quote: string; author: string; lang: string; portrai
         </div>
       </section>
     </div>
+    ${!portrait && funny ? '<div class="badge">😂</div>' : ""}
   </main>
   <script>
     (function () {
@@ -383,6 +456,7 @@ async function renderQuote(
     quote: a.text,
     author: a.title || getDeck(a.deck).name,
     lang: deckLang(a.deck || "") || "en",
+    deckId: a.deck || "",
     portraitDataUri: dataUriFromRootRel(item?.portraitFile),
   });
   const fontPx = await captureCard(html, outPath);

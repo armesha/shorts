@@ -3,6 +3,38 @@
   "sourceTotal": 1102,
   "kept": 864,
   "removed": 238,
+  "blockedItems": [
+    {
+      "index": 144,
+      "key": "a1q1ucxp-481",
+      "title": "Il consiglio della vecchietta",
+      "reason": "self_harm"
+    },
+    {
+      "index": 167,
+      "key": "a1daiw8d-448",
+      "title": "Il numero di telefono",
+      "reason": "adult_nudity"
+    },
+    {
+      "index": 288,
+      "key": "a22n4sn-345",
+      "title": "Bici da donna",
+      "reason": "adult_nudity"
+    },
+    {
+      "index": 430,
+      "key": "alzgeel-500",
+      "title": "Kappa in dogana",
+      "reason": "explicit_sexual"
+    },
+    {
+      "index": 529,
+      "key": "a1p6wm3u-571",
+      "title": "Gli occhiali a raggi X",
+      "reason": "adult_nudity"
+    }
+  ],
   "removedSample": [
     {
       "id": 2,

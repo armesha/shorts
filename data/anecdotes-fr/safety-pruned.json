@@ -1,0 +1,12 @@
+{
+  "generatedAt": "2026-06-27T00:00:00.000Z",
+  "note": "Manual advertiser-safety denylist for active FR joke deck.",
+  "blockedItems": [
+    {
+      "index": 999,
+      "key": "amz1sc-93",
+      "title": "Henri devient rillettes",
+      "reason": "protected_class_gender_identity"
+    }
+  ]
+}

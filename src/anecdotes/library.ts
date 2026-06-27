@@ -37,6 +37,12 @@ type ContentRow = {
   payload_json?: string;
 };
 
+type SafetyPrunedFile = {
+  blockedItemKeys?: unknown;
+  blockedItems?: unknown;
+  blockedItemIndexes?: unknown;
+};
+
 let _contentDb: DatabaseSync | null | undefined;
 function contentDb(): DatabaseSync | null {
   if (process.env.CONTENT_LIBRARY_SQLITE !== "1") return null;
@@ -65,7 +71,7 @@ function sqliteItems(deckId: string): PackItem[] | null {
       )
       .all(deckId) as ContentRow[];
     if (!rows.length) return null;
-    return rows.map((row) => {
+    const items = rows.map((row) => {
       if (row.payload_json) {
         try {
           return JSON.parse(row.payload_json) as PackItem;
@@ -83,9 +89,56 @@ function sqliteItems(deckId: string): PackItem[] | null {
         videoFile: row.video_file ?? undefined,
       };
     });
+    return filterSafetyPrunedItems(deckId, items);
   } catch {
     return null;
   }
+}
+
+const _safetyPrunedCache = new Map<string, { keys: Set<string>; indexes: Set<number> }>();
+function readSafetyPruned(deckId: string): { keys: Set<string>; indexes: Set<number> } {
+  const hit = _safetyPrunedCache.get(deckId);
+  if (hit) return hit;
+  const file = resolve(deckDir(deckId), "safety-pruned.json");
+  const out = { keys: new Set<string>(), indexes: new Set<number>() };
+  if (existsSync(file)) {
+    try {
+      const doc = JSON.parse(readFileSync(file, "utf8")) as SafetyPrunedFile;
+      if (Array.isArray(doc.blockedItemKeys)) {
+        for (const key of doc.blockedItemKeys) if (typeof key === "string" && key.trim()) out.keys.add(key.trim());
+      }
+      if (Array.isArray(doc.blockedItems)) {
+        for (const item of doc.blockedItems) {
+          if (!item || typeof item !== "object") continue;
+          const key = (item as { key?: unknown; itemKey?: unknown }).key ?? (item as { itemKey?: unknown }).itemKey;
+          if (typeof key === "string" && key.trim()) out.keys.add(key.trim());
+          const index = Number((item as { index?: unknown; id?: unknown }).index ?? (item as { id?: unknown }).id);
+          if (Number.isInteger(index) && index >= 0) out.indexes.add(index);
+        }
+      }
+      if (Array.isArray(doc.blockedItemIndexes)) {
+        for (const raw of doc.blockedItemIndexes) {
+          const index = Number(raw);
+          if (Number.isInteger(index) && index >= 0) out.indexes.add(index);
+        }
+      }
+    } catch {
+      /* ignore malformed optional safety metadata */
+    }
+  }
+  _safetyPrunedCache.set(deckId, out);
+  return out;
+}
+
+export function filterSafetyPrunedItems(deckId: string, items: PackItem[]): PackItem[] {
+  const pruned = readSafetyPruned(deckId);
+  if (!pruned.keys.size && !pruned.indexes.size) return items;
+  return items.filter((item, index) => {
+    if (pruned.keys.has(packItemKey(item))) return false;
+    const itemId = Number(item.id);
+    if (pruned.indexes.has(index) || (Number.isInteger(itemId) && pruned.indexes.has(itemId))) return false;
+    return true;
+  });
 }
 
 // titled.json per deck = the pool of READY (titled) anecdotes — the only ones generation may use.
@@ -100,14 +153,17 @@ function titledItems(deckId: string): PackItem[] {
     const arr = existsSync(file)
       ? (JSON.parse(readFileSync(file, "utf8")) as { file: string; title?: string; text?: string }[])
       : [];
-    return withStableItemKeys(arr.map((c, i) => ({
-      id: i,
-      pack: 1,
-      text: c.text ?? "",
-      chars: (c.text ?? "").length,
-      title: c.title ?? "",
-      videoFile: c.file,
-    })));
+    return filterSafetyPrunedItems(
+      deckId,
+      withStableItemKeys(arr.map((c, i) => ({
+        id: i,
+        pack: 1,
+        text: c.text ?? "",
+        chars: (c.text ?? "").length,
+        title: c.title ?? "",
+        videoFile: c.file,
+      }))),
+    );
   }
   const hit = _titledCache.get(deckId);
   if (hit) return hit;
@@ -172,6 +228,7 @@ function titledItems(deckId: string): PackItem[] {
     const titled = resolve(deckDir(deckId), "titled.json");
     items = existsSync(titled) ? (JSON.parse(readFileSync(titled, "utf8")) as PackItem[]) : [];
   }
+  items = filterSafetyPrunedItems(deckId, items);
   _titledCache.set(deckId, items);
   return items;
 }
@@ -225,9 +282,19 @@ function stableHash(seed: string): number {
   return h >>> 0;
 }
 
-function seededIndex(seed: string, size: number): number {
-  if (size <= 1) return 0;
-  return stableHash(seed) % size;
+function seededPick<T>(items: T[], seed: string, keyOf: (item: T, index: number) => string): T | null {
+  if (!items.length) return null;
+  let best = items[0];
+  let bestScore = Number.POSITIVE_INFINITY;
+  for (let index = 0; index < items.length; index += 1) {
+    const item = items[index];
+    const score = stableHash(`${seed}|${keyOf(item, index)}`);
+    if (score < bestScore) {
+      best = item;
+      bestScore = score;
+    }
+  }
+  return best;
 }
 
 export function randomAnecdote(deckId: string, used?: ReadonlySet<string>, seed?: string): PackItem | null {
@@ -238,7 +305,7 @@ export function randomAnecdote(deckId: string, used?: ReadonlySet<string>, seed?
     const pool = skip ? t.filter((it) => !skip.has(packItemKey(it))) : t;
     if (pool.length === 0) return null; // every titled anecdote already used
     if (deck.sequential) return pool[0];
-    if (seed) return pool[seededIndex(`${deckId}|${seed}|${pool.length}`, pool.length)];
+    if (seed) return seededPick(pool, `${deckId}|${seed}`, (it) => packItemKey(it));
     return pool[Math.floor(Math.random() * pool.length)];
   }
   // Fallback so generation still works before any pack is titled.
@@ -247,10 +314,10 @@ export function randomAnecdote(deckId: string, used?: ReadonlySet<string>, seed?
   const packs = readdirSync(dir).filter((f) => f.startsWith("pack-") && f.endsWith(".json")).sort();
   if (packs.length === 0) return null;
   const file = deck.sequential ? packs[0] : packs[Math.floor(Math.random() * packs.length)];
-  let items = JSON.parse(readFileSync(resolve(dir, file), "utf8")) as PackItem[];
+  let items = filterSafetyPrunedItems(deckId, JSON.parse(readFileSync(resolve(dir, file), "utf8")) as PackItem[]);
   if (skip) items = items.filter((it) => !skip.has(packItemKey(it)));
   if (deck.sequential) return items[0] ?? null;
-  if (seed) return items[seededIndex(`${deckId}|${file}|${seed}|${items.length}`, items.length)] ?? null;
+  if (seed) return seededPick(items, `${deckId}|${file}|${seed}`, (it) => packItemKey(it));
   return items[Math.floor(Math.random() * items.length)] ?? null;
 }
 
@@ -262,7 +329,7 @@ export function firstAnecdote(deckId: string): PackItem | null {
   if (!existsSync(dir)) return null;
   const file = readdirSync(dir).filter((f) => f.startsWith("pack-") && f.endsWith(".json")).sort()[0];
   if (!file) return null;
-  const items = JSON.parse(readFileSync(resolve(dir, file), "utf8")) as PackItem[];
+  const items = filterSafetyPrunedItems(deckId, JSON.parse(readFileSync(resolve(dir, file), "utf8")) as PackItem[]);
   return items[0] ?? null;
 }
 
@@ -285,8 +352,9 @@ function poolItems(deckId: string): PackItem[] {
       all.push(...(JSON.parse(readFileSync(resolve(dir, f), "utf8")) as PackItem[]));
     }
   }
-  _poolCache.set(deckId, all);
-  return all;
+  const filtered = filterSafetyPrunedItems(deckId, all);
+  _poolCache.set(deckId, filtered);
+  return filtered;
 }
 
 /**
@@ -297,9 +365,11 @@ export function resetDeckCache(deckId?: string): void {
   if (deckId) {
     _titledCache.delete(deckId);
     _poolCache.delete(deckId);
+    _safetyPrunedCache.delete(deckId);
   } else {
     _titledCache.clear();
     _poolCache.clear();
+    _safetyPrunedCache.clear();
   }
 }
 

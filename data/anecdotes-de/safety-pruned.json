@@ -3,6 +3,134 @@
   "sourceTotal": 1978,
   "kept": 1887,
   "removed": 91,
+  "blockedItems": [
+    {
+      "index": 14,
+      "key": "akbuugr-316",
+      "title": "Oralsex MarioKart Wette",
+      "reason": "explicit_sexual"
+    },
+    {
+      "index": 51,
+      "key": "a1p2wq8e-316",
+      "title": "Betrunkene Chat-Weisheit",
+      "reason": "self_harm"
+    },
+    {
+      "index": 170,
+      "key": "aozd2jj-309",
+      "title": "Doppel-Schicht-Witz",
+      "reason": "explicit_sexual"
+    },
+    {
+      "index": 203,
+      "key": "afpuht1-320",
+      "title": "Schnauze halten Lieblinge",
+      "reason": "religion_insult"
+    },
+    {
+      "index": 217,
+      "key": "a1t1khzf-317",
+      "title": "Anmache Missverständnis",
+      "reason": "violence"
+    },
+    {
+      "index": 262,
+      "key": "a1ou4knf-324",
+      "title": "Kolumbien-Jamaica-Fußball",
+      "reason": "protected_class_stereotype"
+    },
+    {
+      "index": 287,
+      "key": "a1qgcvlu-313",
+      "title": "Die fehlende Ecke",
+      "reason": "protected_class_stereotype"
+    },
+    {
+      "index": 300,
+      "key": "a9x8wur-310",
+      "title": "Cybersex-Fail",
+      "reason": "explicit_sexual"
+    },
+    {
+      "index": 301,
+      "key": "aevb2o2-308",
+      "title": "Arme-Masturbation",
+      "reason": "explicit_sexual"
+    },
+    {
+      "index": 307,
+      "key": "a1hly79x-313",
+      "title": "Wilde Orgie",
+      "reason": "protected_class_stereotype"
+    },
+    {
+      "index": 330,
+      "key": "a4c6cwf-348",
+      "title": "Dusch Geheimnis Junge",
+      "reason": "explicit_sexual"
+    },
+    {
+      "index": 409,
+      "key": "a2wbalv-309",
+      "title": "Streit-Segen",
+      "reason": "sexual_family_context"
+    },
+    {
+      "index": 433,
+      "key": "a1r19v3v-347",
+      "title": "Herz im Knie",
+      "reason": "self_harm"
+    },
+    {
+      "index": 479,
+      "key": "art0u1z-323",
+      "title": "Polen-Griechenland",
+      "reason": "protected_class_stereotype"
+    },
+    {
+      "index": 480,
+      "key": "ayfj0lh-315",
+      "title": "Zwillings-Trick",
+      "reason": "sexual_privacy"
+    },
+    {
+      "index": 484,
+      "key": "a14mhhb6-316",
+      "title": "Kindergarten-Spiel",
+      "reason": "sexual_minor_context"
+    },
+    {
+      "index": 540,
+      "key": "adedv36-311",
+      "title": "Nachbar-Vampire-Beweis",
+      "reason": "violence"
+    },
+    {
+      "index": 561,
+      "key": "a1t94bt6-314",
+      "title": "Berlin Tag&Nacht Fußtritt",
+      "reason": "violence"
+    },
+    {
+      "index": 600,
+      "key": "a1bocit3-319",
+      "title": "Yankees Befreiungswitz",
+      "reason": "protected_class_stereotype"
+    },
+    {
+      "index": 689,
+      "key": "a1eupwb5-317",
+      "title": "Lachs Melone",
+      "reason": "protected_class_gender_identity"
+    },
+    {
+      "index": 743,
+      "key": "a1wa4gc7-312",
+      "title": "Hochzeits-Rache auf Beerdigung",
+      "reason": "death_context"
+    }
+  ],
   "removedSample": [
     {
       "id": 52,

@@ -3,6 +3,14 @@
   "sourceTotal": 507,
   "kept": 504,
   "removed": 3,
+  "blockedItems": [
+    {
+      "index": 17,
+      "key": "ab7aotm-316",
+      "title": "В поезде",
+      "reason": "protected_class_sexual"
+    }
+  ],
   "removedSample": [
     {
       "id": 359,

@@ -4,7 +4,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 
 import { DECKS, deckLang, getDeck, type Deck } from "../../src/anecdotes/decks.ts";
-import { packItemKey, withStableItemKeys, type PackItem } from "../../src/anecdotes/library.ts";
+import { filterSafetyPrunedItems, packItemKey, withStableItemKeys, type PackItem } from "../../src/anecdotes/library.ts";
 
 type SourceRead = { path: string; body: string };
 
@@ -105,7 +105,7 @@ function loadDeckItems(deck: Deck): { items: PackItem[]; hash: string } {
     }
   }
 
-  return { items, hash: sourceHash(deck, sources) };
+  return { items: filterSafetyPrunedItems(deck.id, items), hash: sourceHash(deck, sources) };
 }
 
 export function syncContentLibraryIndex(db: DatabaseSync): { decks: number; items: number } {
