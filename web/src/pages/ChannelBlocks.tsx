@@ -137,8 +137,12 @@ function deckSummaries(block: ChannelThemeBlock): BlockDeckSummary[] {
   return [...map.values()].sort((a, b) => (a.lang || "").localeCompare(b.lang || "") || a.name.localeCompare(b.name));
 }
 
-function blockPackCount(block: ChannelThemeBlock): number {
-  return Math.max(0, ...accountsInBlock(block).map((account) => account.sourceDecks.length));
+function blockPackCount(block: ChannelThemeBlock): string {
+  const counts = accountsInBlock(block).map((account) => account.sourceDecks.length);
+  if (!counts.length) return "0";
+  const min = Math.min(...counts);
+  const max = Math.max(...counts);
+  return min === max ? String(max) : `${min}-${max}`;
 }
 
 function formatRunwayDays(days: number | null): string {
