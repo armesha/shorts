@@ -11,7 +11,8 @@ import { langTag } from "../lib/deck";
 import ChannelBlocks from "./ChannelBlocks";
 
 const ACCOUNTS_CACHE_KEY = "sf.accounts.v2";
-const DAILY_KEY_CAP = 92; // YouTube upload quota per Google project/key (held under the ~100/day ceiling)
+const DEFAULT_DAILY_KEY_CAP = 92; // Safer default for regular users.
+const SUPER_ADMIN_DAILY_KEY_CAP = 100; // Main admin uses the full YouTube project quota.
 type AccountSourceStat = {
   id: string;
   title: string;
@@ -31,6 +32,8 @@ type AccountsCache = {
 
 function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
   const { t } = useT();
+  const { user } = useAuth();
+  const dailyKeyCap = isMainAdmin(user) ? SUPER_ADMIN_DAILY_KEY_CAP : DEFAULT_DAILY_KEY_CAP;
   const cached = readCache<AccountsCache>(ACCOUNTS_CACHE_KEY);
   const [accounts, setAccounts] = useState<Account[]>(cached?.value.accounts ?? []);
   const [status, setStatus] = useState<AppStatus | null>(cached?.value.status ?? null);
@@ -352,10 +355,10 @@ function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
                     <div>
                       <div
                         className={`text-2xl font-bold leading-none ${
-                          k.perDay > DAILY_KEY_CAP ? "text-error" : k.perDay > DAILY_KEY_CAP * 0.85 ? "text-warning" : ""
+                          k.perDay > dailyKeyCap ? "text-error" : k.perDay > dailyKeyCap * 0.85 ? "text-warning" : ""
                         }`}
                       >
-                        {k.perDay}/{DAILY_KEY_CAP}
+                        {k.perDay}/{dailyKeyCap}
                       </div>
                       <div className="mt-1 text-xs text-base-content/55">{t("channelBlocks.postsPerDayTotal")}</div>
                     </div>

@@ -7,21 +7,33 @@ export const USER_ACCOUNT_DAILY_SCHEDULE_CAP = 18;
 export const ACCOUNT_DAILY_SCHEDULE_CAP = ADMIN_ACCOUNT_DAILY_SCHEDULE_CAP;
 
 // Per Google key (Cloud project): total slots across ALL channels sharing that key — YouTube's upload
-// quota is per project, not per channel. This one is role-agnostic.
+// quota is per project, not per channel. Super admin intentionally uses the full 100/day project quota;
+// regular users keep the safer 92/day ceiling.
 export const USER_DAILY_SCHEDULE_CAP = 92;
+export const SUPER_ADMIN_DAILY_SCHEDULE_CAP = 100;
 
 /** Per-channel daily slot ceiling for an owner of the given role. */
 export function accountDailyScheduleCap(isAdminOwner: boolean): number {
   return isAdminOwner ? ADMIN_ACCOUNT_DAILY_SCHEDULE_CAP : USER_ACCOUNT_DAILY_SCHEDULE_CAP;
 }
 
-export function dailyScheduleLimitError(scheduleCount: number, otherSlots: number, isAdminOwner = true): string | null {
+export function googleKeyDailyScheduleCap(isSuperAdminOwner: boolean): number {
+  return isSuperAdminOwner ? SUPER_ADMIN_DAILY_SCHEDULE_CAP : USER_DAILY_SCHEDULE_CAP;
+}
+
+export function dailyScheduleLimitError(
+  scheduleCount: number,
+  otherSlots: number,
+  isAdminOwner = true,
+  isSuperAdminOwner = false,
+): string | null {
   const perChannel = accountDailyScheduleCap(isAdminOwner);
+  const perKey = googleKeyDailyScheduleCap(isSuperAdminOwner);
   if (scheduleCount > perChannel) {
     return `Максимум ${perChannel} видео в сутки на один канал.`;
   }
-  if (otherSlots + scheduleCount > USER_DAILY_SCHEDULE_CAP) {
-    return `Лимит ${USER_DAILY_SCHEDULE_CAP} публикаций в сутки на один Google-ключ (проект). На других каналах этого ключа уже ${otherSlots}, этому каналу доступно ${Math.max(0, USER_DAILY_SCHEDULE_CAP - otherSlots)}.`;
+  if (otherSlots + scheduleCount > perKey) {
+    return `Лимит ${perKey} публикаций в сутки на один Google-ключ (проект). На других каналах этого ключа уже ${otherSlots}, этому каналу доступно ${Math.max(0, perKey - otherSlots)}.`;
   }
   return null;
 }

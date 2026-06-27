@@ -13,7 +13,7 @@ import {
   queuedRemainingForOwnerDecks,
 } from "../services/gen-queue.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
-import { USER_DAILY_SCHEDULE_CAP, accountDailyScheduleCap } from "../infra/account-limits.ts";
+import { accountDailyScheduleCap, googleKeyDailyScheduleCap } from "../infra/account-limits.ts";
 
 const BLOCK_LANGS = [
   { code: "ru", label: "RU" },
@@ -104,12 +104,6 @@ const JOKE_SOURCE_GROUPS: SourceGroupDef[] = [
     title: "Смешные цитаты",
     defaultWeight: 1,
     sources: FUNNY_QUOTE_DECK_BY_LANG,
-  },
-  {
-    id: "visual_riddles",
-    title: "Вижу Ответ",
-    defaultWeight: 1,
-    sources: RIDDLE_VISUAL_DECK_BY_LANG,
   },
 ];
 
@@ -297,12 +291,6 @@ const CHRISTIANITY_SOURCE_GROUPS: SourceGroupDef[] = [
 ];
 
 const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
-  {
-    id: "static_facts",
-    title: "Статичные факты",
-    defaultWeight: 2,
-    sources: STATIC_FACT_DECK_BY_LANG,
-  },
   {
     id: "fact_video",
     title: "Интересный факт",
@@ -1675,12 +1663,13 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
       }
       if (account.oauthClientId != null) {
         const otherSlots = db.scheduleSlotsForKey(account.oauthClientId, account.id);
-        if (otherSlots + perDay > USER_DAILY_SCHEDULE_CAP) {
+        const keyCap = googleKeyDailyScheduleCap(isSuperAdminUser(owner));
+        if (otherSlots + perDay > keyCap) {
           skipped.push({
             accountId: account.id,
             channelName: account.channelName,
             reason: "google_key_limit",
-            available: Math.max(0, USER_DAILY_SCHEDULE_CAP - otherSlots),
+            available: Math.max(0, keyCap - otherSlots),
           });
           continue;
         }

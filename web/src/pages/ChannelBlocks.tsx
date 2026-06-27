@@ -19,7 +19,7 @@ type Props = {
   onShowClassic: () => void;
 };
 
-const DAILY_KEY_CAP = 92;
+const DAILY_KEY_CAP = 100;
 const BLOCK_ORDER_KEY = "channelBlocksOrder";
 
 function readBlockOrder(): string[] {

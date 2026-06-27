@@ -12,6 +12,7 @@ import type { Notifier } from "../services/notify-stream.ts";
 import type { BuildLibraryVideo } from "../services/library-build.ts";
 import type { RefreshHooks } from "../services/stats-refresh.ts";
 import { uid } from "../infra/auth-session.ts";
+import { isSuperAdminUser } from "../auth.ts";
 import {
   RATE_LIMIT_MESSAGE,
   RateLimitError,
@@ -155,8 +156,9 @@ export function makeRouteDeps(input: {
     // Per-channel cap follows the channel OWNER's role: admins keep 20/day, every non-admin channel 18/day.
     // On create (acc === null) the owner is the requester (createAccount sets userId: uid(req)).
     const ownerId = acc?.userId ?? uid(req);
-    const isAdminOwner = db.getUserById(ownerId)?.role === "admin";
-    const limitError = dailyScheduleLimitError(schedule.length, otherSlots, isAdminOwner);
+    const owner = db.getUserById(ownerId);
+    const isAdminOwner = owner?.role === "admin";
+    const limitError = dailyScheduleLimitError(schedule.length, otherSlots, isAdminOwner, isSuperAdminUser(owner));
     if (!limitError) return false;
     reply.code(400).send({ error: limitError });
     return true;

@@ -24,8 +24,9 @@ import {
 } from "../services/manual-videos.ts";
 import * as metrics from "../infra/metrics.ts";
 import { checkRateLimit } from "../infra/rate-limits.ts";
-import { USER_DAILY_SCHEDULE_CAP } from "../infra/account-limits.ts";
+import { googleKeyDailyScheduleCap } from "../infra/account-limits.ts";
 import { uid } from "../infra/auth-session.ts";
+import { isSuperAdminUser } from "../auth.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
 import type { RouteDeps, LimitedReplyish } from "./deps.ts";
 
@@ -279,10 +280,11 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     }
     // Daily per-Google-key upload cap (counts REAL uploads, not planned slots): post-now shares the
     // scheduler's budget so it can't blow the Cloud project's YouTube quota for co-bound channels.
-    if (acc.oauthClientId != null && db.uploadsTodayForKey(acc.oauthClientId) >= USER_DAILY_SCHEDULE_CAP)
+    const keyCap = googleKeyDailyScheduleCap(isSuperAdminUser(db.getUserById(accountOwnerId(req, acc))));
+    if (acc.oauthClientId != null && db.uploadsTodayForKey(acc.oauthClientId) >= keyCap)
       return reply
         .code(429)
-        .send({ error: `Достигнут дневной лимит ${USER_DAILY_SCHEDULE_CAP} публикаций на этот Google-ключ — попробуйте позже.` });
+        .send({ error: `Достигнут дневной лимит ${keyCap} публикаций на этот Google-ключ — попробуйте позже.` });
     // Atomic claim: flip this unposted video to in-flight so a double-click (or the scheduler) can't post it twice.
     if (!db.claimVideoForPost(v.id))
       return reply.code(409).send({ error: "Этот ролик уже публикуется или опубликован — обновите список." });

@@ -6,6 +6,9 @@ import { isMainAdmin } from "../lib/authz";
 import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
 
+const DEFAULT_DAILY_KEY_CAP = 92;
+const SUPER_ADMIN_DAILY_KEY_CAP = 100;
+
 // Admin-only section: create accounts + control which packs each user sees.
 export default function UsersPage() {
   const { user } = useAuth();
@@ -708,7 +711,10 @@ function AdminUsers() {
                                 ? t("users.sinceDate", { date: new Date(au.createdAt).toLocaleDateString("ru-RU") }) + " · "
                                 : "";
                             })()}
-                            {t("users.scheduledPerDay", { n: row.scheduled, limit: "/92" })}
+                            {t("users.scheduledPerDay", {
+                              n: row.scheduled,
+                              limit: `/${row.isSuperAdmin ? SUPER_ADMIN_DAILY_KEY_CAP : DEFAULT_DAILY_KEY_CAP}`,
+                            })}
                             {row.library > 0 ? " · " + t("users.inLibrary", { n: row.library }) : ""}
                           </div>
                           {canManageRights && (

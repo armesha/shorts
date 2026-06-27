@@ -6,7 +6,8 @@ import { DECKS, MANUAL_VIDEO_DECK, getDeck, isPackDeckId } from "../../src/anecd
 import { ytMeta } from "../../src/anecdotes/yt-meta.ts";
 import { uploadShort, ytErrorReason, isYtAuthError, type ClientCreds } from "../services/youtube.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
-import { USER_DAILY_SCHEDULE_CAP } from "./account-limits.ts";
+import { googleKeyDailyScheduleCap } from "./account-limits.ts";
+import { isSuperAdminUser } from "../auth.ts";
 import * as metrics from "./metrics.ts";
 
 /** Delete a posted video's rendered files (best-effort). */
@@ -105,8 +106,9 @@ export function startScheduler(opts: SchedulerOpts) {
         }
         // Daily per-Google-key upload cap (REAL uploads) — shared with manual post-now so the two
         // together can't blow the Cloud project's YouTube quota for channels on the same key.
-        if (acc.oauthClientId != null && opts.db.uploadsTodayForKey(acc.oauthClientId) >= USER_DAILY_SCHEDULE_CAP) {
-          opts.log(`[sched] account ${acc.id}: дневной лимит ${USER_DAILY_SCHEDULE_CAP} на Google-ключ достигнут — пропуск`);
+        const keyCap = googleKeyDailyScheduleCap(isSuperAdminUser(acc.userId != null ? opts.db.getUserById(acc.userId) : null));
+        if (acc.oauthClientId != null && opts.db.uploadsTodayForKey(acc.oauthClientId) >= keyCap) {
+          opts.log(`[sched] account ${acc.id}: дневной лимит ${keyCap} на Google-ключ достигнут — пропуск`);
           continue;
         }
         // Atomic claim: flip this unposted video to in-flight so post-now or another tick can't double-post it.
