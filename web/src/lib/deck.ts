@@ -83,6 +83,10 @@ export const DECK_GLOSS_RU: Record<string, string> = {
   "long-christian-en": "Христианство · длинное видео · англ.",
   "visual-riddles-de": "Sieh die Antwort · видео (DE)",
   "visual-riddles-en": "Визуальные загадки · видео · англ.",
+  "visual-riddles-it": "Визуальные загадки · видео · итал.",
+  "visual-riddles-es": "Визуальные загадки · видео · исп.",
+  "visual-riddles-fr": "Визуальные загадки · видео · фр.",
+  "visual-riddles-pt": "Визуальные загадки · видео · порт.",
   "animal-superheroes": "ЗвероГерои · видео",
   "animal-superheroes-en": "ЗвероГерои · видео · англ.",
   "illusions-3d": "Иллюзия вращения · видео",
@@ -116,7 +120,7 @@ export const deckLabel = (id: string, name: string): string =>
 /** Content language of each built-in deck (deck id → 2-letter lang). Custom packs carry their own lang. */
 export const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", choose: "ru",
-  tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "funny-quotes-ru": "ru", "funny-quotes-en": "en", "funny-quotes-it": "it", "funny-quotes-es": "es", "funny-quotes-fr": "fr", "funny-quotes-pt": "pt", "funny-quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
+  tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "funny-quotes-ru": "ru", "funny-quotes-en": "en", "funny-quotes-it": "it", "funny-quotes-es": "es", "funny-quotes-fr": "fr", "funny-quotes-pt": "pt", "funny-quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-es": "es", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar",
 };
 
@@ -209,6 +213,10 @@ export const BUILTIN_DECKS: { id: string; label: string }[] = [
   { id: "long-christian-en", label: "The Faithful Journey (длинное видео, EN)" },
   { id: "visual-riddles-de", label: "Sieh die Antwort (видео, DE)" },
   { id: "visual-riddles-en", label: "Visual Riddles (видео, EN)" },
+  { id: "visual-riddles-it", label: "Indovinelli visivi (видео, IT)" },
+  { id: "visual-riddles-es", label: "Acertijos visuales (видео, ES)" },
+  { id: "visual-riddles-fr", label: "Énigmes visuelles (видео, FR)" },
+  { id: "visual-riddles-pt", label: "Enigmas visuais (видео, PT)" },
   { id: "animal-superheroes", label: "ЗвероГерои (видео, RU)" },
   { id: "animal-superheroes-en", label: "Animal Heroes (видео, EN)" },
   { id: "illusions-3d", label: "Обмани свой мозг (видео, RU)" },

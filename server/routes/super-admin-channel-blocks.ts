@@ -84,6 +84,10 @@ const RIDDLE_VISUAL_DECK_BY_LANG: Record<string, string[]> = {
   ru: ["visual-riddles"],
   de: ["visual-riddles-de"],
   en: ["visual-riddles-en"],
+  it: ["visual-riddles-it"],
+  es: ["visual-riddles-es"],
+  fr: ["visual-riddles-fr"],
+  pt: ["visual-riddles-pt"],
 };
 
 const JOKE_SOURCE_GROUPS: SourceGroupDef[] = [
@@ -104,6 +108,12 @@ const JOKE_SOURCE_GROUPS: SourceGroupDef[] = [
     title: "Смешные цитаты",
     defaultWeight: 1,
     sources: FUNNY_QUOTE_DECK_BY_LANG,
+  },
+  {
+    id: "visual_riddles",
+    title: "Вижу ответ",
+    defaultWeight: 1,
+    sources: RIDDLE_VISUAL_DECK_BY_LANG,
   },
 ];
 

@@ -1013,6 +1013,58 @@ export const DECKS: Deck[] = [
     preFact: true,
   },
   {
+    id: "visual-riddles-it",
+    name: "Indovinelli visivi",
+    dir: "data/visual-riddles-it", // generated-original visual puzzle MP4s for Italian joke/meme channels
+    source: "Project-generated HTML/CSS visual puzzles; see data/visual-riddles-it/sources.json",
+    emoji: "🧩",
+    hashtags: "#indovinelli #illusioniottiche #logica #shorts",
+    tags: ["indovinelli", "illusioni ottiche", "logica", "attenzione", "shorts"],
+    genericTitles: ["Indovinelli visivi", "Test visivo", "Trova la risposta"],
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+  },
+  {
+    id: "visual-riddles-es",
+    name: "Acertijos visuales",
+    dir: "data/visual-riddles-es", // generated-original visual puzzle MP4s for Spanish joke/meme channels
+    source: "Project-generated HTML/CSS visual puzzles; see data/visual-riddles-es/sources.json",
+    emoji: "🧩",
+    hashtags: "#acertijos #ilusionesopticas #logica #shorts",
+    tags: ["acertijos", "ilusiones opticas", "logica", "atencion", "shorts"],
+    genericTitles: ["Acertijos visuales", "Reto visual", "Encuentra la respuesta"],
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+  },
+  {
+    id: "visual-riddles-fr",
+    name: "Énigmes visuelles",
+    dir: "data/visual-riddles-fr", // generated-original visual puzzle MP4s for French joke/meme channels
+    source: "Project-generated HTML/CSS visual puzzles; see data/visual-riddles-fr/sources.json",
+    emoji: "🧩",
+    hashtags: "#enigmes #illusionsoptiques #logique #shorts",
+    tags: ["enigmes", "illusions optiques", "logique", "attention", "shorts"],
+    genericTitles: ["Énigmes visuelles", "Défi visuel", "Trouve la réponse"],
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+  },
+  {
+    id: "visual-riddles-pt",
+    name: "Enigmas visuais",
+    dir: "data/visual-riddles-pt", // generated-original visual puzzle MP4s for Portuguese joke/meme channels
+    source: "Project-generated HTML/CSS visual puzzles; see data/visual-riddles-pt/sources.json",
+    emoji: "🧩",
+    hashtags: "#enigmas #ilusoesopticas #logica #shorts",
+    tags: ["enigmas", "ilusoes opticas", "logica", "atencao", "shorts"],
+    genericTitles: ["Enigmas visuais", "Desafio visual", "Encontre a resposta"],
+    adminOnly: true,
+    grantable: true,
+    preFact: true,
+  },
+  {
     id: "animal-superheroes",
     name: "ЗвероГерои",
     dir: "data/animal-superheroes", // videos.json = numbered story episodes with voiceover + subtitles
@@ -1222,7 +1274,7 @@ export function isPackDeckId(id?: string | null): boolean {
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ar: "ar", hi: "hi", id: "id", choose: "ru",
-  tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "funny-quotes-ru": "ru", "funny-quotes-en": "en", "funny-quotes-it": "it", "funny-quotes-es": "es", "funny-quotes-fr": "fr", "funny-quotes-pt": "pt", "funny-quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
+  tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "funny-quotes-ru": "ru", "funny-quotes-en": "en", "funny-quotes-it": "it", "funny-quotes-es": "es", "funny-quotes-fr": "fr", "funny-quotes-pt": "pt", "funny-quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-es": "es", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar",
 };
 export function deckLang(id: string): string {
