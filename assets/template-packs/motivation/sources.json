@@ -1,0 +1,49 @@
+{
+  "packFamily": "motivation",
+  "createdAt": "2026-06-27T20:00:00.000Z",
+  "backgrounds": [
+    {
+      "file": "assets/template-packs/motivation/backgrounds/motivation-bg-01.jpg",
+      "source": "OpenAI image generation",
+      "promptSummary": "Cinematic vertical city rooftop at blue hour, no people, no text, no logos, clean center-left text area."
+    },
+    {
+      "file": "assets/template-packs/motivation/backgrounds/motivation-bg-02.jpg",
+      "source": "OpenAI image generation",
+      "promptSummary": "Cinematic vertical desert road at dusk, no people, no vehicles, no signs, clean sky/text area."
+    },
+    {
+      "file": "assets/template-packs/motivation/backgrounds/motivation-bg-03.jpg",
+      "source": "OpenAI image generation",
+      "promptSummary": "Quiet night study desk with rain on window, no people, no readable text, clean dark text area."
+    },
+    {
+      "file": "assets/template-packs/motivation/backgrounds/motivation-bg-04.jpg",
+      "source": "OpenAI image generation",
+      "promptSummary": "Empty dark training room with equipment at edges, no people, no logos, no signage."
+    },
+    {
+      "file": "assets/template-packs/motivation/backgrounds/motivation-bg-05.jpg",
+      "source": "OpenAI image generation",
+      "promptSummary": "Stormy ocean cliff and lookout path, no people, no logos, clean center for text."
+    },
+    {
+      "file": "assets/template-packs/motivation/backgrounds/motivation-bg-06.jpg",
+      "source": "OpenAI image generation",
+      "promptSummary": "Forest road at sunrise with fog, no people, no signs, clean center-left text area."
+    },
+    {
+      "file": "assets/template-packs/motivation/backgrounds/motivation-bg-07.jpg",
+      "source": "OpenAI image generation",
+      "promptSummary": "Misty mountain valley with bench/path, no people, no text, no logos."
+    }
+  ],
+  "textPolicy": "Original project-written motivational lists; no real-person attribution, no copied quotes, no AP/news text.",
+  "visualPolicy": "Backgrounds intentionally contain no readable text, logos, watermarks, social handles, or channel plaques.",
+  "audioPolicy": "Motivation audio beds are local ffmpeg synth files documented in assets/audio/motivation/README.md.",
+  "safetyRules": [
+    "Avoid protected-class insults, gender hostility, political framing, sexual content, violence, medical claims and guaranteed success promises.",
+    "Keep advice general, motivational and non-clinical.",
+    "No channel watermark or subscription plaque; decorative cinematic texture is allowed."
+  ]
+}

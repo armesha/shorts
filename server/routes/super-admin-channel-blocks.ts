@@ -220,6 +220,12 @@ const STATIC_FACT_DECK_BY_LANG: Record<string, string[]> = {
   es: ["pack:static-facts-es-superadmin"],
 };
 
+const MOTIVATION_DECK_BY_LANG: Record<string, string[]> = {
+  ru: ["pack:motivation-ru-superadmin"],
+  en: ["pack:motivation-en-superadmin"],
+  de: ["pack:motivation-de-superadmin"],
+};
+
 const FACT_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
   en: ["fact-en"],
   es: ["fact-es"],
@@ -357,6 +363,12 @@ const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
     defaultWeight: 2,
     sources: PSYCHOLOGY_DECK_BY_LANG,
   },
+  {
+    id: "motivation",
+    title: "Мотивация",
+    defaultWeight: 1,
+    sources: MOTIVATION_DECK_BY_LANG,
+  },
 ];
 
 const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
@@ -449,6 +461,7 @@ const BLOCKS: BlockDef[] = [
       "Если появится озвучка для лайфхаков, новые voiceover-паки собирать через разрешённый TTS-профиль проекта с учётом текущих квот.",
       "Анекдоты внутри блока остаются отдельным источником микса; не смешивать бытовые советы и шутки внутри одной карточки.",
       "Видео-цитаты и статичные цитаты держать отдельными источниками микса.",
+      "Мотивационные карточки писать как оригинальные короткие правила без реальных атрибуций, гендерной токсичности, обещаний успеха или водяных знаков.",
       "Запрещены AP/неясные фото, misattribution, экстремистские/насильственные цитаты и protected-class hate.",
       "Не давать медицинских диагнозов/обещаний лечения; формулировать как общие наблюдения и self-help.",
       "Локализации должны сохранять осторожный тон и избегать травматичных/опасных советов.",

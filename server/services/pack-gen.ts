@@ -28,6 +28,7 @@ function packKeyOf(text: string): string {
 
 function audioHintForPack(pack: Pack): AudioDeckHint | undefined {
   const haystack = `${pack.id} ${pack.name}`.toLowerCase();
+  if (/(motivation|motivaci|motivaц|мотивац|мотивация|motivier)/i.test(haystack)) return { audioProfile: "motivation" };
   if (/(chistes|joke|jokes|witz|witze|barzellette|blague|piada|анекдот|шутк)/i.test(haystack)) return { audioProfile: "jokes" };
   return undefined;
 }
@@ -61,6 +62,13 @@ export interface PickedPackCard {
   values: CardValues;
   tpl: Pack["templates"][number];
   key: string;
+}
+
+function stillMotionForPack(pack: Pack, picked: PickedPackCard): "slow-zoom" | "slow-drift-left" | "slow-drift-right" | undefined {
+  const haystack = `${pack.id} ${pack.name}`.toLowerCase();
+  if (!/(motivation|motivaci|motivaц|мотивац|мотивация|motivier)/i.test(haystack)) return undefined;
+  const variants = ["slow-zoom", "slow-drift-left", "slow-drift-right"] as const;
+  return variants[picked.idx % variants.length];
 }
 
 /** Случайная карточка пака, чей ключ НЕ в usedKeys. null — все использованы/пусто. */
@@ -100,6 +108,7 @@ export async function buildPackLibraryVideo(input: {
     audioPath,
     // editor-exported pack templates carry id/x/y at runtime; PackTemplate type just doesn't declare them
     render: (imgAbs) => renderTemplateCard(picked.tpl as TemplateDoc, picked.values, imgAbs),
+    stillMotion: stillMotionForPack(pack, picked),
   });
   const { title, text } = cardReadable(picked.values, deriveRules(pack.templates[0]));
   const v = db.createVideo({

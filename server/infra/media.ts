@@ -24,6 +24,7 @@ export async function buildStillVideoFiles<T>(opts: {
   audioVolume?: number;
   fadeAudio?: boolean;
   motionOverlay?: MotionOverlay | null;
+  stillMotion?: "slow-zoom" | "slow-drift-left" | "slow-drift-right";
   render: (imgAbs: string) => Promise<T>;
 }): Promise<{ imgRel: string; vidRel: string; render: T }> {
   const stamp = `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
@@ -39,6 +40,7 @@ export async function buildStillVideoFiles<T>(opts: {
       audioVolume: opts.audioVolume,
       fadeAudio: opts.fadeAudio,
       motionOverlay: opts.motionOverlay,
+      stillMotion: opts.stillMotion,
     });
     return r;
   });

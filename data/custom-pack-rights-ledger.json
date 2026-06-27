@@ -30,6 +30,42 @@
         "Keep as general self-reflection/behavioral prompts, not therapy replacement."
       ]
     },
+    "motivation-en-superadmin": {
+      "status": "project_owned_original_text_ai_generated_backgrounds",
+      "livePath": "data/packs/motivation-en-superadmin.json",
+      "note": "English motivation cards use original project-written list text, OpenAI-generated cinematic backgrounds, and local ffmpeg-synth audio beds.",
+      "templateAssets": "assets/template-packs/motivation/backgrounds/*",
+      "sourceLedger": "assets/template-packs/motivation/sources.json",
+      "rules": [
+        "No copied quotes or real-person attribution without a separate source ledger.",
+        "No social handles, channel plaques, logos, AP/news imagery, gender hostility, protected-class insults, politics, sexual content, violence, medical claims, or guaranteed success promises.",
+        "Keep text short and mobile-readable."
+      ]
+    },
+    "motivation-ru-superadmin": {
+      "status": "project_owned_original_text_ai_generated_backgrounds",
+      "livePath": "data/packs/motivation-ru-superadmin.json",
+      "note": "Russian motivation cards use original project-written list text, OpenAI-generated cinematic backgrounds, and local ffmpeg-synth audio beds.",
+      "templateAssets": "assets/template-packs/motivation/backgrounds/*",
+      "sourceLedger": "assets/template-packs/motivation/sources.json",
+      "rules": [
+        "No copied quotes or real-person attribution without a separate source ledger.",
+        "No social handles, channel plaques, logos, AP/news imagery, gender hostility, protected-class insults, politics, sexual content, violence, medical claims, or guaranteed success promises.",
+        "Keep text short and mobile-readable."
+      ]
+    },
+    "motivation-de-superadmin": {
+      "status": "project_owned_original_text_ai_generated_backgrounds",
+      "livePath": "data/packs/motivation-de-superadmin.json",
+      "note": "German motivation cards use original project-written list text, OpenAI-generated cinematic backgrounds, and local ffmpeg-synth audio beds.",
+      "templateAssets": "assets/template-packs/motivation/backgrounds/*",
+      "sourceLedger": "assets/template-packs/motivation/sources.json",
+      "rules": [
+        "No copied quotes or real-person attribution without a separate source ledger.",
+        "No social handles, channel plaques, logos, AP/news imagery, gender hostility, protected-class insults, politics, sexual content, violence, medical claims, or guaranteed success promises.",
+        "Keep text short and mobile-readable."
+      ]
+    },
     "static-facts-en-superadmin": {
       "status": "project_owned_text_with_fact_check_required",
       "livePath": "data/packs/static-facts-en-superadmin.json",

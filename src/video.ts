@@ -21,13 +21,20 @@ const CHRISTIAN_SUBDIR = "christian";
 const MEMES_SUBDIR = "memes";
 const LIFEHACK_SUBDIR = "lifehacks";
 const JOKES_SUBDIR = "anekdoty";
+const MOTIVATION_SUBDIR = "motivation";
 const isIslamicTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(ISLAMIC_SUBDIR + "/");
 const isChristianTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(CHRISTIAN_SUBDIR + "/");
 const isMemesTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(MEMES_SUBDIR + "/");
 const isLifehackTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(LIFEHACK_SUBDIR + "/");
 const isJokesTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(JOKES_SUBDIR + "/");
+const isMotivationTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(MOTIVATION_SUBDIR + "/");
 const isReservedTrack = (f: string) =>
-  isIslamicTrack(f) || isChristianTrack(f) || isMemesTrack(f) || isLifehackTrack(f) || isJokesTrack(f);
+  isIslamicTrack(f) ||
+  isChristianTrack(f) ||
+  isMemesTrack(f) ||
+  isLifehackTrack(f) ||
+  isJokesTrack(f) ||
+  isMotivationTrack(f);
 
 function insideDir(base: string, target: string): boolean {
   const rel = relative(base, target);
@@ -147,6 +154,15 @@ export function pickJokesAudio(): string | null {
   return `${JOKES_SUBDIR}/${files[Math.floor(Math.random() * files.length)]}`;
 }
 
+/** Pick a random focused cinematic bed for motivation decks. */
+export function pickMotivationAudio(): string | null {
+  const dir = resolve(AUDIO_DIR, MOTIVATION_SUBDIR);
+  if (!existsSync(dir)) return null;
+  const files = readdirSync(dir).filter((f) => AUDIO_EXT.has(extname(f).toLowerCase()));
+  if (files.length === 0) return null;
+  return `${MOTIVATION_SUBDIR}/${files[Math.floor(Math.random() * files.length)]}`;
+}
+
 /** Resolve a relative track name (from listAudio) to an absolute path. */
 export function audioPathFor(name: string, opts: { packId?: string } = {}): string {
   const packTrack = parsePackAudioTrack(name);
@@ -169,7 +185,7 @@ export interface AudioDeckHint {
   christian?: boolean;
   meme?: boolean;
   lifehack?: boolean;
-  audioProfile?: "islamic" | "christian" | "memes" | "lifehack" | "jokes";
+  audioProfile?: "islamic" | "christian" | "memes" | "lifehack" | "jokes" | "motivation";
 }
 
 /**
@@ -239,6 +255,13 @@ export function resolveAudio(
       audioPath = audioPathFor(bed);
     }
   }
+  if (deck?.audioProfile === "motivation" && !explicitNone) {
+    const bed = pickMotivationAudio();
+    if (bed) {
+      m = bed;
+      audioPath = audioPathFor(bed);
+    }
+  }
   return { music: m ?? "none", audioPath };
 }
 
@@ -263,6 +286,8 @@ export interface VideoOptions {
   fadeAudio?: boolean;
   /** Optional animated sticker overlay, used by lifehack decks. */
   motionOverlay?: MotionOverlay | null;
+  /** Optional subtle full-frame motion for still backgrounds. */
+  stillMotion?: "slow-zoom" | "slow-drift-left" | "slow-drift-right";
 }
 
 export interface MotionOverlay {
@@ -332,9 +357,19 @@ export async function assembleStillVideo(
   const motion = opts.motionOverlay ?? null;
   await mkdir(dirname(outPath), { recursive: true });
 
-  const vf =
+  const frames = Math.max(1, Math.round(dur * 30));
+  const baseStill =
     "scale=1080:1920:force_original_aspect_ratio=decrease," +
     "pad=1080:1920:(ow-iw)/2:(oh-ih)/2,setsar=1";
+  const motionVf =
+    opts.stillMotion === "slow-zoom"
+      ? `scale=1200:2134:force_original_aspect_ratio=increase,crop=1200:2134,zoompan=z='min(zoom+0.00055,1.055)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=${frames}:s=1080x1920:fps=30,setsar=1`
+      : opts.stillMotion === "slow-drift-left"
+        ? `scale=1160:2062:force_original_aspect_ratio=increase,crop=1160:2062,zoompan=z='1.03':x='(iw-iw/zoom)*(1-on/${frames})':y='ih/2-(ih/zoom/2)':d=${frames}:s=1080x1920:fps=30,setsar=1`
+        : opts.stillMotion === "slow-drift-right"
+          ? `scale=1160:2062:force_original_aspect_ratio=increase,crop=1160:2062,zoompan=z='1.03':x='(iw-iw/zoom)*(on/${frames})':y='ih/2-(ih/zoom/2)':d=${frames}:s=1080x1920:fps=30,setsar=1`
+          : null;
+  const vf = motionVf ?? baseStill;
 
   const args: string[] = ["-y", "-loop", "1", "-framerate", "30", "-i", imagePath];
 
