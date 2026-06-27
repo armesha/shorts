@@ -122,18 +122,6 @@
     "portraitLicense": ""
   },
   {
-    "id": 11,
-    "pack": 1,
-    "title": "Thomas Hobbes",
-    "text": "Denn Krieg besteht nicht nur in Schlachten oder Kampfhandlungen, sondern in einem Zeitraum, in dem der Wille zum Kampf genügend bekannt ist.",
-    "chars": 140,
-    "source": "https://de.wikiquote.org/wiki/Thomas_Hobbes",
-    "qid": "",
-    "portraitUrl": "",
-    "portraitCredit": "",
-    "portraitLicense": ""
-  },
-  {
     "id": 12,
     "pack": 1,
     "title": "Benjamin Franklin",
@@ -388,18 +376,6 @@
     "portraitLicense": ""
   },
   {
-    "id": 33,
-    "pack": 1,
-    "title": "Benjamin Franklin",
-    "text": "Es gab nie einen guten Krieg oder einen schlechten Frieden.",
-    "chars": 59,
-    "source": "https://de.wikiquote.org/wiki/Benjamin_Franklin",
-    "qid": "",
-    "portraitUrl": "",
-    "portraitCredit": "",
-    "portraitLicense": ""
-  },
-  {
     "id": 34,
     "pack": 1,
     "title": "Winston Churchill",
@@ -454,18 +430,6 @@
     "text": "Kriton, wir schulden dem Asklepios einen Hahn. Opfert ihm den und versäume es nicht.",
     "chars": 84,
     "source": "https://de.wikiquote.org/wiki/Sokrates",
-    "qid": "",
-    "portraitUrl": "",
-    "portraitCredit": "",
-    "portraitLicense": ""
-  },
-  {
-    "id": 39,
-    "pack": 1,
-    "title": "George Washington",
-    "text": "Wer auf den Krieg vorbereitet ist, kann den Frieden am Besten wahren.",
-    "chars": 69,
-    "source": "https://de.wikiquote.org/wiki/George_Washington",
     "qid": "",
     "portraitUrl": "",
     "portraitCredit": "",
@@ -1650,18 +1614,6 @@
     "portraitLicense": ""
   },
   {
-    "id": 137,
-    "pack": 2,
-    "title": "Thomas Hobbes",
-    "text": "Gewalt und Betrug sind die zwei Haupttugenden im Kriege.",
-    "chars": 56,
-    "source": "https://de.wikiquote.org/wiki/Thomas_Hobbes",
-    "qid": "",
-    "portraitUrl": "",
-    "portraitCredit": "",
-    "portraitLicense": ""
-  },
-  {
     "id": 138,
     "pack": 2,
     "title": "Johann Wolfgang von Goethe",
@@ -1718,18 +1670,6 @@
     "text": "Die Majorität der Dummen ist unüberwindbar und für alle Zeiten gesichert. Der Schrecken ihrer Tyrannei ist indessen gemildert durch Mangel an Konsequenz.",
     "chars": 153,
     "source": "https://de.wikiquote.org/wiki/Albert_Einstein",
-    "qid": "",
-    "portraitUrl": "",
-    "portraitCredit": "",
-    "portraitLicense": ""
-  },
-  {
-    "id": 143,
-    "pack": 2,
-    "title": "Niccolò Machiavelli",
-    "text": "Nicht, wer zuerst die Waffen ergreift, ist Anstifter des Unheils, sondern wer dazu nötigt.",
-    "chars": 90,
-    "source": "https://de.wikiquote.org/wiki/Niccol%C3%B2_Machiavelli",
     "qid": "",
     "portraitUrl": "",
     "portraitCredit": "",
@@ -2158,18 +2098,6 @@
     "text": "Ich habe keine besondere Begabung, sondern bin nur leidenschaftlich neugierig.",
     "chars": 78,
     "source": "https://de.wikiquote.org/wiki/Albert_Einstein",
-    "qid": "",
-    "portraitUrl": "",
-    "portraitCredit": "",
-    "portraitLicense": ""
-  },
-  {
-    "id": 179,
-    "pack": 2,
-    "title": "Niccolò Machiavelli",
-    "text": "auch wenn man unterliegt, soll man Ehre einzulegen suchen, und es ist zweifellos ehrenvoller, mit den Waffen besiegt zu werden, als den Krieg durch irgendeinen andern Mißstand zu verlieren.",
-    "chars": 189,
-    "source": "https://de.wikiquote.org/wiki/Niccol%C3%B2_Machiavelli",
     "qid": "",
     "portraitUrl": "",
     "portraitCredit": "",
@@ -3332,19 +3260,6 @@
     "portraitLicense": ""
   },
   {
-    "id": 273,
-    "pack": 3,
-    "title": "Johann Wolfgang von Goethe",
-    "text": "Wer Waffen schmiedet, bereitet Krieg und muss davon der Zither Klang nicht erwarten.",
-    "chars": 84,
-    "source": "https://de.wikiquote.org/wiki/Johann_Wolfgang_von_Goethe",
-    "qid": "Q5879",
-    "portraitFile": "data/quotes-de/portraits/johann-wolfgang-von-goethe.jpg",
-    "portraitUrl": "https://commons.wikimedia.org/wiki/File:Goethe_%28Stieler_1828%29.jpg",
-    "portraitCredit": "Transferred from nds.wikipedia to Commons..org by G.Meiners at 12:05, 15. Okt 2005.",
-    "portraitLicense": "Public domain"
-  },
-  {
     "id": 274,
     "pack": 3,
     "title": "Immanuel Kant",
@@ -3857,19 +3772,6 @@
     "portraitLicense": "Public domain"
   },
   {
-    "id": 314,
-    "pack": 4,
-    "title": "Heinrich Heine",
-    "text": "Die Zahl der deutschen Kriegerdenkmäler zur Zahl der deutschen Heine-Denkmäler verhält sich hierzulande wie die Macht zum Geist.",
-    "chars": 128,
-    "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
-    "qid": "Q44403",
-    "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-    "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-    "portraitCredit": "allposters.com",
-    "portraitLicense": "Public domain"
-  },
-  {
     "id": 315,
     "pack": 4,
     "title": "Ludwig Börne",
@@ -4036,19 +3938,6 @@
     "portraitFile": "data/quotes-de/portraits/anton-tschechow.jpg",
     "portraitUrl": "https://commons.wikimedia.org/wiki/File:Anton_Chekhov_with_bow-tie_sepia_image.jpg",
     "portraitCredit": "http://www.my-chekhov.ru/",
-    "portraitLicense": "Public domain"
-  },
-  {
-    "id": 328,
-    "pack": 4,
-    "title": "Carl von Clausewitz",
-    "text": "Der ganze Krieg setzt menschliche Schwäche voraus, und gegen sie ist er gerichtet.",
-    "chars": 82,
-    "source": "https://de.wikiquote.org/wiki/Carl_von_Clausewitz",
-    "qid": "Q76865",
-    "portraitFile": "data/quotes-de/portraits/carl-von-clausewitz.jpg",
-    "portraitUrl": "https://commons.wikimedia.org/wiki/File:PL_Stanis%C5%82aw_Brzozowski_-_Legenda_M%C5%82odej_Polski_p0004aa.jpg",
-    "portraitCredit": "This image is available from the Polish Digital Libraries Federation under the digital ID oai:dlibra.bibliotekaelblaska.pl:18939This tag does not indicate the copyright status of the attached work. A normal copyright tag is still required. See Commons:Licensing for more information.",
     "portraitLicense": "Public domain"
   },
   {
@@ -4426,19 +4315,6 @@
     "portraitFile": "data/quotes-de/portraits/mark-twain.jpg",
     "portraitUrl": "https://commons.wikimedia.org/wiki/File:MarkTwain.LOC.jpg",
     "portraitCredit": "This image is available from the United States Library of Congress's Prints and Photographs division under the digital ID cph.3a08820.This tag does not indicate the copyright status of the attached work. A normal copyright tag is still required. See Commons:Licensing.",
-    "portraitLicense": "Public domain"
-  },
-  {
-    "id": 358,
-    "pack": 4,
-    "title": "Martin Luther",
-    "text": "Gut macht Mut, Mut macht Krieg, Krieg macht Armut, Armut macht Demut.",
-    "chars": 69,
-    "source": "https://de.wikiquote.org/wiki/Martin_Luther",
-    "qid": "Q9554",
-    "portraitFile": "data/quotes-de/portraits/martin-luther.jpg",
-    "portraitUrl": "https://commons.wikimedia.org/wiki/File:Lucas_Cranach_d.%C3%84._-_Martin_Luther%2C_1528_%28Veste_Coburg%29.jpg",
-    "portraitCredit": "GalleriX",
     "portraitLicense": "Public domain"
   },
   {
@@ -5521,19 +5397,6 @@
     "portraitLicense": "Public domain"
   },
   {
-    "id": 442,
-    "pack": 5,
-    "title": "Carl von Clausewitz",
-    "text": "Selten ist in Europa überall Frieden, und nie geht der Krieg in den anderen Weltteilen aus.",
-    "chars": 91,
-    "source": "https://de.wikiquote.org/wiki/Carl_von_Clausewitz",
-    "qid": "Q76865",
-    "portraitFile": "data/quotes-de/portraits/carl-von-clausewitz.jpg",
-    "portraitUrl": "https://commons.wikimedia.org/wiki/File:PL_Stanis%C5%82aw_Brzozowski_-_Legenda_M%C5%82odej_Polski_p0004aa.jpg",
-    "portraitCredit": "This image is available from the Polish Digital Libraries Federation under the digital ID oai:dlibra.bibliotekaelblaska.pl:18939This tag does not indicate the copyright status of the attached work. A normal copyright tag is still required. See Commons:Licensing for more information.",
-    "portraitLicense": "Public domain"
-  },
-  {
     "id": 443,
     "pack": 5,
     "title": "Gerhart Hauptmann",
@@ -5609,19 +5472,6 @@
     "portraitFile": "data/quotes-de/portraits/john-stuart-mill.jpg",
     "portraitUrl": "https://commons.wikimedia.org/wiki/File:John_Stuart_Mill_by_London_Stereoscopic_Company%2C_c1870.jpg",
     "portraitCredit": "Hulton Archive",
-    "portraitLicense": "Public domain"
-  },
-  {
-    "id": 449,
-    "pack": 5,
-    "title": "Friedrich II.",
-    "text": "Sah Friedrichs Heldenzeit und kämpfte mit ihm in allen seinen Kriegen. Wählte Ungnade, wo Gehorsam nicht Ehre brachte.",
-    "chars": 118,
-    "source": "https://de.wikiquote.org/wiki/Friedrich_II.",
-    "qid": "Q66475",
-    "portraitFile": "data/quotes-de/portraits/friedrich-ii.jpg",
-    "portraitUrl": "https://commons.wikimedia.org/wiki/File:Hiob_Ludolf.jpg",
-    "portraitCredit": "from the book Zweihundert deutsche Männer in Bildnissen und Lebensbeschreibungen (Two hundred German men in portraits and biographies), Leipzig 1854, edited by Ludwig Bechstein, compare Zweihundert deutsche Männer in Bildnissen und Lebensbeschreibungen (Visual Library); photograph from portrait.kaar.at",
     "portraitLicense": "Public domain"
   },
   {
@@ -6106,19 +5956,6 @@
     "portraitLicense": "Public domain"
   },
   {
-    "id": 487,
-    "pack": 5,
-    "title": "Ludwig Börne",
-    "text": "Das Schmollen der Weiber ist nichts als ein Guerillakrieg, den sie gegen die konzentrierte Macht der Männer führen, ein Krieg, in dem sie immer siegen.",
-    "chars": 151,
-    "source": "https://de.wikiquote.org/wiki/Ludwig_B%C3%B6rne",
-    "qid": "Q76722",
-    "portraitFile": "data/quotes-de/portraits/ludwig-borne.jpg",
-    "portraitUrl": "https://commons.wikimedia.org/wiki/File:Maximilian_Heinrich_von_Bayern.jpg",
-    "portraitCredit": "",
-    "portraitLicense": "Public domain"
-  },
-  {
     "id": 488,
     "pack": 5,
     "title": "Franz Kafka",
@@ -6181,19 +6018,6 @@
     "portraitFile": "data/quotes-de/portraits/konfuzius.jpg",
     "portraitUrl": "https://commons.wikimedia.org/wiki/File:Confucius%2C_fresco_from_a_Western_Han_tomb_of_Dongping_County%2C_Shandong_province%2C_China.jpg",
     "portraitCredit": "Du Guodong (17 October 2007). \"Frescos found in a tomb in Shandong Province.\" Xinhua News, citing the Shanghai Daily. Accessed 10 October 2016. For further information, see China.org.cn (17 October 2007). \"2,000-year-old tomb frescos discovered.\" Accessed 10 October 2016.",
-    "portraitLicense": "Public domain"
-  },
-  {
-    "id": 493,
-    "pack": 5,
-    "title": "Laotse",
-    "text": "Ein Land regiert man nach Regel und Maß, Krieg führt man ohne Regel mit List.",
-    "chars": 77,
-    "source": "https://de.wikiquote.org/wiki/Laotse",
-    "qid": "Q9333",
-    "portraitFile": "data/quotes-de/portraits/laotse.jpg",
-    "portraitUrl": "https://commons.wikimedia.org/wiki/File:Zhang_Lu-Laozi_Riding_an_Ox_%28cropped%29.jpg",
-    "portraitCredit": "http://tech2.npm.gov.tw/cheschool/zh-tw/index.aspx?content=e_1_58",
     "portraitLicense": "Public domain"
   },
   {
@@ -6272,19 +6096,6 @@
     "portraitFile": "data/quotes-de/portraits/anton-tschechow.jpg",
     "portraitUrl": "https://commons.wikimedia.org/wiki/File:Anton_Chekhov_with_bow-tie_sepia_image.jpg",
     "portraitCredit": "http://www.my-chekhov.ru/",
-    "portraitLicense": "Public domain"
-  },
-  {
-    "id": 500,
-    "pack": 5,
-    "title": "Carl von Clausewitz",
-    "text": "Der Kampf im Kriege ist nicht ein Kampf des einzelnen gegen den einzelnen, sondern ein vielfach gegliedertes Ganzes.",
-    "chars": 116,
-    "source": "https://de.wikiquote.org/wiki/Carl_von_Clausewitz",
-    "qid": "Q76865",
-    "portraitFile": "data/quotes-de/portraits/carl-von-clausewitz.jpg",
-    "portraitUrl": "https://commons.wikimedia.org/wiki/File:PL_Stanis%C5%82aw_Brzozowski_-_Legenda_M%C5%82odej_Polski_p0004aa.jpg",
-    "portraitCredit": "This image is available from the Polish Digital Libraries Federation under the digital ID oai:dlibra.bibliotekaelblaska.pl:18939This tag does not indicate the copyright status of the attached work. A normal copyright tag is still required. See Commons:Licensing for more information.",
     "portraitLicense": "Public domain"
   },
   {
@@ -6948,19 +6759,6 @@
     "portraitFile": "data/quotes-de/portraits/anton-tschechow.jpg",
     "portraitUrl": "https://commons.wikimedia.org/wiki/File:Anton_Chekhov_with_bow-tie_sepia_image.jpg",
     "portraitCredit": "http://www.my-chekhov.ru/",
-    "portraitLicense": "Public domain"
-  },
-  {
-    "id": 552,
-    "pack": 6,
-    "title": "Carl von Clausewitz",
-    "text": "Der Krieg ist also ein Akt der Gewalt um den Gegner zur Erfüllung unseres Willens zu zwingen.",
-    "chars": 93,
-    "source": "https://de.wikiquote.org/wiki/Carl_von_Clausewitz",
-    "qid": "Q76865",
-    "portraitFile": "data/quotes-de/portraits/carl-von-clausewitz.jpg",
-    "portraitUrl": "https://commons.wikimedia.org/wiki/File:PL_Stanis%C5%82aw_Brzozowski_-_Legenda_M%C5%82odej_Polski_p0004aa.jpg",
-    "portraitCredit": "This image is available from the Polish Digital Libraries Federation under the digital ID oai:dlibra.bibliotekaelblaska.pl:18939This tag does not indicate the copyright status of the attached work. A normal copyright tag is still required. See Commons:Licensing for more information.",
     "portraitLicense": "Public domain"
   },
   {
@@ -8118,19 +7916,6 @@
     "portraitFile": "data/quotes-de/portraits/anton-tschechow.jpg",
     "portraitUrl": "https://commons.wikimedia.org/wiki/File:Anton_Chekhov_with_bow-tie_sepia_image.jpg",
     "portraitCredit": "http://www.my-chekhov.ru/",
-    "portraitLicense": "Public domain"
-  },
-  {
-    "id": 642,
-    "pack": 7,
-    "title": "Carl von Clausewitz",
-    "text": "Die politische Absicht ist der Zweck, der Krieg ist das Mittel, und niemals kann das Mittel ohne Zweck gedacht werden.",
-    "chars": 118,
-    "source": "https://de.wikiquote.org/wiki/Carl_von_Clausewitz",
-    "qid": "Q76865",
-    "portraitFile": "data/quotes-de/portraits/carl-von-clausewitz.jpg",
-    "portraitUrl": "https://commons.wikimedia.org/wiki/File:PL_Stanis%C5%82aw_Brzozowski_-_Legenda_M%C5%82odej_Polski_p0004aa.jpg",
-    "portraitCredit": "This image is available from the Polish Digital Libraries Federation under the digital ID oai:dlibra.bibliotekaelblaska.pl:18939This tag does not indicate the copyright status of the attached work. A normal copyright tag is still required. See Commons:Licensing for more information.",
     "portraitLicense": "Public domain"
   },
   {
@@ -9551,19 +9336,6 @@
     "portraitLicense": "Public domain"
   },
   {
-    "id": 752,
-    "pack": 8,
-    "title": "Carl von Clausewitz",
-    "text": "Der Krieg ist eine bloße Fortsetzung der Politik mit anderen Mitteln.",
-    "chars": 69,
-    "source": "https://de.wikiquote.org/wiki/Carl_von_Clausewitz",
-    "qid": "Q76865",
-    "portraitFile": "data/quotes-de/portraits/carl-von-clausewitz.jpg",
-    "portraitUrl": "https://commons.wikimedia.org/wiki/File:PL_Stanis%C5%82aw_Brzozowski_-_Legenda_M%C5%82odej_Polski_p0004aa.jpg",
-    "portraitCredit": "This image is available from the Polish Digital Libraries Federation under the digital ID oai:dlibra.bibliotekaelblaska.pl:18939This tag does not indicate the copyright status of the attached work. A normal copyright tag is still required. See Commons:Licensing for more information.",
-    "portraitLicense": "Public domain"
-  },
-  {
     "id": 753,
     "pack": 8,
     "title": "Gerhart Hauptmann",
@@ -9977,19 +9749,6 @@
     "portraitFile": "data/quotes-de/portraits/anton-tschechow.jpg",
     "portraitUrl": "https://commons.wikimedia.org/wiki/File:Anton_Chekhov_with_bow-tie_sepia_image.jpg",
     "portraitCredit": "http://www.my-chekhov.ru/",
-    "portraitLicense": "Public domain"
-  },
-  {
-    "id": 785,
-    "pack": 8,
-    "title": "Carl von Clausewitz",
-    "text": "Es ist im Kriege alles sehr einfach, aber das Einfachste ist schwierig.",
-    "chars": 71,
-    "source": "https://de.wikiquote.org/wiki/Carl_von_Clausewitz",
-    "qid": "Q76865",
-    "portraitFile": "data/quotes-de/portraits/carl-von-clausewitz.jpg",
-    "portraitUrl": "https://commons.wikimedia.org/wiki/File:PL_Stanis%C5%82aw_Brzozowski_-_Legenda_M%C5%82odej_Polski_p0004aa.jpg",
-    "portraitCredit": "This image is available from the Polish Digital Libraries Federation under the digital ID oai:dlibra.bibliotekaelblaska.pl:18939This tag does not indicate the copyright status of the attached work. A normal copyright tag is still required. See Commons:Licensing for more information.",
     "portraitLicense": "Public domain"
   },
   {
@@ -10692,19 +10451,6 @@
     "portraitFile": "data/quotes-de/portraits/konfuzius.jpg",
     "portraitUrl": "https://commons.wikimedia.org/wiki/File:Confucius%2C_fresco_from_a_Western_Han_tomb_of_Dongping_County%2C_Shandong_province%2C_China.jpg",
     "portraitCredit": "Du Guodong (17 October 2007). \"Frescos found in a tomb in Shandong Province.\" Xinhua News, citing the Shanghai Daily. Accessed 10 October 2016. For further information, see China.org.cn (17 October 2007). \"2,000-year-old tomb frescos discovered.\" Accessed 10 October 2016.",
-    "portraitLicense": "Public domain"
-  },
-  {
-    "id": 840,
-    "pack": 9,
-    "title": "Laotse",
-    "text": "Je mehr scharfe Waffen im Volk, umso wirrer der Staat.",
-    "chars": 54,
-    "source": "https://de.wikiquote.org/wiki/Laotse",
-    "qid": "Q9333",
-    "portraitFile": "data/quotes-de/portraits/laotse.jpg",
-    "portraitUrl": "https://commons.wikimedia.org/wiki/File:Zhang_Lu-Laozi_Riding_an_Ox_%28cropped%29.jpg",
-    "portraitCredit": "http://tech2.npm.gov.tw/cheschool/zh-tw/index.aspx?content=e_1_58",
     "portraitLicense": "Public domain"
   },
   {
@@ -12879,19 +12625,6 @@
     "portraitLicense": "Public domain"
   },
   {
-    "id": 1008,
-    "pack": 11,
-    "title": "Franz Kafka",
-    "text": "Deutschland hat Rußland den Krieg erklärt. – Nachmittag Schwimmschule.",
-    "chars": 70,
-    "source": "https://de.wikiquote.org/wiki/Franz_Kafka",
-    "qid": "Q905",
-    "portraitFile": "data/quotes-de/portraits/franz-kafka.jpg",
-    "portraitUrl": "https://commons.wikimedia.org/wiki/File:Kafka1906_cropped.jpg",
-    "portraitCredit": "http://www.bodleian.ox.ac.uk/news/2008_july_02 Franz Kafka: Pictures of a Life by Klaus Wagenbach (1984), p. 58",
-    "portraitLicense": "Public domain"
-  },
-  {
     "id": 1009,
     "pack": 11,
     "title": "Fjodor Dostojewski",
@@ -14397,19 +14130,6 @@
     "portraitFile": "data/quotes-de/portraits/immanuel-kant.jpg",
     "portraitUrl": "https://commons.wikimedia.org/wiki/File:Immanuel_Kant_-_Gemaelde_2.jpg",
     "portraitCredit": "Self-scanned",
-    "portraitLicense": "Public domain"
-  },
-  {
-    "id": 1125,
-    "pack": 12,
-    "title": "Karl Marx",
-    "text": "Wie die Philosophie im Proletariat ihre materiellen, so findet das Proletariat in der Philosophie seine geistigen Waffen",
-    "chars": 120,
-    "source": "https://de.wikiquote.org/wiki/Karl_Marx",
-    "qid": "Q9061",
-    "portraitFile": "data/quotes-de/portraits/karl-marx.jpg",
-    "portraitUrl": "https://commons.wikimedia.org/wiki/File:Karl_Marx_001_restored.jpg",
-    "portraitCredit": "File:Karl Marx 001.jpg",
     "portraitLicense": "Public domain"
   },
   {
@@ -15957,19 +15677,6 @@
     "portraitFile": "data/quotes-de/portraits/honore-de-balzac.jpg",
     "portraitUrl": "https://commons.wikimedia.org/wiki/File:Honor%C3%A9_de_Balzac_%281842%29_detail.jpg",
     "portraitCredit": "http://images.nzz.ch",
-    "portraitLicense": "Public domain"
-  },
-  {
-    "id": 1245,
-    "pack": 13,
-    "title": "William Shakespeare",
-    "text": "Denn Mord, hat er schon keine Zunge, spricht mit wundervollen Stimmen.",
-    "chars": 70,
-    "source": "https://de.wikiquote.org/wiki/William_Shakespeare",
-    "qid": "Q692",
-    "portraitFile": "data/quotes-de/portraits/william-shakespeare.jpg",
-    "portraitUrl": "https://commons.wikimedia.org/wiki/File:Shakespeare.jpg",
-    "portraitCredit": "Official gallery link",
     "portraitLicense": "Public domain"
   },
   {

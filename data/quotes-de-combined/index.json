@@ -1,10 +1,10 @@
 {
-  "total": 1373,
+  "total": 1350,
   "packs": 1,
-  "packSize": 1373,
+  "packSize": 1350,
   "range": [
-    244,
-    3074
+    45,
+    227
   ],
   "fileRanges": [
     [
@@ -23,5 +23,7 @@
       2843,
       3074
     ]
-  ]
+  ],
+  "reviewPrunedAt": "2026-06-27T18:56:14.360Z",
+  "reviewPrunedRemoved": 23
 }

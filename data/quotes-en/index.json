@@ -1,6 +1,6 @@
 {
   "language": "en",
-  "total": 1068,
+  "total": 1057,
   "packs": 11,
   "packSize": 100,
   "range": [
@@ -11,5 +11,7 @@
   "source": "Curated Wikiquote + Commons portraits",
   "generator": "scripts/build-curated-portrait-quote-decks.py",
   "filteredNonEnglish": 132,
-  "filterNote": "Filtered obvious non-English quote texts from the English pool on 2026-06-27."
+  "filterNote": "Filtered obvious non-English quote texts from the English pool on 2026-06-27.",
+  "reviewPrunedAt": "2026-06-27T18:56:14.402Z",
+  "reviewPrunedRemoved": 11
 }

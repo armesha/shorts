@@ -1,6 +1,12 @@
 {
-  "total": 1373,
+  "total": 1350,
   "packs": 14,
   "packSize": 100,
-  "source": "data/quotes-de-combined/sources.json"
+  "source": "data/quotes-de-combined/sources.json",
+  "range": [
+    45,
+    227
+  ],
+  "reviewPrunedAt": "2026-06-27T18:56:14.380Z",
+  "reviewPrunedRemoved": 23
 }
