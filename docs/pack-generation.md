@@ -1212,6 +1212,12 @@ find assets/fact-videos/prayers-en -maxdepth 1 -name '*.mp4' | wc -l
 - `christian-quotes-en`: 700 quote-card записей из public-domain KJV `data/christian/cards.json`.
   Атрибуция: source/reference label (`Psalms`, `Gospel of Matthew`, `Epistle`, `KJV`), не современные
   портреты и не copyrighted Bible translations.
+- Islamic visual rule: no human faces/portraits in Islamic religious packs. Do not depict prophets,
+  companions, scholars, saints, or modern people; use calligraphy, mosques, geometric ornament,
+  manuscripts/books, light, and abstract textures.
+- Christian visual rule: faces are allowed only as clearly sourced public-domain/clearly licensed
+  religious artwork (icons, frescoes, paintings, stained glass). Treat them as artwork, not factual
+  portraits. Do not use modern actor/person photos as Jesus, apostles, saints, or prophets.
 - Safety: не использовать для нападок на другие религии/protected classes, политических тезисов,
   экстремистского контекста, медицинских обещаний или гарантированных чудес.
 
