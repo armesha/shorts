@@ -245,6 +245,7 @@ prebuilt MP4 считается исключением и требует явн�
 | `quotes-ru` / `quotes-en` / `quotes-es` / `quotes-*` static quote decks | `data/quotes-*/titled.json` | sourced Wikiquote/Wikimedia portrait quote cards, rendered dynamically | нет для рантайма; да, для новых curated batches |
 | `quote-video-*` voiced quote decks | `data/quotes-*/titled.json`, `data/quote-video-de/titled.json` | те же sourced quote cards, но runtime собирает ролик с voiceover через edge-tts | нет для выбора карточки; да, если расширять/чистить источники |
 | `prayers-de` Gebete | `data/prayers-de/videos.json` + `assets/fact-videos/prayers-de/` | 1000 готовых немецких молитвенных card-style MP4 без тега: примерно 250 про детей/семью и 750 общих молитв | нет |
+| `prayers-en` Christian Prayers | `data/prayers-en/videos.json` + `assets/fact-videos/prayers-en/` | готовые английские prayer-card MP4 с оригинальным devotional-текстом и локальным HTML/CSS-шаблоном, без внешних медиа | нет |
 | `space` Space | `data/space/videos.json` + `assets/fact-videos/space/` | готовые MP4 | не в рантайме |
 | `animal-superheroes` / `animal-superheroes-en` ЗвероГерои / Animal Heroes | `data/output/admin-demos/manifest.json` + `data/animal-superheroes*/videos.json` + `assets/fact-videos/animal-superheroes*/` | сериальные MP4-комиксы RU/EN с одинаковым визуалом, ElevenLabs-озвучкой и safe-zone karaoke-субтитрами | нет |
 | `long-anecdotes-ru` Русские анекдоты | `data/long-anecdotes-ru/videos.json` + `assets/fact-videos/long-anecdotes-ru/` | длинный MP4-сборник из коротких читаемых сцен RU-анекдотов под музыку | нет |
@@ -1171,6 +1172,32 @@ node --input-type=module -e 'import fs from "node:fs"; const cards=JSON.parse(fs
 
 ```bash
 node --input-type=module -e 'import fs from "node:fs"; const cards=JSON.parse(fs.readFileSync("data/christian/cards.json","utf8")); const idx=JSON.parse(fs.readFileSync("data/christian/index.json","utf8")); console.log({cards:cards.length,indexTotal:idx.total,range:idx.range,sample:Object.keys(cards[0]||{})});'
+```
+
+## Christian Prayers (`prayers-en`)
+
+`prayers-en` — отдельный английский молитвенный video-pack для блока `christianity`. Он не заменяет
+`christian`/KJV: блок должен использовать два источника, чтобы расписание могло чередовать Bible cards и
+prayer cards через `sourceGroups`.
+
+- Тексты: короткие оригинальные devotional prayer cards, без цитирования защищённых переводов Библии.
+- Медиа: локальный HTML/CSS-шаблон в `src/scripts/build-prayers-en-pack.mjs`, без внешних фото/портретов.
+- Результат: `data/prayers-en/videos.json`, `data/prayers-en/sources.json`,
+  `assets/fact-videos/prayers-en/prayer_en_*.mp4`.
+- Safety: без обещаний гарантированного исцеления, политических нападок, protected-class hate и спорных
+  религиозных утверждений.
+
+Пересобрать:
+
+```bash
+node src/scripts/build-prayers-en-pack.mjs 160
+```
+
+Проверка:
+
+```bash
+node -e 'const fs=require("fs"); const v=JSON.parse(fs.readFileSync("data/prayers-en/videos.json","utf8")); console.log(v.length, v[0]);'
+find assets/fact-videos/prayers-en -maxdepth 1 -name '*.mp4' | wc -l
 ```
 
 ## Что выберешь? (`choose`)

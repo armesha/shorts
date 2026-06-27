@@ -36,6 +36,7 @@ test("deckLang maps built-in decks; '' for packs/unknown", () => {
   assert.equal(deckLang("memes-id"), "id");
   assert.equal(deckLang("memes-ar"), "ar");
   assert.equal(deckLang("prayers-de"), "de");
+  assert.equal(deckLang("prayers-en"), "en");
   assert.equal(deckLang("pack:abc"), "");
   assert.equal(deckLang("does-not-exist"), "");
 });

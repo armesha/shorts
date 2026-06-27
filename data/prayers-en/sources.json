@@ -1,0 +1,11 @@
+{
+  "deckId": "prayers-en",
+  "rights": "Original devotional text and HTML/CSS visuals generated locally for this project. No external media or copyrighted quotes.",
+  "generator": "src/scripts/build-prayers-en-pack.mjs",
+  "count": 160,
+  "safety": [
+    "Christian devotional tone only.",
+    "No claims of guaranteed healing, political attacks, or protected-class hate.",
+    "No external portraits, music, scripture quotations, or stock media."
+  ]
+}

@@ -268,6 +268,7 @@ const RELIGION_KJV_DECK_BY_LANG: Record<string, string[]> = {
 };
 
 const RELIGION_PRAYER_DECK_BY_LANG: Record<string, string[]> = {
+  en: ["prayers-en"],
   de: ["prayers-de"],
 };
 
@@ -340,7 +341,7 @@ const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
     ar: ["islamic"],
   },
   christianity: {
-    en: ["christian"],
+    en: ["christian", "prayers-en"],
     de: ["prayers-de"],
   },
   quotes: QUOTE_STATIC_DECK_BY_LANG,
