@@ -42,6 +42,16 @@ function shortTitle(title, text) {
   return `${cut.slice(0, boundary > 48 ? boundary : 92).trim()}...`;
 }
 
+function splitLeadingSentence(value) {
+  const text = cleanText(value);
+  const match = text.match(/^(.+?[.!?])\s+(.+)$/);
+  if (!match) return { title: "", body: text };
+  return {
+    title: cleanText(match[1].replace(/[.!?]+$/, "")),
+    body: cleanText(match[2]),
+  };
+}
+
 function cardText(text, title) {
   const value = cleanText(text);
   const heading = cleanText(title);
@@ -219,13 +229,17 @@ function buildPack(def) {
     template(`static-facts-${def.lang}-${index + 1}-panel`, bg, index * 2 + 1, def.label),
   ]);
   const cards = raw
-    .map((item) => ({
-      values: {
-        title: shortTitle(item.title, item.text),
-        text: cardText(item.text, item.title),
-      },
-      addedAt: NOW,
-    }))
+    .map((item) => {
+      const leading = splitLeadingSentence(item.text);
+      const fullTitle = leading.title || cleanText(item.title);
+      return {
+        values: {
+          title: shortTitle(fullTitle, item.text),
+          text: cardText(leading.body || item.text, fullTitle),
+        },
+        addedAt: NOW,
+      };
+    })
     .filter((card) => card.values.title && card.values.text);
 
   return {
@@ -238,6 +252,20 @@ function buildPack(def) {
     cards,
     createdAt: NOW,
     grants: [],
+    rightsLedger: {
+      status: "project_owned_text_with_fact_check_required",
+      addedAt: "2026-06-27T07:55:00.000Z",
+      note:
+        def.lang === "es"
+          ? "Spanish static fact card prose and templates are local/project-generated; factual claims need spot-checking before large expansions."
+          : "Static fact card prose and templates are local/project-generated; factual claims need spot-checking before large expansions.",
+      templateAssets: "assets/template-packs/static-facts/backgrounds/* local project assets",
+      rules: [
+        "No AP/news imagery or unlicensed photos.",
+        "Facts should be source-backed before large publication batches.",
+        "Avoid medical/legal/financial instructions and unsafe experiments.",
+      ],
+    },
   };
 }
 
@@ -245,6 +273,6 @@ mkdirSync(OUT_DIR, { recursive: true });
 for (const def of PACKS) {
   const pack = buildPack(def);
   const file = resolve(OUT_DIR, `${pack.id}.json`);
-  writeFileSync(file, JSON.stringify(pack, null, 2));
+  writeFileSync(file, `${JSON.stringify(pack, null, 2)}\n`);
   console.log(`${pack.id}: templates=${pack.templates.length} cards=${pack.cards.length} -> ${file}`);
 }
