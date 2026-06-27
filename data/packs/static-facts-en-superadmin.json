@@ -3788,5 +3788,16 @@
     }
   ],
   "createdAt": "2026-06-26T00:00:00.000Z",
-  "grants": []
+  "grants": [],
+  "rightsLedger": {
+    "status": "project_owned_text_with_fact_check_required",
+    "addedAt": "2026-06-27T07:55:00.000Z",
+    "note": "Static fact card prose and templates are local/project-generated; factual claims need spot-checking before large expansions.",
+    "templateAssets": "assets/template-packs/static-facts/backgrounds/* local project assets",
+    "rules": [
+      "No AP/news imagery or unlicensed photos.",
+      "Facts should be source-backed before large publication batches.",
+      "Avoid medical/legal/financial instructions and unsafe experiments."
+    ]
+  }
 }

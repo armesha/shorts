@@ -7320,5 +7320,14 @@
     }
   ],
   "createdAt": "2026-06-26T12:00:00.000Z",
-  "grants": []
+  "grants": [],
+  "rightsLedger": {
+    "status": "project_owned_generated_text",
+    "addedAt": "2026-06-27T07:55:00.000Z",
+    "note": "Original concise psychology card text and local templates generated for this project; no external quote/photo corpus is intentionally used.",
+    "rules": [
+      "Avoid medical diagnosis, crisis advice, manipulative promises, or protected-class targeting.",
+      "Keep as general self-reflection/behavioral prompts, not therapy replacement."
+    ]
+  }
 }

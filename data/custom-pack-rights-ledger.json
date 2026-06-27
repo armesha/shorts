@@ -1,0 +1,54 @@
+{
+  "updatedAt": "2026-06-27T07:55:00.000Z",
+  "packs": {
+    "chistes-es-public-domain": {
+      "status": "public_domain_source_required_per_card",
+      "livePath": "data/packs/chistes-es-public-domain.json",
+      "note": "Cards carry per-card source labels such as Boira, 1862 and Tesoro, 1847; templates use local project SVG/background assets.",
+      "textSources": [
+        {
+          "label": "Boira, 1862",
+          "status": "public domain by age"
+        },
+        {
+          "label": "Tesoro, 1847",
+          "status": "public domain by age"
+        }
+      ],
+      "rules": [
+        "Keep source labels attached to cards or equivalent metadata.",
+        "Do not mix modern joke corpora into this pack without a separate source/license record.",
+        "Run safety review before broad queue top-up."
+      ]
+    },
+    "psychology-ru-superadmin": {
+      "status": "project_owned_generated_text",
+      "livePath": "data/packs/psychology-ru-superadmin.json",
+      "note": "Original concise psychology card text and local templates generated for this project; no external quote/photo corpus is intentionally used.",
+      "rules": [
+        "Avoid medical diagnosis, crisis advice, manipulative promises, or protected-class targeting.",
+        "Keep as general self-reflection/behavioral prompts, not therapy replacement."
+      ]
+    },
+    "static-facts-en-superadmin": {
+      "status": "project_owned_text_with_fact_check_required",
+      "livePath": "data/packs/static-facts-en-superadmin.json",
+      "note": "Static fact card prose and templates are local/project-generated; factual claims need spot-checking before large expansions.",
+      "templateAssets": "assets/template-packs/static-facts/backgrounds/* local project assets",
+      "rules": [
+        "No AP/news imagery or unlicensed photos.",
+        "Facts should be source-backed before large publication batches.",
+        "Avoid medical/legal/financial instructions and unsafe experiments."
+      ]
+    },
+    "психология-mgs-mqe2kfjv": {
+      "status": "custom_pack_manual_provenance_review",
+      "livePath": "data/packs/психология-mgs-mqe2kfjv.json",
+      "note": "User/custom psychology pack. Active use is allowed in the admin grid, but original provenance should remain under manual review before further expansion.",
+      "rules": [
+        "Do not add external sourced text without a license/source note.",
+        "Avoid clinical diagnosis, crisis/self-harm advice, and protected-class targeting."
+      ]
+    }
+  }
+}
