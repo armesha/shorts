@@ -2765,13 +2765,6 @@
   "title": "Zelda épée cachée"
  },
  {
-  "id": 399,
-  "pack": 4,
-  "text": "Chuck Norris peut te prouver que...\n\nLa condamnation à mort n'est pas la peine maximale.",
-  "chars": 88,
-  "title": "Peine maximale mort"
- },
- {
   "id": 400,
   "pack": 4,
   "text": "Chuck Norris peut mettre un headshot.\n\nAu cavalier sans tête.",
@@ -3659,13 +3652,6 @@
   "text": "C'est l'histoire d'une cocotte-minute connectée...\n\n... qui utilise WinRAR pour décompresser.",
   "chars": 93,
   "title": "Cocotte WinRAR"
- },
- {
-  "id": 528,
-  "pack": 6,
-  "text": "Quel est le comble pour Lara Croft ?\n\nQu'elle tombe raide morte.",
-  "chars": 64,
-  "title": "Lara Croft mort"
  },
  {
   "id": 529,
@@ -5887,13 +5873,6 @@
   "title": "RAM ordinateur eau"
  },
  {
-  "id": 851,
-  "pack": 9,
-  "text": "Comment appelle-t-on des chaussures qui rappellent la mort ?\n\nDes pompes funèbres",
-  "chars": 81,
-  "title": "Pompes funèbres"
- },
- {
   "id": 852,
   "pack": 9,
   "text": "Pourquoi ne peut on pas mettre plus de 7 images dans un programme ?\n\nParce qu'il y en a-sset",
@@ -6046,13 +6025,6 @@
   "text": "Chuck Norris n'a pas de chargeur de téléphone...\n\n... c'est lui qui décide à combien est son téléphone.",
   "chars": 103,
   "title": "Batterie téléphone"
- },
- {
-  "id": 874,
-  "pack": 9,
-  "text": "Un cobra a mordu Chuck Norris, et après 5 jours d'atroces souffrances...\n\n... le cobra est mort.",
-  "chars": 96,
-  "title": "Cobra mort 5 jours"
  },
  {
   "id": 875,
@@ -6440,13 +6412,6 @@
   "title": "Dieu et Satan"
  },
  {
-  "id": 933,
-  "pack": 10,
-  "text": "Quand Chuck Norris commet un meurtre...\n\n... la police est coupable !",
-  "chars": 69,
-  "title": "Chuck meurtrier"
- },
- {
   "id": 934,
   "pack": 10,
   "text": "Un jour Chuck Norris a joué à Mario.\n\nBowser lui a ramené la princesse et s'est excusé.",
@@ -6466,13 +6431,6 @@
   "text": "Savez-vous comment on décrit le meilleur fan de Spider-Man ?\n\nIl connaît Peter par cœur.",
   "chars": 88,
   "title": "Fan Spider-Man"
- },
- {
-  "id": 937,
-  "pack": 10,
-  "text": "Chuck Norris en est à sa 392 ème mort...\n\n...mais la faucheuse n'a toujours pas le courage de le lui annoncer.",
-  "chars": 110,
-  "title": "Chuck 392 morts"
  },
  {
   "id": 938,
@@ -6972,13 +6930,6 @@
   "title": "Un lit pour rever"
  },
  {
-  "id": 1009,
-  "pack": 11,
-  "text": "C'est l'histoire d'un cochon transexuel. Il a commencé Henri...\n\n...et a terminé en rillettes.",
-  "chars": 94,
-  "title": "Henri devient rillettes"
- },
- {
   "id": 1010,
   "pack": 11,
   "text": "Qu'est-ce qu'un yaourt qui court dans les bois ?\n\nUn yaourt nature !",
@@ -7110,13 +7061,6 @@
   "text": "Un écrivain qui se livre…\n\nC’est comme un canard qui se confie.",
   "chars": 63,
   "title": "Ecrivain canard"
- },
- {
-  "id": 1030,
-  "pack": 11,
-  "text": "Le protocole RIP...\n\nEst-ce qu'on peut dire qu'il est mort ?",
-  "chars": 60,
-  "title": "RIP protocol mort"
  },
  {
   "id": 1031,

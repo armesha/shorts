@@ -1,5 +1,5 @@
 {
-  "total": 1886,
+  "total": 1785,
   "packs": 19,
   "packSize": 100,
   "range": [
@@ -9,5 +9,7 @@
   "safetyPrunedAt": "2026-06-27T03:40:30.781Z",
   "safetyPrunedRemoved": 91,
   "safetyReviewPrunedAt": "2026-06-27T18:13:24.770Z",
-  "safetyReviewPrunedRemoved": 1
+  "safetyReviewPrunedRemoved": 1,
+  "strictSafetyPrunedAt": "2026-06-27T18:34:24.523Z",
+  "strictSafetyPrunedRemoved": 101
 }
