@@ -1284,17 +1284,31 @@ function SourceMixSettings({
 
 function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: ReturnType<typeof useT>["t"] }) {
   const bottleneck = accountBottleneck(account);
+  const youtubeUrl = account.ytChannelId ? `https://www.youtube.com/channel/${account.ytChannelId}` : null;
+  const avatar = account.avatar ? (
+    <img src={account.avatar} alt="" className="h-10 w-10 rounded-md border border-base-300 object-cover" loading="lazy" />
+  ) : (
+    <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
+      <AppIcon name="accounts" size={16} />
+    </div>
+  );
   return (
-    <Link to={`/accounts/${account.id}`} className="block rounded-md border border-base-300 bg-base-100 p-3 transition-colors hover:border-primary/50 hover:bg-base-200/30">
+    <div className="rounded-md border border-base-300 bg-base-100 p-3 transition-colors hover:border-primary/50 hover:bg-base-200/30">
       <div className="flex items-start gap-2">
-        {account.avatar ? (
-          <img src={account.avatar} alt="" className="h-10 w-10 shrink-0 rounded-md border border-base-300 object-cover" loading="lazy" />
+        {youtubeUrl ? (
+          <a
+            href={youtubeUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="shrink-0 rounded-md transition-opacity hover:opacity-80"
+            title="YouTube"
+          >
+            {avatar}
+          </a>
         ) : (
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-            <AppIcon name="accounts" size={16} />
-          </div>
+          <div className="shrink-0">{avatar}</div>
         )}
-        <div className="min-w-0 flex-1">
+        <Link to={`/accounts/${account.id}`} className="min-w-0 flex-1">
           <div className="line-clamp-2 text-sm font-semibold leading-snug" title={account.channelName}>
             {account.channelName}
           </div>
@@ -1306,10 +1320,10 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
               <span className="badge badge-warning badge-xs">{t("accounts.needsAuth")}</span>
             )}
           </div>
-        </div>
+        </Link>
       </div>
 
-      <div className="mt-3 rounded bg-base-200/70 px-2 py-2">
+      <Link to={`/accounts/${account.id}`} className="mt-3 block rounded bg-base-200/70 px-2 py-2 transition-colors hover:bg-base-200">
         <div className="flex items-baseline justify-between gap-2">
           <span className="text-[11px] font-semibold uppercase tracking-wide text-base-content/45">{t("channelBlocks.runwayNoGeneration")}</span>
           <span className="text-sm font-bold">{formatRunwayDays(account.effectiveRunwayDays ?? null)}</span>
@@ -1326,14 +1340,14 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
         ) : (
           <div className="mt-1 text-[11px] text-base-content/40">{t("channelBlocks.bottleneckNone")}</div>
         )}
-      </div>
+      </Link>
       {account.authError && (
         <div className="mt-2 flex items-start gap-1 text-[11px] leading-snug text-error">
           <AppIcon name="warning" size={12} className="mt-0.5 shrink-0" />
           <span>{account.authError}</span>
         </div>
       )}
-    </Link>
+    </div>
   );
 }
 
