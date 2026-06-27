@@ -140,9 +140,9 @@ function deckSummaries(block: ChannelThemeBlock): BlockDeckSummary[] {
 function blockPackCount(block: ChannelThemeBlock): string {
   const counts = accountsInBlock(block).map((account) => account.sourceDecks.length);
   if (!counts.length) return "0";
-  const min = Math.min(...counts);
-  const max = Math.max(...counts);
-  return min === max ? String(max) : `${min}-${max}`;
+  // The block summary is intentionally normalized by the weakest channel, same as runway.
+  // Per-channel differences remain visible inside the block details.
+  return String(Math.min(...counts));
 }
 
 function formatRunwayDays(days: number | null): string {
