@@ -146,12 +146,6 @@ async function main() {
       videos.push({ file: rel, title, text: title });
       existingFiles.add(rel);
       added.push(rel);
-    } else {
-      const existing = videos.find((video) => video.file === rel);
-      if (existing) {
-        existing.title = title;
-        existing.text = title;
-      }
     }
   }
 
