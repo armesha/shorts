@@ -25,9 +25,17 @@ export const sourceRemaining = (packs: PackSummary[], gens: Generator[], deckId:
   return gens.find((gg) => gg.id === deckId)?.available ?? 0;
 };
 
+const SUFFIX_LANGS = new Set(["ru", "ar", "en", "it", "es", "de", "fr", "pt", "hi", "id"]);
+
+const inferredBuiltinLang = (id: string): string => {
+  if (DECK_LANG[id]) return DECK_LANG[id];
+  const suffix = id.toLowerCase().split("-").pop() || "";
+  return SUFFIX_LANGS.has(suffix) ? suffix : "";
+};
+
 /** Язык выбранного контента (встроенный или свой пак) — для тега и проверки совпадения с языком канала. */
 export const contentLang = (packs: PackSummary[], id: string): string =>
-  id.startsWith("pack:") ? packs.find((p) => `pack:${p.id}` === id)?.lang || "" : DECK_LANG[id] || id;
+  id.startsWith("pack:") ? packs.find((p) => `pack:${p.id}` === id)?.lang || "" : inferredBuiltinLang(id);
 
 /** Источники, чей язык не совпадает с языком канала. */
 export const mismatchedSources = (

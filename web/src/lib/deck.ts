@@ -42,7 +42,9 @@ export const DECK_GLOSS_RU: Record<string, string> = {
   "fact-es": "Интересные факты · видео · исп.",
   "quotes-ru": "Цитаты · рус.",
   "quotes-ar": "Цитаты · араб.",
+  "islamic-quotes-ar": "Исламские цитаты · араб.",
   "quotes-en": "Цитаты · англ.",
+  "christian-quotes-en": "Христианские цитаты · англ.",
   "quotes-it": "Цитаты · итал.",
   "quotes-es": "Цитаты · исп.",
   "quotes-fr": "Цитаты · фр.",
@@ -114,7 +116,7 @@ export const deckLabel = (id: string, name: string): string =>
 /** Content language of each built-in deck (deck id → 2-letter lang). Custom packs carry their own lang. */
 export const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", choose: "ru",
-  tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "funny-quotes-ru": "ru", "funny-quotes-en": "en", "funny-quotes-it": "it", "funny-quotes-es": "es", "funny-quotes-fr": "fr", "funny-quotes-pt": "pt", "funny-quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
+  tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "funny-quotes-ru": "ru", "funny-quotes-en": "en", "funny-quotes-it": "it", "funny-quotes-es": "es", "funny-quotes-fr": "fr", "funny-quotes-pt": "pt", "funny-quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-es": "es", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar",
 };
 
@@ -173,7 +175,9 @@ export const BUILTIN_DECKS: { id: string; label: string }[] = [
   { id: "fact-es", label: "Datos curiosos (видео, ES)" },
   { id: "quotes-ru", label: "Цитаты великих людей (RU)" },
   { id: "quotes-ar", label: "اقتباسات ملهمة (AR)" },
+  { id: "islamic-quotes-ar", label: "اقتباسات إسلامية (AR)" },
   { id: "quotes-en", label: "Great Quotes (EN)" },
+  { id: "christian-quotes-en", label: "Christian Quotes (EN)" },
   { id: "quotes-it", label: "Citazioni famose (IT)" },
   { id: "quotes-es", label: "Citas famosas (ES)" },
   { id: "quotes-fr", label: "Citations celebres (FR)" },

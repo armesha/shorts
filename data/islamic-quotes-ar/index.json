@@ -1,0 +1,20 @@
+{
+  "deckId": "islamic-quotes-ar",
+  "language": "ar",
+  "total": 700,
+  "packs": 7,
+  "packSize": 100,
+  "range": [
+    40,
+    417
+  ],
+  "byType": {
+    "hadith": 29,
+    "dua": 200,
+    "ayah": 471
+  },
+  "sourceDeck": "islamic",
+  "sourceFile": "data/islamic/cards.json",
+  "generator": "src/scripts/build-religious-quotes-decks.mjs",
+  "attributionMode": "Quran / Prophet Muhammad ﷺ / transmitted dua source labels; no portraits"
+}

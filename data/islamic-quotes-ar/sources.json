@@ -1,0 +1,16 @@
+{
+  "deckId": "islamic-quotes-ar",
+  "language": "ar",
+  "generator": "src/scripts/build-religious-quotes-decks.mjs",
+  "license": {
+    "quoteSource": "Arabic Quran, hadith and dua texts already curated in data/islamic/cards.json from local source ledger",
+    "portraitSource": "none",
+    "note": "No portraits of prophets, companions, scholars, or modern people are used."
+  },
+  "safety": [
+    "Use only within Islamic religious channels and source groups.",
+    "Do not use for attacks on other religions or protected classes.",
+    "No extremist, political, medical, or guaranteed-miracle framing."
+  ],
+  "count": 700
+}

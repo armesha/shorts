@@ -157,6 +157,7 @@ export interface AudioDeckHint {
   christian?: boolean;
   meme?: boolean;
   lifehack?: boolean;
+  audioProfile?: "islamic" | "christian" | "memes" | "lifehack";
 }
 
 /**
@@ -191,28 +192,28 @@ export function resolveAudio(
     }
   }
   // Islamic deck → nature ambient; Christian deck → sacred organ/choir pad. Explicit "none" stays silent.
-  if (deck?.islamic && !explicitNone) {
+  if ((deck?.islamic || deck?.audioProfile === "islamic") && !explicitNone) {
     const amb = pickIslamicAudio();
     if (amb) {
       m = amb;
       audioPath = audioPathFor(amb);
     }
   }
-  if (deck?.christian && !explicitNone) {
+  if ((deck?.christian || deck?.audioProfile === "christian") && !explicitNone) {
     const pad = pickChristianAudio();
     if (pad) {
       m = pad;
       audioPath = audioPathFor(pad);
     }
   }
-  if (deck?.meme && !explicitNone) {
+  if ((deck?.meme || deck?.audioProfile === "memes") && !explicitNone) {
     const bed = pickMemesAudio();
     if (bed) {
       m = bed;
       audioPath = audioPathFor(bed);
     }
   }
-  if (deck?.lifehack && !explicitNone) {
+  if ((deck?.lifehack || deck?.audioProfile === "lifehack") && !explicitNone) {
     const bed = pickLifehackAudio();
     if (bed) {
       m = bed;

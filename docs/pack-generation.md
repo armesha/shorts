@@ -240,6 +240,8 @@ prebuilt MP4 считается исключением и требует явн�
 | `psych` Psychologie (DE) | `data/psych/cards.json` | структурные карточки по `docs/psych-cards-standard.md` | обычно да, но можно загрузить вручную |
 | `islamic` آيات وأذكار | `data/islamic/cards.json` | точные интернет-корпусы -> локальные slices -> workflow выбора id -> assemble | да, только для выбора id/theme |
 | `christian` Holy Bible KJV | `data/christian/cards.json` | KJV public domain -> candidates/slices -> workflow выбора id -> assemble | да, только для выбора id/theme |
+| `islamic-quotes-ar` اقتباسات إسلامية | `data/islamic-quotes-ar/titled.json` | 700 quote-card записей, выведенных из точного `data/islamic/cards.json` без портретов | нет |
+| `christian-quotes-en` Christian Quotes | `data/christian-quotes-en/titled.json` | 700 quote-card записей, выведенных из public-domain KJV `data/christian/cards.json` без портретов | нет |
 | `fact-en` Interesting Facts | `data/fact-videos/videos.json` + `assets/fact-videos/` | готовые MP4 | не в рантайме; новые ролики собираются вне этого конвейера |
 | `quotes-de` Politiker-Zitate | `data/quotes-de-combined/videos.json` + `assets/fact-videos/` | единый статичный немецкий quote-card MP4 deck | не в рантайме |
 | `quotes-ru` / `quotes-en` / `quotes-es` / `quotes-*` static quote decks | `data/quotes-*/titled.json` | sourced Wikiquote/Wikimedia portrait quote cards, rendered dynamically | нет для рантайма; да, для новых curated batches |
@@ -1198,6 +1200,31 @@ node src/scripts/build-prayers-en-pack.mjs 160
 ```bash
 node -e 'const fs=require("fs"); const v=JSON.parse(fs.readFileSync("data/prayers-en/videos.json","utf8")); console.log(v.length, v[0]);'
 find assets/fact-videos/prayers-en -maxdepth 1 -name '*.mp4' | wc -l
+```
+
+## Religious Quote Decks (`islamic-quotes-ar`, `christian-quotes-en`)
+
+Оба пака — обычные `quoteDeck()` на `titled.json`, но их нельзя добавлять в общий блок литературы/цитат:
+они подключаются только к религиозным source groups (`islam`, `christianity`).
+
+- `islamic-quotes-ar`: 700 арабских quote-card записей из уже проверенного `data/islamic/cards.json`.
+  Атрибуция: `القرآن الكريم`, `النبي محمد ﷺ`, `دعاء مأثور` + ссылка. Портреты не используются.
+- `christian-quotes-en`: 700 quote-card записей из public-domain KJV `data/christian/cards.json`.
+  Атрибуция: source/reference label (`Psalms`, `Gospel of Matthew`, `Epistle`, `KJV`), не современные
+  портреты и не copyrighted Bible translations.
+- Safety: не использовать для нападок на другие религии/protected classes, политических тезисов,
+  экстремистского контекста, медицинских обещаний или гарантированных чудес.
+
+Пересобрать оба:
+
+```bash
+node src/scripts/build-religious-quotes-decks.mjs
+```
+
+Проверка:
+
+```bash
+node -e 'for (const p of ["data/islamic-quotes-ar/titled.json","data/christian-quotes-en/titled.json"]) { const a=JSON.parse(require("fs").readFileSync(p,"utf8")); console.log(p, a.length, a[0]); }'
 ```
 
 ## Что выберешь? (`choose`)
