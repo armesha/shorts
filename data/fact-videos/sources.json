@@ -1,0 +1,12 @@
+{
+  "deckId": "fact-en",
+  "status": "project_owned_text_with_fact_check_required",
+  "rightsNote": "Prebuilt fact videos are local/generated project assets in assets/fact-videos. Existing items are allowed for the admin block, but individual science/fact claims still need source-level fact checking before major expansion.",
+  "content": "English short fact videos listed in data/fact-videos/videos.json.",
+  "assetPolicy": "Only project-generated, public-domain, CC0 or clearly licensed footage/audio may be used for new items.",
+  "safetyRules": [
+    "Verify numerical facts and scientific claims against reliable sources.",
+    "Avoid medical, legal or financial advice framing.",
+    "Avoid copyrighted third-party footage unless a clear license is recorded."
+  ]
+}

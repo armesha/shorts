@@ -241,7 +241,8 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
   }, []);
 
   const selectedBlockParam = searchParams.get("block");
-  const selectedBlockId = selectedBlockParam === "lifehacks" || selectedBlockParam === "facts_space" ? "quotes" : selectedBlockParam;
+  const selectedBlockId =
+    selectedBlockParam === "lifehacks" || selectedBlockParam === "facts_space" || selectedBlockParam === "psychology" ? "quotes" : selectedBlockParam;
   const selectedBlock = data?.blocks.find((block) => block.id === selectedBlockId) ?? null;
   useEffect(() => {
     if (selectedBlock) setPerDay(Math.max(0, Math.min(20, selectedBlock.postsPerDay)));
@@ -1296,8 +1297,13 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
     </div>
   );
   return (
-    <div className="rounded-md border border-base-300 bg-base-100 p-3 transition-colors hover:border-primary/50 hover:bg-base-200/30">
-      <div className="flex items-start gap-2">
+    <div className="relative rounded-md border border-base-300 bg-base-100 p-3 transition-colors hover:border-primary/50 hover:bg-base-200/30">
+      <Link
+        to={`/accounts/${account.id}`}
+        className="absolute inset-0 rounded-md"
+        aria-label={account.channelName}
+      />
+      <div className="relative z-10 flex items-start gap-2">
         {youtubeUrl ? (
           <a
             href={youtubeUrl}
@@ -1326,7 +1332,7 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
         </Link>
       </div>
 
-      <Link to={`/accounts/${account.id}`} className="mt-3 block rounded bg-base-200/70 px-2 py-2 transition-colors hover:bg-base-200">
+      <Link to={`/accounts/${account.id}`} className="relative z-10 mt-3 block rounded bg-base-200/70 px-2 py-2 transition-colors hover:bg-base-200">
         <div className="flex items-baseline justify-between gap-2">
           <span className="text-[11px] font-semibold uppercase tracking-wide text-base-content/45">{t("channelBlocks.runwayNoGeneration")}</span>
           <span className="text-sm font-bold">{formatRunwayDays(account.effectiveRunwayDays ?? null)}</span>
@@ -1345,7 +1351,7 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
         )}
       </Link>
       {account.authError && (
-        <div className="mt-2 flex items-start gap-1 text-[11px] leading-snug text-error">
+        <div className="relative z-10 mt-2 flex items-start gap-1 text-[11px] leading-snug text-error">
           <AppIcon name="warning" size={12} className="mt-0.5 shrink-0" />
           <span>{account.authError}</span>
         </div>

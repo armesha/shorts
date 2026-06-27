@@ -1,11 +1,13 @@
 {
   "deckId": "memes-en",
-  "status": "review",
-  "rightsNote": "Cards reference local board meme templates through srcFile/photoFile in data/memes-en/cards.json. Each underlying template image needs a recorded public-domain/CC0/licensed/project-generated source before broad reuse.",
-  "assetPolicy": "Do not add celebrity, movie, TV, anime, game, famous meme-template or unclear-rights images.",
+  "status": "pexels_licensed_photo_ledger",
+  "rightsNote": "Cards reference local board meme templates/photos through srcFile/photoFile in cards.json. Photo sources are recorded in data/memes/photos/sources.jsonl with Pexels page URL, photographer, license and downloaded file. Captions are local/original/localized project text.",
+  "assetPolicy": "Do not add celebrity, movie, TV, anime, game, famous meme-template, trademark-focused, or unclear-rights images. New photos must be recorded in data/memes/photos/sources.jsonl or another explicit source ledger.",
   "safetyRules": [
     "No protected-class insults or harassment.",
     "No explicit sexual content, violence or illegal instructions.",
-    "Keep humor generic and non-political."
-  ]
+    "Keep humor generic, non-political and non-defamatory.",
+    "Spot-check generated/localized captions before large queue top-ups."
+  ],
+  "photoLedger": "data/memes/photos/sources.jsonl"
 }

@@ -1,8 +1,15 @@
 {
   "deckId": "christian",
-  "status": "review",
-  "rightsNote": "KJV Bible text is generally treated as public domain in the United States, but this local cards.json file did not previously include a primary source ledger. Keep this deck under manual source/provenance review before broader reuse.",
+  "status": "source_backed_manual_spot_check",
+  "rightsNote": "King James Version text is public domain in the United States. The local corpus was fetched from aruljohn/Bible-kjv via jsDelivr and assembled by src/scripts/christian-fetch-corpus.mjs, src/scripts/christian-build-candidates.mjs and src/scripts/christian-assemble.mjs.",
   "content": "Selected King James Version Bible passages in data/christian/cards.json.",
+  "primarySources": [
+    {
+      "name": "aruljohn/Bible-kjv",
+      "url": "https://cdn.jsdelivr.net/gh/aruljohn/Bible-kjv@master",
+      "text": "King James Version Bible JSON corpus"
+    }
+  ],
   "safetyRules": [
     "Do not use the text to attack protected groups or justify violence.",
     "Keep titles/descriptions respectful and non-political.",

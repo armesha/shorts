@@ -1,8 +1,25 @@
 {
   "deckId": "islamic",
-  "status": "review",
-  "rightsNote": "Arabic Quran, adhkar, dua and hadith snippets are stored in data/islamic/cards.json, but this local deck did not previously include a primary source ledger. Keep this deck under manual source/provenance review before broader reuse.",
+  "status": "source_backed_manual_spot_check",
+  "rightsNote": "Arabic Quran, hadith and dua snippets are stored in data/islamic/cards.json. The local corpus was fetched by src/scripts/islamic-fetch-corpus.mjs from explicit public APIs/repos and assembled by src/scripts/islamic-assemble.mjs. Religious wording still requires human spot-check before broad reuse.",
   "content": "Selected Arabic ayat, adhkar, duas and hadith references.",
+  "primarySources": [
+    {
+      "name": "alquran.cloud",
+      "url": "https://api.alquran.cloud/v1",
+      "text": "Quran quran-uthmani Arabic text"
+    },
+    {
+      "name": "fawazahmed0/hadith-api",
+      "url": "https://github.com/fawazahmed0/hadith-api",
+      "text": "Hadith editions used by the local corpus fetcher"
+    },
+    {
+      "name": "Hisn al-Muslim API",
+      "url": "https://www.hisnmuslim.com/api/ar",
+      "text": "Arabic dua/adhkar API used by the local corpus fetcher"
+    }
+  ],
   "safetyRules": [
     "Do not use human faces or portraits in Islamic religious visuals.",
     "Do not use religious text to attack protected groups or justify violence.",

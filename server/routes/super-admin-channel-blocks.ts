@@ -461,6 +461,7 @@ const BLOCKS: BlockDef[] = [
 const BLOCK_ALIASES: Record<string, string> = {
   facts_space: "quotes",
   lifehacks: "quotes",
+  psychology: "quotes",
 };
 
 function canonicalBlockId(blockId: string): string {
