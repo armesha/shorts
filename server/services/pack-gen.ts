@@ -6,7 +6,7 @@ import type { Db } from "../db.ts";
 import { loadBaseConfig } from "../config.ts";
 import { deriveRules, type Pack, type CardValues } from "../../src/packs/store.ts";
 import { renderTemplateCard, type TemplateDoc } from "../../src/template/render.ts";
-import { resolveAudio } from "../../src/video.ts";
+import { resolveAudio, type AudioDeckHint } from "../../src/video.ts";
 import { buildStillVideoFiles, cardReadable } from "../infra/media.ts";
 import { anecdoteKey } from "../../src/anecdotes/library.ts";
 
@@ -24,6 +24,12 @@ export function packCardKey(values: CardValues): string {
 // pack: префикс — чтобы ключ пак-карточки не пересекался с ключами текстовых анекдотов.
 function packKeyOf(text: string): string {
   return "p" + anecdoteKey(text);
+}
+
+function audioHintForPack(pack: Pack): AudioDeckHint | undefined {
+  const haystack = `${pack.id} ${pack.name}`.toLowerCase();
+  if (/(chistes|joke|jokes|witz|witze|barzellette|blague|piada|анекдот|шутк)/i.test(haystack)) return { audioProfile: "jokes" };
+  return undefined;
 }
 
 function stableHash(seed: string): number {
@@ -87,7 +93,7 @@ export async function buildPackLibraryVideo(input: {
   music?: string;
 }) {
   const { db, accountId, pack, picked } = input; // userId: бронь карточки делает вызывающий (claimAnecdote)
-  const { music, audioPath } = resolveAudio(input.music, undefined, { packId: pack.id }); // packs are never islamic/christian → no deck override
+  const { music, audioPath } = resolveAudio(input.music, audioHintForPack(pack), { packId: pack.id });
   const { imgRel, vidRel } = await buildStillVideoFiles({
     prefix: "pack",
     outputDir: OUTPUT_DIR,

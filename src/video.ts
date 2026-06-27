@@ -20,11 +20,14 @@ const ISLAMIC_SUBDIR = "islamic";
 const CHRISTIAN_SUBDIR = "christian";
 const MEMES_SUBDIR = "memes";
 const LIFEHACK_SUBDIR = "lifehacks";
+const JOKES_SUBDIR = "anekdoty";
 const isIslamicTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(ISLAMIC_SUBDIR + "/");
 const isChristianTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(CHRISTIAN_SUBDIR + "/");
 const isMemesTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(MEMES_SUBDIR + "/");
 const isLifehackTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(LIFEHACK_SUBDIR + "/");
-const isReservedTrack = (f: string) => isIslamicTrack(f) || isChristianTrack(f) || isMemesTrack(f) || isLifehackTrack(f);
+const isJokesTrack = (f: string) => f.replace(/\\/g, "/").toLowerCase().startsWith(JOKES_SUBDIR + "/");
+const isReservedTrack = (f: string) =>
+  isIslamicTrack(f) || isChristianTrack(f) || isMemesTrack(f) || isLifehackTrack(f) || isJokesTrack(f);
 
 function insideDir(base: string, target: string): boolean {
   const rel = relative(base, target);
@@ -135,6 +138,15 @@ export function pickLifehackAudio(): string | null {
   return `${LIFEHACK_SUBDIR}/${files[Math.floor(Math.random() * files.length)]}`;
 }
 
+/** Pick a random light comedy/jazz bed for joke and funny-quote decks. */
+export function pickJokesAudio(): string | null {
+  const dir = resolve(AUDIO_DIR, JOKES_SUBDIR);
+  if (!existsSync(dir)) return null;
+  const files = readdirSync(dir).filter((f) => AUDIO_EXT.has(extname(f).toLowerCase()));
+  if (files.length === 0) return null;
+  return `${JOKES_SUBDIR}/${files[Math.floor(Math.random() * files.length)]}`;
+}
+
 /** Resolve a relative track name (from listAudio) to an absolute path. */
 export function audioPathFor(name: string, opts: { packId?: string } = {}): string {
   const packTrack = parsePackAudioTrack(name);
@@ -157,7 +169,7 @@ export interface AudioDeckHint {
   christian?: boolean;
   meme?: boolean;
   lifehack?: boolean;
-  audioProfile?: "islamic" | "christian" | "memes" | "lifehack";
+  audioProfile?: "islamic" | "christian" | "memes" | "lifehack" | "jokes";
 }
 
 /**
@@ -168,7 +180,7 @@ export interface AudioDeckHint {
  *  - music === explicit name → that track
  *  - music empty/undefined   → a random instrumental track (or silent if the pool is empty)
  * Deck overrides (skipped when music is explicitly "none"): islamic → nature ambient, christian → sacred pad,
- * meme → quiet meme bed, lifehack → upbeat synthetic bed.
+ * meme → quiet meme bed, lifehack → upbeat synthetic bed, jokes → light comedy/jazz bed.
  * Returns the resolved track name (to store on the videos row) + absolute audio path (null = silent).
  */
 export function resolveAudio(
@@ -215,6 +227,13 @@ export function resolveAudio(
   }
   if ((deck?.lifehack || deck?.audioProfile === "lifehack") && !explicitNone) {
     const bed = pickLifehackAudio();
+    if (bed) {
+      m = bed;
+      audioPath = audioPathFor(bed);
+    }
+  }
+  if (deck?.audioProfile === "jokes" && !explicitNone) {
+    const bed = pickJokesAudio();
     if (bed) {
       m = bed;
       audioPath = audioPathFor(bed);

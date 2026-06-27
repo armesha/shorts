@@ -47,7 +47,7 @@ export interface Deck {
   /** Quote cards rendered dynamically but assembled with an on-demand TTS voiceover. */
   quoteVideo?: boolean;
   /** Deck-specific audio bed without changing render/data dispatch. */
-  audioProfile?: "islamic" | "christian" | "memes" | "lifehack";
+  audioProfile?: "islamic" | "christian" | "memes" | "lifehack" | "jokes";
   /** Pre-built long compilation assembled from many short readable scenes into one 5-15 minute video. */
   longVideo?: boolean;
   /** When true, generation picks the first unused item by videos.json order instead of random. */
@@ -55,6 +55,13 @@ export interface Deck {
 }
 
 export const MANUAL_VIDEO_DECK = "manual";
+
+function quoteDeckAudioProfile(id: string): Deck["audioProfile"] {
+  if (id === "islamic-quotes-ar" || id === "islamic-facts-ar") return "islamic";
+  if (id === "christian-quotes-en" || id === "christian-facts-en") return "christian";
+  if (id.startsWith("funny-quotes-")) return "jokes";
+  return undefined;
+}
 
 function quoteDeck(input: {
   id: string;
@@ -79,7 +86,7 @@ function quoteDeck(input: {
     grantable: true,
     quote: true,
     gallery: true,
-    audioProfile: input.id === "islamic-quotes-ar" ? "islamic" : input.id === "christian-quotes-en" ? "christian" : undefined,
+    audioProfile: quoteDeckAudioProfile(input.id),
   };
 }
 
@@ -119,6 +126,7 @@ export const DECKS: Deck[] = [
     tags: ["анекдоты", "юмор", "приколы", "смешное", "смех", "анекдот", "ржака", "shorts"],
     genericTitles: ["Анекдот", "Свежий анекдот", "Посмеёмся?", "Из жизни", "Народное", "Анекдот дня"],
     russianBg: true, // рендер на тематических сценах russian_jokes/* (лист на кухне/в бане/в поезде…)
+    audioProfile: "jokes",
   },
   {
     id: "de",
@@ -129,6 +137,7 @@ export const DECKS: Deck[] = [
     hashtags: "#Witze #Humor #lustig #comedy #shorts",
     tags: ["Witze", "Humor", "lustig", "Comedy", "Witz", "Spaß", "shorts"],
     genericTitles: ["Witz", "Witz des Tages", "Zum Lachen", "Kurz & gut", "Schon gehört?", "Lustig"],
+    audioProfile: "jokes",
   },
   {
     id: "it",
@@ -139,6 +148,7 @@ export const DECKS: Deck[] = [
     hashtags: "#barzellette #umorismo #divertente #comico #shorts",
     tags: ["barzellette", "umorismo", "divertente", "comico", "ridere", "barzelletta", "shorts"],
     genericTitles: ["Barzelletta", "Ridiamo?", "Che ridere", "Battuta del giorno", "Senti questa", "Comica"],
+    audioProfile: "jokes",
   },
   {
     id: "fr",
@@ -149,6 +159,7 @@ export const DECKS: Deck[] = [
     hashtags: "#blagues #humour #drôle #rire #shorts",
     tags: ["blagues", "humour", "drôle", "rire", "blague", "comédie", "shorts"],
     genericTitles: ["Blague", "Blague du jour", "Pour rire", "Tu connais celle-là ?", "Écoute ça", "Drôle"],
+    audioProfile: "jokes",
   },
   {
     id: "en",
@@ -159,6 +170,7 @@ export const DECKS: Deck[] = [
     hashtags: "#jokes #humor #funny #laugh #comedy #shorts",
     tags: ["jokes", "humor", "funny", "laugh", "comedy", "shorts"],
     genericTitles: ["Joke", "Quick Joke", "Funny Story", "A Little Laugh", "Classic Joke", "One More Joke"],
+    audioProfile: "jokes",
   },
   {
     id: "pt",
@@ -172,6 +184,7 @@ export const DECKS: Deck[] = [
     adminOnly: true,
     grantable: true,
     gallery: true,
+    audioProfile: "jokes",
   },
   {
     id: "ar",
@@ -185,6 +198,7 @@ export const DECKS: Deck[] = [
     adminOnly: true,
     grantable: true,
     gallery: true,
+    audioProfile: "jokes",
   },
   {
     id: "hi",
@@ -198,6 +212,7 @@ export const DECKS: Deck[] = [
     adminOnly: true,
     grantable: true,
     gallery: true,
+    audioProfile: "jokes",
   },
   {
     id: "id",
@@ -211,6 +226,7 @@ export const DECKS: Deck[] = [
     adminOnly: true,
     grantable: true,
     gallery: true,
+    audioProfile: "jokes",
   },
   {
     id: "tips",
