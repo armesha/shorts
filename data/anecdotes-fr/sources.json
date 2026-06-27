@@ -1,8 +1,15 @@
 {
   "deckId": "fr",
   "source": "local-assets/corpora/blagues.json",
-  "status": "review",
-  "rightsNote": "French joke corpus imported from a local file. The original rights/provenance should remain under manual review before large expansions.",
+  "status": "source_backed_manual_spot_check",
+  "rightsNote": "French joke corpus imported from the Blagues-API JSON corpus. The local builder keeps only safe categories, but still keep safety spot-checks before large expansions.",
+  "primarySources": [
+    {
+      "name": "Blagues-API/blagues-api",
+      "url": "https://github.com/Blagues-API/blagues-api",
+      "license": "MIT"
+    }
+  ],
   "safetyRules": [
     "No protected-class insults or slurs.",
     "Avoid explicit sexual content and violence.",

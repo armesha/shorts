@@ -968,8 +968,9 @@ node --input-type=module -e 'import fs from "node:fs"; const idx=JSON.parse(fs.r
 
 ## Немецкие анекдоты (`de`)
 
-Источник: `local-assets/corpora/witze.sql`, SQL dump Schlechtewitzefront. Перед обновлением корпуса проверь лицензию
-источника заново. Сборщик: `src/anecdotes/build-de.ts`.
+Источник: `local-assets/corpora/witze.sql`, SQL dump Schlechtewitzefront
+(`https://github.com/JohannesBauer97/Schlechtewitzefront`, MIT по текущему ledger).
+Перед обновлением корпуса проверь лицензию источника заново. Сборщик: `src/anecdotes/build-de.ts`.
 
 Анализ:
 
@@ -992,8 +993,9 @@ node --import tsx src/anecdotes/apply-titles.ts
 
 ## Французские анекдоты (`fr`)
 
-Источник: `local-assets/corpora/blagues.json`, Blagues-API JSON. Сборщик оставляет только safe categories
-`global` и `dev`.
+Источник: `local-assets/corpora/blagues.json`, Blagues-API JSON
+(`https://github.com/Blagues-API/blagues-api`, MIT по текущему ledger). Сборщик оставляет только safe
+categories `global` и `dev`.
 
 Анализ:
 

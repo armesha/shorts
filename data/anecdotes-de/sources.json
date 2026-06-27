@@ -1,8 +1,15 @@
 {
   "deckId": "de",
   "source": "local-assets/corpora/witze.sql",
-  "status": "review",
-  "rightsNote": "German joke corpus imported from a local file. The active deck has safety pruning metadata, but the original rights/provenance should remain under manual review before large expansions.",
+  "status": "source_backed_manual_spot_check",
+  "rightsNote": "German joke corpus imported from the Schlechtewitzefront SQL dump, which the local builder documents as MIT-licensed. Keep safety spot-checks before large expansions because the corpus is NSFW-heavy.",
+  "primarySources": [
+    {
+      "name": "JohannesBauer97/Schlechtewitzefront",
+      "url": "https://github.com/JohannesBauer97/Schlechtewitzefront",
+      "license": "MIT"
+    }
+  ],
   "safetyRules": [
     "No protected-class insults or slurs.",
     "Avoid explicit sexual content and violence.",
