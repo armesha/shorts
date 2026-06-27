@@ -11,7 +11,6 @@ import {
   enqueue as genEnqueue,
   listStatuses as genListStatuses,
   queuedRemainingForOwnerDecks,
-  queuedRemainingForAccount,
 } from "../services/gen-queue.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
 import { USER_DAILY_SCHEDULE_CAP, accountDailyScheduleCap } from "../infra/account-limits.ts";
@@ -951,17 +950,15 @@ function effectiveCapacityForSchedule(
   return { effective: Math.min(effective, Math.max(0, Math.floor(fallbackTotal))), runwayDays: safeDays };
 }
 
-function deckDeficitSequence(account: Account, sourceDecks: string[], queuedByDeck: Record<string, number>, targetQueued: number): string[] {
+function deckDeficitSequence(account: Account, sourceDecks: string[], queuedByDeck: Record<string, number>, targetRunwayDays: number): string[] {
   const scheduleOrder = scheduledDeckOrder(account, sourceDecks);
-  const perDay = scheduleOrder.length;
-  if (perDay <= 0) return [];
+  if (!scheduleOrder.length || targetRunwayDays <= 0) return [];
 
   const counts = scheduledCountsByDeck(account, sourceDecks);
-  const targetDays = targetQueued / perDay;
   const deficits = new Map<string, number>();
   for (const [deckId, postsPerDay] of counts) {
     if (postsPerDay <= 0) continue;
-    const wanted = Math.ceil(targetDays * postsPerDay);
+    const wanted = Math.ceil(targetRunwayDays * postsPerDay);
     const missing = wanted - Math.max(0, Number(queuedByDeck[deckId] ?? 0));
     if (missing > 0) deficits.set(deckId, missing);
   }
@@ -979,6 +976,47 @@ function deckDeficitSequence(account: Account, sourceDecks: string[], queuedByDe
       progressed = true;
     }
     if (!progressed) break;
+  }
+  return out;
+}
+
+function targetRunwayDeckSequence(
+  block: BlockDef,
+  account: Account,
+  sourceDecks: string[],
+  weights: Record<string, number>,
+  targetRunwayDays: number,
+  seed: string,
+): string[] {
+  const scheduleOrder = scheduledDeckOrder(account, sourceDecks);
+  const perDay = scheduleOrder.length;
+  if (perDay <= 0 || targetRunwayDays <= 0) return [];
+  const total = Math.ceil(targetRunwayDays * perDay);
+  const dailySequence = activeSourceGroups(block, account, sourceDecks, weights).length
+    ? weightedDeckSlotsBalanced(block, account, sourceDecks, weights, perDay, `${seed}|daily`)
+    : scheduleOrder;
+  const day = dailySequence.filter((deckId) => sourceDecks.includes(deckId));
+  if (!day.length) return [];
+  const out: string[] = [];
+  for (let index = 0; index < total; index++) out.push(day[index % day.length]);
+  return out;
+}
+
+function deckDeficitFromTargetSequence(targetSequence: string[], countedByDeck: Record<string, number>): string[] {
+  const targetByDeck = countDeckSequence(targetSequence);
+  const deficits = new Map<string, number>();
+  for (const [deckId, target] of Object.entries(targetByDeck)) {
+    const missing = target - Math.max(0, Number(countedByDeck[deckId] ?? 0));
+    if (missing > 0) deficits.set(deckId, missing);
+  }
+  if (!deficits.size) return [];
+
+  const out: string[] = [];
+  for (const deckId of targetSequence) {
+    const left = deficits.get(deckId) ?? 0;
+    if (left <= 0) continue;
+    out.push(deckId);
+    deficits.set(deckId, left - 1);
   }
   return out;
 }
@@ -1054,6 +1092,21 @@ function queuedRemainingForOwnerDeck(ownerId: number, deckId: string): number {
     }
   }
   return total;
+}
+
+function queuedRemainingForAccountDecks(accountId: number): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const job of genListStatuses()) {
+    if (job.accountId !== accountId) continue;
+    if (job.state !== "queued" && job.state !== "running") continue;
+    const decks = job.deckIds ?? [];
+    if (!decks.length) continue;
+    for (let index = job.done; index < job.total; index++) {
+      const deckId = decks[index % decks.length];
+      counts[deckId] = (counts[deckId] ?? 0) + 1;
+    }
+  }
+  return counts;
 }
 
 function mixedBlockForAccount(deps: RouteDeps, account: Account): BlockDef | null {
@@ -1318,24 +1371,6 @@ function planChannelBlockNormalize(input: {
     const coverage = coverageByAccount.get(account.id);
     const currentQueued = coverage?.effective ?? 0;
     const currentRunwayDays = coverage?.runwayDays ?? (perDay > 0 ? currentQueued / perDay : 0);
-    // Count videos already being generated for THIS channel (queued/running gen jobs) toward the target:
-    // they aren't in db.listVideos yet, so without this a "top up to N days" re-click while a batch is
-    // still generating would stack a second full batch on top and overshoot N days.
-    const inFlightQueued = queuedRemainingForAccount(account.id);
-    const readyDeficit = accountTargetQueued - currentQueued;
-    const missing = readyDeficit - inFlightQueued;
-    if (missing <= 0) {
-      skipped.push({
-        accountId: account.id,
-        channelName: account.ytChannelTitle || account.channelName,
-        reason: readyDeficit > 0 ? "generation_in_progress" : "already_at_target",
-        currentQueued,
-        targetQueued: accountTargetQueued,
-        currentRunwayDays,
-        targetRunwayDays,
-      });
-      continue;
-    }
     const ownerId = account.userId ?? fallbackOwnerId;
     if (!deckIds.length) {
       skipped.push({
@@ -1348,6 +1383,9 @@ function planChannelBlockNormalize(input: {
       continue;
     }
     const queuedByDeck = queuedByAccountDeck.get(account.id) ?? {};
+    const countedByDeck = { ...queuedByDeck };
+    const inFlightByDeck = queuedRemainingForAccountDecks(account.id);
+    for (const [deckId, count] of Object.entries(inFlightByDeck)) countedByDeck[deckId] = (countedByDeck[deckId] ?? 0) + count;
     const sequenceSeed = sourceSequenceSeed(
       block,
       account,
@@ -1355,12 +1393,29 @@ function planChannelBlockNormalize(input: {
       sourceWeights,
       `normalize:${accountTargetQueued}:${targetRunwayDays}`,
     );
-    const exactDeficit = activeSourceGroups(block, account, deckIds, sourceWeights).length
-      ? weightedDeckDeficitSequence(block, account, deckIds, sourceWeights, queuedByDeck, accountTargetQueued, sequenceSeed)
-      : deckDeficitSequence(account, deckIds, queuedByDeck, accountTargetQueued);
-    // exactDeficit fills the READY deficit (target − ready); trim to `missing` so the in-flight videos
-    // already on the way aren't generated again. The deficit sequence is round-robin, so a prefix stays
-    // balanced across decks.
+    const targetSequence = targetRunwayDeckSequence(block, account, deckIds, sourceWeights, targetRunwayDays, sequenceSeed);
+    const exactDeficit =
+      targetSequence.length > 0
+        ? deckDeficitFromTargetSequence(targetSequence, countedByDeck)
+        : activeSourceGroups(block, account, deckIds, sourceWeights).length
+          ? weightedDeckDeficitSequence(block, account, deckIds, sourceWeights, countedByDeck, accountTargetQueued, sequenceSeed)
+          : deckDeficitSequence(account, deckIds, countedByDeck, targetRunwayDays);
+    const missing = exactDeficit.length;
+    const readyDeficit = accountTargetQueued - currentQueued;
+    if (missing <= 0) {
+      skipped.push({
+        accountId: account.id,
+        channelName: account.ytChannelTitle || account.channelName,
+        reason: readyDeficit > 0 ? "generation_in_progress" : "already_at_target",
+        currentQueued,
+        targetQueued: accountTargetQueued,
+        currentRunwayDays,
+        targetRunwayDays,
+      });
+      continue;
+    }
+    // exactDeficit is computed against READY + in-flight videos per deck, so a repeated click does not
+    // stack a second full top-up while the first one is still rendering.
     const baseJobDeckIds = (
       exactDeficit.length ? exactDeficit : weightedDeckSlots(block, account, deckIds, sourceWeights, missing, `${sequenceSeed}|fallback`)
     ).slice(0, missing);
