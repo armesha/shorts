@@ -1,0 +1,11 @@
+{
+  "deckId": "fr",
+  "source": "local-assets/corpora/blagues.json",
+  "status": "review",
+  "rightsNote": "French joke corpus imported from a local file. The original rights/provenance should remain under manual review before large expansions.",
+  "safetyRules": [
+    "No protected-class insults or slurs.",
+    "Avoid explicit sexual content and violence.",
+    "Keep culturally sensitive jokes out of automated bulk publishing."
+  ]
+}

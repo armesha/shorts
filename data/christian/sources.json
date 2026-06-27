@@ -1,0 +1,11 @@
+{
+  "deckId": "christian",
+  "status": "review",
+  "rightsNote": "KJV Bible text is generally treated as public domain in the United States, but this local cards.json file did not previously include a primary source ledger. Keep this deck under manual source/provenance review before broader reuse.",
+  "content": "Selected King James Version Bible passages in data/christian/cards.json.",
+  "safetyRules": [
+    "Do not use the text to attack protected groups or justify violence.",
+    "Keep titles/descriptions respectful and non-political.",
+    "Use only public-domain or clearly licensed Christian artwork when adding visuals."
+  ]
+}

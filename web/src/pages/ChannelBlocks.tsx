@@ -138,7 +138,6 @@ function deckSummaries(block: ChannelThemeBlock): BlockDeckSummary[] {
 }
 
 function blockPackCount(block: ChannelThemeBlock): number {
-  if (block.sourceGroups.length) return block.sourceGroups.length;
   return Math.max(0, ...accountsInBlock(block).map((account) => account.sourceDecks.length));
 }
 
@@ -898,6 +897,10 @@ function BlockDetail({
         <MiniStat label={t("channelBlocks.postsPerDayTotal")} value={block.postsPerDay} />
       </div>
 
+      {block.sourceGroups.length > 1 && (
+        <SourceMixSettings block={block} sourceWeights={sourceWeights} setSourceWeights={setSourceWeights} />
+      )}
+
       <TopUpPanel
         days={topUpDays}
         setDays={setTopUpDays}
@@ -972,10 +975,6 @@ function BlockDetail({
           </div>
         </div>
       </section>
-
-      {block.sourceGroups.length > 1 && (
-        <SourceMixSettings block={block} sourceWeights={sourceWeights} setSourceWeights={setSourceWeights} />
-      )}
 
       {block.rules.length > 0 && (
         <section className="rounded-md border border-base-300 bg-base-100 p-4">

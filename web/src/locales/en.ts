@@ -438,7 +438,7 @@ export const en: Record<string, string> = {
   "channelBlocks.bottleneckNone": "no active schedule",
   "channelBlocks.channelBottleneck": "{deck}: {queued} queued · {perDay}/day · {days} d",
   "channelBlocks.channels": "ch.",
-  "channelBlocks.packs": "packs",
+  "channelBlocks.packs": "packs/channel",
   "channelBlocks.channelCreated": "{lang} channel created and attached to the block packs.",
   "channelBlocks.classicView": "Classic list",
   "channelBlocks.dragHandle": "Drag to reorder blocks",

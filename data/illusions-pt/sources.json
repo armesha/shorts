@@ -1,0 +1,8 @@
+{
+  "deckId": "illusions-pt",
+  "rights": "Portuguese localization of the project's existing optical-illusion video pack; no external media added beyond the source illusion assets already present in the project.",
+  "safetyRules": [
+    "Keep titles as visual-perception prompts, not medical claims.",
+    "Avoid flashing/strobe patterns beyond normal short-video safety."
+  ]
+}

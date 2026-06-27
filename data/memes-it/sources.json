@@ -1,0 +1,11 @@
+{
+  "deckId": "memes-it",
+  "status": "review",
+  "rightsNote": "Cards reference local board meme templates through srcFile/photoFile in data/memes-it/cards.json. Each underlying template image needs a recorded public-domain/CC0/licensed/project-generated source before broad reuse.",
+  "assetPolicy": "Do not add celebrity, movie, TV, anime, game, famous meme-template or unclear-rights images.",
+  "safetyRules": [
+    "No protected-class insults or harassment.",
+    "No explicit sexual content, violence or illegal instructions.",
+    "Keep humor generic and non-political."
+  ]
+}

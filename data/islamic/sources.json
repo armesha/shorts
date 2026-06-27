@@ -1,0 +1,11 @@
+{
+  "deckId": "islamic",
+  "status": "review",
+  "rightsNote": "Arabic Quran, adhkar, dua and hadith snippets are stored in data/islamic/cards.json, but this local deck did not previously include a primary source ledger. Keep this deck under manual source/provenance review before broader reuse.",
+  "content": "Selected Arabic ayat, adhkar, duas and hadith references.",
+  "safetyRules": [
+    "Do not use human faces or portraits in Islamic religious visuals.",
+    "Do not use religious text to attack protected groups or justify violence.",
+    "Keep recitation/voice/music choices respectful; prefer silence or non-melodic background when appropriate."
+  ]
+}

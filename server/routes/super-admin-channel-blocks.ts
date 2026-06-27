@@ -414,7 +414,7 @@ const BLOCKS: BlockDef[] = [
       "Факты требуют проверяемого источника; численные данные и названия нужно перепроверять.",
       "Иллюзии внутри блока подставлять только на языке канала; не смешивать RU-видео в EN/DE-каналах.",
       "Лайфхаки локализовать на одном наборе идей, но бытовые реалии адаптировать под язык.",
-      "Если появится озвучка для лайфхаков, новые voiceover-паки собирать через edge-tts, не ElevenLabs.",
+      "Если появится озвучка для лайфхаков, новые voiceover-паки собирать через разрешённый TTS-профиль проекта с учётом текущих квот.",
       "Анекдоты внутри блока остаются отдельным источником микса; не смешивать бытовые советы и шутки внутри одной карточки.",
       "Видео-цитаты и статичные цитаты держать отдельными источниками микса.",
       "Запрещены AP/неясные фото, misattribution, экстремистские/насильственные цитаты и protected-class hate.",
@@ -740,6 +740,52 @@ function previewSourceWeights(db: Db, block: BlockDef, body: unknown): Record<st
   return resolveSourceWeights(db, block, body, false);
 }
 
+function stableHash(seed: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i += 1) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h >>> 0;
+}
+
+function seededUnit(seed: string): number {
+  return stableHash(seed) / 0x100000000;
+}
+
+function shuffleWithSeed<T>(items: T[], seed?: string): T[] {
+  const out = [...items];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = seed ? Math.floor(seededUnit(`${seed}|shuffle|${i}`) * (i + 1)) : Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
+function sourceWeightsKey(weights: Record<string, number>): string {
+  return Object.entries(weights)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([k, v]) => `${k}:${v}`)
+    .join(",");
+}
+
+function sourceSequenceSeed(
+  block: BlockDef,
+  account: Account,
+  sourceDecks: string[],
+  weights: Record<string, number>,
+  purpose: string,
+): string {
+  return [
+    `block:${block.id}`,
+    `account:${account.id}`,
+    `lang:${account.channelLang || account.lang}`,
+    `sources:${sourceDecks.join(",")}`,
+    `weights:${sourceWeightsKey(weights)}`,
+    purpose,
+  ].join("|");
+}
+
 function publicSourceGroups(db: Db, block: BlockDef) {
   const weights = readSourceWeights(db, block);
   return (block.sourceGroups ?? []).map((group) => ({
@@ -763,16 +809,23 @@ function activeSourceGroups(block: BlockDef, account: Account, sourceDecks: stri
     .filter((group) => group.weight > 0 && group.deckIds.length > 0);
 }
 
-function weightedDeckSlots(block: BlockDef, account: Account, sourceDecks: string[], weights: Record<string, number>, count: number): string[] {
+function weightedDeckSlots(
+  block: BlockDef,
+  account: Account,
+  sourceDecks: string[],
+  weights: Record<string, number>,
+  count: number,
+  seed?: string,
+): string[] {
   const rawActive = activeSourceGroups(block, account, sourceDecks, weights);
-  const offset = rawActive.length ? Math.abs(account.id) % rawActive.length : 0;
+  const offset = rawActive.length ? (seed ? stableHash(`${seed}|group-offset`) : Math.abs(account.id)) % rawActive.length : 0;
   const active = offset ? [...rawActive.slice(offset), ...rawActive.slice(0, offset)] : rawActive;
   if (!active.length) return sourceDecks;
   const totalWeight = active.reduce((sum, group) => sum + group.weight, 0);
   const cursors = new Map(active.map((group) => [group.id, 0]));
   const sequence: string[] = [];
   for (let index = 0; index < count; index++) {
-    let roll = Math.random() * totalWeight;
+    let roll = (seed ? seededUnit(`${seed}|roll|${index}`) : Math.random()) * totalWeight;
     let group = active[active.length - 1];
     for (const candidate of active) {
       roll -= candidate.weight;
@@ -788,9 +841,16 @@ function weightedDeckSlots(block: BlockDef, account: Account, sourceDecks: strin
   return sequence.length ? sequence : sourceDecks;
 }
 
-function weightedDeckSlotsBalanced(block: BlockDef, account: Account, sourceDecks: string[], weights: Record<string, number>, count: number): string[] {
+function weightedDeckSlotsBalanced(
+  block: BlockDef,
+  account: Account,
+  sourceDecks: string[],
+  weights: Record<string, number>,
+  count: number,
+  seed?: string,
+): string[] {
   const rawActive = activeSourceGroups(block, account, sourceDecks, weights);
-  const offset = rawActive.length ? Math.abs(account.id) % rawActive.length : 0;
+  const offset = rawActive.length ? (seed ? stableHash(`${seed}|group-offset`) : Math.abs(account.id)) % rawActive.length : 0;
   const active = offset ? [...rawActive.slice(offset), ...rawActive.slice(0, offset)] : rawActive;
   if (!active.length || count <= 0) return sourceDecks.slice(0, Math.max(0, count));
   const totalWeight = active.reduce((sum, group) => sum + group.weight, 0);
@@ -824,28 +884,32 @@ function weightedDeckSlotsBalanced(block: BlockDef, account: Account, sourceDeck
       cursors.set(group.id, cursor + 1);
     }
   }
-  for (let i = sequence.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [sequence[i], sequence[j]] = [sequence[j], sequence[i]];
-  }
-  return sequence;
+  return shuffleWithSeed(sequence, seed);
 }
 
 function activeSourceWeightTotal(block: BlockDef, account: Account, sourceDecks: string[], weights: Record<string, number>): number {
   return activeSourceGroups(block, account, sourceDecks, weights).reduce((sum, group) => sum + group.weight, 0);
 }
 
-function weightedDeckSequence(block: BlockDef, account: Account, sourceDecks: string[], weights: Record<string, number>, count?: number): string[] {
+function weightedDeckSequence(
+  block: BlockDef,
+  account: Account,
+  sourceDecks: string[],
+  weights: Record<string, number>,
+  count?: number,
+  seed?: string,
+): string[] {
   const active = activeSourceGroups(block, account, sourceDecks, weights);
   if (!active.length) return sourceDecks;
   const totalWeight = active.reduce((sum, group) => sum + group.weight, 0);
   const cycles = Math.max(1, ...active.map((group) => group.deckIds.length));
-  return weightedDeckSlots(block, account, sourceDecks, weights, Math.max(1, count ?? totalWeight * cycles));
+  return weightedDeckSlots(block, account, sourceDecks, weights, Math.max(1, count ?? totalWeight * cycles), seed);
 }
 
 function slotDecksForSchedule(block: BlockDef, account: Account, schedule: string[], sourceDecks: string[], weights: Record<string, number>): Record<string, string> {
   if (!schedule.length) return {};
-  const sequence = weightedDeckSlotsBalanced(block, account, sourceDecks, weights, schedule.length);
+  const seed = sourceSequenceSeed(block, account, sourceDecks, weights, `schedule:${schedule.join(",")}`);
+  const sequence = weightedDeckSlotsBalanced(block, account, sourceDecks, weights, schedule.length, seed);
   if (!sequence.length) return {};
   const out: Record<string, string> = {};
   [...schedule].sort().forEach((time, index) => {
@@ -926,9 +990,10 @@ function weightedDeckDeficitSequence(
   weights: Record<string, number>,
   queuedByDeck: Record<string, number>,
   targetQueued: number,
+  seed?: string,
 ): string[] {
   if (targetQueued <= 0) return [];
-  const targetSequence = weightedDeckSlotsBalanced(block, account, sourceDecks, weights, targetQueued);
+  const targetSequence = weightedDeckSlotsBalanced(block, account, sourceDecks, weights, targetQueued, seed);
   const targetByDeck = countDeckSequence(targetSequence);
   const deficits = new Map<string, number>();
   for (const [deckId, target] of Object.entries(targetByDeck)) {
@@ -1030,8 +1095,13 @@ export function thematicBlockDeckSequenceForGeneration(
 
   const queuedByDeck = videosByDeck(db.listVideos(account.id));
   const targetQueued = sumCounts(queuedByDeck) + count;
-  let sequence = weightedDeckDeficitSequence(block, account, sourceDecks, weights, queuedByDeck, targetQueued);
-  if (sequence.length < count) sequence = [...sequence, ...weightedDeckSlots(block, account, sourceDecks, weights, count - sequence.length)];
+  const seed = sourceSequenceSeed(block, account, sourceDecks, weights, `gen-queue:${targetQueued}:${count}`);
+  let sequence = weightedDeckDeficitSequence(block, account, sourceDecks, weights, queuedByDeck, targetQueued, seed);
+  if (sequence.length < count)
+    sequence = [
+      ...sequence,
+      ...weightedDeckSlots(block, account, sourceDecks, weights, count - sequence.length, `${seed}|fallback`),
+    ];
   sequence = sequence.slice(0, count);
   const capped = capDeckSequenceByFreeCards(db, deps, ownerId, sequence);
   return capped;
@@ -1278,13 +1348,22 @@ function planChannelBlockNormalize(input: {
       continue;
     }
     const queuedByDeck = queuedByAccountDeck.get(account.id) ?? {};
+    const sequenceSeed = sourceSequenceSeed(
+      block,
+      account,
+      deckIds,
+      sourceWeights,
+      `normalize:${accountTargetQueued}:${targetRunwayDays}`,
+    );
     const exactDeficit = activeSourceGroups(block, account, deckIds, sourceWeights).length
-      ? weightedDeckDeficitSequence(block, account, deckIds, sourceWeights, queuedByDeck, accountTargetQueued)
+      ? weightedDeckDeficitSequence(block, account, deckIds, sourceWeights, queuedByDeck, accountTargetQueued, sequenceSeed)
       : deckDeficitSequence(account, deckIds, queuedByDeck, accountTargetQueued);
     // exactDeficit fills the READY deficit (target − ready); trim to `missing` so the in-flight videos
     // already on the way aren't generated again. The deficit sequence is round-robin, so a prefix stays
     // balanced across decks.
-    const baseJobDeckIds = (exactDeficit.length ? exactDeficit : weightedDeckSlots(block, account, deckIds, sourceWeights, missing)).slice(0, missing);
+    const baseJobDeckIds = (
+      exactDeficit.length ? exactDeficit : weightedDeckSlots(block, account, deckIds, sourceWeights, missing, `${sequenceSeed}|fallback`)
+    ).slice(0, missing);
     const requestedByDeck = countDeckSequence(baseJobDeckIds);
     const allowedByDeck = new Map<string, number>();
     for (const [deckId, needed] of Object.entries(requestedByDeck)) {
@@ -1422,7 +1501,14 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
         }
         total = Math.min(total, free);
       }
-      const jobDeckIds = weightedDeckSequence(block, account, deckIds, sourceWeights, total);
+      const sequenceSeed = sourceSequenceSeed(
+        block,
+        account,
+        deckIds,
+        sourceWeights,
+        `manual-generate:${new Date().toISOString().slice(0, 13)}:${total}`,
+      );
+      const jobDeckIds = weightedDeckSequence(block, account, deckIds, sourceWeights, total, sequenceSeed);
       const job = genEnqueue(uid(req), account.id, total, ownerId, jobDeckIds);
       jobs.push({ accountId: account.id, channelName: account.channelName, deckIds: jobDeckIds, jobId: job.id, total: job.total });
     }

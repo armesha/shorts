@@ -242,6 +242,17 @@ function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
       })
     : [];
   const noKeyChannels = multiKey ? accounts.filter((a) => !a.oauthClientId).length : 0;
+  const keyTileCount = perKeyStats.length + (noKeyChannels > 0 ? 1 : 0);
+  const keyGridClass =
+    keyTileCount <= 1
+      ? "grid gap-3"
+      : keyTileCount === 2
+        ? "grid gap-3 sm:grid-cols-2"
+        : keyTileCount === 3
+          ? "grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
+          : keyTileCount === 4
+            ? "grid gap-3 sm:grid-cols-2"
+            : "grid gap-3 sm:grid-cols-2 xl:grid-cols-3";
 
   return (
     <div className="space-y-6">
@@ -328,23 +339,36 @@ function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
             <div className="text-sm font-semibold flex items-center gap-2">
               <BrandIcon name="youtube" size={16} /> {t("accounts.byKeyTitle")}
             </div>
-            <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+            <div className={keyGridClass}>
               {perKeyStats.map((k) => (
-                <div key={k.id} className="rounded-lg border border-base-200 px-3 py-2">
+                <div key={k.id} className="rounded-lg border border-base-200 px-4 py-3">
                   <div className="font-medium text-sm truncate">{k.label}</div>
                   {k.projectId && <div className="text-xs text-base-content/45 truncate">{k.projectId}</div>}
-                  <div className="text-xs text-base-content/60 mt-1">
-                    {t("accounts.byKeyChannels", { n: k.channels })} ·{" "}
-                    <span className={k.perDay > DAILY_KEY_CAP ? "text-error font-medium" : k.perDay > DAILY_KEY_CAP * 0.85 ? "text-warning" : ""}>
-                      {t("accounts.byKeyPerDay", { used: k.perDay, cap: DAILY_KEY_CAP })}
-                    </span>
+                  <div className="mt-3 grid grid-cols-2 gap-3">
+                    <div>
+                      <div className="text-2xl font-bold leading-none">{k.channels}</div>
+                      <div className="mt-1 text-xs text-base-content/55">{t("channelBlocks.channels")}</div>
+                    </div>
+                    <div>
+                      <div
+                        className={`text-2xl font-bold leading-none ${
+                          k.perDay > DAILY_KEY_CAP ? "text-error" : k.perDay > DAILY_KEY_CAP * 0.85 ? "text-warning" : ""
+                        }`}
+                      >
+                        {k.perDay}/{DAILY_KEY_CAP}
+                      </div>
+                      <div className="mt-1 text-xs text-base-content/55">{t("channelBlocks.postsPerDayTotal")}</div>
+                    </div>
                   </div>
                 </div>
               ))}
               {noKeyChannels > 0 && (
-                <div className="rounded-lg border border-dashed border-base-200 px-3 py-2">
+                <div className="rounded-lg border border-dashed border-base-200 px-4 py-3">
                   <div className="font-medium text-sm text-base-content/60">{t("accounts.byKeyNoKey")}</div>
-                  <div className="text-xs text-base-content/60 mt-1">{t("accounts.byKeyChannels", { n: noKeyChannels })}</div>
+                  <div className="mt-3">
+                    <div className="text-2xl font-bold leading-none">{noKeyChannels}</div>
+                    <div className="mt-1 text-xs text-base-content/55">{t("channelBlocks.channels")}</div>
+                  </div>
                 </div>
               )}
             </div>
