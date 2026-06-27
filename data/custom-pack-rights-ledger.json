@@ -41,6 +41,17 @@
         "Avoid medical/legal/financial instructions and unsafe experiments."
       ]
     },
+    "static-facts-es-superadmin": {
+      "status": "project_owned_text_with_fact_check_required",
+      "livePath": "data/packs/static-facts-es-superadmin.json",
+      "note": "Spanish static fact card prose and templates are local/project-generated; factual claims need spot-checking before large expansions.",
+      "templateAssets": "assets/template-packs/static-facts/backgrounds/* local project assets",
+      "rules": [
+        "No AP/news imagery or unlicensed photos.",
+        "Facts should be source-backed before large publication batches.",
+        "Avoid medical/legal/financial instructions and unsafe experiments."
+      ]
+    },
     "психология-mgs-mqe2kfjv": {
       "status": "custom_pack_manual_provenance_review",
       "livePath": "data/packs/психология-mgs-mqe2kfjv.json",
