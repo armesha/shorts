@@ -13,6 +13,7 @@ import { readElevenLabsKeys, fetchElevenLabsLimit } from "../services/elevenlabs
 import { getManualVideoLimits, setManualVideoLimits } from "../services/manual-videos.ts";
 import { getReadinessLimits, setReadinessLimits } from "../services/readiness-limits.ts";
 import { buildAdminAnalytics } from "../services/admin-analytics.ts";
+import { parseStringArray, type Row } from "../db/mappers.ts";
 import {
   DAY_MS,
   SESSION_COOKIE,
@@ -31,6 +32,23 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   const isGrantableLongVideoDeckId = (deckId: string): boolean => {
     const deck = DECKS.find((d) => d.id === deckId);
     return !!deck?.longVideo && isGrantableBuiltinDeck(deck);
+  };
+  const currentAccountDecksByUser = (): Record<number, string[]> => {
+    const sets: Record<number, Set<string>> = {};
+    const add = (userId: number, deckId: string) => {
+      if (!userId || !deckId || deckId.startsWith("pack:")) return;
+      (sets[userId] ??= new Set()).add(deckId);
+    };
+    const rows = db.db
+      .prepare("SELECT user_id, lang, source_decks, long_video_decks FROM accounts WHERE user_id IS NOT NULL")
+      .all() as Row[];
+    for (const row of rows) {
+      const userId = Number(row.user_id);
+      const sourceDecks = parseStringArray(row.source_decks, row.lang ? [String(row.lang)] : []);
+      for (const deckId of sourceDecks) add(userId, deckId);
+      for (const deckId of parseStringArray(row.long_video_decks, [])) add(userId, deckId);
+    }
+    return Object.fromEntries(Object.entries(sets).map(([userId, decks]) => [Number(userId), [...decks]]));
   };
 
   // ---- Admin: user management (admin creates accounts for friends) ----
@@ -222,7 +240,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const hidden = db.hiddenDecksByUser();
     const grantedBuiltins = db.grantedDecksByUser();
     const grantedLongVideos = db.grantedLongVideoDecksByUser();
-    const used = db.usedDecksByUser();
+    const used = currentAccountDecksByUser();
     const posted = db.postedByUserDeck();
     const allPacks = listAllPacks();
     return db.listUsers().map((u) => {
@@ -440,12 +458,14 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     return { userId: targetId, username: target.username, decks };
   });
 
-  // Admin: every (user, pack) where the user's remaining cards in that pack is below the threshold (100).
-  // Across ALL users (admin included) so the admin sees who is about to run out. Lowest remaining first.
+  // Admin: every actively used built-in deck where the user's remaining cards are below the threshold
+  // (100). Keep this scoped to current channel sources; otherwise a super-admin sees every visible
+  // historical deck (for example old Space videos) even after the deck was removed from blocks.
   app.get("/api/admin/low-decks", async (req, reply) => {
     if (!requireSuperAdmin(req, reply)) return;
     const THRESHOLD = 100;
     const posted = db.postedByUserDeck();
+    const used = currentAccountDecksByUser();
     const out: {
       userId: number;
       username: string;
@@ -459,7 +479,9 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     }[] = [];
     for (const u of db.listUsers()) {
       const usedKeys = new Set(db.usedAnecdoteKeys(u.id));
-      for (const d of visibleDecksForUser(u.id)) {
+      for (const deckId of used[u.id] ?? []) {
+        const d = DECKS.find((candidate) => candidate.id === deckId);
+        if (!d) continue;
         const s = libraryStats(d.id, usedKeys);
         if (s.available < THRESHOLD) {
           out.push({
