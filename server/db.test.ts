@@ -71,3 +71,14 @@ test("uploadsTodayForKey: zero without any upload history", () => {
   const db = openDb(":memory:");
   assert.equal(db.uploadsTodayForKey(7), 0);
 });
+
+test("account mapper treats auth_error as needing reconnect even when a token exists", () => {
+  const db = openDb(":memory:");
+  const acc = db.createAccount({ userId: 1, channelName: "Needs reconnect", lang: "en", channelLang: "en" });
+  db.setYouTube(acc.id, { refreshToken: "refresh-token", channelId: "UCx", channelTitle: "Needs reconnect" });
+  db.markAuthError(acc.id, "Доступ канала отозван", "2026-06-27T10:45:00.000Z");
+
+  const current = db.getAccount(acc.id);
+  assert.equal(current?.status, "needs_auth");
+  assert.equal(current?.authError, "Доступ канала отозван");
+});

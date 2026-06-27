@@ -66,7 +66,7 @@ export const rowToAccount = (r: Row): Account => ({
   channelLang: r.channel_lang ?? "",
   schedule: JSON.parse(r.schedule),
   template: r.template,
-  status: r.yt_refresh_token ? "connected" : r.status || "needs_auth",
+  status: r.auth_error ? "needs_auth" : r.yt_refresh_token ? "connected" : r.status || "needs_auth",
   enabled: !!r.enabled,
   uploadsToday: 0, // wired to history once the pipeline runs
   createdAt: r.created_at,
