@@ -1,5 +1,5 @@
 {
-  "total": 210,
+  "total": 208,
   "packs": 1,
   "packSize": 300,
   "range": [
@@ -8,5 +8,7 @@
   ],
   "safety": {
     "filters": "Wikisource/public-domain source ledger + adult/religion/politics/violence/protected-class blocklist + short-card length checks"
-  }
+  },
+  "safetyReviewPrunedAt": "2026-06-27T18:13:24.770Z",
+  "safetyReviewPrunedRemoved": 2
 }

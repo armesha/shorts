@@ -38,6 +38,7 @@ images/
 
 # scratch / temp working dir — not source
 temp/
+data/**/safety-review-*.json
 .playwright-mcp/
 
 # one-off audit artifacts & legacy experiments — collected under audits/ to declutter root; NEVER commit

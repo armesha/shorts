@@ -1,9 +1,11 @@
 {
-  "total": 1063,
+  "total": 1059,
   "packs": 11,
   "packSize": 100,
   "range": [
     60,
-    400
-  ]
+    208
+  ],
+  "safetyReviewPrunedAt": "2026-06-27T18:13:24.770Z",
+  "safetyReviewPrunedRemoved": 3
 }

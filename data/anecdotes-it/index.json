@@ -1,5 +1,5 @@
 {
-  "total": 864,
+  "total": 862,
   "packs": 1,
   "packSize": 5000,
   "range": [
@@ -7,5 +7,7 @@
     620
   ],
   "safetyPrunedAt": "2026-06-26T05:14:59.967Z",
-  "safetyPrunedRemoved": 238
+  "safetyPrunedRemoved": 238,
+  "safetyReviewPrunedAt": "2026-06-27T18:13:24.770Z",
+  "safetyReviewPrunedRemoved": 2
 }
