@@ -216,7 +216,21 @@ export function deckAnecdoteKeys(deckId: string): string[] {
  * Most decks are random. Sequential decks always return the first unused item in file order.
  * Falls back to a raw pack before titling exists. Returns null when nothing is left.
  */
-export function randomAnecdote(deckId: string, used?: ReadonlySet<string>): PackItem | null {
+function stableHash(seed: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i += 1) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h >>> 0;
+}
+
+function seededIndex(seed: string, size: number): number {
+  if (size <= 1) return 0;
+  return stableHash(seed) % size;
+}
+
+export function randomAnecdote(deckId: string, used?: ReadonlySet<string>, seed?: string): PackItem | null {
   const skip = used && used.size ? used : null;
   const deck = getDeck(deckId);
   const t = titledItems(deckId);
@@ -224,6 +238,7 @@ export function randomAnecdote(deckId: string, used?: ReadonlySet<string>): Pack
     const pool = skip ? t.filter((it) => !skip.has(packItemKey(it))) : t;
     if (pool.length === 0) return null; // every titled anecdote already used
     if (deck.sequential) return pool[0];
+    if (seed) return pool[seededIndex(`${deckId}|${seed}|${pool.length}`, pool.length)];
     return pool[Math.floor(Math.random() * pool.length)];
   }
   // Fallback so generation still works before any pack is titled.
@@ -235,6 +250,7 @@ export function randomAnecdote(deckId: string, used?: ReadonlySet<string>): Pack
   let items = JSON.parse(readFileSync(resolve(dir, file), "utf8")) as PackItem[];
   if (skip) items = items.filter((it) => !skip.has(packItemKey(it)));
   if (deck.sequential) return items[0] ?? null;
+  if (seed) return items[seededIndex(`${deckId}|${file}|${seed}|${items.length}`, items.length)] ?? null;
   return items[Math.floor(Math.random() * items.length)] ?? null;
 }
 

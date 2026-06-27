@@ -206,18 +206,6 @@ export const JOKE_POP_VARIANTS = [
 ] as const;
 
 const JOKE_EMOJIS = ["😂", "🤣", "😆", "😹", "😁"];
-const JOKE_LABELS: Record<string, string> = {
-  ru: "СМЕХ",
-  de: "LACHEN",
-  it: "RISATE",
-  fr: "RIRE",
-  en: "LAUGH",
-  pt: "RISOS",
-  es: "RISAS",
-  ar: "ضحك",
-  hi: "हँसी",
-  id: "TAWA",
-};
 const JOKE_DOODLES = ["HA!", "LOL", "WOW", ":-)", "!!", "HEH", "FUN"];
 
 function stableHashString(seed: string): number {
@@ -245,7 +233,6 @@ function buildJokePopHtml(input: { title: string; text: string; deckId?: string;
   const variant = jokeVariant({ title: input.title, text: input.text, channel: deck.name, deck: deck.id, visualVariant: input.visualVariant });
   const dense = input.text.length > 430 || /\n(?:.*\n){7,}/.test(input.text);
   const emoji = JOKE_EMOJIS[(h >>> 3) % JOKE_EMOJIS.length];
-  const label = JOKE_LABELS[lang] ?? "FUN";
   const doodle = JOKE_DOODLES[(h >>> 7) % JOKE_DOODLES.length];
   const tpl = readFileSync(POP_JOKE_TEMPLATE, "utf8");
   return {
@@ -258,7 +245,6 @@ function buildJokePopHtml(input: { title: string; text: string; deckId?: string;
       .replaceAll("{{DENSE}}", dense ? "dense" : "")
       .replaceAll("{{EMOJI}}", emoji)
       .replaceAll("{{DOODLE}}", esc(doodle))
-      .replaceAll("{{LABEL}}", esc(label))
       .replaceAll("{{TITLE}}", esc(input.title || deck.name))
       .replace("{{TEXT}}", esc(input.text)),
   };
@@ -270,12 +256,11 @@ async function renderJokePop(a: Anecdote, outPath: string): Promise<{ path: stri
   return { path: outPath, fontPx, bg: `pop:${variant}` };
 }
 
-function quoteHtml(input: { quote: string; author: string; lang: string; channel: string; portraitDataUri?: string | null }): string {
+function quoteHtml(input: { quote: string; author: string; lang: string; portraitDataUri?: string | null }): string {
   const lang = input.lang || "en";
   const rtl = lang === "ar";
   const q = esc(input.quote);
   const author = esc(input.author);
-  const channel = esc(input.channel);
   const portrait = input.portraitDataUri;
   return `<!doctype html>
 <html lang="${esc(lang)}">
@@ -311,18 +296,9 @@ function quoteHtml(input: { quote: string; author: string; lang: string; channel
     display: flex;
     flex-direction: column;
   }
-  .kicker {
-    direction: ${rtl ? "rtl" : "ltr"};
-    font: 800 32px/1 "Noto Sans", "Noto Naskh Arabic", sans-serif;
-    letter-spacing: 0;
-    text-transform: uppercase;
-    color: #7b1f1f;
-    text-align: ${rtl ? "right" : "left"};
-  }
   .rule {
     width: 132px;
     height: 10px;
-    margin-top: 28px;
     background: #12616a;
   }
   .body {
@@ -349,14 +325,6 @@ function quoteHtml(input: { quote: string; author: string; lang: string; channel
     color: #12616a;
     text-align: ${rtl ? "right" : "left"};
   }
-  .footer {
-    display: flex;
-    justify-content: space-between;
-    gap: 24px;
-    align-items: end;
-    font: 700 28px/1.2 "Noto Sans", "Noto Naskh Arabic", sans-serif;
-    color: rgba(18,18,18,.58);
-  }
   .mark {
     font-size: 120px;
     line-height: .7;
@@ -369,7 +337,6 @@ function quoteHtml(input: { quote: string; author: string; lang: string; channel
     ${portrait ? '<div class="portrait"></div>' : ""}
     <div class="quote-panel">
       <div>
-        <div class="kicker">${channel}</div>
         <div class="rule"></div>
       </div>
       <section class="body">
@@ -379,10 +346,6 @@ function quoteHtml(input: { quote: string; author: string; lang: string; channel
           <div class="author">— ${author}</div>
         </div>
       </section>
-      <footer class="footer">
-        <span>${lang.toUpperCase()}</span>
-        <span>SHORTS</span>
-      </footer>
     </div>
   </main>
   <script>
@@ -420,7 +383,6 @@ async function renderQuote(
     quote: a.text,
     author: a.title || getDeck(a.deck).name,
     lang: deckLang(a.deck || "") || "en",
-    channel: getDeck(a.deck).name,
     portraitDataUri: dataUriFromRootRel(item?.portraitFile),
   });
   const fontPx = await captureCard(html, outPath);

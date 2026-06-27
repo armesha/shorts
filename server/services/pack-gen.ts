@@ -26,6 +26,15 @@ function packKeyOf(text: string): string {
   return "p" + anecdoteKey(text);
 }
 
+function stableHash(seed: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i += 1) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h >>> 0;
+}
+
 export interface PickedPackCard {
   idx: number;
   values: CardValues;
@@ -34,13 +43,13 @@ export interface PickedPackCard {
 }
 
 /** Случайная карточка пака, чей ключ НЕ в usedKeys. null — все использованы/пусто. */
-export function pickUnusedPackCard(pack: Pack, usedKeys: ReadonlySet<string>): PickedPackCard | null {
+export function pickUnusedPackCard(pack: Pack, usedKeys: ReadonlySet<string>, seed?: string): PickedPackCard | null {
   if (!pack.templates.length || !pack.cards.length) return null;
   const fresh = pack.cards
     .map((c, idx) => ({ idx, values: c.values, key: packCardKey(c.values) }))
     .filter((x) => !usedKeys.has(x.key));
   if (!fresh.length) return null;
-  const pick = fresh[Math.floor(Math.random() * fresh.length)];
+  const pick = seed ? fresh[stableHash(`${pack.id}|${seed}|${fresh.length}`) % fresh.length] : fresh[Math.floor(Math.random() * fresh.length)];
   return { idx: pick.idx, values: pick.values, tpl: pack.templates[pick.idx % pack.templates.length], key: pick.key };
 }
 

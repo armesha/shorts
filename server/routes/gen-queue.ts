@@ -40,6 +40,7 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
     const seen = new Set<string>(db.usedAnecdoteKeys(ownerId)); // skip owner's already-used cards
     const infinite = db.hasFeature(ownerId, INFINITE_PACKS_FEATURE);
     const sources = job.deckIds?.length ? job.deckIds : accountSourceDecks(acc);
+    const pickSeed = (sourceDeck: string, offset = 0) => `${job.accountId}|${sourceDeck}|${job.id}|${job.done}|${offset}`;
     // Each candidate is CLAIMED (db.claimAnecdote) before its render so a concurrent run (another job,
     // the sync batch, or a co-owner) can't build the same card twice; a lost claim → re-pick; a render
     // failure → release the claim so the card returns to the pool.
@@ -48,8 +49,9 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
       if (isPackDeckId(sourceDeck)) {
         const pack = getPack(sourceDeck.slice(5), ownerId, isSuperAdminUser(db.getUserById(ownerId)));
         if (!pack || !pack.templates.length) throw new Error(`Пак «${sourceDeck}» не найден или без шаблона`);
+        let attempts = 0;
         for (;;) {
-          const picked = infinite ? pickFixedPackCard(pack) : pickUnusedPackCard(pack, seen);
+          const picked = infinite ? pickFixedPackCard(pack) : pickUnusedPackCard(pack, seen, pickSeed(sourceDeck, attempts++));
           if (!picked) return "exhausted";
           if (!infinite) {
             seen.add(picked.key);
@@ -68,8 +70,9 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
       if (!channelDeck) throw new Error(`У канала язык «${sourceDeck}» без пака`);
       if (db.getUserById(ownerId)?.role !== "admin" && !builtinDeckVisibleForUser(ownerId, channelDeck))
         throw new Error("Этот пак вам недоступен");
+      let attempts = 0;
       for (;;) {
-        const a = infinite ? firstAnecdote(channelDeck.id) : randomAnecdote(channelDeck.id, seen);
+        const a = infinite ? firstAnecdote(channelDeck.id) : randomAnecdote(channelDeck.id, seen, pickSeed(channelDeck.id, attempts++));
         if (!a) return "exhausted"; // deck has no unused cards left
         const key = packItemKey(a);
         if (!infinite) {

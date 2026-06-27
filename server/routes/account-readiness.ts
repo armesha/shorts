@@ -56,15 +56,14 @@ export function registerAccountReadinessRoutes(app: FastifyInstance, db: Db, dep
     const ownerId = deps.accountOwnerId(req, account);
     const readinessLimits = getReadinessLimits(db);
     const postsPerDay = account.schedule?.length ?? 0;
-    const queuedVideos = videos.length;
     const queuedByDeck = videoCountsByDeck(db, account);
     const scheduledByDeck = scheduledCountsByDeck(account, sourceDecks);
     const deckIds = unique([
       ...sourceDecks,
       ...Object.values(account.slotDecks ?? {}),
-      ...Array.from(queuedByDeck.keys()),
       ...Array.from(scheduledByDeck.keys()),
     ].filter(Boolean));
+    const queuedVideos = deckIds.reduce((sum, deckId) => sum + (queuedByDeck.get(deckId) ?? 0), 0);
     const decks = deckIds.map((deckId) => {
       const queued = queuedByDeck.get(deckId) ?? 0;
       const deckPostsPerDay = scheduledByDeck.get(deckId) ?? 0;

@@ -5,13 +5,58 @@
   "license": {
     "quoteSource": "King James Version text already curated in data/christian/cards.json",
     "quoteSpdx": "Public Domain",
-    "portraitSource": "none",
-    "note": "No portraits or modern Bible translations are used. The quote card title is a reference/source label."
+    "portraitSource": "Wikimedia Commons public-domain/CC0 religious artworks",
+    "note": "Christian quote cards may use old public-domain/CC0 religious artwork as contextual artwork only; not modern photos and not real portrait claims."
   },
   "safety": [
     "No claims of guaranteed healing or legal/medical advice.",
     "No attacks on protected classes, politics, or other religions.",
-    "Keep as a separate Christianity block source, not a general literature/quote source."
+    "Keep as a separate Christianity block source, not a general literature/quote source.",
+    "Use Christian artworks only as public-domain/CC0 historical religious artwork, not as real portraits of biblical figures.",
+    "Do not use modern actors/people as Jesus, apostles, saints, or prophets."
   ],
-  "count": 700
+  "count": 700,
+  "artworks": [
+    {
+      "id": "christ-pantocrator-sinai",
+      "role": "Christ Pantocrator icon",
+      "file": "data/christian-quotes-en/artworks/christ-pantocrator-sinai.jpg",
+      "commonsFile": "File:Spas vsederzhitel sinay.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Spas_vsederzhitel_sinay.jpg",
+      "license": "Public domain",
+      "artist": "Unknown artist Unknown artist",
+      "objectName": "Spas vsederzhitel sinay"
+    },
+    {
+      "id": "sermon-on-the-mount-bloch",
+      "role": "Sermon on the Mount artwork",
+      "file": "data/christian-quotes-en/artworks/sermon-on-the-mount-bloch.jpg",
+      "commonsFile": "File:Bloch-SermonOnTheMount.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bloch-SermonOnTheMount.jpg",
+      "license": "Public domain",
+      "artist": "Carl Bloch",
+      "objectName": "Bjergprædiken"
+    },
+    {
+      "id": "apostle-paul-rembrandt",
+      "role": "Saint Paul artwork",
+      "file": "data/christian-quotes-en/artworks/apostle-paul-rembrandt.jpg",
+      "commonsFile": "File:Rembrandt - Apostle Paul - WGA19120.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rembrandt_-_Apostle_Paul_-_WGA19120.jpg",
+      "license": "Public domain",
+      "artist": "Rembrandt",
+      "objectName": "Apostle Paul"
+    },
+    {
+      "id": "good-shepherd-catacomb",
+      "role": "Good Shepherd early Christian artwork",
+      "file": "data/christian-quotes-en/artworks/good-shepherd-catacomb.jpg",
+      "commonsFile": "File:Good Shepherd 04.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Good_Shepherd_04.jpg",
+      "license": "Public domain",
+      "artist": "unknown artist, Rome, mid-4th century A.D.",
+      "objectName": "Good Shepherd 04"
+    }
+  ],
+  "artworkAppliedToCards": 317
 }

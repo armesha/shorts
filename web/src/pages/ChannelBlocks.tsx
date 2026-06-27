@@ -238,7 +238,7 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
   }, []);
 
   const selectedBlockParam = searchParams.get("block");
-  const selectedBlockId = selectedBlockParam === "lifehacks" ? "quotes" : selectedBlockParam;
+  const selectedBlockId = selectedBlockParam === "lifehacks" || selectedBlockParam === "facts_space" ? "quotes" : selectedBlockParam;
   const selectedBlock = data?.blocks.find((block) => block.id === selectedBlockId) ?? null;
   useEffect(() => {
     if (selectedBlock) setPerDay(Math.max(0, Math.min(20, selectedBlock.postsPerDay)));
@@ -1046,14 +1046,17 @@ function BlockDetail({
             {t("channelBlocks.noChannelsYet")}
           </div>
         ) : (
-          <div className="columns-[260px] gap-3">
+          <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
             {visibleLangs.map((lang) => {
               const cell = block.cells.find((candidate) => candidate.lang === lang.code);
               if (!cell) return null;
               const canAdd = cell.defaultSourceDecks.length > 0;
               const addBusy = busy?.blockId === block.id && busy.kind === "account" && busy.lang === lang.code;
               return (
-                <div key={lang.code} className="mb-3 break-inside-avoid rounded-md border border-base-300 bg-base-100">
+                <div
+                  key={lang.code}
+                  className={`rounded-md border border-base-300 bg-base-100 ${cell.accounts.length >= 3 ? "lg:col-span-2" : ""}`}
+                >
                   <div className="flex items-center justify-between gap-2 border-b border-base-300 bg-base-200/60 px-3 py-2">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-bold text-base-content/65">{lang.label}</span>
@@ -1070,7 +1073,7 @@ function BlockDetail({
                       {t("channelBlocks.addChannel")}
                     </button>
                   </div>
-                  <div className="space-y-2 p-2">
+                  <div className={`grid gap-2 p-2 ${cell.accounts.length >= 3 ? "sm:grid-cols-2" : "grid-cols-1"}`}>
                     {cell.accounts.map((account) => (
                       <ChannelCell key={account.id} account={account} t={t} />
                     ))}

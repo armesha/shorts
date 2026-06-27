@@ -115,21 +115,6 @@ const LIFEHACK_DECK_BY_LANG: Record<string, string[]> = {
   id: ["tips-id"],
 };
 
-const LIFEHACK_SOURCE_GROUPS: SourceGroupDef[] = [
-  {
-    id: "lifehacks",
-    title: "Лайфхаки",
-    defaultWeight: 4,
-    sources: LIFEHACK_DECK_BY_LANG,
-  },
-  {
-    id: "jokes",
-    title: "Анекдоты",
-    defaultWeight: 1,
-    sources: JOKE_TEXT_DECK_BY_LANG,
-  },
-];
-
 const RIDDLE_VISUAL_DECK_BY_LANG: Record<string, string[]> = {
   ru: ["visual-riddles"],
   de: ["visual-riddles-de"],
@@ -188,19 +173,6 @@ const RIDDLE_SOURCE_GROUPS: SourceGroupDef[] = [
   },
 ];
 
-const QUOTE_STATIC_DECK_BY_LANG: Record<string, string[]> = {
-  ru: ["quotes-ru"],
-  ar: ["quotes-ar"],
-  en: ["quotes-en"],
-  it: ["quotes-it"],
-  es: ["quotes-es"],
-  de: ["quotes-de"],
-  fr: ["quotes-fr"],
-  pt: ["quotes-pt"],
-  hi: ["quotes-hi"],
-  id: ["quotes-id"],
-};
-
 const QUOTE_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
   ar: ["quote-video-ar"],
   ru: ["quote-video-ru"],
@@ -214,40 +186,23 @@ const QUOTE_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
   id: ["quote-video-id"],
 };
 
+const QUOTE_STATIC_DECK_BY_LANG: Record<string, string[]> = {
+  ar: ["quotes-ar"],
+  ru: ["quotes-ru"],
+  en: ["quotes-en"],
+  it: ["quotes-it"],
+  es: ["quotes-es"],
+  de: ["quotes-de"],
+  fr: ["quotes-fr"],
+  pt: ["quotes-pt"],
+  hi: ["quotes-hi"],
+  id: ["quotes-id"],
+};
+
 const PSYCHOLOGY_DECK_BY_LANG: Record<string, string[]> = {
   ru: ["pack:psychology-ru-superadmin"],
   de: ["pack:психология-mgs-mqe2kfjv"],
 };
-
-const QUOTE_SOURCE_GROUPS: SourceGroupDef[] = [
-  {
-    id: "static",
-    title: "Статичные цитаты",
-    defaultWeight: 3,
-    sources: QUOTE_STATIC_DECK_BY_LANG,
-  },
-  ...(Object.keys(QUOTE_VIDEO_DECK_BY_LANG).length
-    ? [
-        {
-          id: "video",
-          title: "Видео-цитаты с озвучкой",
-          defaultWeight: 1,
-          sources: QUOTE_VIDEO_DECK_BY_LANG,
-        },
-      ]
-    : []),
-  {
-    id: "psychology",
-    title: "Психология",
-    defaultWeight: 6,
-    sources: PSYCHOLOGY_DECK_BY_LANG,
-  },
-];
-
-const LITERATURE_SOURCE_GROUPS: SourceGroupDef[] = [
-  ...LIFEHACK_SOURCE_GROUPS,
-  ...QUOTE_SOURCE_GROUPS,
-];
 
 const STATIC_FACT_DECK_BY_LANG: Record<string, string[]> = {
   en: ["pack:static-facts-en-superadmin"],
@@ -316,11 +271,11 @@ const CHRISTIANITY_SOURCE_GROUPS: SourceGroupDef[] = [
   },
 ];
 
-const FACT_SPACE_SOURCE_GROUPS: SourceGroupDef[] = [
+const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "static_facts",
     title: "Статичные факты",
-    defaultWeight: 4,
+    defaultWeight: 2,
     sources: STATIC_FACT_DECK_BY_LANG,
   },
   {
@@ -332,7 +287,7 @@ const FACT_SPACE_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "mind_flip",
     title: "Обмани свой мозг",
-    defaultWeight: 1,
+    defaultWeight: 2,
     sources: RIDDLE_MIND_FLIP_DECK_BY_LANG,
   },
   {
@@ -340,6 +295,36 @@ const FACT_SPACE_SOURCE_GROUPS: SourceGroupDef[] = [
     title: "Оптические иллюзии",
     defaultWeight: 1,
     sources: RIDDLE_OPTICAL_DECK_BY_LANG,
+  },
+  {
+    id: "lifehacks",
+    title: "Лайфхаки",
+    defaultWeight: 2,
+    sources: LIFEHACK_DECK_BY_LANG,
+  },
+  {
+    id: "jokes",
+    title: "Анекдоты",
+    defaultWeight: 2,
+    sources: JOKE_TEXT_DECK_BY_LANG,
+  },
+  {
+    id: "video_quotes",
+    title: "Видеоцитаты",
+    defaultWeight: 1,
+    sources: QUOTE_VIDEO_DECK_BY_LANG,
+  },
+  {
+    id: "static_quotes",
+    title: "Статичные цитаты",
+    defaultWeight: 1,
+    sources: QUOTE_STATIC_DECK_BY_LANG,
+  },
+  {
+    id: "psychology",
+    title: "Психология",
+    defaultWeight: 2,
+    sources: PSYCHOLOGY_DECK_BY_LANG,
   },
 ];
 
@@ -363,11 +348,6 @@ const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
   christianity: {
     en: ["christian", "prayers-en", "christian-quotes-en"],
     de: ["prayers-de"],
-  },
-  quotes: QUOTE_STATIC_DECK_BY_LANG,
-  facts_space: {
-    en: ["pack:static-facts-en-superadmin", "fact-en"],
-    es: ["pack:static-facts-es-superadmin", "fact-es"],
   },
 };
 
@@ -428,34 +408,37 @@ const BLOCKS: BlockDef[] = [
   },
   {
     id: "quotes",
-    title: "Литература",
-    description: "Лайфхаки, анекдоты, цитаты и психологические карточки в одном тематическом блоке.",
+    title: "ФАКТЫ",
+    description: "Факты, иллюзии, лайфхаки, анекдоты, видеоцитаты и психология в одном тематическом блоке.",
     rules: [
+      "Факты требуют проверяемого источника; численные данные и названия нужно перепроверять.",
+      "Иллюзии внутри блока подставлять только на языке канала; не смешивать RU-видео в EN/DE-каналах.",
       "Лайфхаки локализовать на одном наборе идей, но бытовые реалии адаптировать под язык.",
       "Если появится озвучка для лайфхаков, новые voiceover-паки собирать через edge-tts, не ElevenLabs.",
       "Анекдоты внутри блока остаются отдельным источником микса; не смешивать бытовые советы и шутки внутри одной карточки.",
-      "Цитаты расширять только через проверенные источники; для портретов нужен Wikimedia/аналогичный rights ledger.",
+      "Видео-цитаты и статичные цитаты держать отдельными источниками микса.",
       "Запрещены AP/неясные фото, misattribution, экстремистские/насильственные цитаты и protected-class hate.",
-      "Перед публикацией прогонять quote validator и ручной spot-check по авторам/портретам.",
       "Не давать медицинских диагнозов/обещаний лечения; формулировать как общие наблюдения и self-help.",
       "Локализации должны сохранять осторожный тон и избегать травматичных/опасных советов.",
     ],
-    accountIds: [16, 18, 43, 44, 65, 81],
-    sourceGroups: LITERATURE_SOURCE_GROUPS,
-  },
-  {
-    id: "facts_space",
-    title: "Факты",
-    description: "Готовые факты и визуальные факт-паки.",
-    rules: [
-      "Факты требуют проверяемого источника; численные данные и названия нужно перепроверять.",
-      "Один факт-пак можно локализовать по языкам, но локализацию нужно проверять отдельно.",
-      "Иллюзии внутри блока подставлять только на языке канала; не смешивать RU-видео в EN/DE-каналах.",
-    ],
-    accountIds: [38, 45],
-    sourceGroups: FACT_SPACE_SOURCE_GROUPS,
+    accountIds: [16, 18, 38, 43, 44, 45, 65, 81],
+    sourceGroups: FACT_SOURCE_GROUPS,
   },
 ];
+
+const BLOCK_ALIASES: Record<string, string> = {
+  facts_space: "quotes",
+  lifehacks: "quotes",
+};
+
+function canonicalBlockId(blockId: string): string {
+  return BLOCK_ALIASES[blockId] ?? blockId;
+}
+
+function findBlockDef(blockId: string): BlockDef | null {
+  const canonical = canonicalBlockId(blockId);
+  return BLOCKS.find((block) => block.id === canonical) ?? null;
+}
 
 function requireSuperAdmin(req: unknown, reply: { code: (n: number) => { send: (b: unknown) => unknown } }, deps: RouteDeps): boolean {
   if (deps.auth.isSuperAdminReq(req)) return true;
@@ -628,7 +611,7 @@ function unique(values: string[]): string[] {
 }
 
 function sourceGroupsForBlock(blockId: string): SourceGroupDef[] {
-  return BLOCKS.find((block) => block.id === blockId)?.sourceGroups ?? [];
+  return findBlockDef(blockId)?.sourceGroups ?? [];
 }
 
 function sourceGroupForDeck(blockId: string, lang: string, deckId: string): SourceGroupDef | null {
@@ -716,7 +699,7 @@ function blockSyncMetrics(accounts: BlockAccountSummary[]) {
   };
 }
 
-const sourceWeightSettingKey = (blockId: string): string => `superAdmin.channelBlock.${blockId}.sourceWeights`;
+const sourceWeightSettingKey = (blockId: string): string => `superAdmin.channelBlock.${canonicalBlockId(blockId)}.sourceWeights`;
 
 function sanitizeSourceWeights(block: BlockDef, raw: unknown): Record<string, number> {
   const groups = block.sourceGroups ?? [];
@@ -1120,7 +1103,7 @@ function buildPayload(db: Db, deps: RouteDeps) {
 function blockAccounts(db: Db, deps: RouteDeps, blockId: string): Account[] {
   const ownerId = armenId(db);
   if (ownerId == null) return [];
-  const block = BLOCKS.find((candidate) => candidate.id === blockId);
+  const block = findBlockDef(blockId);
   if (!block) return [];
   const supportedLangs = new Set<string>(BLOCK_LANGS.map((lang) => lang.code));
   return db
@@ -1375,10 +1358,10 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
 
   app.post("/api/super-admin/channel-blocks/:id/accounts", async (req, reply) => {
     if (!requireSuperAdmin(req, reply, deps)) return;
-    const blockId = (req.params as { id: string }).id;
+    const blockId = canonicalBlockId((req.params as { id: string }).id);
     const lang = String((req.body as { lang?: unknown } | null)?.lang || "").trim().toLowerCase();
     const ownerId = armenId(db);
-    const block = BLOCKS.find((candidate) => candidate.id === blockId);
+    const block = findBlockDef(blockId);
     const langDef = BLOCK_LANGS.find((candidate) => candidate.code === lang);
     if (ownerId == null || !block) return reply.code(404).send({ error: "Тематический блок не найден." });
     if (!langDef) return reply.code(400).send({ error: "Этот язык не входит в сетку блока." });
@@ -1410,8 +1393,8 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
 
   app.post("/api/super-admin/channel-blocks/:id/generate", async (req, reply) => {
     if (!requireSuperAdmin(req, reply, deps)) return;
-    const blockId = (req.params as { id: string }).id;
-    const block = BLOCKS.find((candidate) => candidate.id === blockId);
+    const blockId = canonicalBlockId((req.params as { id: string }).id);
+    const block = findBlockDef(blockId);
     const count = Math.max(1, Math.floor(Number((req.body as { count?: unknown } | null)?.count) || 1));
     const only = requestedAccountIds(req.body);
     const accounts = blockAccounts(db, deps, blockId).filter((account) => !only || only.has(account.id));
@@ -1448,8 +1431,8 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
 
   app.post("/api/super-admin/channel-blocks/:id/normalize", async (req, reply) => {
     if (!requireSuperAdmin(req, reply, deps)) return;
-    const blockId = (req.params as { id: string }).id;
-    const block = BLOCKS.find((candidate) => candidate.id === blockId);
+    const blockId = canonicalBlockId((req.params as { id: string }).id);
+    const block = findBlockDef(blockId);
     const requestedTargetRunwayDays = Number((req.body as { targetRunwayDays?: unknown } | null)?.targetRunwayDays);
     const only = requestedAccountIds(req.body);
     const accounts = blockAccounts(db, deps, blockId).filter((account) => !only || only.has(account.id));
@@ -1486,8 +1469,8 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
 
   app.post("/api/super-admin/channel-blocks/:id/normalize-preview", async (req, reply) => {
     if (!requireSuperAdmin(req, reply, deps)) return;
-    const blockId = (req.params as { id: string }).id;
-    const block = BLOCKS.find((candidate) => candidate.id === blockId);
+    const blockId = canonicalBlockId((req.params as { id: string }).id);
+    const block = findBlockDef(blockId);
     const requestedTargetRunwayDays = Number((req.body as { targetRunwayDays?: unknown } | null)?.targetRunwayDays);
     const only = requestedAccountIds(req.body);
     const accounts = blockAccounts(db, deps, blockId).filter((account) => !only || only.has(account.id));
@@ -1508,8 +1491,8 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
 
   app.post("/api/super-admin/channel-blocks/:id/schedule", async (req, reply) => {
     if (!requireSuperAdmin(req, reply, deps)) return;
-    const blockId = (req.params as { id: string }).id;
-    const block = BLOCKS.find((candidate) => candidate.id === blockId);
+    const blockId = canonicalBlockId((req.params as { id: string }).id);
+    const block = findBlockDef(blockId);
     const perDay = Math.max(0, Math.floor(Number((req.body as { perDay?: unknown } | null)?.perDay) || 0));
     if (perDay > 20) return reply.code(400).send({ error: "Максимум 20 публикаций в сутки на канал." });
     const only = requestedAccountIds(req.body);
@@ -1551,8 +1534,8 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
 
   app.post("/api/super-admin/channel-blocks/:id/source-weights", async (req, reply) => {
     if (!requireSuperAdmin(req, reply, deps)) return;
-    const blockId = (req.params as { id: string }).id;
-    const block = BLOCKS.find((candidate) => candidate.id === blockId);
+    const blockId = canonicalBlockId((req.params as { id: string }).id);
+    const block = findBlockDef(blockId);
     if (!block || !block.sourceGroups?.length) return reply.code(404).send({ error: "Тематический блок не найден." });
     const sourceWeights = requestedSourceWeights(db, block, req.body);
     return { blockId, sourceGroups: publicSourceGroups(db, block), sourceWeights };

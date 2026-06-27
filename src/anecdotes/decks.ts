@@ -2,7 +2,7 @@
 // Deck id doubles as the language code (ru | de | it), so account.lang maps straight to a deck.
 export interface Deck {
   id: string;
-  name: string; // UI label AND on-image channel branding (e.g. "Русские анекдоты")
+  name: string; // UI/metadata label; on-card channel plaques are intentionally not rendered.
   dir: string; // data dir (relative to cwd) with pack-*.json + titled.json + index.json
   source: string; // build source file (relative to cwd) — used by build.ts only
   emoji: string; // appended to the YouTube title

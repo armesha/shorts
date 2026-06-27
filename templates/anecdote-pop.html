@@ -117,7 +117,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 6px 0 10px;
+    padding: 6px 0 0;
   }
   .text {
     width: 100%;
@@ -134,12 +134,12 @@
   }
   .footer {
     flex: 0 0 auto;
-    min-height: 170px;
+    min-height: 112px;
     display: flex;
     align-items: end;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 24px;
-    padding-top: 20px;
+    padding-top: 10px;
   }
   .emoji {
     font-family: 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
@@ -147,21 +147,11 @@
     line-height: 1;
     filter: drop-shadow(0 10px 18px rgba(0,0,0,.18));
   }
-  .caption {
-    min-width: 190px;
-    border-radius: 999px;
-    padding: 18px 24px;
-    background: var(--accent);
-    color: var(--panel);
-    font: 900 30px/1 var(--title-font);
-    text-align: center;
-  }
   .dense .art { display: none; }
   .dense .panel { padding-top: 48px; }
   .dense .title { margin-bottom: 16px; }
-  .dense .footer { min-height: 84px; padding-top: 8px; }
+  .dense .footer { min-height: 66px; padding-top: 6px; }
   .dense .emoji { font-size: 72px; }
-  .dense .caption { font-size: 24px; padding: 12px 18px; }
 
   .v-orange-card { --bg:#ff8800; --bg2:#ff9f1c; --panel:#fffdf8; --panel2:#ffffff; --accent:#101010; --accent2:#ffe066; --radius:28px; }
   .v-orange-card .panel { border: 0; }
@@ -225,7 +215,6 @@
       <section class="body"><div class="text">{{TEXT}}</div></section>
       <footer class="footer">
         <span class="emoji">{{EMOJI}}</span>
-        <span class="caption">{{LABEL}}</span>
       </footer>
     </main>
   </div>
@@ -244,7 +233,7 @@
             titleEl.style.fontSize = ts + 'px';
           }
         }
-        var min = 24, max = document.querySelector('.card').classList.contains('dense') ? 56 : 68, best = min;
+        var min = 24, max = document.querySelector('.card').classList.contains('dense') ? 58 : 74, best = min;
         while (min <= max) {
           var mid = (min + max) >> 1;
           text.style.fontSize = mid + 'px';
@@ -255,7 +244,13 @@
           else { max = mid - 1; }
         }
         text.style.fontSize = best + 'px';
-        text.style.lineHeight = best <= 34 ? '1.16' : '1.22';
+        var baseLineHeight = best <= 34 ? 1.16 : 1.22;
+        text.style.lineHeight = String(baseLineHeight);
+        var natural = text.scrollHeight;
+        var target = body.clientHeight;
+        if (natural > 0 && natural < target * 0.82) {
+          text.style.lineHeight = String(Math.min(1.44, baseLineHeight * (target * 0.86 / natural)));
+        }
         window.__fitOverflow = text.scrollHeight > body.clientHeight + 1 || text.scrollWidth > text.clientWidth + 2;
         window.__fitFontPx = best;
         window.__fitted = true;

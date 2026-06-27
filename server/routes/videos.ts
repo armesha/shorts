@@ -178,6 +178,8 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
       const created: unknown[] = [];
       const sourceDeckId = resolveAccountSourceDeck(req, reply, acc, body.deck);
       if (!sourceDeckId) return;
+      const batchSeed = `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+      const pickSeed = (sourceDeck: string, offset = 0) => `${accountId}|${sourceDeck}|batch|${batchSeed}|${created.length}|${offset}`;
       // Пак-канал (язык = "pack:<id>"): случайные неиспользованные карточки пака → рендер мостом.
       if (isPackDeckId(sourceDeckId)) {
         if (!deckAllowed(req, sourceDeckId)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
@@ -185,7 +187,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
         if (!pack) return reply.code(404).send({ error: "Пак не найден." });
         if (!pack.templates.length) return reply.code(400).send({ error: "У пака нет шаблона." });
         while (created.length < requested) {
-          const picked = infinite ? pickFixedPackCard(pack) : pickUnusedPackCard(pack, seen);
+          const picked = infinite ? pickFixedPackCard(pack) : pickUnusedPackCard(pack, seen, pickSeed(sourceDeckId));
           if (!picked) break;
           if (!infinite) {
             seen.add(picked.key);
@@ -209,7 +211,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
         return reply.code(403).send({ error: "Этот пак вам недоступен." });
       const deckId = channelDeck.id; // FORCE the channel's language — no cross-language mixing
       while (created.length < requested) {
-        const a = infinite ? firstAnecdote(deckId) : randomAnecdote(deckId, seen);
+        const a = infinite ? firstAnecdote(deckId) : randomAnecdote(deckId, seen, pickSeed(deckId));
         if (!a) break; // no unused anecdotes left
         const key = packItemKey(a);
         if (!infinite) {

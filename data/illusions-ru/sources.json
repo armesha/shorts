@@ -1,0 +1,40 @@
+{
+  "deckId": "illusions-ru",
+  "generatedExpansion": {
+    "count": 30,
+    "files": [
+      "illusions-ru/expanded-001.mp4",
+      "illusions-ru/expanded-002.mp4",
+      "illusions-ru/expanded-003.mp4",
+      "illusions-ru/expanded-004.mp4",
+      "illusions-ru/expanded-005.mp4",
+      "illusions-ru/expanded-006.mp4",
+      "illusions-ru/expanded-007.mp4",
+      "illusions-ru/expanded-008.mp4",
+      "illusions-ru/expanded-009.mp4",
+      "illusions-ru/expanded-010.mp4",
+      "illusions-ru/expanded-011.mp4",
+      "illusions-ru/expanded-012.mp4",
+      "illusions-ru/expanded-013.mp4",
+      "illusions-ru/expanded-014.mp4",
+      "illusions-ru/expanded-015.mp4",
+      "illusions-ru/expanded-016.mp4",
+      "illusions-ru/expanded-017.mp4",
+      "illusions-ru/expanded-018.mp4",
+      "illusions-ru/expanded-019.mp4",
+      "illusions-ru/expanded-020.mp4",
+      "illusions-ru/expanded-021.mp4",
+      "illusions-ru/expanded-022.mp4",
+      "illusions-ru/expanded-023.mp4",
+      "illusions-ru/expanded-024.mp4",
+      "illusions-ru/expanded-025.mp4",
+      "illusions-ru/expanded-026.mp4",
+      "illusions-ru/expanded-027.mp4",
+      "illusions-ru/expanded-028.mp4",
+      "illusions-ru/expanded-029.mp4",
+      "illusions-ru/expanded-030.mp4"
+    ],
+    "rights": "Локальные варианты созданы из существующего пака оптических иллюзий проекта; внешние медиа не добавлялись.",
+    "tool": "ffmpeg transform variants"
+  }
+}
