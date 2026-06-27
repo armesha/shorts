@@ -56,11 +56,20 @@ export interface Deck {
 
 export const MANUAL_VIDEO_DECK = "manual";
 
-function quoteDeck(input: { id: string; name: string; lang: string; hashtags: string; tags: string[]; titles: string[]; source?: string }): Deck {
+function quoteDeck(input: {
+  id: string;
+  name: string;
+  lang: string;
+  hashtags: string;
+  tags: string[];
+  titles: string[];
+  source?: string;
+  dir?: string;
+}): Deck {
   return {
     id: input.id,
     name: input.name,
-    dir: `data/${input.id}`,
+    dir: input.dir ?? `data/${input.id}`,
     source: input.source ?? "Wikiquote API source ledger in sources.json",
     emoji: "💬",
     hashtags: input.hashtags,
@@ -688,19 +697,16 @@ export const DECKS: Deck[] = [
     tags: ["lustige Zitate", "Humor", "witzig", "lachen", "Sprüche", "shorts"],
     titles: ["Lustiges Zitat", "Lacher des Tages", "Ironischer Gedanke"],
   }),
-  {
+  quoteDeck({
     id: "quotes-de",
-    name: "Politiker-Zitate (DE)",
-    dir: "data/quotes-de-combined", // combined static quote-card MP4 deck; numbered decks stay available separately
-    source: "",
-    emoji: "🇩🇪",
+    name: "Statische Zitate",
+    lang: "de",
+    dir: "data/quotes-de-combined",
+    source: "Wikiquote source ledger shared with quote-video-de; rendered dynamically without baked-in plaques.",
     hashtags: "#zitate #politik #geschichte #deutschland #staatsmänner #shorts",
     tags: ["zitate", "politik", "geschichte", "deutschland", "staatsmänner", "zitat", "shorts"],
-    genericTitles: ["Zitat", "Berühmtes Zitat", "Politiker-Zitat", "Worte der Geschichte"],
-    adminOnly: true,
-    grantable: true,
-    preFact: true,
-  },
+    titles: ["Zitat", "Berühmtes Zitat", "Politiker-Zitat", "Worte der Geschichte"],
+  }),
   quoteVideoDeck({
     id: "quote-video-ru",
     name: "Видео-цитаты RU",

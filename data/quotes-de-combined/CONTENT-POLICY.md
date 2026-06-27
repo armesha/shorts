@@ -1,10 +1,13 @@
-# ⚠️ quotes-de — content policy (ЧИТАТЬ ПЕРЕД правкой videos.json)
+# ⚠️ quotes-de — content policy (ЧИТАТЬ ПЕРЕД правкой titled.json)
 
-Эта дека (`Politiker-Zitate (DE)`, admin-only) уже получила **страйк YouTube** за hate speech
+Эта дека (`Statische Zitate`, admin-only) уже получила **страйк YouTube** за hate speech
 (цитата Штрауса «…die roten Ratten … in ihre Löcher», `q204.mp4`, снято 2026-06-19). 2026-06-20 из
 деки вычищены 10 цитат + соответствующие строки очереди.
 
-**Прежде чем добавить ЛЮБУЮ цитату в `videos.json` — отбракуй её по списку. Сомневаешься → не добавляй.**
+`videos.json` оставлен как legacy-ledger старых prebuilt MP4. Активная генерация использует `titled.json`
+и динамический quote-render без вшитых плашек/канальных подписей.
+
+**Прежде чем добавить ЛЮБУЮ цитату в `titled.json` — отбракуй её по списку. Сомневаешься → не добавляй.**
 
 Запрещено (дроп сразу):
 - дегуманизация людей/групп (звери, паразиты, «крысы», «в норы»);
@@ -23,7 +26,7 @@
 
 Lint-страховка (не замена ручной проверки):
 ```bash
-grep -niE "ratten|warmer bruder|bedingungslosen gehorsam|totalen krieg|tel aviv|raus, und zwar|um die hälfte|untermensch|ausrotten|hingehören|ausländer|asyl|flüchtling|juden|israel|parasiten|schweine|vernichten|vergas|zigeuner|neger|nigger|erschieß|umbring|töt|totschlag|totgeschlag|todesstrafe|rache|wiedervergeltung|geschossen|schossen" videos.json
+grep -niE "ratten|warmer bruder|bedingungslosen gehorsam|totalen krieg|tel aviv|raus, und zwar|um die hälfte|untermensch|ausrotten|hingehören|ausländer|asyl|flüchtling|juden|israel|parasiten|schweine|vernichten|vergas|zigeuner|neger|nigger|erschieß|umbring|töt|totschlag|totgeschlag|todesstrafe|rache|wiedervergeltung|geschossen|schossen" titled.json
 ```
 
 Полные правила и контекст: `docs/pack-generation.md` → раздел «⚠️ Inhaltsrichtlinie `quotes-de`».
