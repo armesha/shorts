@@ -9,6 +9,14 @@
   },
   {
     "title": "Chiste clásico 002",
+    "text": "Un hombre desconfiaba tanto de su memoria que escribió en su cartera:\n«Para que no se me olvide: tengo que casarme al pasar por Aranjuez».\n\nCuando emprendió el viaje, lo primero que olvidó en casa fue la cartera.",
+    "source": "Tesoro, 1847",
+    "sourceId": "el-tesoro-de-los-chistes-1847",
+    "evidence": "raw/el-tesoro-de-los-chistes-1847.txt:3325-3329",
+    "score": 999
+  },
+  {
+    "title": "Chiste clásico 003",
     "text": "—¿Cuándo me paga los cinco duros que me debe?\n—No son cinco, son diez.\n—Se equivoca: quiero que me pague cinco.\n—Es que prefiero deber diez a pagar cinco.",
     "source": "Tesoro, 1847",
     "sourceId": "el-tesoro-de-los-chistes-1847",
@@ -16,7 +24,7 @@
     "score": 999
   },
   {
-    "title": "Chiste clásico 003",
+    "title": "Chiste clásico 004",
     "text": "Hay gente que empieza diciendo:\n—Hágame el favor de prestarme atención.\n\nY continúa enseguida:\n—Hágame el favor de prestarme un duro.",
     "source": "Boira, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-3-1862",
@@ -24,7 +32,43 @@
     "score": 999
   },
   {
-    "title": "Chiste clásico 004",
+    "title": "Chiste clásico 005",
+    "text": "Y á una mujer que le oia Mal de corazón le dio. Al ruido el padre, parado, Preguntó: — ¿Qué pudo ser? Y dijo uno: — A esta mujer Mal de corazón le ha dado.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:5786-5793",
+    "windowSize": 3,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 006",
+    "text": "Un caballero, recien llegado de Galicia, preguntaba hace pocos dias á su hijo, estudiante de primeras letras: — ¿Cuantus acentus hay, hijo miu? —Tres, papá.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:13732-13740",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 007",
+    "text": "Nuestro estudiante llegó á la ciudad, y dijo para sí: necesito obedecer á mi padre; fué al mercado y preguntó: — ¿Cuanto vale un cerdo? — Unos ochocientos reales.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:12695-12701",
+    "windowSize": 3,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 008",
+    "text": "Y dijo uno: — A esta mujer Mal de corazón le ha dado. — ¿Pues de qué, con impaciencia Dijo el padre, aquí ie dio? Y el bellaco respondió: — De oir á su reverencia.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:5792-5799",
+    "windowSize": 3,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 009",
     "text": "Se presentó á matricular en la célebre universidad de Alcalá un estudiante de la Mancha. — ¿Cómo se llama usted? le preguntó el escribiente. — Juan Bautista Combé.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -33,7 +77,25 @@
     "score": 23
   },
   {
-    "title": "Chiste clásico 005",
+    "title": "Chiste clásico 010",
+    "text": "En aquella época en que se creia en la virtud oculta de las piedras preciosas, preguntó una señora á un filósofo. — ¿Y la turquesa tiene alguna virtud? — ¡Oh! señora, muy grande.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:2043-2049",
+    "windowSize": 3,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 011",
+    "text": "Alfredo dijo con una calma espantosa: — ¿Hé perdido el color, Clotilde? ¿Me pongo lívido? — Sí, sí, yo creo que sí, dijo la niña temblando. — No, no es tiempo, no ha podido producir su efcao.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:618-626",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 012",
     "text": "Y tanto y tanto replicaba lo mismo, que le dijo el profesor: — ¿Sabe usted que me parece que no lia estudiado usted una jota? — En eso convienen todos los autores, respondió entonces el graduando.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -42,7 +104,16 @@
     "score": 23
   },
   {
-    "title": "Chiste clásico 006",
+    "title": "Chiste clásico 013",
+    "text": "Un niño á quien su padre se habia olvidado de dar carne en la mesa, decia: —Padre, ¿me dá usted un poquito de sal? —¿Para qué la quieres, hijo mió? —Para echarla en la carne que me va usted á dar, si está sosa.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:6938-6946",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 014",
     "text": "Efectivamente, se presentó en casa del señor colérico, que le dijo: — Amigo, ¿sabes cuan dificultoso es afeitarme? — Sí, señor, le respondió, pero sé también que mi habilidad es mil veces mayor que vuestra delicadeza.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -51,7 +122,25 @@
     "score": 23
   },
   {
-    "title": "Chiste clásico 007",
+    "title": "Chiste clásico 015",
+    "text": "Monsieur Florian acababa de publicar en Francia su Auma-Pompilio, y un chusco de buen humor le preguntó á una de estas señoras que la echan de literatas: —¿Ha leido usted esa nueva producción de? — ¡Pues no la he de leer!",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:7179-7188",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 016",
+    "text": "Latia Gregoria fué á mirar las orejas y vió que estaban recortadas á tijera. —¿Cuanto te ha costado la pollina? d\\)o la buena mujer alarmada. —Treinta y un duros, Gregoria, y uno que safluó de la burra vieja, treinta y dos.",
+    "source": "Boira III, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-3-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-3-1862.txt:15974-15982",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 017",
     "text": "En efecto, los trajeron, y puestos en la mesa tomó dos, y dijo al compañero: — Ahora escoja usted — ¿Y cómo he de escojer, dijo el otro, si no queda mas que uno? — Y bien; todavía puede usted escojer entre comerlo y dejarlo.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -60,7 +149,25 @@
     "score": 23
   },
   {
-    "title": "Chiste clásico 008",
+    "title": "Chiste clásico 018",
+    "text": "La tia Gregoria fué á mirar las orejas y vio que estaban recortadas á tijera. — ¿Cuanto te ha costado la pollina? dijo la buena mujer alarmada. — Treinta y un duros, Gregoria, y uno que saqué de la burra vieja, treinta y dos.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:12834-12841",
+    "windowSize": 3,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 019",
+    "text": "El oficial perdió la paciencia y esclamó: — ¿Es así como cumples mis órdenes? — La culpa no es mia, señorito, la culpa no es mia; dos horas y media han estado cociendo; si no estan blandos consistirá en que no son de buena calidad.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:4374-4381",
+    "windowSize": 3,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 020",
     "text": "Entró en la casa, donde le esperaban algunos fumadores, entregó su caja muy satisfecho, y se sentó á descansar. — ¡líombre! dijo el papá cuando las viósin cabeza. ¿Qué has traído aquí? — Cerillas, y buenas. —¡Cómo! si ninguna sirve.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -69,7 +176,16 @@
     "score": 23
   },
   {
-    "title": "Chiste clásico 009",
+    "title": "Chiste clásico 021",
+    "text": "La preciosa, la lindísima, la hechicera Leonor, encantadora niña de quince años, que está soñando con un miriñaque nuevo, decia esta mañana: — ¿Me compraras, papaito, un miriñaque de verdad? — No, hija mia, que será mejor de ballena.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:346-355",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 022",
     "text": "Uno de ellos se encontraba fulto do dinero; y aunque creía prudente pedirlo u su compañero, no obstante, lo repugnaba; uprovochando la ocasión de estar acostados, le habló así: — ¿Pericu? — Hombre, ¿qué quieres? le contestaba el otro.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -78,7 +194,7 @@
     "score": 23
   },
   {
-    "title": "Chiste clásico 010",
+    "title": "Chiste clásico 023",
     "text": "En la mañana del dia siguiente se dio nueva orden mandando que nadie saliese sin una linterna con su vela. En aquella tarde, al anochecer, se presentó el mismo hombre con su linterna y su vela. — ¿En dónde está tu linterna? — Hela aquí.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -87,7 +203,34 @@
     "score": 23
   },
   {
-    "title": "Chiste clásico 011",
+    "title": "Chiste clásico 024",
+    "text": "Un muchacho aficionado á la horticultura decía un dia á su padre. — Papá, he sembrado patatas en el corral, ¿y sabes lo que ha salido? — Habran salido patatas, hijo mió. — ¡Cá! no señor: lo que ha salido es un cerdo que se las ha comido.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:396-405",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 025",
+    "text": "Un joven que había sido educado en casa del filósofo Zenon volvió á la compañía de su padre, que le preguntó al momento: — ¿Qué has aprendido de bueno en casa del filósofo? — Presto lo sabras, padre mío, respondió el joven, y luego calló.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:10175-10185",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 026",
+    "text": "Siendo guardian en Mérida el padre Galapero, bajó a la cocina una tarde al oscurecer y preguntó al cocinero: — Hermano, ¿qué cena tenemos esta noche para la comunidad? — Padre guardian, la cena que tengo para la comunidad es calabaza en escabeche.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:14442-14452",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 027",
     "text": "Dos quintos se dirigian al punto en que se hallaba el regimiento á que los habian destinado. Cansados por la jornada harto larga que habian hecho, se sentaron á la orilla del camino y preguntaron á un pasajero: — ¿Cuanto falta para llegar á C? — Diez leguas.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -96,7 +239,7 @@
     "score": 23
   },
   {
-    "title": "Chiste clásico 012",
+    "title": "Chiste clásico 028",
     "text": "En el camino encontró á un pastor y le dijo: — Buen hombre, ¿ha visto usted por casualidad un reloj de plata que acabo de perder? — ¡Reloj! ¿como el de la torre? no, señor; no lo he visto. — No era como el de la torre, sino mucho mas pequeño, y lo he debido perder por aquí.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -105,7 +248,16 @@
     "score": 23
   },
   {
-    "title": "Chiste clásico 013",
+    "title": "Chiste clásico 029",
+    "text": "Juntos los dos, y repuestos algnn tanto de su asombro, le dijo el compañero: — ¡Pero hombre! ¿qué has visto? — Qué he de ver, majadero, que estaba el señorito de la casa cuidando las peras, pero vestido de pajaro para que no lo conociesen. — Pues no nos hemos librado de mala.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:3228-3237",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 030",
     "text": "El mas atrevido de estos, que se llamaba Severo, le dijo un dia: — Señor, ¿no dio usted ayer vente mil reales para la compra de un caballo á un chalan á quien usted no ha visto media docena de veces? — Así es la verdad. — Pues entonces voy á hacer este asiento en el libro verde.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -114,7 +266,52 @@
     "score": 23
   },
   {
-    "title": "Chiste clásico 014",
+    "title": "Chiste clásico 031",
+    "text": "Un europeo que se paseaba por las orillas del Missisipi, que es un rio de corriente muy rapida, preguntó aun aldeano que encontró por casualidad: — ¿Cómo se llama este rio? — A fé mia, señor, contestó el rústico, que este rio no es necesario llamarlo, porque demasiado se viene él solo.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:8053-8063",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 032",
+    "text": "Al dia siguiente, la señora condesa salió á pasear, y la lindísima Julia volvió á visitarla. — ¿Está mi hermana? pregunta al portero. — Si está, señorita. Baja del coche, sube á la habitación, recorre la casa, el palomar, el jardin, todo, y no encontrando á la condesa, se vuelve enojada.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:8542-8551",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 033",
+    "text": "Pasando un viajero madrileño una ria de la costa cantabrica en una barca demasiado vieja y en un dia sobrado tormentoso, dijo al barquero: — ¿Se suele perder algún viajero al atravesar esta ria? — Cá, no, señor, somos aquí muy despejados. — Pero si está el tiempo tan borrascoso comohoy...",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:12216-12226",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 034",
+    "text": "Unos muchachos se quejaban de que no se les daba de almorzar, á tiempo de entrar un amigo de su padre, que oyéndolos gritar, dijo compadecido: — ¿Por qué no hacéis que se desayunen esos niños? Y el padre respondió: — ¿Cómo desayunarse? á fé mia que cada uno tiene una asadura en el cuerpo.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:9836-9846",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 035",
+    "text": "El marido, asi gne lo supo, eelió un cigai'ro, encendió un fósforo, dio una chupada y se marchó rio arriba. —;Eh! ¡molinero! le gritó uuo, ¿quiere usted salvar á su mujer? — ¿Pues no lie de querer hombre? A eso voy. — Pues bósquela usted rio abajo, que el agua ha debido llevarla en esa dirección.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:4852-4862",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 036",
     "text": "Un pilluelo de Malaga jugaba en Guadarmedina en un dia de los que, en aquel clima ardiente, llaman de frió: un sugeto pasaba embozado en su capa, y viéndolo desnudo y tan alegre, tuvo la humorada de preguntarle: — ¿Di, chico, no tienes frió? — No, señor, contestó. — ¡Cómo, estando casi en cueros!...",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -123,7 +320,16 @@
     "score": 23
   },
   {
-    "title": "Chiste clásico 015",
+    "title": "Chiste clásico 037",
+    "text": "El forastero, sorprendido, la estuvo observando algún espacio de tiempo, y dijo á su huésped. — ¿Está usted seguro, caballero, de que esta dama es su esposa? — ¿Encuentra usted en eso alguna dificultad? dijo el amo de la casa alarmado. — Ninguna, ciertamente; pero hubiera jurado que era vuestra hermana.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:14257-14267",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 038",
     "text": "En cierta ocasión, presentó un poeta á Que vedo dos sonetos áun propio asunto, para que aprobase uno de ellos. Oyó el primero, y sin detenerse dijo: — Mejor es el otro. — Pues si usted no lo ha visto, respondió el poeta, ¿cómo lo puede saber? — Señor mió; porque ninguno puede ser peor que el que he oido.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -132,7 +338,7 @@
     "score": 23
   },
   {
-    "title": "Chiste clásico 016",
+    "title": "Chiste clásico 039",
     "text": "Le dio un vaso, otro y otro, y viendo que todavía alargaba la mano para que lo echase mas, sin decir si era bueno ó malo, le preguntó: — ¿Qué te parece? — ¿No dices que es griego? — Echame otro vaso, porque como no soy hombre de letras entiendo poco de griego, y necesito mas pruebas para formar mi juicio.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -141,7 +347,16 @@
     "score": 23
   },
   {
-    "title": "Chiste clásico 017",
+    "title": "Chiste clásico 040",
+    "text": "Tratandose en un corrillo de cual era el camino por donde el sol volvia de Poniente á Oriente para comenzar desde allí su carrera, dijo una señora: — ¿Pues qué duda puede haber en eso? Vuelve por el mismo camino por donde fué de Oriente á Poniente. — Si fuera asi, le replicaron, lo veríamos volver como lo vemos ir.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:7254-7265",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 041",
     "text": "El mancebo hízolo así, y acabada la comida, viniendo el huésped á ajustar la cuenta, dijo el compañero: — Amigo, pues te has comido el pollo, bien puedes pagar por mí el escote. — ¿Cómo es eso, habiendo comido un huevo cada uno? — Si no quieres pagar los dos huevos, yo te haré pagar el pollo, y ya veras si sales peor librado.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -150,7 +365,25 @@
     "score": 23
   },
   {
-    "title": "Chiste clásico 018",
+    "title": "Chiste clásico 042",
+    "text": "Cuéntase de un irlandés muy cerrado de mollera, que habiendo ido al correo á saber si tenia carta de su familia, de la que entonces se separaba por primera vez, le hicieron la consabida interpelación de: — ¿Cómo se llama usted? A lo cual contestó el buen irlandés: — -Registre usted bien las cartas que ya lo encontrará en el sobrescrito.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:10670-10681",
+    "windowSize": 4,
+    "score": 23
+  },
+  {
+    "title": "Chiste clásico 043",
+    "text": "Si obedecer es razón Digo que, ¿amo á Soledad? No. — ¿A Julia cuya bondad Persona humana no tiene? No. — ¿Aspira mi amor a Irene? ¡Qué! ¡no! es poca su beldad.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:7902-7907",
+    "windowSize": 1,
+    "score": 21
+  },
+  {
+    "title": "Chiste clásico 044",
     "text": "Dame trébol con dos hojas; darte hé mozas en que escojas. — Damelajóven honesta, yo te la daré compuesta. — Del colérico huye un poco, del enemigo del todo.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -159,7 +392,7 @@
     "score": 20
   },
   {
-    "title": "Chiste clásico 019",
+    "title": "Chiste clásico 045",
     "text": "Un caballero de manos industriosas le decia á un su cofrade: — Chico, es magnífico el alfiler de brillantes que llevas hoy en la camisa — ¡Van! regularcillo.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -168,7 +401,16 @@
     "score": 20
   },
   {
-    "title": "Chiste clásico 020",
+    "title": "Chiste clásico 046",
+    "text": "Y Ana, su amiga, oficiosa, Fijandose,en él decia: — Soberbio gusto has tenido. El peine tiene buena asta; íE Irene repuso: — ¡Oh! basta Serrosa de ¡mi marido.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:5098-5104",
+    "windowSize": 2,
+    "score": 20
+  },
+  {
+    "title": "Chiste clásico 047",
     "text": "Escusandose todos de lo hecho, dijo el mas resabido: — De Perico es, yo lo sé de cierto. Respondió el acusado: — Dice la verdad, porque él demasiado conoce mi género.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -177,7 +419,7 @@
     "score": 20
   },
   {
-    "title": "Chiste clásico 021",
+    "title": "Chiste clásico 048",
     "text": "Reprendia uno á su compañero diciendo: — No hablas palabra de verdad. — Lo que sé decirte es, contestó el otro, que la mayor parte del tiempo la empleo en decir bien de ti.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -186,7 +428,16 @@
     "score": 20
   },
   {
-    "title": "Chiste clásico 022",
+    "title": "Chiste clásico 049",
+    "text": "Para quitar la pereza á un niño, le decia su padre: — Uno que madrugó mucho halló un bolsillo en el camino. — Padre, contestó el muchacho, mas debió madrugar el que lo perdió.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:10469-10476",
+    "windowSize": 3,
+    "score": 20
+  },
+  {
+    "title": "Chiste clásico 050",
     "text": "D. Pedro contestó: — Es el elefante, hermosa Julia mia. — Pues bien, señor elefante, yo ruego á usted que me deje vivir en paz, y que no vuelva ú molestarme con sus impertinencias.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -195,7 +446,7 @@
     "score": 20
   },
   {
-    "title": "Chiste clásico 023",
+    "title": "Chiste clásico 051",
     "text": "Convidaron á cenar en Madrid á un forastero, y le pusieron rabanos al principio. Dijo el convidado: ■ — En mi tierra los rabanos se ponen al fin. — Y aquí también, respondió el que lo convidaba.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -204,7 +455,25 @@
     "score": 20
   },
   {
-    "title": "Chiste clásico 024",
+    "title": "Chiste clásico 052",
+    "text": "Baja del coche, sube á la habitación, recorre la casa, el palomar, el jardin, todo, y no encontrando á la condesa, se vuelve enojada. — Mi hermana no está, le dice al portero. — No está, señorita.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:8549-8555",
+    "windowSize": 3,
+    "score": 20
+  },
+  {
+    "title": "Chiste clásico 053",
+    "text": "Al dia cuarto salió á la calle á buscar los muchachos y les dijo: — Vamos, hoy no tengo cuartos, pero sois tan buenos que me fiareis y seguiréis gritando lo mismo. — ¡Ah! eso no, contestaron los muchachos.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:4176-4183",
+    "windowSize": 3,
+    "score": 20
+  },
+  {
+    "title": "Chiste clásico 054",
     "text": "Al dia siguiente volvió, y dijo á su amiga: — Ayer tarde he venido á verte y he tenido la desgracia de no hallarte en casa. — Sí, ya sé que estuviste, porque encontré tu nombre escrito en todos los muebles.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -213,7 +482,7 @@
     "score": 20
   },
   {
-    "title": "Chiste clásico 025",
+    "title": "Chiste clásico 055",
     "text": "Fué á comprar un par de botas, se las probó, y como le viniesen muy apretadas, dijo al zapatero: —Maestro, estas botas son muy equitativas. — Por eso, dijo el zapatero, me dará usted veinte reales mas de lo que valen.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -222,7 +491,34 @@
     "score": 20
   },
   {
-    "title": "Chiste clásico 026",
+    "title": "Chiste clásico 056",
+    "text": "Y ya junto al vado, lleno de terror, gritó: — Señor, las zorras de mi lugar son como las demas, porque yo he mentido. — Pues siendo eso asi, pasa seguro el rio, que también es como los otros que se vadean, dijo su amo.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:5101-5108",
+    "windowSize": 3,
+    "score": 20
+  },
+  {
+    "title": "Chiste clásico 057",
+    "text": "En seguida mandó á su secretario que leyese las listas, y, acabada su lectura, dijo: — Los primeros, ya veis, hijos mios, que no puedo despedirlos puesto que los necesito yo mismo. — Es verdad, es verdad, dijeron todos.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:12785-12791",
+    "windowSize": 3,
+    "score": 20
+  },
+  {
+    "title": "Chiste clásico 058",
+    "text": "Hay para ciertas mujeres una juventud eterna, y se llama gracia. — No hay ningún dolor que la mujer no sepa endulzar. — No está decidido que las mujeres amen mas que los hombres; pero es incontestable que saben amar mejor.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:11569-11577",
+    "windowSize": 3,
+    "score": 20
+  },
+  {
+    "title": "Chiste clásico 059",
     "text": "Llegaron do£ caminantes pobres á un mesón y pidieron para cenar huevos pasados por agua. Uno de ellos, al partir el suyo, encontró dentro un pollo. — Mira, dijo á su compañero. — Cómelo pronto y sin que lo vea el mesonero.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -231,7 +527,7 @@
     "score": 20
   },
   {
-    "title": "Chiste clásico 027",
+    "title": "Chiste clásico 060",
     "text": "Mas inmediato ya al vado, y por consiguiente con mas miedo, repitió: — Digo, señor, que son como cabras. Y ya junto al vado, lleno de terror, gritó: — Señor, las zorras de mi lugar son como las demas, porque yo he mentido.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -240,7 +536,7 @@
     "score": 20
   },
   {
-    "title": "Chiste clásico 028",
+    "title": "Chiste clásico 061",
     "text": "Decia un fanfarrón á un hombre prudente á quien aborrecia: — No temeria á cincuenta hombres como usted — Lo creo muy bien, le respondió, porque estarla usted seguro en medio de ellos, aunque uno solo bastase para esterminarlo.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -249,7 +545,34 @@
     "score": 20
   },
   {
-    "title": "Chiste clásico 029",
+    "title": "Chiste clásico 062",
+    "text": "Irritado un señor contra su lacayo, que era muy ingenuo, le dijo: — Sube mañana á mi cuarto, que quiero darte de palos. Al dia siguiente, el bonachón del lacayo tocó en la puerta de su amo diciendo: — Señor, vengo á cumplir con lo mandado.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:3260-3269",
+    "windowSize": 4,
+    "score": 20
+  },
+  {
+    "title": "Chiste clásico 063",
+    "text": "Acabada la comida, dijo el amo: — Cuando quieras puedes hablarme del negocio. — Me han dicho que casa usted su hija dandole cien mil duros; casela usted conmigo, que me contentaré con la mitad, y así ganará cincuenta mil duros en un instante.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:9256-9263",
+    "windowSize": 3,
+    "score": 20
+  },
+  {
+    "title": "Chiste clásico 064",
+    "text": "En este caso, dijo el amo de la casa: — Señores, si en este instante hiciera testamento, estoy pensando en una de las clausulas que habia de tener. — ¡Que se sepa, señores! dijo uno de los convidados. — Es cierto, replicó otro, si es posible decídnosla.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:16471-16480",
+    "windowSize": 4,
+    "score": 20
+  },
+  {
+    "title": "Chiste clásico 065",
     "text": "El caballero lo volvió á examinar y dijo: — Cien duros ofrezco á usted de gratificación, ademas del precio del cuadro, si encuentra el medio de que sea mió. — Ya he dicho á usted lo que hay en esto. — El caballero se marchó, y á poco rato volvió con otro que dijo ser pintor.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -258,7 +581,7 @@
     "score": 20
   },
   {
-    "title": "Chiste clásico 030",
+    "title": "Chiste clásico 066",
     "text": "Un caballero se encontró por casualidad aun hombre á quien no conocía y le dijo: — Présteme usted veinte duros. — Pero señor, no tengo el honor de conocerle. — Casualmente por eso me dirijo á usted, porque los que me conocen no quieren tomarse el trabaja de hacerme ese favor.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -267,7 +590,7 @@
     "score": 20
   },
   {
-    "title": "Chiste clásico 031",
+    "title": "Chiste clásico 067",
     "text": "Nuestros lectores nos agradeceran de seguro los siguientes consejos, resultado de largos anos de estudio: —Para que nunca haga daño el café, por malísimo que sea: después de hecho se arroja por la ventana. —Para no perder jamas un duro: no llevar en el bolsillo mas de tres pesetas.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -276,7 +599,16 @@
     "score": 20
   },
   {
-    "title": "Chiste clásico 032",
+    "title": "Chiste clásico 068",
+    "text": "A un caballero que, aunque veia muy bien, llevaba siempre anteojos para echarla de literato, le dijo una señora: — Tan enamorado lo veo á usted de sus anteojos, caballero, que según sospecho duerme usted con ellos. — Es cierto, repuso el joven; la noche que hace írio, uso de ese abrig;o.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:2197-2207",
+    "windowSize": 4,
+    "score": 20
+  },
+  {
+    "title": "Chiste clásico 069",
     "text": "Cuando se rie mi amigo, á él le toca manifestarme la causa de su alegría; pero cuando llora yo soy quien debe descubrir la causa de su tristeza.!'\\ — No elijais vuestros amigcs entre personas de una clase demasiado superior ó inferior ala vuestra. — El que cree tener diez amigos -no tiene ninguno.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -285,7 +617,16 @@
     "score": 20
   },
   {
-    "title": "Chiste clásico 033",
+    "title": "Chiste clásico 070",
+    "text": "La falta del amigo es una lección que amarga: la de la mujer, una ilusión que se desvanece. — La madre es el ángel, el padre el riego, la mujer la vida: sin la primera enrudece el corazón; sin el segundo no fructifica; sin la tercera muere. — Vale mas una verdad amarga, que cien mentiras muy dulces.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:12073-12081",
+    "windowSize": 3,
+    "score": 20
+  },
+  {
+    "title": "Chiste clásico 071",
     "text": "Decia un exajerador: — He visto en Murcia una berza tan grande que á su sombra descansaban, durante la siesta, varias cuadrillas de segadores. — Yo, contestaba otro que lo oia, he visto hacer una caldera tan colosal, que dentro de ella trabajaban cien jornaleros, y de uno á otro no se oian los martillazos.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -294,7 +635,43 @@
     "score": 20
   },
   {
-    "title": "Chiste clásico 034",
+    "title": "Chiste clásico 072",
+    "text": "Maximas. La falta del amigo es una lección que amarga: la de la mujer, una ilusión que se desvanece. — La madre es el ángel, el padre el riego, la mujer la vida: sin la primera enrudece el corazón; sin el segundo no fructifica; sin la tercera muere. — Vale mas una verdad amarga, que cien mentiras muy dulces.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:12071-12081",
+    "windowSize": 4,
+    "score": 20
+  },
+  {
+    "title": "Chiste clásico 073",
+    "text": "Habiéndose puesto un padre á comer con sus dos hijos, le sirvieron la sopa hirviendo. El menor de los dos fué el primero que la probó, y como se quemase la lengua no pudo menos de decir: — Este es un mar tempestuoso. El otro hermano siguió en la prueba, y habiéndole sucedido lo mismo dijo: — Apenas lo he podido atravesar.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:780-790",
+    "windowSize": 4,
+    "score": 20
+  },
+  {
+    "title": "Chiste clásico 074",
+    "text": "Y era su amo un baladí. Que armó una marimorena; — ¿Cómo la rompiste? di. — ¿Cómo he de romperla? asi: Y arrojó al suelo la buena.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:10674-10679",
+    "windowSize": 2,
+    "score": 18
+  },
+  {
+    "title": "Chiste clásico 075",
+    "text": "El acento grave, el agudo y el circunflejo. —¿Y no hay ningunu mas, niño? —No, papá. Busca bien; que aun hay otro que has olvidado.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:13744-13750",
+    "windowSize": 4,
+    "score": 18
+  },
+  {
+    "title": "Chiste clásico 076",
     "text": "Fontenelle estaba espirando. — ¿cómo va eso? le preguntó uno de sus amigos. — Esto no vá, contestó él, esto se vá. ün perro pancista.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -303,7 +680,7 @@
     "score": 18
   },
   {
-    "title": "Chiste clásico 035",
+    "title": "Chiste clásico 077",
     "text": "Un estudiante le dijo á un arriero: — ¿Me permite usted que le diga al mulo dos palabras al oido? — Dígale usted aunque sean cuarenta.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -312,7 +689,16 @@
     "score": 18
   },
   {
-    "title": "Chiste clásico 036",
+    "title": "Chiste clásico 078",
+    "text": "Una griega, vana y ambiciosa, preguntó á Tehana, mujer de Pitagoras: — ¿Cómo conseguiré hacerme ilustre? — Hilando y cuidando de tu casa.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:15140-15146",
+    "windowSize": 3,
+    "score": 18
+  },
+  {
+    "title": "Chiste clásico 079",
     "text": "Entre un amigo nuestro y el portejo del señor N., se entabló ayer el dialogo siguiente: — ¿Está en casa el señor N.? — Sí, señor pero....",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -321,7 +707,7 @@
     "score": 18
   },
   {
-    "title": "Chiste clásico 037",
+    "title": "Chiste clásico 080",
     "text": "El comandante pensó un momento lo que debia hacer, y dijo al sargento: —¿Cuantos centinelas cuidan de la pólvora? ■ — Seis, mi comandante.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -330,7 +716,16 @@
     "score": 18
   },
   {
-    "title": "Chiste clásico 038",
+    "title": "Chiste clásico 081",
+    "text": "La luz. Dijo al ver la llama La huéspeda: — Padre, ¿qué es Eso? y él dijo: — Nuestra ama, Porque se ablande la cama Quemo á la cama los pies.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:6013-6019",
+    "windowSize": 2,
+    "score": 18
+  },
+  {
+    "title": "Chiste clásico 082",
     "text": "Este dijo de nuevo: — ¿En dónde estas, Juan Pérez? — Señor, aquí. — Mira, cierra y corre las cortinas de las claraboyas, porque me incomódala luz.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -339,7 +734,16 @@
     "score": 18
   },
   {
-    "title": "Chiste clásico 039",
+    "title": "Chiste clásico 083",
+    "text": "El repollo es dos veces pollo. Enviaron un vizcaíno á que comprase repollo, y compró un gallo. El amo le dijo: — ¿Qué traes aquí? — Señor, un repollo.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:1048-1055",
+    "windowSize": 4,
+    "score": 18
+  },
+  {
+    "title": "Chiste clásico 084",
     "text": "Pasó un dia, una semana, un mes, no pareció. Entonces llamó á un pintor amigo, y le dijo: — ¿Qué le parece á usted este cuadro? — Hombre, no es malulo.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -348,7 +752,7 @@
     "score": 18
   },
   {
-    "title": "Chiste clásico 040",
+    "title": "Chiste clásico 085",
     "text": "Las gentes que oian esta aventura, preguntaban: —Pero, hombre, cómo al caer la silla no cayó usted también? — Toma! porque me habia tirado al primer bote.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -357,16 +761,25 @@
     "score": 18
   },
   {
-    "title": "Chiste clásico 041",
-    "text": "«O el firmamento, ¡oh, cielos! se desploma, O el señor Manuel Gazquez está en Roma.» Salieron á buscarme, pero yo tenia que hacer y me vine á Sevilla para ir al rosario. Maximas.",
-    "source": "Boira II, 1862",
-    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
-    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:12066-12071",
+    "title": "Chiste clásico 086",
+    "text": "Y el sombrero que me quito La pongo con banda y plumas, Y ella entonces, no peñasco, Pero algo requesón ya. Respondiéndome «arre allá» En un espejo, ya casco.",
+    "source": "Tirso I, 1848",
+    "sourceId": "tirso-cuentos-fabulas-dichos-agudos-1848-tomo-1",
+    "evidence": "raw/cuentosfabulasd00moligoog_djvu.txt:4759-4765",
     "windowSize": 2,
     "score": 17
   },
   {
-    "title": "Chiste clásico 042",
+    "title": "Chiste clásico 087",
+    "text": "Y el sombrero que me quito La pongo con banda y plumas, Y ella entonces, no peñasco, Pero algo requesón ya. Respondiéndome «arre allai» En un espejo, ya casco.",
+    "source": "Tirso II, 1848",
+    "sourceId": "tirso-cuentos-fabulas-dichos-agudos-1848-tomo-2",
+    "evidence": "raw/cuentosfabulasd01moligoog_djvu.txt:4483-4489",
+    "windowSize": 2,
+    "score": 17
+  },
+  {
+    "title": "Chiste clásico 088",
     "text": "Anunciase entre los «Libros Nuevos» de un periódico y pasa á la vidriera de un librero. Los amigos del autor prometen á este decir «algo» y si se sienten con ganas, lo hacen un dia.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -375,7 +788,7 @@
     "score": 17
   },
   {
-    "title": "Chiste clásico 043",
+    "title": "Chiste clásico 089",
     "text": "Un europeo que viajaba por los Estados-Unidos contaba que en la muestra de una caballeriza de New-Hampshire, se leia el anuncio siguiente: «Se admiten caballos: los de rabo largo á tres reales, y los rabones á dos.»",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -384,7 +797,16 @@
     "score": 17
   },
   {
-    "title": "Chiste clásico 044",
+    "title": "Chiste clásico 090",
+    "text": "En la sección de nodrizas de un periódico de anuncios de Londres se leia el siguiente: «Una joven viuda, que está á punto de quitar la leche á una niña de diez meses, desea tener otro niño.» El casamiento imposible.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:6997-7006",
+    "windowSize": 4,
+    "score": 17
+  },
+  {
+    "title": "Chiste clásico 091",
     "text": "Cada pais tiene su escala ó pauta, ó tarifa, para vender rezagos. En París se vende Víctor Hugo por diez (autos de lo que vale el papel; Balzac por seis y Dumas por cinco. No ofendamos la vanidad de nuestros «originales» diciendo á como se venden sus rezagos.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -393,7 +815,7 @@
     "score": 17
   },
   {
-    "title": "Chiste clásico 045",
+    "title": "Chiste clásico 092",
     "text": "«Se tomaran diez mil libras esterlinas en donde quiera que se encuentren; y la persona que las quiere, recibirá aunque sea doble cantidad, con la circunstancia de que no tendrá reparo de partir la suma total con el sugeto que pueda proporcionarlas.» Suspensión motivada.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -402,7 +824,16 @@
     "score": 17
   },
   {
-    "title": "Chiste clásico 046",
+    "title": "Chiste clásico 093",
+    "text": "«Una joven viuda, que está á punto de quitar la leche á una niña de diez meses, desea tener otro niño.» El casamiento imposible. Se moría una mujer que durante diez años, como diez siglos, había dado á su marido una vida de perros, haciéndole pasar en este mundo el purgatorio.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:7002-7011",
+    "windowSize": 3,
+    "score": 17
+  },
+  {
+    "title": "Chiste clásico 094",
     "text": "En un diario de avisos estranj ero se leiael anuncio siguiente: «Se tomaran diez mil libras esterlinas en donde quiera que se encuentren; y la persona que las quiere, recibirá aunque sea doble cantidad, con la circunstancia de que no tendrá reparo de partir la suma total con el sugeto que pueda proporcionarlas.» Suspensión motivada.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -411,7 +842,34 @@
     "score": 17
   },
   {
-    "title": "Chiste clásico 047",
+    "title": "Chiste clásico 095",
+    "text": "Nos topamos antiyer, Y parando la pollina La pellizqué so el sobaco. Sancha. ¿Y qué dijo? Tabaco. «So, Tabaco,» Y dijela, «arre Marina.»",
+    "source": "Tirso I, 1848",
+    "sourceId": "tirso-cuentos-fabulas-dichos-agudos-1848-tomo-1",
+    "evidence": "raw/cuentosfabulasd00moligoog_djvu.txt:4237-4245",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 096",
+    "text": "Que lo sabe: en el molino Nos topamos antiyer, Y parando la pollina La pellizqué so el sobaco. Sancha. ¿Y qué dijo? Tabaco. «So, Tabaco,»",
+    "source": "Tirso I, 1848",
+    "sourceId": "tirso-cuentos-fabulas-dichos-agudos-1848-tomo-1",
+    "evidence": "raw/cuentosfabulasd00moligoog_djvu.txt:4235-4243",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 097",
+    "text": "Casa la del padre quiero, viña la que hizo el abuelo. — Casar y compadrar, cada cual con su igual. — Casa, viña y pctro, que los haga y crie el otro.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:15795-15800",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 098",
     "text": "— ¿Qué ocurre? ¿se hace algo para el señor? le preguntó el cocinero. — De eso se ocuparan los otros; yo me vengo aquí para que me puedas servir mas pronto.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -420,7 +878,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 048",
+    "title": "Chiste clásico 099",
     "text": "— ¿Cuanto falta para llegar á C? — Diez leguas. — Entonces vamonos, dijo uno de ellos levantandose; diez leguas entre dos, nos tocan á cinco para cada uno.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -429,7 +887,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 049",
+    "title": "Chiste clásico 100",
+    "text": "— Padre, respondió el novicio-acongojado, yo no levanté la vista. — ¿Pues en dónde vio el techo? — En el caldo, que estaba claro como el agua de la fuente.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:857-863",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 101",
     "text": "— Mejor es el otro. — Pues si usted no lo ha visto, respondió el poeta, ¿cómo lo puede saber? — Señor mió; porque ninguno puede ser peor que el que he oido.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -438,7 +905,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 050",
+    "title": "Chiste clásico 102",
     "text": "— ¿Qué le parece á usted el frasco de cien años? — A fé mia, respondió el caballero, que ppra tener cien años, me parece, señor, que es todavía muy pequeño.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -447,25 +914,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 051",
-    "text": "— ¿Y cual es? —Que si usted se cae con ella de una torre abajo se hará usted mil pedazos, mientras la piedra quedará entera y sana, lo que no es poca virtud.",
+    "title": "Chiste clásico 103",
+    "text": "— Mi hermana no está, le dice al portero. — No está, señorita. — ¿Por qué has dicho que sí? — Porque me tiene prevenido que para usted está siempre en casa.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
-    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:2051-2055",
-    "windowSize": 2,
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:8553-8560",
+    "windowSize": 4,
     "score": 15
   },
   {
-    "title": "Chiste clásico 052",
-    "text": "— ¿V cual es? — Que si usted se cae con ella de una torre abajo se hará usted mil pedais, mfentfaé íá piedra quedará entera y sana, lo que no es poca virtud.",
-    "source": "Boira III, 1862",
-    "sourceId": "el-libro-de-los-cuentos-tomo-3-1862",
-    "evidence": "raw/el-libro-de-los-cuentos-tomo-3-1862.txt:4892-4896",
-    "windowSize": 2,
-    "score": 15
-  },
-  {
-    "title": "Chiste clásico 053",
+    "title": "Chiste clásico 104",
     "text": "— ¿Cual es tu patria? preguntaron á Sócrates. — El mundo. — ¿En qué te diferencias de los otros hombres? — En que ellos viven para comer y yo como para vivir.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -474,7 +932,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 054",
+    "title": "Chiste clásico 105",
     "text": "— Pero qué, caballero, ¿van ustedes á montar cuatro en mi caballo? — Sí, señor, cuatro, á no ser quequieía también Ricardito, porque en ese caso serian cinco.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -483,7 +941,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 055",
+    "title": "Chiste clásico 106",
     "text": "— Porqué? — Es muy sencillo, y lo comprenderá usted facilmente si se pone un momento en mi lugar. — Espliquese usted — La palabra eterno es necesario quitarla.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -492,7 +950,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 056",
+    "title": "Chiste clásico 107",
+    "text": "— ¿Y cual es? le preguntaron. — No se contenta con el divorcio en esta vida, y ha encontrado el medio de vivir separada de su marido en este mundo y en el otro.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:559-563",
+    "windowSize": 2,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 108",
     "text": "— Tom, me vas á prestar un favor. — ¿Y qué favor es? — Que vayas á llorar por mí en el entierro del banquero M. Tú sabes que es casa rica y la paga no será mala.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -501,7 +968,25 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 057",
+    "title": "Chiste clásico 109",
+    "text": "— Pero, vamos, ¿cuanto poco masó menos? ¿seran cuatro cahíces? — Bobos. — ¿Ocho? —Ponga diez, padre, porque lo que falta iremos á hurtarlo después mis hijos y yo.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:11805-11813",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 110",
+    "text": "— ¿Qué manda usted, señor? — 'Está abierta la puerta de la sacristía? — Sí, señor. — Pues ciérrala, hijo, ciérrala, porque me traspasa el aire que entra por ella.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:15337-15344",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 111",
     "text": "— ¡Ah! ¿conque los periódicos han hablado de mi viaje? ¿Y se puede saber qué es lo que han dicho? — Indudablemente, puesto que estan todos aquí. — Veamos, veamos.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -510,7 +995,25 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 058",
+    "title": "Chiste clásico 112",
+    "text": "— ¿Por qué estas tan triste? ¿qué tienes, hijo mió? — Qué quiere usted que tenga, que el señor maestro me está siempre reprendiendo y llamandome torpe. — Lo seras.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:4794-4800",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 113",
+    "text": "— Señora, respondió, soy Preadamita. — ¿Qué significa eso? replicó la señora. — Que no creo, repuso el caballero, que el Padre Adam sea el primer hombre del mundo.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:4820-4825",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 114",
     "text": "— Tom, me vas á prestar un fafvor. — ¿Y qué favor es? / — Que vayas á llorar por mí en el entierro del banquero M. Tú sabes que es casa rica y la paga no será mala.",
     "source": "Boira III, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-3-1862",
@@ -519,7 +1022,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 059",
+    "title": "Chiste clásico 115",
     "text": "— ¿Pues qué duda puede haber en eso? Vuelve por el mismo camino por donde fué de Oriente á Poniente. — Si fuera asi, le replicaron, lo veríamos volver como lo vemos ir.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -528,7 +1031,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 060",
+    "title": "Chiste clásico 116",
     "text": "— ¡Vaya! cuidado con equivocarse: ¿sabe usted lo que es un doblón de cuatro duros? — ¡De cuatro duros! ¡No lo he de saber! — 'Pues bien, ese es el peso, ni mas ni menos.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -537,7 +1040,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 061",
+    "title": "Chiste clásico 117",
     "text": "— Que como dos dones reunidos estarían mal, he de poner el segundo en donde mas acomodado sea á su nombre y á su caracter. — Admitido. —¿Se llama usted? — Don Ñuño Alvar.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -546,7 +1049,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 062",
+    "title": "Chiste clásico 118",
+    "text": "— ¡Hola, Perico! ¿cómo te va? dijo el uno. — Muy bien, Antonio; me casé después que concluimos la carrera. — Buena noticia. — No muy buena, porque era una mujer perversa.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:4394-4402",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 119",
     "text": "— Pero señor, ¡la bomba! ¡la bomba! — ¿Y qué tiene que ver la bomba con la carta que te dicto? Continúa, y guarda los polvos que han caldo para que te sirvan de arenilla.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -555,7 +1067,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 063",
+    "title": "Chiste clásico 120",
     "text": "— ¿Qué te parece? — ¿No dices que es griego? — Echame otro vaso, porque como no soy hombre de letras entiendo poco de griego, y necesito mas pruebas para formar mi juicio.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -564,7 +1076,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 064",
+    "title": "Chiste clásico 121",
     "text": "— ¿Cual alimenta mas animales, la tierra ó el mar? — La tierra, porque el mar es una parte de ella. — ¿Cual es el mas astuto de los animales? — El que no conoce el hombre.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -573,7 +1085,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 065",
+    "title": "Chiste clásico 122",
+    "text": "—Padre, ¿me dá usted un poquito de sal? —¿Para qué la quieres, hijo mió? —Para echarla en la carne que me va usted á dar, si está sosa. —¡Entendido, entendido, picar uelo!",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:6941-6948",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 123",
     "text": "— Si que la hay; medid siete pies de este suelo, y acostaos. — ¿Habrá ademas, dijo el viajero, una piedra para poner la cabeza? — Eso es, eso, pedid gollerías. Pensamiento.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -582,7 +1103,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 066",
+    "title": "Chiste clásico 124",
     "text": "— ¿Qué te parece? — ¿No dices que es griego? —Sí. — Échame otro vaso, porque como no soy hombre de letras entiendo poco de griego y necesito mas pruebas para formar juicio.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -591,7 +1112,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 067",
+    "title": "Chiste clásico 125",
     "text": "— Veamos, dijo el magnate encarandose con el oficial, ¿de qué parecer sois? — Digo, señor, respondió, que algunos que cuentan cosas de Aristóteles, nunca han estado en ella.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -600,7 +1121,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 068",
+    "title": "Chiste clásico 126",
     "text": "— Por esu me estoy yo callanditu, porque tengo mucho miedu, dijo el tercero. — ¿También tú? pues baja y telo diremos. En efecto, bajó, y tuvo igual fin que sus dos paisanos.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -609,7 +1130,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 069",
+    "title": "Chiste clásico 127",
     "text": "— ¡Que si me ha gustado! digo, pues podia no gastarme. ¡Como estaba tan mala! — ¿Has hecho lo que hacían los otros? — ¡Que si lo he hecho! y puede ser que haya ganado á todos.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -618,7 +1139,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 070",
+    "title": "Chiste clásico 128",
+    "text": "— ¿Me conoces, hijo mió? — ¡Sí que la conozco á usted — Pues dime, ¿quien soy? — Es usted la mayor chismosa que hay en el pueblo. — Mira que no es ocasión ni tiempo de chanzas.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:4213-4220",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 129",
     "text": "—;Por qué no cubre usted las paredes para librarse del frió? El pastor, mostrandole dos pobres que mantenia, respondió: — Mas me complace vestir estos dos pobres que las paredes.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -627,7 +1157,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 071",
+    "title": "Chiste clásico 130",
     "text": "— Sí, señor. — ¿Por qué países? — Señor, he estado dos ó tres veces en Carabanchel de Abajo, y una de ellas he llegado hasta Carabanchel de Arriba. Ya ve usted — Sí, sí, ya lo veo.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -636,7 +1166,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 072",
+    "title": "Chiste clásico 131",
+    "text": "— No está, señorito. — Tengo precisión de hablarle; ¿se sabe á qué hora volverá? — ¡Ah! señorito, cuando su escelencia manda decir que no está en casa, no se sabe á qué hora vuelve.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:8329-8336",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 132",
     "text": "— ¡Vah! ¿y quién ha de saber eso? — No importa; mira, puedes salvar mi honor, y lo salvaras. —¿Cómo? — Dispara tu trabuco en mi manta para que vea todo el mundo que me he defendido.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -645,7 +1184,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 073",
+    "title": "Chiste clásico 133",
     "text": "— ¿Sabes escribir? — le preguntó la doméstica después de la ordinaria salutación. — Eso no se pregunta á un cabo, — contestó acariciando con orgullo su bigote, esto es, dandose tono.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -654,7 +1193,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 074",
+    "title": "Chiste clásico 134",
+    "text": "— Días pasados preguntaba un amigo á otro: “ — ¿Cuanto te costó enviar tu retrato al pueblo de... donde vive tu novia? El valor de dos sellos que lo puse á la carta en que lo remitía.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:4398-4404",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 135",
     "text": "— Manos á la obra. — Hé aquí los ingredientes. — ¿Qué son ellos? — Recipe: cal, una libra; arcilla, tres libras; agua de borrajas, dos cuartillos; carbón vegetal en polvo, tres onzas.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -663,7 +1211,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 075",
+    "title": "Chiste clásico 136",
     "text": "— ¿De veras? — Siempre. Vean ustedes: me faltan todos estos dientes; pues bien, el que me los derribó cayó en el acto redondo á mis pies. — ¿Sin moverse? — Nada, qué se habia de mover.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -672,7 +1220,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 076",
+    "title": "Chiste clásico 137",
+    "text": "— ¡Oh! señora, muy grafrdé. — ¿V cual es? — Que si usted se cae con ella de una torre abajo se hará usted mil pedais, mfentfaé íá piedra quedará entera y sana, lo que no es poca virtud.",
+    "source": "Boira III, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-3-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-3-1862.txt:4890-4896",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 138",
     "text": "— ¿Ha visto usted mas todavía? le preguntó el embustero. — He visto otro país en el que las cubas discutían ellas solas los negocios de Estado con una claridad y una lucidez envidiables.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -681,7 +1238,34 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 077",
+    "title": "Chiste clásico 139",
+    "text": "— ¿Cómo se compondran esas señoritas, dijo un chistoso, para ir en conversación? — Es verdad, contestó otro, porque lo que es á la vuelta, si el milagro está hecho ya no habrá dificultad.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:8776-8781",
+    "windowSize": 2,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 140",
+    "text": "—;Eh! ¡molinero! le gritó uuo, ¿quiere usted salvar á su mujer? — ¿Pues no lie de querer hombre? A eso voy. — Pues bósquela usted rio abajo, que el agua ha debido llevarla en esa dirección.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:4856-4862",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 141",
+    "text": "— ¿En dónde está, en dónde está? — ¿Ves aquel joven elegante que está mirando á nuestros balcones? — íAh! ¡papaito! aquel es D. Arturo, el que va á ver á mamá cuando tú estas en la oficina.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:8069-8075",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 142",
     "text": "«Remito á la censura de usted el adjunto poema; me urge saber su opinión, porque estoy inspirada, y puede decirse que, para cambiar, si es necesario, la forma, tengo las tenazas en el fuego.»",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -690,7 +1274,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 078",
+    "title": "Chiste clásico 143",
     "text": "— ¿Cómo diré que se llama usted? — Buendía: contestó este. — Téngalos usted muy buenos; prosiguió la sirviente, ¿pero á quien tengo el honor de anunciar? — A Buendía; si es ese mi apellido...",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -699,7 +1283,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 079",
+    "title": "Chiste clásico 144",
     "text": "— ¿Qué podrá valer? — Ya sabe usted, señor Juan, que los cuadros estan muy baratos. — Pues bien, dandolo barato. — Hombre, si le dan á usted cuarenta reales, no va usted mal librado, Sr. Juan.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -708,7 +1292,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 080",
+    "title": "Chiste clásico 145",
     "text": "— Pues bien, dandolo barato. — Hombre, si le dan á usted cuarenta reales, no va usted mal librado, Sr. Juan. — ¿Dice usted cuarenta ó cuarenta mil? — Cuarenta, señor Juan, cuarenta y es mucho.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -717,7 +1301,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 081",
+    "title": "Chiste clásico 146",
+    "text": "— Para no quedar nunca cesante: no ser empleado. — ¿Que camisa es esta que traes tan llena de agujeros? decia una pobre mujer á su marido. Esta no es la tuya. — La cambié con la de mi compadre.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:3359-3366",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 147",
     "text": "— Yo te diré, hombre; en los primeros quince dias, como no está uno acostumbrado á aquella vida, se pasa bastante mal. —Pero, ¿y después? —¡Después! ¡ah! después... es cosa de echarse al canal.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -726,7 +1319,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 082",
+    "title": "Chiste clásico 148",
+    "text": "— ¿CkSmo es que no se ha casado usted? preguntaba un amigo al abogado X. —Porque no he encontrado mujer de quien hubiera deseado ser marido, ni hombre alguno de quien hubiera querido ser padre.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:8503-8510",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 149",
     "text": "— Porque no he encontrado quien se lo llevase, ni sé dónde ponerlo. — 'Haz un hoyo en el corral, y mételo allí. — Pero señor, ¿y la tierra del hoyo? — Hazlo bastante grande para que quepa todo.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -735,16 +1337,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 083",
-    "text": "— Donde agradamos nos hallamos á gusto. — ¿Débense estudiar los hombres ó los libros? Os aconsejo los libros: los hombres estan demasiado mal escritos. — La mentira no engaña sino á quien la dice.",
-    "source": "Boira II, 1862",
-    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
-    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:10700-10706",
-    "windowSize": 3,
-    "score": 15
-  },
-  {
-    "title": "Chiste clásico 084",
+    "title": "Chiste clásico 150",
     "text": "—¿A dónde vas así, hombre? le dijo el alcalde parandolo en medio de la calle. — ¿A dónde quieres que vaya? contestó el labrador furioso, á buscar áHerodes para que me vengue de estos chicos malvados.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -753,16 +1346,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 085",
-    "text": "— Ya tengo un cargo, le dijo, que te vendrá como de molde para salir de apuros. — ¿Y puede saberse cual es, señor? observó el magistrado con timidez. — Sí; vas á tomar posesión de una canongia en Tolosa.",
-    "source": "Boira I, 1862",
-    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
-    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:5648-5655",
-    "windowSize": 3,
+    "title": "Chiste clásico 151",
+    "text": "— ¿Cómo te va con tu amo, hijo mió? dijo.la madre. — Por mi íé, madre, que cuando caminamos por mal camino me va bien, y cuando por bueno me va mal, porque anda mucho el caballo y no lo puedo seguir.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:15230-15236",
+    "windowSize": 2,
     "score": 15
   },
   {
-    "title": "Chiste clásico 086",
+    "title": "Chiste clásico 152",
     "text": "— ¿Sabes lo que has hecho, barbaro? — Señor, tratarlos con la mayor consideración, como cosa al ñn de un caballero tan principal, sin que ellos se hayan dignado contestarme siquiera, como si fueran mudos.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -771,7 +1364,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 087",
+    "title": "Chiste clásico 153",
     "text": "Era invierno, el círculo se iba ensanchando, y la amada de nuestro caballero aumentó el número de los tertulios. Entonces, por aquello de «la soga tras el caldero», el buen hombre se presentó inmediatamente.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -780,7 +1373,43 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 088",
+    "title": "Chiste clásico 154",
+    "text": "— ¡Pero hombre! ¿qué has visto? — Qué he de ver, majadero, que estaba el señorito de la casa cuidando las peras, pero vestido de pajaro para que no lo conociesen. — Pues no nos hemos librado de mala. Enigmas.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:3231-3239",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 155",
+    "text": "— ¿Está usted seguro, caballero, de que esta dama es su esposa? — ¿Encuentra usted en eso alguna dificultad? dijo el amo de la casa alarmado. — Ninguna, ciertamente; pero hubiera jurado que era vuestra hermana.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:14260-14267",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 156",
+    "text": "— Dime, Pancho; preguntó la mujer al concluirse el segundo acto, ¿está la comedia en prosa ó en verso? — No sé lo que te diga, Basilia, contestó el tocinero, porque está el palco tan lejos que no lo veo muy bien.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:13496-13502",
+    "windowSize": 2,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 157",
+    "text": "— Dime, hija mia, decia en cierta ocasión á su nuera, ¿qué darias tú por tener esta cara, este talle, y toda esta figura? La joven modesta contestó: — ho mismo que darias tú, mamá, por tener mis diez y seis años.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:15089-15096",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 158",
     "text": "— ¡Pardiez! dijo el amigo, que si mi consejo sigues, lo primero que debes hacer es cambiar el título. — ¿Y por qué? — Porque la pepitoria, según yo entiendo, lleva pies y cabeza, y tu libro no tiene m uao ni otrc).",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -789,7 +1418,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 089",
+    "title": "Chiste clásico 159",
     "text": "— Señor, ¿no dio usted ayer vente mil reales para la compra de un caballo á un chalan á quien usted no ha visto media docena de veces? — Así es la verdad. — Pues entonces voy á hacer este asiento en el libro verde.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -798,7 +1427,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 090",
+    "title": "Chiste clásico 160",
     "text": "— ¡Sí que la conozco á usted — Pues dime, ¿quien soy? — Es usted la mayor chismosa que hay en el pueblo. — Mira que no es ocasión ni tiempo de chanzas. — Por eso lo digo, abuela, porque es ocasión de decir verdades.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -807,7 +1436,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 091",
+    "title": "Chiste clásico 161",
     "text": "— ¿Cómo se llama usted? le preguntó el escribiente. — Juan Bautista Combé. — ¿Viene usted á enseñarnos ortografía, señor novicio? dijo el secretario tomando parte; cómo se llama usted le preguntan. — Bautista Combé.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -816,7 +1445,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 092",
+    "title": "Chiste clásico 162",
     "text": "— La cambié con la de mi compadre. — ¿Cómo fué eso? — Que tomamos lina chispa, sentiamos calor, nos pusimos á la fresca, y luego al vestirnos, hicimos el cambalache. — Pues corre á casa do tu compadre, y deacambiala.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -825,7 +1454,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 093",
+    "title": "Chiste clásico 163",
     "text": "— ¡líombre! dijo el papá cuando las viósin cabeza. ¿Qué has traído aquí? — Cerillas, y buenas. —¡Cómo! si ninguna sirve. — Pues las he probado todas para ver si ardían bien como usted me encargo, y ninguna ha fallado.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -834,7 +1463,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 094",
+    "title": "Chiste clásico 164",
     "text": "— Señor, me han ofrecido que seria aprobado sin examen y no vengo dispuesto á contestar, dijo el mozo. — Necesito irremisiblemente hacerte una pregunta, una sola ¿lo entiendes? pero si no la contestas no hay cartilla.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -843,7 +1472,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 095",
+    "title": "Chiste clásico 165",
+    "text": "— ¿Y la turquesa tiene alguna virtud? — ¡Oh! señora, muy grande. — ¿Y cual es? —Que si usted se cae con ella de una torre abajo se hará usted mil pedazos, mientras la piedra quedará entera y sana, lo que no es poca virtud.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:2047-2055",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 166",
     "text": "— Amigo, pues te has comido el pollo, bien puedes pagar por mí el escote. — ¿Cómo es eso, habiendo comido un huevo cada uno? — Si no quieres pagar los dos huevos, yo te haré pagar el pollo, y ya veras si sales peor librado.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -852,7 +1490,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 096",
+    "title": "Chiste clásico 167",
     "text": "— Vaya, eso es un desatino. ¿Sabe usted lo que se dice? — Lo que usted oye, compadre. ¿Tiene usted algún papel á la mano? — Aquí hay un trozo de periódico; pero no se atreverá usted á hacer la prueba. — No sea usted inocente.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -861,7 +1499,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 097",
+    "title": "Chiste clásico 168",
+    "text": "— Hermano, ¿qué cena tenemos esta noche para la comunidad? — Padre guardian, la cena que tengo para la comunidad es calabaza en escabeche. — ¡Eso me gusta, hermano, que cuide bien á la comunidad! ¡Ola ola calabaza en escabeche!",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:14448-14456",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 169",
     "text": "— ¿Trae usted los hierros de dar fuego? — Sí, señor. Entonces el estudiante se levantó, soltó con ímpetu una pluma de la cola, y dijo al peluquero: — Veamos, maestro, si pone usted á ese los papillotes y le hace un par de rizos.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -870,7 +1517,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 098",
+    "title": "Chiste clásico 170",
+    "text": "— ¿Habrá ademas, dijo el viajero, una piedra para poner la cabeza? — Eso es, eso, pedid gollerías. Pensamiento. Decia cierto hombre chistoso que una de las pocas cosas\" buenas que tenian los casados era la esperanza de enviudar.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:14411-14420",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 171",
     "text": "— ¿Es decir, que usted se alimenta á mis espensas? — De modo, que si se habia de desperdiciar ese tufillo.... — Pues tiene usted que pagarme, porque vive usted á mi costa. — Pues recoja usted el olor para que no salga a la calle.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -879,7 +1535,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 099",
+    "title": "Chiste clásico 172",
     "text": "—Es que ya que no puedo comer, huelo, y esto me entretiene. — ¿Es decir, que usted se alimenta á mis espensas? — De modo, que si se habia de desperdiciar ese tufillo.... — Pues tiene usted que pagarme, porque vive usted á mi costa.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -888,7 +1544,34 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 100",
+    "title": "Chiste clásico 173",
+    "text": "— ¿Qué hace usted caballero? dijeron unas señoras de bastante edad á un joven que estaba parado en la puerta de la esposicion de pintura,s. El joven las miró, se inclinó hacia ellas y les dijo con finura: — Estoy viendo antigüedades.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:960-969",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 174",
+    "text": "— ¿Has dado cuenta á tu mujer del hallazgo? — He temido su codicia y me he callado! — ¿Y nada, absolutamente nada has tomado déla bolsa? — Señor, mi familia, mis pobres hijos se han quedado sin cenar, porque la leña no se pudo vender.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:7126-7135",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 175",
+    "text": "— ¿Está mi hermana? pregunta al portero. — Si está, señorita. Baja del coche, sube á la habitación, recorre la casa, el palomar, el jardin, todo, y no encontrando á la condesa, se vuelve enojada. — Mi hermana no está, le dice al portero.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:8545-8553",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 176",
     "text": "— Ecce cuniculi multi. (Mirad cuanto conejo.) Los conejos al ruido desaparecieron; y reprendiéndolo sus compañeros, respondió: — ¿Quién habia de pensar que los conejos entendiesen también el latin? ¡yá mí que me cuesta tanto el aprenderlo!",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -897,16 +1580,52 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 101",
-    "text": "— Pero, ¿qué motivos he dado para que se dude de mi conducta? — Ninguno; pero de que usted observe buena conducta, a que tenga diez mil duros de renta, hay una gran distancia. — ¡Luego no puede ser hombre de bien el que no tenga esa renta!....",
+    "title": "Chiste clásico 177",
+    "text": "— Señora, aunque grite hasta mañana no tendrá mas ni menos; no puedo darselo. — ¿Cómo se entiende? eres un impertinente y mal hablado; yo te mando que no hagas rabiar al niño, que no le contraríes sus gustos y nunca le niegues lo que pida.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
-    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:13600-13608",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:9589-9595",
+    "windowSize": 2,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 178",
+    "text": "— ¿Dónde está el que buscaba quien se matase con él? Salga si es hombre de su palabra. Como el otro se hubiese despertado y lo oyese, respondió, tomandolo de la mano: — Hermano, dormid un poco sobre ese asunto como yo, y después hablaremos.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:6412-6419",
     "windowSize": 3,
     "score": 15
   },
   {
-    "title": "Chiste clásico 102",
+    "title": "Chiste clásico 179",
+    "text": "— Y bien, señor don fulano, ¿qué le ha \"parecido á usted el verso? Quedóse suspenso el buen caballero, como quien hacia memoria de ello, y al cabo de un rato respondió: — El verso no ha salido esta tarde, porque dicen que está su mujer mala.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:13813-13821",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 180",
+    "text": "— ¡Infeliz padre mió! dijo, y perdió el color. Notaronlo sus amigos, y le dijeron: — ¿Qué es ello? ¿qué te pasa? Repúsose y contestó: — Mi padre, señores, era un gran ginete, y la desgracia ha hecho que un caballo castaño le haya estrellado.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:16546-16555",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 181",
+    "text": "— ¿Y por qué tienes derecho, le dijo el encargado de la puerta, si solo tienen los hermanos? — ¿Y los parientes? — También. — Pues entonces debo entrar, porque es claro, que siendo mi padre hermano, yo debo ser sobrina del Santísimo Sacramento.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:5079-5088",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 182",
     "text": "— 'Dígame usted; ¿qué distribución, qué orden guardaban entre sí los árboles del Paraiso terrenal? El teólogo, sin vacilar, y señalando á cada uno de sus examinadores, respondió: — Aquí habia un alcornoque, allá un camueso, raas allá un naranjo.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -915,7 +1634,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 103",
+    "title": "Chiste clásico 183",
     "text": "— ¿Por qué? — Porque te hará pagar doble si sabe que te comes un pollo. El mancebo hízolo así, y acabada la comida, viniendo el huésped á ajustar la cuenta, dijo el compañero: — Amigo, pues te has comido el pollo, bien puedes pagar por mí el escote.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -924,7 +1643,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 104",
+    "title": "Chiste clásico 184",
+    "text": "— ¿Cómo es eso. Fulano, usted, por aquí? — ¡Ah, señor Mengano! disimule usted, no le habia conocido. — ¿Trae usted intenciones de comprar también alguna cosa? — Si, señor, pienso hacer un regalo á mi prima, que, ya sabe usted, será pronto mi esposa.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:4606-4615",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 185",
     "text": "— ¿Cómo puede ser eso, le repuso el que habia de pagar, si aquí no cuento arriba de cien cabezas? — ¿No vé usted, contestó el pintor, que las demas estan en el templo y por eso no se ven? Pero esté usted seguro de que ellas iran saliendo poco apoco.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -933,7 +1661,25 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 105",
+    "title": "Chiste clásico 186",
+    "text": "— ¿Qué ha de ser? Tu lacayo que es un porfiado y desobediente. — Pero Lúeas, ¿cómo faltas así á tu ama? Eso no es regular. — Señor, no puedo convenir en dar al niño los gustos que quiere, á no ser que usted tenga la gracia de alcanzarlos; yo no puedo.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:9599-9607",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 187",
+    "text": "— ¿Qué tienes, hijo mió? dijo el pobre hombre dando mano á su trabajo, ¿te ha sucedido algo? '—¡Qué quiere usted que me suceda! que por venir corriendo he dado un tropezón, se me ha caido la cazuela entre unas piedras y solo he podido recoger el caldo.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:16245-16251",
+    "windowSize": 2,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 188",
     "text": "— Chico, es magnífico el alfiler de brillantes que llevas hoy en la camisa — ¡Van! regularcillo. — ¿Se puede saber su valor? — Hombre, yo no lo sé á punto fijo, porque cuando lo tomé en casa del joyero no habia nadie en la tienda y no pude preguntarlo.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -942,7 +1688,43 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 106",
+    "title": "Chiste clásico 189",
+    "text": "— Pagar la pena de mi fealdad. ¿Oiuién hallará la mujer fuerte? Preguntó un hombre á Arístipo ¿qué especie de mujer tomaría? — lüo lo sé, respondió; porque si es hermosa, te venderá; si fea, te disgustará; si pobre, te arruinará, y si rica, te dominará.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:12558-12567",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 190",
+    "text": "— De jóvenes soñamos de noche; de viejos soñamos de dia. — Donde agradamos nos hallamos á gusto. — ¿Débense estudiar los hombres ó los libros? Os aconsejo los libros: los hombres estan demasiado mal escritos. — La mentira no engaña sino á quien la dice.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:10697-10706",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 191",
+    "text": "— ¡Eso me gusta, hermano, que cuide bien á la comunidad! ¡Ola ola calabaza en escabeche! ¡magnífico! ¿Y para mí qué cena tiene, hermano, qué cena? — Para su caridad, padre guardian, tengo dos perdices con cebolla, tengo un poquito de lomo fresco de cerdo.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:14454-14463",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 192",
+    "text": "— ¿Hará usted el favor de guardarme este cuadro? voy ahora á la oficina, y lo recogeré á la tarde cuando vuelva á pasar. — Con mucho gusto, caballero. — Que no se lleguen á él los muchachos, porque es un cuadro que compró mi abuelo en la almoneda del infante D.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:104-112",
+    "windowSize": 3,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 193",
     "text": "— Helo aquí, dijo el estudiante. — No puede ser cierto, contestó el guarda, porque ello... no es de hombre sino de buey. — ¡Cuerpo detal...! replicó el estudiante. ¡Fuerte cosa es! ¿Tamb.ien se quiere usted meter en que yo haga eso ó no lo haga á lo buey? Enigmas.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -951,7 +1733,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 107",
+    "title": "Chiste clásico 194",
     "text": "— ¿Se suele perder algún viajero al atravesar esta ria? — Cá, no, señor, somos aquí muy despejados. — Pero si está el tiempo tan borrascoso comohoy... — Tampoco: mire usted, el otro dia, lo mas hará diez, se volcó esta misma barca, cayendo al aguaveinte pasajeros.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -960,7 +1742,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 108",
+    "title": "Chiste clásico 195",
     "text": "— Apenas lo he visto cinco ó seis veces. — Entonces disimule usted, pero no puedo creer que se haya hecho cargo de las piernas. — ¿Y por qué? — Porque soy tan observador como pueda \"usted serlo, y habiéndolo visto mas de cien veces, todavía no he pasado de la cara.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -969,7 +1751,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 109",
+    "title": "Chiste clásico 196",
+    "text": "— Ya tengo un cargo, le dijo, que te vendrá como de molde para salir de apuros. — ¿Y puede saberse cual es, señor? observó el magistrado con timidez. — Sí; vas á tomar posesión de una canongia en Tolosa. — Señor, tengo una pequeña dificultad; soy casado con ocho hijos.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:5648-5658",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 197",
     "text": "— Maestro, estoy asombrado. — ¿Por qué? — Porque ha sacado usted un gaban muy cumplido y muy bueno con la misma tela con que no pudo sacarlo su vecino Gregorio. — ¡Gregorio! dijo el sastre, veamos: cinco, ocho, diez, diez... No, señor, no podia sacarlo. ¡Cá! imposible!",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -978,7 +1769,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 110",
+    "title": "Chiste clásico 198",
     "text": "— Chico, Bartolo, ¿quieres que haga el almuerzo? — Sí, contestó el otro desde lejos. — ¿De qué pan corto las migas, del tuyo ó del mió? preguntó gritando el que hacia de cocinero. — ¡Va! pues córtalas del tuyo, contestó Bartolo, que con el viento no se oye lo que dices.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -987,7 +1778,43 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 111",
+    "title": "Chiste clásico 199",
+    "text": "— ¿Que camisa es esta que traes tan llena de agujeros? decia una pobre mujer á su marido. Esta no es la tuya. — La cambié con la de mi compadre. — ¿Cómo fué eso? — Que tomamos lina chispa, sentiamos calor, nos pusimos á la fresca, y luego al vestirnos, hicimos el cambalache.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:3362-3372",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 200",
+    "text": "— Para que los ministros den siempre audiencia; vestirse lujosamente y anunciarse como embajador. — Para no quedar nunca cesante: no ser empleado. — ¿Que camisa es esta que traes tan llena de agujeros? decia una pobre mujer á su marido. Esta no es la tuya. — La cambié con la de mi compadre.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:3356-3366",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 201",
+    "text": "— No se quede usted sin él, señorito, porque este animal es tan alhaja que hasta sabe leer. — Vaya, eso es un desatino. ¿Sabe usted lo que se dice? — Lo que usted oye, compadre. ¿Tiene usted algún papel á la mano? — Aquí hay un trozo de periódico; pero no se atreverá usted á hacer la prueba.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:5599-5609",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 202",
+    "text": "— Esposa mia, ¿qué es eso? de qué se trata? — ¿Qué ha de ser? Tu lacayo que es un porfiado y desobediente. — Pero Lúeas, ¿cómo faltas así á tu ama? Eso no es regular. — Señor, no puedo convenir en dar al niño los gustos que quiere, á no ser que usted tenga la gracia de alcanzarlos; yo no puedo.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:9597-9607",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 203",
     "text": "— La ausencia de usted nos era conocida, porque uno de los periódicos facultativos de la corte, aunque inciden talmente, nos ha hablado de ella. — ¡Ah! ¿conque los periódicos han hablado de mi viaje? ¿Y se puede saber qué es lo que han dicho? — Indudablemente, puesto que estan todos aquí. — Veamos, veamos.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -996,7 +1823,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 112",
+    "title": "Chiste clásico 204",
     "text": "— Señores, es tan notable, que solo de anchura tiene trescientas mil varas castellanas. ' — ¿Y su longitud? ¿y su longitud? esclamaron en coro todos los oyentes. En aquel momento sintió la brusca presión del pié de su compañero, y procurando enmendarse, continuó: — Su longitud es de tres varas y media escasas.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1005,7 +1832,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 113",
+    "title": "Chiste clásico 205",
     "text": "— Yo, contestaba otro que lo oia, he visto hacer una caldera tan colosal, que dentro de ella trabajaban cien jornaleros, y de uno á otro no se oian los martillazos. — Hombre, esa es grilla, dijo el de la berza. ¿Con qué objeto podían hacer una caldera tan disforme? — Con el de cocer la berza que vio usted en Murcia.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1014,7 +1841,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 114",
+    "title": "Chiste clásico 206",
+    "text": "— Quiero casarme, amigo mió; y tú que lo estas hace ya dos años, haz el íavor de decirme qué tal es la vida del matrimonio. — Yo te diré, hombre; en los primeros quince dias, como no está uno acostumbrado á aquella vida, se pasa bastante mal. —Pero, ¿y después? —¡Después! ¡ah! después... es cosa de echarse al canal.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:8088-8099",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 207",
     "text": "— Pero si no estaba en casa, ¿cómo habiade? — Pues bien, á lo menos debias haber dejado á uno para preguntarle su nombre, su casa, y el país de donde es. — No se me ocurrió esa idea, lo confieso. — Pues ya puedes contar por perdido el caballo pero toma, no te aflijas, ahí tienes un ochavo para ayuda de comprar otro.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1023,7 +1859,16 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 115",
+    "title": "Chiste clásico 208",
+    "text": "— ¿Cuanto te ha costado la pollina? dijo la buena mujer alarmada. — Treinta y un duros, Gregoria, y uno que saqué de la burra vieja, treinta y dos. — Pues bien, Bruno, te has lucido; has perdido treinta y un duros y los gastos del viaje, y te has vuelto á traer la burra que llevaste. — ¡Ah, Gregoria! lo peor es que es cierto.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:12837-12847",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 209",
     "text": "— Es necesario, dijo el honorable examinador, cubrir cuando menos las formalidades y dejar á salvo la conciencia. — Señor, me han ofrecido que seria aprobado sin examen y no vengo dispuesto á contestar, dijo el mozo. — Necesito irremisiblemente hacerte una pregunta, una sola ¿lo entiendes? pero si no la contestas no hay cartilla.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1032,7 +1877,7 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 116",
+    "title": "Chiste clásico 210",
     "text": "— Trata usted en vano de consolarme, porque demasiado comprendo que la enmienda es imposible. Si el agua debia estar debajo del chocolate y hace media hora que lo he tomado ¿qué remedio puede haber? — Uno muy sencillo, el vaso de agua clara que debia usted tomar antes, tómelo usted ahora en una lavativa, Y -ftllsi ocupará su puesto.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1041,7 +1886,25 @@
     "score": 15
   },
   {
-    "title": "Chiste clásico 117",
+    "title": "Chiste clásico 211",
+    "text": "— ¿Y cómo puede ser eso, señorita? dijo el molendero agradecido. — Muy facilmente, contestó la novicia con ia maycr candidez; estoy viendo que cada vez que baja usted el rodillo, sopla con mucha fuerza diciendo: ¡ah! ¡ah! ¡ah! — Es verdad. — Pues bien: suba usted y baje el rodillo, que yo me encargo de soplar y de decir ¡ah! ¡ah! ¡ah!",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:13542-13553",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 212",
+    "text": "— Pero, ¿qué motivos he dado para que se dude de mi conducta? — Ninguno; pero de que usted observe buena conducta, a que tenga diez mil duros de renta, hay una gran distancia. — ¡Luego no puede ser hombre de bien el que no tenga esa renta!.... — Yo no lo sé; pero como su padre de usted lo dice y es mas viejo que yo, creo que tendrá razón.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:13600-13611",
+    "windowSize": 4,
+    "score": 15
+  },
+  {
+    "title": "Chiste clásico 213",
     "text": "Hé aquí uno curioso: «Las carnes van tomando precio en esta: mandame por el mismo conducto los veinte cerdos cebados que estan en esa.»",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1050,7 +1913,16 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 118",
+    "title": "Chiste clásico 214",
+    "text": "Y dijela, «arre Marina.» Y volviéndome una coz, Me puso tal que el barbero A no prestarme un braguero Ya hubiéramos hecho choz En la huesa.",
+    "source": "Tirso I, 1848",
+    "sourceId": "tirso-cuentos-fabulas-dichos-agudos-1848-tomo-1",
+    "evidence": "raw/cuentosfabulasd00moligoog_djvu.txt:4245-4251",
+    "windowSize": 2,
+    "score": 12
+  },
+  {
+    "title": "Chiste clásico 215",
     "text": "— ¡Qué noche tan deliciosa he tenido! diecia una mañana; toda ella la he pasado en brazos de Orfeo. — Con M. dijo uno de sus amigos. — Tienes razón, Orfeom.",
     "source": "Boira III, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-3-1862",
@@ -1059,7 +1931,7 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 119",
+    "title": "Chiste clásico 216",
     "text": "— Sí, dijo. — Pues vela aquí, Respondió con gran presteza Sacandole la que estaba Penúltima; de manera, Que quedó, por no hablar claro, Con la mala y sin dos buenas.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1068,16 +1940,7 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 120",
-    "text": "— No hay duda, dijo Cartesio. — Pues bien: siendo los relojes maquinas, como los perros, si pongo juntos muchos relojes, deberan resultar reloj itos, según su doctrina.",
-    "source": "Boira II, 1862",
-    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
-    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:2755-2759",
-    "windowSize": 2,
-    "score": 12
-  },
-  {
-    "title": "Chiste clásico 121",
+    "title": "Chiste clásico 217",
     "text": "— ¡Qué noche tan deliciosa he tenido! decia una mañana; toda ella la he pasado en brazos de Orfeo. — Con M. dijo uno de sus amigos. — Tienes razón, Orfeom. — ¡¡¡Bravo!!!",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1086,7 +1949,7 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 122",
+    "title": "Chiste clásico 218",
     "text": "— ¡Infeliz! dijo uno; ¡no tendrá ni aun sepultura, y queréis enterraros en su capilla! — No, señores; quise decir en la de su capa, que, según he visto, está bien dotada.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1095,7 +1958,34 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 123",
+    "title": "Chiste clásico 219",
+    "text": "— Diga usted por su orden los nombres de los sujetos á quienes ha prestado. El prestamista dijo: — Padre nuestro, que estas en los cielos, santificado sea el tu nombre, etc.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:16647-16653",
+    "windowSize": 3,
+    "score": 12
+  },
+  {
+    "title": "Chiste clásico 220",
+    "text": "— Mamá, dijo á la suya, que estaba sentada á su cabecera, tú sabes que soy rica; pues bien, declaro que quiero casarme con el que me ha salvado. —¡Hija mia! ¡pobre hija mia! es imposible.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:3514-3518",
+    "windowSize": 2,
+    "score": 12
+  },
+  {
+    "title": "Chiste clásico 221",
+    "text": "— Ved aquí el padre y la madre de Melchisedech. Tomó el señor ambas bolsas sonriéndose, confirióle el curato y le dijo: — Porque te creo mas sabio que los demas concurrentes, te concedo el curato.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:14553-14560",
+    "windowSize": 3,
+    "score": 12
+  },
+  {
+    "title": "Chiste clásico 222",
     "text": "— No me atrevo, señor, dijo el artista, porque temo ofenderle. — Su negativa de usted escita mas mi curiosidad, y le ruego enoarecidamante que me esplique este misterio, por mucho que me perjudique.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1104,7 +1994,7 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 124",
+    "title": "Chiste clásico 223",
     "text": "—Amigo mió, yo agradezco la atención, pero es una alhaja que de nada me sirve. — No diga usted eso, dijo el cazador; tómela usted, que con ella y su habilidad no dejará cosa á vida, yo se lo aseguro.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1113,7 +2003,7 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 125",
+    "title": "Chiste clásico 224",
     "text": "— Doy cuarenta mil reales por el cuadro, y cuatro mil reales para usted si me lo proporciona. — Caballero, dijo el buen hombre aturdido; vuelva usted mañana, yo haré lo que pueda, pero de nada respondo.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1122,7 +2012,7 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 126",
+    "title": "Chiste clásico 225",
     "text": "— He pedido la licencia dos veces; ambas me dijo usted que no; y como dos negaciones afirman, por eso salí. — Eso es en latin, dijo el maestro, pero no en castellano. — Creo que es latin lo que estudio.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1131,7 +2021,7 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 127",
+    "title": "Chiste clásico 226",
     "text": "— Usted está en su derecho. — No sea usted majadero y retire la apelación: le dijo el secretario por lo bajo. — Hay injusticia notoria, contestó el apelante. — ¡Está usted en su juicio! añadió el secretario.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1140,16 +2030,7 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 128",
-    "text": "— Señores, si en este instante hiciera testamento, estoy pensando en una de las clausulas que habia de tener. — ¡Que se sepa, señores! dijo uno de los convidados. — Es cierto, replicó otro, si es posible decídnosla.",
-    "source": "Boira II, 1862",
-    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
-    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:16473-16480",
-    "windowSize": 3,
-    "score": 12
-  },
-  {
-    "title": "Chiste clásico 129",
+    "title": "Chiste clásico 227",
     "text": "— Ninguna, mas que mi buena fé y mi afirmación. — Sois dos miserables; retiraos de mi presencia, dijo el cadí volviéndoles la espalda. Cuando estuvieron fuera se asomó á la ventana y gritó: — Arriero, escucha una palabra.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1158,7 +2039,7 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 130",
+    "title": "Chiste clásico 228",
     "text": "— He querido dar á usted una prueba practica de lo lucrativa que es mi profesión, para que usted se convenza de que soy un buen partido. — No lo es para mí, dijo ella, el que quiere llegar á mi corazón por el camino de la codicia.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1167,7 +2048,7 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 131",
+    "title": "Chiste clásico 229",
     "text": "— Cien duros ofrezco á usted de gratificación, ademas del precio del cuadro, si encuentra el medio de que sea mió. — Ya he dicho á usted lo que hay en esto. — El caballero se marchó, y á poco rato volvió con otro que dijo ser pintor.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1176,7 +2057,7 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 132",
+    "title": "Chiste clásico 230",
     "text": "— Buen hombre, le dijo antes de pagarle, usted ha subido solo la leña y se guarda el gallo, cuando yo he comprado toda la carga. — Lo que yo voceaba es la leña y no el gallo, repuso el labrador, y no ha podido usted comprar loque yo no vendia.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1185,7 +2066,7 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 133",
+    "title": "Chiste clásico 231",
     "text": "— Lo dicho dicho, insistió Quevedo,hay uno mayor en el corrillo. Pero como todos persistieran en negarlo sacó el otro pié que tenia retirado, y en efecto era mayor, y mostrandolo, dijo: — Vean vuestras mercedes si este no es mayor que el otro.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1194,7 +2075,16 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 134",
+    "title": "Chiste clásico 232",
+    "text": "— A mucho fuego mucha agua. Diferencia entre la y griega y la i latina. Pasaban por una calle de Alcalá dos estudiantes, el uno muy alto y el otro muy bajo. Dos señoritas que estaban en un balcón principiaron á mirarlos, y dijo una de ellas: —Ele, i,li.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:4749-4758",
+    "windowSize": 4,
+    "score": 12
+  },
+  {
+    "title": "Chiste clásico 233",
     "text": "— Y yo estaría conforme, dijo el literato, si no fuera porque el diminutivo de espuerta puede ser en ica lo mismo que en illa. — ¡Ah, señor! y eso qué importa, dijo candidamente el estudiante. — Como á usted no le importe, lo que es á mi de seguro nada.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1203,7 +2093,7 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 135",
+    "title": "Chiste clásico 234",
     "text": "— No puedo venderlo, contestó el buen hombre, no es mió. El caballero lo volvió á examinar y dijo: — Cien duros ofrezco á usted de gratificación, ademas del precio del cuadro, si encuentra el medio de que sea mió. — Ya he dicho á usted lo que hay en esto.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1212,7 +2102,25 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 136",
+    "title": "Chiste clásico 235",
+    "text": "— A tu casa iba á convidarte para pasear esta tarde en coche con Eduardo, con tu primo Carlos y conmigo. — Diantre, dijo el joven; el caso es que acabo de alquilar un caballo también para esta tarde: si yo pudiera retirar la señal... déjate, vamos á casa del alquilador.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:6099-6106",
+    "windowSize": 2,
+    "score": 12
+  },
+  {
+    "title": "Chiste clásico 236",
+    "text": "—Ele, i,li. No habló tan bajo que los estudiantes no la oyeran, y entonces, cuadrandose el pequeño en medio del arroyo, dijo con mucha gracia: — Señorita, tiene usted razón, pero esta es y griega que tiene mas rabo que cuerpo. A las órdenes de usted El recogido en la calle.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:4758-4768",
+    "windowSize": 4,
+    "score": 12
+  },
+  {
+    "title": "Chiste clásico 237",
     "text": "—Es por tí llagado Fulano de Tal. — Esa ha sido mi intención, dijo el estudiante. — Y yo estaría conforme, dijo el literato, si no fuera porque el diminutivo de espuerta puede ser en ica lo mismo que en illa. — ¡Ah, señor! y eso qué importa, dijo candidamente el estudiante.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1221,7 +2129,43 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 137",
+    "title": "Chiste clásico 238",
+    "text": "— Señores, no puedo levantarla sino es con mucho esfuerzo, y es necesario que esté rellena de plomo. —Veamos, dijo Geni, curiosa como joven y como mujer, examinando por dentro la cantarilla. ¡Ah! ¡es oro! — ¡Oro!:! gritaron con espanto los imprudentes que habian renunciado.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:3019-3028",
+    "windowSize": 3,
+    "score": 12
+  },
+  {
+    "title": "Chiste clásico 239",
+    "text": "— 'El remedio será, dijo ella, que en adelante nos hagamos tejedores de lana, y así como en las cosas de tienda dabamos de menos, así en el peso de la lana daremos de mas á las hilanderas, para que nos salga el hilado barato. — Doblado engaño es ese, contestó el marido. Eoigmas.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:4951-4959",
+    "windowSize": 3,
+    "score": 12
+  },
+  {
+    "title": "Chiste clásico 240",
+    "text": "— Pues bien: siendo los relojes maquinas, como los perros, si pongo juntos muchos relojes, deberan resultar reloj itos, según su doctrina. — Señora, dijo el filósofo aturdido, los hombres hasta ahora solo han hecho relojes, y es probable -Suceda lo que usted dice el dia que hagan reloj as.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:2757-2763",
+    "windowSize": 2,
+    "score": 12
+  },
+  {
+    "title": "Chiste clásico 241",
+    "text": "— ¡Ay! ¡ángel mió! yo no lo pedia de veras, dijo la vieja en el mayor terror. —De veras ó no de veras, ya no tiene remedio, contestó el ángel. — Sí lo tiene, ángel mió, si me quieres servir, repuso la vieja. Vuelve y di que no estaba en casa, y ten presente que no seré desagradecida contigo.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:607-615",
+    "windowSize": 3,
+    "score": 12
+  },
+  {
+    "title": "Chiste clásico 242",
     "text": "— Esa ha sido mi intención, dijo el estudiante. — Y yo estaría conforme, dijo el literato, si no fuera porque el diminutivo de espuerta puede ser en ica lo mismo que en illa. — ¡Ah, señor! y eso qué importa, dijo candidamente el estudiante. — Como á usted no le importe, lo que es á mi de seguro nada.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1230,7 +2174,25 @@
     "score": 12
   },
   {
-    "title": "Chiste clásico 138",
+    "title": "Chiste clásico 243",
+    "text": "— Nada es tan moral como la diversión. Se hablaba en cierta tertulia de la metempsícosis; cierto sandio caballero que quería echarla de gracioso, dijo efectivamente se acordaba él de haber sido el becerro do oro. — Es verdad, ‘le contestó, una señora tan maliciosa como discreta, usted no ha perdido sino el dorado.",
+    "source": "Almanaque, 1866",
+    "sourceId": "almanaque-de-los-chistes-1866",
+    "evidence": "raw/CASGA_380305_007_djvu.txt:3940-3948",
+    "windowSize": 2,
+    "score": 12
+  },
+  {
+    "title": "Chiste clásico 244",
+    "text": "— No hay duda, dijo Cartesio. — Pues bien: siendo los relojes maquinas, como los perros, si pongo juntos muchos relojes, deberan resultar reloj itos, según su doctrina. — Señora, dijo el filósofo aturdido, los hombres hasta ahora solo han hecho relojes, y es probable -Suceda lo que usted dice el dia que hagan reloj as.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:2755-2763",
+    "windowSize": 3,
+    "score": 12
+  },
+  {
+    "title": "Chiste clásico 245",
     "text": "— ¡Ah! ¿no lo decia yo? ¿Y qué orden es? — La de salir de la corte en todo el dia de mañana sin escusa de ninguna clase.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1239,7 +2201,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 139",
+    "title": "Chiste clásico 246",
     "text": "—Yo, no. — ¿Y por qué? — Porque en la cara nunca se siente el frío. — Pues haga usted cuenta que todo mi cuerpo es cara.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1248,16 +2210,16 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 140",
-    "text": "— ¡Hola, Perico! ¿cómo te va? dijo el uno. — Muy bien, Antonio; me casé después que concluimos la carrera. — Buena noticia.",
-    "source": "Boira I, 1862",
-    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
-    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:4394-4399",
-    "windowSize": 3,
+    "title": "Chiste clásico 247",
+    "text": "«Que no el tener cofres llenos La riqueza en pié mantiene; Que no es rico el que mas tiene Sino el que ha menester menos.»",
+    "source": "Tirso II, 1848",
+    "sourceId": "tirso-cuentos-fabulas-dichos-agudos-1848-tomo-2",
+    "evidence": "raw/cuentosfabulasd01moligoog_djvu.txt:995-998",
+    "windowSize": 1,
     "score": 10
   },
   {
-    "title": "Chiste clásico 141",
+    "title": "Chiste clásico 248",
     "text": "— ¿Há estado usted en aquel pais? — Si, señor, tres años. — Pues ahí tiene usted la prueba de que no es cierto lo que dice.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1266,7 +2228,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 142",
+    "title": "Chiste clásico 249",
     "text": "— ¿Lo quiere usted comprar? — No, señor. — ¿Qué podrá valer? — Ya sabe usted, señor Juan, que los cuadros estan muy baratos.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1275,7 +2237,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 143",
+    "title": "Chiste clásico 250",
     "text": "—¿Ha leido usted esa nueva producción de? — ¡Pues no la he de leer! — ¿Y qué tal le parece? — Cualquier cosa; vale muy poco.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1284,16 +2246,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 144",
-    "text": "— ¿Pues no lie de querer hombre? A eso voy. — Pues bósquela usted rio abajo, que el agua ha debido llevarla en esa dirección.",
-    "source": "Almanaque, 1866",
-    "sourceId": "almanaque-de-los-chistes-1866",
-    "evidence": "raw/CASGA_380305_007_djvu.txt:4859-4862",
-    "windowSize": 2,
-    "score": 10
-  },
-  {
-    "title": "Chiste clásico 145",
+    "title": "Chiste clásico 251",
     "text": "— ¿Cuantos son los enemigos del alma? — Cinco; respondió con cierto aire de satisfacción, y como picado de la afrenta pasada.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1302,7 +2255,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 146",
+    "title": "Chiste clásico 252",
     "text": "— Es una escelente pieza: ¿cuanto dinero quiere usted por ella? — Señor, no pido dinero, eso me lo habrían dado en la cocina.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1311,7 +2264,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 147",
+    "title": "Chiste clásico 253",
     "text": "— No, señor. — ¿Qué podrá valer? — Ya sabe usted, señor Juan, que los cuadros estan muy baratos. — Pues bien, dandolo barato.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1320,7 +2273,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 148",
+    "title": "Chiste clásico 254",
     "text": "— ¿De quién son esas muías? Acordóse felizmente el cochero de lo que habia dicho en el camino, y contestó: — Señor, son mias.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1329,7 +2282,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 149",
+    "title": "Chiste clásico 255",
     "text": "— ¿Por qué, amigo mió? — Porque al principiarse el segundo, se hablan marchado todos los espectadores por no poderla resistir.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1338,7 +2291,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 150",
+    "title": "Chiste clásico 256",
     "text": "— ¿Es ese el secreto? — Sí, señor. — Pues hemos concluido, no me conviene. EL que sabe hacer oro no necesita auxilio de nadie.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1347,7 +2300,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 151",
+    "title": "Chiste clásico 257",
     "text": "— ¿De veras? — I)e veras. — Pues, hombre, al menos dígame usted por cuales de ostos agujeros he de meter los brazos y la cabeza.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -1356,7 +2309,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 152",
+    "title": "Chiste clásico 258",
     "text": "— ¿Se cree usted capaz de poner papillotes á cualquiera? — Sin duda alguna. — ¿Trae usted los hierros de dar fuego? — Sí, señor.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1365,7 +2318,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 153",
+    "title": "Chiste clásico 259",
     "text": "— Apelo. — Y ¿á quien? le preguntó Filipo. — Apelo de Filipo, que acaba de comer y está dormido, á Filipo, en ayunas y despierto.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1374,7 +2327,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 154",
+    "title": "Chiste clásico 260",
     "text": "—No señor, porque para ello sé un remedio. — Y cual es? — Poner ceniza en la mano. — Es cierto; no hubiera yo calculado otro tanto.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -1383,7 +2336,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 155",
+    "title": "Chiste clásico 261",
     "text": "— Sí, señor, respondió uno, pero con ser entera aun no ha llegado al estómago. — ¿Pues qué asadura es? dijo el amigo. — La nuestra.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1392,7 +2345,43 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 156",
+    "title": "Chiste clásico 262",
+    "text": "— ¿Sabe usted el Padre nuestro? — No, padre, respondió, porque he comenzado á aprenderlo muchas veces y nunca he podido conseguirlo.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:16604-16608",
+    "windowSize": 2,
+    "score": 10
+  },
+  {
+    "title": "Chiste clásico 263",
+    "text": "— ¿Por qué no llamabas mas fuerte? — Por no despertar á usted — ¿Qué tiene tu padre? — Señor, cuando salí de casa lo dejé agonizando.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:1465-1471",
+    "windowSize": 4,
+    "score": 10
+  },
+  {
+    "title": "Chiste clásico 264",
+    "text": "— Luego el Cebedeo es su padre. — Es verdad, dijeron todos á coro. — ¿Estais bien enterados? ¿lo comprendéis? — Sí, señor, sí, señor.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:2597-2603",
+    "windowSize": 4,
+    "score": 10
+  },
+  {
+    "title": "Chiste clásico 265",
+    "text": "— ¿Para qué? dijo la niña con curiosidad. — ¡Para qué! es un secreto espantoso que no me atrevo, que no puedo revelar. — Pues digo....",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:582-587",
+    "windowSize": 3,
+    "score": 10
+  },
+  {
+    "title": "Chiste clásico 266",
     "text": "— Llevaba una maleta al hombro. — ¿Y se quejaba del viaje? — Nada: de manera que asi que llegamos lo envié á evacuar algunos encargos.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1401,7 +2390,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 157",
+    "title": "Chiste clásico 267",
     "text": "— ¿Y cual es? — Que como dos dones reunidos estarían mal, he de poner el segundo en donde mas acomodado sea á su nombre y á su caracter.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1410,7 +2399,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 158",
+    "title": "Chiste clásico 268",
     "text": "— Bien, ¿y el ñn? — No puedo aceptarlo. — Porqué? — Es muy sencillo, y lo comprenderá usted facilmente si se pone un momento en mi lugar.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1419,7 +2408,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 159",
+    "title": "Chiste clásico 269",
     "text": "— ¿En qué te diferencias de los otros hombres? — En que ellos viven para comer y yo como para vivir. — ¿Qué es lo que sabes? — Que nadase.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1428,7 +2417,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 160",
+    "title": "Chiste clásico 270",
     "text": "— Pero señor, y el ecétera que usted no me paga, ¿qué es entonces? — El ecétera, buen hombre, es que tiene usted la obligación de subirla.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1437,7 +2426,16 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 161",
+    "title": "Chiste clásico 271",
+    "text": "— Mi padre comia mucho en poco tiempo; pero mi madre estaba comiendo todo el dia. — ¿Y usted? le decia un amigo. — Yo me parezco á los dos.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:6396-6401",
+    "windowSize": 3,
+    "score": 10
+  },
+  {
+    "title": "Chiste clásico 272",
     "text": "— Pero, caballero oficial, ¿qué es lo que tiene usted? Y el oficial, conteniéndose, respondió: — \"No es nada nada, se pasará, sí, se pasará.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1446,7 +2444,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 162",
+    "title": "Chiste clásico 273",
     "text": "— ¿Cómo se llama este rio? — A fé mia, señor, contestó el rústico, que este rio no es necesario llamarlo, porque demasiado se viene él solo.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1455,7 +2453,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 163",
+    "title": "Chiste clásico 274",
     "text": "— Vamos, ¿viene la comida? — Señor, responde el mozo, estoy buscando la brida del caballo para marchar inmediatamente, pero no la encuentro.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1464,7 +2462,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 164",
+    "title": "Chiste clásico 275",
     "text": "— ¿Es verdad, como dicen estos pajes, que todas las noches les das para cenar rabanos y queso? — Cierto es, respondió el mayordomo con temor.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1473,7 +2471,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 165",
+    "title": "Chiste clásico 276",
     "text": "— Sí, ciertamente; tiene muchísimos mas. — Entonces ¿no son amigos tuyos los otros? — Sí, lo son, pero no me dieron encargo de ninguna clase.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1482,7 +2480,25 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 166",
+    "title": "Chiste clásico 277",
+    "text": "— ¿Estais bien enterados? ¿lo comprendéis? — Sí, señor, sí, señor. — Veamos, ¿quiénes el padre de los hijos de Noé? — El Cebedeo, el Cebedeo.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:2601-2607",
+    "windowSize": 4,
+    "score": 10
+  },
+  {
+    "title": "Chiste clásico 278",
+    "text": "— ¿Quién es Jesucristo? — Pero, padre, ¿no conoce que estoy siempre en el campo y no trato con nadie? — ¿Qué es lo que sabes? di. —La letanía.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:12223-12230",
+    "windowSize": 4,
+    "score": 10
+  },
+  {
+    "title": "Chiste clásico 279",
     "text": "— Diez y seis reales, caballero. — ¿Y la cena? — Diez. — Pues oye, chica, dame de cenar, que mientras tengo seis reales no me estoy sin ellos.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1491,7 +2507,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 167",
+    "title": "Chiste clásico 280",
     "text": "— También es verdad. — Luego aqui hay tres huevos. — ¿Lo crees tú así? — Vaya si lo creo; como que la consecuencia no puede estar mejor sacada.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1500,7 +2516,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 168",
+    "title": "Chiste clásico 281",
     "text": "— ¿Cómo se llama usted? A lo cual contestó el buen irlandés: — -Registre usted bien las cartas que ya lo encontrará en el sobrescrito. Maximas.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1509,7 +2525,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 169",
+    "title": "Chiste clásico 282",
     "text": "— ¿Por qué? — dirá el lector. — Por una razón muy sencilla. El cabo había escrito todo, absolutamente todo lo que le ‘había dictado la cocinera.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -1518,7 +2534,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 170",
+    "title": "Chiste clásico 283",
     "text": "— Güenos dius, ¿es aquí donde se pone el nuncio? — El interpelado comprendió lo que el interpelante quería decir, y le contestó afirmativamente.",
     "source": "Almanaque, 1866",
     "sourceId": "almanaque-de-los-chistes-1866",
@@ -1527,7 +2543,16 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 171",
+    "title": "Chiste clásico 284",
+    "text": "— Quiero que vayas ahora mismo á mi casa, y digas á mi mujer que haga decir por mí veinte misas. — ¡Ah! ¿eso me pides? —Sí. — Pues no quiero ir.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:14037-14045",
+    "windowSize": 4,
+    "score": 10
+  },
+  {
+    "title": "Chiste clásico 285",
     "text": "— Necesario es que las respuestas se parezcan á las preguntas. — ¿Qué medio tiene el hombre para hacerse amar? — El ser bueno y no hacerse temer.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1536,7 +2561,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 172",
+    "title": "Chiste clásico 286",
     "text": "— No os canséis, les dijo; el toro huye de mí, porque es gallina. — ¿De veras? le repuso uno; Lpues si tú oyeras lo que va diciendo el toro de tí!",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1545,7 +2570,25 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 173",
+    "title": "Chiste clásico 287",
+    "text": "— Acepto la trasformacion, dijo sonriendo el marido, como te vuelvas calendario. — ¿Y por qué calendario? — Porque cada año se necesita uno nuevo.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:499-504",
+    "windowSize": 3,
+    "score": 10
+  },
+  {
+    "title": "Chiste clásico 288",
+    "text": "— ¿Por qué no hacéis que se desayunen esos niños? Y el padre respondió: — ¿Cómo desayunarse? á fé mia que cada uno tiene una asadura en el cuerpo.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:9840-9846",
+    "windowSize": 3,
+    "score": 10
+  },
+  {
+    "title": "Chiste clásico 289",
     "text": "— ¿Por qué no las has limpiado? le preguntó. — Porque las va usted á ensuciar ahora en el camino, y he creido que no merecia la pena de limpiarlas.",
     "source": "Boira II, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
@@ -1554,7 +2597,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 174",
+    "title": "Chiste clásico 290",
     "text": "— ¡Pero hombre! ¿cómo puede ser eso? — Mira, ¿no está ahora corriendo? —Sí. — Pues bien, coloca la tabla boca abajo, y veras que se está revolcando.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1563,7 +2606,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 175",
+    "title": "Chiste clásico 291",
     "text": "— Acepto, repuso el marinero, y puede usted vivir tranquilo por ella, porque yo sé positivamente dónde está. —¡Tú! Y ¿dónde es? — En el fondo del mar.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1572,7 +2615,7 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 176",
+    "title": "Chiste clásico 292",
     "text": "— ¿Cómo os habéis gobernado para adquirir tantos amigos? — Teniendo siempre presente que todo es posible, y concediendo que todo el mundo tiene razón.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
@@ -1581,21 +2624,39 @@
     "score": 10
   },
   {
-    "title": "Chiste clásico 177",
-    "text": "— ¿Hará usted el favor de guardarme este cuadro? voy ahora á la oficina, y lo recogeré á la tarde cuando vuelva á pasar. — Con mucho gusto, caballero.",
-    "source": "Boira II, 1862",
-    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
-    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:104-108",
-    "windowSize": 2,
+    "title": "Chiste clásico 293",
+    "text": "— ¿Puedes salir solo? —No. — ¿Quieres que te ayude? — Yo te diré, he tenido alguna desazón con Raquel, mi mujer, y no quisiera volver esta noche á casa.",
+    "source": "Boira I, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:14590-14598",
+    "windowSize": 4,
     "score": 10
   },
   {
-    "title": "Chiste clásico 178",
+    "title": "Chiste clásico 294",
     "text": "— Hombre, esa es grilla, dijo el de la berza. ¿Con qué objeto podían hacer una caldera tan disforme? — Con el de cocer la berza que vio usted en Murcia.",
     "source": "Boira I, 1862",
     "sourceId": "el-libro-de-los-cuentos-tomo-1-1862",
     "evidence": "raw/el-libro-de-los-cuentos-tomo-1-1862.txt:15066-15069",
     "windowSize": 2,
     "score": 10
+  },
+  {
+    "title": "Chiste clásico 295",
+    "text": "— Este es un mar tempestuoso. El otro hermano siguió en la prueba, y habiéndole sucedido lo mismo dijo: — Apenas lo he podido atravesar.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:785-790",
+    "windowSize": 3,
+    "score": 7
+  },
+  {
+    "title": "Chiste clásico 296",
+    "text": "— Como que tenemos un mismo padre y una misma madre, que son Adan y Eva. — Hermano, dijo el caballero, tienes razón y debo socorrerte; toma un maravedí.",
+    "source": "Boira II, 1862",
+    "sourceId": "el-libro-de-los-cuentos-tomo-2-1862",
+    "evidence": "raw/el-libro-de-los-cuentos-tomo-2-1862.txt:15254-15258",
+    "windowSize": 2,
+    "score": 7
   }
 ]

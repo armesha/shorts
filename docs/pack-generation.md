@@ -496,7 +496,8 @@ durationSec = clamp(24, 44, ceil(chars / 15 + 8))
 - safety-report основного пака: `local-assets/corpora/spanish-jokes-public-domain/safety-report.json`;
 - safety-report длинного пака: `local-assets/corpora/spanish-jokes-public-domain/safety-report-long.json`;
 - основные источники: Internet Archive scans of `El Tesoro de los chistes` (1847), `Museo cómico`
-  (1863), `El libro de los cuentos` Rafael Boira (1862);
+  (1863), `El libro de los cuentos` Rafael Boira (1862), `Floresta Española` (1790) and
+  `Cuentos, fábulas, diálogos, máximas, apotegmas, epigramas y dichos agudos` (1848);
 - IA/Wikisource evidence указывает public-domain/`NOT_IN_COPYRIGHT` там, где источник это отдаёт, но
   для коммерческого масштабирования всё равно сохраняй source ledger рядом с паком.
 
@@ -546,6 +547,12 @@ durationSec = clamp(24, 44, ceil(chars / 15 + 8))
 - перед показом пользователю рендерить stress-пример на каждый шаблон и смотреть контакт-лист глазами;
 - main body не должен быть на агрессивной цветовой плашке; насыщенные цвета допустимы только для
   коротких меток/акцентов.
+
+Safety note: семейные сетапы сами по себе разрешены для испанских анекдотов, потому что в
+public-domain сборниках они встречаются постоянно; при этом фильтр всё равно выкидывает adult/sexual,
+protected-class stereotypes, religion, politics/crime/authority, alcohol/drugs, violence/death,
+dependency/slavery-risk, coarse insults and OCR fragments. Не возвращай broad-ban по словам вроде
+`madre`, `padre`, `mujer`, `marido`, иначе пак снова схлопнется до слишком малого числа карточек.
 
 Пересборка:
 
