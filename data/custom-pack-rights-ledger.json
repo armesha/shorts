@@ -22,10 +22,13 @@
       ]
     },
     "psychology-ru-superadmin": {
-      "status": "project_owned_generated_text",
+      "status": "project_owned_generated_text_ai_generated_backgrounds",
       "livePath": "data/packs/psychology-ru-superadmin.json",
-      "note": "Original concise psychology card text and local templates generated for this project; no external quote/photo corpus is intentionally used.",
+      "note": "Original concise psychology card text and independent local templates generated for this project; no external quote/photo corpus and no MGS template inheritance is intentionally used.",
+      "templateAssets": "assets/template-packs/psychology-ru/backgrounds/*",
+      "sourceLedger": "assets/template-packs/psychology-ru/sources.json",
       "rules": [
+        "Do not use MGS packs/templates as a donor or fallback for this super-admin pack.",
         "Avoid medical diagnosis, crisis advice, manipulative promises, or protected-class targeting.",
         "Keep as general self-reflection/behavioral prompts, not therapy replacement."
       ]

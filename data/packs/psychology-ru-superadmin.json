@@ -9,45 +9,93 @@
   "templates": [
     {
       "version": 1,
-      "name": "psychology-ru-note-sage",
+      "name": "psychology-ru-01-calm-panel",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#eef7ef"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-01.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.20))"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 64,
+          "y": 96,
+          "w": 952,
+          "h": 1488,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,248,.90)",
+          "radius": 48,
+          "border": "3px solid rgba(47,143,114,.26)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 74,
-          "y": 104,
-          "w": 520,
-          "h": 64,
-          "rot": 0,
+          "x": 104,
+          "y": 142,
+          "w": 760,
+          "h": 58,
           "text": "ЗАМЕТКА",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 32,
-            "weight": 800,
+            "size": 31,
+            "weight": 900,
             "color": "#2f8f72",
             "lineHeight": 1.1
-          }
+          },
+          "bg": "rgba(255,255,255,.58)",
+          "radius": 18,
+          "border": "2px solid rgba(47,143,114,.26)"
         },
         {
           "id": "rule",
           "type": "text",
-          "x": 74,
-          "y": 170,
-          "w": 360,
+          "x": 104,
+          "y": 204,
+          "w": 330,
           "h": 38,
-          "rot": 0,
           "text": "━━━━",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 28,
-            "weight": 800,
+            "size": 26,
+            "weight": 900,
             "color": "#2f8f72",
             "lineHeight": 1.1
           }
@@ -55,2720 +103,3557 @@
         {
           "id": "title",
           "type": "killbox",
-          "x": 74,
-          "y": 238,
-          "w": 910,
-          "h": 330,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 92,
+          "y": 248,
+          "w": 896,
+          "h": 330,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 82,
-            "weight": 800,
+            "size": 74,
+            "weight": 900,
             "color": "#10241d",
-            "lineHeight": 1.12
+            "lineHeight": 1.1
           },
-          "fitMin": 44,
-          "fitMax": 88,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "center"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 92,
-          "y": 650,
-          "w": 880,
-          "h": 1010,
-          "rot": 0,
           "role": "text",
+          "x": 112,
+          "y": 650,
+          "w": 856,
+          "h": 820,
           "padX": 34,
-          "padY": 36,
-          "align": "left",
-          "valign": "top",
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
             "size": 45,
-            "weight": 600,
+            "weight": 650,
             "color": "#10241d",
-            "lineHeight": 1.5
+            "lineHeight": 1.42
           },
-          "fitMin": 28,
-          "fitMax": 52,
-          "maxChars": 760,
-          "bullet": true,
-          "placeholder": "Text",
-          "bg": "#ffffffb8",
-          "border": "2px solid #2f8f7255",
+          "bg": "rgba(255,255,255,.48)",
           "radius": 28,
-          "shadow": "0 24px 60px rgba(0,0,0,.10)"
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-note-rose",
+      "name": "psychology-ru-02-wide-note",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#fff1f5"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-02.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 54,
+          "y": 78,
+          "w": 972,
+          "h": 1540,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,248,250,.84)",
+          "radius": 30,
+          "border": "3px solid rgba(184,70,109,.24)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 74,
-          "y": 104,
-          "w": 520,
-          "h": 64,
-          "rot": 0,
+          "x": 94,
+          "y": 126,
+          "w": 800,
+          "h": 58,
           "text": "ПРОВЕРКА",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 32,
-            "weight": 800,
-            "color": "#d4547a",
+            "size": 31,
+            "weight": 900,
+            "color": "#b8466d",
             "lineHeight": 1.1
-          }
+          },
+          "bg": "rgba(255,241,246,.66)",
+          "radius": 18,
+          "border": "2px solid rgba(184,70,109,.24)"
         },
         {
           "id": "rule",
           "type": "text",
-          "x": 74,
-          "y": 170,
-          "w": 360,
+          "x": 94,
+          "y": 188,
+          "w": 330,
           "h": 38,
-          "rot": 0,
           "text": "━━━━",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 28,
-            "weight": 800,
-            "color": "#d4547a",
+            "size": 26,
+            "weight": 900,
+            "color": "#b8466d",
             "lineHeight": 1.1
           }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 74,
-          "y": 238,
-          "w": 910,
-          "h": 330,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 82,
+          "y": 220,
+          "w": 916,
+          "h": 300,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 82,
-            "weight": 800,
+            "size": 74,
+            "weight": 900,
             "color": "#28121a",
-            "lineHeight": 1.12
+            "lineHeight": 1.1
           },
-          "fitMin": 44,
-          "fitMax": 88,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 92,
-          "y": 650,
-          "w": 880,
-          "h": 1010,
-          "rot": 0,
           "role": "text",
+          "x": 94,
+          "y": 620,
+          "w": 892,
+          "h": 910,
           "padX": 34,
-          "padY": 36,
-          "align": "left",
-          "valign": "top",
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
             "size": 45,
-            "weight": 600,
+            "weight": 650,
             "color": "#28121a",
-            "lineHeight": 1.5
+            "lineHeight": 1.42
           },
-          "fitMin": 28,
-          "fitMax": 52,
-          "maxChars": 760,
-          "bullet": true,
-          "placeholder": "Text",
-          "bg": "#ffffffb8",
-          "border": "2px solid #d4547a55",
+          "bg": "rgba(255,255,255,.24)",
           "radius": 28,
-          "shadow": "0 24px 60px rgba(0,0,0,.10)"
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-note-amber",
+      "name": "psychology-ru-03-lower-focus",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#fff8e6"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-03.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 70,
+          "y": 150,
+          "w": 940,
+          "h": 1370,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,250,236,.78)",
+          "radius": 30,
+          "border": "3px solid rgba(185,133,23,.24)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 74,
-          "y": 104,
-          "w": 520,
-          "h": 64,
-          "rot": 0,
+          "x": 110,
+          "y": 198,
+          "w": 720,
+          "h": 58,
           "text": "НА КАЖДЫЙ ДЕНЬ",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 32,
-            "weight": 800,
-            "color": "#e2a020",
+            "size": 31,
+            "weight": 900,
+            "color": "#b98517",
             "lineHeight": 1.1
-          }
+          },
+          "bg": "rgba(255,248,225,.70)",
+          "radius": 18,
+          "border": "2px solid rgba(185,133,23,.24)"
         },
         {
           "id": "rule",
           "type": "text",
-          "x": 74,
-          "y": 170,
-          "w": 360,
+          "x": 110,
+          "y": 260,
+          "w": 330,
           "h": 38,
-          "rot": 0,
           "text": "━━━━",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 28,
-            "weight": 800,
-            "color": "#e2a020",
+            "size": 26,
+            "weight": 900,
+            "color": "#b98517",
             "lineHeight": 1.1
           }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 74,
-          "y": 238,
-          "w": 910,
-          "h": 330,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 92,
+          "y": 308,
+          "w": 896,
+          "h": 280,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 82,
-            "weight": 800,
-            "color": "#271b05",
-            "lineHeight": 1.12
+            "size": 74,
+            "weight": 900,
+            "color": "#231805",
+            "lineHeight": 1.1
           },
-          "fitMin": 44,
-          "fitMax": 88,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 92,
-          "y": 650,
-          "w": 880,
-          "h": 1010,
-          "rot": 0,
           "role": "text",
+          "x": 112,
+          "y": 690,
+          "w": 856,
+          "h": 770,
           "padX": 34,
-          "padY": 36,
-          "align": "left",
-          "valign": "top",
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
             "size": 45,
-            "weight": 600,
-            "color": "#271b05",
-            "lineHeight": 1.5
+            "weight": 650,
+            "color": "#231805",
+            "lineHeight": 1.42
           },
-          "fitMin": 28,
-          "fitMax": 52,
-          "maxChars": 760,
-          "bullet": true,
-          "placeholder": "Text",
-          "bg": "#ffffffb8",
-          "border": "2px solid #e2a02055",
+          "bg": "rgba(255,255,255,.48)",
           "radius": 28,
-          "shadow": "0 24px 60px rgba(0,0,0,.10)"
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-note-lilac",
+      "name": "psychology-ru-04-compact-card",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#f5f0ff"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-04.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 84,
+          "y": 126,
+          "w": 912,
+          "h": 1320,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(247,250,255,.78)",
+          "radius": 48,
+          "border": "3px solid rgba(63,102,199,.22)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 74,
-          "y": 104,
-          "w": 520,
-          "h": 64,
-          "rot": 0,
+          "x": 126,
+          "y": 178,
+          "w": 690,
+          "h": 58,
           "text": "РЕФЛЕКСИЯ",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 32,
-            "weight": 800,
-            "color": "#8b68d8",
+            "size": 31,
+            "weight": 900,
+            "color": "#3f66c7",
             "lineHeight": 1.1
-          }
+          },
+          "bg": "rgba(239,246,255,.70)",
+          "radius": 18,
+          "border": "2px solid rgba(63,102,199,.22)"
         },
         {
           "id": "rule",
           "type": "text",
-          "x": 74,
-          "y": 170,
-          "w": 360,
+          "x": 126,
+          "y": 240,
+          "w": 330,
           "h": 38,
-          "rot": 0,
           "text": "━━━━",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 28,
-            "weight": 800,
-            "color": "#8b68d8",
+            "size": 26,
+            "weight": 900,
+            "color": "#3f66c7",
             "lineHeight": 1.1
           }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 74,
-          "y": 238,
-          "w": 910,
-          "h": 330,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 116,
+          "y": 260,
+          "w": 848,
+          "h": 310,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 82,
-            "weight": 800,
-            "color": "#1e1732",
-            "lineHeight": 1.12
+            "size": 74,
+            "weight": 900,
+            "color": "#162033",
+            "lineHeight": 1.1
           },
-          "fitMin": 44,
-          "fitMax": 88,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 92,
-          "y": 650,
-          "w": 880,
-          "h": 1010,
-          "rot": 0,
           "role": "text",
+          "x": 132,
+          "y": 650,
+          "w": 816,
+          "h": 760,
           "padX": 34,
-          "padY": 36,
-          "align": "left",
-          "valign": "top",
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
             "size": 45,
-            "weight": 600,
-            "color": "#1e1732",
-            "lineHeight": 1.5
+            "weight": 650,
+            "color": "#162033",
+            "lineHeight": 1.42
           },
-          "fitMin": 28,
-          "fitMax": 52,
-          "maxChars": 760,
-          "bullet": true,
-          "placeholder": "Text",
-          "bg": "#ffffffb8",
-          "border": "2px solid #8b68d855",
+          "bg": "rgba(255,255,255,.24)",
           "radius": 28,
-          "shadow": "0 24px 60px rgba(0,0,0,.10)"
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-note-ice",
+      "name": "psychology-ru-05-journal-sheet",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#ecfbff"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
-          "id": "label",
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-05.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.20))"
+        },
+        {
+          "id": "panel",
           "type": "text",
           "x": 74,
-          "y": 104,
-          "w": 520,
-          "h": 64,
-          "rot": 0,
+          "y": 102,
+          "w": 932,
+          "h": 1450,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(245,251,255,.78)",
+          "radius": 30,
+          "border": "3px solid rgba(47,124,167,.24)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 116,
+          "y": 154,
+          "w": 720,
+          "h": 58,
           "text": "ПАУЗА",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 32,
-            "weight": 800,
-            "color": "#2b9eb3",
+            "size": 31,
+            "weight": 900,
+            "color": "#2f7ca7",
             "lineHeight": 1.1
-          }
+          },
+          "bg": "rgba(235,247,252,.66)",
+          "radius": 18,
+          "border": "2px solid rgba(47,124,167,.24)"
         },
         {
           "id": "rule",
           "type": "text",
-          "x": 74,
-          "y": 170,
-          "w": 360,
+          "x": 116,
+          "y": 216,
+          "w": 330,
           "h": 38,
-          "rot": 0,
           "text": "━━━━",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 28,
-            "weight": 800,
-            "color": "#2b9eb3",
+            "size": 26,
+            "weight": 900,
+            "color": "#2f7ca7",
             "lineHeight": 1.1
           }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 74,
-          "y": 238,
-          "w": 910,
-          "h": 330,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 84,
+          "y": 250,
+          "w": 912,
+          "h": 330,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 82,
-            "weight": 800,
-            "color": "#08252c",
-            "lineHeight": 1.12
+            "size": 74,
+            "weight": 900,
+            "color": "#101827",
+            "lineHeight": 1.1
           },
-          "fitMin": 44,
-          "fitMax": 88,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "center"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 92,
-          "y": 650,
-          "w": 880,
-          "h": 1010,
-          "rot": 0,
           "role": "text",
+          "x": 112,
+          "y": 684,
+          "w": 856,
+          "h": 800,
           "padX": 34,
-          "padY": 36,
-          "align": "left",
-          "valign": "top",
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
             "size": 45,
-            "weight": 600,
-            "color": "#08252c",
-            "lineHeight": 1.5
+            "weight": 650,
+            "color": "#101827",
+            "lineHeight": 1.42
           },
-          "fitMin": 28,
-          "fitMax": 52,
-          "maxChars": 760,
-          "bullet": true,
-          "placeholder": "Text",
-          "bg": "#ffffffb8",
-          "border": "2px solid #2b9eb355",
+          "bg": "rgba(255,255,255,.48)",
           "radius": 28,
-          "shadow": "0 24px 60px rgba(0,0,0,.10)"
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-note-clay",
+      "name": "psychology-ru-06-soft-poster",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#fff2ea"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-06.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 78,
+          "y": 92,
+          "w": 924,
+          "h": 1440,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(252,247,255,.90)",
+          "radius": 30,
+          "border": "3px solid rgba(128,80,170,.22)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 74,
-          "y": 104,
-          "w": 520,
-          "h": 64,
-          "rot": 0,
+          "x": 124,
+          "y": 142,
+          "w": 710,
+          "h": 58,
           "text": "ГРАНИЦЫ",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 32,
-            "weight": 800,
-            "color": "#c46639",
+            "size": 31,
+            "weight": 900,
+            "color": "#8050aa",
             "lineHeight": 1.1
-          }
+          },
+          "bg": "rgba(248,239,255,.68)",
+          "radius": 18,
+          "border": "2px solid rgba(128,80,170,.22)"
         },
         {
           "id": "rule",
           "type": "text",
-          "x": 74,
-          "y": 170,
-          "w": 360,
+          "x": 124,
+          "y": 204,
+          "w": 330,
           "h": 38,
-          "rot": 0,
           "text": "━━━━",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 28,
-            "weight": 800,
-            "color": "#c46639",
+            "size": 26,
+            "weight": 900,
+            "color": "#8050aa",
             "lineHeight": 1.1
           }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 74,
-          "y": 238,
-          "w": 910,
-          "h": 330,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 110,
+          "y": 228,
+          "w": 860,
+          "h": 335,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 82,
-            "weight": 800,
-            "color": "#2a1309",
-            "lineHeight": 1.12
+            "size": 74,
+            "weight": 900,
+            "color": "#241529",
+            "lineHeight": 1.1
           },
-          "fitMin": 44,
-          "fitMax": 88,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 92,
-          "y": 650,
-          "w": 880,
-          "h": 1010,
-          "rot": 0,
           "role": "text",
+          "x": 126,
+          "y": 656,
+          "w": 828,
+          "h": 800,
           "padX": 34,
-          "padY": 36,
-          "align": "left",
-          "valign": "top",
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
             "size": 45,
-            "weight": 600,
-            "color": "#2a1309",
-            "lineHeight": 1.5
+            "weight": 650,
+            "color": "#241529",
+            "lineHeight": 1.42
           },
-          "fitMin": 28,
-          "fitMax": 52,
-          "maxChars": 760,
-          "bullet": true,
-          "placeholder": "Text",
-          "bg": "#ffffffb8",
-          "border": "2px solid #c4663955",
+          "bg": "rgba(255,255,255,.24)",
           "radius": 28,
-          "shadow": "0 24px 60px rgba(0,0,0,.10)"
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-question-black",
+      "name": "psychology-ru-07-calm-panel",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#111318"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-07.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 64,
+          "y": 96,
+          "w": 952,
+          "h": 1488,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,249,242,.84)",
+          "radius": 48,
+          "border": "3px solid rgba(177,95,52,.23)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 82,
-          "y": 130,
-          "w": 916,
-          "h": 56,
-          "rot": 0,
+          "x": 104,
+          "y": 142,
+          "w": 760,
+          "h": 58,
           "text": "ВОПРОС К СЕБЕ",
-          "align": "center",
+          "align": "left",
           "font": {
             "family": "Inter",
-            "size": 30,
-            "weight": 800,
-            "color": "#aeb5c1",
+            "size": 31,
+            "weight": 900,
+            "color": "#b15f34",
+            "lineHeight": 1.1
+          },
+          "bg": "rgba(255,241,228,.66)",
+          "radius": 18,
+          "border": "2px solid rgba(177,95,52,.23)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 104,
+          "y": 204,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#b15f34",
             "lineHeight": 1.1
           }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 104,
-          "y": 245,
-          "w": 872,
-          "h": 405,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "center",
-          "valign": "top",
-          "font": {
-            "family": "Playfair Display",
-            "size": 94,
-            "weight": 800,
-            "color": "#f7f4ed",
-            "lineHeight": 1.1
-          },
-          "fitMin": 48,
-          "fitMax": 100,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
-        },
-        {
-          "id": "mark",
-          "type": "text",
-          "x": 405,
-          "y": 632,
-          "w": 270,
-          "h": 240,
-          "rot": 0,
-          "text": "?",
-          "align": "center",
+          "x": 92,
+          "y": 248,
+          "w": 896,
+          "h": 330,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 206,
-            "weight": 800,
-            "color": "#ffffff",
+            "size": 74,
+            "weight": 900,
+            "color": "#201710",
             "lineHeight": 1.1
           },
-          "opacity": 0.18
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 128,
-          "y": 790,
-          "w": 824,
-          "h": 830,
-          "rot": 0,
           "role": "text",
-          "padX": 0,
-          "padY": 0,
-          "align": "center",
-          "valign": "top",
+          "x": 112,
+          "y": 650,
+          "w": 856,
+          "h": 820,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 48,
-            "weight": 600,
-            "color": "#f7f4ed",
-            "lineHeight": 1.55
+            "size": 45,
+            "weight": 650,
+            "color": "#201710",
+            "lineHeight": 1.42
           },
-          "fitMin": 30,
-          "fitMax": 56,
-          "maxChars": 760,
-          "bullet": false,
-          "placeholder": "Text"
+          "bg": "rgba(255,255,255,.48)",
+          "radius": 28,
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-question-blue",
+      "name": "psychology-ru-08-wide-note",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#f5f7ff"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-08.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 54,
+          "y": 78,
+          "w": 972,
+          "h": 1540,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(244,253,251,.78)",
+          "radius": 30,
+          "border": "3px solid rgba(24,139,132,.22)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 82,
-          "y": 130,
-          "w": 916,
-          "h": 56,
-          "rot": 0,
+          "x": 94,
+          "y": 126,
+          "w": 800,
+          "h": 58,
           "text": "ПАУЗА ДЛЯ МЫСЛИ",
-          "align": "center",
+          "align": "left",
           "font": {
             "family": "Inter",
-            "size": 30,
-            "weight": 800,
-            "color": "#6b728c",
+            "size": 31,
+            "weight": 900,
+            "color": "#188b84",
+            "lineHeight": 1.1
+          },
+          "bg": "rgba(233,250,247,.68)",
+          "radius": 18,
+          "border": "2px solid rgba(24,139,132,.22)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 94,
+          "y": 188,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#188b84",
             "lineHeight": 1.1
           }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 104,
-          "y": 245,
-          "w": 872,
-          "h": 405,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "center",
-          "valign": "top",
-          "font": {
-            "family": "Playfair Display",
-            "size": 94,
-            "weight": 800,
-            "color": "#08102b",
-            "lineHeight": 1.1
-          },
-          "fitMin": 48,
-          "fitMax": 100,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
-        },
-        {
-          "id": "mark",
-          "type": "text",
-          "x": 405,
-          "y": 632,
-          "w": 270,
-          "h": 240,
-          "rot": 0,
-          "text": "?",
-          "align": "center",
+          "x": 82,
+          "y": 220,
+          "w": 916,
+          "h": 300,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 206,
-            "weight": 800,
-            "color": "#0e48ff",
+            "size": 74,
+            "weight": 900,
+            "color": "#102322",
             "lineHeight": 1.1
           },
-          "opacity": 0.18
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 128,
-          "y": 790,
-          "w": 824,
-          "h": 830,
-          "rot": 0,
           "role": "text",
-          "padX": 0,
-          "padY": 0,
-          "align": "center",
-          "valign": "top",
+          "x": 94,
+          "y": 620,
+          "w": 892,
+          "h": 910,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 48,
-            "weight": 600,
-            "color": "#08102b",
-            "lineHeight": 1.55
+            "size": 45,
+            "weight": 650,
+            "color": "#102322",
+            "lineHeight": 1.42
           },
-          "fitMin": 30,
-          "fitMax": 56,
-          "maxChars": 760,
-          "bullet": false,
-          "placeholder": "Text"
+          "bg": "rgba(255,255,255,.24)",
+          "radius": 28,
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-question-green",
+      "name": "psychology-ru-09-lower-focus",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#effaf4"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-01.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.20))"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 70,
+          "y": 150,
+          "w": 940,
+          "h": 1370,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,248,.78)",
+          "radius": 30,
+          "border": "3px solid rgba(47,143,114,.26)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 82,
-          "y": 130,
-          "w": 916,
-          "h": 56,
-          "rot": 0,
+          "x": 110,
+          "y": 198,
+          "w": 720,
+          "h": 58,
           "text": "САМОПРОВЕРКА",
-          "align": "center",
+          "align": "left",
           "font": {
             "family": "Inter",
-            "size": 30,
-            "weight": 800,
-            "color": "#617d70",
+            "size": 31,
+            "weight": 900,
+            "color": "#2f8f72",
+            "lineHeight": 1.1
+          },
+          "bg": "rgba(255,255,255,.58)",
+          "radius": 18,
+          "border": "2px solid rgba(47,143,114,.26)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 110,
+          "y": 260,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#2f8f72",
             "lineHeight": 1.1
           }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 104,
-          "y": 245,
-          "w": 872,
-          "h": 405,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "center",
-          "valign": "top",
-          "font": {
-            "family": "Playfair Display",
-            "size": 94,
-            "weight": 800,
-            "color": "#081f17",
-            "lineHeight": 1.1
-          },
-          "fitMin": 48,
-          "fitMax": 100,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
-        },
-        {
-          "id": "mark",
-          "type": "text",
-          "x": 405,
-          "y": 632,
-          "w": 270,
-          "h": 240,
-          "rot": 0,
-          "text": "?",
-          "align": "center",
+          "x": 92,
+          "y": 308,
+          "w": 896,
+          "h": 280,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 206,
-            "weight": 800,
-            "color": "#0f7b57",
+            "size": 74,
+            "weight": 900,
+            "color": "#10241d",
             "lineHeight": 1.1
           },
-          "opacity": 0.18
+          "align": "center"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 128,
-          "y": 790,
-          "w": 824,
-          "h": 830,
-          "rot": 0,
           "role": "text",
-          "padX": 0,
-          "padY": 0,
-          "align": "center",
-          "valign": "top",
+          "x": 112,
+          "y": 690,
+          "w": 856,
+          "h": 770,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 48,
-            "weight": 600,
-            "color": "#081f17",
-            "lineHeight": 1.55
+            "size": 45,
+            "weight": 650,
+            "color": "#10241d",
+            "lineHeight": 1.42
           },
-          "fitMin": 30,
-          "fitMax": 56,
-          "maxChars": 760,
-          "bullet": false,
-          "placeholder": "Text"
+          "bg": "rgba(255,255,255,.48)",
+          "radius": 28,
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-question-red",
+      "name": "psychology-ru-10-compact-card",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#fff4ef"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-02.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 84,
+          "y": 126,
+          "w": 912,
+          "h": 1320,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,248,250,.78)",
+          "radius": 48,
+          "border": "3px solid rgba(184,70,109,.24)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 82,
-          "y": 130,
-          "w": 916,
-          "h": 56,
-          "rot": 0,
+          "x": 126,
+          "y": 178,
+          "w": 690,
+          "h": 58,
           "text": "ЧЕСТНО?",
-          "align": "center",
+          "align": "left",
           "font": {
             "family": "Inter",
-            "size": 30,
-            "weight": 800,
-            "color": "#9a6a62",
+            "size": 31,
+            "weight": 900,
+            "color": "#b8466d",
+            "lineHeight": 1.1
+          },
+          "bg": "rgba(255,241,246,.66)",
+          "radius": 18,
+          "border": "2px solid rgba(184,70,109,.24)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 126,
+          "y": 240,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#b8466d",
             "lineHeight": 1.1
           }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 104,
-          "y": 245,
-          "w": 872,
-          "h": 405,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "center",
-          "valign": "top",
-          "font": {
-            "family": "Playfair Display",
-            "size": 94,
-            "weight": 800,
-            "color": "#2b0907",
-            "lineHeight": 1.1
-          },
-          "fitMin": 48,
-          "fitMax": 100,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
-        },
-        {
-          "id": "mark",
-          "type": "text",
-          "x": 405,
-          "y": 632,
-          "w": 270,
-          "h": 240,
-          "rot": 0,
-          "text": "?",
-          "align": "center",
+          "x": 116,
+          "y": 260,
+          "w": 848,
+          "h": 310,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 206,
-            "weight": 800,
-            "color": "#d62c2c",
+            "size": 74,
+            "weight": 900,
+            "color": "#28121a",
             "lineHeight": 1.1
           },
-          "opacity": 0.18
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 128,
-          "y": 790,
-          "w": 824,
-          "h": 830,
-          "rot": 0,
           "role": "text",
-          "padX": 0,
-          "padY": 0,
-          "align": "center",
-          "valign": "top",
+          "x": 132,
+          "y": 650,
+          "w": 816,
+          "h": 760,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 48,
-            "weight": 600,
-            "color": "#2b0907",
-            "lineHeight": 1.55
+            "size": 45,
+            "weight": 650,
+            "color": "#28121a",
+            "lineHeight": 1.42
           },
-          "fitMin": 30,
-          "fitMax": 56,
-          "maxChars": 760,
-          "bullet": false,
-          "placeholder": "Text"
+          "bg": "rgba(255,255,255,.24)",
+          "radius": 28,
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-question-paper",
+      "name": "psychology-ru-11-journal-sheet",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#fbf7ec"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-03.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 74,
+          "y": 102,
+          "w": 932,
+          "h": 1450,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,250,236,.90)",
+          "radius": 30,
+          "border": "3px solid rgba(185,133,23,.24)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 82,
-          "y": 130,
-          "w": 916,
-          "h": 56,
-          "rot": 0,
+          "x": 116,
+          "y": 154,
+          "w": 720,
+          "h": 58,
           "text": "ДНЕВНИК",
-          "align": "center",
+          "align": "left",
           "font": {
             "family": "Inter",
-            "size": 30,
-            "weight": 800,
-            "color": "#8a7e66",
+            "size": 31,
+            "weight": 900,
+            "color": "#b98517",
+            "lineHeight": 1.1
+          },
+          "bg": "rgba(255,248,225,.70)",
+          "radius": 18,
+          "border": "2px solid rgba(185,133,23,.24)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 116,
+          "y": 216,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#b98517",
             "lineHeight": 1.1
           }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 104,
-          "y": 245,
-          "w": 872,
-          "h": 405,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "center",
-          "valign": "top",
-          "font": {
-            "family": "Playfair Display",
-            "size": 94,
-            "weight": 800,
-            "color": "#17140f",
-            "lineHeight": 1.1
-          },
-          "fitMin": 48,
-          "fitMax": 100,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
-        },
-        {
-          "id": "mark",
-          "type": "text",
-          "x": 405,
-          "y": 632,
-          "w": 270,
-          "h": 240,
-          "rot": 0,
-          "text": "?",
-          "align": "center",
+          "x": 84,
+          "y": 250,
+          "w": 912,
+          "h": 330,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 206,
-            "weight": 800,
-            "color": "#111111",
+            "size": 74,
+            "weight": 900,
+            "color": "#231805",
             "lineHeight": 1.1
           },
-          "opacity": 0.18
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 128,
-          "y": 790,
-          "w": 824,
-          "h": 830,
-          "rot": 0,
           "role": "text",
-          "padX": 0,
-          "padY": 0,
-          "align": "center",
-          "valign": "top",
+          "x": 112,
+          "y": 684,
+          "w": 856,
+          "h": 800,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 48,
-            "weight": 600,
-            "color": "#17140f",
-            "lineHeight": 1.55
+            "size": 45,
+            "weight": 650,
+            "color": "#231805",
+            "lineHeight": 1.42
           },
-          "fitMin": 30,
-          "fitMax": 56,
-          "maxChars": 760,
-          "bullet": false,
-          "placeholder": "Text"
+          "bg": "rgba(255,255,255,.48)",
+          "radius": 28,
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-question-plum",
+      "name": "psychology-ru-12-soft-poster",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#f7f0fb"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-04.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 78,
+          "y": 92,
+          "w": 924,
+          "h": 1440,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(247,250,255,.84)",
+          "radius": 30,
+          "border": "3px solid rgba(63,102,199,.22)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 82,
-          "y": 130,
-          "w": 916,
-          "h": 56,
-          "rot": 0,
+          "x": 124,
+          "y": 142,
+          "w": 710,
+          "h": 58,
           "text": "ВНУТРЕННИЙ ВЗГЛЯД",
-          "align": "center",
+          "align": "left",
           "font": {
             "family": "Inter",
-            "size": 30,
-            "weight": 800,
-            "color": "#7d628b",
+            "size": 31,
+            "weight": 900,
+            "color": "#3f66c7",
+            "lineHeight": 1.1
+          },
+          "bg": "rgba(239,246,255,.70)",
+          "radius": 18,
+          "border": "2px solid rgba(63,102,199,.22)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 124,
+          "y": 204,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#3f66c7",
             "lineHeight": 1.1
           }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 104,
-          "y": 245,
-          "w": 872,
-          "h": 405,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "center",
-          "valign": "top",
-          "font": {
-            "family": "Playfair Display",
-            "size": 94,
-            "weight": 800,
-            "color": "#24112f",
-            "lineHeight": 1.1
-          },
-          "fitMin": 48,
-          "fitMax": 100,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
-        },
-        {
-          "id": "mark",
-          "type": "text",
-          "x": 405,
-          "y": 632,
-          "w": 270,
-          "h": 240,
-          "rot": 0,
-          "text": "?",
-          "align": "center",
+          "x": 110,
+          "y": 228,
+          "w": 860,
+          "h": 335,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 206,
-            "weight": 800,
-            "color": "#6f2bbd",
+            "size": 74,
+            "weight": 900,
+            "color": "#162033",
             "lineHeight": 1.1
           },
-          "opacity": 0.18
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 128,
-          "y": 790,
-          "w": 824,
-          "h": 830,
-          "rot": 0,
           "role": "text",
-          "padX": 0,
-          "padY": 0,
-          "align": "center",
-          "valign": "top",
+          "x": 126,
+          "y": 656,
+          "w": 828,
+          "h": 800,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 48,
-            "weight": 600,
-            "color": "#24112f",
-            "lineHeight": 1.55
+            "size": 45,
+            "weight": 650,
+            "color": "#162033",
+            "lineHeight": 1.42
           },
-          "fitMin": 30,
-          "fitMax": 56,
-          "maxChars": 760,
-          "bullet": false,
-          "placeholder": "Text"
+          "bg": "rgba(255,255,255,.24)",
+          "radius": 28,
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-myth-yellow",
+      "name": "psychology-ru-13-calm-panel",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#171713"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-05.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.20))"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 64,
+          "y": 96,
+          "w": 952,
+          "h": 1488,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(245,251,255,.78)",
+          "radius": 48,
+          "border": "3px solid rgba(47,124,167,.24)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 76,
-          "y": 104,
-          "w": 540,
-          "h": 60,
-          "rot": 0,
+          "x": 104,
+          "y": 142,
+          "w": 760,
+          "h": 58,
           "text": "МИФ / ФАКТ",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 30,
+            "size": 31,
             "weight": 900,
-            "color": "#ffe357",
+            "color": "#2f7ca7",
+            "lineHeight": 1.1
+          },
+          "bg": "rgba(235,247,252,.66)",
+          "radius": 18,
+          "border": "2px solid rgba(47,124,167,.24)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 104,
+          "y": 204,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#2f7ca7",
             "lineHeight": 1.1
           }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 76,
-          "y": 218,
-          "w": 928,
-          "h": 300,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 92,
+          "y": 248,
+          "w": 896,
+          "h": 330,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 82,
-            "weight": 800,
-            "color": "#f9f4dc",
-            "lineHeight": 1.12
+            "size": 74,
+            "weight": 900,
+            "color": "#101827",
+            "lineHeight": 1.1
           },
-          "fitMin": 44,
-          "fitMax": 88,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "center"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 86,
-          "y": 610,
-          "w": 908,
-          "h": 990,
-          "rot": 0,
           "role": "text",
-          "padX": 32,
-          "padY": 30,
-          "align": "left",
-          "valign": "top",
+          "x": 112,
+          "y": 650,
+          "w": 856,
+          "h": 820,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 42,
+            "size": 45,
             "weight": 650,
-            "color": "#f9f4dc",
-            "lineHeight": 1.36
+            "color": "#101827",
+            "lineHeight": 1.42
           },
-          "fitMin": 24,
-          "fitMax": 44,
-          "maxChars": 690,
-          "bullet": false,
-          "placeholder": "Text",
-          "bg": "rgba(255,255,255,.07)",
-          "border": "1px solid #ffe35755",
-          "radius": 24
+          "bg": "rgba(255,255,255,.48)",
+          "radius": 28,
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-myth-mint",
+      "name": "psychology-ru-14-wide-note",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#10251d"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-06.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 54,
+          "y": 78,
+          "w": 972,
+          "h": 1540,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(252,247,255,.78)",
+          "radius": 30,
+          "border": "3px solid rgba(128,80,170,.22)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 76,
-          "y": 104,
-          "w": 540,
-          "h": 60,
-          "rot": 0,
+          "x": 94,
+          "y": 126,
+          "w": 800,
+          "h": 58,
           "text": "ПЕРЕОСМЫСЛИТЬ",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 30,
+            "size": 31,
             "weight": 900,
-            "color": "#5de6a8",
+            "color": "#8050aa",
+            "lineHeight": 1.1
+          },
+          "bg": "rgba(248,239,255,.68)",
+          "radius": 18,
+          "border": "2px solid rgba(128,80,170,.22)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 94,
+          "y": 188,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#8050aa",
             "lineHeight": 1.1
           }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 76,
-          "y": 218,
-          "w": 928,
-          "h": 300,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 82,
+          "y": 220,
+          "w": 916,
+          "h": 300,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 82,
-            "weight": 800,
-            "color": "#effff7",
-            "lineHeight": 1.12
+            "size": 74,
+            "weight": 900,
+            "color": "#241529",
+            "lineHeight": 1.1
           },
-          "fitMin": 44,
-          "fitMax": 88,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 86,
-          "y": 610,
-          "w": 908,
-          "h": 990,
-          "rot": 0,
           "role": "text",
-          "padX": 32,
-          "padY": 30,
-          "align": "left",
-          "valign": "top",
+          "x": 94,
+          "y": 620,
+          "w": 892,
+          "h": 910,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 42,
+            "size": 45,
             "weight": 650,
-            "color": "#effff7",
-            "lineHeight": 1.36
+            "color": "#241529",
+            "lineHeight": 1.42
           },
-          "fitMin": 24,
-          "fitMax": 44,
-          "maxChars": 690,
-          "bullet": false,
-          "placeholder": "Text",
-          "bg": "rgba(255,255,255,.07)",
-          "border": "1px solid #5de6a855",
-          "radius": 24
+          "bg": "rgba(255,255,255,.24)",
+          "radius": 28,
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-myth-pink",
+      "name": "psychology-ru-15-lower-focus",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#2a111d"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-07.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 70,
+          "y": 150,
+          "w": 940,
+          "h": 1370,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,249,242,.78)",
+          "radius": 30,
+          "border": "3px solid rgba(177,95,52,.23)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 76,
-          "y": 104,
-          "w": 540,
-          "h": 60,
-          "rot": 0,
+          "x": 110,
+          "y": 198,
+          "w": 720,
+          "h": 58,
           "text": "НОВЫЙ ВЗГЛЯД",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 30,
+            "size": 31,
             "weight": 900,
-            "color": "#ff8ab8",
+            "color": "#b15f34",
+            "lineHeight": 1.1
+          },
+          "bg": "rgba(255,241,228,.66)",
+          "radius": 18,
+          "border": "2px solid rgba(177,95,52,.23)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 110,
+          "y": 260,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#b15f34",
             "lineHeight": 1.1
           }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 76,
-          "y": 218,
-          "w": 928,
-          "h": 300,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 92,
+          "y": 308,
+          "w": 896,
+          "h": 280,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 82,
-            "weight": 800,
-            "color": "#fff4f8",
-            "lineHeight": 1.12
+            "size": 74,
+            "weight": 900,
+            "color": "#201710",
+            "lineHeight": 1.1
           },
-          "fitMin": 44,
-          "fitMax": 88,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 86,
-          "y": 610,
-          "w": 908,
-          "h": 990,
-          "rot": 0,
           "role": "text",
-          "padX": 32,
-          "padY": 30,
-          "align": "left",
-          "valign": "top",
+          "x": 112,
+          "y": 690,
+          "w": 856,
+          "h": 770,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 42,
+            "size": 45,
             "weight": 650,
-            "color": "#fff4f8",
-            "lineHeight": 1.36
+            "color": "#201710",
+            "lineHeight": 1.42
           },
-          "fitMin": 24,
-          "fitMax": 44,
-          "maxChars": 690,
-          "bullet": false,
-          "placeholder": "Text",
-          "bg": "rgba(255,255,255,.07)",
-          "border": "1px solid #ff8ab855",
-          "radius": 24
+          "bg": "rgba(255,255,255,.48)",
+          "radius": 28,
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-myth-sky",
+      "name": "psychology-ru-16-compact-card",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#0d1b2a"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-08.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 84,
+          "y": 126,
+          "w": 912,
+          "h": 1320,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(244,253,251,.90)",
+          "radius": 48,
+          "border": "3px solid rgba(24,139,132,.22)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 76,
-          "y": 104,
-          "w": 540,
-          "h": 60,
-          "rot": 0,
+          "x": 126,
+          "y": 178,
+          "w": 690,
+          "h": 58,
           "text": "НОВАЯ РАМКА",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 30,
+            "size": 31,
             "weight": 900,
-            "color": "#7bc7ff",
+            "color": "#188b84",
+            "lineHeight": 1.1
+          },
+          "bg": "rgba(233,250,247,.68)",
+          "radius": 18,
+          "border": "2px solid rgba(24,139,132,.22)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 126,
+          "y": 240,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#188b84",
             "lineHeight": 1.1
           }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 76,
-          "y": 218,
-          "w": 928,
-          "h": 300,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 116,
+          "y": 260,
+          "w": 848,
+          "h": 310,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 82,
-            "weight": 800,
-            "color": "#edf7ff",
-            "lineHeight": 1.12
+            "size": 74,
+            "weight": 900,
+            "color": "#102322",
+            "lineHeight": 1.1
           },
-          "fitMin": 44,
-          "fitMax": 88,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 86,
-          "y": 610,
-          "w": 908,
-          "h": 990,
-          "rot": 0,
           "role": "text",
-          "padX": 32,
-          "padY": 30,
-          "align": "left",
-          "valign": "top",
+          "x": 132,
+          "y": 650,
+          "w": 816,
+          "h": 760,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 42,
+            "size": 45,
             "weight": 650,
-            "color": "#edf7ff",
-            "lineHeight": 1.36
+            "color": "#102322",
+            "lineHeight": 1.42
           },
-          "fitMin": 24,
-          "fitMax": 44,
-          "maxChars": 690,
-          "bullet": false,
-          "placeholder": "Text",
-          "bg": "rgba(255,255,255,.07)",
-          "border": "1px solid #7bc7ff55",
-          "radius": 24
+          "bg": "rgba(255,255,255,.24)",
+          "radius": 28,
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-myth-orange",
+      "name": "psychology-ru-17-journal-sheet",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#23170d"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-01.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.20))"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 74,
+          "y": 102,
+          "w": 932,
+          "h": 1450,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,248,.84)",
+          "radius": 30,
+          "border": "3px solid rgba(47,143,114,.26)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 76,
-          "y": 104,
-          "w": 540,
-          "h": 60,
-          "rot": 0,
+          "x": 116,
+          "y": 154,
+          "w": 720,
+          "h": 58,
           "text": "ВМЕСТО / ЛУЧШЕ",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 30,
+            "size": 31,
             "weight": 900,
-            "color": "#ff9f43",
+            "color": "#2f8f72",
+            "lineHeight": 1.1
+          },
+          "bg": "rgba(255,255,255,.58)",
+          "radius": 18,
+          "border": "2px solid rgba(47,143,114,.26)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 116,
+          "y": 216,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#2f8f72",
             "lineHeight": 1.1
           }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 76,
-          "y": 218,
-          "w": 928,
-          "h": 300,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 84,
+          "y": 250,
+          "w": 912,
+          "h": 330,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 82,
-            "weight": 800,
-            "color": "#fff6ed",
-            "lineHeight": 1.12
+            "size": 74,
+            "weight": 900,
+            "color": "#10241d",
+            "lineHeight": 1.1
           },
-          "fitMin": 44,
-          "fitMax": 88,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "center"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 86,
-          "y": 610,
-          "w": 908,
-          "h": 990,
-          "rot": 0,
           "role": "text",
-          "padX": 32,
-          "padY": 30,
-          "align": "left",
-          "valign": "top",
+          "x": 112,
+          "y": 684,
+          "w": 856,
+          "h": 800,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 42,
+            "size": 45,
             "weight": 650,
-            "color": "#fff6ed",
-            "lineHeight": 1.36
+            "color": "#10241d",
+            "lineHeight": 1.42
           },
-          "fitMin": 24,
-          "fitMax": 44,
-          "maxChars": 690,
-          "bullet": false,
-          "placeholder": "Text",
-          "bg": "rgba(255,255,255,.07)",
-          "border": "1px solid #ff9f4355",
-          "radius": 24
+          "bg": "rgba(255,255,255,.48)",
+          "radius": 28,
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-myth-white",
+      "name": "psychology-ru-18-soft-poster",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#f7f7f2"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-02.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 78,
+          "y": 92,
+          "w": 924,
+          "h": 1440,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,248,250,.78)",
+          "radius": 30,
+          "border": "3px solid rgba(184,70,109,.24)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 76,
-          "y": 104,
-          "w": 540,
-          "h": 60,
-          "rot": 0,
+          "x": 124,
+          "y": 142,
+          "w": 710,
+          "h": 58,
           "text": "ЯСНЕЕ МЫСЛИТЬ",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 30,
+            "size": 31,
             "weight": 900,
-            "color": "#111111",
+            "color": "#b8466d",
+            "lineHeight": 1.1
+          },
+          "bg": "rgba(255,241,246,.66)",
+          "radius": 18,
+          "border": "2px solid rgba(184,70,109,.24)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 124,
+          "y": 204,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#b8466d",
             "lineHeight": 1.1
           }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 76,
-          "y": 218,
-          "w": 928,
-          "h": 300,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 110,
+          "y": 228,
+          "w": 860,
+          "h": 335,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 82,
-            "weight": 800,
-            "color": "#101010",
-            "lineHeight": 1.12
+            "size": 74,
+            "weight": 900,
+            "color": "#28121a",
+            "lineHeight": 1.1
           },
-          "fitMin": 44,
-          "fitMax": 88,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 86,
-          "y": 610,
-          "w": 908,
-          "h": 990,
-          "rot": 0,
           "role": "text",
-          "padX": 32,
-          "padY": 30,
-          "align": "left",
-          "valign": "top",
+          "x": 126,
+          "y": 656,
+          "w": 828,
+          "h": 800,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 42,
+            "size": 45,
             "weight": 650,
-            "color": "#101010",
-            "lineHeight": 1.36
+            "color": "#28121a",
+            "lineHeight": 1.42
           },
-          "fitMin": 24,
-          "fitMax": 44,
-          "maxChars": 690,
-          "bullet": false,
-          "placeholder": "Text",
-          "bg": "rgba(255,255,255,.50)",
-          "border": "1px solid #11111155",
-          "radius": 24
+          "bg": "rgba(255,255,255,.24)",
+          "radius": 28,
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-micro-cobalt",
+      "name": "psychology-ru-19-calm-panel",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#f0f4ff"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
-          "id": "top",
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-03.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
           "type": "text",
-          "x": 72,
-          "y": 105,
-          "w": 460,
-          "h": 54,
-          "rot": 0,
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 64,
+          "y": 96,
+          "w": 952,
+          "h": 1488,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,250,236,.78)",
+          "radius": 48,
+          "border": "3px solid rgba(185,133,23,.24)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 104,
+          "y": 142,
+          "w": 760,
+          "h": 58,
           "text": "МИКРО-ПРИВЫЧКА",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 28,
-            "weight": 800,
-            "color": "#5c6686",
-            "lineHeight": 1.1
-          }
-        },
-        {
-          "id": "number",
-          "type": "text",
-          "x": 760,
-          "y": 92,
-          "w": 240,
-          "h": 140,
-          "rot": 0,
-          "text": "01",
-          "align": "right",
-          "font": {
-            "family": "Inter",
-            "size": 116,
+            "size": 31,
             "weight": 900,
-            "color": "#1746ff",
+            "color": "#b98517",
             "lineHeight": 1.1
           },
-          "opacity": 0.88
+          "bg": "rgba(255,248,225,.70)",
+          "radius": 18,
+          "border": "2px solid rgba(185,133,23,.24)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 104,
+          "y": 204,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#b98517",
+            "lineHeight": 1.1
+          }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 70,
-          "y": 250,
-          "w": 940,
-          "h": 330,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 92,
+          "y": 248,
+          "w": 896,
+          "h": 330,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 82,
-            "weight": 800,
-            "color": "#071133",
-            "lineHeight": 1.08
+            "size": 74,
+            "weight": 900,
+            "color": "#231805",
+            "lineHeight": 1.1
           },
-          "fitMin": 42,
-          "fitMax": 88,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 88,
-          "y": 675,
-          "w": 904,
-          "h": 920,
-          "rot": 0,
           "role": "text",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 112,
+          "y": 650,
+          "w": 856,
+          "h": 820,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 47,
-            "weight": 700,
-            "color": "#071133",
-            "lineHeight": 1.5
+            "size": 45,
+            "weight": 650,
+            "color": "#231805",
+            "lineHeight": 1.42
           },
-          "fitMin": 29,
-          "fitMax": 54,
-          "maxChars": 760,
+          "bg": "rgba(255,255,255,.48)",
+          "radius": 28,
           "bullet": true,
-          "placeholder": "Text",
-          "bg": "#ffffff00"
-        },
-        {
-          "id": "bar",
-          "type": "text",
-          "x": 88,
-          "y": 1640,
-          "w": 904,
-          "h": 44,
-          "rot": 0,
-          "text": "━━━━━━━━━━━━━━━━━━━━",
-          "align": "center",
-          "font": {
-            "family": "Inter",
-            "size": 28,
-            "weight": 900,
-            "color": "#1746ff",
-            "lineHeight": 1.1
-          }
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-micro-grape",
+      "name": "psychology-ru-20-wide-note",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#f7f1ff"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
-          "id": "top",
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-04.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
           "type": "text",
-          "x": 72,
-          "y": 105,
-          "w": 460,
-          "h": 54,
-          "rot": 0,
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 54,
+          "y": 78,
+          "w": 972,
+          "h": 1540,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(247,250,255,.78)",
+          "radius": 30,
+          "border": "3px solid rgba(63,102,199,.22)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 94,
+          "y": 126,
+          "w": 800,
+          "h": 58,
           "text": "3 МИНУТЫ",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 28,
-            "weight": 800,
-            "color": "#7d6798",
-            "lineHeight": 1.1
-          }
-        },
-        {
-          "id": "number",
-          "type": "text",
-          "x": 760,
-          "y": 92,
-          "w": 240,
-          "h": 140,
-          "rot": 0,
-          "text": "01",
-          "align": "right",
-          "font": {
-            "family": "Inter",
-            "size": 116,
+            "size": 31,
             "weight": 900,
-            "color": "#7f35ff",
+            "color": "#3f66c7",
             "lineHeight": 1.1
           },
-          "opacity": 0.88
+          "bg": "rgba(239,246,255,.70)",
+          "radius": 18,
+          "border": "2px solid rgba(63,102,199,.22)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 94,
+          "y": 188,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#3f66c7",
+            "lineHeight": 1.1
+          }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 70,
-          "y": 250,
-          "w": 940,
-          "h": 330,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 82,
+          "y": 220,
+          "w": 916,
+          "h": 300,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 82,
-            "weight": 800,
-            "color": "#211133",
-            "lineHeight": 1.08
+            "size": 74,
+            "weight": 900,
+            "color": "#162033",
+            "lineHeight": 1.1
           },
-          "fitMin": 42,
-          "fitMax": 88,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 88,
-          "y": 675,
-          "w": 904,
-          "h": 920,
-          "rot": 0,
           "role": "text",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 94,
+          "y": 620,
+          "w": 892,
+          "h": 910,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 47,
-            "weight": 700,
-            "color": "#211133",
-            "lineHeight": 1.5
+            "size": 45,
+            "weight": 650,
+            "color": "#162033",
+            "lineHeight": 1.42
           },
-          "fitMin": 29,
-          "fitMax": 54,
-          "maxChars": 760,
+          "bg": "rgba(255,255,255,.24)",
+          "radius": 28,
           "bullet": true,
-          "placeholder": "Text",
-          "bg": "#ffffff00"
-        },
-        {
-          "id": "bar",
-          "type": "text",
-          "x": 88,
-          "y": 1640,
-          "w": 904,
-          "h": 44,
-          "rot": 0,
-          "text": "━━━━━━━━━━━━━━━━━━━━",
-          "align": "center",
-          "font": {
-            "family": "Inter",
-            "size": 28,
-            "weight": 900,
-            "color": "#7f35ff",
-            "lineHeight": 1.1
-          }
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-micro-sun",
+      "name": "psychology-ru-21-lower-focus",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#fff9e8"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
-          "id": "top",
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-05.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
           "type": "text",
-          "x": 72,
-          "y": 105,
-          "w": 460,
-          "h": 54,
-          "rot": 0,
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.20))"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 70,
+          "y": 150,
+          "w": 940,
+          "h": 1370,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(245,251,255,.90)",
+          "radius": 30,
+          "border": "3px solid rgba(47,124,167,.24)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 110,
+          "y": 198,
+          "w": 720,
+          "h": 58,
           "text": "МАЛЕНЬКИЙ ШАГ",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 28,
-            "weight": 800,
-            "color": "#806d36",
-            "lineHeight": 1.1
-          }
-        },
-        {
-          "id": "number",
-          "type": "text",
-          "x": 760,
-          "y": 92,
-          "w": 240,
-          "h": 140,
-          "rot": 0,
-          "text": "01",
-          "align": "right",
-          "font": {
-            "family": "Inter",
-            "size": 116,
+            "size": 31,
             "weight": 900,
-            "color": "#f7bd1e",
+            "color": "#2f7ca7",
             "lineHeight": 1.1
           },
-          "opacity": 0.88
+          "bg": "rgba(235,247,252,.66)",
+          "radius": 18,
+          "border": "2px solid rgba(47,124,167,.24)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 110,
+          "y": 260,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#2f7ca7",
+            "lineHeight": 1.1
+          }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 70,
-          "y": 250,
-          "w": 940,
-          "h": 330,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 92,
+          "y": 308,
+          "w": 896,
+          "h": 280,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 82,
-            "weight": 800,
-            "color": "#261b04",
-            "lineHeight": 1.08
+            "size": 74,
+            "weight": 900,
+            "color": "#101827",
+            "lineHeight": 1.1
           },
-          "fitMin": 42,
-          "fitMax": 88,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "center"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 88,
-          "y": 675,
-          "w": 904,
-          "h": 920,
-          "rot": 0,
           "role": "text",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 112,
+          "y": 690,
+          "w": 856,
+          "h": 770,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 47,
-            "weight": 700,
-            "color": "#261b04",
-            "lineHeight": 1.5
+            "size": 45,
+            "weight": 650,
+            "color": "#101827",
+            "lineHeight": 1.42
           },
-          "fitMin": 29,
-          "fitMax": 54,
-          "maxChars": 760,
+          "bg": "rgba(255,255,255,.48)",
+          "radius": 28,
           "bullet": true,
-          "placeholder": "Text",
-          "bg": "#ffffff00"
-        },
-        {
-          "id": "bar",
-          "type": "text",
-          "x": 88,
-          "y": 1640,
-          "w": 904,
-          "h": 44,
-          "rot": 0,
-          "text": "━━━━━━━━━━━━━━━━━━━━",
-          "align": "center",
-          "font": {
-            "family": "Inter",
-            "size": 28,
-            "weight": 900,
-            "color": "#f7bd1e",
-            "lineHeight": 1.1
-          }
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-micro-teal",
+      "name": "psychology-ru-22-compact-card",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#edfbf9"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
-          "id": "top",
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-06.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
           "type": "text",
-          "x": 72,
-          "y": 105,
-          "w": 460,
-          "h": 54,
-          "rot": 0,
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 84,
+          "y": 126,
+          "w": 912,
+          "h": 1320,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(252,247,255,.84)",
+          "radius": 48,
+          "border": "3px solid rgba(128,80,170,.22)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 126,
+          "y": 178,
+          "w": 690,
+          "h": 58,
           "text": "СБРОС",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 28,
-            "weight": 800,
-            "color": "#5e8584",
-            "lineHeight": 1.1
-          }
-        },
-        {
-          "id": "number",
-          "type": "text",
-          "x": 760,
-          "y": 92,
-          "w": 240,
-          "h": 140,
-          "rot": 0,
-          "text": "01",
-          "align": "right",
-          "font": {
-            "family": "Inter",
-            "size": 116,
+            "size": 31,
             "weight": 900,
-            "color": "#1aa6a6",
+            "color": "#8050aa",
             "lineHeight": 1.1
           },
-          "opacity": 0.88
+          "bg": "rgba(248,239,255,.68)",
+          "radius": 18,
+          "border": "2px solid rgba(128,80,170,.22)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 126,
+          "y": 240,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#8050aa",
+            "lineHeight": 1.1
+          }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 70,
-          "y": 250,
-          "w": 940,
-          "h": 330,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 116,
+          "y": 260,
+          "w": 848,
+          "h": 310,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 82,
-            "weight": 800,
-            "color": "#082a2a",
-            "lineHeight": 1.08
+            "size": 74,
+            "weight": 900,
+            "color": "#241529",
+            "lineHeight": 1.1
           },
-          "fitMin": 42,
-          "fitMax": 88,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 88,
-          "y": 675,
-          "w": 904,
-          "h": 920,
-          "rot": 0,
           "role": "text",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 132,
+          "y": 650,
+          "w": 816,
+          "h": 760,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 47,
-            "weight": 700,
-            "color": "#082a2a",
-            "lineHeight": 1.5
+            "size": 45,
+            "weight": 650,
+            "color": "#241529",
+            "lineHeight": 1.42
           },
-          "fitMin": 29,
-          "fitMax": 54,
-          "maxChars": 760,
+          "bg": "rgba(255,255,255,.24)",
+          "radius": 28,
           "bullet": true,
-          "placeholder": "Text",
-          "bg": "#ffffff00"
-        },
-        {
-          "id": "bar",
-          "type": "text",
-          "x": 88,
-          "y": 1640,
-          "w": 904,
-          "h": 44,
-          "rot": 0,
-          "text": "━━━━━━━━━━━━━━━━━━━━",
-          "align": "center",
-          "font": {
-            "family": "Inter",
-            "size": 28,
-            "weight": 900,
-            "color": "#1aa6a6",
-            "lineHeight": 1.1
-          }
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-micro-rust",
+      "name": "psychology-ru-23-journal-sheet",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#fff1e9"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
-          "id": "top",
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-07.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
           "type": "text",
-          "x": 72,
-          "y": 105,
-          "w": 460,
-          "h": 54,
-          "rot": 0,
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 74,
+          "y": 102,
+          "w": 932,
+          "h": 1450,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,249,242,.78)",
+          "radius": 30,
+          "border": "3px solid rgba(177,95,52,.23)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 116,
+          "y": 154,
+          "w": 720,
+          "h": 58,
           "text": "СЕГОДНЯ",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 28,
-            "weight": 800,
-            "color": "#8b6452",
-            "lineHeight": 1.1
-          }
-        },
-        {
-          "id": "number",
-          "type": "text",
-          "x": 760,
-          "y": 92,
-          "w": 240,
-          "h": 140,
-          "rot": 0,
-          "text": "01",
-          "align": "right",
-          "font": {
-            "family": "Inter",
-            "size": 116,
+            "size": 31,
             "weight": 900,
-            "color": "#c24d2c",
+            "color": "#b15f34",
             "lineHeight": 1.1
           },
-          "opacity": 0.88
+          "bg": "rgba(255,241,228,.66)",
+          "radius": 18,
+          "border": "2px solid rgba(177,95,52,.23)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 116,
+          "y": 216,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#b15f34",
+            "lineHeight": 1.1
+          }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 70,
-          "y": 250,
-          "w": 940,
-          "h": 330,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 84,
+          "y": 250,
+          "w": 912,
+          "h": 330,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 82,
-            "weight": 800,
-            "color": "#2d1208",
-            "lineHeight": 1.08
+            "size": 74,
+            "weight": 900,
+            "color": "#201710",
+            "lineHeight": 1.1
           },
-          "fitMin": 42,
-          "fitMax": 88,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 88,
-          "y": 675,
-          "w": 904,
-          "h": 920,
-          "rot": 0,
           "role": "text",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 112,
+          "y": 684,
+          "w": 856,
+          "h": 800,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 47,
-            "weight": 700,
-            "color": "#2d1208",
-            "lineHeight": 1.5
+            "size": 45,
+            "weight": 650,
+            "color": "#201710",
+            "lineHeight": 1.42
           },
-          "fitMin": 29,
-          "fitMax": 54,
-          "maxChars": 760,
+          "bg": "rgba(255,255,255,.48)",
+          "radius": 28,
           "bullet": true,
-          "placeholder": "Text",
-          "bg": "#ffffff00"
-        },
-        {
-          "id": "bar",
-          "type": "text",
-          "x": 88,
-          "y": 1640,
-          "w": 904,
-          "h": 44,
-          "rot": 0,
-          "text": "━━━━━━━━━━━━━━━━━━━━",
-          "align": "center",
-          "font": {
-            "family": "Inter",
-            "size": 28,
-            "weight": 900,
-            "color": "#c24d2c",
-            "lineHeight": 1.1
-          }
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-micro-ink",
+      "name": "psychology-ru-24-soft-poster",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#141414"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
-          "id": "top",
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-08.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
           "type": "text",
-          "x": 72,
-          "y": 105,
-          "w": 460,
-          "h": 54,
-          "rot": 0,
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 78,
+          "y": 92,
+          "w": 924,
+          "h": 1440,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(244,253,251,.78)",
+          "radius": 30,
+          "border": "3px solid rgba(24,139,132,.22)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 124,
+          "y": 142,
+          "w": 710,
+          "h": 58,
           "text": "МИНИ-ИНСТРУМЕНТ",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 28,
-            "weight": 800,
-            "color": "#bdb6a0",
-            "lineHeight": 1.1
-          }
-        },
-        {
-          "id": "number",
-          "type": "text",
-          "x": 760,
-          "y": 92,
-          "w": 240,
-          "h": 140,
-          "rot": 0,
-          "text": "01",
-          "align": "right",
-          "font": {
-            "family": "Inter",
-            "size": 116,
+            "size": 31,
             "weight": 900,
-            "color": "#f5f0df",
+            "color": "#188b84",
             "lineHeight": 1.1
           },
-          "opacity": 0.88
+          "bg": "rgba(233,250,247,.68)",
+          "radius": 18,
+          "border": "2px solid rgba(24,139,132,.22)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 124,
+          "y": 204,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#188b84",
+            "lineHeight": 1.1
+          }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 70,
-          "y": 250,
-          "w": 940,
-          "h": 330,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 110,
+          "y": 228,
+          "w": 860,
+          "h": 335,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 82,
-            "weight": 800,
-            "color": "#fbf8ed",
-            "lineHeight": 1.08
+            "size": 74,
+            "weight": 900,
+            "color": "#102322",
+            "lineHeight": 1.1
           },
-          "fitMin": 42,
-          "fitMax": 88,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 88,
-          "y": 675,
-          "w": 904,
-          "h": 920,
-          "rot": 0,
           "role": "text",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 126,
+          "y": 656,
+          "w": 828,
+          "h": 800,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 47,
-            "weight": 700,
-            "color": "#fbf8ed",
-            "lineHeight": 1.5
+            "size": 45,
+            "weight": 650,
+            "color": "#102322",
+            "lineHeight": 1.42
           },
-          "fitMin": 29,
-          "fitMax": 54,
-          "maxChars": 760,
+          "bg": "rgba(255,255,255,.24)",
+          "radius": 28,
           "bullet": true,
-          "placeholder": "Text",
-          "bg": "#ffffff00"
-        },
-        {
-          "id": "bar",
-          "type": "text",
-          "x": 88,
-          "y": 1640,
-          "w": 904,
-          "h": 44,
-          "rot": 0,
-          "text": "━━━━━━━━━━━━━━━━━━━━",
-          "align": "center",
-          "font": {
-            "family": "Inter",
-            "size": 28,
-            "weight": 900,
-            "color": "#f5f0df",
-            "lineHeight": 1.1
-          }
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-dark-grid",
+      "name": "psychology-ru-25-calm-panel",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#101216"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-01.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.20))"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 64,
+          "y": 96,
+          "w": 952,
+          "h": 1488,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,248,.78)",
+          "radius": 48,
+          "border": "3px solid rgba(47,143,114,.26)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 74,
-          "y": 108,
-          "w": 500,
+          "x": 104,
+          "y": 142,
+          "w": 760,
           "h": 58,
-          "rot": 0,
           "text": "В ГОЛОВЕ",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 30,
+            "size": 31,
             "weight": 900,
-            "color": "#b7ff35",
+            "color": "#2f8f72",
+            "lineHeight": 1.1
+          },
+          "bg": "rgba(255,255,255,.58)",
+          "radius": 18,
+          "border": "2px solid rgba(47,143,114,.26)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 104,
+          "y": 204,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#2f8f72",
             "lineHeight": 1.1
           }
         },
         {
-          "id": "grid",
-          "type": "text",
-          "x": 640,
-          "y": 110,
-          "w": 360,
-          "h": 80,
-          "rot": 0,
-          "text": "╱╲╱╲╱╲",
-          "align": "right",
-          "font": {
-            "family": "Inter",
-            "size": 54,
-            "weight": 600,
-            "color": "#b7ff35",
-            "lineHeight": 1.1
-          },
-          "opacity": 0.25
-        },
-        {
           "id": "title",
           "type": "killbox",
-          "x": 74,
-          "y": 250,
-          "w": 930,
-          "h": 320,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 92,
+          "y": 248,
+          "w": 896,
+          "h": 330,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 90,
-            "weight": 800,
-            "color": "#f4f7ee",
-            "lineHeight": 1.04
+            "size": 74,
+            "weight": 900,
+            "color": "#10241d",
+            "lineHeight": 1.1
           },
-          "fitMin": 46,
-          "fitMax": 96,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "center"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 86,
-          "y": 650,
-          "w": 908,
-          "h": 920,
-          "rot": 0,
           "role": "text",
+          "x": 112,
+          "y": 650,
+          "w": 856,
+          "h": 820,
           "padX": 34,
           "padY": 34,
-          "align": "left",
-          "valign": "top",
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 47,
-            "weight": 600,
-            "color": "#f4f7ee",
-            "lineHeight": 1.48
+            "size": 45,
+            "weight": 650,
+            "color": "#10241d",
+            "lineHeight": 1.42
           },
-          "fitMin": 29,
-          "fitMax": 54,
-          "maxChars": 760,
+          "bg": "rgba(255,255,255,.48)",
+          "radius": 28,
           "bullet": true,
-          "placeholder": "Text",
-          "bg": "rgba(255,255,255,.08)",
-          "border": "1px solid #b7ff3566",
-          "radius": 24
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-dark-calm",
+      "name": "psychology-ru-26-wide-note",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#0b1b22"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-02.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 54,
+          "y": 78,
+          "w": 972,
+          "h": 1540,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,248,250,.90)",
+          "radius": 30,
+          "border": "3px solid rgba(184,70,109,.24)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
           "id": "label",
           "type": "text",
-          "x": 74,
-          "y": 108,
-          "w": 500,
+          "x": 94,
+          "y": 126,
+          "w": 800,
           "h": 58,
-          "rot": 0,
           "text": "ЭМОЦИЯ",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 30,
+            "size": 31,
             "weight": 900,
-            "color": "#76e4ff",
+            "color": "#b8466d",
+            "lineHeight": 1.1
+          },
+          "bg": "rgba(255,241,246,.66)",
+          "radius": 18,
+          "border": "2px solid rgba(184,70,109,.24)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 94,
+          "y": 188,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#b8466d",
             "lineHeight": 1.1
           }
         },
         {
-          "id": "grid",
-          "type": "text",
-          "x": 640,
-          "y": 110,
-          "w": 360,
-          "h": 80,
-          "rot": 0,
-          "text": "╱╲╱╲╱╲",
-          "align": "right",
-          "font": {
-            "family": "Inter",
-            "size": 54,
-            "weight": 600,
-            "color": "#76e4ff",
-            "lineHeight": 1.1
-          },
-          "opacity": 0.25
-        },
-        {
           "id": "title",
           "type": "killbox",
-          "x": 74,
-          "y": 250,
-          "w": 930,
-          "h": 320,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 82,
+          "y": 220,
+          "w": 916,
+          "h": 300,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 90,
-            "weight": 800,
-            "color": "#effaff",
-            "lineHeight": 1.04
+            "size": 74,
+            "weight": 900,
+            "color": "#28121a",
+            "lineHeight": 1.1
           },
-          "fitMin": 46,
-          "fitMax": 96,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 86,
-          "y": 650,
-          "w": 908,
-          "h": 920,
-          "rot": 0,
           "role": "text",
+          "x": 94,
+          "y": 620,
+          "w": 892,
+          "h": 910,
           "padX": 34,
           "padY": 34,
-          "align": "left",
-          "valign": "top",
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 47,
-            "weight": 600,
-            "color": "#effaff",
-            "lineHeight": 1.48
-          },
-          "fitMin": 29,
-          "fitMax": 54,
-          "maxChars": 760,
-          "bullet": true,
-          "placeholder": "Text",
-          "bg": "rgba(255,255,255,.08)",
-          "border": "1px solid #76e4ff66",
-          "radius": 24
-        }
-      ]
-    },
-    {
-      "version": 1,
-      "name": "psychology-ru-ai-collage",
-      "canvas": {
-        "w": 1080,
-        "h": 1920,
-        "bg": "#ffffff"
-      },
-      "elements": [
-        {
-          "id": "bg-image",
-          "type": "image",
-          "x": 0,
-          "y": 0,
-          "w": 1080,
-          "h": 1920,
-          "rot": 0,
-          "src": "assets/template-packs/psychology-mgs/backgrounds/ai-bg-01.jpg",
-          "fit": "cover"
-        },
-        {
-          "id": "wash",
-          "type": "text",
-          "x": 64,
-          "y": 94,
-          "w": 952,
-          "h": 1540,
-          "rot": 0,
-          "text": "",
-          "align": "left",
-          "bg": "rgba(255,255,255,.76)",
-          "radius": 34,
-          "shadow": "0 28px 80px rgba(0,0,0,.18)",
-          "font": {
-            "family": "Inter",
-            "size": 1,
-            "weight": 400,
-            "color": "#172019",
-            "lineHeight": 1
-          }
-        },
-        {
-          "id": "label",
-          "type": "text",
-          "x": 108,
-          "y": 140,
-          "w": 780,
-          "h": 56,
-          "rot": 0,
-          "text": "ПРОВЕРКА",
-          "align": "left",
-          "font": {
-            "family": "Inter",
-            "size": 29,
-            "weight": 900,
-            "color": "#f16f6f",
-            "lineHeight": 1.1
-          }
-        },
-        {
-          "id": "title",
-          "type": "killbox",
-          "x": 108,
-          "y": 230,
-          "w": 840,
-          "h": 340,
-          "rot": 0,
-          "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
-          "font": {
-            "family": "Inter",
-            "size": 84,
-            "weight": 800,
-            "color": "#172019",
-            "lineHeight": 1.1
-          },
-          "fitMin": 44,
-          "fitMax": 90,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
-        },
-        {
-          "id": "body",
-          "type": "killbox",
-          "x": 118,
-          "y": 650,
-          "w": 820,
-          "h": 875,
-          "rot": 0,
-          "role": "text",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
-          "font": {
-            "family": "Inter",
-            "size": 46,
+            "size": 45,
             "weight": 650,
-            "color": "#172019",
-            "lineHeight": 1.48
+            "color": "#28121a",
+            "lineHeight": 1.42
           },
-          "fitMin": 28,
-          "fitMax": 54,
-          "maxChars": 760,
+          "bg": "rgba(255,255,255,.24)",
+          "radius": 28,
           "bullet": true,
-          "placeholder": "Text"
+          "maxChars": 760
         }
       ]
     },
     {
       "version": 1,
-      "name": "psychology-ru-ai-map",
+      "name": "psychology-ru-27-lower-focus",
       "canvas": {
         "w": 1080,
         "h": 1920,
-        "bg": "#0c1020"
+        "bg": "#f5f0e8"
       },
       "elements": [
         {
@@ -2778,326 +3663,547 @@
           "y": 0,
           "w": 1080,
           "h": 1920,
-          "rot": 0,
-          "src": "assets/template-packs/psychology-mgs/backgrounds/ai-bg-02.jpg",
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-03.jpg",
           "fit": "cover"
         },
         {
-          "id": "wash",
+          "id": "soft-scrim",
           "type": "text",
-          "x": 64,
-          "y": 94,
-          "w": 952,
-          "h": 1540,
-          "rot": 0,
-          "text": "",
-          "align": "left",
-          "bg": "rgba(8,10,18,.62)",
-          "radius": 34,
-          "shadow": "0 28px 80px rgba(0,0,0,.18)",
-          "font": {
-            "family": "Inter",
-            "size": 1,
-            "weight": 400,
-            "color": "#f9f3df",
-            "lineHeight": 1
-          }
-        },
-        {
-          "id": "label",
-          "type": "text",
-          "x": 108,
-          "y": 140,
-          "w": 780,
-          "h": 56,
-          "rot": 0,
-          "text": "ШАБЛОН МЫСЛИ",
-          "align": "left",
-          "font": {
-            "family": "Inter",
-            "size": 29,
-            "weight": 900,
-            "color": "#ffd166",
-            "lineHeight": 1.1
-          }
-        },
-        {
-          "id": "title",
-          "type": "killbox",
-          "x": 108,
-          "y": 230,
-          "w": 840,
-          "h": 340,
-          "rot": 0,
-          "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
-          "font": {
-            "family": "Inter",
-            "size": 84,
-            "weight": 800,
-            "color": "#f9f3df",
-            "lineHeight": 1.1
-          },
-          "fitMin": 44,
-          "fitMax": 90,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
-        },
-        {
-          "id": "body",
-          "type": "killbox",
-          "x": 118,
-          "y": 650,
-          "w": 820,
-          "h": 875,
-          "rot": 0,
-          "role": "text",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
-          "font": {
-            "family": "Inter",
-            "size": 46,
-            "weight": 650,
-            "color": "#f9f3df",
-            "lineHeight": 1.48
-          },
-          "fitMin": 28,
-          "fitMax": 54,
-          "maxChars": 760,
-          "bullet": true,
-          "placeholder": "Text"
-        }
-      ]
-    },
-    {
-      "version": 1,
-      "name": "psychology-ru-ai-journal",
-      "canvas": {
-        "w": 1080,
-        "h": 1920,
-        "bg": "#fff9ef"
-      },
-      "elements": [
-        {
-          "id": "bg-image",
-          "type": "image",
           "x": 0,
           "y": 0,
           "w": 1080,
           "h": 1920,
-          "rot": 0,
-          "src": "assets/template-packs/psychology-mgs/backgrounds/ai-bg-03.jpg",
-          "fit": "cover"
-        },
-        {
-          "id": "wash",
-          "type": "text",
-          "x": 64,
-          "y": 94,
-          "w": 952,
-          "h": 1540,
-          "rot": 0,
           "text": "",
-          "align": "left",
-          "bg": "rgba(255,255,255,.76)",
-          "radius": 34,
-          "shadow": "0 28px 80px rgba(0,0,0,.18)",
           "font": {
             "family": "Inter",
-            "size": 1,
+            "size": 12,
             "weight": 400,
-            "color": "#1d1911",
+            "color": "rgba(0,0,0,0)",
             "lineHeight": 1
-          }
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 70,
+          "y": 150,
+          "w": 940,
+          "h": 1370,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,250,236,.84)",
+          "radius": 30,
+          "border": "3px solid rgba(185,133,23,.24)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
         },
         {
           "id": "label",
           "type": "text",
-          "x": 108,
-          "y": 140,
-          "w": 780,
-          "h": 56,
-          "rot": 0,
-          "text": "ДНЕВНИК",
-          "align": "left",
-          "font": {
-            "family": "Inter",
-            "size": 29,
-            "weight": 900,
-            "color": "#126a62",
-            "lineHeight": 1.1
-          }
-        },
-        {
-          "id": "title",
-          "type": "killbox",
-          "x": 108,
-          "y": 230,
-          "w": 840,
-          "h": 340,
-          "rot": 0,
-          "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
-          "font": {
-            "family": "Inter",
-            "size": 84,
-            "weight": 800,
-            "color": "#1d1911",
-            "lineHeight": 1.1
-          },
-          "fitMin": 44,
-          "fitMax": 90,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
-        },
-        {
-          "id": "body",
-          "type": "killbox",
-          "x": 118,
-          "y": 650,
-          "w": 820,
-          "h": 875,
-          "rot": 0,
-          "role": "text",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
-          "font": {
-            "family": "Inter",
-            "size": 46,
-            "weight": 650,
-            "color": "#1d1911",
-            "lineHeight": 1.48
-          },
-          "fitMin": 28,
-          "fitMax": 54,
-          "maxChars": 760,
-          "bullet": false,
-          "placeholder": "Text"
-        }
-      ]
-    },
-    {
-      "version": 1,
-      "name": "psychology-ru-ai-poster",
-      "canvas": {
-        "w": 1080,
-        "h": 1920,
-        "bg": "#fbfbf5"
-      },
-      "elements": [
-        {
-          "id": "bg-image",
-          "type": "image",
-          "x": 0,
-          "y": 0,
-          "w": 1080,
-          "h": 1920,
-          "rot": 0,
-          "src": "assets/template-packs/psychology-mgs/backgrounds/ai-bg-04.jpg",
-          "fit": "cover"
-        },
-        {
-          "id": "wash",
-          "type": "text",
-          "x": 64,
-          "y": 94,
-          "w": 952,
-          "h": 1540,
-          "rot": 0,
-          "text": "",
-          "align": "left",
-          "bg": "rgba(255,255,255,.76)",
-          "radius": 34,
-          "shadow": "0 28px 80px rgba(0,0,0,.18)",
-          "font": {
-            "family": "Inter",
-            "size": 1,
-            "weight": 400,
-            "color": "#0d0f16",
-            "lineHeight": 1
-          }
-        },
-        {
-          "id": "label",
-          "type": "text",
-          "x": 108,
-          "y": 140,
-          "w": 780,
-          "h": 56,
-          "rot": 0,
+          "x": 110,
+          "y": 198,
+          "w": 720,
+          "h": 58,
           "text": "ПСИХОЛОГИЯ",
           "align": "left",
           "font": {
             "family": "Inter",
-            "size": 29,
+            "size": 31,
             "weight": 900,
-            "color": "#1b45ff",
+            "color": "#b98517",
+            "lineHeight": 1.1
+          },
+          "bg": "rgba(255,248,225,.70)",
+          "radius": 18,
+          "border": "2px solid rgba(185,133,23,.24)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 110,
+          "y": 260,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#b98517",
             "lineHeight": 1.1
           }
         },
         {
           "id": "title",
           "type": "killbox",
-          "x": 108,
-          "y": 230,
-          "w": 840,
-          "h": 340,
-          "rot": 0,
           "role": "title",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 92,
+          "y": 308,
+          "w": 896,
+          "h": 280,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
           "font": {
             "family": "Inter",
-            "size": 84,
-            "weight": 800,
-            "color": "#0d0f16",
+            "size": 74,
+            "weight": 900,
+            "color": "#231805",
             "lineHeight": 1.1
           },
-          "fitMin": 44,
-          "fitMax": 90,
-          "maxChars": 68,
-          "bullet": false,
-          "placeholder": "Titel"
+          "align": "left"
         },
         {
           "id": "body",
           "type": "killbox",
-          "x": 118,
-          "y": 650,
-          "w": 820,
-          "h": 875,
-          "rot": 0,
           "role": "text",
-          "padX": 0,
-          "padY": 0,
-          "align": "left",
-          "valign": "top",
+          "x": 112,
+          "y": 690,
+          "w": 856,
+          "h": 770,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
           "font": {
             "family": "Inter",
-            "size": 46,
+            "size": 45,
             "weight": 650,
-            "color": "#0d0f16",
-            "lineHeight": 1.48
+            "color": "#231805",
+            "lineHeight": 1.42
           },
-          "fitMin": 28,
-          "fitMax": 54,
-          "maxChars": 760,
+          "bg": "rgba(255,255,255,.48)",
+          "radius": 28,
           "bullet": true,
-          "placeholder": "Text"
+          "maxChars": 760
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "psychology-ru-28-compact-card",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#f5f0e8"
+      },
+      "elements": [
+        {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-04.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 84,
+          "y": 126,
+          "w": 912,
+          "h": 1320,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(247,250,255,.78)",
+          "radius": 48,
+          "border": "3px solid rgba(63,102,199,.22)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 126,
+          "y": 178,
+          "w": 690,
+          "h": 58,
+          "text": "ШАБЛОН МЫСЛИ",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 31,
+            "weight": 900,
+            "color": "#3f66c7",
+            "lineHeight": 1.1
+          },
+          "bg": "rgba(239,246,255,.70)",
+          "radius": 18,
+          "border": "2px solid rgba(63,102,199,.22)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 126,
+          "y": 240,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#3f66c7",
+            "lineHeight": 1.1
+          }
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "role": "title",
+          "x": 116,
+          "y": 260,
+          "w": 848,
+          "h": 310,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
+          "font": {
+            "family": "Inter",
+            "size": 74,
+            "weight": 900,
+            "color": "#162033",
+            "lineHeight": 1.1
+          },
+          "align": "left"
+        },
+        {
+          "id": "body",
+          "type": "killbox",
+          "role": "text",
+          "x": 132,
+          "y": 650,
+          "w": 816,
+          "h": 760,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
+          "font": {
+            "family": "Inter",
+            "size": 45,
+            "weight": 650,
+            "color": "#162033",
+            "lineHeight": 1.42
+          },
+          "bg": "rgba(255,255,255,.24)",
+          "radius": 28,
+          "bullet": true,
+          "maxChars": 760
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "psychology-ru-29-journal-sheet",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#f5f0e8"
+      },
+      "elements": [
+        {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-05.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.20))"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 74,
+          "y": 102,
+          "w": 932,
+          "h": 1450,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(245,251,255,.78)",
+          "radius": 30,
+          "border": "3px solid rgba(47,124,167,.24)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 116,
+          "y": 154,
+          "w": 720,
+          "h": 58,
+          "text": "ТИХИЙ ВЫБОР",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 31,
+            "weight": 900,
+            "color": "#2f7ca7",
+            "lineHeight": 1.1
+          },
+          "bg": "rgba(235,247,252,.66)",
+          "radius": 18,
+          "border": "2px solid rgba(47,124,167,.24)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 116,
+          "y": 216,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#2f7ca7",
+            "lineHeight": 1.1
+          }
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "role": "title",
+          "x": 84,
+          "y": 250,
+          "w": 912,
+          "h": 330,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
+          "font": {
+            "family": "Inter",
+            "size": 74,
+            "weight": 900,
+            "color": "#101827",
+            "lineHeight": 1.1
+          },
+          "align": "center"
+        },
+        {
+          "id": "body",
+          "type": "killbox",
+          "role": "text",
+          "x": 112,
+          "y": 684,
+          "w": 856,
+          "h": 800,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
+          "font": {
+            "family": "Inter",
+            "size": 45,
+            "weight": 650,
+            "color": "#101827",
+            "lineHeight": 1.42
+          },
+          "bg": "rgba(255,255,255,.48)",
+          "radius": 28,
+          "bullet": true,
+          "maxChars": 760
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "psychology-ru-30-soft-poster",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#f5f0e8"
+      },
+      "elements": [
+        {
+          "id": "bg-image",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "src": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-06.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "soft-scrim",
+          "type": "text",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(255,255,255,.06)"
+        },
+        {
+          "id": "panel",
+          "type": "text",
+          "x": 78,
+          "y": 92,
+          "w": 924,
+          "h": 1440,
+          "text": "",
+          "font": {
+            "family": "Inter",
+            "size": 12,
+            "weight": 400,
+            "color": "rgba(0,0,0,0)",
+            "lineHeight": 1
+          },
+          "bg": "rgba(252,247,255,.78)",
+          "radius": 30,
+          "border": "3px solid rgba(128,80,170,.22)",
+          "shadow": "0 28px 86px rgba(20,18,16,.26)"
+        },
+        {
+          "id": "label",
+          "type": "text",
+          "x": 124,
+          "y": 142,
+          "w": 710,
+          "h": 58,
+          "text": "ОПОРА",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 31,
+            "weight": 900,
+            "color": "#8050aa",
+            "lineHeight": 1.1
+          },
+          "bg": "rgba(248,239,255,.68)",
+          "radius": 18,
+          "border": "2px solid rgba(128,80,170,.22)"
+        },
+        {
+          "id": "rule",
+          "type": "text",
+          "x": 124,
+          "y": 204,
+          "w": 330,
+          "h": 38,
+          "text": "━━━━",
+          "align": "left",
+          "font": {
+            "family": "Inter",
+            "size": 26,
+            "weight": 900,
+            "color": "#8050aa",
+            "lineHeight": 1.1
+          }
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "role": "title",
+          "x": 110,
+          "y": 228,
+          "w": 860,
+          "h": 335,
+          "padX": 18,
+          "padY": 18,
+          "fitMin": 42,
+          "fitMax": 76,
+          "font": {
+            "family": "Inter",
+            "size": 74,
+            "weight": 900,
+            "color": "#241529",
+            "lineHeight": 1.1
+          },
+          "align": "left"
+        },
+        {
+          "id": "body",
+          "type": "killbox",
+          "role": "text",
+          "x": 126,
+          "y": 656,
+          "w": 828,
+          "h": 800,
+          "padX": 34,
+          "padY": 34,
+          "fitMin": 31,
+          "fitMax": 47,
+          "font": {
+            "family": "Inter",
+            "size": 45,
+            "weight": 650,
+            "color": "#241529",
+            "lineHeight": 1.42
+          },
+          "bg": "rgba(255,255,255,.24)",
+          "radius": 28,
+          "bullet": true,
+          "maxChars": 760
         }
       ]
     }
@@ -6780,14 +7886,5 @@
     }
   ],
   "createdAt": "2026-06-26T12:00:00.000Z",
-  "grants": [],
-  "rightsLedger": {
-    "status": "project_owned_generated_text",
-    "addedAt": "2026-06-27T07:55:00.000Z",
-    "note": "Original concise psychology card text and local templates generated for this project; no external quote/photo corpus is intentionally used.",
-    "rules": [
-      "Avoid medical diagnosis, crisis advice, manipulative promises, or protected-class targeting.",
-      "Keep as general self-reflection/behavioral prompts, not therapy replacement."
-    ]
-  }
+  "grants": []
 }

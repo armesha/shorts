@@ -1,0 +1,45 @@
+{
+  "updatedAt": "2026-06-28T00:00:00.000Z",
+  "status": "project_owned_ai_generated_backgrounds",
+  "tool": "built-in image generation",
+  "note": "Backgrounds are generated specifically for the super-admin Russian psychology pack. They contain no people, faces, logos, watermarks, or readable text.",
+  "files": [
+    {
+      "file": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-01.jpg",
+      "source": "generated panel: warm desk with journal, pen, soft morning light"
+    },
+    {
+      "file": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-02.jpg",
+      "source": "generated panel: abstract mind map lines and soft geometric shapes"
+    },
+    {
+      "file": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-03.jpg",
+      "source": "generated panel: cozy therapy room corner with chair silhouette and plant, no person"
+    },
+    {
+      "file": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-04.jpg",
+      "source": "generated panel: calm rainy window, notebook, cup, muted colors"
+    },
+    {
+      "file": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-05.jpg",
+      "source": "generated panel: abstract neural pathways and soft light dots"
+    },
+    {
+      "file": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-06.jpg",
+      "source": "generated panel: minimal bookshelf, candle, and open journal"
+    },
+    {
+      "file": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-07.jpg",
+      "source": "generated panel: botanical shapes, paper notes, subtle line art"
+    },
+    {
+      "file": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-08.jpg",
+      "source": "generated panel: mountain lake at dawn with reflective water and mist"
+    }
+  ],
+  "rules": [
+    "Keep these assets independent from MGS packs and templates.",
+    "Use only as background imagery behind readable text panels.",
+    "Do not add faces, logos, readable in-image text, social handles, or watermarks."
+  ]
+}
