@@ -242,7 +242,13 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
 
   const selectedBlockParam = searchParams.get("block");
   const selectedBlockId =
-    selectedBlockParam === "lifehacks" || selectedBlockParam === "facts_space" || selectedBlockParam === "psychology" ? "quotes" : selectedBlockParam;
+    selectedBlockParam === "lifehacks" ||
+    selectedBlockParam === "facts_space" ||
+    selectedBlockParam === "psychology" ||
+    selectedBlockParam === "riddles_illusions" ||
+    selectedBlockParam === "jokes_memes"
+      ? "quotes"
+      : selectedBlockParam;
   const selectedBlock = data?.blocks.find((block) => block.id === selectedBlockId) ?? null;
   useEffect(() => {
     if (selectedBlock) setPerDay(Math.max(0, Math.min(20, selectedBlock.postsPerDay)));

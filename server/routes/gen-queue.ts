@@ -13,8 +13,13 @@ import {
   pickFixedPackCard,
   pickLeastPostedPackCard,
   isLeastPostedRepeatPack,
+  isPerAccountAutoExpirePack,
+  availablePackCardsForAccount,
+  packCardClaimKey,
+  usedPackCardKeysForAccount,
   buildPackLibraryVideo,
 } from "../services/pack-gen.ts";
+import { removeAutoExpiredDeckFromAccount } from "../services/auto-expire-packs.ts";
 import { buildFactLibraryVideo } from "../services/fact-gen.ts";
 import {
   initGenQueue,
@@ -24,6 +29,7 @@ import {
   cancelJob as genCancelJob,
   queuedRemainingForUser as genQueuedRemainingForUser,
   queuedRemainingForOwnerDecks as genQueuedRemainingForOwnerDecks,
+  queuedRemainingForAccountDecks as genQueuedRemainingForAccountDecks,
 } from "../services/gen-queue.ts";
 import { uid } from "../infra/auth-session.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
@@ -57,21 +63,29 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
         if (!pack || !pack.templates.length) throw new Error(`Пак «${sourceDeck}» не найден или без шаблона`);
         let attempts = 0;
         for (;;) {
+          const perAccountAutoExpire = isPerAccountAutoExpirePack(pack);
+          const packSeen = perAccountAutoExpire ? usedPackCardKeysForAccount(pack, job.accountId, seen) : seen;
+          const canUseInfinite = infinite && !perAccountAutoExpire;
           const picked = isLeastPostedRepeatPack(pack)
             ? pickLeastPostedPackCard(db, job.accountId, pack, pickSeed(sourceDeck, attempts++))
-            : infinite
+            : canUseInfinite
               ? pickFixedPackCard(pack)
-              : pickUnusedPackCard(pack, seen, pickSeed(sourceDeck, attempts++));
-          if (!picked) return "exhausted";
-          if (!infinite && !isLeastPostedRepeatPack(pack)) {
-            seen.add(picked.key);
-            if (!db.claimAnecdote(ownerId, picked.key)) continue; // taken by a concurrent run → pick another
+              : pickUnusedPackCard(pack, packSeen, pickSeed(sourceDeck, attempts++));
+          if (!picked) {
+            if (perAccountAutoExpire) removeAutoExpiredDeckFromAccount(db, acc, sourceDeck);
+            return "exhausted";
+          }
+          const claimKey = packCardClaimKey(pack, job.accountId, picked.key);
+          if (!canUseInfinite && !isLeastPostedRepeatPack(pack)) {
+            seen.add(claimKey);
+            packSeen.add(picked.key);
+            if (!db.claimAnecdote(ownerId, claimKey)) continue; // taken by a concurrent run → pick another
           }
           try {
             await buildPackLibraryVideo({ db, userId: ownerId, accountId: job.accountId, pack, picked });
             return "made";
           } catch (e) {
-            if (!infinite && !isLeastPostedRepeatPack(pack)) db.releaseAnecdote(ownerId, picked.key);
+            if (!canUseInfinite && !isLeastPostedRepeatPack(pack)) db.releaseAnecdote(ownerId, claimKey);
             throw e;
           }
         }
@@ -154,10 +168,31 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
     // claimed by the owner's in-flight jobs on these same decks so back-to-back batches can't
     // over-commit the pool. Applies to everyone (incl. admins) — this is accuracy, not a quota.
     if (!db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) {
-      const free = Math.max(
-        0,
-        availableUnusedForDecks(ownerId, deckIds) - genQueuedRemainingForOwnerDecks(ownerId, deckIds),
-      );
+      const ownerIsSuperAdmin = isSuperAdminUser(db.getUserById(ownerId));
+      const perAccountPackIds = deckIds.filter((deckId) => {
+        if (!isPackDeckId(deckId)) return false;
+        const pack = getPack(deckId.slice(5), ownerId, ownerIsSuperAdmin);
+        return !!pack && isPerAccountAutoExpirePack(pack);
+      });
+      const sharedDeckIds = deckIds.filter((deckId) => !perAccountPackIds.includes(deckId));
+      let free = 0;
+      if (sharedDeckIds.length) {
+        free += Math.max(
+          0,
+          availableUnusedForDecks(ownerId, sharedDeckIds) - genQueuedRemainingForOwnerDecks(ownerId, sharedDeckIds),
+        );
+      }
+      if (perAccountPackIds.length) {
+        const usedKeys = new Set<string>(db.usedAnecdoteKeys(ownerId));
+        for (const deckId of perAccountPackIds) {
+          const pack = getPack(deckId.slice(5), ownerId, ownerIsSuperAdmin);
+          if (!pack) continue;
+          free += Math.max(
+            0,
+            availablePackCardsForAccount(pack, body.accountId, usedKeys) - genQueuedRemainingForAccountDecks(body.accountId, [deckId]),
+          );
+        }
+      }
       if (free <= 0)
         return reply.code(400).send({
           error:

@@ -4,7 +4,19 @@ import type { Account, Db, Video } from "../db.ts";
 import type { RouteDeps } from "./deps.ts";
 import { thematicBlockDeckSequenceForGeneration } from "./super-admin-channel-blocks.ts";
 
-const JOKE_EN_SOURCES = ["en", "memes-en", "visual-riddles-en"];
+const FOREIGN_EN_SOURCES = [
+  "pack:static-facts-en-superadmin",
+  "fact-en",
+  "visual-riddles-en",
+  "illusions-3d-en",
+  "illusions-en",
+  "tips-en",
+  "en",
+  "pack:new-memes-en-superadmin",
+  "quote-video-en",
+  "quotes-en",
+  "pack:motivation-en-superadmin",
+];
 
 function account(id: number): Account {
   return {
@@ -13,7 +25,7 @@ function account(id: number): Account {
     channelName: `Channel ${id}`,
     theme: "",
     lang: "en",
-    sourceDecks: JOKE_EN_SOURCES,
+    sourceDecks: FOREIGN_EN_SOURCES,
     longVideoDecks: [],
     channelLang: "en",
     schedule: [],
@@ -55,8 +67,8 @@ function db(): Db {
 test("thematic block generation keeps source mix stable but varies order per channel", () => {
   const dbMock = db();
   const depsMock = deps();
-  const first = thematicBlockDeckSequenceForGeneration(dbMock, depsMock, 1, account(101), JOKE_EN_SOURCES, 12);
-  const second = thematicBlockDeckSequenceForGeneration(dbMock, depsMock, 1, account(202), JOKE_EN_SOURCES, 12);
+  const first = thematicBlockDeckSequenceForGeneration(dbMock, depsMock, 1, account(101), FOREIGN_EN_SOURCES, 12);
+  const second = thematicBlockDeckSequenceForGeneration(dbMock, depsMock, 1, account(202), FOREIGN_EN_SOURCES, 12);
 
   assert.ok(first);
   assert.ok(second);

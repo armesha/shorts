@@ -6,7 +6,13 @@ import { libraryStats } from "../../src/anecdotes/library.ts";
 import { getPack } from "../../src/packs/store.ts";
 import { uid } from "../infra/auth-session.ts";
 import type { RouteDeps } from "./deps.ts";
-import { isLeastPostedRepeatPack, packCardKey } from "../services/pack-gen.ts";
+import {
+  availablePackCardsForAccount,
+  isLeastPostedRepeatPack,
+  isPerAccountAutoExpirePack,
+  packCardKey,
+} from "../services/pack-gen.ts";
+import { isAutoExpiredSourceGroup } from "../services/auto-expire-packs.ts";
 import {
   enqueue as genEnqueue,
   listStatuses as genListStatuses,
@@ -59,16 +65,12 @@ const JOKE_TEXT_DECK_BY_LANG: Record<string, string[]> = {
 };
 
 const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
-  ru: ["memes-ru"],
-  de: ["memes-de"],
-  it: ["memes-it"],
-  fr: ["memes-fr"],
-  en: ["memes-en"],
-  es: ["memes-es"],
-  pt: ["memes-pt"],
-  hi: ["memes-hi"],
-  id: ["memes-id"],
-  ar: ["memes-ar"],
+  de: ["pack:new-memes-de-superadmin"],
+  it: ["pack:new-memes-it-superadmin"],
+  fr: ["pack:new-memes-fr-superadmin"],
+  en: ["pack:new-memes-en-superadmin"],
+  es: ["pack:new-memes-es-superadmin"],
+  pt: ["pack:new-memes-pt-superadmin"],
 };
 
 const RIDDLE_VISUAL_DECK_BY_LANG: Record<string, string[]> = {
@@ -80,27 +82,6 @@ const RIDDLE_VISUAL_DECK_BY_LANG: Record<string, string[]> = {
   fr: ["visual-riddles-fr"],
   pt: ["visual-riddles-pt"],
 };
-
-const JOKE_SOURCE_GROUPS: SourceGroupDef[] = [
-  {
-    id: "jokes",
-    title: "Анекдоты",
-    defaultWeight: 5,
-    sources: JOKE_TEXT_DECK_BY_LANG,
-  },
-  {
-    id: "memes",
-    title: "Мемы",
-    defaultWeight: 3,
-    sources: JOKE_MEME_DECK_BY_LANG,
-  },
-  {
-    id: "visual_riddles",
-    title: "Вижу ответ",
-    defaultWeight: 1,
-    sources: RIDDLE_VISUAL_DECK_BY_LANG,
-  },
-];
 
 const LIFEHACK_DECK_BY_LANG: Record<string, string[]> = {
   ru: ["tips"],
@@ -305,12 +286,6 @@ const RUSSIAN_SOURCE_GROUPS: SourceGroupDef[] = [
     sources: { ru: ["ru"] },
   },
   {
-    id: "memes",
-    title: "Мемы",
-    defaultWeight: 3,
-    sources: { ru: ["memes-ru"] },
-  },
-  {
     id: "visual_riddles",
     title: "Вижу ответ",
     defaultWeight: 1,
@@ -453,7 +428,6 @@ const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
 ];
 
 const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
-  jokes_memes: JOKE_TEXT_DECK_BY_LANG,
   islam: {
     ar: ["islamic", "islamic-quotes-ar", "islamic-facts-ar"],
   },
@@ -476,24 +450,12 @@ const BLOCKS: BlockDef[] = [
     rules: [
       "Русский блок использует один общий микс источников для всех русских каналов супер-админа.",
       "Все RU-каналы в блоке должны иметь одинаковый набор источников: юмор, иллюзии, факты, лайфхаки, цитаты, психология, мотивация и советские постеры.",
-      "Советские постеры — RU-only архивный источник: не локализовать, не пополнять, использовать как повторяемый curated pack.",
+      "Legacy-пак Мемы (RU) не подключать к русскому блоку; русский блок пока работает без мемов.",
+      "Советские постеры — RU-only архивный источник: не локализовать, не пополнять; он конечный и авто-удаляется из канала после исчерпания.",
       "Постеры брать только из проверенного public-domain набора; не добавлять антирелигиозную сатиру, сталинский культ, расовые стереотипы, тяжёлые военные изображения и спорные киноафиши.",
     ],
     accountIds: [7, 16, 52, 62, 81],
     sourceGroups: RUSSIAN_SOURCE_GROUPS,
-  },
-  {
-    id: "jokes_memes",
-    title: "Анекдоты и мемы",
-    description: "Юмористические паки: анекдоты + мемы по доступным языкам.",
-    rules: [
-      "Анекдоты не придумывать ИИ: брать только проверенные внешние/PD/licensed корпуса с источниками.",
-      "Мемы публиковать массово только после проверки прав на шаблоны/фото и отсутствия оскорбительного контекста.",
-      "Локализации считаются одним тематическим семейством, но unsafe-языки или отсутствующие мем-паки не подставляются автоматически.",
-      "Декоративные смеющиеся emoji/GIF разрешены, если они не перекрывают текст и не выглядят как плашка/водяной знак канала.",
-    ],
-    accountIds: [14, 15, 64, 68, 70, 79, 82],
-    sourceGroups: JOKE_SOURCE_GROUPS,
   },
   {
     id: "religion",
@@ -515,28 +477,33 @@ const BLOCKS: BlockDef[] = [
   },
   {
     id: "quotes",
-    title: "ФАКТЫ",
-    description: "Факты, загадки, иллюзии, лайфхаки, юмор, видеоцитаты и психология в одном тематическом блоке.",
+    title: "Иностранные",
+    description: "Все нерусские нерелигиозные каналы в одном общем миксе источников.",
     rules: [
+      "Все нерусские нерелигиозные каналы супер-админа используют один общий микс источников.",
       "Факты требуют проверяемого источника; численные данные и названия нужно перепроверять.",
       "Визуальные загадки и мемы в этом блоке остаются отдельными источниками микса, а не отдельным блоком.",
       "Иллюзии внутри блока подставлять только на языке канала; не смешивать RU-видео в EN/DE-каналах.",
       "Лайфхаки локализовать на одном наборе идей, но бытовые реалии адаптировать под язык.",
       "Если появится озвучка для лайфхаков, новые voiceover-паки собирать через разрешённый TTS-профиль проекта с учётом текущих квот.",
+      "Анекдоты не придумывать ИИ: брать только проверенные внешние/PD/licensed корпуса с источниками.",
       "Анекдоты внутри блока остаются отдельным источником микса; не смешивать бытовые советы и шутки внутри одной карточки.",
+      "Legacy memes-* не подключать к armen-блокам; иностранные мемы брать только из новых pack:new-memes-<lang>-superadmin после проверки прав и оскорбительного контекста.",
+      "Декоративные смеющиеся emoji/GIF разрешены, если они не перекрывают текст и не выглядят как плашка/водяной знак канала.",
       "Видео-цитаты и статичные цитаты держать отдельными источниками микса.",
       "Мотивационные карточки писать как оригинальные короткие правила без реальных атрибуций, гендерной токсичности, обещаний успеха или водяных знаков.",
       "Запрещены AP/неясные фото, misattribution, экстремистские/насильственные цитаты и protected-class hate.",
       "Не давать медицинских диагнозов/обещаний лечения; формулировать как общие наблюдения и self-help.",
       "Локализации должны сохранять осторожный тон и избегать травматичных/опасных советов.",
     ],
-    accountIds: [18, 38, 43, 44, 45, 65, 72, 78],
+    accountIds: [14, 15, 18, 38, 43, 44, 45, 64, 65, 68, 70, 72, 78, 79, 82],
     sourceGroups: FACT_SOURCE_GROUPS,
   },
 ];
 
 const BLOCK_ALIASES: Record<string, string> = {
   facts_space: "quotes",
+  jokes_memes: "quotes",
   lifehacks: "quotes",
   psychology: "quotes",
   riddles_illusions: "quotes",
@@ -692,10 +659,58 @@ function availableForDecks(db: Db, deps: RouteDeps, ctx: BlockContext | undefine
   return total;
 }
 
+function ownerIsSuperAdmin(db: Db, ownerId: number): boolean {
+  const getUserById = (db as { getUserById?: (id: number) => unknown }).getUserById;
+  const user = typeof getUserById === "function" ? getUserById.call(db, ownerId) : null;
+  return isSuperAdminUser(user as { username?: string | null; role?: string | null } | null);
+}
+
+function packForDeck(db: Db, ownerId: number, deckId: string) {
+  if (!isPackDeckId(deckId)) return null;
+  return getPack(deckId.slice(5), ownerId, ownerIsSuperAdmin(db, ownerId));
+}
+
 function isRepeatPackDeck(db: Db, ownerId: number, deckId: string): boolean {
-  if (!isPackDeckId(deckId)) return false;
-  const pack = getPack(deckId.slice(5), ownerId, isSuperAdminUser(db.getUserById(ownerId)));
+  const pack = packForDeck(db, ownerId, deckId);
   return !!pack && isLeastPostedRepeatPack(pack);
+}
+
+function isPerAccountAutoExpirePackDeck(db: Db, ownerId: number, deckId: string): boolean {
+  const pack = packForDeck(db, ownerId, deckId);
+  return !!pack && isPerAccountAutoExpirePack(pack);
+}
+
+function availableForDeckForAccount(
+  db: Db,
+  deps: RouteDeps,
+  ctx: BlockContext | undefined,
+  ownerId: number,
+  accountId: number,
+  deckId: string,
+): number {
+  const pack = packForDeck(db, ownerId, deckId);
+  if (pack && isPerAccountAutoExpirePack(pack)) {
+    const key = `${ownerId}|${accountId}|${deckId}`;
+    const cached = ctx?.availableCache.get(key);
+    if (cached != null) return cached;
+    const usedAnecdoteKeys = (db as unknown as { usedAnecdoteKeys?: (userId: number) => ReadonlySet<string> }).usedAnecdoteKeys;
+    const usedKeys = typeof usedAnecdoteKeys === "function" ? usedAnecdoteKeys.call(db, ownerId) : new Set<string>();
+    const total = availablePackCardsForAccount(pack, accountId, usedKeys);
+    ctx?.availableCache.set(key, total);
+    return total;
+  }
+  return availableForDecks(db, deps, ctx, ownerId, [deckId]);
+}
+
+function availableForDecksForAccount(
+  db: Db,
+  deps: RouteDeps,
+  ctx: BlockContext | undefined,
+  ownerId: number,
+  accountId: number,
+  deckIds: string[],
+): number {
+  return unique(deckIds).reduce((sum, deckId) => sum + availableForDeckForAccount(db, deps, ctx, ownerId, accountId, deckId), 0);
 }
 
 function deckSummaries(input: {
@@ -704,14 +719,15 @@ function deckSummaries(input: {
   ctx?: BlockContext;
   blockId?: string;
   ownerId: number;
+  accountId: number;
   deckIds: string[];
   queuedByDeck: Record<string, number>;
 }) {
-  const { db, deps, ctx, blockId, ownerId, deckIds, queuedByDeck } = input;
+  const { db, deps, ctx, blockId, ownerId, accountId, deckIds, queuedByDeck } = input;
   return deckIds.map((deckId) => {
     const title = deckTitle(deckId, ownerId);
     const group = blockId && title.lang ? sourceGroupForDeck(blockId, title.lang, deckId) : null;
-    const available = availableForDecks(db, deps, ctx, ownerId, [deckId]);
+    const available = availableForDeckForAccount(db, deps, ctx, ownerId, accountId, deckId);
     return {
       id: deckId,
       name: title.name,
@@ -747,6 +763,19 @@ function blockDefaultSources(blockId: string, lang: string): string[] {
   return BLOCK_DEFAULT_SOURCES[blockId]?.[lang] ?? [];
 }
 
+function blockDefaultSourcesForDb(db: Db, blockId: string, lang: string): string[] {
+  if (lang === "ru" && canonicalBlockId(blockId) !== "russian") return [];
+  const canonical = canonicalBlockId(blockId);
+  const groups = sourceGroupsForBlock(canonical);
+  if (groups.length)
+    return unique(
+      groups
+        .filter((group) => !isAutoExpiredSourceGroup(db, canonical, group.id))
+        .flatMap((group) => group.sources[lang] ?? []),
+    );
+  return BLOCK_DEFAULT_SOURCES[canonical]?.[lang] ?? [];
+}
+
 function sameDeckSet(a: string[], b: string[]): boolean {
   if (a.length !== b.length) return false;
   const aa = [...a].sort();
@@ -765,10 +794,15 @@ function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockCo
   const ownerId = account.userId ?? 0;
   const sourceDecks = deps.deckAccess.accountSourceDecks(account);
   const queuedByDeck = ctx?.queuedByAccountDeck.get(account.id) ?? videosByDeck(db.listVideos(account.id));
-  const decks = deckSummaries({ db, deps, ctx, blockId, ownerId, deckIds: sourceDecks, queuedByDeck });
+  const decks = deckSummaries({ db, deps, ctx, blockId, ownerId, accountId: account.id, deckIds: sourceDecks, queuedByDeck });
   const availableByDeck = Object.fromEntries(decks.map((deck) => [deck.id, deck.available]));
   const queuedCoverage = effectiveCapacityForSchedule(account, sourceDecks, queuedByDeck, ctx?.queuedByAccount.get(account.id) ?? sumCounts(queuedByDeck));
-  const availableCoverage = effectiveCapacityForSchedule(account, sourceDecks, availableByDeck, availableForDecks(db, deps, ctx, ownerId, sourceDecks));
+  const availableCoverage = effectiveCapacityForSchedule(
+    account,
+    sourceDecks,
+    availableByDeck,
+    availableForDecksForAccount(db, deps, ctx, ownerId, account.id, sourceDecks),
+  );
   const scheduledByDeck = Object.fromEntries(scheduledCountsByDeck(account, sourceDecks));
   return {
     id: account.id,
@@ -789,7 +823,7 @@ function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockCo
     queuedByDeck,
     scheduledByDeck,
     shortAvailable: availableCoverage.effective,
-    rawShortAvailable: availableForDecks(db, deps, ctx, ownerId, sourceDecks),
+    rawShortAvailable: availableForDecksForAccount(db, deps, ctx, ownerId, account.id, sourceDecks),
     sourceDecks: decks,
   };
 }
@@ -908,13 +942,15 @@ function sourceSequenceSeed(
 
 function publicSourceGroups(db: Db, block: BlockDef) {
   const weights = readSourceWeights(db, block);
-  return (block.sourceGroups ?? []).map((group) => ({
-    id: group.id,
-    title: group.title,
-    section: group.section ?? null,
-    defaultWeight: group.defaultWeight,
-    weight: weights[group.id] ?? group.defaultWeight,
-  }));
+  return (block.sourceGroups ?? [])
+    .filter((group) => !isAutoExpiredSourceGroup(db, block.id, group.id))
+    .map((group) => ({
+      id: group.id,
+      title: group.title,
+      section: group.section ?? null,
+      defaultWeight: group.defaultWeight,
+      weight: weights[group.id] ?? group.defaultWeight,
+    }));
 }
 
 function activeSourceGroups(block: BlockDef, account: Account, sourceDecks: string[], weights: Record<string, number>) {
@@ -1166,12 +1202,21 @@ function weightedDeckDeficitSequence(
   return out;
 }
 
-function capDeckSequenceByFreeCards(db: Db, deps: RouteDeps, ownerId: number, sequence: string[]): string[] {
-  if (!sequence.length || db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) return sequence;
+function capDeckSequenceByFreeCards(db: Db, deps: RouteDeps, ownerId: number, accountId: number, sequence: string[]): string[] {
+  if (!sequence.length) return sequence;
+  const hasAccountScopedFinitePack = sequence.some((deckId) => isPerAccountAutoExpirePackDeck(db, ownerId, deckId));
+  if (db.hasFeature(ownerId, INFINITE_PACKS_FEATURE) && !hasAccountScopedFinitePack) return sequence;
   const freeByDeck = new Map<string, number>();
   for (const deckId of unique(sequence)) {
     if (isRepeatPackDeck(db, ownerId, deckId)) {
       freeByDeck.set(deckId, Number.MAX_SAFE_INTEGER);
+      continue;
+    }
+    if (isPerAccountAutoExpirePackDeck(db, ownerId, deckId)) {
+      freeByDeck.set(
+        deckId,
+        Math.max(0, availableForDeckForAccount(db, deps, undefined, ownerId, accountId, deckId) - (queuedRemainingForAccountDecks(accountId)[deckId] ?? 0)),
+      );
       continue;
     }
     freeByDeck.set(
@@ -1276,7 +1321,7 @@ export function thematicBlockDeckSequenceForGeneration(
       ...weightedDeckSlots(block, account, sourceDecks, weights, count - sequence.length, `${seed}|fallback`),
     ];
   sequence = sequence.slice(0, count);
-  const capped = capDeckSequenceByFreeCards(db, deps, ownerId, sequence);
+  const capped = capDeckSequenceByFreeCards(db, deps, ownerId, account.id, sequence);
   return capped;
 }
 
@@ -1307,7 +1352,7 @@ function buildPayload(db: Db, deps: RouteDeps) {
         lang: lang.code,
         label: lang.label,
         accounts: cellAccounts,
-        defaultSourceDecks: blockDefaultSources(block.id, lang.code),
+        defaultSourceDecks: blockDefaultSourcesForDb(db, block.id, lang.code),
       };
     });
     const allAccounts = cells.flatMap((cell) => cell.accounts);
@@ -1449,14 +1494,16 @@ function planChannelBlockNormalize(input: {
   const shortages = new Map<string, NormalizeShortage>();
   const freeRemaining = new Map<string, number>();
   const takeFree = (ownerId: number, deckId: string, deckName: string, needed: number, account: Account): number => {
-    if (needed <= 0 || db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) return needed;
+    if (needed <= 0) return needed;
     if (isRepeatPackDeck(db, ownerId, deckId)) return needed;
-    const key = `${ownerId}|${deckId}`;
+    const perAccountAutoExpire = isPerAccountAutoExpirePackDeck(db, ownerId, deckId);
+    if (!perAccountAutoExpire && db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) return needed;
+    const key = perAccountAutoExpire ? `${ownerId}|${account.id}|${deckId}` : `${ownerId}|${deckId}`;
     if (!freeRemaining.has(key)) {
-      freeRemaining.set(
-        key,
-        Math.max(0, deps.deckAccess.availableUnusedForDecks(ownerId, [deckId]) - queuedRemainingForOwnerDeck(ownerId, deckId)),
-      );
+      const available = perAccountAutoExpire
+        ? availableForDeckForAccount(db, deps, undefined, ownerId, account.id, deckId) - (queuedRemainingForAccountDecks(account.id)[deckId] ?? 0)
+        : deps.deckAccess.availableUnusedForDecks(ownerId, [deckId]) - queuedRemainingForOwnerDeck(ownerId, deckId);
+      freeRemaining.set(key, Math.max(0, available));
     }
     const available = freeRemaining.get(key) ?? 0;
     const taken = Math.min(needed, available);
@@ -1621,7 +1668,7 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
     if (ownerId == null || !block) return reply.code(404).send({ error: "Тематический блок не найден." });
     if (!langDef) return reply.code(400).send({ error: "Этот язык не входит в сетку блока." });
 
-    const sourceDecks = blockDefaultSources(block.id, lang);
+    const sourceDecks = blockDefaultSourcesForDb(db, block.id, lang);
     if (!sourceDecks.length) {
       return reply.code(400).send({ error: "Для этого языка пока нет безопасно подготовленных паков блока." });
     }

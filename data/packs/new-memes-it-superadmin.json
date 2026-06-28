@@ -1,0 +1,5159 @@
+{
+  "id": "new-memes-it-superadmin",
+  "owners": [
+    1
+  ],
+  "createdBy": 1,
+  "name": "Nuovi meme",
+  "lang": "it",
+  "templates": [
+    {
+      "version": 1,
+      "name": "new-memes-it-001",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/001_wzQuht6tOcA.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-002",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/008_r4OkmBimQCs.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-003",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/009_QjZUABLlNyo.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-004",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/010_NLY-53Qrxj0.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-005",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/014_kAu_45iZmeQ.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-006",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/015_4ZDHJjSEPig.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-007",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/022_mo78C4NU0fk.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-008",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/024_DGXUZFu4hL4.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-009",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/035_NX6GVkeRjQk.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-010",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/038_HngzMp7nVaA.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-011",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/044_9QkrU0TORMg.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-012",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/046_E7XhihmwECw.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-013",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/048_TAco9hzn1kA.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-014",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/052_K0NFH5rkZJE.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-015",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/055_6_0wQG5EssE.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-016",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/056_w8UWdB2rhz8.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-017",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/058_8q-1nYa9f0w.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-018",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/061_0UKFKiqe0iM.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-019",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/063_WssXd_GZJsw.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-020",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/065_YogypT-0nsQ.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-021",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/067_qveUl-UkVQU.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-022",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/068_SOwUTsESB7U.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-023",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/073_PJy3ZwaVeig.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-024",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/076_H6k-FG4TnWI.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-025",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/078_u-ywzLCMhw4.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-026",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/083_yf_XbdPRcNc.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-027",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/085_U6mo5DYJc6E.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-028",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/088_SxT34QUrHtc.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-029",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/089_s8e5Hi6cF8E.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-030",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/093__paiTfwYfo4.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-031",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/094_fpIfSzagdFU.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-032",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/096_JqdoaoSD9q4.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-033",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/097_5IgSCrB_1nA.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-034",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/099_YOJiI395ABo.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-035",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/105__WKrWsauP78.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-036",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/108_po_4hUEmM7E.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-037",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/110_wotf5w68N-E.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-038",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/112_Rhc96iV6aPQ.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-039",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/122_jsGrHcdR86M.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-040",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/124_i_UspbQuyHE.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-041",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/126_CkwPa4F9OfY.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-042",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/130__fYsHrKrPlo.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-043",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/133_OhjNaljXZuI.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-044",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/134_6-07Unx5DEs.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-045",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/137_u7-RlAuPaeM.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-046",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/142_Fo3BnqDp76I.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-047",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/145_BqTFvHj6_8c.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-048",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/146_nzb2dwLrESQ.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-049",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/147_Dyw2d7qYjTs.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-050",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/151_9RkV7RTDpOs.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-051",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/152_VHxGCA7T9YM.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-052",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/154_g4AgCmDcP2M.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-053",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/157_-J_4w5dOSpw.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-054",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/159_qBcDOgvp0Fk.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-055",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/160_n26wldrz00E.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-056",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/172_UWG9qKQy_sM.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-057",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/177_gpzy3rrNQqQ.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-058",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/182_-7nlvRcahmg.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-059",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/186_byFQY7aKoYY.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-060",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/190_2-sM-TizXMg.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-061",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/191_xVSPdwUmGDk.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-062",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/192_pKXyeueDzX8.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-063",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/195_hDqrhWBgcf4.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-064",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/197_qtv7SfvWqAM.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "name": "new-memes-it-065",
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "bg": "#111111"
+      },
+      "elements": [
+        {
+          "id": "card",
+          "type": "image",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 1920,
+          "rot": 0,
+          "src": "assets/template-packs/new-memes/it/199_Awcb2gCpDL0.jpg",
+          "fit": "cover"
+        },
+        {
+          "id": "title",
+          "type": "killbox",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "title",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 220,
+          "placeholder": "title"
+        },
+        {
+          "id": "source",
+          "type": "killbox",
+          "x": 0,
+          "y": 1,
+          "w": 1,
+          "h": 1,
+          "rot": 0,
+          "role": "source",
+          "padX": 0,
+          "padY": 0,
+          "align": "left",
+          "valign": "top",
+          "font": {
+            "family": "Inter",
+            "size": 1,
+            "weight": 400,
+            "color": "#00000000",
+            "lineHeight": 1
+          },
+          "fitMin": 1,
+          "fitMax": 1,
+          "maxChars": 1200,
+          "placeholder": "source"
+        }
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "values": {
+        "title": "Nuovi meme 001",
+        "source": "Translated ready-made meme card 001_wzQuht6tOcA. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 002",
+        "source": "Translated ready-made meme card 008_r4OkmBimQCs. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 003",
+        "source": "Translated ready-made meme card 009_QjZUABLlNyo. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 004",
+        "source": "Translated ready-made meme card 010_NLY-53Qrxj0. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 005",
+        "source": "Translated ready-made meme card 014_kAu_45iZmeQ. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 006",
+        "source": "Translated ready-made meme card 015_4ZDHJjSEPig. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 007",
+        "source": "Translated ready-made meme card 022_mo78C4NU0fk. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 008",
+        "source": "Translated ready-made meme card 024_DGXUZFu4hL4. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 009",
+        "source": "Translated ready-made meme card 035_NX6GVkeRjQk. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 010",
+        "source": "Translated ready-made meme card 038_HngzMp7nVaA. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 011",
+        "source": "Translated ready-made meme card 044_9QkrU0TORMg. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 012",
+        "source": "Translated ready-made meme card 046_E7XhihmwECw. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 013",
+        "source": "Translated ready-made meme card 048_TAco9hzn1kA. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 014",
+        "source": "Translated ready-made meme card 052_K0NFH5rkZJE. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 015",
+        "source": "Translated ready-made meme card 055_6_0wQG5EssE. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 016",
+        "source": "Translated ready-made meme card 056_w8UWdB2rhz8. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 017",
+        "source": "Translated ready-made meme card 058_8q-1nYa9f0w. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 018",
+        "source": "Translated ready-made meme card 061_0UKFKiqe0iM. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 019",
+        "source": "Translated ready-made meme card 063_WssXd_GZJsw. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 020",
+        "source": "Translated ready-made meme card 065_YogypT-0nsQ. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 021",
+        "source": "Translated ready-made meme card 067_qveUl-UkVQU. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 022",
+        "source": "Translated ready-made meme card 068_SOwUTsESB7U. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 023",
+        "source": "Translated ready-made meme card 073_PJy3ZwaVeig. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 024",
+        "source": "Translated ready-made meme card 076_H6k-FG4TnWI. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 025",
+        "source": "Translated ready-made meme card 078_u-ywzLCMhw4. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 026",
+        "source": "Translated ready-made meme card 083_yf_XbdPRcNc. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 027",
+        "source": "Translated ready-made meme card 085_U6mo5DYJc6E. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 028",
+        "source": "Translated ready-made meme card 088_SxT34QUrHtc. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 029",
+        "source": "Translated ready-made meme card 089_s8e5Hi6cF8E. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 030",
+        "source": "Translated ready-made meme card 093__paiTfwYfo4. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 031",
+        "source": "Translated ready-made meme card 094_fpIfSzagdFU. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 032",
+        "source": "Translated ready-made meme card 096_JqdoaoSD9q4. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 033",
+        "source": "Translated ready-made meme card 097_5IgSCrB_1nA. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 034",
+        "source": "Translated ready-made meme card 099_YOJiI395ABo. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 035",
+        "source": "Translated ready-made meme card 105__WKrWsauP78. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 036",
+        "source": "Translated ready-made meme card 108_po_4hUEmM7E. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 037",
+        "source": "Translated ready-made meme card 110_wotf5w68N-E. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 038",
+        "source": "Translated ready-made meme card 112_Rhc96iV6aPQ. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 039",
+        "source": "Translated ready-made meme card 122_jsGrHcdR86M. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 040",
+        "source": "Translated ready-made meme card 124_i_UspbQuyHE. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 041",
+        "source": "Translated ready-made meme card 126_CkwPa4F9OfY. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 042",
+        "source": "Translated ready-made meme card 130__fYsHrKrPlo. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 043",
+        "source": "Translated ready-made meme card 133_OhjNaljXZuI. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 044",
+        "source": "Translated ready-made meme card 134_6-07Unx5DEs. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 045",
+        "source": "Translated ready-made meme card 137_u7-RlAuPaeM. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 046",
+        "source": "Translated ready-made meme card 142_Fo3BnqDp76I. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 047",
+        "source": "Translated ready-made meme card 145_BqTFvHj6_8c. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 048",
+        "source": "Translated ready-made meme card 146_nzb2dwLrESQ. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 049",
+        "source": "Translated ready-made meme card 147_Dyw2d7qYjTs. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 050",
+        "source": "Translated ready-made meme card 151_9RkV7RTDpOs. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 051",
+        "source": "Translated ready-made meme card 152_VHxGCA7T9YM. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 052",
+        "source": "Translated ready-made meme card 154_g4AgCmDcP2M. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 053",
+        "source": "Translated ready-made meme card 157_-J_4w5dOSpw. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 054",
+        "source": "Translated ready-made meme card 159_qBcDOgvp0Fk. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 055",
+        "source": "Translated ready-made meme card 160_n26wldrz00E. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 056",
+        "source": "Translated ready-made meme card 172_UWG9qKQy_sM. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 057",
+        "source": "Translated ready-made meme card 177_gpzy3rrNQqQ. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 058",
+        "source": "Translated ready-made meme card 182_-7nlvRcahmg. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 059",
+        "source": "Translated ready-made meme card 186_byFQY7aKoYY. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 060",
+        "source": "Translated ready-made meme card 190_2-sM-TizXMg. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 061",
+        "source": "Translated ready-made meme card 191_xVSPdwUmGDk. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 062",
+        "source": "Translated ready-made meme card 192_pKXyeueDzX8. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 063",
+        "source": "Translated ready-made meme card 195_hDqrhWBgcf4. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 064",
+        "source": "Translated ready-made meme card 197_qtv7SfvWqAM. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    },
+    {
+      "values": {
+        "title": "Nuovi meme 065",
+        "source": "Translated ready-made meme card 199_Awcb2gCpDL0. Legacy memes-* decks are not used for armen thematic blocks."
+      },
+      "addedAt": "2026-06-28T00:00:00.000Z"
+    }
+  ],
+  "createdAt": "2026-06-28T00:00:00.000Z",
+  "grants": [],
+  "autoExpireMode": "per_account",
+  "notes": {
+    "source": "temp/meme/translated; user-provided translated meme cards rendered before pack assembly.",
+    "policy": [
+      "These packs replace legacy memes-* sources for armen foreign thematic blocks.",
+      "Russian channels intentionally do not use a meme source after the legacy meme deck retirement.",
+      "Do not reconnect legacy memes-* decks to armen thematic blocks without a new rights/safety review."
+    ]
+  }
+}

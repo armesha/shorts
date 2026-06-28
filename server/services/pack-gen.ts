@@ -99,6 +99,38 @@ export function isLeastPostedRepeatPack(pack: Pack): boolean {
   return pack.repeatMode === "least_posted_per_account";
 }
 
+export function isPerAccountAutoExpirePack(pack: Pack): boolean {
+  return pack.autoExpireMode === "per_account";
+}
+
+function perAccountPackPrefix(pack: Pack, accountId: number): string {
+  return `pack:${pack.id}:account:${accountId}:`;
+}
+
+export function packCardClaimKey(pack: Pack, accountId: number, cardKey: string): string {
+  return isPerAccountAutoExpirePack(pack) ? `${perAccountPackPrefix(pack, accountId)}${cardKey}` : cardKey;
+}
+
+export function usedPackCardKeysForAccount(pack: Pack, accountId: number, usedKeys: ReadonlySet<string>): Set<string> {
+  if (!isPerAccountAutoExpirePack(pack)) return new Set(usedKeys);
+  const prefix = perAccountPackPrefix(pack, accountId);
+  const out = new Set<string>();
+  for (const key of usedKeys) {
+    if (key.startsWith(prefix)) out.add(key.slice(prefix.length));
+  }
+  return out;
+}
+
+export function availablePackCardsForAccount(pack: Pack, accountId: number, usedKeys: ReadonlySet<string>): number {
+  if (!pack.cards.length) return 0;
+  const used = usedPackCardKeysForAccount(pack, accountId, usedKeys);
+  let n = 0;
+  for (const card of pack.cards) {
+    if (!used.has(packCardKey(card.values))) n += 1;
+  }
+  return n;
+}
+
 /**
  * Curated one-off packs can be repeatable without enabling the user's global infinite-pack mode.
  * Pick the card with the lowest rendered count for this account; ties are seeded so channels do not

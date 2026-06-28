@@ -182,9 +182,9 @@ const pack = {
   cards,
   createdAt: "2026-06-28T00:00:00.000Z",
   grants: [],
-  repeatMode: "least_posted_per_account",
+  autoExpireMode: "per_account",
   note:
-    "RU-only curated public-domain Soviet poster pack. Do not localize, do not replenish automatically. Repeat mode picks the least rendered poster per channel.",
+    "RU-only curated public-domain Soviet poster pack. Do not localize or replenish automatically. Finite per-channel auto-expiring source: when a channel exhausts it, remove it from that channel.",
 };
 
 writeFileSync(resolve(outDir, "sources.json"), `${JSON.stringify(ledger, null, 2)}\n`);

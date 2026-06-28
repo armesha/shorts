@@ -15,8 +15,12 @@ import {
   pickFixedPackCard,
   pickLeastPostedPackCard,
   isLeastPostedRepeatPack,
+  isPerAccountAutoExpirePack,
+  packCardClaimKey,
+  usedPackCardKeysForAccount,
   buildPackLibraryVideo,
 } from "../services/pack-gen.ts";
+import { removeAutoExpiredDeckFromAccount } from "../services/auto-expire-packs.ts";
 import { buildFactLibraryVideo } from "../services/fact-gen.ts";
 import { addLongVideoToLibrary, LongVideoLibraryError } from "../services/long-video-library.ts";
 import { uploadShort, isYtAuthError, ytErrorReason } from "../services/youtube.ts";
@@ -195,22 +199,30 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
         if (!pack) return reply.code(404).send({ error: "Пак не найден." });
         if (!pack.templates.length) return reply.code(400).send({ error: "У пака нет шаблона." });
         while (created.length < requested) {
+          const perAccountAutoExpire = isPerAccountAutoExpirePack(pack);
+          const packSeen = perAccountAutoExpire ? usedPackCardKeysForAccount(pack, accountId, seen) : seen;
+          const canUseInfinite = infinite && !perAccountAutoExpire;
           const picked = isLeastPostedRepeatPack(pack)
             ? pickLeastPostedPackCard(db, accountId, pack, pickSeed(sourceDeckId))
-            : infinite
+            : canUseInfinite
               ? pickFixedPackCard(pack)
-              : pickUnusedPackCard(pack, seen, pickSeed(sourceDeckId));
-          if (!picked) break;
-          if (!infinite && !isLeastPostedRepeatPack(pack)) {
-            seen.add(picked.key);
-            if (!db.claimAnecdote(ownerId, picked.key)) continue; // a concurrent run already took this card
+              : pickUnusedPackCard(pack, packSeen, pickSeed(sourceDeckId));
+          if (!picked) {
+            if (perAccountAutoExpire) removeAutoExpiredDeckFromAccount(db, acc, sourceDeckId);
+            break;
+          }
+          const claimKey = packCardClaimKey(pack, accountId, picked.key);
+          if (!canUseInfinite && !isLeastPostedRepeatPack(pack)) {
+            seen.add(claimKey);
+            packSeen.add(picked.key);
+            if (!db.claimAnecdote(ownerId, claimKey)) continue; // a concurrent run already took this card
           }
           try {
             created.push(
               await buildPackLibraryVideo({ db, userId: ownerId, accountId, pack, picked, music: body.music || undefined }),
             );
           } catch (e) {
-            if (!infinite && !isLeastPostedRepeatPack(pack)) db.releaseAnecdote(ownerId, picked.key); // render failed → return the card to the pool
+            if (!canUseInfinite && !isLeastPostedRepeatPack(pack)) db.releaseAnecdote(ownerId, claimKey); // render failed → return the card to the pool
             throw e;
           }
         }

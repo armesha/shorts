@@ -59,6 +59,12 @@ export interface Pack {
    * keeps picking the card that has been rendered least often for the current channel.
    */
   repeatMode?: "least_posted_per_account";
+  /**
+   * Finite curated source that expires independently per channel. Cards are claimed with an
+   * account-scoped key, and when a channel exhausts the pack the source can be removed from that
+   * channel's source_decks/slot_decks without affecting other channels.
+   */
+  autoExpireMode?: "per_account";
 }
 export interface PackSummary {
   id: string;

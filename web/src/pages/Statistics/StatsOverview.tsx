@@ -109,16 +109,6 @@ export function StatsOverview({
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
             <div className="font-semibold">{t("stats.overviewTitle")}</div>
-            <div className="text-xs text-base-content/50 mt-1">
-              {t("stats.overviewSubtitle", {
-                channels: overview.channels,
-                ready: overview.analyticsChannels,
-              })}
-              {overview.dataThrough ? ` · ${t("stats.analyticsDataThrough", { date: overview.dataThrough })}` : ""}
-            </div>
-            {days !== 90 && (
-              <div className="text-xs text-base-content/40 mt-0.5">{t("stats.breakdownPeriodNote")}</div>
-            )}
           </div>
           <div className="min-w-0 max-w-full overflow-x-auto pb-1">
             <div className="join min-w-max">
@@ -328,7 +318,6 @@ export function TopChannelsPanel({ rows }: { rows: OverviewTopChannel[] }) {
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="text-sm font-semibold">{t("stats.topChannels")}</div>
-            <div className="text-xs text-base-content/45">{t("stats.topChannelsHint")}</div>
           </div>
           {ranked.some((r) => !r.hasAnalytics) && (
             <span className="badge badge-ghost badge-sm shrink-0">{t("stats.totalFallbackShort")}</span>
@@ -337,7 +326,7 @@ export function TopChannelsPanel({ rows }: { rows: OverviewTopChannel[] }) {
       {rows.length === 0 ? (
         <div className="text-sm text-base-content/45 py-6 text-center">{t("stats.noTopChannels")}</div>
       ) : (
-        <div ref={listRef} className="space-y-2 max-h-[32rem] overflow-auto pr-1">
+        <div ref={listRef} className="space-y-2 max-h-[56rem] overflow-auto pr-1">
           {ranked.map((r, index) => {
             const pct = Math.max(3, Math.round((r.mainViews / maxViews) * 100));
             return (

@@ -723,6 +723,41 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
+/* Thin elegant scrollbars — hidden until hover, then a slim rounded thumb */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 999px;
+  transition: background 200ms ease;
+}
+
+/* Show scrollbar thumb on hover of the scrollable container */
+*:hover::-webkit-scrollbar-thumb {
+  background: color-mix(in oklch, var(--color-base-content) 22%, transparent);
+}
+
+*:hover::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklch, var(--color-base-content) 38%, transparent);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+*:hover {
+  scrollbar-color: color-mix(in oklch, var(--color-base-content) 22%, transparent) transparent;
+}
+
 /* Respect users who prefer reduced motion — near-disable animations/transitions. */
 @media (prefers-reduced-motion: reduce) {
   *,
