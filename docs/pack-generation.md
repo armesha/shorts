@@ -1068,11 +1068,13 @@ node --input-type=module -e 'import fs from "node:fs"; const idx=JSON.parse(fs.r
 
 2026-06-24 добавлен source-backed набор `surprising-lifehacks-2026-06`: RU/DE/ES локализации по
 25 карточек, источники в `local-assets/corpora/tips-sources/surprising-lifehacks-2026-06.json`.
-Визуальный рендер обновлён: `src/anecdotes/lifehack-templates.ts` содержит 25 детерминированных
-вариантов, `templates/lifehack.html` использует верхнюю текстовую область примерно на 70% кадра,
-а `assets/backgrounds/lifehacks/editorial-clean-0*.png` дают нейтральные сгенерированные фоны без
-людей, логотипов и слов. Нижняя часть кадра намеренно остаётся свободной под CTA/UI Shorts и
-маленький motion-оверлей.
+Визуальный рендер обновлён: `src/anecdotes/lifehack-templates.ts` содержит детерминированные
+layout-варианты, `templates/lifehack.html` использует верхнюю текстовую область примерно на 70% кадра,
+а `assets/backgrounds/lifehacks/editorial-clean-0*.png` и `generated-workspace-*.jpg` дают нейтральные
+сгенерированные фоны без брендов, логотипов и readable text. Для profession-карточек renderer обычно
+берёт соответствующий `profession_*` фон, но детерминированно подмешивает neutral `generated-workspace`
+примерно в 25% случаев, чтобы super-admin каналы не повторяли один и тот же portrait-heavy visual.
+Нижняя часть кадра намеренно остаётся свободной под CTA/UI Shorts и маленький motion-оверлей.
 MP4 для `lifehack`-дек получают маленький синтезированный GIF-оверлей из
 `assets/motion/lifehacks/` и отдельную синтезированную музыку из `assets/audio/lifehacks/`
 (оба набора без скачанных ассетов, пересборка скриптами `src/scripts/lifehack-gen-motion.mjs` и

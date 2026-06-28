@@ -91,7 +91,13 @@ function lifehackBgFile(profession?: string | null, variant?: string | null, see
       `profession_${key}`,
     ].filter(Boolean);
     const candidates = professionFiles.filter((f) => exact.some((prefix) => f.toLowerCase().startsWith(`${prefix}.`)));
-    if (candidates.length) return candidates[stableIndex(seed || `${profession}|${variant}`, candidates.length)];
+    if (candidates.length) {
+      const baseSeed = seed || `${profession}|${variant}`;
+      if (generatedFiles.length && stableIndex(`${baseSeed}|workspace-mix`, 4) === 0) {
+        return generatedFiles[stableIndex(`${baseSeed}|workspace`, generatedFiles.length)];
+      }
+      return candidates[stableIndex(baseSeed, candidates.length)];
+    }
     if (generatedFiles.length) return generatedFiles[stableIndex(seed || `${profession}|${variant}`, generatedFiles.length)];
   }
   return files[stableIndex(seed || `${profession ?? ""}|${variant ?? ""}`, files.length)];
