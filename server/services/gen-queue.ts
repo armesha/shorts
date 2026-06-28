@@ -38,9 +38,16 @@ export interface JobStatus extends Job {
   position: number; // 0 = running/next, >0 = waiting, -1 = finished
 }
 
+export interface QueueAttachOptions {
+  /** Convert stale running rows to queued on attach. Use this only in the process that owns rendering. */
+  recoverRunning?: boolean;
+}
+
 export interface GenQueue {
-  attachDatabase(db: DatabaseSync): void;
+  attachDatabase(db: DatabaseSync, options?: QueueAttachOptions): void;
   initWorker(w: GenWorker): void;
+  /** Poll SQLite for jobs created by another process. Intended for the standalone worker. */
+  startPolling(intervalMs?: number): void;
   enqueue(userId: number, accountId: number, total: number, ownerUserId?: number, deckIds?: string[]): Job;
   cancelJob(id: string, userId: number, force?: boolean): boolean;
   jobStatus(id: string): JobStatus | null;
@@ -80,6 +87,8 @@ type JobRow = {
 
 type QueueStore = {
   upsert: StatementSync;
+  claim: StatementSync;
+  get: StatementSync;
   markRestarted: StatementSync;
   load: StatementSync;
   prune: StatementSync;
@@ -141,6 +150,8 @@ export function createGenQueue(): GenQueue {
   let seq = 0;
   let worker: GenWorker | null = null;
   let store: QueueStore | null = null;
+  let pollTimer: NodeJS.Timeout | null = null;
+  let activeJobId: string | null = null;
 
   function persist(job: Job): void {
     if (!store) return;
@@ -165,6 +176,44 @@ export function createGenQueue(): GenQueue {
     store?.prune.run(now - KEEP_FINISHED_MS);
   }
 
+  function refreshFromStore(): void {
+    if (!store) return;
+    const cutoff = Date.now() - KEEP_FINISHED_MS;
+    const rows = store.load.all(cutoff) as JobRow[];
+    const ids = new Set<string>();
+    pending = [];
+    for (const row of rows) {
+      const job = rowToJob(row);
+      const match = /^g(\d+)-/.exec(job.id);
+      if (match) seq = Math.max(seq, Number(match[1]) || 0);
+      jobs.set(job.id, job);
+      ids.add(job.id);
+      if (job.state === "queued" || job.state === "running") pending.push(job.id);
+    }
+    for (const id of [...jobs.keys()]) if (!ids.has(id)) jobs.delete(id);
+  }
+
+  function tryClaim(job: Job): boolean {
+    if (!store) return true;
+    if (job.state !== "queued") return activeJobId === job.id && job.state === "running";
+    const info = store.claim.run(job.id);
+    if (Number(info.changes) !== 1) return false;
+    activeJobId = job.id;
+    job.state = "running";
+    job.endedAt = undefined;
+    return true;
+  }
+
+  function refreshJobFromStore(job: Job): void {
+    if (!store) return;
+    const row = store.get.get(job.id) as JobRow | undefined;
+    if (!row) return;
+    if (row.state === "canceled") {
+      job.state = "canceled";
+      job.endedAt = row.ended_at == null ? Date.now() : Number(row.ended_at);
+    }
+  }
+
   async function pump(): Promise<void> {
     if (running || !worker) return;
     running = true;
@@ -177,9 +226,16 @@ export function createGenQueue(): GenQueue {
           pending.shift();
           continue;
         }
-        job.state = "running";
-        persist(job);
+        if (!tryClaim(job)) {
+          pending.shift();
+          continue;
+        }
+        if (!store) {
+          job.state = "running";
+          persist(job);
+        }
         while (job.done < job.total) {
+          refreshJobFromStore(job);
           // cast: worker() can be canceled by another request mid-await, which TS's flow analysis
           // can't see (it narrows job.state to "running" from the assignment above).
           if ((job.state as string) === "canceled" || draining) break; // soft stop AFTER the current video
@@ -189,6 +245,7 @@ export function createGenQueue(): GenQueue {
           } catch (e) {
             job.state = "error";
             job.error = (e as Error)?.message ?? "ошибка генерации";
+            persist(job);
             break;
           }
           if (res === "exhausted") {
@@ -202,11 +259,13 @@ export function createGenQueue(): GenQueue {
         if (draining) {
           // Interrupted by shutdown — leave the job unfinished (not falsely "done"); stop the queue.
           if (job.state === "running") job.state = "queued";
+          activeJobId = null;
           persist(job);
           break;
         }
         if (job.state === "running") job.state = "done";
         job.endedAt = Date.now();
+        activeJobId = null;
         persist(job);
         pending.shift();
       }
@@ -228,7 +287,7 @@ export function createGenQueue(): GenQueue {
   }
 
   return {
-    attachDatabase(db) {
+    attachDatabase(db, options = {}) {
       ensureQueueSchema(db);
       store = {
         upsert: db.prepare(
@@ -238,37 +297,41 @@ export function createGenQueue(): GenQueue {
             "account_id=excluded.account_id, deck_ids=excluded.deck_ids, total=excluded.total, done=excluded.done, " +
             "state=excluded.state, error=excluded.error, created_at=excluded.created_at, ended_at=excluded.ended_at",
         ),
+        claim: db.prepare(
+          "UPDATE generation_jobs SET state = 'running', ended_at = NULL WHERE id = ? AND state = 'queued'",
+        ),
+        get: db.prepare("SELECT * FROM generation_jobs WHERE id = ?"),
         markRestarted: db.prepare(
           "UPDATE generation_jobs SET state = 'queued', ended_at = NULL WHERE state = 'running'",
         ),
         load: db.prepare(
           "SELECT * FROM generation_jobs " +
             "WHERE state IN ('queued','running') OR (ended_at IS NOT NULL AND ended_at >= ?) " +
-            "ORDER BY created_at ASC, id ASC",
+            "ORDER BY CASE state WHEN 'running' THEN 0 WHEN 'queued' THEN 1 ELSE 2 END, created_at ASC, id ASC",
         ),
         prune: db.prepare(
           "DELETE FROM generation_jobs WHERE state IN ('done','exhausted','canceled','error') AND ended_at IS NOT NULL AND ended_at < ?",
         ),
       };
-      store.markRestarted.run();
-      jobs.clear();
-      pending = [];
-      const cutoff = Date.now() - KEEP_FINISHED_MS;
-      for (const row of store.load.all(cutoff) as JobRow[]) {
-        const job = rowToJob(row);
-        const match = /^g(\d+)-/.exec(job.id);
-        if (match) seq = Math.max(seq, Number(match[1]) || 0);
-        if (job.state === "running") job.state = "queued";
-        jobs.set(job.id, job);
-        if (job.state === "queued") pending.push(job.id);
-      }
+      if (options.recoverRunning) store.markRestarted.run();
+      refreshFromStore();
       void pump();
     },
     initWorker(w) {
       worker = w;
       void pump();
     },
+    startPolling(intervalMs = 1500) {
+      if (pollTimer) return;
+      const tick = () => {
+        refreshFromStore();
+        void pump();
+      };
+      pollTimer = setInterval(tick, Math.max(500, intervalMs));
+      tick();
+    },
     enqueue(userId, accountId, total, ownerUserId = userId, deckIds) {
+      refreshFromStore();
       prune();
       const id = `g${++seq}-${Date.now().toString(36)}`;
       const cleanDeckIds = deckIds?.map((d) => String(d || "").trim()).filter(Boolean);
@@ -290,6 +353,7 @@ export function createGenQueue(): GenQueue {
       return job;
     },
     cancelJob(id, userId, force = false) {
+      refreshFromStore();
       const job = jobs.get(id);
       if (!job || (!force && job.userId !== userId)) return false;
       if (job.state !== "queued" && job.state !== "running") return false;
@@ -301,9 +365,11 @@ export function createGenQueue(): GenQueue {
       return true;
     },
     jobStatus(id) {
+      refreshFromStore();
       return statusFor(id);
     },
     listStatuses(userId) {
+      refreshFromStore();
       prune();
       const rank: Record<JobState, number> = {
         running: 0,
@@ -320,6 +386,7 @@ export function createGenQueue(): GenQueue {
         .sort((a, b) => rank[a.state] - rank[b.state] || a.position - b.position || b.createdAt - a.createdAt);
     },
     queuedRemainingForUser(userId) {
+      refreshFromStore();
       prune();
       let total = 0;
       for (const id of pending) {
@@ -331,6 +398,7 @@ export function createGenQueue(): GenQueue {
       return total;
     },
     queuedRemainingForOwnerDecks(ownerUserId, deckIds) {
+      refreshFromStore();
       prune();
       const want = new Set(deckIds);
       let total = 0;
@@ -347,6 +415,7 @@ export function createGenQueue(): GenQueue {
       return total;
     },
     queuedRemainingForAccountDecks(accountId, deckIds) {
+      refreshFromStore();
       prune();
       const want = new Set(deckIds);
       let total = 0;
@@ -368,6 +437,7 @@ export function createGenQueue(): GenQueue {
       return total;
     },
     queuedRemainingForAccount(accountId) {
+      refreshFromStore();
       prune();
       let total = 0;
       for (const id of pending) {
@@ -380,6 +450,10 @@ export function createGenQueue(): GenQueue {
     },
     drain() {
       draining = true;
+      if (pollTimer) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+      }
     },
     isDraining() {
       return draining;
@@ -392,8 +466,9 @@ export function createGenQueue(): GenQueue {
 
 // ---- process-wide singleton used by the server ----
 const _queue = createGenQueue();
-export const attachGenQueueDb = (db: DatabaseSync): void => _queue.attachDatabase(db);
+export const attachGenQueueDb = (db: DatabaseSync, options?: QueueAttachOptions): void => _queue.attachDatabase(db, options);
 export const initGenQueue = (w: GenWorker): void => _queue.initWorker(w);
+export const startGenQueuePolling = (intervalMs?: number): void => _queue.startPolling(intervalMs);
 export const enqueue = (userId: number, accountId: number, total: number, ownerUserId?: number, deckIds?: string[]): Job =>
   _queue.enqueue(userId, accountId, total, ownerUserId, deckIds);
 export const cancelJob = (id: string, userId: number, force?: boolean): boolean => _queue.cancelJob(id, userId, force);
@@ -406,3 +481,4 @@ export const queuedRemainingForAccountDecks = (accountId: number, deckIds: strin
   _queue.queuedRemainingForAccountDecks(accountId, deckIds);
 export const queuedRemainingForAccount = (accountId: number): number => _queue.queuedRemainingForAccount(accountId);
 export const drainQueue = (): void => _queue.drain();
+export const isGenQueueRunning = (): boolean => _queue.isRunning();

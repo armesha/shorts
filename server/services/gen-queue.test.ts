@@ -175,7 +175,7 @@ test("durable queue marks interrupted running jobs as queued on restore", () => 
     ).run("g99-restart", 1, 1, 7, JSON.stringify(["ru"]), 5, 2, "running", Date.now());
 
     const q = createGenQueue();
-    q.attachDatabase(db);
+    q.attachDatabase(db, { recoverRunning: true });
     const restored = q.jobStatus("g99-restart")!;
     assert.equal(restored.state, "queued");
     assert.equal(restored.done, 2);

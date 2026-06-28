@@ -1,26 +1,14 @@
-// Global generation queue: ONE video at a time across ALL users (bounds server load). Registers the
-// queue worker (initGenQueue) + the enqueue/status/cancel routes. Worker + handlers moved VERBATIM from
-// index.ts. The worker uses the SHARED buildLibraryVideo (injected via deps) so claim/spend guarantees
-// match the sync batch path.
+// Global generation queue API. In embedded mode this route also starts the queue worker; in external
+// worker mode it only writes/reads SQLite-backed jobs and the standalone worker process renders them.
 import type { FastifyInstance } from "fastify";
 import type { Db } from "../db.ts";
 import { isSuperAdminUser } from "../auth.ts";
-import { DECKS, isPackDeckId } from "../../src/anecdotes/decks.ts";
-import { randomAnecdote, firstAnecdote, packItemKey } from "../../src/anecdotes/library.ts";
+import { isPackDeckId } from "../../src/anecdotes/decks.ts";
 import { getPack } from "../../src/packs/store.ts";
 import {
-  pickUnusedPackCard,
-  pickFixedPackCard,
-  pickLeastPostedPackCard,
-  isLeastPostedRepeatPack,
   isPerAccountAutoExpirePack,
   availablePackCardsForAccount,
-  packCardClaimKey,
-  usedPackCardKeysForAccount,
-  buildPackLibraryVideo,
 } from "../services/pack-gen.ts";
-import { removeAutoExpiredDeckFromAccount } from "../services/auto-expire-packs.ts";
-import { buildFactLibraryVideo } from "../services/fact-gen.ts";
 import {
   initGenQueue,
   enqueue as genEnqueue,
@@ -31,6 +19,7 @@ import {
   queuedRemainingForOwnerDecks as genQueuedRemainingForOwnerDecks,
   queuedRemainingForAccountDecks as genQueuedRemainingForAccountDecks,
 } from "../services/gen-queue.ts";
+import { makeGenQueueWorker } from "../services/gen-queue-worker.ts";
 import { uid } from "../infra/auth-session.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
 import type { RouteDeps } from "./deps.ts";
@@ -39,98 +28,12 @@ import { thematicBlockDeckSequenceForGeneration } from "./super-admin-channel-bl
 const USER_GEN_QUEUE_CAP = 100;
 
 export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
-  const { accessibleAccount, accountOwnerId, buildLibraryVideo } = deps;
-  const { builtinDeckVisibleForUser, accountSourceDecks, cleanDeckIds, validateAccountSourceDeck, availableUnusedForDecks } =
-    deps.deckAccess;
+  const { accessibleAccount, accountOwnerId } = deps;
+  const { accountSourceDecks, cleanDeckIds, validateAccountSourceDeck, availableUnusedForDecks } = deps.deckAccess;
 
-  // ---- Global generation queue: ONE video at a time across ALL users → bounds server load ----
-  // Worker = make ONE random unused video for the job's channel (a single batch step).
-  initGenQueue(async (job) => {
-    const acc = db.getAccount(job.accountId);
-    if (!acc) throw new Error("Канал не найден");
-    const ownerId = job.ownerUserId ?? job.userId;
-    const seen = new Set<string>(db.usedAnecdoteKeys(ownerId)); // skip owner's already-used cards
-    const infinite = db.hasFeature(ownerId, INFINITE_PACKS_FEATURE);
-    const sources = job.deckIds?.length ? job.deckIds : accountSourceDecks(acc);
-    const pickSeed = (sourceDeck: string, offset = 0) => `${job.accountId}|${sourceDeck}|${job.id}|${job.done}|${offset}`;
-    // Each candidate is CLAIMED (db.claimAnecdote) before its render so a concurrent run (another job,
-    // the sync batch, or a co-owner) can't build the same card twice; a lost claim → re-pick; a render
-    // failure → release the claim so the card returns to the pool.
-    const generateFromSource = async (sourceDeck: string): Promise<"made" | "exhausted"> => {
-      // Пак-канал: одна случайная неиспользованная карточка пака → видео в библиотеку.
-      if (isPackDeckId(sourceDeck)) {
-        const pack = getPack(sourceDeck.slice(5), ownerId, isSuperAdminUser(db.getUserById(ownerId)));
-        if (!pack || !pack.templates.length) throw new Error(`Пак «${sourceDeck}» не найден или без шаблона`);
-        let attempts = 0;
-        for (;;) {
-          const perAccountAutoExpire = isPerAccountAutoExpirePack(pack);
-          const packSeen = perAccountAutoExpire ? usedPackCardKeysForAccount(pack, job.accountId, seen) : seen;
-          const canUseInfinite = infinite && !perAccountAutoExpire;
-          const picked = isLeastPostedRepeatPack(pack)
-            ? pickLeastPostedPackCard(db, job.accountId, pack, pickSeed(sourceDeck, attempts++))
-            : canUseInfinite
-              ? pickFixedPackCard(pack)
-              : pickUnusedPackCard(pack, packSeen, pickSeed(sourceDeck, attempts++));
-          if (!picked) {
-            if (perAccountAutoExpire) removeAutoExpiredDeckFromAccount(db, acc, sourceDeck);
-            return "exhausted";
-          }
-          const claimKey = packCardClaimKey(pack, job.accountId, picked.key);
-          if (!canUseInfinite && !isLeastPostedRepeatPack(pack)) {
-            seen.add(claimKey);
-            packSeen.add(picked.key);
-            if (!db.claimAnecdote(ownerId, claimKey)) continue; // taken by a concurrent run → pick another
-          }
-          try {
-            await buildPackLibraryVideo({ db, userId: ownerId, accountId: job.accountId, pack, picked });
-            return "made";
-          } catch (e) {
-            if (!canUseInfinite && !isLeastPostedRepeatPack(pack)) db.releaseAnecdote(ownerId, claimKey);
-            throw e;
-          }
-        }
-      }
-      const channelDeck = DECKS.find((d) => d.id === sourceDeck);
-      if (!channelDeck) throw new Error(`У канала язык «${sourceDeck}» без пака`);
-      if (db.getUserById(ownerId)?.role !== "admin" && !builtinDeckVisibleForUser(ownerId, channelDeck))
-        throw new Error("Этот пак вам недоступен");
-      let attempts = 0;
-      for (;;) {
-        const a = infinite ? firstAnecdote(channelDeck.id) : randomAnecdote(channelDeck.id, seen, pickSeed(channelDeck.id, attempts++));
-        if (!a) return "exhausted"; // deck has no unused cards left
-        const key = packItemKey(a);
-        if (!infinite) {
-          seen.add(key);
-          if (!db.claimAnecdote(ownerId, key)) continue; // taken by a concurrent run → pick another
-        }
-        try {
-          if (channelDeck.preFact) {
-            await buildFactLibraryVideo({ db, userId: ownerId, accountId: job.accountId, deckId: channelDeck.id, picked: a });
-          } else {
-            await buildLibraryVideo({
-              userId: ownerId,
-              accountId: job.accountId,
-              text: a.text,
-              title: a.title,
-              deck: channelDeck.id,
-              profession: a.profession,
-              item: a,
-            });
-          }
-          return "made";
-        } catch (e) {
-          if (!infinite) db.releaseAnecdote(ownerId, key);
-          throw e;
-        }
-      }
-    };
-    for (let offset = 0; offset < Math.max(1, sources.length); offset++) {
-      const sourceDeck = sources[(job.done + offset) % Math.max(1, sources.length)] || acc.lang;
-      const result = await generateFromSource(sourceDeck);
-      if (result === "made") return "made";
-    }
-    return "exhausted";
-  });
+  if (process.env.GEN_QUEUE_RUNNER !== "0" && process.env.GEN_QUEUE_RUNNER !== "external") {
+    initGenQueue(makeGenQueueWorker(db, deps));
+  }
 
   // Enqueue a batch. Regular users may have at most USER_GEN_QUEUE_CAP unfinished videos queued
   // across their jobs; admins are not capped.

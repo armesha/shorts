@@ -56,7 +56,8 @@ import { registerSuperAdminChannelBlockRoutes } from "./routes/super-admin-chann
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
-attachGenQueueDb(db.db);
+const embeddedGenQueueRunner = process.env.GEN_QUEUE_RUNNER !== "0" && process.env.GEN_QUEUE_RUNNER !== "external";
+attachGenQueueDb(db.db, { recoverRunning: embeddedGenQueueRunner });
 try {
   const synced = syncContentLibraryIndex(db.db);
   process.env.CONTENT_LIBRARY_SQLITE = "1";
