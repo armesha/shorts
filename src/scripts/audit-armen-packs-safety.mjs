@@ -19,7 +19,13 @@ const CHECKS = [
     id: "explicit_sexual",
     severity: "high",
     pattern:
-      /\b(porn|porno|orgasm|blowjob|handjob|sex tape|prostitut|whore|slut|penis|vagina|masturb|еба|секс|оргазм|член|вагин|проститут|шлюх|минет|дроч|cazzo|puttan|troia|pene|vagina|sesso|coño|polla|puta|sexo|boquete|buceta)\b/i,
+      /\b(porn|porno|orgasm|blowjob|handjob|sex tape|prostitut|whore|slut|penis|vagina|masturb|еба|секс|оргазм|член|вагин|проститут|шлюх|минет|дроч|cazzo|fottutamente|puttan|troia|vagina|sesso|coño|polla|puta|boquete|buceta)\b/i,
+  },
+  {
+    id: "misogynistic_joke",
+    severity: "high",
+    pattern:
+      /(mujer\s+perversa|vida\s+de\s+perros|genio\s+de\s+mil\s+demonios|si\s+es\s+hermosa[\s\S]{0,120}si\s+fea|mujer[\s\S]{0,80}solemne\s+desprecio|mujer\s+mas\s+linda[\s\S]{0,120}qu[ií]tale|pena\s+de\s+mi\s+fealdad[\s\S]{0,120}mujer|mujer\s+fuerte[\s\S]{0,140}hermosa[\s\S]{0,80}fea)/i,
   },
   {
     id: "violence_self_harm_extremism",
