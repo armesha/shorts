@@ -8,6 +8,11 @@ const BACKGROUNDS = [
   "assets/template-packs/static-facts/backgrounds/facts-observatory.png",
   "assets/template-packs/static-facts/backgrounds/facts-studio.png",
   "assets/template-packs/static-facts/backgrounds/facts-desk.jpg",
+  "assets/template-packs/static-facts/backgrounds/facts-notebook-ai-01.jpg",
+  "assets/template-packs/static-facts/backgrounds/facts-dark-psych-ai-01.jpg",
+  "assets/template-packs/static-facts/backgrounds/facts-curiosity-ai-01.jpg",
+  "assets/template-packs/static-facts/backgrounds/facts-lifehack-ai-01.jpg",
+  "assets/template-packs/static-facts/backgrounds/facts-wisdom-ai-01.jpg",
 ];
 
 const PACKS = [

@@ -204,10 +204,16 @@ export const JOKE_POP_VARIANTS = [
   "v-graphite",
   "v-notebook",
   "v-confetti",
+  "v-ai-comedy-card",
+  "v-paper-desk",
+  "v-dark-punchline",
+  "v-sticker-board",
+  "v-speech-bubble",
 ] as const;
 
 const JOKE_EMOJIS = ["😂", "🤣", "😆", "😹", "😁"];
 const JOKE_DOODLES = ["HA!", "LOL", "WOW", ":-)", "!!", "HEH", "FUN"];
+const JOKE_AI_BG = "assets/backgrounds/jokes/comedy-card-ai-01.jpg";
 
 function stableHashString(seed: string): number {
   let h = 2166136261;
@@ -246,6 +252,7 @@ function buildJokePopHtml(input: { title: string; text: string; deckId?: string;
       .replaceAll("{{DENSE}}", dense ? "dense" : "")
       .replaceAll("{{EMOJI}}", emoji)
       .replaceAll("{{DOODLE}}", esc(doodle))
+      .replaceAll("{{AI_BG}}", dataUriFromRootRel(JOKE_AI_BG) ?? "")
       .replaceAll("{{TITLE}}", esc(input.title || deck.name))
       .replace("{{TEXT}}", esc(input.text)),
   };

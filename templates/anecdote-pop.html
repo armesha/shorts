@@ -205,6 +205,48 @@
   .v-confetti { --bg:#fef3c7; --bg2:#fde68a; --panel:#ffffff; --panel2:#fffaf0; --accent:#111827; --accent2:#16a34a; --radius:36px; }
   .v-confetti::before { border-color: rgba(22,163,74,.35); }
   .v-confetti::after { background: rgba(239,68,68,.26); }
+
+  .v-ai-comedy-card {
+    --bg:#ff8a00; --bg2:#ffcf3d; --panel:#ffffff; --panel2:#fffdf7; --accent:#111111; --accent2:#00a9d6; --radius:30px;
+    background:
+      linear-gradient(180deg, rgba(255,138,0,.12), rgba(255,138,0,.10)),
+      url("{{AI_BG}}") center/cover no-repeat;
+  }
+  .v-ai-comedy-card::before,
+  .v-ai-comedy-card::after { display: none; }
+  .v-ai-comedy-card .panel {
+    margin-top: 34px;
+    height: calc(100% - 68px);
+    background: rgba(255,255,255,.86);
+    border: 6px solid rgba(17,17,17,.18);
+    box-shadow: 0 20px 52px rgba(0,0,0,.12);
+  }
+
+  .v-paper-desk { --bg:#f1e2c8; --bg2:#fff7e8; --panel:#fffdf6; --panel2:#fff8ea; --accent:#3f2a16; --accent2:#0f766e; --radius:18px; }
+  .v-paper-desk .panel {
+    border: 8px solid rgba(63,42,22,.22);
+    box-shadow: 0 24px 54px rgba(70,43,18,.20);
+  }
+  .v-paper-desk .art .doodle { background: #fff3c4; }
+
+  .v-dark-punchline { --bg:#111827; --bg2:#334155; --panel:#fff7db; --panel2:#ffffff; --accent:#111827; --accent2:#f59e0b; --radius:24px; }
+  .v-dark-punchline .panel { border: 10px solid #f59e0b; box-shadow: 0 28px 70px rgba(0,0,0,.34); }
+  .v-dark-punchline .title { background:#111827; color:#fff7db; border-radius:18px; padding:14px 22px; }
+
+  .v-sticker-board { --bg:#8b5cf6; --bg2:#22d3ee; --panel:#ffffff; --panel2:#f8fbff; --accent:#1f2937; --accent2:#facc15; --radius:46px; }
+  .v-sticker-board .panel {
+    border: 7px solid #1f2937;
+    box-shadow: 0 24px 56px rgba(31,41,55,.25);
+  }
+  .v-sticker-board .art .doodle { background:#facc15; transform: rotate(4deg); }
+
+  .v-speech-bubble { --bg:#38bdf8; --bg2:#f0f9ff; --panel:#ffffff; --panel2:#ffffff; --accent:#0f172a; --accent2:#fb7185; --radius:64px; }
+  .v-speech-bubble .panel {
+    border-bottom-left-radius: 150px;
+    border: 8px solid rgba(15,23,42,.16);
+    box-shadow: 0 22px 52px rgba(14,116,144,.18);
+  }
+  .v-speech-bubble .footer { justify-content: flex-end; }
 </style>
 </head>
 <body>

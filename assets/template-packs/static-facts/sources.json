@@ -38,6 +38,31 @@
       "file": "assets/template-packs/static-facts/backgrounds/facts-desk.jpg",
       "type": "generated",
       "promptSummary": "Editorial facts still life with globe/map/technology details around the edges, clean central safe zone, no text/logos."
+    },
+    {
+      "file": "assets/template-packs/static-facts/backgrounds/facts-notebook-ai-01.jpg",
+      "type": "generated",
+      "promptSummary": "Open notebook/editorial desk background with a large clean page area for overlay text; no text/logos/watermarks."
+    },
+    {
+      "file": "assets/template-packs/static-facts/backgrounds/facts-dark-psych-ai-01.jpg",
+      "type": "generated",
+      "promptSummary": "Dark premium psychology/facts background with subtle abstract lines and a clean central safe zone; no text/logos/watermarks."
+    },
+    {
+      "file": "assets/template-packs/static-facts/backgrounds/facts-curiosity-ai-01.jpg",
+      "type": "generated",
+      "promptSummary": "Museum-curiosity educational still life with objects around the margins and a central parchment area; no text/logos/watermarks."
+    },
+    {
+      "file": "assets/template-packs/static-facts/backgrounds/facts-lifehack-ai-01.jpg",
+      "type": "generated",
+      "promptSummary": "Clean practical workspace/lifehack background with household objects around the edges and a blank central card; no text/logos/watermarks."
+    },
+    {
+      "file": "assets/template-packs/static-facts/backgrounds/facts-wisdom-ai-01.jpg",
+      "type": "generated",
+      "promptSummary": "Cinematic classical wisdom/statue background with dark negative space for overlay text; no text/logos/watermarks."
     }
   ],
   "safetyNotes": [

@@ -1,0 +1,16 @@
+{
+  "packFamily": "plain-joke-pop-backgrounds",
+  "createdAt": "2026-06-28",
+  "backgrounds": [
+    {
+      "file": "assets/backgrounds/jokes/comedy-card-ai-01.jpg",
+      "type": "generated",
+      "promptSummary": "Bright clean comedy card background with a large white text-safe area and decorative laughing icons outside the text area; no text/logos/watermarks."
+    }
+  ],
+  "safetyNotes": [
+    "No external web images were imported for this background.",
+    "Decorative emoji-like faces are generated artwork and must not overlap joke text.",
+    "No channel plaque, social handle, logo, watermark, or readable source text is embedded in the background."
+  ]
+}
