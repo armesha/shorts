@@ -1,0 +1,68 @@
+{
+  "createdAt": "2026-06-28T11:33:04.438Z",
+  "license": "Pexels License",
+  "licenseUrl": "https://www.pexels.com/license/",
+  "note": "Local short vertical motion backgrounds for joke/anecdote overlays. Avoid recognizable people/logos in manual review.",
+  "files": [
+    {
+      "file": "assets/fact-videos/joke-backgrounds/stage-lights-15439743.mp4",
+      "query": "abstract colorful light beams no people",
+      "pexelsId": 15439743,
+      "pageUrl": "https://www.pexels.com/video/close-up-of-a-3d-luminous-pattern-in-motion-15439743/",
+      "photographer": "Pachon in Motion",
+      "photographerUrl": "https://www.pexels.com/@pachon-in-motion-426015731",
+      "license": "Pexels License",
+      "licenseUrl": "https://www.pexels.com/license/"
+    },
+    {
+      "file": "assets/fact-videos/joke-backgrounds/confetti-dark-8516545.mp4",
+      "query": "confetti dark background no people",
+      "pexelsId": 8516545,
+      "pageUrl": "https://www.pexels.com/video/close-up-shot-of-a-confetti-8516545/",
+      "photographer": "Hanna Pad",
+      "photographerUrl": "https://www.pexels.com/@anna-nekrashevich",
+      "license": "Pexels License",
+      "licenseUrl": "https://www.pexels.com/license/"
+    },
+    {
+      "file": "assets/fact-videos/joke-backgrounds/neon-bokeh-35090392.mp4",
+      "query": "neon bokeh lights abstract no people",
+      "pexelsId": 35090392,
+      "pageUrl": "https://www.pexels.com/video/vibrant-festival-of-night-lights-display-35090392/",
+      "photographer": "Mariano Quintero",
+      "photographerUrl": "https://www.pexels.com/@mariano-quintero-47135304",
+      "license": "Pexels License",
+      "licenseUrl": "https://www.pexels.com/license/"
+    },
+    {
+      "file": "assets/fact-videos/joke-backgrounds/theater-empty-7984191.mp4",
+      "query": "empty theater stage lights",
+      "pexelsId": 7984191,
+      "pageUrl": "https://www.pexels.com/video/a-tracking-shot-of-an-empty-theater-7984191/",
+      "photographer": "Tima Miroshnichenko",
+      "photographerUrl": "https://www.pexels.com/@tima-miroshnichenko",
+      "license": "Pexels License",
+      "licenseUrl": "https://www.pexels.com/license/"
+    },
+    {
+      "file": "assets/fact-videos/joke-backgrounds/color-bokeh-32173273.mp4",
+      "query": "colorful bokeh lights no people",
+      "pexelsId": 32173273,
+      "pageUrl": "https://www.pexels.com/video/urban-night-traffic-with-blurred-city-lights-32173273/",
+      "photographer": "Engin Akyurt",
+      "photographerUrl": "https://www.pexels.com/@enginakyurt",
+      "license": "Pexels License",
+      "licenseUrl": "https://www.pexels.com/license/"
+    },
+    {
+      "file": "assets/fact-videos/joke-backgrounds/soft-shadows-8516626.mp4",
+      "query": "abstract moving shadows wall no people no text",
+      "pexelsId": 8516626,
+      "pageUrl": "https://www.pexels.com/video/shadow-moving-on-a-white-wall-8516626/",
+      "photographer": "Hanna Pad",
+      "photographerUrl": "https://www.pexels.com/@anna-nekrashevich",
+      "license": "Pexels License",
+      "licenseUrl": "https://www.pexels.com/license/"
+    }
+  ]
+}

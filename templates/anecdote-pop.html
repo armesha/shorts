@@ -247,10 +247,51 @@
     box-shadow: 0 22px 52px rgba(14,116,144,.18);
   }
   .v-speech-bubble .footer { justify-content: flex-end; }
+
+  .motion-overlay {
+    background: transparent !important;
+    padding: 116px 84px 108px;
+  }
+  .motion-overlay::before,
+  .motion-overlay::after {
+    display: none !important;
+  }
+  .motion-overlay .panel {
+    height: 100%;
+    border: 7px solid rgba(255,255,255,.38);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.91), rgba(255,255,255,.78)),
+      linear-gradient(180deg, var(--panel), var(--panel2));
+    box-shadow:
+      0 30px 90px rgba(0,0,0,.42),
+      inset 0 0 0 2px rgba(255,255,255,.28);
+  }
+  .motion-overlay .art {
+    min-height: 84px;
+    margin-bottom: 18px;
+    font-size: 68px;
+  }
+  .motion-overlay .art .doodle {
+    font-size: 36px;
+    padding: 10px 20px;
+    background: rgba(255,255,255,.62);
+  }
+  .motion-overlay .footer {
+    min-height: 90px;
+  }
+  .motion-overlay .emoji {
+    font-size: 96px;
+  }
+  .motion-overlay.dense .panel {
+    padding-top: 46px;
+  }
+  .motion-overlay.dense .footer {
+    min-height: 54px;
+  }
 </style>
 </head>
 <body>
-  <div class="card {{VARIANT}} {{DENSE}}">
+  <div class="card {{VARIANT}} {{DENSE}} {{MOTION_OVERLAY}}">
     <main class="panel">
       <div class="art"><span>{{EMOJI}}</span><span class="doodle">{{DOODLE}}</span></div>
       <div class="title">{{TITLE}}</div>

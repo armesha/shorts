@@ -126,7 +126,7 @@ export interface Anecdote {
 }
 
 /** Shared Chrome capture: load HTML, wait for the auto-fit, screenshot a 1080x1920 PNG. */
-async function captureCard(html: string, outPath: string): Promise<number> {
+async function captureCard(html: string, outPath: string, opts: { transparent?: boolean } = {}): Promise<number> {
   const browser = await puppeteer.launch({
     executablePath: chromePath(),
     headless: true,
@@ -146,7 +146,11 @@ async function captureCard(html: string, outPath: string): Promise<number> {
     await page.waitForFunction("window.__fitted === true", { timeout: 5_000 }).catch(() => {});
     const fontPx = (await page.evaluate("window.__fitFontPx").catch(() => 0)) as number;
     await mkdir(dirname(outPath), { recursive: true });
-    const buf = await page.screenshot({ type: "png", clip: { x: 0, y: 0, width: 1080, height: 1920 } });
+    const buf = await page.screenshot({
+      type: "png",
+      clip: { x: 0, y: 0, width: 1080, height: 1920 },
+      omitBackground: !!opts.transparent,
+    });
     await writeFile(outPath, buf);
     return fontPx;
   } finally {
@@ -231,7 +235,13 @@ function jokeVariant(input: Anecdote): string {
   return JOKE_POP_VARIANTS[h % JOKE_POP_VARIANTS.length];
 }
 
-function buildJokePopHtml(input: { title: string; text: string; deckId?: string; visualVariant?: string }): { html: string; variant: string } {
+function buildJokePopHtml(input: {
+  title: string;
+  text: string;
+  deckId?: string;
+  visualVariant?: string;
+  motionOverlay?: boolean;
+}): { html: string; variant: string } {
   const deck = getDeck(input.deckId);
   const lang = deckLang(deck.id) || "ru";
   const rtl = lang === "ar";
@@ -250,6 +260,7 @@ function buildJokePopHtml(input: { title: string; text: string; deckId?: string;
       .replaceAll("{{TEXT_ALIGN}}", rtl ? "right" : "center")
       .replaceAll("{{VARIANT}}", variant)
       .replaceAll("{{DENSE}}", dense ? "dense" : "")
+      .replaceAll("{{MOTION_OVERLAY}}", input.motionOverlay ? "motion-overlay" : "")
       .replaceAll("{{EMOJI}}", emoji)
       .replaceAll("{{DOODLE}}", esc(doodle))
       .replaceAll("{{AI_BG}}", dataUriFromRootRel(JOKE_AI_BG) ?? "")
@@ -262,6 +273,18 @@ async function renderJokePop(a: Anecdote, outPath: string): Promise<{ path: stri
   const { html, variant } = buildJokePopHtml({ title: a.title, text: a.text, deckId: a.deck, visualVariant: a.visualVariant });
   const fontPx = await captureCard(html, outPath);
   return { path: outPath, fontPx, bg: `pop:${variant}` };
+}
+
+export async function renderJokeMotionOverlay(a: Anecdote, outPath: string): Promise<{ path: string; fontPx: number; bg: string }> {
+  const { html, variant } = buildJokePopHtml({
+    title: a.title,
+    text: a.text,
+    deckId: a.deck,
+    visualVariant: a.visualVariant,
+    motionOverlay: true,
+  });
+  const fontPx = await captureCard(html, outPath, { transparent: true });
+  return { path: outPath, fontPx, bg: `pop:${variant}:motion-overlay` };
 }
 
 const ISLAMIC_QUOTE_BACKGROUNDS = [

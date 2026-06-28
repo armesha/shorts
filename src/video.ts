@@ -10,6 +10,7 @@ const FFMPEG = ffmpegPath as unknown as string;
 const AUDIO_DIR = resolve(process.cwd(), "assets/audio");
 const LIFEHACK_MOTION_DIR = resolve(process.cwd(), "assets/motion/lifehacks");
 const JOKE_MOTION_DIR = resolve(process.cwd(), "assets/motion/jokes");
+const JOKE_VIDEO_BG_DIR = resolve(process.cwd(), "assets/fact-videos/joke-backgrounds");
 export const AUDIO_EXT = new Set([".mp3", ".m4a", ".aac", ".wav", ".ogg", ".opus"]);
 export const PACK_AUDIO_PREFIX = "pack-audio/";
 export const PACK_AUDIO_DIR = resolve(process.cwd(), "data/pack-audio");
@@ -340,6 +341,78 @@ export function pickJokeMotionOverlay(seed: string, textLen = 0): MotionOverlay 
     x: pos.x,
     y: pos.y,
   };
+}
+
+export function pickJokeVideoBackground(seed: string, textLen = 0): string | null {
+  if (textLen > 520 || !existsSync(JOKE_VIDEO_BG_DIR)) return null;
+  const files = readdirSync(JOKE_VIDEO_BG_DIR)
+    .map((f) => f.toString())
+    .filter((f) => /\.(mp4|webm|mov)$/i.test(f))
+    .sort();
+  if (files.length === 0) return null;
+  const h = stableHash(seed);
+  // Keep static joke cards in the mix; motion backgrounds are a visual variant, not the only template.
+  if (h % 3 === 0) return null;
+  return resolve(JOKE_VIDEO_BG_DIR, files[h % files.length]);
+}
+
+export async function assembleVideoBackground(
+  backgroundPath: string,
+  overlayImagePath: string,
+  outPath: string,
+  opts: VideoOptions = {},
+): Promise<string> {
+  const dur = opts.durationSec ?? 6;
+  const audio = opts.audioPath === undefined ? await pickAudio() : opts.audioPath;
+  const motion = opts.motionOverlay ?? null;
+  await mkdir(dirname(outPath), { recursive: true });
+
+  const args: string[] = ["-y", "-stream_loop", "-1", "-i", backgroundPath];
+  if (audio) {
+    args.push("-stream_loop", "-1", "-i", audio);
+  } else {
+    args.push("-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=48000");
+  }
+  args.push("-loop", "1", "-framerate", "30", "-i", overlayImagePath);
+  if (motion) args.push("-ignore_loop", "0", "-i", motion.path);
+  args.push("-t", String(dur));
+
+  const bg =
+    "[0:v]scale=1080:1920:force_original_aspect_ratio=increase," +
+    "crop=1080:1920,setsar=1,eq=brightness=-0.06:saturation=0.88,format=rgba[bg]";
+  const overlay = "[2:v]scale=1080:1920:flags=lanczos,format=rgba[card];[bg][card]overlay=0:0:format=auto[base]";
+  const withSticker = motion
+    ? `;[3:v]fps=30,scale=${motion.width}:-1:flags=lanczos,format=rgba[sticker];[base][sticker]overlay=x='${motion.x}':y='${motion.y}':shortest=0:format=auto[v]`
+    : ";[base]format=yuv420p[v]";
+  args.push("-filter_complex", `${bg};${overlay}${withSticker}`, "-map", "[v]", "-map", "1:a");
+  args.push(
+    "-c:v", "libx264",
+    "-preset", "veryfast",
+    "-profile:v", "high",
+    "-pix_fmt", "yuv420p",
+    "-r", "30",
+  );
+  if (audio) {
+    const volume = Number.isFinite(opts.audioVolume) ? Math.max(0, Math.min(4, opts.audioVolume ?? 0.5)) : 0.5;
+    const filters = [`volume=${volume}`];
+    if (opts.fadeAudio !== false) {
+      const fadeStart = Math.max(0, dur - 1);
+      filters.push(`afade=t=out:st=${fadeStart}:d=1`);
+    }
+    filters.push("aresample=48000");
+    args.push("-af", filters.join(","));
+  }
+  args.push(
+    "-c:a", "aac",
+    "-b:a", audio ? "192k" : "128k",
+    "-ar", "48000",
+    "-ac", "2",
+    "-movflags", "+faststart",
+    outPath,
+  );
+
+  await pexec(FFMPEG, args, { timeout: 120_000, maxBuffer: 16 * 1024 * 1024 });
+  return outPath;
 }
 
 /**

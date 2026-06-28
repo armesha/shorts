@@ -8,8 +8,17 @@ import type { Db } from "../db.ts";
 import { getDeck, isPlainAnecdoteDeck, pickGenericTitle } from "../../src/anecdotes/decks.ts";
 import { randomAnecdote, firstAnecdote, libraryStats, anecdoteKey, packItemKey, deckCards } from "../../src/anecdotes/library.ts";
 import type { PackItem } from "../../src/anecdotes/library.ts";
-import { renderAnecdote, listBackgrounds } from "../../src/anecdotes/render.ts";
-import { assembleStillVideo, listAudio, pickJokeMotionOverlay, pickLifehackMotionOverlay, resolveAudio, downscaleImage } from "../../src/video.ts";
+import { renderAnecdote, renderJokeMotionOverlay, listBackgrounds } from "../../src/anecdotes/render.ts";
+import {
+  assembleStillVideo,
+  assembleVideoBackground,
+  listAudio,
+  pickJokeMotionOverlay,
+  pickJokeVideoBackground,
+  pickLifehackMotionOverlay,
+  resolveAudio,
+  downscaleImage,
+} from "../../src/video.ts";
 import { INFINITE_PACKS_FEATURE, infiniteCounts } from "../services/infinite-packs.ts";
 import * as metrics from "../infra/metrics.ts";
 import { rememberOutputOwner } from "../infra/output-access.ts";
@@ -192,14 +201,19 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
       const vidRel = `preview/anek-${stamp}.mp4`;
       const imgOut = resolve(process.cwd(), outputDir, imgRel);
       const vidOut = resolve(process.cwd(), outputDir, vidRel);
+      const seed = `${deck.id}|${profession ?? ""}|${title}|${text}`;
       const motionOverlay = deck.lifehack
-        ? pickLifehackMotionOverlay(`${deck.id}|${profession ?? ""}|${title}|${text}`)
+        ? pickLifehackMotionOverlay(seed)
         : isPlainAnecdoteDeck(deck)
-          ? pickJokeMotionOverlay(`${deck.id}|${title}|${text}`, text.length)
+          ? pickJokeMotionOverlay(seed, text.length)
           : null;
+      const videoBg = isPlainAnecdoteDeck(deck) ? pickJokeVideoBackground(seed, text.length) : null;
       const r = await metrics.track("render", async () => {
-        const rr = await renderAnecdote({ title, text, channel: deck.name, bg: body.bg, deck: deck.id, profession }, imgOut, pickedItem);
-        await assembleStillVideo(imgOut, vidOut, { durationSec: 6, audioPath, motionOverlay });
+        const rr = videoBg
+          ? await renderJokeMotionOverlay({ title, text, channel: deck.name, deck: deck.id }, imgOut)
+          : await renderAnecdote({ title, text, channel: deck.name, bg: body.bg, deck: deck.id, profession }, imgOut, pickedItem);
+        if (videoBg) await assembleVideoBackground(videoBg, imgOut, vidOut, { durationSec: 6, audioPath, motionOverlay });
+        else await assembleStillVideo(imgOut, vidOut, { durationSec: 6, audioPath, motionOverlay });
         return rr;
       });
       rememberOutputOwner([imgRel, vidRel], uid(req));
