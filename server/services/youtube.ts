@@ -127,11 +127,12 @@ export function ytErrorReason(err: unknown): string {
   const { s, status, reason } = extractYtError(err);
   // Три РАЗНЫХ лимита YouTube (403), которые постоянно путают — держим их раздельно, чтобы в истории
   // было видно, какая стена и что её снимает. uploadLimitExceeded = суточный потолок ЗАГРУЗОК самого
-  // канала (НЕ квота API); quotaExceeded = дневной бюджет API проекта; rateLimit = слишком частые запросы.
+  // канала (НЕ квота API); quotaExceeded = дневной бюджет API проекта (10 000 единиц/сутки; с дек. 2025
+  // загрузка ≈100 единиц вместо ≈1600 → ~100 загрузок/сутки); rateLimit = слишком частые запросы.
   if (/uploadLimitExceeded/i.test(s))
     return `Достигнут суточный лимит загрузок самого YouTube-канала (ограничение YouTube, не квота API) — обычно снимается примерно через 24 часа; поднять потолок помогает верификация канала по номеру телефона (uploadLimitExceeded).`;
   if (/quotaExceeded|dailyLimitExceeded|quota/i.test(s))
-    return `Исчерпана суточная квота YouTube Data API проекта (хватает примерно на 6 загрузок в сутки) — сбрасывается в полночь по тихоокеанскому времени (quotaExceeded).`;
+    return `Исчерпана суточная квота YouTube Data API проекта (хватает примерно на 100 загрузок в сутки) — сбрасывается в полночь по тихоокеанскому времени (quotaExceeded).`;
   if (/userRateLimitExceeded|rateLimitExceeded|rateLimit/i.test(s))
     return `Слишком много запросов к YouTube за короткое время — подождите минуту и повторите${reason ? ` (${reason})` : ""}.`;
   if (/youtubeSignupRequired|channelNotFound/i.test(s))
