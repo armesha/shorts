@@ -36,6 +36,46 @@
       "file": "assets/template-packs/motivation/backgrounds/motivation-bg-07.jpg",
       "source": "OpenAI image generation",
       "promptSummary": "Misty mountain valley with bench/path, no people, no text, no logos."
+    },
+    {
+      "file": "assets/template-packs/motivation/backgrounds/motivation-bg-08.jpg",
+      "source": "OpenAI image generation",
+      "promptSummary": "Cinematic dark fitness room with punching bag, no people, no text, no logos, clean text area."
+    },
+    {
+      "file": "assets/template-packs/motivation/backgrounds/motivation-bg-09.jpg",
+      "source": "OpenAI image generation",
+      "promptSummary": "Predawn mountain trail with sunrise and mist, no people, no text, clean upper text area."
+    },
+    {
+      "file": "assets/template-packs/motivation/backgrounds/motivation-bg-10.jpg",
+      "source": "OpenAI image generation",
+      "promptSummary": "Late-night study desk by rainy city window, no people, no readable text, clean dark text area."
+    },
+    {
+      "file": "assets/template-packs/motivation/backgrounds/motivation-bg-11.jpg",
+      "source": "OpenAI image generation",
+      "promptSummary": "Empty boxing ring at dawn under spotlight, no people, no logos, clean upper text area."
+    },
+    {
+      "file": "assets/template-packs/motivation/backgrounds/motivation-bg-12.jpg",
+      "source": "OpenAI image generation",
+      "promptSummary": "Urban rooftop at sunrise with running shoes, no brands, no text, broad sky text area."
+    },
+    {
+      "file": "assets/template-packs/motivation/backgrounds/motivation-bg-13.jpg",
+      "source": "OpenAI image generation",
+      "promptSummary": "Dramatic library staircase with warm shafts of light, no people, no readable titles, clean top/center text area."
+    },
+    {
+      "file": "assets/template-packs/motivation/backgrounds/motivation-bg-14.jpg",
+      "source": "OpenAI image generation",
+      "promptSummary": "Misty lakeside dock before sunrise with rowboat, no people, no logos, open sky/water text area."
+    },
+    {
+      "file": "assets/template-packs/motivation/backgrounds/motivation-bg-15.jpg",
+      "source": "OpenAI image generation",
+      "promptSummary": "Cinematic artisan workshop with workbench and tools, no people, no text, clean center/upper text area."
     }
   ],
   "textPolicy": "Original project-written motivational lists; no real-person attribution, no copied quotes, no AP/news text.",

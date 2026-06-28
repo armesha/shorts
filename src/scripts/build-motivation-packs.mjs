@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 const ROOT = process.cwd();
 const OUT_DIR = resolve(ROOT, "data/packs");
 const CREATED_AT = "2026-06-27T20:00:00.000Z";
-const BACKGROUNDS = Array.from({ length: 7 }, (_, index) =>
+const BACKGROUNDS = Array.from({ length: 15 }, (_, index) =>
   `assets/template-packs/motivation/backgrounds/motivation-bg-${String(index + 1).padStart(2, "0")}.jpg`,
 );
 
@@ -344,14 +344,14 @@ const LAYOUTS = [
   { bg: 4, mode: "bottom", accent: "#f7d76a", overlay: "rgba(3,7,13,.58)" },
   { bg: 5, mode: "center", accent: "#ffe26a", overlay: "rgba(2,8,9,.50)" },
   { bg: 6, mode: "left", accent: "#ffe670", overlay: "rgba(4,9,12,.56)" },
-  { bg: 0, mode: "panel", accent: "#91d8ff", overlay: "rgba(1,5,12,.60)" },
-  { bg: 1, mode: "bottom", accent: "#ffb86b", overlay: "rgba(9,5,3,.54)" },
-  { bg: 2, mode: "left", accent: "#e6f0ff", overlay: "rgba(2,5,10,.56)" },
-  { bg: 3, mode: "center", accent: "#ffc857", overlay: "rgba(0,0,0,.65)" },
-  { bg: 4, mode: "panel", accent: "#bde0ff", overlay: "rgba(1,8,14,.60)" },
-  { bg: 5, mode: "left", accent: "#fcefb4", overlay: "rgba(5,8,4,.50)" },
-  { bg: 6, mode: "bottom", accent: "#ffd166", overlay: "rgba(2,8,12,.55)" },
-  { bg: 0, mode: "center", accent: "#f5f7fb", overlay: "rgba(0,4,10,.62)" },
+  { bg: 7, mode: "panel", accent: "#91d8ff", overlay: "rgba(1,5,12,.60)" },
+  { bg: 8, mode: "bottom", accent: "#ffb86b", overlay: "rgba(9,5,3,.54)" },
+  { bg: 9, mode: "left", accent: "#e6f0ff", overlay: "rgba(2,5,10,.56)" },
+  { bg: 10, mode: "center", accent: "#ffc857", overlay: "rgba(0,0,0,.65)" },
+  { bg: 11, mode: "panel", accent: "#bde0ff", overlay: "rgba(1,8,14,.60)" },
+  { bg: 12, mode: "left", accent: "#fcefb4", overlay: "rgba(5,8,4,.50)" },
+  { bg: 13, mode: "bottom", accent: "#ffd166", overlay: "rgba(2,8,12,.55)" },
+  { bg: 14, mode: "center", accent: "#f5f7fb", overlay: "rgba(0,4,10,.62)" },
 ];
 
 function templateFor(locale, layout, index) {
