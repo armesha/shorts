@@ -271,6 +271,22 @@ const ISLAMIC_QUOTE_BACKGROUNDS = [
   "assets/backgrounds/islamic_templates/islamic_ai_emerald_arch.jpg",
   "assets/backgrounds/islamic_templates/islamic_ai_sapphire_mihrab.jpg",
   "assets/backgrounds/islamic_templates/islamic_ai_turquoise_mosaic.jpg",
+  "assets/backgrounds/islamic_templates/islamic_ai_burgundy_frame.jpg",
+  "assets/backgrounds/islamic_templates/islamic_ai_courtyard.jpg",
+  "assets/backgrounds/islamic_templates/islamic_ai_green_rosette.jpg",
+  "assets/backgrounds/islamic_templates/islamic_ai_navy_dome.jpg",
+  "assets/backgrounds/islamic_templates/islamic_ai_night_domes.jpg",
+  "assets/backgrounds/islamic_templates/islamic_ai_open_book.jpg",
+  "assets/backgrounds/islamic_templates/islamic_ai_palm_garden.jpg",
+  "assets/backgrounds/islamic_templates/islamic_ai_prayer_rug.jpg",
+  "assets/backgrounds/islamic_templates/islamic_ai_velvet_filigree.jpg",
+  "assets/backgrounds/islamic_templates/islamic_crescent.jpg",
+  "assets/backgrounds/islamic_templates/islamic_gold_rosette.jpg",
+  "assets/backgrounds/islamic_templates/islamic_light_beam.jpg",
+  "assets/backgrounds/islamic_templates/islamic_mosque_silhouette.jpg",
+  "assets/backgrounds/islamic_templates/islamic_prayer_rug.jpg",
+  "assets/backgrounds/islamic_templates/islamic_quran_corner.jpg",
+  "assets/backgrounds/islamic_templates/islamic_quran_header.jpg",
 ];
 const CHRISTIAN_QUOTE_BACKGROUNDS = [
   "assets/backgrounds/christian_protestant_templates/protestant_open_bible.jpg",
@@ -279,6 +295,28 @@ const CHRISTIAN_QUOTE_BACKGROUNDS = [
   "assets/backgrounds/christian_protestant_templates/protestant_ai_open_bible_glow.jpg",
   "assets/backgrounds/christian_protestant_templates/protestant_ai_stained_glow.jpg",
   "assets/backgrounds/christian_protestant_templates/protestant_candle_cross.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_ai_candle_arch.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_ai_empty_pews_warm.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_ai_forest_path.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_ai_glass_border.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_ai_hill_sunrise.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_ai_lake_chapel.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_ai_olive_branch.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_ai_rainy_window.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_ai_ruby_glass.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_ai_stone_arch.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_ai_walnut_cross.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_bible_corner.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_chapel_silhouette.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_forest_sunrise.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_minimal_cross.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_photo_empty_pews.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_photo_hill_cross.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_photo_pulpit_bible.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_photo_rainy_bible.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_photo_wooden_church.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_pulpit_bible.jpg",
+  "assets/backgrounds/christian_protestant_templates/protestant_worship_hall.jpg",
 ];
 
 function isIslamicQuoteDeck(deckId: string): boolean {
@@ -307,8 +345,10 @@ function quoteHtml(input: { quote: string; author: string; lang: string; deckId?
   const funny = deckId.startsWith("funny-quotes-");
   const islamic = isIslamicQuoteDeck(deckId);
   const christian = isChristianQuoteDeck(deckId);
-  const themedBg = portrait ? null : quoteFallbackBg(deckId, `${input.quote}|${input.author}`);
+  const seed = `${deckId}|${input.quote}|${input.author}`;
+  const themedBg = portrait ? null : quoteFallbackBg(deckId, seed);
   const themeClass = funny ? "funny" : islamic ? "islamic" : christian ? "christian" : themedBg ? "themed" : "classic";
+  const layoutClass = portrait ? "layout-portrait" : `layout-${stableIndex(seed, 4)}`;
   const pageBg = themedBg
     ? `linear-gradient(180deg, rgba(10, 9, 7, 0.36), rgba(10, 9, 7, 0.50)), url("${themedBg}") center/cover no-repeat`
     : funny
@@ -367,6 +407,45 @@ function quoteHtml(input: { quote: string; author: string; lang: string; deckId?
     background: rgba(250, 247, 239, .92);
     border-color: rgba(210, 180, 110, .86);
   }
+  body.layout-1 .quote-panel {
+    border-radius: 62px 24px 62px 24px;
+    padding: 92px 74px 92px;
+  }
+  body.layout-1 .body {
+    align-items: flex-start;
+    padding-top: 132px;
+  }
+  body.layout-1 .author {
+    text-align: ${rtl ? "left" : "right"};
+  }
+  body.layout-2 .quote-panel {
+    margin: 96px 0;
+    border-radius: 26px;
+    padding: 74px 82px 78px;
+    flex: 0 0 auto;
+    min-height: 1420px;
+  }
+  body.layout-2 .body {
+    align-items: center;
+  }
+  body.layout-2 .mark {
+    text-align: center;
+  }
+  body.layout-3 .quote-panel {
+    border-radius: 34px;
+    padding: 86px 76px 92px;
+    border-left-width: 16px;
+  }
+  body.layout-3 .body {
+    align-items: flex-end;
+    padding-bottom: 86px;
+  }
+  body.layout-3 .quote {
+    text-align: ${rtl ? "right" : "left"};
+  }
+  body.layout-3 .author {
+    margin-top: 32px;
+  }
   .rule {
     width: 132px;
     height: 10px;
@@ -419,7 +498,7 @@ function quoteHtml(input: { quote: string; author: string; lang: string; deckId?
   }
 </style>
 </head>
-<body class="${themeClass}">
+<body class="${themeClass} ${layoutClass}">
   <main class="card">
     ${portrait ? '<div class="portrait"></div>' : ""}
     <div class="quote-panel">

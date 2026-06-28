@@ -54,12 +54,38 @@ const SAFE: Record<string, [number, number, number, number]> = {
 };
 const DEFAULT_SAFE: [number, number, number, number] = [380, 120, 360, 120];
 
+const VISUAL_BACKGROUND_FILES = [
+  "islamic_ai_burgundy_frame.jpg",
+  "islamic_ai_courtyard.jpg",
+  "islamic_ai_emerald_arch.jpg",
+  "islamic_ai_green_rosette.jpg",
+  "islamic_ai_navy_dome.jpg",
+  "islamic_ai_night_domes.jpg",
+  "islamic_ai_open_book.jpg",
+  "islamic_ai_palm_garden.jpg",
+  "islamic_ai_prayer_rug.jpg",
+  "islamic_ai_sapphire_mihrab.jpg",
+  "islamic_ai_turquoise_mosaic.jpg",
+  "islamic_ai_velvet_filigree.jpg",
+  "islamic_crescent.jpg",
+  "islamic_gold_rosette.jpg",
+  "islamic_lantern_beads.jpg",
+  "islamic_light_beam.jpg",
+  "islamic_mosque_arch.jpg",
+  "islamic_mosque_silhouette.jpg",
+  "islamic_open_book.jpg",
+  "islamic_prayer_rug.jpg",
+  "islamic_quran_corner.jpg",
+  "islamic_quran_header.jpg",
+] as const;
+
 const esc = (s: unknown) =>
   String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 export function listIslamicBgs(): string[] {
   if (!existsSync(BG_DIR)) return [];
-  return readdirSync(BG_DIR).filter((f) => /\.(jpe?g|png)$/i.test(f)).sort();
+  const files = new Set(readdirSync(BG_DIR).filter((f) => /\.(jpe?g|png)$/i.test(f)));
+  return VISUAL_BACKGROUND_FILES.filter((file) => files.has(file)).sort();
 }
 
 function bgCss(file: string): string {

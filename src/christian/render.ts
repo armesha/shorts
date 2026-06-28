@@ -60,12 +60,44 @@ const SAFE: Record<string, [number, number, number, number]> = {
 };
 const DEFAULT_SAFE: [number, number, number, number] = [320, 130, 320, 130];
 
+const VISUAL_BACKGROUND_FILES = [
+  "protestant_ai_candle_arch.jpg",
+  "protestant_ai_empty_pews_warm.jpg",
+  "protestant_ai_forest_path.jpg",
+  "protestant_ai_glass_border.jpg",
+  "protestant_ai_hill_sunrise.jpg",
+  "protestant_ai_lake_chapel.jpg",
+  "protestant_ai_olive_branch.jpg",
+  "protestant_ai_open_bible_glow.jpg",
+  "protestant_ai_rainy_window.jpg",
+  "protestant_ai_ruby_glass.jpg",
+  "protestant_ai_stained_glow.jpg",
+  "protestant_ai_stone_arch.jpg",
+  "protestant_ai_walnut_cross.jpg",
+  "protestant_bible_corner.jpg",
+  "protestant_candle_cross.jpg",
+  "protestant_chapel_silhouette.jpg",
+  "protestant_forest_sunrise.jpg",
+  "protestant_minimal_cross.jpg",
+  "protestant_open_bible.jpg",
+  "protestant_photo_empty_pews.jpg",
+  "protestant_photo_hill_cross.jpg",
+  "protestant_photo_pulpit_bible.jpg",
+  "protestant_photo_rainy_bible.jpg",
+  "protestant_photo_wooden_church.jpg",
+  "protestant_pulpit_bible.jpg",
+  "protestant_stained_glass.jpg",
+  "protestant_wooden_cross.jpg",
+  "protestant_worship_hall.jpg",
+] as const;
+
 const esc = (s: unknown) =>
   String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 export function listChristianBgs(): string[] {
   if (!existsSync(BG_DIR)) return [];
-  return readdirSync(BG_DIR).filter((f) => /\.(jpe?g|png)$/i.test(f)).sort();
+  const files = new Set(readdirSync(BG_DIR).filter((f) => /\.(jpe?g|png)$/i.test(f)));
+  return VISUAL_BACKGROUND_FILES.filter((file) => files.has(file)).sort();
 }
 
 function bgCss(file: string): string {
