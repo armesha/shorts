@@ -332,7 +332,6 @@ export function pickJokeMotionOverlay(seed: string, textLen = 0): MotionOverlay 
   const positions = [
     { x: "main_w-overlay_w-56", y: "main_h-overlay_h-58" },
     { x: "56", y: "main_h-overlay_h-58" },
-    { x: "main_w-overlay_w-64", y: "64" },
   ];
   const pos = positions[(h >>> 4) % positions.length];
   return {

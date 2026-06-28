@@ -1,10 +1,22 @@
 {
-  "createdAt": "2026-06-26T18:57:28.365Z",
+  "createdAt": "2026-06-28T10:58:40.649Z",
   "license": "Project-owned generated CSS sticker animations; no external imagery.",
   "files": [
     "laugh-bounce.gif",
     "laugh-wiggle.gif",
-    "laugh-pop.gif"
+    "laugh-pop.gif",
+    "laugh-squash.gif",
+    "laugh-shake.gif",
+    "laugh-nod.gif",
+    "laugh-tilt.gif",
+    "laugh-hop.gif",
+    "laugh-pulse.gif",
+    "laugh-slide.gif",
+    "laugh-drum.gif",
+    "laugh-spark.gif",
+    "laugh-wave.gif",
+    "laugh-flip.gif",
+    "laugh-zoom.gif"
   ],
   "generator": "src/scripts/build-joke-motion-assets.mjs"
 }
