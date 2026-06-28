@@ -4,7 +4,7 @@ import type { Account, Db, Video } from "../db.ts";
 import type { RouteDeps } from "./deps.ts";
 import { thematicBlockDeckSequenceForGeneration } from "./super-admin-channel-blocks.ts";
 
-const JOKE_EN_SOURCES = ["en", "memes-en", "funny-quotes-en", "visual-riddles-en"];
+const JOKE_EN_SOURCES = ["en", "memes-en", "visual-riddles-en"];
 
 function account(id: number): Account {
   return {

@@ -59,7 +59,6 @@ export const MANUAL_VIDEO_DECK = "manual";
 function quoteDeckAudioProfile(id: string): Deck["audioProfile"] {
   if (id === "islamic-quotes-ar" || id === "islamic-facts-ar") return "islamic";
   if (id === "christian-quotes-en" || id === "christian-facts-en") return "christian";
-  if (id.startsWith("funny-quotes-")) return "jokes";
   return undefined;
 }
 
@@ -669,69 +668,6 @@ export const DECKS: Deck[] = [
     titles: ["Kutipan", "Kata Bijak", "Pemikiran Hari Ini"],
   }),
   quoteDeck({
-    id: "funny-quotes-ru",
-    name: "Смешные цитаты",
-    lang: "ru",
-    source: "Original safe humorous aphorism corpus; see sources.json",
-    hashtags: "#смешныецитаты #юмор #смешно #приколы #shorts",
-    tags: ["смешные цитаты", "юмор", "смешно", "приколы", "афоризмы", "shorts"],
-    titles: ["Смешная цитата", "Юмор дня", "Ироничная мысль", "Смешная мудрость"],
-  }),
-  quoteDeck({
-    id: "funny-quotes-en",
-    name: "Funny Quotes",
-    lang: "en",
-    source: "Original safe humorous aphorism corpus; see sources.json",
-    hashtags: "#funnyquotes #humor #funny #relatable #shorts",
-    tags: ["funny quotes", "humor", "funny", "relatable", "one liners", "shorts"],
-    titles: ["Funny Quote", "Daily Laugh", "Relatable Thought", "Small Joke"],
-  }),
-  quoteDeck({
-    id: "funny-quotes-it",
-    name: "Citazioni divertenti",
-    lang: "it",
-    source: "Original safe humorous aphorism corpus; see sources.json",
-    hashtags: "#citazionidivertenti #umorismo #ridere #divertente #shorts",
-    tags: ["citazioni divertenti", "umorismo", "ridere", "divertente", "aforismi", "shorts"],
-    titles: ["Citazione divertente", "Risata del giorno", "Pensiero ironico"],
-  }),
-  quoteDeck({
-    id: "funny-quotes-es",
-    name: "Frases graciosas",
-    lang: "es",
-    source: "Original safe humorous aphorism corpus; see sources.json",
-    hashtags: "#frasesgraciosas #humor #risa #divertido #shorts",
-    tags: ["frases graciosas", "humor", "risa", "divertido", "frases", "shorts"],
-    titles: ["Frase graciosa", "Risa del día", "Pensamiento irónico"],
-  }),
-  quoteDeck({
-    id: "funny-quotes-fr",
-    name: "Citations drôles",
-    lang: "fr",
-    source: "Original safe humorous aphorism corpus; see sources.json",
-    hashtags: "#citationsdroles #humour #drole #rire #shorts",
-    tags: ["citations drôles", "humour", "drôle", "rire", "phrases", "shorts"],
-    titles: ["Citation drôle", "Sourire du jour", "Pensée ironique"],
-  }),
-  quoteDeck({
-    id: "funny-quotes-pt",
-    name: "Frases engraçadas",
-    lang: "pt",
-    source: "Original safe humorous aphorism corpus; see sources.json",
-    hashtags: "#frasesengracadas #humor #rir #engracado #shorts",
-    tags: ["frases engraçadas", "humor", "rir", "engraçado", "frases", "shorts"],
-    titles: ["Frase engraçada", "Riso do dia", "Pensamento irônico"],
-  }),
-  quoteDeck({
-    id: "funny-quotes-de",
-    name: "Lustige Zitate",
-    lang: "de",
-    source: "Original safe humorous aphorism corpus; see sources.json",
-    hashtags: "#lustigezitate #humor #witzig #lachen #shorts",
-    tags: ["lustige Zitate", "Humor", "witzig", "lachen", "Sprüche", "shorts"],
-    titles: ["Lustiges Zitat", "Lacher des Tages", "Ironischer Gedanke"],
-  }),
-  quoteDeck({
     id: "quotes-de",
     name: "Statische Zitate",
     lang: "de",
@@ -1274,7 +1210,7 @@ export function isPackDeckId(id?: string | null): boolean {
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ar: "ar", hi: "hi", id: "id", choose: "ru",
-  tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "funny-quotes-ru": "ru", "funny-quotes-en": "en", "funny-quotes-it": "it", "funny-quotes-es": "es", "funny-quotes-fr": "fr", "funny-quotes-pt": "pt", "funny-quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
+  tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-es": "es", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar",
 };
 export function deckLang(id: string): string {

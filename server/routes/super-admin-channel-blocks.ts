@@ -70,16 +70,6 @@ const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
   ar: ["memes-ar"],
 };
 
-const FUNNY_QUOTE_DECK_BY_LANG: Record<string, string[]> = {
-  ru: ["funny-quotes-ru"],
-  de: ["funny-quotes-de"],
-  it: ["funny-quotes-it"],
-  fr: ["funny-quotes-fr"],
-  en: ["funny-quotes-en"],
-  es: ["funny-quotes-es"],
-  pt: ["funny-quotes-pt"],
-};
-
 const RIDDLE_VISUAL_DECK_BY_LANG: Record<string, string[]> = {
   ru: ["visual-riddles"],
   de: ["visual-riddles-de"],
@@ -102,12 +92,6 @@ const JOKE_SOURCE_GROUPS: SourceGroupDef[] = [
     title: "Мемы",
     defaultWeight: 3,
     sources: JOKE_MEME_DECK_BY_LANG,
-  },
-  {
-    id: "funny_quotes",
-    title: "Смешные цитаты",
-    defaultWeight: 1,
-    sources: FUNNY_QUOTE_DECK_BY_LANG,
   },
   {
     id: "visual_riddles",
