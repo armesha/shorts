@@ -341,6 +341,12 @@ const CHRISTIAN_QUOTE_BACKGROUNDS = [
   "assets/backgrounds/christian_protestant_templates/protestant_pulpit_bible.jpg",
   "assets/backgrounds/christian_protestant_templates/protestant_worship_hall.jpg",
 ];
+const GENERIC_QUOTE_BACKGROUNDS = [
+  "assets/backgrounds/quotes/quote-bg-01.jpg",
+  "assets/backgrounds/quotes/quote-bg-02.jpg",
+  "assets/backgrounds/quotes/quote-bg-03.jpg",
+  "assets/backgrounds/quotes/quote-bg-04.jpg",
+];
 
 function isIslamicQuoteDeck(deckId: string): boolean {
   return deckId === "islamic-quotes-ar" || deckId === "islamic-facts-ar";
@@ -352,7 +358,11 @@ function isChristianQuoteDeck(deckId: string): boolean {
 
 function quoteFallbackBg(deckId: string, seed: string): string | null {
   const files =
-    isIslamicQuoteDeck(deckId) ? ISLAMIC_QUOTE_BACKGROUNDS : isChristianQuoteDeck(deckId) ? CHRISTIAN_QUOTE_BACKGROUNDS : [];
+    isIslamicQuoteDeck(deckId)
+      ? ISLAMIC_QUOTE_BACKGROUNDS
+      : isChristianQuoteDeck(deckId)
+        ? CHRISTIAN_QUOTE_BACKGROUNDS
+        : GENERIC_QUOTE_BACKGROUNDS;
   const existing = files.filter((file) => existsSync(resolve(process.cwd(), file)));
   if (!existing.length) return null;
   return dataUriFromRootRel(existing[stableIndex(seed || deckId, existing.length)]);

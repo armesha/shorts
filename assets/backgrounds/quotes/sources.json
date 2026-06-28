@@ -1,0 +1,29 @@
+{
+  "updatedAt": "2026-06-28T00:00:00.000Z",
+  "status": "project_owned_ai_generated_backgrounds",
+  "tool": "built-in image generation",
+  "note": "Generic fallback backgrounds for quote and quote-video cards when a card has no portraitFile. No people, faces, logos, watermarks, or readable text.",
+  "files": [
+    {
+      "file": "assets/backgrounds/quotes/quote-bg-01.jpg",
+      "source": "generated panel: old library shelves with warm side light and empty parchment area"
+    },
+    {
+      "file": "assets/backgrounds/quotes/quote-bg-02.jpg",
+      "source": "generated panel: marble desk with fountain pen, open book, and soft shadows"
+    },
+    {
+      "file": "assets/backgrounds/quotes/quote-bg-03.jpg",
+      "source": "generated panel: abstract museum wall with column shadows and subtle golden frame lines"
+    },
+    {
+      "file": "assets/backgrounds/quotes/quote-bg-04.jpg",
+      "source": "generated panel: night window, notebook, candle, deep blue atmosphere"
+    }
+  ],
+  "rules": [
+    "Use only as fallback when a sourced portrait is unavailable.",
+    "Do not add readable in-image text, logos, social handles, or watermarks.",
+    "Keep the text panel readable over the background."
+  ]
+}
