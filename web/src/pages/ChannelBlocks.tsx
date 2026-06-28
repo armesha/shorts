@@ -1245,41 +1245,55 @@ function SourceMixSettings({
     weight: Math.max(0, Math.min(20, Math.floor(Number(sourceWeights[group.id] ?? group.weight) || 0))),
   }));
   const total = resolvedWeights.reduce((sum, group) => sum + group.weight, 0);
+  const sections = Array.from(new Set(resolvedWeights.map((group) => group.section || "").filter(Boolean)));
+  const grouped =
+    sections.length > 0
+      ? sections.map((section) => ({ section, groups: resolvedWeights.filter((group) => group.section === section) }))
+      : [{ section: "", groups: resolvedWeights }];
 
   return (
     <section className="rounded-md border border-base-300 bg-base-100 p-4">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <h2 className="text-base font-semibold lg:min-w-52">{t("channelBlocks.sourceMix")}</h2>
-        <div className="flex flex-wrap gap-2">
-          {resolvedWeights.map((group) => {
-            const share = total > 0 ? Math.round((group.weight / total) * 100) : 0;
-            return (
-              <label key={group.id} className="form-control w-48">
-                <span className="label py-1 pr-0">
-                  <span className="label-text truncate text-xs font-semibold uppercase tracking-wide text-base-content/60" title={group.title}>
-                    {group.title}
-                  </span>
-                  <span className="label-text-alt whitespace-nowrap text-xs text-base-content/45">
-                    {share}%
-                  </span>
-                </span>
-                <input
-                  type="number"
-                  min={0}
-                  max={20}
-                  className="input input-bordered input-sm w-full"
-                  value={group.weight}
-                  aria-label={t("channelBlocks.sourceWeight", { name: group.title })}
-                  onChange={(e) =>
-                    setSourceWeights({
-                      ...sourceWeights,
-                      [group.id]: Math.max(0, Math.min(20, Number(e.target.value) || 0)),
-                    })
-                  }
-                />
-              </label>
-            );
-          })}
+        <div className="flex flex-1 flex-col gap-3">
+          {grouped.map((section) => (
+            <div key={section.section || "default"}>
+              {section.section && (
+                <div className="mb-1 text-xs font-bold uppercase tracking-wide text-base-content/45">{section.section}</div>
+              )}
+              <div className="flex flex-wrap gap-2">
+                {section.groups.map((group) => {
+                  const share = total > 0 ? Math.round((group.weight / total) * 100) : 0;
+                  return (
+                    <label key={group.id} className="form-control w-48">
+                      <span className="label py-1 pr-0">
+                        <span className="label-text truncate text-xs font-semibold uppercase tracking-wide text-base-content/60" title={group.title}>
+                          {group.title}
+                        </span>
+                        <span className="label-text-alt whitespace-nowrap text-xs text-base-content/45">
+                          {share}%
+                        </span>
+                      </span>
+                      <input
+                        type="number"
+                        min={0}
+                        max={20}
+                        className="input input-bordered input-sm w-full"
+                        value={group.weight}
+                        aria-label={t("channelBlocks.sourceWeight", { name: group.title })}
+                        onChange={(e) =>
+                          setSourceWeights({
+                            ...sourceWeights,
+                            [group.id]: Math.max(0, Math.min(20, Number(e.target.value) || 0)),
+                          })
+                        }
+                      />
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { pickFixedPackCard, pickUnusedPackCard, packCardKey } from "./pack-gen.ts";
+import { pickFixedPackCard, pickLeastPostedPackCard, pickUnusedPackCard, packCardKey } from "./pack-gen.ts";
 import type { Pack } from "../../src/packs/store.ts";
 
 function demoPack(): Pack {
@@ -51,4 +51,28 @@ test("pickFixedPackCard returns the first card even when normal unused picking i
   assert.ok(fixed);
   assert.equal(fixed.idx, 0);
   assert.deepEqual(fixed.values, { title: "Card 0", body: "Body 0" });
+});
+
+test("pickLeastPostedPackCard prefers the least rendered card for the account", () => {
+  const pack = demoPack();
+  const firstKey = packCardKey(pack.cards[0].values);
+  const secondKey = packCardKey(pack.cards[1].values);
+  const db = {
+    db: {
+      prepare() {
+        return {
+          all() {
+            return [
+              { bg: `repeat-pack:${firstKey}`, n: 5 },
+              { bg: `repeat-pack:${secondKey}`, n: 1 },
+            ];
+          },
+        };
+      },
+    },
+  };
+
+  const picked = pickLeastPostedPackCard(db as never, 7, pack, "stable");
+  assert.ok(picked);
+  assert.notEqual(picked.key, firstKey);
 });

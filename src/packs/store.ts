@@ -53,6 +53,12 @@ export interface Pack {
   createdAt: string;
   /** userId'ы, которым админ выдал доступ (opt-in). По умолчанию []: видят только владельцы/админ. */
   grants?: number[];
+  /**
+   * Special content policy for curated one-off packs.
+   * `least_posted_per_account` means the pack is not depleted by user_used_anecdotes; generation
+   * keeps picking the card that has been rendered least often for the current channel.
+   */
+  repeatMode?: "least_posted_per_account";
 }
 export interface PackSummary {
   id: string;

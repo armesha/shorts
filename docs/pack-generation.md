@@ -31,7 +31,7 @@ public-domain книги, Wikisource/Internet Archive/Gutenberg, open-source д�
 стремятся к пропорции на длинной дистанции, но порядок роликов может рандомизироваться между каналами.
 Длинные видео в эту формулу не включать: длинные сборники публикуются отдельно из библиотеки канала.
 `Вижу Ответ`/visual-riddle деки можно использовать в `jokes_memes` как легкий дополнительный источник,
-но основной блок для загадок и иллюзий остается `riddles_illusions`.
+а основной микс загадок и иллюзий теперь входит в общий блок `quotes` / `ФАКТЫ`.
 
 Декоративные смеющиеся emoji/GIF в шаблонах анекдотов допустимы, если они не мешают чтению, не
 перекрывают текст и не выглядят как плашка/водяной знак/название канала. GIF-акценты держать только в
@@ -587,6 +587,34 @@ EOF
 workflow. Локальную regex-фильтрацию можно делать без вопроса, но она не заменяет ручную/LLM-проверку
 старых шуток на protected-class stereotypes, религию, секс, насилие, болезни, детей/семью,
 алкоголь/наркотики, политику/криминал, возрастные шутки, классовые оскорбления и OCR-мусор.
+
+## Советские постеры (`soviet-posters-ru`)
+
+RU-only curated public-domain pack. Build it with:
+
+```bash
+node scripts/build-soviet-posters-pack.mjs
+```
+
+Source folder can be either `local-assets/soviet-posters-pd/` (preferred, ignored) or temporary
+`assets/soviet-posters-pd/`. The script writes compressed runtime images to
+`assets/template-packs/soviet-posters/backgrounds/`, a small source ledger to
+`assets/template-packs/soviet-posters/sources.json`, rejected-source ledger to
+`assets/template-packs/soviet-posters/excluded-sources.json`, and the live custom pack to
+`data/packs/soviet-posters-ru.json`.
+
+Rules:
+- do not localize and do not auto-replenish this pack;
+- keep `repeatMode: "least_posted_per_account"` so generation reuses the fixed set by choosing the
+  least-rendered poster for the current channel;
+- use only source-ledger PD files;
+- keep the script's explicit `VISUAL_SAFE_POSTER_FILES` allowlist: this pack is intentionally small
+  and neutral rather than a broad Soviet-poster dump;
+- never restore anything in `excluded-sources.json` without a fresh manual safety pass;
+- exclude protected-class wording and obsolete/offensive terms such as `негр`;
+- do not add anti-religious satire, Stalin-cult material, racial/ethnic stereotypes, dehumanizing
+  enemy framing, repression/security-service framing, war/weapon/call-to-kill propaganda, graphic
+  war/death imagery, unclear film posters, or files without a clear PD ledger.
 
 ## Новый этап: visual-first загадки с озвучкой
 

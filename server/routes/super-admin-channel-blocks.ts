@@ -41,6 +41,7 @@ type SourceGroupDef = {
   id: string;
   title: string;
   defaultWeight: number;
+  section?: string;
   sources: Record<string, string[]>;
 };
 
@@ -210,6 +211,10 @@ const MOTIVATION_DECK_BY_LANG: Record<string, string[]> = {
   de: ["pack:motivation-de-superadmin"],
 };
 
+const SOVIET_POSTER_DECK_BY_LANG: Record<string, string[]> = {
+  ru: ["pack:soviet-posters-ru"],
+};
+
 const FACT_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
   en: ["fact-en"],
   es: ["fact-es"],
@@ -292,6 +297,86 @@ const CHRISTIANITY_SOURCE_GROUPS: SourceGroupDef[] = [
   },
 ];
 
+const RUSSIAN_SOURCE_GROUPS: SourceGroupDef[] = [
+  {
+    id: "jokes",
+    title: "Анекдоты",
+    defaultWeight: 6,
+    sources: { ru: ["ru"] },
+  },
+  {
+    id: "memes",
+    title: "Мемы",
+    defaultWeight: 3,
+    sources: { ru: ["memes-ru"] },
+  },
+  {
+    id: "visual_riddles",
+    title: "Вижу ответ",
+    defaultWeight: 1,
+    sources: { ru: ["visual-riddles"] },
+  },
+  {
+    id: "mind_flip",
+    title: "Обмани мозг",
+    defaultWeight: 2,
+    sources: { ru: ["illusions-3d"] },
+  },
+  {
+    id: "optical_illusions",
+    title: "Иллюзии",
+    defaultWeight: 1,
+    sources: { ru: ["illusions-ru"] },
+  },
+  {
+    id: "lifehacks",
+    title: "Лайфхаки",
+    defaultWeight: 3,
+    sources: { ru: ["tips"] },
+  },
+  {
+    id: "static_facts",
+    title: "Факты",
+    defaultWeight: 2,
+    sources: { ru: ["pack:static-facts-ru-superadmin"] },
+  },
+  {
+    id: "video_quotes",
+    title: "Видеоцитаты",
+    defaultWeight: 2,
+    sources: { ru: ["quote-video-ru"] },
+  },
+  {
+    id: "static_quotes",
+    title: "Цитаты",
+    defaultWeight: 3,
+    sources: { ru: ["quotes-ru"] },
+  },
+  {
+    id: "psychology",
+    title: "Психология",
+    defaultWeight: 2,
+    sources: { ru: ["pack:psychology-ru-superadmin"] },
+  },
+  {
+    id: "motivation",
+    title: "Мотивация",
+    defaultWeight: 2,
+    sources: { ru: ["pack:motivation-ru-superadmin"] },
+  },
+  {
+    id: "soviet_posters",
+    title: "Постеры",
+    defaultWeight: 1,
+    sources: SOVIET_POSTER_DECK_BY_LANG,
+  },
+];
+
+const RELIGION_SOURCE_GROUPS: SourceGroupDef[] = [
+  ...ISLAM_SOURCE_GROUPS.map((group) => ({ ...group, section: "Ислам" })),
+  ...CHRISTIANITY_SOURCE_GROUPS.map((group) => ({ ...group, section: "Христианство" })),
+];
+
 const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "static_facts",
@@ -304,6 +389,12 @@ const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
     title: "Интересный факт",
     defaultWeight: 1,
     sources: FACT_VIDEO_DECK_BY_LANG,
+  },
+  {
+    id: "visual_riddles",
+    title: "Вижу ответ",
+    defaultWeight: 1,
+    sources: RIDDLE_VISUAL_DECK_BY_LANG,
   },
   {
     id: "mind_flip",
@@ -328,6 +419,12 @@ const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
     title: "Анекдоты",
     defaultWeight: 2,
     sources: JOKE_TEXT_DECK_BY_LANG,
+  },
+  {
+    id: "memes",
+    title: "Мемы",
+    defaultWeight: 2,
+    sources: JOKE_MEME_DECK_BY_LANG,
   },
   {
     id: "video_quotes",
@@ -357,18 +454,6 @@ const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
 
 const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
   jokes_memes: JOKE_TEXT_DECK_BY_LANG,
-  riddles_illusions: {
-    ru: ["visual-riddles", "illusions-ru", "illusions-3d", "ru", "memes-ru"],
-    ar: ["illusions-ar", "ar", "memes-ar"],
-    de: ["visual-riddles-de", "illusions-de", "illusions-3d-de", "de", "memes-de"],
-    en: ["visual-riddles-en", "illusions-en", "illusions-3d-en", "en", "memes-en"],
-    it: ["illusions-it", "it", "memes-it"],
-    es: ["illusions-es", "pack:chistes-es-public-domain", "memes-es"],
-    fr: ["illusions-fr", "fr", "memes-fr"],
-    pt: ["illusions-pt", "pt", "memes-pt"],
-    hi: ["illusions-hi", "hi", "memes-hi"],
-    id: ["illusions-id", "id", "memes-id"],
-  },
   islam: {
     ar: ["islamic", "islamic-quotes-ar", "islamic-facts-ar"],
   },
@@ -376,9 +461,27 @@ const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
     en: ["christian", "prayers-en", "christian-quotes-en", "christian-facts-en"],
     de: ["prayers-de"],
   },
+  religion: {
+    ar: ["islamic", "islamic-quotes-ar", "islamic-facts-ar"],
+    en: ["christian", "prayers-en", "christian-quotes-en", "christian-facts-en"],
+    de: ["prayers-de"],
+  },
 };
 
 const BLOCKS: BlockDef[] = [
+  {
+    id: "russian",
+    title: "Русские",
+    description: "Все русские нерелигиозные каналы в одной сетке источников.",
+    rules: [
+      "Русский блок использует один общий микс источников для всех русских каналов супер-админа.",
+      "Все RU-каналы в блоке должны иметь одинаковый набор источников: юмор, иллюзии, факты, лайфхаки, цитаты, психология, мотивация и советские постеры.",
+      "Советские постеры — RU-only архивный источник: не локализовать, не пополнять, использовать как повторяемый curated pack.",
+      "Постеры брать только из проверенного public-domain набора; не добавлять антирелигиозную сатиру, сталинский культ, расовые стереотипы, тяжёлые военные изображения и спорные киноафиши.",
+    ],
+    accountIds: [7, 16, 52, 62, 81],
+    sourceGroups: RUSSIAN_SOURCE_GROUPS,
+  },
   {
     id: "jokes_memes",
     title: "Анекдоты и мемы",
@@ -389,57 +492,34 @@ const BLOCKS: BlockDef[] = [
       "Локализации считаются одним тематическим семейством, но unsafe-языки или отсутствующие мем-паки не подставляются автоматически.",
       "Декоративные смеющиеся emoji/GIF разрешены, если они не перекрывают текст и не выглядят как плашка/водяной знак канала.",
     ],
-    accountIds: [7, 14, 15, 62, 64, 68, 70, 79, 82],
+    accountIds: [14, 15, 64, 68, 70, 79, 82],
     sourceGroups: JOKE_SOURCE_GROUPS,
   },
   {
-    id: "riddles_illusions",
-    title: "Загадки и иллюзии",
-    description: "Визуальные загадки и оптические иллюзии.",
-    rules: [
-      "Один визуальный ассет можно локализовать через текстовые overlays, если права на исходник проверены.",
-      "Для новых языков готовить отдельные titles/labels, а не смешивать языки внутри одного ролика.",
-      "Анекдоты и мемы в этом блоке остаются отдельными источниками с настраиваемым весом, чтобы не ломать основной визуальный микс.",
-    ],
-    accountIds: [52, 72, 78],
-    sourceGroups: RIDDLE_SOURCE_GROUPS,
-  },
-  {
-    id: "islam",
-    title: "Ислам",
-    description: "Исламские религиозные источники без смешивания с христианскими каналами.",
+    id: "religion",
+    title: "Религия",
+    description: "Исламские и христианские каналы в одном блоке, но с раздельными настройками микса.",
     rules: [
       "Исламские тексты и молитвенные формулировки не смешивать с христианскими источниками.",
+      "Христианские KJV/молитвенные источники не смешивать с исламскими каналами.",
       "Для каждого религиозного пака нужен отдельный source ledger и ручная проверка переводов/формулировок.",
       "Перед массовой публикацией проверять title/description/thumbnails на спорный, оскорбительный или политизированный контекст.",
       "Музыка/звук подбирается отдельно под религию; для исламских паков использовать немелодический фон или тишину.",
       "В исламских религиозных паках не использовать человеческие лица/портреты: никаких изображений пророков, сподвижников, учёных или современных людей; вместо этого каллиграфия, мечети, орнаменты, книги, свет/текстуры.",
-      "Не использовать религиозные тексты для нападок на защищённые группы, оправдания насилия, экстремизма или обещаний медицинских чудес.",
-    ],
-    accountIds: [23],
-    sourceGroups: ISLAM_SOURCE_GROUPS,
-  },
-  {
-    id: "christianity",
-    title: "Христианство",
-    description: "Христианские источники отдельно от исламских каналов.",
-    rules: [
-      "Христианские KJV/молитвенные источники не смешивать с исламскими каналами.",
-      "Для каждого религиозного пака нужен отдельный source ledger и ручная проверка переводов/формулировок.",
-      "Перед массовой публикацией проверять title/description/thumbnails на спорный, оскорбительный или политизированный контекст.",
       "В христианских паках можно использовать только public-domain/clearly licensed религиозные artworks (иконы, фрески, картины, витражи) с source ledger; не выдавать artwork за реальный портрет библейского персонажа.",
       "Не использовать современные фото актёров/людей как Иисуса, апостолов, святых или пророков без явных прав и контекста.",
       "Не использовать религиозные тексты для нападок на защищённые группы, оправдания насилия, экстремизма или обещаний медицинских чудес.",
     ],
-    accountIds: [31],
-    sourceGroups: CHRISTIANITY_SOURCE_GROUPS,
+    accountIds: [23, 31],
+    sourceGroups: RELIGION_SOURCE_GROUPS,
   },
   {
     id: "quotes",
     title: "ФАКТЫ",
-    description: "Факты, иллюзии, лайфхаки, анекдоты, видеоцитаты и психология в одном тематическом блоке.",
+    description: "Факты, загадки, иллюзии, лайфхаки, юмор, видеоцитаты и психология в одном тематическом блоке.",
     rules: [
       "Факты требуют проверяемого источника; численные данные и названия нужно перепроверять.",
+      "Визуальные загадки и мемы в этом блоке остаются отдельными источниками микса, а не отдельным блоком.",
       "Иллюзии внутри блока подставлять только на языке канала; не смешивать RU-видео в EN/DE-каналах.",
       "Лайфхаки локализовать на одном наборе идей, но бытовые реалии адаптировать под язык.",
       "Если появится озвучка для лайфхаков, новые voiceover-паки собирать через разрешённый TTS-профиль проекта с учётом текущих квот.",
@@ -450,7 +530,7 @@ const BLOCKS: BlockDef[] = [
       "Не давать медицинских диагнозов/обещаний лечения; формулировать как общие наблюдения и self-help.",
       "Локализации должны сохранять осторожный тон и избегать травматичных/опасных советов.",
     ],
-    accountIds: [16, 18, 38, 43, 44, 45, 65, 81],
+    accountIds: [18, 38, 43, 44, 45, 65, 72, 78],
     sourceGroups: FACT_SOURCE_GROUPS,
   },
 ];
@@ -459,6 +539,9 @@ const BLOCK_ALIASES: Record<string, string> = {
   facts_space: "quotes",
   lifehacks: "quotes",
   psychology: "quotes",
+  riddles_illusions: "quotes",
+  islam: "religion",
+  christianity: "religion",
 };
 
 function canonicalBlockId(blockId: string): string {
@@ -652,6 +735,7 @@ function sourceGroupForDeck(blockId: string, lang: string, deckId: string): Sour
 }
 
 function blockDefaultSources(blockId: string, lang: string): string[] {
+  if (lang === "ru" && canonicalBlockId(blockId) !== "russian") return [];
   const groups = sourceGroupsForBlock(blockId);
   if (groups.length) return unique(groups.flatMap((group) => group.sources[lang] ?? []));
   return BLOCK_DEFAULT_SOURCES[blockId]?.[lang] ?? [];
@@ -821,6 +905,7 @@ function publicSourceGroups(db: Db, block: BlockDef) {
   return (block.sourceGroups ?? []).map((group) => ({
     id: group.id,
     title: group.title,
+    section: group.section ?? null,
     defaultWeight: group.defaultWeight,
     weight: weights[group.id] ?? group.defaultWeight,
   }));
@@ -1079,6 +1164,10 @@ function capDeckSequenceByFreeCards(db: Db, deps: RouteDeps, ownerId: number, se
   if (!sequence.length || db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) return sequence;
   const freeByDeck = new Map<string, number>();
   for (const deckId of unique(sequence)) {
+    if (isPackDeckId(deckId) && getPack(deckId.slice(5), ownerId, isSuperAdminUser(db.getUserById(ownerId)))?.repeatMode === "least_posted_per_account") {
+      freeByDeck.set(deckId, Number.MAX_SAFE_INTEGER);
+      continue;
+    }
     freeByDeck.set(
       deckId,
       Math.max(0, deps.deckAccess.availableUnusedForDecks(ownerId, [deckId]) - queuedRemainingForOwnerDeck(ownerId, deckId)),

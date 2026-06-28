@@ -8,7 +8,13 @@ import { isSuperAdminUser } from "../auth.ts";
 import { DECKS, isPackDeckId } from "../../src/anecdotes/decks.ts";
 import { randomAnecdote, firstAnecdote, packItemKey } from "../../src/anecdotes/library.ts";
 import { getPack } from "../../src/packs/store.ts";
-import { pickUnusedPackCard, pickFixedPackCard, buildPackLibraryVideo } from "../services/pack-gen.ts";
+import {
+  pickUnusedPackCard,
+  pickFixedPackCard,
+  pickLeastPostedPackCard,
+  isLeastPostedRepeatPack,
+  buildPackLibraryVideo,
+} from "../services/pack-gen.ts";
 import { buildFactLibraryVideo } from "../services/fact-gen.ts";
 import {
   initGenQueue,
@@ -51,9 +57,13 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
         if (!pack || !pack.templates.length) throw new Error(`Пак «${sourceDeck}» не найден или без шаблона`);
         let attempts = 0;
         for (;;) {
-          const picked = infinite ? pickFixedPackCard(pack) : pickUnusedPackCard(pack, seen, pickSeed(sourceDeck, attempts++));
+          const picked = isLeastPostedRepeatPack(pack)
+            ? pickLeastPostedPackCard(db, job.accountId, pack, pickSeed(sourceDeck, attempts++))
+            : infinite
+              ? pickFixedPackCard(pack)
+              : pickUnusedPackCard(pack, seen, pickSeed(sourceDeck, attempts++));
           if (!picked) return "exhausted";
-          if (!infinite) {
+          if (!infinite && !isLeastPostedRepeatPack(pack)) {
             seen.add(picked.key);
             if (!db.claimAnecdote(ownerId, picked.key)) continue; // taken by a concurrent run → pick another
           }
@@ -61,7 +71,7 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
             await buildPackLibraryVideo({ db, userId: ownerId, accountId: job.accountId, pack, picked });
             return "made";
           } catch (e) {
-            if (!infinite) db.releaseAnecdote(ownerId, picked.key);
+            if (!infinite && !isLeastPostedRepeatPack(pack)) db.releaseAnecdote(ownerId, picked.key);
             throw e;
           }
         }

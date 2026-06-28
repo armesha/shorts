@@ -10,7 +10,13 @@ import { DECKS, getDeck, isPackDeckId } from "../../src/anecdotes/decks.ts";
 import { ytMeta } from "../../src/anecdotes/yt-meta.ts";
 import { randomAnecdote, firstAnecdote, anecdoteKey, packItemKey } from "../../src/anecdotes/library.ts";
 import { getPack } from "../../src/packs/store.ts";
-import { pickUnusedPackCard, pickFixedPackCard, buildPackLibraryVideo } from "../services/pack-gen.ts";
+import {
+  pickUnusedPackCard,
+  pickFixedPackCard,
+  pickLeastPostedPackCard,
+  isLeastPostedRepeatPack,
+  buildPackLibraryVideo,
+} from "../services/pack-gen.ts";
 import { buildFactLibraryVideo } from "../services/fact-gen.ts";
 import { addLongVideoToLibrary, LongVideoLibraryError } from "../services/long-video-library.ts";
 import { uploadShort, isYtAuthError, ytErrorReason } from "../services/youtube.ts";
@@ -189,9 +195,13 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
         if (!pack) return reply.code(404).send({ error: "Пак не найден." });
         if (!pack.templates.length) return reply.code(400).send({ error: "У пака нет шаблона." });
         while (created.length < requested) {
-          const picked = infinite ? pickFixedPackCard(pack) : pickUnusedPackCard(pack, seen, pickSeed(sourceDeckId));
+          const picked = isLeastPostedRepeatPack(pack)
+            ? pickLeastPostedPackCard(db, accountId, pack, pickSeed(sourceDeckId))
+            : infinite
+              ? pickFixedPackCard(pack)
+              : pickUnusedPackCard(pack, seen, pickSeed(sourceDeckId));
           if (!picked) break;
-          if (!infinite) {
+          if (!infinite && !isLeastPostedRepeatPack(pack)) {
             seen.add(picked.key);
             if (!db.claimAnecdote(ownerId, picked.key)) continue; // a concurrent run already took this card
           }
@@ -200,7 +210,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
               await buildPackLibraryVideo({ db, userId: ownerId, accountId, pack, picked, music: body.music || undefined }),
             );
           } catch (e) {
-            if (!infinite) db.releaseAnecdote(ownerId, picked.key); // render failed → return the card to the pool
+            if (!infinite && !isLeastPostedRepeatPack(pack)) db.releaseAnecdote(ownerId, picked.key); // render failed → return the card to the pool
             throw e;
           }
         }

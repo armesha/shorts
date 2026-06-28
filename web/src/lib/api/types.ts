@@ -847,6 +847,7 @@ export interface ChannelThemeBlockDeck {
 export interface ChannelThemeBlockSourceGroup {
   id: string;
   title: string;
+  section?: string | null;
   defaultWeight: number;
   weight: number;
 }

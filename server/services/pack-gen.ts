@@ -91,6 +91,36 @@ export function pickFixedPackCard(pack: Pack): PickedPackCard | null {
   return { idx, values, tpl: pack.templates[idx % pack.templates.length], key: packCardKey(values) };
 }
 
+function repeatPackBg(key: string): string {
+  return `repeat-pack:${key}`;
+}
+
+export function isLeastPostedRepeatPack(pack: Pack): boolean {
+  return pack.repeatMode === "least_posted_per_account";
+}
+
+/**
+ * Curated one-off packs can be repeatable without enabling the user's global infinite-pack mode.
+ * Pick the card with the lowest rendered count for this account; ties are seeded so channels do not
+ * collapse to the same first card.
+ */
+export function pickLeastPostedPackCard(db: Db, accountId: number, pack: Pack, seed?: string): PickedPackCard | null {
+  if (!pack.templates.length || !pack.cards.length) return null;
+  const rows = db.db
+    .prepare("SELECT bg, COUNT(*) AS n FROM videos WHERE account_id = ? AND deck = ? GROUP BY bg")
+    .all(accountId, `pack:${pack.id}`) as { bg?: string; n?: number }[];
+  const counts = new Map(rows.map((row) => [String(row.bg || ""), Number(row.n) || 0]));
+  const candidates = pack.cards.map((card, idx) => {
+    const key = packCardKey(card.values);
+    return { idx, values: card.values, key, count: counts.get(repeatPackBg(key)) ?? 0 };
+  });
+  const min = Math.min(...candidates.map((candidate) => candidate.count));
+  const least = candidates.filter((candidate) => candidate.count === min);
+  const picked = seed ? seededPick(least, `${pack.id}|least-posted|${seed}`, (card) => card.key) : least[0];
+  if (!picked) return null;
+  return { idx: picked.idx, values: picked.values, tpl: pack.templates[picked.idx % pack.templates.length], key: picked.key };
+}
+
 /** Собрать ОДНО видео из заранее выбранной карточки пака в библиотеку канала + пометить использованной. */
 export async function buildPackLibraryVideo(input: {
   db: Db;
@@ -115,7 +145,7 @@ export async function buildPackLibraryVideo(input: {
     accountId,
     title,
     text,
-    bg: "",
+    bg: isLeastPostedRepeatPack(pack) ? repeatPackBg(picked.key) : "",
     music,
     deck: `pack:${pack.id}`,
     videoRel: vidRel,
