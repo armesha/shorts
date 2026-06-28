@@ -1580,6 +1580,38 @@ node --import tsx --experimental-sqlite src/scripts/seed-mind-edge.ts
 node --input-type=module -e 'import fs from "node:fs"; const cards=JSON.parse(fs.readFileSync("assets/template-packs/the-mind-edge/cards.json","utf8")); console.log({cards:cards.length,first:Object.keys(cards[0]||{})});'
 ```
 
+## Template-pack: psychology super-admin
+
+Живые паки `psychology-ru-superadmin` и `psychology-de-superadmin` - отдельные super-admin паки,
+не связанные с MGS. Их нельзя пополнять через `assets/template-packs/psychology-mgs/`, использовать
+MGS-шаблоны как fallback или переносить MGS-карточки в armen-блоки.
+
+Файлы:
+
+- `src/scripts/build-psychology-ru-pack.mjs` - генерирует RU-пак;
+- `src/scripts/build-psychology-de-pack.mjs` - локализует структуру RU-пака в DE;
+- `assets/template-packs/psychology-ru/backgrounds/` и `assets/template-packs/psychology-de/backgrounds/`
+  - независимые project-owned фоны;
+- `assets/template-packs/psychology-*/sources.json` - ledger ассетов.
+
+Правила ассетов: реальные/узнаваемые лица, логотипы, social handles, водяные знаки и читаемый
+in-image текст запрещены. Generic silhouette или интерьерная фигура допустимы только если они
+неузнаваемые, находятся вне основной текстовой зоны и не мешают читабельности.
+
+Сборка:
+
+```bash
+node src/scripts/build-psychology-ru-pack.mjs
+node src/scripts/build-psychology-de-pack.mjs
+```
+
+QA после правок:
+
+```bash
+node --experimental-sqlite src/scripts/audit-superadmin-visual-packs.mjs
+node --import tsx src/scripts/audit-armen-packs-safety.mjs
+```
+
 ## Template-pack: psychology-mgs
 
 Это пользовательский template-pack с большим набором визуальных шаблонов и карточек в

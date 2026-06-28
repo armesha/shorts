@@ -2,7 +2,7 @@
   "updatedAt": "2026-06-28T00:00:00.000Z",
   "status": "project_owned_ai_generated_backgrounds",
   "tool": "built-in image generation",
-  "note": "Backgrounds are generated specifically for the super-admin Russian psychology pack. They contain no people, faces, logos, watermarks, or readable text.",
+  "note": "Backgrounds are generated specifically for the super-admin Russian psychology pack. They contain no real or identifiable people/faces, logos, watermarks, or readable text; abstract side silhouettes are allowed only when they do not compete with text.",
   "files": [
     {
       "file": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-01.jpg",
@@ -35,11 +35,28 @@
     {
       "file": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-08.jpg",
       "source": "generated panel: mountain lake at dawn with reflective water and mist"
+    },
+    {
+      "file": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-09.jpg",
+      "source": "locally generated panel: therapy-room interior, chair, lamp, plant, and an abstract non-identifiable side silhouette"
+    },
+    {
+      "file": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-10.jpg",
+      "source": "locally generated panel: journal desk with hourglass and subtle thought-line motif"
+    },
+    {
+      "file": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-11.jpg",
+      "source": "locally generated panel: quiet library corner with shelf, tea cup, and clean central wall area"
+    },
+    {
+      "file": "assets/template-packs/psychology-ru/backgrounds/psychology-ru-bg-12.jpg",
+      "source": "locally generated panel: misty garden path with subtle abstract neural light lines"
     }
   ],
   "rules": [
     "Keep these assets independent from MGS packs and templates.",
     "Use only as background imagery behind readable text panels.",
-    "Do not add faces, logos, readable in-image text, social handles, or watermarks."
+    "Do not add real/identifiable faces, logos, readable in-image text, social handles, or watermarks.",
+    "Abstract silhouettes or interior figures are acceptable only when they are generic, non-identifiable, and outside the main text area."
   ]
 }

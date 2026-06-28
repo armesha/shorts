@@ -29,6 +29,7 @@
       "sourceLedger": "assets/template-packs/psychology-ru/sources.json",
       "rules": [
         "Do not use MGS packs/templates as a donor or fallback for this super-admin pack.",
+        "Do not use real/identifiable faces; generic abstract silhouettes are allowed only outside the main text area.",
         "Avoid medical diagnosis, crisis advice, manipulative promises, or protected-class targeting.",
         "Keep as general self-reflection/behavioral prompts, not therapy replacement."
       ]
@@ -41,6 +42,7 @@
       "sourceLedger": "assets/template-packs/psychology-de/sources.json",
       "rules": [
         "Do not use MGS packs/templates as a donor or fallback for this super-admin pack.",
+        "Do not use real/identifiable faces; generic abstract silhouettes are allowed only outside the main text area.",
         "Avoid medical diagnosis, crisis advice, manipulative promises, or protected-class targeting.",
         "Keep as general self-reflection/behavioral prompts, not therapy replacement."
       ]
