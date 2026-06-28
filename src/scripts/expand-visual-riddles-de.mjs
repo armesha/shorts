@@ -5,15 +5,21 @@ import { promisify } from "node:util";
 
 const exec = promisify(execFile);
 const ROOT = process.cwd();
-const DATA_PATH = resolve(ROOT, "data/visual-riddles-de/videos.json");
-const SOURCE_PATH = resolve(ROOT, "data/visual-riddles-de/sources.json");
-const ASSET_DIR = resolve(ROOT, "assets/fact-videos/visual-riddles-de");
 const FFMPEG = process.env.FFMPEG || "ffmpeg";
 
-const count = Math.max(1, Number(process.argv[2] || 40));
+const firstArg = String(process.argv[2] || "");
+const lang = firstArg === "en" || firstArg === "de" ? firstArg : "de";
+const countArg = firstArg === "en" || firstArg === "de" ? process.argv[3] : process.argv[2];
+const deckId = `visual-riddles-${lang}`;
+const DATA_PATH = resolve(ROOT, `data/${deckId}/videos.json`);
+const SOURCE_PATH = resolve(ROOT, `data/${deckId}/sources.json`);
+const ASSET_DIR = resolve(ROOT, `assets/fact-videos/${deckId}`);
+
+const count = Math.max(1, Number(countArg || 40));
 const force = process.argv.includes("--force");
 
-const titles = [
+const titleByLang = {
+  de: [
   "Rätselbild: finde das Detail",
   "Optische Frage: was fällt dir auf?",
   "Schneller Blicktest",
@@ -34,7 +40,32 @@ const titles = [
   "Fokus-Test für dein Gehirn",
   "Was verbirgt sich im Bild?",
   "Schaust du genau genug hin?",
-];
+  ],
+  en: [
+    "Quick visual riddle",
+    "Spot the hidden detail",
+    "Fast attention test",
+    "Can you see the difference?",
+    "Visual puzzle for sharp eyes",
+    "Which shape fits here?",
+    "Find the hidden answer",
+    "Eye test: look closely",
+    "Mini perspective puzzle",
+    "What is wrong in this picture?",
+    "Find the right path",
+    "Crack the pattern",
+    "Which answer is correct?",
+    "Few people see it instantly",
+    "Train your eyes",
+    "Logic meets illusion",
+    "Riddle in seconds",
+    "Focus test for your brain",
+    "What is hiding in the image?",
+    "Are you looking closely enough?",
+  ],
+};
+const titles = titleByLang[lang];
+const variantPrefix = lang === "de" ? "vrdx" : "vrex";
 
 function readJson(path) {
   return JSON.parse(readFileSync(path, "utf8"));
@@ -105,7 +136,7 @@ async function main() {
   const existingFiles = new Set(videos.map((video) => video.file));
   const usedTitles = new Set(videos.map((video) => video.title).filter(Boolean));
   const sourceByFile = new Map(
-    sources.map((source) => [`visual-riddles-de/${source.id}.mp4`, source]),
+    sources.map((source) => [`${deckId}/${source.id}.mp4`, source]),
   );
   const baseFiles = videos
     .map((video) => ({
@@ -113,20 +144,27 @@ async function main() {
       abs: resolve(ROOT, "assets/fact-videos", video.file),
       source: sourceByFile.get(video.file),
     }))
-    .filter((entry) => existsSync(entry.abs) && !basename(entry.rel).startsWith("vrdx_"));
+    .filter((entry) => existsSync(entry.abs) && entry.source?.type !== "generated-local-variant" && !basename(entry.rel).startsWith(`${variantPrefix}_`));
   if (!baseFiles.length) throw new Error("No base visual-riddle videos found");
+
+  let nextIndex = 1;
+  for (const rel of existingFiles) {
+    const match = basename(rel).match(new RegExp(`^${variantPrefix}_(\\d+)\\.mp4$`));
+    if (match) nextIndex = Math.max(nextIndex, Number(match[1]) + 1);
+  }
 
   const added = [];
   for (let i = 1; i <= count; i += 1) {
-    const id = `vrdx_${String(i).padStart(3, "0")}`;
-    const rel = `visual-riddles-de/${id}.mp4`;
+    const index = nextIndex + i - 1;
+    const id = `${variantPrefix}_${String(index).padStart(3, "0")}`;
+    const rel = `${deckId}/${id}.mp4`;
     const out = resolve(ROOT, "assets/fact-videos", rel);
-    const title = titleFor(i - 1, usedTitles);
+    const title = titleFor(index - 1, usedTitles);
     usedTitles.add(title);
-    const base = baseFiles[((i - 1) * 13) % baseFiles.length];
+    const base = baseFiles[((index - 1) * 13) % baseFiles.length];
     if (force || !existsSync(out)) {
       process.stdout.write(`render ${rel} from ${basename(base.abs)}\n`);
-      await renderVariant(base.abs, out, i - 1);
+      await renderVariant(base.abs, out, index - 1);
     }
     if (!existingFiles.has(rel)) {
       videos.push({ file: rel, title, text: title });
@@ -142,7 +180,10 @@ async function main() {
         license: base.source?.license || "Derived local variant",
         author: base.source?.author || "shorts-factory local transform",
         derivedFrom: base.rel,
-        rightsNote: "Lokale ffmpeg-Variante aus einem bereits im Projekt geprüften CC0/Public-Domain-Rätselvideo; keine externen Medien hinzugefügt.",
+        rightsNote:
+          lang === "de"
+            ? "Lokale ffmpeg-Variante aus einem bereits im Projekt geprüften CC0/Public-Domain-Rätselvideo; keine externen Medien hinzugefügt."
+            : "Local ffmpeg variant derived from an already project-reviewed CC0/Public-Domain visual-riddle video; no external media added.",
       });
       existingFiles.add(rel);
       added.push(rel);

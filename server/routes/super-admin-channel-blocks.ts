@@ -6,7 +6,7 @@ import { libraryStats } from "../../src/anecdotes/library.ts";
 import { getPack } from "../../src/packs/store.ts";
 import { uid } from "../infra/auth-session.ts";
 import type { RouteDeps } from "./deps.ts";
-import { packCardKey } from "../services/pack-gen.ts";
+import { isLeastPostedRepeatPack, packCardKey } from "../services/pack-gen.ts";
 import {
   enqueue as genEnqueue,
   listStatuses as genListStatuses,
@@ -692,6 +692,12 @@ function availableForDecks(db: Db, deps: RouteDeps, ctx: BlockContext | undefine
   return total;
 }
 
+function isRepeatPackDeck(db: Db, ownerId: number, deckId: string): boolean {
+  if (!isPackDeckId(deckId)) return false;
+  const pack = getPack(deckId.slice(5), ownerId, isSuperAdminUser(db.getUserById(ownerId)));
+  return !!pack && isLeastPostedRepeatPack(pack);
+}
+
 function deckSummaries(input: {
   db: Db;
   deps: RouteDeps;
@@ -1164,7 +1170,7 @@ function capDeckSequenceByFreeCards(db: Db, deps: RouteDeps, ownerId: number, se
   if (!sequence.length || db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) return sequence;
   const freeByDeck = new Map<string, number>();
   for (const deckId of unique(sequence)) {
-    if (isPackDeckId(deckId) && getPack(deckId.slice(5), ownerId, isSuperAdminUser(db.getUserById(ownerId)))?.repeatMode === "least_posted_per_account") {
+    if (isRepeatPackDeck(db, ownerId, deckId)) {
       freeByDeck.set(deckId, Number.MAX_SAFE_INTEGER);
       continue;
     }
@@ -1444,6 +1450,7 @@ function planChannelBlockNormalize(input: {
   const freeRemaining = new Map<string, number>();
   const takeFree = (ownerId: number, deckId: string, deckName: string, needed: number, account: Account): number => {
     if (needed <= 0 || db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) return needed;
+    if (isRepeatPackDeck(db, ownerId, deckId)) return needed;
     const key = `${ownerId}|${deckId}`;
     if (!freeRemaining.has(key)) {
       freeRemaining.set(
