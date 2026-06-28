@@ -141,7 +141,16 @@ function builtinReport(deckId, accounts) {
     return titledReport(deckId, accounts, dir, "rendered through quote video renderer with portrait/artwork or generated quote backgrounds");
   }
   if (/^(visual-riddles|illusions|space|fact-|prayers)/.test(deckId)) {
-    return visualDirReport(deckId, accounts, deckId === "fact-en" ? "fact-videos" : deckId, "prebuilt visual/video deck", deckId === "fact-en" ? "" : deckId);
+    if (deckId === "fact-en") return visualDirReport(deckId, accounts, "fact-videos", "prebuilt visual/video deck", "");
+    if (deckId === "fact-es")
+      return visualDirReport(
+        deckId,
+        accounts,
+        "fact-videos-es",
+        "Spanish localized fact deck; runtime rebuilds the shared source footage with ES overlay + edge-tts",
+        "",
+      );
+    return visualDirReport(deckId, accounts, deckId, "prebuilt visual/video deck", deckId);
   }
   if (/^tips/.test(deckId)) {
     const items = readJson(resolve(ROOT, `data/${deckId}/titled.json`), []);
