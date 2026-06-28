@@ -1,0 +1,14 @@
+{
+  "generatedAt": "2026-06-28T00:00:00.000Z",
+  "reason": "Super-admin YouTube safety pruning: remove protected-class/race-related wording from future generation.",
+  "blockedItemKeys": [
+    "a48sek9-280"
+  ],
+  "blockedItems": [
+    {
+      "key": "a48sek9-280",
+      "index": 176,
+      "note": "race-related joke wording"
+    }
+  ]
+}

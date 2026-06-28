@@ -1,0 +1,14 @@
+{
+  "generatedAt": "2026-06-28T00:00:00.000Z",
+  "reason": "Super-admin YouTube safety pruning: avoid protected-class/race-related quote wording in mass publishing.",
+  "blockedItemKeys": [
+    "a1woi95p-165"
+  ],
+  "blockedItems": [
+    {
+      "key": "a1woi95p-165",
+      "index": 336,
+      "note": "race-related terminology"
+    }
+  ]
+}

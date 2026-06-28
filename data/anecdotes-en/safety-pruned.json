@@ -1,0 +1,20 @@
+{
+  "generatedAt": "2026-06-28T00:00:00.000Z",
+  "reason": "Super-admin YouTube safety pruning: remove protected-class slurs and obsolete racial language from future generation.",
+  "blockedItemKeys": [
+    "a5304i5-135",
+    "a1bn971n-265"
+  ],
+  "blockedItems": [
+    {
+      "key": "a5304i5-135",
+      "index": 624,
+      "note": "obsolete racial term"
+    },
+    {
+      "key": "a1bn971n-265",
+      "index": 1613,
+      "note": "racial slur"
+    }
+  ]
+}
