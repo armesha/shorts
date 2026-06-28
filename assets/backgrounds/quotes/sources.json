@@ -19,6 +19,22 @@
     {
       "file": "assets/backgrounds/quotes/quote-bg-04.jpg",
       "source": "generated panel: night window, notebook, candle, deep blue atmosphere"
+    },
+    {
+      "file": "assets/backgrounds/quotes/quote-bg-05.jpg",
+      "source": "locally generated project-owned panel: old writer desk/library edge with warm parchment safe area"
+    },
+    {
+      "file": "assets/backgrounds/quotes/quote-bg-06.jpg",
+      "source": "locally generated project-owned panel: museum niche with soft stone frame and clean quote safe area"
+    },
+    {
+      "file": "assets/backgrounds/quotes/quote-bg-07.jpg",
+      "source": "locally generated project-owned panel: deep green library staircase with gold frame and central light safe area"
+    },
+    {
+      "file": "assets/backgrounds/quotes/quote-bg-08.jpg",
+      "source": "locally generated project-owned panel: twilight study window with desk, pen, candle, and clean center"
     }
   ],
   "rules": [

@@ -1439,6 +1439,13 @@ Wikimedia/Commons portrait ledger. Их voiced-версии `quote-video-*` не
 у цитатных каналов armen источники стоят как `quotes-de + quote-video-de` и `quotes-ru +
 quote-video-ru`, а `slotDecks` дают 8 статичных и 2 voiced слота на 10 публикаций.
 
+Если у карточки нет `portraitFile`, `renderQuote()` использует generic fallback-фоны из
+`assets/backgrounds/quotes/quote-bg-*.jpg`; список подключённых файлов лежит в
+`GENERIC_QUOTE_BACKGROUNDS` в `src/anecdotes/render.ts`, а provenance - в
+`assets/backgrounds/quotes/sources.json`. Эти фоны должны быть project-owned, без лиц, логотипов,
+водяных знаков и readable in-image text. После добавления новых fallback-фонов обязательно отрендери
+несколько quote cards без portraitFile через `renderAnecdote()` и проверь контакт-лист на читаемость.
+
 2026-06-21 добавлен статичный card-style batch `q244..q543` (+300 MP4) без озвучки: портрет +
 цитата + процедурная фоновая музыка. Builder:
 

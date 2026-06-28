@@ -346,6 +346,10 @@ const GENERIC_QUOTE_BACKGROUNDS = [
   "assets/backgrounds/quotes/quote-bg-02.jpg",
   "assets/backgrounds/quotes/quote-bg-03.jpg",
   "assets/backgrounds/quotes/quote-bg-04.jpg",
+  "assets/backgrounds/quotes/quote-bg-05.jpg",
+  "assets/backgrounds/quotes/quote-bg-06.jpg",
+  "assets/backgrounds/quotes/quote-bg-07.jpg",
+  "assets/backgrounds/quotes/quote-bg-08.jpg",
 ];
 
 function isIslamicQuoteDeck(deckId: string): boolean {
