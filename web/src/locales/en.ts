@@ -468,6 +468,8 @@ export const en: Record<string, string> = {
   "channelBlocks.queued": "Queue/channel",
   "channelBlocks.runwayNoGeneration": "days without generation",
   "channelBlocks.runwayDays": "days left",
+  "channelBlocks.videosLeft": "videos left",
+  "channelBlocks.sourceMissingWarning": "{deck}: {queued} queued · {perDay}/day. If this slot fires before top-up, publishing will use another available pack.",
   "channelBlocks.scheduleApplied": "Schedule updated: {updated}; skipped: {skipped}.{details}",
   "channelBlocks.skipReason.per_channel_limit": "channel limit {cap}/day",
   "channelBlocks.skipReason.google_key_limit": "Google key limit, {available} free",

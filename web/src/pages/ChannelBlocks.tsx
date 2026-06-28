@@ -193,6 +193,11 @@ function deckDisplayName(deck: ChannelThemeBlockAccount["sourceDecks"][number]):
   return deck.groupTitle || deck.name;
 }
 
+function accountTotalRunwayDays(account: ChannelThemeBlockAccount): number | null {
+  const postsPerDay = account.enabled ? account.schedule.length : 0;
+  return postsPerDay > 0 ? account.queued / postsPerDay : null;
+}
+
 export default function ChannelBlocks({ onShowClassic }: Props) {
   const { t } = useT();
   const queue = useGenQueue();
@@ -1308,6 +1313,15 @@ function SourceMixSettings({
 
 function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: ReturnType<typeof useT>["t"] }) {
   const bottleneck = accountBottleneck(account);
+  const totalRunwayDays = accountTotalRunwayDays(account);
+  const missingScheduledDeck = bottleneck && bottleneck.postsPerDay > 0 && bottleneck.queued <= 0 ? bottleneck : null;
+  const missingTitle = missingScheduledDeck
+    ? t("channelBlocks.sourceMissingWarning", {
+        deck: deckDisplayName(missingScheduledDeck.deck),
+        queued: missingScheduledDeck.queued,
+        perDay: missingScheduledDeck.postsPerDay,
+      })
+    : "";
   const youtubeUrl = account.ytChannelId ? `https://www.youtube.com/channel/${account.ytChannelId}` : null;
   const avatar = account.avatar ? (
     <img src={account.avatar} alt="" className="h-10 w-10 rounded-md border border-base-300 object-cover" loading="lazy" />
@@ -1354,21 +1368,19 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
 
       <div className="pointer-events-none relative z-10 mt-3 block rounded bg-base-200/70 px-2 py-2">
         <div className="flex items-baseline justify-between gap-2">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-base-content/45">{t("channelBlocks.runwayNoGeneration")}</span>
-          <span className="text-sm font-bold">{formatRunwayDays(account.effectiveRunwayDays ?? null)}</span>
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-base-content/45">{t("channelBlocks.videosLeft")}</span>
+          <span className="flex items-center gap-1 text-sm font-bold">
+            {account.queued}
+            {missingScheduledDeck && (
+              <span className="pointer-events-auto text-warning" title={missingTitle} aria-label={missingTitle}>
+                <AppIcon name="warning" size={13} />
+              </span>
+            )}
+          </span>
         </div>
-        {bottleneck ? (
-          <div className="mt-1 text-[11px] leading-snug text-base-content/60">
-            {t("channelBlocks.channelBottleneck", {
-              deck: deckDisplayName(bottleneck.deck),
-              queued: bottleneck.queued,
-              perDay: bottleneck.postsPerDay,
-              days: formatRunwayDays(bottleneck.days),
-            })}
-          </div>
-        ) : (
-          <div className="mt-1 text-[11px] text-base-content/40">{t("channelBlocks.bottleneckNone")}</div>
-        )}
+        <div className="mt-1 text-[11px] text-base-content/55">
+          {totalRunwayDays == null ? t("channelBlocks.bottleneckNone") : `${formatRunwayDays(totalRunwayDays)} ${t("channelBlocks.runwayDays")}`}
+        </div>
       </div>
       {account.authError && (
         <div className="pointer-events-none relative z-10 mt-2 flex items-start gap-1 text-[11px] leading-snug text-error">

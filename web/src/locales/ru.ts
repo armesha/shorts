@@ -472,6 +472,8 @@ export const ru: Record<string, string> = {
   "channelBlocks.queued": "Очередь/канал",
   "channelBlocks.runwayNoGeneration": "дней без генерации",
   "channelBlocks.runwayDays": "дней запаса",
+  "channelBlocks.videosLeft": "видео осталось",
+  "channelBlocks.sourceMissingWarning": "{deck}: {queued} в очереди · {perDay} в день. Если слот сработает раньше добивки, публикация возьмёт другой доступный пак.",
   "channelBlocks.scheduleApplied": "Расписание обновлено: {updated}; пропущено: {skipped}.{details}",
   "channelBlocks.skipReason.per_channel_limit": "лимит канала {cap}/сутки",
   "channelBlocks.skipReason.google_key_limit": "лимит Google-ключа, свободно {available}",

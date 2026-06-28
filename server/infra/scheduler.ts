@@ -33,6 +33,10 @@ function isSchedulerSourceDeck(deckId: string): boolean {
   return DECKS.some((deck) => deck.id === deckId) || isPackDeckId(deckId);
 }
 
+function uniqueDecks(deckIds: string[]): string[] {
+  return [...new Set(deckIds.map((deckId) => String(deckId || "").trim()).filter(Boolean))];
+}
+
 export interface SchedulerOpts {
   db: Db;
   outputDir: string;
@@ -81,7 +85,7 @@ export function startScheduler(opts: SchedulerOpts) {
       try {
         opts.log(`[sched] account ${acc.id} (${acc.channelName}) firing at ${hhmm}`);
 
-        const sources = (acc.sourceDecks?.length ? acc.sourceDecks : [acc.lang]).filter(isSchedulerSourceDeck);
+        const sources = uniqueDecks((acc.sourceDecks?.length ? acc.sourceDecks : [acc.lang]).filter(isSchedulerSourceDeck));
         const slotDeck = acc.slotDecks?.[hhmm];
         const allowedDecks =
           slotDeck === MANUAL_VIDEO_DECK
@@ -89,16 +93,29 @@ export function startScheduler(opts: SchedulerOpts) {
             : slotDeck && sources.includes(slotDeck)
               ? [slotDeck]
               : [...sources, MANUAL_VIDEO_DECK];
+        const fallbackDecks =
+          slotDeck && slotDeck !== MANUAL_VIDEO_DECK && sources.includes(slotDeck)
+            ? uniqueDecks([...sources.filter((deckId) => deckId !== slotDeck), MANUAL_VIDEO_DECK])
+            : [];
         const slotSeed = `${day}|${hhmm}|account:${acc.id}|decks:${allowedDecks.join(",")}`;
         // Post-once queue: a pinned video (legacy, if present and still valid), else the next
-        // unposted video from the slot's selected pack or any selected channel pack.
+        // unposted video from the slot's selected pack. If that selected pack is empty, fall back to
+        // the channel's other selected packs so one dry source does not block the whole schedule.
         const pinnedId = acc.slotVideos?.[hhmm];
         const pinned = pinnedId ? opts.db.getVideo(pinnedId) : null;
-        const lib =
+        let lib =
           (pinned && pinned.postCount === 0 && allowedDecks.includes(pinned.deck) ? pinned : null) ??
           opts.db.nextUnpostedVideoForDecks(acc.id, allowedDecks, slotSeed);
+        if (!lib && fallbackDecks.length) {
+          lib = opts.db.nextUnpostedVideoForDecks(acc.id, fallbackDecks, `${slotSeed}|fallback`);
+          if (lib)
+            opts.log(
+              `[sched] account ${acc.id}: пак слота «${slotDeck}» пуст — взял ролик из «${lib.deck}»`,
+            );
+        }
         if (!lib) {
-          opts.log(`[sched] account ${acc.id}: нет роликов в библиотеке для паков «${allowedDecks.join(", ")}» — нечего постить`);
+          const checkedDecks = uniqueDecks([...allowedDecks, ...fallbackDecks]);
+          opts.log(`[sched] account ${acc.id}: нет роликов в библиотеке для паков «${checkedDecks.join(", ")}» — нечего постить`);
           continue;
         }
         // Each channel posts with the SPECIFIC Google key it was connected with (per-channel binding).
