@@ -1,0 +1,26 @@
+{
+  "packFamily": "lifehack-backgrounds",
+  "updatedAt": "2026-06-28",
+  "backgrounds": [
+    {
+      "file": "assets/backgrounds/lifehacks/generated-workspace-02.jpg",
+      "type": "generated",
+      "promptSummary": "Modern practical kitchen/household workspace with a clean central card area; no readable words, logos, watermarks, or branded packaging."
+    },
+    {
+      "file": "assets/backgrounds/lifehacks/generated-workspace-03.jpg",
+      "type": "generated",
+      "promptSummary": "Organized home workspace with planner, blank phone screen, storage items, and a clean safe zone for overlay text; no readable words/logos/watermarks."
+    },
+    {
+      "file": "assets/backgrounds/lifehacks/generated-workspace-04.jpg",
+      "type": "generated",
+      "promptSummary": "Tidy pantry and household shelf scene with blank-label objects and central notepad safe zone; no readable words/logos/watermarks."
+    }
+  ],
+  "safetyNotes": [
+    "No external web images were imported for these generated backgrounds.",
+    "Backgrounds are designed as decorative support only; lifehack text remains rendered by project templates.",
+    "Do not add branded packaging, readable fake labels, or medical/chemical warning labels to this pool."
+  ]
+}
