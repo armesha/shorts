@@ -15,10 +15,15 @@ npm run server     # Fastify API on :8080  (needs the Google client-secret file 
 npm run web        # Vite dev server on :5173 (proxies /api → :8080)
 npm run web:build  # build the dashboard into web/dist (served by the API in prod)
 npm run server:restart  # safe prod restart: stop stale :8080 pids, start shorts.service, health-check
-npm run deploy:restart  # web:build + safe prod restart for shareboard.live
+npm run deploy:refresh  # web:build + safe prod restart + public smoke check for shareboard.live
 ```
 
 Checks: `npm test` (node:test) · `npm run typecheck` (tsc --noEmit, src + server).
+
+Production uses systemd units from `systemd/`: `shorts.service` serves the API and scheduler with
+`GEN_QUEUE_RUNNER=external`, while `shorts-gen-worker.service` renders the SQLite-backed generation
+queue. `npm run server:restart` restarts both when the worker unit is installed; without systemd it
+falls back to the old embedded `npm run server` mode.
 
 ## Layout
 

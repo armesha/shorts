@@ -1,0 +1,22 @@
+[Unit]
+Description=shorts-factory backend (Fastify API on :8080)
+Documentation=https://github.com/armesha/shorts
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=davtian
+Group=davtian
+WorkingDirectory=/home/davtian/Documents/shorts
+Environment=GEN_QUEUE_RUNNER=external
+ExecStart=/usr/bin/node --import tsx --experimental-sqlite server/index.ts
+Restart=always
+RestartSec=5
+TimeoutStopSec=20
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=shorts
+
+[Install]
+WantedBy=multi-user.target

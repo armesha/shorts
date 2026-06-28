@@ -1,0 +1,22 @@
+[Unit]
+Description=shorts-factory generation queue worker
+Documentation=https://github.com/armesha/shorts
+After=network-online.target shorts.service
+Wants=network-online.target
+PartOf=shorts.service
+
+[Service]
+Type=simple
+User=davtian
+Group=davtian
+WorkingDirectory=/home/davtian/Documents/shorts
+ExecStart=/usr/bin/node --import tsx --experimental-sqlite server/gen-worker.ts
+Restart=always
+RestartSec=5
+TimeoutStopSec=45
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=shorts-gen-worker
+
+[Install]
+WantedBy=multi-user.target

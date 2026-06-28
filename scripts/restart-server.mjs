@@ -9,6 +9,7 @@ const execFile = promisify(execFileCb);
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const PORT = Number(process.env.PORT || 8080);
 const SERVICE = process.env.SHORTS_SERVICE || "shorts.service";
+const WORKER_SERVICE = process.env.SHORTS_WORKER_SERVICE || "shorts-gen-worker.service";
 const LOG_FILE = resolve(ROOT, "logs/server.log");
 const HEALTH_URL = `http://127.0.0.1:${PORT}/api/health`;
 
@@ -71,7 +72,7 @@ function procCwd(pid) {
   }
 }
 
-function repoServerPids() {
+function repoAppPids() {
   if (!existsSync("/proc")) return [];
   const pids = [];
   for (const entry of readdirSync("/proc")) {
@@ -79,7 +80,7 @@ function repoServerPids() {
     const pid = Number(entry);
     if (pid === process.pid) continue;
     const cmd = procCmdline(pid);
-    if (!cmd.includes("server/index.ts")) continue;
+    if (!cmd.includes("server/index.ts") && !cmd.includes("server/gen-worker.ts")) continue;
     const cwd = procCwd(pid);
     if (cwd === ROOT || cmd.includes(ROOT)) pids.push(pid);
   }
@@ -93,19 +94,19 @@ async function portPids() {
   return [...ids].filter((pid) => pid > 1);
 }
 
-async function serviceLoadState() {
-  const { stdout } = await tryRun("systemctl", ["show", SERVICE, "-p", "LoadState", "--value"]);
+async function serviceLoadState(service = SERVICE) {
+  const { stdout } = await tryRun("systemctl", ["show", service, "-p", "LoadState", "--value"]);
   return stdout.trim();
 }
 
-async function serviceMainPid() {
-  const { stdout } = await tryRun("systemctl", ["show", SERVICE, "-p", "MainPID", "--value"]);
+async function serviceMainPid(service = SERVICE) {
+  const { stdout } = await tryRun("systemctl", ["show", service, "-p", "MainPID", "--value"]);
   const pid = Number(stdout.trim());
   return Number.isFinite(pid) && pid > 0 ? pid : 0;
 }
 
-async function serviceActiveState() {
-  const { stdout } = await tryRun("systemctl", ["is-active", SERVICE]);
+async function serviceActiveState(service = SERVICE) {
+  const { stdout } = await tryRun("systemctl", ["is-active", service]);
   return stdout.trim();
 }
 
@@ -166,22 +167,36 @@ async function startDetachedFallback() {
 
 async function restartSystemd() {
   log(`using systemd service ${SERVICE}`);
+  const workerLoadState = await serviceLoadState(WORKER_SERVICE);
+  const hasWorkerService = workerLoadState && workerLoadState !== "not-found";
+  if (hasWorkerService) {
+    log(`using systemd worker ${WORKER_SERVICE}`);
+    await tryRun("sudo", ["-n", "systemctl", "stop", WORKER_SERVICE], { timeout: 45_000 });
+  }
   await tryRun("sudo", ["-n", "systemctl", "stop", SERVICE], { timeout: 20_000 });
   await waitFor(async () => (await serviceMainPid()) === 0, 12_000);
-  const leftovers = [...new Set([...(await portPids()), ...repoServerPids()])];
+  if (hasWorkerService) await waitFor(async () => (await serviceMainPid(WORKER_SERVICE)) === 0, 45_000);
+  const leftovers = [...new Set([...(await portPids()), ...repoAppPids()])];
   await stopPids(leftovers);
   await tryRun("sudo", ["-n", "systemctl", "reset-failed", SERVICE]);
+  if (hasWorkerService) await tryRun("sudo", ["-n", "systemctl", "reset-failed", WORKER_SERVICE]);
   await run("sudo", ["-n", "systemctl", "start", SERVICE], { timeout: 20_000 });
+  if (hasWorkerService) await run("sudo", ["-n", "systemctl", "start", WORKER_SERVICE], { timeout: 20_000 });
   const ok = await waitForHealth();
   if (!ok) throw new Error(`${HEALTH_URL} did not become healthy after systemd start`);
   const pid = await serviceMainPid();
   const active = await serviceActiveState();
   log(`${SERVICE}: ${active}; pid=${pid}`);
+  if (hasWorkerService) {
+    const workerPid = await serviceMainPid(WORKER_SERVICE);
+    const workerActive = await serviceActiveState(WORKER_SERVICE);
+    log(`${WORKER_SERVICE}: ${workerActive}; pid=${workerPid}`);
+  }
 }
 
 async function restartFallback() {
   log("systemd service is unavailable; using detached npm fallback");
-  await stopPids([...(await portPids()), ...repoServerPids()]);
+  await stopPids([...(await portPids()), ...repoAppPids()]);
   await startDetachedFallback();
   const ok = await waitForHealth();
   if (!ok) throw new Error(`${HEALTH_URL} did not become healthy after detached start`);
