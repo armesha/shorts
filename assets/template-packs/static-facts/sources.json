@@ -63,6 +63,26 @@
       "file": "assets/template-packs/static-facts/backgrounds/facts-wisdom-ai-01.jpg",
       "type": "generated",
       "promptSummary": "Cinematic classical wisdom/statue background with dark negative space for overlay text; no text/logos/watermarks."
+    },
+    {
+      "file": "assets/template-packs/static-facts/backgrounds/facts-science-lab-ai-02.jpg",
+      "type": "generated",
+      "promptSummary": "Bright science lab desk with microscope, glassware, prism and a clean empty area for overlay text; no text/logos/watermarks."
+    },
+    {
+      "file": "assets/template-packs/static-facts/backgrounds/facts-observatory-ai-02.jpg",
+      "type": "generated",
+      "promptSummary": "Night observatory desk and telescope with soft sky glow and central safe area for overlay text; no text/logos/watermarks."
+    },
+    {
+      "file": "assets/template-packs/static-facts/backgrounds/facts-psychology-desk-ai-03.jpg",
+      "type": "generated",
+      "promptSummary": "Cozy psychology and human-behavior desk background with abstract brain/network motif, clean central area, no text/logos/watermarks."
+    },
+    {
+      "file": "assets/template-packs/static-facts/backgrounds/facts-lifehack-shelf-ai-02.jpg",
+      "type": "generated",
+      "promptSummary": "Clean home-organization shelf and workspace background with large blank wall area for overlay text; no text/logos/watermarks."
     }
   ],
   "safetyNotes": [
