@@ -221,6 +221,19 @@ export function applySchema(db: DatabaseSync): void {
       synced_at TEXT NOT NULL DEFAULT (datetime('now')),
       PRIMARY KEY (deck_id, item_index)
     );
+    CREATE TABLE IF NOT EXISTS generation_jobs (
+      id TEXT PRIMARY KEY,
+      user_id INTEGER NOT NULL,
+      owner_user_id INTEGER NOT NULL,
+      account_id INTEGER NOT NULL,
+      deck_ids TEXT NOT NULL DEFAULT '[]',
+      total INTEGER NOT NULL,
+      done INTEGER NOT NULL DEFAULT 0,
+      state TEXT NOT NULL DEFAULT 'queued',
+      error TEXT,
+      created_at INTEGER NOT NULL,
+      ended_at INTEGER
+    );
   `);
 
   // Additive schema migrations. ADD COLUMN is idempotent across restarts, but ONLY the expected
@@ -298,6 +311,9 @@ export function applySchema(db: DatabaseSync): void {
     CREATE INDEX IF NOT EXISTS idx_accounts_oauth_client ON accounts(oauth_client_id);
     CREATE INDEX IF NOT EXISTS idx_content_items_deck_key ON content_items(deck_id, item_key);
     CREATE INDEX IF NOT EXISTS idx_content_decks_lang ON content_decks(lang);
+    CREATE INDEX IF NOT EXISTS idx_generation_jobs_state_created ON generation_jobs(state, created_at);
+    CREATE INDEX IF NOT EXISTS idx_generation_jobs_user_state ON generation_jobs(user_id, state);
+    CREATE INDEX IF NOT EXISTS idx_generation_jobs_account_state ON generation_jobs(account_id, state);
   `);
 
   // Multi-key OAuth migration (idempotent via MOVE semantics): pull each user's legacy single

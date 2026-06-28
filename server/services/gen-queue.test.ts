@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { DatabaseSync } from "node:sqlite";
 import { createGenQueue } from "./gen-queue.ts";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -140,4 +141,68 @@ test("exhausted: worker reporting 'exhausted' stops the job softly", async () =>
   const st = q.jobStatus(job.id)!;
   assert.equal(st.state, "exhausted");
   assert.equal(st.done, 1, "only the cards that existed were made");
+});
+
+test("durable queue restores unfinished queued jobs from SQLite", () => {
+  const db = new DatabaseSync(":memory:");
+  try {
+    const q1 = createGenQueue();
+    q1.attachDatabase(db);
+    const job = q1.enqueue(1, 2, 3, 10, ["ru", "de"]);
+
+    const q2 = createGenQueue();
+    q2.attachDatabase(db);
+    const restored = q2.jobStatus(job.id)!;
+    assert.equal(restored.state, "queued");
+    assert.equal(restored.userId, 1);
+    assert.equal(restored.ownerUserId, 10);
+    assert.equal(restored.accountId, 2);
+    assert.equal(restored.total, 3);
+    assert.deepEqual(restored.deckIds, ["ru", "de"]);
+    assert.equal(q2.queuedRemainingForAccount(2), 3);
+  } finally {
+    db.close();
+  }
+});
+
+test("durable queue marks interrupted running jobs as queued on restore", () => {
+  const db = new DatabaseSync(":memory:");
+  try {
+    const bootstrap = createGenQueue();
+    bootstrap.attachDatabase(db);
+    db.prepare(
+      "INSERT INTO generation_jobs (id,user_id,owner_user_id,account_id,deck_ids,total,done,state,created_at) VALUES (?,?,?,?,?,?,?,?,?)",
+    ).run("g99-restart", 1, 1, 7, JSON.stringify(["ru"]), 5, 2, "running", Date.now());
+
+    const q = createGenQueue();
+    q.attachDatabase(db);
+    const restored = q.jobStatus("g99-restart")!;
+    assert.equal(restored.state, "queued");
+    assert.equal(restored.done, 2);
+    assert.equal(restored.position, 0);
+    assert.equal(q.queuedRemainingForAccount(7), 3);
+  } finally {
+    db.close();
+  }
+});
+
+test("durable queue writes progress and terminal state to SQLite", async () => {
+  const db = new DatabaseSync(":memory:");
+  try {
+    const q = createGenQueue();
+    q.attachDatabase(db);
+    q.initWorker(async () => "made");
+    const job = q.enqueue(1, 1, 2);
+    for (let i = 0; i < 200 && q.jobStatus(job.id)!.state !== "done"; i++) await sleep(5);
+    const row = db.prepare("SELECT done,state,ended_at FROM generation_jobs WHERE id = ?").get(job.id) as {
+      done: number;
+      state: string;
+      ended_at: number | null;
+    };
+    assert.equal(row.done, 2);
+    assert.equal(row.state, "done");
+    assert.ok(row.ended_at);
+  } finally {
+    db.close();
+  }
 });

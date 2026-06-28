@@ -19,7 +19,7 @@ import * as metrics from "./infra/metrics.ts";
 import { type RefreshHooks } from "./services/stats-refresh.ts";
 import { hashPassword, isSuperAdminUser, SUPER_ADMIN_USERNAME } from "./auth.ts";
 import { gracefulShutdown } from "./infra/shutdown.ts";
-import { drainQueue as genDrainQueue } from "./services/gen-queue.ts";
+import { attachGenQueueDb, drainQueue as genDrainQueue } from "./services/gen-queue.ts";
 
 // ---- Foundation singletons (built once, injected everywhere) ----
 import { makeAuthSession, getCookie, SESSION_COOKIE, setSessionCookie } from "./infra/auth-session.ts";
@@ -56,6 +56,7 @@ import { registerSuperAdminChannelBlockRoutes } from "./routes/super-admin-chann
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
+attachGenQueueDb(db.db);
 try {
   const synced = syncContentLibraryIndex(db.db);
   process.env.CONTENT_LIBRARY_SQLITE = "1";
