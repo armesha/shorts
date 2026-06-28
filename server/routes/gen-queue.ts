@@ -6,6 +6,7 @@ import { isSuperAdminUser } from "../auth.ts";
 import { isPackDeckId } from "../../src/anecdotes/decks.ts";
 import { getPack } from "../../src/packs/store.ts";
 import {
+  isLeastPostedRepeatPack,
   isPerAccountAutoExpirePack,
   availablePackCardsForAccount,
 } from "../services/pack-gen.ts";
@@ -77,8 +78,14 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
         const pack = getPack(deckId.slice(5), ownerId, ownerIsSuperAdmin);
         return !!pack && isPerAccountAutoExpirePack(pack);
       });
-      const sharedDeckIds = deckIds.filter((deckId) => !perAccountPackIds.includes(deckId));
+      const repeatPackIds = deckIds.filter((deckId) => {
+        if (!isPackDeckId(deckId)) return false;
+        const pack = getPack(deckId.slice(5), ownerId, ownerIsSuperAdmin);
+        return !!pack && isLeastPostedRepeatPack(pack);
+      });
+      const sharedDeckIds = deckIds.filter((deckId) => !perAccountPackIds.includes(deckId) && !repeatPackIds.includes(deckId));
       let free = 0;
+      if (repeatPackIds.length) free = Number.MAX_SAFE_INTEGER;
       if (sharedDeckIds.length) {
         free += Math.max(
           0,

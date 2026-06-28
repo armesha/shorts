@@ -480,6 +480,27 @@ const BLOCK_ALIASES: Record<string, string> = {
   christianity: "religion",
 };
 
+const REMOVED_SUPER_ADMIN_OPTICAL_DECKS = new Set([
+  "illusions-en",
+  "illusions-de",
+  "illusions-it",
+  "illusions-es",
+  "illusions-ru",
+  "illusions-fr",
+  "illusions-pt",
+  "illusions-hi",
+  "illusions-id",
+  "illusions-ar",
+]);
+
+function isRemovedSuperAdminOpticalDeck(deckId: string): boolean {
+  return REMOVED_SUPER_ADMIN_OPTICAL_DECKS.has(deckId);
+}
+
+function cleanSuperAdminSourceDecks(deckIds: string[]): string[] {
+  return unique(deckIds).filter((deckId) => !isRemovedSuperAdminOpticalDeck(deckId));
+}
+
 function canonicalBlockId(blockId: string): string {
   return BLOCK_ALIASES[blockId] ?? blockId;
 }
@@ -658,6 +679,12 @@ function availableForDeckForAccount(
   deckId: string,
 ): number {
   const pack = packForDeck(db, ownerId, deckId);
+  if (pack && isLeastPostedRepeatPack(pack)) {
+    const total = pack.cards.length;
+    const key = `${ownerId}|${accountId}|${deckId}|repeat`;
+    ctx?.availableCache.set(key, total);
+    return total;
+  }
   if (pack && isPerAccountAutoExpirePack(pack)) {
     const key = `${ownerId}|${accountId}|${deckId}`;
     const cached = ctx?.availableCache.get(key);
@@ -680,6 +707,44 @@ function availableForDecksForAccount(
   deckIds: string[],
 ): number {
   return unique(deckIds).reduce((sum, deckId) => sum + availableForDeckForAccount(db, deps, ctx, ownerId, accountId, deckId), 0);
+}
+
+function freeCardsForGenerationDeck(
+  db: Db,
+  deps: RouteDeps,
+  ownerId: number,
+  accountId: number,
+  deckId: string,
+): number {
+  if (isRemovedSuperAdminOpticalDeck(deckId)) return 0;
+  if (isRepeatPackDeck(db, ownerId, deckId)) return Number.MAX_SAFE_INTEGER;
+  const perAccountAutoExpire = isPerAccountAutoExpirePackDeck(db, ownerId, deckId);
+  if (!perAccountAutoExpire && db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) return Number.MAX_SAFE_INTEGER;
+  const queued = perAccountAutoExpire
+    ? (queuedRemainingForAccountDecks(accountId)[deckId] ?? 0)
+    : queuedRemainingForOwnerDeck(ownerId, deckId);
+  const available = perAccountAutoExpire
+    ? availableForDeckForAccount(db, deps, undefined, ownerId, accountId, deckId)
+    : deps.deckAccess.availableUnusedForDecks(ownerId, [deckId]);
+  return Math.max(0, available - queued);
+}
+
+function sourceDecksForGeneration(db: Db, deps: RouteDeps, ownerId: number, account: Account, deckIds: string[]): string[] {
+  return cleanSuperAdminSourceDecks(deckIds).filter((deckId) => freeCardsForGenerationDeck(db, deps, ownerId, account.id, deckId) > 0);
+}
+
+function sourceDecksForSchedule(
+  db: Db,
+  deps: RouteDeps,
+  ownerId: number,
+  account: Account,
+  deckIds: string[],
+  queuedByDeck?: Record<string, number>,
+): string[] {
+  const clean = cleanSuperAdminSourceDecks(deckIds);
+  const queued = queuedByDeck ?? videosByDeck(db.listVideos(account.id));
+  const usable = clean.filter((deckId) => Math.max(0, Number(queued[deckId] ?? 0)) > 0 || freeCardsForGenerationDeck(db, deps, ownerId, account.id, deckId) > 0);
+  return usable.length ? usable : clean;
 }
 
 function deckSummaries(input: {
@@ -728,8 +793,8 @@ function sourceGroupForDeck(blockId: string, lang: string, deckId: string): Sour
 function blockDefaultSources(blockId: string, lang: string): string[] {
   if (lang === "ru" && canonicalBlockId(blockId) !== "russian") return [];
   const groups = sourceGroupsForBlock(blockId);
-  if (groups.length) return unique(groups.flatMap((group) => group.sources[lang] ?? []));
-  return BLOCK_DEFAULT_SOURCES[blockId]?.[lang] ?? [];
+  if (groups.length) return cleanSuperAdminSourceDecks(groups.flatMap((group) => group.sources[lang] ?? []));
+  return cleanSuperAdminSourceDecks(BLOCK_DEFAULT_SOURCES[blockId]?.[lang] ?? []);
 }
 
 function blockDefaultSourcesForDb(db: Db, blockId: string, lang: string): string[] {
@@ -737,12 +802,12 @@ function blockDefaultSourcesForDb(db: Db, blockId: string, lang: string): string
   const canonical = canonicalBlockId(blockId);
   const groups = sourceGroupsForBlock(canonical);
   if (groups.length)
-    return unique(
+    return cleanSuperAdminSourceDecks(
       groups
         .filter((group) => !isAutoExpiredSourceGroup(db, canonical, group.id))
         .flatMap((group) => group.sources[lang] ?? []),
     );
-  return BLOCK_DEFAULT_SOURCES[canonical]?.[lang] ?? [];
+  return cleanSuperAdminSourceDecks(BLOCK_DEFAULT_SOURCES[canonical]?.[lang] ?? []);
 }
 
 function sameDeckSet(a: string[], b: string[]): boolean {
@@ -756,12 +821,12 @@ function accountBelongsToBlock(deps: RouteDeps, block: BlockDef, account: Accoun
   if (block.accountIds.includes(account.id)) return true;
   const defaults = blockDefaultSources(block.id, account.channelLang);
   if (!defaults.length) return false;
-  return sameDeckSet(deps.deckAccess.accountSourceDecks(account), defaults);
+  return sameDeckSet(cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account)), defaults);
 }
 
 function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockContext, blockId?: string) {
   const ownerId = account.userId ?? 0;
-  const sourceDecks = deps.deckAccess.accountSourceDecks(account);
+  const sourceDecks = cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account));
   const queuedByDeck = ctx?.queuedByAccountDeck.get(account.id) ?? videosByDeck(db.listVideos(account.id));
   const decks = deckSummaries({ db, deps, ctx, blockId, ownerId, accountId: account.id, deckIds: sourceDecks, queuedByDeck });
   const availableByDeck = Object.fromEntries(decks.map((deck) => [deck.id, deck.available]));
@@ -1068,13 +1133,22 @@ function effectiveCapacityForSchedule(
   countsByDeck: Record<string, number>,
   fallbackTotal: number,
 ): { effective: number; runwayDays: number | null } {
-  const scheduled = [...scheduledCountsByDeck(account, sourceDecks)].filter(([, perDay]) => perDay > 0);
-  const totalPerDay = scheduled.reduce((sum, [, perDay]) => sum + perDay, 0);
-  if (totalPerDay <= 0) return { effective: Math.max(0, Math.floor(fallbackTotal)), runwayDays: null };
-  const days = Math.min(...scheduled.map(([deckId, perDay]) => Math.max(0, Number(countsByDeck[deckId] ?? 0)) / perDay));
-  const safeDays = Number.isFinite(days) ? days : 0;
-  const effective = Math.floor(safeDays * totalPerDay);
-  return { effective: Math.min(effective, Math.max(0, Math.floor(fallbackTotal))), runwayDays: safeDays };
+  const cleanSources = cleanSuperAdminSourceDecks(sourceDecks.length ? sourceDecks : [account.lang].filter(Boolean));
+  const postsPerDay = scheduledDeckOrder(account, cleanSources).length;
+  if (postsPerDay <= 0) return { effective: Math.max(0, Math.floor(fallbackTotal)), runwayDays: null };
+
+  // The scheduler pins a slot to its configured deck first, then falls back to the other source decks
+  // when that deck has no ready video. Runway should model the same behavior, otherwise one empty
+  // source can make a channel look stopped even when other ready videos will still be posted.
+  const sourceSet = new Set(cleanSources);
+  const effective = Math.max(
+    0,
+    Math.floor(
+      Object.entries(countsByDeck).reduce((sum, [deckId, count]) => (sourceSet.has(deckId) ? sum + Math.max(0, Number(count) || 0) : sum), 0),
+    ),
+  );
+  const total = effective > 0 ? effective : Math.max(0, Math.floor(fallbackTotal));
+  return { effective: total, runwayDays: total / postsPerDay };
 }
 
 function deckDeficitSequence(account: Account, sourceDecks: string[], queuedByDeck: Record<string, number>, targetRunwayDays: number): string[] {
@@ -1173,25 +1247,9 @@ function weightedDeckDeficitSequence(
 
 function capDeckSequenceByFreeCards(db: Db, deps: RouteDeps, ownerId: number, accountId: number, sequence: string[]): string[] {
   if (!sequence.length) return sequence;
-  const hasAccountScopedFinitePack = sequence.some((deckId) => isPerAccountAutoExpirePackDeck(db, ownerId, deckId));
-  if (db.hasFeature(ownerId, INFINITE_PACKS_FEATURE) && !hasAccountScopedFinitePack) return sequence;
   const freeByDeck = new Map<string, number>();
   for (const deckId of unique(sequence)) {
-    if (isRepeatPackDeck(db, ownerId, deckId)) {
-      freeByDeck.set(deckId, Number.MAX_SAFE_INTEGER);
-      continue;
-    }
-    if (isPerAccountAutoExpirePackDeck(db, ownerId, deckId)) {
-      freeByDeck.set(
-        deckId,
-        Math.max(0, availableForDeckForAccount(db, deps, undefined, ownerId, accountId, deckId) - (queuedRemainingForAccountDecks(accountId)[deckId] ?? 0)),
-      );
-      continue;
-    }
-    freeByDeck.set(
-      deckId,
-      Math.max(0, deps.deckAccess.availableUnusedForDecks(ownerId, [deckId]) - queuedRemainingForOwnerDeck(ownerId, deckId)),
-    );
+    freeByDeck.set(deckId, freeCardsForGenerationDeck(db, deps, ownerId, accountId, deckId));
   }
   const out: string[] = [];
   for (const deckId of sequence) {
@@ -1256,7 +1314,9 @@ export function thematicBlockSlotDecksForAccount(
 ): Record<string, string> | null {
   const block = mixedBlockForAccount(deps, account);
   if (!block) return null;
-  const decks = sourceDecks?.length ? sourceDecks : deps.deckAccess.accountSourceDecks(account);
+  const rawDecks = sourceDecks?.length ? sourceDecks : deps.deckAccess.accountSourceDecks(account);
+  const ownerId = account.userId ?? armenId(db) ?? 0;
+  const decks = sourceDecksForSchedule(db, deps, ownerId, account, rawDecks);
   const weights = readSourceWeights(db, block);
   if (!activeSourceGroups(block, account, decks, weights).length) return null;
   return slotDecksForSchedule(block, account, schedule, decks, weights);
@@ -1272,22 +1332,26 @@ export function thematicBlockDeckSequenceForGeneration(
 ): string[] | null {
   const block = mixedBlockForAccount(deps, account);
   if (!block || requestedDecks.length <= 1 || count <= 0) return null;
-  const selectedSources = deps.deckAccess.accountSourceDecks(account);
-  const requestedSet = new Set(requestedDecks);
+  const selectedSources = cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account));
+  const cleanRequested = cleanSuperAdminSourceDecks(requestedDecks);
+  const requestedSet = new Set(cleanRequested);
   const sourceDecks = selectedSources.filter((deckId) => requestedSet.has(deckId));
-  if (sourceDecks.length <= 1 || !sameDeckSet(unique(sourceDecks), unique(requestedDecks))) return null;
+  if (sourceDecks.length <= 1 || !sameDeckSet(unique(sourceDecks), unique(cleanRequested))) return null;
+
+  const generationDecks = sourceDecksForGeneration(db, deps, ownerId, account, sourceDecks);
+  if (!generationDecks.length) return [];
 
   const weights = readSourceWeights(db, block);
-  if (!activeSourceGroups(block, account, sourceDecks, weights).length) return null;
+  if (!activeSourceGroups(block, account, generationDecks, weights).length) return [];
 
   const queuedByDeck = videosByDeck(db.listVideos(account.id));
   const targetQueued = sumCounts(queuedByDeck) + count;
-  const seed = sourceSequenceSeed(block, account, sourceDecks, weights, `gen-queue:${targetQueued}:${count}`);
-  let sequence = weightedDeckDeficitSequence(block, account, sourceDecks, weights, queuedByDeck, targetQueued, seed);
+  const seed = sourceSequenceSeed(block, account, generationDecks, weights, `gen-queue:${targetQueued}:${count}`);
+  let sequence = weightedDeckDeficitSequence(block, account, generationDecks, weights, queuedByDeck, targetQueued, seed);
   if (sequence.length < count)
     sequence = [
       ...sequence,
-      ...weightedDeckSlots(block, account, sourceDecks, weights, count - sequence.length, `${seed}|fallback`),
+      ...weightedDeckSlots(block, account, generationDecks, weights, count - sequence.length, `${seed}|fallback`),
     ];
   sequence = sequence.slice(0, count);
   const capped = capDeckSequenceByFreeCards(db, deps, ownerId, account.id, sequence);
@@ -1434,7 +1498,7 @@ function planChannelBlockNormalize(input: {
   const coverageByAccount = new Map<number, { effective: number; runwayDays: number | null }>();
   for (const account of accounts) {
     const queuedByDeck = videosByDeck(db.listVideos(account.id));
-    const sourceDecks = deps.deckAccess.accountSourceDecks(account);
+    const sourceDecks = cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account));
     const total = sumCounts(queuedByDeck);
     queuedByAccountDeck.set(account.id, queuedByDeck);
     queuedTotals.set(account.id, total);
@@ -1446,7 +1510,7 @@ function planChannelBlockNormalize(input: {
     ...accounts.map((account) => {
       const coverage = coverageByAccount.get(account.id);
       if (coverage?.runwayDays != null) return coverage.runwayDays;
-      const perDay = scheduledDeckOrder(account, deps.deckAccess.accountSourceDecks(account)).length;
+      const perDay = scheduledDeckOrder(account, cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account))).length;
       return perDay > 0 ? (coverage?.effective ?? 0) / perDay : 0;
     }),
   );
@@ -1456,7 +1520,9 @@ function planChannelBlockNormalize(input: {
       : currentMaxRunwayDays;
   const targetQueued = Math.max(
     0,
-    ...accounts.map((account) => Math.ceil(targetRunwayDays * scheduledDeckOrder(account, deps.deckAccess.accountSourceDecks(account)).length)),
+    ...accounts.map((account) =>
+      Math.ceil(targetRunwayDays * scheduledDeckOrder(account, cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account))).length),
+    ),
   );
   const jobs: NormalizePlannedJob[] = [];
   const skipped: NormalizeSkip[] = [];
@@ -1502,7 +1568,7 @@ function planChannelBlockNormalize(input: {
   };
 
   for (const account of accounts) {
-    const deckIds = deps.deckAccess.accountSourceDecks(account);
+    const deckIds = cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account));
     const perDay = scheduledDeckOrder(account, deckIds).length;
     const accountTargetQueued = Math.ceil(targetRunwayDays * perDay);
     const coverage = coverageByAccount.get(account.id);
@@ -1523,20 +1589,27 @@ function planChannelBlockNormalize(input: {
     const countedByDeck = { ...queuedByDeck };
     const inFlightByDeck = queuedRemainingForAccountDecks(account.id);
     for (const [deckId, count] of Object.entries(inFlightByDeck)) countedByDeck[deckId] = (countedByDeck[deckId] ?? 0) + count;
+    const generationDeckIds = sourceDecksForGeneration(db, deps, ownerId, account, deckIds);
+    if (!generationDeckIds.length) {
+      skipped.push({
+        accountId: account.id,
+        channelName: account.ytChannelTitle || account.channelName,
+        reason: "no_free_cards",
+        currentQueued,
+        targetQueued: accountTargetQueued,
+      });
+      continue;
+    }
     const sequenceSeed = sourceSequenceSeed(
       block,
       account,
-      deckIds,
+      generationDeckIds,
       sourceWeights,
       `normalize:${accountTargetQueued}:${targetRunwayDays}`,
     );
-    const targetSequence = targetRunwayDeckSequence(account, deckIds, targetRunwayDays);
-    const exactDeficit =
-      targetSequence.length > 0
-        ? deckDeficitFromTargetSequence(targetSequence, countedByDeck)
-        : activeSourceGroups(block, account, deckIds, sourceWeights).length
-          ? weightedDeckDeficitSequence(block, account, deckIds, sourceWeights, countedByDeck, accountTargetQueued, sequenceSeed)
-          : deckDeficitSequence(account, deckIds, countedByDeck, targetRunwayDays);
+    const exactDeficit = activeSourceGroups(block, account, generationDeckIds, sourceWeights).length
+      ? weightedDeckDeficitSequence(block, account, generationDeckIds, sourceWeights, countedByDeck, accountTargetQueued, sequenceSeed)
+      : deckDeficitSequence(account, generationDeckIds, countedByDeck, targetRunwayDays);
     const missing = exactDeficit.length;
     const readyDeficit = accountTargetQueued - currentQueued;
     if (missing <= 0) {
@@ -1554,7 +1627,7 @@ function planChannelBlockNormalize(input: {
     // exactDeficit is computed against READY + in-flight videos per deck, so a repeated click does not
     // stack a second full top-up while the first one is still rendering.
     const baseJobDeckIds = (
-      exactDeficit.length ? exactDeficit : weightedDeckSlots(block, account, deckIds, sourceWeights, missing, `${sequenceSeed}|fallback`)
+      exactDeficit.length ? exactDeficit : weightedDeckSlots(block, account, generationDeckIds, sourceWeights, missing, `${sequenceSeed}|fallback`)
     ).slice(0, missing);
     const requestedByDeck = countDeckSequence(baseJobDeckIds);
     const allowedByDeck = new Map<string, number>();
@@ -1676,17 +1749,23 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
     const skipped: unknown[] = [];
     for (const account of accounts) {
       const ownerId = account.userId ?? uid(req);
-      const deckIds = deps.deckAccess.accountSourceDecks(account);
+      const deckIds = cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account));
       if (!deckIds.length) {
         skipped.push({ accountId: account.id, channelName: account.channelName, reason: "no_sources" });
         continue;
       }
+      const generationDeckIds = sourceDecksForGeneration(db, deps, ownerId, account, deckIds);
+      if (!generationDeckIds.length) {
+        skipped.push({ accountId: account.id, channelName: account.channelName, reason: "no_free_cards" });
+        continue;
+      }
       let total = count;
       if (!db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) {
-        const free = Math.max(
-          0,
-          deps.deckAccess.availableUnusedForDecks(ownerId, deckIds) - queuedRemainingForOwnerDecks(ownerId, deckIds),
-        );
+        const free = generationDeckIds.reduce((sum, deckId) => {
+          const deckFree = freeCardsForGenerationDeck(db, deps, ownerId, account.id, deckId);
+          if (deckFree >= Number.MAX_SAFE_INTEGER) return Number.MAX_SAFE_INTEGER;
+          return sum + deckFree;
+        }, 0);
         if (free <= 0) {
           skipped.push({ accountId: account.id, channelName: account.channelName, reason: "no_free_cards" });
           continue;
@@ -1696,11 +1775,11 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
       const sequenceSeed = sourceSequenceSeed(
         block,
         account,
-        deckIds,
+        generationDeckIds,
         sourceWeights,
         `manual-generate:${new Date().toISOString().slice(0, 13)}:${total}`,
       );
-      const jobDeckIds = weightedDeckSequence(block, account, deckIds, sourceWeights, total, sequenceSeed);
+      const jobDeckIds = weightedDeckSequence(block, account, generationDeckIds, sourceWeights, total, sequenceSeed);
       const job = genEnqueue(uid(req), account.id, total, ownerId, jobDeckIds);
       jobs.push({ accountId: account.id, channelName: account.channelName, deckIds: jobDeckIds, jobId: job.id, total: job.total });
     }
@@ -1804,8 +1883,10 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
       }
       const schedule = randomDayTimes(perDay, taken);
       for (const time of schedule) taken.add(toMin(time));
-      const sourceDecks = deps.deckAccess.accountSourceDecks(account);
-      const next = db.updateAccount(account.id, { schedule, slotDecks: slotDecksForSchedule(block, account, schedule, sourceDecks, sourceWeights) });
+      const sourceDecks = cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account));
+      const queuedByDeck = videosByDeck(db.listVideos(account.id));
+      const scheduleDecks = sourceDecksForSchedule(db, deps, ownerId, account, sourceDecks, queuedByDeck);
+      const next = db.updateAccount(account.id, { schedule, slotDecks: slotDecksForSchedule(block, account, schedule, scheduleDecks, sourceWeights) });
       if (next) updated.push({ accountId: next.id, channelName: next.channelName, schedule: next.schedule });
     }
     return { blockId, perDay, updated, skipped };

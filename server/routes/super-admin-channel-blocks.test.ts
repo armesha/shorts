@@ -46,11 +46,12 @@ function account(id: number): Account {
   };
 }
 
-function deps(): RouteDeps {
+function deps(availableByDeck: Record<string, number> = {}): RouteDeps {
   return {
     deckAccess: {
       accountSourceDecks: (a: Account) => a.sourceDecks,
-      availableUnusedForDecks: () => 999,
+      availableUnusedForDecks: (_ownerId: number, deckIds: string[]) =>
+        deckIds.reduce((sum, deckId) => sum + (availableByDeck[deckId] ?? 999), 0),
     },
   } as unknown as RouteDeps;
 }
@@ -77,4 +78,26 @@ test("thematic block generation keeps source mix stable but varies order per cha
   assert.ok(first.every((deckId) => allowed.has(deckId)));
   assert.ok(second.every((deckId) => allowed.has(deckId)));
   assert.notDeepEqual(first, second);
+});
+
+test("thematic block generation skips exhausted sources and removed optical packs", () => {
+  const sources = [...FOREIGN_EN_SOURCES, "illusions-en"];
+  const acc = { ...account(303), sourceDecks: sources };
+  const sequence = thematicBlockDeckSequenceForGeneration(
+    db(),
+    deps({
+      "fact-en": 0,
+      "illusions-en": 0,
+    }),
+    1,
+    acc,
+    sources,
+    20,
+  );
+
+  assert.ok(sequence);
+  assert.equal(sequence.length, 20);
+  assert.ok(!sequence.includes("fact-en"));
+  assert.ok(!sequence.includes("illusions-en"));
+  assert.ok(sequence.every((deckId) => FOREIGN_EN_SOURCES.includes(deckId)));
 });

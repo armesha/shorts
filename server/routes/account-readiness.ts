@@ -84,10 +84,9 @@ export function registerAccountReadinessRoutes(app: FastifyInstance, db: Db, dep
         status,
       };
     });
-    const scheduledRunwayDays = decks
-      .filter((deck) => deck.postsPerDay > 0 && deck.runwayDays != null && Number.isFinite(deck.runwayDays))
-      .map((deck) => deck.runwayDays as number);
-    const runwayDays = scheduledRunwayDays.length ? Math.min(...scheduledRunwayDays) : postsPerDay > 0 ? queuedVideos / postsPerDay : null;
+    // The scheduler first tries the pinned slot deck, then falls back to another ready source deck.
+    // Keep per-deck warnings below, but the headline runway is the real continuity of the channel.
+    const runwayDays = postsPerDay > 0 ? queuedVideos / postsPerDay : null;
     const blockers: string[] = [];
     const warnings: string[] = [];
 

@@ -24,13 +24,12 @@ function scheduledCountsByDeck(account: Account, deps: RouteDeps): Record<string
   return counts;
 }
 
-function runwayDays(byDeck: Record<string, number>, scheduledByDeck: Record<string, number>, queued: number, postsPerDay: number): number | null {
+function runwayDays(_byDeck: Record<string, number>, _scheduledByDeck: Record<string, number>, queued: number, postsPerDay: number): number | null {
   if (postsPerDay <= 0) return null;
-  const values = Object.entries(scheduledByDeck)
-    .filter(([, perDay]) => perDay > 0)
-    .map(([deckId, perDay]) => Math.max(0, byDeck[deckId] ?? 0) / perDay)
-    .filter((value) => Number.isFinite(value));
-  return values.length ? Math.min(...values) : queued / postsPerDay;
+  // Scheduler falls back to another source deck when a slot's pinned deck is empty.
+  // The queue runway should reflect actual posting continuity, while per-deck shortages
+  // remain visible through byDeck/scheduledByDeck.
+  return queued / postsPerDay;
 }
 
 function nextSlots(accounts: Account[], deps: RouteDeps, limit = 40) {
