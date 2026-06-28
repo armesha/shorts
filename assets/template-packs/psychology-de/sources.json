@@ -1,0 +1,21 @@
+{
+  "updatedAt": "2026-06-28T00:00:00.000Z",
+  "status": "project_owned_ai_generated_backgrounds",
+  "tool": "built-in image generation",
+  "note": "Backgrounds are copied from the project-owned super-admin psychology background set and renamed for the independent German psychology pack. This pack does not use MGS templates or MGS content.",
+  "files": [
+    "assets/template-packs/psychology-de/backgrounds/psychology-de-bg-01.jpg",
+    "assets/template-packs/psychology-de/backgrounds/psychology-de-bg-02.jpg",
+    "assets/template-packs/psychology-de/backgrounds/psychology-de-bg-03.jpg",
+    "assets/template-packs/psychology-de/backgrounds/psychology-de-bg-04.jpg",
+    "assets/template-packs/psychology-de/backgrounds/psychology-de-bg-05.jpg",
+    "assets/template-packs/psychology-de/backgrounds/psychology-de-bg-06.jpg",
+    "assets/template-packs/psychology-de/backgrounds/psychology-de-bg-07.jpg",
+    "assets/template-packs/psychology-de/backgrounds/psychology-de-bg-08.jpg"
+  ],
+  "rules": [
+    "Do not use MGS packs/templates as a donor or fallback.",
+    "Keep these assets as background imagery behind readable psychology cards.",
+    "Do not add faces, logos, readable in-image text, social handles, or watermarks."
+  ]
+}

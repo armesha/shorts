@@ -33,6 +33,18 @@
         "Keep as general self-reflection/behavioral prompts, not therapy replacement."
       ]
     },
+    "psychology-de-superadmin": {
+      "status": "project_owned_generated_text_ai_generated_backgrounds",
+      "livePath": "data/packs/psychology-de-superadmin.json",
+      "note": "Original concise German psychology card text and independent super-admin templates generated for this project; no external quote/photo corpus and no MGS template/content inheritance is intentionally used.",
+      "templateAssets": "assets/template-packs/psychology-de/backgrounds/*",
+      "sourceLedger": "assets/template-packs/psychology-de/sources.json",
+      "rules": [
+        "Do not use MGS packs/templates as a donor or fallback for this super-admin pack.",
+        "Avoid medical diagnosis, crisis advice, manipulative promises, or protected-class targeting.",
+        "Keep as general self-reflection/behavioral prompts, not therapy replacement."
+      ]
+    },
     "motivation-en-superadmin": {
       "status": "project_owned_original_text_ai_generated_backgrounds",
       "livePath": "data/packs/motivation-en-superadmin.json",
@@ -116,8 +128,9 @@
     "психология-mgs-mqe2kfjv": {
       "status": "custom_pack_manual_provenance_review",
       "livePath": "data/packs/психология-mgs-mqe2kfjv.json",
-      "note": "User/custom psychology pack. Active use is allowed in the admin grid, but original provenance should remain under manual review before further expansion.",
+      "note": "MGS/client-specific psychology pack. Do not use as a donor, fallback, or active source for armen/super-admin thematic blocks unless explicitly requested.",
       "rules": [
+        "Keep separate from super-admin packs.",
         "Do not add external sourced text without a license/source note.",
         "Avoid clinical diagnosis, crisis/self-harm advice, and protected-class targeting."
       ]

@@ -194,7 +194,7 @@ const QUOTE_STATIC_DECK_BY_LANG: Record<string, string[]> = {
 
 const PSYCHOLOGY_DECK_BY_LANG: Record<string, string[]> = {
   ru: ["pack:psychology-ru-superadmin"],
-  de: ["pack:психология-mgs-mqe2kfjv"],
+  de: ["pack:psychology-de-superadmin"],
 };
 
 const STATIC_FACT_DECK_BY_LANG: Record<string, string[]> = {
