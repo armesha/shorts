@@ -8,6 +8,7 @@ import {
   sourceGapsForScheduledDecks,
   thematicBlockDeckSequenceForGeneration,
   thematicBlockSlotDecksForAccount,
+  visibleLanguageDefsForAccounts,
 } from "./super-admin-channel-blocks.ts";
 import { openDb } from "../db.ts";
 
@@ -192,6 +193,18 @@ test("source gap warnings only report scheduled empty or depleted sources", () =
       reason: "no_free_cards",
     },
   ]);
+});
+
+test("visible thematic languages follow armen's actual channel languages", () => {
+  const langs = visibleLanguageDefsForAccounts([
+    { ...account(1), channelLang: "ru", lang: "ru" },
+    { ...account(2), channelLang: "de", lang: "de" },
+    { ...account(3), channelLang: "pt", lang: "pt" },
+  ]).map((lang) => lang.code);
+
+  assert.deepEqual(langs, ["ru", "de", "pt"]);
+  assert.ok(!langs.includes("hi"));
+  assert.ok(!langs.includes("id"));
 });
 
 test("source weight settings are canonicalized and stale groups are pruned", () => {

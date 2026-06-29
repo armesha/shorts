@@ -156,6 +156,25 @@ function collectThemeBlockSourceIds(body) {
   return ids;
 }
 
+function activeSuperAdminLanguages() {
+  const db = new DatabaseSync(DB_PATH, { readOnly: true });
+  try {
+    const rows = db
+      .prepare(
+        `SELECT DISTINCT COALESCE(NULLIF(a.channel_lang, ''), a.lang) AS lang
+           FROM accounts a
+           JOIN users u ON u.id = a.user_id
+          WHERE u.username = ?
+            AND COALESCE(NULLIF(a.channel_lang, ''), a.lang) <> ''
+          ORDER BY lang`,
+      )
+      .all(SUPER_ADMIN_USERNAME);
+    return new Set(rows.map((row) => String(row.lang || "")).filter(Boolean));
+  } finally {
+    db.close();
+  }
+}
+
 async function checkSuperAdminThemeBlocks() {
   const session = superAdminSession();
   const controller = new AbortController();
@@ -171,6 +190,22 @@ async function checkSuperAdminThemeBlocks() {
     const forbidden = FORBIDDEN_ARMEN_SOURCE_DECKS.filter((deckId) => ids.has(deckId));
     if (forbidden.length) {
       throw new Error(`forbidden armen source decks in theme blocks API: ${forbidden.join(", ")}`);
+    }
+    const activeLangs = activeSuperAdminLanguages();
+    const staleLangs = (body?.languages ?? [])
+      .map((lang) => String(lang?.code || ""))
+      .filter((lang) => lang && !activeLangs.has(lang));
+    if (staleLangs.length) {
+      throw new Error(`unused armen languages in theme blocks API: ${staleLangs.join(", ")}`);
+    }
+    const emptyCells = [];
+    for (const block of body?.blocks ?? []) {
+      for (const cell of block?.cells ?? []) {
+        if (!(cell?.accounts ?? []).length) emptyCells.push(`${block.id}:${cell.lang}`);
+      }
+    }
+    if (emptyCells.length) {
+      throw new Error(`empty language cells in theme blocks API: ${emptyCells.join(", ")}`);
     }
     console.log(`[smoke] armen theme blocks: ok (${body?.blocks?.length ?? 0} blocks, ${ids.size} source decks)`);
   } finally {

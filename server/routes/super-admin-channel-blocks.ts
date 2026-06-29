@@ -756,6 +756,17 @@ function accountBelongsToBlock(deps: RouteDeps, block: BlockDef, account: Accoun
   return sameDeckSet(cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account)), defaults);
 }
 
+type BlockLangDef = (typeof BLOCK_LANGS)[number];
+
+export function visibleLanguageDefsForAccounts(accounts: Array<Pick<Account, "channelLang" | "lang">>): BlockLangDef[] {
+  const active = new Set(
+    accounts
+      .map((account) => String(account.channelLang || account.lang || "").trim())
+      .filter(Boolean),
+  );
+  return BLOCK_LANGS.filter((lang) => active.has(lang.code));
+}
+
 type ScheduledDeckGapInput = {
   id: string;
   name: string;
@@ -1370,22 +1381,21 @@ export function thematicBlockDeckSequenceForGeneration(
 
 function buildPayload(db: Db, deps: RouteDeps) {
   const ownerId = armenId(db);
-  if (ownerId == null) return { languages: BLOCK_LANGS, blocks: [], unassignedAccounts: [] };
+  if (ownerId == null) return { languages: [], blocks: [], unassignedAccounts: [] };
   normalizeSourceWeightSettings(db);
   cleanupDrainedAutoExpireDecksForUser(db, ownerId);
   const accounts = db.listAccountsByUser(ownerId);
+  const languages = visibleLanguageDefsForAccounts(accounts);
   const ctx = makeBlockContext(db, accounts);
   const byId = new Map(accounts.map((account) => [account.id, account]));
   const assigned = new Set<number>();
   const supportedLangs = new Set<string>(BLOCK_LANGS.map((lang) => lang.code));
 
   const blocks = BLOCKS.map((block) => {
-    const blockAccountIds = new Set(
-      accounts
-        .filter((account) => accountBelongsToBlock(deps, block, account))
-        .map((account) => account.id),
-    );
-    const cells = BLOCK_LANGS.map((lang) => {
+    const blockAccounts = accounts.filter((account) => accountBelongsToBlock(deps, block, account));
+    const blockAccountIds = new Set(blockAccounts.map((account) => account.id));
+    const blockLangs = visibleLanguageDefsForAccounts(blockAccounts);
+    const cells = blockLangs.map((lang) => {
       const cellAccounts = [...blockAccountIds]
         .map((id) => byId.get(id))
         .filter((account): account is Account => !!account && account.channelLang === lang.code)
@@ -1430,7 +1440,7 @@ function buildPayload(db: Db, deps: RouteDeps) {
     .filter((account) => !assigned.has(account.id) || !supportedLangs.has(account.channelLang) || !configuredIds.has(account.id))
     .map((account) => accountSummary(db, deps, account, ctx));
 
-  return { languages: BLOCK_LANGS, blocks, unassignedAccounts };
+  return { languages, blocks, unassignedAccounts };
 }
 
 function blockAccounts(db: Db, deps: RouteDeps, blockId: string): Account[] {
