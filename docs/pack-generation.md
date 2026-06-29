@@ -24,14 +24,21 @@ public-domain книги, Wikisource/Internet Archive/Gutenberg, open-source д�
 легального текста и safety-фильтр. Если права или происхождение текста неясны, такой источник не
 использовать.
 
-## Статус блока "Анекдоты и мемы" armen
+## Статус тематических блоков armen
 
-Тематический блок `jokes_memes` сейчас состоит из source groups: `jokes` с весом 5, `memes` с весом 3
-и `visual_riddles` с весом 1. Это не жесткий порядок слотов, а целевое взвешивание: генерация и добивка
-стремятся к пропорции на длинной дистанции, но порядок роликов может рандомизироваться между каналами.
-Длинные видео в эту формулу не включать: длинные сборники публикуются отдельно из библиотеки канала.
-`Вижу Ответ`/visual-riddle деки можно использовать в `jokes_memes` как легкий дополнительный источник,
-а основной микс загадок и иллюзий теперь входит в общий блок `quotes` / `ФАКТЫ`.
+Для super-admin `armen` актуальная сетка держится в `server/routes/super-admin-channel-blocks.ts`.
+Сейчас рабочие блоки такие:
+
+- `russian` / "Русские" - все русские нерелигиозные каналы, один общий RU-микс;
+- `quotes` / "Иностранные" - все нерусские нерелигиозные каналы, включая старые URL-алиасы
+  `jokes_memes`, `facts_space`, `lifehacks`, `psychology`, `riddles_illusions`;
+- `religion` / "Религия" - исламские и христианские каналы, но с раздельными секциями source mix.
+
+В `armen`-схему больше не возвращать `visual-riddles*`, `illusions*`, `illusions-3d*` и legacy
+`memes-*`: они запрещены shared guard'ом `server/services/super-admin-forbidden-source-decks.ts` и
+не должны появляться в `sourceDecks`, `slotDecks`, picker'ах и новых block rules. Новые мемы для
+иностранных каналов - только `pack:new-memes-<lang>-superadmin`; русский блок пока без meme-источника.
+Длинные видео в block mix не включать: длинные сборники публикуются отдельно из библиотеки канала.
 
 Декоративные смеющиеся emoji/GIF в шаблонах анекдотов допустимы, если они не мешают чтению, не
 перекрывают текст и не выглядят как плашка/водяной знак/название канала. GIF-акценты держать только в
@@ -55,13 +62,13 @@ public-domain книги, Wikisource/Internet Archive/Gutenberg, open-source д�
 MGS-паки и MGS-шаблоны — отдельный клиентский контент. Не использовать их как базу, донор или fallback
 для armen/super-admin паков, если это не запрошено явно отдельной задачей.
 
-Текущие подготовленные текстовые joke/anecdote источники: `ru`, `de`, `it`, `fr`, `en`, `pt`, а для
-испанского канала живой template pack `pack:chistes-es-public-domain`.
-`pt` сейчас рассчитан как недельный минимум под текущий темп блока: текстовая дека + `memes-pt`.
-Текущие подготовленные meme decks: `memes-ru`, `memes-en`, `memes-de`, `memes-fr`, `memes-it`,
-`memes-es`, `memes-pt`, `memes-ar`, `memes-hi`, `memes-id`. Meme decks сделаны как оригинальные
-локализованные подписи поверх уже существующего локального набора meme-board шаблонов; новые внешние
-картинки для них не скачивались.
+Текущие подготовленные текстовые joke/anecdote источники для live-блоков: `ru`, `de`, `it`, `fr`,
+`en`, `pt`, а для испанского канала живой template pack `pack:chistes-es-public-domain`.
+Новые foreign meme template packs: `pack:new-memes-de-superadmin`, `pack:new-memes-en-superadmin`,
+`pack:new-memes-es-superadmin`, `pack:new-memes-fr-superadmin`, `pack:new-memes-it-superadmin`,
+`pack:new-memes-pt-superadmin`. Они собраны из пользовательского переведенного набора
+`temp/meme/translated*` через `scripts/build-translated-meme-packs.mjs`; старые `memes-*` в armen
+не использовать.
 
 Не подставляй автоматически fake text deck для `ar`, `hi`, `id`. Для этих языков нужен отдельный
 ingestion/safety проход:
@@ -95,7 +102,7 @@ ingestion/safety проход:
 
 ### Backlog по недостающим joke-языкам
 
-Цель для первого подключения нового joke-языка в блок `jokes_memes` - не "тысячи любой ценой", а
+Цель для первого подключения нового joke-языка в тематический mix - не "тысячи любой ценой", а
 минимум на неделю публикации при текущем темпе блока и пропорции 80/20. После подключения можно
 расширять, но только тем же source-backed способом.
 
@@ -283,7 +290,7 @@ prebuilt MP4 считается исключением и требует явн�
 | `psychology-mgs` template-pack | `assets/template-packs/psychology-mgs/` -> `data/packs/` seed | карточки + 40 шаблонов | зависит от источника новых карточек |
 | `Curiosaurs English Facts` template-pack | `assets/template-packs/curiosaurs-english/` -> `data/packs/` seed | локальный набор kid-safe facts + PNG-шаблоны | нет |
 | `Chistes ES` template-pack | `local-assets/corpora/spanish-jokes-public-domain/` + `assets/template-packs/spanish-jokes*/` -> `data/packs/chistes-es-public-domain.json`, `data/packs/chistes-es-long.json` | public-domain Spanish joke books -> local safety/quality filter -> фактическое число safe-карточек + 30 short templates + 42 length-aware long templates | нет для локальной сборки; да, спросить модель перед LLM-чисткой/адаптацией |
-| `visual-riddles` Вижу Ответ | `data/output/admin-demos/manifest.json` + `data/visual-riddles/videos.json` + `assets/fact-videos/visual-riddles/` | индивидуальные визуальные MP4 для `/clip-demos` и selectable `preFact` deck для каналов | нет |
+| `visual-riddles` Вижу Ответ | `data/output/admin-demos/manifest.json` + `data/visual-riddles/videos.json` + `assets/fact-videos/visual-riddles/` | legacy/admin demo MP4; не подключать к armen-блокам и не использовать как super-admin source | нет |
 | `choose` Что выберешь? | `data/choose/cards.json` + `data/choose/photos/` | дилеммы «A или B» (RU) + реальные фото Pexels (без апскейла); статичная card-style дека | да — генерация дилемм + VISION-отбраковка неверных фото (спросить модель) |
 
 `data/packs/*.json` - это живые пользовательские паки из страницы "Карточки". Они gitignored и
@@ -605,8 +612,9 @@ Source folder can be either `local-assets/soviet-posters-pd/` (preferred, ignore
 
 Rules:
 - do not localize and do not auto-replenish this pack;
-- keep `repeatMode: "least_posted_per_account"` so generation reuses the fixed set by choosing the
-  least-rendered poster for the current channel;
+- keep `autoExpireMode: "per_account"` so each channel consumes the finite poster set once; when a
+  channel drains the pack, `server/services/auto-expire-packs.ts` removes the source from that channel;
+- do not set `repeatMode` for this pack and do not make it infinite/reusable again;
 - use only source-ledger PD files;
 - keep the script's explicit `VISUAL_SAFE_POSTER_FILES` allowlist: this pack is intentionally small
   and neutral rather than a broad Soviet-poster dump;
@@ -739,6 +747,10 @@ for f in data/output/admin-demos/as_*.mp4; do printf "%s " "$f"; ffprobe -v erro
 Это не Studio/template-pack. Это набор индивидуальных коротких MP4 для страницы `/clip-demos` и
 одновременно selectable `preFact` deck для выбора источника в каналах, потому что каждая загадка
 требует отдельной картинки, собственной озвучки, музыки и визуальной проверки.
+
+Важно для текущей armen-сетки: `visual-riddles*` больше не является источником super-admin блоков.
+Не добавляй его обратно в `russian`, `quotes`, `religion`, `sourceDecks` или `slotDecks` armen без
+нового прямого решения пользователя.
 
 ### Текущий пайплайн дозаливки (edge-tts, без ElevenLabs) — обновлено 2026-06-22
 
@@ -1789,7 +1801,12 @@ node --input-type=module -e 'import fs from "node:fs"; const manifest=JSON.parse
 - команда preview/render-проверки;
 - как не задублировать уже добавленные карточки.
 
-## Мем-деки (`memes-ru` / `memes-en` / `memes-de` / `memes-fr` / `memes-it`)
+## Legacy мем-деки (`memes-ru` / `memes-en` / `memes-de` / `memes-fr` / `memes-it`)
+
+Legacy warning: встроенные `memes-*` больше не подключать к armen/super-admin блокам. Для текущих
+иностранных каналов armen используется только набор `pack:new-memes-<lang>-superadmin`; русский блок
+работает без meme-источника. Этот раздел оставлен для исторического обслуживания старых дек и других
+пользователей, не как инструкция для armen.
 
 Встроенные деки оригинальных МЕМОВ (не анекдотов), admin-only. Один формат v1 — **caption**: крупный
 текст-подпись (relatable / «паблик» / POV / «ожидание-реальность» / Nobody:/Me: / списки) на фоне.
@@ -1824,7 +1841,7 @@ node --input-type=module -e 'import fs from "node:fs"; const manifest=JSON.parse
 - Прототип раскладки/стресс длинных слов: `npx tsx src/scripts/meme-proto.ts` → `/tmp/meme-proto/`.
 - Бэкенд-правки (decks/library/render/video) → **нужен рестарт сервера**, чтобы дека стала живой.
 
-## Мем-паки (board-раскладка, 5 языков) — `memes-{ru,en,de,fr,it}` (admin-only)
+## Legacy мем-паки (board-раскладка, 5 языков) — `memes-{ru,en,de,fr,it}` (admin-only)
 
 ВСЕ пять мем-дек `memes-*` переведены на **board-раскладку**: подпись **НАД** картинкой (плашка
 сверху + готовый реакшн-шаблон снизу), вместо прежнего Pexels-оверлея (раздел выше — историч.).
@@ -1833,6 +1850,45 @@ node --input-type=module -e 'import fs from "node:fs"; const manifest=JSON.parse
 Объёмы: ~2000 на КАЖДЫЙ язык (≈24–25 подписей на шаблон; одна картинка = много мемов — норма мем-пабликов).
 Добор до объёма — delta-воркфлоу (`cap-d2-<lang>/`): агентам отдаются УЖЕ существующие подписи шаблона,
 они пишут только НОВЫЕ → дедуп в `assemble_2000.py`. Качество к «хвосту» (15-я+ подпись на картинку) тоньше.
+
+## Новые foreign meme template packs (`pack:new-memes-*-superadmin`)
+
+Это текущие meme-источники для блока `quotes` / "Иностранные" у armen. Они заменяют legacy `memes-*`
+и подключены только для языков, где у armen есть иностранные нерелигиозные каналы: DE, EN, ES, FR,
+IT, PT. Русский блок их не использует, а `pack:new-memes-ru-superadmin` не нужен.
+
+Где лежит:
+
+- вход: `temp/meme/translated/<lang>/*.jpg` и отдельная папка `temp/meme/translated/en/` для EN;
+- runtime assets: `assets/template-packs/new-memes/<lang>/*.jpg`;
+- live packs: `data/packs/new-memes-<lang>-superadmin.json`;
+- сборщик: `scripts/build-translated-meme-packs.mjs`.
+
+Пересобрать из готовых переводных карточек:
+
+```bash
+node scripts/build-translated-meme-packs.mjs
+```
+
+Скрипт копирует картинки из `temp/meme/translated`, создает по одному image-template на карточку и
+пишет custom pack с `autoExpireMode: "per_account"`. Карточки конечные: когда у канала закончится
+свободный набор, не подменяй его legacy `memes-*`; либо добавь новые проверенные картинки во входную
+папку и пересобери, либо временно дай миксу перераспределиться на другие источники.
+
+Правила:
+
+- не подключать legacy `memes-*` обратно к armen;
+- не добавлять русский meme pack в `russian`, пока пользователь отдельно не попросит новый RU-набор;
+- входные картинки должны быть уже проверены на права, оскорбительный/protected-class контекст,
+  чужие водяные знаки, логотипы и узнаваемые copyrighted templates;
+- если нужны новые переводы/подписи через LLM/subagent, сначала спросить пользователя модель workflow;
+- после пересборки проверить `npm run audit:armen:visual` и `npm run audit:armen:safety`.
+
+Быстрая проверка счетчиков:
+
+```bash
+jq '{id,name,lang,cards:(.cards|length),templates:(.templates|length),autoExpireMode}' data/packs/new-memes-*-superadmin.json
+```
 
 ### Источник картинок
 - Папка пользователя `local-assets/Генератор мемов/` — 157 реакшн-шаблонов (коты/собаки/рыцари/комиксы/абсурд).
