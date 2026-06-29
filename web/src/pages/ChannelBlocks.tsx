@@ -285,6 +285,7 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
       ? "quotes"
       : selectedBlockParam;
   const selectedBlock = data?.blocks.find((block) => block.id === selectedBlockId) ?? null;
+  const activeLanguageLabels = data?.languages.map((lang) => lang.label).join(", ") ?? "";
   useEffect(() => {
     if (selectedBlock) setPerDay(Math.max(0, Math.min(20, selectedBlock.postsPerDay)));
   }, [selectedBlock?.id, selectedBlock?.postsPerDay]);
@@ -593,7 +594,13 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{selectedBlock ? selectedBlock.title : t("channelBlocks.title")}</h1>
-          {!selectedBlock && <p className="mt-1 text-sm text-base-content/60">{t("channelBlocks.subtitle")}</p>}
+          {!selectedBlock && (
+            <p className="mt-1 text-sm text-base-content/60">
+              {data && activeLanguageLabels
+                ? t("channelBlocks.subtitleActive", { languages: activeLanguageLabels })
+                : t("channelBlocks.subtitle")}
+            </p>
+          )}
         </div>
         <div className="flex flex-wrap gap-2">
           {selectedBlock && (
