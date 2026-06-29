@@ -103,7 +103,7 @@ test("thematic block generation keeps source mix stable but varies order per cha
   assert.notDeepEqual(first, second);
 });
 
-test("thematic block generation skips exhausted sources and removed optical packs", () => {
+test("thematic block generation skips exhausted sources and removed visual/optical packs", () => {
   const sources = [...FOREIGN_EN_SOURCES, "visual-riddles-en", "illusions-en"];
   const acc = { ...account(303), sourceDecks: sources };
   const sequence = thematicBlockDeckSequenceForGeneration(

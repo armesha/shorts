@@ -1,3 +1,7 @@
+// Super-admin-only removal guard for the old visual/optical source family.
+// These decks remain in the global catalog for other users, but armen's
+// thematic grid, source pickers, schedule slots, generation and post-now paths
+// must not use them.
 export const REMOVED_SUPER_ADMIN_OPTICAL_DECKS = new Set([
   "visual-riddles",
   "visual-riddles-de",

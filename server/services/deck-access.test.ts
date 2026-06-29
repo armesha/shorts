@@ -10,7 +10,7 @@ const deps = {
   isSuperAdminReq: () => false,
 };
 
-test("accountSourceDecks hides removed optical decks only for the super admin owner", () => {
+test("accountSourceDecks hides removed visual/optical decks only for the super admin owner", () => {
   const db = openDb(":memory:");
   const armen = db.createUser({ username: SUPER_ADMIN_USERNAME, passHash: "x", role: "admin" });
   const user = db.createUser({ username: "regular", passHash: "x", role: "user" });

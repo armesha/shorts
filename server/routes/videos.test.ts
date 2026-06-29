@@ -11,7 +11,7 @@ const deps = {
   isSuperAdminReq: () => true,
 };
 
-test("post-now source guard rejects removed optical decks for armen even if stored on an old channel", () => {
+test("post-now source guard rejects removed visual/optical decks for armen even if stored on an old channel", () => {
   const db = openDb(":memory:");
   const armen = db.createUser({ username: SUPER_ADMIN_USERNAME, passHash: "x", role: "admin" });
   const access = makeDeckAccess(db, deps);
