@@ -21,6 +21,7 @@
     "audit:armen:sources": "node --experimental-sqlite --import tsx src/scripts/audit-armen-source-decks.mjs",
     "audit:armen:visual": "node --experimental-sqlite --import tsx src/scripts/audit-superadmin-visual-packs.mjs",
     "audit:armen:blocks": "node --experimental-sqlite --import tsx src/scripts/audit-armen-block-runway.mjs",
+    "audit:armen:blocks-consistency": "node --experimental-sqlite --import tsx src/scripts/audit-armen-block-consistency.mjs",
     "cleanup:armen:flagged-queue": "node --experimental-sqlite scripts/cleanup-armen-flagged-queue-videos.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "tunnel": "node scripts/tunnel.mjs",

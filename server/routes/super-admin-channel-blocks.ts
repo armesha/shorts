@@ -345,7 +345,7 @@ const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
   },
 };
 
-const BLOCKS: BlockDef[] = [
+export const BLOCKS: BlockDef[] = [
   {
     id: "russian",
     title: "Русские",
@@ -414,7 +414,7 @@ const BLOCK_ALIASES: Record<string, string> = {
   christianity: "religion",
 };
 
-function canonicalBlockId(blockId: string): string {
+export function canonicalBlockId(blockId: string): string {
   return BLOCK_ALIASES[blockId] ?? blockId;
 }
 
@@ -729,7 +729,7 @@ function blockDefaultSources(blockId: string, lang: string): string[] {
   return cleanSuperAdminSourceDecks(BLOCK_DEFAULT_SOURCES[blockId]?.[lang] ?? []);
 }
 
-function blockDefaultSourcesForDb(db: Db, blockId: string, lang: string): string[] {
+export function blockDefaultSourcesForDb(db: Db, blockId: string, lang: string): string[] {
   if (lang === "ru" && canonicalBlockId(blockId) !== "russian") return [];
   const canonical = canonicalBlockId(blockId);
   const groups = sourceGroupsForBlock(canonical);
