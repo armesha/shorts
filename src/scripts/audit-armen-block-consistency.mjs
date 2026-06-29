@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-import { DatabaseSync } from "node:sqlite";
 import { resolve } from "node:path";
+import { openDb } from "../../server/db.ts";
 import { BLOCKS, blockDefaultSourcesForDb } from "../../server/routes/super-admin-channel-blocks.ts";
-import { cleanSuperAdminSourceDecks } from "../../server/services/super-admin-optical-decks.ts";
+import { makeDeckAccess } from "../../server/services/deck-access.ts";
+import { cleanSuperAdminSourceDecks, isRemovedSuperAdminOpticalDeck } from "../../server/services/super-admin-optical-decks.ts";
 
 const ROOT = process.cwd();
 const DB_PATH = process.env.DATABASE_PATH || resolve(ROOT, "data/app.db");
@@ -23,16 +24,6 @@ function sameSet(a, b) {
   return aa.every((value, index) => value === bb[index]);
 }
 
-function dbFacade(db) {
-  return {
-    db,
-    getSetting(key) {
-      const row = db.prepare("SELECT value FROM settings WHERE key = ?").get(key);
-      return row ? String(row.value ?? "") : null;
-    },
-  };
-}
-
 function blockForAccount(db, account, sourceDecks) {
   for (const block of BLOCKS) {
     if (block.accountIds.includes(account.id)) return block;
@@ -44,7 +35,8 @@ function blockForAccount(db, account, sourceDecks) {
   return null;
 }
 
-const db = new DatabaseSync(DB_PATH, { readOnly: true });
+const store = openDb(DB_PATH);
+const db = store.db;
 db.exec("PRAGMA query_only = ON");
 
 const user = db.prepare("SELECT id, username FROM users WHERE username = ?").get(USERNAME);
@@ -53,25 +45,37 @@ if (!user) {
   process.exit(1);
 }
 
-const facade = dbFacade(db);
+const deckAccess = makeDeckAccess(store, { isAdminReq: () => true, isSuperAdminReq: () => true });
 const accounts = db
   .prepare("SELECT id, channel_name, yt_channel_title, lang, channel_lang, source_decks, slot_decks FROM accounts WHERE user_id = ? ORDER BY id")
   .all(user.id);
 
 const issues = [];
 for (const account of accounts) {
-  const sourceDecks = cleanSuperAdminSourceDecks(readJson(account.source_decks, []).map(String));
+  const rawSourceDecks = readJson(account.source_decks, []).map(String);
+  const removedSourceDecks = rawSourceDecks.filter((deckId) => isRemovedSuperAdminOpticalDeck(deckId));
+  const sourceDecks = cleanSuperAdminSourceDecks(rawSourceDecks);
   const slotDecks = readJson(account.slot_decks, {});
-  const block = blockForAccount(facade, account, sourceDecks);
+  const block = blockForAccount(store, account, sourceDecks);
   const channelName = account.yt_channel_title || account.channel_name;
   const lang = account.channel_lang || account.lang;
+
+  if (removedSourceDecks.length) {
+    issues.push({
+      accountId: account.id,
+      channelName,
+      issue: "removed_optical_source_deck",
+      lang,
+      deckIds: removedSourceDecks,
+    });
+  }
 
   if (!block) {
     issues.push({ accountId: account.id, channelName, issue: "unassigned_account", lang, sourceDecks });
     continue;
   }
 
-  const expected = blockDefaultSourcesForDb(facade, block.id, lang);
+  const expected = blockDefaultSourcesForDb(store, block.id, lang);
   if (!expected.length) {
     issues.push({ accountId: account.id, channelName, block: block.id, issue: "missing_block_defaults", lang, sourceDecks });
   } else if (!sameSet(sourceDecks, expected)) {
@@ -85,6 +89,20 @@ for (const account of accounts) {
       actual: sourceDecks,
       missing: expected.filter((deckId) => !sourceDecks.includes(deckId)),
       extra: sourceDecks.filter((deckId) => !expected.includes(deckId)),
+    });
+  }
+
+  for (const deckId of sourceDecks) {
+    const err = deckAccess.validateAccountSourceDeck({ userId: user.id }, deckId, lang);
+    if (!err) continue;
+    issues.push({
+      accountId: account.id,
+      channelName,
+      block: block.id,
+      issue: "invalid_source_deck",
+      lang,
+      deckId,
+      error: err,
     });
   }
 
