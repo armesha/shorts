@@ -17,6 +17,8 @@
     "deploy:restart": "npm run web:build && npm run server:restart",
     "smoke:live": "node scripts/smoke-live.mjs",
     "deploy:refresh": "npm run web:build && npm run server:restart && npm run smoke:live",
+    "audit:armen:safety": "node --experimental-sqlite --import tsx src/scripts/audit-armen-packs-safety.mjs",
+    "cleanup:armen:flagged-queue": "node --experimental-sqlite scripts/cleanup-armen-flagged-queue-videos.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "tunnel": "node scripts/tunnel.mjs",
     "share": "npm run web:build && concurrently -k -n app,tunnel -c blue,magenta \"npm run server\" \"npm run tunnel\"",

@@ -170,30 +170,39 @@ const deckIds = db
   .all()
   .map((row) => String(row.deck_id));
 
+function addFlag(flags, row) {
+  const text = compact(row.text);
+  for (const check of CHECKS) {
+    if (!check.pattern.test(text)) continue;
+    if (shouldSuppressFlag(row.deckId, check.id, text)) continue;
+    flags.push({
+      check: check.id,
+      severity: check.severity,
+      deckId: row.deckId,
+      itemIndex: row.itemIndex,
+      title: compact(row.title).slice(0, 120),
+      sample: text.slice(0, 260),
+      ...(row.accountId != null ? { accountId: row.accountId } : {}),
+      ...(row.channelName ? { channelName: row.channelName } : {}),
+      ...(row.videoId != null ? { videoId: row.videoId } : {}),
+    });
+    break;
+  }
+}
+
 const report = {
   generatedAt: new Date().toISOString(),
   owner: "armen",
   decks: [],
-  summary: { decks: 0, itemsScanned: 0, flags: 0, highFlags: 0, reviewFlags: 0 },
+  queue: { itemsScanned: 0, flags: [], flagCount: 0, highFlags: 0, reviewFlags: 0 },
+  summary: { decks: 0, itemsScanned: 0, queuedItemsScanned: 0, flags: 0, highFlags: 0, reviewFlags: 0 },
 };
 
 for (const deckId of deckIds) {
   const rows = isPackDeckId(deckId) ? packRows(deckId) : builtInRows(db, deckId);
   const flags = [];
   for (const row of rows) {
-    const text = compact(row.text);
-    for (const check of CHECKS) {
-      if (!check.pattern.test(text)) continue;
-      if (shouldSuppressFlag(deckId, check.id, text)) continue;
-      flags.push({
-        check: check.id,
-        severity: check.severity,
-        itemIndex: row.itemIndex,
-        title: compact(row.title).slice(0, 120),
-        sample: text.slice(0, 260),
-      });
-      break;
-    }
+    addFlag(flags, row);
   }
   const highFlags = flags.filter((flag) => flag.severity === "high").length;
   const reviewFlags = flags.length - highFlags;
@@ -212,6 +221,41 @@ for (const deckId of deckIds) {
   report.summary.highFlags += highFlags;
   report.summary.reviewFlags += reviewFlags;
 }
+
+const queuedRows = db
+  .prepare(
+    `SELECT v.id AS video_id, v.account_id, a.channel_name, v.deck, v.title, v.text
+       FROM videos v
+       JOIN accounts a ON a.id = v.account_id
+       JOIN users u ON u.id = a.user_id
+      WHERE u.username = 'armen'
+      ORDER BY a.id, v.id`,
+  )
+  .all()
+  .map((row) => ({
+    deckId: String(row.deck ?? ""),
+    itemIndex: Number(row.video_id) || 0,
+    videoId: Number(row.video_id) || 0,
+    accountId: Number(row.account_id) || 0,
+    channelName: String(row.channel_name ?? ""),
+    title: String(row.title ?? ""),
+    text: compact(`${row.title ?? ""}\n${row.text ?? ""}`),
+  }));
+const queueFlags = [];
+for (const row of queuedRows) addFlag(queueFlags, row);
+const queueHighFlags = queueFlags.filter((flag) => flag.severity === "high").length;
+const queueReviewFlags = queueFlags.length - queueHighFlags;
+report.queue = {
+  itemsScanned: queuedRows.length,
+  flags: queueFlags.slice(0, 100),
+  flagCount: queueFlags.length,
+  highFlags: queueHighFlags,
+  reviewFlags: queueReviewFlags,
+};
+report.summary.queuedItemsScanned = queuedRows.length;
+report.summary.flags += queueFlags.length;
+report.summary.highFlags += queueHighFlags;
+report.summary.reviewFlags += queueReviewFlags;
 
 mkdirSync(resolve(ROOT, "temp"), { recursive: true });
 writeFileSync(OUT, `${JSON.stringify(report, null, 2)}\n`);
