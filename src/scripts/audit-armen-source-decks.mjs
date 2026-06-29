@@ -179,6 +179,35 @@ if (forbiddenDecks.length) {
       });
     }
   }
+
+  const activeHistoryRows = db
+    .prepare(
+      `SELECT h.id,
+              h.status,
+              h.deck,
+              h.account_id,
+              a.channel_name,
+              a.lang,
+              a.channel_lang
+         FROM history h
+         JOIN accounts a ON a.id = h.account_id
+        WHERE a.user_id = ?
+          AND h.status IN ('pending','scheduled')
+          AND h.deck IN (${placeholders})
+        ORDER BY h.created_at, h.id`,
+    )
+    .all(user.id, ...forbiddenDecks);
+  for (const row of activeHistoryRows) {
+    hits.push({
+      accountId: row.account_id,
+      channelName: row.channel_name,
+      channelLang: row.channel_lang || row.lang,
+      place: `history:${row.status}`,
+      deckId: row.deck,
+      group: FORBIDDEN.get(row.deck),
+      historyId: row.id,
+    });
+  }
 }
 
 console.log(`armen source audit: user=${USERNAME}; accounts=${accounts.length}; forbiddenHits=${hits.length}`);
