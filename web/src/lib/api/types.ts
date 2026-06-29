@@ -808,6 +808,29 @@ export interface GenJobStatus {
   endedAt?: number | null;
 }
 
+export interface GenWorkerHeartbeat {
+  version: 1;
+  pid: number;
+  startedAt: number;
+  beatAt: number;
+  queueRunning: boolean;
+  stopping: boolean;
+  pollMs: number;
+}
+
+export interface GenWorkerStatus {
+  mode: "embedded" | "external";
+  online: boolean;
+  stale: boolean;
+  ageMs: number | null;
+  heartbeat: GenWorkerHeartbeat | null;
+}
+
+export interface GenQueueResponse {
+  worker: GenWorkerStatus;
+  jobs: GenJobStatus[];
+}
+
 export type ContentCatalogKind = "builtin" | "custom_pack" | "manual" | "clip_demo";
 
 export interface ContentCatalogAccount {

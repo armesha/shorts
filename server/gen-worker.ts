@@ -13,6 +13,7 @@ import {
   startGenQueuePolling,
 } from "./services/gen-queue.ts";
 import { makeGenQueueWorker } from "./services/gen-queue-worker.ts";
+import { writeGenWorkerHeartbeat } from "./services/gen-worker-heartbeat.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -35,18 +36,43 @@ const buildLibraryVideo = makeBuildLibraryVideo({
 
 attachGenQueueDb(db.db, { recoverRunning: true });
 initGenQueue(makeGenQueueWorker(db, { deckAccess, buildLibraryVideo }));
-startGenQueuePolling(Number(process.env.GEN_QUEUE_POLL_MS || 1500));
+const pollMs = Number(process.env.GEN_QUEUE_POLL_MS || 1500);
+const startedAt = Date.now();
+startGenQueuePolling(pollMs);
 console.log("[gen-worker] started");
 
 const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 let stopping = false;
+function heartbeat(): void {
+  try {
+    writeGenWorkerHeartbeat(db, {
+      version: 1,
+      pid: process.pid,
+      startedAt,
+      beatAt: Date.now(),
+      queueRunning: isGenQueueRunning(),
+      stopping,
+      pollMs,
+    });
+  } catch (err) {
+    console.warn("[gen-worker] heartbeat write failed", err);
+  }
+}
+
+heartbeat();
+const heartbeatTimer = setInterval(heartbeat, Math.max(2_000, Math.min(10_000, pollMs * 2)));
+heartbeatTimer.unref();
+
 async function stop(signal: string): Promise<void> {
   if (stopping) return;
   stopping = true;
   console.log(`[gen-worker] received ${signal}; draining current video`);
+  heartbeat();
+  clearInterval(heartbeatTimer);
   drainQueue();
   const started = Date.now();
   while (isGenQueueRunning() && Date.now() - started < 30_000) await sleep(250);
+  heartbeat();
   try {
     db.db.close();
   } catch {

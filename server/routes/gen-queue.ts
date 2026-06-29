@@ -21,12 +21,15 @@ import {
   queuedRemainingForAccountDecks as genQueuedRemainingForAccountDecks,
 } from "../services/gen-queue.ts";
 import { makeGenQueueWorker } from "../services/gen-queue-worker.ts";
+import { publicGenWorkerStatus } from "../services/gen-worker-heartbeat.ts";
 import { uid } from "../infra/auth-session.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
 import type { RouteDeps } from "./deps.ts";
 import { thematicBlockDeckSequenceForGeneration } from "./super-admin-channel-blocks.ts";
 
 const USER_GEN_QUEUE_CAP = 100;
+const genQueueRunnerMode = (): "embedded" | "external" =>
+  process.env.GEN_QUEUE_RUNNER === "0" || process.env.GEN_QUEUE_RUNNER === "external" ? "external" : "embedded";
 
 export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
   const { accessibleAccount, accountOwnerId } = deps;
@@ -128,6 +131,7 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
     const scope = String(((req.query ?? {}) as { scope?: string }).scope ?? "");
     const all = scope === "all" && db.getUserById(uid(req))?.role === "admin";
     return {
+      worker: publicGenWorkerStatus(db, { mode: genQueueRunnerMode() }),
       jobs: genListStatuses(all ? undefined : uid(req)).map((job) => ({
         id: job.id,
         userId: job.userId,
@@ -145,6 +149,10 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
       })),
     };
   });
+
+  app.get("/api/gen-queue/worker", async () => ({
+    worker: publicGenWorkerStatus(db, { mode: genQueueRunnerMode() }),
+  }));
 
   // Poll one job's progress + position in the queue.
   app.get("/api/gen-queue/:id", async (req, reply) => {
