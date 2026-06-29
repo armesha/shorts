@@ -1,4 +1,5 @@
 import { execFile as execFileCb, spawn } from "node:child_process";
+import { DatabaseSync } from "node:sqlite";
 import { existsSync, mkdirSync, openSync, readdirSync, readFileSync, readlinkSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -11,7 +12,10 @@ const PORT = Number(process.env.PORT || 8080);
 const SERVICE = process.env.SHORTS_SERVICE || "shorts.service";
 const WORKER_SERVICE = process.env.SHORTS_WORKER_SERVICE || "shorts-gen-worker.service";
 const LOG_FILE = resolve(ROOT, "logs/server.log");
+const DB_PATH = process.env.DATABASE_PATH || resolve(ROOT, "data/app.db");
 const HEALTH_URL = `http://127.0.0.1:${PORT}/api/health`;
+const WORKER_HEARTBEAT_KEY = "generationWorker.heartbeat.v1";
+const WORKER_HEARTBEAT_STALE_MS = 12_000;
 
 function log(message) {
   process.stdout.write(`[restart] ${message}\n`);
@@ -152,6 +156,49 @@ async function waitForHealth() {
   }, 30_000, 500);
 }
 
+function readWorkerHeartbeat() {
+  let db;
+  try {
+    db = new DatabaseSync(DB_PATH, { readOnly: true });
+    const row = db.prepare("SELECT value FROM settings WHERE key = ?").get(WORKER_HEARTBEAT_KEY);
+    if (!row?.value) return null;
+    const heartbeat = JSON.parse(String(row.value));
+    const pid = Number(heartbeat.pid);
+    const beatAt = Number(heartbeat.beatAt);
+    const startedAt = Number(heartbeat.startedAt);
+    if (!Number.isFinite(pid) || pid <= 0) return null;
+    if (!Number.isFinite(beatAt) || beatAt <= 0) return null;
+    if (!Number.isFinite(startedAt) || startedAt <= 0) return null;
+    return {
+      pid,
+      startedAt,
+      beatAt,
+      stopping: !!heartbeat.stopping,
+      queueRunning: !!heartbeat.queueRunning,
+      pollMs: Math.max(0, Number(heartbeat.pollMs) || 0),
+    };
+  } catch {
+    return null;
+  } finally {
+    try {
+      db?.close();
+    } catch {
+      /* already closed */
+    }
+  }
+}
+
+async function waitForWorkerHeartbeat(workerPid, startAfter) {
+  return waitFor(() => {
+    const heartbeat = readWorkerHeartbeat();
+    if (!heartbeat) return false;
+    if (workerPid > 0 && heartbeat.pid !== workerPid) return false;
+    if (heartbeat.stopping) return false;
+    if (heartbeat.beatAt < startAfter) return false;
+    return Date.now() - heartbeat.beatAt <= WORKER_HEARTBEAT_STALE_MS;
+  }, 20_000, 500);
+}
+
 async function startDetachedFallback() {
   mkdirSync(dirname(LOG_FILE), { recursive: true });
   const out = openSync(LOG_FILE, "a");
@@ -181,6 +228,7 @@ async function restartSystemd() {
   await tryRun("sudo", ["-n", "systemctl", "reset-failed", SERVICE]);
   if (hasWorkerService) await tryRun("sudo", ["-n", "systemctl", "reset-failed", WORKER_SERVICE]);
   await run("sudo", ["-n", "systemctl", "start", SERVICE], { timeout: 20_000 });
+  const workerStartAfter = Date.now();
   if (hasWorkerService) await run("sudo", ["-n", "systemctl", "start", WORKER_SERVICE], { timeout: 20_000 });
   const ok = await waitForHealth();
   if (!ok) throw new Error(`${HEALTH_URL} did not become healthy after systemd start`);
@@ -190,7 +238,12 @@ async function restartSystemd() {
   if (hasWorkerService) {
     const workerPid = await serviceMainPid(WORKER_SERVICE);
     const workerActive = await serviceActiveState(WORKER_SERVICE);
+    const workerOk = await waitForWorkerHeartbeat(workerPid, workerStartAfter);
+    if (!workerOk) throw new Error(`${WORKER_SERVICE} did not publish a fresh heartbeat`);
+    const heartbeat = readWorkerHeartbeat();
+    const age = heartbeat ? Date.now() - heartbeat.beatAt : null;
     log(`${WORKER_SERVICE}: ${workerActive}; pid=${workerPid}`);
+    log(`generation worker heartbeat: pid=${heartbeat?.pid ?? "?"}; age=${age == null ? "?" : `${Math.round(age)}ms`}`);
   }
 }
 
