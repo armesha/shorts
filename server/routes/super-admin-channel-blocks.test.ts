@@ -2,7 +2,12 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type { Account, Db, Video } from "../db.ts";
 import type { RouteDeps } from "./deps.ts";
-import { planChannelBlockNormalize, normalizeSourceWeightSettings, thematicBlockDeckSequenceForGeneration } from "./super-admin-channel-blocks.ts";
+import {
+  planChannelBlockNormalize,
+  normalizeSourceWeightSettings,
+  thematicBlockDeckSequenceForGeneration,
+  thematicBlockSlotDecksForAccount,
+} from "./super-admin-channel-blocks.ts";
 import { openDb } from "../db.ts";
 
 const FOREIGN_EN_SOURCES = [
@@ -100,6 +105,19 @@ test("thematic block generation skips exhausted sources and removed optical pack
   assert.ok(!sequence.includes("visual-riddles-en"));
   assert.ok(!sequence.includes("illusions-en"));
   assert.ok(sequence.every((deckId) => FOREIGN_EN_SOURCES.includes(deckId)));
+});
+
+test("thematic block schedule falls back when one source has no ready or free cards", () => {
+  const acc = {
+    ...account(313),
+    schedule: ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00"],
+  };
+  const slotDecks = thematicBlockSlotDecksForAccount(db(), deps({ "fact-en": 0 }), acc, acc.schedule, FOREIGN_EN_SOURCES);
+
+  assert.ok(slotDecks);
+  assert.equal(Object.keys(slotDecks).length, acc.schedule.length);
+  assert.ok(!Object.values(slotDecks).includes("fact-en"));
+  assert.ok(Object.values(slotDecks).every((deckId) => FOREIGN_EN_SOURCES.includes(deckId)));
 });
 
 test("block top-up redistributes missing videos away from a depleted source", () => {
