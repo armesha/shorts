@@ -1634,11 +1634,24 @@ export function planChannelBlockNormalize(input: {
       ? weightedDeckDeficitSequence(block, account, generationDeckIds, sourceWeights, countedByDeck, accountTargetQueued, sequenceSeed)
       : deckDeficitSequence(account, generationDeckIds, countedByDeck, targetRunwayDays);
     const readyDeficit = Math.max(0, accountTargetQueued - currentQueued);
-    if (readyDeficit <= 0 || exactDeficit.length <= 0) {
+    const sourceDeficit = exactDeficit.length;
+    if (readyDeficit <= 0 && sourceDeficit <= 0) {
       skipped.push({
         accountId: account.id,
         channelName: account.ytChannelTitle || account.channelName,
-        reason: readyDeficit > 0 && exactDeficit.length <= 0 ? "generation_in_progress" : "already_at_target",
+        reason: "already_at_target",
+        currentQueued,
+        targetQueued: accountTargetQueued,
+        currentRunwayDays,
+        targetRunwayDays,
+      });
+      continue;
+    }
+    if (readyDeficit > 0 && sourceDeficit <= 0) {
+      skipped.push({
+        accountId: account.id,
+        channelName: account.ytChannelTitle || account.channelName,
+        reason: "generation_in_progress",
         currentQueued,
         targetQueued: accountTargetQueued,
         currentRunwayDays,
@@ -1650,7 +1663,7 @@ export function planChannelBlockNormalize(input: {
     // stack a second full top-up while the first one is still rendering. If a preferred source has run
     // out of free cards, refill the remaining target from other available block sources instead of
     // treating that one source as a hard blocker.
-    const missing = Math.min(readyDeficit, exactDeficit.length);
+    const missing = Math.max(readyDeficit, sourceDeficit);
     const jobDeckIds: string[] = [];
     const appendReservable = (deckIds: string[]): number => {
       let added = 0;

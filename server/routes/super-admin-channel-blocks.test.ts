@@ -70,6 +70,23 @@ function db(): Db {
   } as unknown as Db;
 }
 
+function video(id: number, accountId: number, deck: string): Video {
+  return {
+    id,
+    accountId,
+    title: `Video ${id}`,
+    text: "",
+    bg: "",
+    music: "",
+    deck,
+    videoRel: "",
+    imageRel: null,
+    postCount: 0,
+    lastPostedAt: null,
+    createdAt: "",
+  };
+}
+
 test("thematic block generation keeps source mix stable but varies order per channel", () => {
   const dbMock = db();
   const depsMock = deps();
@@ -157,6 +174,57 @@ test("block top-up redistributes missing videos away from a depleted source", ()
   assert.equal(plan.jobs[0]?.total, 4);
   assert.equal(plan.jobs[0]?.deckIds.filter((deckId) => deckId === "alpha").length, 1);
   assert.equal(plan.jobs[0]?.deckIds.filter((deckId) => deckId === "beta").length, 3);
+  assert.deepEqual(plan.shortages, []);
+});
+
+test("block top-up fills source gaps even when total channel runway is already enough", () => {
+  const acc = {
+    ...account(405),
+    sourceDecks: ["alpha", "beta"],
+    channelLang: "en",
+    schedule: ["00:00", "06:00", "12:00", "18:00"],
+    slotDecks: {
+      "00:00": "alpha",
+      "06:00": "beta",
+      "12:00": "alpha",
+      "18:00": "beta",
+    },
+  };
+  const block = {
+    id: "test",
+    title: "Test",
+    description: "",
+    rules: [],
+    accountIds: [acc.id],
+    sourceGroups: [
+      { id: "alpha", title: "Alpha", defaultWeight: 1, sources: { en: ["alpha"] } },
+      { id: "beta", title: "Beta", defaultWeight: 1, sources: { en: ["beta"] } },
+    ],
+  } satisfies Parameters<typeof planChannelBlockNormalize>[0]["block"];
+  const dbMock = {
+    ...db(),
+    listVideos: (accountId: number) => [
+      video(1, accountId, "beta"),
+      video(2, accountId, "beta"),
+      video(3, accountId, "beta"),
+      video(4, accountId, "beta"),
+    ],
+  } as unknown as Db;
+
+  const plan = planChannelBlockNormalize({
+    db: dbMock,
+    deps: deps({ alpha: 20, beta: 20 }),
+    block,
+    blockId: block.id,
+    accounts: [acc],
+    sourceWeights: { alpha: 1, beta: 1 },
+    requestedTargetRunwayDays: 1,
+    fallbackOwnerId: 1,
+  });
+
+  assert.equal(plan.jobs.length, 1);
+  assert.equal(plan.jobs[0]?.total, 2);
+  assert.deepEqual(plan.jobs[0]?.deckIds, ["alpha", "alpha"]);
   assert.deepEqual(plan.shortages, []);
 });
 
