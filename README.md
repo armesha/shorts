@@ -18,7 +18,7 @@ npm run worker:status   # read-only generation worker + SQLite queue status, no 
 npm run ops:check  # worker status + public smoke + armen checks, no restart
 npm run server:restart  # safe prod restart: stop stale pids, start API + gen worker, check health + worker heartbeat
 npm run deploy:refresh  # web:build + safe prod restart + public smoke check for shareboard.live
-npm run verify:armen  # source/safety/runway/visual consistency checks for armen thematic blocks
+npm run verify:armen  # source/safety/strict-slot-runway/visual consistency checks for armen blocks
 npm run verify:live   # typecheck + tests + armen checks + build + restart + worker status + public smoke
 ```
 

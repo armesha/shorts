@@ -25,7 +25,7 @@
     "audit:armen:blocks": "node --experimental-sqlite --import tsx src/scripts/audit-armen-block-runway.mjs",
     "audit:armen:blocks-strict": "npm run audit:armen:blocks -- --days=1 --strict-slots",
     "audit:armen:blocks-consistency": "node --experimental-sqlite --import tsx src/scripts/audit-armen-block-consistency.mjs",
-    "verify:armen": "npm run audit:armen:sources && npm run audit:armen:blocks-consistency && npm run audit:armen:blocks -- --days=1 && npm run audit:armen:visual && npm run audit:armen:safety",
+    "verify:armen": "npm run audit:armen:sources && npm run audit:armen:blocks-consistency && npm run audit:armen:blocks-strict && npm run audit:armen:visual && npm run audit:armen:safety",
     "verify:live": "npm run typecheck && npm test && npm run verify:armen && npm run web:build && npm run server:restart && npm run worker:status && npm run smoke:live",
     "cleanup:armen:flagged-queue": "node --experimental-sqlite scripts/cleanup-armen-flagged-queue-videos.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
