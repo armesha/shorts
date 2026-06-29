@@ -1,0 +1,36 @@
+{
+  "generatedAt": "2026-06-29T00:00:00.000Z",
+  "reason": "Super-admin YouTube safety pruning: avoid scripture excerpts with concentrated terror/murder wording in mass publishing.",
+  "blockedItemKeys": [
+    "a1d7asdd-515",
+    "a1lkvxca-486",
+    "a1smhpf2-538",
+    "a5qaj4a-450"
+  ],
+  "blockedItems": [
+    {
+      "key": "a1lkvxca-486",
+      "index": 339,
+      "title": "Isaiah 10:32-34",
+      "note": "super-admin safety prune: concentrated terror/murder wording"
+    },
+    {
+      "key": "a5qaj4a-450",
+      "index": 1060,
+      "title": "Romans 1:29-31",
+      "note": "super-admin safety prune: concentrated terror/murder wording"
+    },
+    {
+      "key": "a1d7asdd-515",
+      "index": 1192,
+      "title": "2 Corinthians 5:9-11",
+      "note": "super-admin safety prune: concentrated terror/murder wording"
+    },
+    {
+      "key": "a1smhpf2-538",
+      "index": 1415,
+      "title": "1 Peter 3:14-16",
+      "note": "super-admin safety prune: concentrated terror/murder wording"
+    }
+  ]
+}

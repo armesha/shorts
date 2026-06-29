@@ -1,0 +1,15 @@
+{
+  "generatedAt": "2026-06-29T00:00:00.000Z",
+  "reason": "Super-admin YouTube safety pruning: avoid contemporary politics, war/extremism, self-harm, protected-class or fascism-related quote wording in mass publishing.",
+  "blockedItemKeys": [
+    "a1yjeoea-51"
+  ],
+  "blockedItems": [
+    {
+      "key": "a1yjeoea-51",
+      "index": 581,
+      "title": "Ralph Waldo Emerson",
+      "note": "super-admin safety prune: sensitive quote topic"
+    }
+  ]
+}

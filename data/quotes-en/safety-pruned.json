@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-06-29T00:00:00.000Z",
+  "reason": "Super-admin YouTube safety pruning: avoid contemporary politics, war/extremism, self-harm, protected-class or fascism-related quote wording in mass publishing.",
+  "blockedItemKeys": [
+    "a10lwbsj-128",
+    "a1s1wfc4-81",
+    "ap833xh-154"
+  ],
+  "blockedItems": [
+    {
+      "key": "a10lwbsj-128",
+      "index": 293,
+      "title": "Karl Marx",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "ap833xh-154",
+      "index": 326,
+      "title": "Karl Marx",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1s1wfc4-81",
+      "index": 790,
+      "title": "Fyodor Dostoyevsky",
+      "note": "super-admin safety prune: sensitive quote topic"
+    }
+  ]
+}

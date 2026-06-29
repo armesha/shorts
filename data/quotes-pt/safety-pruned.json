@@ -1,16 +1,108 @@
 {
-  "generatedAt": "2026-06-28T00:00:00.000Z",
-  "reason": "Super-admin YouTube safety pruning: avoid protected-class/race-related quote wording in mass publishing.",
+  "generatedAt": "2026-06-29T00:00:00.000Z",
+  "reason": "Super-admin YouTube safety pruning: avoid contemporary politics, war/extremism, self-harm, protected-class or fascism-related quote wording in mass publishing.",
   "blockedItemKeys": [
-    "aylqdw-192",
+    "a10godb2-186",
+    "a11t7nii-74",
+    "a14dt6hs-76",
+    "a16x77ss-87",
+    "a17asyhc-128",
+    "a1gw3j5p-165",
+    "a1mm7fkf-176",
+    "a1quv63q-144",
+    "a65tpwc-169",
+    "a774hb4-121",
+    "abrw6ql-188",
+    "adb4hy-272",
+    "ahr9x2r-137",
+    "ak0tlfv-133",
+    "ak627wp-185",
+    "aohtuh4-177",
+    "aovfhay-189",
     "arao0j7-244",
-    "a14dt6hs-76"
+    "atj3v13-177",
+    "avzdxi9-176",
+    "aylqdw-192",
+    "azbf6fb-187"
   ],
   "blockedItems": [
     {
-      "key": "aylqdw-192",
-      "index": 549,
-      "note": "protected-class comparative quote"
+      "key": "aohtuh4-177",
+      "index": 7,
+      "title": "A. James Gregor",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a10godb2-186",
+      "index": 8,
+      "title": "A. James Gregor",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "abrw6ql-188",
+      "index": 9,
+      "title": "A. James Gregor",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "ahr9x2r-137",
+      "index": 10,
+      "title": "A. James Gregor",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1quv63q-144",
+      "index": 11,
+      "title": "A. James Gregor",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "aovfhay-189",
+      "index": 15,
+      "title": "A. James Gregor",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a16x77ss-87",
+      "index": 16,
+      "title": "A. James Gregor",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "azbf6fb-187",
+      "index": 17,
+      "title": "A. James Gregor",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a774hb4-121",
+      "index": 18,
+      "title": "A. James Gregor",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "ak0tlfv-133",
+      "index": 19,
+      "title": "A. James Gregor",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1gw3j5p-165",
+      "index": 20,
+      "title": "A. James Gregor",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "atj3v13-177",
+      "index": 21,
+      "title": "A. James Gregor",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a17asyhc-128",
+      "index": 22,
+      "title": "A. James Gregor",
+      "note": "super-admin safety prune: sensitive quote topic"
     },
     {
       "key": "arao0j7-244",
@@ -18,9 +110,50 @@
       "note": "race-related identity quote"
     },
     {
+      "key": "avzdxi9-176",
+      "index": 537,
+      "title": "Ali Khamenei",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a65tpwc-169",
+      "index": 539,
+      "title": "Ali Khamenei",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1mm7fkf-176",
+      "index": 544,
+      "title": "Ali Khamenei",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "aylqdw-192",
+      "index": 549,
+      "note": "protected-class comparative quote"
+    },
+    {
       "key": "a14dt6hs-76",
       "index": 709,
       "note": "race-related identity quote"
+    },
+    {
+      "key": "adb4hy-272",
+      "index": 769,
+      "title": "Andrea Dworkin",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a11t7nii-74",
+      "index": 815,
+      "title": "André Malraux",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "ak627wp-185",
+      "index": 939,
+      "title": "Érico Veríssimo",
+      "note": "super-admin safety prune: sensitive quote topic"
     }
   ]
 }

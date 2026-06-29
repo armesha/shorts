@@ -1,0 +1,407 @@
+{
+  "generatedAt": "2026-06-29T00:00:00.000Z",
+  "reason": "Super-admin YouTube safety pruning: avoid contemporary politics, war/extremism, self-harm, protected-class or fascism-related quote wording in mass publishing.",
+  "blockedItemKeys": [
+    "a112fa4y-156",
+    "a11hhjn9-48",
+    "a13e093a-236",
+    "a13oteyy-184",
+    "a15iq5os-156",
+    "a173tvh8-98",
+    "a1920k0h-65",
+    "a19wmy4g-160",
+    "a1a46ble-224",
+    "a1ch0f5m-162",
+    "a1dftejg-94",
+    "a1f34amy-133",
+    "a1fh7t9r-100",
+    "a1gc8g9f-107",
+    "a1i6uqlb-195",
+    "a1i8n9rh-87",
+    "a1jk08h0-88",
+    "a1mhkcc9-107",
+    "a1n60ptd-181",
+    "a1py5teu-146",
+    "a1qmpj8h-127",
+    "a1r3e2qa-105",
+    "a1r4jkeo-119",
+    "a1reab25-59",
+    "a1rrtczp-62",
+    "a1u825mi-221",
+    "a1wkdxec-262",
+    "a2xw25k-169",
+    "a323op8-114",
+    "a3o46gb-195",
+    "a5v8qyw-234",
+    "a6g0gtm-276",
+    "a6ve1bv-206",
+    "a7pf3gd-160",
+    "a8eztc2-63",
+    "a8zaxus-243",
+    "aaljr7b-205",
+    "abnk3kc-40",
+    "abt2j19-250",
+    "abztykr-154",
+    "acscnjo-70",
+    "adqancg-134",
+    "afgzkgt-58",
+    "agjjf99-198",
+    "ai5k88i-119",
+    "ajea7fy-184",
+    "ak90lnr-76",
+    "akmlwzj-105",
+    "al03x6h-73",
+    "amv9ujo-70",
+    "aosyzk9-148",
+    "aoywgo3-209",
+    "auvmmfs-151",
+    "avicwr9-159",
+    "awl2gtc-134",
+    "axw7q9d-229",
+    "aysz9tq-234"
+  ],
+  "blockedItems": [
+    {
+      "key": "aaljr7b-205",
+      "index": 93,
+      "title": "Abd al-Fattah al-Sisi",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a2xw25k-169",
+      "index": 94,
+      "title": "Abd al-Karim Qasim",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1i8n9rh-87",
+      "index": 176,
+      "title": "Abraham Joshua Heschel",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a323op8-114",
+      "index": 212,
+      "title": "Abraham Yehoshua",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1py5teu-146",
+      "index": 219,
+      "title": "Abu Bakr al-Baghdadi",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1jk08h0-88",
+      "index": 236,
+      "title": "Acazia (re d'Israele)",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a8zaxus-243",
+      "index": 237,
+      "title": "Acazia (re d'Israele)",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "aysz9tq-234",
+      "index": 238,
+      "title": "Acazia (re d'Israele)",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "aosyzk9-148",
+      "index": 299,
+      "title": "Achmat Kadyrov",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a112fa4y-156",
+      "index": 300,
+      "title": "Achmat Kadyrov",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a13oteyy-184",
+      "index": 301,
+      "title": "Achmat Kadyrov",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a6g0gtm-276",
+      "index": 302,
+      "title": "Achmat Kadyrov",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a19wmy4g-160",
+      "index": 303,
+      "title": "Achmat Kadyrov",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "amv9ujo-70",
+      "index": 304,
+      "title": "Achmat Kadyrov",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1fh7t9r-100",
+      "index": 305,
+      "title": "Achmat Kadyrov",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "auvmmfs-151",
+      "index": 306,
+      "title": "Achmat Kadyrov",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "acscnjo-70",
+      "index": 307,
+      "title": "Achmat Kadyrov",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1n60ptd-181",
+      "index": 308,
+      "title": "Achmed Zakaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1reab25-59",
+      "index": 311,
+      "title": "Achmed Zakaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a13e093a-236",
+      "index": 312,
+      "title": "Achmed Zakaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "agjjf99-198",
+      "index": 314,
+      "title": "Achmed Zakaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1qmpj8h-127",
+      "index": 315,
+      "title": "Achmed Zakaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a5v8qyw-234",
+      "index": 316,
+      "title": "Achmed Zakaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "ak90lnr-76",
+      "index": 317,
+      "title": "Achmed Zakaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1r4jkeo-119",
+      "index": 319,
+      "title": "Achmed Zakaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "axw7q9d-229",
+      "index": 322,
+      "title": "Achmed Zakaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1i6uqlb-195",
+      "index": 323,
+      "title": "Achmed Zakaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "avicwr9-159",
+      "index": 324,
+      "title": "Achmed Zakaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "ajea7fy-184",
+      "index": 354,
+      "title": "Adam Bakri",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a8eztc2-63",
+      "index": 499,
+      "title": "Adolphe d'Houdetot",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a7pf3gd-160",
+      "index": 652,
+      "title": "Adriano Scianca",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1gc8g9f-107",
+      "index": 654,
+      "title": "Adriano Sofri",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "afgzkgt-58",
+      "index": 655,
+      "title": "Adriano Sofri",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "abnk3kc-40",
+      "index": 662,
+      "title": "Adriano Sofri",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "abt2j19-250",
+      "index": 663,
+      "title": "Adriano Sofri",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1u825mi-221",
+      "index": 910,
+      "title": "Óscar Arias Sánchez",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a6ve1bv-206",
+      "index": 955,
+      "title": "Ėduard Limonov",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1wkdxec-262",
+      "index": 956,
+      "title": "Ėduard Limonov",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "al03x6h-73",
+      "index": 961,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1a46ble-224",
+      "index": 962,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "akmlwzj-105",
+      "index": 963,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1f34amy-133",
+      "index": 964,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "abztykr-154",
+      "index": 965,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a11hhjn9-48",
+      "index": 966,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1rrtczp-62",
+      "index": 967,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1mhkcc9-107",
+      "index": 968,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1dftejg-94",
+      "index": 969,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "ai5k88i-119",
+      "index": 970,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1920k0h-65",
+      "index": 971,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1r3e2qa-105",
+      "index": 972,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a15iq5os-156",
+      "index": 973,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "awl2gtc-134",
+      "index": 974,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a173tvh8-98",
+      "index": 975,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1ch0f5m-162",
+      "index": 976,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "aoywgo3-209",
+      "index": 977,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "adqancg-134",
+      "index": 978,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a3o46gb-195",
+      "index": 979,
+      "title": "Šamil' Salmanovič Basaev",
+      "note": "super-admin safety prune: sensitive quote topic"
+    }
+  ]
+}

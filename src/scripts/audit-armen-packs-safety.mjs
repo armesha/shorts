@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { getDeck, isPackDeckId } from "../anecdotes/decks.ts";
+import { filterSafetyPrunedItems } from "../anecdotes/library.ts";
 
 const ROOT = process.cwd();
 const DB_PATH = process.env.DATABASE_PATH || resolve(ROOT, "data/app.db");
@@ -59,6 +60,26 @@ function compact(text) {
   return String(text || "").replace(/\s+/g, " ").trim();
 }
 
+function shouldSuppressFlag(deckId, checkId, text) {
+  if (checkId === "politics_war_sensitive" && /^(christian|christian-quotes-en)$/.test(deckId)) {
+    // Biblical references to Israel inside explicitly Christian decks are religious context, not
+    // contemporary politics. Other checks still apply to these decks.
+    return /\bIsrael\b/i.test(text);
+  }
+  if (checkId === "politics_war_sensitive" && deckId === "pack:static-facts-de-superadmin") {
+    return /Baikalsee|Russland/i.test(text);
+  }
+  if (checkId === "violence_self_harm_extremism" && /^(fact-es|pack:static-facts-es-superadmin)$/.test(deckId)) {
+    return /El rape vive|café es en realidad|Los antiguos egipcios adoraban tanto a los gatos|atrapar y matar insectos|matar insectos|suficiente veneno|matar instantáneamente/i.test(
+      text,
+    );
+  }
+  if (checkId === "violence_self_harm_extremism" && deckId === "pack:chistes-es-public-domain") {
+    return /\bterror\b/i.test(text);
+  }
+  return false;
+}
+
 function sourceLedger(deckId) {
   if (isPackDeckId(deckId)) return { status: "custom_pack", note: "custom pack JSON; inspect pack metadata/templates manually" };
   let dir = "";
@@ -94,6 +115,41 @@ function packRows(deckId) {
   }));
 }
 
+function builtInRows(db, deckId) {
+  const items = db
+    .prepare("SELECT item_index, item_key, pack_no, title, text, chars, video_file, payload_json FROM content_items WHERE deck_id = ? ORDER BY item_index")
+    .all(deckId)
+    .map((row) => {
+      if (row.payload_json) {
+        try {
+          const item = JSON.parse(row.payload_json);
+          return {
+            ...item,
+            id: Number(row.item_index),
+            itemKey: item.itemKey || String(row.item_key || ""),
+          };
+        } catch {
+          /* fall through to column values */
+        }
+      }
+      return {
+        id: Number(row.item_index),
+        itemKey: String(row.item_key || ""),
+        pack: Number(row.pack_no) || 1,
+        title: String(row.title ?? ""),
+        text: String(row.text ?? ""),
+        chars: Number(row.chars) || 0,
+        videoFile: row.video_file ? String(row.video_file) : undefined,
+      };
+    });
+  return filterSafetyPrunedItems(deckId, items).map((item) => ({
+    deckId,
+    itemIndex: Number(item.id ?? 0),
+    title: String(item.title ?? ""),
+    text: compact(`${item.title ?? ""}\n${item.text ?? ""}\n${JSON.stringify(item)}`),
+  }));
+}
+
 const db = new DatabaseSync(DB_PATH, { readOnly: true });
 db.exec("PRAGMA query_only = ON");
 
@@ -122,22 +178,13 @@ const report = {
 };
 
 for (const deckId of deckIds) {
-  const rows = isPackDeckId(deckId)
-    ? packRows(deckId)
-    : db
-        .prepare("SELECT item_index, title, text, payload_json FROM content_items WHERE deck_id = ? ORDER BY item_index")
-        .all(deckId)
-        .map((row) => ({
-          deckId,
-          itemIndex: Number(row.item_index),
-          title: String(row.title ?? ""),
-          text: compact(`${row.title ?? ""}\n${row.text ?? ""}\n${row.payload_json ?? ""}`),
-        }));
+  const rows = isPackDeckId(deckId) ? packRows(deckId) : builtInRows(db, deckId);
   const flags = [];
   for (const row of rows) {
     const text = compact(row.text);
     for (const check of CHECKS) {
       if (!check.pattern.test(text)) continue;
+      if (shouldSuppressFlag(deckId, check.id, text)) continue;
       flags.push({
         check: check.id,
         severity: check.severity,

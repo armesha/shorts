@@ -1,14 +1,42 @@
 {
-  "generatedAt": "2026-06-28T00:00:00.000Z",
-  "reason": "Super-admin YouTube safety pruning: avoid protected-class/race-related quote wording in mass publishing.",
+  "generatedAt": "2026-06-29T00:00:00.000Z",
+  "reason": "Super-admin YouTube safety pruning: avoid contemporary politics, war/extremism, self-harm, protected-class or fascism-related quote wording in mass publishing.",
   "blockedItemKeys": [
-    "a1woi95p-165"
+    "a11y3gl7-70",
+    "a1cxo0tc-60",
+    "a1jo0b3e-95",
+    "a1woi95p-165",
+    "a1xjbolr-236"
   ],
   "blockedItems": [
+    {
+      "key": "a1cxo0tc-60",
+      "index": 99,
+      "title": "Achille Chavée",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a11y3gl7-70",
+      "index": 281,
+      "title": "Ahed Tamimi",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
     {
       "key": "a1woi95p-165",
       "index": 336,
       "note": "race-related terminology"
+    },
+    {
+      "key": "a1xjbolr-236",
+      "index": 446,
+      "title": "Alain Finkielkraut",
+      "note": "super-admin safety prune: sensitive quote topic"
+    },
+    {
+      "key": "a1jo0b3e-95",
+      "index": 548,
+      "title": "Alba de Céspedes",
+      "note": "super-admin safety prune: sensitive quote topic"
     }
   ]
 }

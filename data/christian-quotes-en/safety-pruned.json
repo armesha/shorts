@@ -1,0 +1,15 @@
+{
+  "generatedAt": "2026-06-29T00:00:00.000Z",
+  "reason": "Super-admin YouTube safety pruning: avoid scripture excerpts with concentrated terror/murder wording in mass publishing.",
+  "blockedItemKeys": [
+    "religious-quote:christian-quotes-en:Romans 1:29-31:1060"
+  ],
+  "blockedItems": [
+    {
+      "key": "religious-quote:christian-quotes-en:Romans 1:29-31:1060",
+      "index": 236,
+      "title": "Epistle · Romans 1:29-31",
+      "note": "super-admin safety prune: concentrated terror/murder wording"
+    }
+  ]
+}
