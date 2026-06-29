@@ -217,7 +217,7 @@ test("block top-up fills source gaps even when total channel runway is already e
     block,
     blockId: block.id,
     accounts: [acc],
-    sourceWeights: { alpha: 1, beta: 1 },
+    sourceWeights: { alpha: 1, beta: 10 },
     requestedTargetRunwayDays: 1,
     fallbackOwnerId: 1,
   });

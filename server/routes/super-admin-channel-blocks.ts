@@ -1237,6 +1237,31 @@ function deckDeficitFromTargetSequence(targetSequence: string[], countedByDeck: 
   return out;
 }
 
+function maxDeckDeficitSequence(sequences: string[][]): string[] {
+  const order: string[] = [];
+  const maxByDeck = new Map<string, number>();
+  for (const sequence of sequences) {
+    const counts = countDeckSequence(sequence);
+    for (const deckId of sequence) if (!order.includes(deckId)) order.push(deckId);
+    for (const [deckId, count] of Object.entries(counts)) {
+      maxByDeck.set(deckId, Math.max(maxByDeck.get(deckId) ?? 0, count));
+    }
+  }
+  const out: string[] = [];
+  while ([...maxByDeck.values()].some((count) => count > 0)) {
+    let progressed = false;
+    for (const deckId of order) {
+      const left = maxByDeck.get(deckId) ?? 0;
+      if (left <= 0) continue;
+      out.push(deckId);
+      maxByDeck.set(deckId, left - 1);
+      progressed = true;
+    }
+    if (!progressed) break;
+  }
+  return out;
+}
+
 function weightedDeckDeficitSequence(
   block: BlockDef,
   account: Account,
@@ -1630,10 +1655,13 @@ export function planChannelBlockNormalize(input: {
       sourceWeights,
       `normalize:${accountTargetQueued}:${targetRunwayDays}`,
     );
-    const exactDeficit = activeSourceGroups(block, account, generationDeckIds, sourceWeights).length
+    const mixDeficit = activeSourceGroups(block, account, generationDeckIds, sourceWeights).length
       ? weightedDeckDeficitSequence(block, account, generationDeckIds, sourceWeights, countedByDeck, accountTargetQueued, sequenceSeed)
       : deckDeficitSequence(account, generationDeckIds, countedByDeck, targetRunwayDays);
     const readyDeficit = Math.max(0, accountTargetQueued - currentQueued);
+    const slotDeficit = deckDeficitFromTargetSequence(targetRunwayDeckSequence(account, generationDeckIds, targetRunwayDays), countedByDeck);
+    const combinedDeficit = maxDeckDeficitSequence([mixDeficit, slotDeficit]);
+    const exactDeficit = readyDeficit > 0 ? combinedDeficit.slice(0, Math.max(readyDeficit, slotDeficit.length)) : combinedDeficit;
     const sourceDeficit = exactDeficit.length;
     if (readyDeficit <= 0 && sourceDeficit <= 0) {
       skipped.push({
