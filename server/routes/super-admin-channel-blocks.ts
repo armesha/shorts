@@ -20,6 +20,7 @@ import {
 } from "../services/gen-queue.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
 import { accountDailyScheduleCap, googleKeyDailyScheduleCap } from "../infra/account-limits.ts";
+import { cleanSuperAdminSourceDecks, isRemovedSuperAdminOpticalDeck } from "../services/super-admin-optical-decks.ts";
 
 const BLOCK_LANGS = [
   { code: "ru", label: "RU" },
@@ -479,27 +480,6 @@ const BLOCK_ALIASES: Record<string, string> = {
   islam: "religion",
   christianity: "religion",
 };
-
-const REMOVED_SUPER_ADMIN_OPTICAL_DECKS = new Set([
-  "illusions-en",
-  "illusions-de",
-  "illusions-it",
-  "illusions-es",
-  "illusions-ru",
-  "illusions-fr",
-  "illusions-pt",
-  "illusions-hi",
-  "illusions-id",
-  "illusions-ar",
-]);
-
-function isRemovedSuperAdminOpticalDeck(deckId: string): boolean {
-  return REMOVED_SUPER_ADMIN_OPTICAL_DECKS.has(deckId);
-}
-
-function cleanSuperAdminSourceDecks(deckIds: string[]): string[] {
-  return unique(deckIds).filter((deckId) => !isRemovedSuperAdminOpticalDeck(deckId));
-}
 
 function canonicalBlockId(blockId: string): string {
   return BLOCK_ALIASES[blockId] ?? blockId;

@@ -198,6 +198,12 @@ function accountTotalRunwayDays(account: ChannelThemeBlockAccount): number | nul
   return postsPerDay > 0 ? account.queued / postsPerDay : null;
 }
 
+function compactDeckList(decks: string[], max = 4): string {
+  const head = decks.slice(0, max);
+  const rest = decks.length - head.length;
+  return rest > 0 ? `${head.join(", ")} +${rest}` : head.join(", ");
+}
+
 export default function ChannelBlocks({ onShowClassic }: Props) {
   const { t } = useT();
   const queue = useGenQueue();
@@ -1315,6 +1321,7 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
   const bottleneck = accountBottleneck(account);
   const totalRunwayDays = accountTotalRunwayDays(account);
   const missingScheduledDeck = bottleneck && bottleneck.postsPerDay > 0 && bottleneck.queued <= 0 ? bottleneck : null;
+  const depletedSources = account.sourceDecks.filter((deck) => deck.available <= 0 && deck.queued > 0);
   const missingTitle = missingScheduledDeck
     ? t("channelBlocks.sourceMissingWarning", {
         deck: deckDisplayName(missingScheduledDeck.deck),
@@ -1322,6 +1329,12 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
         perDay: missingScheduledDeck.postsPerDay,
       })
     : "";
+  const depletedTitle = depletedSources.length
+    ? t("channelBlocks.sourceDepletedWarning", {
+        decks: compactDeckList(depletedSources.map(deckDisplayName)),
+      })
+    : "";
+  const warningTitle = [missingTitle, depletedTitle].filter(Boolean).join("\n");
   const youtubeUrl = account.ytChannelId ? `https://www.youtube.com/channel/${account.ytChannelId}` : null;
   const avatar = account.avatar ? (
     <img src={account.avatar} alt="" className="h-10 w-10 rounded-md border border-base-300 object-cover" loading="lazy" />
@@ -1371,8 +1384,8 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
           <span className="text-[11px] font-semibold uppercase tracking-wide text-base-content/45">{t("channelBlocks.videosLeft")}</span>
           <span className="flex items-center gap-1 text-sm font-bold">
             {account.queued}
-            {missingScheduledDeck && (
-              <span className="pointer-events-auto text-warning" title={missingTitle} aria-label={missingTitle}>
+            {warningTitle && (
+              <span className="pointer-events-auto text-warning" title={warningTitle} aria-label={warningTitle}>
                 <AppIcon name="warning" size={13} />
               </span>
             )}

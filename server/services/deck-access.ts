@@ -9,6 +9,7 @@ import { getPack } from "../../src/packs/store.ts";
 import { libraryStats } from "../../src/anecdotes/library.ts";
 import { packCardKey } from "./pack-gen.ts";
 import { INFINITE_PACKS_FEATURE } from "./infinite-packs.ts";
+import { isRemovedSuperAdminOpticalDeck } from "./super-admin-optical-decks.ts";
 
 type Replyish = { code: (n: number) => { send: (b: unknown) => unknown } };
 const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
@@ -42,11 +43,13 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
   }
 
   function builtinDeckVisibleForUser(userId: number, deck: (typeof DECKS)[number]): boolean {
+    const user = db.getUserById(userId);
+    if (isSuperAdminUser(user) && isRemovedSuperAdminOpticalDeck(deck.id)) return false;
     // Админ видит ВСЁ (вкл. admin-only) по умолчанию, КРОМЕ того, что он скрыл лично у себя
     // (тот же per-user hidden-набор, что и у юзеров — он опционален и легко снимается в матрице
     // Админки). Это только ВИДИМОСТЬ (списки/пикеры): право генерить у админа остаётся (deckAllowed),
     // поэтому уже настроенный автопостинг канала не ломается.
-    if (db.getUserById(userId)?.role === "admin") return !db.isDeckHiddenFor(userId, deck.id);
+    if (user?.role === "admin") return !db.isDeckHiddenFor(userId, deck.id);
     if (deck.adminOnly && deck.longVideo) return isGrantableBuiltinDeck(deck) && db.isLongVideoDeckGrantedFor(userId, deck.id);
     if (deck.adminOnly) return isGrantableBuiltinDeck(deck) && db.isDeckGrantedFor(userId, deck.id);
     return !db.isDeckHiddenFor(userId, deck.id);
@@ -57,6 +60,7 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
     function deckAllowed(req: unknown, deckId: string): boolean {
       // Кастомные паки: доступ по владению/гранту (getPack применяет canAccess), а не по hidden.
       if (isPackDeckId(deckId)) return getPack(deckId.slice(5), uid(req), isSuperAdminReq(req)) !== null;
+      if (isSuperAdminUser(db.getUserById(uid(req))) && isRemovedSuperAdminOpticalDeck(deckId)) return false;
       if (isAdminReq(req)) return true;
       const deck = DECKS.find((d) => d.id === deckId);
       return !!deck && builtinDeckVisibleForUser(uid(req), deck);
@@ -68,6 +72,7 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
       if (isPackDeckId(deckId)) {
         return getPack(deckId.slice(5), userId, isSuperAdminUser(db.getUserById(userId))) !== null;
       }
+      if (isSuperAdminUser(db.getUserById(userId)) && isRemovedSuperAdminOpticalDeck(deckId)) return false;
       const deck = DECKS.find((d) => d.id === deckId);
       return !!deck && builtinDeckVisibleForUser(userId, deck);
   }
@@ -92,11 +97,14 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
   // Built-in decks are counted by DISTINCT item_key so aggregate decks plus legacy split decks do not
   // inflate the same quote/card pool.
   function availableUnusedForDecks(ownerId: number, deckIds: string[]): number {
-    const clean = [...new Set(deckIds.map((deckId) => String(deckId || "").trim()).filter(Boolean))];
+    const ownerIsSuperAdmin = isSuperAdminUser(db.getUserById(ownerId));
+    const clean = [...new Set(deckIds.map((deckId) => String(deckId || "").trim()).filter(Boolean))].filter(
+      (deckId) => !ownerIsSuperAdmin || !isRemovedSuperAdminOpticalDeck(deckId),
+    );
+    if (!clean.length) return 0;
     const builtinIds = clean.filter((deckId) => !isPackDeckId(deckId));
     const packIds = clean.filter((deckId) => isPackDeckId(deckId));
     if (db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) {
-      const ownerIsSuperAdmin = isSuperAdminUser(db.getUserById(ownerId));
       let total = 0;
       if (builtinIds.length) {
         try {
@@ -117,7 +125,6 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
       return total;
     }
     const usedKeys = db.usedAnecdoteKeys(ownerId);
-    const ownerIsSuperAdmin = isSuperAdminUser(db.getUserById(ownerId));
     let total = 0;
     if (builtinIds.length) {
       try {
