@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type { Account, Db, Video } from "../db.ts";
 import type { RouteDeps } from "./deps.ts";
-import { planChannelBlockNormalize, thematicBlockDeckSequenceForGeneration } from "./super-admin-channel-blocks.ts";
+import { planChannelBlockNormalize, normalizeSourceWeightSettings, thematicBlockDeckSequenceForGeneration } from "./super-admin-channel-blocks.ts";
+import { openDb } from "../db.ts";
 
 const FOREIGN_EN_SOURCES = [
   "pack:static-facts-en-superadmin",
@@ -137,4 +138,46 @@ test("block top-up redistributes missing videos away from a depleted source", ()
   assert.equal(plan.jobs[0]?.deckIds.filter((deckId) => deckId === "alpha").length, 1);
   assert.equal(plan.jobs[0]?.deckIds.filter((deckId) => deckId === "beta").length, 3);
   assert.deepEqual(plan.shortages, []);
+});
+
+test("source weight settings are canonicalized and stale groups are pruned", () => {
+  const dbStore = openDb(":memory:");
+  dbStore.setSetting(
+    "superAdmin.channelBlock.quotes.sourceWeights",
+    JSON.stringify({
+      static_facts: 9,
+      fact_video: 1,
+      visual_riddles: 4,
+      mind_flip: 2,
+      jokes: 3,
+      memes: 2,
+    }),
+  );
+  dbStore.setSetting(
+    "superAdmin.channelBlock.jokes_memes.sourceWeights",
+    JSON.stringify({
+      visual_riddles: 1,
+      jokes: 6,
+      memes: 3,
+    }),
+  );
+  dbStore.setSetting(
+    "superAdmin.channelBlock.riddles_illusions.sourceWeights",
+    JSON.stringify({
+      visual_riddles: 1,
+      mind_flip: 2,
+    }),
+  );
+
+  normalizeSourceWeightSettings(dbStore);
+
+  const normalized = JSON.parse(dbStore.getSetting("superAdmin.channelBlock.quotes.sourceWeights") ?? "{}") as Record<string, number>;
+  assert.equal(normalized.static_facts, 9);
+  assert.equal(normalized.jokes, 3);
+  assert.equal(normalized.memes, 2);
+  assert.equal(Object.prototype.hasOwnProperty.call(normalized, "visual_riddles"), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(normalized, "mind_flip"), false);
+  assert.equal(dbStore.getSetting("superAdmin.channelBlock.jokes_memes.sourceWeights"), null);
+  assert.equal(dbStore.getSetting("superAdmin.channelBlock.riddles_illusions.sourceWeights"), null);
+  dbStore.db.close();
 });

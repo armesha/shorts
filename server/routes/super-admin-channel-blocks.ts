@@ -418,6 +418,20 @@ function canonicalBlockId(blockId: string): string {
   return BLOCK_ALIASES[blockId] ?? blockId;
 }
 
+function rawSourceWeightSettingKey(blockId: string): string {
+  return `superAdmin.channelBlock.${blockId}.sourceWeights`;
+}
+
+function sourceWeightSettingKeysForBlock(blockId: string): { canonical: string; aliases: string[] } {
+  const canonical = canonicalBlockId(blockId);
+  return {
+    canonical: rawSourceWeightSettingKey(canonical),
+    aliases: Object.entries(BLOCK_ALIASES)
+      .filter(([, target]) => target === canonical)
+      .map(([alias]) => rawSourceWeightSettingKey(alias)),
+  };
+}
+
 function findBlockDef(blockId: string): BlockDef | null {
   const canonical = canonicalBlockId(blockId);
   return BLOCKS.find((block) => block.id === canonical) ?? null;
@@ -805,7 +819,7 @@ function blockSyncMetrics(accounts: BlockAccountSummary[]) {
   };
 }
 
-const sourceWeightSettingKey = (blockId: string): string => `superAdmin.channelBlock.${canonicalBlockId(blockId)}.sourceWeights`;
+const sourceWeightSettingKey = (blockId: string): string => sourceWeightSettingKeysForBlock(blockId).canonical;
 
 function sanitizeSourceWeights(block: BlockDef, raw: unknown): Record<string, number> {
   const groups = block.sourceGroups ?? [];
@@ -826,6 +840,47 @@ function readSourceWeights(db: Db, block: BlockDef): Record<string, number> {
     return sanitizeSourceWeights(block, JSON.parse(raw));
   } catch {
     return sanitizeSourceWeights(block, {});
+  }
+}
+
+export function normalizeSourceWeightSettings(db: Db): void {
+  for (const block of BLOCKS.filter((candidate) => candidate.sourceGroups?.length)) {
+    const keys = sourceWeightSettingKeysForBlock(block.id);
+    const canonicalRaw = db.getSetting(keys.canonical);
+    let raw: unknown = null;
+    if (canonicalRaw) {
+      try {
+        raw = JSON.parse(canonicalRaw);
+      } catch {
+        raw = {};
+      }
+    }
+    if (raw == null) {
+      for (const key of keys.aliases) {
+        const legacyRaw = db.getSetting(key);
+        if (!legacyRaw) continue;
+        try {
+          raw = JSON.parse(legacyRaw);
+        } catch {
+          raw = {};
+        }
+        break;
+      }
+    }
+
+    const hasAnySetting = canonicalRaw != null || keys.aliases.some((key) => db.getSetting(key) != null);
+    if (hasAnySetting) {
+      const normalized = sanitizeSourceWeights(block, raw ?? {});
+      const serialized = JSON.stringify(normalized);
+      if (serialized !== canonicalRaw) db.setSetting(keys.canonical, serialized);
+    }
+    for (const key of keys.aliases) {
+      try {
+        db.db.prepare("DELETE FROM settings WHERE key = ?").run(key);
+      } catch {
+        /* settings cleanup is best-effort */
+      }
+    }
   }
 }
 
@@ -1279,6 +1334,7 @@ export function thematicBlockDeckSequenceForGeneration(
 function buildPayload(db: Db, deps: RouteDeps) {
   const ownerId = armenId(db);
   if (ownerId == null) return { languages: BLOCK_LANGS, blocks: [], unassignedAccounts: [] };
+  normalizeSourceWeightSettings(db);
   cleanupDrainedAutoExpireDecksForUser(db, ownerId);
   const accounts = db.listAccountsByUser(ownerId);
   const ctx = makeBlockContext(db, accounts);
