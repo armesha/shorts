@@ -147,6 +147,38 @@ if (forbiddenDecks.length) {
       count: Number(row.count) || 0,
     });
   }
+
+  const jobRows = db
+    .prepare(
+      `SELECT gj.id,
+              gj.state,
+              gj.account_id,
+              gj.deck_ids,
+              a.channel_name,
+              a.lang,
+              a.channel_lang
+         FROM generation_jobs gj
+         LEFT JOIN accounts a ON a.id = gj.account_id
+        WHERE gj.state IN ('queued','running')
+          AND (gj.user_id = ? OR gj.owner_user_id = ? OR a.user_id = ?)
+        ORDER BY gj.created_at, gj.id`,
+    )
+    .all(user.id, user.id, user.id);
+  for (const row of jobRows) {
+    for (const deckId of stringValuesDeep(readJson(row.deck_ids, []))) {
+      const group = FORBIDDEN.get(deckId);
+      if (!group) continue;
+      hits.push({
+        accountId: row.account_id,
+        channelName: row.channel_name || `generation job ${row.id}`,
+        channelLang: row.channel_lang || row.lang || "",
+        place: `generation_jobs:${row.state}`,
+        deckId,
+        group,
+        jobId: row.id,
+      });
+    }
+  }
 }
 
 console.log(`armen source audit: user=${USERNAME}; accounts=${accounts.length}; forbiddenHits=${hits.length}`);
