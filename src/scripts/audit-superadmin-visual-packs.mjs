@@ -4,6 +4,7 @@ import { dirname, resolve } from "node:path";
 
 const ROOT = process.cwd();
 const OUT = resolve(ROOT, "temp/superadmin-visual-audit.json");
+const DB_PATH = process.env.DATABASE_PATH || resolve(ROOT, "data/app.db");
 const USERNAME = process.argv.find((arg) => arg.startsWith("--user="))?.slice("--user=".length) || "armen";
 
 function readJson(path, fallback = null) {
@@ -25,6 +26,29 @@ function listFiles(dir, pattern = /.*/) {
   });
 }
 
+function parseJson(value, fallback) {
+  try {
+    return JSON.parse(String(value || ""));
+  } catch {
+    return fallback;
+  }
+}
+
+function stringValuesDeep(value, out = []) {
+  if (typeof value === "string") {
+    out.push(value);
+    return out;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) stringValuesDeep(item, out);
+    return out;
+  }
+  if (value && typeof value === "object") {
+    for (const item of Object.values(value)) stringValuesDeep(item, out);
+  }
+  return out;
+}
+
 function walk(value, visitor) {
   if (!value || typeof value !== "object") return;
   if (Array.isArray(value)) {
@@ -35,25 +59,59 @@ function walk(value, visitor) {
   for (const item of Object.values(value)) walk(item, visitor);
 }
 
+function looksLikeLocalAssetRef(value) {
+  const ref = String(value || "").trim();
+  if (!ref || /^https?:\/\//i.test(ref) || /^data:/i.test(ref)) return false;
+  return /^(assets|local-assets|public|web\/public|data)\//.test(ref) || ref.startsWith("/files/");
+}
+
+function assetPath(ref) {
+  const value = String(ref || "").trim();
+  if (!looksLikeLocalAssetRef(value)) return null;
+  if (value.startsWith("/files/")) return resolve(ROOT, value.slice("/files/".length));
+  if (value.startsWith("public/")) return resolve(ROOT, "web", value);
+  return resolve(ROOT, value.replace(/^\/+/, ""));
+}
+
+function cssUrlRefs(value) {
+  const refs = [];
+  const text = String(value || "");
+  const re = /url\(['"]?([^'")]+)['"]?\)/g;
+  let match;
+  while ((match = re.exec(text))) refs.push(match[1]);
+  return refs;
+}
+
 function hasVisualTemplate(template) {
   let ok = false;
   walk(template, (node) => {
-    const src = String(node.src || node.image || node.imageUrl || node.backgroundImage || node.bg || "");
-    if (node.type === "image" || /^data:image\//.test(src) || /^(assets|data)\//.test(src)) ok = true;
+    const refs = [
+      node.src,
+      node.image,
+      node.imageUrl,
+      node.backgroundImage,
+      node.poster,
+      node.video,
+      node.url,
+      ...cssUrlRefs(node.bg),
+    ].filter(Boolean);
+    if (["image", "video"].includes(String(node.type || ""))) ok = true;
+    if (refs.some((ref) => /^data:(image|video)\//i.test(String(ref)) || looksLikeLocalAssetRef(ref))) ok = true;
   });
   return ok;
 }
 
-function templateAssetRefs(template) {
+function assetRefs(value) {
   const refs = [];
-  walk(template, (node) => {
-    for (const key of ["src", "image", "imageUrl", "backgroundImage"]) {
+  walk(value, (node) => {
+    for (const key of ["src", "image", "imageUrl", "backgroundImage", "poster", "video", "url"]) {
       const value = node[key];
-      if (typeof value === "string" && /^(assets|data)\//.test(value)) refs.push(value);
+      if (typeof value === "string" && looksLikeLocalAssetRef(value)) refs.push(value);
     }
     if (typeof node.bg === "string") {
-      const match = node.bg.match(/url\(['"]?((?:assets|data)\/[^'")]+)['"]?\)/);
-      if (match) refs.push(match[1]);
+      for (const ref of cssUrlRefs(node.bg)) {
+        if (looksLikeLocalAssetRef(ref)) refs.push(ref);
+      }
     }
   });
   return refs;
@@ -69,8 +127,11 @@ function packReport(deckId, accounts) {
   const templates = Array.isArray(pack.templates) ? pack.templates : [];
   const cards = Array.isArray(pack.cards) ? pack.cards : [];
   const imageTemplates = templates.filter(hasVisualTemplate).length;
-  const refs = [...new Set(templates.flatMap(templateAssetRefs))];
-  const missingRefs = refs.filter((ref) => !existsSync(resolve(ROOT, ref)));
+  const refs = [...new Set([...templates, ...cards].flatMap(assetRefs))];
+  const missingRefs = refs.filter((ref) => {
+    const path = assetPath(ref);
+    return path && !existsSync(path);
+  });
   const mgsRefs = (JSON.stringify(pack).match(/mgs|MGS|психология-mgs/g) || []).length;
   const warnings = [];
   if (mgsRefs > 0) warnings.push(`MGS references: ${mgsRefs}`);
@@ -175,6 +236,9 @@ function builtinReport(deckId, accounts) {
   if (["christian-quotes-en", "christian-facts-en"].includes(deckId)) {
     return titledReport(deckId, accounts, deckId, "rendered through quote/religious visual fallback backgrounds");
   }
+  if (/^long-/.test(deckId)) {
+    return visualDirReport(deckId, accounts, deckId, "long-video deck with prepared scenes and local footage", deckId);
+  }
   if (/^quotes-/.test(deckId)) {
     return titledReport(deckId, accounts, deckId === "quotes-de" ? "quotes-de-combined" : deckId, "portrait/artwork when available; generated quote fallback backgrounds otherwise");
   }
@@ -191,21 +255,30 @@ function builtinReport(deckId, accounts) {
   return { deckId, type: "unknown", status: "review", accounts, warnings: ["unclassified deck visual path"] };
 }
 
-const db = new DatabaseSync(resolve(ROOT, "data/app.db"));
+function addDeckUse(deckAccounts, deckId, account, place) {
+  const id = String(deckId || "").trim();
+  if (!id) return;
+  const key = `${account.id}:${place}`;
+  const list = deckAccounts.get(id) || [];
+  if (!list.some((item) => `${item.id}:${item.place}` === key)) {
+    list.push({ id: account.id, name: account.channel_name, place });
+  }
+  deckAccounts.set(id, list);
+}
+
+const db = new DatabaseSync(DB_PATH, { readOnly: true });
 try {
+  db.exec("PRAGMA query_only = ON");
   const user = db.prepare("SELECT id, username FROM users WHERE username=?").get(USERNAME);
   if (!user) throw new Error(`User not found: ${USERNAME}`);
   const rows = db
-    .prepare("SELECT id, channel_name, source_decks FROM accounts WHERE user_id=? ORDER BY id")
+    .prepare("SELECT id, channel_name, source_decks, slot_decks, long_video_decks FROM accounts WHERE user_id=? ORDER BY id")
     .all(user.id);
   const deckAccounts = new Map();
   for (const row of rows) {
-    const sourceDecks = JSON.parse(row.source_decks || "[]");
-    for (const deckId of sourceDecks) {
-      const list = deckAccounts.get(deckId) || [];
-      list.push({ id: row.id, name: row.channel_name });
-      deckAccounts.set(deckId, list);
-    }
+    for (const deckId of parseJson(row.source_decks, [])) addDeckUse(deckAccounts, deckId, row, "source");
+    for (const deckId of stringValuesDeep(parseJson(row.slot_decks, {}))) addDeckUse(deckAccounts, deckId, row, "slot");
+    for (const deckId of parseJson(row.long_video_decks, [])) addDeckUse(deckAccounts, deckId, row, "long");
   }
   const decks = [...deckAccounts.keys()].sort();
   const reports = decks.map((deckId) => (deckId.startsWith("pack:") ? packReport(deckId, deckAccounts.get(deckId)) : builtinReport(deckId, deckAccounts.get(deckId))));
