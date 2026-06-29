@@ -893,6 +893,16 @@ export interface ChannelThemeBlockAccount {
   effectiveRunwayDays?: number | null;
   queuedByDeck: Record<string, number>;
   scheduledByDeck?: Record<string, number>;
+  sourceGaps?: {
+    deckId: string;
+    deckName: string;
+    groupId?: string | null;
+    groupTitle?: string | null;
+    queued: number;
+    available: number;
+    postsPerDay: number;
+    reason: "empty_queue" | "no_free_cards";
+  }[];
   shortAvailable: number;
   rawShortAvailable?: number;
   sourceDecks: ChannelThemeBlockDeck[];

@@ -770,6 +770,26 @@ function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockCo
     availableForDecksForAccount(db, deps, ctx, ownerId, account.id, sourceDecks),
   );
   const scheduledByDeck = Object.fromEntries(scheduledCountsByDeck(account, sourceDecks));
+  const sourceGaps = decks
+    .map((deck) => {
+      const postsPerDay = Number(scheduledByDeck[deck.id] ?? 0);
+      if (postsPerDay <= 0) return null;
+      const queued = Number(queuedByDeck[deck.id] ?? 0);
+      const available = Number(deck.available ?? 0);
+      const reason = queued <= 0 ? "empty_queue" : available <= 0 ? "no_free_cards" : null;
+      if (!reason) return null;
+      return {
+        deckId: deck.id,
+        deckName: deck.groupTitle || deck.name,
+        groupId: deck.groupId,
+        groupTitle: deck.groupTitle,
+        queued,
+        available,
+        postsPerDay,
+        reason,
+      };
+    })
+    .filter(Boolean);
   return {
     id: account.id,
     userId: account.userId,
@@ -788,6 +808,7 @@ function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockCo
     effectiveRunwayDays: queuedCoverage.runwayDays,
     queuedByDeck,
     scheduledByDeck,
+    sourceGaps,
     shortAvailable: availableCoverage.effective,
     rawShortAvailable: availableForDecksForAccount(db, deps, ctx, ownerId, account.id, sourceDecks),
     sourceDecks: decks,

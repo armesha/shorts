@@ -214,6 +214,20 @@ function compactDeckList(decks: string[], max = 4): string {
   return rest > 0 ? `${head.join(", ")} +${rest}` : head.join(", ");
 }
 
+function sourceGapTitle(account: ChannelThemeBlockAccount, t: ReturnType<typeof useT>["t"]): string {
+  const gaps = account.sourceGaps ?? [];
+  if (!gaps.length) return "";
+  const lines = gaps.slice(0, 6).map((gap) => {
+    const reason =
+      gap.reason === "no_free_cards"
+        ? ` · ${t("channelBlocks.sourceGapNoFree")}`
+        : ` · ${t("channelBlocks.sourceGapEmpty")}`;
+    return `${gap.deckName}: ${gap.queued} ${t("channelBlocks.inQueueShort")} · ${gap.postsPerDay} ${t("channelBlocks.perDayShort")}${reason}`;
+  });
+  if (gaps.length > lines.length) lines.push(`+${gaps.length - lines.length}`);
+  return t("channelBlocks.sourceGapWarning", { gaps: lines.join("; ") });
+}
+
 export default function ChannelBlocks({ onShowClassic }: Props) {
   const { t } = useT();
   const queue = useGenQueue();
@@ -1352,6 +1366,7 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
   const bottleneck = accountBottleneck(account);
   const totalRunwayDays = accountTotalRunwayDays(account);
   const readyVideos = account.effectiveQueued ?? account.queued;
+  const gapTitle = sourceGapTitle(account, t);
   const missingScheduledDeck = bottleneck && bottleneck.postsPerDay > 0 && bottleneck.queued <= 0 ? bottleneck : null;
   const depletedSources = account.sourceDecks.filter((deck) => deck.available <= 0 && deck.queued > 0);
   const missingTitle = missingScheduledDeck
@@ -1366,7 +1381,7 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
         decks: compactDeckList(depletedSources.map(deckDisplayName)),
       })
     : "";
-  const warningTitle = [missingTitle, depletedTitle].filter(Boolean).join("\n");
+  const warningTitle = [gapTitle, missingTitle, depletedTitle].filter(Boolean).join("\n");
   const youtubeUrl = account.ytChannelId ? `https://www.youtube.com/channel/${account.ytChannelId}` : null;
   const avatar = account.avatar ? (
     <img src={account.avatar} alt="" className="h-10 w-10 rounded-md border border-base-300 object-cover" loading="lazy" />
