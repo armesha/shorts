@@ -15,6 +15,7 @@ npm run server     # Fastify API on :8080  (needs the Google client-secret file 
 npm run web        # Vite dev server on :5173 (proxies /api → :8080)
 npm run web:build  # build the dashboard into web/dist (served by the API in prod)
 npm run worker:status   # read-only generation worker + SQLite queue status, no restart
+npm run ops:check  # worker status + public smoke + armen checks, no restart
 npm run server:restart  # safe prod restart: stop stale pids, start API + gen worker, check health + worker heartbeat
 npm run deploy:refresh  # web:build + safe prod restart + public smoke check for shareboard.live
 npm run verify:armen  # source/safety/runway/visual consistency checks for armen thematic blocks

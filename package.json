@@ -18,6 +18,7 @@
     "deploy:restart": "npm run web:build && npm run server:restart",
     "smoke:live": "node --experimental-sqlite scripts/smoke-live.mjs",
     "deploy:refresh": "npm run web:build && npm run server:restart && npm run smoke:live",
+    "ops:check": "npm run worker:status && npm run smoke:live && npm run verify:armen",
     "audit:armen:safety": "node --experimental-sqlite --import tsx src/scripts/audit-armen-packs-safety.mjs",
     "audit:armen:sources": "node --experimental-sqlite --import tsx src/scripts/audit-armen-source-decks.mjs",
     "audit:armen:visual": "node --experimental-sqlite --import tsx src/scripts/audit-superadmin-visual-packs.mjs",

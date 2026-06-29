@@ -84,6 +84,9 @@ Repo layout + SOLID monolith-split / cleanup plan: `docs/REORG-PLAN.md`.
   `npm run deploy:restart` (делает `web:build`, безопасно останавливает зависшие shorts-процессы на :8080,
   стартует `shorts.service`, проверяет `/api/health` и ровно один listener). Если пересборка фронта не нужна —
   `npm run server:restart`. Это предпочтительнее ручных `kill`/`setsid`/`npm run server`.
+- **Быстрая проверка без рестарта:** если нужно понять текущее состояние live-сайта, generation worker,
+  очереди и armen-блоков, запускай `npm run ops:check` (worker status + public smoke + armen audits).
+  Она ничего не пересобирает и не перезапускает; после неё решай, нужен ли `server:restart`/`deploy:restart`.
 - **Перезапуск (passwordless sudo):** `sudo systemctl restart shorts.service`
   (пока приложение поднимается, Caddy отдаёт страницу «Обновляемся» — это норм, тоннель не рвётся).
 - **Проверить после рестарта:**
