@@ -135,6 +135,13 @@ export const LANG_TAG: Record<string, string> = {
 export const langTag = (code: string): string => LANG_TAG[code] || (code || "").toUpperCase();
 
 export const REMOVED_SUPER_ADMIN_OPTICAL_DECKS = new Set([
+  "visual-riddles",
+  "visual-riddles-de",
+  "visual-riddles-en",
+  "visual-riddles-it",
+  "visual-riddles-es",
+  "visual-riddles-fr",
+  "visual-riddles-pt",
   "illusions-3d",
   "illusions-3d-de",
   "illusions-3d-en",

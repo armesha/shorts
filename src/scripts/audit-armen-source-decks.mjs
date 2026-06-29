@@ -9,7 +9,7 @@ const USERNAME = process.argv.find((arg) => arg.startsWith("--user="))?.slice("-
 
 const FORBIDDEN_GROUPS = [
   {
-    group: "removed optical illusions",
+    group: "removed optical/visual riddles",
     decks: [...REMOVED_SUPER_ADMIN_OPTICAL_DECKS],
   },
   {

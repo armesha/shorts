@@ -31,6 +31,6 @@ test("accountSourceDecks hides removed optical decks only for the super admin ow
     sourceDecks: ["en", "illusions-en", "visual-riddles-en", "illusions-3d-en"],
   });
 
-  assert.deepEqual(access.accountSourceDecks(armenAccount), ["en", "visual-riddles-en"]);
+  assert.deepEqual(access.accountSourceDecks(armenAccount), ["en"]);
   assert.deepEqual(access.accountSourceDecks(regularAccount), ["en", "illusions-en", "visual-riddles-en", "illusions-3d-en"]);
 });

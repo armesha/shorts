@@ -7,7 +7,6 @@ import { planChannelBlockNormalize, thematicBlockDeckSequenceForGeneration } fro
 const FOREIGN_EN_SOURCES = [
   "pack:static-facts-en-superadmin",
   "fact-en",
-  "visual-riddles-en",
   "tips-en",
   "en",
   "pack:new-memes-en-superadmin",
@@ -80,7 +79,7 @@ test("thematic block generation keeps source mix stable but varies order per cha
 });
 
 test("thematic block generation skips exhausted sources and removed optical packs", () => {
-  const sources = [...FOREIGN_EN_SOURCES, "illusions-en"];
+  const sources = [...FOREIGN_EN_SOURCES, "visual-riddles-en", "illusions-en"];
   const acc = { ...account(303), sourceDecks: sources };
   const sequence = thematicBlockDeckSequenceForGeneration(
     db(),
@@ -97,6 +96,7 @@ test("thematic block generation skips exhausted sources and removed optical pack
   assert.ok(sequence);
   assert.equal(sequence.length, 20);
   assert.ok(!sequence.includes("fact-en"));
+  assert.ok(!sequence.includes("visual-riddles-en"));
   assert.ok(!sequence.includes("illusions-en"));
   assert.ok(sequence.every((deckId) => FOREIGN_EN_SOURCES.includes(deckId)));
 });
