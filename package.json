@@ -10,6 +10,7 @@
     "postinstall": "cd web && npm install --ignore-scripts",
     "server": "node --import tsx --experimental-sqlite server/index.ts",
     "worker:gen": "node --import tsx --experimental-sqlite server/gen-worker.ts",
+    "worker:status": "node --experimental-sqlite scripts/gen-worker-status.mjs",
     "server:dev": "node --import tsx --experimental-sqlite --watch server/index.ts",
     "server:restart": "node --experimental-sqlite scripts/restart-server.mjs",
     "web": "npm --prefix web run dev",
