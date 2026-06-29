@@ -9,10 +9,12 @@ import {
   type PackSummary,
 } from "../lib/api";
 import { useDeck, buildDeckGroups } from "../lib/deck";
+import { FORBIDDEN_SUPER_ADMIN_SOURCE_DECKS } from "../lib/deck";
 import { useAuth } from "../lib/auth";
 import { useGenQueue } from "../lib/genQueue";
 import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
+import { isMainAdmin } from "../lib/authz";
 
 const bgLabel = (f: string) => f.replace(/\.(jpe?g|png)$/i, "");
 const musicLabel = (f: string) => f.split("/").pop()!.replace(/\.\w+$/, "");
@@ -51,6 +53,10 @@ export default function Studio() {
   const [deck, setDeck] = useDeck();
   const [err, setErr] = useState<string | null>(null);
   const { user } = useAuth();
+  const forbiddenSourceIds = isMainAdmin(user) ? FORBIDDEN_SUPER_ADMIN_SOURCE_DECKS : undefined;
+  const sourcePacks = forbiddenSourceIds
+    ? packs.filter((p) => !forbiddenSourceIds.has(`pack:${p.id}`))
+    : packs;
   const roleMax = user?.role === "admin" ? 100 : 50; // потолок «за раз»: админ 100, обычный юзер 50
   const [batchN, setBatchN] = useState(5);
   const q = useGenQueue();
@@ -58,10 +64,10 @@ export default function Studio() {
   // Кастомный пак выбран в дропдауне (deck = "pack:<id>") — параллельный путь превью/сборки.
   const isPack = deck.startsWith("pack:");
   const packId = isPack ? deck.slice(5) : "";
-  const curPack = packs.find((p) => `pack:${p.id}` === deck);
+  const curPack = sourcePacks.find((p) => `pack:${p.id}` === deck);
   const g = gens.find((x) => x.id === deck) ?? gens[0]; // выбранная встроенная дека (остаток/инфо)
   const hasVideoSources = gens.some((x) => x.total > 0 && x.preFact);
-  const hasTextSources = gens.some((x) => x.total > 0 && !x.preFact) || packs.length > 0;
+  const hasTextSources = gens.some((x) => x.total > 0 && !x.preFact) || sourcePacks.length > 0;
   const showPackKind = hasVideoSources && hasTextSources;
   const selectedIsVideo = !isPack && !!g?.preFact;
   const selectedIsLongVideo = !isPack && !!g?.longVideo;
@@ -75,7 +81,7 @@ export default function Studio() {
   const saveAccounts = accounts.filter((a) => accountSources(a).includes(deck));
 
   // Единый пикер: встроенные деки + кастомные паки в одном списке, сгруппированы только по языку.
-  const deckGroups = buildDeckGroups(gens, packs, { requireTotal: true });
+  const deckGroups = buildDeckGroups(gens, sourcePacks, { requireTotal: true, excludeIds: forbiddenSourceIds });
 
   useEffect(() => {
     apiClient.generators().then(setGens).catch(() => {});
@@ -97,6 +103,12 @@ export default function Studio() {
     apiClient.generators().then(setGens).catch(() => {});
     apiClient.packs().then(setPacks).catch(() => {});
   }, [q.completions]);
+
+  useEffect(() => {
+    if (!forbiddenSourceIds?.has(deck)) return;
+    const first = deckGroups[0]?.items[0]?.id;
+    if (first) setDeck(first);
+  }, [deck, deckGroups, forbiddenSourceIds, setDeck]);
 
   // Keep the save-target channel matching the selected pack's language (hard language guard).
   useEffect(() => {

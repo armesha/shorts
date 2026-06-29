@@ -7,7 +7,14 @@ import { useAuth } from "../../lib/auth";
 import { useGenQueue } from "../../lib/genQueue";
 import { useT } from "../../lib/i18n";
 import { AppIcon } from "../../components/AppIcon";
-import { BUILTIN_DECKS, CONTENT_LANGS, DECK_LANG, isForbiddenSuperAdminSourceDeck, type DeckGroup } from "../../lib/deck";
+import {
+  BUILTIN_DECKS,
+  CONTENT_LANGS,
+  DECK_LANG,
+  FORBIDDEN_SUPER_ADMIN_SOURCE_DECKS,
+  isForbiddenSuperAdminSourceDeck,
+  type DeckGroup,
+} from "../../lib/deck";
 import { isMainAdmin } from "../../lib/authz";
 import { cleanDisplayText } from "../../lib/text";
 import { toMin, randomDayTimes, accountDailySlotCap, USER_DAILY_SLOT_CAP } from "./schedule";
@@ -480,6 +487,7 @@ export default function AccountDetail() {
   // Опции дропдаунов контента канала: встроенные паки + группа «Кастомные паки» (свои паки по имени) —
   // тот же набор, что в Студии, чтобы пак можно было назначить каналу и генерить из него.
   const packIds = new Set(packs.map((p) => `pack:${p.id}`));
+  const forbiddenSourceIds = isMainAdmin(user) ? FORBIDDEN_SUPER_ADMIN_SOURCE_DECKS : undefined;
   // язык выбранного контента (встроенный или свой пак) — для тега и проверки совпадения с языком канала
   const contentLang = (id: string): string => srcContentLang(packs, id);
   const curContentLang = contentLang(activeGenerateDeck);
@@ -521,7 +529,16 @@ export default function AccountDetail() {
   // Единый пикер источников: встроенные деки + кастомные паки, сгруппированы только по языку.
   // Группы (данные) считает чистый хелпер sources.ts; здесь только JSX-рендер <optgroup>.
   const deckOptions = (excludeSelected = false) => {
-    const groups: DeckGroup[] = srcDeckGroups(packs, normalGens, visibleLangs, selectedSources, packIds, t, excludeSelected);
+    const groups: DeckGroup[] = srcDeckGroups(
+      packs,
+      normalGens,
+      visibleLangs,
+      selectedSources,
+      packIds,
+      t,
+      excludeSelected,
+      forbiddenSourceIds,
+    );
     return groups.map((grp) => (
       <optgroup key={grp.key} label={grp.title}>
         {grp.items.map((it) => (

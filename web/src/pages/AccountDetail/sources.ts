@@ -79,11 +79,13 @@ export const deckGroups = (
   packIds: Set<string>,
   t: T,
   excludeSelected = false,
+  hiddenIds?: Set<string>,
 ): DeckGroup[] => {
-  const exclude = excludeSelected ? new Set(selectedSources) : undefined;
+  const exclude = new Set<string>(hiddenIds ?? []);
+  if (excludeSelected) for (const source of selectedSources) exclude.add(source);
   const extraPacks = selectedSources
-    .filter((x) => x.startsWith("pack:") && !packIds.has(x))
+    .filter((x) => x.startsWith("pack:") && !packIds.has(x) && !exclude.has(x))
     .map((x) => ({ id: x, label: `${x.slice(5)} ${t("account.noAccess")}`, lang: "" }));
   const builtinGens = visibleLangs.map(({ id, label }) => genById(gens, id) ?? { id, name: label });
-  return buildDeckGroups(builtinGens, packs, { excludeIds: exclude, extraPacks });
+  return buildDeckGroups(builtinGens, packs, { excludeIds: exclude.size ? exclude : undefined, extraPacks });
 };

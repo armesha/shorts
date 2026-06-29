@@ -51,6 +51,7 @@ import {
   type PackMusicUploadInput,
 } from "../services/pack-audio.ts";
 import { INFINITE_PACKS_FEATURE, infiniteCounts } from "../services/infinite-packs.ts";
+import { isForbiddenSuperAdminSourceDeck } from "../services/super-admin-forbidden-source-decks.ts";
 
 const OUTPUT_DIR = loadBaseConfig().outputDir;
 const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
@@ -141,7 +142,11 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const usedKeys = db.usedAnecdoteKeys(userId);
     const infinite = db.hasFeature(userId, INFINITE_PACKS_FEATURE);
     const base = all ? listAllPacks() : listPacks(userId, isSuperAdmin);
-    const visible = includeHidden ? base : base.filter((s) => !db.isDeckHiddenFor(userId, `pack:${s.id}`));
+    const visibleBase = includeHidden ? base : base.filter((s) => !db.isDeckHiddenFor(userId, `pack:${s.id}`));
+    const visible =
+      isSuperAdmin && !includeHidden
+        ? visibleBase.filter((s) => !isForbiddenSuperAdminSourceDeck(`pack:${s.id}`))
+        : visibleBase;
     return visible.map((s) => {
       const pack = getPack(s.id, userId, isSuperAdmin);
       if (!pack) return { ...s, used: 0, available: s.cards };
@@ -324,6 +329,9 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     if (!enforceWindow(reply, userId, isAdmin, "pack-preview", PACK_PREVIEW_LIMIT)) return;
     const p = getPack((req.params as { id: string }).id, uid(req), superAdminReq(req));
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
+    if (superAdminReq(req) && isForbiddenSuperAdminSourceDeck(`pack:${p.id}`)) {
+      return reply.code(403).send({ error: "Этот пак отключён как источник для armen." });
+    }
     const requestedIndex = Math.max(0, Math.floor(Number((req.query as Record<string, string>)?.i) || 0));
     const i = db.hasFeature(userId, INFINITE_PACKS_FEATURE) ? 0 : requestedIndex;
     const card = p.cards[i];
@@ -354,6 +362,9 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     if (!enforceWindow(reply, userId, isAdmin, "pack-video", PACK_VIDEO_LIMIT)) return;
     const p = getPack(id, userId, superAdminReq(req));
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
+    if (superAdminReq(req) && isForbiddenSuperAdminSourceDeck(`pack:${p.id}`)) {
+      return reply.code(403).send({ error: "Этот пак отключён как источник для armen." });
+    }
     const requestedIndex = Math.max(0, Math.floor(Number(i) || 0));
     const idx = db.hasFeature(userId, INFINITE_PACKS_FEATURE) ? 0 : requestedIndex;
     const card = p.cards[idx];

@@ -10,7 +10,7 @@ const deps = {
   isSuperAdminReq: () => false,
 };
 
-test("accountSourceDecks hides removed visual/optical decks only for the super admin owner", () => {
+test("accountSourceDecks hides forbidden source decks only for the super admin owner", () => {
   const db = openDb(":memory:");
   const armen = db.createUser({ username: SUPER_ADMIN_USERNAME, passHash: "x", role: "admin" });
   const user = db.createUser({ username: "regular", passHash: "x", role: "user" });
@@ -21,16 +21,16 @@ test("accountSourceDecks hides removed visual/optical decks only for the super a
     channelName: "armen",
     lang: "en",
     channelLang: "en",
-    sourceDecks: ["en", "illusions-en", "visual-riddles-en", "illusions-3d-en"],
+    sourceDecks: ["en", "illusions-en", "visual-riddles-en", "illusions-3d-en", "memes-en"],
   });
   const regularAccount = db.createAccount({
     userId: user.id,
     channelName: "regular",
     lang: "en",
     channelLang: "en",
-    sourceDecks: ["en", "illusions-en", "visual-riddles-en", "illusions-3d-en"],
+    sourceDecks: ["en", "illusions-en", "visual-riddles-en", "illusions-3d-en", "memes-en"],
   });
 
   assert.deepEqual(access.accountSourceDecks(armenAccount), ["en"]);
-  assert.deepEqual(access.accountSourceDecks(regularAccount), ["en", "illusions-en", "visual-riddles-en", "illusions-3d-en"]);
+  assert.deepEqual(access.accountSourceDecks(regularAccount), ["en", "illusions-en", "visual-riddles-en", "illusions-3d-en", "memes-en"]);
 });
