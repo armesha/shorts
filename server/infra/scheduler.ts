@@ -8,6 +8,8 @@ import { uploadShort, ytErrorReason, isYtAuthError, type ClientCreds } from "../
 import type { Notifier } from "../services/notify-stream.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
 import { isRemovedSuperAdminOpticalDeck } from "../services/super-admin-optical-decks.ts";
+import { cleanupDrainedAutoExpireDecksForAccount } from "../services/auto-expire-packs.ts";
+import { markPackLibraryVideoUsed } from "../services/pack-gen.ts";
 import { googleKeyDailyScheduleCap } from "./account-limits.ts";
 import { isSuperAdminUser } from "../auth.ts";
 import * as metrics from "./metrics.ts";
@@ -174,8 +176,13 @@ export function startScheduler(opts: SchedulerOpts) {
             opts.log(`[sched] account ${acc.id} uploaded ${videoId} — recycled (бесконечный пак)`);
           } else {
             // posted once → remove from the library so it never reposts
+            if (acc.userId != null && isPackDeckId(lib.deck))
+              markPackLibraryVideoUsed(opts.db, acc.userId, acc.id, lib.deck, lib, isSuperAdminUser(opts.db.getUserById(acc.userId)));
             removeVideoFiles(opts.outputDir, lib);
             opts.db.deleteVideo(lib.id);
+            const expired = cleanupDrainedAutoExpireDecksForAccount(opts.db, acc);
+            if (expired.removedDecks.length)
+              opts.log(`[sched] account ${acc.id}: removed drained auto-expire sources ${expired.removedDecks.join(", ")}`);
             opts.log(`[sched] account ${acc.id} uploaded ${videoId} — removed from library`);
           }
         } else {

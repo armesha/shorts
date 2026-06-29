@@ -11,7 +11,7 @@ import {
   pickFixedPackCard,
   pickLeastPostedPackCard,
   pickUnusedPackCard,
-  usedPackCardKeysForAccount,
+  usedPackCardKeysForAccountIncludingLibrary,
 } from "./pack-gen.ts";
 import { removeAutoExpiredDeckFromAccount } from "./auto-expire-packs.ts";
 import { buildFactLibraryVideo } from "./fact-gen.ts";
@@ -46,7 +46,14 @@ export function makeGenQueueWorker(
         let attempts = 0;
         for (;;) {
           const perAccountAutoExpire = isPerAccountAutoExpirePack(pack);
-          const packSeen = perAccountAutoExpire ? usedPackCardKeysForAccount(pack, job.accountId, seen) : seen;
+          const packSeen = perAccountAutoExpire
+            ? usedPackCardKeysForAccountIncludingLibrary(
+                pack,
+                job.accountId,
+                seen,
+                db.listVideos(job.accountId).filter((video) => video.deck === sourceDeck),
+              )
+            : seen;
           const canUseInfinite = infinite && !perAccountAutoExpire;
           const picked = isLeastPostedRepeatPack(pack)
             ? pickLeastPostedPackCard(db, job.accountId, pack, pickSeed(sourceDeck, attempts++))

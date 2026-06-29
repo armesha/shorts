@@ -2,9 +2,9 @@
 // Тот же мост рендера (renderTemplateCard) + assembleStillVideo, что и в Студии (packs-routes),
 // но карточка выбирается СЛУЧАЙНО среди НЕиспользованных этим юзером (как randomAnecdote у дек).
 // «Использованность» — общий per-user механизм db (markAnecdoteUsed/usedAnecdoteKeys) по ключу карточки.
-import type { Db } from "../db.ts";
+import type { Db, Video } from "../db.ts";
 import { loadBaseConfig } from "../config.ts";
-import { deriveRules, type Pack, type CardValues } from "../../src/packs/store.ts";
+import { deriveRules, getPack, type Pack, type CardValues } from "../../src/packs/store.ts";
 import { renderTemplateCard, type TemplateDoc } from "../../src/template/render.ts";
 import { resolveAudio, type AudioDeckHint } from "../../src/video.ts";
 import { buildStillVideoFiles, cardReadable } from "../infra/media.ts";
@@ -121,14 +121,65 @@ export function usedPackCardKeysForAccount(pack: Pack, accountId: number, usedKe
   return out;
 }
 
-export function availablePackCardsForAccount(pack: Pack, accountId: number, usedKeys: ReadonlySet<string>): number {
+export function packCardKeysFromLibraryVideos(pack: Pack, videos: Pick<Video, "bg" | "title" | "text">[]): Set<string> {
+  return new Set(videos.map((video) => packCardKeyFromLibraryVideo(pack, video)).filter((key): key is string => !!key));
+}
+
+export function packCardKeyFromLibraryVideo(pack: Pack, video: Pick<Video, "bg" | "title" | "text">): string | null {
+  const bg = String(video.bg || "");
+  if (bg.startsWith("repeat-pack:")) return bg.slice("repeat-pack:".length);
+  const rules = deriveRules(pack.templates[0]);
+  const needle = `${video.title}\n${video.text}`;
+  for (const card of pack.cards) {
+    const readable = cardReadable(card.values, rules);
+    if (`${readable.title}\n${readable.text}` === needle) return packCardKey(card.values);
+  }
+  return null;
+}
+
+export function usedPackCardKeysForAccountIncludingLibrary(
+  pack: Pack,
+  accountId: number,
+  usedKeys: ReadonlySet<string>,
+  videos: Pick<Video, "bg" | "title" | "text">[],
+): Set<string> {
+  const out = usedPackCardKeysForAccount(pack, accountId, usedKeys);
+  for (const key of packCardKeysFromLibraryVideos(pack, videos)) out.add(key);
+  return out;
+}
+
+export function availablePackCardsForAccount(
+  pack: Pack,
+  accountId: number,
+  usedKeys: ReadonlySet<string>,
+  videos: Pick<Video, "bg" | "title" | "text">[] = [],
+): number {
   if (!pack.cards.length) return 0;
-  const used = usedPackCardKeysForAccount(pack, accountId, usedKeys);
+  const used = videos.length
+    ? usedPackCardKeysForAccountIncludingLibrary(pack, accountId, usedKeys, videos)
+    : usedPackCardKeysForAccount(pack, accountId, usedKeys);
   let n = 0;
   for (const card of pack.cards) {
     if (!used.has(packCardKey(card.values))) n += 1;
   }
   return n;
+}
+
+export function markPackLibraryVideoUsed(
+  db: Db,
+  ownerId: number,
+  accountId: number,
+  deckId: string,
+  video: Pick<Video, "bg" | "title" | "text">,
+  isSuperAdmin = false,
+): boolean {
+  if (!deckId.startsWith("pack:")) return false;
+  const pack = getPack(deckId.slice("pack:".length), ownerId, isSuperAdmin);
+  if (!pack) return false;
+  const key = packCardKeyFromLibraryVideo(pack, video);
+  if (!key) return false;
+  db.markAnecdoteUsed(ownerId, isPerAccountAutoExpirePack(pack) ? packCardClaimKey(pack, accountId, key) : key);
+  return true;
 }
 
 /**

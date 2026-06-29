@@ -17,10 +17,11 @@ import {
   isLeastPostedRepeatPack,
   isPerAccountAutoExpirePack,
   packCardClaimKey,
-  usedPackCardKeysForAccount,
+  usedPackCardKeysForAccountIncludingLibrary,
+  markPackLibraryVideoUsed,
   buildPackLibraryVideo,
 } from "../services/pack-gen.ts";
-import { removeAutoExpiredDeckFromAccount } from "../services/auto-expire-packs.ts";
+import { cleanupDrainedAutoExpireDecksForAccount, removeAutoExpiredDeckFromAccount } from "../services/auto-expire-packs.ts";
 import { buildFactLibraryVideo } from "../services/fact-gen.ts";
 import { addLongVideoToLibrary, LongVideoLibraryError } from "../services/long-video-library.ts";
 import { uploadShort, isYtAuthError, ytErrorReason } from "../services/youtube.ts";
@@ -200,7 +201,14 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
         if (!pack.templates.length) return reply.code(400).send({ error: "У пака нет шаблона." });
         while (created.length < requested) {
           const perAccountAutoExpire = isPerAccountAutoExpirePack(pack);
-          const packSeen = perAccountAutoExpire ? usedPackCardKeysForAccount(pack, accountId, seen) : seen;
+          const packSeen = perAccountAutoExpire
+            ? usedPackCardKeysForAccountIncludingLibrary(
+                pack,
+                accountId,
+                seen,
+                db.listVideos(accountId).filter((video) => video.deck === sourceDeckId),
+              )
+            : seen;
           const canUseInfinite = infinite && !perAccountAutoExpire;
           const picked = isLeastPostedRepeatPack(pack)
             ? pickLeastPostedPackCard(db, accountId, pack, pickSeed(sourceDeckId))
@@ -273,8 +281,12 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
   app.delete("/api/videos/:id", async (req, reply) => {
     const v = db.getVideo(Number((req.params as { id: string }).id));
     if (!v) return reply.code(404).send({ error: "not found" });
-    if (!accessibleAccount(req, reply, v.accountId)) return;
+    const acc = accessibleAccount(req, reply, v.accountId);
+    if (!acc) return;
+    const ownerId = accountOwnerId(req, acc);
+    if (isPackDeckId(v.deck)) markPackLibraryVideoUsed(db, ownerId, acc.id, v.deck, v, isAdminReq(req));
     db.deleteVideo(v.id);
+    cleanupDrainedAutoExpireDecksForAccount(db, acc);
     return { ok: true };
   });
 
@@ -336,6 +348,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
       if (youtubeId) {
         db.clearAuthError(v.accountId); // token works → drop any stale "needs reconnect" flag
         // posted once → remove from the library (files + row) so it never reposts
+        if (isPackDeckId(v.deck)) markPackLibraryVideoUsed(db, accountOwnerId(req, acc), acc.id, v.deck, v, isAdminReq(req));
         for (const rel of [v.videoRel, v.imageRel]) {
           if (rel) {
             try {
@@ -346,6 +359,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
           }
         }
         db.deleteVideo(v.id);
+        cleanupDrainedAutoExpireDecksForAccount(db, acc);
       } else {
         db.releaseVideoPost(v.id); // YouTube returned no id → un-claim so it can be retried later
       }

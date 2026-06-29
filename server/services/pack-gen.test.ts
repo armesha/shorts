@@ -18,7 +18,13 @@ function demoPack(): Pack {
     createdBy: 1,
     name: "Demo",
     lang: "en",
-    templates: [{ canvas: { w: 1080, h: 1920, bg: "#fff" }, elements: [] }],
+    templates: [{
+      canvas: { w: 1080, h: 1920, bg: "#fff" },
+      elements: [
+        { type: "killbox", role: "title" },
+        { type: "killbox", role: "body" },
+      ],
+    }],
     cards: Array.from({ length: 24 }, (_, index) => ({
       values: { title: `Card ${index}`, body: `Body ${index}` },
       addedAt: new Date(0).toISOString(),
@@ -99,4 +105,22 @@ test("per-account auto-expire packs scope used cards by channel", () => {
   assert.deepEqual(usedPackCardKeysForAccount(pack, 20, used), new Set([secondKey]));
   assert.equal(availablePackCardsForAccount(pack, 10, used), pack.cards.length - 2);
   assert.equal(availablePackCardsForAccount(pack, 20, used), pack.cards.length - 1);
+});
+
+test("per-account auto-expire availability treats existing library videos as used cards", () => {
+  const pack = { ...demoPack(), autoExpireMode: "per_account" as const };
+  const firstKey = packCardKey(pack.cards[0].values);
+  const secondKey = packCardKey(pack.cards[1].values);
+  const thirdKey = packCardKey(pack.cards[2].values);
+  const used = new Set([packCardClaimKey(pack, 10, firstKey)]);
+
+  assert.equal(
+    availablePackCardsForAccount(pack, 10, used, [
+      { bg: "", title: "Card 1", text: "Card 1\n\nBody 1" },
+      { bg: `repeat-pack:${thirdKey}`, title: "legacy", text: "legacy" },
+    ]),
+    pack.cards.length - 3,
+  );
+  assert.equal(availablePackCardsForAccount(pack, 20, used, [{ bg: "", title: "Card 1", text: "Card 1\n\nBody 1" }]), pack.cards.length - 1);
+  assert.equal(secondKey, packCardKey(pack.cards[1].values));
 });

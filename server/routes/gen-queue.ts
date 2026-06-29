@@ -102,7 +102,12 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
           if (!pack) continue;
           free += Math.max(
             0,
-            availablePackCardsForAccount(pack, body.accountId, usedKeys) - genQueuedRemainingForAccountDecks(body.accountId, [deckId]),
+            availablePackCardsForAccount(
+              pack,
+              body.accountId,
+              usedKeys,
+              db.listVideos(body.accountId).filter((video) => video.deck === deckId),
+            ) - genQueuedRemainingForAccountDecks(body.accountId, [deckId]),
           );
         }
       }

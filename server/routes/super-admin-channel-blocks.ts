@@ -12,7 +12,7 @@ import {
   isPerAccountAutoExpirePack,
   packCardKey,
 } from "../services/pack-gen.ts";
-import { isAutoExpiredSourceGroup } from "../services/auto-expire-packs.ts";
+import { cleanupDrainedAutoExpireDecksForUser, isAutoExpiredSourceGroup } from "../services/auto-expire-packs.ts";
 import {
   enqueue as genEnqueue,
   listStatuses as genListStatuses,
@@ -626,7 +626,12 @@ function availableForDeckForAccount(
     if (cached != null) return cached;
     const usedAnecdoteKeys = (db as unknown as { usedAnecdoteKeys?: (userId: number) => ReadonlySet<string> }).usedAnecdoteKeys;
     const usedKeys = typeof usedAnecdoteKeys === "function" ? usedAnecdoteKeys.call(db, ownerId) : new Set<string>();
-    const total = availablePackCardsForAccount(pack, accountId, usedKeys);
+    const total = availablePackCardsForAccount(
+      pack,
+      accountId,
+      usedKeys,
+      db.listVideos(accountId).filter((video) => video.deck === deckId),
+    );
     ctx?.availableCache.set(key, total);
     return total;
   }
@@ -1296,6 +1301,7 @@ export function thematicBlockDeckSequenceForGeneration(
 function buildPayload(db: Db, deps: RouteDeps) {
   const ownerId = armenId(db);
   if (ownerId == null) return { languages: BLOCK_LANGS, blocks: [], unassignedAccounts: [] };
+  cleanupDrainedAutoExpireDecksForUser(db, ownerId);
   const accounts = db.listAccountsByUser(ownerId);
   const ctx = makeBlockContext(db, accounts);
   const byId = new Map(accounts.map((account) => [account.id, account]));

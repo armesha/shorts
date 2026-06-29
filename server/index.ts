@@ -30,6 +30,7 @@ import { youtubeAnalyticsRange, summarizeStoredAnalytics } from "./services/anal
 import { ytErrorMessage } from "./services/youtube-errors.ts";
 import { syncContentLibraryIndex } from "./services/content-library-index.ts";
 import { makeRouteDeps } from "./routes/deps.ts";
+import { markPackLibraryVideoUsed } from "./services/pack-gen.ts";
 
 // ---- Route modules ----
 import { registerPasswordRoutes } from "./routes/password-routes.ts";
@@ -121,7 +122,11 @@ if (firstAdmin) {
 // Self-heal used-anecdote marks PER OWNER (every saved library video is a used anecdote).
 for (const acc of db.listAccounts()) {
   if (acc.userId == null) continue;
-  for (const v of db.listVideos(acc.id)) db.markAnecdoteUsed(acc.userId, anecdoteKey(v.text));
+  const ownerIsSuperAdmin = isSuperAdminUser(db.getUserById(acc.userId));
+  for (const v of db.listVideos(acc.id)) {
+    if (isPackDeckId(v.deck) && markPackLibraryVideoUsed(db, acc.userId, acc.id, v.deck, v, ownerIsSuperAdmin)) continue;
+    db.markAnecdoteUsed(acc.userId, anecdoteKey(v.text));
+  }
 }
 
 // Backfill channel language for existing channels (new channel_lang column): built-in deck → its
