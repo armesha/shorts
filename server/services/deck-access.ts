@@ -83,12 +83,14 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
   }
 
   function accountSourceDecks(account: Account): string[] {
+    const ownerIsSuperAdmin = isSuperAdminUser(account.userId != null ? db.getUserById(account.userId) : null);
     const ids = account.sourceDecks?.length ? account.sourceDecks : [account.lang];
     return [
       ...new Set(
         ids
           .map((x) => String(x || "").trim())
-          .filter((deckId) => deckId && !DECKS.find((deck) => deck.id === deckId)?.longVideo),
+          .filter((deckId) => deckId && !DECKS.find((deck) => deck.id === deckId)?.longVideo)
+          .filter((deckId) => !ownerIsSuperAdmin || !isRemovedSuperAdminOpticalDeck(deckId)),
       ),
     ];
   }

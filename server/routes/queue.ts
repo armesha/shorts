@@ -1,5 +1,8 @@
 import type { FastifyInstance } from "fastify";
 
+import { DECKS, isPackDeckId, MANUAL_VIDEO_DECK } from "../../src/anecdotes/decks.ts";
+import { getPack } from "../../src/packs/store.ts";
+import { isSuperAdminUser } from "../auth.ts";
 import type { Account, Db } from "../db.ts";
 import { uid } from "../infra/auth-session.ts";
 import { listStatuses as listGenStatuses } from "../services/gen-queue.ts";
@@ -9,6 +12,17 @@ import type { RouteDeps } from "./deps.ts";
 type QueueQuery = { scope?: string };
 const genQueueRunnerMode = (): "embedded" | "external" =>
   process.env.GEN_QUEUE_RUNNER === "0" || process.env.GEN_QUEUE_RUNNER === "external" ? "external" : "embedded";
+
+function deckName(db: Db, ownerId: number | null | undefined, deckId: string | null | undefined): string | null {
+  const id = String(deckId || "").trim();
+  if (!id) return null;
+  if (id === MANUAL_VIDEO_DECK) return "Manual videos";
+  if (isPackDeckId(id)) {
+    const owner = ownerId ? db.getUserById(ownerId) : null;
+    return getPack(id.slice(5), ownerId ?? 0, isSuperAdminUser(owner))?.name ?? id;
+  }
+  return DECKS.find((deck) => deck.id === id)?.name ?? id;
+}
 
 function deckCounts(db: Db, account: Account): Record<string, number> {
   const counts: Record<string, number> = {};
@@ -35,7 +49,7 @@ function runwayDays(_byDeck: Record<string, number>, _scheduledByDeck: Record<st
   return queued / postsPerDay;
 }
 
-function nextSlots(accounts: Account[], deps: RouteDeps, limit = 40) {
+function nextSlots(db: Db, accounts: Account[], deps: RouteDeps, limit = 40) {
   const now = new Date();
   const horizonMs = 48 * 60 * 60 * 1000;
   const slots: {
@@ -44,6 +58,7 @@ function nextSlots(accounts: Account[], deps: RouteDeps, limit = 40) {
     time: string;
     at: string;
     deck: string | null;
+    deckName: string | null;
   }[] = [];
 
   for (const account of accounts) {
@@ -57,12 +72,14 @@ function nextSlots(accounts: Account[], deps: RouteDeps, limit = 40) {
         at.setHours(hh, mm, 0, 0);
         const delta = at.getTime() - now.getTime();
         if (delta <= 0 || delta > horizonMs) continue;
+        const deck = account.slotDecks?.[time] ?? sources[0] ?? account.lang ?? null;
         slots.push({
           accountId: account.id,
           channelName: account.channelName,
           time,
           at: at.toISOString(),
-          deck: account.slotDecks?.[time] ?? sources[0] ?? account.lang ?? null,
+          deck,
+          deckName: deckName(db, account.userId, deck),
         });
       }
     }
@@ -96,6 +113,13 @@ export function registerQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDep
 
     const channelQueues = accounts.map((account) => {
       const byDeck = deckCounts(db, account);
+      const deckIds = [
+        ...new Set([
+          ...Object.keys(byDeck),
+          ...deps.deckAccess.accountSourceDecks(account),
+          ...Object.keys(scheduledCountsByDeck(account, deps)),
+        ]),
+      ];
       const queued = Object.values(byDeck).reduce((sum, n) => sum + n, 0);
       const postsPerDay = account.schedule?.length ?? 0;
       const scheduledByDeck = scheduledCountsByDeck(account, deps);
@@ -108,6 +132,7 @@ export function registerQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDep
         schedule: account.schedule ?? [],
         sourceDecks: deps.deckAccess.accountSourceDecks(account),
         byDeck,
+        deckNames: Object.fromEntries(deckIds.map((deckId) => [deckId, deckName(db, account.userId, deckId) ?? deckId])),
         scheduledByDeck,
         queued,
         postsPerDay,
@@ -119,7 +144,7 @@ export function registerQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       worker: publicGenWorkerStatus(db, { mode: genQueueRunnerMode() }),
       generationJobs,
       channelQueues,
-      upcomingSlots: nextSlots(accounts, deps),
+      upcomingSlots: nextSlots(db, accounts, deps),
     };
   });
 }

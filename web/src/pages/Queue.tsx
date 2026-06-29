@@ -199,7 +199,9 @@ export default function QueuePage() {
               >
                 <div>
                   <div className="font-semibold">{slot.channelName}</div>
-                  <div className="text-xs text-base-content/55">{slot.deck || t("queue.channelSources")}</div>
+                  <div className="text-xs text-base-content/55" title={slot.deck || undefined}>
+                    {slot.deckName || slot.deck || t("queue.channelSources")}
+                  </div>
                 </div>
                 <div className="text-right text-sm font-bold">{formatAt(slot.at)}</div>
               </Link>
@@ -241,11 +243,17 @@ export default function QueuePage() {
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap gap-1">
-                {Object.entries(channel.byDeck).slice(0, 5).map(([deck, count]) => (
-                  <span key={deck} className="badge badge-ghost max-w-full overflow-hidden text-ellipsis whitespace-nowrap" title={`${deck}: ${count}`}>
-                    {deck}: {count}
-                  </span>
-                ))}
+                {Object.entries(channel.byDeck)
+                  .slice(0, 5)
+                  .map(([deck, count]) => {
+                    const label = channel.deckNames?.[deck] ?? deck;
+                    const title = label === deck ? `${deck}: ${count}` : `${label}: ${count} (${deck})`;
+                    return (
+                      <span key={deck} className="badge badge-ghost max-w-full overflow-hidden text-ellipsis whitespace-nowrap" title={title}>
+                        {label}: {count}
+                      </span>
+                    );
+                  })}
                 {!Object.keys(channel.byDeck).length && <span className="badge badge-ghost">{t("queue.emptyLibrary")}</span>}
               </div>
             </Link>

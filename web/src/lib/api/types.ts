@@ -1016,6 +1016,7 @@ export interface QueueChannel {
   schedule: string[];
   sourceDecks: string[];
   byDeck: Record<string, number>;
+  deckNames?: Record<string, string>;
   scheduledByDeck?: Record<string, number>;
   queued: number;
   postsPerDay: number;
@@ -1028,6 +1029,7 @@ export interface QueueSlot {
   time: string;
   at: string;
   deck: string | null;
+  deckName?: string | null;
 }
 
 export interface QueueOverview {

@@ -7,6 +7,7 @@ import { ytMeta } from "../../src/anecdotes/yt-meta.ts";
 import { uploadShort, ytErrorReason, isYtAuthError, type ClientCreds } from "../services/youtube.ts";
 import type { Notifier } from "../services/notify-stream.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
+import { isRemovedSuperAdminOpticalDeck } from "../services/super-admin-optical-decks.ts";
 import { googleKeyDailyScheduleCap } from "./account-limits.ts";
 import { isSuperAdminUser } from "../auth.ts";
 import * as metrics from "./metrics.ts";
@@ -85,7 +86,12 @@ export function startScheduler(opts: SchedulerOpts) {
       try {
         opts.log(`[sched] account ${acc.id} (${acc.channelName}) firing at ${hhmm}`);
 
-        const sources = uniqueDecks((acc.sourceDecks?.length ? acc.sourceDecks : [acc.lang]).filter(isSchedulerSourceDeck));
+        const ownerIsSuperAdmin = isSuperAdminUser(acc.userId != null ? opts.db.getUserById(acc.userId) : null);
+        const sources = uniqueDecks(
+          (acc.sourceDecks?.length ? acc.sourceDecks : [acc.lang])
+            .filter(isSchedulerSourceDeck)
+            .filter((deckId) => !ownerIsSuperAdmin || !isRemovedSuperAdminOpticalDeck(deckId)),
+        );
         const slotDeck = acc.slotDecks?.[hhmm];
         const allowedDecks =
           slotDeck === MANUAL_VIDEO_DECK
