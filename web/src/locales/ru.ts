@@ -419,6 +419,8 @@ export const ru: Record<string, string> = {
   "accounts.sourceAvailableUnknown": "ост. ?",
   "accounts.sourceDays": "~{n} дн.",
   "accounts.sourceQueued": "готово {n}",
+  "accounts.sourceWarnEmpty": "{deck}: сейчас 0 готовых роликов при {perDay}/день. Если слот сработает до добивки, публикация возьмёт другой доступный пак.",
+  "accounts.sourceWarnNoFree": "{deck}: свободные карточки закончились. Готовые ролики продолжат выкладываться, новая добивка уйдёт в другие доступные паки.",
   "accounts.sourcesTitle": "Паки канала",
   "accounts.subtitle": "Обзор и YouTube-каналы — в одном месте",
   "accounts.title": "Каналы",

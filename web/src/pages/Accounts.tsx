@@ -22,6 +22,7 @@ type AccountSourceStat = {
   queued: number;
   postsPerDay: number;
   runwayDays: number | null;
+  warning: "empty_queue" | "no_free_cards" | null;
 };
 type AccountsCache = {
   accounts: Account[];
@@ -215,15 +216,23 @@ function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
       const item = catalogById.get(id);
       const postsPerDay = account.enabled ? scheduled[id] ?? 0 : 0;
       const sourceQueued = queued?.[id] ?? 0;
+      const available = item?.available ?? null;
+      const warning =
+        postsPerDay > 0 && sourceQueued <= 0
+          ? "empty_queue"
+          : postsPerDay > 0 && available != null && available <= 0
+            ? "no_free_cards"
+            : null;
       return {
         id,
         title: item?.title ?? id.replace(/^pack:/, ""),
         lang: item?.lang ?? account.channelLang ?? account.lang,
-        available: item?.available ?? null,
+        available,
         total: item?.total ?? null,
         queued: sourceQueued,
         postsPerDay,
         runwayDays: queued && postsPerDay > 0 ? sourceQueued / postsPerDay : null,
+        warning,
       };
     });
   };
@@ -584,10 +593,21 @@ function SourceInfo({ sources }: { sources: AccountSourceStat[] }) {
       <div className="flex flex-wrap gap-1.5">
         {sources.map((source) => {
           const days = source.runwayDays == null ? null : Math.ceil(source.runwayDays);
+          const warningTitle =
+            source.warning === "empty_queue"
+              ? t("accounts.sourceWarnEmpty", { deck: source.title, perDay: source.postsPerDay })
+              : source.warning === "no_free_cards"
+                ? t("accounts.sourceWarnNoFree", { deck: source.title })
+                : "";
           return (
-            <span key={source.id} className="badge badge-outline badge-sm max-w-full gap-1 py-3" title={source.title}>
+            <span key={source.id} className="badge badge-outline badge-sm max-w-full gap-1 py-3" title={warningTitle || source.title}>
               {source.lang && <span className="badge badge-ghost badge-xs">{langTag(source.lang)}</span>}
               <span className="max-w-36 truncate">{source.title}</span>
+              {warningTitle && (
+                <span className="text-warning" aria-label={warningTitle}>
+                  <AppIcon name="warning" size={12} />
+                </span>
+              )}
               <span className="opacity-60">
                 · {t("accounts.sourceQueued", { n: source.queued })} ·{" "}
                 {source.available == null

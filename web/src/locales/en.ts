@@ -415,6 +415,8 @@ export const en: Record<string, string> = {
   "accounts.sourceAvailableUnknown": "left ?",
   "accounts.sourceDays": "~{n} d",
   "accounts.sourceQueued": "ready {n}",
+  "accounts.sourceWarnEmpty": "{deck}: 0 ready videos at {perDay}/day. If this slot fires before top-up, publishing will use another available pack.",
+  "accounts.sourceWarnNoFree": "{deck}: no fresh cards left. Ready videos will keep publishing; new top-up will shift to other available packs.",
   "accounts.sourcesTitle": "Channel packs",
   "accounts.subtitle": "Overview and YouTube channels — all in one place",
   "accounts.title": "Channels",
