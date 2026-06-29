@@ -38,7 +38,7 @@ function scheduledCountsByDeck(account: Account, sourceDecks: string[]): Map<str
 
   for (const [index, time] of (account.schedule ?? []).entries()) {
     const explicit = account.slotDecks?.[time];
-    const deckId = explicit || sources[index % Math.max(1, sources.length)] || account.lang;
+    const deckId = explicit && sources.includes(explicit) ? explicit : sources[index % Math.max(1, sources.length)] || account.lang;
     if (!deckId) continue;
     counts.set(deckId, (counts.get(deckId) ?? 0) + 1);
   }
@@ -51,7 +51,6 @@ export function registerAccountReadinessRoutes(app: FastifyInstance, db: Db, dep
     const account = deps.accessibleAccount(req, reply, id);
     if (!account) return;
 
-    const videos = db.listVideos(account.id);
     const sourceDecks = deps.deckAccess.accountSourceDecks(account);
     const ownerId = deps.accountOwnerId(req, account);
     const readinessLimits = getReadinessLimits(db);
@@ -60,7 +59,6 @@ export function registerAccountReadinessRoutes(app: FastifyInstance, db: Db, dep
     const scheduledByDeck = scheduledCountsByDeck(account, sourceDecks);
     const deckIds = unique([
       ...sourceDecks,
-      ...Object.values(account.slotDecks ?? {}),
       ...Array.from(scheduledByDeck.keys()),
     ].filter(Boolean));
     const queuedVideos = deckIds.reduce((sum, deckId) => sum + (queuedByDeck.get(deckId) ?? 0), 0);

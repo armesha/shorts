@@ -35,7 +35,7 @@ function scheduledCountsByDeck(account: Account, deps: RouteDeps): Record<string
   const counts: Record<string, number> = Object.fromEntries(sources.map((deckId) => [deckId, 0]));
   for (const [index, time] of (account.schedule ?? []).entries()) {
     const explicit = account.slotDecks?.[time];
-    const deckId = explicit || sources[index % Math.max(1, sources.length)] || account.lang;
+    const deckId = explicit && sources.includes(explicit) ? explicit : sources[index % Math.max(1, sources.length)] || account.lang;
     if (deckId) counts[deckId] = (counts[deckId] ?? 0) + 1;
   }
   return counts;
@@ -72,7 +72,8 @@ function nextSlots(db: Db, accounts: Account[], deps: RouteDeps, limit = 40) {
         at.setHours(hh, mm, 0, 0);
         const delta = at.getTime() - now.getTime();
         if (delta <= 0 || delta > horizonMs) continue;
-        const deck = account.slotDecks?.[time] ?? sources[0] ?? account.lang ?? null;
+        const explicit = account.slotDecks?.[time];
+        const deck = explicit && sources.includes(explicit) ? explicit : sources[0] ?? account.lang ?? null;
         slots.push({
           accountId: account.id,
           channelName: account.channelName,
@@ -120,7 +121,11 @@ export function registerQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDep
           ...Object.keys(scheduledCountsByDeck(account, deps)),
         ]),
       ];
-      const queued = Object.values(byDeck).reduce((sum, n) => sum + n, 0);
+      const sourceDecks = deps.deckAccess.accountSourceDecks(account);
+      const sourceSet = new Set(sourceDecks);
+      const queued = sourceDecks.length
+        ? Object.entries(byDeck).reduce((sum, [deckId, n]) => (sourceSet.has(deckId) ? sum + n : sum), 0)
+        : Object.values(byDeck).reduce((sum, n) => sum + n, 0);
       const postsPerDay = account.schedule?.length ?? 0;
       const scheduledByDeck = scheduledCountsByDeck(account, deps);
       return {
@@ -130,7 +135,7 @@ export function registerQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDep
         connected: account.status === "connected",
         enabled: account.enabled,
         schedule: account.schedule ?? [],
-        sourceDecks: deps.deckAccess.accountSourceDecks(account),
+        sourceDecks,
         byDeck,
         deckNames: Object.fromEntries(deckIds.map((deckId) => [deckId, deckName(db, account.userId, deckId) ?? deckId])),
         scheduledByDeck,

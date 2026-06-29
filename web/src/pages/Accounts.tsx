@@ -149,7 +149,7 @@ function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
   })();
 
   const scheduledCountsByDeck = (a: Account): Record<string, number> => {
-    const sources = a.sourceDecks?.length ? a.sourceDecks : [a.lang].filter(Boolean);
+    const sources = sourceDeckIds(a);
     const counts: Record<string, number> = Object.fromEntries(sources.map((id) => [id, 0]));
     for (const [index, time] of (a.schedule ?? []).entries()) {
       const explicit = a.slotDecks?.[time];
@@ -159,18 +159,27 @@ function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
     return counts;
   };
 
-  // Days of video left = the first scheduled pack that will run dry.
+  const sourceDeckIds = (a: Account): string[] => {
+    const ids = a.sourceDecks?.length ? a.sourceDecks : [a.lang].filter(Boolean);
+    return [...new Set(ids.map((id) => String(id || "").trim()).filter(Boolean))];
+  };
+
+  const effectiveQueuedVideos = (a: Account): number | null => {
+    if (queue[a.id] == null) return null;
+    const byDeck = queueByDeck[a.id];
+    if (!byDeck) return queue[a.id];
+    const sources = sourceDeckIds(a);
+    if (!sources.length) return queue[a.id];
+    return sources.reduce((sum, deckId) => sum + (byDeck[deckId] ?? 0), 0);
+  };
+
+  // Days of video left = how long the channel can keep posting from its current source decks.
+  // Per-pack shortages remain visible below, but the scheduler falls back to other ready sources.
   // null = not applicable (no schedule, or counts still loading) → never flagged as low.
   const runwayDays = (a: Account): number | null => {
-    if (!a.enabled || !a.schedule.length || queue[a.id] == null) return null;
-    if (!queueByDeck[a.id]) return null;
-    const scheduled = scheduledCountsByDeck(a);
-    const queued = queueByDeck[a.id] ?? {};
-    const values = Object.entries(scheduled)
-      .filter(([, perDay]) => perDay > 0)
-      .map(([deckId, perDay]) => (queued[deckId] ?? 0) / perDay)
-      .filter((value) => Number.isFinite(value));
-    return values.length ? Math.min(...values) : queue[a.id] / a.schedule.length;
+    if (!a.enabled || !a.schedule.length) return null;
+    const queued = effectiveQueuedVideos(a);
+    return queued == null ? null : queued / a.schedule.length;
   };
 
   // Channels about to run dry (< 1 day) — drives the alert and the «< 1 дня» filter.
@@ -308,7 +317,7 @@ function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
                   {a.channelName}
                 </Link>{" "}
                 <span className="text-base-content/60">
-                  ({queue[a.id] === 0 ? t("accounts.noVideos") : t("accounts.inQueueN", { n: queue[a.id] })})
+                  ({(effectiveQueuedVideos(a) ?? queue[a.id]) === 0 ? t("accounts.noVideos") : t("accounts.inQueueN", { n: effectiveQueuedVideos(a) ?? queue[a.id] })})
                 </span>
               </span>
             ))}
@@ -490,7 +499,7 @@ function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
                   {t("accounts.schedule")}{" "}
                   <span className="font-medium text-base-content">{a.schedule.join(", ")}</span>
                 </div>
-                <QueueInfo count={queue[a.id]} runwayDays={runwayDays(a)} schedule={a.schedule} enabled={a.enabled} />
+                <QueueInfo count={effectiveQueuedVideos(a) ?? queue[a.id]} runwayDays={runwayDays(a)} schedule={a.schedule} enabled={a.enabled} />
                 <SourceInfo sources={accountSourceStats(a)} />
                 {multiKey && a.oauthClientId && clientById.get(a.oauthClientId) && (
                   <div className="mt-2 text-xs text-base-content/45 flex items-center gap-1.5">

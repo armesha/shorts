@@ -193,40 +193,16 @@ function safeJsonStringArray(raw: unknown, fallback: string[] = []): string[] {
   }
 }
 
-function safeJsonStringRecord(raw: unknown): Record<string, string> {
-  try {
-    const parsed = JSON.parse(String(raw || "{}"));
-    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
-    const out: Record<string, string> = {};
-    for (const [key, value] of Object.entries(parsed)) {
-      const k = String(key || "").trim();
-      const v = String(value || "").trim();
-      if (k && v) out[k] = v;
-    }
-    return out;
-  } catch {
-    return {};
-  }
+function effectiveQueuedVideos(byDeck: Record<string, number>, sources: string[], fallbackQueued: number): number {
+  const decks = [...new Set(sources.map((deckId) => String(deckId || "").trim()).filter(Boolean))];
+  if (!decks.length) return fallbackQueued;
+  const sourceSet = new Set(decks);
+  return Object.entries(byDeck).reduce((sum, [deckId, queued]) => (sourceSet.has(deckId) ? sum + Math.max(0, queued) : sum), 0);
 }
 
-function scheduledCountsByDeck(schedule: string[], slotDecks: Record<string, string>, sources: string[], lang: string): Record<string, number> {
-  const decks = sources.length ? sources : [lang].filter(Boolean);
-  const counts: Record<string, number> = Object.fromEntries(decks.map((deckId) => [deckId, 0]));
-  for (const [index, time] of schedule.entries()) {
-    const explicit = slotDecks[time];
-    const deckId = explicit || decks[index % Math.max(1, decks.length)] || lang;
-    if (deckId) counts[deckId] = (counts[deckId] ?? 0) + 1;
-  }
-  return counts;
-}
-
-function strictRunwayDays(byDeck: Record<string, number>, scheduledByDeck: Record<string, number>, queued: number, postsPerDay: number): number | null {
+function effectiveRunwayDays(queued: number, postsPerDay: number): number | null {
   if (postsPerDay <= 0) return null;
-  const values = Object.entries(scheduledByDeck)
-    .filter(([, perDay]) => perDay > 0)
-    .map(([deckId, perDay]) => Math.max(0, byDeck[deckId] ?? 0) / perDay)
-    .filter((value) => Number.isFinite(value));
-  return values.length ? Math.min(...values) : queued / postsPerDay;
+  return queued / postsPerDay;
 }
 
 function fillDaily(from: string, to: string, rows: Row[]): AdminAnalytics["daily"] {
@@ -324,7 +300,6 @@ export function buildAdminAnalytics(dbh: Db, input: AnalyticsRange): AdminAnalyt
         a.lang AS lang,
         a.source_decks AS sourceDecks,
         a.schedule AS schedule,
-        a.slot_decks AS slotDecks,
         a.enabled AS enabled,
         a.yt_refresh_token AS refreshToken,
         u.id AS userId,
@@ -341,12 +316,12 @@ export function buildAdminAnalytics(dbh: Db, input: AnalyticsRange): AdminAnalyt
   const accounts = accountRows.map((r) => {
     const schedule = safeJsonStringArray(r.schedule);
     const postsPerDay = r.enabled ? schedule.length : 0;
-    const queued = num(r.queued);
+    const rawQueued = num(r.queued);
     const accountId = num(r.accountId);
     const byDeck: Record<string, number> = {};
     for (const video of dbh.listVideos(accountId)) byDeck[video.deck] = (byDeck[video.deck] ?? 0) + 1;
     const sources = safeJsonStringArray(r.sourceDecks, r.lang ? [String(r.lang)] : []);
-    const scheduledByDeck = scheduledCountsByDeck(schedule, safeJsonStringRecord(r.slotDecks), sources, String(r.lang || ""));
+    const queued = effectiveQueuedVideos(byDeck, sources, rawQueued);
     return {
       accountId,
       channelName: String(r.channelName || `#${r.accountId}`),
@@ -356,7 +331,7 @@ export function buildAdminAnalytics(dbh: Db, input: AnalyticsRange): AdminAnalyt
       connected: !!r.refreshToken,
       queued,
       postsPerDay,
-      runwayDays: strictRunwayDays(byDeck, scheduledByDeck, queued, postsPerDay),
+      runwayDays: effectiveRunwayDays(queued, postsPerDay),
     };
   });
   const accountById = new Map(accounts.map((a) => [a.accountId, a]));
