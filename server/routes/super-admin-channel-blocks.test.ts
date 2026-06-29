@@ -5,6 +5,7 @@ import type { RouteDeps } from "./deps.ts";
 import {
   planChannelBlockNormalize,
   normalizeSourceWeightSettings,
+  sourceGapsForScheduledDecks,
   thematicBlockDeckSequenceForGeneration,
   thematicBlockSlotDecksForAccount,
 } from "./super-admin-channel-blocks.ts";
@@ -156,6 +157,41 @@ test("block top-up redistributes missing videos away from a depleted source", ()
   assert.equal(plan.jobs[0]?.deckIds.filter((deckId) => deckId === "alpha").length, 1);
   assert.equal(plan.jobs[0]?.deckIds.filter((deckId) => deckId === "beta").length, 3);
   assert.deepEqual(plan.shortages, []);
+});
+
+test("source gap warnings only report scheduled empty or depleted sources", () => {
+  const gaps = sourceGapsForScheduledDecks(
+    [
+      { id: "alpha", name: "Alpha", groupId: "a", groupTitle: "Alpha group", available: 12 },
+      { id: "beta", name: "Beta", groupId: "b", groupTitle: "Beta group", available: 0 },
+      { id: "gamma", name: "Gamma", groupId: "g", groupTitle: "Gamma group", available: 0 },
+    ],
+    { alpha: 2, beta: 1, gamma: 0 },
+    { alpha: 0, beta: 5, gamma: 0 },
+  );
+
+  assert.deepEqual(gaps, [
+    {
+      deckId: "alpha",
+      deckName: "Alpha group",
+      groupId: "a",
+      groupTitle: "Alpha group",
+      queued: 0,
+      available: 12,
+      postsPerDay: 2,
+      reason: "empty_queue",
+    },
+    {
+      deckId: "beta",
+      deckName: "Beta group",
+      groupId: "b",
+      groupTitle: "Beta group",
+      queued: 5,
+      available: 0,
+      postsPerDay: 1,
+      reason: "no_free_cards",
+    },
+  ]);
 });
 
 test("source weight settings are canonicalized and stale groups are pruned", () => {

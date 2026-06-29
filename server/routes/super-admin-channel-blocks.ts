@@ -756,21 +756,20 @@ function accountBelongsToBlock(deps: RouteDeps, block: BlockDef, account: Accoun
   return sameDeckSet(cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account)), defaults);
 }
 
-function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockContext, blockId?: string) {
-  const ownerId = account.userId ?? 0;
-  const sourceDecks = cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account));
-  const queuedByDeck = ctx?.queuedByAccountDeck.get(account.id) ?? videosByDeck(db.listVideos(account.id));
-  const decks = deckSummaries({ db, deps, ctx, blockId, ownerId, accountId: account.id, deckIds: sourceDecks, queuedByDeck });
-  const availableByDeck = Object.fromEntries(decks.map((deck) => [deck.id, deck.available]));
-  const queuedCoverage = effectiveCapacityForSchedule(account, sourceDecks, queuedByDeck, ctx?.queuedByAccount.get(account.id) ?? sumCounts(queuedByDeck));
-  const availableCoverage = effectiveCapacityForSchedule(
-    account,
-    sourceDecks,
-    availableByDeck,
-    availableForDecksForAccount(db, deps, ctx, ownerId, account.id, sourceDecks),
-  );
-  const scheduledByDeck = Object.fromEntries(scheduledCountsByDeck(account, sourceDecks));
-  const sourceGaps = decks
+type ScheduledDeckGapInput = {
+  id: string;
+  name: string;
+  groupId?: string | null;
+  groupTitle?: string | null;
+  available: number;
+};
+
+export function sourceGapsForScheduledDecks(
+  decks: ScheduledDeckGapInput[],
+  scheduledByDeck: Record<string, number>,
+  queuedByDeck: Record<string, number>,
+) {
+  return decks
     .map((deck) => {
       const postsPerDay = Number(scheduledByDeck[deck.id] ?? 0);
       if (postsPerDay <= 0) return null;
@@ -789,7 +788,24 @@ function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockCo
         reason,
       };
     })
-    .filter(Boolean);
+    .filter((gap): gap is NonNullable<typeof gap> => Boolean(gap));
+}
+
+function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockContext, blockId?: string) {
+  const ownerId = account.userId ?? 0;
+  const sourceDecks = cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account));
+  const queuedByDeck = ctx?.queuedByAccountDeck.get(account.id) ?? videosByDeck(db.listVideos(account.id));
+  const decks = deckSummaries({ db, deps, ctx, blockId, ownerId, accountId: account.id, deckIds: sourceDecks, queuedByDeck });
+  const availableByDeck = Object.fromEntries(decks.map((deck) => [deck.id, deck.available]));
+  const queuedCoverage = effectiveCapacityForSchedule(account, sourceDecks, queuedByDeck, ctx?.queuedByAccount.get(account.id) ?? sumCounts(queuedByDeck));
+  const availableCoverage = effectiveCapacityForSchedule(
+    account,
+    sourceDecks,
+    availableByDeck,
+    availableForDecksForAccount(db, deps, ctx, ownerId, account.id, sourceDecks),
+  );
+  const scheduledByDeck = Object.fromEntries(scheduledCountsByDeck(account, sourceDecks));
+  const sourceGaps = sourceGapsForScheduledDecks(decks, scheduledByDeck, queuedByDeck);
   return {
     id: account.id,
     userId: account.userId,
