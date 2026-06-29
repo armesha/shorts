@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type { Account, Db, Video } from "../db.ts";
 import type { RouteDeps } from "./deps.ts";
-import { thematicBlockDeckSequenceForGeneration } from "./super-admin-channel-blocks.ts";
+import { planChannelBlockNormalize, thematicBlockDeckSequenceForGeneration } from "./super-admin-channel-blocks.ts";
 
 const FOREIGN_EN_SOURCES = [
   "pack:static-facts-en-superadmin",
@@ -99,4 +99,42 @@ test("thematic block generation skips exhausted sources and removed optical pack
   assert.ok(!sequence.includes("fact-en"));
   assert.ok(!sequence.includes("illusions-en"));
   assert.ok(sequence.every((deckId) => FOREIGN_EN_SOURCES.includes(deckId)));
+});
+
+test("block top-up redistributes missing videos away from a depleted source", () => {
+  const acc = {
+    ...account(404),
+    sourceDecks: ["alpha", "beta"],
+    channelLang: "en",
+    schedule: ["00:00", "12:00"],
+    slotDecks: {},
+  };
+  const block = {
+    id: "test",
+    title: "Test",
+    description: "",
+    rules: [],
+    accountIds: [acc.id],
+    sourceGroups: [
+      { id: "alpha", title: "Alpha", defaultWeight: 3, sources: { en: ["alpha"] } },
+      { id: "beta", title: "Beta", defaultWeight: 1, sources: { en: ["beta"] } },
+    ],
+  } satisfies Parameters<typeof planChannelBlockNormalize>[0]["block"];
+
+  const plan = planChannelBlockNormalize({
+    db: db(),
+    deps: deps({ alpha: 1, beta: 20 }),
+    block,
+    blockId: block.id,
+    accounts: [acc],
+    sourceWeights: { alpha: 3, beta: 1 },
+    requestedTargetRunwayDays: 2,
+    fallbackOwnerId: 1,
+  });
+
+  assert.equal(plan.jobs.length, 1);
+  assert.equal(plan.jobs[0]?.total, 4);
+  assert.equal(plan.jobs[0]?.deckIds.filter((deckId) => deckId === "alpha").length, 1);
+  assert.equal(plan.jobs[0]?.deckIds.filter((deckId) => deckId === "beta").length, 3);
+  assert.deepEqual(plan.shortages, []);
 });

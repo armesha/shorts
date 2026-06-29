@@ -499,6 +499,7 @@ export const en: Record<string, string> = {
   "channelBlocks.shortagesChecking": "Checking shortages for the selected runway...",
   "channelBlocks.shortagesNone": "No shortage found for the selected runway.",
   "channelBlocks.shortageMissing": "missing {n}",
+  "channelBlocks.availableSources": "available sources",
   "channelBlocks.unassignedHint": "Channels outside the current language grid or without an explicit block. They remain available in the classic list.",
   "channelBlocks.unassignedTitle": "Outside the grid",
 

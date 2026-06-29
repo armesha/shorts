@@ -503,6 +503,7 @@ export const ru: Record<string, string> = {
   "channelBlocks.shortagesChecking": "Проверяю дефицит для выбранного запаса...",
   "channelBlocks.shortagesNone": "Для выбранного запаса дефицит не найден.",
   "channelBlocks.shortageMissing": "не хватает {n}",
+  "channelBlocks.availableSources": "доступные источники",
   "channelBlocks.unassignedHint": "Каналы вне текущей языковой сетки или без явного блока. Они доступны в обычном списке.",
   "channelBlocks.unassignedTitle": "Вне сетки",
 

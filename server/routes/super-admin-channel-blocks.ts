@@ -1417,7 +1417,7 @@ type NormalizePlan = {
   shortages: NormalizeShortage[];
 };
 
-function planChannelBlockNormalize(input: {
+export function planChannelBlockNormalize(input: {
   db: Db;
   deps: RouteDeps;
   block: BlockDef;
@@ -1463,7 +1463,7 @@ function planChannelBlockNormalize(input: {
   const skipped: NormalizeSkip[] = [];
   const shortages = new Map<string, NormalizeShortage>();
   const freeRemaining = new Map<string, number>();
-  const takeFree = (ownerId: number, deckId: string, deckName: string, needed: number, account: Account): number => {
+  const reserveFree = (ownerId: number, deckId: string, needed: number, account: Account): number => {
     if (needed <= 0) return needed;
     if (isRepeatPackDeck(db, ownerId, deckId)) return needed;
     const perAccountAutoExpire = isPerAccountAutoExpirePackDeck(db, ownerId, deckId);
@@ -1478,28 +1478,29 @@ function planChannelBlockNormalize(input: {
     const available = freeRemaining.get(key) ?? 0;
     const taken = Math.min(needed, available);
     freeRemaining.set(key, available - taken);
-    const missing = needed - taken;
-    if (missing > 0) {
-      const shortageKey = `${key}|${account.id}`;
-      const cur = shortages.get(shortageKey);
-      if (cur) {
-        cur.missing += missing;
-        cur.needed += needed;
-        cur.available = Math.max(0, cur.available - taken);
-      } else {
-        shortages.set(shortageKey, {
-          ownerId,
-          accountId: account.id,
-          channelName: account.ytChannelTitle || account.channelName,
-          deckId,
-          deckName,
-          missing,
-          available,
-          needed,
-        });
-      }
-    }
     return taken;
+  };
+  const addChannelShortage = (ownerId: number, account: Account, missing: number, needed: number, available: number) => {
+    if (missing <= 0) return;
+    const deckId = "__block_sources";
+    const shortageKey = `${ownerId}|${account.id}|${deckId}`;
+    const cur = shortages.get(shortageKey);
+    if (cur) {
+      cur.missing += missing;
+      cur.needed += needed;
+      cur.available += available;
+      return;
+    }
+    shortages.set(shortageKey, {
+      ownerId,
+      accountId: account.id,
+      channelName: account.ytChannelTitle || account.channelName,
+      deckId,
+      deckName: "доступные источники",
+      missing,
+      available,
+      needed,
+    });
   };
 
   for (const account of accounts) {
@@ -1545,13 +1546,12 @@ function planChannelBlockNormalize(input: {
     const exactDeficit = activeSourceGroups(block, account, generationDeckIds, sourceWeights).length
       ? weightedDeckDeficitSequence(block, account, generationDeckIds, sourceWeights, countedByDeck, accountTargetQueued, sequenceSeed)
       : deckDeficitSequence(account, generationDeckIds, countedByDeck, targetRunwayDays);
-    const missing = exactDeficit.length;
-    const readyDeficit = accountTargetQueued - currentQueued;
-    if (missing <= 0) {
+    const readyDeficit = Math.max(0, accountTargetQueued - currentQueued);
+    if (readyDeficit <= 0 || exactDeficit.length <= 0) {
       skipped.push({
         accountId: account.id,
         channelName: account.ytChannelTitle || account.channelName,
-        reason: readyDeficit > 0 ? "generation_in_progress" : "already_at_target",
+        reason: readyDeficit > 0 && exactDeficit.length <= 0 ? "generation_in_progress" : "already_at_target",
         currentQueued,
         targetQueued: accountTargetQueued,
         currentRunwayDays,
@@ -1560,22 +1560,32 @@ function planChannelBlockNormalize(input: {
       continue;
     }
     // exactDeficit is computed against READY + in-flight videos per deck, so a repeated click does not
-    // stack a second full top-up while the first one is still rendering.
-    const baseJobDeckIds = (
-      exactDeficit.length ? exactDeficit : weightedDeckSlots(block, account, generationDeckIds, sourceWeights, missing, `${sequenceSeed}|fallback`)
-    ).slice(0, missing);
-    const requestedByDeck = countDeckSequence(baseJobDeckIds);
-    const allowedByDeck = new Map<string, number>();
-    for (const [deckId, needed] of Object.entries(requestedByDeck)) {
-      const deckName = deckTitle(deckId, ownerId).name;
-      allowedByDeck.set(deckId, takeFree(ownerId, deckId, deckName, needed, account));
+    // stack a second full top-up while the first one is still rendering. If a preferred source has run
+    // out of free cards, refill the remaining target from other available block sources instead of
+    // treating that one source as a hard blocker.
+    const missing = Math.min(readyDeficit, exactDeficit.length);
+    const jobDeckIds: string[] = [];
+    const appendReservable = (deckIds: string[]): number => {
+      let added = 0;
+      for (const deckId of deckIds) {
+        if (jobDeckIds.length >= missing) break;
+        if (reserveFree(ownerId, deckId, 1, account) <= 0) continue;
+        jobDeckIds.push(deckId);
+        added += 1;
+      }
+      return added;
+    };
+    appendReservable(exactDeficit.slice(0, missing));
+    let refillPass = 0;
+    while (jobDeckIds.length < missing && refillPass < 20) {
+      const deficit = missing - jobDeckIds.length;
+      const refill = [
+        ...weightedDeckSlots(block, account, generationDeckIds, sourceWeights, deficit + generationDeckIds.length, `${sequenceSeed}|redistribute|${refillPass}`),
+        ...generationDeckIds,
+      ];
+      if (appendReservable(refill) <= 0) break;
+      refillPass += 1;
     }
-    const jobDeckIds = baseJobDeckIds.filter((deckId) => {
-      const left = allowedByDeck.get(deckId) ?? 0;
-      if (left <= 0) return false;
-      allowedByDeck.set(deckId, left - 1);
-      return true;
-    });
     const total = jobDeckIds.length;
     if (total <= 0) {
       skipped.push({
@@ -1587,6 +1597,7 @@ function planChannelBlockNormalize(input: {
       });
       continue;
     }
+    addChannelShortage(ownerId, account, missing - total, missing, total);
     jobs.push({
       accountId: account.id,
       channelName: account.ytChannelTitle || account.channelName,

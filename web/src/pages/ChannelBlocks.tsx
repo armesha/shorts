@@ -81,6 +81,10 @@ function orderBlocks(blocks: ChannelThemeBlock[], order: string[]): ChannelTheme
 type BusyState = { blockId: string; kind: "short" | "normalize" | "normalize_all" | "schedule" | "account"; lang?: string } | null;
 type NormalizeShortage = NonNullable<ChannelThemeBlockNormalizeResult["shortages"]>[number] & { blockTitle?: string };
 
+function shortageDeckLabel(shortage: NormalizeShortage, t: (key: string, vars?: Record<string, string | number>) => string): string {
+  return shortage.deckId === "__block_sources" ? t("channelBlocks.availableSources") : shortage.deckName;
+}
+
 type BlockDeckSummary = {
   id: string;
   name: string;
@@ -739,7 +743,7 @@ function TopUpPanel({
               <div key={`${shortage.blockTitle}-${shortage.accountId}-${shortage.deckId}`} className="text-sm text-base-content/75">
                 <span className="font-semibold">{shortage.blockTitle ? `${shortage.blockTitle} · ` : ""}{shortage.channelName}</span>
                 {" → "}
-                <span>{shortage.deckName}</span>
+                <span>{shortageDeckLabel(shortage, t)}</span>
                 {" · "}
                 <span className="font-semibold">{t("channelBlocks.shortageMissing", { n: shortage.missing })}</span>
               </div>
@@ -784,7 +788,7 @@ function BlockCard({
   const packs = blockPackCount(block);
   const shortageTitle = shortages
     .slice(0, 8)
-    .map((shortage) => `${shortage.channelName} -> ${shortage.deckName}: ${t("channelBlocks.shortageMissing", { n: shortage.missing })}`)
+    .map((shortage) => `${shortage.channelName} -> ${shortageDeckLabel(shortage, t)}: ${t("channelBlocks.shortageMissing", { n: shortage.missing })}`)
     .join("\n");
   const shortageMore = shortages.length > 8 ? `\n+${shortages.length - 8}` : "";
   return (
