@@ -16,6 +16,8 @@ npm run web        # Vite dev server on :5173 (proxies /api → :8080)
 npm run web:build  # build the dashboard into web/dist (served by the API in prod)
 npm run server:restart  # safe prod restart: stop stale pids, start API + gen worker, check health + worker heartbeat
 npm run deploy:refresh  # web:build + safe prod restart + public smoke check for shareboard.live
+npm run verify:armen  # source/safety/runway/visual consistency checks for armen thematic blocks
+npm run verify:live   # typecheck + tests + armen checks + build + restart + public smoke
 ```
 
 Checks: `npm test` (node:test) · `npm run typecheck` (tsc --noEmit, src + server).
