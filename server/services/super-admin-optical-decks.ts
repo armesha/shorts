@@ -1,4 +1,7 @@
 export const REMOVED_SUPER_ADMIN_OPTICAL_DECKS = new Set([
+  "illusions-3d",
+  "illusions-3d-de",
+  "illusions-3d-en",
   "illusions-en",
   "illusions-de",
   "illusions-it",

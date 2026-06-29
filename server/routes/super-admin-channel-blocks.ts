@@ -97,39 +97,6 @@ const LIFEHACK_DECK_BY_LANG: Record<string, string[]> = {
   id: ["tips-id"],
 };
 
-const RIDDLE_MIND_FLIP_DECK_BY_LANG: Record<string, string[]> = {
-  ru: ["illusions-3d"],
-  de: ["illusions-3d-de"],
-  en: ["illusions-3d-en"],
-};
-
-const RIDDLE_SOURCE_GROUPS: SourceGroupDef[] = [
-  {
-    id: "visual_riddles",
-    title: "Вижу ответ",
-    defaultWeight: 1,
-    sources: RIDDLE_VISUAL_DECK_BY_LANG,
-  },
-  {
-    id: "mind_flip",
-    title: "Обмани свой мозг",
-    defaultWeight: 1,
-    sources: RIDDLE_MIND_FLIP_DECK_BY_LANG,
-  },
-  {
-    id: "jokes",
-    title: "Анекдоты",
-    defaultWeight: 1,
-    sources: JOKE_TEXT_DECK_BY_LANG,
-  },
-  {
-    id: "memes",
-    title: "Мемы",
-    defaultWeight: 1,
-    sources: JOKE_MEME_DECK_BY_LANG,
-  },
-];
-
 const QUOTE_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
   ar: ["quote-video-ar"],
   ru: ["quote-video-ru"],
@@ -274,12 +241,6 @@ const RUSSIAN_SOURCE_GROUPS: SourceGroupDef[] = [
     sources: { ru: ["visual-riddles"] },
   },
   {
-    id: "mind_flip",
-    title: "Обмани мозг",
-    defaultWeight: 2,
-    sources: { ru: ["illusions-3d"] },
-  },
-  {
     id: "lifehacks",
     title: "Лайфхаки",
     defaultWeight: 3,
@@ -348,12 +309,6 @@ const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
     sources: RIDDLE_VISUAL_DECK_BY_LANG,
   },
   {
-    id: "mind_flip",
-    title: "Обмани свой мозг",
-    defaultWeight: 2,
-    sources: RIDDLE_MIND_FLIP_DECK_BY_LANG,
-  },
-  {
     id: "lifehacks",
     title: "Лайфхаки",
     defaultWeight: 2,
@@ -419,7 +374,7 @@ const BLOCKS: BlockDef[] = [
     description: "Все русские нерелигиозные каналы в одной сетке источников.",
     rules: [
       "Русский блок использует один общий микс источников для всех русских каналов супер-админа.",
-      "Все RU-каналы в блоке должны иметь одинаковый набор источников: юмор, визуальные загадки, 3D-иллюзии, факты, лайфхаки, цитаты, психология, мотивация и советские постеры.",
+      "Все RU-каналы в блоке должны иметь одинаковый набор источников: юмор, визуальные загадки, факты, лайфхаки, цитаты, психология, мотивация и советские постеры.",
       "Legacy-пак Мемы (RU) не подключать к русскому блоку; русский блок пока работает без мемов.",
       "Советские постеры — RU-only архивный источник: не локализовать, не пополнять; он конечный и авто-удаляется из канала после исчерпания.",
       "Постеры брать только из проверенного public-domain набора; не добавлять антирелигиозную сатиру, сталинский культ, расовые стереотипы, тяжёлые военные изображения и спорные киноафиши.",
@@ -453,7 +408,7 @@ const BLOCKS: BlockDef[] = [
       "Все нерусские нерелигиозные каналы супер-админа используют один общий микс источников.",
       "Факты требуют проверяемого источника; численные данные и названия нужно перепроверять.",
       "Визуальные загадки и мемы в этом блоке остаются отдельными источниками микса, а не отдельным блоком.",
-      "Визуальные загадки и 3D-иллюзии внутри блока подставлять только на языке канала; не смешивать RU-видео в EN/DE-каналах.",
+      "Визуальные загадки внутри блока подставлять только на языке канала; не смешивать RU-видео в EN/DE-каналах.",
       "Лайфхаки локализовать на одном наборе идей, но бытовые реалии адаптировать под язык.",
       "Если появится озвучка для лайфхаков, новые voiceover-паки собирать через разрешённый TTS-профиль проекта с учётом текущих квот.",
       "Анекдоты не придумывать ИИ: брать только проверенные внешние/PD/licensed корпуса с источниками.",

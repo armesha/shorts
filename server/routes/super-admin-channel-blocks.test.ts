@@ -8,7 +8,6 @@ const FOREIGN_EN_SOURCES = [
   "pack:static-facts-en-superadmin",
   "fact-en",
   "visual-riddles-en",
-  "illusions-3d-en",
   "tips-en",
   "en",
   "pack:new-memes-en-superadmin",
