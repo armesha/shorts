@@ -189,13 +189,19 @@ function blockBottleneck(block: ChannelThemeBlock): DeckRunway | null {
     .sort((a, b) => a.days - b.days || a.account.channelName.localeCompare(b.account.channelName))[0] ?? null;
 }
 
+function blockBottleneckLabelKey(block: ChannelThemeBlock, bottleneck: DeckRunway | null): "channelBlocks.bottleneck" | "channelBlocks.weakSource" {
+  if (!bottleneck || block.runwayDays == null) return "channelBlocks.bottleneck";
+  return bottleneck.days + 0.01 < block.runwayDays ? "channelBlocks.weakSource" : "channelBlocks.bottleneck";
+}
+
 function deckDisplayName(deck: ChannelThemeBlockAccount["sourceDecks"][number]): string {
   return deck.groupTitle || deck.name;
 }
 
 function accountTotalRunwayDays(account: ChannelThemeBlockAccount): number | null {
+  if (account.effectiveRunwayDays !== undefined) return account.effectiveRunwayDays;
   const postsPerDay = account.enabled ? account.schedule.length : 0;
-  return postsPerDay > 0 ? account.queued / postsPerDay : null;
+  return postsPerDay > 0 ? (account.effectiveQueued ?? account.queued) / postsPerDay : null;
 }
 
 function compactDeckList(decks: string[], max = 4): string {
@@ -774,6 +780,7 @@ function BlockCard({
 }) {
   const { t } = useT();
   const bottleneck = blockBottleneck(block);
+  const bottleneckLabel = blockBottleneckLabelKey(block, bottleneck);
   const packs = blockPackCount(block);
   const shortageTitle = shortages
     .slice(0, 8)
@@ -818,7 +825,7 @@ function BlockCard({
         <div className="mt-1 text-xs text-base-content/55">{t("channelBlocks.runwayNoGeneration")}</div>
       </div>
       <div className="min-w-0">
-        <div className="text-xs font-semibold uppercase tracking-wide text-base-content/45">{t("channelBlocks.bottleneck")}</div>
+        <div className="text-xs font-semibold uppercase tracking-wide text-base-content/45">{t(bottleneckLabel)}</div>
         {bottleneck ? (
           <>
             <div className="mt-1 truncate text-sm font-semibold" title={`${bottleneck.account.channelName} → ${deckDisplayName(bottleneck.deck)}`}>
@@ -891,6 +898,7 @@ function BlockDetail({
   const range = queueRange(block);
   const canNormalize = block.totalAccounts > 1 && range.max > range.min;
   const bottleneck = blockBottleneck(block);
+  const bottleneckLabel = blockBottleneckLabelKey(block, bottleneck);
   const blockShortages = topUpShortages.filter((shortage) => !shortage.blockTitle || shortage.blockTitle === block.title);
   // Only languages that actually have channels are shown (no rows of empty "пусто" cells just to keep the
   // grid full). Languages with prepared block packs can still be added via the picker, including ones not
@@ -917,7 +925,7 @@ function BlockDetail({
       <div className="grid gap-3 lg:grid-cols-[220px_minmax(0,1fr)_220px]">
         <MiniStat label={t("channelBlocks.runwayNoGeneration")} value={formatRunwayDays(block.runwayDays)} />
         <section className="rounded-md border border-base-300 bg-base-100 px-4 py-3">
-          <div className="text-xs font-semibold uppercase tracking-wide text-base-content/45">{t("channelBlocks.bottleneck")}</div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-base-content/45">{t(bottleneckLabel)}</div>
           {bottleneck ? (
             <div className="mt-1 min-w-0">
               <div className="truncate text-lg font-semibold" title={`${bottleneck.account.channelName} → ${deckDisplayName(bottleneck.deck)}`}>
@@ -1339,6 +1347,7 @@ function SourceMixSettings({
 function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: ReturnType<typeof useT>["t"] }) {
   const bottleneck = accountBottleneck(account);
   const totalRunwayDays = accountTotalRunwayDays(account);
+  const readyVideos = account.effectiveQueued ?? account.queued;
   const missingScheduledDeck = bottleneck && bottleneck.postsPerDay > 0 && bottleneck.queued <= 0 ? bottleneck : null;
   const depletedSources = account.sourceDecks.filter((deck) => deck.available <= 0 && deck.queued > 0);
   const missingTitle = missingScheduledDeck
@@ -1402,7 +1411,7 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
         <div className="flex items-baseline justify-between gap-2">
           <span className="text-[11px] font-semibold uppercase tracking-wide text-base-content/45">{t("channelBlocks.videosLeft")}</span>
           <span className="flex items-center gap-1 text-sm font-bold">
-            {account.queued}
+            {readyVideos}
             {warningTitle && (
               <span className="pointer-events-auto text-warning" title={warningTitle} aria-label={warningTitle}>
                 <AppIcon name="warning" size={13} />

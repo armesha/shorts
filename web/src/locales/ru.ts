@@ -440,6 +440,7 @@ export const ru: Record<string, string> = {
   "channelBlocks.bottleneck": "Ограничивает",
   "channelBlocks.bottleneckMeta": "{queued} в очереди · {perDay} в день · {days} дн.",
   "channelBlocks.bottleneckNone": "нет активного расписания",
+  "channelBlocks.weakSource": "Слабый источник",
   "channelBlocks.channelBottleneck": "{deck}: {queued} в очереди · {perDay} в день · {days} дн.",
   "channelBlocks.channels": "кан.",
   "channelBlocks.packs": "паков/кан.",

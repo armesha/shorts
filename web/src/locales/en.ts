@@ -436,6 +436,7 @@ export const en: Record<string, string> = {
   "channelBlocks.bottleneck": "Bottleneck",
   "channelBlocks.bottleneckMeta": "{queued} queued · {perDay}/day · {days} d",
   "channelBlocks.bottleneckNone": "no active schedule",
+  "channelBlocks.weakSource": "Weak source",
   "channelBlocks.channelBottleneck": "{deck}: {queued} queued · {perDay}/day · {days} d",
   "channelBlocks.channels": "ch.",
   "channelBlocks.packs": "packs/ch.",
