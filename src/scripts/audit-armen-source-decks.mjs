@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 import { resolve } from "node:path";
-import { DatabaseSync } from "node:sqlite";
+import { openDb } from "../../server/db.ts";
+import { makeDeckAccess } from "../../server/services/deck-access.ts";
 import { REMOVED_SUPER_ADMIN_OPTICAL_DECKS } from "../../server/services/super-admin-optical-decks.ts";
+import { DECKS } from "../anecdotes/decks.ts";
 
 const ROOT = process.cwd();
 const DB_PATH = process.env.DATABASE_PATH || resolve(ROOT, "data/app.db");
@@ -62,7 +64,8 @@ function addHits(hits, account, place, deckIds) {
   }
 }
 
-const db = new DatabaseSync(DB_PATH, { readOnly: true });
+const store = openDb(DB_PATH);
+const db = store.db;
 db.exec("PRAGMA query_only = ON");
 
 const user = db.prepare("SELECT id, username FROM users WHERE username = ?").get(USERNAME);
@@ -79,6 +82,32 @@ const hits = [];
 for (const account of accounts) {
   addHits(hits, account, "source_decks", readJson(account.source_decks, []));
   addHits(hits, account, "slot_decks", stringValuesDeep(readJson(account.slot_decks, {})));
+}
+
+const deckAccess = makeDeckAccess(store, { isAdminReq: () => true, isSuperAdminReq: () => true });
+for (const deckId of REMOVED_SUPER_ADMIN_OPTICAL_DECKS) {
+  const deck = DECKS.find((candidate) => candidate.id === deckId);
+  if (!deck) continue;
+  if (deckAccess.builtinDeckVisibleForUser(user.id, deck)) {
+    hits.push({
+      accountId: null,
+      channelName: USERNAME,
+      channelLang: "",
+      place: "builtin_visibility",
+      deckId,
+      group: FORBIDDEN.get(deckId),
+    });
+  }
+  if (deckAccess.deckAllowedForUser(user.id, deckId)) {
+    hits.push({
+      accountId: null,
+      channelName: USERNAME,
+      channelLang: "",
+      place: "deck_allowed",
+      deckId,
+      group: FORBIDDEN.get(deckId),
+    });
+  }
 }
 
 const forbiddenDecks = [...FORBIDDEN.keys()];
