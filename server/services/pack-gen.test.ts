@@ -1,6 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { pickFixedPackCard, pickLeastPostedPackCard, pickUnusedPackCard, packCardKey } from "./pack-gen.ts";
+import {
+  availablePackCardsForAccount,
+  packCardClaimKey,
+  pickFixedPackCard,
+  pickLeastPostedPackCard,
+  pickUnusedPackCard,
+  usedPackCardKeysForAccount,
+  packCardKey,
+} from "./pack-gen.ts";
 import type { Pack } from "../../src/packs/store.ts";
 
 function demoPack(): Pack {
@@ -75,4 +83,20 @@ test("pickLeastPostedPackCard prefers the least rendered card for the account", 
   const picked = pickLeastPostedPackCard(db as never, 7, pack, "stable");
   assert.ok(picked);
   assert.notEqual(picked.key, firstKey);
+});
+
+test("per-account auto-expire packs scope used cards by channel", () => {
+  const pack = { ...demoPack(), autoExpireMode: "per_account" as const };
+  const firstKey = packCardKey(pack.cards[0].values);
+  const secondKey = packCardKey(pack.cards[1].values);
+  const used = new Set([
+    packCardClaimKey(pack, 10, firstKey),
+    packCardClaimKey(pack, 10, secondKey),
+    packCardClaimKey(pack, 20, secondKey),
+  ]);
+
+  assert.deepEqual(usedPackCardKeysForAccount(pack, 10, used), new Set([firstKey, secondKey]));
+  assert.deepEqual(usedPackCardKeysForAccount(pack, 20, used), new Set([secondKey]));
+  assert.equal(availablePackCardsForAccount(pack, 10, used), pack.cards.length - 2);
+  assert.equal(availablePackCardsForAccount(pack, 20, used), pack.cards.length - 1);
 });
