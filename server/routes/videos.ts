@@ -47,6 +47,10 @@ const NORMAL_BATCH_VIDEO_CAP = 5;
 const POST_NOW_LIMIT = { limit: 15, windowMs: 10 * 60 * 1000 }; // burst guard on manual «Опубликовать»
 const MANUAL_VIDEO_UPLOAD_WINDOW_MS = 60 * 60 * 1000;
 
+export function canPostVideoDeckForAccount(videoDeck: string, acc: { longVideoDecks?: string[] }, selectedSourceDecks: string[]): boolean {
+  return videoDeck === MANUAL_VIDEO_DECK || selectedSourceDecks.includes(videoDeck) || (acc.longVideoDecks ?? []).includes(videoDeck);
+}
+
 export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
   const {
     accessibleAccount,
@@ -303,7 +307,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     const creds = accountCreds(acc);
     if (!creds) return reply.code(400).send({ error: "Google-ключ канала не найден — переподключите канал в Настройках" });
     // HARD source guard: never post a video whose deck is not selected for this channel.
-    if (v.deck !== MANUAL_VIDEO_DECK && !accountSourceDecks(acc).includes(v.deck) && !(acc.longVideoDecks ?? []).includes(v.deck))
+    if (!canPostVideoDeckForAccount(v.deck, acc, accountSourceDecks(acc)))
       return reply.code(400).send({ error: `Пак ролика (${v.deck}) не выбран у канала — не выложено.` });
     // Burst guard (non-admin): manual posting must not be scriptable into a quota-burning loop.
     if (!isAdminReq(req)) {
