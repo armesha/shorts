@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { DatabaseSync } from "node:sqlite";
+import { openDb } from "../../server/db.ts";
+import { BLOCKS, blockDefaultSourcesForDb } from "../../server/routes/super-admin-channel-blocks.ts";
+import { makeDeckAccess } from "../../server/services/deck-access.ts";
 import { DECKS } from "../anecdotes/decks.ts";
 import { cleanSuperAdminSourceDecks } from "../../server/services/super-admin-optical-decks.ts";
 
@@ -37,17 +39,30 @@ function deckName(deckId) {
   return packName(deckId) || BUILTIN_NAMES.get(deckId) || deckId;
 }
 
-function blockForAccount(account, sourceDecks) {
-  if (sourceDecks.some((deckId) => /^(islamic|christian|prayers-|christian-|islamic-)/.test(deckId))) return "Религия";
-  if ((account.channel_lang || account.lang) === "ru") return "Русские";
-  return "Иностранные";
+function sameSet(a, b) {
+  if (a.length !== b.length) return false;
+  const aa = [...a].sort();
+  const bb = [...b].sort();
+  return aa.every((value, index) => value === bb[index]);
+}
+
+function blockForAccount(db, account, sourceDecks) {
+  for (const block of BLOCKS) {
+    if (block.accountIds.includes(account.id)) return block;
+  }
+  for (const block of BLOCKS) {
+    const expected = blockDefaultSourcesForDb(db, block.id, account.channelLang);
+    if (expected.length && sameSet(sourceDecks, expected)) return block;
+  }
+  return null;
 }
 
 function scheduledDeckOrder(account, sourceDecks) {
   const sources = sourceDecks.length ? sourceDecks : [account.lang].filter(Boolean);
   if (!sources.length) return [];
-  const slotDecks = readJson(account.slot_decks, {});
-  return readJson(account.schedule, [])
+  const slotDecks = account.slotDecks ?? readJson(account.slot_decks, {});
+  const schedule = Array.isArray(account.schedule) ? account.schedule : readJson(account.schedule, []);
+  return schedule
     .map((time, index) => {
       const explicit = slotDecks?.[time];
       return explicit && sources.includes(explicit) ? explicit : sources[index % sources.length];
@@ -68,7 +83,8 @@ function fmtDays(days) {
   return days.toFixed(1);
 }
 
-const db = new DatabaseSync(DB_PATH, { readOnly: true });
+const store = openDb(DB_PATH);
+const db = store.db;
 db.exec("PRAGMA query_only = ON");
 
 const user = db.prepare("SELECT id, username FROM users WHERE username = ?").get(USERNAME);
@@ -77,14 +93,8 @@ if (!user) {
   process.exit(1);
 }
 
-const accounts = db
-  .prepare(
-    `SELECT id, channel_name, yt_channel_title, lang, channel_lang, schedule, slot_decks, source_decks
-       FROM accounts
-      WHERE user_id = ?
-      ORDER BY id`,
-  )
-  .all(user.id);
+const deckAccess = makeDeckAccess(store, { isAdminReq: () => true, isSuperAdminReq: () => true });
+const accounts = store.listAccountsByUser(user.id);
 
 const readyRows = db
   .prepare(
@@ -107,7 +117,9 @@ const blocks = new Map();
 const channelShortages = [];
 const slotWarnings = [];
 for (const account of accounts) {
-  const sourceDecks = cleanSuperAdminSourceDecks(readJson(account.source_decks, []));
+  const sourceDecks = cleanSuperAdminSourceDecks(deckAccess.accountSourceDecks(account));
+  const blockDef = blockForAccount(store, account, sourceDecks);
+  const blockName = blockDef?.title ?? "Вне блоков";
   const order = scheduledDeckOrder(account, sourceDecks);
   const slotsByDeck = countBy(order);
   const sourceSet = new Set(sourceDecks);
@@ -127,8 +139,8 @@ for (const account of accounts) {
     const wanted = Math.ceil(TARGET_DAYS * daily);
     if (ready < wanted) {
       slotWarnings.push({
-        block: blockForAccount(account, sourceDecks),
-        channel: account.yt_channel_title || account.channel_name,
+        block: blockName,
+        channel: account.ytChannelTitle || account.channelName,
         deckId,
         deckName: deckName(deckId),
         missing: wanted - ready,
@@ -137,12 +149,11 @@ for (const account of accounts) {
       });
     }
   }
-  const blockName = blockForAccount(account, sourceDecks);
   const block = blocks.get(blockName) || { channels: [], perDay: 0, ready: 0, minRunway: null, limiting: null };
   const channel = {
     id: account.id,
-    name: account.yt_channel_title || account.channel_name,
-    lang: account.channel_lang || account.lang,
+    name: account.ytChannelTitle || account.channelName,
+    lang: account.channelLang || account.lang,
     ready: readyTotal,
     perDay,
     runwayDays,
@@ -205,9 +216,9 @@ if (slotWarnings.length && STRICT_SLOTS) {
 }
 
 if (channelShortages.length || (STRICT_SLOTS && slotWarnings.length)) {
-  db.close();
+  store.db.close();
   process.exit(1);
 }
 
 console.log(`\nNo channel runway shortages for ${TARGET_DAYS} days.`);
-db.close();
+store.db.close();
