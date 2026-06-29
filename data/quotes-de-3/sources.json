@@ -155,20 +155,6 @@
       "credit": "File:Karl Marx 001.jpg",
       "localPath": "data/quotes-de/portraits/karl-marx.jpg"
     },
-    "Heinrich Heine": {
-      "author": "Heinrich Heine",
-      "wikidataQid": "Q44403",
-      "commonsFile": "Heinrich Heine.PNG",
-      "commonsTitle": "File:Heinrich Heine.PNG",
-      "commonsPage": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "thumbUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Heinrich_Heine.PNG",
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Heinrich_Heine.PNG",
-      "licenseShortName": "Public domain",
-      "licenseUrl": null,
-      "artist": "Moritz Daniel Oppenheim",
-      "credit": "allposters.com",
-      "localPath": "data/quotes-de/portraits/heinrich-heine.png"
-    },
     "Friedrich Hölderlin": {
       "author": "Friedrich Hölderlin",
       "wikidataQid": "Q43440",
@@ -4700,6 +4686,15 @@
       "policyReview": "auto-blocklist-pass; manual rule set from data/quotes-de/CONTENT-POLICY.md",
       "createdAt": "2026-06-21T20:06:43.606160+00:00",
       "duration": 8.26
+    }
+  ],
+  "removedPortraitSources": [
+    {
+      "author": "Heinrich Heine",
+      "wikidataQid": "Q44403",
+      "removedAt": "2026-06-29",
+      "reason": "unsafe_portrait_source",
+      "note": "commercial poster credit was not acceptable for super-admin quote packs"
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-25T21:01:11.072Z",
+  "updatedAt": "2026-06-29T00:59:43.261Z",
   "derivedFrom": "data/quotes-de-combined/sources.json",
   "quoteSource": {
     "name": "German Wikiquote",
@@ -444,20 +444,6 @@
       "artist": "Nadar",
       "credit": "This file comes from Gallica Digital Library and is available under the digital ID btv1b100502719/f1",
       "localPath": "data/quotes-de/portraits/gustave-flaubert.jpg"
-    },
-    "Heinrich Heine": {
-      "author": "Heinrich Heine",
-      "wikidataQid": "Q44403",
-      "commonsFile": "Heinrich Heine.PNG",
-      "commonsTitle": "File:Heinrich Heine.PNG",
-      "commonsPage": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "thumbUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Heinrich_Heine.PNG",
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Heinrich_Heine.PNG",
-      "licenseShortName": "Public domain",
-      "licenseUrl": null,
-      "artist": "Moritz Daniel Oppenheim",
-      "credit": "allposters.com",
-      "localPath": "data/quotes-de/portraits/heinrich-heine.png"
     },
     "Henry David Thoreau": {
       "author": "Henry David Thoreau",
@@ -3833,10 +3819,9 @@
       "text": "Die Zahl der deutschen Kriegerdenkmäler zur Zahl der deutschen Heine-Denkmäler verhält sich hierzulande wie die Macht zum Geist.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -4333,10 +4318,9 @@
       "text": "Wenn wir es recht überdenken, so stecken wir doch alle nackt in unseren Kleidern.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -4973,10 +4957,9 @@
       "text": "In der Weltgeschichte ist nicht jedes Ereignis die unmittelbare Folge eines anderen, die Ereignisse bedingen sich vielmehr wechselseitig.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -5553,10 +5536,9 @@
       "text": "Die Religion kann nie schlimmer sinken, als wenn sie solchermaßen zur Staatsreligion erhoben wird.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -6073,10 +6055,9 @@
       "text": "Das ist schön bei den Deutschen: Keiner ist so verrückt, dass er nicht einen noch Verrückteren fände, der ihn versteht.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -6543,10 +6524,9 @@
       "text": "Die Stadt selbst ist schön, und gefällt einem am besten, wenn man sie mit dem Rücken ansieht.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -6973,10 +6953,9 @@
       "text": "Rom wollte immer herrschen, und als seine Legionen fielen, sandte es Dogmen in die Provinzen.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -7363,10 +7342,9 @@
       "text": "Unser Sommer ist nur ein grün angestrichener Winter, sogar die Sonne muss bei uns eine Jacke von Flanell tragen, wenn sie sich nicht erkälten will.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -7723,10 +7701,9 @@
       "text": "Wahrlich, es gibt Dinge zwischen Himmel und Erde, die nicht bloß unsere Philosophen, sondern sogar die gewöhnlichsten Dummköpfe nicht begreifen.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -8073,10 +8050,9 @@
       "text": "Von dem Augenblick an, wo eine Religion bei der Philosophie Hülfe begehrt, ist ihr Untergang unabwendlich.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -8403,10 +8379,9 @@
       "text": "Die Handlungen eines Furchtsamen, wie die eines Genies, liegen außerhalb aller Berechnungen.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -8723,10 +8698,9 @@
       "text": "Er sprach mit jener stillen, impertinenten Zurückhaltung, die noch unerträglicher ist als die vollauteste Aufschneiderei.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -9023,10 +8997,9 @@
       "text": "Ich habe immer unter Jüdinnen die gesündesten Naturen gefunden, und ich kann es Gott Vater gar nicht verdenken, dass er der bethlehemitischen Maria die Cour und ein Kind gemacht.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -9303,10 +9276,9 @@
       "text": "Ihr könnt Euch darauf verlassen, die Bescheidenheit der Leute hat immer ihre guten Gründe.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -9563,10 +9535,9 @@
       "text": "Der Historiker ist immer ein Merlin, er ist die Stimme einer begrabenen Zeit, man befragt ihn, und er gibt Antwort, der rückwärtsschauende Prophet.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -9823,10 +9794,9 @@
       "text": "Ich las das langweilige Buch, schlief darüber ein, im Schlafe träumte ich, weiter zu lesen, erwachte vor Langeweile, und das dreimal.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -10073,10 +10043,9 @@
       "text": "Altdeutschland, wir weben dein Leichentuch, wir weben hinein den dreyfachen Fluch, wir weben, wir weben.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -10313,10 +10282,9 @@
       "text": "Verfolgung der Andersdenkenden ist überall das Monopol der Geistlichkeit.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -10543,10 +10511,9 @@
       "text": "So ein bisschen Bildung ziert den ganzen Menschen.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -10753,10 +10720,9 @@
       "text": "Armut ist das Los der großen Menschheitshelfer",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -10963,10 +10929,9 @@
       "text": "Vergnügen ist nichts als ein höchst angenehmer Schmerz.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -11153,10 +11118,9 @@
       "text": "Denk ich an Deutschland in der Nacht, dann bin ich um den Schlaf gebracht.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -11343,10 +11307,9 @@
       "text": "Die Verleumdung, das freche Gespenst, setzt sich auf die edelsten Gräber.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -11523,10 +11486,9 @@
       "text": "Wenn es den Kaiser juckt, so müssen die Völker sich kratzen.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -11703,10 +11665,9 @@
       "text": "Das Geld ist der Gott unserer Zeit und Rothschild ist sein Prophet.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -11863,10 +11824,9 @@
       "text": "St. Denis ist, wie männiglich weiß, der Schutzpatron der Könige von Frankreich, bekanntlich ein Heiliger, der mit seinem eigenen Kopfe in der Hand dargestellt wird.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -12023,10 +11983,9 @@
       "text": "Die Fee Morgana, wie würde sie erschrecken, wenn sie etwa einer deutschen Hexe begegnete, die nackt, mit Salben beschmiert, und auf einem Besenstiel, nach dem Brocken reitet.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -12163,10 +12122,9 @@
       "text": "Wir Deutschen hassen gründlich, dauernd; da wir zu ehrlich, auch zu unbeholfen sind, um uns mit schneller Perfidie zu rächen, so hassen wir bis zu unserem letzten Atemzug.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Ludwig Börne",
@@ -12313,10 +12271,9 @@
       "text": "Ärgert dich dein Auge, so reiß es aus, ärgert dich deine Hand, so hau sie ab, ärgert dich deine Zunge, so schneide sie ab, und ärgert dich deine Vernunft, so werde katholisch.",
       "source": "https://de.wikiquote.org/wiki/Heinrich_Heine",
       "qid": "Q44403",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitUrl": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "portraitCredit": "allposters.com",
-      "portraitLicense": "Public domain"
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "title": "Oscar Wilde",
@@ -14427,6 +14384,14 @@
       "portraitUrl": "https://commons.wikimedia.org/wiki/File:Arthur_Schopenhauer_by_J_Sch%C3%A4fer%2C_1859b.jpg",
       "portraitCredit": "Frankfurt am Main University Library",
       "portraitLicense": "Public domain"
+    }
+  ],
+  "removedPortraitSources": [
+    {
+      "removedAt": "2026-06-29",
+      "author": "Heinrich Heine",
+      "reason": "unsafe_portrait_source",
+      "note": "commercial poster credit was not acceptable for super-admin quote packs"
     }
   ]
 }

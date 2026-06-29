@@ -273,20 +273,6 @@
       "credit": "Web Gallery of Art: Image Info about artworkwga QS:P11807,\"h/holbein/hans_y/1525/08erasmu\"",
       "localPath": "data/quotes-de/portraits/erasmus-von-rotterdam.jpg"
     },
-    "Q44403": {
-      "author": "Heinrich Heine",
-      "wikidataQid": "Q44403",
-      "commonsFile": "Heinrich Heine.PNG",
-      "commonsTitle": "File:Heinrich Heine.PNG",
-      "commonsPage": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
-      "thumbUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Heinrich_Heine.PNG",
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Heinrich_Heine.PNG",
-      "licenseShortName": "Public domain",
-      "licenseUrl": null,
-      "artist": "Moritz Daniel Oppenheim",
-      "credit": "allposters.com",
-      "localPath": "data/quotes-de/portraits/heinrich-heine.png"
-    },
     "Q4604": {
       "author": "Konfuzius",
       "wikidataQid": "Q4604",
@@ -1045,8 +1031,10 @@
       "section": "Quotes",
       "line": 37,
       "sourceLine": "At first I was almost about to despair, I thought I never could bear it — but I did bear it. The question remains: how?",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 26,
@@ -1656,8 +1644,10 @@
       "section": "Quotes",
       "line": 104,
       "sourceLine": "So we keep asking, over and over, Until a handful of earth Stops our mouths — But is that an answer?",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 73,
@@ -2228,8 +2218,10 @@
       "section": "Quotes",
       "line": 130,
       "sourceLine": "Oh what lies there are in kisses! And their guile so well prepared! Sweet the snaring is; but this is Sweeter still, to be ensnared.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 117,
@@ -2787,8 +2779,10 @@
       "section": "Quotes",
       "line": 133,
       "sourceLine": "What! Think you that my flashes show me Only in lightnings to excel? Believe me, friends, you do not know me, For I can thunder quite as well.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 160,
@@ -3333,8 +3327,10 @@
       "section": "Quotes",
       "line": 22,
       "sourceLine": "The moon, too, hid herself Behind the clouds that darkly came over her; High up roarèd the sea, And then triumphantly stood in the heavens The stars all-eternal.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 202,
@@ -3879,8 +3875,10 @@
       "section": "Quotes",
       "line": 28,
       "sourceLine": "Ich weiss nicht, was soll es bedeuten, Dass ich so traurig bin; Ein Märchen aus alten Zeiten, Das kommt mir nicht aus dem Sinn.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 244,
@@ -4412,8 +4410,10 @@
       "section": "Quotes",
       "line": 32,
       "sourceLine": "Du bist wie eine Blume, So hold und schön und rein; Ich schau dich an, und Wehmut Schleicht mir ins Herz hinein.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 285,
@@ -4945,8 +4945,10 @@
       "section": "Quotes",
       "line": 72,
       "sourceLine": "Christianity is an idea, and as such is indestructible and immortal, like every idea.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 326,
@@ -5478,8 +5480,10 @@
       "section": "Quotes",
       "line": 75,
       "sourceLine": "Mark this well, you proud men of action: You are nothing but the unwitting agents of the men of thought who often, in quiet self-effacement, mark out most exactly all your doings in advance.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 367,
@@ -6011,8 +6015,10 @@
       "section": "Quotes",
       "line": 75,
       "sourceLine": "Mark this well, you proud men of action: You are nothing but the unwitting agents of the men of thought who often, in quiet self-effacement, mark out most exactly all your doings in advance.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 408,
@@ -6531,8 +6537,10 @@
       "section": "Quotes",
       "line": 96,
       "sourceLine": "Ordinarily he is insane, but he has lucid moments when he is only stupid.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 448,
@@ -7038,8 +7046,10 @@
       "section": "Quotes",
       "line": 117,
       "sourceLine": "If the Romans had been obliged to learn Latin, they would never have found time to conquer the world.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 487,
@@ -7545,8 +7555,10 @@
       "section": "Quotes",
       "line": 123,
       "sourceLine": "Great genius takes shape by contact with another great genius, but less by assimilation than by friction.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 526,
@@ -8039,8 +8051,10 @@
       "section": "Quotes",
       "line": 137,
       "sourceLine": "Oaks shall be rent; the Word shall shatter — Yea, on that fiery day, the Crown, Even the palace walls shall totter, And domes and spires come crashing down.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 564,
@@ -8533,8 +8547,10 @@
       "section": "Quotes",
       "line": 146,
       "sourceLine": "The music at a wedding procession always reminds me of the music of soldiers going into battle.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 602,
@@ -9027,8 +9043,10 @@
       "section": "Quotes",
       "line": 154,
       "sourceLine": "The fundamental evil of the world arose from the fact that the good Lord has not created money enough.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 640,
@@ -9508,8 +9526,10 @@
       "section": "Quotes",
       "line": 126,
       "sourceLine": "My songs, they say, are poisoned. How else, love, could it be? Thou hast, with deadly magic, Poured poison into me.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 677,
@@ -9989,8 +10009,10 @@
       "section": "Quotes",
       "line": 10,
       "sourceLine": "Darling maiden, who can be Ever found to equal thee? To thy service joyfully Shall my life be pledged by me. Thy sweet eyes gleam tenderly, Like soft moonbeams o’er the sea; Lights of rosy harmony O’er thy red cheeks wander free.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 714,
@@ -10470,8 +10492,10 @@
       "section": "Quotes",
       "line": 37,
       "sourceLine": "At first I was almost about to despair, I thought I never could bear it — but I did bear it. The question remains: how?",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 751,
@@ -10951,8 +10975,10 @@
       "section": "Quotes",
       "line": 104,
       "sourceLine": "So we keep asking, over and over, Until a handful of earth Stops our mouths — But is that an answer?",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 788,
@@ -11419,8 +11445,10 @@
       "section": "Quotes",
       "line": 25,
       "sourceLine": "Out of my own great woe I make my little songs.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 824,
@@ -11887,8 +11915,10 @@
       "section": "Quotes",
       "line": 45,
       "sourceLine": "Dort wo man Bücher verbrennt, verbrennt man auch am Ende Menschen.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 860,
@@ -12329,8 +12359,10 @@
       "section": "Quotes",
       "line": 83,
       "sourceLine": "If one has no heart, one cannot write for the masses.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 894,
@@ -12771,8 +12803,10 @@
       "section": "Quotes",
       "line": 99,
       "sourceLine": "One should forgive one's enemies, but not before they are hanged.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 928,
@@ -13213,8 +13247,10 @@
       "section": "Quotes",
       "line": 140,
       "sourceLine": "Experience is a good school. But the fees are high.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 962,
@@ -13655,8 +13691,10 @@
       "section": "Quotes",
       "line": 151,
       "sourceLine": "Whatever tears one may shed, in the end one always blows one's nose.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 996,
@@ -14097,8 +14135,10 @@
       "section": "Quotes",
       "line": 157,
       "sourceLine": "There are more fools in the world than there are people.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 1030,
@@ -14539,8 +14579,10 @@
       "section": "Quotes",
       "line": 160,
       "sourceLine": "Music is a strange thing. I would almost say it is a miracle.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 1064,
@@ -14981,8 +15023,10 @@
       "section": "Quotes",
       "line": 13,
       "sourceLine": "When I am with my sweetheart kind, A happy youth am I; So great the wealth within my mind, I the whole world could buy. But when her swanlike arms I quit, In that sad hour of pain, Away my boasted wealth doth flit, And I am poor again.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 1098,
@@ -15410,8 +15454,10 @@
       "section": "Quotes",
       "line": 59,
       "sourceLine": "Every woman is the gift of a world to me.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 1131,
@@ -15826,8 +15872,10 @@
       "section": "Quotes",
       "line": 143,
       "sourceLine": "When words leave off, music begins.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 1163,
@@ -16229,8 +16277,10 @@
       "section": "Quotes",
       "line": 137,
       "sourceLine": "Oaks shall be rent; the Word shall shatter — Yea, on that fiery day, the Crown, Even the palace walls shall totter, And domes and spires come crashing down.",
-      "portraitFile": "data/quotes-de/portraits/heinrich-heine.png",
-      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG"
+      "portraitSource": "https://commons.wikimedia.org/wiki/File:Heinrich_Heine.PNG",
+      "portraitRemovedAt": "2026-06-29",
+      "portraitRemovedReason": "unsafe_portrait_source",
+      "portraitRemovedNote": "commercial poster credit was not acceptable for super-admin quote packs"
     },
     {
       "id": 1194,
@@ -16322,6 +16372,15 @@
       "sourceLine": "There can be no friendship without confidence, and no confidence without integrity.",
       "portraitFile": "data/quotes-de/portraits/samuel-johnson.jpg",
       "portraitSource": "https://commons.wikimedia.org/wiki/File:Samuel_Johnson_by_Joshua_Reynolds.jpg"
+    }
+  ],
+  "removedPortraitSources": [
+    {
+      "author": "Q44403",
+      "wikidataQid": "Q44403",
+      "removedAt": "2026-06-29",
+      "reason": "unsafe_portrait_source",
+      "note": "commercial poster credit was not acceptable for super-admin quote packs"
     }
   ]
 }

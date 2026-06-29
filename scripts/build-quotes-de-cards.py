@@ -771,6 +771,11 @@ def is_public_domainish(meta: dict[str, Any]) -> bool:
     return any(token in license_name for token in ["public domain", "cc0", "no restrictions"])
 
 
+def has_unsafe_portrait_credit(meta: dict[str, Any]) -> bool:
+    credit = (meta.get("credit") or "").lower()
+    return "allposters.com" in credit
+
+
 def prepare_portraits(args: argparse.Namespace, required_authors: set[str] | None = None) -> dict[str, dict[str, Any]]:
     session = requests.Session()
     session.headers.update({"User-Agent": USER_AGENT})
@@ -783,6 +788,9 @@ def prepare_portraits(args: argparse.Namespace, required_authors: set[str] | Non
             meta = fetch_portrait_meta(session, author, args.fetch_wait, args.refresh)
             if not meta or not meta.get("thumbUrl"):
                 print(f"{author['name']}: no portrait")
+                continue
+            if has_unsafe_portrait_credit(meta):
+                print(f"{author['name']}: portrait skipped (unsafe credit)")
                 continue
             if not args.allow_attribution_portraits and not is_public_domainish(meta):
                 print(f"{author['name']}: portrait skipped ({meta.get('licenseShortName') or 'unknown license'})")

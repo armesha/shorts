@@ -1497,6 +1497,9 @@ python3 -u scripts/build-quotes-de-cards.py --count 300 --start-id 244 --fetch-w
 - берет немецкие цитаты из de.Wikiquote, кеширует wikitext в `data/quotes-de/source-cache/wikiquote/`;
 - берет портреты через Wikidata P18 / Wikimedia Commons и по умолчанию оставляет только
   `Public domain`, `CC0`, `No restrictions`;
+- отбрасывает portrait metadata с коммерческими poster-credit/сомнительными provenance даже при
+  `Public domain`; если источник вызывает сомнение, оставляй quote без `portraitFile` и рендерь через
+  generic fallback;
 - отбраковывает markup/source artifacts, policy-risk terms и прямые violence terms;
 - генерирует музыку локальным синтезом в `data/quotes-de/music/` (нет внешнего аудио-источника);
 - рендерит карточки в `temp/quotes-de-cards/`, контакт-листы в `temp/quotes-de-contact/`;
