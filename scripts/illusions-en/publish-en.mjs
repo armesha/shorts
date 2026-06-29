@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Publish the illusions-en pack (run AFTER build-en renders temp/illusions-en/out/).
-// For each clip:  mux quiet ambient into the silent master ->
+// For each clip:  mux quiet music into the silent master ->
 //   data/output/admin-demos/<id>.mp4 (+ .jpg poster)   -> /clip-demos gallery
 //   assets/fact-videos/illusions-en/<id>.mp4           -> channel deck source
 //   videos.json entry {file,title,text}                -> data/illusions-en/videos.json
@@ -16,10 +16,10 @@ const ROOT = resolve(HERE, '../..');
 const OUTDIR = resolve(ROOT, 'temp/illusions-en/out');
 const ADMIN = resolve(ROOT, 'data/output/admin-demos');
 const MANIFEST = resolve(ADMIN, 'manifest.json');
-const AMBIENT = resolve(ROOT, 'assets/audio/illusions-en/ambient.mp3');
+const MUSIC = resolve(ROOT, 'assets/audio/long-videos/fats-waller-swingin-the-operas-1939.opus');
 const DECK = 'illusions-en', PACK_TITLE = 'Optical Illusions', LANG = 'en';
 
-if (!existsSync(AMBIENT)) { console.error('missing ambient: run gen-audio.mjs first'); process.exit(1); }
+if (!existsSync(MUSIC)) { console.error('missing music'); process.exit(1); }
 const manifestPath = process.argv.find((a) => a.endsWith('.json')) || resolve(HERE, 'manifest.json');
 const specs = JSON.parse(readFileSync(resolve(manifestPath), 'utf8'));
 
@@ -44,7 +44,7 @@ specs.forEach((s, i) => {
   const fadeOut = Math.max(0.5, dur - 1.0).toFixed(2);
   const adminMp4 = resolve(ADMIN, `${s.id}.mp4`);
   execFileSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error',
-    '-i', master, '-ss', offset, '-i', AMBIENT,
+    '-i', master, '-ss', offset, '-i', MUSIC,
     '-filter_complex', `[1:a]volume=0.9,afade=t=in:st=0:d=0.6,afade=t=out:st=${fadeOut}:d=1.0[a]`,
     '-map', '0:v', '-map', '[a]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '160k', '-ar', '48000', '-ac', '2',
     '-shortest', '-movflags', '+faststart', adminMp4]);

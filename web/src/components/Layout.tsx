@@ -6,7 +6,16 @@ import { useT, type Lang } from "../lib/i18n";
 import { AppIcon } from "./AppIcon";
 import { apiClient, type AuthUser } from "../lib/api";
 import { groupNotifications } from "../lib/notificationGroups";
-import { ADMIN_NAV_GROUPS, ADMIN_BOTTOM_NAV, USER_BOTTOM_NAV, canSeeNav } from "./layout/navConfig";
+import {
+  ADMIN_NAV_GROUPS,
+  ADMIN_BOTTOM_NAV,
+  USER_BOTTOM_NAV,
+  canSeeNav,
+  navKeyFor,
+  readPinnedNavKeys,
+  writePinnedNavKeys,
+  type NavItem,
+} from "./layout/navConfig";
 import { NotificationDropdown } from "./layout/NotificationDropdown";
 import { NetworkIndicator, LanguageToggle, SkinToggle } from "./layout/widgets";
 
@@ -18,6 +27,7 @@ type ViewTransitionHandle = {
 type ViewTransitionDocument = Document & {
   startViewTransition?: (updateCallback: () => void) => ViewTransitionHandle;
 };
+type SidebarNavItem = NavItem & { navKey: string };
 
 // Close the off-canvas drawer (mobile) after navigating — pure-CSS DaisyUI drawer keeps it open otherwise.
 function closeDrawer() {
@@ -122,6 +132,7 @@ function AdminLayout({
   const navigate = useNavigate();
   const firstRoute = useRef(true);
   const [routeSettling, setRouteSettling] = useState(false);
+  const [pinnedNavKeys, setPinnedNavKeys] = useState<string[]>(readPinnedNavKeys);
   const bottomNav = user.role === "admin" ? ADMIN_BOTTOM_NAV : USER_BOTTOM_NAV;
   // Clip-demos (нарезки) is open to all, but the nav item only shows if the user has ≥1 accessible pack.
   const [hasClipDemos, setHasClipDemos] = useState(user.role === "admin");
@@ -144,6 +155,52 @@ function AdminLayout({
     const timer = window.setTimeout(() => setRouteSettling(false), 320);
     return () => window.clearTimeout(timer);
   }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    writePinnedNavKeys(pinnedNavKeys);
+  }, [pinnedNavKeys]);
+
+  useEffect(() => {
+    const syncPinnedNav = () => setPinnedNavKeys(readPinnedNavKeys());
+    window.addEventListener("sidebar:pinned-nav-changed", syncPinnedNav);
+    return () => window.removeEventListener("sidebar:pinned-nav-changed", syncPinnedNav);
+  }, []);
+
+  const visibleNavGroups = ADMIN_NAV_GROUPS.map((group) => ({
+    ...group,
+    items: group.items
+      .filter((item) => canSeeNav(item, user, { hasClipDemos }))
+      .map((item) => ({ ...item, navKey: navKeyFor(item) })),
+  })).filter((group) => group.items.length > 0);
+  const visibleNavItems = visibleNavGroups.flatMap((group) => group.items);
+  const visibleNavItemsByKey = new Map(visibleNavItems.map((item) => [item.navKey, item]));
+  const pinnedNavItems = pinnedNavKeys
+    .map((key) => visibleNavItemsByKey.get(key))
+    .filter((item): item is SidebarNavItem => Boolean(item));
+  const pinnedNavKeySet = new Set(pinnedNavItems.map((item) => item.navKey));
+  const regularNavGroups = visibleNavGroups
+    .map((group) => ({ ...group, items: group.items.filter((item) => !pinnedNavKeySet.has(item.navKey)) }))
+    .filter((group) => group.items.length > 0);
+
+  function renderSidebarItem({ to, labelKey, icon, end, adminBadge, navKey }: SidebarNavItem) {
+    return (
+      <li key={navKey}>
+        <NavLink
+          to={to}
+          end={end}
+          onClick={closeDrawer}
+          className={({ isActive }) => (isActive ? "active font-medium" : "")}
+        >
+          <AppIcon name={icon} size={18} />
+          {t(labelKey)}
+          {adminBadge && <span className="admin-nav-badge ml-auto">adm</span>}
+          {to === "/notifications" && notificationUnread > 0 && (
+            <span className="badge badge-error badge-sm ml-auto">{notificationUnread > 99 ? "99+" : notificationUnread}</span>
+          )}
+        </NavLink>
+      </li>
+    );
+  }
 
   function handleRouteClick(event: ReactMouseEvent<HTMLDivElement>) {
     const target = event.target;
@@ -267,36 +324,26 @@ function AdminLayout({
 
           <nav className="p-3 flex-1 overflow-y-auto">
             <div className="space-y-4">
-              {ADMIN_NAV_GROUPS.map((group) => {
-                const items = group.items.filter((item) => canSeeNav(item, user, { hasClipDemos }));
-                if (!items.length) return null;
-                return (
+              {pinnedNavItems.length > 0 && (
+                <section>
+                  <div className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-base-content/45">
+                    {t("layout.groupPinned")}
+                  </div>
+                  <ul className="menu gap-1 w-full p-0">
+                    {pinnedNavItems.map(renderSidebarItem)}
+                  </ul>
+                </section>
+              )}
+              {regularNavGroups.map((group) => (
                 <section key={group.labelKey}>
                   <div className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-base-content/45">
                     {t(group.labelKey)}
                   </div>
                   <ul className="menu gap-1 w-full p-0">
-                    {items.map(({ to, labelKey, icon, end, adminBadge }) => (
-                      <li key={to}>
-                        <NavLink
-                          to={to}
-                          end={end}
-                          onClick={closeDrawer}
-                          className={({ isActive }) => (isActive ? "active font-medium" : "")}
-                        >
-                          <AppIcon name={icon} size={18} />
-                          {t(labelKey)}
-                          {adminBadge && <span className="admin-nav-badge ml-auto">adm</span>}
-                          {to === "/notifications" && notificationUnread > 0 && (
-                            <span className="badge badge-error badge-sm ml-auto">{notificationUnread > 99 ? "99+" : notificationUnread}</span>
-                          )}
-                        </NavLink>
-                      </li>
-                    ))}
+                    {group.items.map(renderSidebarItem)}
                   </ul>
                 </section>
-                );
-              })}
+              ))}
             </div>
           </nav>
 

@@ -12,8 +12,7 @@
     "targetDurationSec": 430,
     "plannedDurationSec": 449,
     "sceneCount": 13,
-    "music": "pad-long-sanctuary-11m.mp3",
-    "audioMode": "synthSacredPad",
+    "music": "long-videos/fats-waller-swingin-the-operas-1939.opus",
     "source": "data/christian/cards.json",
     "builtAt": "2026-06-25T08:59:40.328Z"
   },
@@ -30,8 +29,7 @@
     "targetDurationSec": 455,
     "plannedDurationSec": 449,
     "sceneCount": 13,
-    "music": "pad-long-sanctuary-11m.mp3",
-    "audioMode": "synthSacredPad",
+    "music": "long-videos/fats-waller-swingin-the-operas-1939.opus",
     "source": "data/christian/cards.json",
     "builtAt": "2026-06-25T09:01:40.089Z"
   },
@@ -48,8 +46,7 @@
     "targetDurationSec": 480,
     "plannedDurationSec": 472,
     "sceneCount": 14,
-    "music": "pad-long-sanctuary-11m.mp3",
-    "audioMode": "synthSacredPad",
+    "music": "long-videos/fats-waller-swingin-the-operas-1939.opus",
     "source": "data/christian/cards.json",
     "builtAt": "2026-06-25T09:03:47.278Z"
   },
@@ -66,8 +63,7 @@
     "targetDurationSec": 505,
     "plannedDurationSec": 511,
     "sceneCount": 15,
-    "music": "pad-long-sanctuary-11m.mp3",
-    "audioMode": "synthSacredPad",
+    "music": "long-videos/fats-waller-swingin-the-operas-1939.opus",
     "source": "data/christian/cards.json",
     "builtAt": "2026-06-25T09:06:06.756Z"
   },
@@ -84,8 +80,7 @@
     "targetDurationSec": 530,
     "plannedDurationSec": 534,
     "sceneCount": 16,
-    "music": "pad-long-sanctuary-11m.mp3",
-    "audioMode": "synthSacredPad",
+    "music": "long-videos/fats-waller-swingin-the-operas-1939.opus",
     "source": "data/christian/cards.json",
     "builtAt": "2026-06-25T09:08:33.768Z"
   },
@@ -102,8 +97,7 @@
     "targetDurationSec": 555,
     "plannedDurationSec": 554,
     "sceneCount": 16,
-    "music": "pad-long-sanctuary-11m.mp3",
-    "audioMode": "synthSacredPad",
+    "music": "long-videos/fats-waller-swingin-the-operas-1939.opus",
     "source": "data/christian/cards.json",
     "builtAt": "2026-06-25T09:11:09.797Z"
   },
@@ -120,8 +114,7 @@
     "targetDurationSec": 580,
     "plannedDurationSec": 601,
     "sceneCount": 17,
-    "music": "pad-long-sanctuary-11m.mp3",
-    "audioMode": "synthSacredPad",
+    "music": "long-videos/fats-waller-swingin-the-operas-1939.opus",
     "source": "data/christian/cards.json",
     "builtAt": "2026-06-25T09:14:01.960Z"
   },
@@ -138,8 +131,7 @@
     "targetDurationSec": 605,
     "plannedDurationSec": 621,
     "sceneCount": 18,
-    "music": "pad-long-sanctuary-11m.mp3",
-    "audioMode": "synthSacredPad",
+    "music": "long-videos/fats-waller-swingin-the-operas-1939.opus",
     "source": "data/christian/cards.json",
     "builtAt": "2026-06-25T09:16:51.467Z"
   },
@@ -156,8 +148,7 @@
     "targetDurationSec": 630,
     "plannedDurationSec": 642,
     "sceneCount": 19,
-    "music": "pad-long-sanctuary-11m.mp3",
-    "audioMode": "synthSacredPad",
+    "music": "long-videos/fats-waller-swingin-the-operas-1939.opus",
     "source": "data/christian/cards.json",
     "builtAt": "2026-06-25T09:19:50.611Z"
   },
@@ -174,8 +165,7 @@
     "targetDurationSec": 650,
     "plannedDurationSec": 644,
     "sceneCount": 19,
-    "music": "pad-long-sanctuary-11m.mp3",
-    "audioMode": "synthSacredPad",
+    "music": "long-videos/fats-waller-swingin-the-operas-1939.opus",
     "source": "data/christian/cards.json",
     "builtAt": "2026-06-25T09:22:45.767Z"
   }

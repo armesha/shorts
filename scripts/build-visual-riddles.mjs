@@ -21,7 +21,7 @@ const TEMPLATE = resolve(ROOT, 'templates/visual-riddle.html');
 const VENV_PY = resolve(ROOT, '.venv-tts/bin/python');
 const AUDIO_DIR = resolve(ROOT, 'assets/audio');
 const VOICE = process.env.VR_VOICE || 'ru-RU-DmitryNeural';
-const RESERVED_MUSIC = ['islamic', 'christian', 'memes', 'animal-superheroes', 'packs', 'illusions-3d'];
+const RESERVED_MUSIC = ['memes', 'animal-superheroes', 'packs'];
 const AUDIO_EXT = new Set(['.mp3', '.m4a', '.aac', '.wav', '.ogg', '.opus']);
 // Banner palette rotates per card (matches the existing pack look).
 const BANNERS = ['#f26d5b', '#f5b942', '#e85aa8', '#a7d96a', '#2bb9b0', '#5ec8e8'];
@@ -130,15 +130,10 @@ async function narrate(text, outMp3) {
   throw lastErr;
 }
 
-// Assemble card PNG + narration (+ quiet looped music) into a 1080x1920 MP4.
-// Default: a slow Ken-Burns zoom (subtle motion reads as "video", better for monetization than a
-// dead still). VR_ZOOM=0 forces a static frame; a zoom ffmpeg error also falls back to static.
+// Assemble card PNG + narration (+ quiet looped music) into a static 1080x1920 MP4.
 async function assemble(png, voiceMp3, music, outMp4, voiceDur) {
   const dur = Math.max(7, +(voiceDur + 1.8).toFixed(2));
   const fadeOut = Math.max(0, dur - 1.0).toFixed(2);
-  const durFrames = Math.round(dur * 30);
-  const rate = (0.08 / durFrames).toFixed(6); // reaches ~1.08x zoom by the end of the clip
-  const vZoom = `[0:v]setsar=1,zoompan=z='min(1.0+${rate}*on,1.08)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s=1080x1920:fps=30[v]`;
   const vStatic = `[0:v]setsar=1[v]`;
   const aMix = `[1:a]volume=1.0[vo];[2:a]volume=0.10,atrim=0:${dur},afade=t=in:st=0:d=0.6,afade=t=out:st=${fadeOut}:d=1.0[m];[vo][m]amix=inputs=2:duration=longest:normalize=0[a]`;
   const aSolo = `[1:a]volume=1.0[a]`;
@@ -152,9 +147,7 @@ async function assemble(png, voiceMp3, music, outMp4, voiceDur) {
       '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '160k', '-ar', '48000', '-ac', '2',
       '-movflags', '+faststart', outMp4], { timeout: 180000, maxBuffer: 32 * 1024 * 1024 });
   };
-  const wantZoom = process.env.VR_ZOOM === '1'; // СТАТИКА по умолчанию (загадку надо разглядывать); VR_ZOOM=1 — опционально Ken-Burns
-  try { await run(wantZoom ? vZoom : vStatic); }
-  catch (e) { if (wantZoom) await run(vStatic); else throw e; }
+  await run(vStatic);
   return dur;
 }
 

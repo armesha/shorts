@@ -12,8 +12,7 @@
     "targetDurationSec": 430,
     "plannedDurationSec": 432,
     "sceneCount": 19,
-    "music": "ambient-long-wind-11m.mp3",
-    "audioMode": "nonInstrumentalAmbient",
+    "music": "long-videos/fats-waller-swingin-the-operas-1939.opus",
     "source": "data/islamic/cards.json",
     "builtAt": "2026-06-24T15:44:01.621Z"
   },
@@ -30,8 +29,7 @@
     "targetDurationSec": 505,
     "plannedDurationSec": 496,
     "sceneCount": 23,
-    "music": "ambient-long-wind-11m.mp3",
-    "audioMode": "nonInstrumentalAmbient",
+    "music": "long-videos/fats-waller-swingin-the-operas-1939.opus",
     "source": "data/islamic/cards.json",
     "builtAt": "2026-06-24T15:46:11.502Z"
   },
@@ -48,8 +46,7 @@
     "targetDurationSec": 560,
     "plannedDurationSec": 566,
     "sceneCount": 29,
-    "music": "ambient-long-wind-11m.mp3",
-    "audioMode": "nonInstrumentalAmbient",
+    "music": "long-videos/fats-waller-swingin-the-operas-1939.opus",
     "source": "data/islamic/cards.json",
     "builtAt": "2026-06-24T15:48:42.628Z"
   },
@@ -66,8 +63,7 @@
     "targetDurationSec": 610,
     "plannedDurationSec": 608,
     "sceneCount": 28,
-    "music": "ambient-long-wind-11m.mp3",
-    "audioMode": "nonInstrumentalAmbient",
+    "music": "long-videos/fats-waller-swingin-the-operas-1939.opus",
     "source": "data/islamic/cards.json",
     "builtAt": "2026-06-24T15:51:23.363Z"
   },
@@ -84,8 +80,7 @@
     "targetDurationSec": 650,
     "plannedDurationSec": 643,
     "sceneCount": 31,
-    "music": "ambient-long-wind-11m.mp3",
-    "audioMode": "nonInstrumentalAmbient",
+    "music": "long-videos/fats-waller-swingin-the-operas-1939.opus",
     "source": "data/islamic/cards.json",
     "builtAt": "2026-06-24T15:54:13.825Z"
   }

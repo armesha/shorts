@@ -11,7 +11,7 @@ export interface PackItem {
   text: string;
   chars: number;
   title: string;
-  /** Tips deck only: profession key → which lifehack background/template to render on. */
+  /** Optional source/category marker retained for legacy imported items. */
   profession?: string;
   /** preFact deck only: relative filename of the pre-built mp4 in assets/fact-videos/. */
   videoFile?: string;

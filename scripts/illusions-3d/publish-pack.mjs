@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Publish the full illusions-3d RU + DE packs (run AFTER build renders out-ru/ + out-de/).
 // For each pack, for each clip:
-//   - mux quiet ambient drone into the silent master -> with-audio mp4
+//   - mux quiet music into the silent master -> with-audio mp4
 //   - -> data/output/admin-demos/<id>.mp4 (+ <id>.jpg poster)  → /clip-demos gallery
 //   - -> assets/fact-videos/<deck>/<id>.mp4                    → channel deck source
 //   - videos.json entry {file,title,text}                      → data/<deck>/videos.json
@@ -17,7 +17,7 @@ const ROOT = resolve(HERE, '../..');
 const WORK = resolve(ROOT, 'temp/illusions-3d'); // generated manifests + rendered masters (gitignored)
 const ADMIN = resolve(ROOT, 'data/output/admin-demos');
 const MANIFEST = resolve(ADMIN, 'manifest.json');
-const DRONE = resolve(ROOT, 'assets/audio/illusions-3d/ambient_drone.mp3');
+const MUSIC = resolve(ROOT, 'assets/audio/long-videos/fats-waller-swingin-the-operas-1939.opus');
 
 const PACKS = [
   { deck: 'illusions-3d', title: 'Обмани свой мозг', lang: 'ru', manifest: 'ru-manifest.json', dir: 'out-ru' },
@@ -45,7 +45,7 @@ for (const pk of PACKS) {
     const offset = ((i * 2) % 24).toFixed(2);
     const adminMp4 = resolve(ADMIN, `${s.id}.mp4`);
     execFileSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error',
-      '-i', master, '-ss', offset, '-i', DRONE,
+      '-i', master, '-ss', offset, '-i', MUSIC,
       '-filter_complex', '[1:a]volume=0.9,afade=t=in:st=0:d=0.6,afade=t=out:st=7.0:d=1.0[a]',
       '-map', '0:v', '-map', '[a]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '160k', '-ar', '48000', '-ac', '2',
       '-shortest', '-movflags', '+faststart', adminMp4]);

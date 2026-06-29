@@ -74,19 +74,6 @@ const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
   pt: ["pack:new-memes-pt-superadmin"],
 };
 
-const LIFEHACK_DECK_BY_LANG: Record<string, string[]> = {
-  ru: ["tips"],
-  ar: ["tips-ar"],
-  en: ["tips-en"],
-  it: ["tips-it"],
-  de: ["tips-de"],
-  es: ["tips-es"],
-  fr: ["tips-fr"],
-  pt: ["tips-pt"],
-  hi: ["tips-hi"],
-  id: ["tips-id"],
-};
-
 const QUOTE_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
   ar: ["quote-video-ar"],
   ru: ["quote-video-ru"],
@@ -225,12 +212,6 @@ const RUSSIAN_SOURCE_GROUPS: SourceGroupDef[] = [
     sources: { ru: ["ru"] },
   },
   {
-    id: "lifehacks",
-    title: "Лайфхаки",
-    defaultWeight: 3,
-    sources: { ru: ["tips"] },
-  },
-  {
     id: "static_facts",
     title: "Факты",
     defaultWeight: 2,
@@ -285,12 +266,6 @@ const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
     title: "Интересный факт",
     defaultWeight: 1,
     sources: FACT_VIDEO_DECK_BY_LANG,
-  },
-  {
-    id: "lifehacks",
-    title: "Лайфхаки",
-    defaultWeight: 2,
-    sources: LIFEHACK_DECK_BY_LANG,
   },
   {
     id: "jokes",
@@ -407,7 +382,6 @@ export const BLOCKS: BlockDef[] = [
 const BLOCK_ALIASES: Record<string, string> = {
   facts_space: "quotes",
   jokes_memes: "quotes",
-  lifehacks: "quotes",
   psychology: "quotes",
   riddles_illusions: "quotes",
   islam: "religion",

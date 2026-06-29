@@ -20,6 +20,14 @@ import { AppIcon } from "../components/AppIcon";
 import { DEFAULT_DESIGN, DESIGNS, getSavedDesign, saveDesign, type DesignId } from "../lib/design";
 import { useSkin } from "../lib/skin";
 import { useT } from "../lib/i18n";
+import { useAuth } from "../lib/auth";
+import {
+  ADMIN_NAV_GROUPS,
+  canSeeNav,
+  navKeyFor,
+  readPinnedNavKeys,
+  writePinnedNavKeys,
+} from "../components/layout/navConfig";
 
 export default function Settings() {
   const { t } = useT();
@@ -35,12 +43,106 @@ export default function Settings() {
 
       <DesignSettings />
 
+      <FavoriteNavSettings />
+
       <GoogleKeysManager />
 
       <TelegramLink />
 
       <ChangePassword />
     </div>
+  );
+}
+
+function FavoriteNavSettings() {
+  const { t } = useT();
+  const { user } = useAuth();
+  const [pinnedKeys, setPinnedKeys] = useState<string[]>(readPinnedNavKeys);
+  const [hasClipDemos, setHasClipDemos] = useState(user?.role === "admin");
+
+  useEffect(() => {
+    if (user?.role === "admin") {
+      setHasClipDemos(true);
+      return;
+    }
+    let alive = true;
+    fetch("/api/clip-demos/packs", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : { packs: [] }))
+      .then((d) => {
+        if (alive) setHasClipDemos((d.packs?.length ?? 0) > 0);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [user?.role]);
+
+  if (!user) return null;
+
+  const groups = ADMIN_NAV_GROUPS.map((group) => ({
+    ...group,
+    items: group.items
+      .filter((item) => canSeeNav(item, user, { hasClipDemos }))
+      .map((item) => ({ ...item, navKey: navKeyFor(item) })),
+  })).filter((group) => group.items.length > 0);
+  const visibleKeys = new Set(groups.flatMap((group) => group.items.map((item) => item.navKey)));
+  const selectedCount = pinnedKeys.filter((key) => visibleKeys.has(key)).length;
+
+  function commit(next: string[]) {
+    setPinnedKeys(next);
+    writePinnedNavKeys(next);
+    window.dispatchEvent(new Event("sidebar:pinned-nav-changed"));
+  }
+
+  function toggle(navKey: string) {
+    commit(pinnedKeys.includes(navKey) ? pinnedKeys.filter((key) => key !== navKey) : [navKey, ...pinnedKeys]);
+  }
+
+  return (
+    <section className="card bg-base-100 border border-base-300">
+      <div className="card-body gap-4">
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div className="flex items-start gap-2">
+            <AppIcon name="deck" className="text-primary mt-0.5" size={18} />
+            <div>
+              <h2 className="card-title text-base">{t("settings.favoriteNavTitle")}</h2>
+              <div className="mt-1">
+                <span className="badge badge-sm badge-ghost">{t("settings.favoriteNavCount", { n: selectedCount })}</span>
+              </div>
+            </div>
+          </div>
+          <button className="btn btn-sm btn-ghost gap-1" onClick={() => commit([])} disabled={selectedCount === 0}>
+            <AppIcon name="refresh" size={14} />
+            {t("settings.favoriteNavReset")}
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {groups.map((group) => (
+            <div key={group.labelKey} className="rounded-lg border border-base-300 bg-base-100 p-3">
+              <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-base-content/45">
+                {t(group.labelKey)}
+              </div>
+              <div className="space-y-1">
+                {group.items.map((item) => (
+                  <label key={item.navKey} className="flex min-h-8 cursor-pointer items-center gap-2 rounded-md px-1.5 hover:bg-base-200/60">
+                    <input
+                      type="checkbox"
+                      className="checkbox checkbox-primary checkbox-sm"
+                      checked={pinnedKeys.includes(item.navKey)}
+                      onChange={() => toggle(item.navKey)}
+                    />
+                    <AppIcon name={item.icon} size={16} className="text-base-content/65" />
+                    <span className="min-w-0 flex-1 truncate text-sm font-medium">{t(item.labelKey)}</span>
+                    {item.adminBadge && <span className="admin-nav-badge">adm</span>}
+                  </label>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 

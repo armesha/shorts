@@ -8,7 +8,6 @@ import {
   assembleVideoBackground,
   pickJokeMotionOverlay,
   pickJokeVideoBackground,
-  pickLifehackMotionOverlay,
   resolveAudio,
 } from "../video.ts";
 
@@ -37,11 +36,7 @@ export async function produceAnecdoteVideo(
   const imagePath = resolve(outputDir, `out/anek-${stamp}.png`);
   const videoPath = resolve(outputDir, `out/anek-${stamp}.mp4`);
   const seed = `${deck.id}|${a.profession ?? ""}|${a.title}|${a.text}`;
-  const motionOverlay = deck.lifehack
-    ? pickLifehackMotionOverlay(seed)
-    : isPlainAnecdoteDeck(deck)
-      ? pickJokeMotionOverlay(seed, a.text.length)
-      : null;
+  const motionOverlay = isPlainAnecdoteDeck(deck) ? pickJokeMotionOverlay(seed, a.text.length) : null;
   const videoBg = isPlainAnecdoteDeck(deck) ? pickJokeVideoBackground(seed, a.text.length) : null;
   const audio = resolveAudio(undefined, deck);
   const r = videoBg

@@ -37,15 +37,16 @@ function Gate() {
       <GenProgressToast />
       <Layout>
         <Routes>
-        <Route path="/" element={user.role === "admin" ? <Overview /> : <Accounts />} />
+        <Route path="/" element={<Navigate to="/channels" replace />} />
         <Route path="/channels" element={<Accounts />} />
+        <Route path="/overview" element={user.role === "admin" ? <Overview /> : <Navigate to="/channels" replace />} />
         <Route path="/studio" element={<Studio />} />
-        <Route path="/gallery" element={user.role === "admin" ? <Gallery /> : <Navigate to="/" replace />} />
+        <Route path="/gallery" element={user.role === "admin" ? <Gallery /> : <Navigate to="/channels" replace />} />
         <Route path="/cards" element={<Cards />} />
         <Route path="/packs" element={<Packs />} />
-        <Route path="/queue" element={user.role === "admin" ? <QueuePage /> : <Navigate to="/" replace />} />
-        <Route path="/notifications" element={user.role === "admin" ? <Notifications /> : <Navigate to="/" replace />} />
-        <Route path="/accounts" element={<Navigate to={user.role === "admin" ? "/channels" : "/"} replace />} />
+        <Route path="/queue" element={user.role === "admin" ? <QueuePage /> : <Navigate to="/channels" replace />} />
+        <Route path="/notifications" element={user.role === "admin" ? <Notifications /> : <Navigate to="/channels" replace />} />
+        <Route path="/accounts" element={<Navigate to="/channels" replace />} />
         <Route path="/accounts/:id" element={<AccountDetail />} />
         <Route path="/history" element={<History />} />
         <Route path="/statistics" element={<Statistics />} />
@@ -53,14 +54,14 @@ function Gate() {
         <Route path="/admin/analytics" element={<Navigate to="/statistics" replace />} />
         <Route path="/clip-demos" element={<ClipDemos />} />
         <Route path="/long-videos" element={<LongVideos />} />
-        <Route path="/limits" element={user.role === "admin" ? <Limits /> : <Navigate to="/" replace />} />
+        <Route path="/limits" element={user.role === "admin" ? <Limits /> : <Navigate to="/channels" replace />} />
         <Route path="/changelog" element={<Changelog />} />
         <Route path="/errors" element={<Errors />} />
         <Route path="/system" element={<System />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/editor" element={<TemplateEditor />} />
         <Route path="/users" element={<Users />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/channels" replace />} />
         </Routes>
       </Layout>
     </GenQueueProvider>

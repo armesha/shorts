@@ -26,15 +26,6 @@ export const DECK_GLOSS_RU: Record<string, string> = {
   fr: "Французские анекдоты",
   en: "Английские анекдоты",
   pt: "Португальские анекдоты",
-  "tips-de": "Немецкие лайфхаки",
-  "tips-es": "Испанские лайфхаки",
-  "tips-ar": "Арабские лайфхаки",
-  "tips-en": "Английские лайфхаки",
-  "tips-it": "Итальянские лайфхаки",
-  "tips-fr": "Французские лайфхаки",
-  "tips-pt": "Португальские лайфхаки",
-  "tips-hi": "Лайфхаки · хинди",
-  "tips-id": "Индонезийские лайфхаки",
   psych: "Психология",
   islamic: "Ислам · арабский",
   christian: "Библия · англ.",
@@ -114,8 +105,7 @@ export const deckLabel = (id: string, name: string): string =>
 
 /** Content language of each built-in deck (deck id → 2-letter lang). Custom packs carry their own lang. */
 export const DECK_LANG: Record<string, string> = {
-  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", choose: "ru",
-  tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
+  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", choose: "ru", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-es": "es", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar",
 };
 
@@ -210,17 +200,7 @@ export const BUILTIN_DECKS: { id: string; label: string }[] = [
   { id: "fr", label: "Французский" },
   { id: "en", label: "Английский" },
   { id: "pt", label: "Португальский" },
-  { id: "tips", label: "Народные лайфхаки" },
   { id: "choose", label: "Что выберешь? (RU)" },
-  { id: "tips-de", label: "Немецкие лайфхаки" },
-  { id: "tips-es", label: "Trucos utiles (ES)" },
-  { id: "tips-ar", label: "نصائح يومية (AR)" },
-  { id: "tips-en", label: "Everyday Lifehacks (EN)" },
-  { id: "tips-it", label: "Consigli utili (IT)" },
-  { id: "tips-fr", label: "Astuces utiles (FR)" },
-  { id: "tips-pt", label: "Dicas úteis (PT)" },
-  { id: "tips-hi", label: "रोज़मर्रा के टिप्स (HI)" },
-  { id: "tips-id", label: "Tips Harian (ID)" },
   { id: "psych", label: "Психология (DE)" },
   { id: "islamic", label: "Ислам · арабский (Коран и хадисы)" },
   { id: "christian", label: "Христианство · Библия (англ., KJV)" },

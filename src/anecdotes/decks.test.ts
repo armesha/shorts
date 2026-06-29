@@ -9,7 +9,6 @@ import { ytMeta } from "./yt-meta.ts";
 test("deckLang maps built-in decks; '' for packs/unknown", () => {
   assert.equal(deckLang("ru"), "ru");
   assert.equal(deckLang("psych"), "de");
-  assert.equal(deckLang("tips-es"), "es");
   assert.equal(deckLang("pt"), "pt");
   assert.equal(deckLang("ar"), "ar");
   assert.equal(deckLang("hi"), "hi");

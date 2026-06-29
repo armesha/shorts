@@ -1776,7 +1776,7 @@
           "w": 1080,
           "h": 1920,
           "rot": 0,
-          "src": "assets/template-packs/static-facts/backgrounds/facts-lifehack-ai-01.jpg",
+          "src": "assets/template-packs/static-facts/backgrounds/facts-household-ai-01.jpg",
           "fit": "cover",
           "opacity": 1
         },
@@ -1913,7 +1913,7 @@
           "w": 1080,
           "h": 1920,
           "rot": 0,
-          "src": "assets/template-packs/static-facts/backgrounds/facts-lifehack-ai-01.jpg",
+          "src": "assets/template-packs/static-facts/backgrounds/facts-household-ai-01.jpg",
           "fit": "cover",
           "opacity": 1
         },
@@ -3236,7 +3236,7 @@
           "w": 1080,
           "h": 1920,
           "rot": 0,
-          "src": "assets/template-packs/static-facts/backgrounds/facts-lifehack-shelf-ai-02.jpg",
+          "src": "assets/template-packs/static-facts/backgrounds/facts-household-shelf-ai-02.jpg",
           "fit": "cover",
           "opacity": 1
         },
@@ -3373,7 +3373,7 @@
           "w": 1080,
           "h": 1920,
           "rot": 0,
-          "src": "assets/template-packs/static-facts/backgrounds/facts-lifehack-shelf-ai-02.jpg",
+          "src": "assets/template-packs/static-facts/backgrounds/facts-household-shelf-ai-02.jpg",
           "fit": "cover",
           "opacity": 1
         },

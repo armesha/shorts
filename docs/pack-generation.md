@@ -31,7 +31,7 @@ public-domain книги, Wikisource/Internet Archive/Gutenberg, open-source д�
 
 - `russian` / "Русские" - все русские нерелигиозные каналы, один общий RU-микс;
 - `quotes` / "Иностранные" - все нерусские нерелигиозные каналы, включая старые URL-алиасы
-  `jokes_memes`, `facts_space`, `lifehacks`, `psychology`, `riddles_illusions`;
+  `jokes_memes`, `facts_space`, `psychology`, `riddles_illusions`;
 - `religion` / "Религия" - исламские и христианские каналы, но с раздельными секциями source mix.
 
 В `armen`-схему больше не возвращать `visual-riddles*`, `illusions*`, `illusions-3d*` и legacy
@@ -266,9 +266,6 @@ prebuilt MP4 считается исключением и требует явн�
 | `de` Deutsche Witze | `data/anecdotes-de/` | локальный SQL-корпус `local-assets/corpora/witze.sql` -> фильтр/дедуп | нет для сборки; нужен только workflow заголовков |
 | `fr` Blagues françaises | `data/anecdotes-fr/` | локальный JSON `local-assets/corpora/blagues.json` -> safe categories | нет для сборки; нужен только workflow заголовков |
 | `it` Barzellette Italiane | `data/anecdotes-it/` | текущий плотный вариант из `local-assets/corpora/it-gen/clean-*.json` | да, для чистки кандидатов; сборка локальная |
-| `tips` Народные лайфхаки | `data/tips/` | source-backed батчи `local-assets/corpora/tips-gen/surprising-*.json` -> локальная сборка | да, для новых батчей |
-| `tips-de` Deutsche Lifehacks | `data/tips-de/` | source-backed батчи `local-assets/corpora/tips-de-gen/surprising-*.json` -> локальная сборка | да, для новых батчей |
-| `tips-es` Trucos utiles | `data/tips-es/` | source-backed батчи `local-assets/corpora/tips-es-gen/surprising-*.json` -> локальная сборка | да, для новых батчей |
 | `psych` Psychologie (DE) | `data/psych/cards.json` | структурные карточки по `docs/psych-cards-standard.md` | обычно да, но можно загрузить вручную |
 | `islamic` آيات وأذكار | `data/islamic/cards.json` | точные интернет-корпусы -> локальные slices -> workflow выбора id -> assemble | да, только для выбора id/theme |
 | `christian` Holy Bible KJV | `data/christian/cards.json` | KJV public domain -> candidates/slices -> workflow выбора id -> assemble | да, только для выбора id/theme |
@@ -294,7 +291,7 @@ prebuilt MP4 считается исключением и требует явн�
 | `choose` Что выберешь? | `data/choose/cards.json` + `data/choose/photos/` | дилеммы «A или B» (RU) + реальные фото Pexels (без апскейла); статичная card-style дека | да — генерация дилемм + VISION-отбраковка неверных фото (спросить модель) |
 
 `data/packs/*.json` - это живые пользовательские паки из страницы "Карточки". Они gitignored и
-пополняются через UI/API или seed-скрипты. Встроенные деки (`data/anecdotes*`, `data/tips*`,
+пополняются через UI/API или seed-скрипты. Встроенные деки (`data/anecdotes*`,
 `data/islamic`, `data/christian`, `data/*/videos.json`) работают через статический реестр
 `src/anecdotes/decks.ts`.
 
@@ -421,15 +418,13 @@ ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p
 - ledger использованных карточек: `data/long-islamic-ar/usage.json`;
 - контакт-листы: `data/output/long-islamic-ar/contact-long-islamic-ar-00N.jpg`.
 
-Исламские длинные видео не используют обычную музыку и инструменты. Сборщик создаёт/использует одну
-длинную немелодическую ambient-дорожку:
+Исламские длинные видео используют одну длинную мелодичную дорожку из общего long-video пула:
 
 ```text
-assets/audio/islamic/ambient-long-wind-11m.mp3
+assets/audio/long-videos/fats-waller-swingin-the-operas-1939.opus
 ```
 
-Это локально сгенерированный шумовой фон (ветер/дождь), без мелодии, без инструментов, без внешней
-лицензии и атрибуции. Не заменяй его на инструментальную музыку.
+Шумовые ambient/drone-подложки здесь не используются.
 
 Пересборка 5 выпусков по 7-11 минут:
 
@@ -466,11 +461,10 @@ YouTube title/description/tags берутся из метаданных пака
 Звук:
 
 ```text
-assets/audio/christian/pad-long-sanctuary-11m.mp3
+assets/audio/long-videos/fats-waller-swingin-the-operas-1939.opus
 ```
 
-Это одна длинная локально синтезированная спокойная pad-дорожка для всего ролика. Она не скачана из
-интернета и не перезапускается между сценами.
+Это одна длинная мелодичная дорожка для всего ролика; ambient/pad-подложки больше не используются.
 
 Пересборка 10 выпусков по 7-11 минут:
 
@@ -765,7 +759,7 @@ Microsoft Edge, голос `ru-RU-DmitryNeural`) в изолированном v
   картинкой, вопрос + CTA «Пиши ответ в комментариях»).
 - `scripts/build-visual-riddles.mjs <manifest.json> --outdir DIR` — на каждую: `_vr-prep.py` (PIL:
   обрезка белых полей + автоконтраст + ≤1200px) → puppeteer-рендер карточки → edge-tts озвучка
-  (retry) → ffmpeg (лёгкий Ken-Burns зум; голос 100% + музыка ~10%). Env `VR_VOICE`/`VR_ZOOM`.
+  (retry) → ffmpeg (статичная карточка; голос 100% + музыка ~10%). Env `VR_VOICE`.
 - `scripts/_vr-ingest.mjs <sourcing.json>` — качает кандидатов (Commons `Special:FilePath?width=1400`
   растрирует SVG; не-Commons SVG → cairosvg; throttle + retry под 429 Commons; PIL-валидация) →
   `temp/visual-riddle-demos/build-manifest.json` + `sources.json`.
@@ -810,8 +804,8 @@ CC-BY-SA и отбрасываются. Финальную визуальную 
 5. Регистрация: `node scripts/_vr-register.mjs --deck visual-riddles-de --title "Sieh die Antwort" --lang de
    --manifest <de-manifest> --batch <batch-de> --sources data/visual-riddles/sources.json`.
 
-Параметризация (общая): CTA — `{{CTA}}` в шаблоне / поле `cta` в манифесте / env `VR_CTA`; зум выключен
-по умолчанию (`VR_ZOOM=1` — включить); `_vr-register.mjs` флаги `--deck/--title/--lang` пишут в
+Параметризация (общая): CTA — `{{CTA}}` в шаблоне / поле `cta` в манифесте / env `VR_CTA`; зум отключён
+и не используется; `_vr-register.mjs` флаги `--deck/--title/--lang` пишут в
 `data/<deck>/{videos,sources}.json` и создают manifest-пак; постеры на `/clip-demos` (общая плоская
 `admin-demos/`) получают суффикс `-<lang>`, чтобы локализация не затёрла оригинал. Дека прописана в
 `src/anecdotes/decks.ts` (DECKS + lang-map) и `web/src/lib/deck.ts` (label/lang/список) → в селекторе
@@ -933,16 +927,13 @@ LLM НЕ нужен: фигуры — это математика, заголо�
   1080×1920 MP4 **без звука**. Env `DUR`(8)/`FPS`(30)/`PALETTE`/`SKIP_EXISTING=1`(докатка).
 - `gen-manifest.mjs` — пишет `ru-manifest.json` + `de-manifest.json` (по 100: 20 фигур × 5 вариантов
   направление/скорость/угол; банки заголовков RU/DE «силой мысли»).
-- `publish-pack.mjs` — после рендера: мьюксит эмбиент в каждый немой мастер и раскладывает RU+DE по
+- `publish-pack.mjs` — после рендера: мьюксит музыку в каждый немой мастер и раскладывает RU+DE по
   нарезкам (`admin-demos/`) и канальным декам (`assets/fact-videos/<deck>/` + `data/<deck>/videos.json`),
   обновляет пак в `admin-demos/manifest.json` (чужие паки не трогает).
 - Мастера (немые): `temp/illusions-3d/out-ru/*.mp4` + `out-de/*.mp4` (+ `.jpg` постеры).
 
-Звук: общий дрон `assets/audio/illusions-3d/ambient_drone.mp3` — синтез ffmpeg (сумма синусов +
-tremolo/aecho/lowpass), 100% свободно, как islamic/christian. **ГРАБЛИ:** без нормализации дрон выходит
-тихим (~−33 dB) и в миксе становится неслышным (−52 dB). Поэтому в синтез добавлен
-`loudnorm=I=-16:TP=-1.0`, а в миксе `volume=0.9` → итог по ролику ≈ −19.5 dB mean (уверенно слышно).
-Дрон добавлен в `RESERVED_MUSIC` в `scripts/build-visual-riddles.mjs`, чтобы не попасть фоном в другие паки.
+Звук: общий мелодичный трек `assets/audio/long-videos/fats-waller-swingin-the-operas-1939.opus`.
+Drone/ambient-подложки для этих паков не используются.
 
 Полная пересборка с нуля:
 ```bash
@@ -1105,69 +1096,6 @@ node --import tsx src/anecdotes/build-it.ts
 
 ```bash
 node --input-type=module -e 'import fs from "node:fs"; const idx=JSON.parse(fs.readFileSync("data/anecdotes-it/index.json","utf8")); const titled=JSON.parse(fs.readFileSync("data/anecdotes-it/titled.json","utf8")); console.log({indexTotal:idx.total,titled:titled.length,range:idx.range});'
-```
-
-## Лайфхаки (`tips`, `tips-de`, `tips-es`)
-
-Контент собирается только из source-backed батчей `surprising-*.json` в
-`local-assets/corpora/tips-gen/`, `local-assets/corpora/tips-de-gen/` и
-`local-assets/corpora/tips-es-gen/`, затем локально валидируется, дедупится и складывается в
-`data/tips*/titled.json`. Старые `<profession>-*.json` остаются как архивный сырец, но сборщики их
-намеренно игнорируют, чтобы слабые legacy-карточки не возвращались в генерацию. Mixed batch может
-держать `profession` в каждом item; если его нет, профессия берётся из имени файла.
-
-2026-06-24 добавлен source-backed набор `surprising-lifehacks-2026-06`: RU/DE/ES локализации по
-25 карточек, источники в `local-assets/corpora/tips-sources/surprising-lifehacks-2026-06.json`.
-Визуальный рендер обновлён: `src/anecdotes/lifehack-templates.ts` содержит детерминированные
-layout-варианты, `templates/lifehack.html` использует верхнюю текстовую область примерно на 70% кадра,
-а `assets/backgrounds/lifehacks/editorial-clean-0*.png` и `generated-workspace-*.jpg` дают нейтральные
-сгенерированные фоны без брендов, логотипов и readable text. Для profession-карточек renderer обычно
-берёт соответствующий `profession_*` фон, но детерминированно подмешивает neutral `generated-workspace`
-примерно в 25% случаев, чтобы super-admin каналы не повторяли один и тот же portrait-heavy visual.
-Нижняя часть кадра намеренно остаётся свободной под CTA/UI Shorts и маленький motion-оверлей.
-MP4 для `lifehack`-дек получают маленький синтезированный GIF-оверлей из
-`assets/motion/lifehacks/` и отдельную синтезированную музыку из `assets/audio/lifehacks/`
-(оба набора без скачанных ассетов, пересборка скриптами `src/scripts/lifehack-gen-motion.mjs` и
-`src/scripts/lifehack-gen-audio.mjs`).
-
-Перед генерацией новых батчей спроси пользователя модель workflow. Для активной сборки имена файлов
-должны быть `surprising-<n>.json`; старый формат `<profession>-<n>.json` не участвует в сборке
-lifehack-дек. `profession` внутри item должен быть один из:
-
-```text
-chef, mechanic, firefighter, lawyer, accountant, teacher, programmer, builder, police, hairdresser
-```
-
-Формат каждого файла:
-
-```json
-[
-  { "title": "Kurzer Titel", "profession": "chef", "text": "300-500 Zeichen полезного совета..." }
-]
-```
-
-Сборка RU:
-
-```bash
-node --import tsx src/anecdotes/build-tips.ts
-```
-
-Сборка DE:
-
-```bash
-node --import tsx src/anecdotes/build-tips-de.ts
-```
-
-Сборка ES:
-
-```bash
-node --import tsx src/anecdotes/build-tips-es.ts
-```
-
-Проверка:
-
-```bash
-node --input-type=module -e 'import fs from "node:fs"; for (const d of ["data/tips","data/tips-de","data/tips-es"]) { const idx=JSON.parse(fs.readFileSync(`${d}/index.json`,"utf8")); const titled=JSON.parse(fs.readFileSync(`${d}/titled.json`,"utf8")); console.log(d,{indexTotal:idx.total,titled:titled.length,byProfession:idx.byProfession}); }'
 ```
 
 ## Psychologie (`psych`)
@@ -2018,7 +1946,7 @@ hypnotic tunnel, kinetic depth dots, aperture bars, neon ladder, ray afterimage 
 8. Регистрация дек в `src/anecdotes/decks.ts` (объект + `DECK_LANG`) и `web/src/lib/deck.ts`
    (`DECK_GLOSS_RU`/`DECK_LANG`/`BUILTIN_DECKS`) → `npm run web:build` → **рестарт сервера**.
 
-Эмбиент: `assets/audio/illusions-en/ambient.mp3` (ffmpeg-синтез, `gen-audio.mjs`, loudnorm I=-16 → слышно).
+Звук: `assets/audio/long-videos/fats-waller-swingin-the-operas-1939.opus`; ambient-синтез удалён.
 Новый ЯЗЫК: добавить в `compose-publish.mjs ALL_LANGS`/`PACK_TITLE`, перевести хуки, зарегать деку.
 Новый ТИП: создать `illusions/<key>.html` от `skeleton-v2.html`, прогнать шаги 2→8.
 **Доступ:** админ видит все 5 в Нарезках без рестарта (`deckAllowed`/`files.ts` admin-bypass, манифест читается

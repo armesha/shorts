@@ -2,7 +2,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { mkdir, rm, writeFile } from "node:fs/promises";
-import { basename, dirname, resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import puppeteer from "puppeteer-core";
 import { chromePath } from "../src/render.ts";
 
@@ -15,7 +15,7 @@ const DATA_DIR = resolve("data", DECK_ID);
 const ASSET_DIR = resolve("assets/fact-videos", DECK_ID);
 const OUTPUT_DIR = resolve("data/output", DECK_ID);
 const BG_DIR = resolve("assets/backgrounds/islamic_templates");
-const AMBIENT_FILE = process.env.AMBIENT_FILE || "assets/audio/islamic/ambient-long-wind-11m.mp3";
+const MUSIC_FILE = process.env.MUSIC_FILE || "assets/audio/long-videos/fats-waller-swingin-the-operas-1939.opus";
 
 const VIDEO_WIDTH = Number(process.env.VIDEO_WIDTH || 1920);
 const VIDEO_HEIGHT = Number(process.env.VIDEO_HEIGHT || 1080);
@@ -29,7 +29,7 @@ const MIN_SCENE_SEC = Number(process.env.MIN_SCENE_SEC || 16);
 const MAX_SCENE_SEC = Number(process.env.MAX_SCENE_SEC || 48);
 const CHARS_PER_SEC = Number(process.env.CHARS_PER_SEC || 18);
 const EXTRA_READ_SEC = Number(process.env.EXTRA_READ_SEC || 9);
-const AMBIENT_VOLUME = Number(process.env.AMBIENT_VOLUME || 0.18);
+const MUSIC_VOLUME = Number(process.env.MUSIC_VOLUME || 0.22);
 const EPISODE_START = Math.max(1, Number(process.env.EPISODE_START || 1));
 const EPISODE_COUNT = Math.max(1, Number(process.env.EPISODE_COUNT || 5));
 const KEEP_WORK = process.env.KEEP_WORK === "1";
@@ -208,28 +208,9 @@ function ffprobeDuration(path) {
   }
 }
 
-function ensureAmbientBed() {
-  if (existsSync(AMBIENT_FILE) && (ffprobeDuration(AMBIENT_FILE) || 0) >= 700) return;
-  run(FFMPEG, [
-    "-y",
-    "-hide_banner",
-    "-loglevel",
-    "error",
-    "-filter_complex",
-    "anoisesrc=color=brown:amplitude=0.42:duration=720[b];" +
-      "anoisesrc=color=pink:amplitude=0.13:duration=720,highpass=f=1400,lowpass=f=5200[h];" +
-      "[b]lowpass=f=360,tremolo=f=0.11:d=0.35[w];" +
-      "[w][h]amix=inputs=2:weights=0.8 0.32:normalize=0,loudnorm=I=-28:TP=-4[a]",
-    "-map",
-    "[a]",
-    "-ar",
-    "44100",
-    "-ac",
-    "2",
-    "-b:a",
-    "128k",
-    AMBIENT_FILE,
-  ]);
+function ensureMusicBed() {
+  if (existsSync(MUSIC_FILE) && (ffprobeDuration(MUSIC_FILE) || 0) >= 700) return;
+  throw new Error(`Long-video music must exist and cover the whole video: ${MUSIC_FILE}`);
 }
 
 function concatListLine(path) {
@@ -492,10 +473,10 @@ function buildContactSheet(workDir, contactSheet, sceneCount) {
 }
 
 function addAmbient(silentVideo, finalVideo, totalSec) {
-  ensureAmbientBed();
-  const ambientDuration = ffprobeDuration(AMBIENT_FILE);
-  if (!ambientDuration || ambientDuration < totalSec - 0.5) {
-    throw new Error(`Islamic ambient bed must cover the whole video: ambient=${ambientDuration ?? "unknown"}s video=${totalSec}s`);
+  ensureMusicBed();
+  const musicDuration = ffprobeDuration(MUSIC_FILE);
+  if (!musicDuration || musicDuration < totalSec - 0.5) {
+    throw new Error(`Islamic music bed must cover the whole video: music=${musicDuration ?? "unknown"}s video=${totalSec}s`);
   }
   const fadeStart = Math.max(0, totalSec - 4);
   run(FFMPEG, [
@@ -506,9 +487,9 @@ function addAmbient(silentVideo, finalVideo, totalSec) {
     "-i",
     silentVideo,
     "-i",
-    AMBIENT_FILE,
+    MUSIC_FILE,
     "-filter_complex",
-    `[1:a]atrim=0:${totalSec},asetpts=PTS-STARTPTS,volume=${AMBIENT_VOLUME},afade=t=in:st=0:d=1,afade=t=out:st=${fadeStart}:d=4[a]`,
+    `[1:a]atrim=0:${totalSec},asetpts=PTS-STARTPTS,volume=${MUSIC_VOLUME},afade=t=in:st=0:d=1,afade=t=out:st=${fadeStart}:d=4[a]`,
     "-map",
     "0:v:0",
     "-map",
@@ -581,8 +562,7 @@ async function buildEpisode({ episode, videoId, targetSec, scenes, plannedDurati
     targetDurationSec: targetSec,
     plannedDurationSec,
     sceneCount: scenes.length,
-    music: basename(AMBIENT_FILE),
-    audioMode: "nonInstrumentalAmbient",
+    music: "long-videos/fats-waller-swingin-the-operas-1939.opus",
     source: SOURCE_FILE,
     builtAt,
   };
@@ -754,8 +734,8 @@ async function main() {
           plannedDurationSec: ep.plannedDurationSec,
           plannedDurationMin: Number((ep.plannedDurationSec / 60).toFixed(2)),
         })),
-        ambient: AMBIENT_FILE,
-        ambientDurationSec: ffprobeDuration(AMBIENT_FILE),
+        music: MUSIC_FILE,
+        musicDurationSec: ffprobeDuration(MUSIC_FILE),
         video: `${VIDEO_WIDTH}x${VIDEO_HEIGHT}`,
         staticScenes: true,
         fadeSec: FADE_SEC,
@@ -811,9 +791,9 @@ async function main() {
     sourceFile: SOURCE_FILE,
     sourceSelection: "Deterministic top slice from the exact Islamic Arabic deck, without rewriting Quran, hadith, or dua text.",
     audio: {
-      file: AMBIENT_FILE,
-      mode: "single continuous non-instrumental synthesized wind/rain ambient bed for the whole long video; no instruments, no melody, no per-scene restarts",
-      licenseNote: "Generated locally with ffmpeg noise sources; no external copyrighted music and no attribution required.",
+      file: MUSIC_FILE,
+      mode: "single continuous melodic public-domain jazz track for the whole long video; no ambient drone or noise bed",
+      licenseNote: "Public-domain recording stored in the local long-videos music pool.",
     },
     output: {
       videos: mergedVideos.map((video) => video.file),

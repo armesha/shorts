@@ -12,15 +12,12 @@ import { buildRussianHtml, pickRussianBg } from "./russian-bg.ts";
 import { buildMemeHtml, buildMemeBoardHtml, memeBackdropFor, type MemeCard } from "../memes/render.ts";
 import { photoCss, photoDataUri } from "../memes/photos.ts";
 import { buildChooseHtml, type ChooseCard } from "../choose/render.ts";
-import { lifehackTemplateStyle, pickLifehackTemplate } from "./lifehack-templates.ts";
 import type { PackItem } from "./library.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATE = resolve(__dirname, "../../templates/anecdote.html");
 const POP_JOKE_TEMPLATE = resolve(__dirname, "../../templates/anecdote-pop.html");
 const BG_DIR = resolve(process.cwd(), "assets/backgrounds");
-const LIFEHACK_TEMPLATE = resolve(__dirname, "../../templates/lifehack.html");
-const LIFEHACK_BG_DIR = resolve(process.cwd(), "assets/backgrounds/lifehacks");
 
 const esc = (s: string): string =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -64,7 +61,6 @@ export function backgroundCss(name?: string | null): string {
   return `url('data:${mime};base64,${buf.toString("base64")}') center/cover no-repeat`;
 }
 
-/** Pick a deterministic lifehack background from generated/editorial/profession pools. */
 function stableIndex(seed: string, size: number): number {
   let h = 2166136261;
   for (let i = 0; i < seed.length; i += 1) {
@@ -72,47 +68,6 @@ function stableIndex(seed: string, size: number): number {
     h = Math.imul(h, 16777619) >>> 0;
   }
   return h % size;
-}
-
-function lifehackBgFile(profession?: string | null, variant?: string | null, seed = ""): string | null {
-  if (!existsSync(LIFEHACK_BG_DIR)) return null;
-  const files = readdirSync(LIFEHACK_BG_DIR)
-    .filter((f) => /^(editorial-clean-\d+|generated-[a-z0-9-]+|profession_.*)\.(png|jpe?g)$/i.test(f))
-    .filter((f) => !/_chaplin\.(png|jpe?g)$/i.test(f))
-    .sort();
-  if (files.length === 0) return null;
-  const v = (variant ?? "").toLowerCase();
-  const professionFiles = files.filter((f) => /^profession_.*\.(jpe?g|png)$/i.test(f));
-  const generatedFiles = files.filter((f) => /^generated-[a-z0-9-]+\.(png|jpe?g)$/i.test(f));
-  if (profession) {
-    const key = profession.toLowerCase();
-    const exact = [
-      v ? `profession_${key}_${v}` : "",
-      `profession_${key}`,
-    ].filter(Boolean);
-    const candidates = professionFiles.filter((f) => exact.some((prefix) => f.toLowerCase().startsWith(`${prefix}.`)));
-    if (candidates.length) {
-      const baseSeed = seed || `${profession}|${variant}`;
-      if (generatedFiles.length && stableIndex(`${baseSeed}|workspace-mix`, 4) === 0) {
-        return generatedFiles[stableIndex(`${baseSeed}|workspace`, generatedFiles.length)];
-      }
-      return candidates[stableIndex(baseSeed, candidates.length)];
-    }
-    if (generatedFiles.length) return generatedFiles[stableIndex(seed || `${profession}|${variant}`, generatedFiles.length)];
-  }
-  return files[stableIndex(seed || `${profession ?? ""}|${variant ?? ""}`, files.length)];
-}
-
-/** Resolve a profession (+ deck variant) to a CSS background (inlined data-URI) + the file name used. */
-function lifehackBgCss(profession?: string | null, variant?: string | null, seed = ""): { css: string; name: string } {
-  const file = lifehackBgFile(profession, variant, seed);
-  if (!file) return { css: "#ffffff", name: "" };
-  const buf = readFileSync(resolve(LIFEHACK_BG_DIR, file));
-  const mime = /\.png$/i.test(file) ? "image/png" : "image/jpeg";
-  return {
-    css: `url('data:${mime};base64,${buf.toString("base64")}') center/cover no-repeat`,
-    name: file,
-  };
 }
 
 export interface Anecdote {
@@ -123,7 +78,7 @@ export interface Anecdote {
   bg?: string;
   /** Best-effort exclusion for random background selection. */
   avoidBg?: string;
-  /** Deck id — lifehack decks use the dedicated editorial template. */
+  /** Deck id. */
   deck?: string;
   /** Legacy profession key retained for source stats/template seeding. */
   profession?: string;
@@ -164,7 +119,7 @@ async function captureCard(html: string, outPath: string, opts: { transparent?: 
   }
 }
 
-/** Render one anecdote (or a lifehack, for lifehack decks) to a 1080x1920 image. */
+/** Render one anecdote/card to a 1080x1920 image. */
 export async function renderAnecdote(
   a: Anecdote,
   outPath: string,
@@ -175,7 +130,6 @@ export async function renderAnecdote(
   if (deck.islamic) return renderIslamic(a, outPath);
   if (deck.christian) return renderChristian(a, outPath);
   if (deck.psych) return renderPsych(a, outPath);
-  if (deck.lifehack) return renderLifehack(a, outPath);
   if (deck.russianBg) return renderRussian(a, outPath);
   if (deck.memeBoard) return renderMemeBoard(a, outPath);
   if (deck.meme) return renderMeme(a, outPath);
@@ -713,26 +667,4 @@ async function renderChoose(
   const html = buildChooseHtml(card);
   const fontPx = await captureCard(html, outPath);
   return { path: outPath, fontPx, bg: "choose" };
-}
-
-/** Render one lifehack/tip onto the editorial top-safe template. */
-async function renderLifehack(
-  a: Anecdote,
-  outPath: string,
-): Promise<{ path: string; fontPx: number; bg: string }> {
-  const { css, name } = lifehackBgCss(a.profession, getDeck(a.deck).lifehackVariant, `${a.deck}|${a.title}|${a.text}`);
-  const template = pickLifehackTemplate({ deck: a.deck, profession: a.profession, title: a.title, text: a.text });
-  const lang = deckLang(a.deck ?? "") || "en";
-  let html = await readFile(LIFEHACK_TEMPLATE, "utf8");
-  html = html
-    .replaceAll("{{LANG}}", esc(lang))
-    .replaceAll("{{DIR}}", lang === "ar" ? "rtl" : "ltr")
-    .replaceAll("{{TITLE}}", esc(a.title))
-    .replace("{{TEXT}}", esc(a.text))
-    .replaceAll("{{BG}}", css)
-    .replaceAll("{{TEMPLATE_CLASS}}", `layout-${template.layout}`)
-    .replaceAll("{{TEMPLATE_ID}}", template.id)
-    .replaceAll("{{STYLE}}", lifehackTemplateStyle(template));
-  const fontPx = await captureCard(html, outPath);
-  return { path: outPath, fontPx, bg: name || (a.profession ?? "") };
 }

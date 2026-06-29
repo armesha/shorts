@@ -15,7 +15,6 @@ import { openDb } from "../db.ts";
 const FOREIGN_EN_SOURCES = [
   "pack:static-facts-en-superadmin",
   "fact-en",
-  "tips-en",
   "en",
   "pack:new-memes-en-superadmin",
   "quote-video-en",

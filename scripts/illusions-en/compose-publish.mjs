@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// Compose localized clips from titleless bases + title overlays + ambient, and publish localized decks.
+// Compose localized clips from titleless bases + title overlays + music, and publish localized decks.
 // Inputs: matrix.json [{id,key,html,variant,dur,fps,name}], localize.json {id:{en,de,it,es,ru,...}},
-//   temp/illusions-en/base/<id>.mp4(+.jpg), temp/illusions-en/titles/<id>_<lang>.png, ambient.mp3
-// Per (lang,design): overlay title PNG onto the base + mux ambient -> final mp4, placed in:
+//   temp/illusions-en/base/<id>.mp4(+.jpg), temp/illusions-en/titles/<id>_<lang>.png, music
+// Per (lang,design): overlay title PNG onto the base + mux music -> final mp4, placed in:
 //   assets/fact-videos/illusions-<lang>/<id>.mp4   (channel deck source)
 //   data/output/admin-demos/<lang>-<id>.mp4 (+ .jpg) via HARDLINK  (clip-demos gallery)
 //   data/illusions-<lang>/videos.json + manifest pack illusions-<lang>
@@ -19,7 +19,7 @@ const BASE = resolve(ROOT, 'temp/illusions-en/base');
 const TITLES = resolve(ROOT, 'temp/illusions-en/titles');
 const ADMIN = resolve(ROOT, 'data/output/admin-demos');
 const MANIFEST = resolve(ADMIN, 'manifest.json');
-const AMBIENT = resolve(ROOT, 'assets/audio/illusions-en/ambient.mp3');
+const MUSIC = resolve(ROOT, 'assets/audio/long-videos/fats-waller-swingin-the-operas-1939.opus');
 const PACK_TITLE = {
   en: 'Optical Illusions',
   de: 'Optische Täuschungen',
@@ -42,7 +42,7 @@ const LANGS = langIdx >= 0 ? argv[langIdx + 1].split(',') : ALL_LANGS;
 const matrix = JSON.parse(readFileSync(resolve(HERE, 'matrix.json'), 'utf8'));
 const loc = JSON.parse(readFileSync(resolve(HERE, 'localize.json'), 'utf8'));
 const skipExisting = process.env.SKIP_EXISTING === '1';
-if (!existsSync(AMBIENT)) { console.error('missing ambient'); process.exit(1); }
+if (!existsSync(MUSIC)) { console.error('missing music'); process.exit(1); }
 mkdirSync(ADMIN, { recursive: true });
 const manifest = existsSync(MANIFEST) ? JSON.parse(readFileSync(MANIFEST, 'utf8')) : { packs: [] };
 if (!Array.isArray(manifest.packs)) manifest.packs = [];
@@ -72,12 +72,12 @@ for (const lang of LANGS) {
       if (!existsSync(adminJpg) && existsSync(baseJpg)) copyFileSync(baseJpg, adminJpg);
     } else {
       if (useOverlay) {
-        execFileSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', '-i', base, '-i', titlePng, '-i', AMBIENT,
+        execFileSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', '-i', base, '-i', titlePng, '-i', MUSIC,
           '-filter_complex', `[0:v][1:v]overlay=0:0[v];[2:a]${audioF.replace('[a0]', '')}`,
           '-map', '[v]', '-map', '[a]', '-c:v', 'libx264', '-preset', 'medium', '-crf', '19', '-pix_fmt', 'yuv420p',
           '-c:a', 'aac', '-b:a', '160k', '-ar', '48000', '-ac', '2', '-shortest', '-movflags', '+faststart', out]);
       } else {
-        execFileSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', '-i', base, '-i', AMBIENT,
+        execFileSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', '-i', base, '-i', MUSIC,
           '-filter_complex', `[1:a]volume=0.9,afade=t=in:st=0:d=0.6,afade=t=out:st=${fadeOut}:d=1.0[a]`,
           '-map', '0:v', '-map', '[a]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '160k', '-ar', '48000', '-ac', '2', '-shortest', '-movflags', '+faststart', out]);
       }

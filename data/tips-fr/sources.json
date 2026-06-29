@@ -1,6 +1,0 @@
-{
-  "updatedAt": "2026-06-25T17:19:08.292Z",
-  "source": "scripts/build-missing-lifehack-locales.mjs",
-  "license": "original deterministic localized cards prepared in-repo",
-  "safety": "generic household organization, storage, routine, and digital-hygiene tips; excludes high-risk professional, medical, legal, repair, weapon, surveillance, and chemical-mixing advice"
-}

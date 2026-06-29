@@ -55,9 +55,9 @@
       "promptSummary": "Museum-curiosity educational still life with objects around the margins and a central parchment area; no text/logos/watermarks."
     },
     {
-      "file": "assets/template-packs/static-facts/backgrounds/facts-lifehack-ai-01.jpg",
+      "file": "assets/template-packs/static-facts/backgrounds/facts-household-ai-01.jpg",
       "type": "generated",
-      "promptSummary": "Clean practical workspace/lifehack background with household objects around the edges and a blank central card; no text/logos/watermarks."
+      "promptSummary": "Clean practical household workspace background with household objects around the edges and a blank central card; no text/logos/watermarks."
     },
     {
       "file": "assets/template-packs/static-facts/backgrounds/facts-wisdom-ai-01.jpg",
@@ -80,7 +80,7 @@
       "promptSummary": "Cozy psychology and human-behavior desk background with abstract brain/network motif, clean central area, no text/logos/watermarks."
     },
     {
-      "file": "assets/template-packs/static-facts/backgrounds/facts-lifehack-shelf-ai-02.jpg",
+      "file": "assets/template-packs/static-facts/backgrounds/facts-household-shelf-ai-02.jpg",
       "type": "generated",
       "promptSummary": "Clean home-organization shelf and workspace background with large blank wall area for overlay text; no text/logos/watermarks."
     }

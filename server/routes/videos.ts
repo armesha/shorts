@@ -268,7 +268,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
                 bg: body.bg, // undefined → random background per video
                 music: body.music || undefined, // empty/undefined → random track per video
                 deck: deckId,
-                profession: a.profession, // tips deck → which profession background to render on
+                profession: a.profession,
                 item: a,
               }),
             );

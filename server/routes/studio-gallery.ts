@@ -15,7 +15,6 @@ import {
   listAudio,
   pickJokeMotionOverlay,
   pickJokeVideoBackground,
-  pickLifehackMotionOverlay,
   resolveAudio,
   downscaleImage,
 } from "../../src/video.ts";
@@ -192,7 +191,7 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
       }
       if (!title) title = pickGenericTitle(deck);
 
-      // Music: explicit track | "none" = silent | empty = random; islamic/christian get their own ambient bed.
+      // Music: explicit track | "none" = silent | empty = random.
       const { music, audioPath } = resolveAudio(body.music, deck);
 
       videoCounter++;
@@ -202,11 +201,7 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
       const imgOut = resolve(process.cwd(), outputDir, imgRel);
       const vidOut = resolve(process.cwd(), outputDir, vidRel);
       const seed = `${deck.id}|${profession ?? ""}|${title}|${text}`;
-      const motionOverlay = deck.lifehack
-        ? pickLifehackMotionOverlay(seed)
-        : isPlainAnecdoteDeck(deck)
-          ? pickJokeMotionOverlay(seed, text.length)
-          : null;
+      const motionOverlay = isPlainAnecdoteDeck(deck) ? pickJokeMotionOverlay(seed, text.length) : null;
       const videoBg = isPlainAnecdoteDeck(deck) ? pickJokeVideoBackground(seed, text.length) : null;
       const r = await metrics.track("render", async () => {
         const rr = videoBg

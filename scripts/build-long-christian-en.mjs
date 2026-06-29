@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { mkdir, rm, writeFile } from "node:fs/promises";
-import { basename, dirname, resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import puppeteer from "puppeteer-core";
 import { chromePath } from "../src/render.ts";
 
@@ -15,7 +15,7 @@ const DATA_DIR = resolve("data", DECK_ID);
 const ASSET_DIR = resolve("assets/fact-videos", DECK_ID);
 const OUTPUT_DIR = resolve("data/output", DECK_ID);
 const BG_DIR = resolve("assets/backgrounds/christian_protestant_templates");
-const AUDIO_FILE = process.env.AUDIO_FILE || "assets/audio/christian/pad-long-sanctuary-11m.mp3";
+const AUDIO_FILE = process.env.MUSIC_FILE || "assets/audio/long-videos/fats-waller-swingin-the-operas-1939.opus";
 
 const VIDEO_WIDTH = Number(process.env.VIDEO_WIDTH || 1920);
 const VIDEO_HEIGHT = Number(process.env.VIDEO_HEIGHT || 1080);
@@ -217,30 +217,7 @@ function ffprobeDuration(path) {
 
 function ensureAudioBed() {
   if (existsSync(AUDIO_FILE) && (ffprobeDuration(AUDIO_FILE) || 0) >= 700) return;
-  mkdirSync(dirname(resolve(AUDIO_FILE)), { recursive: true });
-  run(FFMPEG, [
-    "-y",
-    "-hide_banner",
-    "-loglevel",
-    "error",
-    "-filter_complex",
-    "sine=frequency=196:duration=720:sample_rate=44100[a1];" +
-      "sine=frequency=246.94:duration=720:sample_rate=44100[a2];" +
-      "sine=frequency=293.66:duration=720:sample_rate=44100[a3];" +
-      "sine=frequency=392:duration=720:sample_rate=44100[a4];" +
-      "anoisesrc=color=pink:amplitude=0.015:duration=720[n];" +
-      "[a1][a2][a3][a4][n]amix=inputs=5:weights=0.18 0.13 0.10 0.08 0.04:normalize=0," +
-      "lowpass=f=2600,aecho=0.45:0.5:1800|2600:0.18|0.11,tremolo=f=0.12:d=0.12,loudnorm=I=-29:TP=-4[a]",
-    "-map",
-    "[a]",
-    "-ar",
-    "44100",
-    "-ac",
-    "2",
-    "-b:a",
-    "128k",
-    AUDIO_FILE,
-  ]);
+  throw new Error(`Long-video music must exist and cover the whole video: ${AUDIO_FILE}`);
 }
 
 function concatListLine(path) {
@@ -517,7 +494,7 @@ function addAudio(silentVideo, finalVideo, totalSec) {
   ensureAudioBed();
   const audioDuration = ffprobeDuration(AUDIO_FILE);
   if (!audioDuration || audioDuration < totalSec - 0.5) {
-    throw new Error(`Christian audio bed must cover the whole video: audio=${audioDuration ?? "unknown"}s video=${totalSec}s`);
+    throw new Error(`Christian music bed must cover the whole video: audio=${audioDuration ?? "unknown"}s video=${totalSec}s`);
   }
   const fadeStart = Math.max(0, totalSec - 4);
   run(FFMPEG, [
@@ -603,7 +580,7 @@ async function buildEpisode({ episode, videoId, targetSec, scenes, plannedDurati
     targetDurationSec: targetSec,
     plannedDurationSec,
     sceneCount: scenes.length,
-    music: basename(AUDIO_FILE),
+    music: "long-videos/fats-waller-swingin-the-operas-1939.opus",
     audioMode: "synthSacredPad",
     source: SOURCE_FILE,
     builtAt,
@@ -835,8 +812,8 @@ async function main() {
     sourceSelection: "Deterministic top slice from the exact KJV Christian deck, without rewriting Bible text.",
     audio: {
       file: AUDIO_FILE,
-      mode: "single continuous locally synthesized quiet sacred pad for the whole long video; no per-scene restarts",
-      licenseNote: "Generated locally by ffmpeg sine/noise filters for this pack; no external copyrighted source.",
+      mode: "single continuous melodic public-domain jazz track for the whole long video; no ambient pad or noise bed",
+      licenseNote: "Public-domain recording stored in the local long-videos music pool.",
     },
     output: {
       videos: mergedVideos.map((video) => video.file),

@@ -277,7 +277,6 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
 
   const selectedBlockParam = searchParams.get("block");
   const selectedBlockId =
-    selectedBlockParam === "lifehacks" ||
     selectedBlockParam === "facts_space" ||
     selectedBlockParam === "psychology" ||
     selectedBlockParam === "riddles_illusions" ||

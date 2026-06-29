@@ -8,7 +8,7 @@ import type { Db } from "../db.ts";
 import { DECKS, getDeck, isPlainAnecdoteDeck, pickGenericTitle } from "../../src/anecdotes/decks.ts";
 import type { PackItem } from "../../src/anecdotes/library.ts";
 import { renderAnecdote } from "../../src/anecdotes/render.ts";
-import { pickJokeMotionOverlay, pickLifehackMotionOverlay, resolveAudio } from "../../src/video.ts";
+import { pickJokeMotionOverlay, resolveAudio } from "../../src/video.ts";
 import { buildStillVideoFiles } from "../infra/media.ts";
 import { quoteVoiceover } from "./quote-voiceover.ts";
 
@@ -46,10 +46,8 @@ export function makeBuildLibraryVideo(deps: {
     const audio = deck.quoteVideo
       ? await quoteVoiceover({ deck, title, text: input.text })
       : { ...resolveAudio(input.music, deck), durationSec: undefined as number | undefined };
-    const motionOverlay = deck.lifehack
-      ? pickLifehackMotionOverlay(`${deck.id}|${input.profession ?? ""}|${title}|${input.text}`)
-      : isPlainAnecdoteDeck(deck)
-        ? pickJokeMotionOverlay(`${deck.id}|${title}|${input.text}`, input.text.length)
+    const motionOverlay = isPlainAnecdoteDeck(deck)
+      ? pickJokeMotionOverlay(`${deck.id}|${title}|${input.text}`, input.text.length)
       : null;
     const { imgRel, vidRel, render: r } = await buildStillVideoFiles({
       prefix: "vid",

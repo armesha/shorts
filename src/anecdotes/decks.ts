@@ -9,8 +9,6 @@ export interface Deck {
   hashtags: string; // appended to the YouTube description
   tags: string[]; // YouTube tags
   genericTitles: string[]; // fallback headings when an anecdote has no title yet
-  /** When true, render via the lifehack (profession) layout instead of the anecdote card. */
-  lifehack?: boolean;
   /** When true, this deck's items are psychology cards (whole card as JSON in `text`), rendered via templates/psych.html. */
   psych?: boolean;
   /** When true, this deck's items are Islamic cards (Quran/hadith/dua; whole card as JSON in `text`), rendered via templates/islamic.html. */
@@ -32,9 +30,6 @@ export interface Deck {
   adminOnly?: boolean;
   /** Admin-only built-in deck that can be explicitly granted to non-admin users from /users. */
   grantable?: boolean;
-  /** Lifehack background style suffix, e.g. "chaplin" → profession_<key>_chaplin.jpg (with moustache).
-   *  Omitted → the plain profession_<key>.jpg (no moustache). */
-  lifehackVariant?: string;
   /** When true, render anecdotes on the themed russian_jokes/* scenes (text in each bg's paper
    *  safe-zone) via templates/anecdote-russian.html instead of the flat textured card. */
   russianBg?: boolean;
@@ -47,7 +42,7 @@ export interface Deck {
   /** Quote cards rendered dynamically but assembled with an on-demand TTS voiceover. */
   quoteVideo?: boolean;
   /** Deck-specific audio bed without changing render/data dispatch. */
-  audioProfile?: "islamic" | "christian" | "memes" | "lifehack" | "jokes";
+  audioProfile?: "islamic" | "christian" | "memes" | "jokes";
   /** Pre-built long compilation assembled from many short readable scenes into one 5-15 minute video. */
   longVideo?: boolean;
   /** When true, generation picks the first unused item by videos.json order instead of random. */
@@ -226,126 +221,6 @@ export const DECKS: Deck[] = [
     grantable: true,
     gallery: true,
     audioProfile: "jokes",
-  },
-  {
-    id: "tips",
-    name: "Народные лайфхаки",
-    dir: "data/tips",
-    source: "local-assets/corpora/tips.json",
-    emoji: "💡",
-    hashtags: "#лайфхаки #советы #полезное #лайфхак #shorts",
-    tags: ["лайфхаки", "советы", "полезное", "лайфхак", "быт", "хитрости", "shorts"],
-    genericTitles: ["Лайфхак", "Полезный совет", "На заметку", "Хитрость", "Совет дня", "Запомни"],
-    lifehack: true,
-    gallery: true,
-  },
-  {
-    id: "tips-de",
-    name: "Deutsche Lifehacks",
-    dir: "data/tips-de",
-    source: "local-assets/corpora/tips-de.json",
-    emoji: "💡",
-    hashtags: "#lifehacks #tipps #alltag #lifehack #shorts",
-    tags: ["lifehacks", "tipps", "alltagstipps", "lifehack", "haushalt", "tricks", "shorts"],
-    genericTitles: ["Lifehack", "Nützlicher Tipp", "Gut zu wissen", "Profi-Trick", "Tipp des Tages", "Merk dir das"],
-    lifehack: true,
-    gallery: true,
-  },
-  {
-    id: "tips-es",
-    name: "Trucos utiles",
-    dir: "data/tips-es",
-    source: "local-assets/corpora/tips-es.json",
-    emoji: "💡",
-    hashtags: "#trucos #lifehacks #consejos #util #shorts",
-    tags: ["trucos", "lifehacks", "consejos utiles", "vida diaria", "ahorro", "seguridad", "shorts"],
-    genericTitles: ["Truco util", "Consejo practico", "Guarda este dato", "Dato que ayuda", "Tip del dia", "No lo olvides"],
-    lifehack: true,
-    gallery: true,
-  },
-  {
-    id: "tips-ar",
-    name: "نصائح يومية",
-    dir: "data/tips-ar",
-    source: "scripts/build-missing-lifehack-locales.mjs",
-    emoji: "💡",
-    hashtags: "#نصائح #حيل_منزلية #افكار #lifehack #shorts",
-    tags: ["نصائح", "حيل منزلية", "افكار", "تنظيم", "lifehack", "shorts"],
-    genericTitles: ["نصيحة", "فكرة مفيدة", "تذكير بسيط"],
-    lifehack: true,
-    gallery: true,
-  },
-  {
-    id: "tips-en",
-    name: "Everyday Lifehacks",
-    dir: "data/tips-en",
-    source: "scripts/build-missing-lifehack-locales.mjs",
-    emoji: "💡",
-    hashtags: "#lifehacks #tips #homehacks #usefultips #shorts",
-    tags: ["lifehacks", "tips", "home hacks", "organization", "useful tips", "shorts"],
-    genericTitles: ["Lifehack", "Useful Tip", "Good to Know", "Quick Fix"],
-    lifehack: true,
-    gallery: true,
-  },
-  {
-    id: "tips-it",
-    name: "Consigli utili",
-    dir: "data/tips-it",
-    source: "scripts/build-missing-lifehack-locales.mjs",
-    emoji: "💡",
-    hashtags: "#consigli #lifehacks #casa #utile #shorts",
-    tags: ["consigli", "lifehacks", "casa", "organizzazione", "utile", "shorts"],
-    genericTitles: ["Consiglio", "Idea utile", "Da ricordare", "Trucco pratico"],
-    lifehack: true,
-    gallery: true,
-  },
-  {
-    id: "tips-fr",
-    name: "Astuces utiles",
-    dir: "data/tips-fr",
-    source: "scripts/build-missing-lifehack-locales.mjs",
-    emoji: "💡",
-    hashtags: "#astuces #conseils #maison #utile #shorts",
-    tags: ["astuces", "conseils", "maison", "organisation", "utile", "shorts"],
-    genericTitles: ["Astuce", "Conseil utile", "Bon à savoir", "Petit rappel"],
-    lifehack: true,
-    gallery: true,
-  },
-  {
-    id: "tips-pt",
-    name: "Dicas úteis",
-    dir: "data/tips-pt",
-    source: "scripts/build-missing-lifehack-locales.mjs",
-    emoji: "💡",
-    hashtags: "#dicas #lifehacks #casa #util #shorts",
-    tags: ["dicas", "lifehacks", "casa", "organizacao", "util", "shorts"],
-    genericTitles: ["Dica", "Dica útil", "Bom saber", "Ideia prática"],
-    lifehack: true,
-    gallery: true,
-  },
-  {
-    id: "tips-hi",
-    name: "रोज़मर्रा के टिप्स",
-    dir: "data/tips-hi",
-    source: "scripts/build-missing-lifehack-locales.mjs",
-    emoji: "💡",
-    hashtags: "#टिप्स #लाइफहैक #घर #उपयोगी #shorts",
-    tags: ["टिप्स", "लाइफहैक", "घर", "व्यवस्था", "उपयोगी", "shorts"],
-    genericTitles: ["टिप", "उपयोगी सलाह", "याद रखें", "छोटी तरकीब"],
-    lifehack: true,
-    gallery: true,
-  },
-  {
-    id: "tips-id",
-    name: "Tips Harian",
-    dir: "data/tips-id",
-    source: "scripts/build-missing-lifehack-locales.mjs",
-    emoji: "💡",
-    hashtags: "#tips #lifehacks #rumah #berguna #shorts",
-    tags: ["tips", "lifehacks", "rumah", "organisasi", "berguna", "shorts"],
-    genericTitles: ["Tips", "Tips Berguna", "Perlu Diingat", "Ide Praktis"],
-    lifehack: true,
-    gallery: true,
   },
   {
     id: "psych",
@@ -1209,8 +1084,7 @@ export function isPackDeckId(id?: string | null): boolean {
 }
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
-  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ar: "ar", hi: "hi", id: "id", choose: "ru",
-  tips: "ru", "tips-de": "de", "tips-es": "es", "tips-ar": "ar", "tips-en": "en", "tips-it": "it", "tips-fr": "fr", "tips-pt": "pt", "tips-hi": "hi", "tips-id": "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
+  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ar: "ar", hi: "hi", id: "id", choose: "ru", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-es": "es", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar",
 };
 export function deckLang(id: string): string {
@@ -1255,7 +1129,6 @@ export function pickGenericTitle(deck: Deck): string {
 export function isPlainAnecdoteDeck(deck: Deck): boolean {
   return (
     deck.emoji === "😂" &&
-    !deck.lifehack &&
     !deck.psych &&
     !deck.islamic &&
     !deck.christian &&

@@ -11,12 +11,12 @@ const BACKGROUNDS = [
   "assets/template-packs/static-facts/backgrounds/facts-notebook-ai-01.jpg",
   "assets/template-packs/static-facts/backgrounds/facts-dark-psych-ai-01.jpg",
   "assets/template-packs/static-facts/backgrounds/facts-curiosity-ai-01.jpg",
-  "assets/template-packs/static-facts/backgrounds/facts-lifehack-ai-01.jpg",
+  "assets/template-packs/static-facts/backgrounds/facts-household-ai-01.jpg",
   "assets/template-packs/static-facts/backgrounds/facts-wisdom-ai-01.jpg",
   "assets/template-packs/static-facts/backgrounds/facts-science-lab-ai-02.jpg",
   "assets/template-packs/static-facts/backgrounds/facts-observatory-ai-02.jpg",
   "assets/template-packs/static-facts/backgrounds/facts-psychology-desk-ai-03.jpg",
-  "assets/template-packs/static-facts/backgrounds/facts-lifehack-shelf-ai-02.jpg",
+  "assets/template-packs/static-facts/backgrounds/facts-household-shelf-ai-02.jpg",
 ];
 
 const PACKS = [

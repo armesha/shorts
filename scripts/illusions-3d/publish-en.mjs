@@ -10,7 +10,7 @@ const ROOT = resolve(HERE, '../..');
 const WORK = resolve(ROOT, 'temp/illusions-3d');
 const ADMIN = resolve(ROOT, 'data/output/admin-demos');
 const MANIFEST = resolve(ADMIN, 'manifest.json');
-const DRONE = resolve(ROOT, 'assets/audio/illusions-3d/ambient_drone.mp3');
+const MUSIC = resolve(ROOT, 'assets/audio/long-videos/fats-waller-swingin-the-operas-1939.opus');
 const PACK = {
   deck: 'illusions-3d-en',
   title: 'Mind-Flip 3D Illusions',
@@ -44,7 +44,7 @@ specs.forEach((s, i) => {
   const offset = ((i * 2) % 24).toFixed(2);
   const adminMp4 = resolve(ADMIN, `${s.id}.mp4`);
   execFileSync('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error',
-    '-i', master, '-ss', offset, '-i', DRONE,
+    '-i', master, '-ss', offset, '-i', MUSIC,
     '-filter_complex', '[1:a]volume=0.9,afade=t=in:st=0:d=0.6,afade=t=out:st=7.0:d=1.0[a]',
     '-map', '0:v', '-map', '[a]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '160k', '-ar', '48000', '-ac', '2',
     '-shortest', '-movflags', '+faststart', adminMp4]);

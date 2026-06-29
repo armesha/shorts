@@ -156,7 +156,7 @@
 6 per-deck render-модулей — реальный copy-paste (вербатим-равные Chrome-проба, bg-инлайнер, `esc()`, SAFE-карты, 4 разошедшихся копии puppeteer-цикла). Риск средний: их дёргает живой диспетчер `anecdotes/render.ts`, нужна per-deck визуальная QA.
 
 - [ ] **Low:** удалить мёртвый «N facts» pipeline (`fillTemplate/renderToImage/ShortContent/ShortTheme` + ссылка на отсутствующий `templates/short.html`) из `src/render.ts`; живой `chromePath()` → `src/core/chrome.ts` (тонкий re-export на релиз).
-- [ ] **Low:** перенести CLI-билдеры из `src/anecdotes/` в `src/scripts/` (build-de/fr/it/it-dense/tips/tips-de, apply-titles/format, pair-de, it-mine; `build.ts`: общие `SRC/BLOCK` → `src/anecdotes/source.ts`). Обновить команды в `docs/packs/`.
+- [ ] **Low:** перенести CLI-билдеры из `src/anecdotes/` в `src/scripts/` (build-de/fr/it/it-dense, apply-titles/format, pair-de, it-mine; `build.ts`: общие `SRC/BLOCK` → `src/anecdotes/source.ts`). Обновить команды в `docs/packs/`.
 - [ ] **Low:** `src/template/render.ts` → `validate.ts` (~150 стр. валидатор недоверенного ввода) + `render.ts` (barrel-реэкспорт валидатора).
 - [ ] **Higher:** `src/core/render/` (`chrome.ts`/`capture.ts`=канонический `captureCard`/`assets.ts`/`html.ts`); per-deck модули оставляют ТОЛЬКО данные (SAFE-карта, форма cards.json, путь шаблона, refLine/caption) и зовут core. Сигнатуры `buildXHtml`/`pickXBg` — byte-identical. По одной деке.
 - [ ] Распилить `src/anecdotes/decks.ts` (445): реестр оставить, `ytMeta()`/`psychDescription()`+JSON-unwrap → `src/anecdotes/yt-meta.ts`.

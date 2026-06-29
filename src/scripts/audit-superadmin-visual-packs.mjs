@@ -213,14 +213,6 @@ function builtinReport(deckId, accounts) {
       );
     return visualDirReport(deckId, accounts, deckId, "prebuilt visual/video deck", deckId);
   }
-  if (/^tips/.test(deckId)) {
-    const items = readJson(resolve(ROOT, `data/${deckId}/titled.json`), []);
-    const bgCount = listFiles(resolve(ROOT, "assets/backgrounds/lifehacks"), /\.(jpe?g|png)$/i).filter((file) => !/_chaplin\./i.test(file)).length;
-    const warnings = [];
-    if (!Array.isArray(items) || items.length === 0) warnings.push("no lifehack cards");
-    if (bgCount === 0) warnings.push("no lifehack visual backgrounds");
-    return { deckId, type: "lifehack", status: warnings.length ? "review" : "ok", accounts, items: Array.isArray(items) ? items.length : 0, backgrounds: bgCount, warnings };
-  }
   if (deckId === "islamic" || deckId === "christian") {
     const cards = readJson(resolve(ROOT, `data/${deckId}/cards.json`), []);
     const bgDir = deckId === "islamic" ? "assets/backgrounds/islamic_templates" : "assets/backgrounds/christian_protestant_templates";
