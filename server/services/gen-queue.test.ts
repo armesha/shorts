@@ -165,6 +165,36 @@ test("durable queue restores unfinished queued jobs from SQLite", () => {
   }
 });
 
+test("external-mode API can persist jobs without owning the worker", () => {
+  const db = new DatabaseSync(":memory:");
+  try {
+    const apiQueue = createGenQueue();
+    apiQueue.attachDatabase(db, { recoverRunning: false });
+    const job = apiQueue.enqueue(1, 2, 4, 10, ["ru", "de"]);
+
+    const stored = db.prepare("SELECT state, done, total, deck_ids FROM generation_jobs WHERE id = ?").get(job.id) as {
+      state: string;
+      done: number;
+      total: number;
+      deck_ids: string;
+    };
+    assert.equal(stored.state, "queued");
+    assert.equal(stored.done, 0);
+    assert.equal(stored.total, 4);
+    assert.deepEqual(JSON.parse(stored.deck_ids), ["ru", "de"]);
+
+    const workerQueue = createGenQueue();
+    workerQueue.attachDatabase(db, { recoverRunning: true });
+    const restored = workerQueue.jobStatus(job.id)!;
+    assert.equal(restored.state, "queued");
+    assert.equal(restored.position, 0);
+    assert.equal(restored.done, 0);
+    assert.deepEqual(restored.deckIds, ["ru", "de"]);
+  } finally {
+    db.close();
+  }
+});
+
 test("durable queue marks interrupted running jobs as queued on restore", () => {
   const db = new DatabaseSync(":memory:");
   try {
