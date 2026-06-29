@@ -14,7 +14,7 @@ const CHECKS = [
     id: "protected_class_slur",
     severity: "high",
     pattern:
-      /\b(nigg|faggot|tranny|kike|chink|spic(?!\s*&\s*span)|negroes|neger|zigeuner|kanake|schwuchtel|пидор|ниггер|хач|жид|чурк|даун|дебил|кретин|урод)\b/i,
+      /(?:\b(?:nigg(?:er|a|ah)?s?|faggot|tranny|kike|chink|spic(?!\s*&\s*span)|(?<!agujero\s)(?<!agujeros\s)(?<!ojos\s)(?<!olhos\s)negro(?:es|s)?|neger|zigeuner|kanake|schwuchtel)\b|(?:^|[^\p{L}\p{N}_])(?:пидор\p{L}*|ниггер\p{L}*|негр\p{L}*|хач\p{L}*|жид(?!к)\p{L}*|чурк\p{L}*)(?=$|[^\p{L}\p{N}_]))/iu,
   },
   {
     id: "explicit_sexual",

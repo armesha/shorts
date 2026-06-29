@@ -24,7 +24,7 @@ function packHits(file: string, risky: RegExp): string[] {
 test("super-admin joke decks filter protected-class race slurs from generation pools", () => {
   const builtinJokeDecks = ["ru", "de", "en", "it", "fr", "pt"];
   const risky =
-    /\b(nigg(?:er|a|ah)s?|negress|negroes|neger|nègre|négresse|zigeuner|nonspara|чурк\w*|хач\w*|хохл\w*|москал\w*|кацап\w*|жид(?!к)\w*)\b|homens muito negros/iu;
+    /(?:\b(?:nigg(?:er|a|ah)?s?|negress|(?<!agujero\s)(?<!agujeros\s)(?<!ojos\s)(?<!olhos\s)negro(?:es|s)?|neger|nègre|négresse|zigeuner|nonspara)\b|(?:^|[^\p{L}\p{N}_])(?:негр\p{L}*|чурк\p{L}*|хач\p{L}*|хохл\p{L}*|москал\p{L}*|кацап\p{L}*|жид(?!к)\p{L}*)(?=$|[^\p{L}\p{N}_])|homens muito negros)/iu;
 
   for (const deckId of builtinJokeDecks) {
     const hits = deckCards(deckId)
