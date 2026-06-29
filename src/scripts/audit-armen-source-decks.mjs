@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { resolve } from "node:path";
 import { openDb } from "../../server/db.ts";
+import { BLOCKS } from "../../server/routes/super-admin-channel-blocks.ts";
 import { makeDeckAccess } from "../../server/services/deck-access.ts";
 import { REMOVED_SUPER_ADMIN_OPTICAL_DECKS } from "../../server/services/super-admin-optical-decks.ts";
 import { DECKS } from "../anecdotes/decks.ts";
@@ -79,6 +80,17 @@ const accounts = db
   .all(user.id);
 
 const hits = [];
+for (const block of BLOCKS) {
+  for (const group of block.sourceGroups ?? []) {
+    addHits(
+      hits,
+      { id: null, channel_name: block.title, lang: "", channel_lang: "" },
+      `block:${block.id}/sourceGroup:${group.id}`,
+      stringValuesDeep(group.sources),
+    );
+  }
+}
+
 for (const account of accounts) {
   addHits(hits, account, "source_decks", readJson(account.source_decks, []));
   addHits(hits, account, "slot_decks", stringValuesDeep(readJson(account.slot_decks, {})));
