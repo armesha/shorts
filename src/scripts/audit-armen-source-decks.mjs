@@ -3,27 +3,17 @@ import { resolve } from "node:path";
 import { openDb } from "../../server/db.ts";
 import { BLOCKS } from "../../server/routes/super-admin-channel-blocks.ts";
 import { makeDeckAccess } from "../../server/services/deck-access.ts";
-import { REMOVED_SUPER_ADMIN_OPTICAL_DECKS } from "../../server/services/super-admin-optical-decks.ts";
+import {
+  FORBIDDEN_SUPER_ADMIN_SOURCE_GROUPS,
+  REMOVED_SUPER_ADMIN_OPTICAL_DECKS,
+} from "../../server/services/super-admin-forbidden-source-decks.ts";
 import { DECKS } from "../anecdotes/decks.ts";
 
 const ROOT = process.cwd();
 const DB_PATH = process.env.DATABASE_PATH || resolve(ROOT, "data/app.db");
 const USERNAME = process.argv.find((arg) => arg.startsWith("--user="))?.slice("--user=".length) || "armen";
 
-const FORBIDDEN_GROUPS = [
-  {
-    group: "removed armen visual/optical decks",
-    decks: [...REMOVED_SUPER_ADMIN_OPTICAL_DECKS],
-  },
-  {
-    group: "legacy meme decks",
-    decks: ["memes-ru", "memes-en", "memes-de", "memes-it", "memes-es", "memes-fr", "memes-pt", "memes-hi", "memes-id", "memes-ar"],
-  },
-  {
-    group: "mgs-only psychology decks",
-    decks: ["pack:психология-mgs-mqe2kfjv", "pack:психология-mgs-mqp9hqle", "pack:mgs-psychologie-eigen"],
-  },
-];
+const FORBIDDEN_GROUPS = FORBIDDEN_SUPER_ADMIN_SOURCE_GROUPS;
 
 const FORBIDDEN = new Map(FORBIDDEN_GROUPS.flatMap((group) => group.decks.map((deck) => [deck, group.group])));
 

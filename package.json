@@ -16,7 +16,7 @@
     "web": "npm --prefix web run dev",
     "web:build": "npm --prefix web run build",
     "deploy:restart": "npm run web:build && npm run server:restart",
-    "smoke:live": "node --experimental-sqlite scripts/smoke-live.mjs",
+    "smoke:live": "node --experimental-sqlite --import tsx scripts/smoke-live.mjs",
     "deploy:refresh": "npm run web:build && npm run server:restart && npm run smoke:live",
     "ops:check": "npm run worker:status && npm run smoke:live && npm run verify:armen",
     "audit:armen:safety": "node --experimental-sqlite --import tsx src/scripts/audit-armen-packs-safety.mjs",

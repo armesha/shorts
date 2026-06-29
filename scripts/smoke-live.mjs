@@ -2,6 +2,7 @@
 import { randomBytes } from "node:crypto";
 import { DatabaseSync } from "node:sqlite";
 import { resolve } from "node:path";
+import { FORBIDDEN_SUPER_ADMIN_SOURCE_DECKS } from "../server/services/super-admin-forbidden-source-decks.ts";
 
 const CHECKS = [
   {
@@ -20,41 +21,6 @@ const DB_PATH = process.env.DATABASE_PATH || resolve(process.cwd(), "data/app.db
 const WORKER_URL = process.env.SMOKE_WORKER_URL || "http://127.0.0.1:8080/api/gen-queue/worker";
 const LOCAL_BASE_URL = process.env.SMOKE_LOCAL_BASE_URL || "http://127.0.0.1:8080";
 const SUPER_ADMIN_USERNAME = "armen";
-const FORBIDDEN_ARMEN_SOURCE_DECKS = [
-  "visual-riddles",
-  "visual-riddles-de",
-  "visual-riddles-en",
-  "visual-riddles-it",
-  "visual-riddles-es",
-  "visual-riddles-fr",
-  "visual-riddles-pt",
-  "illusions-3d",
-  "illusions-3d-de",
-  "illusions-3d-en",
-  "illusions-en",
-  "illusions-de",
-  "illusions-it",
-  "illusions-es",
-  "illusions-ru",
-  "illusions-fr",
-  "illusions-pt",
-  "illusions-hi",
-  "illusions-id",
-  "illusions-ar",
-  "memes-ru",
-  "memes-en",
-  "memes-de",
-  "memes-it",
-  "memes-es",
-  "memes-fr",
-  "memes-pt",
-  "memes-hi",
-  "memes-id",
-  "memes-ar",
-  "pack:психология-mgs-mqe2kfjv",
-  "pack:психология-mgs-mqp9hqle",
-  "pack:mgs-psychologie-eigen",
-];
 
 async function check({ name, url, method }) {
   const controller = new AbortController();
@@ -187,7 +153,7 @@ async function checkSuperAdminThemeBlocks() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const body = await res.json();
     const ids = collectThemeBlockSourceIds(body);
-    const forbidden = FORBIDDEN_ARMEN_SOURCE_DECKS.filter((deckId) => ids.has(deckId));
+    const forbidden = [...FORBIDDEN_SUPER_ADMIN_SOURCE_DECKS].filter((deckId) => ids.has(deckId));
     if (forbidden.length) {
       throw new Error(`forbidden armen source decks in theme blocks API: ${forbidden.join(", ")}`);
     }
