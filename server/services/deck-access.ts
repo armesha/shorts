@@ -9,7 +9,7 @@ import { getPack } from "../../src/packs/store.ts";
 import { libraryStats } from "../../src/anecdotes/library.ts";
 import { packCardKey } from "./pack-gen.ts";
 import { INFINITE_PACKS_FEATURE } from "./infinite-packs.ts";
-import { isRemovedSuperAdminOpticalDeck } from "./super-admin-optical-decks.ts";
+import { isForbiddenSuperAdminSourceDeck } from "./super-admin-optical-decks.ts";
 
 type Replyish = { code: (n: number) => { send: (b: unknown) => unknown } };
 const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
@@ -44,7 +44,7 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
 
   function builtinDeckVisibleForUser(userId: number, deck: (typeof DECKS)[number]): boolean {
     const user = db.getUserById(userId);
-    if (isSuperAdminUser(user) && isRemovedSuperAdminOpticalDeck(deck.id)) return false;
+    if (isSuperAdminUser(user) && isForbiddenSuperAdminSourceDeck(deck.id)) return false;
     // Админ видит ВСЁ (вкл. admin-only) по умолчанию, КРОМЕ того, что он скрыл лично у себя
     // (тот же per-user hidden-набор, что и у юзеров — он опционален и легко снимается в матрице
     // Админки). Это только ВИДИМОСТЬ (списки/пикеры): право генерить у админа остаётся (deckAllowed),
@@ -58,9 +58,10 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
     // True if the user may use a deck (pack): admins always; custom packs by owner/grant;
     // grantable admin-only built-ins by explicit admin grant; normal built-ins unless hidden.
     function deckAllowed(req: unknown, deckId: string): boolean {
+      const user = db.getUserById(uid(req));
+      if (isSuperAdminUser(user) && isForbiddenSuperAdminSourceDeck(deckId)) return false;
       // Кастомные паки: доступ по владению/гранту (getPack применяет canAccess), а не по hidden.
       if (isPackDeckId(deckId)) return getPack(deckId.slice(5), uid(req), isSuperAdminReq(req)) !== null;
-      if (isSuperAdminUser(db.getUserById(uid(req))) && isRemovedSuperAdminOpticalDeck(deckId)) return false;
       if (isAdminReq(req)) return true;
       const deck = DECKS.find((d) => d.id === deckId);
       return !!deck && builtinDeckVisibleForUser(uid(req), deck);
@@ -69,10 +70,11 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
   // Same as deckAllowed but keyed by a bare userId (no req) — used by the file streamer's authz gate,
   // which only has the session {id, role}, not a Fastify request.
     function deckAllowedForUser(userId: number, deckId: string): boolean {
+      const user = db.getUserById(userId);
+      if (isSuperAdminUser(user) && isForbiddenSuperAdminSourceDeck(deckId)) return false;
       if (isPackDeckId(deckId)) {
-        return getPack(deckId.slice(5), userId, isSuperAdminUser(db.getUserById(userId))) !== null;
+        return getPack(deckId.slice(5), userId, isSuperAdminUser(user)) !== null;
       }
-      if (isSuperAdminUser(db.getUserById(userId)) && isRemovedSuperAdminOpticalDeck(deckId)) return false;
       const deck = DECKS.find((d) => d.id === deckId);
       return !!deck && builtinDeckVisibleForUser(userId, deck);
   }
@@ -90,7 +92,7 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
         ids
           .map((x) => String(x || "").trim())
           .filter((deckId) => deckId && !DECKS.find((deck) => deck.id === deckId)?.longVideo)
-          .filter((deckId) => !ownerIsSuperAdmin || !isRemovedSuperAdminOpticalDeck(deckId)),
+          .filter((deckId) => !ownerIsSuperAdmin || !isForbiddenSuperAdminSourceDeck(deckId)),
       ),
     ];
   }
@@ -101,7 +103,7 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
   function availableUnusedForDecks(ownerId: number, deckIds: string[]): number {
     const ownerIsSuperAdmin = isSuperAdminUser(db.getUserById(ownerId));
     const clean = [...new Set(deckIds.map((deckId) => String(deckId || "").trim()).filter(Boolean))].filter(
-      (deckId) => !ownerIsSuperAdmin || !isRemovedSuperAdminOpticalDeck(deckId),
+      (deckId) => !ownerIsSuperAdmin || !isForbiddenSuperAdminSourceDeck(deckId),
     );
     if (!clean.length) return 0;
     const builtinIds = clean.filter((deckId) => !isPackDeckId(deckId));

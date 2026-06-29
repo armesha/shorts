@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { openDb } from "../../server/db.ts";
 import { BLOCKS, blockDefaultSourcesForDb } from "../../server/routes/super-admin-channel-blocks.ts";
 import { makeDeckAccess } from "../../server/services/deck-access.ts";
-import { cleanSuperAdminSourceDecks, isRemovedSuperAdminOpticalDeck } from "../../server/services/super-admin-optical-decks.ts";
+import { cleanSuperAdminSourceDecks, isForbiddenSuperAdminSourceDeck } from "../../server/services/super-admin-optical-decks.ts";
 
 const ROOT = process.cwd();
 const DB_PATH = process.env.DATABASE_PATH || resolve(ROOT, "data/app.db");
@@ -53,20 +53,20 @@ const accounts = db
 const issues = [];
 for (const account of accounts) {
   const rawSourceDecks = readJson(account.source_decks, []).map(String);
-  const removedSourceDecks = rawSourceDecks.filter((deckId) => isRemovedSuperAdminOpticalDeck(deckId));
+  const forbiddenSourceDecks = rawSourceDecks.filter((deckId) => isForbiddenSuperAdminSourceDeck(deckId));
   const sourceDecks = cleanSuperAdminSourceDecks(rawSourceDecks);
   const slotDecks = readJson(account.slot_decks, {});
   const block = blockForAccount(store, account, sourceDecks);
   const channelName = account.yt_channel_title || account.channel_name;
   const lang = account.channel_lang || account.lang;
 
-  if (removedSourceDecks.length) {
+  if (forbiddenSourceDecks.length) {
     issues.push({
       accountId: account.id,
       channelName,
-      issue: "removed_optical_source_deck",
+      issue: "forbidden_superadmin_source_deck",
       lang,
-      deckIds: removedSourceDecks,
+      deckIds: forbiddenSourceDecks,
     });
   }
 

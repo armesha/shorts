@@ -7,7 +7,7 @@ import { useAuth } from "../../lib/auth";
 import { useGenQueue } from "../../lib/genQueue";
 import { useT } from "../../lib/i18n";
 import { AppIcon } from "../../components/AppIcon";
-import { BUILTIN_DECKS, CONTENT_LANGS, DECK_LANG, isRemovedSuperAdminOpticalDeck, type DeckGroup } from "../../lib/deck";
+import { BUILTIN_DECKS, CONTENT_LANGS, DECK_LANG, isForbiddenSuperAdminSourceDeck, type DeckGroup } from "../../lib/deck";
 import { isMainAdmin } from "../../lib/authz";
 import { cleanDisplayText } from "../../lib/text";
 import { toMin, randomDayTimes, accountDailySlotCap, USER_DAILY_SLOT_CAP } from "./schedule";
@@ -470,7 +470,7 @@ export default function AccountDetail() {
   const visibleDecksBase =
     gens.length === 0 ? BUILTIN_DECKS : BUILTIN_DECKS.filter(({ id }) => gensIds.has(id) || currentDeckIds.has(id));
   const visibleLangs = isMainAdmin(user)
-    ? visibleDecksBase.filter(({ id }) => !isRemovedSuperAdminOpticalDeck(id))
+    ? visibleDecksBase.filter(({ id }) => !isForbiddenSuperAdminSourceDeck(id))
     : visibleDecksBase;
   const genById = (id: string) => srcGenById(normalGens, id);
   const hasVideoSources = visibleLangs.some(({ id }) => !!genById(id)?.preFact);

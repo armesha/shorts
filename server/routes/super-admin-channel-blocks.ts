@@ -20,7 +20,7 @@ import {
 } from "../services/gen-queue.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
 import { accountDailyScheduleCap, googleKeyDailyScheduleCap } from "../infra/account-limits.ts";
-import { cleanSuperAdminSourceDecks, isRemovedSuperAdminOpticalDeck } from "../services/super-admin-optical-decks.ts";
+import { cleanSuperAdminSourceDecks, isForbiddenSuperAdminSourceDeck } from "../services/super-admin-optical-decks.ts";
 
 const BLOCK_LANGS = [
   { code: "ru", label: "RU" },
@@ -648,7 +648,7 @@ function freeCardsForGenerationDeck(
   accountId: number,
   deckId: string,
 ): number {
-  if (isRemovedSuperAdminOpticalDeck(deckId)) return 0;
+  if (isForbiddenSuperAdminSourceDeck(deckId)) return 0;
   if (isRepeatPackDeck(db, ownerId, deckId)) return Number.MAX_SAFE_INTEGER;
   const perAccountAutoExpire = isPerAccountAutoExpirePackDeck(db, ownerId, deckId);
   if (!perAccountAutoExpire && db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) return Number.MAX_SAFE_INTEGER;

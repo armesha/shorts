@@ -7,7 +7,7 @@ import { ytMeta } from "../../src/anecdotes/yt-meta.ts";
 import { uploadShort, ytErrorReason, isYtAuthError, type ClientCreds } from "../services/youtube.ts";
 import type { Notifier } from "../services/notify-stream.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
-import { isRemovedSuperAdminOpticalDeck } from "../services/super-admin-optical-decks.ts";
+import { isForbiddenSuperAdminSourceDeck } from "../services/super-admin-optical-decks.ts";
 import { cleanupDrainedAutoExpireDecksForAccount } from "../services/auto-expire-packs.ts";
 import { markPackLibraryVideoUsed } from "../services/pack-gen.ts";
 import { googleKeyDailyScheduleCap } from "./account-limits.ts";
@@ -59,7 +59,7 @@ export function selectScheduledVideoForSlot(
   const sources = uniqueDecks(
     (acc.sourceDecks?.length ? acc.sourceDecks : [acc.lang])
       .filter(isSchedulerSourceDeck)
-      .filter((deckId) => !ownerIsSuperAdmin || !isRemovedSuperAdminOpticalDeck(deckId)),
+      .filter((deckId) => !ownerIsSuperAdmin || !isForbiddenSuperAdminSourceDeck(deckId)),
   );
   const slotDeck = acc.slotDecks?.[hhmm];
   const allowedDecks =

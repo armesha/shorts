@@ -67,6 +67,10 @@ export function isRemovedSuperAdminOpticalDeck(deckId: string): boolean {
   return REMOVED_SUPER_ADMIN_OPTICAL_DECKS.has(deckId);
 }
 
+export function isForbiddenSuperAdminSourceDeck(deckId: string): boolean {
+  return FORBIDDEN_SUPER_ADMIN_SOURCE_DECKS.has(deckId);
+}
+
 export function cleanSuperAdminSourceDecks(deckIds: string[]): string[] {
-  return [...new Set(deckIds)].filter((deckId) => !isRemovedSuperAdminOpticalDeck(deckId));
+  return [...new Set(deckIds)].filter((deckId) => !isForbiddenSuperAdminSourceDeck(deckId));
 }

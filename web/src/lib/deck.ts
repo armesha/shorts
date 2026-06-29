@@ -157,8 +157,36 @@ export const REMOVED_SUPER_ADMIN_OPTICAL_DECKS = new Set([
   "illusions-ar",
 ]);
 
+export const LEGACY_SUPER_ADMIN_MEME_DECKS = new Set([
+  "memes-ru",
+  "memes-en",
+  "memes-de",
+  "memes-it",
+  "memes-es",
+  "memes-fr",
+  "memes-pt",
+  "memes-hi",
+  "memes-id",
+  "memes-ar",
+]);
+
+export const MGS_ONLY_SUPER_ADMIN_DECKS = new Set([
+  "pack:психология-mgs-mqe2kfjv",
+  "pack:психология-mgs-mqp9hqle",
+  "pack:mgs-psychologie-eigen",
+]);
+
+export const FORBIDDEN_SUPER_ADMIN_SOURCE_DECKS = new Set([
+  ...REMOVED_SUPER_ADMIN_OPTICAL_DECKS,
+  ...LEGACY_SUPER_ADMIN_MEME_DECKS,
+  ...MGS_ONLY_SUPER_ADMIN_DECKS,
+]);
+
 export const isRemovedSuperAdminOpticalDeck = (id: string): boolean =>
   REMOVED_SUPER_ADMIN_OPTICAL_DECKS.has(id);
+
+export const isForbiddenSuperAdminSourceDeck = (id: string): boolean =>
+  FORBIDDEN_SUPER_ADMIN_SOURCE_DECKS.has(id);
 
 /** The content/channel languages a pack or channel can carry (code → human label). */
 export const CONTENT_LANGS: { code: string; label: string }[] = [

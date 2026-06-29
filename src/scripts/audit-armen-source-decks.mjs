@@ -4,8 +4,8 @@ import { openDb } from "../../server/db.ts";
 import { BLOCKS } from "../../server/routes/super-admin-channel-blocks.ts";
 import { makeDeckAccess } from "../../server/services/deck-access.ts";
 import {
+  FORBIDDEN_SUPER_ADMIN_SOURCE_DECKS,
   FORBIDDEN_SUPER_ADMIN_SOURCE_GROUPS,
-  REMOVED_SUPER_ADMIN_OPTICAL_DECKS,
 } from "../../server/services/super-admin-forbidden-source-decks.ts";
 import { DECKS } from "../anecdotes/decks.ts";
 
@@ -87,10 +87,9 @@ for (const account of accounts) {
 }
 
 const deckAccess = makeDeckAccess(store, { isAdminReq: () => true, isSuperAdminReq: () => true });
-for (const deckId of REMOVED_SUPER_ADMIN_OPTICAL_DECKS) {
+for (const deckId of FORBIDDEN_SUPER_ADMIN_SOURCE_DECKS) {
   const deck = DECKS.find((candidate) => candidate.id === deckId);
-  if (!deck) continue;
-  if (deckAccess.builtinDeckVisibleForUser(user.id, deck)) {
+  if (deck && deckAccess.builtinDeckVisibleForUser(user.id, deck)) {
     hits.push({
       accountId: null,
       channelName: USERNAME,
