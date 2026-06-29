@@ -191,13 +191,17 @@ if (channelShortages.length) {
   }
 }
 
-if (slotWarnings.length) {
-  console.log(`\nPer-slot source warnings for ${TARGET_DAYS} days${STRICT_SLOTS ? "" : " (scheduler can fall back to other ready sources)"}:`);
+if (slotWarnings.length && STRICT_SLOTS) {
+  console.log(`\nStrict per-slot source warnings for ${TARGET_DAYS} days:`);
   for (const item of slotWarnings) {
     console.log(
       `- ${item.block} · ${item.channel} -> ${item.deckName}: ready=${item.ready}; perDay=${item.daily}; missing=${item.missing}`,
     );
   }
+} else if (slotWarnings.length) {
+  console.log(
+    `\nSoft source gaps: ${slotWarnings.length} slot-level gaps. Scheduler/top-up can shift those slots to other ready sources; use --strict-slots to list them.`,
+  );
 }
 
 if (channelShortages.length || (STRICT_SLOTS && slotWarnings.length)) {
