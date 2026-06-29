@@ -6,7 +6,7 @@ import { get, send } from "./http";
 import type {
   Account, HistoryPage, AppStatus, AppSettings, OAuthClientsResponse, AddOAuthClientResponse,
   AdminUser, DeckInfo, UserDeckRow, AdminLimits, PackUsageItem, MyDecks, LowDeckRow, ManualVideoLimits, ReadinessLimits,
-  AuthUser, Generator, GeneratedPreview, GeneratedVideo, VideoItem, GenJobStatus, GenQueueResponse,
+  AuthUser, Generator, GeneratedPreview, GeneratedVideo, VideoItem, GenJobStatus, GenQueueResponse, GenWorkerStatus,
   PsychSchema, PsychCardList, PackSummary, PackFull, PackMusic, PackMusicUploadFile,
   PackMusicUploadResult, MusicTrack, StatRow, ChannelTotals, PlatformSummary, StatPoint,
   AdminAnalytics, UserAnalytics, ErrorLogItem, NotificationItem, NotificationCounts, SystemStatus,
@@ -246,6 +246,7 @@ export const apiClient = {
   enqueueGen: (accountId: number | string, count: number, deckIds?: string[]) =>
     send<{ jobId: string; total: number }>("/gen-queue", "POST", { accountId: Number(accountId), count, deckIds }),
   genJobs: (scope?: "all") => get<GenQueueResponse>(`/gen-queue${scope === "all" ? "?scope=all" : ""}`),
+  genWorker: () => get<{ worker: GenWorkerStatus }>("/gen-queue/worker"),
   genStatus: (jobId: string) => get<GenJobStatus>(`/gen-queue/${jobId}`),
   cancelGen: (jobId: string) => send<{ ok: boolean }>(`/gen-queue/${jobId}/cancel`, "POST", {}),
   queueOverview: (scope?: "all") => get<QueueOverview>(`/queue${scope === "all" ? "?scope=all" : ""}`),

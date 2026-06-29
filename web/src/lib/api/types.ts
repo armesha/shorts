@@ -1031,6 +1031,7 @@ export interface QueueSlot {
 }
 
 export interface QueueOverview {
+  worker: GenWorkerStatus;
   generationJobs: QueueJob[];
   channelQueues: QueueChannel[];
   upcomingSlots: QueueSlot[];

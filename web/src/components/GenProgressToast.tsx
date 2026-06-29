@@ -4,7 +4,7 @@
 // browser. State/logic live in lib/genQueue.ts; this is purely the presentation.
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { createPortal } from "react-dom";
-import { Loader2, Square, CheckCircle2, X, Minus, ChevronUp, GripVertical } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ChevronUp, GripVertical, Loader2, Minus, Square, X } from "lucide-react";
 import { useGenQueue } from "../lib/genQueue";
 
 const POS_KEY = "genQueue.toast.pos.v1";
@@ -23,6 +23,13 @@ function pluralRu(n: number, forms: [string, string, string]) {
   return forms[2];
 }
 const videoWord = (n: number) => pluralRu(n, ["ролик", "ролика", "роликов"]);
+
+function formatWorkerAge(ageMs: number | null): string {
+  if (ageMs == null) return "";
+  const sec = Math.max(0, Math.round(ageMs / 1000));
+  if (sec < 60) return `${sec} сек назад`;
+  return `${Math.round(sec / 60)} мин назад`;
+}
 
 function loadPos(): Pos | null {
   try {
@@ -140,6 +147,8 @@ export function GenProgressToast() {
   ) : (
     <CheckCircle2 className={`shrink-0 ${ok ? "text-success" : "text-warning"}`} size={18} />
   );
+  const workerOffline = q.running && q.worker && !q.worker.online;
+  const workerAge = formatWorkerAge(q.worker?.ageMs ?? null);
 
   const dragHandlers = {
     onPointerDown: onHandleDown,
@@ -218,6 +227,17 @@ export function GenProgressToast() {
                 <progress className="progress progress-primary w-full" />
               ) : (
                 <progress className="progress progress-primary w-full" value={q.done} max={q.total} />
+              )}
+              {q.worker && (
+                <div
+                  className={`flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] ${
+                    workerOffline ? "bg-error/10 text-error" : "bg-base-200 text-base-content/55"
+                  }`}
+                >
+                  {workerOffline ? <AlertTriangle size={12} /> : <CheckCircle2 size={12} />}
+                  <span>{workerOffline ? "Движок не отвечает" : "Движок активен"}</span>
+                  {q.worker.mode === "external" && workerAge && <span className="text-current/70">· {workerAge}</span>}
+                </div>
               )}
               <button className="btn btn-xs btn-outline btn-error self-end gap-1" onClick={q.cancel}>
                 <Square size={12} />

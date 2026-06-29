@@ -26,6 +26,14 @@ function formatAt(value: string): string {
   });
 }
 
+function formatAgeMs(ageMs: number | null): string {
+  if (ageMs == null) return "—";
+  const sec = Math.max(0, Math.round(ageMs / 1000));
+  if (sec < 60) return `${sec}s`;
+  const min = Math.round(sec / 60);
+  return `${min}m`;
+}
+
 export default function QueuePage() {
   const { t } = useT();
   const { user } = useAuth();
@@ -112,7 +120,7 @@ export default function QueuePage() {
         {error && <div className="alert alert-error mt-4 text-sm">{error}</div>}
       </section>
 
-      <section className="grid gap-3 md:grid-cols-3">
+      <section className="grid gap-3 md:grid-cols-4">
         <div className="rounded-2xl border border-base-300 bg-base-100 p-4">
           <div className="text-sm text-base-content/55">{t("queue.metricJobs")}</div>
           <div className="text-3xl font-black">{activeJobs.length}</div>
@@ -124,6 +132,19 @@ export default function QueuePage() {
         <div className="rounded-2xl border border-base-300 bg-base-100 p-4">
           <div className="text-sm text-base-content/55">{t("queue.metricDaily")}</div>
           <div className="text-3xl font-black">{postsPerDay}</div>
+        </div>
+        <div className="rounded-2xl border border-base-300 bg-base-100 p-4">
+          <div className="text-sm text-base-content/55">{t("queue.metricWorker")}</div>
+          <div className={`text-2xl font-black ${!data?.worker ? "" : data.worker.online ? "text-success" : "text-error"}`}>
+            {!data?.worker ? "—" : data.worker.online ? t("queue.workerOnline") : t("queue.workerOffline")}
+          </div>
+          <div className="text-xs text-base-content/45">
+            {!data?.worker
+              ? t("common.loading")
+              : data.worker.mode === "external"
+                ? t("queue.workerBeat").replace("{age}", formatAgeMs(data.worker.ageMs))
+                : t("queue.workerEmbedded")}
+          </div>
         </div>
       </section>
 
@@ -221,7 +242,7 @@ export default function QueuePage() {
               </div>
               <div className="mt-3 flex flex-wrap gap-1">
                 {Object.entries(channel.byDeck).slice(0, 5).map(([deck, count]) => (
-                  <span key={deck} className="badge badge-ghost">
+                  <span key={deck} className="badge badge-ghost max-w-full overflow-hidden text-ellipsis whitespace-nowrap" title={`${deck}: ${count}`}>
                     {deck}: {count}
                   </span>
                 ))}

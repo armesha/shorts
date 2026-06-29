@@ -3,9 +3,12 @@ import type { FastifyInstance } from "fastify";
 import type { Account, Db } from "../db.ts";
 import { uid } from "../infra/auth-session.ts";
 import { listStatuses as listGenStatuses } from "../services/gen-queue.ts";
+import { publicGenWorkerStatus } from "../services/gen-worker-heartbeat.ts";
 import type { RouteDeps } from "./deps.ts";
 
 type QueueQuery = { scope?: string };
+const genQueueRunnerMode = (): "embedded" | "external" =>
+  process.env.GEN_QUEUE_RUNNER === "0" || process.env.GEN_QUEUE_RUNNER === "external" ? "external" : "embedded";
 
 function deckCounts(db: Db, account: Account): Record<string, number> {
   const counts: Record<string, number> = {};
@@ -113,6 +116,7 @@ export function registerQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     });
 
     return {
+      worker: publicGenWorkerStatus(db, { mode: genQueueRunnerMode() }),
       generationJobs,
       channelQueues,
       upcomingSlots: nextSlots(accounts, deps),

@@ -1,5 +1,6 @@
 import { createContext, createElement, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { apiClient } from "./api";
+import type { GenWorkerStatus } from "./api";
 
 // Global generation queue. Generation runs SERVER-SIDE (one video at a time across all users);
 // the client only enqueues a batch, then polls its status. State lives in a single app-wide
@@ -17,6 +18,7 @@ export interface GenQueueUI {
   position: number; // 0 = your turn (generating), >0 = waiting in line
   state: string;
   msg: string | null;
+  worker: GenWorkerStatus | null;
   accountId: number | null; // which channel this batch fills (for in-place refresh)
   completions: number; // bumps each time a job reaches a terminal state
   run: (accountId: number | string, count: number, deckIds?: string[]) => Promise<void>;
@@ -35,10 +37,12 @@ function useProvideGenQueue(): GenQueueUI {
   const [position, setPosition] = useState(-1);
   const [state, setState] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
+  const [worker, setWorker] = useState<GenWorkerStatus | null>(null);
   const [accountId, setAccountId] = useState<number | null>(null);
   const [completions, setCompletions] = useState(0);
   const activeJobIdsRef = useRef<string[]>([]);
   const timerRef = useRef<number | null>(null);
+  const workerPollAtRef = useRef(0);
 
   const stopTimer = () => {
     if (timerRef.current) {
@@ -58,6 +62,14 @@ function useProvideGenQueue(): GenQueueUI {
     }
   };
 
+  const refreshWorker = async (force = false) => {
+    const now = Date.now();
+    if (!force && now - workerPollAtRef.current < 4_000) return;
+    workerPollAtRef.current = now;
+    const res = await apiClient.genWorker();
+    setWorker(res.worker);
+  };
+
   const pollActiveJobs = async () => {
     const ids = activeJobIdsRef.current;
     if (ids.length === 0) {
@@ -65,6 +77,7 @@ function useProvideGenQueue(): GenQueueUI {
       setRunning(false);
       return;
     }
+    await refreshWorker().catch(() => {});
     const statuses = await Promise.all(ids.map((id) => apiClient.genStatus(id).catch(() => null)));
     const keep: string[] = [];
     let activeTotal = 0;
@@ -177,6 +190,7 @@ function useProvideGenQueue(): GenQueueUI {
       const { jobId, total: t } = await apiClient.enqueueGen(acc, requested, deckIds);
       setActiveJobIds([...activeJobIdsRef.current, jobId]);
       setTotal((prev) => Math.max(0, prev - requested) + t);
+      void refreshWorker(true).catch(() => {});
       startPolling();
     } catch (e) {
       setTotal((prev) => Math.max(0, prev - requested));
@@ -194,6 +208,7 @@ function useProvideGenQueue(): GenQueueUI {
     setAccountId(valid.find((job) => job.accountId != null)?.accountId ?? null);
     setTotal((t) => t + valid.reduce((sum, job) => sum + Math.max(0, Number(job.total) || 0), 0));
     setActiveJobIds([...activeJobIdsRef.current, ...valid.map((job) => job.jobId)]);
+    void refreshWorker(true).catch(() => {});
     startPolling();
   }
 
@@ -205,7 +220,7 @@ function useProvideGenQueue(): GenQueueUI {
     setMsg(null);
   }
 
-  return { running, total, done, ahead, position, state, msg, accountId, completions, run, trackJobs, cancel, dismiss };
+  return { running, total, done, ahead, position, state, msg, worker, accountId, completions, run, trackJobs, cancel, dismiss };
 }
 
 export function GenQueueProvider({ children }: { children: ReactNode }) {
