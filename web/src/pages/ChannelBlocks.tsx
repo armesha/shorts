@@ -621,10 +621,12 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
           <div className={`grid gap-3 ${drag ? "select-none" : ""}`}>
             {orderedBlocks.map((block) => {
               const dragging = drag?.id === block.id;
+              const shortages = topUpShortages.filter((shortage) => shortage.blockTitle === block.title);
               return (
                 <div key={block.id} ref={setItemRef(block.id)} style={styleFor(block.id)} className={blockWrapperClass(dragging)}>
                   <BlockCard
                     block={block}
+                    shortages={shortages}
                     onOpen={() => setSearchParams({ block: block.id })}
                     dragging={dragging}
                     onHandlePointerDown={(e) => startDrag(e, block.id)}
@@ -759,11 +761,13 @@ function blockWrapperClass(dragging: boolean): string {
 
 function BlockCard({
   block,
+  shortages,
   onOpen,
   dragging,
   onHandlePointerDown,
 }: {
   block: ChannelThemeBlock;
+  shortages: NormalizeShortage[];
   onOpen: () => void;
   dragging: boolean;
   onHandlePointerDown: (e: ReactPointerEvent<HTMLElement>) => void;
@@ -771,6 +775,11 @@ function BlockCard({
   const { t } = useT();
   const bottleneck = blockBottleneck(block);
   const packs = blockPackCount(block);
+  const shortageTitle = shortages
+    .slice(0, 8)
+    .map((shortage) => `${shortage.channelName} -> ${shortage.deckName}: ${t("channelBlocks.shortageMissing", { n: shortage.missing })}`)
+    .join("\n");
+  const shortageMore = shortages.length > 8 ? `\n+${shortages.length - 8}` : "";
   return (
     <>
       <span
@@ -792,6 +801,16 @@ function BlockCard({
         <div className="flex items-center gap-2">
           <h2 className="truncate text-base font-semibold">{block.title}</h2>
           <span className="badge badge-ghost badge-sm">{block.totalAccounts}</span>
+          {shortages.length > 0 && (
+            <span
+              className="badge badge-warning badge-sm gap-1"
+              title={`${shortageTitle}${shortageMore}`}
+              aria-label={`${t("channelBlocks.shortagesTitle")}: ${shortageTitle}${shortageMore}`}
+            >
+              <AppIcon name="warning" size={12} />
+              {shortages.length}
+            </span>
+          )}
         </div>
       </div>
       <div className="rounded bg-base-200 px-3 py-2">
