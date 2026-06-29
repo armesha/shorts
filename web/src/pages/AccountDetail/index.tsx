@@ -7,7 +7,8 @@ import { useAuth } from "../../lib/auth";
 import { useGenQueue } from "../../lib/genQueue";
 import { useT } from "../../lib/i18n";
 import { AppIcon } from "../../components/AppIcon";
-import { BUILTIN_DECKS, CONTENT_LANGS, DECK_LANG, type DeckGroup } from "../../lib/deck";
+import { BUILTIN_DECKS, CONTENT_LANGS, DECK_LANG, isRemovedSuperAdminOpticalDeck, type DeckGroup } from "../../lib/deck";
+import { isMainAdmin } from "../../lib/authz";
 import { cleanDisplayText } from "../../lib/text";
 import { toMin, randomDayTimes, accountDailySlotCap, USER_DAILY_SLOT_CAP } from "./schedule";
 import {
@@ -466,8 +467,11 @@ export default function AccountDetail() {
   // While generators load, show all to avoid an empty dropdown; always keep the channel's current value.
   const currentDeckIds = new Set([lang, ...selectedSources]);
   const gensIds = new Set(normalGens.map((g) => g.id));
-  const visibleLangs =
+  const visibleDecksBase =
     gens.length === 0 ? BUILTIN_DECKS : BUILTIN_DECKS.filter(({ id }) => gensIds.has(id) || currentDeckIds.has(id));
+  const visibleLangs = isMainAdmin(user)
+    ? visibleDecksBase.filter(({ id }) => !isRemovedSuperAdminOpticalDeck(id))
+    : visibleDecksBase;
   const genById = (id: string) => srcGenById(normalGens, id);
   const hasVideoSources = visibleLangs.some(({ id }) => !!genById(id)?.preFact);
   const hasTextSources = visibleLangs.some(({ id }) => !genById(id)?.preFact) || packs.length > 0;

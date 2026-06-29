@@ -134,6 +134,22 @@ export const LANG_TAG: Record<string, string> = {
 };
 export const langTag = (code: string): string => LANG_TAG[code] || (code || "").toUpperCase();
 
+export const REMOVED_SUPER_ADMIN_OPTICAL_DECKS = new Set([
+  "illusions-en",
+  "illusions-de",
+  "illusions-it",
+  "illusions-es",
+  "illusions-ru",
+  "illusions-fr",
+  "illusions-pt",
+  "illusions-hi",
+  "illusions-id",
+  "illusions-ar",
+]);
+
+export const isRemovedSuperAdminOpticalDeck = (id: string): boolean =>
+  REMOVED_SUPER_ADMIN_OPTICAL_DECKS.has(id);
+
 /** The content/channel languages a pack or channel can carry (code → human label). */
 export const CONTENT_LANGS: { code: string; label: string }[] = [
   { code: "ru", label: "Русский" },
