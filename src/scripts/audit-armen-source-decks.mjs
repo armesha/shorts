@@ -16,6 +16,11 @@ const USERNAME = process.argv.find((arg) => arg.startsWith("--user="))?.slice("-
 const FORBIDDEN_GROUPS = FORBIDDEN_SUPER_ADMIN_SOURCE_GROUPS;
 
 const FORBIDDEN = new Map(FORBIDDEN_GROUPS.flatMap((group) => group.decks.map((deck) => [deck, group.group])));
+const LIBRARY_ALLOWED_GROUPS = new Set([
+  "retired armen russian motivation decks",
+  "retired armen christian fact decks",
+  "retired armen soviet poster decks",
+]);
 
 function readJson(value, fallback) {
   try {
@@ -126,13 +131,15 @@ if (forbiddenDecks.length) {
     )
     .all(user.id, ...forbiddenDecks);
   for (const row of videoRows) {
+    const group = FORBIDDEN.get(row.deck);
+    if (group && LIBRARY_ALLOWED_GROUPS.has(group)) continue;
     hits.push({
       accountId: row.account_id,
       channelName: row.channel_name,
       channelLang: row.channel_lang || row.lang,
       place: "videos",
       deckId: row.deck,
-      group: FORBIDDEN.get(row.deck),
+      group,
       count: Number(row.count) || 0,
     });
   }

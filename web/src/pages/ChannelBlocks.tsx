@@ -78,7 +78,7 @@ function orderBlocks(blocks: ChannelThemeBlock[], order: string[]): ChannelTheme
   return result;
 }
 
-type BusyState = { blockId: string; kind: "short" | "normalize" | "normalize_all" | "schedule" | "account"; lang?: string } | null;
+type BusyState = { blockId: string; kind: "normalize_all" | "schedule" | "account"; lang?: string } | null;
 type NormalizeShortage = NonNullable<ChannelThemeBlockNormalizeResult["shortages"]>[number] & { blockTitle?: string };
 
 function shortageDeckLabel(shortage: NormalizeShortage, t: (key: string, vars?: Record<string, string | number>) => string): string {
@@ -156,15 +156,6 @@ function formatRunwayDays(days: number | null): string {
   return days.toFixed(days < 10 ? 1 : 0);
 }
 
-function queueRange(block: ChannelThemeBlock): { min: number; max: number } {
-  const accounts = accountsInBlock(block);
-  if (!accounts.length) return { min: 0, max: 0 };
-  return {
-    min: Math.min(...accounts.map((account) => account.effectiveQueued ?? account.queued)),
-    max: Math.max(...accounts.map((account) => account.queued)),
-  };
-}
-
 function deckRunways(account: ChannelThemeBlockAccount): DeckRunway[] {
   return account.sourceDecks
     .map((deck) => {
@@ -236,7 +227,6 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
   const [clients, setClients] = useState<OAuthClient[]>(clientsCache);
   const [searchParams, setSearchParams] = useSearchParams();
   const [err, setErr] = useState("");
-  const [shortCount, setShortCount] = useState(1);
   const [topUpDays, setTopUpDays] = useState(7);
   const [topUpShortages, setTopUpShortages] = useState<NormalizeShortage[]>([]);
   const [topUpPreviewBusy, setTopUpPreviewBusy] = useState(false);
@@ -439,8 +429,12 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
   }
 
   useEffect(() => {
-    if (!data) return;
-    const blocks = selectedBlock ? [selectedBlock] : data.blocks.filter((block) => block.totalAccounts > 0);
+    if (!data || selectedBlock) {
+      setTopUpShortages([]);
+      setTopUpPreviewBusy(false);
+      return;
+    }
+    const blocks = data.blocks.filter((block) => block.totalAccounts > 0);
     if (!blocks.length) {
       setTopUpShortages([]);
       setTopUpPreviewBusy(false);
@@ -453,8 +447,7 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
       try {
         const shortages: NormalizeShortage[] = [];
         for (const block of blocks) {
-          const weights = selectedBlock && block.sourceGroups.length ? sourceWeights : undefined;
-          const res = await apiClient.previewChannelThemeBlockNormalize(block.id, undefined, weights, topUpDays);
+          const res = await apiClient.previewChannelThemeBlockNormalize(block.id, undefined, undefined, topUpDays);
           shortages.push(...(res.shortages ?? []).map((shortage) => ({ ...shortage, blockTitle: block.title })));
         }
         if (!cancelled) setTopUpShortages(shortages);
@@ -469,53 +462,7 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [data, selectedBlock, topUpDays, sourceWeightsKey]);
-
-  async function generateShort(block: ChannelThemeBlock) {
-    setBusy({ blockId: block.id, kind: "short" });
-    setNotice("");
-    try {
-      const res = await apiClient.generateChannelThemeBlock(block.id, shortCount, undefined, block.sourceGroups.length ? sourceWeights : undefined);
-      queue.trackJobs(res.jobs);
-      setNotice(
-        t("channelBlocks.shortQueued", {
-          jobs: res.jobs.length,
-          videos: res.jobs.reduce((sum, job) => sum + job.total, 0),
-          skipped: res.skipped.length,
-        }),
-      );
-      await load();
-    } catch (e) {
-      setNotice(e instanceof Error ? e.message : String(e));
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  async function normalizeQueue(block: ChannelThemeBlock, targetDays = topUpDays) {
-    setBusy({ blockId: block.id, kind: "normalize" });
-    setNotice("");
-    setTopUpShortages([]);
-    try {
-      const res = await apiClient.normalizeChannelThemeBlock(block.id, undefined, block.sourceGroups.length ? sourceWeights : undefined, targetDays);
-      queue.trackJobs(res.jobs);
-      setTopUpShortages((res.shortages ?? []).map((shortage) => ({ ...shortage, blockTitle: block.title })));
-      setNotice(
-        t("channelBlocks.normalizeQueued", {
-          jobs: res.jobs.length,
-          videos: res.jobs.reduce((sum, job) => sum + job.total, 0),
-          target: res.targetQueued,
-          skipped: res.skipped.length,
-          shortages: res.shortages?.length ?? 0,
-        }),
-      );
-      await load();
-    } catch (e) {
-      setNotice(e instanceof Error ? e.message : String(e));
-    } finally {
-      setBusy(null);
-    }
-  }
+  }, [data, selectedBlock, topUpDays]);
 
   async function normalizeAllBlocks() {
     if (!data) return;
@@ -686,19 +633,11 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
         <BlockDetail
           block={selectedBlock}
           languages={data.languages}
-          shortCount={shortCount}
-          setShortCount={setShortCount}
-          topUpDays={topUpDays}
-          setTopUpDays={setTopUpDays}
-          topUpPreviewBusy={topUpPreviewBusy}
-          topUpShortages={topUpShortages}
           perDay={perDay}
           setPerDay={setPerDay}
           busy={busy}
           sourceWeights={sourceWeights}
           setSourceWeights={setSourceWeights}
-          generateShort={generateShort}
-          normalizeQueue={normalizeQueue}
           applySchedule={applySchedule}
           addBlockAccount={addBlockAccount}
         />
@@ -880,50 +819,29 @@ function BlockCard({
 function BlockDetail({
   block,
   languages,
-  shortCount,
-  setShortCount,
-  topUpDays,
-  setTopUpDays,
-  topUpPreviewBusy,
-  topUpShortages,
   perDay,
   setPerDay,
   busy,
   sourceWeights,
   setSourceWeights,
-  generateShort,
-  normalizeQueue,
   applySchedule,
   addBlockAccount,
 }: {
   block: ChannelThemeBlock;
   languages: ChannelThemeBlocksResponse["languages"];
-  shortCount: number;
-  setShortCount: (value: number) => void;
-  topUpDays: number;
-  setTopUpDays: (value: number) => void;
-  topUpPreviewBusy: boolean;
-  topUpShortages: NormalizeShortage[];
   perDay: number;
   setPerDay: (value: number) => void;
   busy: BusyState;
   sourceWeights: Record<string, number>;
   setSourceWeights: (value: Record<string, number>) => void;
-  generateShort: (block: ChannelThemeBlock) => Promise<void>;
-  normalizeQueue: (block: ChannelThemeBlock, targetDays?: number) => Promise<void>;
   applySchedule: (block: ChannelThemeBlock) => Promise<void>;
   addBlockAccount: (block: ChannelThemeBlock, lang: string) => Promise<void>;
 }) {
   const { t } = useT();
-  const shortBusy = busy?.blockId === block.id && busy.kind === "short";
-  const normalizeBusy = busy?.blockId === block.id && busy.kind === "normalize";
   const scheduleBusy = busy?.blockId === block.id && busy.kind === "schedule";
   const decks = deckSummaries(block);
-  const range = queueRange(block);
-  const canNormalize = block.totalAccounts > 1 && range.max > range.min;
   const bottleneck = blockBottleneck(block);
   const bottleneckLabel = blockBottleneckLabelKey(block, bottleneck);
-  const blockShortages = topUpShortages.filter((shortage) => !shortage.blockTitle || shortage.blockTitle === block.title);
   // Only languages that actually have channels are shown (no rows of empty "пусто" cells just to keep the
   // grid full). Languages with prepared block packs can still be added via the picker, including ones not
   // present yet — so hiding the empty cells doesn't take away the ability to add a new language.
@@ -974,56 +892,12 @@ function BlockDetail({
         <SourceMixSettings block={block} sourceWeights={sourceWeights} setSourceWeights={setSourceWeights} />
       )}
 
-      <TopUpPanel
-        days={topUpDays}
-        setDays={setTopUpDays}
-        busy={normalizeBusy}
-        previewBusy={topUpPreviewBusy}
-        shortages={blockShortages}
-        onTopUp={() => void normalizeQueue(block, topUpDays)}
-      />
-
       <section className="rounded-md border border-base-300 bg-base-100 p-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="text-base font-semibold">{t("channelBlocks.blockSettings")}</h2>
           </div>
           <div className="flex flex-wrap items-end gap-3">
-            <div className="flex flex-wrap items-end gap-2">
-              <label className="form-control w-28">
-                <span className="label py-1 pr-0">
-                  <span className="label-text whitespace-nowrap text-xs font-semibold uppercase tracking-wide text-base-content/60">
-                    {t("channelBlocks.shortCount")}
-                  </span>
-                </span>
-                <input
-                  type="number"
-                  min={1}
-                  max={100}
-                  className="input input-bordered input-sm w-full"
-                  value={shortCount}
-                  onChange={(e) => setShortCount(Math.max(1, Math.min(100, Number(e.target.value) || 1)))}
-                />
-              </label>
-              <button
-                className="btn btn-sm btn-primary gap-1 whitespace-nowrap"
-                disabled={shortBusy || block.totalAccounts < 1 || block.shortAvailable < 1}
-                onClick={() => void generateShort(block)}
-                title={block.shortAvailable < 1 ? t("channelBlocks.noShortLeft") : t("channelBlocks.generateShortTitle")}
-              >
-                {shortBusy ? <span className="loading loading-spinner loading-xs" /> : <AppIcon name="plus" size={14} />}
-                {t("channelBlocks.generateShort")}
-              </button>
-              <button
-                className="btn btn-sm btn-outline gap-1 whitespace-nowrap"
-                disabled={normalizeBusy || !canNormalize}
-                onClick={() => void normalizeQueue(block, topUpDays)}
-                title={canNormalize ? t("channelBlocks.normalizeTitle", { target: range.max }) : t("channelBlocks.normalizeAlready")}
-              >
-                {normalizeBusy ? <span className="loading loading-spinner loading-xs" /> : <AppIcon name="refresh" size={14} />}
-                {t("channelBlocks.normalizeQueue")}
-              </button>
-            </div>
             <div className="flex flex-wrap items-end gap-2">
               <label className="form-control w-32">
                 <span className="label py-1 pr-0">

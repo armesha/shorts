@@ -44,6 +44,7 @@ test("super-admin joke decks filter protected-class race slurs from generation p
     "data/packs/new-memes-fr-superadmin.json",
     "data/packs/new-memes-it-superadmin.json",
     "data/packs/new-memes-pt-superadmin.json",
+    "data/packs/new-memes-ru-superadmin.json",
     "data/packs/psychology-de-superadmin.json",
     "data/packs/psychology-ru-superadmin.json",
     "data/packs/soviet-posters-ru.json",

@@ -280,6 +280,16 @@ export interface VideoItem {
   createdAt: string;
 }
 
+export interface VideoCountsRow {
+  accountId: number;
+  total: number;
+  byDeck: Record<string, number>;
+}
+
+export interface VideoCountsResponse {
+  accounts: VideoCountsRow[];
+}
+
 export interface AuthUser {
   id: number;
   username: string;

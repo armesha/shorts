@@ -12,12 +12,14 @@ import {
   USER_BOTTOM_NAV,
   canSeeNav,
   navKeyFor,
+  readHiddenNavKeys,
   readPinnedNavKeys,
   writePinnedNavKeys,
   type NavItem,
 } from "./layout/navConfig";
 import { NotificationDropdown } from "./layout/NotificationDropdown";
 import { NetworkIndicator, LanguageToggle, SkinToggle } from "./layout/widgets";
+import { preloadRoutePath } from "../lib/routeLoaders";
 
 const DRAWER_ID = "main-drawer";
 type ViewTransitionHandle = {
@@ -133,6 +135,7 @@ function AdminLayout({
   const firstRoute = useRef(true);
   const [routeSettling, setRouteSettling] = useState(false);
   const [pinnedNavKeys, setPinnedNavKeys] = useState<string[]>(readPinnedNavKeys);
+  const [hiddenNavKeys, setHiddenNavKeys] = useState<string[]>(readHiddenNavKeys);
   const bottomNav = user.role === "admin" ? ADMIN_BOTTOM_NAV : USER_BOTTOM_NAV;
   // Clip-demos (нарезки) is open to all, but the nav item only shows if the user has ≥1 accessible pack.
   const [hasClipDemos, setHasClipDemos] = useState(user.role === "admin");
@@ -161,16 +164,21 @@ function AdminLayout({
   }, [pinnedNavKeys]);
 
   useEffect(() => {
-    const syncPinnedNav = () => setPinnedNavKeys(readPinnedNavKeys());
-    window.addEventListener("sidebar:pinned-nav-changed", syncPinnedNav);
-    return () => window.removeEventListener("sidebar:pinned-nav-changed", syncPinnedNav);
+    const syncNavPreferences = () => {
+      setPinnedNavKeys(readPinnedNavKeys());
+      setHiddenNavKeys(readHiddenNavKeys());
+    };
+    window.addEventListener("sidebar:pinned-nav-changed", syncNavPreferences);
+    return () => window.removeEventListener("sidebar:pinned-nav-changed", syncNavPreferences);
   }, []);
 
+  const hiddenNavKeySet = new Set(hiddenNavKeys);
   const visibleNavGroups = ADMIN_NAV_GROUPS.map((group) => ({
     ...group,
     items: group.items
       .filter((item) => canSeeNav(item, user, { hasClipDemos }))
-      .map((item) => ({ ...item, navKey: navKeyFor(item) })),
+      .map((item) => ({ ...item, navKey: navKeyFor(item) }))
+      .filter((item) => !hiddenNavKeySet.has(item.navKey)),
   })).filter((group) => group.items.length > 0);
   const visibleNavItems = visibleNavGroups.flatMap((group) => group.items);
   const visibleNavItemsByKey = new Map(visibleNavItems.map((item) => [item.navKey, item]));
@@ -181,6 +189,7 @@ function AdminLayout({
   const regularNavGroups = visibleNavGroups
     .map((group) => ({ ...group, items: group.items.filter((item) => !pinnedNavKeySet.has(item.navKey)) }))
     .filter((group) => group.items.length > 0);
+  const visibleBottomNav = bottomNav.filter((item) => !hiddenNavKeySet.has(navKeyFor(item)));
 
   function renderSidebarItem({ to, labelKey, icon, end, adminBadge, navKey }: SidebarNavItem) {
     return (
@@ -188,6 +197,9 @@ function AdminLayout({
         <NavLink
           to={to}
           end={end}
+          onFocus={() => preloadRoutePath(to)}
+          onPointerEnter={() => preloadRoutePath(to)}
+          onPointerDown={() => preloadRoutePath(to)}
           onClick={closeDrawer}
           className={({ isActive }) => (isActive ? "active font-medium" : "")}
         >
@@ -216,6 +228,7 @@ function AdminLayout({
       return;
     }
 
+    preloadRoutePath(nextPath);
     event.preventDefault();
     event.stopPropagation();
 
@@ -288,26 +301,31 @@ function AdminLayout({
           </div>
         </main>
 
-        <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 border-t border-base-300 bg-base-100/95 backdrop-blur">
-          <div className="grid" style={{ gridTemplateColumns: `repeat(${bottomNav.length}, minmax(0, 1fr))` }}>
-            {bottomNav.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.end}
-                className={({ isActive }) =>
-                  `relative min-h-14 px-1 py-1.5 flex flex-col items-center justify-center gap-0.5 text-[11px] ${
-                    isActive ? "text-primary font-semibold" : "text-base-content/60"
-                  }`
-                }
-              >
-                {item.adminBadge && <span className="admin-nav-badge admin-nav-badge-mobile">adm</span>}
-                <AppIcon name={item.icon} size={18} />
-                <span className="truncate max-w-full">{t(item.labelKey)}</span>
-              </NavLink>
-            ))}
-          </div>
-        </nav>
+        {visibleBottomNav.length > 0 && (
+          <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 border-t border-base-300 bg-base-100/95 backdrop-blur">
+            <div className="grid" style={{ gridTemplateColumns: `repeat(${visibleBottomNav.length}, minmax(0, 1fr))` }}>
+              {visibleBottomNav.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  onFocus={() => preloadRoutePath(item.to)}
+                  onPointerEnter={() => preloadRoutePath(item.to)}
+                  onPointerDown={() => preloadRoutePath(item.to)}
+                  className={({ isActive }) =>
+                    `relative min-h-14 px-1 py-1.5 flex flex-col items-center justify-center gap-0.5 text-[11px] ${
+                      isActive ? "text-primary font-semibold" : "text-base-content/60"
+                    }`
+                  }
+                >
+                  {item.adminBadge && <span className="admin-nav-badge admin-nav-badge-mobile">adm</span>}
+                  <AppIcon name={item.icon} size={18} />
+                  <span className="truncate max-w-full">{t(item.labelKey)}</span>
+                </NavLink>
+              ))}
+            </div>
+          </nav>
+        )}
       </div>
 
       <div className="drawer-side z-40">
@@ -315,6 +333,9 @@ function AdminLayout({
         <aside className="w-72 min-h-screen bg-base-100 border-r border-base-300 flex flex-col">
           <Link
             to="/"
+            onFocus={() => preloadRoutePath("/")}
+            onPointerEnter={() => preloadRoutePath("/")}
+            onPointerDown={() => preloadRoutePath("/")}
             onClick={closeDrawer}
             className="px-5 h-14 flex items-center gap-2 border-b border-base-300 font-bold text-lg tracking-tight hover:bg-base-200/60 transition-colors"
           >

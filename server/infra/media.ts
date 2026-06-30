@@ -11,6 +11,8 @@ import { assembleStillVideo, type MotionOverlay } from "../../src/video.ts";
 import type { CardValues, RoleRule } from "../../src/packs/store.ts";
 import * as metrics from "./metrics.ts";
 
+const INTERNAL_CARD_ROLES = new Set(["source", "debug", "note", "notes", "path", "file", "asset", "ledger"]);
+
 /**
  * Render a still to `library/<prefix>-<stamp>.png` and assemble it into a 6s mp4 beside it.
  * `render(imgAbs)` does the actual drawing (renderAnecdote / renderTemplateCard / …) and its return
@@ -53,6 +55,7 @@ export function cardReadable(values: CardValues, rules: RoleRule[]): { title: st
   let title = "";
   const parts: string[] = [];
   for (const r of rules) {
+    if (INTERNAL_CARD_ROLES.has(r.role.toLowerCase())) continue;
     const v = values[r.role];
     if (v == null) continue;
     if (!r.list && typeof v === "string" && !title) title = v;

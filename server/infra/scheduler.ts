@@ -7,7 +7,10 @@ import { ytMeta } from "../../src/anecdotes/yt-meta.ts";
 import { uploadShort, ytErrorReason, isYtAuthError, type ClientCreds } from "../services/youtube.ts";
 import type { Notifier } from "../services/notify-stream.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
-import { isForbiddenSuperAdminSourceDeck } from "../services/super-admin-optical-decks.ts";
+import {
+  RETIRED_SUPER_ADMIN_SOVIET_POSTER_DECKS,
+  isForbiddenSuperAdminSourceDeck,
+} from "../services/super-admin-optical-decks.ts";
 import { cleanupDrainedAutoExpireDecksForAccount } from "../services/auto-expire-packs.ts";
 import { markPackLibraryVideoUsed } from "../services/pack-gen.ts";
 import { googleKeyDailyScheduleCap } from "./account-limits.ts";
@@ -40,6 +43,31 @@ function uniqueDecks(deckIds: string[]): string[] {
   return [...new Set(deckIds.map((deckId) => String(deckId || "").trim()).filter(Boolean))];
 }
 
+function stableHash(seed: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i += 1) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h >>> 0;
+}
+
+const RETIRED_LIBRARY_ROTATION_RATES = new Map(
+  [...RETIRED_SUPER_ADMIN_SOVIET_POSTER_DECKS].map((deckId) => [deckId, 0.1]),
+);
+
+function retiredLibraryDecksForSlot(acc: Account, hhmm: string, day: string, slotDeck: string | undefined): string[] {
+  if (slotDeck === MANUAL_VIDEO_DECK) return [];
+  return [...RETIRED_LIBRARY_ROTATION_RATES.entries()]
+    .filter(([deckId, rate]) => {
+      if (rate <= 0) return false;
+      if (rate >= 1) return true;
+      const bucket = stableHash(`${day}|${hhmm}|account:${acc.id}|retired-library:${deckId}`) % 1000;
+      return bucket < Math.round(rate * 1000);
+    })
+    .map(([deckId]) => deckId);
+}
+
 type ScheduledVideoSelectionDb = Pick<Db, "getUserById" | "getVideo" | "nextUnpostedVideoForDecks">;
 
 export type ScheduledVideoSelection = {
@@ -55,7 +83,8 @@ export function selectScheduledVideoForSlot(
   hhmm: string,
   day: string,
 ): ScheduledVideoSelection {
-  const ownerIsSuperAdmin = isSuperAdminUser(acc.userId != null ? db.getUserById(acc.userId) : null);
+  const owner = acc.userId != null ? db.getUserById(acc.userId) : null;
+  const ownerIsSuperAdmin = isSuperAdminUser(owner);
   const sources = uniqueDecks(
     (acc.sourceDecks?.length ? acc.sourceDecks : [acc.lang])
       .filter(isSchedulerSourceDeck)
@@ -75,15 +104,18 @@ export function selectScheduledVideoForSlot(
   const slotSeed = `${day}|${hhmm}|account:${acc.id}|decks:${allowedDecks.join(",")}`;
   const pinnedId = acc.slotVideos?.[hhmm];
   const pinned = pinnedId ? db.getVideo(pinnedId) : null;
-  let video =
-    (pinned && pinned.postCount === 0 && allowedDecks.includes(pinned.deck) ? pinned : null) ??
-    db.nextUnpostedVideoForDecks(acc.id, allowedDecks, slotSeed);
+  const retiredDecks = ownerIsSuperAdmin ? retiredLibraryDecksForSlot(acc, hhmm, day, slotDeck) : [];
+  let video = pinned && pinned.postCount === 0 && allowedDecks.includes(pinned.deck) ? pinned : null;
+  if (!video && retiredDecks.length) {
+    video = db.nextUnpostedVideoForDecks(acc.id, retiredDecks, `${slotSeed}|retired-library`);
+  }
+  video ??= db.nextUnpostedVideoForDecks(acc.id, allowedDecks, slotSeed);
   let fallback = false;
   if (!video && fallbackDecks.length) {
     video = db.nextUnpostedVideoForDecks(acc.id, fallbackDecks, `${slotSeed}|fallback`);
     fallback = !!video;
   }
-  return { video, checkedDecks: uniqueDecks([...allowedDecks, ...fallbackDecks]), slotDeck, fallback };
+  return { video, checkedDecks: uniqueDecks([...retiredDecks, ...allowedDecks, ...fallbackDecks]), slotDeck, fallback };
 }
 
 export interface SchedulerOpts {

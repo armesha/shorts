@@ -24,9 +24,9 @@ function deckName(db: Db, ownerId: number | null | undefined, deckId: string | n
   return DECKS.find((deck) => deck.id === id)?.name ?? id;
 }
 
-function deckCounts(db: Db, account: Account): Record<string, number> {
+function deckCounts(rows: { deck: string; count: number }[]): Record<string, number> {
   const counts: Record<string, number> = {};
-  for (const video of db.listVideos(account.id)) counts[video.deck] = (counts[video.deck] ?? 0) + 1;
+  for (const row of rows) counts[row.deck] = (counts[row.deck] ?? 0) + row.count;
   return counts;
 }
 
@@ -99,12 +99,19 @@ export function registerQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const accounts = all ? db.listAccounts() : db.listAccountsByUser(userId);
     const visibleAccountIds = new Set(accounts.map((account) => account.id));
     const accountById = new Map(accounts.map((account) => [account.id, account]));
+    const userById = new Map(db.listUsers().map((user) => [user.id, user]));
+    const countsByAccount = new Map<number, { deck: string; count: number }[]>();
+    for (const row of db.videoCountsByAccount(accounts.map((account) => account.id))) {
+      const list = countsByAccount.get(row.accountId) ?? [];
+      list.push({ deck: row.deck, count: row.count });
+      countsByAccount.set(row.accountId, list);
+    }
 
     const generationJobs = listGenStatuses(all ? undefined : userId)
       .filter((job) => visibleAccountIds.has(job.accountId))
       .map((job) => {
         const account = accountById.get(job.accountId);
-        const owner = job.userId != null ? db.getUserById(job.userId) : null;
+        const owner = job.userId != null ? userById.get(job.userId) : null;
         return {
           ...job,
           channelName: account?.channelName ?? `#${job.accountId}`,
@@ -113,7 +120,7 @@ export function registerQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       });
 
     const channelQueues = accounts.map((account) => {
-      const byDeck = deckCounts(db, account);
+      const byDeck = deckCounts(countsByAccount.get(account.id) ?? []);
       const deckIds = [
         ...new Set([
           ...Object.keys(byDeck),
@@ -131,7 +138,7 @@ export function registerQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       return {
         accountId: account.id,
         channelName: account.channelName,
-        ownerUsername: account.userId ? db.getUserById(account.userId)?.username ?? null : null,
+        ownerUsername: account.userId ? userById.get(account.userId)?.username ?? null : null,
         connected: account.status === "connected",
         enabled: account.enabled,
         schedule: account.schedule ?? [],

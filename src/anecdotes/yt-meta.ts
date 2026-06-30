@@ -3,6 +3,42 @@
 // Импортирует тип Deck из реестра (одно направление: yt-meta → decks, без цикла).
 import type { Deck } from "./decks.ts";
 
+const INTERNAL_DESCRIPTION_LINE =
+  /(?:\b(?:data|temp|assets|local-assets|scripts|server|src)\/|\/home\/|\.json\b|\.mjs\b|\.ts\b|pack:new-|translated ready-made meme card|legacy memes-\*|template-packs|sourcecounts|sourcelabel|Генератор мемов)/i;
+
+function publicDescription(text: string): string {
+  return String(text || "")
+    .split(/\n{2,}/)
+    .map((part) =>
+      part
+        .split(/\r?\n/)
+        .filter((line) => !INTERNAL_DESCRIPTION_LINE.test(line))
+        .join("\n")
+        .trim(),
+    )
+    .filter(Boolean)
+    .join("\n\n")
+    .trim();
+}
+
+function withHashtags(body: string, hashtags: string): string {
+  const clean = publicDescription(body);
+  return `${clean || " "}\n\n${hashtags}`.trim();
+}
+
+/** A readable meme title from a caption: first line, trimmed to a sentence or word boundary
+ *  (never cut mid-word). Keeps short captions whole; long ones end at the first sentence stop
+ *  or, failing that, the last word boundary + ellipsis. */
+function memeTitleLine(caption: string): string {
+  const line = (caption.split(/\r?\n/)[0] || caption).trim();
+  if (line.length <= 80) return line;
+  const sentence = line.match(/^[\s\S]{20,80}?[.!?…»"](?=\s|$)/);
+  if (sentence) return sentence[0].trim();
+  const head = line.slice(0, 76);
+  const sp = head.lastIndexOf(" ");
+  return (sp > 40 ? head.slice(0, sp) : head).trim() + "…";
+}
+
 /** Build YouTube title/description/tags for a deck. */
 export function ytMeta(
   deck: Deck,
@@ -14,7 +50,7 @@ export function ytMeta(
     const body = (text || deck.name).trim();
     return {
       title: `${cleanTitle} ${deck.emoji}`.slice(0, 100),
-      description: `${body}\n\n${deck.hashtags}`,
+      description: withHashtags(body, deck.hashtags),
       tags: deck.tags,
     };
   }
@@ -24,7 +60,7 @@ export function ytMeta(
     const preview = cleanQuote.length > 74 ? cleanQuote.slice(0, 73).trim() + "…" : cleanQuote;
     return {
       title: `${preview || cleanAuthor} ${deck.emoji} #shorts`.slice(0, 100),
-      description: `${cleanQuote}\n\n— ${cleanAuthor}\n\n${deck.hashtags}`,
+      description: withHashtags(`${cleanQuote}\n\n— ${cleanAuthor}`, deck.hashtags),
       tags: deck.tags,
     };
   }
@@ -43,7 +79,7 @@ export function ytMeta(
     }
     return {
       title: `${ref} ${deck.emoji} #shorts`,
-      description: `${ar}\n\n${ref}${refEn}\n\n${deck.hashtags}`,
+      description: withHashtags(`${ar}\n\n${ref}${refEn}`, deck.hashtags),
       tags: deck.tags,
     };
   }
@@ -60,7 +96,7 @@ export function ytMeta(
     }
     return {
       title: `${ref} ${deck.emoji} #shorts`,
-      description: `${body}\n\n${ref} (KJV)\n\n${deck.hashtags}`,
+      description: withHashtags(`${body}\n\n${ref} (KJV)`, deck.hashtags),
       tags: deck.tags,
     };
   }
@@ -80,7 +116,7 @@ export function ytMeta(
     const body = `${q}\n\n🔴 ${a.label ?? ""}: ${a.desc ?? ""}\n🔵 ${b.label ?? ""}: ${b.desc ?? ""}\n\nА ты что выберешь? Пиши в комментариях 👇`;
     return {
       title: `${q} ${deck.emoji} #shorts`,
-      description: `${body}\n\n${deck.hashtags}`,
+      description: withHashtags(body, deck.hashtags),
       tags: deck.tags,
     };
   }
@@ -93,10 +129,10 @@ export function ytMeta(
     } catch {
       /* not JSON — use raw text */
     }
-    const firstLine = (cap.split(/\r?\n/)[0] || cap).slice(0, 80).trim();
+    const firstLine = memeTitleLine(cap);
     return {
       title: `${firstLine || title} ${deck.emoji} #shorts`,
-      description: `${cap}\n\n${deck.hashtags}`,
+      description: withHashtags(cap, deck.hashtags),
       tags: deck.tags,
     };
   }
@@ -104,7 +140,7 @@ export function ytMeta(
   const body = deck.psych ? psychDescription(text) : text;
   return {
     title: `${title} ${deck.emoji} #shorts`,
-    description: `${body}\n\n${deck.hashtags}`,
+    description: withHashtags(body, deck.hashtags),
     tags: deck.tags,
   };
 }

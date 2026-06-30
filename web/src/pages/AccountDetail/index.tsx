@@ -110,11 +110,11 @@ export default function AccountDetail() {
   const reloadVideos = () =>
     apiClient
       .videos(id!)
-      .then((items) => {
-        setVideos(items);
+      .then(setVideos)
+      .catch(() => {})
+      .finally(() => {
         void reloadReadiness();
-      })
-      .catch(() => {});
+      });
 
   // «Сделать сразу» не больше остатка свободных карточек выбранного контента (дека/пак) — для всех ролей.
   const roleMax = user?.role === "admin" ? 100 : 50; // потолок: админ 100, обычный юзер 50
@@ -178,7 +178,6 @@ export default function AccountDetail() {
       })
       .catch(() => {});
     reloadVideos();
-    reloadReadiness();
     apiClient.manualVideoLimits().then(setManualLimits).catch(() => {});
     apiClient.generators().then(setGens).catch(() => {});
     apiClient.packs().then(setPacks).catch(() => {}); // доступные паки → в дропдаун канала (по имени)
@@ -204,7 +203,6 @@ export default function AccountDetail() {
     if (!q.completions) return;
     if (q.accountId === Number(id)) {
       reloadVideos();
-      reloadReadiness();
     }
     apiClient.generators().then(setGens).catch(() => {});
     apiClient.packs().then(setPacks).catch(() => {});

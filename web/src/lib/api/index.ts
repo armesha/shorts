@@ -10,7 +10,7 @@ import type {
   PsychSchema, PsychCardList, PackSummary, PackFull, PackMusic, PackMusicUploadFile,
   PackMusicUploadResult, MusicTrack, StatRow, ChannelTotals, PlatformSummary, StatPoint,
   AdminAnalytics, UserAnalytics, ErrorLogItem, NotificationItem, NotificationCounts, SystemStatus,
-  ContentCatalogResponse, AccountReadiness, QueueOverview, LongVideoCatalog,
+  ContentCatalogResponse, AccountReadiness, QueueOverview, LongVideoCatalog, VideoCountsResponse,
   ChannelThemeBlockAccount, ChannelThemeBlocksResponse, ChannelThemeBlockGenerateResult,
   ChannelThemeBlockNormalizeResult, ChannelThemeBlockScheduleResult, ChannelThemeBlockSourceGroup,
 } from "./types";
@@ -230,6 +230,7 @@ export const apiClient = {
     send<GeneratedPreview>("/generate/anecdote", "POST", body ?? {}),
   generateAnecdoteVideo: (body?: { text?: string; title?: string; bg?: string; music?: string; deck?: string }) =>
     send<GeneratedVideo>("/generate/anecdote-video", "POST", body ?? {}),
+  videoCounts: (scope?: "all") => get<VideoCountsResponse>(`/videos/counts${scope === "all" ? "?scope=all" : ""}`),
   videos: (accountId: number | string) => get<VideoItem[]>(`/videos?accountId=${accountId}`),
   saveVideo: (body: { accountId: number; text: string; title: string; bg?: string; music?: string; deck?: string }) =>
     send<VideoItem>("/videos", "POST", body),

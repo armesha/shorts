@@ -3,6 +3,7 @@ import type { AuthUser } from "../../lib/api";
 import { isMainAdmin } from "../../lib/authz";
 
 export const PINNED_NAV_STORAGE_KEY = "sidebarPinnedNavItems";
+export const HIDDEN_NAV_STORAGE_KEY = "sidebarHiddenNavItems";
 
 export type NavItem = {
   to: string;
@@ -94,20 +95,42 @@ export function navKeyFor(item: Pick<NavItem, "to" | "labelKey">) {
   return `${item.to}::${item.labelKey}`;
 }
 
-export function readPinnedNavKeys(): string[] {
+function readStringArray(key: string): string[] {
   try {
-    const raw = localStorage.getItem(PINNED_NAV_STORAGE_KEY);
+    const raw = localStorage.getItem(key);
     const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed.filter((key): key is string => typeof key === "string") : [];
+    if (!Array.isArray(parsed)) return [];
+    const seen = new Set<string>();
+    return parsed.filter((value): value is string => {
+      if (typeof value !== "string" || seen.has(value)) return false;
+      seen.add(value);
+      return true;
+    });
   } catch {
     return [];
   }
 }
 
-export function writePinnedNavKeys(keys: string[]) {
+function writeStringArray(key: string, values: string[]) {
   try {
-    localStorage.setItem(PINNED_NAV_STORAGE_KEY, JSON.stringify(keys));
+    localStorage.setItem(key, JSON.stringify([...new Set(values)]));
   } catch {
     /* localStorage can be unavailable in private or restricted browser contexts. */
   }
+}
+
+export function readPinnedNavKeys(): string[] {
+  return readStringArray(PINNED_NAV_STORAGE_KEY);
+}
+
+export function writePinnedNavKeys(keys: string[]) {
+  writeStringArray(PINNED_NAV_STORAGE_KEY, keys);
+}
+
+export function readHiddenNavKeys(): string[] {
+  return readStringArray(HIDDEN_NAV_STORAGE_KEY);
+}
+
+export function writeHiddenNavKeys(keys: string[]) {
+  writeStringArray(HIDDEN_NAV_STORAGE_KEY, keys);
 }

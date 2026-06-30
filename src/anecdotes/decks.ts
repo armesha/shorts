@@ -423,6 +423,18 @@ export const DECKS: Deck[] = [
     preFact: true,
   },
   {
+    id: "fact-ru",
+    name: "Интересный факт",
+    dir: "data/fact-videos-ru", // Russian title/text localization of the pre-built Interesting Facts corpus.
+    source: "Localized from data/fact-videos/videos.json; see data/fact-videos-ru/sources.json",
+    emoji: "🤯",
+    hashtags: "#факты #интересныефакты #тызнал #удивительныефакты #shorts",
+    tags: ["факты", "интересные факты", "ты знал", "удивительные факты", "наука", "shorts"],
+    genericTitles: ["А ты знал?", "Интересный факт", "Удивительный факт", "В это сложно поверить"],
+    adminOnly: true,
+    preFact: true,
+  },
+  {
     id: "fact-es",
     name: "Datos curiosos",
     dir: "data/fact-videos-es", // Spanish title/text; generation rebuilds source footage with ES overlay + edge-tts
@@ -1084,13 +1096,55 @@ export function isPackDeckId(id?: string | null): boolean {
 }
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
-  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ar: "ar", hi: "hi", id: "id", choose: "ru", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
+  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ar: "ar", hi: "hi", id: "id", choose: "ru", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-ru": "ru", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-es": "es", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar",
 };
 export function deckLang(id: string): string {
   return DECK_LANG[id] || "";
 }
+// Localized YouTube metadata for the super-admin «Новые мемы» packs (pack:new-memes-<lang>-superadmin).
+// These packs carry the real meme caption in each card (role `title` = caption); the meme deck flavor
+// makes ytMeta derive the title from the caption's first line and append proper meme hashtags — instead
+// of the old generic "Свой пак ✨ #shorts". Reuses the same hashtags/tags as the built-in memes-* decks.
+const NEW_MEMES_META: Record<string, { name: string; hashtags: string; tags: string[] }> = {
+  ru: { name: "Новые мемы", hashtags: "#мемы #юмор #приколы #relatable #shorts", tags: ["мемы", "мем", "юмор", "приколы", "смешное", "relatable", "shorts"] },
+  en: { name: "New Memes", hashtags: "#memes #funny #relatable #meme #shorts", tags: ["memes", "meme", "funny", "relatable", "humor", "lol", "shorts"] },
+  de: { name: "Neue Memes", hashtags: "#memes #humor #lustig #relatable #shorts", tags: ["memes", "meme", "humor", "lustig", "relatable", "shorts"] },
+  it: { name: "Nuovi meme", hashtags: "#meme #umorismo #divertente #relatable #shorts", tags: ["meme", "umorismo", "divertente", "relatable", "ironia", "shorts"] },
+  es: { name: "Memes nuevos", hashtags: "#memes #humor #gracioso #relatable #shorts", tags: ["memes", "meme", "humor", "gracioso", "relatable", "shorts"] },
+  pt: { name: "Memes novos", hashtags: "#memes #humor #engraçado #relatable #shorts", tags: ["memes", "meme", "humor", "engraçado", "relatable", "shorts"] },
+  fr: { name: "Nouveaux mèmes", hashtags: "#mèmes #humour #drôle #relatable #shorts", tags: ["mèmes", "mème", "humour", "drôle", "relatable", "shorts"] },
+};
 function synthPackDeck(id: string): Deck {
+  const meme = /^pack:new-memes-([a-z]{2})-superadmin$/.exec(id);
+  if (meme) {
+    const m = NEW_MEMES_META[meme[1]] ?? NEW_MEMES_META.en;
+    return {
+      id,
+      name: m.name,
+      dir: "",
+      source: "",
+      emoji: "😂",
+      hashtags: m.hashtags,
+      tags: m.tags,
+      genericTitles: ["Мем"],
+      meme: true, // ytMeta meme branch: title = caption first line, description = full caption + hashtags
+    };
+  }
+  // Spanish classic-joke packs (pack:chistes-*): each card carries a real per-joke title + the joke body,
+  // so the generic ytMeta branch already produces «title 😂 #shorts» + the joke; just give it joke branding.
+  if (/^pack:chistes-/.test(id)) {
+    return {
+      id,
+      name: "Chistes",
+      dir: "",
+      source: "",
+      emoji: "😂",
+      hashtags: "#chistes #humor #risa #gracioso #shorts",
+      tags: ["chistes", "chiste", "humor", "risa", "gracioso", "comedia", "shorts"],
+      genericTitles: ["Chiste", "Para reír", "Un clásico"],
+    };
+  }
   return {
     id,
     name: "Свой пак",

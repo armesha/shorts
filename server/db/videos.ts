@@ -59,6 +59,27 @@ export function videoMethods(db: DatabaseSync) {
         db.prepare("SELECT * FROM videos WHERE account_id = ? ORDER BY id DESC").all(accountId) as Row[]
       ).map(rowToVideo);
     },
+    videoCountsByAccount(accountIds?: number[]): { accountId: number; deck: string; count: number }[] {
+      const ids = Array.isArray(accountIds)
+        ? [...new Set(accountIds.map((id) => Number(id)).filter((id) => Number.isInteger(id) && id > 0))]
+        : [];
+      if (Array.isArray(accountIds) && ids.length === 0) return [];
+      const where = ids.length ? `WHERE account_id IN (${ids.map(() => "?").join(",")})` : "";
+      const rows = db
+        .prepare(
+          `SELECT account_id, deck, COUNT(*) AS n
+             FROM videos
+             ${where}
+            GROUP BY account_id, deck
+            ORDER BY account_id, deck`,
+        )
+        .all(...ids) as Row[];
+      return rows.map((row) => ({
+        accountId: Number(row.account_id),
+        deck: String(row.deck ?? ""),
+        count: Number(row.n) || 0,
+      }));
+    },
     findOutputFileOwner(rel: string): { accountId: number; userId: number | null } | null {
       const r = db
         .prepare(

@@ -112,9 +112,27 @@ export function registerFilesRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     if (!st.isFile()) return reply.code(404).send({ error: "not found" });
 
     const contentType = outputContentType(rel);
+    const etag = `W/"${st.size}-${Math.floor(st.mtimeMs)}"`;
+    const lastModified = st.mtime.toUTCString();
     reply.header("Content-Type", contentType);
     reply.header("Accept-Ranges", "bytes");
+    reply.header("Cache-Control", "private, max-age=86400");
+    reply.header("ETag", etag);
+    reply.header("Last-Modified", lastModified);
     const rangeRaw = req.headers.range;
+    if (!rangeRaw) {
+      const ifNoneMatch = req.headers["if-none-match"];
+      if (typeof ifNoneMatch === "string" && (ifNoneMatch === "*" || ifNoneMatch.split(",").map((v) => v.trim()).includes(etag))) {
+        return reply.code(304).send();
+      }
+      const ifModifiedSince = req.headers["if-modified-since"];
+      if (typeof ifModifiedSince === "string") {
+        const since = Date.parse(ifModifiedSince);
+        if (Number.isFinite(since) && Math.floor(st.mtimeMs / 1000) <= Math.floor(since / 1000)) {
+          return reply.code(304).send();
+        }
+      }
+    }
     const range = typeof rangeRaw === "string" ? parseRangeHeader(rangeRaw, st.size) : null;
     if (rangeRaw && !range) {
       reply.header("Content-Range", `bytes */${st.size}`);

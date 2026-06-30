@@ -74,6 +74,10 @@ const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
   pt: ["pack:new-memes-pt-superadmin"],
 };
 
+const RUSSIAN_MEME_DECK_BY_LANG: Record<string, string[]> = {
+  ru: ["pack:new-memes-ru-superadmin"],
+};
+
 const QUOTE_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
   ar: ["quote-video-ar"],
   ru: ["quote-video-ru"],
@@ -105,24 +109,13 @@ const PSYCHOLOGY_DECK_BY_LANG: Record<string, string[]> = {
   de: ["pack:psychology-de-superadmin"],
 };
 
-const STATIC_FACT_DECK_BY_LANG: Record<string, string[]> = {
-  ru: ["pack:static-facts-ru-superadmin"],
-  en: ["pack:static-facts-en-superadmin"],
-  de: ["pack:static-facts-de-superadmin"],
-  es: ["pack:static-facts-es-superadmin"],
-};
-
 const MOTIVATION_DECK_BY_LANG: Record<string, string[]> = {
-  ru: ["pack:motivation-ru-superadmin"],
   en: ["pack:motivation-en-superadmin"],
   de: ["pack:motivation-de-superadmin"],
 };
 
-const SOVIET_POSTER_DECK_BY_LANG: Record<string, string[]> = {
-  ru: ["pack:soviet-posters-ru"],
-};
-
 const FACT_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
+  ru: ["fact-ru"],
   en: ["fact-en"],
   es: ["fact-es"],
 };
@@ -150,10 +143,6 @@ const RELIGION_PRAYER_DECK_BY_LANG: Record<string, string[]> = {
 
 const RELIGION_CHRISTIAN_QUOTE_DECK_BY_LANG: Record<string, string[]> = {
   en: ["christian-quotes-en"],
-};
-
-const RELIGION_CHRISTIAN_FACT_DECK_BY_LANG: Record<string, string[]> = {
-  en: ["christian-facts-en"],
 };
 
 const ISLAM_SOURCE_GROUPS: SourceGroupDef[] = [
@@ -196,26 +185,20 @@ const CHRISTIANITY_SOURCE_GROUPS: SourceGroupDef[] = [
     defaultWeight: 1,
     sources: RELIGION_CHRISTIAN_QUOTE_DECK_BY_LANG,
   },
-  {
-    id: "christian_facts",
-    title: "Факты о христианстве",
-    defaultWeight: 1,
-    sources: RELIGION_CHRISTIAN_FACT_DECK_BY_LANG,
-  },
 ];
 
 const RUSSIAN_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "jokes",
     title: "Анекдоты",
-    defaultWeight: 6,
+    defaultWeight: 7,
     sources: { ru: ["ru"] },
   },
   {
-    id: "static_facts",
-    title: "Факты",
-    defaultWeight: 2,
-    sources: { ru: ["pack:static-facts-ru-superadmin"] },
+    id: "fact_video",
+    title: "Интересный факт",
+    defaultWeight: 1,
+    sources: FACT_VIDEO_DECK_BY_LANG,
   },
   {
     id: "video_quotes",
@@ -230,22 +213,16 @@ const RUSSIAN_SOURCE_GROUPS: SourceGroupDef[] = [
     sources: { ru: ["quotes-ru"] },
   },
   {
+    id: "memes",
+    title: "Мемы",
+    defaultWeight: 2,
+    sources: RUSSIAN_MEME_DECK_BY_LANG,
+  },
+  {
     id: "psychology",
     title: "Психология",
     defaultWeight: 2,
     sources: { ru: ["pack:psychology-ru-superadmin"] },
-  },
-  {
-    id: "motivation",
-    title: "Мотивация",
-    defaultWeight: 2,
-    sources: { ru: ["pack:motivation-ru-superadmin"] },
-  },
-  {
-    id: "soviet_posters",
-    title: "Постеры",
-    defaultWeight: 1,
-    sources: SOVIET_POSTER_DECK_BY_LANG,
   },
 ];
 
@@ -255,12 +232,6 @@ const RELIGION_SOURCE_GROUPS: SourceGroupDef[] = [
 ];
 
 const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
-  {
-    id: "static_facts",
-    title: "Статичные факты",
-    defaultWeight: 2,
-    sources: STATIC_FACT_DECK_BY_LANG,
-  },
   {
     id: "fact_video",
     title: "Интересный факт",
@@ -310,12 +281,12 @@ const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
     ar: ["islamic", "islamic-quotes-ar", "islamic-facts-ar"],
   },
   christianity: {
-    en: ["christian", "prayers-en", "christian-quotes-en", "christian-facts-en"],
+    en: ["christian", "prayers-en", "christian-quotes-en"],
     de: ["prayers-de"],
   },
   religion: {
     ar: ["islamic", "islamic-quotes-ar", "islamic-facts-ar"],
-    en: ["christian", "prayers-en", "christian-quotes-en", "christian-facts-en"],
+    en: ["christian", "prayers-en", "christian-quotes-en"],
     de: ["prayers-de"],
   },
 };
@@ -327,10 +298,8 @@ export const BLOCKS: BlockDef[] = [
     description: "Все русские нерелигиозные каналы в одной сетке источников.",
     rules: [
       "Русский блок использует один общий микс источников для всех русских каналов супер-админа.",
-      "Все RU-каналы в блоке должны иметь одинаковый набор источников: юмор, факты, лайфхаки, цитаты, психология, мотивация и советские постеры.",
-      "Legacy-пак Мемы (RU) не подключать к русскому блоку; русский блок пока работает без мемов.",
-      "Советские постеры — RU-only архивный источник: не локализовать, не пополнять; он конечный и авто-удаляется из канала после исчерпания.",
-      "Постеры брать только из проверенного public-domain набора; не добавлять антирелигиозную сатиру, сталинский культ, расовые стереотипы, тяжёлые военные изображения и спорные киноафиши.",
+      "Все RU-каналы в блоке должны иметь одинаковый набор источников: юмор, мемы, интересные факты, лайфхаки, цитаты и психология.",
+      "Русские мемы брать только из pack:new-memes-ru-superadmin после проверки прав и оскорбительного контекста.",
     ],
     accountIds: [7, 16, 52, 62, 81],
     sourceGroups: RUSSIAN_SOURCE_GROUPS,
@@ -366,7 +335,7 @@ export const BLOCKS: BlockDef[] = [
       "Если появится озвучка для лайфхаков, новые voiceover-паки собирать через разрешённый TTS-профиль проекта с учётом текущих квот.",
       "Анекдоты не придумывать ИИ: брать только проверенные внешние/PD/licensed корпуса с источниками.",
       "Анекдоты внутри блока остаются отдельным источником микса; не смешивать бытовые советы и шутки внутри одной карточки.",
-      "Legacy memes-* не подключать к armen-блокам; иностранные мемы брать только из новых pack:new-memes-<lang>-superadmin после проверки прав и оскорбительного контекста.",
+      "Иностранные мемы брать только из pack:new-memes-<lang>-superadmin после проверки прав и оскорбительного контекста.",
       "Декоративные смеющиеся emoji/GIF разрешены, если они не перекрывают текст и не выглядят как плашка/водяной знак канала.",
       "Видео-цитаты и статичные цитаты держать отдельными источниками микса.",
       "Мотивационные карточки писать как оригинальные короткие правила без реальных атрибуций, гендерной токсичности, обещаний успеха или водяных знаков.",

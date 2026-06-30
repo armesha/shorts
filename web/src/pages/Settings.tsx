@@ -25,7 +25,9 @@ import {
   ADMIN_NAV_GROUPS,
   canSeeNav,
   navKeyFor,
+  readHiddenNavKeys,
   readPinnedNavKeys,
+  writeHiddenNavKeys,
   writePinnedNavKeys,
 } from "../components/layout/navConfig";
 
@@ -58,6 +60,7 @@ function FavoriteNavSettings() {
   const { t } = useT();
   const { user } = useAuth();
   const [pinnedKeys, setPinnedKeys] = useState<string[]>(readPinnedNavKeys);
+  const [hiddenKeys, setHiddenKeys] = useState<string[]>(readHiddenNavKeys);
   const [hasClipDemos, setHasClipDemos] = useState(user?.role === "admin");
 
   useEffect(() => {
@@ -86,16 +89,37 @@ function FavoriteNavSettings() {
       .map((item) => ({ ...item, navKey: navKeyFor(item) })),
   })).filter((group) => group.items.length > 0);
   const visibleKeys = new Set(groups.flatMap((group) => group.items.map((item) => item.navKey)));
-  const selectedCount = pinnedKeys.filter((key) => visibleKeys.has(key)).length;
+  const pinnedKeySet = new Set(pinnedKeys);
+  const hiddenKeySet = new Set(hiddenKeys);
+  const selectedCount = pinnedKeys.filter((key) => visibleKeys.has(key) && !hiddenKeySet.has(key)).length;
+  const hiddenCount = hiddenKeys.filter((key) => visibleKeys.has(key)).length;
 
-  function commit(next: string[]) {
-    setPinnedKeys(next);
-    writePinnedNavKeys(next);
+  function commit(nextPinned: string[], nextHidden: string[]) {
+    const normalizedHidden = [...new Set(nextHidden)];
+    const normalizedHiddenSet = new Set(normalizedHidden);
+    const normalizedPinned = [...new Set(nextPinned)].filter((key) => !normalizedHiddenSet.has(key));
+
+    setPinnedKeys(normalizedPinned);
+    setHiddenKeys(normalizedHidden);
+    writePinnedNavKeys(normalizedPinned);
+    writeHiddenNavKeys(normalizedHidden);
     window.dispatchEvent(new Event("sidebar:pinned-nav-changed"));
   }
 
-  function toggle(navKey: string) {
-    commit(pinnedKeys.includes(navKey) ? pinnedKeys.filter((key) => key !== navKey) : [navKey, ...pinnedKeys]);
+  function togglePinned(navKey: string) {
+    const isPinned = pinnedKeySet.has(navKey) && !hiddenKeySet.has(navKey);
+    commit(
+      isPinned ? pinnedKeys.filter((key) => key !== navKey) : [navKey, ...pinnedKeys.filter((key) => key !== navKey)],
+      hiddenKeys.filter((key) => key !== navKey),
+    );
+  }
+
+  function toggleHidden(navKey: string) {
+    const isHidden = hiddenKeySet.has(navKey);
+    commit(
+      pinnedKeys.filter((key) => key !== navKey),
+      isHidden ? hiddenKeys.filter((key) => key !== navKey) : [navKey, ...hiddenKeys.filter((key) => key !== navKey)],
+    );
   }
 
   return (
@@ -106,37 +130,69 @@ function FavoriteNavSettings() {
             <AppIcon name="deck" className="text-primary mt-0.5" size={18} />
             <div>
               <h2 className="card-title text-base">{t("settings.favoriteNavTitle")}</h2>
-              <div className="mt-1">
+              <div className="mt-1 flex flex-wrap gap-1.5">
                 <span className="badge badge-sm badge-ghost">{t("settings.favoriteNavCount", { n: selectedCount })}</span>
+                <span className="badge badge-sm badge-ghost">{t("settings.hiddenNavCount", { n: hiddenCount })}</span>
               </div>
             </div>
           </div>
-          <button className="btn btn-sm btn-ghost gap-1" onClick={() => commit([])} disabled={selectedCount === 0}>
-            <AppIcon name="refresh" size={14} />
-            {t("settings.favoriteNavReset")}
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button className="btn btn-sm btn-ghost gap-1" onClick={() => commit([], hiddenKeys)} disabled={selectedCount === 0}>
+              <AppIcon name="refresh" size={14} />
+              {t("settings.favoriteNavReset")}
+            </button>
+            <button className="btn btn-sm btn-ghost gap-1" onClick={() => commit(pinnedKeys, [])} disabled={hiddenCount === 0}>
+              <AppIcon name="refresh" size={14} />
+              {t("settings.hiddenNavReset")}
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {groups.map((group) => (
             <div key={group.labelKey} className="rounded-lg border border-base-300 bg-base-100 p-3">
-              <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-base-content/45">
-                {t(group.labelKey)}
+              <div className="mb-2 grid grid-cols-[minmax(0,1fr)_72px_72px] items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-base-content/45">
+                <span>{t(group.labelKey)}</span>
+                <span className="text-center">{t("settings.favoriteNavColumn")}</span>
+                <span className="text-center">{t("settings.hiddenNavColumn")}</span>
               </div>
               <div className="space-y-1">
-                {group.items.map((item) => (
-                  <label key={item.navKey} className="flex min-h-8 cursor-pointer items-center gap-2 rounded-md px-1.5 hover:bg-base-200/60">
-                    <input
-                      type="checkbox"
-                      className="checkbox checkbox-primary checkbox-sm"
-                      checked={pinnedKeys.includes(item.navKey)}
-                      onChange={() => toggle(item.navKey)}
-                    />
-                    <AppIcon name={item.icon} size={16} className="text-base-content/65" />
-                    <span className="min-w-0 flex-1 truncate text-sm font-medium">{t(item.labelKey)}</span>
-                    {item.adminBadge && <span className="admin-nav-badge">adm</span>}
-                  </label>
-                ))}
+                {group.items.map((item) => {
+                  const isHidden = hiddenKeySet.has(item.navKey);
+                  const isPinned = pinnedKeySet.has(item.navKey) && !isHidden;
+                  return (
+                    <div
+                      key={item.navKey}
+                      className={`grid min-h-9 grid-cols-[minmax(0,1fr)_72px_72px] items-center gap-2 rounded-md px-1.5 hover:bg-base-200/60 ${
+                        isHidden ? "text-base-content/45" : ""
+                      }`}
+                    >
+                      <div className="flex min-w-0 items-center gap-2">
+                        <AppIcon name={item.icon} size={16} className="shrink-0 text-base-content/65" />
+                        <span className="min-w-0 flex-1 truncate text-sm font-medium">{t(item.labelKey)}</span>
+                        {item.adminBadge && <span className="admin-nav-badge">adm</span>}
+                      </div>
+                      <label className="flex cursor-pointer justify-center" title={t("settings.favoriteNavColumn")}>
+                        <input
+                          type="checkbox"
+                          className="checkbox checkbox-primary checkbox-sm"
+                          checked={isPinned}
+                          onChange={() => togglePinned(item.navKey)}
+                          aria-label={`${t("settings.favoriteNavColumn")}: ${t(item.labelKey)}`}
+                        />
+                      </label>
+                      <label className="flex cursor-pointer justify-center" title={t("settings.hiddenNavColumn")}>
+                        <input
+                          type="checkbox"
+                          className="checkbox checkbox-sm"
+                          checked={isHidden}
+                          onChange={() => toggleHidden(item.navKey)}
+                          aria-label={`${t("settings.hiddenNavColumn")}: ${t(item.labelKey)}`}
+                        />
+                      </label>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ))}

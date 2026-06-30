@@ -297,11 +297,24 @@ export function applySchema(db: DatabaseSync): void {
   }
   db.exec(`
     CREATE INDEX IF NOT EXISTS idx_history_account_published ON history(account_id, published_at);
+    CREATE INDEX IF NOT EXISTS idx_history_account_id ON history(account_id, id DESC);
+    CREATE INDEX IF NOT EXISTS idx_history_account_status_published ON history(account_id, status, published_at);
+    CREATE INDEX IF NOT EXISTS idx_history_video_path ON history(video_path);
+    CREATE INDEX IF NOT EXISTS idx_history_image_path ON history(image_path);
     CREATE INDEX IF NOT EXISTS idx_history_status_published ON history(status, published_at);
     CREATE INDEX IF NOT EXISTS idx_history_created ON history(created_at);
     CREATE INDEX IF NOT EXISTS idx_videos_account ON videos(account_id);
+    CREATE INDEX IF NOT EXISTS idx_videos_account_deck ON videos(account_id, deck);
+    CREATE INDEX IF NOT EXISTS idx_videos_ready_any ON videos(account_id, post_count, last_posted_at, id);
+    CREATE INDEX IF NOT EXISTS idx_videos_ready_deck ON videos(account_id, deck, post_count, last_posted_at, id);
+    CREATE INDEX IF NOT EXISTS idx_videos_account_deck_bg ON videos(account_id, deck, bg);
+    CREATE INDEX IF NOT EXISTS idx_videos_video_rel ON videos(video_rel);
+    CREATE INDEX IF NOT EXISTS idx_videos_image_rel ON videos(image_rel);
+    CREATE INDEX IF NOT EXISTS idx_accounts_user ON accounts(user_id, id);
     CREATE INDEX IF NOT EXISTS idx_channel_stats_account_taken ON channel_stats(account_id, taken_at);
+    CREATE INDEX IF NOT EXISTS idx_channel_stats_account_id ON channel_stats(account_id, id DESC);
     CREATE INDEX IF NOT EXISTS idx_channel_analytics_daily_date ON channel_analytics_daily(date);
+    CREATE INDEX IF NOT EXISTS idx_channel_analytics_daily_date_account ON channel_analytics_daily(date, account_id);
     CREATE INDEX IF NOT EXISTS idx_report_cache_account_key_taken ON youtube_report_cache(account_id, report_key, taken_at);
     CREATE INDEX IF NOT EXISTS idx_error_log_created ON error_log(created_at);
     CREATE INDEX IF NOT EXISTS idx_notifications_user_last ON notifications(user_id, last_seen_at);

@@ -44,6 +44,24 @@ export const MGS_ONLY_SUPER_ADMIN_DECKS = new Set([
   "pack:mgs-psychologie-eigen",
 ]);
 
+export const RETIRED_SUPER_ADMIN_STATIC_FACT_DECKS = new Set([
+  "pack:static-facts-en-superadmin",
+  "pack:static-facts-de-superadmin",
+  "pack:static-facts-es-superadmin",
+]);
+
+export const RETIRED_SUPER_ADMIN_RUSSIAN_MOTIVATION_DECKS = new Set([
+  "pack:motivation-ru-superadmin",
+]);
+
+export const RETIRED_SUPER_ADMIN_CHRISTIAN_FACT_DECKS = new Set([
+  "christian-facts-en",
+]);
+
+export const RETIRED_SUPER_ADMIN_SOVIET_POSTER_DECKS = new Set([
+  "pack:soviet-posters-ru",
+]);
+
 export const FORBIDDEN_SUPER_ADMIN_SOURCE_GROUPS = [
   {
     group: "removed armen visual/optical decks",
@@ -56,6 +74,22 @@ export const FORBIDDEN_SUPER_ADMIN_SOURCE_GROUPS = [
   {
     group: "mgs-only psychology decks",
     decks: [...MGS_ONLY_SUPER_ADMIN_DECKS],
+  },
+  {
+    group: "retired armen static fact decks",
+    decks: [...RETIRED_SUPER_ADMIN_STATIC_FACT_DECKS],
+  },
+  {
+    group: "retired armen russian motivation decks",
+    decks: [...RETIRED_SUPER_ADMIN_RUSSIAN_MOTIVATION_DECKS],
+  },
+  {
+    group: "retired armen christian fact decks",
+    decks: [...RETIRED_SUPER_ADMIN_CHRISTIAN_FACT_DECKS],
+  },
+  {
+    group: "retired armen soviet poster decks",
+    decks: [...RETIRED_SUPER_ADMIN_SOVIET_POSTER_DECKS],
   },
 ];
 

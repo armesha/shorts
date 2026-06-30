@@ -1,9 +1,12 @@
 #!/usr/bin/env node
-import { copyFileSync, existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { basename, extname, resolve } from "node:path";
 
 const ROOT = process.cwd();
-const SOURCE_ROOT = resolve(ROOT, "temp/meme/translated");
+const SOURCE_ROOTS = [
+  { path: resolve(ROOT, "temp/meme/translated"), label: "temp/meme/translated", addedAt: "2026-06-28T00:00:00.000Z" },
+  { path: resolve(ROOT, "temp/meme2/translated"), label: "temp/meme2/translated", addedAt: "2026-06-29T00:00:00.000Z" },
+].filter((source) => existsSync(source.path));
 const ASSET_ROOT = resolve(ROOT, "assets/template-packs/new-memes");
 const PACK_ROOT = resolve(ROOT, "data/packs");
 const OWNER_ID = 1;
@@ -15,9 +18,11 @@ const LANG_NAMES = {
   fr: "Nouveaux memes",
   it: "Nuovi meme",
   pt: "Memes novos",
+  ru: "Новые мемы",
 };
 
 const TEMPLATE_IMAGE = (lang, file) => `assets/template-packs/new-memes/${lang}/${file}`;
+const IMAGE_FILE_RE = /\.(jpe?g|png|webp)$/i;
 
 function hiddenKillbox(id, role, y, maxChars) {
   return {
@@ -71,16 +76,31 @@ function templateFor(lang, file, index) {
 }
 
 function buildLang(lang) {
-  const srcDir = resolve(SOURCE_ROOT, lang);
-  if (!existsSync(srcDir)) return null;
-  const files = readdirSync(srcDir)
-    .filter((file) => /\.(jpe?g|png|webp)$/i.test(file))
-    .sort();
+  const seen = new Set();
+  const files = [];
+  const sourceCounts = {};
+  for (const source of SOURCE_ROOTS) {
+    const srcDir = resolve(source.path, lang);
+    if (!existsSync(srcDir)) continue;
+    const sourceFiles = readdirSync(srcDir)
+      .filter((file) => IMAGE_FILE_RE.test(file))
+      .sort();
+    for (const file of sourceFiles) {
+      if (seen.has(file)) continue;
+      seen.add(file);
+      files.push({ file, src: resolve(srcDir, file), sourceLabel: source.label, addedAt: source.addedAt });
+      sourceCounts[source.label] = (sourceCounts[source.label] ?? 0) + 1;
+    }
+  }
   if (!files.length) return null;
 
   const assetDir = resolve(ASSET_ROOT, lang);
   mkdirSync(assetDir, { recursive: true });
-  for (const file of files) copyFileSync(resolve(srcDir, file), resolve(assetDir, file));
+  const targetFiles = new Set(files.map(({ file }) => file));
+  for (const existingFile of readdirSync(assetDir).filter((file) => IMAGE_FILE_RE.test(file))) {
+    if (!targetFiles.has(existingFile)) unlinkSync(resolve(assetDir, existingFile));
+  }
+  for (const { file, src } of files) copyFileSync(src, resolve(assetDir, file));
 
   const packId = `new-memes-${lang}-superadmin`;
   const pack = {
@@ -89,29 +109,30 @@ function buildLang(lang) {
     createdBy: OWNER_ID,
     name: LANG_NAMES[lang] ?? `New Memes (${lang.toUpperCase()})`,
     lang,
-    templates: files.map((file, index) => templateFor(lang, file, index)),
-    cards: files.map((file, index) => ({
+    templates: files.map(({ file }, index) => templateFor(lang, file, index)),
+    cards: files.map(({ file, sourceLabel, addedAt }, index) => ({
       values: {
         title: `${LANG_NAMES[lang] ?? "New Memes"} ${String(index + 1).padStart(3, "0")}`,
-        source: `Translated ready-made meme card ${basename(file, extname(file))}. Legacy memes-* decks are not used for armen thematic blocks.`,
+        source: `Translated ready-made meme card ${basename(file, extname(file))} from ${sourceLabel}. Legacy memes-* decks are not used for armen thematic blocks.`,
       },
-      addedAt: "2026-06-28T00:00:00.000Z",
+      addedAt,
     })),
     createdAt: "2026-06-28T00:00:00.000Z",
     grants: [],
     autoExpireMode: "per_account",
     notes: {
-      source: "temp/meme/translated; user-provided translated meme cards rendered before pack assembly.",
+      source: `${SOURCE_ROOTS.map((source) => source.label).join(" + ")}; user-provided translated meme cards rendered before pack assembly.`,
+      sourceCounts,
       policy: [
         "These packs replace legacy memes-* sources for armen foreign thematic blocks.",
-        "Russian channels intentionally do not use a meme source after the legacy meme deck retirement.",
+        "Russian channels use only pack:new-memes-ru-superadmin for the Russian thematic block after the legacy meme deck retirement.",
         "Do not reconnect legacy memes-* decks to armen thematic blocks without a new rights/safety review.",
       ],
     },
   };
   mkdirSync(PACK_ROOT, { recursive: true });
   writeFileSync(resolve(PACK_ROOT, `${packId}.json`), `${JSON.stringify(pack, null, 2)}\n`);
-  return { lang, packId, cards: files.length };
+  return { lang, packId, cards: files.length, sourceCounts };
 }
 
 const results = Object.keys(LANG_NAMES).map(buildLang).filter(Boolean);

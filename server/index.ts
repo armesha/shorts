@@ -185,6 +185,13 @@ await app.register(fastifyStatic, { root: resolve(process.cwd(), "assets/avatars
 // Falls back to index.html for client-side routes. Skipped in dev (no web/dist → use `npm run web`).
 const WEB_DIST = resolve(process.cwd(), "web/dist");
 if (existsSync(resolve(WEB_DIST, "index.html"))) {
+  await app.register(fastifyStatic, {
+    root: resolve(WEB_DIST, "assets"),
+    prefix: "/assets/",
+    decorateReply: false,
+    maxAge: "1y",
+    immutable: true,
+  });
   await app.register(fastifyStatic, { root: WEB_DIST, prefix: "/", decorateReply: false });
   app.setNotFoundHandler((req, reply) => {
     if (

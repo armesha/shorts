@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { apiClient, type Account, type AppStatus, type ContentCatalogItem, type OAuthClient } from "../lib/api";
 import { AppIcon } from "../components/AppIcon";
@@ -8,7 +8,8 @@ import { fmtCacheTime, readCache, writeCache } from "../lib/cache";
 import { useAuth } from "../lib/auth";
 import { isMainAdmin } from "../lib/authz";
 import { langTag } from "../lib/deck";
-import ChannelBlocks from "./ChannelBlocks";
+
+const ChannelBlocks = lazy(() => import("./ChannelBlocks"));
 
 const ACCOUNTS_CACHE_KEY = "sf.accounts.v2";
 const DEFAULT_DAILY_KEY_CAP = 92; // Safer default for regular users.
@@ -65,32 +66,36 @@ function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
   }, [sortDir]);
 
   useEffect(() => {
-    apiClient
-      .accounts()
-      .then((a) => {
+    let alive = true;
+    Promise.allSettled([apiClient.accounts(), apiClient.videoCounts()]).then(([accountsRes, countsRes]) => {
+      if (!alive) return;
+      if (accountsRes.status === "fulfilled") {
         setLoadError(false);
-        setAccounts(a);
-        a.forEach((acc) =>
-          apiClient
-            .videos(acc.id)
-            .then((v) => {
-              setQueue((q) => ({ ...q, [acc.id]: v.length }));
-              setQueueByDeck((prev) => ({
-                ...prev,
-                [acc.id]: v.reduce<Record<string, number>>((map, item) => {
-                  map[item.deck] = (map[item.deck] ?? 0) + 1;
-                  return map;
-                }, {}),
-              }));
-            })
-            .catch(() => {}),
-        );
-      })
-      .catch(() => setLoadError(true));
+        setAccounts(accountsRes.value);
+      } else {
+        setLoadError(true);
+      }
+      if (countsRes.status === "fulfilled") {
+        const totals: Record<number, number> = {};
+        const byDeck: Record<number, Record<string, number>> = {};
+        for (const row of countsRes.value.accounts) {
+          totals[row.accountId] = row.total;
+          byDeck[row.accountId] = row.byDeck;
+        }
+        setQueue(totals);
+        setQueueByDeck(byDeck);
+      }
+    });
     apiClient.status().then((s) => {
+      if (!alive) return;
       setLoadError(false);
       setStatus(s);
-    }).catch(() => setLoadError(true));
+    }).catch(() => {
+      if (alive) setLoadError(true);
+    });
+    return () => {
+      alive = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -546,8 +551,40 @@ function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
 export default function Accounts() {
   const { user } = useAuth();
   const [classic, setClassic] = useState(false);
-  if (isMainAdmin(user) && !classic) return <ChannelBlocks onShowClassic={() => setClassic(true)} />;
+  if (isMainAdmin(user) && !classic) {
+    return (
+      <Suspense fallback={<ChannelBlocksFallback />}>
+        <ChannelBlocks onShowClassic={() => setClassic(true)} />
+      </Suspense>
+    );
+  }
   return <AccountsList onShowBlocks={isMainAdmin(user) ? () => setClassic(false) : undefined} />;
+}
+
+function ChannelBlocksFallback() {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <div className="skeleton h-7 w-56 rounded mb-2" />
+          <div className="skeleton h-4 w-80 max-w-full rounded" />
+        </div>
+        <div className="skeleton h-9 w-28 rounded-md" />
+      </div>
+      <div className="grid gap-3 lg:grid-cols-[280px_1fr]">
+        <div className="rounded-lg border border-base-300 bg-base-100 p-3 space-y-2">
+          <div className="skeleton h-10 rounded-md" />
+          <div className="skeleton h-10 rounded-md" />
+          <div className="skeleton h-10 rounded-md" />
+          <div className="skeleton h-10 rounded-md" />
+        </div>
+        <div className="rounded-lg border border-base-300 bg-base-100 p-4">
+          <div className="skeleton h-5 w-48 rounded mb-4" />
+          <div className="skeleton h-72 rounded-lg" />
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // Per-channel queue size + runway (how many days the library lasts at its posting rate).
@@ -604,8 +641,8 @@ function SourceInfo({ sources }: { sources: AccountSourceStat[] }) {
               {source.lang && <span className="badge badge-ghost badge-xs">{langTag(source.lang)}</span>}
               <span className="max-w-36 truncate">{source.title}</span>
               {warningTitle && (
-                <span className="text-warning" aria-label={warningTitle}>
-                  <AppIcon name="warning" size={12} />
+                <span className="inline-flex text-warning" aria-label={warningTitle}>
+                  <AppIcon name="warning" size={16} />
                 </span>
               )}
               <span className="opacity-60">

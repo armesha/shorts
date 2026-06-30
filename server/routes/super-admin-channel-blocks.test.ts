@@ -13,7 +13,6 @@ import {
 import { openDb } from "../db.ts";
 
 const FOREIGN_EN_SOURCES = [
-  "pack:static-facts-en-superadmin",
   "fact-en",
   "en",
   "pack:new-memes-en-superadmin",
@@ -306,7 +305,7 @@ test("source weight settings are canonicalized and stale groups are pruned", () 
   normalizeSourceWeightSettings(dbStore);
 
   const normalized = JSON.parse(dbStore.getSetting("superAdmin.channelBlock.quotes.sourceWeights") ?? "{}") as Record<string, number>;
-  assert.equal(normalized.static_facts, 9);
+  assert.equal(Object.prototype.hasOwnProperty.call(normalized, "static_facts"), false);
   assert.equal(normalized.jokes, 3);
   assert.equal(normalized.memes, 2);
   assert.equal(Object.prototype.hasOwnProperty.call(normalized, "visual_riddles"), false);

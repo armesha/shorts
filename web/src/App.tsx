@@ -1,70 +1,101 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
-import Overview from "./pages/Overview";
-import Studio from "./pages/Studio";
-import Gallery from "./pages/Gallery";
-import Cards from "./pages/Cards";
-import Packs from "./pages/Packs";
-import QueuePage from "./pages/Queue";
-import Accounts from "./pages/Accounts";
-import AccountDetail from "./pages/AccountDetail";
-import History from "./pages/History";
-import Notifications from "./pages/Notifications";
-import Statistics from "./pages/Statistics";
-import Changelog from "./pages/Changelog";
-import Errors from "./pages/Errors";
-import System from "./pages/System";
-import Settings from "./pages/Settings";
-import Users from "./pages/Users";
-import ClipDemos from "./pages/ClipDemos";
-import LongVideos from "./pages/LongVideos";
-import Limits from "./pages/Limits";
-import TemplateEditor from "./pages/TemplateEditor";
-import Login from "./pages/Login";
 import { AuthProvider, useAuth } from "./lib/auth";
 import { SkinProvider } from "./lib/skin";
 import { GenQueueProvider } from "./lib/genQueue";
 import { GenProgressToast } from "./components/GenProgressToast";
 import { ConfirmHost } from "./lib/confirm";
 import { I18nProvider } from "./lib/i18n";
+import { pageLoaders } from "./lib/routeLoaders";
+
+const Overview = lazy(pageLoaders.overview);
+const Studio = lazy(pageLoaders.studio);
+const Gallery = lazy(pageLoaders.gallery);
+const Cards = lazy(pageLoaders.cards);
+const Packs = lazy(pageLoaders.packs);
+const QueuePage = lazy(pageLoaders.queue);
+const Accounts = lazy(pageLoaders.accounts);
+const AccountDetail = lazy(pageLoaders.accountDetail);
+const History = lazy(pageLoaders.history);
+const Notifications = lazy(pageLoaders.notifications);
+const Statistics = lazy(pageLoaders.statistics);
+const Changelog = lazy(pageLoaders.changelog);
+const Errors = lazy(pageLoaders.errors);
+const System = lazy(pageLoaders.system);
+const Settings = lazy(pageLoaders.settings);
+const Users = lazy(pageLoaders.users);
+const ClipDemos = lazy(pageLoaders.clipDemos);
+const LongVideos = lazy(pageLoaders.longVideos);
+const Limits = lazy(pageLoaders.limits);
+const TemplateEditor = lazy(pageLoaders.templateEditor);
+const Login = lazy(pageLoaders.login);
 
 function Gate() {
   const { user, loading } = useAuth();
   if (loading) return <BootShell />;
-  if (!user) return <Login />;
+  if (!user) {
+    return (
+      <Suspense fallback={<BootShell />}>
+        <Login />
+      </Suspense>
+    );
+  }
   return (
     <GenQueueProvider>
       <GenProgressToast />
       <Layout>
-        <Routes>
-        <Route path="/" element={<Navigate to="/channels" replace />} />
-        <Route path="/channels" element={<Accounts />} />
-        <Route path="/overview" element={user.role === "admin" ? <Overview /> : <Navigate to="/channels" replace />} />
-        <Route path="/studio" element={<Studio />} />
-        <Route path="/gallery" element={user.role === "admin" ? <Gallery /> : <Navigate to="/channels" replace />} />
-        <Route path="/cards" element={<Cards />} />
-        <Route path="/packs" element={<Packs />} />
-        <Route path="/queue" element={user.role === "admin" ? <QueuePage /> : <Navigate to="/channels" replace />} />
-        <Route path="/notifications" element={user.role === "admin" ? <Notifications /> : <Navigate to="/channels" replace />} />
-        <Route path="/accounts" element={<Navigate to="/channels" replace />} />
-        <Route path="/accounts/:id" element={<AccountDetail />} />
-        <Route path="/history" element={<History />} />
-        <Route path="/statistics" element={<Statistics />} />
-        {/* Аналитика-сводка переехала во вкладку «Сводка» на /statistics (только админ). */}
-        <Route path="/admin/analytics" element={<Navigate to="/statistics" replace />} />
-        <Route path="/clip-demos" element={<ClipDemos />} />
-        <Route path="/long-videos" element={<LongVideos />} />
-        <Route path="/limits" element={user.role === "admin" ? <Limits /> : <Navigate to="/channels" replace />} />
-        <Route path="/changelog" element={<Changelog />} />
-        <Route path="/errors" element={<Errors />} />
-        <Route path="/system" element={<System />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/editor" element={<TemplateEditor />} />
-        <Route path="/users" element={<Users />} />
-        <Route path="*" element={<Navigate to="/channels" replace />} />
-        </Routes>
+        <Suspense fallback={<PageFallback />}>
+          <Routes>
+            <Route path="/" element={<Navigate to="/channels" replace />} />
+            <Route path="/channels" element={<Accounts />} />
+            <Route path="/overview" element={user.role === "admin" ? <Overview /> : <Navigate to="/channels" replace />} />
+            <Route path="/studio" element={<Studio />} />
+            <Route path="/gallery" element={user.role === "admin" ? <Gallery /> : <Navigate to="/channels" replace />} />
+            <Route path="/cards" element={<Cards />} />
+            <Route path="/packs" element={<Packs />} />
+            <Route path="/queue" element={user.role === "admin" ? <QueuePage /> : <Navigate to="/channels" replace />} />
+            <Route path="/notifications" element={user.role === "admin" ? <Notifications /> : <Navigate to="/channels" replace />} />
+            <Route path="/accounts" element={<Navigate to="/channels" replace />} />
+            <Route path="/accounts/:id" element={<AccountDetail />} />
+            <Route path="/history" element={<History />} />
+            <Route path="/statistics" element={<Statistics />} />
+            {/* Аналитика-сводка переехала во вкладку «Сводка» на /statistics (только админ). */}
+            <Route path="/admin/analytics" element={<Navigate to="/statistics" replace />} />
+            <Route path="/clip-demos" element={<ClipDemos />} />
+            <Route path="/long-videos" element={<LongVideos />} />
+            <Route path="/limits" element={user.role === "admin" ? <Limits /> : <Navigate to="/channels" replace />} />
+            <Route path="/changelog" element={<Changelog />} />
+            <Route path="/errors" element={<Errors />} />
+            <Route path="/system" element={<System />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/editor" element={<TemplateEditor />} />
+            <Route path="/users" element={<Users />} />
+            <Route path="*" element={<Navigate to="/channels" replace />} />
+          </Routes>
+        </Suspense>
       </Layout>
     </GenQueueProvider>
+  );
+}
+
+function PageFallback() {
+  return (
+    <div className="route-page space-y-4">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="rounded-lg border border-base-300 bg-base-100 p-4">
+            <div className="skeleton h-4 w-20 rounded mb-4" />
+            <div className="skeleton h-7 w-24 rounded mb-2" />
+            <div className="skeleton h-3 w-32 rounded" />
+          </div>
+        ))}
+      </div>
+      <div className="rounded-lg border border-base-300 bg-base-100 p-4">
+        <div className="skeleton h-5 w-40 rounded mb-4" />
+        <div className="skeleton h-56 rounded-lg" />
+      </div>
+    </div>
   );
 }
 

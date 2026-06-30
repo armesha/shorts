@@ -5,7 +5,7 @@
 import type { FastifyInstance } from "fastify";
 import { resolve } from "node:path";
 import { unlinkSync } from "node:fs";
-import type { Db } from "../db.ts";
+import type { Account, Db } from "../db.ts";
 import { DECKS, getDeck, isPackDeckId } from "../../src/anecdotes/decks.ts";
 import { ytMeta } from "../../src/anecdotes/yt-meta.ts";
 import { randomAnecdote, firstAnecdote, anecdoteKey, packItemKey } from "../../src/anecdotes/library.ts";
@@ -55,6 +55,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
   const {
     accessibleAccount,
     accountOwnerId,
+    visibleAccounts,
     rejectIfNotConnected,
     buildLibraryVideo,
     accountCreds,
@@ -68,7 +69,26 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
   const { deckAllowed, resolveAccountSourceDeck, accountSourceDecks, deckContentLang } = deps.deckAccess;
   const REDIRECT_URI = redirectUri;
 
+  const videoCountRowsForAccounts = (accounts: Account[]) => {
+    const rowsByAccount = new Map<number, { accountId: number; total: number; byDeck: Record<string, number> }>(
+      accounts.map((account) => [account.id, { accountId: account.id, total: 0, byDeck: {} }]),
+    );
+    for (const row of db.videoCountsByAccount(accounts.map((account) => account.id))) {
+      const entry = rowsByAccount.get(row.accountId);
+      if (!entry) continue;
+      entry.byDeck[row.deck] = row.count;
+      entry.total += row.count;
+    }
+    return accounts.map((account) => rowsByAccount.get(account.id)!);
+  };
+
   // ---- Video library (save / list / delete / post-now) ----
+  app.get("/api/videos/counts", async (req) => {
+    const scope = (req.query as { scope?: string } | undefined)?.scope;
+    const accounts = visibleAccounts(req, scope);
+    return { accounts: videoCountRowsForAccounts(accounts) };
+  });
+
   app.get("/api/videos", async (req, reply) => {
     const accountId = Number((req.query as { accountId?: string }).accountId ?? 0);
     if (!accountId) return [];

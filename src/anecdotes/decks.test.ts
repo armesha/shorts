@@ -31,6 +31,7 @@ test("deckLang maps built-in decks; '' for packs/unknown", () => {
   assert.equal(deckLang("quote-video-id"), "id");
   assert.equal(deckLang("quote-video-ar"), "ar");
   assert.equal(deckLang("quote-video-de"), "de");
+  assert.equal(deckLang("fact-ru"), "ru");
   assert.equal(deckLang("fact-es"), "es");
   assert.equal(deckLang("space-es"), "es");
   assert.equal(deckLang("memes-pt"), "pt");
@@ -95,4 +96,19 @@ test("ytMeta default deck: title + emoji + #shorts, body = text", () => {
   assert.ok(m.title.includes("#shorts"));
   assert.ok(m.description.includes("тело анекдота"));
   assert.ok(Array.isArray(m.tags) && m.tags.length > 0);
+});
+
+test("ytMeta removes internal pack/source notes from public descriptions", () => {
+  const m = ytMeta(
+    getDeck("pack:new-memes-ru-superadmin"),
+    "Новые мемы 001",
+    [
+      "Новые мемы 001",
+      "Translated ready-made meme card 001_wzQuht6tOcA from temp/meme2/translated.",
+      "Legacy memes-* decks are not used for armen thematic blocks.",
+    ].join("\n\n"),
+  );
+  assert.ok(m.description.includes("Новые мемы 001"));
+  assert.ok(m.description.includes("#shorts"));
+  assert.doesNotMatch(m.description, /temp\/|translated|Legacy memes|pack:new/i);
 });

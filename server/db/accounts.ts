@@ -10,22 +10,38 @@ export function accountMethods(db: DatabaseSync) {
   const countUploadsToday = (accountId: number): number => {
     const r = db
       .prepare(
-        "SELECT COUNT(*) AS n FROM history WHERE account_id = ? AND status = 'published' AND date(published_at) = date('now')",
+        "SELECT COUNT(*) AS n FROM history WHERE account_id = ? AND status = 'published' AND published_at >= date('now') AND published_at < date('now','+1 day')",
       )
       .get(accountId) as Row;
     return Number(r.n) || 0;
   };
 
+  const accountsWithUploadsToday = (where = "", args: (string | number)[] = []): Account[] =>
+    (
+      db
+        .prepare(
+          `SELECT a.*, COALESCE(today.uploads_today, 0) AS uploads_today
+             FROM accounts a
+             LEFT JOIN (
+               SELECT account_id, COUNT(*) AS uploads_today
+                 FROM history
+                WHERE status = 'published'
+                  AND published_at >= date('now')
+                  AND published_at < date('now','+1 day')
+                GROUP BY account_id
+             ) today ON today.account_id = a.id
+             ${where}
+            ORDER BY a.id`,
+        )
+        .all(...args) as Row[]
+    ).map((row) => ({ ...rowToAccount(row), uploadsToday: Number(row.uploads_today) || 0 }));
+
   return {
     listAccounts(): Account[] {
-      return (db.prepare("SELECT * FROM accounts ORDER BY id").all() as Row[])
-        .map(rowToAccount)
-        .map((a) => ({ ...a, uploadsToday: countUploadsToday(a.id) }));
+      return accountsWithUploadsToday();
     },
     listAccountsByUser(userId: number): Account[] {
-      return (db.prepare("SELECT * FROM accounts WHERE user_id = ? ORDER BY id").all(userId) as Row[])
-        .map(rowToAccount)
-        .map((a) => ({ ...a, uploadsToday: countUploadsToday(a.id) }));
+      return accountsWithUploadsToday("WHERE a.user_id = ?", [userId]);
     },
     // One-time migration: existing channels (no owner) become the first admin's.
     assignOrphanAccounts(userId: number): void {

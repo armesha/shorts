@@ -35,10 +35,8 @@ type ManifestPack = { id: string; title?: string; lang?: string; items?: unknown
 
 function queuedByDeck(accounts: Account[], db: Db): Map<string, number> {
   const counts = new Map<string, number>();
-  for (const account of accounts) {
-    for (const video of db.listVideos(account.id)) {
-      counts.set(video.deck, (counts.get(video.deck) ?? 0) + 1);
-    }
+  for (const row of db.videoCountsByAccount(accounts.map((account) => account.id))) {
+    counts.set(row.deck, (counts.get(row.deck) ?? 0) + row.count);
   }
   return counts;
 }

@@ -27,7 +27,7 @@ function unique<T>(items: T[]): T[] {
 
 function videoCountsByDeck(db: Db, account: Account): Map<string, number> {
   const counts = new Map<string, number>();
-  for (const video of db.listVideos(account.id)) counts.set(video.deck, (counts.get(video.deck) ?? 0) + 1);
+  for (const row of db.videoCountsByAccount([account.id])) counts.set(row.deck, row.count);
   return counts;
 }
 

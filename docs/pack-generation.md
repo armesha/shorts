@@ -34,10 +34,12 @@ public-domain книги, Wikisource/Internet Archive/Gutenberg, open-source д�
   `jokes_memes`, `facts_space`, `psychology`, `riddles_illusions`;
 - `religion` / "Религия" - исламские и христианские каналы, но с раздельными секциями source mix.
 
-В `armen`-схему больше не возвращать `visual-riddles*`, `illusions*`, `illusions-3d*` и legacy
-`memes-*`: они запрещены shared guard'ом `server/services/super-admin-forbidden-source-decks.ts` и
-не должны появляться в `sourceDecks`, `slotDecks`, picker'ах и новых block rules. Новые мемы для
-иностранных каналов - только `pack:new-memes-<lang>-superadmin`; русский блок пока без meme-источника.
+В `armen`-схему больше не возвращать `visual-riddles*`, `illusions*`, `illusions-3d*`, legacy
+`memes-*`, иностранные `pack:static-facts-*-superadmin`, `pack:motivation-ru-superadmin` и
+`christian-facts-en`, `pack:soviet-posters-ru`: они запрещены shared guard'ом
+`server/services/super-admin-forbidden-source-decks.ts` и не должны появляться в `sourceDecks`,
+`slotDecks`, picker'ах и новых block rules. Новые мемы для нерелигиозных каналов - только
+`pack:new-memes-<lang>-superadmin`; русский блок использует `pack:new-memes-ru-superadmin`.
 Длинные видео в block mix не включать: длинные сборники публикуются отдельно из библиотеки канала.
 
 Декоративные смеющиеся emoji/GIF в шаблонах анекдотов допустимы, если они не мешают чтению, не
@@ -64,11 +66,13 @@ MGS-паки и MGS-шаблоны — отдельный клиентский �
 
 Текущие подготовленные текстовые joke/anecdote источники для live-блоков: `ru`, `de`, `it`, `fr`,
 `en`, `pt`, а для испанского канала живой template pack `pack:chistes-es-public-domain`.
-Новые foreign meme template packs: `pack:new-memes-de-superadmin`, `pack:new-memes-en-superadmin`,
+Русский блок использует отдельный prebuilt video source `fact-ru` ("Интересный факт") из
+`data/fact-videos-ru`; статичный `pack:static-facts-ru-superadmin` в микс русского блока не входит.
+Новые meme template packs: `pack:new-memes-de-superadmin`, `pack:new-memes-en-superadmin`,
 `pack:new-memes-es-superadmin`, `pack:new-memes-fr-superadmin`, `pack:new-memes-it-superadmin`,
-`pack:new-memes-pt-superadmin`. Они собраны из пользовательского переведенного набора
-`temp/meme/translated*` через `scripts/build-translated-meme-packs.mjs`; старые `memes-*` в armen
-не использовать.
+`pack:new-memes-pt-superadmin`, `pack:new-memes-ru-superadmin`. Они собраны из пользовательского
+переведенного набора `temp/meme/translated*` + `temp/meme2/translated*` через
+`scripts/build-translated-meme-packs.mjs`; старые `memes-*` в armen не использовать.
 
 Не подставляй автоматически fake text deck для `ar`, `hi`, `id`. Для этих языков нужен отдельный
 ingestion/safety проход:
@@ -271,7 +275,7 @@ prebuilt MP4 считается исключением и требует явн�
 | `christian` Holy Bible KJV | `data/christian/cards.json` | KJV public domain -> candidates/slices -> workflow выбора id -> assemble | да, только для выбора id/theme |
 | `islamic-quotes-ar` اقتباسات إسلامية | `data/islamic-quotes-ar/titled.json` | 700 quote-card записей, выведенных из точного `data/islamic/cards.json` без портретов | нет |
 | `christian-quotes-en` Christian Quotes | `data/christian-quotes-en/titled.json` | 700 quote-card записей, выведенных из public-domain KJV `data/christian/cards.json` без портретов | нет |
-| `fact-en` Interesting Facts | `data/fact-videos/videos.json` + `assets/fact-videos/` | готовые MP4 | не в рантайме; новые ролики собираются вне этого конвейера |
+| `fact-en` Interesting Facts / `fact-ru` Интересный факт | `data/fact-videos/videos.json`, `data/fact-videos-ru/videos.json` + `assets/fact-videos/` | готовые MP4; RU deck использует русские title/text для тех же локальных MP4 | не в рантайме; новые ролики собираются вне этого конвейера |
 | `quotes-de` Politiker-Zitate | `data/quotes-de-combined/videos.json` + `assets/fact-videos/` | единый статичный немецкий quote-card MP4 deck | не в рантайме |
 | `quotes-ru` / `quotes-en` / `quotes-es` / `quotes-*` static quote decks | `data/quotes-*/titled.json` | sourced Wikiquote/Wikimedia portrait quote cards, rendered dynamically | нет для рантайма; да, для новых curated batches |
 | `quote-video-*` voiced quote decks | `data/quotes-*/titled.json`, `data/quote-video-de/titled.json` | те же sourced quote cards, но runtime собирает ролик с voiceover через edge-tts | нет для выбора карточки; да, если расширять/чистить источники |
@@ -591,7 +595,11 @@ workflow. Локальную regex-фильтрацию можно делать 
 
 ## Советские постеры (`soviet-posters-ru`)
 
-RU-only curated public-domain pack. Build it with:
+RU-only curated public-domain pack. It is retired from armen's active source mix. Existing
+library videos may still be consumed by the scheduler with the special rare-posting path, but do
+not add it back to block source groups, channel sources, slot decks, pickers or new generation.
+
+Build it only for maintenance with:
 
 ```bash
 node scripts/build-soviet-posters-pack.mjs
@@ -605,9 +613,11 @@ Source folder can be either `local-assets/soviet-posters-pd/` (preferred, ignore
 `data/packs/soviet-posters-ru.json`.
 
 Rules:
-- do not localize and do not auto-replenish this pack;
-- keep `autoExpireMode: "per_account"` so each channel consumes the finite poster set once; when a
-  channel drains the pack, `server/services/auto-expire-packs.ts` removes the source from that channel;
+- existing library videos can be posted through `server/infra/scheduler.ts` at about 10% chance until
+  the channel's old poster queue is empty;
+- do not localize, auto-replenish or generate new armen library videos from this pack;
+- keep `autoExpireMode: "per_account"` for historical/source-integrity behavior, but do not rely on it
+  to keep the pack visible in the current block mix;
 - do not set `repeatMode` for this pack and do not make it infinite/reusable again;
 - use only source-ledger PD files;
 - keep the script's explicit `VISUAL_SAFE_POSTER_FILES` allowlist: this pack is intentionally small
@@ -1216,6 +1226,8 @@ find assets/fact-videos/prayers-en -maxdepth 1 -name '*.mp4' | wc -l
 - `christian-quotes-en`: 700 quote-card записей из public-domain KJV `data/christian/cards.json`.
   Атрибуция: source/reference label (`Psalms`, `Gospel of Matthew`, `Epistle`, `KJV`), не современные
   портреты и не copyrighted Bible translations.
+- `christian-facts-en` больше не подключать к `armen` religion mix/sourceDecks/slotDecks; существующие
+  библиотечные ролики можно оставить, но новые добивки и расписания не должны брать этот источник.
 - Islamic visual rule: no human faces/portraits in Islamic religious packs. Do not depict prophets,
   companions, scholars, saints, or modern people; use calligraphy, mosques, geometric ornament,
   manuscripts/books, light, and abstract textures.
@@ -1732,9 +1744,9 @@ node --input-type=module -e 'import fs from "node:fs"; const manifest=JSON.parse
 ## Legacy мем-деки (`memes-ru` / `memes-en` / `memes-de` / `memes-fr` / `memes-it`)
 
 Legacy warning: встроенные `memes-*` больше не подключать к armen/super-admin блокам. Для текущих
-иностранных каналов armen используется только набор `pack:new-memes-<lang>-superadmin`; русский блок
-работает без meme-источника. Этот раздел оставлен для исторического обслуживания старых дек и других
-пользователей, не как инструкция для armen.
+нерелигиозных каналов armen используется только набор `pack:new-memes-<lang>-superadmin`, включая
+`pack:new-memes-ru-superadmin` для русского блока. Этот раздел оставлен для исторического обслуживания
+старых дек и других пользователей, не как инструкция для armen.
 
 Встроенные деки оригинальных МЕМОВ (не анекдотов), admin-only. Один формат v1 — **caption**: крупный
 текст-подпись (relatable / «паблик» / POV / «ожидание-реальность» / Nobody:/Me: / списки) на фоне.
@@ -1779,15 +1791,15 @@ Legacy warning: встроенные `memes-*` больше не подключ�
 Добор до объёма — delta-воркфлоу (`cap-d2-<lang>/`): агентам отдаются УЖЕ существующие подписи шаблона,
 они пишут только НОВЫЕ → дедуп в `assemble_2000.py`. Качество к «хвосту» (15-я+ подпись на картинку) тоньше.
 
-## Новые foreign meme template packs (`pack:new-memes-*-superadmin`)
+## Новые meme template packs (`pack:new-memes-*-superadmin`)
 
-Это текущие meme-источники для блока `quotes` / "Иностранные" у armen. Они заменяют legacy `memes-*`
-и подключены только для языков, где у armen есть иностранные нерелигиозные каналы: DE, EN, ES, FR,
-IT, PT. Русский блок их не использует, а `pack:new-memes-ru-superadmin` не нужен.
+Это текущие meme-источники для блока `quotes` / "Иностранные" и блока `russian` / "Русские" у armen.
+Они заменяют legacy `memes-*` и подключены только для нерелигиозных каналов: DE, EN, ES, FR, IT, PT
+в иностранном блоке и RU в русском блоке.
 
 Где лежит:
 
-- вход: `temp/meme/translated/<lang>/*.jpg` и отдельная папка `temp/meme/translated/en/` для EN;
+- вход: `temp/meme/translated/<lang>/*.jpg` + `temp/meme2/translated/<lang>/*.jpg`;
 - runtime assets: `assets/template-packs/new-memes/<lang>/*.jpg`;
 - live packs: `data/packs/new-memes-<lang>-superadmin.json`;
 - сборщик: `scripts/build-translated-meme-packs.mjs`.
@@ -1798,7 +1810,7 @@ IT, PT. Русский блок их не использует, а `pack:new-mem
 node scripts/build-translated-meme-packs.mjs
 ```
 
-Скрипт копирует картинки из `temp/meme/translated`, создает по одному image-template на карточку и
+Скрипт копирует картинки из обоих `translated`-наборов, создает по одному image-template на карточку и
 пишет custom pack с `autoExpireMode: "per_account"`. Карточки конечные: когда у канала закончится
 свободный набор, не подменяй его legacy `memes-*`; либо добавь новые проверенные картинки во входную
 папку и пересобери, либо временно дай миксу перераспределиться на другие источники.
@@ -1806,7 +1818,7 @@ node scripts/build-translated-meme-packs.mjs
 Правила:
 
 - не подключать legacy `memes-*` обратно к armen;
-- не добавлять русский meme pack в `russian`, пока пользователь отдельно не попросит новый RU-набор;
+- русский блок использует только `pack:new-memes-ru-superadmin`; legacy `memes-ru` не возвращать;
 - входные картинки должны быть уже проверены на права, оскорбительный/protected-class контекст,
   чужие водяные знаки, логотипы и узнаваемые copyrighted templates;
 - если нужны новые переводы/подписи через LLM/subagent, сначала спросить пользователя модель workflow;

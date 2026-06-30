@@ -30,6 +30,7 @@ export const DECK_GLOSS_RU: Record<string, string> = {
   islamic: "Ислам · арабский",
   christian: "Библия · англ.",
   "fact-en": "Интересные факты · видео",
+  "fact-ru": "Интересные факты · видео · рус.",
   "fact-es": "Интересные факты · видео · исп.",
   "quotes-ru": "Цитаты · рус.",
   "quotes-ar": "Цитаты · араб.",
@@ -105,7 +106,7 @@ export const deckLabel = (id: string, name: string): string =>
 
 /** Content language of each built-in deck (deck id → 2-letter lang). Custom packs carry their own lang. */
 export const DECK_LANG: Record<string, string> = {
-  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", choose: "ru", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
+  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", choose: "ru", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-ru": "ru", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-es": "es", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar",
 };
 
@@ -166,10 +167,32 @@ export const MGS_ONLY_SUPER_ADMIN_DECKS = new Set([
   "pack:mgs-psychologie-eigen",
 ]);
 
+export const RETIRED_SUPER_ADMIN_STATIC_FACT_DECKS = new Set([
+  "pack:static-facts-en-superadmin",
+  "pack:static-facts-de-superadmin",
+  "pack:static-facts-es-superadmin",
+]);
+
+export const RETIRED_SUPER_ADMIN_RUSSIAN_MOTIVATION_DECKS = new Set([
+  "pack:motivation-ru-superadmin",
+]);
+
+export const RETIRED_SUPER_ADMIN_CHRISTIAN_FACT_DECKS = new Set([
+  "christian-facts-en",
+]);
+
+export const RETIRED_SUPER_ADMIN_SOVIET_POSTER_DECKS = new Set([
+  "pack:soviet-posters-ru",
+]);
+
 export const FORBIDDEN_SUPER_ADMIN_SOURCE_DECKS = new Set([
   ...REMOVED_SUPER_ADMIN_OPTICAL_DECKS,
   ...LEGACY_SUPER_ADMIN_MEME_DECKS,
   ...MGS_ONLY_SUPER_ADMIN_DECKS,
+  ...RETIRED_SUPER_ADMIN_STATIC_FACT_DECKS,
+  ...RETIRED_SUPER_ADMIN_RUSSIAN_MOTIVATION_DECKS,
+  ...RETIRED_SUPER_ADMIN_CHRISTIAN_FACT_DECKS,
+  ...RETIRED_SUPER_ADMIN_SOVIET_POSTER_DECKS,
 ]);
 
 export const isRemovedSuperAdminOpticalDeck = (id: string): boolean =>
@@ -206,6 +229,7 @@ export const BUILTIN_DECKS: { id: string; label: string }[] = [
   { id: "christian", label: "Христианство · Библия (англ., KJV)" },
   { id: "fact-en", label: "Интересные факты (видео, EN)" },
   { id: "fact-es", label: "Datos curiosos (видео, ES)" },
+  { id: "fact-ru", label: "Интересный факт (видео, RU)" },
   { id: "quotes-ru", label: "Цитаты великих людей (RU)" },
   { id: "quotes-ar", label: "اقتباسات ملهمة (AR)" },
   { id: "islamic-quotes-ar", label: "اقتباسات إسلامية (AR)" },
