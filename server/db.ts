@@ -19,6 +19,7 @@ import { featureMethods } from "./db/features.ts";
 import { oauthMethods } from "./db/oauth-clients.ts";
 import { statsMethods } from "./db/stats.ts";
 import { notifMethods } from "./db/notifications.ts";
+import { creatorMethods } from "./db/creator.ts";
 
 // Re-export everything callers import from this module (types + the two public constants live in
 // ./db/types.ts; parseCredMeta/defaultClientLabel live in ./db/mappers.ts).
@@ -60,6 +61,7 @@ export function openDb(path: string) {
     ...oauthMethods(db),
     ...statsMethods(db),
     ...notifMethods(db),
+    ...creatorMethods(db),
   };
   return store;
 }

@@ -17,6 +17,8 @@ import { useGenQueue } from "../lib/genQueue";
 
 type Props = {
   onShowClassic: () => void;
+  defaultBlockId?: string;
+  hideBlockList?: boolean;
 };
 
 const DAILY_KEY_CAP = 100;
@@ -219,7 +221,7 @@ function sourceGapTitle(account: ChannelThemeBlockAccount, t: ReturnType<typeof 
   return t("channelBlocks.sourceGapWarning", { gaps: lines.join("; ") });
 }
 
-export default function ChannelBlocks({ onShowClassic }: Props) {
+export default function ChannelBlocks({ onShowClassic, defaultBlockId, hideBlockList = false }: Props) {
   const { t } = useT();
   const queue = useGenQueue();
   const [data, setData] = useState<ChannelThemeBlocksResponse | null>(channelBlocksCache);
@@ -266,13 +268,15 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
   }, []);
 
   const selectedBlockParam = searchParams.get("block");
+  const selectedBlockSource = selectedBlockParam || defaultBlockId || null;
   const selectedBlockId =
-    selectedBlockParam === "facts_space" ||
-    selectedBlockParam === "psychology" ||
-    selectedBlockParam === "riddles_illusions" ||
-    selectedBlockParam === "jokes_memes"
+    selectedBlockSource === "russian" ||
+    selectedBlockSource === "facts_space" ||
+    selectedBlockSource === "psychology" ||
+    selectedBlockSource === "riddles_illusions" ||
+    selectedBlockSource === "jokes_memes"
       ? "quotes"
-      : selectedBlockParam;
+      : selectedBlockSource;
   const selectedBlock = data?.blocks.find((block) => block.id === selectedBlockId) ?? null;
   const activeLanguageLabels = data?.languages.map((lang) => lang.label).join(", ") ?? "";
   useEffect(() => {
@@ -549,7 +553,7 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
           )}
         </div>
         <div className="flex flex-wrap gap-2">
-          {selectedBlock && (
+          {selectedBlock && !hideBlockList && (
             <button className="btn btn-sm btn-outline gap-2" onClick={() => setSearchParams({})}>
               <AppIcon name="chevron-left" size={15} />
               {t("channelBlocks.backToBlocks")}
@@ -992,7 +996,7 @@ function BlockDetail({
             {t("channelBlocks.noChannelsYet")}
           </div>
         ) : (
-          <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
+          <div className="columns-1 gap-3 md:columns-2 xl:columns-3 2xl:columns-4">
             {visibleLangs.map((lang) => {
               const cell = block.cells.find((candidate) => candidate.lang === lang.code);
               if (!cell) return null;
@@ -1001,7 +1005,7 @@ function BlockDetail({
               return (
                 <div
                   key={lang.code}
-                  className={`rounded-md border border-base-300 bg-base-100 ${cell.accounts.length >= 3 ? "lg:col-span-2" : ""}`}
+                  className="mb-3 break-inside-avoid rounded-md border border-base-300 bg-base-100"
                 >
                   <div className="flex items-center justify-between gap-2 border-b border-base-300 bg-base-200/60 px-3 py-2">
                     <div className="flex items-center gap-2">
@@ -1019,7 +1023,7 @@ function BlockDetail({
                       {t("channelBlocks.addChannel")}
                     </button>
                   </div>
-                  <div className={`grid gap-2 p-2 ${cell.accounts.length >= 3 ? "sm:grid-cols-2" : "grid-cols-1"}`}>
+                  <div className="grid grid-cols-1 gap-2 p-2">
                     {cell.accounts.map((account) => (
                       <ChannelCell key={account.id} account={account} t={t} />
                     ))}
@@ -1195,19 +1199,31 @@ function SourceMixSettings({
 
   return (
     <section className="rounded-md border border-base-300 bg-base-100 p-4">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <h2 className="text-base font-semibold lg:min-w-52">{t("channelBlocks.sourceMix")}</h2>
-        <div className="flex flex-1 flex-col gap-3">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="text-base font-semibold">{t("channelBlocks.sourceMix")}</h2>
+          <div className="text-xs font-semibold uppercase tracking-wide text-base-content/45">
+            {t("channelBlocks.sourceRatio")} · {total}
+          </div>
+        </div>
+        <div className="grid gap-3">
           {grouped.map((section) => (
-            <div key={section.section || "default"}>
-              {section.section && (
-                <div className="mb-1 text-xs font-bold uppercase tracking-wide text-base-content/45">{section.section}</div>
-              )}
-              <div className="flex flex-wrap gap-2">
+            <div key={section.section || "default"} className={sourceMixSectionClass(section.section)}>
+              <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+                <div className="text-xs font-bold uppercase tracking-wide text-base-content/70">
+                  {section.section || t("channelBlocks.sourceMix")}
+                </div>
+                <div className="text-xs font-semibold text-base-content/45">
+                  {total > 0
+                    ? `${Math.round((section.groups.reduce((sum, group) => sum + group.weight, 0) / total) * 100)}%`
+                    : "0%"}
+                </div>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                 {section.groups.map((group) => {
                   const share = total > 0 ? Math.round((group.weight / total) * 100) : 0;
                   return (
-                    <label key={group.id} className="form-control w-48">
+                    <label key={group.id} className="form-control min-w-0">
                       <span className="label py-1 pr-0">
                         <span className="label-text truncate text-xs font-semibold uppercase tracking-wide text-base-content/60" title={group.title}>
                           {group.title}
@@ -1240,6 +1256,14 @@ function SourceMixSettings({
       </div>
     </section>
   );
+}
+
+function sourceMixSectionClass(section: string): string {
+  const base = "rounded-md border bg-base-100 p-3";
+  if (section === "Ислам") return `${base} border-emerald-200 border-l-4 border-l-emerald-500 bg-emerald-50/45`;
+  if (section === "Христианство") return `${base} border-sky-200 border-l-4 border-l-sky-500 bg-sky-50/45`;
+  if (section === "Общее") return `${base} border-amber-200 border-l-4 border-l-amber-500 bg-amber-50/45`;
+  return `${base} border-base-300`;
 }
 
 function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: ReturnType<typeof useT>["t"] }) {

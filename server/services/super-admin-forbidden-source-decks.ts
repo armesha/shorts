@@ -54,6 +54,11 @@ export const RETIRED_SUPER_ADMIN_RUSSIAN_MOTIVATION_DECKS = new Set([
   "pack:motivation-ru-superadmin",
 ]);
 
+export const RETIRED_SUPER_ADMIN_FOREIGN_MOTIVATION_DECKS = new Set([
+  "pack:motivation-en-superadmin",
+  "pack:motivation-de-superadmin",
+]);
+
 export const RETIRED_SUPER_ADMIN_CHRISTIAN_FACT_DECKS = new Set([
   "christian-facts-en",
 ]);
@@ -82,6 +87,10 @@ export const FORBIDDEN_SUPER_ADMIN_SOURCE_GROUPS = [
   {
     group: "retired armen russian motivation decks",
     decks: [...RETIRED_SUPER_ADMIN_RUSSIAN_MOTIVATION_DECKS],
+  },
+  {
+    group: "retired armen foreign motivation decks",
+    decks: [...RETIRED_SUPER_ADMIN_FOREIGN_MOTIVATION_DECKS],
   },
   {
     group: "retired armen christian fact decks",

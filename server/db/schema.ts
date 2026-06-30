@@ -54,6 +54,7 @@ export function applySchema(db: DatabaseSync): void {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       username TEXT NOT NULL UNIQUE,
       pass_hash TEXT NOT NULL,
+      password_set INTEGER NOT NULL DEFAULT 1,
       role TEXT NOT NULL DEFAULT 'user',
       failed_attempts INTEGER NOT NULL DEFAULT 0,
       locked_until TEXT,
@@ -234,6 +235,24 @@ export function applySchema(db: DatabaseSync): void {
       created_at INTEGER NOT NULL,
       ended_at INTEGER
     );
+    CREATE TABLE IF NOT EXISTS creator_gallery_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      pack_id TEXT NOT NULL,
+      pack_name TEXT NOT NULL DEFAULT '',
+      template_type TEXT NOT NULL DEFAULT 'custom',
+      card_index INTEGER NOT NULL DEFAULT 0,
+      title TEXT NOT NULL DEFAULT '',
+      text TEXT NOT NULL DEFAULT '',
+      narration TEXT DEFAULT '',
+      format TEXT NOT NULL DEFAULT 'mp4',
+      image_rel TEXT,
+      video_rel TEXT,
+      zip_rel TEXT,
+      music TEXT NOT NULL DEFAULT 'none',
+      duration_sec REAL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 
   // Additive schema migrations. ADD COLUMN is idempotent across restarts, but ONLY the expected
@@ -271,6 +290,7 @@ export function applySchema(db: DatabaseSync): void {
   addColumn("accounts", "auth_error TEXT"); // last OAuth/token rejection → channel surfaced as "needs reconnect"
   addColumn("accounts", "auth_failed_at TEXT"); // when that rejection first started (ISO)
   addColumn("users", "client_secret_json TEXT");
+  addColumn("users", "password_set INTEGER NOT NULL DEFAULT 1");
   addColumn("channel_analytics_daily", "dislikes INTEGER NOT NULL DEFAULT 0");
   addColumn("history", "error TEXT");
   addColumn("history", "deck TEXT"); // deck a post was actually published with (old rows NULL → fall back to channel lang)
@@ -327,6 +347,9 @@ export function applySchema(db: DatabaseSync): void {
     CREATE INDEX IF NOT EXISTS idx_generation_jobs_state_created ON generation_jobs(state, created_at);
     CREATE INDEX IF NOT EXISTS idx_generation_jobs_user_state ON generation_jobs(user_id, state);
     CREATE INDEX IF NOT EXISTS idx_generation_jobs_account_state ON generation_jobs(account_id, state);
+    CREATE INDEX IF NOT EXISTS idx_creator_gallery_user_created ON creator_gallery_items(user_id, id DESC);
+    CREATE INDEX IF NOT EXISTS idx_creator_gallery_user_type ON creator_gallery_items(user_id, template_type, id DESC);
+    CREATE INDEX IF NOT EXISTS idx_creator_gallery_pack ON creator_gallery_items(pack_id, id DESC);
   `);
 
   // Multi-key OAuth migration (idempotent via MOVE semantics): pull each user's legacy single

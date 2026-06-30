@@ -1,1 +1,12 @@
-{"total":800,"packs":1,"packSize":800,"range":[40,600]}
+{
+  "total": 1300,
+  "packs": 1,
+  "packSize": 1300,
+  "baseCards": 800,
+  "mergedFacts": 500,
+  "mergedFactSource": "data/islamic-facts-ar/titled.json",
+  "range": [
+    40,
+    600
+  ]
+}

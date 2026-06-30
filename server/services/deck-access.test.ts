@@ -21,16 +21,23 @@ test("accountSourceDecks hides forbidden source decks only for the super admin o
     channelName: "armen",
     lang: "en",
     channelLang: "en",
-    sourceDecks: ["en", "illusions-en", "visual-riddles-en", "illusions-3d-en", "memes-en"],
+    sourceDecks: ["en", "illusions-en", "visual-riddles-en", "illusions-3d-en", "memes-en", "pack:motivation-en-superadmin"],
   });
   const regularAccount = db.createAccount({
     userId: user.id,
     channelName: "regular",
     lang: "en",
     channelLang: "en",
-    sourceDecks: ["en", "illusions-en", "visual-riddles-en", "illusions-3d-en", "memes-en"],
+    sourceDecks: ["en", "illusions-en", "visual-riddles-en", "illusions-3d-en", "memes-en", "pack:motivation-en-superadmin"],
   });
 
   assert.deepEqual(access.accountSourceDecks(armenAccount), ["en"]);
-  assert.deepEqual(access.accountSourceDecks(regularAccount), ["en", "illusions-en", "visual-riddles-en", "illusions-3d-en", "memes-en"]);
+  assert.deepEqual(access.accountSourceDecks(regularAccount), [
+    "en",
+    "illusions-en",
+    "visual-riddles-en",
+    "illusions-3d-en",
+    "memes-en",
+    "pack:motivation-en-superadmin",
+  ]);
 });

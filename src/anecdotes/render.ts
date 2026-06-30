@@ -397,8 +397,9 @@ function quoteHtml(input: { quote: string; author: string; lang: string; deckId?
     border-color: #141414;
   }
   body.islamic .quote-panel {
-    background: rgba(247, 244, 225, .92);
-    border-color: rgba(202, 169, 84, .90);
+    background: linear-gradient(180deg, rgba(5,4,3,.72), rgba(5,4,3,.42));
+    border: 1px solid rgba(230,199,137,.24);
+    box-shadow: 0 24px 70px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.06);
   }
   body.christian .quote-panel {
     background: rgba(250, 247, 239, .92);
@@ -485,6 +486,22 @@ function quoteHtml(input: { quote: string; author: string; lang: string; deckId?
   }
   body.funny .mark { color: rgba(251, 133, 0, .34); }
   body.islamic .mark { color: rgba(148, 119, 42, .26); }
+  body.islamic .quote {
+    color: #f7ecd2;
+    font-family: "Noto Naskh Arabic", "Noto Sans Arabic", serif;
+    font-weight: 500;
+    line-height: 1.55;
+    text-align: center;
+    text-shadow: 0 2px 16px rgba(0,0,0,.72), 0 0 3px rgba(0,0,0,.6);
+  }
+  body.islamic .author {
+    color: #e6c789;
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(0,0,0,.85);
+    border-top: 1px solid rgba(230,199,137,.42);
+    padding-top: 18px;
+  }
+  body.islamic .mark { display: none; }
   body.christian .mark { color: rgba(111, 85, 33, .24); }
   .badge {
     position: absolute;

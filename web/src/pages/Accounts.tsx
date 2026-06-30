@@ -236,7 +236,7 @@ function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
         total: item?.total ?? null,
         queued: sourceQueued,
         postsPerDay,
-        runwayDays: queued && postsPerDay > 0 ? sourceQueued / postsPerDay : null,
+        runwayDays: sourceQueued > 0 && postsPerDay > 0 ? sourceQueued / postsPerDay : null,
         warning,
       };
     });
@@ -630,14 +630,35 @@ function SourceInfo({ sources }: { sources: AccountSourceStat[] }) {
       <div className="flex flex-wrap gap-1.5">
         {sources.map((source) => {
           const days = source.runwayDays == null ? null : Math.ceil(source.runwayDays);
+          const action =
+            source.postsPerDay <= 0
+              ? { label: t("accounts.sourceActionIdle"), className: "text-base-content/45" }
+              : source.available != null && source.available <= 0
+                ? { label: t("accounts.sourceActionRefill"), className: "text-error" }
+                : source.queued <= 0
+                  ? { label: t("accounts.sourceActionGenerate"), className: "text-warning" }
+                  : days != null && days < 3
+                    ? { label: t("accounts.sourceActionLow", { days }), className: "text-warning" }
+                    : days != null
+                      ? { label: t("accounts.sourceActionOk", { days }), className: "text-success" }
+                      : { label: t("accounts.sourceActionReady", { n: source.queued }), className: "text-base-content/60" };
           const warningTitle =
             source.warning === "empty_queue"
               ? t("accounts.sourceWarnEmpty", { deck: source.title, perDay: source.postsPerDay })
               : source.warning === "no_free_cards"
                 ? t("accounts.sourceWarnNoFree", { deck: source.title })
                 : "";
+          const statusTitle = [
+            source.title,
+            t("accounts.sourceQueued", { n: source.queued }),
+            t("accounts.sourcePerDay", { n: source.postsPerDay }),
+            source.available == null
+              ? t("accounts.sourceAvailableUnknown")
+              : t("accounts.sourceAvailable", { n: source.available, total: source.total ?? "?" }),
+            days != null ? t("accounts.sourceDays", { n: days }) : "",
+          ].filter(Boolean).join(" · ");
           return (
-            <span key={source.id} className="badge badge-outline badge-sm max-w-full gap-1 py-3" title={warningTitle || source.title}>
+            <span key={source.id} className="badge badge-outline badge-sm max-w-full gap-1 py-3" title={warningTitle || statusTitle}>
               {source.lang && <span className="badge badge-ghost badge-xs">{langTag(source.lang)}</span>}
               <span className="max-w-36 truncate">{source.title}</span>
               {warningTitle && (
@@ -645,13 +666,7 @@ function SourceInfo({ sources }: { sources: AccountSourceStat[] }) {
                   <AppIcon name="warning" size={16} />
                 </span>
               )}
-              <span className="opacity-60">
-                · {t("accounts.sourceQueued", { n: source.queued })} ·{" "}
-                {source.available == null
-                  ? t("accounts.sourceAvailableUnknown")
-                  : t("accounts.sourceAvailable", { n: source.available, total: source.total ?? "?" })}
-                {days != null ? ` · ${t("accounts.sourceDays", { n: days })}` : ""}
-              </span>
+              <span className={action.className}>· {action.label}</span>
             </span>
           );
         })}

@@ -29,7 +29,9 @@ const ClipDemos = lazy(pageLoaders.clipDemos);
 const LongVideos = lazy(pageLoaders.longVideos);
 const Limits = lazy(pageLoaders.limits);
 const TemplateEditor = lazy(pageLoaders.templateEditor);
+const Creator = lazy(pageLoaders.creator);
 const Login = lazy(pageLoaders.login);
+const Register = lazy(pageLoaders.register);
 
 function Gate() {
   const { user, loading } = useAuth();
@@ -37,17 +39,22 @@ function Gate() {
   if (!user) {
     return (
       <Suspense fallback={<BootShell />}>
-        <Login />
+        <Routes>
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="*" element={<Login />} />
+        </Routes>
       </Suspense>
     );
   }
+  const defaultPath = user.role === "admin" ? "/channels" : "/creator";
   return (
     <GenQueueProvider>
       <GenProgressToast />
       <Layout>
         <Suspense fallback={<PageFallback />}>
           <Routes>
-            <Route path="/" element={<Navigate to="/channels" replace />} />
+            <Route path="/" element={<Navigate to={defaultPath} replace />} />
             <Route path="/channels" element={<Accounts />} />
             <Route path="/overview" element={user.role === "admin" ? <Overview /> : <Navigate to="/channels" replace />} />
             <Route path="/studio" element={<Studio />} />
@@ -65,13 +72,16 @@ function Gate() {
             <Route path="/clip-demos" element={<ClipDemos />} />
             <Route path="/long-videos" element={<LongVideos />} />
             <Route path="/limits" element={user.role === "admin" ? <Limits /> : <Navigate to="/channels" replace />} />
+            <Route path="/creator" element={<Creator />} />
+            <Route path="/register" element={<Navigate to="/creator" replace />} />
+            <Route path="/login" element={<Navigate to={defaultPath} replace />} />
             <Route path="/changelog" element={<Changelog />} />
             <Route path="/errors" element={<Errors />} />
             <Route path="/system" element={<System />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/editor" element={<TemplateEditor />} />
             <Route path="/users" element={<Users />} />
-            <Route path="*" element={<Navigate to="/channels" replace />} />
+            <Route path="*" element={<Navigate to={defaultPath} replace />} />
           </Routes>
         </Suspense>
       </Layout>

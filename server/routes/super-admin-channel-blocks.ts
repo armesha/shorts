@@ -66,16 +66,13 @@ const JOKE_TEXT_DECK_BY_LANG: Record<string, string[]> = {
 };
 
 const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
+  ru: ["pack:new-memes-ru-superadmin"],
   de: ["pack:new-memes-de-superadmin"],
   it: ["pack:new-memes-it-superadmin"],
   fr: ["pack:new-memes-fr-superadmin"],
   en: ["pack:new-memes-en-superadmin"],
   es: ["pack:new-memes-es-superadmin"],
   pt: ["pack:new-memes-pt-superadmin"],
-};
-
-const RUSSIAN_MEME_DECK_BY_LANG: Record<string, string[]> = {
-  ru: ["pack:new-memes-ru-superadmin"],
 };
 
 const QUOTE_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
@@ -106,30 +103,26 @@ const QUOTE_STATIC_DECK_BY_LANG: Record<string, string[]> = {
 
 const PSYCHOLOGY_DECK_BY_LANG: Record<string, string[]> = {
   ru: ["pack:psychology-ru-superadmin"],
+  en: ["pack:psychology-en-superadmin"],
   de: ["pack:psychology-de-superadmin"],
-};
-
-const MOTIVATION_DECK_BY_LANG: Record<string, string[]> = {
-  en: ["pack:motivation-en-superadmin"],
-  de: ["pack:motivation-de-superadmin"],
+  it: ["pack:psychology-it-superadmin"],
+  es: ["pack:psychology-es-superadmin"],
+  fr: ["pack:psychology-fr-superadmin"],
+  pt: ["pack:psychology-pt-superadmin"],
 };
 
 const FACT_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
   ru: ["fact-ru"],
   en: ["fact-en"],
   es: ["fact-es"],
+  de: ["fact-de"],
+  it: ["fact-it"],
+  fr: ["fact-fr"],
+  pt: ["fact-pt"],
 };
 
 const RELIGION_ISLAM_DECK_BY_LANG: Record<string, string[]> = {
   ar: ["islamic"],
-};
-
-const RELIGION_ISLAM_QUOTE_DECK_BY_LANG: Record<string, string[]> = {
-  ar: ["islamic-quotes-ar"],
-};
-
-const RELIGION_ISLAM_FACT_DECK_BY_LANG: Record<string, string[]> = {
-  ar: ["islamic-facts-ar"],
 };
 
 const RELIGION_KJV_DECK_BY_LANG: Record<string, string[]> = {
@@ -145,24 +138,30 @@ const RELIGION_CHRISTIAN_QUOTE_DECK_BY_LANG: Record<string, string[]> = {
   en: ["christian-quotes-en"],
 };
 
+const RELIGION_JOKE_DECK_BY_LANG: Record<string, string[]> = {
+  ar: ["ar"],
+  en: ["en"],
+  de: ["de"],
+};
+
+const RELIGION_MEME_DECK_BY_LANG: Record<string, string[]> = {
+  ar: ["pack:new-memes-ar-superadmin"],
+  en: ["pack:new-memes-en-superadmin"],
+  de: ["pack:new-memes-de-superadmin"],
+};
+
+const RELIGION_STATIC_QUOTE_DECK_BY_LANG: Record<string, string[]> = {
+  ar: ["quotes-ar"],
+  en: ["quotes-en"],
+  de: ["quotes-de"],
+};
+
 const ISLAM_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "islam",
     title: "Ислам",
     defaultWeight: 3,
     sources: RELIGION_ISLAM_DECK_BY_LANG,
-  },
-  {
-    id: "islamic_quotes",
-    title: "Исламские цитаты",
-    defaultWeight: 1,
-    sources: RELIGION_ISLAM_QUOTE_DECK_BY_LANG,
-  },
-  {
-    id: "islamic_facts",
-    title: "Факты об исламе",
-    defaultWeight: 1,
-    sources: RELIGION_ISLAM_FACT_DECK_BY_LANG,
   },
 ];
 
@@ -187,48 +186,31 @@ const CHRISTIANITY_SOURCE_GROUPS: SourceGroupDef[] = [
   },
 ];
 
-const RUSSIAN_SOURCE_GROUPS: SourceGroupDef[] = [
+const RELIGION_COMMON_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "jokes",
     title: "Анекдоты",
-    defaultWeight: 7,
-    sources: { ru: ["ru"] },
-  },
-  {
-    id: "fact_video",
-    title: "Интересный факт",
     defaultWeight: 1,
-    sources: FACT_VIDEO_DECK_BY_LANG,
-  },
-  {
-    id: "video_quotes",
-    title: "Видеоцитаты",
-    defaultWeight: 2,
-    sources: { ru: ["quote-video-ru"] },
-  },
-  {
-    id: "static_quotes",
-    title: "Цитаты",
-    defaultWeight: 3,
-    sources: { ru: ["quotes-ru"] },
+    sources: RELIGION_JOKE_DECK_BY_LANG,
   },
   {
     id: "memes",
     title: "Мемы",
-    defaultWeight: 2,
-    sources: RUSSIAN_MEME_DECK_BY_LANG,
+    defaultWeight: 1,
+    sources: RELIGION_MEME_DECK_BY_LANG,
   },
   {
-    id: "psychology",
-    title: "Психология",
-    defaultWeight: 2,
-    sources: { ru: ["pack:psychology-ru-superadmin"] },
+    id: "static_quotes",
+    title: "Статичные цитаты",
+    defaultWeight: 1,
+    sources: RELIGION_STATIC_QUOTE_DECK_BY_LANG,
   },
 ];
 
 const RELIGION_SOURCE_GROUPS: SourceGroupDef[] = [
   ...ISLAM_SOURCE_GROUPS.map((group) => ({ ...group, section: "Ислам" })),
   ...CHRISTIANITY_SOURCE_GROUPS.map((group) => ({ ...group, section: "Христианство" })),
+  ...RELIGION_COMMON_SOURCE_GROUPS.map((group) => ({ ...group, section: "Общее" })),
 ];
 
 const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
@@ -241,25 +223,25 @@ const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "jokes",
     title: "Анекдоты",
-    defaultWeight: 2,
+    defaultWeight: 7,
     sources: JOKE_TEXT_DECK_BY_LANG,
   },
   {
     id: "memes",
     title: "Мемы",
-    defaultWeight: 2,
+    defaultWeight: 4,
     sources: JOKE_MEME_DECK_BY_LANG,
   },
   {
     id: "video_quotes",
     title: "Видеоцитаты",
-    defaultWeight: 1,
+    defaultWeight: 2,
     sources: QUOTE_VIDEO_DECK_BY_LANG,
   },
   {
     id: "static_quotes",
     title: "Статичные цитаты",
-    defaultWeight: 1,
+    defaultWeight: 3,
     sources: QUOTE_STATIC_DECK_BY_LANG,
   },
   {
@@ -268,42 +250,24 @@ const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
     defaultWeight: 2,
     sources: PSYCHOLOGY_DECK_BY_LANG,
   },
-  {
-    id: "motivation",
-    title: "Мотивация",
-    defaultWeight: 1,
-    sources: MOTIVATION_DECK_BY_LANG,
-  },
 ];
 
 const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
   islam: {
-    ar: ["islamic", "islamic-quotes-ar", "islamic-facts-ar"],
+    ar: ["islamic", "ar", "pack:new-memes-ar-superadmin", "quotes-ar"],
   },
   christianity: {
-    en: ["christian", "prayers-en", "christian-quotes-en"],
-    de: ["prayers-de"],
+    en: ["christian", "prayers-en", "christian-quotes-en", "en", "pack:new-memes-en-superadmin", "quotes-en"],
+    de: ["prayers-de", "de", "pack:new-memes-de-superadmin", "quotes-de"],
   },
   religion: {
-    ar: ["islamic", "islamic-quotes-ar", "islamic-facts-ar"],
-    en: ["christian", "prayers-en", "christian-quotes-en"],
-    de: ["prayers-de"],
+    ar: ["islamic", "ar", "pack:new-memes-ar-superadmin", "quotes-ar"],
+    en: ["christian", "prayers-en", "christian-quotes-en", "en", "pack:new-memes-en-superadmin", "quotes-en"],
+    de: ["prayers-de", "de", "pack:new-memes-de-superadmin", "quotes-de"],
   },
 };
 
 export const BLOCKS: BlockDef[] = [
-  {
-    id: "russian",
-    title: "Русские",
-    description: "Все русские нерелигиозные каналы в одной сетке источников.",
-    rules: [
-      "Русский блок использует один общий микс источников для всех русских каналов супер-админа.",
-      "Все RU-каналы в блоке должны иметь одинаковый набор источников: юмор, мемы, интересные факты, лайфхаки, цитаты и психология.",
-      "Русские мемы брать только из pack:new-memes-ru-superadmin после проверки прав и оскорбительного контекста.",
-    ],
-    accountIds: [7, 16, 52, 62, 81],
-    sourceGroups: RUSSIAN_SOURCE_GROUPS,
-  },
   {
     id: "religion",
     title: "Религия",
@@ -324,10 +288,10 @@ export const BLOCKS: BlockDef[] = [
   },
   {
     id: "quotes",
-    title: "Иностранные",
-    description: "Все нерусские нерелигиозные каналы в одном общем миксе источников.",
+    title: "Нерелигиозные",
+    description: "Все русские и нерусские нерелигиозные каналы в одном общем миксе источников.",
     rules: [
-      "Все нерусские нерелигиозные каналы супер-админа используют один общий микс источников.",
+      "Все нерелигиозные каналы супер-админа используют один общий микс источников.",
       "Факты требуют проверяемого источника; численные данные и названия нужно перепроверять.",
       "Мемы в этом блоке остаются отдельным источником микса, а не отдельным блоком.",
       "Оптические иллюзии, визуальные загадки и visual-riddles источники больше не подключать к armen-блокам.",
@@ -335,20 +299,20 @@ export const BLOCKS: BlockDef[] = [
       "Если появится озвучка для лайфхаков, новые voiceover-паки собирать через разрешённый TTS-профиль проекта с учётом текущих квот.",
       "Анекдоты не придумывать ИИ: брать только проверенные внешние/PD/licensed корпуса с источниками.",
       "Анекдоты внутри блока остаются отдельным источником микса; не смешивать бытовые советы и шутки внутри одной карточки.",
-      "Иностранные мемы брать только из pack:new-memes-<lang>-superadmin после проверки прав и оскорбительного контекста.",
+      "Мемы брать только из pack:new-memes-<lang>-superadmin после проверки прав и оскорбительного контекста.",
       "Декоративные смеющиеся emoji/GIF разрешены, если они не перекрывают текст и не выглядят как плашка/водяной знак канала.",
       "Видео-цитаты и статичные цитаты держать отдельными источниками микса.",
-      "Мотивационные карточки писать как оригинальные короткие правила без реальных атрибуций, гендерной токсичности, обещаний успеха или водяных знаков.",
       "Запрещены AP/неясные фото, misattribution, экстремистские/насильственные цитаты и protected-class hate.",
       "Не давать медицинских диагнозов/обещаний лечения; формулировать как общие наблюдения и self-help.",
       "Локализации должны сохранять осторожный тон и избегать травматичных/опасных советов.",
     ],
-    accountIds: [14, 15, 18, 38, 43, 44, 45, 64, 65, 68, 70, 72, 78, 79, 82],
+    accountIds: [7, 14, 15, 16, 18, 38, 43, 44, 45, 52, 62, 64, 65, 68, 70, 72, 78, 79, 81, 82],
     sourceGroups: FACT_SOURCE_GROUPS,
   },
 ];
 
 const BLOCK_ALIASES: Record<string, string> = {
+  russian: "quotes",
   facts_space: "quotes",
   jokes_memes: "quotes",
   psychology: "quotes",
@@ -666,14 +630,12 @@ function sourceGroupForDeck(blockId: string, lang: string, deckId: string): Sour
 }
 
 function blockDefaultSources(blockId: string, lang: string): string[] {
-  if (lang === "ru" && canonicalBlockId(blockId) !== "russian") return [];
-  const groups = sourceGroupsForBlock(blockId);
+  const groups = sourceGroupsForBlock(canonicalBlockId(blockId));
   if (groups.length) return cleanSuperAdminSourceDecks(groups.flatMap((group) => group.sources[lang] ?? []));
   return cleanSuperAdminSourceDecks(BLOCK_DEFAULT_SOURCES[blockId]?.[lang] ?? []);
 }
 
 export function blockDefaultSourcesForDb(db: Db, blockId: string, lang: string): string[] {
-  if (lang === "ru" && canonicalBlockId(blockId) !== "russian") return [];
   const canonical = canonicalBlockId(blockId);
   const groups = sourceGroupsForBlock(canonical);
   if (groups.length)

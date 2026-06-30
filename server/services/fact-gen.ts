@@ -1,7 +1,6 @@
-// Видео-факты (дека preFact, напр. "fact-en"): items — это УЖЕ готовые mp4
-// (озвучка + сток-футаж + субтитры), лежащие в assets/fact-videos/. «Генерация в библиотеку»
-// = скопировать выбранный mp4 (не рендерить карточку) + снять постер-кадр + пометить использованным.
-// Совпадает по контракту с randomAnecdote/buildLibraryVideo (PackItem.videoFile несёт имя файла).
+// Видео-факты (дека preFact, напр. "fact-en"): items ссылаются на готовые mp4 в assets/fact-videos/.
+// EN копируется как есть; локализованные fact-* деки пересобирают тот же footage с локальной озвучкой
+// и плашкой. Совпадает по контракту с randomAnecdote/buildLibraryVideo (PackItem.videoFile несёт имя файла).
 import { copyFileSync, mkdirSync, existsSync, writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { execFile } from "node:child_process";
@@ -18,7 +17,14 @@ const FFMPEG = ffmpegPath as unknown as string;
 const OUTPUT_DIR = loadBaseConfig().outputDir;
 const FACT_DIR = resolve(process.cwd(), "assets/fact-videos");
 const TTS_PYTHON = resolve(process.cwd(), ".venv-tts/bin/python");
-const SPANISH_VOICE = "es-ES-ElviraNeural";
+const FACT_TTS_VOICE_BY_LANG: Record<string, string> = {
+  ru: "ru-RU-SvetlanaNeural",
+  de: "de-DE-KatjaNeural",
+  it: "it-IT-ElsaNeural",
+  es: "es-ES-ElviraNeural",
+  fr: "fr-FR-DeniseNeural",
+  pt: "pt-BR-FranciscaNeural",
+};
 
 async function mediaDurationSec(path: string): Promise<number> {
   try {
@@ -90,16 +96,18 @@ function ffmpegFilterPath(path: string): string {
   return path.replace(/\\/g, "\\\\").replace(/:/g, "\\:").replace(/'/g, "\\'");
 }
 
-async function buildSpanishLocalizedVideo(input: {
+async function buildLocalizedFactVideo(input: {
   src: string;
   out: string;
   imageOut: string;
   title: string;
   text: string;
   stamp: string;
+  lang: string;
+  voice: string;
 }): Promise<{ music: string }> {
   if (!existsSync(TTS_PYTHON)) throw new Error(`edge-tts не найден: ${TTS_PYTHON}`);
-  const tempDir = resolve(process.cwd(), "temp/fact-es-render");
+  const tempDir = resolve(process.cwd(), `temp/fact-${input.lang}-render`);
   mkdirSync(tempDir, { recursive: true });
   const speech = cleanForSpeech(input.text || input.title);
   const spoken = speech.length > 520 ? `${speech.slice(0, 500).replace(/\s+\S*$/, "")}.` : speech;
@@ -107,7 +115,7 @@ async function buildSpanishLocalizedVideo(input: {
   const assPath = resolve(tempDir, `${input.stamp}.ass`);
   await pexec(
     TTS_PYTHON,
-    ["-m", "edge_tts", "--voice", SPANISH_VOICE, "--text", spoken, "--write-media", audioPath],
+    ["-m", "edge_tts", "--voice", input.voice, "--text", spoken, "--write-media", audioPath],
     { timeout: 120_000, maxBuffer: 4 * 1024 * 1024 },
   );
   const audioDuration = await mediaDurationSec(audioPath);
@@ -160,7 +168,7 @@ async function buildSpanishLocalizedVideo(input: {
   } catch {
     /* thumbnail optional */
   }
-  return { music: `edge-tts:${SPANISH_VOICE}` };
+  return { music: `edge-tts:${input.voice}` };
 }
 
 /** Скопировать ОДИН готовый видео-факт в библиотеку канала + пометить использованным. */
@@ -185,14 +193,18 @@ export async function buildFactLibraryVideo(input: {
   let music = "";
   await metrics.track("render", async () => {
     mkdirSync(dirname(vidAbs), { recursive: true });
-    if (deckLang(deckId) === "es") {
-      const localized = await buildSpanishLocalizedVideo({
+    const lang = deckLang(deckId);
+    const localizedVoice = FACT_TTS_VOICE_BY_LANG[lang];
+    if (localizedVoice) {
+      const localized = await buildLocalizedFactVideo({
         src,
         out: vidAbs,
         imageOut: imgAbs,
-        title: picked.title || "Dato curioso",
-        text: picked.text || picked.title || "Dato curioso",
+        title: picked.title || "Interesting Fact",
+        text: picked.text || picked.title || "Interesting Fact",
         stamp,
+        lang,
+        voice: localizedVoice,
       });
       music = localized.music;
     } else {

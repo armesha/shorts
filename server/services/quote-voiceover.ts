@@ -11,7 +11,7 @@ const pexec = promisify(execFile);
 const TTS_PYTHON = resolve(process.cwd(), ".venv-tts/bin/python");
 const CACHE_DIR = resolve(process.cwd(), "temp/quote-tts");
 
-const VOICE_BY_LANG: Record<string, string> = {
+export const EDGE_TTS_VOICE_BY_LANG: Record<string, string> = {
   ar: "ar-SA-ZariyahNeural",
   de: "de-DE-KatjaNeural",
   en: "en-US-JennyNeural",
@@ -56,19 +56,20 @@ async function audioDurationSec(audioPath: string): Promise<number> {
   }
 }
 
-export async function quoteVoiceover(input: {
-  deck: Deck;
-  title: string;
+export async function edgeTtsVoiceover(input: {
   text: string;
-}): Promise<{ audioPath: string; durationSec: number; music: string }> {
-  const lang = deckLang(input.deck.id);
-  const voice = VOICE_BY_LANG[lang];
-  if (!voice) throw new Error(`Для видео-цитат нет edge-tts голоса для языка ${lang || input.deck.id}`);
+  lang: string;
+  namespace?: string;
+}): Promise<{ audioPath: string; durationSec: number; music: string; voice: string }> {
+  const lang = String(input.lang || "ru").trim().toLowerCase();
+  const voice = EDGE_TTS_VOICE_BY_LANG[lang];
+  if (!voice) throw new Error(`Для языка ${lang || "unknown"} нет edge-tts голоса`);
   if (!existsSync(TTS_PYTHON)) throw new Error(`edge-tts не найден: ${TTS_PYTHON}`);
-
-  const text = spokenText(lang, input.text, input.title || input.deck.name);
-  const key = hashKey([input.deck.id, voice, text]);
-  const audioPath = resolve(CACHE_DIR, `${input.deck.id}-${key}.mp3`);
+  const text = input.text.replace(/\s+/g, " ").trim().slice(0, 5_000);
+  if (!text) throw new Error("Пустой текст для озвучки");
+  const namespace = String(input.namespace || "creator").replace(/[^a-z0-9_-]+/gi, "-").slice(0, 48) || "creator";
+  const key = hashKey([namespace, lang, voice, text]);
+  const audioPath = resolve(CACHE_DIR, `${namespace}-${key}.mp3`);
   if (!existsSync(audioPath)) {
     mkdirSync(dirname(audioPath), { recursive: true });
     await pexec(
@@ -80,7 +81,21 @@ export async function quoteVoiceover(input: {
   const duration = await audioDurationSec(audioPath);
   return {
     audioPath,
-    durationSec: Math.max(7, Math.min(45, duration + 0.8)),
+    durationSec: Math.max(2, Math.min(90, duration + 0.8)),
     music: `edge-tts:${voice}`,
+    voice,
   };
+}
+
+export async function quoteVoiceover(input: {
+  deck: Deck;
+  title: string;
+  text: string;
+}): Promise<{ audioPath: string; durationSec: number; music: string }> {
+  const lang = deckLang(input.deck.id);
+  const voice = EDGE_TTS_VOICE_BY_LANG[lang];
+  if (!voice) throw new Error(`Для видео-цитат нет edge-tts голоса для языка ${lang || input.deck.id}`);
+  const text = spokenText(lang, input.text, input.title || input.deck.name);
+  const out = await edgeTtsVoiceover({ text, lang, namespace: input.deck.id });
+  return { audioPath: out.audioPath, durationSec: Math.max(7, Math.min(45, out.durationSec)), music: out.music };
 }

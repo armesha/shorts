@@ -252,11 +252,52 @@ function AdminLayout({
     go();
   }
 
+  if (location.pathname.startsWith("/creator") || location.pathname.startsWith("/editor")) {
+    return (
+      <div className="creator-shell min-h-screen bg-base-200 text-base-content" onClickCapture={handleRouteClick}>
+        <header className="creator-liquid-header sticky top-0 z-30">
+          <div className="creator-liquid-row">
+            <Link to="/creator" className="creator-liquid-pill creator-liquid-brand h-11 px-4 flex items-center gap-2 font-bold">
+              <span>{t("creator.shellTitle")}</span>
+            </Link>
+            <div className="creator-liquid-pill creator-liquid-actions h-11 px-2 flex items-center gap-2">
+              <LanguageToggle lang={lang} setLang={setLang} t={t} className="px-2" />
+              <Link to="/settings" className="btn btn-ghost btn-sm btn-square" title={t("settings.title")} aria-label={t("settings.title")}>
+                <AppIcon name="settings" size={16} />
+              </Link>
+              <button className="btn btn-ghost btn-sm btn-square" onClick={logout} title={t("layout.logout")} aria-label={t("layout.logout")}>
+                <AppIcon name="logout" size={16} />
+              </button>
+            </div>
+          </div>
+          <div className={`route-progress ${routeSettling ? "is-visible" : ""}`} aria-hidden="true" />
+        </header>
+        {user.impersonator && (
+          <div className="sticky top-14 z-20 bg-warning text-warning-content border-b border-warning/30 px-4 sm:px-6 py-2">
+            <div className="max-w-[1320px] mx-auto flex items-center justify-between gap-3">
+              <div className="text-sm">
+                {t("layout.impersonating", { user: user.username, admin: user.impersonator.username })}
+              </div>
+              <button className="btn btn-sm btn-warning" onClick={stopImpersonation}>
+                {t("layout.returnAdmin")}
+              </button>
+            </div>
+          </div>
+        )}
+        <main className="max-w-[1320px] mx-auto px-4 sm:px-6 py-5 sm:py-6">
+          <div key={`${location.pathname}${location.search}`} className="route-page">
+            {children}
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
-    <div className="admin-shell drawer lg:drawer-open min-h-screen bg-base-200 text-base-content" onClickCapture={handleRouteClick}>
+    <div className="admin-shell drawer lg:drawer-open min-h-screen overflow-x-hidden bg-base-200 text-base-content" onClickCapture={handleRouteClick}>
       <input id={DRAWER_ID} type="checkbox" className="drawer-toggle" />
 
-      <div className="drawer-content flex min-w-0 flex-col pb-16 lg:pb-0">
+      <div className="drawer-content flex min-w-0 flex-col overflow-x-hidden pb-16 lg:pb-0">
         <header className="sticky top-0 z-30 border-b border-base-300 bg-base-100/95 backdrop-blur">
           <div className="h-14 px-3 sm:px-5 flex items-center gap-3">
             <label htmlFor={DRAWER_ID} className="btn btn-ghost btn-sm btn-square lg:hidden" aria-label={t("layout.openMenu")}>

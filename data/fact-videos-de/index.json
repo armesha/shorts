@@ -1,8 +1,8 @@
 {
-  "total": 160,
+  "total": 399,
   "packs": 1,
-  "packSize": 160,
+  "packSize": 399,
   "sourceDeck": "fact-en",
   "localization": "de",
-  "mediaReuse": "none-static-card-only"
+  "mediaReuse": "source-footage"
 }

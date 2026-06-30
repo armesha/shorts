@@ -14,7 +14,7 @@ const CHECKS = [
     id: "protected_class_slur",
     severity: "high",
     pattern:
-      /(?:\b(?:nigg(?:er|a|ah)?s?|faggot|tranny|kike|chink|spic(?!\s*&\s*span)|(?<!agujero\s)(?<!agujeros\s)(?<!ojos\s)(?<!olhos\s)negro(?:es|s)?|neger|zigeuner|kanake|schwuchtel)\b|(?:^|[^\p{L}\p{N}_])(?:пидор\p{L}*|ниггер\p{L}*|негр\p{L}*|хач\p{L}*|жид(?!к)\p{L}*|чурк\p{L}*)(?=$|[^\p{L}\p{N}_]))/iu,
+      /(?:\b(?:nigg(?:er|a|ah)?s?|faggot|tranny|kike|chink|spic(?!\s*&\s*span)|(?<!agujero\s)(?<!agujeros\s)(?<!ojos\s)(?<!olhos\s)(?<!buraco\s)(?<!buracos\s)negro(?:es|s)?|neger|zigeuner|kanake|schwuchtel)\b|(?:^|[^\p{L}\p{N}_])(?:пидор\p{L}*|ниггер\p{L}*|негр\p{L}*|хач\p{L}*|жид(?!к)\p{L}*|чурк\p{L}*)(?=$|[^\p{L}\p{N}_]))/iu,
   },
   {
     id: "explicit_sexual",
@@ -73,6 +73,9 @@ function shouldSuppressFlag(deckId, checkId, text) {
     return /El rape vive|café es en realidad|Los antiguos egipcios adoraban tanto a los gatos|atrapar y matar insectos|matar insectos|suficiente veneno|matar instantáneamente/i.test(
       text,
     );
+  }
+  if (checkId === "explicit_sexual" && deckId === "fact-it") {
+    return /pesci pagliaccio|cambio di sesso/i.test(text);
   }
   if (checkId === "violence_self_harm_extremism" && deckId === "pack:chistes-es-public-domain") {
     return /\bterror\b/i.test(text);

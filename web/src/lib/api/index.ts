@@ -19,6 +19,8 @@ export const apiClient = {
   me: () => get<AuthUser>("/auth/me"),
   login: (username: string, password: string) =>
     send<AuthUser>("/auth/login", "POST", { username, password }),
+  register: (username: string, password: string) =>
+    send<AuthUser>("/auth/register", "POST", { username, password }),
   logout: () => send<{ ok: boolean }>("/auth/logout", "POST", {}),
   // Telegram via the bot (press Start): info / link-status / bind / login / unbind.
   telegramInfo: () => get<{ enabled: boolean; bot: string | null }>("/auth/telegram/info"),
@@ -38,6 +40,12 @@ export const apiClient = {
   tgLoginStatus: (token: string) =>
     get<{ status: string; user?: AuthUser }>(
       `/auth/telegram/login/status?token=${encodeURIComponent(token)}`,
+    ),
+  tgRegisterStart: () =>
+    send<{ token: string; url: string; bot: string }>("/auth/telegram/register/start", "POST", {}),
+  tgRegisterStatus: (token: string) =>
+    get<{ status: string; user?: AuthUser }>(
+      `/auth/telegram/register/status?token=${encodeURIComponent(token)}`,
     ),
   recoverStart: (username: string) => send<{ ok: boolean }>("/auth/recover/start", "POST", { username }),
   recoverComplete: (username: string, code: string, newPassword: string) =>
@@ -83,6 +91,8 @@ export const apiClient = {
   // «Бесконечный пак» (имитация) — вкл/выкл для юзера: весь пак свободен + рецикл очереди.
   setUserInfinitePacks: (userId: number, enabled: boolean) =>
     send<{ ok: boolean; enabled: boolean }>(`/admin/users/${userId}/infinite-packs`, "PUT", { enabled }),
+  setUserCommercialCreator: (userId: number, enabled: boolean) =>
+    send<{ ok: boolean; enabled: boolean }>(`/admin/users/${userId}/commercial-creator`, "PUT", { enabled }),
   resetUserDeck: (userId: number, deckId: string) =>
     send<{ ok: boolean; removed: number }>(`/admin/users/${userId}/decks/${encodeURIComponent(deckId)}/reset`, "POST", {}),
   adminUserPackUsage: (userId: number) =>

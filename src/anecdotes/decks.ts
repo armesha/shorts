@@ -446,6 +446,54 @@ export const DECKS: Deck[] = [
     adminOnly: true,
     preFact: true,
   },
+  {
+    id: "fact-de",
+    name: "Interessante Fakten",
+    dir: "data/fact-videos-de",
+    source: "Localized from data/fact-videos/videos.json; see data/fact-videos-de/sources.json",
+    emoji: "🤯",
+    hashtags: "#fakten #wusstestdu #interessantefakten #wissenschaft #shorts",
+    tags: ["fakten", "wusstest du", "interessante fakten", "wissenschaft", "shorts"],
+    genericTitles: ["Wusstest du?", "Interessanter Fakt", "Erstaunlicher Fakt", "Kaum zu glauben"],
+    adminOnly: true,
+    preFact: true,
+  },
+  {
+    id: "fact-it",
+    name: "Fatti interessanti",
+    dir: "data/fact-videos-it",
+    source: "Localized from data/fact-videos/videos.json; see data/fact-videos-it/sources.json",
+    emoji: "🤯",
+    hashtags: "#fatticuriosi #losapevi #curiosita #scienza #shorts",
+    tags: ["fatti curiosi", "lo sapevi", "curiosità", "scienza", "shorts"],
+    genericTitles: ["Lo sapevi?", "Fatto curioso", "Fatto sorprendente", "Difficile da credere"],
+    adminOnly: true,
+    preFact: true,
+  },
+  {
+    id: "fact-fr",
+    name: "Faits interessants",
+    dir: "data/fact-videos-fr",
+    source: "Localized from data/fact-videos/videos.json; see data/fact-videos-fr/sources.json",
+    emoji: "🤯",
+    hashtags: "#faits #lesaviezvous #curiosites #science #shorts",
+    tags: ["faits", "le saviez-vous", "curiosités", "science", "shorts"],
+    genericTitles: ["Le saviez-vous ?", "Fait intéressant", "Fait étonnant", "Difficile à croire"],
+    adminOnly: true,
+    preFact: true,
+  },
+  {
+    id: "fact-pt",
+    name: "Fatos interessantes",
+    dir: "data/fact-videos-pt",
+    source: "Localized from data/fact-videos/videos.json; see data/fact-videos-pt/sources.json",
+    emoji: "🤯",
+    hashtags: "#fatoscuriosos #vocesabia #curiosidades #ciencia #shorts",
+    tags: ["fatos curiosos", "você sabia", "curiosidades", "ciência", "shorts"],
+    genericTitles: ["Você sabia?", "Fato curioso", "Fato surpreendente", "Difícil de acreditar"],
+    adminOnly: true,
+    preFact: true,
+  },
   quoteDeck({
     id: "quotes-ru",
     name: "Цитаты великих людей",
@@ -1096,7 +1144,7 @@ export function isPackDeckId(id?: string | null): boolean {
 }
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
-  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ar: "ar", hi: "hi", id: "id", choose: "ru", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-ru": "ru", "fact-es": "es", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
+  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ar: "ar", hi: "hi", id: "id", choose: "ru", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-ru": "ru", "fact-es": "es", "fact-de": "de", "fact-it": "it", "fact-fr": "fr", "fact-pt": "pt", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-es": "es", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar",
 };
 export function deckLang(id: string): string {
@@ -1114,6 +1162,7 @@ const NEW_MEMES_META: Record<string, { name: string; hashtags: string; tags: str
   es: { name: "Memes nuevos", hashtags: "#memes #humor #gracioso #relatable #shorts", tags: ["memes", "meme", "humor", "gracioso", "relatable", "shorts"] },
   pt: { name: "Memes novos", hashtags: "#memes #humor #engraçado #relatable #shorts", tags: ["memes", "meme", "humor", "engraçado", "relatable", "shorts"] },
   fr: { name: "Nouveaux mèmes", hashtags: "#mèmes #humour #drôle #relatable #shorts", tags: ["mèmes", "mème", "humour", "drôle", "relatable", "shorts"] },
+  ar: { name: "ميمز جديدة", hashtags: "#ميمز #ضحك #كوميديا #relatable #shorts", tags: ["ميمز", "ضحك", "كوميديا", "relatable", "shorts"] },
 };
 function synthPackDeck(id: string): Deck {
   const meme = /^pack:new-memes-([a-z]{2})-superadmin$/.exec(id);

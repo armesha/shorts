@@ -101,6 +101,7 @@ export const rowToUserAuth = (r: Row): UserAuth => ({
   id: r.id,
   username: r.username,
   passHash: r.pass_hash,
+  passwordSet: Number(r.password_set ?? 1) !== 0,
   role: r.role,
   failedAttempts: Number(r.failed_attempts) || 0,
   lockedUntil: r.locked_until ?? null,

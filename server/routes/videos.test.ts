@@ -11,7 +11,7 @@ const deps = {
   isSuperAdminReq: () => true,
 };
 
-test("post-now source guard rejects removed visual/optical decks for armen even if stored on an old channel", () => {
+test("post-now source guard rejects removed/retired decks for armen even if stored on an old channel", () => {
   const db = openDb(":memory:");
   const armen = db.createUser({ username: SUPER_ADMIN_USERNAME, passHash: "x", role: "admin" });
   const access = makeDeckAccess(db, deps);
@@ -20,7 +20,7 @@ test("post-now source guard rejects removed visual/optical decks for armen even 
     channelName: "Old armen channel",
     lang: "en",
     channelLang: "en",
-    sourceDecks: ["en", "illusions-en"],
+    sourceDecks: ["en", "illusions-en", "pack:motivation-en-superadmin"],
     longVideoDecks: ["long-christian-en"],
   });
 
@@ -31,4 +31,5 @@ test("post-now source guard rejects removed visual/optical decks for armen even 
   assert.equal(canPostVideoDeckForAccount(MANUAL_VIDEO_DECK, account, selectedSources), true);
   assert.equal(canPostVideoDeckForAccount("long-christian-en", account, selectedSources), true);
   assert.equal(canPostVideoDeckForAccount("illusions-en", account, selectedSources), false);
+  assert.equal(canPostVideoDeckForAccount("pack:motivation-en-superadmin", account, selectedSources), false);
 });

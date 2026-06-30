@@ -78,10 +78,30 @@ export interface Video {
   createdAt: string;
 }
 
+export interface CreatorGalleryItem {
+  id: number;
+  userId: number;
+  packId: string;
+  packName: string;
+  templateType: string;
+  cardIndex: number;
+  title: string;
+  text: string;
+  narration: string | null;
+  format: "png" | "mp4" | "zip" | string;
+  imageRel: string | null;
+  videoRel: string | null;
+  zipRel: string | null;
+  music: string;
+  durationSec: number | null;
+  createdAt: string;
+}
+
 export interface UserAuth {
   id: number;
   username: string;
   passHash: string;
+  passwordSet: boolean;
   role: string;
   failedAttempts: number;
   lockedUntil: string | null;

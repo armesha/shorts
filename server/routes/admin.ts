@@ -9,6 +9,7 @@ import { listAllPacks, setGrant, setPackOwners, getPack, canAccess } from "../..
 import { libraryStats, deckAnecdoteKeys } from "../../src/anecdotes/library.ts";
 import { packCardKey } from "../services/pack-gen.ts";
 import { INFINITE_PACKS_FEATURE, infiniteCounts } from "../services/infinite-packs.ts";
+import { COMMERCIAL_CREATOR_FEATURE } from "../services/creator-assets.ts";
 import { readElevenLabsKeys, fetchElevenLabsLimit } from "../services/elevenlabs-limits.ts";
 import { getManualVideoLimits, setManualVideoLimits } from "../services/manual-videos.ts";
 import { getReadinessLimits, setReadinessLimits } from "../services/readiness-limits.ts";
@@ -83,8 +84,8 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     if (!isSuperAdmin && Array.isArray(body.hidden) && body.hidden.length > 0) {
       return reply.code(403).send({ error: "Паки нового пользователя может настраивать только главный администратор" });
     }
-    if (!username || password.length < 6)
-      return reply.code(400).send({ error: "Логин обязателен, пароль ≥ 6 символов" });
+    if (!username || password.length < 3)
+      return reply.code(400).send({ error: "Логин обязателен, пароль ≥ 3 символа" });
     if (db.listUsers().some((u) => u.username.trim().toLowerCase() === username.toLowerCase()))
       return reply.code(409).send({ error: "Такой логин уже есть" });
     const u = db.createUser({ username, passHash: hashPassword(password), role });
@@ -271,6 +272,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
         library: db.countVideosByUser(u.id), // videos queued in their libraries
         usedTotal: db.usedAnecdoteCount(u.id), // всего использованных карточек (встроенные + кастомные) — бейдж в панели сброса
         infiniteSim: db.hasFeature(u.id, INFINITE_PACKS_FEATURE), // «бесконечный пак» (имитация): тумблер ниже
+        commercialCreator: db.hasFeature(u.id, COMMERCIAL_CREATOR_FEATURE),
         deckStats, // ВСЕГДА реальные числа (правда для админа), даже когда у юзера включён бесконечный пак
       };
     });
@@ -360,6 +362,16 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
     const enabled = !!(req.body as { enabled?: unknown })?.enabled;
     db.setFeature(id, INFINITE_PACKS_FEATURE, enabled);
+    return { ok: true, enabled };
+  });
+
+  app.put("/api/admin/users/:id/commercial-creator", async (req, reply) => {
+    if (!requireSuperAdmin(req, reply)) return;
+    const id = Number((req.params as { id: string }).id);
+    const target = db.getUserById(id);
+    if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
+    const enabled = !!(req.body as { enabled?: unknown })?.enabled;
+    db.setFeature(id, COMMERCIAL_CREATOR_FEATURE, enabled);
     return { ok: true, enabled };
   });
 

@@ -7,15 +7,17 @@ import type { FastifyInstance } from "fastify";
 import type { Db, Account } from "../db.ts";
 import type { ClientCreds } from "../services/youtube.ts";
 import type { RefreshHooks, SnapshotAnalyticsFields } from "../services/stats-refresh.ts";
-import { hashPassword, newSessionToken, SESSION_TTL_DAYS } from "../auth.ts";
+import { hashPassword, isSuperAdminUser, newSessionToken, SESSION_TTL_DAYS } from "../auth.ts";
 import { sendBotMessage, getBotUsername, setBotWebhook, botStartLink, setBotCommands } from "../telegram.ts";
 import { makeBotStats, type BotCallbackQuery } from "../services/telegram-stats.ts";
+import { COMMERCIAL_CREATOR_FEATURE } from "../services/creator-assets.ts";
 
 const DAY_MS = 86_400_000;
 const LINK_TTL_MIN = 10; // a bot-handshake token is valid 10 min
 const RESET_TTL_MIN = 10; // a recovery code is valid 10 min
 const RESET_MAX_ATTEMPTS = 5;
 const RESET_RESEND_SEC = 60;
+const MIN_PASSWORD_LEN = 3;
 
 interface Deps {
   // Reuse index.ts's cookie writer so session-cookie attributes live in one place.
@@ -53,6 +55,32 @@ const ageSec = (createdAt: string) =>
   (Date.now() - new Date(createdAt.replace(" ", "T") + "Z").getTime()) / 1000;
 const tgLabel = (f?: TgFrom) =>
   f?.username ? `@${f.username}` : [f?.first_name, f?.last_name].filter(Boolean).join(" ") || String(f?.id ?? "");
+const authUser = (user: NonNullable<ReturnType<Db["getUserById"]>>) => ({
+  id: user.id,
+  username: user.username,
+  role: user.role,
+  isSuperAdmin: isSuperAdminUser(user),
+  passwordSet: user.passwordSet,
+});
+
+function cleanUsernamePart(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g, "_")
+    .replace(/^[._-]+|[._-]+$/g, "")
+    .slice(0, 28);
+}
+
+function defaultTelegramUsername(db: Db, from: TgFrom | undefined, tgId: string): string {
+  const raw = from?.username || [from?.first_name, from?.last_name].filter(Boolean).join("_") || tgId;
+  const base = cleanUsernamePart(`tg_${raw}`) || `tg_${tgId}`;
+  for (let i = 0; i < 500; i++) {
+    const candidate = i === 0 ? base : `${base}_${i}`;
+    if (!db.getUserByUsername(candidate)) return candidate.slice(0, 32);
+  }
+  return `tg_${tgId}_${randomBytes(3).toString("hex")}`.slice(0, 32);
+}
 
 export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps) {
   const botToken = () => (process.env.TELEGRAM_BOT_TOKEN || "").trim();
@@ -156,6 +184,16 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
     return { token, url: botStartLink(bot, token), bot };
   });
 
+  // ---- Public: start registration via the bot ----
+  app.post("/api/auth/telegram/register/start", async (req, reply) => {
+    if (!enabled()) return reply.code(404).send({ error: "Telegram не настроен" });
+    const bot = await getBotUsername(botToken());
+    if (!bot) return reply.code(500).send({ error: "Не удалось определить бота" });
+    const token = randomBytes(24).toString("hex");
+    db.createTelegramLink(token, "register", null);
+    return { token, url: botStartLink(bot, token), bot };
+  });
+
   // ---- Public: poll login status; on success issue the session cookie ----
   app.get("/api/auth/telegram/login/status", async (req, reply) => {
     const token = String((req.query as { token?: string })?.token ?? "");
@@ -168,7 +206,25 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
       if (!user) return { status: "nomatch" };
       db.clearLock(user.id);
       issueSession(reply, user.id);
-      return { status: "ok", user: { id: user.id, username: user.username, role: user.role } };
+      return { status: "ok", user: authUser(user) };
+    }
+    if (ageSec(link.createdAt) > LINK_TTL_MIN * 60) return { status: "expired" };
+    return { status: "pending" };
+  });
+
+  // ---- Public: poll registration status; on success issue the session cookie ----
+  app.get("/api/auth/telegram/register/status", async (req, reply) => {
+    const token = String((req.query as { token?: string })?.token ?? "");
+    const link = token ? db.getTelegramLink(token) : null;
+    if (!link || link.purpose !== "register") return { status: "notfound" };
+    if (link.status === "conflict") return { status: "conflict" };
+    if (link.status === "ready" && link.userId) {
+      const user = db.getUserById(link.userId);
+      db.deleteTelegramLink(token); // single use
+      if (!user) return { status: "conflict" };
+      db.clearLock(user.id);
+      issueSession(reply, user.id);
+      return { status: "ok", user: authUser(user) };
     }
     if (ageSec(link.createdAt) > LINK_TTL_MIN * 60) return { status: "expired" };
     return { status: "pending" };
@@ -238,6 +294,27 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
       await dm("✅ Вход подтверждён. Вернитесь на сайт — вы уже авторизованы.");
       return;
     }
+
+    if (link.purpose === "register") {
+      const existing = db.getUserByTelegramId(tgId);
+      if (existing) {
+        db.updateTelegramLink(token, { telegramId: tgId, telegramUsername: label, chatId: String(chatId ?? ""), status: "ready", userId: existing.id });
+        await dm("✅ Этот Telegram уже привязан к аккаунту. Вернитесь на сайт — вход подтверждён.");
+        return;
+      }
+      const username = defaultTelegramUsername(db, msg.from, tgId);
+      const user = db.createUser({
+        username,
+        passHash: hashPassword(randomBytes(32).toString("hex")),
+        role: "user",
+        passwordSet: false,
+      });
+      db.setFeature(user.id, COMMERCIAL_CREATOR_FEATURE, true);
+      db.setUserTelegram(user.id, tgId, label);
+      db.updateTelegramLink(token, { telegramId: tgId, telegramUsername: label, chatId: String(chatId ?? ""), status: "ready", userId: user.id });
+      await dm(`✅ Аккаунт создан: ${username}\n\nПароль не нужен. Если захотите входить по паролю — установите его в настройках.`);
+      return;
+    }
   }
 
   // ---- Public: start password recovery — the bot DMs a one-time code (generic response) ----
@@ -272,7 +349,7 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
     const code = String(b.code ?? "").trim();
     const next = String(b.newPassword ?? "");
     if (!username || !code || !next) return reply.code(400).send({ error: "Заполните все поля" });
-    if (next.length < 6) return reply.code(400).send({ error: "Новый пароль — минимум 6 символов" });
+    if (next.length < MIN_PASSWORD_LEN) return reply.code(400).send({ error: "Новый пароль — минимум 3 символа" });
 
     const user = db.getUserByUsername(username);
     const rec = user ? db.getPasswordReset(user.id) : null;

@@ -211,6 +211,16 @@ function builtinReport(deckId, accounts) {
         "Spanish localized fact deck; runtime rebuilds the shared source footage with ES overlay + edge-tts",
         "",
       );
+    if (/^fact-(ru|de|it|fr|pt)$/.test(deckId)) {
+      const lang = deckId.slice("fact-".length).toUpperCase();
+      return visualDirReport(
+        deckId,
+        accounts,
+        `fact-videos-${deckId.slice("fact-".length)}`,
+        `${lang} localized fact deck; runtime rebuilds the shared source footage with localized overlay + edge-tts`,
+        "",
+      );
+    }
     return visualDirReport(deckId, accounts, deckId, "prebuilt visual/video deck", deckId);
   }
   if (deckId === "islamic" || deckId === "christian") {

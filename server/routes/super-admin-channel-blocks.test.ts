@@ -3,6 +3,8 @@ import test from "node:test";
 import type { Account, Db, Video } from "../db.ts";
 import type { RouteDeps } from "./deps.ts";
 import {
+  BLOCKS,
+  blockDefaultSourcesForDb,
   planChannelBlockNormalize,
   normalizeSourceWeightSettings,
   sourceGapsForScheduledDecks,
@@ -18,7 +20,7 @@ const FOREIGN_EN_SOURCES = [
   "pack:new-memes-en-superadmin",
   "quote-video-en",
   "quotes-en",
-  "pack:motivation-en-superadmin",
+  "pack:psychology-en-superadmin",
 ];
 
 function account(id: number): Account {
@@ -101,8 +103,36 @@ test("thematic block generation keeps source mix stable but varies order per cha
   assert.notDeepEqual(first, second);
 });
 
-test("thematic block generation skips exhausted sources and removed visual/optical packs", () => {
-  const sources = [...FOREIGN_EN_SOURCES, "visual-riddles-en", "illusions-en"];
+test("quotes block has localized fact and psychology sources for all non-religious languages", () => {
+  const dbMock = db();
+  const expected: Record<string, string[]> = {
+    ru: ["fact-ru", "ru", "pack:new-memes-ru-superadmin", "quote-video-ru", "quotes-ru", "pack:psychology-ru-superadmin"],
+    en: ["fact-en", "en", "pack:new-memes-en-superadmin", "quote-video-en", "quotes-en", "pack:psychology-en-superadmin"],
+    de: ["fact-de", "de", "pack:new-memes-de-superadmin", "quote-video-de", "quotes-de", "pack:psychology-de-superadmin"],
+    it: ["fact-it", "it", "pack:new-memes-it-superadmin", "quote-video-it", "quotes-it", "pack:psychology-it-superadmin"],
+    es: ["fact-es", "pack:chistes-es-public-domain", "pack:new-memes-es-superadmin", "quote-video-es", "quotes-es", "pack:psychology-es-superadmin"],
+    fr: ["fact-fr", "fr", "pack:new-memes-fr-superadmin", "quote-video-fr", "quotes-fr", "pack:psychology-fr-superadmin"],
+    pt: ["fact-pt", "pt", "pack:new-memes-pt-superadmin", "quote-video-pt", "quotes-pt", "pack:psychology-pt-superadmin"],
+  };
+  for (const [lang, sources] of Object.entries(expected)) {
+    assert.deepEqual(blockDefaultSourcesForDb(dbMock, "quotes", lang), sources);
+  }
+  assert.deepEqual(blockDefaultSourcesForDb(dbMock, "russian", "ru"), expected.ru);
+  assert.equal(BLOCKS.some((block) => block.id === "russian"), false);
+});
+
+test("islam block uses one merged Islamic pack plus shared religion sources", () => {
+  const dbMock = db();
+
+  const sources = blockDefaultSourcesForDb(dbMock, "religion", "ar");
+  assert.deepEqual(blockDefaultSourcesForDb(dbMock, "islam", "ar"), ["islamic", "ar", "pack:new-memes-ar-superadmin", "quotes-ar"]);
+  assert.deepEqual(sources, ["islamic", "ar", "pack:new-memes-ar-superadmin", "quotes-ar"]);
+  assert.equal(sources.includes("islamic-quotes-ar"), false);
+  assert.equal(sources.includes("islamic-facts-ar"), false);
+});
+
+test("thematic block generation skips exhausted sources and retired packs", () => {
+  const sources = [...FOREIGN_EN_SOURCES, "visual-riddles-en", "illusions-en", "pack:motivation-en-superadmin"];
   const acc = { ...account(303), sourceDecks: sources };
   const sequence = thematicBlockDeckSequenceForGeneration(
     db(),
@@ -121,6 +151,7 @@ test("thematic block generation skips exhausted sources and removed visual/optic
   assert.ok(!sequence.includes("fact-en"));
   assert.ok(!sequence.includes("visual-riddles-en"));
   assert.ok(!sequence.includes("illusions-en"));
+  assert.ok(!sequence.includes("pack:motivation-en-superadmin"));
   assert.ok(sequence.every((deckId) => FOREIGN_EN_SOURCES.includes(deckId)));
 });
 
@@ -282,8 +313,31 @@ test("source weight settings are canonicalized and stale groups are pruned", () 
       fact_video: 1,
       visual_riddles: 4,
       mind_flip: 2,
+      motivation: 1,
       jokes: 3,
       memes: 2,
+    }),
+  );
+  dbStore.setSetting(
+    "superAdmin.channelBlock.russian.sourceWeights",
+    JSON.stringify({
+      jokes: 7,
+      fact_video: 1,
+      video_quotes: 2,
+      static_quotes: 3,
+      memes: 2,
+      psychology: 2,
+    }),
+  );
+  dbStore.setSetting(
+    "superAdmin.channelBlock.religion.sourceWeights",
+    JSON.stringify({
+      islam: 3,
+      islamic_quotes: 1,
+      islamic_facts: 1,
+      kjv_bible: 2,
+      christian_prayers: 1,
+      christian_quotes: 1,
     }),
   );
   dbStore.setSetting(
@@ -308,9 +362,21 @@ test("source weight settings are canonicalized and stale groups are pruned", () 
   assert.equal(Object.prototype.hasOwnProperty.call(normalized, "static_facts"), false);
   assert.equal(normalized.jokes, 3);
   assert.equal(normalized.memes, 2);
+  assert.equal(Object.prototype.hasOwnProperty.call(normalized, "motivation"), false);
   assert.equal(Object.prototype.hasOwnProperty.call(normalized, "visual_riddles"), false);
   assert.equal(Object.prototype.hasOwnProperty.call(normalized, "mind_flip"), false);
+  const religionNormalized = JSON.parse(dbStore.getSetting("superAdmin.channelBlock.religion.sourceWeights") ?? "{}") as Record<string, number>;
+  assert.deepEqual(religionNormalized, {
+    islam: 3,
+    kjv_bible: 2,
+    christian_prayers: 1,
+    christian_quotes: 1,
+    jokes: 1,
+    memes: 1,
+    static_quotes: 1,
+  });
   assert.equal(dbStore.getSetting("superAdmin.channelBlock.jokes_memes.sourceWeights"), null);
   assert.equal(dbStore.getSetting("superAdmin.channelBlock.riddles_illusions.sourceWeights"), null);
+  assert.equal(dbStore.getSetting("superAdmin.channelBlock.russian.sourceWeights"), null);
   dbStore.db.close();
 });

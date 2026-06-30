@@ -54,6 +54,7 @@ import { registerContentCatalogRoutes } from "./routes/content-catalog.ts";
 import { registerQueueRoutes } from "./routes/queue.ts";
 import { registerAccountReadinessRoutes } from "./routes/account-readiness.ts";
 import { registerSuperAdminChannelBlockRoutes } from "./routes/super-admin-channel-blocks.ts";
+import { registerCreatorRoutes } from "./routes/creator.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -216,7 +217,10 @@ if (existsSync(resolve(WEB_DIST, "index.html"))) {
 const PUBLIC_API = new Set([
   "/api/health",
   "/api/auth/login",
+  "/api/auth/register",
   "/api/auth/telegram/info", // pre-login: is Telegram offered here + bot @username
+  "/api/auth/telegram/register/start", // signup via bot: mint a /start deep-link token
+  "/api/auth/telegram/register/status", // signup via bot: poll until the user pressed Start
   "/api/auth/telegram/login/start", // login via bot: mint a /start deep-link token
   "/api/auth/telegram/login/status", // login via bot: poll until the user pressed Start
   "/api/telegram/webhook", // Telegram pushes bot updates (/start) here
@@ -315,6 +319,7 @@ const deps = makeRouteDeps({
 registerPasswordRoutes(app, db);
 registerPsychCardsRoutes(app, db);
 registerPacksRoutes(app, db);
+registerCreatorRoutes(app, db);
 // Telegram login + account binding + bot-delivered password recovery (public routes whitelisted above)
 // + the in-bot channel-statistics menu (mirrors the website's Statistics tab; reuses refreshAccountStats).
 registerTelegramRoutes(app, db, {

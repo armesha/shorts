@@ -2,7 +2,7 @@
   "deckId": "islamic",
   "status": "source_backed_manual_spot_check",
   "rightsNote": "Arabic Quran, hadith and dua snippets are stored in data/islamic/cards.json. The local corpus was fetched by src/scripts/islamic-fetch-corpus.mjs from explicit public APIs/repos and assembled by src/scripts/islamic-assemble.mjs. Religious wording still requires human spot-check before broad reuse.",
-  "content": "Selected Arabic ayat, adhkar, duas and hadith references.",
+  "content": "Selected Arabic ayat, adhkar, duas, hadith references and educational Islamic facts.",
   "primarySources": [
     {
       "name": "alquran.cloud",
@@ -23,6 +23,15 @@
   "safetyRules": [
     "Do not use human faces or portraits in Islamic religious visuals.",
     "Do not use religious text to attack protected groups or justify violence.",
-    "Keep recitation/voice/music choices respectful; prefer silence or non-melodic background when appropriate."
+    "Keep recitation/voice/music choices respectful; prefer silence or non-melodic background when appropriate.",
+    "Educational Islamic facts are rendered as religious information, not as attributed scripture."
+  ],
+  "mergedSources": [
+    {
+      "deckId": "islamic-facts-ar",
+      "sourceFile": "data/islamic-facts-ar/titled.json",
+      "count": 500,
+      "note": "Merged into the single islamic source deck so the Islam channel uses one source pack with the dark Islamic renderer."
+    }
   ]
 }

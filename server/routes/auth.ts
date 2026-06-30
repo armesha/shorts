@@ -11,6 +11,7 @@ import {
   LOCK_SECONDS,
   SESSION_TTL_DAYS,
 } from "../auth.ts";
+import { checkRateLimit } from "../infra/rate-limits.ts";
 import {
   SESSION_COOKIE,
   ADMIN_SESSION_COOKIE,
@@ -23,10 +24,59 @@ import {
   setSessionCookie,
   uid,
 } from "../infra/auth-session.ts";
+import { COMMERCIAL_CREATOR_FEATURE } from "../services/creator-assets.ts";
 import type { RouteDeps } from "./deps.ts";
+
+const REGISTER_LIMIT = { limit: 8, windowMs: 15 * 60 * 1000 };
+const MIN_PASSWORD_LEN = 3;
+const RESERVED_USERNAMES = new Set(["admin", "root", "system", "support", "shareboard"]);
+
+function registerClientKey(req: { headers: Record<string, unknown>; ip?: string }): string {
+  const cf = typeof req.headers["cf-connecting-ip"] === "string" ? req.headers["cf-connecting-ip"] : "";
+  const forwarded = typeof req.headers["x-forwarded-for"] === "string" ? req.headers["x-forwarded-for"] : "";
+  const ip = cf.trim() || forwarded.split(",")[0]?.trim() || req.ip || "unknown";
+  return `auth-register:${ip}`;
+}
+
+function cleanRegisterUsername(value: string | undefined): string {
+  return (value ?? "").trim().toLowerCase();
+}
 
 export function registerAuthRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
   const { validSessionUser, publicUser } = deps.auth;
+
+  app.post("/api/auth/register", async (req, reply) => {
+    const hit = checkRateLimit(registerClientKey(req), REGISTER_LIMIT);
+    if (!hit.ok) {
+      reply.header("Retry-After", String(Math.ceil((hit.retryAfterMs ?? 1_000) / 1_000)));
+      return reply.code(429).send({ error: "Слишком много регистраций. Попробуйте чуть позже." });
+    }
+
+    const body = (req.body as { username?: string; password?: string }) ?? {};
+    const username = cleanRegisterUsername(body.username);
+    const password = body.password ?? "";
+    if (!/^[a-z0-9][a-z0-9._-]{2,31}$/.test(username) || RESERVED_USERNAMES.has(username)) {
+      return reply.code(400).send({ error: "Логин: 3-32 символа, латиница/цифры/._-" });
+    }
+    if (password.length < MIN_PASSWORD_LEN || password.length > 200) {
+      return reply.code(400).send({ error: "Пароль должен быть от 3 до 200 символов" });
+    }
+    if (db.listUsers().some((u) => u.username.trim().toLowerCase() === username)) {
+      return reply.code(409).send({ error: "Такой логин уже занят" });
+    }
+
+    try {
+      const user = db.createUser({ username, passHash: hashPassword(password), role: "user", passwordSet: true });
+      db.setFeature(user.id, COMMERCIAL_CREATOR_FEATURE, true);
+      const token = newSessionToken();
+      db.createSession(token, user.id, new Date(Date.now() + SESSION_TTL_DAYS * DAY_MS).toISOString());
+      setSessionCookie(reply, token);
+      return publicUser(req, user);
+    } catch (e) {
+      if (String(e).includes("UNIQUE")) return reply.code(409).send({ error: "Такой логин уже занят" });
+      throw e;
+    }
+  });
 
   app.post("/api/auth/login", async (req, reply) => {
     const body = (req.body as { username?: string; password?: string }) ?? {};

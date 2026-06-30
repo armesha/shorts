@@ -592,7 +592,6 @@ export default function AccountDetail() {
   };
   const readinessRunway =
     readiness?.runwayDays == null ? "—" : readiness.runwayDays < 1 ? "<1" : readiness.runwayDays.toFixed(readiness.runwayDays < 10 ? 1 : 0);
-  const deckRunwayText = (days: number | null) => (days == null ? "—" : days < 1 ? "<1" : days.toFixed(days < 10 ? 1 : 0));
   const deckReadinessClass = (status: string) =>
     status === "ok" ? "badge-success" : status === "idle" ? "badge-ghost" : status === "low" ? "badge-warning" : "badge-error";
   const deckReadinessLabel = (status: string) =>
@@ -603,6 +602,19 @@ export default function AccountDetail() {
         : status === "low"
           ? t("account.deckReadinessLow")
           : t("account.deckReadinessEmpty");
+  const deckReadinessAction = (deck: AccountReadiness["decks"][number]) => {
+    const days = deck.runwayDays == null ? null : Math.ceil(deck.runwayDays);
+    const title = t("account.deckReadinessMeta", {
+      queued: deck.queued,
+      perDay: deck.postsPerDay,
+      available: deck.available ?? "?",
+    });
+    if (deck.postsPerDay <= 0) return { label: t("account.deckReadinessActionIdle"), className: "text-base-content/45", title };
+    if (deck.available != null && deck.available <= 0) return { label: t("account.deckReadinessActionRefill"), className: "text-error", title };
+    if (deck.queued <= 0) return { label: t("account.deckReadinessActionGenerate"), className: "text-warning", title };
+    if (deck.status === "low") return { label: t("account.deckReadinessActionLow", { days: days ?? 0 }), className: "text-warning", title };
+    return { label: t("account.deckReadinessActionOk", { days: days ?? 0 }), className: "text-success", title };
+  };
 
   if (!account) return <div className="text-base-content/60">{t("common.loading")}</div>;
   const youtubeChannelUrl = account.ytChannelId ? `https://www.youtube.com/channel/${account.ytChannelId}` : null;
@@ -720,26 +732,30 @@ export default function AccountDetail() {
                   </div>
                 </div>
                 <div className="divide-y divide-base-300">
-                  {readiness.decks.map((deck) => (
-                    <div key={deck.deckId} className="grid gap-3 px-4 py-3 md:grid-cols-[minmax(0,1fr)_auto_auto_auto_auto] md:items-center">
-                      <div className="min-w-0">
-                        <div className="truncate font-semibold" title={deckName(deck.deckId)}>
-                          {librarySourceName(deck.deckId)}
+                  {readiness.decks.map((deck) => {
+                    const action = deckReadinessAction(deck);
+                    return (
+                      <div key={deck.deckId} className="grid gap-3 px-4 py-3 md:grid-cols-[minmax(0,1fr)_auto_minmax(190px,auto)] md:items-center">
+                        <div className="min-w-0">
+                          <div className="truncate font-semibold" title={deckName(deck.deckId)}>
+                            {librarySourceName(deck.deckId)}
+                          </div>
+                          <div className="text-xs text-base-content/45">{deck.deckId}</div>
                         </div>
-                        <div className="text-xs text-base-content/45">{deck.deckId}</div>
+                        <span className={`badge ${deckReadinessClass(deck.status)}`}>{deckReadinessLabel(deck.status)}</span>
+                        <div className="text-sm md:text-right" title={action.title}>
+                          <div className={`font-semibold ${action.className}`}>{action.label}</div>
+                          <div className="text-xs text-base-content/45">
+                            {t("account.deckReadinessMeta", {
+                              queued: deck.queued,
+                              perDay: deck.postsPerDay,
+                              available: deck.available ?? "?",
+                            })}
+                          </div>
+                        </div>
                       </div>
-                      <span className={`badge ${deckReadinessClass(deck.status)}`}>{deckReadinessLabel(deck.status)}</span>
-                      <div className="text-sm">
-                        <b>{deck.queued}</b> <span className="text-base-content/50">{t("account.deckReadinessQueued")}</span>
-                      </div>
-                      <div className="text-sm">
-                        <b>{deck.postsPerDay}</b> <span className="text-base-content/50">{t("account.deckReadinessPerDay")}</span>
-                      </div>
-                      <div className="text-sm">
-                        <b>{deckRunwayText(deck.runwayDays)}</b> <span className="text-base-content/50">{t("account.deckReadinessDays")}</span>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}

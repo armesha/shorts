@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
 import { apiClient, ApiError } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
@@ -10,26 +11,24 @@ export default function Login() {
   const [mode, setMode] = useState<"login" | "recover">("login");
 
   return (
-    <div className="min-h-screen grid place-items-center bg-base-200 px-4 py-8">
-      <div className="card w-full max-w-sm bg-base-100 border border-base-300 shadow-sm">
-        <div className="card-body gap-4">
-          <div className="text-center">
-            <div className="flex items-center gap-2 justify-center">
-              <AppIcon name="clips" className="text-primary" size={28} />
-              <span className="font-bold text-xl tracking-tight">Shorts Factory</span>
-            </div>
-            <p className="text-sm text-base-content/60 mt-1">
-              {mode === "login" ? t("login.subtitleLogin") : t("login.subtitleRecover")}
-            </p>
+    <main className="auth-screen">
+      <section className="auth-panel" aria-labelledby="login-title">
+        <header className="auth-header">
+          <div className="auth-brand" id="login-title">
+            <AppIcon name="clips" size={28} />
+            <span>Shorts Factory</span>
           </div>
-          {mode === "login" ? (
-            <LoginForm onRecover={() => setMode("recover")} />
-          ) : (
-            <RecoverForm onBack={() => setMode("login")} />
-          )}
-        </div>
-      </div>
-    </div>
+          <p className="auth-subtitle">
+            {mode === "login" ? t("login.subtitleLogin") : t("login.subtitleRecover")}
+          </p>
+        </header>
+        {mode === "login" ? (
+          <LoginForm onRecover={() => setMode("recover")} />
+        ) : (
+          <RecoverForm onBack={() => setMode("login")} />
+        )}
+      </section>
+    </main>
   );
 }
 
@@ -71,64 +70,78 @@ function LoginForm({ onRecover }: { onRecover: () => void }) {
   }
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={submit}>
-      <label className="form-control">
-        <span className="label-text">{t("login.username")}</span>
-        <input
-          id="login-username"
-          name="username"
-          className="input input-bordered w-full"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          disabled={busy}
-          autoFocus
-          autoComplete="username"
-        />
-      </label>
+    <>
+      <form className="auth-form" onSubmit={submit}>
+        <label className="auth-field">
+          <span className="auth-label">{t("login.username")}</span>
+          <input
+            id="login-username"
+            name="username"
+            className="auth-input"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            disabled={busy}
+            autoFocus
+            autoComplete="username"
+          />
+        </label>
 
-      <label className="form-control">
-        <span className="label-text">{t("login.password")}</span>
-        <input
-          id="login-password"
-          name="password"
-          type="password"
-          className="input input-bordered w-full"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          disabled={busy}
-          autoComplete="current-password"
-        />
-      </label>
+        <label className="auth-field">
+          <span className="auth-label">{t("login.password")}</span>
+          <input
+            id="login-password"
+            name="password"
+            type="password"
+            className="auth-input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={busy}
+            autoComplete="current-password"
+          />
+        </label>
 
-      {error && (
-        <div className={`alert ${locked ? "alert-warning" : "alert-error"} py-2 text-sm`} role="alert">
-          <AppIcon name="warning" size={16} />
-          <span>{error}</span>
-        </div>
-      )}
+        {error && (
+          <div className={`auth-alert ${locked ? "auth-alert--info" : ""}`} role="alert">
+            <AppIcon name="warning" size={16} />
+            <span>{error}</span>
+          </div>
+        )}
 
-      <button className="btn btn-primary w-full" disabled={busy || !username || !password}>
-        {busy ? <span className="loading loading-spinner loading-sm" /> : <AppIcon name="login" size={16} />}
-        {t("login.signIn")}
-      </button>
+        <button className="auth-button auth-button--primary" disabled={busy || !username || !password}>
+          {busy ? <span className="loading loading-spinner loading-sm" /> : <AppIcon name="login" size={16} />}
+          {t("login.signIn")}
+        </button>
 
-      <button
-        type="button"
-        className="btn btn-ghost btn-sm self-center text-base-content/60"
-        onClick={onRecover}
-      >
-        {t("login.forgotPassword")}
-      </button>
+        <button type="button" className="auth-button auth-button--quiet" onClick={onRecover}>
+          {t("login.forgotPassword")}
+        </button>
+      </form>
+
+      <p className="auth-footer">
+        {t("login.noAccount")}{" "}
+        <Link className="auth-link" to="/register">
+          {t("login.register")}
+        </Link>
+      </p>
 
       {tgEnabled && (
         <>
-          <div className="divider text-xs text-base-content/40 my-0">{t("login.or")}</div>
-          <div className="flex justify-center">
-            <TelegramConnect mode="login" onDone={(u) => u && setUser(u)} />
+          <div className="auth-divider">{t("login.or")}</div>
+          <div className="auth-telegram">
+            <TelegramConnect
+              mode="login"
+              onDone={(u) => u && setUser(u)}
+              buttonClassName="auth-button auth-button--telegram"
+              linkClassName="auth-button auth-button--telegram"
+              quietButtonClassName="auth-button auth-button--quiet"
+              statusClassName="auth-status"
+              successClassName="auth-alert auth-alert--success"
+              errorClassName="auth-alert"
+            />
           </div>
         </>
       )}
-    </form>
+    </>
   );
 }
 
@@ -161,7 +174,7 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
   async function complete(e: FormEvent) {
     e.preventDefault();
     setError("");
-    if (pw.length < 6) return setError(t("login.errPwTooShort"));
+    if (pw.length < 3) return setError(t("login.errPwTooShort"));
     if (pw !== pw2) return setError(t("login.errPwMismatch"));
     setBusy(true);
     try {
@@ -176,12 +189,12 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
 
   if (step === "done") {
     return (
-      <div className="flex flex-col gap-4">
-        <div className="alert alert-success py-2 text-sm" role="alert">
+      <div className="auth-form">
+        <div className="auth-alert auth-alert--success" role="alert">
           <AppIcon name="check" size={16} />
           <span>{t("login.pwChanged")}</span>
         </div>
-        <button className="btn btn-primary w-full" onClick={onBack}>
+        <button type="button" className="auth-button auth-button--primary" onClick={onBack}>
           <AppIcon name="chevron-left" size={16} /> {t("login.backToLogin")}
         </button>
       </div>
@@ -189,14 +202,14 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
   }
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={step === "request" ? request : complete}>
+    <form className="auth-form" onSubmit={step === "request" ? request : complete}>
       {step === "request" ? (
         <>
-          <p className="text-sm text-base-content/70">{t("login.recoverHint")}</p>
-          <label className="form-control">
-            <span className="label-text">{t("login.username")}</span>
+          <p className="auth-note">{t("login.recoverHint")}</p>
+          <label className="auth-field">
+            <span className="auth-label">{t("login.username")}</span>
             <input
-              className="input input-bordered w-full"
+              className="auth-input"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               disabled={busy}
@@ -207,14 +220,14 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
         </>
       ) : (
         <>
-          <div className="alert alert-info py-2 text-xs">
+          <div className="auth-alert auth-alert--info">
             <AppIcon name="check" size={16} />
             <span>{t("login.codeSentHint")}</span>
           </div>
-          <label className="form-control">
-            <span className="label-text">{t("login.codeFromTelegram")}</span>
+          <label className="auth-field">
+            <span className="auth-label">{t("login.codeFromTelegram")}</span>
             <input
-              className="input input-bordered w-full tracking-[0.4em] text-center"
+              className="auth-input auth-input--code"
               value={code}
               inputMode="numeric"
               onChange={(e) => setCode(e.target.value)}
@@ -223,22 +236,22 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
               placeholder="000000"
             />
           </label>
-          <label className="form-control">
-            <span className="label-text">{t("login.newPassword")}</span>
+          <label className="auth-field">
+            <span className="auth-label">{t("login.newPassword")}</span>
             <input
               type="password"
-              className="input input-bordered w-full"
+              className="auth-input"
               value={pw}
               onChange={(e) => setPw(e.target.value)}
               disabled={busy}
               autoComplete="new-password"
             />
           </label>
-          <label className="form-control">
-            <span className="label-text">{t("login.repeatPassword")}</span>
+          <label className="auth-field">
+            <span className="auth-label">{t("login.repeatPassword")}</span>
             <input
               type="password"
-              className="input input-bordered w-full"
+              className="auth-input"
               value={pw2}
               onChange={(e) => setPw2(e.target.value)}
               disabled={busy}
@@ -249,14 +262,14 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
       )}
 
       {error && (
-        <div className="alert alert-error py-2 text-sm" role="alert">
+        <div className="auth-alert" role="alert">
           <AppIcon name="warning" size={16} />
           <span>{error}</span>
         </div>
       )}
 
       <button
-        className="btn btn-primary w-full"
+        className="auth-button auth-button--primary"
         disabled={busy || (step === "request" ? !username.trim() : !code.trim() || !pw)}
       >
         {busy ? (
@@ -269,14 +282,14 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
         {step === "request" ? t("login.getCode") : t("login.changePassword")}
       </button>
 
-      <div className="flex justify-between">
-        <button type="button" className="btn btn-ghost btn-sm text-base-content/60" onClick={onBack}>
+      <div className="auth-action-row">
+        <button type="button" className="auth-button auth-button--quiet" onClick={onBack}>
           <AppIcon name="chevron-left" size={14} /> {t("login.backToLogin")}
         </button>
         {step === "verify" && (
           <button
             type="button"
-            className="btn btn-ghost btn-sm text-base-content/60"
+            className="auth-button auth-button--quiet"
             onClick={() => setStep("request")}
           >
             {t("login.requestCodeAgain")}

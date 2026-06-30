@@ -4,5 +4,5 @@
   "packSize": 160,
   "sourceDeck": "fact-en",
   "localization": "ru",
-  "mediaReuse": "none-static-card-only"
+  "mediaReuse": "source-footage"
 }

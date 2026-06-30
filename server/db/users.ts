@@ -11,10 +11,10 @@ export function userMethods(db: DatabaseSync) {
       const r = db.prepare("SELECT COUNT(*) AS n FROM users").get() as Row;
       return Number(r.n) || 0;
     },
-    createUser(u: { username: string; passHash: string; role?: string }): UserAuth {
+    createUser(u: { username: string; passHash: string; role?: string; passwordSet?: boolean }): UserAuth {
       const info = db
-        .prepare("INSERT INTO users (username, pass_hash, role) VALUES (?,?,?)")
-        .run(u.username, u.passHash, u.role ?? "user");
+        .prepare("INSERT INTO users (username, pass_hash, password_set, role) VALUES (?,?,?,?)")
+        .run(u.username, u.passHash, u.passwordSet === false ? 0 : 1, u.role ?? "user");
       return this.getUserById(Number(info.lastInsertRowid))!;
     },
     updateUserRole(id: number, role: "admin" | "user"): UserAuth | null {
@@ -72,10 +72,10 @@ export function userMethods(db: DatabaseSync) {
       );
     },
     // Set a new password hash directly (used by Telegram-based recovery); also lifts any lockout.
-    setUserPassword(userId: number, passHash: string): void {
+    setUserPassword(userId: number, passHash: string, passwordSet = true): void {
       db.prepare(
-        "UPDATE users SET pass_hash = ?, failed_attempts = 0, locked_until = NULL WHERE id = ?",
-      ).run(passHash, userId);
+        "UPDATE users SET pass_hash = ?, password_set = ?, failed_attempts = 0, locked_until = NULL WHERE id = ?",
+      ).run(passHash, passwordSet ? 1 : 0, userId);
     },
     // ---- One-time password-reset codes (delivered via the Telegram bot) ----
     upsertPasswordReset(userId: number, codeHash: string, expiresAtIso: string): void {

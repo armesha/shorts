@@ -66,6 +66,7 @@ export function registerAccountReadinessRoutes(app: FastifyInstance, db: Db, dep
       const queued = queuedByDeck.get(deckId) ?? 0;
       const deckPostsPerDay = scheduledByDeck.get(deckId) ?? 0;
       const deckRunwayDays = deckPostsPerDay > 0 ? queued / deckPostsPerDay : null;
+      const available = deckId === MANUAL_VIDEO_DECK ? null : deps.deckAccess.availableUnusedForDecks(ownerId, [deckId]);
       const status =
         deckPostsPerDay <= 0
           ? "idle"
@@ -79,6 +80,7 @@ export function registerAccountReadinessRoutes(app: FastifyInstance, db: Db, dep
         queued,
         postsPerDay: deckPostsPerDay,
         runwayDays: deckRunwayDays,
+        available,
         status,
       };
     });

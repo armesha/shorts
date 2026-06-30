@@ -175,6 +175,7 @@ export interface UserDeckRow {
   library: number; // videos queued in the user's libraries
   usedTotal: number; // всего использованных карточек (встроенные + кастомные паки) — бейдж в панели сброса
   infiniteSim?: boolean; // «бесконечный пак» (имитация): весь пак свободен, очередь крутится по кругу
+  commercialCreator?: boolean; // доступ к коммерческому creator hub (/creator)
   // Per-deck remaining/used/total/posted for the decks the user uses (admin "when does a pack run out").
   deckStats?: Record<string, { used: number; available: number; total: number; posted: number }>;
 }
@@ -295,6 +296,7 @@ export interface AuthUser {
   username: string;
   role: string;
   isSuperAdmin?: boolean;
+  passwordSet?: boolean;
   impersonator?: { id: number; username: string; role: string; isSuperAdmin?: boolean } | null;
 }
 
@@ -1015,6 +1017,7 @@ export interface AccountReadiness {
     queued: number;
     postsPerDay: number;
     runwayDays: number | null;
+    available: number | null;
     status: "ok" | "low" | "empty" | "idle";
   }[];
   nextSlotAt: string | null;

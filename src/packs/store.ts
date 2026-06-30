@@ -28,7 +28,7 @@ export interface PackTemplate {
     maxChars?: number;
     minChars?: number;
     bullet?: boolean;
-    font?: { lineHeight?: number };
+    font?: { family?: string; size?: number; weight?: number; color?: string; lineHeight?: number };
     [k: string]: unknown;
   }>;
 }
@@ -37,6 +37,8 @@ export type CardValues = Record<string, string | string[]>;
 export interface StoredCard {
   values: CardValues;
   addedAt: string;
+  /** Optional text to synthesize with TTS for creator exports. Falls back to readable card text. */
+  narration?: string;
 }
 export interface Pack {
   id: string;
@@ -48,6 +50,10 @@ export interface Pack {
   createdBy?: number | null;
   name: string;
   lang: string;
+  /** Simple grouping label for the commercial creator gallery, e.g. jokes, memes, quotes. */
+  templateType?: string;
+  /** True for packs created from the commercial creator hub. Keeps the old /cards flow separate. */
+  creator?: boolean;
   templates: PackTemplate[];
   cards: StoredCard[];
   createdAt: string;
@@ -72,6 +78,8 @@ export interface PackSummary {
   createdBy: number | null;
   name: string;
   lang: string;
+  templateType?: string;
+  creator?: boolean;
   templates: number;
   cards: number;
   createdAt: string;
@@ -215,6 +223,8 @@ function summary(p: Pack): PackSummary {
     createdBy: p.createdBy ?? null,
     name: p.name,
     lang: p.lang,
+    templateType: p.templateType,
+    creator: !!p.creator,
     templates: p.templates.length,
     cards: p.cards.length,
     createdAt: p.createdAt,
@@ -225,7 +235,7 @@ function summary(p: Pack): PackSummary {
 /** Создать пак (владелец = userId). templates — 1+ шаблонов из редактора. */
 export function createPack(
   userId: number,
-  opts: { name: string; lang: string; templates: PackTemplate[] },
+  opts: { name: string; lang: string; templates: PackTemplate[]; templateType?: string; creator?: boolean },
   now: string = new Date().toISOString(),
 ): Pack {
   const id = `${slug(opts.name)}-${Date.now().toString(36)}`;
@@ -235,6 +245,8 @@ export function createPack(
     createdBy: userId,
     name: opts.name.trim() || "Пак",
     lang: opts.lang || "ru",
+    templateType: cleanTemplateType(opts.templateType),
+    creator: !!opts.creator,
     templates: opts.templates?.length ? opts.templates : [],
     cards: [],
     createdAt: now,
@@ -242,6 +254,15 @@ export function createPack(
   };
   writeAtomic(packFile(id), pack);
   return pack;
+}
+
+function cleanTemplateType(value: unknown): string {
+  return String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 40) || "custom";
 }
 
 /** Доступ к паку (чтение/использование: список, превью, сборка видео): главный админ ИЛИ владелец ИЛИ грант. */
@@ -335,6 +356,20 @@ export function listPacks(userId: number, isSuperAdmin = false): PackSummary[] {
   return out;
 }
 
+/** Creator hub packs only. Admins may inspect all creator packs; users see only their own/editable packs. */
+export function listCreatorPacks(userId: number, isSuperAdmin = false): PackSummary[] {
+  if (!existsSync(PACKS_DIR)) return [];
+  const out: PackSummary[] = [];
+  for (const f of readdirSync(PACKS_DIR)) {
+    if (!f.endsWith(".json") || f.endsWith(".tmp")) continue;
+    const p = readPackFile(f.replace(/\.json$/, ""));
+    if (!p || !p.creator || !canAccess(p, userId, isSuperAdmin)) continue;
+    out.push(summary(p));
+  }
+  out.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+  return out;
+}
+
 /** Полный пак — владельцу/админу/гранченному. */
 export function getPack(id: string, userId: number, isSuperAdmin = false): Pack | null {
   const p = readPackFile(id);
@@ -365,6 +400,92 @@ export function addCards(
   for (const v of result.cards) p.cards.push({ values: v, addedAt: now });
   writeAtomic(packFile(id), p);
   return { ok: true, added: result.cards.length, total: p.cards.length };
+}
+
+export interface CreatorCardInput {
+  values?: CardValues;
+  narration?: string;
+  [role: string]: unknown;
+}
+
+function cardValuesFromCreatorInput(input: unknown): { values: unknown; narration?: string } {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return { values: input };
+  const raw = input as CreatorCardInput;
+  const narration = typeof raw.narration === "string" ? raw.narration.trim().slice(0, 5_000) : undefined;
+  if (raw.values && typeof raw.values === "object" && !Array.isArray(raw.values)) return { values: raw.values, narration };
+  const { narration: _narration, values: _values, ...rest } = raw;
+  return { values: rest, narration };
+}
+
+function normalizeCreatorValues(raw: unknown, rules: RoleRule[]): CardValues {
+  const input = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
+  const getString = (...keys: string[]) => {
+    for (const key of keys) {
+      const value = input[key];
+      if (typeof value === "string" && value.trim()) return value.trim();
+      if (Array.isArray(value) && value.length) return value.map((x) => String(x)).join("\n").trim();
+    }
+    return "";
+  };
+  const lines = (...keys: string[]) => {
+    for (const key of keys) {
+      const value = input[key];
+      if (Array.isArray(value)) return value.map((x) => String(x).trim()).filter(Boolean);
+      if (typeof value === "string" && value.trim()) {
+        return value.split(/\r?\n|(?:^|\s)\d+\.\s+/).map((x) => x.trim()).filter(Boolean);
+      }
+    }
+    return [];
+  };
+  const title = getString("title", "heading", "hook", "badge") || "Карточка";
+  const body = getString("text", "body", "fact", "description") || title;
+  const source = getString("source", "badge", "cta") || "Creator";
+  const cta = getString("cta", "source") || source;
+  const points = lines("points", "items", "body", "text");
+  const out: CardValues = {};
+  for (const [key, value] of Object.entries(input)) {
+    if (typeof value === "string" || Array.isArray(value)) out[key] = Array.isArray(value) ? value.map(String) : value;
+  }
+  for (const rule of rules) {
+    if (out[rule.role] != null) continue;
+    if (rule.role === "title" || rule.role === "heading") out[rule.role] = title;
+    else if (rule.role === "hook") out[rule.role] = getString("hook", "heading", "title", "badge") || title;
+    else if (rule.role === "text" || rule.role === "body" || rule.role === "fact") out[rule.role] = rule.list ? points : body;
+    else if (rule.role === "points" || rule.role === "items") out[rule.role] = points.length ? points : [body];
+    else if (rule.role === "source") out[rule.role] = source;
+    else if (rule.role === "cta") out[rule.role] = cta;
+  }
+  return out;
+}
+
+/** Add creator cards, preserving optional per-card narration for TTS. */
+export function addCreatorCards(
+  id: string,
+  userId: number,
+  isSuperAdmin: boolean,
+  input: unknown,
+  now: string = new Date().toISOString(),
+): { ok: true; added: number; total: number; pack: Pack } | { ok: false; reason: "not_found" | "no_template" | "invalid"; result?: ValidationResult } {
+  const p = readPackFile(id);
+  if (!p || !canEdit(p, userId, isSuperAdmin)) return { ok: false, reason: "not_found" };
+  if (!p.templates.length) return { ok: false, reason: "no_template" };
+  const entries = Array.isArray(input) ? input : input ? [input] : [];
+  const rules = deriveRules(p.templates[0]);
+  const normalized = entries.map(cardValuesFromCreatorInput);
+  const normalizedValues = normalized.map((entry) => normalizeCreatorValues(entry.values, rules));
+  let result: ValidationResult;
+  try {
+    result = validateBatch(normalizedValues, rules);
+  } catch {
+    return { ok: false, reason: "invalid", result: { cards: [], errors: [{ index: 0, messages: ["Неверный JSON"] }], parsed: 0 } };
+  }
+  if (result.parsed === 0 || result.errors.length) return { ok: false, reason: "invalid", result };
+  result.cards.forEach((values, i) => {
+    const narration = normalized[i]?.narration;
+    p.cards.push({ values, addedAt: now, ...(narration ? { narration } : {}) });
+  });
+  writeAtomic(packFile(id), p);
+  return { ok: true, added: result.cards.length, total: p.cards.length, pack: p };
 }
 
 /** Удалить одну карточку по индексу (сверка addedAt от гонок). Только владелец/главный админ (canEdit). */

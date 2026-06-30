@@ -76,7 +76,7 @@ export const uid = (req: unknown): number => (req as { userId?: number }).userId
 export type Replyish = { code: (n: number) => { send: (b: unknown) => unknown } };
 
 export type SessionUser = { id: number; username: string; role: string; isSuperAdmin: boolean };
-type PublicUserInput = { id: number; username: string; role: string; isSuperAdmin?: boolean };
+type PublicUserInput = { id: number; username: string; role: string; isSuperAdmin?: boolean; passwordSet?: boolean };
 
 export interface AuthSession {
   validSessionUser: (token: string | null) => SessionUser | null;
@@ -86,6 +86,7 @@ export interface AuthSession {
     username: string;
     role: string;
     isSuperAdmin: boolean;
+    passwordSet: boolean;
     impersonator: SessionUser | null;
   };
   requireAdmin: (req: unknown, reply: Replyish) => boolean;
@@ -118,6 +119,7 @@ export function makeAuthSession(db: Db): AuthSession {
       username: user.username,
       role: user.role,
       isSuperAdmin: user.isSuperAdmin ?? isSuperAdminUser(user),
+      passwordSet: user.passwordSet ?? true,
       impersonator,
     };
   }

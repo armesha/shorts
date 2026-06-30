@@ -38,6 +38,211 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const snap = v => (state.snap ? Math.round(v / GRID) * GRID : Math.round(v));
 const $ = sel => document.querySelector(sel);
 
+const I18N = {
+  ru: {
+    title: "Редактор шаблона",
+    brand: "Редактор шаблона",
+    brandSub: "Соберите макет карточки и скачайте JSON для пака.",
+    stepsAria: "Шаги редактора",
+    stepBlocks: "Блоки",
+    stepBlocksSub: "текст и картинки",
+    stepEdit: "Настройка",
+    stepEditSub: "шрифт и лимиты",
+    stepExport: "Экспорт",
+    stepExportSub: "JSON для пака",
+    templateName: "Название шаблона",
+    newTemplate: "Новый",
+    newTitle: "Новый чистый шаблон",
+    import: "Импорт",
+    importTitle: "Загрузить JSON",
+    export: "Скачать JSON",
+    exportTitle: "Скачать JSON",
+    toolsTitle: "Блоки",
+    addField: "Поле текста",
+    addFieldSub: "для данных карточки",
+    addFieldTitle: "Добавить поле текста",
+    addText: "Надпись",
+    addTextSub: "статичный текст",
+    addTextTitle: "Добавить обычную надпись",
+    addImage: "Картинка",
+    addImageSub: "SVG, PNG или JPG",
+    addImageTitle: "Загрузить картинку",
+    viewTitle: "Вид",
+    snap: "Привязка к сетке",
+    guides: "Показывать поля",
+    zoomTitle: "Масштаб",
+    zoomOutTitle: "Уменьшить",
+    zoomResetTitle: "Сбросить к 100%",
+    zoomInTitle: "Увеличить",
+    zoomFitTitle: "Вписать",
+    zoomFit: "Вписать",
+    toolsHint: "Начните с поля текста: оно станет переменной карточки в паке.",
+    layersTitle: "Слои",
+    layersHint: "Перетащите слой выше или ниже, чтобы изменить порядок.",
+    zoomLabel: "масштаб",
+    propsTitle: "Настройки",
+    emptyProps: "Выберите блок на холсте, чтобы настроить текст, размер и лимиты.",
+    layerField: "поле",
+    layerText: "текст",
+    layerImage: "картинка",
+    lockTitle: "заблокировать / разблокировать",
+    fieldPlaceholder: "Поле · title",
+    staticText: "Статичный текст",
+    untitled: "untitled",
+    defaultTitle: "Заголовок",
+    defaultBody: "Текст",
+    geometry: "Геометрия",
+    rotation: "Поворот",
+    fieldSection: "Поле текста",
+    role: "Роль",
+    padding: "Отступ X / Y",
+    align: "Горизонталь",
+    valign: "Вертикаль",
+    sampleText: "Пример текста",
+    font: "Шрифт",
+    fitRange: "Авторазмер",
+    fontFamily: "Шрифт",
+    fontSize: "Размер",
+    fontWeight: "Жирность",
+    lineHeight: "Строка",
+    color: "Цвет",
+    textLimit: "Лимит текста",
+    minMaxChars: "Мин / Макс симв.",
+    limitHint: "Макс 0 = авто (вместимость при минимальном шрифте {fitMin}px примерно {capacity} симв.). Мин — нижняя граница карточки пака. Сверх максимума текст обрежется.",
+    style: "Оформление",
+    marker: "Маркер",
+    markerColor: "Цвет маркера",
+    underline: "Подчёркивание",
+    bullets: "Список",
+    textSection: "Надпись",
+    textValue: "Текст",
+    imageSection: "Картинка",
+    fit: "Заполнение",
+    opacity: "Прозрачность",
+    duplicate: "Дублировать",
+    delete: "Удалить",
+    tooLong: "не влезет",
+    newConfirm: "Создать новый чистый шаблон? Текущий autosave будет очищен.",
+    imported: "Импортировано",
+    importFailed: "Импорт не удался",
+    badFormat: "плохой формат",
+    jsonSaved: "JSON сохранён",
+  },
+  en: {
+    title: "Template editor",
+    brand: "Template editor",
+    brandSub: "Build a card layout and download JSON for a pack.",
+    stepsAria: "Editor steps",
+    stepBlocks: "Blocks",
+    stepBlocksSub: "text and images",
+    stepEdit: "Settings",
+    stepEditSub: "font and limits",
+    stepExport: "Export",
+    stepExportSub: "JSON for pack",
+    templateName: "Template name",
+    newTemplate: "New",
+    newTitle: "New blank template",
+    import: "Import",
+    importTitle: "Load JSON",
+    export: "Download JSON",
+    exportTitle: "Download JSON",
+    toolsTitle: "Blocks",
+    addField: "Text field",
+    addFieldSub: "for card data",
+    addFieldTitle: "Add text field",
+    addText: "Label",
+    addTextSub: "static text",
+    addTextTitle: "Add static label",
+    addImage: "Image",
+    addImageSub: "SVG, PNG or JPG",
+    addImageTitle: "Upload image",
+    viewTitle: "View",
+    snap: "Snap to grid",
+    guides: "Show fields",
+    zoomTitle: "Zoom",
+    zoomOutTitle: "Zoom out",
+    zoomResetTitle: "Reset to 100%",
+    zoomInTitle: "Zoom in",
+    zoomFitTitle: "Fit",
+    zoomFit: "Fit",
+    toolsHint: "Start with a text field: it becomes a pack card variable.",
+    layersTitle: "Layers",
+    layersHint: "Drag a layer up or down to change the order.",
+    zoomLabel: "zoom",
+    propsTitle: "Settings",
+    emptyProps: "Select a block on the canvas to adjust text, size and limits.",
+    layerField: "field",
+    layerText: "text",
+    layerImage: "image",
+    lockTitle: "lock / unlock",
+    fieldPlaceholder: "Field · title",
+    staticText: "Static text",
+    untitled: "untitled",
+    defaultTitle: "Title",
+    defaultBody: "Text",
+    geometry: "Geometry",
+    rotation: "Rotation",
+    fieldSection: "Text field",
+    role: "Role",
+    padding: "Padding X / Y",
+    align: "Horizontal",
+    valign: "Vertical",
+    sampleText: "Sample text",
+    font: "Font",
+    fitRange: "Auto size",
+    fontFamily: "Font",
+    fontSize: "Size",
+    fontWeight: "Weight",
+    lineHeight: "Line",
+    color: "Color",
+    textLimit: "Text limit",
+    minMaxChars: "Min / Max chars",
+    limitHint: "Max 0 = auto (capacity at minimum font {fitMin}px is about {capacity} chars). Min is the lower bound for pack cards. Text above max is clipped.",
+    style: "Style",
+    marker: "Marker",
+    markerColor: "Marker color",
+    underline: "Underline",
+    bullets: "List",
+    textSection: "Label",
+    textValue: "Text",
+    imageSection: "Image",
+    fit: "Fit",
+    opacity: "Opacity",
+    duplicate: "Duplicate",
+    delete: "Delete",
+    tooLong: "will not fit",
+    newConfirm: "Create a new blank template? Current autosave will be cleared.",
+    imported: "Imported",
+    importFailed: "Import failed",
+    badFormat: "bad format",
+    jsonSaved: "JSON saved",
+  },
+};
+
+function editorLang() {
+  const fromUrl = new URLSearchParams(location.search).get("lang");
+  if (fromUrl === "en" || fromUrl === "ru") return fromUrl;
+  try {
+    const saved = localStorage.getItem("uiLang");
+    if (saved === "en" || saved === "ru") return saved;
+  } catch {}
+  return "ru";
+}
+const LANG = editorLang();
+function t(key, vars) {
+  let s = (I18N[LANG] && I18N[LANG][key]) || I18N.ru[key] || key;
+  if (vars) for (const k of Object.keys(vars)) s = s.split(`{${k}}`).join(String(vars[k]));
+  return s;
+}
+function applyI18n() {
+  document.documentElement.lang = LANG;
+  document.title = t("title");
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-title]").forEach(el => { el.title = t(el.dataset.i18nTitle); });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+  document.querySelectorAll("[data-i18n-aria-label]").forEach(el => { el.setAttribute("aria-label", t(el.dataset.i18nAriaLabel)); });
+}
+
 function toast(msg, isErr) {
   const t = document.createElement("div");
   t.className = "toast" + (isErr ? " err" : "");
@@ -79,14 +284,14 @@ function defaultKillbox() {
     minChars: 0,            // нижняя граница для валидации карточек пака (0 = без минимума)
     maxChars: 0,            // 0 = авто-лимит (estimateCapacity по геометрии и fitMin)
     highlight: "", underline: false, bullet: false, // маркер-фон / подчёркивание / список-буллеты
-    placeholder: "Killbox · title",
+    placeholder: t("fieldPlaceholder"),
   };
 }
 function defaultText() {
   return {
     id: uid(), type: "text",
     x: 140, y: 1700, w: 800, h: 80, rot: 0, locked: false,
-    text: "Static text",
+    text: t("staticText"),
     font: { family: "Inter", size: 40, weight: 500, color: "#111111", lineHeight: 1.2 },
     align: "left",
   };
@@ -98,16 +303,16 @@ function defaultImage(src, w, h) {
     src, fit: "contain", opacity: 1,
   };
 }
-function blankTemplate(name = "untitled") {
+function blankTemplate(name) {
   return {
-    version: 1, name,
+    version: 1, name: name || t("untitled"),
     canvas: { ...DEFAULT_CANVAS },
     elements: [
       // дефолтные килбоксы — как в primer/template.html
       { ...defaultKillbox(), id: uid(), role: "title",
-        x: 65, y: 61, w: 950, h: 235, placeholder: "Заголовок" },
+        x: 65, y: 61, w: 950, h: 235, placeholder: t("defaultTitle") },
       { ...defaultKillbox(), id: uid(), role: "text",
-        x: 67, y: 316, w: 946, h: 1424, placeholder: "Текст",
+        x: 67, y: 316, w: 946, h: 1424, placeholder: t("defaultBody"),
         font: { family: "Lora", size: 49, weight: 400, color: "#111111", lineHeight: 1.27 },
         fitMin: 26, fitMax: 66, align: "left", valign: "top" },
     ],
@@ -203,7 +408,7 @@ function renderElement(el) {
   if (el.type === "killbox") {
     const label = document.createElement("div");
     label.className = "label";
-    label.textContent = el.role || "killbox";
+    label.textContent = el.role || t("layerField");
     node.appendChild(label);
 
     const content = document.createElement("div");
@@ -221,7 +426,7 @@ function renderElement(el) {
       color:${el.font.color};line-height:${el.font.lineHeight};
       text-align:${el.align || "left"};font-style:normal;opacity:.55;
     `;
-    const phText = el.placeholder || el.role || "killbox";
+    const phText = el.placeholder || el.role || t("layerField");
     if (el.bullet) {
       const ul = document.createElement("ul");
       ul.style.cssText = "list-style:disc;margin:0;padding:0 0 0 1.05em;width:100%;box-sizing:border-box;";
@@ -289,12 +494,12 @@ function renderLayers() {
     const ic = document.createElement("span"); ic.className = "ic";
     ic.textContent = el.type === "killbox" ? "▣" : el.type === "text" ? "T" : "▦";
     const name = document.createElement("span"); name.className = "name";
-    name.textContent = el.type === "killbox" ? `${el.role || "killbox"}` :
-                      el.type === "text"     ? (el.text || "text").slice(0, 28) :
-                      "image";
+    name.textContent = el.type === "killbox" ? `${el.role || t("layerField")}` :
+                      el.type === "text"     ? (el.text || t("layerText")).slice(0, 28) :
+                      t("layerImage");
     const lock = document.createElement("span"); lock.className = "lock";
     lock.textContent = el.locked ? "🔒" : "🔓";
-    lock.title = "блок/разблок";
+    lock.title = t("lockTitle");
     lock.addEventListener("click", e => { e.stopPropagation(); el.locked = !el.locked; render(); autosave(); });
 
     li.append(ic, name, lock);
@@ -329,60 +534,60 @@ function renderProps(force) {
       document.activeElement.matches("input,textarea,select")) return;
   const el = findEl(state.selectedId);
   if (!el) {
-    root.innerHTML = `<div class="empty">Ничего не выбрано.<br><br>• drag — перетащить<br>• ручки — изменить размер<br>• Delete — удалить<br>• стрелки — нудж 1px (Shift = 10)<br>• Esc — снять выделение</div>`;
+    root.innerHTML = `<div class="empty">${t("emptyProps")}</div>`;
     return;
   }
   root.innerHTML = "";
 
   // --- секция: позиция/размер ---
-  root.appendChild(section("Геометрия"));
+  root.appendChild(section(t("geometry")));
   root.appendChild(rowPair("X / Y", "number", el.x, el.y, (vx, vy) => { el.x = vx; el.y = vy; render(); autosave(); }));
   root.appendChild(rowPair("W / H", "number", el.w, el.h, (vw, vh) => { el.w = Math.max(MIN_SIZE, vw); el.h = Math.max(MIN_SIZE, vh); render(); autosave(); }, MIN_SIZE));
-  root.appendChild(row("Поворот°", "number", el.rot || 0, v => { el.rot = v; render(); autosave(); }));
+  root.appendChild(row(t("rotation"), "number", el.rot || 0, v => { el.rot = v; render(); autosave(); }));
 
   if (el.type === "killbox") {
-    root.appendChild(section("Килбокс"));
-    root.appendChild(row("Role", "text", el.role, v => { el.role = v; render(); autosave(); }));
-    root.appendChild(rowPair("padX / padY", "number", el.padX, el.padY, (a, b) => { el.padX = a; el.padY = b; render(); autosave(); }));
-    root.appendChild(rowSelect("Align", el.align, ["left","center","right"], v => { el.align = v; render(); autosave(); }));
-    root.appendChild(rowSelect("VAlign", el.valign, ["top","center","bottom"], v => { el.valign = v; render(); autosave(); }));
-    root.appendChild(rowTextareaCounted("Placeholder", el.placeholder || "", () => effectiveMaxChars(el), v => { el.placeholder = v; render(); autosave(); }));
+    root.appendChild(section(t("fieldSection")));
+    root.appendChild(row(t("role"), "text", el.role, v => { el.role = v; render(); autosave(); }));
+    root.appendChild(rowPair(t("padding"), "number", el.padX, el.padY, (a, b) => { el.padX = a; el.padY = b; render(); autosave(); }));
+    root.appendChild(rowSelect(t("align"), el.align, ["left","center","right"], v => { el.align = v; render(); autosave(); }));
+    root.appendChild(rowSelect(t("valign"), el.valign, ["top","center","bottom"], v => { el.valign = v; render(); autosave(); }));
+    root.appendChild(rowTextareaCounted(t("sampleText"), el.placeholder || "", () => effectiveMaxChars(el), v => { el.placeholder = v; render(); autosave(); }));
 
-    root.appendChild(section("Шрифт"));
+    root.appendChild(section(t("font")));
     fontRows(root, el);
-    root.appendChild(rowPair("fitMin / Max", "number", el.fitMin, el.fitMax, (a, b) => { el.fitMin = a; el.fitMax = b; render(); autosave(); }));
+    root.appendChild(rowPair(t("fitRange"), "number", el.fitMin, el.fitMax, (a, b) => { el.fitMin = a; el.fitMax = b; render(); autosave(); }));
 
     // --- лимит текста: пол шрифта (fitMin) + потолок символов, чтобы текст не мельчал и не обрезался ---
-    root.appendChild(section("Лимит текста"));
-    root.appendChild(rowPair("Мин / Макс симв.", "number", el.minChars || 0, el.maxChars || 0, (a, b) => { el.minChars = Math.max(0, Math.round(a) || 0); el.maxChars = Math.max(0, Math.round(b) || 0); render(); autosave(); }, 0));
-    root.appendChild(hint(`Макс 0 = авто (вместимость при fitMin ${el.fitMin || 24}px ≈ ${estimateCapacity(el)} симв.). Мин — нижняя граница карточки пака (0 = без минимума). Сверх макс — обрезка «…», шрифт ниже fitMin не падает.`));
+    root.appendChild(section(t("textLimit")));
+    root.appendChild(rowPair(t("minMaxChars"), "number", el.minChars || 0, el.maxChars || 0, (a, b) => { el.minChars = Math.max(0, Math.round(a) || 0); el.maxChars = Math.max(0, Math.round(b) || 0); render(); autosave(); }, 0));
+    root.appendChild(hint(t("limitHint", { fitMin: el.fitMin || 24, capacity: estimateCapacity(el) })));
 
-    root.appendChild(section("Оформление"));
-    root.appendChild(rowCheck("Маркер (фон)", !!el.highlight, on => { el.highlight = on ? (el.highlight || "#aaff00") : ""; renderCanvas(); autosave(); }));
-    root.appendChild(rowColor("Цвет маркера", el.highlight || "#aaff00", v => { el.highlight = v; renderCanvas(); autosave(); }));
-    root.appendChild(rowCheck("Подчёркивание", !!el.underline, on => { el.underline = on; renderCanvas(); autosave(); }));
-    root.appendChild(rowCheck("Буллеты (список)", !!el.bullet, on => { el.bullet = on; renderCanvas(); autosave(); }));
+    root.appendChild(section(t("style")));
+    root.appendChild(rowCheck(t("marker"), !!el.highlight, on => { el.highlight = on ? (el.highlight || "#aaff00") : ""; renderCanvas(); autosave(); }));
+    root.appendChild(rowColor(t("markerColor"), el.highlight || "#aaff00", v => { el.highlight = v; renderCanvas(); autosave(); }));
+    root.appendChild(rowCheck(t("underline"), !!el.underline, on => { el.underline = on; renderCanvas(); autosave(); }));
+    root.appendChild(rowCheck(t("bullets"), !!el.bullet, on => { el.bullet = on; renderCanvas(); autosave(); }));
   }
 
   if (el.type === "text") {
-    root.appendChild(section("Текст"));
-    root.appendChild(rowTextarea("text", el.text, v => { el.text = v; render(); autosave(); }));
-    root.appendChild(rowSelect("Align", el.align, ["left","center","right"], v => { el.align = v; render(); autosave(); }));
+    root.appendChild(section(t("textSection")));
+    root.appendChild(rowTextarea(t("textValue"), el.text, v => { el.text = v; render(); autosave(); }));
+    root.appendChild(rowSelect(t("align"), el.align, ["left","center","right"], v => { el.align = v; render(); autosave(); }));
 
-    root.appendChild(section("Шрифт"));
+    root.appendChild(section(t("font")));
     fontRows(root, el);
   }
 
   if (el.type === "image") {
-    root.appendChild(section("Картинка"));
-    root.appendChild(rowSelect("Fit", el.fit || "contain", ["contain","cover","fill"], v => { el.fit = v; render(); autosave(); }));
-    root.appendChild(row("Opacity", "number", el.opacity ?? 1, v => { el.opacity = clamp(+v, 0, 1); render(); autosave(); }, 0));
+    root.appendChild(section(t("imageSection")));
+    root.appendChild(rowSelect(t("fit"), el.fit || "contain", ["contain","cover","fill"], v => { el.fit = v; render(); autosave(); }));
+    root.appendChild(row(t("opacity"), "number", el.opacity ?? 1, v => { el.opacity = clamp(+v, 0, 1); render(); autosave(); }, 0));
   }
 
   // --- кнопки ---
   const actions = document.createElement("div"); actions.className = "btn-row";
-  const dup = btn("Дублировать", () => { duplicate(el.id); });
-  const del = btn("Удалить", () => { remove(el.id); }, "danger");
+  const dup = btn(t("duplicate"), () => { duplicate(el.id); });
+  const del = btn(t("delete"), () => { remove(el.id); }, "danger");
   actions.append(dup, del); root.appendChild(actions);
 }
 
@@ -449,7 +654,7 @@ function rowTextareaCounted(label, val, getMax, onChange){
   const cnt=document.createElement("div"); cnt.style.cssText="font-size:11px;line-height:1;text-align:right;";
   const paint=()=>{
     const max=getMax(), len=t.value.length, over=len>max;
-    cnt.textContent = `${len} / ${max}` + (over ? " · не влезет" : "");
+    cnt.textContent = `${len} / ${max}` + (over ? ` · ${t("tooLong")}` : "");
     cnt.style.color = over ? "#e5484d" : "#8a8f98";
   };
   t.addEventListener("input", () => { onChange(t.value); paint(); });
@@ -477,11 +682,11 @@ function btn(label, fn, cls){
   b.addEventListener("click", fn); return b;
 }
 function fontRows(root, el){
-  root.appendChild(rowSelect("Family", el.font.family, FONTS, v => { el.font.family=v; render(); autosave(); }));
-  root.appendChild(row("Size", "number", el.font.size, v => { el.font.size=+v; render(); autosave(); }));
-  root.appendChild(rowSelect("Weight", String(el.font.weight), ["400","500","600","700","800"], v => { el.font.weight=+v; render(); autosave(); }));
-  root.appendChild(row("Line", "number", el.font.lineHeight, v => { el.font.lineHeight=+v; render(); autosave(); }));
-  root.appendChild(rowColor("Color", el.font.color, v => { el.font.color=v; render(); autosave(); }));
+  root.appendChild(rowSelect(t("fontFamily"), el.font.family, FONTS, v => { el.font.family=v; render(); autosave(); }));
+  root.appendChild(row(t("fontSize"), "number", el.font.size, v => { el.font.size=+v; render(); autosave(); }));
+  root.appendChild(rowSelect(t("fontWeight"), String(el.font.weight), ["400","500","600","700","800"], v => { el.font.weight=+v; render(); autosave(); }));
+  root.appendChild(row(t("lineHeight"), "number", el.font.lineHeight, v => { el.font.lineHeight=+v; render(); autosave(); }));
+  root.appendChild(rowColor(t("color"), el.font.color, v => { el.font.color=v; render(); autosave(); }));
 }
 
 // ---------- действия ----------
@@ -612,11 +817,16 @@ window.addEventListener("keydown", e => {
 
 // ---------- тулбар ----------
 document.addEventListener("click", e => {
+  const step = e.target.closest("[data-step]");
+  if (step) {
+    activateStep(step.dataset.step);
+    return;
+  }
   const a = e.target.closest("[data-action]"); if (!a) return;
   const act = a.dataset.action;
   if (act === "add-killbox") { state.tpl.elements.push(defaultKillbox()); state.selectedId = state.tpl.elements.at(-1).id; render(); autosave(); }
   if (act === "add-text")    { state.tpl.elements.push(defaultText());    state.selectedId = state.tpl.elements.at(-1).id; render(); autosave(); }
-  if (act === "new")         { if (confirm("Создать новый чистый шаблон? Текущий будет очищен (autosave удалится).")) { state.tpl = blankTemplate(); state.selectedId = null; $("#tplName").value = state.tpl.name; render(); autosave(); } }
+  if (act === "new")         { if (confirm(t("newConfirm"))) { state.tpl = blankTemplate(); state.selectedId = null; $("#tplName").value = state.tpl.name; render(); autosave(); } }
   if (act === "export")      exportJson();
   if (act === "import")      $("#importInput").click();
   if (act === "zoom-in")     zoomStep(1.2);
@@ -624,6 +834,17 @@ document.addEventListener("click", e => {
   if (act === "zoom-fit")    fitZoom();
   if (act === "zoom-pct")    setZoom(1);   // 100%
 });
+
+function activateStep(step) {
+  document.querySelectorAll("[data-step]").forEach(el => el.classList.toggle("is-active", el.dataset.step === step));
+  const target =
+    step === "blocks" ? $("#toolsPanel") :
+    step === "edit" ? $("#propsPanel") :
+    step === "export" ? $(".top-actions") :
+    null;
+  if (target) target.classList.add("pulse");
+  window.setTimeout(() => target && target.classList.remove("pulse"), 520);
+}
 
 // ---------- зум колесом (Ctrl + wheel) к точке курсора ----------
 $("#stageWrap").addEventListener("wheel", e => {
@@ -681,8 +902,8 @@ $("#importInput").addEventListener("change", async e => {
     state.tpl = json; state.selectedId = null;
     $("#tplName").value = json.name || "imported";
     render(); autosave();
-    toast("Импортировано");
-  } catch (err) { toast("Импорт не удался: " + err.message, true); }
+    toast(t("imported"));
+  } catch (err) { toast(t("importFailed") + ": " + (err.message === "плохой формат" ? t("badFormat") : err.message), true); }
   e.target.value = "";
 });
 
@@ -697,7 +918,7 @@ function exportJson() {
   a.download = (state.tpl.name || "template") + ".json";
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  toast("JSON сохранён");
+  toast(t("jsonSaved"));
 }
 
 function fileToDataUrl(f) {
@@ -730,6 +951,7 @@ window.addEventListener("resize", () => { if (!state.manualZoom) fitZoom(); });
 
 // ---------- старт ----------
 function start() {
+  applyI18n();
   state.tpl = autoload() || blankTemplate();
   $("#tplName").value = state.tpl.name || "untitled";
   $("#snapToggle").checked = state.snap;

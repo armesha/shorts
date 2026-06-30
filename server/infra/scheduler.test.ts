@@ -79,6 +79,49 @@ test("super-admin scheduler can rarely consume retired soviet poster library vid
   assert.ok(posterSelections >= 90 && posterSelections <= 190, `poster selections: ${posterSelections}`);
 });
 
+test("super-admin scheduler can rarely consume retired foreign motivation library videos without source binding", () => {
+  const db = openDb(":memory:");
+  const admin = db.createUser({ username: "armen", passHash: "x", role: "admin" });
+  const account = db.createAccount({
+    userId: admin.id,
+    channelName: "EN",
+    lang: "en",
+    channelLang: "en",
+    sourceDecks: ["en"],
+    schedule: ["12:00"],
+  });
+  db.createVideo({
+    accountId: account.id,
+    title: "regular",
+    text: "text",
+    bg: "",
+    music: "",
+    deck: "en",
+    videoRel: "regular.mp4",
+    imageRel: null,
+  });
+  db.createVideo({
+    accountId: account.id,
+    title: "motivation",
+    text: "text",
+    bg: "",
+    music: "",
+    deck: "pack:motivation-en-superadmin",
+    videoRel: "motivation.mp4",
+    imageRel: null,
+  });
+
+  let motivationSelections = 0;
+  for (let minute = 0; minute < 24 * 60; minute += 1) {
+    const hh = String(Math.floor(minute / 60)).padStart(2, "0");
+    const mm = String(minute % 60).padStart(2, "0");
+    const selection = selectScheduledVideoForSlot(db, account, `${hh}:${mm}`, "2026-06-30");
+    if (selection.video?.deck === "pack:motivation-en-superadmin") motivationSelections += 1;
+  }
+
+  assert.ok(motivationSelections >= 90 && motivationSelections <= 190, `motivation selections: ${motivationSelections}`);
+});
+
 test("retired library rotation does not override manual slots", () => {
   const db = openDb(":memory:");
   const admin = db.createUser({ username: "armen", passHash: "x", role: "admin" });

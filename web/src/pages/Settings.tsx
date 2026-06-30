@@ -792,18 +792,20 @@ function TelegramLink() {
 // Self-service password change — any logged-in user changes their OWN password.
 function ChangePassword() {
   const { t } = useT();
+  const { user, setUser } = useAuth();
   const [cur, setCur] = useState("");
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
-  const valid = cur.length > 0 && next.length >= 6 && next === confirm;
+  const passwordSet = user?.passwordSet !== false;
+  const valid = (!passwordSet || cur.length > 0) && next.length >= 3 && next === confirm;
 
   async function submit() {
     setMsg(null);
     if (next !== confirm) return setMsg({ ok: false, text: t("settings.pwMismatch") });
-    if (next.length < 6) return setMsg({ ok: false, text: t("settings.pwTooShort") });
+    if (next.length < 3) return setMsg({ ok: false, text: t("settings.pwTooShort") });
     setBusy(true);
     try {
       const r = await fetch("/api/auth/change-password", {
@@ -818,6 +820,7 @@ function ChangePassword() {
         return;
       }
       setMsg({ ok: true, text: t("settings.pwChanged") });
+      if (user) setUser({ ...user, passwordSet: true });
       setCur("");
       setNext("");
       setConfirm("");
@@ -836,7 +839,7 @@ function ChangePassword() {
           <h2 className="card-title text-base">{t("settings.pwTitle")}</h2>
         </div>
         <p className="text-sm text-base-content/70">
-          {t("settings.pwIntro")}
+          {passwordSet ? t("settings.pwIntro") : t("settings.pwSetIntro")}
         </p>
         <form
           className="flex flex-wrap items-end gap-2"
@@ -845,16 +848,18 @@ function ChangePassword() {
             if (!busy && valid) submit();
           }}
         >
-          <label className="form-control w-44">
-            <span className="label-text">{t("settings.pwCurrent")}</span>
-            <input
-              type="password"
-              className="input input-bordered input-sm"
-              value={cur}
-              onChange={(e) => setCur(e.target.value)}
-              autoComplete="current-password"
-            />
-          </label>
+          {passwordSet && (
+            <label className="form-control w-44">
+              <span className="label-text">{t("settings.pwCurrent")}</span>
+              <input
+                type="password"
+                className="input input-bordered input-sm"
+                value={cur}
+                onChange={(e) => setCur(e.target.value)}
+                autoComplete="current-password"
+              />
+            </label>
+          )}
           <label className="form-control w-44">
             <span className="label-text">{t("settings.pwNew")}</span>
             <input
@@ -877,7 +882,7 @@ function ChangePassword() {
           </label>
           <button type="submit" className="btn btn-primary btn-sm gap-1" disabled={busy || !valid}>
             {busy ? <span className="loading loading-spinner loading-sm" /> : <KeyRound size={14} />}
-            {t("settings.pwSubmit")}
+            {passwordSet ? t("settings.pwSubmit") : t("settings.pwSetSubmit")}
           </button>
         </form>
         {msg && (

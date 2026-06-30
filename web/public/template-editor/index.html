@@ -3,53 +3,86 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Template Editor</title>
+<title>Редактор шаблона</title>
 <!-- Локальные шрифты (web/public/template-editor/fonts.css + fonts/*.woff2, см.
      src/scripts/fetch-template-fonts.mjs). Без Google CDN → редактор работает офлайн. -->
 <link rel="stylesheet" href="fonts.css">
-<link rel="stylesheet" href="editor.css">
+<link rel="stylesheet" href="editor.css?v=20260630-minimal">
 </head>
 <body>
   <header class="topbar">
-    <div class="brand">Template Editor</div>
-
-    <div class="group">
-      <button data-action="add-killbox" title="Добавить килбокс">＋ Killbox</button>
-      <button data-action="add-text"    title="Добавить текст">＋ Text</button>
-      <label class="file-btn" title="Загрузить картинку (SVG/PNG/JPEG)">
-        ＋ Image
-        <input type="file" id="imageInput" accept=".svg,.png,.jpg,.jpeg,image/*" hidden>
-      </label>
+    <div class="brand-block">
+      <div class="brand" data-i18n="brand">Редактор шаблона</div>
     </div>
 
-    <div class="group">
-      <label class="chk"><input type="checkbox" id="snapToggle" checked> Привязка к сетке</label>
-      <label class="chk"><input type="checkbox" id="guidesToggle" checked> Показывать килбоксы</label>
-    </div>
-
-    <div class="group zoom-group">
-      <button data-action="zoom-out" title="Уменьшить (Ctrl -)">−</button>
-      <button data-action="zoom-pct" id="zoomBtn" title="Сбросить к 100%">100%</button>
-      <button data-action="zoom-in" title="Увеличить (Ctrl +)">＋</button>
-      <button data-action="zoom-fit" title="Вписать (Ctrl 0)">Fit</button>
-    </div>
-
-    <div class="group right">
-      <input id="tplName" class="tpl-name" placeholder="имя шаблона" value="untitled">
-      <button data-action="new"     title="Новый чистый шаблон">Новый</button>
-      <button data-action="import"  title="Загрузить JSON">Импорт</button>
-      <button data-action="export" class="primary" title="Скачать JSON">Экспорт</button>
+    <div class="top-actions">
+      <input id="tplName" class="tpl-name" placeholder="Название шаблона" data-i18n-placeholder="templateName" value="untitled">
+      <button data-action="new" data-i18n-title="newTitle" title="Новый чистый шаблон">
+        <span data-i18n="newTemplate">Новый</span>
+      </button>
+      <button data-action="import" data-i18n-title="importTitle" title="Загрузить JSON">
+        <span data-i18n="import">Импорт</span>
+      </button>
+      <button data-action="export" class="primary" data-i18n-title="exportTitle" title="Скачать JSON">
+        <span data-i18n="export">Скачать JSON</span>
+      </button>
       <input type="file" id="importInput" accept=".json,application/json" hidden>
     </div>
   </header>
 
   <main class="workspace">
+    <aside class="panel tools" id="toolsPanel">
+      <div class="panel-head">
+        <span data-i18n="toolsTitle">Блоки</span>
+      </div>
+      <div class="tool-stack">
+        <button class="tool-btn primary" data-action="add-killbox" data-i18n-title="addFieldTitle" title="Добавить поле текста">
+          <span class="tool-ic">T</span>
+          <span>
+            <b data-i18n="addField">Поле текста</b>
+            <small data-i18n="addFieldSub">для данных карточки</small>
+          </span>
+        </button>
+        <button class="tool-btn" data-action="add-text" data-i18n-title="addTextTitle" title="Добавить обычную надпись">
+          <span class="tool-ic">Aa</span>
+          <span>
+            <b data-i18n="addText">Надпись</b>
+            <small data-i18n="addTextSub">статичный текст</small>
+          </span>
+        </button>
+        <label class="tool-btn file-btn" data-i18n-title="addImageTitle" title="Загрузить картинку">
+          <span class="tool-ic">▧</span>
+          <span>
+            <b data-i18n="addImage">Картинка</b>
+            <small data-i18n="addImageSub">SVG, PNG или JPG</small>
+          </span>
+          <input type="file" id="imageInput" accept=".svg,.png,.jpg,.jpeg,image/*" hidden>
+        </label>
+      </div>
 
-    <!-- ЛЕВАЯ ПАНЕЛЬ: СЛОИ -->
-    <aside class="panel layers">
-      <div class="panel-head">Слои</div>
-      <ul id="layers"></ul>
-      <div class="panel-foot small">Перетащи в списке — изменит z-index.<br>Сверху = на переднем плане.</div>
+      <div class="panel-section">
+        <div class="section-title" data-i18n="viewTitle">Вид</div>
+        <label class="chk"><input type="checkbox" id="snapToggle" checked> <span data-i18n="snap">Привязка к сетке</span></label>
+        <label class="chk"><input type="checkbox" id="guidesToggle" checked> <span data-i18n="guides">Показывать поля</span></label>
+      </div>
+
+      <div class="panel-section">
+        <div class="section-title" data-i18n="zoomTitle">Масштаб</div>
+        <div class="zoom-group">
+          <button data-action="zoom-out" data-i18n-title="zoomOutTitle" title="Уменьшить">−</button>
+          <button data-action="zoom-pct" id="zoomBtn" data-i18n-title="zoomResetTitle" title="100%">100%</button>
+          <button data-action="zoom-in" data-i18n-title="zoomInTitle" title="Увеличить">＋</button>
+          <button data-action="zoom-fit" data-i18n-title="zoomFitTitle" title="Вписать" data-i18n="zoomFit">Вписать</button>
+        </div>
+      </div>
+
+      <div class="panel-section layers-inline">
+        <div class="section-title" data-i18n="layersTitle">Слои</div>
+        <ul id="layers"></ul>
+        <div class="small muted" data-i18n="layersHint">Перетащите слой выше или ниже, чтобы изменить порядок.</div>
+      </div>
+
+      <div class="panel-foot small" data-i18n="toolsHint">Начните с поля текста: оно станет переменной карточки в паке.</div>
     </aside>
 
     <!-- ЦЕНТР: ХОЛСТ -->
@@ -64,20 +97,22 @@
       <div class="stage-info">
         <span id="canvasInfo">1080 × 1920</span>
         <span class="dot">·</span>
-        <span>zoom: <span id="zoomVal">—</span></span>
+        <span><span data-i18n="zoomLabel">масштаб</span>: <span id="zoomVal">—</span></span>
       </div>
     </section>
 
     <!-- ПРАВАЯ ПАНЕЛЬ: СВОЙСТВА -->
-    <aside class="panel props">
-      <div class="panel-head">Свойства</div>
+    <aside class="panel props" id="propsPanel">
+      <div class="panel-head">
+        <span data-i18n="propsTitle">Настройки</span>
+      </div>
       <div id="props" class="props-body">
-        <div class="empty">Ничего не выбрано.<br><br>Подсказки:<br>• drag — перетащить<br>• ручки — изменить размер<br>• Delete — удалить<br>• стрелки — нудж 1px (Shift = 10)<br>• Esc — снять выделение</div>
+        <div class="empty" data-i18n="emptyProps">Выберите блок на холсте, чтобы настроить текст, размер и лимиты.</div>
       </div>
     </aside>
 
   </main>
 
-  <script src="editor.js"></script>
+  <script src="editor.js?v=20260630-minimal"></script>
 </body>
 </html>

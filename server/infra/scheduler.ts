@@ -8,6 +8,7 @@ import { uploadShort, ytErrorReason, isYtAuthError, type ClientCreds } from "../
 import type { Notifier } from "../services/notify-stream.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
 import {
+  RETIRED_SUPER_ADMIN_FOREIGN_MOTIVATION_DECKS,
   RETIRED_SUPER_ADMIN_SOVIET_POSTER_DECKS,
   isForbiddenSuperAdminSourceDeck,
 } from "../services/super-admin-optical-decks.ts";
@@ -53,7 +54,10 @@ function stableHash(seed: string): number {
 }
 
 const RETIRED_LIBRARY_ROTATION_RATES = new Map(
-  [...RETIRED_SUPER_ADMIN_SOVIET_POSTER_DECKS].map((deckId) => [deckId, 0.1]),
+  [
+    ...[...RETIRED_SUPER_ADMIN_SOVIET_POSTER_DECKS].map((deckId) => [deckId, 0.1] as const),
+    ...[...RETIRED_SUPER_ADMIN_FOREIGN_MOTIVATION_DECKS].map((deckId) => [deckId, 0.1] as const),
+  ],
 );
 
 function retiredLibraryDecksForSlot(acc: Account, hhmm: string, day: string, slotDeck: string | undefined): string[] {

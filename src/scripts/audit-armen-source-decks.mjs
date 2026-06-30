@@ -18,6 +18,7 @@ const FORBIDDEN_GROUPS = FORBIDDEN_SUPER_ADMIN_SOURCE_GROUPS;
 const FORBIDDEN = new Map(FORBIDDEN_GROUPS.flatMap((group) => group.decks.map((deck) => [deck, group.group])));
 const LIBRARY_ALLOWED_GROUPS = new Set([
   "retired armen russian motivation decks",
+  "retired armen foreign motivation decks",
   "retired armen christian fact decks",
   "retired armen soviet poster decks",
 ]);

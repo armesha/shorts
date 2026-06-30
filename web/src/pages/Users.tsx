@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Users, Plus, Check, AlertTriangle, Crown, LogIn, Send, Infinity as InfinityIcon } from "lucide-react";
+import { Users, Plus, Check, AlertTriangle, Crown, LogIn, Send, Infinity as InfinityIcon, Wand2 } from "lucide-react";
 import { apiClient, ApiError, type AdminUser, type DeckInfo, type UserDeckRow, type PackSummary, type PackUsageItem } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { isMainAdmin } from "../lib/authz";
@@ -59,6 +59,7 @@ function AdminUsers() {
   const [ownerErr, setOwnerErr] = useState<string | null>(null);
   const [impersonatingId, setImpersonatingId] = useState<number | null>(null);
   const [togglingInfinite, setTogglingInfinite] = useState<number | null>(null); // «бесконечный пак» в полёте
+  const [togglingCreator, setTogglingCreator] = useState<number | null>(null);
   const [noticeUserId, setNoticeUserId] = useState<number | "">("");
   const [noticeSeverity, setNoticeSeverity] = useState<"info" | "warning" | "error">("info");
   const [noticeTitle, setNoticeTitle] = useState("");
@@ -294,6 +295,24 @@ function AdminUsers() {
     }
   }
 
+  async function toggleCommercialCreator(row: UserDeckRow) {
+    const next = !row.commercialCreator;
+    setTogglingCreator(row.userId);
+    setSaveState("saving");
+    setRows((rs) => rs.map((r) => (r.userId === row.userId ? { ...r, commercialCreator: next } : r)));
+    try {
+      const res = await apiClient.setUserCommercialCreator(row.userId, next);
+      setRows((rs) => rs.map((r) => (r.userId === row.userId ? { ...r, commercialCreator: res.enabled } : r)));
+      setSaveState("saved");
+      window.setTimeout(() => setSaveState((s) => (s === "saved" ? "idle" : s)), 1800);
+    } catch {
+      setSaveState("error");
+      loadMatrix();
+    } finally {
+      setTogglingCreator(null);
+    }
+  }
+
   async function sendNotice() {
     if (!noticeUserId || !noticeMessage.trim()) return;
     setNoticeBusy(true);
@@ -430,7 +449,7 @@ function AdminUsers() {
             <button
               className="btn btn-primary btn-sm gap-1"
               onClick={add}
-              disabled={busy || !username.trim() || password.length < 6}
+              disabled={busy || !username.trim() || password.length < 3}
             >
               {busy ? <span className="loading loading-spinner loading-sm" /> : <Plus size={14} />}
               {t("common.create")}
@@ -718,20 +737,32 @@ function AdminUsers() {
                             {row.library > 0 ? " · " + t("users.inLibrary", { n: row.library }) : ""}
                           </div>
                           {canManageRights && (
-                            <button
-                              type="button"
-                              className={`btn btn-xs gap-1 mt-1 ${row.infiniteSim ? "btn-primary" : "btn-ghost border border-base-300 opacity-70"}`}
-                              disabled={togglingInfinite === row.userId}
-                              onClick={() => toggleInfinite(row)}
-                              title={t("users.infiniteSimTitle")}
-                            >
-                              {togglingInfinite === row.userId ? (
-                                <span className="loading loading-spinner loading-xs" />
-                              ) : (
-                                <InfinityIcon size={11} />
-                              )}
-                              {row.infiniteSim ? t("users.infiniteSimOn") : t("users.infiniteSimOff")}
-                            </button>
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              <button
+                                type="button"
+                                className={`btn btn-xs gap-1 ${row.commercialCreator ? "btn-primary" : "btn-ghost border border-base-300 opacity-70"}`}
+                                disabled={togglingCreator === row.userId}
+                                onClick={() => toggleCommercialCreator(row)}
+                                title="Commercial Creator доступ к /creator"
+                              >
+                                {togglingCreator === row.userId ? <span className="loading loading-spinner loading-xs" /> : <Wand2 size={11} />}
+                                {row.commercialCreator ? "Creator: вкл" : "Creator"}
+                              </button>
+                              <button
+                                type="button"
+                                className={`btn btn-xs gap-1 ${row.infiniteSim ? "btn-primary" : "btn-ghost border border-base-300 opacity-70"}`}
+                                disabled={togglingInfinite === row.userId}
+                                onClick={() => toggleInfinite(row)}
+                                title={t("users.infiniteSimTitle")}
+                              >
+                                {togglingInfinite === row.userId ? (
+                                  <span className="loading loading-spinner loading-xs" />
+                                ) : (
+                                  <InfinityIcon size={11} />
+                                )}
+                                {row.infiniteSim ? t("users.infiniteSimOn") : t("users.infiniteSimOff")}
+                              </button>
+                            </div>
                           )}
                         </td>
                         {renderAccessCells(row, accessDecks)}

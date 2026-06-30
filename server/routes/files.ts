@@ -57,6 +57,8 @@ export function registerFilesRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     if (ext === ".png") return "image/png";
     if (ext === ".jpg" || ext === ".jpeg") return "image/jpeg";
     if (ext === ".webp") return "image/webp";
+    if (ext === ".mp3") return "audio/mpeg";
+    if (ext === ".zip") return "application/zip";
     if (ext === ".json") return "application/json; charset=utf-8";
     return "application/octet-stream";
   }
@@ -93,6 +95,7 @@ export function registerFilesRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const packPreview = /^packs\/(.+)-\d+\.png$/i.exec(rel);
     if (packPreview) return getPack(packPreview[1], user.id, false) !== null;
     if (rel.startsWith("library/")) return db.findOutputFileOwner(rel)?.userId === user.id;
+    if (rel.startsWith("creator/")) return db.findCreatorOutputFileOwner(rel)?.userId === user.id;
     return false;
   }
 
