@@ -3,7 +3,7 @@
 // Handlers moved VERBATIM from index.ts.
 import type { FastifyInstance } from "fastify";
 import type { Db } from "../db.ts";
-import { hashPassword, isSuperAdminUser, newSessionToken, SESSION_TTL_DAYS, SUPER_ADMIN_USERNAME } from "../auth.ts";
+import { hashPassword, isSuperAdminUser, newSessionToken, SESSION_TTL_DAYS } from "../auth.ts";
 import { DECKS, deckLang } from "../../src/anecdotes/decks.ts";
 import { listAllPacks, setGrant, setPackOwners, getPack, canAccess } from "../../src/packs/store.ts";
 import { libraryStats, deckAnecdoteKeys } from "../../src/anecdotes/library.ts";
@@ -75,12 +75,6 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     if (role === "admin" && !isSuperAdmin) {
       return reply.code(403).send({ error: "Роль админа может выдавать только главный администратор" });
     }
-    if (username.toLowerCase() === SUPER_ADMIN_USERNAME && username !== SUPER_ADMIN_USERNAME) {
-      return reply.code(400).send({ error: `Главный администратор должен иметь точный логин "${SUPER_ADMIN_USERNAME}"` });
-    }
-    if (username === SUPER_ADMIN_USERNAME && (!isSuperAdmin || role !== "admin")) {
-      return reply.code(403).send({ error: `Аккаунт "${SUPER_ADMIN_USERNAME}" может создавать только главный администратор как admin` });
-    }
     if (!isSuperAdmin && Array.isArray(body.hidden) && body.hidden.length > 0) {
       return reply.code(403).send({ error: "Паки нового пользователя может настраивать только главный администратор" });
     }
@@ -104,7 +98,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
     const role = (req.body as { role?: string } | null)?.role === "admin" ? "admin" : "user";
     if (isSuperAdminUser(target) && role !== "admin") {
-      return reply.code(400).send({ error: "Главного администратора armen нельзя понизить" });
+      return reply.code(400).send({ error: "Супер-админа нельзя понизить" });
     }
     const updated = db.updateUserRole(targetId, role);
     return { ok: true, role: updated?.role ?? role, isSuperAdmin: isSuperAdminUser(updated) };
@@ -384,7 +378,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const target = db.getUserById(id);
     if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
     if (!deps.auth.isSuperAdminReq(req) && isSuperAdminUser(target)) {
-      return reply.code(403).send({ error: "Сброс истории главного администратора доступен только armen" });
+      return reply.code(403).send({ error: "Сброс истории супер-админа доступен только супер-админу" });
     }
     // Кастомный пак: ключи карточек = packCardKey(values); чистим именно их у этого юзера.
     if (deckId.startsWith("pack:")) {
@@ -407,7 +401,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const target = db.getUserById(id);
     if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
     if (!deps.auth.isSuperAdminReq(req) && isSuperAdminUser(target)) {
-      return reply.code(403).send({ error: "Историю главного администратора может смотреть только armen" });
+      return reply.code(403).send({ error: "Историю супер-админа может смотреть только супер-админ" });
     }
     const usedKeys = db.usedAnecdoteKeys(id);
     const targetIsSuperAdmin = isSuperAdminUser(target);

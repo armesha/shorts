@@ -149,7 +149,7 @@ function AdminUsers() {
 
   // Toggle one pack's visibility for a user (checked = visible). Optimistic; reverts on failure.
   // Главный админ видит всё по умолчанию → opt-out. Обычный админ тоже может менять эту строку
-  // в матрице, но это не даёт ему роли, impersonate или сброс истории armen.
+  // в матрице, но это не даёт ему роли, impersonate или сброс истории супер-админа.
   async function toggle(row: UserDeckRow, deckId: string, visible: boolean) {
     const isAdminRow = row.role === "admin";
     const deck = decks.find((d) => d.id === deckId);

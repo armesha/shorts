@@ -1,6 +1,28 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { openDb } from "./db.ts";
+import { isSuperAdminUser } from "./auth.ts";
+
+test("super-admin rights are data-driven, not username-driven", () => {
+  const db = openDb(":memory:");
+  const armen = db.createUser({ username: "armen", passHash: "x", role: "admin" });
+  const owner = db.createUser({ username: "owner", passHash: "x", role: "admin", isSuperAdmin: true });
+
+  assert.equal(isSuperAdminUser(armen), false, "username alone must not grant super-admin rights");
+  assert.equal(isSuperAdminUser(owner), true, "admin with is_super_admin gets super-admin rights");
+  assert.equal(isSuperAdminUser({ ...owner, role: "user" }), false, "super-admin flag requires admin role");
+  assert.equal(db.getSuperAdminUser()?.id, owner.id);
+});
+
+test("users table enforces a single super-admin flag", () => {
+  const db = openDb(":memory:");
+  db.createUser({ username: "owner", passHash: "x", role: "admin", isSuperAdmin: true });
+
+  assert.throws(
+    () => db.createUser({ username: "other", passHash: "x", role: "admin", isSuperAdmin: true }),
+    /UNIQUE|constraint/i,
+  );
+});
 
 // Atomic card claim (H1: anti double-spend). Two concurrent generation paths must not both build
 // the same card — the loser of the claim re-picks; a released card becomes claimable again.

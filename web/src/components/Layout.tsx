@@ -257,10 +257,7 @@ function AdminLayout({
       <div className="creator-shell min-h-screen bg-base-200 text-base-content" onClickCapture={handleRouteClick}>
         <header className="creator-liquid-header sticky top-0 z-30">
           <div className="creator-liquid-row">
-            <Link to="/creator" className="creator-liquid-pill creator-liquid-brand h-11 px-4 flex items-center gap-2 font-bold">
-              <span>{t("creator.shellTitle")}</span>
-            </Link>
-            <div className="creator-liquid-pill creator-liquid-actions h-11 px-2 flex items-center gap-2">
+            <div className="creator-liquid-pill creator-liquid-actions h-9 px-2 flex items-center gap-1">
               <LanguageToggle lang={lang} setLang={setLang} t={t} className="px-2" />
               <Link to="/settings" className="btn btn-ghost btn-sm btn-square" title={t("settings.title")} aria-label={t("settings.title")}>
                 <AppIcon name="settings" size={16} />

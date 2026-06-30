@@ -248,7 +248,7 @@ function normalizeSummary(data: unknown): CreatorSummary {
   return {
     feature: Boolean(src.feature),
     packs: Array.isArray(src.packs) ? (src.packs as CreatorPack[]) : [],
-    gallery: Array.isArray(src.gallery) ? (src.gallery as CreatorGalleryItem[]) : [],
+    gallery: Array.isArray(src.gallery) ? (src.gallery as CreatorRecord[]) : [],
     backgrounds: Array.isArray(src.backgrounds) ? (src.backgrounds as CreatorBackground[]) : [],
     userBackgrounds: Array.isArray(src.userBackgrounds) ? (src.userBackgrounds as CreatorBackground[]) : [],
     presets,
@@ -519,6 +519,8 @@ export default function Creator() {
       ...values,
       title: values.heading,
       hook: values.heading || values.badge,
+      text: values.text || values.body,
+      body: values.body,
       fact: values.body || values.text,
       points: bodyLines.length ? bodyLines : [values.body || values.text].filter(Boolean),
       source: values.badge || t("creator.sourceFallback"),
@@ -602,16 +604,6 @@ export default function Creator() {
 
   return (
     <div className="creator-page max-w-7xl space-y-4">
-      <div className="creator-hero">
-        <div className="min-w-0">
-          <h1 className="text-2xl font-bold tracking-tight">{t("creator.title")}</h1>
-        </div>
-        <a href="/editor" className="btn btn-sm btn-outline gap-2">
-          <LayoutTemplate size={16} />
-          {t("creator.openEditor")}
-        </a>
-      </div>
-
       {summaryError && (
         <div className="alert alert-warning text-sm" role="alert">
           <AlertTriangle size={18} />
@@ -735,6 +727,10 @@ function StepRail({
           );
         })}
       </div>
+      <a href="/editor" className="creator-rail-tool">
+        <LayoutTemplate size={15} />
+        <span className="creator-rail-title">{t("creator.openEditor")}</span>
+      </a>
     </aside>
   );
 }
@@ -1104,244 +1100,23 @@ function TextLayoutEditor({
   );
 }
 
-function ExportPanel({
-  packs,
-  activePackId,
-  setActivePackId,
-  activePackCards,
-  studioCardNumber,
-  setStudioCardNumber,
-  durationSec,
-  setDurationSec,
-  zipLimit,
-  setZipLimit,
-  voiceover,
-  setVoiceover,
-  addToGallery,
-  setAddToGallery,
-  music,
-  setMusic,
-  motion,
-  setMotion,
-  musicTracks,
-  motionOverlays,
-  previewPack,
-  previewTts,
-  exportOne,
-  exportZip,
-  busy,
-  actionsDisabled,
-  galleryGroups,
-  galleryPages,
-  setGalleryPages,
-  onBack,
-}: {
-  packs: CreatorPack[];
-  activePackId: string;
-  setActivePackId: (id: string) => void;
-  activePackCards: number;
-  studioCardNumber: number;
-  setStudioCardNumber: (value: number) => void;
-  durationSec: number;
-  setDurationSec: (value: number) => void;
-  zipLimit: number;
-  setZipLimit: (value: number) => void;
-  voiceover: boolean;
-  setVoiceover: (value: boolean) => void;
-  addToGallery: boolean;
-  setAddToGallery: (value: boolean) => void;
-  music: string;
-  setMusic: (value: string) => void;
-  motion: string;
-  setMotion: (value: string) => void;
-  musicTracks: CreatorAsset[];
-  motionOverlays: CreatorAsset[];
-  previewPack: () => void;
-  previewTts: () => void;
-  exportOne: (format: "mp4" | "png") => void;
-  exportZip: () => void;
-  busy: string | null;
-  actionsDisabled: boolean;
-  galleryGroups: [string, CreatorGalleryItem[]][];
-  galleryPages: Record<string, number>;
-  setGalleryPages: (pages: Record<string, number>) => void;
-  onBack: () => void;
-}) {
-  const { t } = useT();
-  const hasPack = Boolean(activePackId);
-
-  return (
-    <section className="creator-card">
-      <PanelHeader number="3" title={t("creator.exportTitle")} />
-
-      <div className="creator-export-controls">
-          <div className="creator-form-grid">
-            <label className="form-control">
-              <span className="label-text">{t("creator.currentPack")}</span>
-              <select className="select select-bordered select-sm" value={activePackId} onChange={(event) => setActivePackId(event.target.value)}>
-                {packs.length === 0 && <option value="">{t("creator.noPacksShort")}</option>}
-                {packs.map((pack) => {
-                  const id = packId(pack);
-                  return (
-                    <option key={id} value={id}>
-                      {packName(pack, t("creator.untitledPack"))} - {packCards(pack)}
-                    </option>
-                  );
-                })}
-              </select>
-            </label>
-            <label className="form-control">
-              <span className="label-text">{t("creator.cardNumber")}</span>
-              <input
-                className="input input-bordered input-sm"
-                type="number"
-                min={1}
-                max={Math.max(1, activePackCards)}
-                value={studioCardNumber}
-                onChange={(event) => setStudioCardNumber(Number(event.target.value) || 1)}
-              />
-            </label>
-          </div>
-
-          <div className="creator-download-actions">
-            <button className="btn btn-sm btn-outline gap-2" onClick={previewPack} disabled={actionsDisabled || busy !== null || !hasPack}>
-              {busy === "preview" ? <Loader2 className="animate-spin" size={16} /> : <Eye size={16} />}
-              {t("creator.preview")}
-            </button>
-            <button className="btn btn-sm btn-outline gap-2" onClick={previewTts} disabled={actionsDisabled || busy !== null}>
-              {busy === "tts" ? <Loader2 className="animate-spin" size={16} /> : <Mic2 size={16} />}
-              {t("creator.ttsPreview")}
-            </button>
-            <button className="btn btn-sm btn-primary gap-2" onClick={() => exportOne("mp4")} disabled={actionsDisabled || busy !== null || !hasPack}>
-              {busy === "export-mp4" ? <Loader2 className="animate-spin" size={16} /> : <Film size={16} />}
-              MP4
-            </button>
-            <button className="btn btn-sm btn-secondary gap-2" onClick={() => exportOne("png")} disabled={actionsDisabled || busy !== null || !hasPack}>
-              {busy === "export-png" ? <Loader2 className="animate-spin" size={16} /> : <FileImage size={16} />}
-              PNG
-            </button>
-            <button className="btn btn-sm btn-ghost gap-2" onClick={exportZip} disabled={actionsDisabled || busy !== null || !hasPack}>
-              {busy === "export-zip" ? <Loader2 className="animate-spin" size={16} /> : <Archive size={16} />}
-              ZIP
-            </button>
-          </div>
-
-          <details className="creator-details">
-            <summary>{t("creator.exportSettings")}</summary>
-            <div className="creator-form-grid pt-3">
-              <label className="form-control">
-                <span className="label-text">{t("creator.durationSec")}</span>
-                <input
-                  className="input input-bordered input-sm"
-                  type="number"
-                  min={3}
-                  max={120}
-                  value={durationSec}
-                  onChange={(event) => setDurationSec(Math.max(3, Number(event.target.value) || 3))}
-                />
-              </label>
-              <label className="form-control">
-                <span className="label-text">{t("creator.zipLimit")}</span>
-                <input
-                  className="input input-bordered input-sm"
-                  type="number"
-                  min={1}
-                  max={200}
-                  value={zipLimit}
-                  onChange={(event) => setZipLimit(Math.max(1, Number(event.target.value) || 1))}
-                />
-              </label>
-              <label className="form-control">
-                <span className="label-text">{t("creator.music")}</span>
-                <select className="select select-bordered select-sm" value={music} onChange={(event) => setMusic(event.target.value)} disabled={voiceover}>
-                  <option value="none">{t("creator.noMusic")}</option>
-                  {musicTracks.map((track, index) => {
-                    const id = String(track.id ?? track.src ?? track.url ?? "");
-                    return (
-                      <option key={`${id}-${index}`} value={id}>
-                        {String(track.name ?? id)}
-                      </option>
-                    );
-                  })}
-                </select>
-              </label>
-              <label className="form-control">
-                <span className="label-text">{t("creator.gif")}</span>
-                <select className="select select-bordered select-sm" value={motion} onChange={(event) => setMotion(event.target.value)}>
-                  <option value="none">{t("creator.noGif")}</option>
-                  {motionOverlays.map((item, index) => {
-                    const id = String(item.id ?? item.src ?? "");
-                    return (
-                      <option key={`${id}-${index}`} value={id}>
-                        {String(item.name ?? id)}
-                      </option>
-                    );
-                  })}
-                </select>
-              </label>
-              <div className="creator-toggle-row">
-                <label className="flex cursor-pointer items-center gap-2 text-sm">
-                  <input type="checkbox" className="toggle toggle-sm" checked={voiceover} onChange={(event) => setVoiceover(event.target.checked)} />
-                  {t("creator.voiceover")}
-                </label>
-                <label className="flex cursor-pointer items-center gap-2 text-sm">
-                  <input type="checkbox" className="toggle toggle-sm" checked={addToGallery} onChange={(event) => setAddToGallery(event.target.checked)} />
-                  {t("creator.addToGallery")}
-                </label>
-              </div>
-            </div>
-          </details>
-      </div>
-
-      <details className="creator-details creator-gallery-details">
-        <summary>{t("creator.readyFiles")}</summary>
-        <div className="pt-3">
-          <GalleryPanel galleryGroups={galleryGroups} galleryPages={galleryPages} setGalleryPages={setGalleryPages} />
-        </div>
-      </details>
-
-      <FlowActions>
-        <button className="btn btn-sm btn-ghost gap-2" onClick={onBack}>
-          <ChevronLeft size={16} />
-          {t("creator.prev")}
-        </button>
-      </FlowActions>
-    </section>
-  );
-}
-
 function CreatorPreviewPanel({
   step,
-  activePack,
-  activePackCards,
   activePreset,
-  values,
-  packNameValue,
   packLang,
   background,
-  backgroundName,
 }: {
   step: CreatorStep;
-  activePack: CreatorPack | null;
-  activePackCards: number;
   activePreset: TemplatePreset;
-  values: CardValues;
-  packNameValue: string;
   packLang: string;
   background: string;
-  backgroundName: string;
 }) {
   const { t } = useT();
   const tone = templateTone(activePreset.templateType);
   const backgroundUrl = usableBackgroundUrl(background);
   const presetBackgroundUrl = creatorServiceAssetUrl(activePreset.previewSrc ?? firstTemplateImageSrc(activePreset.templates));
   const previewBackgroundUrl = backgroundUrl || presetBackgroundUrl;
-  const packTitle = activePack ? packName(activePack, t("creator.untitledPack")) : packNameValue.trim() || t("creator.defaultPackName");
   const stepLabel = t(FLOW_STEPS.find((item) => item.id === step)?.labelKey ?? "creator.flowSetup");
-  const previewBackgroundLabel = background
-    ? (backgroundName || t("creator.uploadBackground"))
-    : activePreset.label;
-  const cleanBackgroundPreview = step === "setup";
   const previewStyle = previewBackgroundUrl
     ? {
         backgroundImage: `url("${cssUrl(previewBackgroundUrl)}")`,
@@ -1363,35 +1138,9 @@ function CreatorPreviewPanel({
         <span className="creator-device-button is-right" aria-hidden="true" />
         <div className="creator-phone-screen">
           <span className="creator-device-island" aria-hidden="true" />
-          <div className={`creator-phone-card ${cleanBackgroundPreview ? "is-clean-background" : ""}`} style={previewStyle}>
-            {!cleanBackgroundPreview && (
-              <>
-                <div className="creator-preview-badge">{values.badge || activePreset.defaults.badge || activePreset.templateType}</div>
-                <h3>{values.heading || activePreset.defaults.heading || t("creator.previewHeadingFallback")}</h3>
-                <p>{values.body || activePreset.defaults.body || t("creator.previewBodyFallback")}</p>
-                {values.text && <small>{values.text}</small>}
-                <div className="creator-preview-cta">{values.cta || activePreset.defaults.cta || t("creator.previewCtaFallback")}</div>
-              </>
-            )}
-          </div>
+          <div className="creator-phone-card is-clean-background" style={previewStyle} />
         </div>
       </div>
-
-      <div className="creator-preview-stats">
-        <span>
-          <small>{t("creator.previewPackLabel")}</small>
-          <strong title={packTitle}>{packTitle}</strong>
-        </span>
-        <span>
-          <small>{t("creator.previewTemplateLabel")}</small>
-          <strong title={previewBackgroundLabel}>{previewBackgroundLabel}</strong>
-        </span>
-        <span>
-          <small>{t("creator.previewCardsLabel")}</small>
-          <strong>{activePackCards}</strong>
-        </span>
-      </div>
-
     </aside>
   );
 }
@@ -1409,86 +1158,6 @@ function PanelHeader({ number, title }: { number: string; title: string }) {
 
 function FlowActions({ children }: { children: React.ReactNode }) {
   return <div className="creator-flow-actions">{children}</div>;
-}
-
-function GalleryPanel({
-  galleryGroups,
-  galleryPages,
-  setGalleryPages,
-}: {
-  galleryGroups: [string, CreatorGalleryItem[]][];
-  galleryPages: Record<string, number>;
-  setGalleryPages: (pages: Record<string, number>) => void;
-}) {
-  const { t, lang } = useT();
-  const locale = lang === "ru" ? "ru-RU" : "en-US";
-
-  if (galleryGroups.length === 0) {
-    return (
-      <section className="rounded-lg border border-dashed border-base-300 bg-base-100 p-8 text-center text-sm text-base-content/55">
-        {t("creator.galleryEmpty")}
-      </section>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      {galleryGroups.map(([type, items]) => {
-        const totalPages = Math.max(1, Math.ceil(items.length / GALLERY_PAGE_SIZE));
-        const page = Math.min(galleryPages[type] ?? 1, totalPages);
-        const pageItems = items.slice((page - 1) * GALLERY_PAGE_SIZE, page * GALLERY_PAGE_SIZE);
-        const setPage = (next: number) => setGalleryPages({ ...galleryPages, [type]: Math.max(1, Math.min(next, totalPages)) });
-        return (
-          <section key={type} className="rounded-lg border border-base-300 bg-base-100 p-4">
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <h2 className="text-base font-semibold">{type}</h2>
-                <span className="badge badge-ghost badge-sm">{items.length}</span>
-              </div>
-              {totalPages > 1 && (
-                <div className="join">
-                  <button className="btn btn-xs join-item" disabled={page <= 1} onClick={() => setPage(page - 1)}>
-                    {t("creator.prev")}
-                  </button>
-                  <span className="btn btn-xs join-item pointer-events-none">
-                    {page} / {totalPages}
-                  </span>
-                  <button className="btn btn-xs join-item" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>
-                    {t("creator.next")}
-                  </button>
-                </div>
-              )}
-            </div>
-            <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
-              {pageItems.map((item, index) => {
-                const url = itemUrl(item);
-                return (
-                  <article key={String(item.id ?? `${type}-${page}-${index}`)} className="rounded-lg border border-base-300 p-3">
-                    <div className="mb-2 flex items-center justify-between gap-2">
-                      <span className="badge badge-sm badge-ghost">{String(item.format ?? "file").toUpperCase()}</span>
-                      <span className="text-xs text-base-content/45">{createdLabel(item.createdAt, locale)}</span>
-                    </div>
-                    <div className="truncate text-sm font-semibold" title={galleryTitle(item, t("creator.generatedItem"))}>
-                      {galleryTitle(item, t("creator.generatedItem"))}
-                    </div>
-                    <div className="mt-1 truncate text-xs text-base-content/55">
-                      {String(item.packName ?? item.packId ?? t("creator.packSection"))} {item.index != null || item.cardIndex != null ? `- #${Number(item.index ?? item.cardIndex) + 1}` : ""}
-                    </div>
-                    {url && (
-                      <a className="btn btn-xs btn-outline mt-3 gap-1" href={url} target="_blank" rel="noreferrer">
-                        <Download size={13} />
-                        {t("creator.download")}
-                      </a>
-                    )}
-                  </article>
-                );
-              })}
-            </div>
-          </section>
-        );
-      })}
-    </div>
-  );
 }
 
 function TextInput({
@@ -1553,44 +1222,5 @@ function Counter({ value, limit }: { value: string; limit: number }) {
     <span className={`text-xs tabular-nums ${over ? "text-error" : "text-base-content/45"}`}>
       {value.length}/{limit}
     </span>
-  );
-}
-
-function MediaBox({
-  title,
-  url,
-  empty,
-  allowDownload,
-  compact = false,
-}: {
-  title: string;
-  url: string;
-  empty: string;
-  allowDownload?: boolean;
-  compact?: boolean;
-}) {
-  const { t } = useT();
-
-  return (
-    <div className={`creator-media-box ${compact ? "is-compact" : ""}`}>
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <div className="text-sm font-semibold">{title}</div>
-        {allowDownload && url && (
-          <a className="btn btn-xs btn-ghost gap-1" href={url} target="_blank" rel="noreferrer">
-            <Download size={13} />
-            {t("creator.download")}
-          </a>
-        )}
-      </div>
-      {!url ? (
-        <div className="creator-media-empty">
-          {empty}
-        </div>
-      ) : mediaLooksVideo(url) ? (
-        <video src={url} controls className="creator-media-render bg-black object-contain" />
-      ) : (
-        <img src={url} alt={title} className="creator-media-render bg-base-200 object-contain" />
-      )}
-    </div>
   );
 }

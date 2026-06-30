@@ -103,6 +103,7 @@ export interface UserAuth {
   passHash: string;
   passwordSet: boolean;
   role: string;
+  isSuperAdmin: boolean;
   failedAttempts: number;
   lockedUntil: string | null;
   telegramId: string | null; // linked Telegram user id (for "Login with Telegram" + recovery)

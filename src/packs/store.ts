@@ -444,7 +444,8 @@ function normalizeCreatorValues(raw: unknown, rules: RoleRule[]): CardValues {
   const points = lines("points", "items", "body", "text");
   const out: CardValues = {};
   for (const [key, value] of Object.entries(input)) {
-    if (typeof value === "string" || Array.isArray(value)) out[key] = Array.isArray(value) ? value.map(String) : value;
+    if (typeof value === "string" && value.trim()) out[key] = value;
+    else if (Array.isArray(value) && value.length) out[key] = value.map(String);
   }
   for (const rule of rules) {
     if (out[rule.role] != null) continue;

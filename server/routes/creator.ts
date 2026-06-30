@@ -47,6 +47,8 @@ import { writeZipFile } from "../services/zip.ts";
 const OUTPUT_DIR = loadBaseConfig().outputDir;
 const CREATOR_LIMIT = { limit: 12, windowMs: 10 * 60 * 1000 };
 const CREATOR_UPLOAD_BYTES = 3 * 1024 * 1024;
+const CREATOR_TEMPLATE_W = 1080;
+const CREATOR_TEMPLATE_H = 1920;
 const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
 
 function sendRateLimit(
@@ -122,6 +124,60 @@ function validCreatorBackground(src: string): string {
     return value;
   }
   throw new TemplateValidationError("background: разрешены только сервисные assets/template-packs или загруженный data:image");
+}
+
+type CreatorTextRole = "heading" | "body";
+type CreatorTextBox = { x: number; y: number; w: number; h: number };
+
+function cleanCreatorTextBox(raw: unknown, role: CreatorTextRole): CreatorTextBox | null {
+  if (!raw || typeof raw !== "object") return null;
+  const src = raw as Record<string, unknown>;
+  const minW = role === "heading" ? 280 : 320;
+  const minH = role === "heading" ? 92 : 160;
+  const x = Number(src.x);
+  const y = Number(src.y);
+  const w = Number(src.w);
+  const h = Number(src.h);
+  if (![x, y, w, h].every(Number.isFinite)) return null;
+  const safeW = Math.min(CREATOR_TEMPLATE_W, Math.max(minW, Math.round(w)));
+  const safeH = Math.min(CREATOR_TEMPLATE_H, Math.max(minH, Math.round(h)));
+  return {
+    x: Math.min(CREATOR_TEMPLATE_W - safeW, Math.max(0, Math.round(x))),
+    y: Math.min(CREATOR_TEMPLATE_H - safeH, Math.max(0, Math.round(y))),
+    w: safeW,
+    h: safeH,
+  };
+}
+
+function applyTextLayout(templates: PackTemplate[], layout: unknown): PackTemplate[] {
+  if (!layout || typeof layout !== "object") return templates;
+  const src = layout as Record<string, unknown>;
+  const boxes = {
+    heading: cleanCreatorTextBox(src.heading, "heading"),
+    body: cleanCreatorTextBox(src.body, "body"),
+  };
+  if (!boxes.heading && !boxes.body) return templates;
+  return templates.map((template) => {
+    const copy = JSON.parse(JSON.stringify(template)) as PackTemplate;
+    for (const el of copy.elements ?? []) {
+      if (el.type !== "killbox") continue;
+      const role = String(el.role ?? el.id ?? "");
+      const box =
+        role === "title" || role === "heading" || role === "hook"
+          ? boxes.heading
+          : role === "body" || role === "text" || role === "fact" || role === "points" || role === "items"
+            ? boxes.body
+            : null;
+      if (!box) continue;
+      el.x = box.x;
+      el.y = box.y;
+      el.w = box.w;
+      el.h = box.h;
+      if (box.w < 520) el.align = "center";
+      if (box.h < 220) el.valign = "center";
+    }
+    return copy;
+  });
 }
 
 function cleanTemplatePackAsset(raw: string): { abs: string; rel: string } | null {
@@ -316,7 +372,7 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
   app.post("/api/creator/packs", { bodyLimit: CREATOR_UPLOAD_BYTES }, async (req, reply) => {
     if (!requireCreator(req, reply)) return;
     const body =
-      (req.body as { name?: string; lang?: string; templateType?: string; presetId?: string; templates?: PackTemplate[]; background?: string }) ?? {};
+      (req.body as { name?: string; lang?: string; templateType?: string; presetId?: string; templates?: PackTemplate[]; background?: string; layout?: unknown }) ?? {};
     if (!body.name?.trim()) return reply.code(400).send({ error: "Нужно имя пака" });
     let templates = Array.isArray(body.templates) ? body.templates : [];
     let lang = body.lang || "ru";
@@ -331,6 +387,7 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
     if (!templates.length) return reply.code(400).send({ error: "Нужен шаблон или presetId" });
     try {
       templates = applyBackground(templates, body.background);
+      templates = applyTextLayout(templates, body.layout);
       enforceCreatorTemplateAssets(templates);
       validateTemplateList(templates);
     } catch (e) {

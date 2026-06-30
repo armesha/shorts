@@ -1,4 +1,4 @@
-import { ExternalLink } from "lucide-react";
+import { ChevronLeft, ExternalLink } from "lucide-react";
 import { useT } from "../lib/i18n";
 
 // Экспериментальный конструктор карточек живёт статикой в web/public/template-editor/
@@ -15,8 +15,11 @@ export default function TemplateEditor() {
   return (
     <div className="editor-page space-y-4">
       <div className="editor-simple-header">
-        <div className="min-w-0">
-          <h1 className="text-2xl font-bold tracking-tight">{t("editor.title")}</h1>
+        <div className="min-w-0 flex items-center gap-2">
+          <a href="/creator" className="btn btn-ghost btn-sm btn-square -ml-2" title={t("creator.title")} aria-label={t("creator.title")}>
+            <ChevronLeft size={18} />
+          </a>
+          <h1 className="text-2xl font-bold tracking-tight truncate">{t("editor.title")}</h1>
         </div>
         <a
           href={editorSrc}

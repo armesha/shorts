@@ -17,9 +17,10 @@ import { parseCreds, type ClientCreds } from "./services/youtube.ts";
 import { startScheduler } from "./infra/scheduler.ts";
 import * as metrics from "./infra/metrics.ts";
 import { type RefreshHooks } from "./services/stats-refresh.ts";
-import { hashPassword, isSuperAdminUser, SUPER_ADMIN_USERNAME } from "./auth.ts";
+import { hashPassword, isSuperAdminUser } from "./auth.ts";
 import { gracefulShutdown } from "./infra/shutdown.ts";
 import { attachGenQueueDb, drainQueue as genDrainQueue } from "./services/gen-queue.ts";
+import { ensureSuperAdminBootstrap } from "./services/super-admin-bootstrap.ts";
 
 // ---- Foundation singletons (built once, injected everywhere) ----
 import { makeAuthSession, getCookie, SESSION_COOKIE, setSessionCookie } from "./infra/auth-session.ts";
@@ -87,18 +88,16 @@ for (const entry of (process.env.SEED_USERS ?? "").split(",")) {
 }
 if (db.countUsers() === 0)
   console.warn("[auth] No users seeded — set ADMIN_USERNAME/ADMIN_PASSWORD in .env, then restart.");
-const configuredSuperAdmin = db
-  .listUsers()
-  .find((u) => (u.username ?? "").trim() === SUPER_ADMIN_USERNAME);
-if (configuredSuperAdmin && configuredSuperAdmin.role !== "admin") {
-  db.updateUserRole(configuredSuperAdmin.id, "admin");
-  console.log(`[auth] Promoted fixed main admin "${SUPER_ADMIN_USERNAME}" to role "admin".`);
-}
-if (!db.listUsers().some(isSuperAdminUser))
-  console.warn(`[auth] No main admin found — create username "${SUPER_ADMIN_USERNAME}" with role "admin".`);
+const superAdminBootstrap = ensureSuperAdminBootstrap(db);
+if (superAdminBootstrap.status === "promoted_flagged")
+  console.log(`[auth] Promoted flagged super admin "${superAdminBootstrap.user.username}" to role "admin".`);
+if (superAdminBootstrap.status === "bootstrapped")
+  console.log(`[auth] Marked bootstrap super admin "${superAdminBootstrap.user.username}".`);
+if (superAdminBootstrap.status === "missing")
+  console.warn(`[auth] No super admin found (${superAdminBootstrap.reason}) — set is_super_admin=1 on exactly one admin user.`);
 
 // ---- One-time migrations: all pre-existing data belongs to the first admin ----
-const firstAdmin = db.listUsers().find(isSuperAdminUser) ?? db.listUsers().find((u) => u.role === "admin") ?? db.listUsers()[0] ?? null;
+const firstAdmin = db.getSuperAdminUser() ?? db.listUsers().find((u) => u.role === "admin") ?? db.listUsers()[0] ?? null;
 if (firstAdmin) {
   db.assignOrphanAccounts(firstAdmin.id); // channels with no owner → admin
   // Seed the admin's first Google key from the legacy global client-secret file so already-connected

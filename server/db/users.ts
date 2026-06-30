@@ -11,15 +11,42 @@ export function userMethods(db: DatabaseSync) {
       const r = db.prepare("SELECT COUNT(*) AS n FROM users").get() as Row;
       return Number(r.n) || 0;
     },
-    createUser(u: { username: string; passHash: string; role?: string; passwordSet?: boolean }): UserAuth {
+    createUser(u: { username: string; passHash: string; role?: string; passwordSet?: boolean; isSuperAdmin?: boolean }): UserAuth {
       const info = db
-        .prepare("INSERT INTO users (username, pass_hash, password_set, role) VALUES (?,?,?,?)")
-        .run(u.username, u.passHash, u.passwordSet === false ? 0 : 1, u.role ?? "user");
+        .prepare("INSERT INTO users (username, pass_hash, password_set, role, is_super_admin) VALUES (?,?,?,?,?)")
+        .run(u.username, u.passHash, u.passwordSet === false ? 0 : 1, u.role ?? "user", u.isSuperAdmin ? 1 : 0);
       return this.getUserById(Number(info.lastInsertRowid))!;
     },
     updateUserRole(id: number, role: "admin" | "user"): UserAuth | null {
-      db.prepare("UPDATE users SET role = ? WHERE id = ?").run(role, id);
+      db.prepare("UPDATE users SET role = ?, is_super_admin = CASE WHEN ? = 'admin' THEN is_super_admin ELSE 0 END WHERE id = ?").run(
+        role,
+        role,
+        id,
+      );
       return this.getUserById(id);
+    },
+    setUserSuperAdmin(id: number, enabled: boolean): UserAuth | null {
+      if (!this.getUserById(id)) return null;
+      if (enabled) {
+        db.exec("BEGIN");
+        try {
+          db.prepare("UPDATE users SET is_super_admin = 0 WHERE id <> ?").run(id);
+          db.prepare("UPDATE users SET role = 'admin', is_super_admin = 1 WHERE id = ?").run(id);
+          db.exec("COMMIT");
+        } catch (err) {
+          db.exec("ROLLBACK");
+          throw err;
+        }
+      } else {
+        db.prepare("UPDATE users SET is_super_admin = 0 WHERE id = ?").run(id);
+      }
+      return this.getUserById(id);
+    },
+    getSuperAdminUser(): UserAuth | null {
+      const r = db.prepare("SELECT * FROM users WHERE role = 'admin' AND is_super_admin = 1 ORDER BY id LIMIT 1").get() as
+        | Row
+        | undefined;
+      return r ? rowToUserAuth(r) : null;
     },
     getUserById(id: number): UserAuth | null {
       const r = db.prepare("SELECT * FROM users WHERE id = ?").get(id) as Row | undefined;

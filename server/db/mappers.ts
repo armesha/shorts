@@ -103,6 +103,7 @@ export const rowToUserAuth = (r: Row): UserAuth => ({
   passHash: r.pass_hash,
   passwordSet: Number(r.password_set ?? 1) !== 0,
   role: r.role,
+  isSuperAdmin: Number(r.is_super_admin ?? 0) !== 0,
   failedAttempts: Number(r.failed_attempts) || 0,
   lockedUntil: r.locked_until ?? null,
   telegramId: r.telegram_id ?? null,

@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import type { Account, Db, Video } from "../db.ts";
-import { SUPER_ADMIN_USERNAME, isSuperAdminUser } from "../auth.ts";
+import { isSuperAdminUser } from "../auth.ts";
 import { DECKS, deckLang, isPackDeckId } from "../../src/anecdotes/decks.ts";
 import { libraryStats } from "../../src/anecdotes/library.ts";
 import { getPack } from "../../src/packs/store.ts";
@@ -350,8 +350,8 @@ function requireSuperAdmin(req: unknown, reply: { code: (n: number) => { send: (
   return false;
 }
 
-function armenId(db: Db): number | null {
-  return db.getUserByUsername(SUPER_ADMIN_USERNAME)?.id ?? null;
+function superAdminOwnerId(db: Db): number | null {
+  return db.getSuperAdminUser()?.id ?? null;
 }
 
 function deckTitle(deckId: string, ownerId: number): { name: string; lang: string | null } {
@@ -486,7 +486,7 @@ function availableForDecks(db: Db, deps: RouteDeps, ctx: BlockContext | undefine
 function ownerIsSuperAdmin(db: Db, ownerId: number): boolean {
   const getUserById = (db as { getUserById?: (id: number) => unknown }).getUserById;
   const user = typeof getUserById === "function" ? getUserById.call(db, ownerId) : null;
-  return isSuperAdminUser(user as { username?: string | null; role?: string | null } | null);
+  return isSuperAdminUser(user as { role?: string | null; isSuperAdmin?: boolean | number | null } | null);
 }
 
 function packForDeck(db: Db, ownerId: number, deckId: string) {
@@ -1266,7 +1266,7 @@ export function thematicBlockSlotDecksForAccount(
   const block = mixedBlockForAccount(deps, account);
   if (!block) return null;
   const rawDecks = sourceDecks?.length ? sourceDecks : deps.deckAccess.accountSourceDecks(account);
-  const ownerId = account.userId ?? armenId(db) ?? 0;
+  const ownerId = account.userId ?? superAdminOwnerId(db) ?? 0;
   const decks = sourceDecksForSchedule(db, deps, ownerId, account, rawDecks);
   const weights = readSourceWeights(db, block);
   if (!activeSourceGroups(block, account, decks, weights).length) return null;
@@ -1310,7 +1310,7 @@ export function thematicBlockDeckSequenceForGeneration(
 }
 
 function buildPayload(db: Db, deps: RouteDeps) {
-  const ownerId = armenId(db);
+  const ownerId = superAdminOwnerId(db);
   if (ownerId == null) return { languages: [], blocks: [], unassignedAccounts: [] };
   normalizeSourceWeightSettings(db);
   cleanupDrainedAutoExpireDecksForUser(db, ownerId);
@@ -1374,7 +1374,7 @@ function buildPayload(db: Db, deps: RouteDeps) {
 }
 
 function blockAccounts(db: Db, deps: RouteDeps, blockId: string): Account[] {
-  const ownerId = armenId(db);
+  const ownerId = superAdminOwnerId(db);
   if (ownerId == null) return [];
   const block = findBlockDef(blockId);
   if (!block) return [];
@@ -1683,7 +1683,7 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
     if (!requireSuperAdmin(req, reply, deps)) return;
     const blockId = canonicalBlockId((req.params as { id: string }).id);
     const lang = String((req.body as { lang?: unknown } | null)?.lang || "").trim().toLowerCase();
-    const ownerId = armenId(db);
+    const ownerId = superAdminOwnerId(db);
     const block = findBlockDef(blockId);
     const langDef = BLOCK_LANGS.find((candidate) => candidate.code === lang);
     if (ownerId == null || !block) return reply.code(404).send({ error: "Тематический блок не найден." });
@@ -1840,7 +1840,7 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
     const updated: unknown[] = [];
     const skipped: unknown[] = [];
     for (const account of accounts) {
-      const ownerId = account.userId ?? armenId(db) ?? uid(req);
+      const ownerId = account.userId ?? superAdminOwnerId(db) ?? uid(req);
       const owner = db.getUserById(ownerId);
       const cap = accountDailyScheduleCap(owner?.role === "admin");
       if (perDay > cap) {

@@ -29,10 +29,13 @@ export function newSessionToken(): string {
 }
 
 // ---- Admin / brute-force / session policy ----
-// The product has exactly one main admin account by rule: username "armen".
+// Bootstrap-only fallback for existing installs. Runtime permissions must use is_super_admin from users.
 export const SUPER_ADMIN_USERNAME = "armen";
-export function isSuperAdminUser(user: { username?: string | null; role?: string | null } | null | undefined): boolean {
-  return user?.role === "admin" && (user.username ?? "").trim() === SUPER_ADMIN_USERNAME;
+export function isSuperAdminUser(
+  user: { role?: string | null; isSuperAdmin?: boolean | number | null; is_super_admin?: boolean | number | null } | null | undefined,
+): boolean {
+  const flag = user?.isSuperAdmin ?? user?.is_super_admin ?? false;
+  return user?.role === "admin" && (flag === true || flag === 1);
 }
 
 export const MAX_FAILED_ATTEMPTS = Math.max(1, Number(process.env.AUTH_MAX_ATTEMPTS ?? 10));

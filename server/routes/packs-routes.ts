@@ -330,7 +330,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const p = getPack((req.params as { id: string }).id, uid(req), superAdminReq(req));
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
     if (superAdminReq(req) && isForbiddenSuperAdminSourceDeck(`pack:${p.id}`)) {
-      return reply.code(403).send({ error: "Этот пак отключён как источник для armen." });
+      return reply.code(403).send({ error: "Этот пак отключён как источник для супер-админа." });
     }
     const requestedIndex = Math.max(0, Math.floor(Number((req.query as Record<string, string>)?.i) || 0));
     const i = db.hasFeature(userId, INFINITE_PACKS_FEATURE) ? 0 : requestedIndex;
@@ -363,7 +363,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const p = getPack(id, userId, superAdminReq(req));
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
     if (superAdminReq(req) && isForbiddenSuperAdminSourceDeck(`pack:${p.id}`)) {
-      return reply.code(403).send({ error: "Этот пак отключён как источник для armen." });
+      return reply.code(403).send({ error: "Этот пак отключён как источник для супер-админа." });
     }
     const requestedIndex = Math.max(0, Math.floor(Number(i) || 0));
     const idx = db.hasFeature(userId, INFINITE_PACKS_FEATURE) ? 0 : requestedIndex;

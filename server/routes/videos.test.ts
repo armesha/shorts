@@ -13,7 +13,7 @@ const deps = {
 
 test("post-now source guard rejects removed/retired decks for armen even if stored on an old channel", () => {
   const db = openDb(":memory:");
-  const armen = db.createUser({ username: SUPER_ADMIN_USERNAME, passHash: "x", role: "admin" });
+  const armen = db.createUser({ username: SUPER_ADMIN_USERNAME, passHash: "x", role: "admin", isSuperAdmin: true });
   const access = makeDeckAccess(db, deps);
   const account = db.createAccount({
     userId: armen.id,

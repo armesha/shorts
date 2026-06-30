@@ -38,7 +38,7 @@ test("scheduler falls back to other channel sources when the slot deck is empty"
 
 test("super-admin scheduler can rarely consume retired soviet poster library videos without source binding", () => {
   const db = openDb(":memory:");
-  const admin = db.createUser({ username: "armen", passHash: "x", role: "admin" });
+  const admin = db.createUser({ username: "armen", passHash: "x", role: "admin", isSuperAdmin: true });
   const account = db.createAccount({
     userId: admin.id,
     channelName: "RU",
@@ -81,7 +81,7 @@ test("super-admin scheduler can rarely consume retired soviet poster library vid
 
 test("super-admin scheduler can rarely consume retired foreign motivation library videos without source binding", () => {
   const db = openDb(":memory:");
-  const admin = db.createUser({ username: "armen", passHash: "x", role: "admin" });
+  const admin = db.createUser({ username: "armen", passHash: "x", role: "admin", isSuperAdmin: true });
   const account = db.createAccount({
     userId: admin.id,
     channelName: "EN",
@@ -124,7 +124,7 @@ test("super-admin scheduler can rarely consume retired foreign motivation librar
 
 test("retired library rotation does not override manual slots", () => {
   const db = openDb(":memory:");
-  const admin = db.createUser({ username: "armen", passHash: "x", role: "admin" });
+  const admin = db.createUser({ username: "armen", passHash: "x", role: "admin", isSuperAdmin: true });
   const account = db.createAccount({
     userId: admin.id,
     channelName: "RU",

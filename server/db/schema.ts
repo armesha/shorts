@@ -56,6 +56,7 @@ export function applySchema(db: DatabaseSync): void {
       pass_hash TEXT NOT NULL,
       password_set INTEGER NOT NULL DEFAULT 1,
       role TEXT NOT NULL DEFAULT 'user',
+      is_super_admin INTEGER NOT NULL DEFAULT 0,
       failed_attempts INTEGER NOT NULL DEFAULT 0,
       locked_until TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
@@ -291,6 +292,7 @@ export function applySchema(db: DatabaseSync): void {
   addColumn("accounts", "auth_failed_at TEXT"); // when that rejection first started (ISO)
   addColumn("users", "client_secret_json TEXT");
   addColumn("users", "password_set INTEGER NOT NULL DEFAULT 1");
+  addColumn("users", "is_super_admin INTEGER NOT NULL DEFAULT 0");
   addColumn("channel_analytics_daily", "dislikes INTEGER NOT NULL DEFAULT 0");
   addColumn("history", "error TEXT");
   addColumn("history", "deck TEXT"); // deck a post was actually published with (old rows NULL → fall back to channel lang)
@@ -315,6 +317,7 @@ export function applySchema(db: DatabaseSync): void {
   } catch {
     /* older SQLite without partial indexes — binding still works, uniqueness just not DB-enforced */
   }
+  db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_one_super_admin ON users(is_super_admin) WHERE is_super_admin = 1");
   db.exec(`
     CREATE INDEX IF NOT EXISTS idx_history_account_published ON history(account_id, published_at);
     CREATE INDEX IF NOT EXISTS idx_history_account_id ON history(account_id, id DESC);

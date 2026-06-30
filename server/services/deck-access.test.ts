@@ -12,7 +12,7 @@ const deps = {
 
 test("accountSourceDecks hides forbidden source decks only for the super admin owner", () => {
   const db = openDb(":memory:");
-  const armen = db.createUser({ username: SUPER_ADMIN_USERNAME, passHash: "x", role: "admin" });
+  const armen = db.createUser({ username: SUPER_ADMIN_USERNAME, passHash: "x", role: "admin", isSuperAdmin: true });
   const user = db.createUser({ username: "regular", passHash: "x", role: "user" });
   const access = makeDeckAccess(db, deps);
 
