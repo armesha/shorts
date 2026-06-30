@@ -1,19 +1,12 @@
 import { type ChangeEvent, type CSSProperties, type PointerEvent as ReactPointerEvent, useEffect, useMemo, useState, useCallback, useRef } from "react";
 import {
   AlertTriangle,
-  Archive,
   ArrowRight,
   ChevronLeft,
-  ChevronRight,
   Check,
-  Download,
-  Eye,
   FileImage,
-  Film,
   LayoutTemplate,
   Loader2,
-  Mic2,
-  PackagePlus,
   Plus,
 } from "lucide-react";
 import { ApiError, get, send } from "../lib/api/http";
@@ -34,23 +27,6 @@ type CreatorPack = CreatorRecord & {
   updatedAt?: string;
 };
 
-type CreatorGalleryItem = CreatorRecord & {
-  id?: string;
-  packId?: string;
-  packName?: string;
-  name?: string;
-  title?: string;
-  templateType?: string;
-  format?: "mp4" | "png" | string;
-  url?: string;
-  videoUrl?: string;
-  imageUrl?: string;
-  zipRel?: string;
-  createdAt?: string;
-  index?: number;
-  cardIndex?: number;
-};
-
 type CreatorAsset = CreatorRecord & {
   id?: string;
   name?: string;
@@ -64,7 +40,7 @@ type CreatorBackground = string | CreatorAsset;
 type CreatorSummary = {
   feature: boolean;
   packs: CreatorPack[];
-  gallery: CreatorGalleryItem[];
+  gallery: CreatorRecord[];
   backgrounds: CreatorBackground[];
   userBackgrounds: CreatorBackground[];
   presets: TemplatePreset[];
@@ -164,7 +140,6 @@ const CHAR_LIMITS = {
   narration: 700,
 };
 
-const GALLERY_PAGE_SIZE = 6;
 const TEMPLATE_W = 1080;
 const TEMPLATE_H = 1920;
 const DEFAULT_TEXT_LAYOUT: TextLayout = {
@@ -299,31 +274,6 @@ function packCards(pack: CreatorPack | null | undefined): number {
   return Number.isFinite(n) ? Math.max(0, n) : 0;
 }
 
-function itemUrl(item: CreatorGalleryItem): string {
-  return String(item.url ?? item.videoUrl ?? item.imageUrl ?? item.downloadUrl ?? (item.zipRel ? `/files/${item.zipRel}` : ""));
-}
-
-function galleryType(item: CreatorGalleryItem): string {
-  return String(item.templateType ?? item.type ?? "unknown");
-}
-
-function galleryTitle(item: CreatorGalleryItem, fallback = "Generated item"): string {
-  return String(item.title ?? item.name ?? item.id ?? fallback);
-}
-
-function createdLabel(value: unknown, locale: string): string {
-  if (!value) return "";
-  const date = new Date(String(value));
-  if (!Number.isFinite(date.getTime())) return "";
-  return date.toLocaleString(locale, {
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-}
-
 function firstTemplateImageSrc(templates: unknown): string | undefined {
   const list = Array.isArray(templates) ? templates : [];
   for (const template of list) {
@@ -349,20 +299,10 @@ function cssUrl(url: string): string {
   return url.replace(/["\\]/g, "\\$&");
 }
 
-function mediaLooksVideo(url: string): boolean {
-  return /\.(mp4|webm|mov)(\?|#|$)/i.test(url);
-}
-
 function errorText(err: unknown, fallback: string): string {
   if (err instanceof ApiError) return `${fallback}: ${err.message}`;
   if (err instanceof Error) return `${fallback}: ${err.message}`;
   return fallback;
-}
-
-function clampIndex(cardNumber: number, total: number): number | undefined {
-  if (total <= 0) return undefined;
-  const safe = Math.max(1, Math.min(cardNumber || 1, total));
-  return safe - 1;
 }
 
 function templateTone(templateType: string): string {
@@ -468,19 +408,6 @@ export default function Creator() {
   const [textLayout, setTextLayout] = useState<TextLayout>(() => cloneTextLayout(DEFAULT_TEXT_LAYOUT));
   const [values, setValues] = useState<CardValues>(initialPreset.defaults);
   const [narration, setNarration] = useState(() => t("creator.defaultNarration"));
-  const [music, setMusic] = useState("none");
-  const [motion, setMotion] = useState("none");
-
-  const [studioCardNumber, setStudioCardNumber] = useState(1);
-  const [durationSec, setDurationSec] = useState(12);
-  const [zipLimit, setZipLimit] = useState(12);
-  const [voiceover, setVoiceover] = useState(true);
-  const [addToGallery, setAddToGallery] = useState(true);
-  const [previewUrl, setPreviewUrl] = useState("");
-  const [exportUrl, setExportUrl] = useState("");
-  const [ttsUrl, setTtsUrl] = useState("");
-  const [galleryPages, setGalleryPages] = useState<Record<string, number>>({});
-
   const loadSummary = useCallback(async (quiet = false) => {
     if (!quiet) setLoadingSummary(true);
     setSummaryError(null);
@@ -500,7 +427,6 @@ export default function Creator() {
   }, [loadSummary]);
 
   const packs = summary?.packs ?? [];
-  const gallery = summary?.gallery ?? [];
   const localizedSummaryPresets = useMemo(() => {
     const known = new Map(fallbackPresets.map((preset) => [preset.id, preset]));
     return (summary?.presets ?? []).map((preset) => {
@@ -534,17 +460,6 @@ export default function Creator() {
 
   const activePackCards = packCards(activePack);
   const activePreset = availablePresets.find((preset) => preset.id === presetId) ?? availablePresets[0] ?? fallbackPresets[0] ?? FALLBACK_PRESETS[0];
-
-  const galleryGroups = useMemo(() => {
-    const map = new Map<string, CreatorGalleryItem[]>();
-    for (const item of gallery) {
-      const key = galleryType(item);
-      const list = map.get(key) ?? [];
-      list.push(item);
-      map.set(key, list);
-    }
-    return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
-  }, [gallery]);
 
   useEffect(() => {
     if (!availablePresets.length) return;
@@ -683,94 +598,6 @@ export default function Creator() {
     }
   }
 
-  async function previewPack() {
-    setNotice(null);
-    if (!activePackId) return;
-    setBusy("preview");
-    try {
-      const index = clampIndex(studioCardNumber, activePackCards);
-      const res = await send<{ url: string }>(`/creator/packs/${encodeURIComponent(activePackId)}/preview`, "POST", {
-        ...(index != null ? { index } : {}),
-      });
-      setPreviewUrl(res.url);
-    } catch (err) {
-      setNotice({ type: "error", text: errorText(err, t("creator.errPreview")) });
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  async function exportOne(format: "mp4" | "png") {
-    setNotice(null);
-    if (!activePackId) return;
-    setBusy(`export-${format}`);
-    try {
-      const index = clampIndex(studioCardNumber, activePackCards);
-      const res = await send<{ item?: CreatorGalleryItem; url: string }>(
-        `/creator/packs/${encodeURIComponent(activePackId)}/export`,
-        "POST",
-        {
-          ...(index != null ? { index } : {}),
-          format,
-          durationSec,
-          voiceover,
-          addToGallery,
-          music,
-          motion,
-        },
-      );
-      setExportUrl(res.url);
-      setNotice({ type: "success", text: t("creator.exportReady", { format: format.toUpperCase() }) });
-      void loadSummary(true);
-    } catch (err) {
-      setNotice({ type: "error", text: errorText(err, t("creator.errExport", { format: format.toUpperCase() })) });
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  async function exportZip() {
-    setNotice(null);
-    if (!activePackId) return;
-    setBusy("export-zip");
-    try {
-      const res = await send<{ url: string }>(`/creator/packs/${encodeURIComponent(activePackId)}/export-zip`, "POST", {
-        limit: zipLimit,
-        durationSec,
-        voiceover,
-        music,
-        motion,
-      });
-      setExportUrl(res.url);
-      setNotice({ type: "success", text: t("creator.zipReady") });
-    } catch (err) {
-      setNotice({ type: "error", text: errorText(err, t("creator.errZip")) });
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  async function previewTts() {
-    setNotice(null);
-    const text = narration.trim() || [values.heading, values.body, values.text].filter(Boolean).join(". ");
-    if (!text.trim()) {
-      setNotice({ type: "error", text: t("creator.errTtsText") });
-      return;
-    }
-    setBusy("tts");
-    try {
-      const res = await send<{ url: string }>("/creator/tts/preview", "POST", {
-        text,
-        lang: String(activePack?.lang ?? packLang),
-      });
-      setTtsUrl(res.url);
-    } catch (err) {
-      setNotice({ type: "error", text: errorText(err, t("creator.errTts")) });
-    } finally {
-      setBusy(null);
-    }
-  }
-
   const actionsDisabled = loadingSummary || featureDisabled;
 
   return (
@@ -821,8 +648,6 @@ export default function Creator() {
           <div className="creator-step-pane" key={step}>
             {step === "setup" ? (
               <SetupPanel
-                packs={packs}
-                activePackId={activePackId}
                 packNameValue={packNameValue}
                 setPackNameValue={setPackNameValue}
                 packLang={packLang}
@@ -862,14 +687,9 @@ export default function Creator() {
           {step === "setup" && (
             <CreatorPreviewPanel
               step={step}
-              activePack={activePack}
-              activePackCards={activePackCards}
               activePreset={activePreset}
-              values={values}
-              packNameValue={packNameValue}
               packLang={packLang}
               background={background}
-              backgroundName={backgroundName}
             />
           )}
         </div>
@@ -920,8 +740,6 @@ function StepRail({
 }
 
 function SetupPanel({
-  packs,
-  activePackId,
   packNameValue,
   setPackNameValue,
   packLang,
@@ -936,8 +754,6 @@ function SetupPanel({
   actionsDisabled,
   onNext,
 }: {
-  packs: CreatorPack[];
-  activePackId: string;
   packNameValue: string;
   setPackNameValue: (value: string) => void;
   packLang: string;
