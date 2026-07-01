@@ -177,8 +177,17 @@ export const RETIRED_SUPER_ADMIN_RUSSIAN_MOTIVATION_DECKS = new Set([
   "pack:motivation-ru-superadmin",
 ]);
 
-export const RETIRED_SUPER_ADMIN_CHRISTIAN_FACT_DECKS = new Set([
+export const RETIRED_SUPER_ADMIN_RELIGIOUS_DECKS = new Set([
+  "islamic",
+  "islamic-quotes-ar",
+  "islamic-facts-ar",
+  "christian",
+  "prayers-en",
+  "prayers-de",
+  "christian-quotes-en",
   "christian-facts-en",
+  "long-islamic-ar",
+  "long-christian-en",
 ]);
 
 export const RETIRED_SUPER_ADMIN_SOVIET_POSTER_DECKS = new Set([
@@ -191,7 +200,7 @@ export const FORBIDDEN_SUPER_ADMIN_SOURCE_DECKS = new Set([
   ...MGS_ONLY_SUPER_ADMIN_DECKS,
   ...RETIRED_SUPER_ADMIN_STATIC_FACT_DECKS,
   ...RETIRED_SUPER_ADMIN_RUSSIAN_MOTIVATION_DECKS,
-  ...RETIRED_SUPER_ADMIN_CHRISTIAN_FACT_DECKS,
+  ...RETIRED_SUPER_ADMIN_RELIGIOUS_DECKS,
   ...RETIRED_SUPER_ADMIN_SOVIET_POSTER_DECKS,
 ]);
 

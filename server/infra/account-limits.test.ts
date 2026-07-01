@@ -8,7 +8,9 @@ import {
   USER_DAILY_SCHEDULE_CAP,
   accountDailyScheduleCap,
   dailyScheduleLimitError,
+  forbiddenSuperAdminScheduleTimes,
   googleKeyDailyScheduleCap,
+  isSuperAdminScheduleTimeAllowed,
 } from "./account-limits.ts";
 
 test("per-channel cap depends on owner role: admin 20, everyone else 18", () => {
@@ -50,4 +52,11 @@ test("allows super admin up to 100 scheduled videos across one Google key", () =
   assert.equal(dailyScheduleLimitError(10, 90, true, true), null);
   assert.match(dailyScheduleLimitError(11, 90, true, true) ?? "", /Лимит 100 публикаций/);
   assert.match(dailyScheduleLimitError(11, 90, true, true) ?? "", /доступно 10/);
+});
+
+test("super admin schedule window starts at 08:00", () => {
+  assert.equal(isSuperAdminScheduleTimeAllowed("07:59"), false);
+  assert.equal(isSuperAdminScheduleTimeAllowed("08:00"), true);
+  assert.equal(isSuperAdminScheduleTimeAllowed("23:59"), true);
+  assert.deepEqual(forbiddenSuperAdminScheduleTimes(["00:00", "07:59", "08:00", "12:00"]), ["00:00", "07:59"]);
 });

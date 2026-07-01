@@ -174,6 +174,7 @@ export function resolveAudio(
 ): { music: string; audioPath: string | null } {
   let m = music;
   const explicitNone = m === "none";
+  const explicitTrack = !!m && !explicitNone;
   let audioPath: string | null;
   if (m === "none") audioPath = null;
   else if (m) audioPath = audioPathFor(m, opts);
@@ -187,21 +188,21 @@ export function resolveAudio(
       audioPath = null;
     }
   }
-  if ((deck?.meme || deck?.audioProfile === "memes") && !explicitNone) {
+  if ((deck?.meme || deck?.audioProfile === "memes") && !explicitNone && !explicitTrack) {
     const bed = pickMemesAudio();
     if (bed) {
       m = bed;
       audioPath = audioPathFor(bed);
     }
   }
-  if (deck?.audioProfile === "jokes" && !explicitNone) {
+  if (deck?.audioProfile === "jokes" && !explicitNone && !explicitTrack) {
     const bed = pickJokesAudio();
     if (bed) {
       m = bed;
       audioPath = audioPathFor(bed);
     }
   }
-  if (deck?.audioProfile === "motivation" && !explicitNone) {
+  if (deck?.audioProfile === "motivation" && !explicitNone && !explicitTrack) {
     const bed = pickMotivationAudio();
     if (bed) {
       m = bed;
@@ -237,6 +238,7 @@ export interface VideoOptions {
 export interface MotionOverlay {
   path: string;
   width: number;
+  height?: number;
   x: string;
   y: string;
 }
@@ -310,7 +312,7 @@ export async function assembleVideoBackground(
     "crop=1080:1920,setsar=1,eq=brightness=-0.06:saturation=0.88,format=rgba[bg]";
   const overlay = "[2:v]scale=1080:1920:flags=lanczos,format=rgba[card];[bg][card]overlay=0:0:format=auto[base]";
   const withSticker = motion
-    ? `;[3:v]fps=30,scale=${motion.width}:-1:flags=lanczos,format=rgba[sticker];[base][sticker]overlay=x='${motion.x}':y='${motion.y}':shortest=0:format=auto[v]`
+    ? `;[3:v]fps=30,scale=${motion.width}:${motion.height ?? -1}:flags=lanczos,format=rgba[sticker];[base][sticker]overlay=x='${motion.x}':y='${motion.y}':shortest=0:format=auto[v]`
     : ";[base]format=yuv420p[v]";
   args.push("-filter_complex", `${bg};${overlay}${withSticker}`, "-map", "[v]", "-map", "1:a");
   args.push(
@@ -374,7 +376,7 @@ export async function assembleStillVideo(
 
   args.push("-t", String(dur));
   if (motion) {
-    const overlay = `[0:v]${vf}[base];[2:v]fps=30,scale=${motion.width}:-1:flags=lanczos,format=rgba[sticker];[base][sticker]overlay=x='${motion.x}':y='${motion.y}':shortest=0:format=auto[v]`;
+    const overlay = `[0:v]${vf}[base];[2:v]fps=30,scale=${motion.width}:${motion.height ?? -1}:flags=lanczos,format=rgba[sticker];[base][sticker]overlay=x='${motion.x}':y='${motion.y}':shortest=0:format=auto[v]`;
     args.push("-filter_complex", overlay, "-map", "[v]", "-map", "1:a");
   } else {
     args.push("-vf", vf);

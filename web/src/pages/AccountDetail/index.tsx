@@ -17,7 +17,15 @@ import {
 } from "../../lib/deck";
 import { isMainAdmin } from "../../lib/authz";
 import { cleanDisplayText } from "../../lib/text";
-import { toMin, randomDayTimes, accountDailySlotCap, USER_DAILY_SLOT_CAP } from "./schedule";
+import {
+  toMin,
+  randomDayTimes,
+  accountDailySlotCap,
+  USER_DAILY_SLOT_CAP,
+  SUPER_ADMIN_SCHEDULE_WINDOW,
+  cleanSuperAdminScheduleTimes,
+  isSuperAdminScheduleTimeAllowed,
+} from "./schedule";
 import {
   GENERATE_ALL_DECKS,
   genById as srcGenById,
@@ -121,6 +129,8 @@ export default function AccountDetail() {
   // Кап «видео в сутки на канал» зависит от роли ВЛАДЕЛЬЦА канала: админ 20, остальные 18.
   // (Бэкенд — источник истины; здесь это только для UX-валидации/счётчиков.)
   const ownerIsAdmin = user?.role === "admin" && (!account?.userId || account.userId === user?.id);
+  const ownerIsSuperAdminAccount = user?.isSuperAdmin === true && (!account?.userId || account.userId === user.id);
+  const scheduleWindow = ownerIsSuperAdminAccount ? SUPER_ADMIN_SCHEDULE_WINDOW : undefined;
   const perChannelCap = accountDailySlotCap(ownerIsAdmin);
   const selectedSources = (sourceDecks.length ? sourceDecks : [lang]).filter(Boolean);
   // Остаток = СВОБОДНЫЕ (неиспользованные) карточки. Для пака — available (cards − used), не общее число.
@@ -166,7 +176,7 @@ export default function AccountDetail() {
         }
         setLongVideoDecks(a.longVideoDecks ?? []);
         setChannelLang(a.channelLang || DECK_LANG[a.lang] || "ru");
-        setTimes(a.schedule);
+        setTimes(user?.isSuperAdmin === true && (!a.userId || a.userId === user.id) ? cleanSuperAdminScheduleTimes(a.schedule) : a.schedule);
         setSlotVideos(a.slotVideos || {});
         setSlotDecks(a.slotDecks || {});
         console.log("[привязка] канал загружен:", {
@@ -194,7 +204,7 @@ export default function AccountDetail() {
         setOtherTimes(others.flatMap((a) => a.schedule ?? []));
       })
       .catch(() => {});
-  }, [id]);
+  }, [id, user?.id, user?.isSuperAdmin]);
 
   // Когда фоновая генерация (глобальная очередь) завершилась для ЭТОГО канала — обновить библиотеку.
   // Остатки свободных карточек (деки/паки) перечитываем всегда — они per-user, не per-channel, и
@@ -252,14 +262,19 @@ export default function AccountDetail() {
       const cleanLongVideoDecks = [...new Set(longVideoDecksRef.current.filter(Boolean))];
       const sourceLangs = [...new Set(cleanSources.map(contentLang).filter(Boolean))];
       const effectiveChannelLang = sourceLangs.length === 1 ? sourceLangs[0] : channelLangRef.current || channelLang;
+      const effectiveTimes = ownerIsSuperAdminAccount ? cleanSuperAdminScheduleTimes(times) : times;
+      if (effectiveTimes.length !== times.length) {
+        setTimes(effectiveTimes);
+        notify("Для каналов главного админа разрешено только 08:00-23:59.", "info", t("account.scheduleLimitToastTitle"));
+      }
       const cleanSlotDecks = Object.fromEntries(
-        Object.entries(slotDecks).filter(([time, deck]) => times.includes(time) && (cleanSources.includes(deck) || deck === "manual")),
+        Object.entries(slotDecks).filter(([time, deck]) => effectiveTimes.includes(time) && (cleanSources.includes(deck) || deck === "manual")),
       );
-      if (times.length > perChannelCap) {
+      if (effectiveTimes.length > perChannelCap) {
         notify(t("account.accountDayLimitReached", { n: perChannelCap }), "error", t("account.scheduleLimitToastTitle"));
         return false;
       }
-      if (otherSlots + times.length > USER_DAILY_SLOT_CAP) {
+      if (otherSlots + effectiveTimes.length > USER_DAILY_SLOT_CAP) {
         notify(
           t("account.dayLimitReached", {
             limit: USER_DAILY_SLOT_CAP,
@@ -278,7 +293,7 @@ export default function AccountDetail() {
         sourceDecks: cleanSources,
         longVideoDecks: cleanLongVideoDecks,
         channelLang: effectiveChannelLang,
-        schedule: times,
+        schedule: effectiveTimes,
         slotVideos,
         slotDecks: cleanSlotDecks,
       });
@@ -842,7 +857,7 @@ export default function AccountDetail() {
                       notifyScheduleLimit();
                       return;
                     }
-                    setTimes(randomDayTimes(n, takenMinutes));
+                    setTimes(randomDayTimes(n, takenMinutes, scheduleWindow));
                   }}
                   title={t("account.perDayBtnTitle", { n })}
                 >
@@ -874,7 +889,7 @@ export default function AccountDetail() {
                     notifyScheduleLimit();
                     return;
                   }
-                  setTimes(randomDayTimes(Math.min(perDayInput, perDayMax), takenMinutes));
+                  setTimes(randomDayTimes(Math.min(perDayInput, perDayMax), takenMinutes, scheduleWindow));
                 }}
                 title={t("account.spreadTitle")}
               >
@@ -927,6 +942,10 @@ export default function AccountDetail() {
                   const v = newTime.trim();
                   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(v)) {
                     notify(t("account.invalidTime"), "error");
+                    return;
+                  }
+                  if (ownerIsSuperAdminAccount && !isSuperAdminScheduleTimeAllowed(v)) {
+                    notify("Для каналов главного админа разрешено только 08:00-23:59.", "error", t("account.scheduleLimitToastTitle"));
                     return;
                   }
                   if (times.length >= perChannelCap) {

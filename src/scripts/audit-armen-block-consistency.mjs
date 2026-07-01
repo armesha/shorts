@@ -141,8 +141,11 @@ const staleSettings = db
           key LIKE '%jokes_memes%'
           OR key LIKE '%riddles_illusions%'
           OR key LIKE '%facts_space%'
+          OR key LIKE '%religion.sourceWeights%'
           OR key LIKE '%islam.sourceWeights%'
           OR key LIKE '%christianity.sourceWeights%'
+          OR value LIKE '%fact_video%'
+          OR value LIKE '%psychology%'
           OR value LIKE '%visual_riddles%'
           OR value LIKE '%mind_flip%'
         )

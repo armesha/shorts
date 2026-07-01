@@ -19,6 +19,8 @@ export interface CreatorAsset {
   id: string;
   name: string;
   type: "background" | "motion" | "music";
+  group?: string;
+  groupName?: string;
   src?: string;
   url?: string;
 }
@@ -291,34 +293,134 @@ export function creatorBackgrounds(): CreatorAsset[] {
 }
 
 export function creatorMotionOverlays(): CreatorAsset[] {
-  const baseRel = "assets/motion/jokes";
+  const baseRel = "assets/creator/motion";
   const base = resolve(process.cwd(), baseRel);
   if (!existsSync(base)) return [];
+  const groups: Record<string, { id: string; name: string }> = {
+    reaction: { id: "reaction", name: "Реакции" },
+    meme: { id: "meme", name: "Мемы" },
+    gesture: { id: "gesture", name: "Жесты" },
+    love: { id: "love", name: "Любовь" },
+  };
+  const groupOrder = ["reaction", "meme", "gesture", "love"];
+  const fileOrder = [
+    "reaction-joy.gif",
+    "reaction-rofl.gif",
+    "reaction-laughing.gif",
+    "reaction-grin-sweat.gif",
+    "reaction-grin.gif",
+    "reaction-smile.gif",
+    "reaction-sunglasses.gif",
+    "reaction-thinking.gif",
+    "reaction-mouth-open.gif",
+    "reaction-melting.gif",
+    "reaction-loudly-crying.gif",
+    "reaction-screaming.gif",
+    "reaction-mind-blown.gif",
+    "reaction-skull.gif",
+    "reaction-poop.gif",
+    "meme-star-struck.gif",
+    "meme-partying-face.gif",
+    "meme-fire.gif",
+    "meme-100.gif",
+    "meme-sparkles.gif",
+    "meme-party-popper.gif",
+    "meme-rocket.gif",
+    "gesture-thumbs-up.gif",
+    "gesture-thumbs-down.gif",
+    "gesture-clap.gif",
+    "gesture-raising-hands.gif",
+    "gesture-ok.gif",
+    "gesture-heart-hands.gif",
+    "love-heart-eyes.gif",
+    "love-heart-face.gif",
+    "love-red-heart.gif",
+    "love-sparkling-heart.gif",
+    "love-growing-heart.gif",
+  ];
+  const names: Record<string, string> = {
+    "reaction-joy.gif": "Смех до слез",
+    "reaction-rofl.gif": "Катается от смеха",
+    "reaction-laughing.gif": "Смеется",
+    "reaction-grin-sweat.gif": "Смеется с потом",
+    "reaction-grin.gif": "Широкая улыбка",
+    "reaction-smile.gif": "Улыбка",
+    "reaction-sunglasses.gif": "Круто",
+    "reaction-thinking.gif": "Думает",
+    "reaction-mouth-open.gif": "Удивление",
+    "reaction-melting.gif": "Растаял",
+    "reaction-loudly-crying.gif": "Плачет",
+    "reaction-screaming.gif": "Шок",
+    "reaction-mind-blown.gif": "Взрыв мозга",
+    "reaction-skull.gif": "Смешно до смерти",
+    "reaction-poop.gif": "Ну такое",
+    "meme-star-struck.gif": "В восторге",
+    "meme-partying-face.gif": "Праздник",
+    "meme-fire.gif": "Огонь",
+    "meme-100.gif": "Сто процентов",
+    "meme-sparkles.gif": "Искры",
+    "meme-party-popper.gif": "Конфетти",
+    "meme-rocket.gif": "Ракета",
+    "gesture-thumbs-up.gif": "Лайк",
+    "gesture-thumbs-down.gif": "Дизлайк",
+    "gesture-clap.gif": "Аплодисменты",
+    "gesture-raising-hands.gif": "Руки вверх",
+    "gesture-ok.gif": "Окей",
+    "gesture-heart-hands.gif": "Сердце руками",
+    "love-heart-eyes.gif": "Глаза-сердца",
+    "love-heart-face.gif": "Влюблен",
+    "love-red-heart.gif": "Сердце",
+    "love-sparkling-heart.gif": "Сияющее сердце",
+    "love-growing-heart.gif": "Растущее сердце",
+  };
+  const groupFor = (file: string) => {
+    const key = Object.keys(groups).find((prefix) => file.startsWith(`${prefix}-`)) ?? "reaction";
+    return groups[key] ?? groups.reaction;
+  };
   return readdirSync(base)
     .map((f) => f.toString())
     .filter((f) => /\.gif$/i.test(f))
-    .sort()
-    .map((file) => ({
-      id: file,
-      name: file.replace(/\.gif$/i, "").replace(/[-_]+/g, " "),
-      type: "motion" as const,
-      src: `${baseRel}/${file}`,
-    }));
+    .sort((a, b) => {
+      const groupA = groupFor(a).id;
+      const groupB = groupFor(b).id;
+      const orderA = groupOrder.indexOf(groupA);
+      const orderB = groupOrder.indexOf(groupB);
+      const fileOrderA = fileOrder.indexOf(a);
+      const fileOrderB = fileOrder.indexOf(b);
+      return (orderA === -1 ? 99 : orderA) - (orderB === -1 ? 99 : orderB)
+        || (fileOrderA === -1 ? 999 : fileOrderA) - (fileOrderB === -1 ? 999 : fileOrderB)
+        || a.localeCompare(b);
+    })
+    .map((file) => {
+      const group = groupFor(file);
+      return {
+        id: file,
+        name: names[file] ?? file.replace(/\.gif$/i, "").replace(/[-_]+/g, " "),
+        type: "motion" as const,
+        group: group.id,
+        groupName: group.name,
+        src: `${baseRel}/${file}`,
+      };
+    });
 }
 
 export function creatorMusicTracks(): CreatorAsset[] {
-  const explicit = [
-    "anekdoty/jazz-01.mp3",
-    "anekdoty/jazz-05.mp3",
-    "anekdoty/jazz-10.mp3",
-    "memes/lofi_chill.mp3",
-    "memes/pluck_playful.mp3",
-    "memes/quirky_boop.mp3",
-    "motivation/morning-rise.mp3",
-    "motivation/focus-pulse.mp3",
-    "motivation/deep-drive.mp3",
-  ];
-  const tracks = [...new Set([...explicit, ...listAudio().slice(0, 20)])];
+  const fromAudioDir = (dir: string, limit: number) => {
+    const abs = resolve(process.cwd(), "assets/audio", dir);
+    if (!existsSync(abs)) return [];
+    return readdirSync(abs)
+      .map((file) => file.toString())
+      .filter((file) => /\.(mp3|m4a|aac|wav|ogg|opus)$/i.test(file))
+      .sort()
+      .slice(0, limit)
+      .map((file) => `${dir}/${file}`);
+  };
+  const tracks = [...new Set([
+    ...fromAudioDir("anekdoty", 20),
+    ...fromAudioDir("memes", 80),
+    ...fromAudioDir("motivation", 30),
+    ...listAudio().slice(0, 20),
+  ])];
   return tracks
     .filter((id) => existsSync(resolve(process.cwd(), "assets/audio", id)))
     .map((id) => ({ id, name: musicNameFromFile(id), type: "music" as const, url: `/audio/${id.split("/").map(encodeURIComponent).join("/")}` }));

@@ -94,6 +94,7 @@ function mountElement(el, content, showKillboxOutline) {
       font-weight:${el.font.weight};
       color:${el.font.color};
       line-height:${el.font.lineHeight};
+      text-shadow:${el.textShadow || "none"};
     `;
     // содержимое килбокса
     const val = content[el.role];
@@ -111,6 +112,7 @@ function mountElement(el, content, showKillboxOutline) {
       font-weight:${el.font.weight};
       color:${el.font.color};
       line-height:${el.font.lineHeight};
+      text-shadow:${el.textShadow || "none"};
     `;
     div.textContent = el.text;
     node.appendChild(div);

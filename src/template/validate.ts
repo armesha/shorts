@@ -164,7 +164,7 @@ export function validateTemplateDoc(tpl: unknown, label = "template"): asserts t
     optionalNumber(el.minChars, `${elLabel}.minChars`, 0, 20_000);
     optionalNumber(el.maxChars, `${elLabel}.maxChars`, 0, 20_000);
     optionalNumber(el.opacity, `${elLabel}.opacity`, 0, 1);
-    for (const k of ["bg", "border", "shadow", "highlight", "radius"]) {
+    for (const k of ["bg", "border", "shadow", "textShadow", "highlight", "radius"]) {
       if (typeof el[k] === "string") validateCssValue(el[k] as string, `${elLabel}.${k}`);
     }
     if (el.align != null && !["left", "center", "right"].includes(String(el.align))) {

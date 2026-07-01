@@ -15,12 +15,10 @@ import {
 import { openDb } from "../db.ts";
 
 const FOREIGN_EN_SOURCES = [
-  "fact-en",
   "en",
   "pack:new-memes-en-superadmin",
   "quote-video-en",
   "quotes-en",
-  "pack:psychology-en-superadmin",
 ];
 
 function account(id: number): Account {
@@ -103,32 +101,40 @@ test("thematic block generation keeps source mix stable but varies order per cha
   assert.notDeepEqual(first, second);
 });
 
-test("quotes block has localized fact and psychology sources for all non-religious languages", () => {
+test("single block has localized sources and retires armen's fact and psychology videos", () => {
   const dbMock = db();
   const expected: Record<string, string[]> = {
-    ru: ["fact-ru", "ru", "pack:new-memes-ru-superadmin", "quote-video-ru", "quotes-ru", "pack:psychology-ru-superadmin"],
-    en: ["fact-en", "en", "pack:new-memes-en-superadmin", "quote-video-en", "quotes-en", "pack:psychology-en-superadmin"],
-    de: ["fact-de", "de", "pack:new-memes-de-superadmin", "quote-video-de", "quotes-de", "pack:psychology-de-superadmin"],
-    it: ["fact-it", "it", "pack:new-memes-it-superadmin", "quote-video-it", "quotes-it", "pack:psychology-it-superadmin"],
-    es: ["fact-es", "pack:chistes-es-public-domain", "pack:new-memes-es-superadmin", "quote-video-es", "quotes-es", "pack:psychology-es-superadmin"],
-    fr: ["fact-fr", "fr", "pack:new-memes-fr-superadmin", "quote-video-fr", "quotes-fr", "pack:psychology-fr-superadmin"],
-    pt: ["fact-pt", "pt", "pack:new-memes-pt-superadmin", "quote-video-pt", "quotes-pt", "pack:psychology-pt-superadmin"],
+    ar: ["ar", "pack:new-memes-ar-superadmin", "quote-video-ar", "quotes-ar"],
+    ru: ["ru", "pack:new-memes-ru-superadmin", "quote-video-ru", "quotes-ru"],
+    en: ["en", "pack:new-memes-en-superadmin", "quote-video-en", "quotes-en"],
+    de: ["de", "pack:new-memes-de-superadmin", "quote-video-de", "quotes-de"],
+    it: ["it", "pack:new-memes-it-superadmin", "quote-video-it", "quotes-it"],
+    es: ["pack:chistes-es-public-domain", "pack:new-memes-es-superadmin", "quote-video-es", "quotes-es"],
+    fr: ["fr", "pack:new-memes-fr-superadmin", "quote-video-fr", "quotes-fr"],
+    pt: ["pt", "pack:new-memes-pt-superadmin", "quote-video-pt", "quotes-pt"],
   };
   for (const [lang, sources] of Object.entries(expected)) {
     assert.deepEqual(blockDefaultSourcesForDb(dbMock, "quotes", lang), sources);
   }
   assert.deepEqual(blockDefaultSourcesForDb(dbMock, "russian", "ru"), expected.ru);
+  assert.deepEqual(blockDefaultSourcesForDb(dbMock, "religion", "ar"), expected.ar);
+  assert.deepEqual(blockDefaultSourcesForDb(dbMock, "islam", "ar"), expected.ar);
+  assert.deepEqual(blockDefaultSourcesForDb(dbMock, "christianity", "en"), expected.en);
   assert.equal(BLOCKS.some((block) => block.id === "russian"), false);
+  assert.equal(BLOCKS.some((block) => block.id === "religion"), false);
 });
 
-test("islam block uses one merged Islamic pack plus shared religion sources", () => {
+test("legacy religion aliases do not expose religious sources", () => {
   const dbMock = db();
 
   const sources = blockDefaultSourcesForDb(dbMock, "religion", "ar");
-  assert.deepEqual(blockDefaultSourcesForDb(dbMock, "islam", "ar"), ["islamic", "ar", "pack:new-memes-ar-superadmin", "quotes-ar"]);
-  assert.deepEqual(sources, ["islamic", "ar", "pack:new-memes-ar-superadmin", "quotes-ar"]);
+  assert.deepEqual(blockDefaultSourcesForDb(dbMock, "islam", "ar"), sources);
+  assert.deepEqual(sources, ["ar", "pack:new-memes-ar-superadmin", "quote-video-ar", "quotes-ar"]);
+  assert.equal(sources.includes("islamic"), false);
   assert.equal(sources.includes("islamic-quotes-ar"), false);
   assert.equal(sources.includes("islamic-facts-ar"), false);
+  assert.equal(blockDefaultSourcesForDb(dbMock, "christianity", "en").includes("christian"), false);
+  assert.equal(blockDefaultSourcesForDb(dbMock, "christianity", "en").includes("prayers-en"), false);
 });
 
 test("thematic block generation skips exhausted sources and retired packs", () => {
@@ -137,7 +143,7 @@ test("thematic block generation skips exhausted sources and retired packs", () =
   const sequence = thematicBlockDeckSequenceForGeneration(
     db(),
     deps({
-      "fact-en": 0,
+      "quote-video-en": 0,
       "illusions-en": 0,
     }),
     1,
@@ -148,11 +154,11 @@ test("thematic block generation skips exhausted sources and retired packs", () =
 
   assert.ok(sequence);
   assert.equal(sequence.length, 20);
-  assert.ok(!sequence.includes("fact-en"));
+  assert.ok(!sequence.includes("quote-video-en"));
   assert.ok(!sequence.includes("visual-riddles-en"));
   assert.ok(!sequence.includes("illusions-en"));
   assert.ok(!sequence.includes("pack:motivation-en-superadmin"));
-  assert.ok(sequence.every((deckId) => FOREIGN_EN_SOURCES.includes(deckId)));
+  assert.ok(sequence.every((deckId) => FOREIGN_EN_SOURCES.includes(deckId) && deckId !== "quote-video-en"));
 });
 
 test("thematic block schedule falls back when one source has no ready or free cards", () => {
@@ -160,11 +166,11 @@ test("thematic block schedule falls back when one source has no ready or free ca
     ...account(313),
     schedule: ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00"],
   };
-  const slotDecks = thematicBlockSlotDecksForAccount(db(), deps({ "fact-en": 0 }), acc, acc.schedule, FOREIGN_EN_SOURCES);
+  const slotDecks = thematicBlockSlotDecksForAccount(db(), deps({ "quote-video-en": 0 }), acc, acc.schedule, FOREIGN_EN_SOURCES);
 
   assert.ok(slotDecks);
   assert.equal(Object.keys(slotDecks).length, acc.schedule.length);
-  assert.ok(!Object.values(slotDecks).includes("fact-en"));
+  assert.ok(!Object.values(slotDecks).includes("quote-video-en"));
   assert.ok(Object.values(slotDecks).every((deckId) => FOREIGN_EN_SOURCES.includes(deckId)));
 });
 
@@ -360,21 +366,14 @@ test("source weight settings are canonicalized and stale groups are pruned", () 
 
   const normalized = JSON.parse(dbStore.getSetting("superAdmin.channelBlock.quotes.sourceWeights") ?? "{}") as Record<string, number>;
   assert.equal(Object.prototype.hasOwnProperty.call(normalized, "static_facts"), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(normalized, "fact_video"), false);
   assert.equal(normalized.jokes, 3);
   assert.equal(normalized.memes, 2);
+  assert.equal(Object.prototype.hasOwnProperty.call(normalized, "psychology"), false);
   assert.equal(Object.prototype.hasOwnProperty.call(normalized, "motivation"), false);
   assert.equal(Object.prototype.hasOwnProperty.call(normalized, "visual_riddles"), false);
   assert.equal(Object.prototype.hasOwnProperty.call(normalized, "mind_flip"), false);
-  const religionNormalized = JSON.parse(dbStore.getSetting("superAdmin.channelBlock.religion.sourceWeights") ?? "{}") as Record<string, number>;
-  assert.deepEqual(religionNormalized, {
-    islam: 3,
-    kjv_bible: 2,
-    christian_prayers: 1,
-    christian_quotes: 1,
-    jokes: 1,
-    memes: 1,
-    static_quotes: 1,
-  });
+  assert.equal(dbStore.getSetting("superAdmin.channelBlock.religion.sourceWeights"), null);
   assert.equal(dbStore.getSetting("superAdmin.channelBlock.jokes_memes.sourceWeights"), null);
   assert.equal(dbStore.getSetting("superAdmin.channelBlock.riddles_illusions.sourceWeights"), null);
   assert.equal(dbStore.getSetting("superAdmin.channelBlock.russian.sourceWeights"), null);

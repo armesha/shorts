@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Link } from "react-router-dom";
 import {
   apiClient,
   type Account,
@@ -17,68 +17,9 @@ import { useGenQueue } from "../lib/genQueue";
 
 type Props = {
   onShowClassic: () => void;
-  defaultBlockId?: string;
-  hideBlockList?: boolean;
 };
 
 const DAILY_KEY_CAP = 100;
-const BLOCK_ORDER_KEY = "channelBlocksOrder";
-
-function readBlockOrder(): string[] {
-  try {
-    const raw = JSON.parse(localStorage.getItem(BLOCK_ORDER_KEY) || "[]");
-    return Array.isArray(raw) ? raw.filter((id): id is string => typeof id === "string") : [];
-  } catch {
-    return [];
-  }
-}
-
-// --- Pointer-based sortable for the block list ---------------------------------
-// We freeze the slot geometry at drag start, then translate the non-dragged cards
-// into the gap live (so reordering is visible in real time) while the dragged card
-// stays fully opaque and follows the cursor. Order is committed once, on drop.
-type DragSlot = { id: string; top: number; height: number; center: number };
-type DragState = {
-  id: string;
-  pointerStartY: number;
-  pointerY: number;
-  slots: DragSlot[];
-  order: string[];
-  dropping?: { finalDelta: number; newOrder: string[] };
-};
-type DragView = { newOrder: string[]; delta: number; topByIndex: number[]; order: string[]; dropping: boolean };
-
-function computeDrag(d: DragState): DragView {
-  const di = d.order.indexOf(d.id);
-  const delta = d.pointerY - d.pointerStartY;
-  const draggedCenter = (d.slots[di]?.center ?? 0) + delta;
-  const centerById = new Map(d.slots.map((s) => [s.id, s.center]));
-  const others = d.order.filter((id) => id !== d.id);
-  let insert = others.length;
-  for (let k = 0; k < others.length; k++) {
-    if (draggedCenter < (centerById.get(others[k]) ?? 0)) {
-      insert = k;
-      break;
-    }
-  }
-  const newOrder = [...others.slice(0, insert), d.id, ...others.slice(insert)];
-  return { newOrder, delta, topByIndex: d.slots.map((s) => s.top), order: d.order, dropping: false };
-}
-
-// Order server blocks by the saved drag order; unknown/new blocks keep their server position at the end.
-function orderBlocks(blocks: ChannelThemeBlock[], order: string[]): ChannelThemeBlock[] {
-  const byId = new Map(blocks.map((block) => [block.id, block]));
-  const result: ChannelThemeBlock[] = [];
-  for (const id of order) {
-    const block = byId.get(id);
-    if (block) {
-      result.push(block);
-      byId.delete(id);
-    }
-  }
-  for (const block of blocks) if (byId.has(block.id)) result.push(block);
-  return result;
-}
 
 type BusyState = { blockId: string; kind: "normalize_all" | "schedule" | "account"; lang?: string } | null;
 type NormalizeShortage = NonNullable<ChannelThemeBlockNormalizeResult["shortages"]>[number] & { blockTitle?: string };
@@ -141,14 +82,6 @@ function deckSummaries(block: ChannelThemeBlock): BlockDeckSummary[] {
     }
   }
   return [...map.values()].sort((a, b) => (a.lang || "").localeCompare(b.lang || "") || a.name.localeCompare(b.name));
-}
-
-function blockPackCount(block: ChannelThemeBlock): string {
-  const counts = accountsInBlock(block).map((account) => account.sourceDecks.length);
-  if (!counts.length) return "0";
-  // The block summary is intentionally normalized by the weakest channel, same as runway.
-  // Per-channel differences remain visible inside the block details.
-  return String(Math.min(...counts));
 }
 
 function formatRunwayDays(days: number | null): string {
@@ -221,13 +154,23 @@ function sourceGapTitle(account: ChannelThemeBlockAccount, t: ReturnType<typeof 
   return t("channelBlocks.sourceGapWarning", { gaps: lines.join("; ") });
 }
 
-export default function ChannelBlocks({ onShowClassic, defaultBlockId, hideBlockList = false }: Props) {
+function languagePanelClass(count: number): string {
+  const base = "rounded-md border border-base-300 bg-base-100";
+  if (count >= 4) return `${base} xl:col-span-2`;
+  return base;
+}
+
+function languageChannelsGridClass(count: number): string {
+  if (count >= 4) return "grid grid-cols-1 gap-1.5 p-2 sm:grid-cols-2";
+  return "grid grid-cols-1 gap-1.5 p-2";
+}
+
+export default function ChannelBlocks({ onShowClassic }: Props) {
   const { t } = useT();
   const queue = useGenQueue();
   const [data, setData] = useState<ChannelThemeBlocksResponse | null>(channelBlocksCache);
   const [accounts, setAccounts] = useState<Account[]>(accountsCache);
   const [clients, setClients] = useState<OAuthClient[]>(clientsCache);
-  const [searchParams, setSearchParams] = useSearchParams();
   const [err, setErr] = useState("");
   const [topUpDays, setTopUpDays] = useState(7);
   const [topUpShortages, setTopUpShortages] = useState<NormalizeShortage[]>([]);
@@ -236,10 +179,6 @@ export default function ChannelBlocks({ onShowClassic, defaultBlockId, hideBlock
   const [sourceWeights, setSourceWeights] = useState<Record<string, number>>({});
   const [busy, setBusy] = useState<BusyState>(null);
   const [notice, setNotice] = useState("");
-  const [blockOrder, setBlockOrder] = useState<string[]>(readBlockOrder);
-  const [drag, setDrag] = useState<DragState | null>(null);
-  const dragRef = useRef<DragState | null>(null);
-  const itemRefs = useRef(new Map<string, HTMLDivElement>());
 
   const load = () =>
     apiClient
@@ -267,17 +206,8 @@ export default function ChannelBlocks({ onShowClassic, defaultBlockId, hideBlock
     loadOps();
   }, []);
 
-  const selectedBlockParam = searchParams.get("block");
-  const selectedBlockSource = selectedBlockParam || defaultBlockId || null;
-  const selectedBlockId =
-    selectedBlockSource === "russian" ||
-    selectedBlockSource === "facts_space" ||
-    selectedBlockSource === "psychology" ||
-    selectedBlockSource === "riddles_illusions" ||
-    selectedBlockSource === "jokes_memes"
-      ? "quotes"
-      : selectedBlockSource;
-  const selectedBlock = data?.blocks.find((block) => block.id === selectedBlockId) ?? null;
+  const selectedBlock = data?.blocks[0] ?? null;
+  const selectedBlockId = selectedBlock?.id ?? null;
   const activeLanguageLabels = data?.languages.map((lang) => lang.label).join(", ") ?? "";
   useEffect(() => {
     if (selectedBlock) setPerDay(Math.max(0, Math.min(20, selectedBlock.postsPerDay)));
@@ -333,113 +263,13 @@ export default function ChannelBlocks({ onShowClassic, defaultBlockId, hideBlock
     });
   }, [accounts, selectedBlock]);
 
-  const orderedBlocks = useMemo(() => (data ? orderBlocks(data.blocks, blockOrder) : []), [data, blockOrder]);
-
-  function commitOrder(ids: string[]) {
-    setBlockOrder(ids);
-    try {
-      localStorage.setItem(BLOCK_ORDER_KEY, JSON.stringify(ids));
-    } catch {
-      /* ignore quota / privacy-mode errors */
-    }
-  }
-
-  const setItemRef = (id: string) => (el: HTMLDivElement | null) => {
-    if (el) itemRefs.current.set(id, el);
-    else itemRefs.current.delete(id);
-  };
-
-  const dragView = useMemo<DragView | null>(() => {
-    if (!drag) return null;
-    if (drag.dropping) {
-      return {
-        newOrder: drag.dropping.newOrder,
-        delta: drag.dropping.finalDelta,
-        topByIndex: drag.slots.map((s) => s.top),
-        order: drag.order,
-        dropping: true,
-      };
-    }
-    return computeDrag(drag);
-  }, [drag]);
-
-  function startDrag(e: ReactPointerEvent<HTMLElement>, blockId: string) {
-    if (e.button !== 0) return; // left button / primary touch only
-    e.preventDefault();
-    const ids = orderedBlocks.map((block) => block.id);
-    const slots: DragSlot[] = ids.map((id) => {
-      const rect = itemRefs.current.get(id)?.getBoundingClientRect();
-      const top = rect?.top ?? 0;
-      const height = rect?.height ?? 0;
-      return { id, top, height, center: top + height / 2 };
-    });
-    const next: DragState = { id: blockId, pointerStartY: e.clientY, pointerY: e.clientY, slots, order: ids };
-    dragRef.current = next;
-    setDrag(next);
-
-    const onMove = (ev: PointerEvent) => {
-      const cur = dragRef.current;
-      if (!cur || cur.dropping) return;
-      const updated = { ...cur, pointerY: ev.clientY };
-      dragRef.current = updated;
-      setDrag(updated);
-    };
-    const finish = () => {
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", onUp);
-      window.removeEventListener("pointercancel", onUp);
-      const cur = dragRef.current;
-      if (!cur) return;
-      const view = computeDrag(cur);
-      const di = cur.order.indexOf(cur.id);
-      const ni = view.newOrder.indexOf(cur.id);
-      const finalDelta = (view.topByIndex[ni] ?? 0) - (view.topByIndex[di] ?? 0);
-      const dropState: DragState = { ...cur, dropping: { finalDelta, newOrder: view.newOrder } };
-      dragRef.current = dropState;
-      setDrag(dropState);
-      window.setTimeout(() => {
-        commitOrder(view.newOrder);
-        dragRef.current = null;
-        setDrag(null);
-      }, 190);
-    };
-    const onUp = () => finish();
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", onUp);
-    window.addEventListener("pointercancel", onUp);
-  }
-
-  function styleFor(blockId: string): CSSProperties {
-    if (!drag || !dragView) return {};
-    if (blockId === drag.id) {
-      return {
-        transform: `translateY(${dragView.delta}px) scale(${dragView.dropping ? 1 : 1.015})`,
-        transition: dragView.dropping ? "transform 190ms cubic-bezier(0.2, 0.8, 0.2, 1)" : "none",
-        zIndex: 30,
-        position: "relative",
-        boxShadow: "0 14px 30px -10px rgba(15, 23, 42, 0.35)",
-        cursor: "grabbing",
-      };
-    }
-    const oi = dragView.order.indexOf(blockId);
-    const ni = dragView.newOrder.indexOf(blockId);
-    const ty = (dragView.topByIndex[ni] ?? 0) - (dragView.topByIndex[oi] ?? 0);
-    return {
-      transform: `translateY(${ty}px)`,
-      transition: "transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1)",
-      position: "relative",
-      zIndex: 1,
-    };
-  }
-
   useEffect(() => {
-    if (!data || selectedBlock) {
+    if (!data || !selectedBlock) {
       setTopUpShortages([]);
       setTopUpPreviewBusy(false);
       return;
     }
-    const blocks = data.blocks.filter((block) => block.totalAccounts > 0);
-    if (!blocks.length) {
+    if (selectedBlock.totalAccounts <= 0) {
       setTopUpShortages([]);
       setTopUpPreviewBusy(false);
       return;
@@ -449,11 +279,8 @@ export default function ChannelBlocks({ onShowClassic, defaultBlockId, hideBlock
     const timer = window.setTimeout(async () => {
       setTopUpPreviewBusy(true);
       try {
-        const shortages: NormalizeShortage[] = [];
-        for (const block of blocks) {
-          const res = await apiClient.previewChannelThemeBlockNormalize(block.id, undefined, undefined, topUpDays);
-          shortages.push(...(res.shortages ?? []).map((shortage) => ({ ...shortage, blockTitle: block.title })));
-        }
+        const res = await apiClient.previewChannelThemeBlockNormalize(selectedBlock.id, undefined, undefined, topUpDays);
+        const shortages = (res.shortages ?? []).map((shortage) => ({ ...shortage, blockTitle: selectedBlock.title }));
         if (!cancelled) setTopUpShortages(shortages);
       } catch {
         if (!cancelled) setTopUpShortages([]);
@@ -544,21 +371,13 @@ export default function ChannelBlocks({ onShowClassic, defaultBlockId, hideBlock
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{selectedBlock ? selectedBlock.title : t("channelBlocks.title")}</h1>
-          {!selectedBlock && (
-            <p className="mt-1 text-sm text-base-content/60">
-              {data && activeLanguageLabels
-                ? t("channelBlocks.subtitleActive", { languages: activeLanguageLabels })
-                : t("channelBlocks.subtitle")}
-            </p>
-          )}
+          <p className="mt-1 text-sm text-base-content/60">
+            {data && activeLanguageLabels
+              ? t("channelBlocks.subtitleActive", { languages: activeLanguageLabels })
+              : t("channelBlocks.subtitle")}
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {selectedBlock && !hideBlockList && (
-            <button className="btn btn-sm btn-outline gap-2" onClick={() => setSearchParams({})}>
-              <AppIcon name="chevron-left" size={15} />
-              {t("channelBlocks.backToBlocks")}
-            </button>
-          )}
           <button className="btn btn-sm btn-outline gap-2" onClick={onShowClassic}>
             <AppIcon name="library" size={15} />
             {t("channelBlocks.classicView")}
@@ -588,7 +407,7 @@ export default function ChannelBlocks({ onShowClassic, defaultBlockId, hideBlock
 
       <OperationalSummary accounts={operationalAccounts} clients={clients} />
 
-      {data && !selectedBlock && (
+      {data && selectedBlock && (
         <>
           <TopUpPanel
             days={topUpDays}
@@ -598,53 +417,18 @@ export default function ChannelBlocks({ onShowClassic, defaultBlockId, hideBlock
             shortages={topUpShortages}
             onTopUp={() => void normalizeAllBlocks()}
           />
-
-          <div className={`grid gap-3 ${drag ? "select-none" : ""}`}>
-            {orderedBlocks.map((block) => {
-              const dragging = drag?.id === block.id;
-              const shortages = topUpShortages.filter((shortage) => shortage.blockTitle === block.title);
-              return (
-                <div key={block.id} ref={setItemRef(block.id)} style={styleFor(block.id)} className={blockWrapperClass(dragging)}>
-                  <BlockCard
-                    block={block}
-                    shortages={shortages}
-                    onOpen={() => setSearchParams({ block: block.id })}
-                    dragging={dragging}
-                    onHandlePointerDown={(e) => startDrag(e, block.id)}
-                  />
-                </div>
-              );
-            })}
-          </div>
-
-          {data.unassignedAccounts.length > 0 && (
-            <section className="rounded-md border border-base-300 bg-base-100 p-4">
-              <div>
-                <h2 className="text-base font-semibold">{t("channelBlocks.unassignedTitle")}</h2>
-                <p className="mt-1 text-sm text-base-content/60">{t("channelBlocks.unassignedHint")}</p>
-              </div>
-              <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
-                {data.unassignedAccounts.map((account) => (
-                  <ChannelCell key={account.id} account={account} t={t} />
-                ))}
-              </div>
-            </section>
-          )}
+          <BlockDetail
+            block={selectedBlock}
+            languages={data.languages}
+            perDay={perDay}
+            setPerDay={setPerDay}
+            busy={busy}
+            sourceWeights={sourceWeights}
+            setSourceWeights={setSourceWeights}
+            applySchedule={applySchedule}
+            addBlockAccount={addBlockAccount}
+          />
         </>
-      )}
-
-      {data && selectedBlock && (
-        <BlockDetail
-          block={selectedBlock}
-          languages={data.languages}
-          perDay={perDay}
-          setPerDay={setPerDay}
-          busy={busy}
-          sourceWeights={sourceWeights}
-          setSourceWeights={setSourceWeights}
-          applySchedule={applySchedule}
-          addBlockAccount={addBlockAccount}
-        />
       )}
     </div>
   );
@@ -721,105 +505,6 @@ function TopUpPanel({
   );
 }
 
-// The flex row, border/lift visuals, geometry ref and transform live on the parent wrapper
-// (it owns the drag state); BlockCard is purely the handle + card content.
-function blockWrapperClass(dragging: boolean): string {
-  return [
-    "flex items-stretch overflow-hidden rounded-md border bg-base-100",
-    dragging
-      ? "border-primary/60 ring-2 ring-primary/25"
-      : "border-base-300 transition-[border-color] hover:border-primary/50",
-  ].join(" ");
-}
-
-function BlockCard({
-  block,
-  shortages,
-  onOpen,
-  dragging,
-  onHandlePointerDown,
-}: {
-  block: ChannelThemeBlock;
-  shortages: NormalizeShortage[];
-  onOpen: () => void;
-  dragging: boolean;
-  onHandlePointerDown: (e: ReactPointerEvent<HTMLElement>) => void;
-}) {
-  const { t } = useT();
-  const bottleneck = blockBottleneck(block);
-  const bottleneckLabel = blockBottleneckLabelKey(block, bottleneck);
-  const packs = blockPackCount(block);
-  const shortageTitle = shortages
-    .slice(0, 8)
-    .map((shortage) => `${shortage.channelName} -> ${shortageDeckLabel(shortage, t)}: ${t("channelBlocks.shortageMissing", { n: shortage.missing })}`)
-    .join("\n");
-  const shortageMore = shortages.length > 8 ? `\n+${shortages.length - 8}` : "";
-  return (
-    <>
-      <span
-        aria-label={t("channelBlocks.dragHandle")}
-        title={t("channelBlocks.dragHandle")}
-        onPointerDown={onHandlePointerDown}
-        className={`flex w-9 shrink-0 touch-none select-none items-center justify-center text-base-content/30 transition-colors hover:bg-base-200 hover:text-base-content/60 ${
-          dragging ? "cursor-grabbing bg-base-200 text-base-content/60" : "cursor-grab"
-        }`}
-      >
-        <AppIcon name="drag" size={16} />
-      </span>
-      <button
-        type="button"
-        className="grid min-w-0 flex-1 gap-3 p-4 text-left transition-colors hover:bg-base-200/30 lg:grid-cols-[minmax(220px,1fr)_190px_minmax(280px,1.5fr)_220px_24px] lg:items-center"
-        onClick={onOpen}
-      >
-      <div className="min-w-0">
-        <div className="flex items-center gap-2">
-          <h2 className="truncate text-base font-semibold">{block.title}</h2>
-          <span className="badge badge-ghost badge-sm">{block.totalAccounts}</span>
-          {shortages.length > 0 && (
-            <span
-              className="badge badge-warning badge-sm gap-1"
-              title={`${shortageTitle}${shortageMore}`}
-              aria-label={`${t("channelBlocks.shortagesTitle")}: ${shortageTitle}${shortageMore}`}
-            >
-              <AppIcon name="warning" size={12} />
-              {shortages.length}
-            </span>
-          )}
-        </div>
-      </div>
-      <div className="rounded bg-base-200 px-3 py-2">
-        <div className="text-2xl font-bold leading-none">{formatRunwayDays(block.runwayDays)}</div>
-        <div className="mt-1 text-xs text-base-content/55">{t("channelBlocks.runwayNoGeneration")}</div>
-      </div>
-      <div className="min-w-0">
-        <div className="text-xs font-semibold uppercase tracking-wide text-base-content/45">{t(bottleneckLabel)}</div>
-        {bottleneck ? (
-          <>
-            <div className="mt-1 truncate text-sm font-semibold" title={`${bottleneck.account.channelName} → ${deckDisplayName(bottleneck.deck)}`}>
-              {bottleneck.account.channelName} → {deckDisplayName(bottleneck.deck)}
-            </div>
-            <div className="mt-1 text-xs text-base-content/60">
-              {t("channelBlocks.bottleneckMeta", {
-                queued: bottleneck.queued,
-                perDay: bottleneck.postsPerDay,
-                days: formatRunwayDays(bottleneck.days),
-              })}
-            </div>
-          </>
-        ) : (
-          <div className="mt-1 text-sm text-base-content/45">{t("channelBlocks.bottleneckNone")}</div>
-        )}
-      </div>
-      <div className="grid grid-cols-2 gap-2 text-center">
-        <Metric value={packs} label={t("channelBlocks.packs")} />
-        <Metric value={block.postsPerDay} label={t("channelBlocks.postsPerDayTotal")} />
-      </div>
-      <AppIcon name="chevron-right" size={18} className="justify-self-end text-base-content/40" />
-      </button>
-    </>
-  );
-}
-
 function BlockDetail({
   block,
   languages,
@@ -850,10 +535,16 @@ function BlockDetail({
   // grid full). Languages with prepared block packs can still be added via the picker, including ones not
   // present yet — so hiding the empty cells doesn't take away the ability to add a new language.
   const [addLang, setAddLang] = useState("");
-  const visibleLangs = languages.filter((lang) => {
-    const cell = block.cells.find((candidate) => candidate.lang === lang.code);
-    return (cell?.accounts.length ?? 0) > 0;
-  });
+  const visibleLangs = [...languages]
+    .filter((lang) => {
+      const cell = block.cells.find((candidate) => candidate.lang === lang.code);
+      return (cell?.accounts.length ?? 0) > 0;
+    })
+    .sort((a, b) => {
+      const ac = block.cells.find((candidate) => candidate.lang === a.code)?.accounts.length ?? 0;
+      const bc = block.cells.find((candidate) => candidate.lang === b.code)?.accounts.length ?? 0;
+      return bc - ac || a.label.localeCompare(b.label);
+    });
   const addableLangs = languages.filter((lang) => {
     const cell = block.cells.find((candidate) => candidate.lang === lang.code);
     return (cell?.defaultSourceDecks.length ?? 0) > 0;
@@ -928,9 +619,8 @@ function BlockDetail({
       </section>
 
       {block.rules.length > 0 && (
-        <section className="rounded-md border border-base-300 bg-base-100 p-4">
-          <h2 className="text-base font-semibold">{t("channelBlocks.blockRules")}</h2>
-          <ul className="mt-3 space-y-2 text-sm text-base-content/70">
+        <CollapsibleSection title={t("channelBlocks.blockRules")} meta={String(block.rules.length)}>
+          <ul className="space-y-2 text-sm text-base-content/70">
             {block.rules.map((rule) => (
               <li key={rule} className="flex gap-2">
                 <AppIcon name="check" size={14} className="mt-0.5 shrink-0 text-success" />
@@ -938,12 +628,11 @@ function BlockDetail({
               </li>
             ))}
           </ul>
-        </section>
+        </CollapsibleSection>
       )}
 
-      <section className="rounded-md border border-base-300 bg-base-100 p-4">
-        <h2 className="text-base font-semibold">{t("channelBlocks.blockDecks")}</h2>
-        <div className="mt-3 flex flex-wrap gap-2">
+      <CollapsibleSection title={t("channelBlocks.blockDecks")} meta={String(decks.length)}>
+        <div className="flex flex-wrap gap-2">
           {decks.length === 0 ? (
             <span className="text-sm text-base-content/45">{t("channelBlocks.noDecks")}</span>
           ) : (
@@ -955,7 +644,7 @@ function BlockDetail({
             ))
           )}
         </div>
-      </section>
+      </CollapsibleSection>
 
       <section className="rounded-md border border-base-300 bg-base-100 p-4">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
@@ -996,7 +685,7 @@ function BlockDetail({
             {t("channelBlocks.noChannelsYet")}
           </div>
         ) : (
-          <div className="columns-1 gap-3 md:columns-2 xl:columns-3 2xl:columns-4">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-5">
             {visibleLangs.map((lang) => {
               const cell = block.cells.find((candidate) => candidate.lang === lang.code);
               if (!cell) return null;
@@ -1005,9 +694,9 @@ function BlockDetail({
               return (
                 <div
                   key={lang.code}
-                  className="mb-3 break-inside-avoid rounded-md border border-base-300 bg-base-100"
+                  className={languagePanelClass(cell.accounts.length)}
                 >
-                  <div className="flex items-center justify-between gap-2 border-b border-base-300 bg-base-200/60 px-3 py-2">
+                  <div className="flex items-center justify-between gap-2 border-b border-base-300 bg-base-200/60 px-2.5 py-1.5">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-bold text-base-content/65">{lang.label}</span>
                       <span className="text-xs text-base-content/40">{cell.accounts.length}</span>
@@ -1023,7 +712,7 @@ function BlockDetail({
                       {t("channelBlocks.addChannel")}
                     </button>
                   </div>
-                  <div className="grid grid-cols-1 gap-2 p-2">
+                  <div className={languageChannelsGridClass(cell.accounts.length)}>
                     {cell.accounts.map((account) => (
                       <ChannelCell key={account.id} account={account} t={t} />
                     ))}
@@ -1035,6 +724,26 @@ function BlockDetail({
         )}
       </section>
     </>
+  );
+}
+
+function CollapsibleSection({
+  title,
+  meta,
+  children,
+}: {
+  title: string;
+  meta?: string;
+  children: ReactNode;
+}) {
+  return (
+    <details className="rounded-md border border-base-300 bg-base-100">
+      <summary className="flex cursor-pointer select-none items-center justify-between gap-3 px-4 py-3 text-base font-semibold marker:text-base-content/35">
+        <span>{title}</span>
+        {meta && <span className="rounded border border-base-300 px-2 py-0.5 text-xs font-semibold text-base-content/55">{meta}</span>}
+      </summary>
+      <div className="border-t border-base-300 px-4 py-3">{children}</div>
+    </details>
   );
 }
 
@@ -1111,8 +820,8 @@ function OperationalSummary({ accounts, clients }: { accounts: OperationalAccoun
       </div>
 
       {multiKey && (
-        <section className="rounded-md border border-base-300 bg-base-100 p-4">
-          <div className="flex items-center gap-2 text-sm font-semibold">
+        <CollapsibleSection title={t("accounts.byKeyTitle")} meta={String(keyTileCount)}>
+          <div className="flex items-center gap-2 text-sm font-semibold text-base-content/70">
             <BrandIcon name="youtube" size={16} />
             {t("accounts.byKeyTitle")}
           </div>
@@ -1148,7 +857,7 @@ function OperationalSummary({ accounts, clients }: { accounts: OperationalAccoun
               </div>
             )}
           </div>
-        </section>
+        </CollapsibleSection>
       )}
     </div>
   );
@@ -1288,20 +997,20 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
   const warningTitle = [gapTitle, missingTitle, depletedTitle].filter(Boolean).join("\n");
   const youtubeUrl = account.ytChannelId ? `https://www.youtube.com/channel/${account.ytChannelId}` : null;
   const avatar = account.avatar ? (
-    <img src={account.avatar} alt="" className="h-10 w-10 rounded-md border border-base-300 object-cover" loading="lazy" />
+    <img src={account.avatar} alt="" className="h-8 w-8 rounded-md border border-base-300 object-cover" loading="lazy" />
   ) : (
-    <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
-      <AppIcon name="accounts" size={16} />
+    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary">
+      <AppIcon name="accounts" size={14} />
     </div>
   );
   return (
-    <div className="relative rounded-md border border-base-300 bg-base-100 p-3 transition-colors hover:border-primary/50 hover:bg-base-200/30">
+    <div className="relative rounded-md border border-base-300 bg-base-100 p-2 transition-colors hover:border-primary/50 hover:bg-base-200/30">
       <Link
         to={`/accounts/${account.id}`}
         className="absolute inset-0 z-0 rounded-md"
         aria-label={account.channelName}
       />
-      <div className="pointer-events-none relative z-10 flex items-start gap-2">
+      <div className="pointer-events-none relative z-10 flex items-start gap-1.5">
         {youtubeUrl ? (
           <a
             href={youtubeUrl}
@@ -1316,7 +1025,7 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
           <div className="shrink-0">{avatar}</div>
         )}
         <div className="min-w-0 flex-1">
-          <div className="line-clamp-2 text-sm font-semibold leading-snug" title={account.channelName}>
+          <div className="line-clamp-2 text-[13px] font-semibold leading-tight" title={account.channelName}>
             {account.channelName}
           </div>
           <div className="mt-0.5 flex flex-wrap gap-1">
@@ -1330,7 +1039,7 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
         </div>
       </div>
 
-      <div className="pointer-events-none relative z-10 mt-3 block rounded bg-base-200/70 px-2 py-2">
+      <div className="pointer-events-none relative z-10 mt-2 block rounded bg-base-200/70 px-2 py-1.5">
         <div className="flex items-baseline justify-between gap-2">
           <span className="text-[11px] font-semibold uppercase tracking-wide text-base-content/45">{t("channelBlocks.videosLeft")}</span>
           <span className="flex items-center gap-1 text-sm font-bold">
@@ -1352,15 +1061,6 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
           <span>{account.authError}</span>
         </div>
       )}
-    </div>
-  );
-}
-
-function Metric({ value, label }: { value: ReactNode; label: string }) {
-  return (
-    <div className="rounded bg-base-200 px-3 py-2">
-      <div className="text-2xl font-black leading-none">{value}</div>
-      <div className="mt-1 text-xs leading-tight text-base-content/55">{label}</div>
     </div>
   );
 }

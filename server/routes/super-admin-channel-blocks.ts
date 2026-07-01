@@ -19,7 +19,7 @@ import {
   queuedRemainingForOwnerDecks,
 } from "../services/gen-queue.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
-import { accountDailyScheduleCap, googleKeyDailyScheduleCap } from "../infra/account-limits.ts";
+import { accountDailyScheduleCap, googleKeyDailyScheduleCap, SUPER_ADMIN_SCHEDULE_START_HOUR } from "../infra/account-limits.ts";
 import { cleanSuperAdminSourceDecks, isForbiddenSuperAdminSourceDeck } from "../services/super-admin-optical-decks.ts";
 
 const BLOCK_LANGS = [
@@ -73,6 +73,7 @@ const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
   en: ["pack:new-memes-en-superadmin"],
   es: ["pack:new-memes-es-superadmin"],
   pt: ["pack:new-memes-pt-superadmin"],
+  ar: ["pack:new-memes-ar-superadmin"],
 };
 
 const QUOTE_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
@@ -101,125 +102,7 @@ const QUOTE_STATIC_DECK_BY_LANG: Record<string, string[]> = {
   id: ["quotes-id"],
 };
 
-const PSYCHOLOGY_DECK_BY_LANG: Record<string, string[]> = {
-  ru: ["pack:psychology-ru-superadmin"],
-  en: ["pack:psychology-en-superadmin"],
-  de: ["pack:psychology-de-superadmin"],
-  it: ["pack:psychology-it-superadmin"],
-  es: ["pack:psychology-es-superadmin"],
-  fr: ["pack:psychology-fr-superadmin"],
-  pt: ["pack:psychology-pt-superadmin"],
-};
-
-const FACT_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
-  ru: ["fact-ru"],
-  en: ["fact-en"],
-  es: ["fact-es"],
-  de: ["fact-de"],
-  it: ["fact-it"],
-  fr: ["fact-fr"],
-  pt: ["fact-pt"],
-};
-
-const RELIGION_ISLAM_DECK_BY_LANG: Record<string, string[]> = {
-  ar: ["islamic"],
-};
-
-const RELIGION_KJV_DECK_BY_LANG: Record<string, string[]> = {
-  en: ["christian"],
-};
-
-const RELIGION_PRAYER_DECK_BY_LANG: Record<string, string[]> = {
-  en: ["prayers-en"],
-  de: ["prayers-de"],
-};
-
-const RELIGION_CHRISTIAN_QUOTE_DECK_BY_LANG: Record<string, string[]> = {
-  en: ["christian-quotes-en"],
-};
-
-const RELIGION_JOKE_DECK_BY_LANG: Record<string, string[]> = {
-  ar: ["ar"],
-  en: ["en"],
-  de: ["de"],
-};
-
-const RELIGION_MEME_DECK_BY_LANG: Record<string, string[]> = {
-  ar: ["pack:new-memes-ar-superadmin"],
-  en: ["pack:new-memes-en-superadmin"],
-  de: ["pack:new-memes-de-superadmin"],
-};
-
-const RELIGION_STATIC_QUOTE_DECK_BY_LANG: Record<string, string[]> = {
-  ar: ["quotes-ar"],
-  en: ["quotes-en"],
-  de: ["quotes-de"],
-};
-
-const ISLAM_SOURCE_GROUPS: SourceGroupDef[] = [
-  {
-    id: "islam",
-    title: "Ислам",
-    defaultWeight: 3,
-    sources: RELIGION_ISLAM_DECK_BY_LANG,
-  },
-];
-
-const CHRISTIANITY_SOURCE_GROUPS: SourceGroupDef[] = [
-  {
-    id: "kjv_bible",
-    title: "Библия KJV",
-    defaultWeight: 2,
-    sources: RELIGION_KJV_DECK_BY_LANG,
-  },
-  {
-    id: "christian_prayers",
-    title: "Христианские молитвы",
-    defaultWeight: 1,
-    sources: RELIGION_PRAYER_DECK_BY_LANG,
-  },
-  {
-    id: "christian_quotes",
-    title: "Христианские цитаты",
-    defaultWeight: 1,
-    sources: RELIGION_CHRISTIAN_QUOTE_DECK_BY_LANG,
-  },
-];
-
-const RELIGION_COMMON_SOURCE_GROUPS: SourceGroupDef[] = [
-  {
-    id: "jokes",
-    title: "Анекдоты",
-    defaultWeight: 1,
-    sources: RELIGION_JOKE_DECK_BY_LANG,
-  },
-  {
-    id: "memes",
-    title: "Мемы",
-    defaultWeight: 1,
-    sources: RELIGION_MEME_DECK_BY_LANG,
-  },
-  {
-    id: "static_quotes",
-    title: "Статичные цитаты",
-    defaultWeight: 1,
-    sources: RELIGION_STATIC_QUOTE_DECK_BY_LANG,
-  },
-];
-
-const RELIGION_SOURCE_GROUPS: SourceGroupDef[] = [
-  ...ISLAM_SOURCE_GROUPS.map((group) => ({ ...group, section: "Ислам" })),
-  ...CHRISTIANITY_SOURCE_GROUPS.map((group) => ({ ...group, section: "Христианство" })),
-  ...RELIGION_COMMON_SOURCE_GROUPS.map((group) => ({ ...group, section: "Общее" })),
-];
-
 const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
-  {
-    id: "fact_video",
-    title: "Интересный факт",
-    defaultWeight: 1,
-    sources: FACT_VIDEO_DECK_BY_LANG,
-  },
   {
     id: "jokes",
     title: "Анекдоты",
@@ -244,55 +127,17 @@ const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
     defaultWeight: 3,
     sources: QUOTE_STATIC_DECK_BY_LANG,
   },
-  {
-    id: "psychology",
-    title: "Психология",
-    defaultWeight: 2,
-    sources: PSYCHOLOGY_DECK_BY_LANG,
-  },
 ];
-
-const BLOCK_DEFAULT_SOURCES: Record<string, Record<string, string[]>> = {
-  islam: {
-    ar: ["islamic", "ar", "pack:new-memes-ar-superadmin", "quotes-ar"],
-  },
-  christianity: {
-    en: ["christian", "prayers-en", "christian-quotes-en", "en", "pack:new-memes-en-superadmin", "quotes-en"],
-    de: ["prayers-de", "de", "pack:new-memes-de-superadmin", "quotes-de"],
-  },
-  religion: {
-    ar: ["islamic", "ar", "pack:new-memes-ar-superadmin", "quotes-ar"],
-    en: ["christian", "prayers-en", "christian-quotes-en", "en", "pack:new-memes-en-superadmin", "quotes-en"],
-    de: ["prayers-de", "de", "pack:new-memes-de-superadmin", "quotes-de"],
-  },
-};
 
 export const BLOCKS: BlockDef[] = [
   {
-    id: "religion",
-    title: "Религия",
-    description: "Исламские и христианские каналы в одном блоке, но с раздельными настройками микса.",
-    rules: [
-      "Исламские тексты и молитвенные формулировки не смешивать с христианскими источниками.",
-      "Христианские KJV/молитвенные источники не смешивать с исламскими каналами.",
-      "Для каждого религиозного пака нужен отдельный source ledger и ручная проверка переводов/формулировок.",
-      "Перед массовой публикацией проверять title/description/thumbnails на спорный, оскорбительный или политизированный контекст.",
-      "Музыка/звук подбирается отдельно под религию; для исламских паков использовать немелодический фон или тишину.",
-      "В исламских религиозных паках не использовать человеческие лица/портреты: никаких изображений пророков, сподвижников, учёных или современных людей; вместо этого каллиграфия, мечети, орнаменты, книги, свет/текстуры.",
-      "В христианских паках можно использовать только public-domain/clearly licensed религиозные artworks (иконы, фрески, картины, витражи) с source ledger; не выдавать artwork за реальный портрет библейского персонажа.",
-      "Не использовать современные фото актёров/людей как Иисуса, апостолов, святых или пророков без явных прав и контекста.",
-      "Не использовать религиозные тексты для нападок на защищённые группы, оправдания насилия, экстремизма или обещаний медицинских чудес.",
-    ],
-    accountIds: [23, 31],
-    sourceGroups: RELIGION_SOURCE_GROUPS,
-  },
-  {
     id: "quotes",
-    title: "Нерелигиозные",
-    description: "Все русские и нерусские нерелигиозные каналы в одном общем миксе источников.",
+    title: "Все каналы",
+    description: "Все 23 канала armen в одном общем миксе нерелигиозных источников.",
     rules: [
-      "Все нерелигиозные каналы супер-админа используют один общий микс источников.",
-      "Факты требуют проверяемого источника; численные данные и названия нужно перепроверять.",
+      "Все каналы супер-админа используют один общий микс нерелигиозных источников.",
+      "Религиозные источники не подключать к каналам armen.",
+      "Видео-факты больше не подключать к каналам armen.",
       "Мемы в этом блоке остаются отдельным источником микса, а не отдельным блоком.",
       "Оптические иллюзии, визуальные загадки и visual-riddles источники больше не подключать к armen-блокам.",
       "Лайфхаки локализовать на одном наборе идей, но бытовые реалии адаптировать под язык.",
@@ -306,7 +151,7 @@ export const BLOCKS: BlockDef[] = [
       "Не давать медицинских диагнозов/обещаний лечения; формулировать как общие наблюдения и self-help.",
       "Локализации должны сохранять осторожный тон и избегать травматичных/опасных советов.",
     ],
-    accountIds: [7, 14, 15, 16, 18, 38, 43, 44, 45, 52, 62, 64, 65, 68, 70, 72, 78, 79, 81, 82],
+    accountIds: [],
     sourceGroups: FACT_SOURCE_GROUPS,
   },
 ];
@@ -317,8 +162,9 @@ const BLOCK_ALIASES: Record<string, string> = {
   jokes_memes: "quotes",
   psychology: "quotes",
   riddles_illusions: "quotes",
-  islam: "religion",
-  christianity: "religion",
+  religion: "quotes",
+  islam: "quotes",
+  christianity: "quotes",
 };
 
 export function canonicalBlockId(blockId: string): string {
@@ -632,7 +478,7 @@ function sourceGroupForDeck(blockId: string, lang: string, deckId: string): Sour
 function blockDefaultSources(blockId: string, lang: string): string[] {
   const groups = sourceGroupsForBlock(canonicalBlockId(blockId));
   if (groups.length) return cleanSuperAdminSourceDecks(groups.flatMap((group) => group.sources[lang] ?? []));
-  return cleanSuperAdminSourceDecks(BLOCK_DEFAULT_SOURCES[blockId]?.[lang] ?? []);
+  return [];
 }
 
 export function blockDefaultSourcesForDb(db: Db, blockId: string, lang: string): string[] {
@@ -644,7 +490,7 @@ export function blockDefaultSourcesForDb(db: Db, blockId: string, lang: string):
         .filter((group) => !isAutoExpiredSourceGroup(db, canonical, group.id))
         .flatMap((group) => group.sources[lang] ?? []),
     );
-  return cleanSuperAdminSourceDecks(BLOCK_DEFAULT_SOURCES[canonical]?.[lang] ?? []);
+  return [];
 }
 
 function sameDeckSet(a: string[], b: string[]): boolean {
@@ -656,6 +502,7 @@ function sameDeckSet(a: string[], b: string[]): boolean {
 
 function accountBelongsToBlock(deps: RouteDeps, block: BlockDef, account: Account): boolean {
   if (block.accountIds.includes(account.id)) return true;
+  if (block.id === "quotes") return blockDefaultSources(block.id, account.channelLang).length > 0;
   const defaults = blockDefaultSources(block.id, account.channelLang);
   if (!defaults.length) return false;
   return sameDeckSet(cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account)), defaults);
@@ -1653,18 +1500,27 @@ function toMin(time: string): number {
   return h * 60 + m;
 }
 
-function randomDayTimes(n: number, avoid: Set<number> = new Set()): string[] {
+type ScheduleWindow = { startMinute: number; endMinute: number };
+const FULL_DAY_SCHEDULE_WINDOW: ScheduleWindow = { startMinute: 0, endMinute: 1440 };
+const SUPER_ADMIN_SCHEDULE_WINDOW: ScheduleWindow = { startMinute: SUPER_ADMIN_SCHEDULE_START_HOUR * 60, endMinute: 1440 };
+
+function randomDayTimes(n: number, avoid: Set<number> = new Set(), window = FULL_DAY_SCHEDULE_WINDOW): string[] {
   if (n <= 0) return [];
-  const interval = 1440 / n;
-  const phase = Math.random() * interval;
+  const windowMinutes = Math.max(1, window.endMinute - window.startMinute);
+  const interval = windowMinutes / n;
+  const phase = window.startMinute + Math.random() * interval;
   const jitter = Math.min(interval * 0.35, 20);
   const used = new Set<number>();
   const mins: number[] = [];
   for (let i = 0; i < n; i++) {
     let m = Math.round(phase + i * interval + (Math.random() * 2 - 1) * jitter);
-    m = ((m % 1440) + 1440) % 1440;
+    while (m < window.startMinute) m += windowMinutes;
+    while (m >= window.endMinute) m -= windowMinutes;
     let guard = 0;
-    while ((used.has(m) || avoid.has(m)) && guard++ < 180) m = (m + 1) % 1440;
+    while ((used.has(m) || avoid.has(m)) && guard++ < windowMinutes) {
+      m += 1;
+      if (m >= window.endMinute) m = window.startMinute;
+    }
     used.add(m);
     mins.push(m);
   }
@@ -1842,6 +1698,7 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
     for (const account of accounts) {
       const ownerId = account.userId ?? superAdminOwnerId(db) ?? uid(req);
       const owner = db.getUserById(ownerId);
+      const ownerIsSuperAdmin = isSuperAdminUser(owner);
       const cap = accountDailyScheduleCap(owner?.role === "admin");
       if (perDay > cap) {
         skipped.push({ accountId: account.id, channelName: account.channelName, reason: "per_channel_limit", cap });
@@ -1849,7 +1706,7 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
       }
       if (account.oauthClientId != null) {
         const otherSlots = db.scheduleSlotsForKey(account.oauthClientId, account.id);
-        const keyCap = googleKeyDailyScheduleCap(isSuperAdminUser(owner));
+        const keyCap = googleKeyDailyScheduleCap(ownerIsSuperAdmin);
         if (otherSlots + perDay > keyCap) {
           skipped.push({
             accountId: account.id,
@@ -1860,7 +1717,7 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
           continue;
         }
       }
-      const schedule = randomDayTimes(perDay, taken);
+      const schedule = randomDayTimes(perDay, taken, ownerIsSuperAdmin ? SUPER_ADMIN_SCHEDULE_WINDOW : FULL_DAY_SCHEDULE_WINDOW);
       for (const time of schedule) taken.add(toMin(time));
       const sourceDecks = cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account));
       const queuedByDeck = videosByDeck(db.listVideos(account.id));

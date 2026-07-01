@@ -44,6 +44,16 @@ export const MGS_ONLY_SUPER_ADMIN_DECKS = new Set([
   "pack:mgs-psychologie-eigen",
 ]);
 
+export const RETIRED_SUPER_ADMIN_FACT_VIDEO_DECKS = new Set([
+  "fact-ru",
+  "fact-en",
+  "fact-de",
+  "fact-es",
+  "fact-fr",
+  "fact-it",
+  "fact-pt",
+]);
+
 export const RETIRED_SUPER_ADMIN_STATIC_FACT_DECKS = new Set([
   "pack:static-facts-en-superadmin",
   "pack:static-facts-de-superadmin",
@@ -59,8 +69,27 @@ export const RETIRED_SUPER_ADMIN_FOREIGN_MOTIVATION_DECKS = new Set([
   "pack:motivation-de-superadmin",
 ]);
 
-export const RETIRED_SUPER_ADMIN_CHRISTIAN_FACT_DECKS = new Set([
+export const RETIRED_SUPER_ADMIN_RELIGIOUS_DECKS = new Set([
+  "islamic",
+  "islamic-quotes-ar",
+  "islamic-facts-ar",
+  "christian",
+  "prayers-en",
+  "prayers-de",
+  "christian-quotes-en",
   "christian-facts-en",
+  "long-islamic-ar",
+  "long-christian-en",
+]);
+
+export const RETIRED_SUPER_ADMIN_PSYCHOLOGY_DECKS = new Set([
+  "pack:psychology-ru-superadmin",
+  "pack:psychology-en-superadmin",
+  "pack:psychology-de-superadmin",
+  "pack:psychology-it-superadmin",
+  "pack:psychology-es-superadmin",
+  "pack:psychology-fr-superadmin",
+  "pack:psychology-pt-superadmin",
 ]);
 
 export const RETIRED_SUPER_ADMIN_SOVIET_POSTER_DECKS = new Set([
@@ -81,6 +110,10 @@ export const FORBIDDEN_SUPER_ADMIN_SOURCE_GROUPS = [
     decks: [...MGS_ONLY_SUPER_ADMIN_DECKS],
   },
   {
+    group: "retired armen fact video decks",
+    decks: [...RETIRED_SUPER_ADMIN_FACT_VIDEO_DECKS],
+  },
+  {
     group: "retired armen static fact decks",
     decks: [...RETIRED_SUPER_ADMIN_STATIC_FACT_DECKS],
   },
@@ -93,8 +126,12 @@ export const FORBIDDEN_SUPER_ADMIN_SOURCE_GROUPS = [
     decks: [...RETIRED_SUPER_ADMIN_FOREIGN_MOTIVATION_DECKS],
   },
   {
-    group: "retired armen christian fact decks",
-    decks: [...RETIRED_SUPER_ADMIN_CHRISTIAN_FACT_DECKS],
+    group: "retired armen religious decks",
+    decks: [...RETIRED_SUPER_ADMIN_RELIGIOUS_DECKS],
+  },
+  {
+    group: "retired armen psychology decks",
+    decks: [...RETIRED_SUPER_ADMIN_PSYCHOLOGY_DECKS],
   },
   {
     group: "retired armen soviet poster decks",

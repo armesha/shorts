@@ -59,6 +59,8 @@ client_secret_*.json
 
 # DB backups (e.g. data/app.db.bak-*) — NEVER commit
 data/*.db.bak*
+data/*.db.pre-*.bak
+data/psychology-*-20*.json
 
 # python bytecode cache
 __pycache__/
@@ -70,6 +72,9 @@ __pycache__/
 # scratch screenshots at repo root — agent working files, not source
 /image.png
 /gen-queue-toast.png
+/creator-*.png
+/creator-*.yml
+/shareboard-live-*.png
 
 # standalone design mockup (not part of the shorts pipeline) — kept local, not committed
 /example-design/

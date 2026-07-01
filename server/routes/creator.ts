@@ -9,9 +9,12 @@ import {
   addCreatorCards,
   canEdit,
   createPack,
+  deletePack,
   deriveRules,
   getPack,
   listCreatorPacks,
+  setCreatorPackTemplate,
+  setPackName,
   type PackTemplate,
   type StoredCard,
 } from "../../src/packs/store.ts";
@@ -42,11 +45,15 @@ import {
   creatorPresetById,
   creatorPresets,
 } from "../services/creator-assets.ts";
+import { deletePackMusicDir } from "../services/pack-audio.ts";
 import { writeZipFile } from "../services/zip.ts";
 
 const OUTPUT_DIR = loadBaseConfig().outputDir;
 const CREATOR_LIMIT = { limit: 12, windowMs: 10 * 60 * 1000 };
-const CREATOR_UPLOAD_BYTES = 3 * 1024 * 1024;
+const CREATOR_UPLOAD_BYTES = 8 * 1024 * 1024;
+const CREATOR_GIF_BYTES = 2 * 1024 * 1024;
+const CREATOR_AUDIO_BYTES = 7 * 1024 * 1024;
+const CREATOR_DESIGN_STATE_BYTES = 2_500_000;
 const CREATOR_TEMPLATE_W = 1080;
 const CREATOR_TEMPLATE_H = 1920;
 const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
@@ -126,8 +133,32 @@ function validCreatorBackground(src: string): string {
   throw new TemplateValidationError("background: разрешены только сервисные assets/template-packs или загруженный data:image");
 }
 
+function cleanCreatorDesignState(raw: unknown): unknown | undefined {
+  if (raw === undefined) return undefined;
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return undefined;
+  const json = JSON.stringify(raw);
+  if (Buffer.byteLength(json, "utf8") > CREATOR_DESIGN_STATE_BYTES) {
+    throw new TemplateValidationError("designState: состояние шаблона слишком большое");
+  }
+  return JSON.parse(json) as unknown;
+}
+
 type CreatorTextRole = "heading" | "body";
-type CreatorTextBox = { x: number; y: number; w: number; h: number };
+type CreatorTextBox = { x: number; y: number; w: number; h: number; rot?: number };
+
+function isCreatorMetaElement(el: PackTemplate["elements"][number]): boolean {
+  const role = String(el.role ?? "").toLowerCase();
+  const id = String((el as { id?: unknown }).id ?? "").toLowerCase();
+  return role === "source" || role === "cta" || role === "badge" || id === "source" || id === "cta" || id === "badge" || id === "panel";
+}
+
+function stripCreatorMetaElements(templates: PackTemplate[]): PackTemplate[] {
+  return templates.map((template) => {
+    const copy = JSON.parse(JSON.stringify(template)) as PackTemplate;
+    copy.elements = (copy.elements ?? []).filter((el) => !isCreatorMetaElement(el));
+    return copy;
+  });
+}
 
 function cleanCreatorTextBox(raw: unknown, role: CreatorTextRole): CreatorTextBox | null {
   if (!raw || typeof raw !== "object") return null;
@@ -138,6 +169,7 @@ function cleanCreatorTextBox(raw: unknown, role: CreatorTextRole): CreatorTextBo
   const y = Number(src.y);
   const w = Number(src.w);
   const h = Number(src.h);
+  const rot = Number(src.rot ?? 0);
   if (![x, y, w, h].every(Number.isFinite)) return null;
   const safeW = Math.min(CREATOR_TEMPLATE_W, Math.max(minW, Math.round(w)));
   const safeH = Math.min(CREATOR_TEMPLATE_H, Math.max(minH, Math.round(h)));
@@ -146,19 +178,21 @@ function cleanCreatorTextBox(raw: unknown, role: CreatorTextRole): CreatorTextBo
     y: Math.min(CREATOR_TEMPLATE_H - safeH, Math.max(0, Math.round(y))),
     w: safeW,
     h: safeH,
+    rot: Number.isFinite(rot) ? Math.max(-360, Math.min(360, Math.round(rot))) : 0,
   };
 }
 
 function applyTextLayout(templates: PackTemplate[], layout: unknown): PackTemplate[] {
-  if (!layout || typeof layout !== "object") return templates;
+  if (!layout || typeof layout !== "object") return stripCreatorMetaElements(templates);
   const src = layout as Record<string, unknown>;
   const boxes = {
     heading: cleanCreatorTextBox(src.heading, "heading"),
     body: cleanCreatorTextBox(src.body, "body"),
   };
-  if (!boxes.heading && !boxes.body) return templates;
+  if (!boxes.heading && !boxes.body) return stripCreatorMetaElements(templates);
   return templates.map((template) => {
     const copy = JSON.parse(JSON.stringify(template)) as PackTemplate;
+    copy.elements = (copy.elements ?? []).filter((el) => !isCreatorMetaElement(el));
     for (const el of copy.elements ?? []) {
       if (el.type !== "killbox") continue;
       const role = String(el.role ?? el.id ?? "");
@@ -173,6 +207,7 @@ function applyTextLayout(templates: PackTemplate[], layout: unknown): PackTempla
       el.y = box.y;
       el.w = box.w;
       el.h = box.h;
+      el.rot = box.rot ?? 0;
       if (box.w < 520) el.align = "center";
       if (box.h < 220) el.valign = "center";
     }
@@ -187,9 +222,10 @@ function cleanTemplatePackAsset(raw: string): { abs: string; rel: string } | nul
   } catch {
     return null;
   }
-  if (!rel.startsWith("template-packs/") || rel.includes("\\") || isAbsolute(rel)) return null;
+  if ((!rel.startsWith("template-packs/") && !rel.startsWith("motion/") && !rel.startsWith("creator/motion/")) || rel.includes("\\") || isAbsolute(rel)) return null;
   if (rel.split("/").some((part) => !part || part === "." || part === "..")) return null;
-  if (!/\.(png|jpe?g|webp|svg)$/i.test(rel)) return null;
+  if (rel.startsWith("template-packs/") && !/\.(png|jpe?g|webp|svg)$/i.test(rel)) return null;
+  if ((rel.startsWith("motion/") || rel.startsWith("creator/motion/")) && !/\.gif$/i.test(rel)) return null;
   const root = resolve(process.cwd(), "assets");
   const abs = resolve(root, rel);
   const back = relative(root, abs);
@@ -203,6 +239,7 @@ function imageContentType(rel: string): string {
   if (ext === ".jpg" || ext === ".jpeg") return "image/jpeg";
   if (ext === ".webp") return "image/webp";
   if (ext === ".svg") return "image/svg+xml; charset=utf-8";
+  if (ext === ".gif") return "image/gif";
   return "application/octet-stream";
 }
 
@@ -238,15 +275,86 @@ async function runHeavyLimited<T>(
   }
 }
 
-function motionOverlay(id: string | undefined): MotionOverlay | null {
+function parseDataGif(dataUrl: string): Buffer {
+  const m = /^data:image\/gif;base64,([A-Za-z0-9+/=\s]+)$/i.exec(dataUrl.trim());
+  if (!m) throw new TemplateValidationError("gif: разрешён только data:image/gif в base64");
+  const bytes = Buffer.from(m[1].replace(/\s/g, ""), "base64");
+  if (bytes.length > CREATOR_GIF_BYTES) throw new TemplateValidationError(`gif: файл больше ${CREATOR_GIF_BYTES} байт`);
+  return bytes;
+}
+
+function cleanCreatorMotionBox(raw: unknown): CreatorTextBox | null {
+  if (!raw || typeof raw !== "object") return null;
+  const src = raw as Record<string, unknown>;
+  const x = Number(src.x);
+  const y = Number(src.y);
+  const w = Number(src.w);
+  const h = Number(src.h);
+  const rot = Number(src.rot ?? 0);
+  if (![x, y, w, h].every(Number.isFinite)) return null;
+  const safeW = Math.min(CREATOR_TEMPLATE_W, Math.max(48, Math.round(w)));
+  const safeH = Math.min(CREATOR_TEMPLATE_H, Math.max(48, Math.round(h)));
+  return {
+    x: Math.min(CREATOR_TEMPLATE_W - safeW, Math.max(0, Math.round(x))),
+    y: Math.min(CREATOR_TEMPLATE_H - safeH, Math.max(0, Math.round(y))),
+    w: safeW,
+    h: safeH,
+    rot: Number.isFinite(rot) ? Math.max(-360, Math.min(360, Math.round(rot))) : 0,
+  };
+}
+
+function motionPlacement(rawBox: unknown): Pick<MotionOverlay, "width" | "height" | "x" | "y"> {
+  const box = cleanCreatorMotionBox(rawBox);
+  if (!box) return { width: 166, x: "main_w-overlay_w-56", y: "main_h-overlay_h-58" };
+  return { width: box.w, height: box.h, x: String(box.x), y: String(box.y) };
+}
+
+async function motionOverlay(id: string | undefined, box?: unknown): Promise<MotionOverlay | null> {
   if (!id || id === "none") return null;
+  if (/^data:image\/gif;base64,/i.test(id)) {
+    const bytes = parseDataGif(id);
+    const rel = stamp("motion", "gif");
+    const abs = outputAbs(rel);
+    await mkdir(dirname(abs), { recursive: true });
+    await writeFile(abs, bytes);
+    return { path: abs, ...motionPlacement(box) };
+  }
   const file = basename(id);
   if (!/\.gif$/i.test(file)) return null;
-  const dir = resolve(process.cwd(), "assets/motion/jokes");
-  const abs = resolve(dir, file);
-  const rel = relative(dir, abs);
-  if (!rel || rel.startsWith("..") || isAbsolute(rel) || !existsSync(abs)) return null;
-  return { path: abs, width: 166, x: "main_w-overlay_w-56", y: "main_h-overlay_h-58" };
+  for (const dir of [resolve(process.cwd(), "assets/creator/motion"), resolve(process.cwd(), "assets/motion/jokes")]) {
+    const abs = resolve(dir, file);
+    const rel = relative(dir, abs);
+    if (rel && !rel.startsWith("..") && !isAbsolute(rel) && existsSync(abs)) {
+      return { path: abs, ...motionPlacement(box) };
+    }
+  }
+  return null;
+}
+
+function optionalString(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
+}
+
+function creatorDesignMedia(pack: NonNullable<ReturnType<typeof getPack>>): Record<string, unknown> {
+  const raw = pack.creatorDesignState;
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+  const media = (raw as { media?: unknown }).media;
+  return media && typeof media === "object" && !Array.isArray(media) ? (media as Record<string, unknown>) : {};
+}
+
+function cleanCreatorDurationSec(value: unknown): number {
+  return Math.max(6, Math.min(30, Math.round(Number(value) || 6)));
+}
+
+function creatorExportSettings(pack: NonNullable<ReturnType<typeof getPack>>, body: { durationSec?: unknown; music?: unknown; motion?: unknown; motionBox?: unknown }) {
+  const media = creatorDesignMedia(pack);
+  const savedMotion = optionalString(media.motion);
+  return {
+    durationSec: cleanCreatorDurationSec(body.durationSec ?? media.durationSec),
+    music: optionalString(body.music) ?? optionalString(media.music),
+    motion: optionalString(body.motion) ?? (savedMotion === "custom" ? optionalString(media.customMotion) : savedMotion),
+    motionBox: body.motionBox ?? media.motionBox,
+  };
 }
 
 function readableFor(pack: NonNullable<ReturnType<typeof getPack>>, card: StoredCard) {
@@ -283,6 +391,27 @@ function parseDataImage(dataUrl: string): { ext: string; bytes: Buffer } {
   return { ext, bytes };
 }
 
+function parseDataAudio(dataUrl: string): { ext: string; bytes: Buffer } {
+  const m = /^data:audio\/(mpeg|mp3|mp4|m4a|aac|wav|ogg|opus);base64,([A-Za-z0-9+/=\s]+)$/i.exec(dataUrl.trim());
+  if (!m) throw new TemplateValidationError("music: разрешены mp3, m4a, aac, wav, ogg, opus");
+  const mime = m[1].toLowerCase();
+  const ext = mime === "mpeg" ? "mp3" : mime === "mp4" ? "m4a" : mime;
+  const bytes = Buffer.from(m[2].replace(/\s/g, ""), "base64");
+  if (bytes.length > CREATOR_AUDIO_BYTES) throw new TemplateValidationError(`music: файл больше ${CREATOR_AUDIO_BYTES} байт`);
+  return { ext, bytes };
+}
+
+function creatorMusicPath(userId: number, id: string): string | null {
+  if (!id.startsWith(`creator-music/${userId}/`)) return null;
+  const file = basename(id);
+  if (!/\.(mp3|m4a|aac|wav|ogg|opus)$/i.test(file)) return null;
+  const dir = resolve(process.cwd(), "data/creator-assets", String(userId), "music");
+  const abs = resolve(dir, file);
+  const rel = relative(dir, abs);
+  if (!rel || rel.startsWith("..") || isAbsolute(rel) || !existsSync(abs)) return null;
+  return abs;
+}
+
 async function listUserBackgrounds(userId: number) {
   const dir = resolve(process.cwd(), "data/creator-assets", String(userId), "backgrounds");
   if (!existsSync(dir)) return [];
@@ -299,6 +428,24 @@ async function listUserBackgrounds(userId: number) {
       name: file.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " "),
       type: "background",
       dataUrl: `data:${mime};base64,${bytes.toString("base64")}`,
+    });
+  }
+  return out.reverse();
+}
+
+async function listUserMusic(userId: number) {
+  const dir = resolve(process.cwd(), "data/creator-assets", String(userId), "music");
+  if (!existsSync(dir)) return [];
+  const out: Array<{ id: string; name: string; type: "music"; url: string }> = [];
+  for (const file of readdirSync(dir).sort().slice(-60)) {
+    if (!/\.(mp3|m4a|aac|wav|ogg|opus)$/i.test(file)) continue;
+    const abs = resolve(dir, file);
+    if (!statSync(abs).isFile()) continue;
+    out.push({
+      id: `creator-music/${userId}/${file}`,
+      name: file.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " "),
+      type: "music",
+      url: `/api/creator/assets/music/${encodeURIComponent(file)}`,
     });
   }
   return out.reverse();
@@ -340,7 +487,7 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
         sample: preset.sample,
         rules: preset.templates[0] ? deriveRules(preset.templates[0]) : [],
       })),
-      music: creatorMusicTracks(),
+      music: [...await listUserMusic(userId), ...creatorMusicTracks()],
       motion: creatorMotionOverlays(),
     };
   });
@@ -372,7 +519,7 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
   app.post("/api/creator/packs", { bodyLimit: CREATOR_UPLOAD_BYTES }, async (req, reply) => {
     if (!requireCreator(req, reply)) return;
     const body =
-      (req.body as { name?: string; lang?: string; templateType?: string; presetId?: string; templates?: PackTemplate[]; background?: string; layout?: unknown }) ?? {};
+      (req.body as { name?: string; lang?: string; templateType?: string; presetId?: string; templates?: PackTemplate[]; background?: string; layout?: unknown; designState?: unknown }) ?? {};
     if (!body.name?.trim()) return reply.code(400).send({ error: "Нужно имя пака" });
     let templates = Array.isArray(body.templates) ? body.templates : [];
     let lang = body.lang || "ru";
@@ -390,19 +537,49 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
       templates = applyTextLayout(templates, body.layout);
       enforceCreatorTemplateAssets(templates);
       validateTemplateList(templates);
+      const designState = cleanCreatorDesignState(body.designState);
+      const pack = createPack(uid(req), { name: body.name, lang, templates, templateType, creator: true, creatorDesignState: designState });
+      return { pack: fullPackPayload(pack) };
     } catch (e) {
       const msg = templateError(e);
       if (msg) return reply.code(400).send({ error: msg });
       throw e;
     }
-    const pack = createPack(uid(req), { name: body.name, lang, templates, templateType, creator: true });
-    return { pack: fullPackPayload(pack) };
   });
 
-  app.post("/api/creator/packs/:id/cards", async (req, reply) => {
+  app.patch("/api/creator/packs/:id/design", { bodyLimit: CREATOR_UPLOAD_BYTES }, async (req, reply) => {
     if (!requireCreator(req, reply)) return;
     const id = (req.params as { id: string }).id;
-    const body = (req.body as { cards?: unknown }) ?? {};
+    const body = (req.body as { templates?: PackTemplate[]; background?: string; layout?: unknown; templateType?: string; designState?: unknown }) ?? {};
+    if (!Array.isArray(body.templates) || !body.templates.length) return reply.code(400).send({ error: "Нужен шаблон" });
+    let templates = body.templates;
+    try {
+      templates = applyBackground(templates, body.background);
+      templates = applyTextLayout(templates, body.layout);
+      enforceCreatorTemplateAssets(templates);
+      validateTemplateList(templates);
+      const designState = cleanCreatorDesignState(body.designState);
+      const updated = setCreatorPackTemplate(id, uid(req), isSuperAdminUser(db.getUserById(uid(req))), templates, body.templateType, designState);
+      if (!updated.ok) {
+        if (updated.reason === "not_found") return reply.code(404).send({ error: "Пак не найден или нет прав на редактирование" });
+        if (updated.reason === "not_creator") return reply.code(400).send({ error: "Это не creator-пак" });
+        return reply.code(400).send({ error: "Нужен шаблон" });
+      }
+      return { pack: fullPackPayload(updated.pack) };
+    } catch (e) {
+      const msg = templateError(e);
+      if (msg) return reply.code(400).send({ error: msg });
+      throw e;
+    }
+  });
+
+  app.post("/api/creator/packs/:id/cards", { bodyLimit: CREATOR_UPLOAD_BYTES }, async (req, reply) => {
+    if (!requireCreator(req, reply)) return;
+    const id = (req.params as { id: string }).id;
+    const body = (req.body as { cards?: unknown; templates?: PackTemplate[]; background?: string; layout?: unknown; templateType?: string; designState?: unknown }) ?? {};
+    if (Array.isArray(body.templates) || body.designState !== undefined || body.layout !== undefined || body.background !== undefined || body.templateType !== undefined) {
+      return reply.code(400).send({ error: "Шаблон сохраняется отдельно от карточек" });
+    }
     const r = addCreatorCards(id, uid(req), isSuperAdminUser(db.getUserById(uid(req))), body.cards ?? []);
     if (!r.ok) {
       if (r.reason === "not_found") return reply.code(404).send({ error: "Пак не найден или нет прав на редактирование" });
@@ -410,6 +587,35 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
       return reply.code(400).send({ error: "Карточки не прошли правила шаблона", errors: r.result?.errors ?? [], parsed: r.result?.parsed ?? 0 });
     }
     return { added: r.added, total: r.total, pack: fullPackPayload(r.pack) };
+  });
+
+  app.patch("/api/creator/packs/:id", async (req, reply) => {
+    if (!requireCreator(req, reply)) return;
+    const id = (req.params as { id: string }).id;
+    const body = (req.body as { name?: string }) ?? {};
+    const userId = uid(req);
+    const isSuper = isSuperAdminUser(db.getUserById(userId));
+    const pack = getPack(id, userId, isSuper);
+    if (!pack || !pack.creator || !canEdit(pack, userId, isSuper)) return reply.code(404).send({ error: "Пак не найден или нет прав" });
+    const name = String(body.name || "").trim();
+    if (!name) return reply.code(400).send({ error: "Нужно название пака" });
+    if (!setPackName(id, name)) return reply.code(400).send({ error: "Не удалось переименовать пак" });
+    const updated = getPack(id, userId, isSuper);
+    return { pack: updated ? fullPackPayload(updated) : null };
+  });
+
+  app.delete("/api/creator/packs/:id", async (req, reply) => {
+    if (!requireCreator(req, reply)) return;
+    const id = (req.params as { id: string }).id;
+    const userId = uid(req);
+    const user = db.getUserById(userId);
+    const isSuper = isSuperAdminUser(user);
+    const pack = getPack(id, userId, isSuper);
+    if (!pack || !pack.creator) return reply.code(404).send({ error: "Пак не найден или нет прав на удаление" });
+    const ok = deletePack(id, userId, isSuper, { isAdmin: user?.role === "admin" });
+    if (!ok) return reply.code(404).send({ error: "Пак не найден или нет прав на удаление" });
+    deletePackMusicDir(id);
+    return { deleted: true };
   });
 
   app.post("/api/creator/assets/backgrounds", { bodyLimit: CREATOR_UPLOAD_BYTES }, async (req, reply) => {
@@ -438,6 +644,51 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
     return { asset: { id: file, name: safeName, type: "background", dataUrl: body.dataUrl } };
   });
 
+  app.post("/api/creator/assets/music", { bodyLimit: CREATOR_UPLOAD_BYTES }, async (req, reply) => {
+    if (!requireCreator(req, reply)) return;
+    const userId = uid(req);
+    const body = (req.body as { name?: string; dataUrl?: string }) ?? {};
+    if (!body.dataUrl) return reply.code(400).send({ error: "Нужен dataUrl" });
+    let parsed: { ext: string; bytes: Buffer };
+    try {
+      parsed = parseDataAudio(body.dataUrl);
+    } catch (e) {
+      const msg = templateError(e);
+      if (msg) return reply.code(400).send({ error: msg });
+      throw e;
+    }
+    const safeName =
+      String(body.name || "music")
+        .toLowerCase()
+        .replace(/\.[^.]+$/, "")
+        .replace(/[^a-z0-9а-яё_-]+/giu, "-")
+        .replace(/^-|-$/g, "")
+        .slice(0, 42) || "music";
+    const dir = resolve(process.cwd(), "data/creator-assets", String(userId), "music");
+    await mkdir(dir, { recursive: true });
+    const file = `${Date.now()}-${safeName}.${parsed.ext}`;
+    await writeFile(resolve(dir, file), parsed.bytes);
+    return {
+      asset: {
+        id: `creator-music/${userId}/${file}`,
+        name: safeName,
+        type: "music",
+        url: `/api/creator/assets/music/${encodeURIComponent(file)}`,
+      },
+    };
+  });
+
+  app.get("/api/creator/assets/music/:file", async (req, reply) => {
+    if (!requireCreator(req, reply)) return;
+    const file = basename((req.params as { file: string }).file);
+    if (!/\.(mp3|m4a|aac|wav|ogg|opus)$/i.test(file)) return reply.code(404).send({ error: "Не найдено" });
+    const dir = resolve(process.cwd(), "data/creator-assets", String(uid(req)), "music");
+    const abs = resolve(dir, file);
+    const rel = relative(dir, abs);
+    if (!rel || rel.startsWith("..") || isAbsolute(rel) || !existsSync(abs)) return reply.code(404).send({ error: "Не найдено" });
+    return reply.send(createReadStream(abs));
+  });
+
   async function preview(req: unknown, reply: { code: (n: number) => { send: (b: unknown) => unknown }; header: (k: string, v: string) => unknown }) {
     if (!requireCreator(req, reply)) return;
     const userId = uid(req);
@@ -463,7 +714,7 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
   }
   app.post("/api/creator/packs/:id/preview", preview);
 
-  app.post("/api/creator/packs/:id/export", async (req, reply) => {
+  app.post("/api/creator/packs/:id/export", { bodyLimit: CREATOR_UPLOAD_BYTES }, async (req, reply) => {
     if (!requireCreator(req, reply)) return;
     const userId = uid(req);
     const isAdmin = adminReq(req);
@@ -481,11 +732,12 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
         addToGallery?: boolean;
         music?: string;
         motion?: string;
+        motionBox?: unknown;
       }) ?? {};
     const pack = getPack(id, userId, isSuperAdminUser(db.getUserById(userId)));
     if (!pack || !pack.creator) return reply.code(404).send({ error: "Пак не найден" });
     if (!canEdit(pack, userId, isSuperAdminUser(db.getUserById(userId)))) return reply.code(403).send({ error: "Нет прав на экспорт" });
-    if (!canEdit(pack, userId, isSuperAdminUser(db.getUserById(userId)))) return reply.code(403).send({ error: "Нет прав на экспорт" });
+    const exportSettings = creatorExportSettings(pack, body);
     const index = Math.max(0, Math.floor(Number(body.index ?? 0)));
     const card = pack.cards[index];
     if (!card) return reply.code(404).send({ error: "Нет такой карточки" });
@@ -497,7 +749,7 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
         const readable = readableFor(pack, card);
         let audioPath: string | null = null;
         let music = "none";
-        let durationSec = Math.max(3, Math.min(60, Number(body.durationSec) || 6));
+        let durationSec = exportSettings.durationSec;
         let narration: string | null = null;
         if (body.voiceover) {
           narration = readable.narration;
@@ -506,15 +758,21 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
           music = voice.music;
           durationSec = Math.max(durationSec, voice.durationSec);
         } else {
-          const resolved = resolveAudio(body.music, { audioProfile: cleanType(pack.templateType) === "jokes" ? "jokes" : cleanType(pack.templateType) === "motivation" ? "motivation" : undefined }, { packId: pack.id });
-          audioPath = resolved.audioPath;
-          music = resolved.music;
+          const customAudio = exportSettings.music ? creatorMusicPath(userId, exportSettings.music) : null;
+          if (customAudio) {
+            audioPath = customAudio;
+            music = exportSettings.music || "custom";
+          } else {
+            const resolved = resolveAudio(exportSettings.music, { audioProfile: cleanType(pack.templateType) === "jokes" ? "jokes" : cleanType(pack.templateType) === "motivation" ? "motivation" : undefined }, { packId: pack.id });
+            audioPath = resolved.audioPath;
+            music = resolved.music;
+          }
         }
         const vidRel = stamp("exports", "mp4");
         await assembleStillVideo(imgAbs, outputAbs(vidRel), {
           durationSec,
           audioPath,
-          motionOverlay: motionOverlay(body.motion),
+          motionOverlay: await motionOverlay(exportSettings.motion, exportSettings.motionBox),
           audioVolume: body.voiceover ? 1 : 0.45,
         });
         return { imgRel, vidRel, music, durationSec, narration };
@@ -551,7 +809,7 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
     }
   });
 
-  app.post("/api/creator/packs/:id/export-zip", async (req, reply) => {
+  app.post("/api/creator/packs/:id/export-zip", { bodyLimit: CREATOR_UPLOAD_BYTES }, async (req, reply) => {
     if (!requireCreator(req, reply)) return;
     const userId = uid(req);
     const isAdmin = adminReq(req);
@@ -560,9 +818,10 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
       if (!hit.ok) return sendRateLimit(reply, hit);
     }
     const id = (req.params as { id: string }).id;
-    const body = (req.body as { limit?: number; durationSec?: number; voiceover?: boolean; format?: "png" | "mp4"; music?: string; motion?: string }) ?? {};
+    const body = (req.body as { limit?: number; durationSec?: number; voiceover?: boolean; format?: "png" | "mp4"; music?: string; motion?: string; motionBox?: unknown }) ?? {};
     const pack = getPack(id, userId, isSuperAdminUser(db.getUserById(userId)));
     if (!pack || !pack.creator) return reply.code(404).send({ error: "Пак не найден" });
+    const exportSettings = creatorExportSettings(pack, body);
     const limit = Math.max(1, Math.min(50, Math.floor(Number(body.limit) || Math.min(pack.cards.length, 12))));
     const format = body.format === "png" ? "png" : "mp4";
     try {
@@ -580,22 +839,28 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
           }
           let audioPath: string | null = null;
           let music = "none";
-          let durationSec = Math.max(3, Math.min(60, Number(body.durationSec) || 6));
+          let durationSec = exportSettings.durationSec;
           if (body.voiceover) {
             const voice = await edgeTtsVoiceover({ text: readable.narration, lang: pack.lang, namespace: `creator-${pack.id}` });
             audioPath = voice.audioPath;
             music = voice.music;
             durationSec = Math.max(durationSec, voice.durationSec);
           } else {
-            const resolved = resolveAudio(body.music, { audioProfile: cleanType(pack.templateType) === "jokes" ? "jokes" : undefined }, { packId: pack.id });
-            audioPath = resolved.audioPath;
-            music = resolved.music;
+            const customAudio = exportSettings.music ? creatorMusicPath(userId, exportSettings.music) : null;
+            if (customAudio) {
+              audioPath = customAudio;
+              music = exportSettings.music || "custom";
+            } else {
+              const resolved = resolveAudio(exportSettings.music, { audioProfile: cleanType(pack.templateType) === "jokes" ? "jokes" : undefined }, { packId: pack.id });
+              audioPath = resolved.audioPath;
+              music = resolved.music;
+            }
           }
           const vidRel = stamp("exports", "mp4");
           await assembleStillVideo(imgAbs, outputAbs(vidRel), {
             durationSec,
             audioPath,
-            motionOverlay: motionOverlay(body.motion),
+            motionOverlay: await motionOverlay(exportSettings.motion, exportSettings.motionBox),
             audioVolume: body.voiceover ? 1 : 0.45,
           });
           entries.push({ name: `card-${String(index + 1).padStart(3, "0")}.mp4`, path: outputAbs(vidRel) });

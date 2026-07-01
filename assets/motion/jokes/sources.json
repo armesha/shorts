@@ -1,22 +1,31 @@
 {
-  "createdAt": "2026-06-28T10:58:40.649Z",
-  "license": "Project-owned generated CSS sticker animations; no external imagery.",
+  "createdAt": "2026-07-01T10:52:22.302098+00:00",
+  "license": "Project-owned generated transparent GIF sticker animations; no external imagery.",
+  "groups": {
+    "laugh": "Laugh",
+    "cta": "CTA"
+  },
   "files": [
-    "laugh-bounce.gif",
-    "laugh-wiggle.gif",
+    "cta-comment.gif",
+    "cta-follow.gif",
+    "cta-like.gif",
+    "cta-new.gif",
+    "cta-save.gif",
+    "cta-share.gif",
+    "cta-subscribe.gif",
+    "cta-tap.gif",
+    "laugh-cry.gif",
+    "laugh-grin.gif",
     "laugh-pop.gif",
-    "laugh-squash.gif",
+    "laugh-rofl.gif",
     "laugh-shake.gif",
-    "laugh-nod.gif",
-    "laugh-tilt.gif",
-    "laugh-hop.gif",
-    "laugh-pulse.gif",
-    "laugh-slide.gif",
-    "laugh-drum.gif",
+    "laugh-snort.gif",
     "laugh-spark.gif",
+    "laugh-squint.gif",
+    "laugh-tears.gif",
+    "laugh-tilt.gif",
     "laugh-wave.gif",
-    "laugh-flip.gif",
     "laugh-zoom.gif"
   ],
-  "generator": "src/scripts/build-joke-motion-assets.mjs"
+  "generator": "src/scripts/build-creator-motion-gifs.py"
 }

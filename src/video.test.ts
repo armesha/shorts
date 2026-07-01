@@ -13,6 +13,14 @@ test("resolveAudio: joke decks use the joke audio pool unless explicitly silent"
   const silent = resolveAudio("none", { audioProfile: "jokes" });
   assert.equal(silent.music, "none");
   assert.equal(silent.audioPath, null);
+
+  const explicitTrack = listAudio()[0];
+  if (explicitTrack) {
+    const explicit = resolveAudio(explicitTrack, { audioProfile: "jokes" });
+    assert.equal(explicit.music, explicitTrack);
+    assert.ok(explicit.audioPath, "expected the explicit audio path");
+    assert.ok(existsSync(explicit.audioPath));
+  }
 });
 
 test("resolveAudio: religious fact decks use melodic audio, not ambient/drone beds", () => {

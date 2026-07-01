@@ -9,6 +9,22 @@ export const toMin = (t: string): number => {
   return h * 60 + m;
 };
 
+export type ScheduleWindow = { startMinute: number; endMinute: number };
+export const FULL_DAY_SCHEDULE_WINDOW: ScheduleWindow = { startMinute: 0, endMinute: 1440 };
+export const SUPER_ADMIN_SCHEDULE_START_HOUR = 8;
+export const SUPER_ADMIN_SCHEDULE_WINDOW: ScheduleWindow = {
+  startMinute: SUPER_ADMIN_SCHEDULE_START_HOUR * 60,
+  endMinute: 1440,
+};
+
+export const isSuperAdminScheduleTimeAllowed = (time: string): boolean => {
+  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) return false;
+  return toMin(time) >= SUPER_ADMIN_SCHEDULE_WINDOW.startMinute;
+};
+
+export const cleanSuperAdminScheduleTimes = (times: string[]): string[] =>
+  times.filter(isSuperAdminScheduleTimeAllowed);
+
 // Per-channel daily slot cap follows the channel OWNER's role: admins keep 20/day, every non-admin 18/day.
 // (Backend mirror: server/infra/account-limits.ts — it's the authoritative enforcement.)
 export const ADMIN_ACCOUNT_DAILY_SLOT_CAP = 20;
@@ -17,18 +33,27 @@ export const accountDailySlotCap = (ownerIsAdmin: boolean): number =>
   ownerIsAdmin ? ADMIN_ACCOUNT_DAILY_SLOT_CAP : USER_ACCOUNT_DAILY_SLOT_CAP;
 export const USER_DAILY_SLOT_CAP = 92;
 
-export const randomDayTimes = (n: number, avoid: Set<number> = new Set()): string[] => {
+export const randomDayTimes = (
+  n: number,
+  avoid: Set<number> = new Set(),
+  window = FULL_DAY_SCHEDULE_WINDOW,
+): string[] => {
   if (n <= 0) return [];
-  const interval = 1440 / n;
-  const phase = Math.random() * interval; // per-channel random start within the first slot
+  const windowMinutes = Math.max(1, window.endMinute - window.startMinute);
+  const interval = windowMinutes / n;
+  const phase = window.startMinute + Math.random() * interval; // per-channel random start within the first slot
   const jitter = Math.min(interval * 0.35, 20); // small → intervals stay roughly equal
   const used = new Set<number>();
   const mins: number[] = [];
   for (let i = 0; i < n; i++) {
     let m = Math.round(phase + i * interval + (Math.random() * 2 - 1) * jitter);
-    m = ((m % 1440) + 1440) % 1440;
+    while (m < window.startMinute) m += windowMinutes;
+    while (m >= window.endMinute) m -= windowMinutes;
     let guard = 0;
-    while ((used.has(m) || avoid.has(m)) && guard++ < 120) m = (m + 1) % 1440;
+    while ((used.has(m) || avoid.has(m)) && guard++ < windowMinutes) {
+      m += 1;
+      if (m >= window.endMinute) m = window.startMinute;
+    }
     used.add(m);
     mins.push(m);
   }

@@ -12,6 +12,9 @@ export const ACCOUNT_DAILY_SCHEDULE_CAP = ADMIN_ACCOUNT_DAILY_SCHEDULE_CAP;
 export const USER_DAILY_SCHEDULE_CAP = 92;
 export const SUPER_ADMIN_DAILY_SCHEDULE_CAP = 100;
 
+export const SUPER_ADMIN_SCHEDULE_START_HOUR = 8;
+const HHMM_RE = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
 /** Per-channel daily slot ceiling for an owner of the given role. */
 export function accountDailyScheduleCap(isAdminOwner: boolean): number {
   return isAdminOwner ? ADMIN_ACCOUNT_DAILY_SCHEDULE_CAP : USER_ACCOUNT_DAILY_SCHEDULE_CAP;
@@ -19,6 +22,24 @@ export function accountDailyScheduleCap(isAdminOwner: boolean): number {
 
 export function googleKeyDailyScheduleCap(isSuperAdminOwner: boolean): number {
   return isSuperAdminOwner ? SUPER_ADMIN_DAILY_SCHEDULE_CAP : USER_DAILY_SCHEDULE_CAP;
+}
+
+export function scheduleTimeMinutes(time: string): number | null {
+  const match = HHMM_RE.exec(String(time || "").trim());
+  if (!match) return null;
+  return Number(match[1]) * 60 + Number(match[2]);
+}
+
+export function isSuperAdminScheduleTimeAllowed(time: string): boolean {
+  const minutes = scheduleTimeMinutes(time);
+  return minutes != null && minutes >= SUPER_ADMIN_SCHEDULE_START_HOUR * 60;
+}
+
+export function forbiddenSuperAdminScheduleTimes(schedule: unknown): string[] {
+  if (!Array.isArray(schedule)) return [];
+  return schedule
+    .map((time) => String(time || "").trim())
+    .filter((time) => time && !isSuperAdminScheduleTimeAllowed(time));
 }
 
 export function dailyScheduleLimitError(

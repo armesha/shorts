@@ -54,6 +54,8 @@ export interface Pack {
   templateType?: string;
   /** True for packs created from the commercial creator hub. Keeps the old /cards flow separate. */
   creator?: boolean;
+  /** Creator editor state used to restore layout/colors/media when reopening a template. */
+  creatorDesignState?: unknown;
   templates: PackTemplate[];
   cards: StoredCard[];
   createdAt: string;
@@ -235,7 +237,7 @@ function summary(p: Pack): PackSummary {
 /** Создать пак (владелец = userId). templates — 1+ шаблонов из редактора. */
 export function createPack(
   userId: number,
-  opts: { name: string; lang: string; templates: PackTemplate[]; templateType?: string; creator?: boolean },
+  opts: { name: string; lang: string; templates: PackTemplate[]; templateType?: string; creator?: boolean; creatorDesignState?: unknown },
   now: string = new Date().toISOString(),
 ): Pack {
   const id = `${slug(opts.name)}-${Date.now().toString(36)}`;
@@ -247,6 +249,7 @@ export function createPack(
     lang: opts.lang || "ru",
     templateType: cleanTemplateType(opts.templateType),
     creator: !!opts.creator,
+    creatorDesignState: opts.creatorDesignState,
     templates: opts.templates?.length ? opts.templates : [],
     cards: [],
     createdAt: now,
@@ -327,6 +330,25 @@ export function setPackName(packId: string, name: string): boolean {
   p.name = next;
   writeAtomic(packFile(packId), p);
   return true;
+}
+
+export function setCreatorPackTemplate(
+  id: string,
+  userId: number,
+  isSuperAdmin: boolean,
+  templates: PackTemplate[],
+  templateType?: string,
+  creatorDesignState?: unknown,
+): { ok: true; pack: Pack } | { ok: false; reason: "not_found" | "not_creator" | "no_template" } {
+  const p = readPackFile(id);
+  if (!p || !canEdit(p, userId, isSuperAdmin)) return { ok: false, reason: "not_found" };
+  if (!p.creator) return { ok: false, reason: "not_creator" };
+  if (!templates.length) return { ok: false, reason: "no_template" };
+  p.templates = templates;
+  if (templateType) p.templateType = cleanTemplateType(templateType);
+  if (creatorDesignState !== undefined) p.creatorDesignState = creatorDesignState;
+  writeAtomic(packFile(id), p);
+  return { ok: true, pack: p };
 }
 
 /** Задать список владельцев пака (0+; проверка админ-права на уровне роута). Пусто = без владельца.
@@ -459,6 +481,16 @@ function normalizeCreatorValues(raw: unknown, rules: RoleRule[]): CardValues {
   return out;
 }
 
+function stripCreatorTemplateMetaForRules(template: PackTemplate): PackTemplate {
+  const copy = JSON.parse(JSON.stringify(template)) as PackTemplate;
+  copy.elements = (copy.elements ?? []).filter((el) => {
+    const role = String(el.role ?? "").toLowerCase();
+    const id = String((el as { id?: unknown }).id ?? "").toLowerCase();
+    return role !== "source" && role !== "cta" && role !== "badge" && id !== "source" && id !== "cta" && id !== "badge" && id !== "panel";
+  });
+  return copy;
+}
+
 /** Add creator cards, preserving optional per-card narration for TTS. */
 export function addCreatorCards(
   id: string,
@@ -471,7 +503,7 @@ export function addCreatorCards(
   if (!p || !canEdit(p, userId, isSuperAdmin)) return { ok: false, reason: "not_found" };
   if (!p.templates.length) return { ok: false, reason: "no_template" };
   const entries = Array.isArray(input) ? input : input ? [input] : [];
-  const rules = deriveRules(p.templates[0]);
+  const rules = deriveRules(p.creator ? stripCreatorTemplateMetaForRules(p.templates[0]) : p.templates[0]);
   const normalized = entries.map(cardValuesFromCreatorInput);
   const normalizedValues = normalized.map((entry) => normalizeCreatorValues(entry.values, rules));
   let result: ValidationResult;

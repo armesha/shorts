@@ -21,7 +21,7 @@ import {
   withActiveLimit,
   withGlobalRenderSlot,
 } from "../infra/rate-limits.ts";
-import { dailyScheduleLimitError } from "../infra/account-limits.ts";
+import { dailyScheduleLimitError, forbiddenSuperAdminScheduleTimes } from "../infra/account-limits.ts";
 import {
   youtubeAnalyticsRange,
   summarizeStoredAnalytics,
@@ -158,7 +158,15 @@ export function makeRouteDeps(input: {
     const ownerId = acc?.userId ?? uid(req);
     const owner = db.getUserById(ownerId);
     const isAdminOwner = owner?.role === "admin";
-    const limitError = dailyScheduleLimitError(schedule.length, otherSlots, isAdminOwner, isSuperAdminUser(owner));
+    const isSuperAdminOwner = isSuperAdminUser(owner);
+    if (isSuperAdminOwner) {
+      const forbiddenTimes = forbiddenSuperAdminScheduleTimes(schedule);
+      if (forbiddenTimes.length) {
+        reply.code(400).send({ error: `Для каналов главного админа расписание разрешено только с 08:00 до 23:59. Уберите: ${forbiddenTimes.join(", ")}.` });
+        return true;
+      }
+    }
+    const limitError = dailyScheduleLimitError(schedule.length, otherSlots, isAdminOwner, isSuperAdminOwner);
     if (!limitError) return false;
     reply.code(400).send({ error: limitError });
     return true;
