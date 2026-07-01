@@ -900,10 +900,11 @@
 
 .creator-media-layout {
   display: grid;
-  grid-template-columns: minmax(250px, 360px) minmax(290px, 340px);
+  grid-template-columns: minmax(300px, 0.82fr) minmax(420px, 1.18fr);
   gap: 18px;
-  align-items: start;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: stretch;
+  width: 100%;
 }
 
 .creator-media-tools {
@@ -912,17 +913,57 @@
   display: grid;
   align-content: start;
   gap: 12px;
-  padding-top: 8px;
+  min-width: 0;
 }
 
 .creator-audio-hidden {
   display: none;
 }
 
+.creator-video-settings {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
+  min-height: 100%;
+  border: 1px solid var(--commercial-line);
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 12px;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.06);
+}
+
+.creator-video-duration {
+  display: grid;
+  gap: 8px;
+  border-bottom: 1px solid var(--commercial-line);
+  padding-bottom: 12px;
+}
+
+.creator-video-duration .creator-tool-label,
+.creator-music-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.creator-video-music {
+  min-height: 0;
+}
+
+.creator-music-head .btn {
+  flex: 0 0 auto;
+}
+
+.creator-music-head input {
+  display: none;
+}
+
 .creator-music-list {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(154px, 1fr));
   gap: 6px;
-  max-height: 390px;
+  max-height: clamp(240px, calc(100vh - 400px), 520px);
   overflow-y: auto;
   padding-right: 2px;
   overscroll-behavior: contain;
@@ -1027,7 +1068,9 @@ button.creator-music-option {
   grid-column: 1;
   grid-row: 1;
   display: grid;
+  align-content: start;
   justify-items: center;
+  min-width: 0;
 }
 
 .creator-media-canvas {
@@ -2418,6 +2461,14 @@ button.creator-music-option {
     order: 2;
   }
 
+  .creator-media-tools {
+    order: 1;
+  }
+
+  .creator-media-preview {
+    order: 2;
+  }
+
   .creator-compose-layout.is-designer .creator-designer-tools {
     display: grid;
     gap: 10px;
@@ -2554,6 +2605,11 @@ button.creator-music-option {
   .creator-music-list,
   .creator-pack-manage {
     max-width: 100%;
+  }
+
+  .creator-music-list {
+    grid-template-columns: minmax(0, 1fr);
+    max-height: 320px;
   }
 
   .creator-pack-choice-list {

@@ -1260,66 +1260,69 @@ function MediaPanel({
 
       <div className="creator-media-layout">
         <div className="creator-media-tools">
-          <div className="creator-tool-group">
-            <span className="creator-tool-label">{t("creator.music")}</span>
+          <div className="creator-video-settings">
             <audio ref={audioRef} className="creator-audio-hidden" onEnded={() => setPreviewMusicId("")} />
-            <div className="creator-music-list">
-              <button
-                type="button"
-                className={`creator-music-option ${mediaSettings.music === "none" ? "is-active" : ""}`}
-                onClick={() => {
-                  update({ music: "none" });
-                  stopMusicPreview();
-                }}
-              >
-                <span>{t("creator.noMusic")}</span>
-              </button>
-              {music.map((track) => (
+
+            <div className="creator-video-duration">
+              <span className="creator-tool-label">
+                {t("creator.durationSec")}
+                <span className="creator-range-value">{t("creator.secondsShort", { count: mediaSettings.durationSec })}</span>
+              </span>
+              <input
+                className="creator-range"
+                type="range"
+                min="6"
+                max="30"
+                step="1"
+                value={mediaSettings.durationSec}
+                onChange={(event) => update({ durationSec: Number(event.target.value) })}
+                aria-label={t("creator.durationSec")}
+              />
+            </div>
+
+            <div className="creator-tool-group creator-video-music">
+              <div className="creator-music-head">
+                <span className="creator-tool-label">{t("creator.music")}</span>
+                <label className="btn btn-xs btn-outline">
+                  {t("creator.uploadMusic")}
+                  <input type="file" accept="audio/mpeg,audio/mp3,audio/mp4,audio/aac,audio/wav,audio/ogg,audio/opus,.mp3,.m4a,.aac,.wav,.ogg,.opus" onChange={handleMusicUpload} />
+                </label>
+              </div>
+              <div className="creator-music-list">
                 <button
                   type="button"
-                  key={String(track.id)}
-                  className={`creator-music-option ${mediaSettings.music === track.id ? "is-active" : ""}`}
+                  className={`creator-music-option ${mediaSettings.music === "none" ? "is-active" : ""}`}
                   onClick={() => {
-                    update({ music: String(track.id) });
-                    playMusicPreview(track);
+                    update({ music: "none" });
+                    stopMusicPreview();
                   }}
                 >
-                  <span className="creator-music-name">
-                    {track.name || track.id}
-                  </span>
-                  {track.url && (
-                    <span className={`creator-music-meter ${previewMusicId === track.id ? "is-playing" : ""}`} aria-hidden="true">
-                      <span />
-                      <span />
-                      <span />
-                    </span>
-                  )}
+                  <span>{t("creator.noMusic")}</span>
                 </button>
-              ))}
+                {music.map((track) => (
+                  <button
+                    type="button"
+                    key={String(track.id)}
+                    className={`creator-music-option ${mediaSettings.music === track.id ? "is-active" : ""}`}
+                    onClick={() => {
+                      update({ music: String(track.id) });
+                      playMusicPreview(track);
+                    }}
+                  >
+                    <span className="creator-music-name">
+                      {track.name || track.id}
+                    </span>
+                    {track.url && (
+                      <span className={`creator-music-meter ${previewMusicId === track.id ? "is-playing" : ""}`} aria-hidden="true">
+                        <span />
+                        <span />
+                        <span />
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="creator-sticker-actions">
-              <label className="btn btn-xs btn-outline">
-                {t("creator.uploadMusic")}
-                <input type="file" accept="audio/mpeg,audio/mp3,audio/mp4,audio/aac,audio/wav,audio/ogg,audio/opus,.mp3,.m4a,.aac,.wav,.ogg,.opus" onChange={handleMusicUpload} />
-              </label>
-            </div>
-          </div>
-
-          <div className="creator-tool-group">
-            <span className="creator-tool-label">
-              {t("creator.durationSec")}
-              <span className="creator-range-value">{t("creator.secondsShort", { count: mediaSettings.durationSec })}</span>
-            </span>
-            <input
-              className="creator-range"
-              type="range"
-              min="6"
-              max="30"
-              step="1"
-              value={mediaSettings.durationSec}
-              onChange={(event) => update({ durationSec: Number(event.target.value) })}
-              aria-label={t("creator.durationSec")}
-            />
           </div>
         </div>
 
