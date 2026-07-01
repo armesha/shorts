@@ -86,6 +86,8 @@ export interface PackSummary {
   cards: number;
   createdAt: string;
   grants: number[];
+  /** Сервисный фон первого шаблона (assets/template-packs/...) — для плиток creator-проектов. */
+  previewSrc?: string;
 }
 /** Правило для одной роли, выведенное из шаблона. */
 export interface RoleRule {
@@ -218,7 +220,15 @@ function readPackFile(id: string): Pack | null {
   }
 }
 
+function creatorPackPreviewSrc(p: Pack): string | undefined {
+  const el = p.templates[0]?.elements?.find(
+    (item) => item.type === "image" && typeof item.src === "string" && (item.src as string).startsWith("assets/template-packs/"),
+  );
+  return el ? (el.src as string) : undefined;
+}
+
 function summary(p: Pack): PackSummary {
+  const previewSrc = p.creator ? creatorPackPreviewSrc(p) : undefined;
   return {
     id: p.id,
     owners: p.owners,
@@ -231,6 +241,7 @@ function summary(p: Pack): PackSummary {
     cards: p.cards.length,
     createdAt: p.createdAt,
     grants: p.grants ?? [],
+    ...(previewSrc ? { previewSrc } : {}),
   };
 }
 
@@ -519,6 +530,35 @@ export function addCreatorCards(
   });
   writeAtomic(packFile(id), p);
   return { ok: true, added: result.cards.length, total: p.cards.length, pack: p };
+}
+
+/** Обновить одну creator-карточку по индексу (валидация как при добавлении). Только canEdit. */
+export function updateCreatorCard(
+  id: string,
+  userId: number,
+  isSuperAdmin: boolean,
+  index: number,
+  input: unknown,
+): { ok: true; pack: Pack } | { ok: false; reason: "not_found" | "no_template" | "invalid"; result?: ValidationResult } {
+  const p = readPackFile(id);
+  if (!p || !canEdit(p, userId, isSuperAdmin)) return { ok: false, reason: "not_found" };
+  if (!Number.isInteger(index) || index < 0 || index >= p.cards.length) return { ok: false, reason: "not_found" };
+  if (!p.templates.length) return { ok: false, reason: "no_template" };
+  const rules = deriveRules(p.creator ? stripCreatorTemplateMetaForRules(p.templates[0]) : p.templates[0]);
+  const { values, narration } = cardValuesFromCreatorInput(input);
+  let result: ValidationResult;
+  try {
+    result = validateBatch([normalizeCreatorValues(values, rules)], rules);
+  } catch {
+    return { ok: false, reason: "invalid", result: { cards: [], errors: [{ index: 0, messages: ["Неверный JSON"] }], parsed: 0 } };
+  }
+  if (result.parsed === 0 || result.errors.length) return { ok: false, reason: "invalid", result };
+  const prev = p.cards[index];
+  // narration: undefined → не трогаем, "" → убираем, строка → заменяем
+  const nextNarration = narration === undefined ? prev.narration : narration || undefined;
+  p.cards[index] = { values: result.cards[0], addedAt: prev.addedAt, ...(nextNarration ? { narration: nextNarration } : {}) };
+  writeAtomic(packFile(id), p);
+  return { ok: true, pack: p };
 }
 
 /** Удалить одну карточку по индексу (сверка addedAt от гонок). Только владелец/главный админ (canEdit). */

@@ -48,15 +48,6 @@ export const FALLBACK_PRESETS: TemplatePreset[] = [
   },
 ];
 
-export const FLOW_STEPS = [
-  { id: "setup", labelKey: "creator.flowSetup" },
-  { id: "compose", labelKey: "creator.flowCompose" },
-  { id: "media", labelKey: "creator.flowMedia" },
-  { id: "save", labelKey: "creator.flowSave" },
-] as const;
-
-export type CreatorStep = (typeof FLOW_STEPS)[number]["id"];
-
 export const CHAR_LIMITS = {
   heading: 72,
   body: 300,

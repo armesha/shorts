@@ -72,6 +72,11 @@ export function creatorMethods(db: DatabaseSync) {
       return row ? rowToCreatorGalleryItem(row) : null;
     },
 
+    deleteCreatorGalleryItem(id: number, userId: number): boolean {
+      const info = db.prepare("DELETE FROM creator_gallery_items WHERE id = ? AND user_id = ?").run(id, userId);
+      return Number(info.changes) > 0;
+    },
+
     listCreatorGalleryItems(userId: number): CreatorGalleryItem[] {
       return (
         db.prepare("SELECT * FROM creator_gallery_items WHERE user_id = ? ORDER BY id DESC").all(userId) as Row[]

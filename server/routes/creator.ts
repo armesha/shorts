@@ -9,12 +9,14 @@ import {
   addCreatorCards,
   canEdit,
   createPack,
+  deleteCard,
   deletePack,
   deriveRules,
   getPack,
   listCreatorPacks,
   setCreatorPackTemplate,
   setPackName,
+  updateCreatorCard,
   type PackTemplate,
   type StoredCard,
 } from "../../src/packs/store.ts";
@@ -587,6 +589,44 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
       return reply.code(400).send({ error: "Карточки не прошли правила шаблона", errors: r.result?.errors ?? [], parsed: r.result?.parsed ?? 0 });
     }
     return { added: r.added, total: r.total, pack: fullPackPayload(r.pack) };
+  });
+
+  app.patch("/api/creator/packs/:id/cards/:index", { bodyLimit: CREATOR_UPLOAD_BYTES }, async (req, reply) => {
+    if (!requireCreator(req, reply)) return;
+    const { id, index } = req.params as { id: string; index: string };
+    const r = updateCreatorCard(id, uid(req), isSuperAdminUser(db.getUserById(uid(req))), Number(index), req.body ?? {});
+    if (!r.ok) {
+      if (r.reason === "not_found") return reply.code(404).send({ error: "Карточка не найдена или нет прав" });
+      if (r.reason === "no_template") return reply.code(400).send({ error: "У пака нет шаблона" });
+      return reply.code(400).send({ error: "Карточка не прошла правила шаблона", errors: r.result?.errors ?? [], parsed: r.result?.parsed ?? 0 });
+    }
+    return { pack: fullPackPayload(r.pack) };
+  });
+
+  app.delete("/api/creator/packs/:id/cards/:index", async (req, reply) => {
+    if (!requireCreator(req, reply)) return;
+    const { id, index } = req.params as { id: string; index: string };
+    const userId = uid(req);
+    const isSuper = isSuperAdminUser(db.getUserById(userId));
+    const pack = getPack(id, userId, isSuper);
+    if (!pack || !pack.creator) return reply.code(404).send({ error: "Пак не найден" });
+    const addedAt = (req.query as Record<string, string> | undefined)?.addedAt;
+    const r = deleteCard(id, userId, isSuper, Number(index), addedAt);
+    if (!r.deleted) {
+      return reply
+        .code(r.reason === "stale" ? 409 : 404)
+        .send({ error: r.reason === "stale" ? "Список карточек изменился — обновите страницу" : "Карточка не найдена" });
+    }
+    const updated = getPack(id, userId, isSuper);
+    return { deleted: true, total: r.total, pack: updated ? fullPackPayload(updated) : null };
+  });
+
+  app.delete("/api/creator/gallery/:id", async (req, reply) => {
+    if (!requireCreator(req, reply)) return;
+    const id = Number((req.params as { id: string }).id);
+    if (!Number.isInteger(id) || id <= 0) return reply.code(400).send({ error: "Некорректный id" });
+    if (!db.deleteCreatorGalleryItem(id, uid(req))) return reply.code(404).send({ error: "Файл не найден" });
+    return { deleted: true };
   });
 
   app.patch("/api/creator/packs/:id", async (req, reply) => {

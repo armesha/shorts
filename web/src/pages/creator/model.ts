@@ -141,3 +141,66 @@ export function usableBackgroundUrl(value: string): string {
   if (/^(data:image\/|https?:\/\/|\/)/i.test(trimmed)) return trimmed;
   return "";
 }
+
+/** Читаемые заголовок/текст карточки пака (values по ролям с алиасами). */
+export function cardTitleText(card: CreatorRecord): { title: string; text: string; narration: string } {
+  const values = (card.values && typeof card.values === "object" && !Array.isArray(card.values) ? card.values : card) as CreatorRecord;
+  const asText = (value: unknown) => (Array.isArray(value) ? value.map(String).join("\n") : typeof value === "string" ? value : "");
+  const title = asText(values.title ?? values.heading ?? values.hook).trim();
+  const text = asText(values.text ?? values.body ?? values.fact ?? values.points ?? values.items).trim();
+  const narration = asText(card.narration).trim();
+  return { title, text, narration };
+}
+
+export function cardAddedAt(card: CreatorRecord): string {
+  return typeof card.addedAt === "string" ? card.addedAt : "";
+}
+
+export type GalleryItem = {
+  id: number;
+  packId: string;
+  packName: string;
+  templateType: string;
+  cardIndex: number;
+  title: string;
+  text: string;
+  format: string;
+  imageRel: string | null;
+  videoRel: string | null;
+  zipRel: string | null;
+  music: string;
+  durationSec: number | null;
+  createdAt: string;
+};
+
+export function normalizeGalleryItem(raw: unknown): GalleryItem | null {
+  if (!raw || typeof raw !== "object") return null;
+  const src = raw as CreatorRecord;
+  const id = Number(src.id);
+  if (!Number.isFinite(id) || id <= 0) return null;
+  const rel = (value: unknown) => (typeof value === "string" && value ? value : null);
+  return {
+    id,
+    packId: String(src.packId ?? ""),
+    packName: String(src.packName ?? ""),
+    templateType: String(src.templateType ?? "custom"),
+    cardIndex: Number(src.cardIndex) || 0,
+    title: String(src.title ?? ""),
+    text: String(src.text ?? ""),
+    format: String(src.format ?? "mp4"),
+    imageRel: rel(src.imageRel),
+    videoRel: rel(src.videoRel),
+    zipRel: rel(src.zipRel),
+    music: String(src.music ?? "none"),
+    durationSec: src.durationSec == null ? null : Number(src.durationSec),
+    createdAt: String(src.createdAt ?? ""),
+  };
+}
+
+/** SQLite CURRENT_TIMESTAMP — UTC без зоны; парсим как UTC. */
+export function parseUtcDate(value: string): Date | null {
+  if (!value) return null;
+  const iso = value.includes("T") ? value : `${value.replace(" ", "T")}Z`;
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
