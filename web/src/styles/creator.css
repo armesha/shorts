@@ -342,10 +342,11 @@
 
 .creator-compose-layout {
   display: grid;
-  grid-template-columns: minmax(250px, 360px) minmax(290px, 340px);
+  grid-template-columns: minmax(280px, 0.85fr) minmax(360px, 1.15fr);
   gap: 18px;
   align-items: start;
-  justify-content: center;
+  justify-content: stretch;
+  width: 100%;
 }
 
 .creator-compose-layout.is-designer {
@@ -371,7 +372,7 @@
   display: grid;
   align-content: start;
   gap: 12px;
-  padding-top: 8px;
+  min-width: 0;
 }
 
 .creator-designer-tools {
@@ -379,6 +380,38 @@
   overflow-y: auto;
   padding-right: 2px;
   overscroll-behavior: contain;
+}
+
+@media (min-width: 701px) {
+  .creator-compose-tools:not(.creator-designer-tools) {
+    grid-template-columns: minmax(132px, 0.8fr) minmax(132px, 0.8fr) minmax(220px, 1.4fr);
+    align-items: start;
+    gap: 12px;
+  }
+
+  .creator-compose-tools:not(.creator-designer-tools) .creator-tool-group-assets {
+    grid-column: 1 / -1;
+  }
+
+  .creator-compose-tools:not(.creator-designer-tools) .creator-asset-picker {
+    width: 100%;
+  }
+
+  .creator-compose-tools:not(.creator-designer-tools) .creator-asset-scroll {
+    max-height: clamp(300px, calc(100vh - 488px), 450px);
+  }
+
+  .creator-compose-tools:not(.creator-designer-tools) .creator-asset-scroll.is-gif {
+    max-height: clamp(300px, calc(100vh - 488px), 450px);
+  }
+
+  .creator-compose-tools:not(.creator-designer-tools) .creator-telegram-emoji-grid {
+    grid-template-columns: repeat(auto-fill, minmax(34px, 1fr));
+  }
+
+  .creator-compose-tools:not(.creator-designer-tools) .creator-telegram-gif-grid {
+    grid-template-columns: repeat(auto-fill, minmax(126px, 1fr));
+  }
 }
 
 .creator-compose-layout.is-designer .creator-designer-tools {
