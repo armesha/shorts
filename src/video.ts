@@ -8,7 +8,31 @@ import ffmpegPath from "ffmpeg-static";
 const pexec = promisify(execFile);
 const FFMPEG = ffmpegPath as unknown as string;
 const AUDIO_DIR = resolve(process.cwd(), "assets/audio");
-const JOKE_MOTION_DIR = resolve(process.cwd(), "assets/motion/jokes");
+const CREATOR_MOTION_DIR = resolve(process.cwd(), "assets/creator/motion");
+const CREATOR_JOKE_MOTION_FILES = new Set([
+  "reaction-joy.gif",
+  "reaction-rofl.gif",
+  "reaction-laughing.gif",
+  "reaction-grin-sweat.gif",
+  "reaction-grin.gif",
+  "reaction-smile.gif",
+  "reaction-sunglasses.gif",
+  "reaction-thinking.gif",
+  "reaction-mouth-open.gif",
+  "reaction-melting.gif",
+  "reaction-mind-blown.gif",
+  "meme-star-struck.gif",
+  "meme-partying-face.gif",
+  "meme-fire.gif",
+  "meme-100.gif",
+  "meme-sparkles.gif",
+  "meme-party-popper.gif",
+  "meme-rocket.gif",
+  "gesture-thumbs-up.gif",
+  "gesture-clap.gif",
+  "gesture-raising-hands.gif",
+  "gesture-ok.gif",
+]);
 const JOKE_VIDEO_BG_DIR = resolve(process.cwd(), "assets/fact-videos/joke-backgrounds");
 export const AUDIO_EXT = new Set([".mp3", ".m4a", ".aac", ".wav", ".ogg", ".opus"]);
 export const PACK_AUDIO_PREFIX = "pack-audio/";
@@ -253,21 +277,21 @@ function stableHash(s: string): number {
 }
 
 export function pickJokeMotionOverlay(seed: string, textLen = 0): MotionOverlay | null {
-  if (textLen > 560 || !existsSync(JOKE_MOTION_DIR)) return null;
-  const files = readdirSync(JOKE_MOTION_DIR)
+  if (textLen > 560 || !existsSync(CREATOR_MOTION_DIR)) return null;
+  const files = readdirSync(CREATOR_MOTION_DIR)
     .map((f) => f.toString())
-    .filter((f) => /\.gif$/i.test(f))
+    .filter((f) => /\.gif$/i.test(f) && CREATOR_JOKE_MOTION_FILES.has(f))
     .sort();
   if (files.length === 0) return null;
   const h = stableHash(seed);
   const positions = [
-    { x: "main_w-overlay_w-56", y: "main_h-overlay_h-58" },
-    { x: "56", y: "main_h-overlay_h-58" },
+    { x: "main_w-overlay_w-74", y: "main_h-overlay_h-230" },
+    { x: "74", y: "main_h-overlay_h-230" },
   ];
   const pos = positions[(h >>> 4) % positions.length];
   return {
-    path: resolve(JOKE_MOTION_DIR, files[h % files.length]),
-    width: textLen > 420 ? 132 : 172,
+    path: resolve(CREATOR_MOTION_DIR, files[h % files.length]),
+    width: textLen > 420 ? 120 : 148,
     x: pos.x,
     y: pos.y,
   };

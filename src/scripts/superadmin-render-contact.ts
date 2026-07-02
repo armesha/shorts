@@ -19,7 +19,7 @@ for (const raw of process.argv.slice(2)) {
 }
 
 const USERNAME = String(args.get("user") || "armen");
-const OUT_DIR = resolve(ROOT, String(args.get("out") || "temp/superadmin-current-contact"));
+const OUT_DIR = resolve(ROOT, String(args.get("out") || "tmp/superadmin-current-contact"));
 const LIMIT = Math.max(1, Number(args.get("limit") || 80));
 
 interface AccountRow {

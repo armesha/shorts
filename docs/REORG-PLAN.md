@@ -30,7 +30,7 @@
 | `web/src/lib/api.ts` | 1033 | один плоский `apiClient` на ~90 эндпоинтов / 12 доменов + ~50 inline-типов |
 | `web/src/pages/AdminAnalytics.tsx` | 846 | экспортит `SystemOverview` (вкладка внутри Statistics) — имя вводит в заблуждение |
 | `web/src/components/Layout.tsx` | 708 | внутри — самостоятельная фича `NotificationDropdown` (~225 стр.) |
-| корень репо | — | ~18 одноразовых артефактов (5 `.py`, 6 `strike-audit-*`, `temp/ images/ .playwright-mcp/`) |
+| корень репо | — | ~18 одноразовых артефактов (5 `.py`, 6 `strike-audit-*`, `tmp/ images/ .playwright-mcp/`) |
 
 **Реальный баг (не косметика):** папка `local-assets/Генератор мемов/` (**214 МБ** бинарей) **НЕ в `.gitignore`**,
 хотя сосед `local-assets/Русские анекдоты/` — в нём. Кодом не читается. `git add -A` (его же рекомендует CLAUDE.md)
@@ -95,14 +95,14 @@
 
 - [ ] **Фикс бага:** добавить `local-assets/Генератор мемов/` в `.gitignore` рядом с `local-assets/Русские анекдоты/`.
 - [ ] `mkdir audits/`, перенести 6 `strike-audit-*` туда; в `.gitignore` заменить `strike-audit-*.{md,json}` → `audits/`.
-- [ ] Удалить мёртвое: 5 `process_anecdotes*.py`, каталоги `images/` `temp/` `.playwright-mcp/` (все ignored, ~19 МБ).
+- [ ] Удалить мёртвое: 5 `process_anecdotes*.py`, каталоги `images/` `tmp/` `.playwright-mcp/` (все ignored, ~19 МБ).
 - [ ] Прибрать `data/`-корень (НЕ трогая деки и `data/app.db`/`data/output`): scratch-БД
       `app.db.bak-codex-e2e-admin-del`, `e2e-account-ui.db`, `shorts.db`, `server.log`; пустой tracked `data/output-e2e/`.
 - [ ] **Индексировать CLAUDE.md** (контент не урезать): 117-строчный блок «Notes for myself» → `###`-подзаголовки
       (Decks / Render gotchas / Auth-Telegram / Infra & restart / Pack system) + короткий TOC; редкие
       infra-runbook'и (Caddy, регламент рестарта `:8080`) вынести в `docs/ops-runbook.md` со ссылкой.
 - [ ] Разбить `docs/pack-generation.md` (79 КБ, 30 секций) → `docs/packs/<deck>.md` + `README.md`-индекс +
-      `_conventions.md`; починить мёртвую ссылку `temp/meme-recheck/catalog.json`.
+      `_conventions.md`; починить мёртвую ссылку `tmp/meme-recheck/catalog.json`.
 - [ ] Расширить `README.md` (263 Б) до тонкого онбординг-указателя (что это, quickstart, карта `src/server/web/docs`, ссылки).
 
 **Verify:** `git add -A --dry-run` больше не стейджит `local-assets/Генератор мемов/`; деки/`app.db`/`client_secret` не тронуты; сайт не трогаем.

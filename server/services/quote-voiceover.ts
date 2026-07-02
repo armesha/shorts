@@ -9,7 +9,7 @@ import { deckLang } from "../../src/anecdotes/decks.ts";
 const pexec = promisify(execFile);
 
 const TTS_PYTHON = resolve(process.cwd(), ".venv-tts/bin/python");
-const CACHE_DIR = resolve(process.cwd(), "temp/quote-tts");
+const CACHE_DIR = resolve(process.cwd(), "tmp/quote-tts");
 
 export const EDGE_TTS_VOICE_BY_LANG: Record<string, string> = {
   ar: "ar-SA-ZariyahNeural",

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Compose localized clips from titleless bases + title overlays + music, and publish localized decks.
 // Inputs: matrix.json [{id,key,html,variant,dur,fps,name}], localize.json {id:{en,de,it,es,ru,...}},
-//   temp/illusions-en/base/<id>.mp4(+.jpg), temp/illusions-en/titles/<id>_<lang>.png, music
+//   tmp/illusions-en/base/<id>.mp4(+.jpg), tmp/illusions-en/titles/<id>_<lang>.png, music
 // Per (lang,design): overlay title PNG onto the base + mux music -> final mp4, placed in:
 //   assets/fact-videos/illusions-<lang>/<id>.mp4   (channel deck source)
 //   data/output/admin-demos/<lang>-<id>.mp4 (+ .jpg) via HARDLINK  (clip-demos gallery)
@@ -15,8 +15,8 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, '../..');
-const BASE = resolve(ROOT, 'temp/illusions-en/base');
-const TITLES = resolve(ROOT, 'temp/illusions-en/titles');
+const BASE = resolve(ROOT, 'tmp/illusions-en/base');
+const TITLES = resolve(ROOT, 'tmp/illusions-en/titles');
 const ADMIN = resolve(ROOT, 'data/output/admin-demos');
 const MANIFEST = resolve(ADMIN, 'manifest.json');
 const MUSIC = resolve(ROOT, 'assets/audio/long-videos/fats-waller-swingin-the-operas-1939.opus');

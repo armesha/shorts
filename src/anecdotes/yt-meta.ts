@@ -4,7 +4,7 @@
 import type { Deck } from "./decks.ts";
 
 const INTERNAL_DESCRIPTION_LINE =
-  /(?:\b(?:data|temp|assets|local-assets|scripts|server|src)\/|\/home\/|\.json\b|\.mjs\b|\.ts\b|pack:new-|translated ready-made meme card|legacy memes-\*|template-packs|sourcecounts|sourcelabel|Генератор мемов)/i;
+  /(?:\b(?:data|tmp|assets|local-assets|scripts|server|src)\/|\/home\/|\.json\b|\.mjs\b|\.ts\b|pack:new-|translated ready-made meme card|legacy memes-\*|template-packs|sourcecounts|sourcelabel|Генератор мемов)/i;
 
 function publicDescription(text: string): string {
   return String(text || "")
@@ -97,26 +97,6 @@ export function ytMeta(
     return {
       title: `${ref} ${deck.emoji} #shorts`,
       description: withHashtags(`${body}\n\n${ref} (KJV)`, deck.hashtags),
-      tags: deck.tags,
-    };
-  }
-  // «Что выберешь?» cards: whole card is JSON in `text`; title = the question, body = both options + CTA.
-  if (deck.choose) {
-    let q = title;
-    let a: { label?: string; desc?: string } = {};
-    let b: { label?: string; desc?: string } = {};
-    try {
-      const c = JSON.parse(text) as { q?: string; a?: typeof a; b?: typeof b };
-      q = c.q ?? title;
-      a = c.a ?? {};
-      b = c.b ?? {};
-    } catch {
-      /* not JSON — use raw text */
-    }
-    const body = `${q}\n\n🔴 ${a.label ?? ""}: ${a.desc ?? ""}\n🔵 ${b.label ?? ""}: ${b.desc ?? ""}\n\nА ты что выберешь? Пиши в комментариях 👇`;
-    return {
-      title: `${q} ${deck.emoji} #shorts`,
-      description: withHashtags(body, deck.hashtags),
       tags: deck.tags,
     };
   }

@@ -126,7 +126,7 @@ Follow it exactly when adding or rebuilding episodes for `ЗвероГерои: 
 
 ## YouTube Channel Assets
 
-- Channel assets live in `temp/animal-superheroes/youtube/`.
+- Channel assets live in `tmp/animal-superheroes/youtube/`.
 - Keep two channel folders:
   - `ru/` for the Russian channel.
   - `en/` for the English channel.
@@ -135,7 +135,7 @@ Follow it exactly when adding or rebuilding episodes for `ЗвероГерои: 
   - `banner.png`, YouTube banner `2560x1440`.
   - `name.txt`.
   - `description.txt`.
-- Shared channel copy can also be summarized in `temp/animal-superheroes/youtube/channel-info.md`.
+- Shared channel copy can also be summarized in `tmp/animal-superheroes/youtube/channel-info.md`.
 - The RU banner must include the readable text `Каждый день три новые серии`.
 - The EN banner should use the localized equivalent `Three new episodes every day`.
 - Do not ask image generation to render important banner text. Generate or reuse textless comic art, then overlay exact text locally so it is readable and spelled correctly.
@@ -186,7 +186,7 @@ For 20-35 seconds, use 8-12 scene images. If the narration has 6 sentences, spli
 
 - Source scripts and translations belong in `data/animal-superheroes/episodes-source.json`.
 - Use optional `ttsText` / `ttsTextEn` there only for voice/pronunciation fixes. Keep `text` / `textEn` as the exact subtitle copy.
-- Scene images belong in `temp/animal-superheroes/gpt-image2/generated_scenes/<ru_episode_id>/`.
+- Scene images belong in `tmp/animal-superheroes/gpt-image2/generated_scenes/<ru_episode_id>/`.
 - Build RU and EN from the same scene directory.
 - After rendering both languages, inspect contact sheets from both videos because subtitle wrapping differs by language.
 - Keep EN text natural, short, and punchy for Shorts. Do not translate word-for-word if it makes subtitles too long.

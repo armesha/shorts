@@ -9,6 +9,8 @@ import { MANUAL_VIDEO_DECK, deckLang, isPackDeckId } from "../../src/anecdotes/d
 import { libraryStats } from "../../src/anecdotes/library.ts";
 import { listPacks } from "../../src/packs/store.ts";
 import { INFINITE_PACKS_FEATURE, infiniteCounts } from "../services/infinite-packs.ts";
+import { createDeckAvailabilityContext } from "../services/deck-availability.ts";
+import { cachedRead } from "../services/read-cache.ts";
 
 type CatalogKind = "builtin" | "custom_pack" | "manual" | "clip_demo";
 
@@ -76,6 +78,7 @@ function clipDemoCounts(req: unknown, deps: RouteDeps): Map<string, { count: num
 export function registerContentCatalogRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
   app.get("/api/content-catalog", async (req) => {
     const userId = uid(req);
+    return cachedRead(`content-catalog:${userId}:${deps.auth.isSuperAdminReq(req) ? "super" : "user"}`, 30_000, () => {
     const isSuperAdmin = deps.auth.isSuperAdminReq(req);
     const accounts = isSuperAdmin ? db.listAccounts() : db.listAccountsByUser(userId);
     const queued = queuedByDeck(accounts, db);
@@ -85,7 +88,19 @@ export function registerContentCatalogRoutes(app: FastifyInstance, db: Db, deps:
     const items: CatalogItem[] = [];
     const seen = new Set<string>();
 
-    for (const deck of deps.deckAccess.visibleDecksForUser(userId)) {
+    const visibleDecks = deps.deckAccess.visibleDecksForUser(userId);
+    const packs = listPacks(userId, isSuperAdmin);
+    const availabilityCtx = createDeckAvailabilityContext();
+    const availability = deps.deckAccess.availableUnusedByDeck(
+      userId,
+      [
+        ...visibleDecks.map((deck) => deck.id),
+        ...packs.map((pack) => (isPackDeckId(pack.id) ? pack.id : `pack:${pack.id}`)),
+      ],
+      availabilityCtx,
+    );
+
+    for (const deck of visibleDecks) {
       const stats = libraryStats(deck.id, usedKeys);
       const counts = infinite ? infiniteCounts(stats.total) : stats;
       const demo = demos.get(deck.id);
@@ -95,7 +110,7 @@ export function registerContentCatalogRoutes(app: FastifyInstance, db: Db, deps:
         title: deck.name,
         lang: deckLang(deck.id) || null,
         total: counts.total,
-        available: counts.available,
+        available: availability.get(deck.id) ?? counts.available,
         queued: queued.get(deck.id) ?? 0,
         demoCount: demo?.count ?? 0,
         usedByAccounts: accountsUsingDeck(accounts, deps, deck.id),
@@ -103,7 +118,7 @@ export function registerContentCatalogRoutes(app: FastifyInstance, db: Db, deps:
       seen.add(deck.id);
     }
 
-    for (const pack of listPacks(userId, isSuperAdmin)) {
+    for (const pack of packs) {
       const p = pack as typeof pack & {
         id: string;
         title?: string;
@@ -122,7 +137,7 @@ export function registerContentCatalogRoutes(app: FastifyInstance, db: Db, deps:
         title: p.title || p.name || p.id,
         lang: p.lang || null,
         total,
-        available: deps.deckAccess.availableUnusedForDecks(userId, [deckId]),
+        available: availability.get(deckId) ?? 0,
         queued: queued.get(deckId) ?? 0,
         demoCount: demo?.count ?? 0,
         usedByAccounts: accountsUsingDeck(accounts, deps, deckId),
@@ -161,5 +176,6 @@ export function registerContentCatalogRoutes(app: FastifyInstance, db: Db, deps:
     const rank: Record<CatalogKind, number> = { builtin: 0, custom_pack: 1, manual: 2, clip_demo: 3 };
     items.sort((a, b) => rank[a.kind] - rank[b.kind] || a.title.localeCompare(b.title));
     return { items };
+    });
   });
 }

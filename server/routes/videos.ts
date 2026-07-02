@@ -25,7 +25,6 @@ import { cleanupDrainedAutoExpireDecksForAccount, removeAutoExpiredDeckFromAccou
 import { buildFactLibraryVideo } from "../services/fact-gen.ts";
 import { addLongVideoToLibrary, LongVideoLibraryError } from "../services/long-video-library.ts";
 import { uploadShort, isYtAuthError, ytErrorReason } from "../services/youtube.ts";
-import { ytErrorMessage } from "../services/youtube-errors.ts";
 import {
   MANUAL_VIDEO_DECK,
   MAX_MANUAL_VIDEO_UPLOAD_BYTES,
@@ -35,15 +34,21 @@ import {
 } from "../services/manual-videos.ts";
 import * as metrics from "../infra/metrics.ts";
 import { checkRateLimit } from "../infra/rate-limits.ts";
-import { googleKeyDailyScheduleCap } from "../infra/account-limits.ts";
+import {
+  USER_BATCH_VIDEO_CAP,
+  accountDailyScheduleCap,
+  channelLibraryVideoCap,
+  googleKeyDailyScheduleCap,
+  isMgsUser,
+} from "../infra/account-limits.ts";
 import { uid } from "../infra/auth-session.ts";
 import { isSuperAdminUser } from "../auth.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
+import { queuedRemainingForAccount as genQueuedRemainingForAccount } from "../services/gen-queue.ts";
 import type { RouteDeps, LimitedReplyish } from "./deps.ts";
 
 const BATCH_VIDEO_LIMIT = { limit: 2, windowMs: 30 * 60 * 1000 };
 const LONG_VIDEO_LIBRARY_LIMIT = { limit: 4, windowMs: 60 * 60 * 1000 };
-const NORMAL_BATCH_VIDEO_CAP = 5;
 const POST_NOW_LIMIT = { limit: 15, windowMs: 10 * 60 * 1000 }; // burst guard on manual «Опубликовать»
 const MANUAL_VIDEO_UPLOAD_WINDOW_MS = 60 * 60 * 1000;
 
@@ -68,6 +73,66 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
   const { isAdminReq } = deps.auth;
   const { deckAllowed, resolveAccountSourceDeck, accountSourceDecks, deckContentLang } = deps.deckAccess;
   const REDIRECT_URI = redirectUri;
+
+  const longDeckIdsForAccount = (acc: Account): string[] => [
+    ...new Set([
+      ...DECKS.filter((deck) => deck.longVideo).map((deck) => deck.id),
+      ...(acc.longVideoDecks ?? []),
+    ]),
+  ];
+
+  const videoKindFilter = (acc: Account, kind: string | undefined) => {
+    const longDeckIds = longDeckIdsForAccount(acc);
+    if (kind === "long") return { includeDecks: longDeckIds.length ? longDeckIds : ["__none__"] };
+    if (kind === "all") return {};
+    return longDeckIds.length ? { excludeDecks: longDeckIds } : {};
+  };
+
+  const channelLibraryCapacity = (req: unknown, acc: Account) => {
+    const owner = db.getUserById(accountOwnerId(req, acc));
+    const cap = channelLibraryVideoCap(owner?.role === "admin", isMgsUser(owner));
+    if (cap == null) return null;
+    const current = db.countVideosByAccount(acc.id);
+    const queued = genQueuedRemainingForAccount(acc.id);
+    const reserved = db.libraryReservationsForAccount(acc.id);
+    const occupied = current + queued + reserved;
+    return { cap, current, queued, reserved, occupied, available: Math.max(0, cap - occupied) };
+  };
+
+  const sendChannelLibraryLimit = (
+    reply: LimitedReplyish,
+    details: { cap: number; current: number; queued?: number; reserved?: number; available: number },
+  ): void => {
+    const queued = (details.queued ?? 0) + (details.reserved ?? 0);
+    const queuedText = queued > 0 ? `, ещё ${queued} уже стоит в генерации` : "";
+    reply.code(400).send({
+      error: `В библиотеке канала максимум ${details.cap} видео. Сейчас ${details.current}${queuedText}, можно добавить ещё ${details.available}.`,
+    });
+  };
+
+  const reserveChannelLibrarySlots = (
+    req: unknown,
+    reply: LimitedReplyish,
+    acc: Account,
+    adding = 1,
+  ): { ok: true; token: string | null } | { ok: false } => {
+    const capacity = channelLibraryCapacity(req, acc);
+    if (!capacity) return { ok: true, token: null };
+    if (capacity.occupied + adding > capacity.cap) {
+      sendChannelLibraryLimit(reply, capacity);
+      return { ok: false };
+    }
+    const reserved = db.reserveLibrarySlots(acc.id, capacity.cap, adding);
+    if (!reserved.ok) {
+      sendChannelLibraryLimit(reply, reserved);
+      return { ok: false };
+    }
+    return { ok: true, token: reserved.token };
+  };
+
+  const releaseChannelLibraryReservation = (reservation: { ok: true; token: string | null } | null): void => {
+    if (reservation?.token) db.releaseLibraryReservation(reservation.token);
+  };
 
   const videoCountRowsForAccounts = (accounts: Account[]) => {
     const rowsByAccount = new Map<number, { accountId: number; total: number; byDeck: Record<string, number> }>(
@@ -96,6 +161,44 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     return db.listVideos(accountId);
   });
 
+  app.get("/api/videos/page", async (req, reply) => {
+    const q = (req.query as {
+      accountId?: string;
+      kind?: string;
+      page?: string;
+      pageSize?: string;
+      sort?: "date" | "title" | "posts";
+    }) ?? {};
+    const accountId = Number(q.accountId ?? 0);
+    if (!accountId) return reply.code(400).send({ error: "accountId обязателен" });
+    const acc = accessibleAccount(req, reply, accountId);
+    if (!acc) return;
+    const pageSize = Math.min(100, Math.max(1, Number(q.pageSize) || 6));
+    const page = Math.max(1, Number(q.page) || 1);
+    const filter = videoKindFilter(acc, q.kind);
+    const total = db.countVideosByAccountFiltered(accountId, filter);
+    const pageCount = Math.max(1, Math.ceil(total / pageSize));
+    const clampedPage = Math.min(page, pageCount);
+    const items = db.listVideosPage({
+      accountId,
+      limit: pageSize,
+      offset: (clampedPage - 1) * pageSize,
+      sort: q.sort === "title" || q.sort === "posts" ? q.sort : "date",
+      filter,
+    });
+    const regularFilter = videoKindFilter(acc, "regular");
+    return {
+      items,
+      total,
+      page: clampedPage,
+      pageSize,
+      pageCount,
+      byDeck: db.videoDeckCountsForAccount(accountId),
+      postedTwicePlus: db.countVideosByAccountFiltered(accountId, { ...regularFilter, postCountGt: 1 }),
+      totalAll: db.countVideosByAccount(accountId),
+    };
+  });
+
   app.post("/api/videos", async (req, reply) => {
     const body = (req.body as { accountId?: number; text?: string; title?: string; bg?: string; music?: string; deck?: string }) ?? {};
     if (!body.accountId || !body.text) return reply.code(400).send({ error: "accountId и text обязательны" });
@@ -114,19 +217,25 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
       return reply.code(400).send({ error: "Это видео-пак — добавляйте ролики кнопкой «Сгенерировать»." });
     if (!deckAllowed(req, channelDeck.id))
       return reply.code(403).send({ error: "Этот пак вам недоступен." });
-    const v = await buildLibraryVideo({
-      userId: ownerId,
-      accountId: body.accountId,
-      text: body.text,
-      title: body.title,
-      bg: body.bg,
-      music: body.music,
-      deck: channelDeck.id, // forced to the channel's language
-    });
-    if (!db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) {
-      db.markAnecdoteUsed(ownerId, anecdoteKey(body.text)); // explicit single save → mark used (idempotent)
+    const reservation = reserveChannelLibrarySlots(req, reply as LimitedReplyish, acc);
+    if (!reservation.ok) return;
+    try {
+      const v = await buildLibraryVideo({
+        userId: ownerId,
+        accountId: body.accountId,
+        text: body.text,
+        title: body.title,
+        bg: body.bg,
+        music: body.music,
+        deck: channelDeck.id, // forced to the channel's language
+      });
+      if (!db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) {
+        db.markAnecdoteUsed(ownerId, anecdoteKey(body.text)); // explicit single save → mark used (idempotent)
+      }
+      return v;
+    } finally {
+      releaseChannelLibraryReservation(reservation);
     }
-    return v;
   });
 
   app.post(
@@ -149,6 +258,8 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
           return reply.code(429).send({ error: "Слишком много загрузок видео — подождите немного." });
         }
       }
+      const reservation = reserveChannelLibrarySlots(req, reply as LimitedReplyish, acc);
+      if (!reservation.ok) return;
       try {
         const saved = await saveManualVideoUpload(outputDir, body, manualLimits);
         return db.createVideo({
@@ -163,6 +274,8 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
         });
       } catch (e) {
         return reply.code(400).send({ error: e instanceof Error ? e.message : "Не удалось загрузить видео" });
+      } finally {
+        releaseChannelLibraryReservation(reservation);
       }
     },
   );
@@ -182,6 +295,8 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     if (rejectIfNotConnected(reply, acc)) return;
     if (!enforceGenerationWindow(req, reply as LimitedReplyish, "videos-long", LONG_VIDEO_LIBRARY_LIMIT)) return;
     return runHeavyGenerationLimited(req, reply as LimitedReplyish, "videos-long", async () => {
+      const reservation = reserveChannelLibrarySlots(req, reply as LimitedReplyish, acc);
+      if (!reservation.ok) return;
       try {
         return await addLongVideoToLibrary({
           db,
@@ -194,6 +309,8 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
       } catch (e) {
         if (e instanceof LongVideoLibraryError) return reply.code(e.statusCode).send({ error: e.message });
         throw e;
+      } finally {
+        releaseChannelLibraryReservation(reservation);
       }
     });
   });
@@ -209,12 +326,24 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     if (!enforceGenerationWindow(req, reply as LimitedReplyish, "videos-batch", BATCH_VIDEO_LIMIT)) return;
     return runHeavyGenerationLimited(req, reply as LimitedReplyish, "videos-batch", async () => {
       const ownerId = accountOwnerId(req, acc);
-      const requested = Math.max(1, Math.min(isAdminReq(req) ? 25 : NORMAL_BATCH_VIDEO_CAP, Number(body.count) || 5));
+      const ownerIsMgs = isMgsUser(db.getUserById(ownerId));
+      let requested = Math.max(1, Math.min(isAdminReq(req) || ownerIsMgs ? 25 : USER_BATCH_VIDEO_CAP, Number(body.count) || USER_BATCH_VIDEO_CAP));
+      const capacity = channelLibraryCapacity(req, acc);
+      if (capacity) {
+        if (capacity.available <= 0) {
+          sendChannelLibraryLimit(reply as LimitedReplyish, capacity);
+          return;
+        }
+        requested = Math.min(requested, capacity.available);
+      }
       const seen = new Set<string>(db.usedAnecdoteKeys(ownerId)); // exclude owner-used + dedupe batch
       const infinite = db.hasFeature(ownerId, INFINITE_PACKS_FEATURE);
       const created: unknown[] = [];
       const sourceDeckId = resolveAccountSourceDeck(req, reply, acc, body.deck);
       if (!sourceDeckId) return;
+      const reservation = reserveChannelLibrarySlots(req, reply as LimitedReplyish, acc, requested);
+      if (!reservation.ok) return;
+      try {
       const batchSeed = `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
       const pickSeed = (sourceDeck: string, offset = 0) => `${accountId}|${sourceDeck}|batch|${batchSeed}|${created.length}|${offset}`;
       // Пак-канал (язык = "pack:<id>"): случайные неиспользованные карточки пака → рендер мостом.
@@ -299,6 +428,9 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
         }
       }
       return { created, requested, made: created.length, exhausted: created.length < requested };
+      } finally {
+        releaseChannelLibraryReservation(reservation);
+      }
     });
   });
 
@@ -339,7 +471,13 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     }
     // Daily per-Google-key upload cap (counts REAL uploads, not planned slots): post-now shares the
     // scheduler's budget so it can't blow the Cloud project's YouTube quota for co-bound channels.
-    const keyCap = googleKeyDailyScheduleCap(isSuperAdminUser(db.getUserById(accountOwnerId(req, acc))));
+    const owner = db.getUserById(accountOwnerId(req, acc));
+    const accountCap = accountDailyScheduleCap(owner?.role === "admin", isMgsUser(owner));
+    if (db.uploadsTodayForAccount(acc.id) >= accountCap)
+      return reply
+        .code(429)
+        .send({ error: `Достигнут дневной лимит ${accountCap} публикаций на этот канал — попробуйте завтра.` });
+    const keyCap = googleKeyDailyScheduleCap(isSuperAdminUser(owner), isMgsUser(owner));
     if (acc.oauthClientId != null && db.uploadsTodayForKey(acc.oauthClientId) >= keyCap)
       return reply
         .code(429)
@@ -347,6 +485,24 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     // Atomic claim: flip this unposted video to in-flight so a double-click (or the scheduler) can't post it twice.
     if (!db.claimVideoForPost(v.id))
       return reply.code(409).send({ error: "Этот ролик уже публикуется или опубликован — обновите список." });
+    const uploadReservation = db.reserveDailyUploadQuota({
+      accountId: acc.id,
+      oauthClientId: acc.oauthClientId,
+      accountCap,
+      keyCap: acc.oauthClientId != null ? keyCap : null,
+    });
+    if (!uploadReservation.ok) {
+      db.releaseVideoPost(v.id);
+      return reply
+        .code(429)
+        .send({
+          error:
+            uploadReservation.scope === "account"
+              ? `Достигнут дневной лимит ${uploadReservation.cap} публикаций на этот канал — попробуйте завтра.`
+              : `Достигнут дневной лимит ${uploadReservation.cap} публикаций на этот Google-ключ — попробуйте позже.`,
+        });
+    }
+    let uploadReservationToken: string | null = uploadReservation.token;
     // Optional publishAt (RFC3339) → scheduled (private until then); empty → publish now.
     const publishAt = ((req.body as { publishAt?: string })?.publishAt || "").trim() || null;
     try {
@@ -368,7 +524,10 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
         videoPath: v.videoRel,
         publishedAt: publishAt ?? new Date().toISOString(),
         deck: v.deck,
+        oauthClientId: acc.oauthClientId,
       });
+      db.releaseDailyUploadReservation(uploadReservation.token);
+      uploadReservationToken = null;
       if (youtubeId) {
         db.clearAuthError(v.accountId); // token works → drop any stale "needs reconnect" flag
         // posted once → remove from the library (files + row) so it never reposts
@@ -395,6 +554,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
         removed: !!youtubeId,
       };
     } catch (err) {
+      if (uploadReservationToken) db.releaseDailyUploadReservation(uploadReservationToken);
       db.releaseVideoPost(v.id); // upload threw → un-claim so the video stays postable
       app.log.error(err);
       // Dead/revoked token → flag the channel so /channels shows "needs reconnect", not just history.

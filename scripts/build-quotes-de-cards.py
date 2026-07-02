@@ -31,8 +31,8 @@ PORTRAIT_DIR = DECK_DIR / "portraits"
 MUSIC_DIR = DECK_DIR / "music"
 CACHE_DIR = DECK_DIR / "source-cache"
 ASSET_DIR = ROOT / "assets" / "fact-videos"
-TEMP_CARD_DIR = ROOT / "temp" / "quotes-de-cards"
-CONTACT_DIR = ROOT / "temp" / "quotes-de-contact"
+TEMP_CARD_DIR = ROOT / "tmp" / "quotes-de-cards"
+CONTACT_DIR = ROOT / "tmp" / "quotes-de-contact"
 
 USER_AGENT = "shorts-quotes-de-card-pack/1.0 (local source tracking)"
 WIDTH = 1080

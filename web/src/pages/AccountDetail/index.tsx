@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
 import { ArrowLeft, Save, Trash2, Check, Plus, RefreshCw, Loader2, Play, Upload } from "lucide-react";
-import { apiClient, type Account, type VideoItem, type Generator, type PackSummary, type OAuthClient, type AccountReadiness } from "../../lib/api";
+import { apiClient, type Account, type VideoItem, type Generator, type PackSummary, type OAuthClient, type AccountReadiness, type VideoLibraryPage } from "../../lib/api";
 import { confirmDialog } from "../../lib/confirm";
 import { useAuth } from "../../lib/auth";
 import { useGenQueue } from "../../lib/genQueue";
@@ -16,12 +16,15 @@ import {
   type DeckGroup,
 } from "../../lib/deck";
 import { isMainAdmin } from "../../lib/authz";
+import { isMgsLegacyUser } from "../../lib/accountLimits";
 import { cleanDisplayText } from "../../lib/text";
 import {
   toMin,
   randomDayTimes,
   accountDailySlotCap,
-  USER_DAILY_SLOT_CAP,
+  googleKeyDailySlotCap,
+  USER_BATCH_VIDEO_CAP,
+  USER_CHANNEL_LIBRARY_CAP,
   SUPER_ADMIN_SCHEDULE_WINDOW,
   cleanSuperAdminScheduleTimes,
   isSuperAdminScheduleTimeAllowed,
@@ -51,6 +54,19 @@ function readDataUrl(file: File): Promise<string> {
   });
 }
 
+const LIBRARY_PAGE_SIZE = 6;
+const LONG_LIBRARY_PAGE_SIZE = 100;
+const EMPTY_VIDEO_PAGE: VideoLibraryPage = {
+  items: [],
+  total: 0,
+  page: 1,
+  pageSize: LIBRARY_PAGE_SIZE,
+  pageCount: 1,
+  byDeck: {},
+  postedTwicePlus: 0,
+  totalAll: 0,
+};
+
 export default function AccountDetail() {
   const { t } = useT();
   const { id } = useParams();
@@ -68,6 +84,9 @@ export default function AccountDetail() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [videos, setVideos] = useState<VideoItem[]>([]);
+  const [videoPage, setVideoPage] = useState<VideoLibraryPage>(EMPTY_VIDEO_PAGE);
+  const [longLibraryVideos, setLongLibraryVideos] = useState<VideoItem[]>([]);
+  const [longVideoPage, setLongVideoPage] = useState<VideoLibraryPage>(EMPTY_VIDEO_PAGE);
   const [readiness, setReadiness] = useState<AccountReadiness | null>(null);
   const [sort, setSort] = useState<"date" | "title" | "posts">("date");
   const [posting, setPosting] = useState<number | null>(null);
@@ -115,23 +134,36 @@ export default function AccountDetail() {
   };
 
   const reloadReadiness = () => apiClient.accountReadiness(id!).then(setReadiness).catch(() => {});
-  const reloadVideos = () =>
-    apiClient
-      .videos(id!)
-      .then(setVideos)
+  const reloadVideos = (nextPage = page, nextSort = sort) =>
+    Promise.all([
+      apiClient.videosPage(id!, { kind: "regular", page: nextPage, pageSize: LIBRARY_PAGE_SIZE, sort: nextSort }),
+      apiClient.videosPage(id!, { kind: "long", page: 1, pageSize: LONG_LIBRARY_PAGE_SIZE, sort: "date" }),
+    ])
+      .then(([regular, long]) => {
+        setVideoPage(regular);
+        setVideos(regular.items);
+        setLongVideoPage(long);
+        setLongLibraryVideos(long.items);
+        if (regular.page !== nextPage) setPage(regular.page);
+      })
       .catch(() => {})
       .finally(() => {
         void reloadReadiness();
       });
 
-  // «Сделать сразу» не больше остатка свободных карточек выбранного контента (дека/пак) — для всех ролей.
-  const roleMax = user?.role === "admin" ? 100 : 50; // потолок: админ 100, обычный юзер 50
-  // Кап «видео в сутки на канал» зависит от роли ВЛАДЕЛЬЦА канала: админ 20, остальные 18.
+  const ownedByMeForLimits = !account?.userId || account.userId === user?.id;
+  const ownerId = account?.userId ?? (ownedByMeForLimits ? user?.id : null);
+  const ownerUsername = account?.ownerUsername ?? (ownedByMeForLimits ? user?.username : null);
+  const ownerRole = account?.ownerRole ?? (ownedByMeForLimits ? user?.role : null);
+  const ownerIsMgs = isMgsLegacyUser({ id: ownerId, username: ownerUsername });
+  // Капы зависят от ВЛАДЕЛЬЦА канала: обычные пользователи 5/50, mgs 18/92, админы выше.
   // (Бэкенд — источник истины; здесь это только для UX-валидации/счётчиков.)
-  const ownerIsAdmin = user?.role === "admin" && (!account?.userId || account.userId === user?.id);
-  const ownerIsSuperAdminAccount = user?.isSuperAdmin === true && (!account?.userId || account.userId === user.id);
+  const ownerIsAdmin = ownerRole === "admin";
+  const ownerIsSuperAdminAccount = account?.ownerIsSuperAdmin ?? (user?.isSuperAdmin === true && ownedByMeForLimits);
   const scheduleWindow = ownerIsSuperAdminAccount ? SUPER_ADMIN_SCHEDULE_WINDOW : undefined;
-  const perChannelCap = accountDailySlotCap(ownerIsAdmin);
+  const perChannelCap = accountDailySlotCap(ownerIsAdmin, ownerIsMgs);
+  const perGoogleKeyCap = googleKeyDailySlotCap(ownerIsSuperAdminAccount, ownerIsMgs);
+  const libraryCap = ownerIsAdmin || ownerIsMgs ? null : USER_CHANNEL_LIBRARY_CAP;
   const selectedSources = (sourceDecks.length ? sourceDecks : [lang]).filter(Boolean);
   // Остаток = СВОБОДНЫЕ (неиспользованные) карточки. Для пака — available (cards − used), не общее число.
   const sourceRemaining = (deckId: string) => srcSourceRemaining(packs, gens, deckId);
@@ -149,7 +181,13 @@ export default function AccountDetail() {
       ? [activeGenerateDeck]
       : [];
   const remaining = generateDeckIds.reduce((sum, deckId) => sum + sourceRemaining(deckId), 0);
-  const maxBatch = Math.max(0, Math.min(roleMax, remaining));
+  const trackedQueueForThisAccount = q.accountId === Number(id) ? Math.max(0, q.total - q.done) : 0;
+  const libraryLoadedTotal = Math.max(videoPage.totalAll, videoPage.total + longVideoPage.total);
+  const libraryAvailable = libraryCap == null ? Number.MAX_SAFE_INTEGER : Math.max(0, libraryCap - libraryLoadedTotal - trackedQueueForThisAccount);
+  // «Сделать сразу» не больше остатка свободных карточек выбранного контента и свободного места в библиотеке.
+  const roleMax = user?.role === "admin" || ownerIsMgs ? 100 : USER_BATCH_VIDEO_CAP;
+  const maxBatch = Math.max(0, Math.min(roleMax, remaining, libraryAvailable));
+  const libraryFull = libraryCap != null && libraryAvailable <= 0;
 
   // Сменили контент канала с меньшим остатком — подожмём «сразу» к новому максимуму.
   useEffect(() => {
@@ -187,7 +225,6 @@ export default function AccountDetail() {
         });
       })
       .catch(() => {});
-    reloadVideos();
     apiClient.manualVideoLimits().then(setManualLimits).catch(() => {});
     apiClient.generators().then(setGens).catch(() => {});
     apiClient.packs().then(setPacks).catch(() => {}); // доступные паки → в дропдаун канала (по имени)
@@ -198,13 +235,18 @@ export default function AccountDetail() {
       .then((accs) => {
         const myKey = accs.find((a) => a.id === Number(id))?.oauthClientId ?? null;
         const others = accs.filter((a) => a.id !== Number(id));
-        // Per-key daily cap: only channels sharing THIS channel's Google key count toward its 92/day.
-        const sameKey = others.filter((a) => (a.oauthClientId ?? null) === myKey);
+        // Per-key daily cap: only channels sharing THIS channel's Google key count toward its daily cap.
+        const sameKey = myKey == null ? [] : others.filter((a) => (a.oauthClientId ?? null) === myKey);
         setOtherSlots(sameKey.reduce((s, a) => s + (a.schedule?.length ?? 0), 0));
         setOtherTimes(others.flatMap((a) => a.schedule ?? []));
       })
       .catch(() => {});
   }, [id, user?.id, user?.isSuperAdmin]);
+
+  useEffect(() => {
+    void reloadVideos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, page, sort]);
 
   // Когда фоновая генерация (глобальная очередь) завершилась для ЭТОГО канала — обновить библиотеку.
   // Остатки свободных карточек (деки/паки) перечитываем всегда — они per-user, не per-channel, и
@@ -212,7 +254,8 @@ export default function AccountDetail() {
   useEffect(() => {
     if (!q.completions) return;
     if (q.accountId === Number(id)) {
-      reloadVideos();
+      setPage(1);
+      void reloadVideos(1, sort);
     }
     apiClient.generators().then(setGens).catch(() => {});
     apiClient.packs().then(setPacks).catch(() => {});
@@ -274,12 +317,12 @@ export default function AccountDetail() {
         notify(t("account.accountDayLimitReached", { n: perChannelCap }), "error", t("account.scheduleLimitToastTitle"));
         return false;
       }
-      if (otherSlots + effectiveTimes.length > USER_DAILY_SLOT_CAP) {
+      if (otherSlots + effectiveTimes.length > perGoogleKeyCap) {
         notify(
           t("account.dayLimitReached", {
-            limit: USER_DAILY_SLOT_CAP,
+            limit: perGoogleKeyCap,
             other: otherSlots,
-            available: Math.max(0, USER_DAILY_SLOT_CAP - otherSlots),
+            available: Math.max(0, perGoogleKeyCap - otherSlots),
           }),
           "error",
           t("account.scheduleLimitToastTitle"),
@@ -368,7 +411,7 @@ export default function AccountDetail() {
   async function postNow(vid: number) {
     setPosting(vid);
     try {
-      const v = videos.find((x) => x.id === vid);
+      const v = [...videos, ...longLibraryVideos].find((x) => x.id === vid);
       const r = await apiClient.postVideoNow(vid);
       if (r.url) setLastPosted({ title: v?.title ?? t("account.videoFallbackTitle"), url: r.url });
       await reloadVideos(); // posted video is removed server-side → disappears from the list
@@ -393,15 +436,15 @@ export default function AccountDetail() {
     setManualUploading(true);
     try {
       const dataUrl = await readDataUrl(file);
-      const v = await apiClient.uploadVideo({
+      await apiClient.uploadVideo({
         accountId: Number(id),
         name: file.name,
         type: file.type,
         size: file.size,
         dataUrl,
       });
-      setVideos((cur) => [v, ...cur]);
       setPage(1);
+      await reloadVideos(1, sort);
       notify(t("account.manualUploadSuccess"), "success");
     } catch (e) {
       notify(t("account.manualUploadFailed") + " " + String(e), "error");
@@ -419,9 +462,9 @@ export default function AccountDetail() {
     if ((sourcesDirty || longVideoDecksDirty) && !(await save())) return;
     setAddingLongVideoDeck(deckId);
     try {
-      const v = await apiClient.addLongVideoToLibrary(id!, deckId);
-      setVideos((cur) => [v, ...cur]);
+      await apiClient.addLongVideoToLibrary(id!, deckId);
       setPage(1);
+      await reloadVideos(1, sort);
       notify(t("account.longVideoAdded"), "success");
       void reloadReadiness();
       apiClient.generators().then(setGens).catch(() => {});
@@ -438,9 +481,12 @@ export default function AccountDetail() {
     await reloadVideos();
   }
 
-  // Удалить все ролики, которые выкладывались больше одного раза (postCount > 1).
-  async function removePosted(candidates = videos) {
-    const targets = candidates.filter((v) => v.postCount > 1);
+  const fetchAllAccountVideos = () => apiClient.videos(id!);
+
+  // Удалить все обычные ролики, которые выкладывались больше одного раза (postCount > 1).
+  async function removePosted() {
+    const all = await fetchAllAccountVideos();
+    const targets = all.filter((v) => !isLongVideoDeck(v.deck) && v.postCount > 1);
     if (targets.length === 0) return;
     if (!(await confirmDialog(t("account.deletePostedConfirm", { n: targets.length }), { confirmText: t("common.delete"), danger: true }))) return;
     for (const v of targets) await apiClient.deleteVideo(v.id);
@@ -448,11 +494,20 @@ export default function AccountDetail() {
   }
 
   // Очистить ВСЮ библиотеку канала (например, после смены пака — старый контент больше не подходит).
-  async function clearLibrary(targets = videos) {
-    if (targets.length === 0) return;
-    if (!(await confirmDialog(t("account.clearLibraryConfirm", { n: targets.length }), { title: t("account.clearLibraryTitle"), confirmText: t("account.deleteAll"), danger: true }))) return;
+  async function clearLibrary(kind: "regular" | "long" = "regular") {
     setClearing(true);
     try {
+      const all = await fetchAllAccountVideos();
+      const targets = all.filter((v) => (kind === "long" ? isLongVideoDeck(v.deck) : !isLongVideoDeck(v.deck)));
+      if (targets.length === 0) return;
+      if (
+        !(await confirmDialog(t("account.clearLibraryConfirm", { n: targets.length }), {
+          title: t("account.clearLibraryTitle"),
+          confirmText: t("account.deleteAll"),
+          danger: true,
+        }))
+      )
+        return;
       for (const v of [...targets]) await apiClient.deleteVideo(v.id);
       await reloadVideos();
     } catch (e) {
@@ -467,21 +522,10 @@ export default function AccountDetail() {
   const normalGens = gens.filter((g) => !g.longVideo);
   const longVideoDeckIds = new Set(allLongVideoGens.map((g) => g.id));
   const isLongVideoDeck = (deckId: string) => longVideoDeckIds.has(deckId) || longVideoDecks.includes(deckId);
-  const regularVideos = videos.filter((v) => !isLongVideoDeck(v.deck));
-  const longLibraryVideos = videos.filter((v) => isLongVideoDeck(v.deck));
-  const sortedVideos = [...regularVideos].sort((a, b) =>
-    sort === "title"
-      ? a.title.localeCompare(b.title)
-      : sort === "posts"
-        ? a.postCount - b.postCount
-        : b.id - a.id,
-  );
-
-  const PAGE_SIZE = 6;
-  const pageCount = Math.max(1, Math.ceil(sortedVideos.length / PAGE_SIZE));
-  const clampedPage = Math.min(Math.max(1, page), pageCount);
-  const pageVideos = sortedVideos.slice((clampedPage - 1) * PAGE_SIZE, clampedPage * PAGE_SIZE);
-  const postedTwicePlus = regularVideos.filter((v) => v.postCount > 1).length;
+  const pageVideos = videos;
+  const pageCount = videoPage.pageCount;
+  const clampedPage = videoPage.page;
+  const postedTwicePlus = videoPage.postedTwicePlus;
 
   // Only offer packs (languages) the user is allowed to see — generators are filtered server-side.
   // While generators load, show all to avoid an empty dropdown; always keep the channel's current value.
@@ -563,7 +607,9 @@ export default function AccountDetail() {
       </optgroup>
     ));
   };
-  const libraryDeckCounts = videos.reduce((map, v) => map.set(v.deck, (map.get(v.deck) || 0) + 1), new Map<string, number>());
+  const libraryDeckCounts = new Map<string, number>(
+    Object.entries(videoPage.byDeck).map(([deckId, count]) => [deckId, Number(count) || 0]),
+  );
   const slotDeckOptions = [
     ...selectedSources.filter((deckId) => (libraryDeckCounts.get(deckId) || 0) > 0),
     ...(libraryDeckCounts.get("manual") ? ["manual"] : []),
@@ -575,13 +621,13 @@ export default function AccountDetail() {
 
   // Per-channel cap: ≤20 slots/day; per-user aggregate cap stays separate.
   const dayUsed = otherSlots + times.length; // posts/day across all the user's channels
-  const scheduleRemaining = Math.max(0, USER_DAILY_SLOT_CAP - otherSlots); // max slots this channel may hold
+  const scheduleRemaining = Math.max(0, perGoogleKeyCap - otherSlots); // max slots this channel may hold
   const takenMinutes = new Set(otherTimes.map(toMin)); // minutes busy on other channels → generator avoids them
   const perDayMax = Math.min(perChannelCap, scheduleRemaining); // cap for the «раз в день» generator
   const notifyScheduleLimit = () =>
     notify(
       t("account.dayLimitReached", {
-        limit: USER_DAILY_SLOT_CAP,
+        limit: perGoogleKeyCap,
         other: otherSlots,
         available: scheduleRemaining,
       }),
@@ -830,8 +876,8 @@ export default function AccountDetail() {
           <div className="form-control">
             <div className="flex items-center justify-between mb-2 gap-2">
               <span className="label-text">{t("account.scheduleLabel")}</span>
-              <span className={`text-xs ${dayUsed > USER_DAILY_SLOT_CAP ? "text-error font-medium" : "text-base-content/50"}`}>
-                {t("account.perDayAllChannels", { n: dayUsed, limit: USER_DAILY_SLOT_CAP })}
+              <span className={`text-xs ${dayUsed > perGoogleKeyCap ? "text-error font-medium" : "text-base-content/50"}`}>
+                {t("account.perDayAllChannels", { n: dayUsed, limit: perGoogleKeyCap })}
               </span>
             </div>
 
@@ -843,7 +889,7 @@ export default function AccountDetail() {
 
             <div className="flex flex-wrap gap-2 mb-1 items-center">
               <span className="text-sm text-base-content/60">{t("account.timesPerDay")}</span>
-              {[1, 2, 3, 4, 6].map((n) => (
+              {[1, 2, 3, 4, 5, 6].filter((n) => n <= perChannelCap).map((n) => (
                 <button
                   key={n}
                   className="btn btn-xs btn-outline"
@@ -853,7 +899,7 @@ export default function AccountDetail() {
                       notify(t("account.accountDayLimitReached", { n: perChannelCap }), "error", t("account.scheduleLimitToastTitle"));
                       return;
                     }
-                    if (otherSlots + n > USER_DAILY_SLOT_CAP) {
+                    if (otherSlots + n > perGoogleKeyCap) {
                       notifyScheduleLimit();
                       return;
                     }
@@ -885,7 +931,7 @@ export default function AccountDetail() {
                     notify(t("account.accountDayLimitReached", { n: perChannelCap }), "error", t("account.scheduleLimitToastTitle"));
                     return;
                   }
-                  if (otherSlots + perDayInput > USER_DAILY_SLOT_CAP) {
+                  if (otherSlots + perDayInput > perGoogleKeyCap) {
                     notifyScheduleLimit();
                     return;
                   }
@@ -1003,12 +1049,12 @@ export default function AccountDetail() {
       <LibrarySection
         account={account}
         accountId={id!}
-        videos={regularVideos}
+        totalVideos={videoPage.total}
         pageVideos={pageVideos}
         sort={sort}
         setSort={setSort}
         clearing={clearing}
-        clearLibrary={() => clearLibrary(regularVideos)}
+        clearLibrary={() => clearLibrary("regular")}
         selectedSources={selectedSources}
         deckName={deckName}
         deckMeta={deckMeta}
@@ -1019,6 +1065,8 @@ export default function AccountDetail() {
         setGenerateDeck={setGenerateDeck}
         canGenerateAllSources={canGenerateAllSources}
         maxBatch={maxBatch}
+        libraryFull={libraryFull}
+        libraryCap={libraryCap}
         batchN={batchN}
         setBatchN={setBatchN}
         sourcesDirty={sourcesDirty}
@@ -1037,7 +1085,7 @@ export default function AccountDetail() {
         curContentLang={curContentLang}
         channelLang={channelLang}
         postedTwicePlus={postedTwicePlus}
-        removePosted={() => removePosted(regularVideos)}
+        removePosted={removePosted}
         lastPosted={lastPosted}
         setPreview={setPreview}
         removeVid={removeVid}
@@ -1074,7 +1122,7 @@ export default function AccountDetail() {
         t={t}
       />
 
-      {(longVideoGens.length > 0 || longLibraryVideos.length > 0) && (
+      {(longVideoGens.length > 0 || longVideoPage.total > 0) && (
         <section id="channel-long-content" className="card bg-base-100 border border-base-300">
           <div className="card-body gap-4">
             <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -1086,10 +1134,10 @@ export default function AccountDetail() {
                     {t("common.save")}
                   </button>
                 )}
-                {longLibraryVideos.length > 0 && (
+                {longVideoPage.total > 0 && (
                   <button
                     className="btn btn-sm btn-error btn-outline gap-1"
-                    onClick={() => clearLibrary(longLibraryVideos)}
+                    onClick={() => clearLibrary("long")}
                     disabled={clearing}
                     title={t("account.clearAllTitle")}
                   >
@@ -1104,7 +1152,7 @@ export default function AccountDetail() {
               <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
                 {longVideoGens.map((opt) => {
                   const checked = longVideoDecks.includes(opt.id);
-                  const inLibrary = longLibraryVideos.filter((v) => v.deck === opt.id).length;
+                  const inLibrary = libraryDeckCounts.get(opt.id) ?? longLibraryVideos.filter((v) => v.deck === opt.id).length;
                   const total = opt.total ?? Math.max(opt.available ?? 0, inLibrary);
                   const remaining = Math.min(opt.available ?? total, Math.max(0, total - inLibrary));
                   const busy = addingLongVideoDeck === opt.id;
@@ -1152,7 +1200,7 @@ export default function AccountDetail() {
               </div>
             )}
 
-            {longLibraryVideos.length > 0 && (
+            {longVideoPage.total > 0 && (
               <div className="grid grid-cols-1 gap-x-3 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
                 {longLibraryVideos.map((v) => (
                   <div key={v.id} className="group min-w-0">

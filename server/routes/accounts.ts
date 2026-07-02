@@ -144,8 +144,8 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
       }
       body.slotDecks = clean;
     }
-    // Caps are about platform load: the per-channel ceiling is 18/day for non-admin owners and 20/day
-    // for admin-owned channels; the per-Google-key cap is 92/day normally and 100/day for super admin.
+    // Caps are about platform load: regular users get 5/day per channel and 50/day per Google key;
+    // mgs keeps the legacy 18/92 profile; admins/super-admin keep their higher ceilings.
     if (rejectScheduleLimit(req, reply, body.schedule, acc, id)) return;
     const a = db.updateAccount(id, body);
     if (!a) return reply.code(404).send({ error: "not found" });

@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 const ROOT = process.cwd();
-const OUT_DIR = resolve(ROOT, "temp/id-abunawas");
+const OUT_DIR = resolve(ROOT, "tmp/id-abunawas");
 const PDF_PATH = resolve(OUT_DIR, "tjerita-aboe-nawas.pdf");
 const RAW_PATH = resolve(OUT_DIR, "tjerita-aboe-nawas-raw.txt");
 const CHAPTERS_PATH = resolve(OUT_DIR, "chapters.json");

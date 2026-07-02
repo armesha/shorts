@@ -16,9 +16,9 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 ROOT = Path.cwd()
 SOURCE = ROOT / "data/animal-superheroes/episodes-source.json"
 ADMIN_DIR = ROOT / "data/output/admin-demos"
-SCENE_ROOT = ROOT / "temp/animal-superheroes/gpt-image2/generated_scenes"
-WORK_ROOT = ROOT / "temp/animal-superheroes/generated-build"
-VOICE_DIR = ROOT / "temp/animal-superheroes/voice-jessica"
+SCENE_ROOT = ROOT / "tmp/animal-superheroes/gpt-image2/generated_scenes"
+WORK_ROOT = ROOT / "tmp/animal-superheroes/generated-build"
+VOICE_DIR = ROOT / "tmp/animal-superheroes/voice-jessica"
 MUSIC = ROOT / "assets/audio/animal-superheroes/sunflower-valley-isaiah658.mp3"
 
 W, H, FPS = 1080, 1920, 30

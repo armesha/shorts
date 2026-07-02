@@ -317,21 +317,76 @@
 }
 
 html[data-skin="sechenie"] .auth-screen {
-  --auth-bg: #f3f5f7;
-  --auth-panel: #ffffff;
-  --auth-text: #172033;
-  --auth-muted: #667085;
-  --auth-line: #d7dee8;
-  --auth-line-strong: #b9c3d0;
-  --auth-primary: #155eef;
-  --auth-primary-hover: #0f4cc9;
-  --auth-primary-disabled: #aebbe0;
-  --auth-telegram: #1d9bd7;
-  --auth-telegram-hover: #147cab;
+  --auth-bg: var(--sx-paper);
+  --auth-panel: var(--sx-surface);
+  --auth-text: var(--sx-ink);
+  --auth-muted: var(--sx-muted);
+  --auth-line: var(--sx-line);
+  --auth-line-strong: var(--sx-line-strong);
+  --auth-primary: var(--sx-ink);
+  --auth-primary-hover: #2b2b28;
+  --auth-primary-disabled: #8f8b7c;
+  --auth-telegram: var(--sx-blue);
+  --auth-telegram-hover: #2639c7;
+  --auth-error-bg: color-mix(in srgb, var(--sx-red) 9%, var(--sx-surface));
+  --auth-error-line: color-mix(in srgb, var(--sx-red) 45%, var(--sx-line));
+  --auth-error-text: #9a1f15;
   background: var(--auth-bg);
   color: var(--auth-text);
+  font-family: "Helvetica Neue", "Inter", Arial, system-ui, sans-serif;
+}
+
+html[data-skin="sechenie"] .auth-panel,
+html[data-skin="sechenie"] .auth-input,
+html[data-skin="sechenie"] .auth-button,
+html[data-skin="sechenie"] .auth-alert {
+  border-radius: 0;
+}
+
+html[data-skin="sechenie"] .auth-panel {
+  border-color: var(--sx-line-strong);
+  box-shadow: none;
+}
+
+html[data-skin="sechenie"] .auth-brand {
+  font-weight: 900;
   letter-spacing: 0;
-  text-transform: none;
+  text-transform: uppercase;
+}
+
+html[data-skin="sechenie"] .auth-brand svg {
+  color: var(--sx-ink);
+}
+
+html[data-skin="sechenie"] .auth-label,
+html[data-skin="sechenie"] .auth-divider {
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+html[data-skin="sechenie"] .auth-input {
+  background: var(--sx-paper);
+  border-color: var(--sx-line);
+}
+
+html[data-skin="sechenie"] .auth-input:focus {
+  border-color: var(--sx-ink);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--sx-acid) 80%, transparent);
+}
+
+html[data-skin="sechenie"] .auth-button--primary {
+  box-shadow: 4px 4px 0 var(--sx-acid);
+}
+
+html[data-skin="sechenie"] .auth-button--primary:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 var(--sx-acid);
+}
+
+html[data-skin="sechenie"] .auth-button--telegram {
+  background: var(--sx-paper);
+  border-color: color-mix(in srgb, var(--sx-blue) 42%, var(--sx-line));
+  color: var(--sx-blue);
 }
 
 html[data-skin="sechenie"]:has(.auth-screen) body::before,
@@ -343,7 +398,7 @@ html[data-skin="sechenie"] .auth-screen :where(.btn-primary)::after {
   content: none;
 }
 
-html[data-skin="sechenie"] .auth-screen :where(.auth-brand, .auth-subtitle, .auth-label, .auth-note, .auth-button, .auth-footer, .auth-link, .auth-divider, input) {
+html[data-skin="sechenie"] .auth-screen :where(.auth-subtitle, .auth-note, .auth-button, .auth-footer, .auth-link, input) {
   letter-spacing: 0;
   text-transform: none;
 }

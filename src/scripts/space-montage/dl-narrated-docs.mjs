@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import { execFileSync } from "node:child_process";
 const ROOT = "/home/davtian/Documents/shorts";
-const DOC = `${ROOT}/temp/space-build/doc`;
+const DOC = `${ROOT}/tmp/space-build/doc`;
 fs.mkdirSync(DOC, { recursive: true });
 const a = JSON.parse(fs.readFileSync("/tmp/sciencecasts.json", "utf8"));
 const b = JSON.parse(fs.readFileSync("/tmp/narrated.json", "utf8"));
@@ -34,4 +34,4 @@ async function dl(v) {
 const CONC = 4, q = [...list]; let active = 0;
 await new Promise((done) => { const tick = () => { if (!q.length && active === 0) return done(); while (active < CONC && q.length) { const v = q.shift(); active++; dl(v).finally(() => { active--; tick(); }); } }; tick(); });
 fs.writeFileSync("/tmp/doc-sources.json", JSON.stringify(out, null, 2));
-console.log(`\nDONE: ${out.length} narrated sources in temp/space-build/doc/`);
+console.log(`\nDONE: ${out.length} narrated sources in tmp/space-build/doc/`);

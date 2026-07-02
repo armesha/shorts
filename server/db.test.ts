@@ -94,6 +94,105 @@ test("uploadsTodayForKey: zero without any upload history", () => {
   assert.equal(db.uploadsTodayForKey(7), 0);
 });
 
+test("uploadsTodayForAccount counts today's real upload attempts for one channel", () => {
+  const db = openDb(":memory:");
+  const acc = db.createAccount({ userId: 1, channelName: "Daily cap", lang: "en", channelLang: "en" });
+  db.addHistory({ accountId: acc.id, title: "published", status: "published" });
+  db.addHistory({ accountId: acc.id, title: "scheduled", status: "scheduled" });
+  db.addHistory({ accountId: acc.id, title: "failed", status: "failed" });
+
+  assert.equal(db.uploadsTodayForAccount(acc.id), 2);
+});
+
+test("uploadsTodayForKey sticks to the upload-time Google key after channel rebind", () => {
+  const db = openDb(":memory:");
+  const user = db.createUser({ username: "quota-keys", passHash: "x" });
+  const key1 = db.addOAuthClient(user.id, {
+    json: JSON.stringify({ installed: { client_id: "cid-1", project_id: "p1" } }),
+    clientId: "cid-1",
+    projectId: "p1",
+  });
+  const key2 = db.addOAuthClient(user.id, {
+    json: JSON.stringify({ installed: { client_id: "cid-2", project_id: "p2" } }),
+    clientId: "cid-2",
+    projectId: "p2",
+  });
+  const acc = db.createAccount({ userId: user.id, channelName: "Rebind", lang: "en", channelLang: "en" });
+  db.bindAccountOAuthClient(acc.id, key1.id);
+  db.addHistory({ accountId: acc.id, title: "one", status: "published", oauthClientId: key1.id });
+  db.bindAccountOAuthClient(acc.id, key2.id);
+
+  assert.equal(db.uploadsTodayForKey(key1.id), 1);
+  assert.equal(db.uploadsTodayForKey(key2.id), 0);
+});
+
+test("reserveDailyUploadQuota serializes account/key daily caps before history is written", () => {
+  const db = openDb(":memory:");
+  const user = db.createUser({ username: "quota", passHash: "x" });
+  const key = db.addOAuthClient(user.id, {
+    json: JSON.stringify({ installed: { client_id: "cid", project_id: "p" } }),
+    clientId: "cid",
+    projectId: "p",
+  });
+  const acc = db.createAccount({ userId: user.id, channelName: "Quota", lang: "en", channelLang: "en" });
+  db.bindAccountOAuthClient(acc.id, key.id);
+  db.addHistory({ accountId: acc.id, title: "one", status: "published" });
+
+  const first = db.reserveDailyUploadQuota({ accountId: acc.id, oauthClientId: key.id, accountCap: 2, keyCap: 2 });
+  assert.equal(first.ok, true);
+  const second = db.reserveDailyUploadQuota({ accountId: acc.id, oauthClientId: key.id, accountCap: 2, keyCap: 2 });
+  assert.deepEqual(second, { ok: false, scope: "account", cap: 2, used: 2 });
+  if (first.ok) db.releaseDailyUploadReservation(first.token);
+});
+
+test("reserveLibrarySlots counts existing videos, reservations and generation jobs", () => {
+  const db = openDb(":memory:");
+  const user = db.createUser({ username: "library", passHash: "x" });
+  const acc = db.createAccount({ userId: user.id, channelName: "Library", lang: "en", channelLang: "en" });
+  db.createVideo({ accountId: acc.id, title: "v", text: "x", bg: "", music: "", deck: "en", videoRel: "v.mp4", imageRel: null });
+  db.db
+    .prepare(
+      "INSERT INTO generation_jobs (id,user_id,owner_user_id,account_id,deck_ids,total,done,state,created_at) VALUES (?,?,?,?,?,?,?,?,?)",
+    )
+    .run("job-1", user.id, user.id, acc.id, "[]", 1, 0, "queued", Date.now());
+
+  const first = db.reserveLibrarySlots(acc.id, 3, 1);
+  assert.equal(first.ok, true);
+  const second = db.reserveLibrarySlots(acc.id, 3, 1);
+  assert.equal(second.ok, false);
+  if (first.ok) db.releaseLibraryReservation(first.token);
+});
+
+test("listVideosPage paginates, sorts and counts without loading the full library", () => {
+  const db = openDb(":memory:");
+  const user = db.createUser({ username: "library-page", passHash: "x" });
+  const acc = db.createAccount({ userId: user.id, channelName: "Paged Library", lang: "en", channelLang: "en" });
+  db.createVideo({ accountId: acc.id, title: "Gamma", text: "x", bg: "", music: "", deck: "en", videoRel: "1.mp4", imageRel: null });
+  db.createVideo({ accountId: acc.id, title: "Long", text: "x", bg: "", music: "", deck: "long-en", videoRel: "2.mp4", imageRel: null });
+  db.createVideo({ accountId: acc.id, title: "Alpha", text: "x", bg: "", music: "", deck: "ru", videoRel: "3.mp4", imageRel: null });
+  const beta = db.createVideo({ accountId: acc.id, title: "Beta", text: "x", bg: "", music: "", deck: "en", videoRel: "4.mp4", imageRel: null });
+  db.createVideo({ accountId: acc.id, title: "Delta", text: "x", bg: "", music: "", deck: "en", videoRel: "5.mp4", imageRel: null });
+  db.db.prepare("UPDATE videos SET post_count = 2 WHERE id = ?").run(beta.id);
+
+  assert.equal(db.countVideosByAccount(acc.id), 5);
+  assert.equal(db.countVideosByAccountFiltered(acc.id, { excludeDecks: ["long-en"] }), 4);
+  assert.equal(db.countVideosByAccountFiltered(acc.id, { excludeDecks: ["long-en"], postCountGt: 1 }), 1);
+  assert.deepEqual(db.videoDeckCountsForAccount(acc.id), { en: 3, "long-en": 1, ru: 1 });
+
+  assert.deepEqual(
+    db.listVideosPage({ accountId: acc.id, limit: 2, offset: 1, sort: "date", filter: { excludeDecks: ["long-en"] } }).map((v) => v.title),
+    ["Beta", "Alpha"],
+  );
+  assert.deepEqual(
+    db.listVideosPage({ accountId: acc.id, limit: 4, offset: 0, sort: "title", filter: { excludeDecks: ["long-en"] } }).map((v) => v.title),
+    ["Alpha", "Beta", "Delta", "Gamma"],
+  );
+  assert.deepEqual(
+    db.listVideosPage({ accountId: acc.id, limit: 3, offset: 0, sort: "posts", filter: { excludeDecks: ["long-en"] } }).map((v) => v.title),
+    ["Delta", "Alpha", "Gamma"],
+  );
+});
+
 test("account mapper treats auth_error as needing reconnect even when a token exists", () => {
   const db = openDb(":memory:");
   const acc = db.createAccount({ userId: 1, channelName: "Needs reconnect", lang: "en", channelLang: "en" });

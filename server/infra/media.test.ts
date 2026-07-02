@@ -6,7 +6,7 @@ test("cardReadable excludes internal source/debug roles from public pack text", 
   const readable = cardReadable(
     {
       title: "Новые мемы 001",
-      source: "Translated ready-made meme card from temp/meme2/translated.",
+      source: "Translated ready-made meme card from tmp/meme2/translated.",
       debug: "assets/template-packs/new-memes/ru/001.jpg",
     },
     [
@@ -18,5 +18,5 @@ test("cardReadable excludes internal source/debug roles from public pack text", 
 
   assert.equal(readable.title, "Новые мемы 001");
   assert.equal(readable.text, "Новые мемы 001");
-  assert.doesNotMatch(readable.text, /temp\/|assets\/|Translated ready-made/i);
+  assert.doesNotMatch(readable.text, /tmp\/|assets\/|Translated ready-made/i);
 });

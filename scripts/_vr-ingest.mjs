@@ -17,9 +17,9 @@ let PREFIX = 'vrx';
 const pi = argv.indexOf('--prefix');
 if (pi >= 0) { PREFIX = argv[pi + 1]; argv.splice(pi, 2); }
 const [inPath, srcDirArg, manOut, srcOut] = argv;
-const srcDir = resolve(srcDirArg || resolve(ROOT, 'temp/visual-riddle-demos/src'));
-const manifestOut = resolve(manOut || resolve(ROOT, 'temp/visual-riddle-demos/build-manifest.json'));
-const sourcesOut = resolve(srcOut || resolve(ROOT, 'temp/visual-riddle-demos/sources.json'));
+const srcDir = resolve(srcDirArg || resolve(ROOT, 'tmp/visual-riddle-demos/src'));
+const manifestOut = resolve(manOut || resolve(ROOT, 'tmp/visual-riddle-demos/build-manifest.json'));
+const sourcesOut = resolve(srcOut || resolve(ROOT, 'tmp/visual-riddle-demos/sources.json'));
 const EXISTING_SOURCES = resolve(ROOT, 'data/visual-riddles/sources.json');
 mkdirSync(srcDir, { recursive: true });
 

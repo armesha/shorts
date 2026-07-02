@@ -57,6 +57,8 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
       return "gallery";
     case "/cards":
       return "cards";
+    case "/library":
+      return "packs";
     case "/packs":
       return "packs";
     case "/queue":

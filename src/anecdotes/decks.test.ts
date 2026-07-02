@@ -109,11 +109,11 @@ test("ytMeta removes internal pack/source notes from public descriptions", () =>
     "Новые мемы 001",
     [
       "Новые мемы 001",
-      "Translated ready-made meme card 001_wzQuht6tOcA from temp/meme2/translated.",
+      "Translated ready-made meme card 001_wzQuht6tOcA from tmp/meme2/translated.",
       "Legacy memes-* decks are not used for armen thematic blocks.",
     ].join("\n\n"),
   );
   assert.ok(m.description.includes("Новые мемы 001"));
   assert.ok(m.description.includes("#shorts"));
-  assert.doesNotMatch(m.description, /temp\/|translated|Legacy memes|pack:new/i);
+  assert.doesNotMatch(m.description, /tmp\/|translated|Legacy memes|pack:new/i);
 });

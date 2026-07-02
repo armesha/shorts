@@ -88,12 +88,6 @@ function loadDeckItems(deck: Deck): { items: PackItem[]; hash: string } {
         title: (cap.split(/\r?\n/)[0] || "").slice(0, 40),
       };
     });
-  } else if (deck.choose) {
-    const cards = readJson<{ q?: string }[]>(resolve(dir, "cards.json"), sources, []);
-    items = cards.map((c, i) => {
-      const q = (c.q ?? "").trim();
-      return { id: i, pack: 1, text: JSON.stringify(c), chars: q.length, title: q };
-    });
   } else {
     const titled = resolve(dir, "titled.json");
     if (existsSync(titled)) {

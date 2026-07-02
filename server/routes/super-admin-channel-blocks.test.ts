@@ -320,7 +320,7 @@ test("source weight settings are canonicalized and stale groups are pruned", () 
       visual_riddles: 4,
       mind_flip: 2,
       motivation: 1,
-      jokes: 3,
+      jokes: 6,
       memes: 2,
     }),
   );
@@ -367,7 +367,7 @@ test("source weight settings are canonicalized and stale groups are pruned", () 
   const normalized = JSON.parse(dbStore.getSetting("superAdmin.channelBlock.quotes.sourceWeights") ?? "{}") as Record<string, number>;
   assert.equal(Object.prototype.hasOwnProperty.call(normalized, "static_facts"), false);
   assert.equal(Object.prototype.hasOwnProperty.call(normalized, "fact_video"), false);
-  assert.equal(normalized.jokes, 3);
+  assert.equal(normalized.jokes, 6);
   assert.equal(normalized.memes, 2);
   assert.equal(Object.prototype.hasOwnProperty.call(normalized, "psychology"), false);
   assert.equal(Object.prototype.hasOwnProperty.call(normalized, "motivation"), false);

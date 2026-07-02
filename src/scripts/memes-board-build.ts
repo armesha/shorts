@@ -1,7 +1,7 @@
 // Build ALL FIVE board meme decks (memes-ru/en/de/fr/it) from per-language caption files:
-//   temp/meme-recheck/captions-<lang>.json = [{idx, caption}]   (idx = catalog template idx)
+//   tmp/meme-recheck/captions-<lang>.json = [{idx, caption}]   (idx = catalog template idx)
 // Images are language-neutral and SHARED: each template idx -> data/memes/photos/board-<idx>.jpg
-// (copied from temp/meme-recheck/src-scaled/meme_src_<idx>.jpg). Cards reference that shared file.
+// (copied from tmp/meme-recheck/src-scaled/meme_src_<idx>.jpg). Cards reference that shared file.
 // Writes data/memes-<lang>/{cards.json,index.json}; card = {caption, photoFile, format:"board", theme, srcFile}.
 // Also folds the obsolete data/memes-board-ru away and clears stale gallery caches.
 // Re-run after regenerating captions. See docs/pack-generation.md.
@@ -9,7 +9,7 @@ import { readFileSync, writeFileSync, copyFileSync, mkdirSync, existsSync, rmSyn
 import { resolve } from "node:path";
 
 const ROOT = process.cwd();
-const REC = resolve(ROOT, "temp/meme-recheck");
+const REC = resolve(ROOT, "tmp/meme-recheck");
 const SCALED = resolve(REC, "src-scaled");
 const PHOTOS = resolve(ROOT, "data/memes/photos");
 const GALLERY = resolve(ROOT, "data/output/gallery");

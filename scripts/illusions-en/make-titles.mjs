@@ -2,7 +2,7 @@
 // Render transparent title-overlay PNGs for every (design, language). renderTitle is host-level
 // (illusion-independent), so we load ONE skeleton-v2 page and stamp all titles from it.
 // Reads localize.json: { "<designId>": { en, de, it, es, ru, ... } }. Empty/missing title => no PNG (skipped).
-// Output: temp/illusions-en/titles/<designId>_<lang>.png
+// Output: tmp/illusions-en/titles/<designId>_<lang>.png
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -11,7 +11,7 @@ import puppeteer from 'puppeteer-core';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, '../..');
-const TITLES = resolve(ROOT, 'temp/illusions-en/titles');
+const TITLES = resolve(ROOT, 'tmp/illusions-en/titles');
 const HOST = resolve(HERE, 'illusions/spiral.html'); // any skeleton-v2 page exposes renderTitle
 const ALL_LANGS = ['en', 'de', 'it', 'es', 'ru', 'fr', 'pt', 'hi', 'id', 'ar'];
 function chromePath() {

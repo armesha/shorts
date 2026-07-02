@@ -11,7 +11,20 @@ import { assembleStillVideo, type MotionOverlay } from "../../src/video.ts";
 import type { CardValues, RoleRule } from "../../src/packs/store.ts";
 import * as metrics from "./metrics.ts";
 
-const INTERNAL_CARD_ROLES = new Set(["source", "debug", "note", "notes", "path", "file", "asset", "ledger"]);
+const INTERNAL_CARD_ROLES = new Set([
+  "source",
+  "debug",
+  "note",
+  "notes",
+  "path",
+  "file",
+  "asset",
+  "ledger",
+  "label",
+  "langname",
+  "q_name",
+  "a_name",
+]);
 
 /**
  * Render a still to `library/<prefix>-<stamp>.png` and assemble it into a 6s mp4 beside it.

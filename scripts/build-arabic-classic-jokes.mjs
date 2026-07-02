@@ -4,8 +4,11 @@ import { resolve } from "node:path";
 
 const OUT_DIR = resolve(process.cwd(), "data/anecdotes-ar");
 const PACK_SIZE = 300;
-const TARGET = 120;
-const MAX_CARDS_PER_BASE = 2;
+const TARGET = Number(process.env.TARGET || 120);
+const MAX_CARDS_PER_BASE = Number(process.env.MAX_CARDS_PER_BASE || 2);
+const MIN_SCORE = Number(process.env.MIN_SCORE || 7);
+const MIN_CHARS = Number(process.env.MIN_CHARS || 150);
+const MIN_WORDS = Number(process.env.MIN_WORDS || 24);
 
 const SOURCES = [
   {
@@ -50,6 +53,123 @@ const SOURCES = [
     sourceUrl: "https://ar.wikisource.org/wiki/%D8%A7%D9%84%D8%A8%D9%8A%D8%A7%D9%86_%D9%88%D8%A7%D9%84%D8%AA%D8%A8%D9%8A%D9%8A%D9%86",
     rights:
       "Original author is public-domain by age. Text extracted from Arabic Wikisource; keep attribution/source URL and CC BY-SA notice from Wikisource.",
+  },
+  {
+    id: "al-mustatraf-wikisource",
+    page: "المستطرف في كل فن مستظرف",
+    title: "المستطرف في كل فن مستظرف",
+    author: "شهاب الدين الأبشيهي",
+    authorDied: "1446",
+    sourceUrl:
+      "https://ar.wikisource.org/wiki/%D8%A7%D9%84%D9%85%D8%B3%D8%AA%D8%B7%D8%B1%D9%81_%D9%81%D9%8A_%D9%83%D9%84_%D9%81%D9%86_%D9%85%D8%B3%D8%AA%D8%B8%D8%B1%D9%81",
+    rights:
+      "Original author is public-domain by age. Text extracted from Arabic Wikisource; keep attribution/source URL and CC BY-SA notice from Wikisource.",
+  },
+  {
+    id: "akhbar-al-hamqa-wikisource",
+    page: "أخبار الحمقى والمغفلين",
+    title: "أخبار الحمقى والمغفلين",
+    author: "ابن الجوزي",
+    authorDied: "1201",
+    sourceUrl:
+      "https://ar.wikisource.org/wiki/%D8%A3%D8%AE%D8%A8%D8%A7%D8%B1_%D8%A7%D9%84%D8%AD%D9%85%D9%82%D9%89_%D9%88%D8%A7%D9%84%D9%85%D8%BA%D9%81%D9%84%D9%8A%D9%86",
+    rights:
+      "Original author is public-domain by age. Text extracted from Arabic Wikisource; keep attribution/source URL and CC BY-SA notice from Wikisource.",
+  },
+  {
+    id: "nishwar-al-muhadara-wikisource",
+    page: "نشوار المحاضرة",
+    title: "نشوار المحاضرة",
+    author: "القاضي التنوخي",
+    authorDied: "994",
+    sourceUrl:
+      "https://ar.wikisource.org/wiki/%D9%86%D8%B4%D9%88%D8%A7%D8%B1_%D8%A7%D9%84%D9%85%D8%AD%D8%A7%D8%B6%D8%B1%D8%A9",
+    rights:
+      "Original author is public-domain by age. Text extracted from Arabic Wikisource; keep attribution/source URL and CC BY-SA notice from Wikisource.",
+  },
+  {
+    id: "al-iqd-al-farid-part-1-wikisource",
+    page: "العقد الفريد/الجزء الأول",
+    pages: Array.from({ length: 31 }, (_, index) => `العقد الفريد/الجزء الأول/${index + 1}`),
+    title: "العقد الفريد - الجزء الأول",
+    author: "ابن عبد ربه",
+    authorDied: "940",
+    sourceUrl:
+      "https://ar.wikisource.org/wiki/%D8%A7%D9%84%D8%B9%D9%82%D8%AF_%D8%A7%D9%84%D9%81%D8%B1%D9%8A%D8%AF/%D8%A7%D9%84%D8%AC%D8%B2%D8%A1_%D8%A7%D9%84%D8%A3%D9%88%D9%84",
+    rights:
+      "Original author is public-domain by age. Text extracted from Arabic Wikisource subpages; keep attribution/source URLs and CC BY-SA notice from Wikisource.",
+  },
+  {
+    id: "al-iqd-al-farid-part-3-wikisource",
+    page: "العقد الفريد/الجزء الثالث",
+    pages: Array.from({ length: 31 }, (_, index) => `العقد الفريد/الجزء الثالث/${index + 1}`),
+    title: "العقد الفريد - الجزء الثالث",
+    author: "ابن عبد ربه",
+    authorDied: "940",
+    sourceUrl:
+      "https://ar.wikisource.org/wiki/%D8%A7%D9%84%D8%B9%D9%82%D8%AF_%D8%A7%D9%84%D9%81%D8%B1%D9%8A%D8%AF/%D8%A7%D9%84%D8%AC%D8%B2%D8%A1_%D8%A7%D9%84%D8%AB%D8%A7%D9%84%D8%AB",
+    rights:
+      "Original author is public-domain by age. Text extracted from Arabic Wikisource subpages; keep attribution/source URLs and CC BY-SA notice from Wikisource.",
+  },
+  {
+    id: "al-iqd-al-farid-part-4-wikisource",
+    page: "العقد الفريد/الجزء الرابع",
+    pages: Array.from({ length: 31 }, (_, index) => `العقد الفريد/الجزء الرابع/${index + 1}`),
+    title: "العقد الفريد - الجزء الرابع",
+    author: "ابن عبد ربه",
+    authorDied: "940",
+    sourceUrl:
+      "https://ar.wikisource.org/wiki/%D8%A7%D9%84%D8%B9%D9%82%D8%AF_%D8%A7%D9%84%D9%81%D8%B1%D9%8A%D8%AF/%D8%A7%D9%84%D8%AC%D8%B2%D8%A1_%D8%A7%D9%84%D8%B1%D8%A7%D8%A8%D8%B9",
+    rights:
+      "Original author is public-domain by age. Text extracted from Arabic Wikisource subpages; keep attribution/source URLs and CC BY-SA notice from Wikisource.",
+  },
+  {
+    id: "al-iqd-al-farid-part-5-wikisource",
+    page: "العقد الفريد/الجزء الخامس",
+    pages: Array.from({ length: 31 }, (_, index) => `العقد الفريد/الجزء الخامس/${index + 1}`),
+    title: "العقد الفريد - الجزء الخامس",
+    author: "ابن عبد ربه",
+    authorDied: "940",
+    sourceUrl:
+      "https://ar.wikisource.org/wiki/%D8%A7%D9%84%D8%B9%D9%82%D8%AF_%D8%A7%D9%84%D9%81%D8%B1%D9%8A%D8%AF/%D8%A7%D9%84%D8%AC%D8%B2%D8%A1_%D8%A7%D9%84%D8%AE%D8%A7%D9%85%D8%B3",
+    rights:
+      "Original author is public-domain by age. Text extracted from Arabic Wikisource subpages; keep attribution/source URLs and CC BY-SA notice from Wikisource.",
+  },
+  {
+    id: "al-iqd-al-farid-part-6-wikisource",
+    page: "العقد الفريد/الجزء السادس",
+    pages: Array.from({ length: 31 }, (_, index) => `العقد الفريد/الجزء السادس/${index + 1}`),
+    title: "العقد الفريد - الجزء السادس",
+    author: "ابن عبد ربه",
+    authorDied: "940",
+    sourceUrl:
+      "https://ar.wikisource.org/wiki/%D8%A7%D9%84%D8%B9%D9%82%D8%AF_%D8%A7%D9%84%D9%81%D8%B1%D9%8A%D8%AF/%D8%A7%D9%84%D8%AC%D8%B2%D8%A1_%D8%A7%D9%84%D8%B3%D8%A7%D8%AF%D8%B3",
+    rights:
+      "Original author is public-domain by age. Text extracted from Arabic Wikisource subpages; keep attribution/source URLs and CC BY-SA notice from Wikisource.",
+  },
+  {
+    id: "al-iqd-al-farid-part-7-wikisource",
+    page: "العقد الفريد/الجزء السابع",
+    pages: Array.from({ length: 31 }, (_, index) => `العقد الفريد/الجزء السابع/${index + 1}`),
+    title: "العقد الفريد - الجزء السابع",
+    author: "ابن عبد ربه",
+    authorDied: "940",
+    sourceUrl:
+      "https://ar.wikisource.org/wiki/%D8%A7%D9%84%D8%B9%D9%82%D8%AF_%D8%A7%D9%84%D9%81%D8%B1%D9%8A%D8%AF/%D8%A7%D9%84%D8%AC%D8%B2%D8%A1_%D8%A7%D9%84%D8%B3%D8%A7%D8%A8%D8%B9",
+    rights:
+      "Original author is public-domain by age. Text extracted from Arabic Wikisource subpages; keep attribution/source URLs and CC BY-SA notice from Wikisource.",
+  },
+  {
+    id: "al-iqd-al-farid-part-8-wikisource",
+    page: "العقد الفريد/الجزء الثامن",
+    pages: Array.from({ length: 31 }, (_, index) => `العقد الفريد/الجزء الثامن/${index + 1}`),
+    title: "العقد الفريد - الجزء الثامن",
+    author: "ابن عبد ربه",
+    authorDied: "940",
+    sourceUrl:
+      "https://ar.wikisource.org/wiki/%D8%A7%D9%84%D8%B9%D9%82%D8%AF_%D8%A7%D9%84%D9%81%D8%B1%D9%8A%D8%AF/%D8%A7%D9%84%D8%AC%D8%B2%D8%A1_%D8%A7%D9%84%D8%AB%D8%A7%D9%85%D9%86",
+    rights:
+      "Original author is public-domain by age. Text extracted from Arabic Wikisource subpages; keep attribution/source URLs and CC BY-SA notice from Wikisource.",
   },
 ];
 
@@ -459,8 +579,8 @@ function isSafeCard(text) {
   const normalized = normalizeArabic(text);
   const arabicChars = normalized.match(/[\u0600-\u06ff]/g)?.length ?? 0;
   const words = normalized.split(/\s+/).length;
-  if (normalized.length < 150 || normalized.length > 620) return false;
-  if (words < 24 || words > 115) return false;
+  if (normalized.length < MIN_CHARS || normalized.length > 620) return false;
+  if (words < MIN_WORDS || words > 115) return false;
   if (arabicChars / normalized.length < 0.65) return false;
   if (containsAny(normalized, NAV_TERMS)) return false;
   if (containsAny(normalized, BLOCKED_TERMS)) return false;
@@ -468,7 +588,7 @@ function isSafeCard(text) {
   if (!/(?:قال|قلت|فقال|سال|فقلت|؟|!|")/.test(normalized)) return false;
   if ((normalized.match(/"/g) ?? []).length % 2 !== 0) return false;
   if (/[A-Za-z]{3,}/.test(normalized)) return false;
-  if (scoreCard(text) < 7) return false;
+  if (scoreCard(text) < MIN_SCORE) return false;
   return true;
 }
 

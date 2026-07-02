@@ -78,8 +78,16 @@ export function textOutlineShadow(color: string): string {
   return `2px 0 0 ${color}, -2px 0 0 ${color}, 0 2px 0 ${color}, 0 -2px 0 ${color}, 1px 1px 2px rgba(0,0,0,.18)`;
 }
 
+const HEX_COLOR_RE = /^#[0-9a-f]{6}$/i;
+
+function isHexColor(value: unknown): value is string {
+  return typeof value === "string" && HEX_COLOR_RE.test(value);
+}
+
 export function colorInputValue(value: string, fallback: string): string {
-  return /^#[0-9a-f]{6}$/i.test(value) ? value : fallback;
+  if (isHexColor(value)) return value;
+  if (isHexColor(fallback)) return fallback;
+  return "#000000";
 }
 
 function cleanString(value: unknown, fallback = ""): string {
@@ -95,9 +103,12 @@ function cleanPercent(value: unknown, fallback: number): number {
 function cleanTextStyle(value: unknown, fallback: TextStyle): TextStyle {
   if (!value || typeof value !== "object") return { ...fallback };
   const src = value as Partial<TextStyle>;
+  const fallbackColor = isHexColor(fallback.color) ? fallback.color : DEFAULT_TEXT_STYLE.color;
+  const fallbackOutline = fallback.outline === "none" || isHexColor(fallback.outline) ? fallback.outline : DEFAULT_TEXT_STYLE.outline;
+  const outline = src.outline === "none" || isHexColor(src.outline) ? String(src.outline) : fallbackOutline;
   return {
-    color: cleanString(src.color, fallback.color),
-    outline: cleanString(src.outline, fallback.outline),
+    color: isHexColor(src.color) ? src.color : fallbackColor,
+    outline,
     background: cleanPercent(src.background, fallback.background),
   };
 }

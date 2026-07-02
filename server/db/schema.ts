@@ -32,6 +32,18 @@ export function applySchema(db: DatabaseSync): void {
       error TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+    CREATE TABLE IF NOT EXISTS upload_quota_reservations (
+      token TEXT PRIMARY KEY,
+      account_id INTEGER NOT NULL,
+      oauth_client_id INTEGER,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE TABLE IF NOT EXISTS library_reservations (
+      token TEXT PRIMARY KEY,
+      account_id INTEGER NOT NULL,
+      count INTEGER NOT NULL DEFAULT 1,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
     CREATE TABLE IF NOT EXISTS settings (
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL
@@ -296,6 +308,10 @@ export function applySchema(db: DatabaseSync): void {
   addColumn("channel_analytics_daily", "dislikes INTEGER NOT NULL DEFAULT 0");
   addColumn("history", "error TEXT");
   addColumn("history", "deck TEXT"); // deck a post was actually published with (old rows NULL → fall back to channel lang)
+  addColumn("history", "oauth_client_id INTEGER"); // Google key used at upload time; fixed even if channel is rebound later
+  db.prepare(
+    "UPDATE history SET oauth_client_id = (SELECT oauth_client_id FROM accounts WHERE accounts.id = history.account_id) WHERE oauth_client_id IS NULL",
+  ).run();
   addColumn("channel_stats", "analytics_status TEXT");
   addColumn("channel_stats", "analytics_error TEXT");
   addColumn("channel_stats", "data_through TEXT");
@@ -326,7 +342,12 @@ export function applySchema(db: DatabaseSync): void {
     CREATE INDEX IF NOT EXISTS idx_history_image_path ON history(image_path);
     CREATE INDEX IF NOT EXISTS idx_history_status_published ON history(status, published_at);
     CREATE INDEX IF NOT EXISTS idx_history_created ON history(created_at);
+    CREATE INDEX IF NOT EXISTS idx_history_oauth_created ON history(oauth_client_id, created_at);
+    CREATE INDEX IF NOT EXISTS idx_upload_res_account_created ON upload_quota_reservations(account_id, created_at);
+    CREATE INDEX IF NOT EXISTS idx_upload_res_key_created ON upload_quota_reservations(oauth_client_id, created_at);
+    CREATE INDEX IF NOT EXISTS idx_library_res_account_created ON library_reservations(account_id, created_at);
     CREATE INDEX IF NOT EXISTS idx_videos_account ON videos(account_id);
+    CREATE INDEX IF NOT EXISTS idx_videos_account_id_desc ON videos(account_id, id DESC);
     CREATE INDEX IF NOT EXISTS idx_videos_account_deck ON videos(account_id, deck);
     CREATE INDEX IF NOT EXISTS idx_videos_ready_any ON videos(account_id, post_count, last_posted_at, id);
     CREATE INDEX IF NOT EXISTS idx_videos_ready_deck ON videos(account_id, deck, post_count, last_posted_at, id);

@@ -11,7 +11,7 @@ import { createReadStream, existsSync, readFileSync, readdirSync } from "node:fs
 import { loadBaseConfig, resolveClientSecretFile, credsFileExists } from "./config.ts";
 import { openDb, parseCredMeta, type Account } from "./db.ts";
 import { anecdoteKey } from "../src/anecdotes/library.ts";
-import { getDeck, isPackDeckId, deckLang } from "../src/anecdotes/decks.ts";
+import { isPackDeckId, deckLang } from "../src/anecdotes/decks.ts";
 import { getPack } from "../src/packs/store.ts";
 import { parseCreds, type ClientCreds } from "./services/youtube.ts";
 import { startScheduler } from "./infra/scheduler.ts";
@@ -362,7 +362,7 @@ app
     metrics.startSampler(resolve(process.cwd(), base.outputDir));
 
     // ---- Graceful shutdown: drain in-flight render/upload, then close cleanly (SIGTERM/SIGINT) ----
-    // So a restart never interrupts a render mid-flight (no orphan temp files / no double-post).
+    // So a restart never interrupts a render mid-flight (no orphan scratch files / no double-post).
     let shuttingDown = false;
     const onSignal = async (sig: string) => {
       if (shuttingDown) return;

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Build an English manifest for visual-riddles from the checked source ledger.
 // Downloads the original CC0/PD images, then writes:
-//   temp/visual-riddles-en/build-manifest.json
-//   temp/visual-riddles-en/sources.json
+//   tmp/visual-riddles-en/build-manifest.json
+//   tmp/visual-riddles-en/sources.json
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { resolve, dirname, basename } from 'node:path';
@@ -12,7 +12,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const VENV_PY = resolve(ROOT, '.venv-tts/bin/python');
 const UA = 'Mozilla/5.0 (shorts-factory visual-riddles-en builder)';
 const INPUT = resolve(ROOT, 'data/visual-riddles-de/sources.json');
-const WORK = resolve(ROOT, 'temp/visual-riddles-en');
+const WORK = resolve(ROOT, 'tmp/visual-riddles-en');
 const SRC_DIR = resolve(WORK, 'src');
 const MANIFEST = resolve(WORK, 'build-manifest.json');
 const SOURCES = resolve(WORK, 'sources.json');

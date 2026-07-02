@@ -38,7 +38,7 @@ LAYOUT_REPORT = PACK_DIR / "layout-report.json"
 FACT_DIR = ROOT / "assets" / "fact-videos" / PACK_ID
 ADMIN_DIR = ROOT / "data" / "output" / "admin-demos"
 MANIFEST_JSON = ADMIN_DIR / "manifest.json"
-CONTACT_DIR = ROOT / "temp" / PACK_ID
+CONTACT_DIR = ROOT / "tmp" / PACK_ID
 FFMPEG = ROOT / "node_modules" / "ffmpeg-static" / "ffmpeg"
 
 FONT_SERIF_BOLD = "/usr/share/fonts/truetype/noto/NotoSerifDisplay-Bold.ttf"

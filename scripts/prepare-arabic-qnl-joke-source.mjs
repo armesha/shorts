@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 const ROOT = process.cwd();
-const OUT_DIR = resolve(ROOT, "temp/qnl-arabic-jokes");
+const OUT_DIR = resolve(ROOT, "tmp/qnl-arabic-jokes");
 const METADATA_PATH = resolve(OUT_DIR, "metadata.csv");
 const CANDIDATES_PATH = resolve(OUT_DIR, "metadata-candidates.json");
 const SOURCES_PATH = resolve(OUT_DIR, "sources.json");

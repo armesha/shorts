@@ -39,6 +39,7 @@ import {
   withGlobalRenderSlot,
 } from "../infra/rate-limits.ts";
 import { rememberOutputOwner } from "../infra/output-access.ts";
+import { channelLibraryVideoCap, isMgsUser } from "../infra/account-limits.ts";
 import {
   MAX_PACK_AUDIO_FILES,
   MAX_PACK_AUDIO_UPLOAD_BYTES,
@@ -130,6 +131,22 @@ function builtinMusicTracks() {
 export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof openDb>) {
   const adminReq = (req: unknown): boolean => db.getUserById(uid(req))?.role === "admin";
   const superAdminReq = (req: unknown): boolean => isSuperAdminUser(db.getUserById(uid(req)));
+  const reserveLibrarySlot = (
+    reply: { code: (n: number) => { send: (b: unknown) => unknown } },
+    accountId: number,
+    ownerId: number,
+  ): { ok: true; token: string | null } | { ok: false } => {
+    const owner = db.getUserById(ownerId);
+    const cap = channelLibraryVideoCap(owner?.role === "admin", isMgsUser(owner));
+    if (cap == null) return { ok: true, token: null };
+    const reservation = db.reserveLibrarySlots(accountId, cap, 1);
+    if (reservation.ok) return { ok: true, token: reservation.token };
+    const queued = reservation.queued + reservation.reserved;
+    reply.code(400).send({
+      error: `В библиотеке канала максимум ${cap} видео. Сейчас ${reservation.current}${queued > 0 ? `, ещё ${queued} уже стоит в генерации` : ""}, можно добавить ещё ${reservation.available}.`,
+    });
+    return { ok: false };
+  };
   // Видимые мне паки (владелец / главный админ / выдан грант) + сколько карточек свободно/использовано
   // именно у этого юзера — фронт по `available` ограничивает «сколько роликов сгенерировать».
   // По умолчанию исключаем паки, скрытые лично у запросившего. `?all=1` оставляет скрытые
@@ -371,6 +388,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     if (!card) return reply.code(404).send({ error: "Нет такой карточки" });
     if (!p.templates.length) return reply.code(400).send({ error: "У пака нет шаблона" });
     const tpl = p.templates[idx % p.templates.length];
+    let libraryReservation: { ok: true; token: string | null } | { ok: false } | null = null;
     // владелец целевого канала (если сохраняем)
     if (body.accountId != null) {
       const acc = db.getAccount(Number(body.accountId));
@@ -382,49 +400,55 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
       const sources = acc.sourceDecks?.length ? acc.sourceDecks : [acc.lang];
       if (!sources.includes(`pack:${p.id}`))
         return reply.code(400).send({ error: "Канал не использует этот пак — сначала выбери пак источником канала." });
+      libraryReservation = reserveLibrarySlot(reply, acc.id, userId);
+      if (!libraryReservation.ok) return;
     }
-    // музыка: явная / случайная / без; для pack-audio разрешаем только треки этого пака.
-    let resolvedAudio: { music: string; audioPath: string | null };
     try {
-      resolvedAudio = resolveAudio(body.music, undefined, { packId: id });
-    } catch (e) {
-      return reply.code(400).send({ error: audioError(e) });
+      // музыка: явная / случайная / без; для pack-audio разрешаем только треки этого пака.
+      let resolvedAudio: { music: string; audioPath: string | null };
+      try {
+        resolvedAudio = resolveAudio(body.music, undefined, { packId: id });
+      } catch (e) {
+        return reply.code(400).send({ error: audioError(e) });
+      }
+      const { music, audioPath } = resolvedAudio;
+      let imgRel: string;
+      let vidRel: string;
+      try {
+        const built = await runHeavyLimited(reply, userId, isAdmin, "pack-video", () =>
+          buildStillVideoFiles({
+            prefix: "pack",
+            outputDir: OUTPUT_DIR,
+            audioPath,
+            render: (imgAbs) => renderTemplateCard(tpl as TemplateDoc, card.values, imgAbs),
+          }),
+        );
+        if (!built || typeof built !== "object" || !("imgRel" in built) || !("vidRel" in built)) return;
+        ({ imgRel, vidRel } = built as { imgRel: string; vidRel: string });
+        rememberOutputOwner([imgRel, vidRel], userId);
+      } catch (e) {
+        const msg = templateError(e);
+        if (msg) return reply.code(400).send({ error: msg });
+        return reply.code(500).send({ error: "Сборка не удалась: " + String(e).slice(0, 140) });
+      }
+      let saved = false;
+      if (body.accountId != null) {
+        const { title, text } = cardReadable(card.values, deriveRules(p.templates[0]));
+        db.createVideo({
+          accountId: Number(body.accountId),
+          title,
+          text,
+          bg: "",
+          music,
+          deck: `pack:${p.id}`,
+          videoRel: vidRel,
+          imageRel: imgRel,
+        });
+        saved = true;
+      }
+      return { videoUrl: `/files/${vidRel}`, music, saved };
+    } finally {
+      if (libraryReservation?.ok && libraryReservation.token) db.releaseLibraryReservation(libraryReservation.token);
     }
-    const { music, audioPath } = resolvedAudio;
-    let imgRel: string;
-    let vidRel: string;
-    try {
-      const built = await runHeavyLimited(reply, userId, isAdmin, "pack-video", () =>
-        buildStillVideoFiles({
-          prefix: "pack",
-          outputDir: OUTPUT_DIR,
-          audioPath,
-          render: (imgAbs) => renderTemplateCard(tpl as TemplateDoc, card.values, imgAbs),
-        }),
-      );
-      if (!built || typeof built !== "object" || !("imgRel" in built) || !("vidRel" in built)) return;
-      ({ imgRel, vidRel } = built as { imgRel: string; vidRel: string });
-      rememberOutputOwner([imgRel, vidRel], userId);
-    } catch (e) {
-      const msg = templateError(e);
-      if (msg) return reply.code(400).send({ error: msg });
-      return reply.code(500).send({ error: "Сборка не удалась: " + String(e).slice(0, 140) });
-    }
-    let saved = false;
-    if (body.accountId != null) {
-      const { title, text } = cardReadable(card.values, deriveRules(p.templates[0]));
-      db.createVideo({
-        accountId: Number(body.accountId),
-        title,
-        text,
-        bg: "",
-        music,
-        deck: `pack:${p.id}`,
-        videoRel: vidRel,
-        imageRel: imgRel,
-      });
-      saved = true;
-    }
-    return { videoUrl: `/files/${vidRel}`, music, saved };
   });
 }

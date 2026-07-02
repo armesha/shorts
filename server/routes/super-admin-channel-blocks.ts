@@ -2,7 +2,6 @@ import type { FastifyInstance } from "fastify";
 import type { Account, Db, Video } from "../db.ts";
 import { isSuperAdminUser } from "../auth.ts";
 import { DECKS, deckLang, isPackDeckId } from "../../src/anecdotes/decks.ts";
-import { libraryStats } from "../../src/anecdotes/library.ts";
 import { getPack } from "../../src/packs/store.ts";
 import { uid } from "../infra/auth-session.ts";
 import type { RouteDeps } from "./deps.ts";
@@ -10,17 +9,22 @@ import {
   availablePackCardsForAccount,
   isLeastPostedRepeatPack,
   isPerAccountAutoExpirePack,
-  packCardKey,
 } from "../services/pack-gen.ts";
 import { cleanupDrainedAutoExpireDecksForUser, isAutoExpiredSourceGroup } from "../services/auto-expire-packs.ts";
 import {
   enqueue as genEnqueue,
   listStatuses as genListStatuses,
-  queuedRemainingForOwnerDecks,
 } from "../services/gen-queue.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
-import { accountDailyScheduleCap, googleKeyDailyScheduleCap, SUPER_ADMIN_SCHEDULE_START_HOUR } from "../infra/account-limits.ts";
+import { accountDailyScheduleCap, googleKeyDailyScheduleCap, isMgsUser, SUPER_ADMIN_SCHEDULE_START_HOUR } from "../infra/account-limits.ts";
 import { cleanSuperAdminSourceDecks, isForbiddenSuperAdminSourceDeck } from "../services/super-admin-optical-decks.ts";
+import {
+  availableUnusedForDecks as availableUnusedForDecksBatched,
+  createDeckAvailabilityContext,
+  usedKeysForOwner,
+  type DeckAvailabilityContext,
+} from "../services/deck-availability.ts";
+import { cachedRead } from "../services/read-cache.ts";
 
 const BLOCK_LANGS = [
   { code: "ru", label: "RU" },
@@ -106,7 +110,7 @@ const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "jokes",
     title: "Анекдоты",
-    defaultWeight: 7,
+    defaultWeight: 3,
     sources: JOKE_TEXT_DECK_BY_LANG,
   },
   {
@@ -118,13 +122,13 @@ const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "video_quotes",
     title: "Видеоцитаты",
-    defaultWeight: 2,
+    defaultWeight: 1,
     sources: QUOTE_VIDEO_DECK_BY_LANG,
   },
   {
     id: "static_quotes",
     title: "Статичные цитаты",
-    defaultWeight: 3,
+    defaultWeight: 2,
     sources: QUOTE_STATIC_DECK_BY_LANG,
   },
 ];
@@ -224,6 +228,7 @@ type BlockContext = {
   queuedByAccount: Map<number, number>;
   queuedByAccountDeck: Map<number, Record<string, number>>;
   availableCache: Map<string, number>;
+  availability: DeckAvailabilityContext;
   contentIndexReady: boolean;
 };
 
@@ -256,33 +261,7 @@ function makeBlockContext(db: Db, accounts: Account[]): BlockContext {
   } catch {
     contentIndexReady = false;
   }
-  return { accounts, queuedByAccount, queuedByAccountDeck, availableCache: new Map(), contentIndexReady };
-}
-
-function builtinDeckTotal(db: Db, deckId: string): number {
-  try {
-    const row = db.db.prepare("SELECT total FROM content_decks WHERE deck_id = ?").get(deckId) as { total?: number } | undefined;
-    if (row) return Number(row.total) || 0;
-  } catch {
-    /* fall back below */
-  }
-  return libraryStats(deckId, new Set()).total;
-}
-
-function builtinDeckUsed(db: Db, ownerId: number, deckId: string): number {
-  try {
-    const row = db.db
-      .prepare(
-        `SELECT COUNT(DISTINCT ci.item_key) AS n
-           FROM content_items ci
-           JOIN user_used_anecdotes used ON used.key = ci.item_key AND used.user_id = ?
-          WHERE ci.deck_id = ?`,
-      )
-      .get(ownerId, deckId) as { n?: number } | undefined;
-    return Number(row?.n) || 0;
-  } catch {
-    return libraryStats(deckId, db.usedAnecdoteKeys(ownerId)).used;
-  }
+  return { accounts, queuedByAccount, queuedByAccountDeck, availableCache: new Map(), availability: createDeckAvailabilityContext(), contentIndexReady };
 }
 
 function availableForDecks(db: Db, deps: RouteDeps, ctx: BlockContext | undefined, ownerId: number, deckIds: string[]): number {
@@ -291,40 +270,7 @@ function availableForDecks(db: Db, deps: RouteDeps, ctx: BlockContext | undefine
   const key = `${ownerId}|${clean.slice().sort().join("\u0001")}`;
   const cached = ctx?.availableCache.get(key);
   if (cached != null) return cached;
-  try {
-    const total = deps.deckAccess.availableUnusedForDecks(ownerId, clean);
-    ctx?.availableCache.set(key, total);
-    return total;
-  } catch {
-    /* fall back to local counters below */
-  }
-
-  let total = 0;
-  try {
-    const ownerIsSuperAdmin = isSuperAdminUser(db.getUserById(ownerId));
-    const infinite = db.hasFeature(ownerId, INFINITE_PACKS_FEATURE);
-    const usedKeys = infinite ? null : db.usedAnecdoteKeys(ownerId);
-    for (const deckId of clean) {
-      if (isPackDeckId(deckId)) {
-        const pack = getPack(deckId.slice(5), ownerId, ownerIsSuperAdmin);
-        if (!pack) continue;
-        if (infinite) {
-          total += pack.cards.length;
-        } else {
-          let used = 0;
-          for (const card of pack.cards) if (usedKeys?.has(packCardKey(card.values))) used++;
-          total += Math.max(0, pack.cards.length - used);
-        }
-      } else if (ctx?.contentIndexReady) {
-        const deckTotal = builtinDeckTotal(db, deckId);
-        total += infinite ? deckTotal : Math.max(0, deckTotal - builtinDeckUsed(db, ownerId, deckId));
-      } else {
-        total += deps.deckAccess.availableUnusedForDecks(ownerId, [deckId]);
-      }
-    }
-  } catch {
-    total = deps.deckAccess.availableUnusedForDecks(ownerId, clean);
-  }
+  const total = availableUnusedForDecksBatched(db, ownerId, clean, ctx?.availability);
   ctx?.availableCache.set(key, total);
   return total;
 }
@@ -369,8 +315,7 @@ function availableForDeckForAccount(
     const key = `${ownerId}|${accountId}|${deckId}`;
     const cached = ctx?.availableCache.get(key);
     if (cached != null) return cached;
-    const usedAnecdoteKeys = (db as unknown as { usedAnecdoteKeys?: (userId: number) => ReadonlySet<string> }).usedAnecdoteKeys;
-    const usedKeys = typeof usedAnecdoteKeys === "function" ? usedAnecdoteKeys.call(db, ownerId) : new Set<string>();
+    const usedKeys = usedKeysForOwner(db, ownerId, ctx?.availability);
     const total = availablePackCardsForAccount(
       pack,
       accountId,
@@ -623,7 +568,7 @@ const sourceWeightSettingKey = (blockId: string): string => sourceWeightSettingK
 
 function sanitizeSourceWeights(block: BlockDef, raw: unknown): Record<string, number> {
   const groups = block.sourceGroups ?? [];
-  const obj = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
+  const obj = raw && typeof raw === "object" && !Array.isArray(raw) ? { ...(raw as Record<string, unknown>) } : {};
   const out: Record<string, number> = {};
   for (const group of groups) {
     const n = Math.floor(Number(obj[group.id]));
@@ -849,10 +794,6 @@ function weightedDeckSlotsBalanced(
     }
   }
   return shuffleWithSeed(sequence, seed);
-}
-
-function activeSourceWeightTotal(block: BlockDef, account: Account, sourceDecks: string[], weights: Record<string, number>): number {
-  return activeSourceGroups(block, account, sourceDecks, weights).reduce((sum, group) => sum + group.weight, 0);
 }
 
 function weightedDeckSequence(
@@ -1532,7 +1473,8 @@ function randomDayTimes(n: number, avoid: Set<number> = new Set(), window = FULL
 export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
   app.get("/api/super-admin/channel-blocks", async (req, reply) => {
     if (!requireSuperAdmin(req, reply, deps)) return;
-    return buildPayload(db, deps);
+    const ownerId = superAdminOwnerId(db) ?? uid(req);
+    return cachedRead(`super-admin-channel-blocks:${ownerId}`, 30_000, () => buildPayload(db, deps));
   });
 
   app.post("/api/super-admin/channel-blocks/:id/accounts", async (req, reply) => {
@@ -1699,14 +1641,15 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
       const ownerId = account.userId ?? superAdminOwnerId(db) ?? uid(req);
       const owner = db.getUserById(ownerId);
       const ownerIsSuperAdmin = isSuperAdminUser(owner);
-      const cap = accountDailyScheduleCap(owner?.role === "admin");
+      const ownerIsMgs = isMgsUser(owner);
+      const cap = accountDailyScheduleCap(owner?.role === "admin", ownerIsMgs);
       if (perDay > cap) {
         skipped.push({ accountId: account.id, channelName: account.channelName, reason: "per_channel_limit", cap });
         continue;
       }
       if (account.oauthClientId != null) {
         const otherSlots = db.scheduleSlotsForKey(account.oauthClientId, account.id);
-        const keyCap = googleKeyDailyScheduleCap(ownerIsSuperAdmin);
+        const keyCap = googleKeyDailyScheduleCap(ownerIsSuperAdmin, ownerIsMgs);
         if (otherSlots + perDay > keyCap) {
           skipped.push({
             accountId: account.id,

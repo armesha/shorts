@@ -71,7 +71,7 @@ MGS-паки и MGS-шаблоны — отдельный клиентский �
 Новые meme template packs: `pack:new-memes-de-superadmin`, `pack:new-memes-en-superadmin`,
 `pack:new-memes-es-superadmin`, `pack:new-memes-fr-superadmin`, `pack:new-memes-it-superadmin`,
 `pack:new-memes-pt-superadmin`, `pack:new-memes-ru-superadmin`. Они собраны из пользовательского
-переведенного набора `temp/meme/translated*` + `temp/meme2/translated*` через
+переведенного набора `tmp/meme/translated*` + `tmp/meme2/translated*` через
 `scripts/build-translated-meme-packs.mjs`; старые `memes-*` в armen не использовать.
 
 Не подставляй автоматически fake text deck для `ar`, `hi`, `id`. Для этих языков нужен отдельный
@@ -83,7 +83,7 @@ ingestion/safety проход:
   scans/reproductions, metadata CC0. В metadata есть `البخلاء` (`i15827203`, `i15832326`) и
   `المستطرف`; для source ledger сохраняй и URL датасета, и конкретные QNL repository item URLs.
   Быстрая подготовка metadata-кандидатов: `node scripts/prepare-arabic-qnl-joke-source.mjs` пишет
-  `temp/qnl-arabic-jokes/metadata-candidates.json`, `sources.json`, `report.md` и ранжирует старые
+  `tmp/qnl-arabic-jokes/metadata-candidates.json`, `sources.json`, `report.md` и ранжирует старые
   издания до 1929 года выше поздних. Прямой BookReader OCR endpoint у item-страниц доступен, но
   spot-check `QNL:00005095` дал сильно шумный постраничный текст; лучше извлекать из
   `QNL_ArabicOCR_Corpus-v2.zip` только нужные `.txt` во временную папку или делать ручную корректуру.
@@ -94,13 +94,13 @@ ingestion/safety проход:
   Hindi Wikisource `पंचतन्त्र` и отдельные Premchand stories (`बड़े भाई साहब`, `नशा`): страницы
   помечены PD India / public domain in the USA и дают чистый HTML/export. Но это не современные
   `चुटकुले`; source-prep: `node scripts/prepare-hindi-witty-source.mjs` пишет
-  `temp/hi-witty-sources/pages.json`, `candidate-excerpts.json`, `sources.json`, `report.md`. Если
+  `tmp/hi-witty-sources/pages.json`, `candidate-excerpts.json`, `sources.json`, `report.md`. Если
   делать pack, честно называй его "классические остроумные истории/नीति-कथाएँ" и не подключай как
   обычные анекдоты без такого позиционирования.
 - `id`: лучший найденный стартовый кандидат - public-domain-by-age `Tjerita Aboe Nawas dengan Radja
   Haroenarrasid di Negri Bagdad` (1894), Commons PDF/Google Books. `pdftotext -raw` извлекает
   латинский OCR в старой Malay/Indonesian орфографии; использовать `scripts/prepare-indonesian-abunawas-source.mjs`
-  для временного source ledger, глав, candidate excerpts и safety-report в `temp/id-abunawas/`. Не
+  для временного source ledger, глав, candidate excerpts и safety-report в `tmp/id-abunawas/`. Не
   подключать raw OCR как live-deck: в тексте есть религиозные, насильственные, gross/adult и
   protected-class фрагменты, плюс старое написание требует clean/localization workflow.
 
@@ -117,7 +117,7 @@ ingestion/safety проход:
   `https://commons.wikimedia.org/wiki/File:Tjerita_Aboe_Nawas_dengan_Radja_Haroenarrasid_di_Negri_Bagdad.pdf`
   и Google Books metadata
   `https://books.google.com/books/about/Tjerita_Aboe_Nawas_dengan_Radja_Haroenar.html?hl=id&id=LtWpHDQB6fsC`.
-  Подготовка: `node scripts/prepare-indonesian-abunawas-source.mjs`; результат только в `temp/`, не
+  Подготовка: `node scripts/prepare-indonesian-abunawas-source.mjs`; результат только в `tmp/`, не
   live-pack. На текущем прогоне получилось 18 глав и 134 OCR-фрагмента-кандидата, но report пометил
   много safety/OCR-флагов, поэтому перед `data/anecdotes-id` нужен отдельный cleanup/localization
   workflow с вопросом пользователю о модели. `Cherita Jenaka` / `Cerita Jenaka` про Pa' Kadok,
@@ -292,7 +292,6 @@ prebuilt MP4 считается исключением и требует явн�
 | `Curiosaurs English Facts` template-pack | `assets/template-packs/curiosaurs-english/` -> `data/packs/` seed | локальный набор kid-safe facts + PNG-шаблоны | нет |
 | `Chistes ES` template-pack | `local-assets/corpora/spanish-jokes-public-domain/` + `assets/template-packs/spanish-jokes*/` -> `data/packs/chistes-es-public-domain.json`, `data/packs/chistes-es-long.json` | public-domain Spanish joke books -> local safety/quality filter -> фактическое число safe-карточек + 30 short templates + 42 length-aware long templates | нет для локальной сборки; да, спросить модель перед LLM-чисткой/адаптацией |
 | `visual-riddles` Вижу Ответ | `data/output/admin-demos/manifest.json` + `data/visual-riddles/videos.json` + `assets/fact-videos/visual-riddles/` | legacy/admin demo MP4; не подключать к armen-блокам и не использовать как super-admin source | нет |
-| `choose` Что выберешь? | `data/choose/cards.json` + `data/choose/photos/` | дилеммы «A или B» (RU) + реальные фото Pexels (без апскейла); статичная card-style дека | да — генерация дилемм + VISION-отбраковка неверных фото (спросить модель) |
 
 `data/packs/*.json` - это живые пользовательские паки из страницы "Карточки". Они gitignored и
 пополняются через UI/API или seed-скрипты. Встроенные деки (`data/anecdotes*`,
@@ -713,12 +712,12 @@ ElevenLabs Jessica, тихая музыка и safe-zone karaoke-субтитр�
 - `data/animal-superheroes/AGENTS.md` - главный контракт по стилю, voice, safe subtitles, ordering, YouTube assets;
 - `data/animal-superheroes/STORY_STATE.md` - короткое состояние сюжета;
 - `scripts/build-animal-superheroes-generated.py` - текущий сборщик RU/EN из gpt-image-2 сцен;
-- `temp/animal-superheroes/gpt-image2/generated_scenes/<episode_id>/scene_01.png...` - визуальные сцены;
-- `temp/animal-superheroes/voice-jessica/` - ElevenLabs voice cache;
-- `temp/animal-superheroes/youtube/` - avatar/banner/name/description для RU и EN каналов.
+- `tmp/animal-superheroes/gpt-image2/generated_scenes/<episode_id>/scene_01.png...` - визуальные сцены;
+- `tmp/animal-superheroes/voice-jessica/` - ElevenLabs voice cache;
+- `tmp/animal-superheroes/youtube/` - avatar/banner/name/description для RU и EN каналов.
 
 Музыка: `Sunflower Valley` by `isaiah658`, OpenGameArt, CC0. Источник и license evidence записаны в
-`temp/animal-superheroes/sources.json`.
+`tmp/animal-superheroes/sources.json`.
 
 Пересборка:
 
@@ -772,7 +771,7 @@ Microsoft Edge, голос `ru-RU-DmitryNeural`) в изолированном v
   (retry) → ffmpeg (статичная карточка; голос 100% + музыка ~10%). Env `VR_VOICE`.
 - `scripts/_vr-ingest.mjs <sourcing.json>` — качает кандидатов (Commons `Special:FilePath?width=1400`
   растрирует SVG; не-Commons SVG → cairosvg; throttle + retry под 429 Commons; PIL-валидация) →
-  `temp/visual-riddle-demos/build-manifest.json` + `sources.json`.
+  `tmp/visual-riddle-demos/build-manifest.json` + `sources.json`.
 - `scripts/_vr-contact.py <dir> <out-prefix>` — контакт-листы для визуального QA.
 - `scripts/_vr-register.mjs --cull id1,id2` — копирует принятые mp4 в
   `assets/fact-videos/visual-riddles/`, постеры в `data/output/admin-demos/`, дописывает
@@ -828,25 +827,25 @@ CC-BY-SA и отбрасываются. Финальную визуальную 
 - `data/output/admin-demos/vr_*.jpg` - постеры для карточек в `/clip-demos`;
 - `data/visual-riddles/videos.json` - список роликов для selectable deck;
 - `assets/fact-videos/visual-riddles/*.mp4` - MP4, которые библиотека канала копирует как готовые видео;
-- `temp/visual-riddle-demos/` - локальный рабочий набор карточек, цветовых SVG, музыки, voice-кэша и сборщика;
-- `temp/visual-riddle-channel-avatar.png` и `temp/visual-riddle-channel-wallpaper.png` - оформление канала;
-- `temp/visual-riddle-channel-title-description.md` - название, handle и описание канала.
+- `tmp/visual-riddle-demos/` - локальный рабочий набор карточек, цветовых SVG, музыки, voice-кэша и сборщика;
+- `tmp/visual-riddle-channel-avatar.png` и `tmp/visual-riddle-channel-wallpaper.png` - оформление канала;
+- `tmp/visual-riddle-channel-title-description.md` - название, handle и описание канала.
 
-Важно про `temp/`: это рабочая одноразовая зона. В ней можно держать исходные PNG, voice-cache,
+Важно про `tmp/`: это рабочая одноразовая зона. В ней можно держать исходные PNG, voice-cache,
 contact sheets, временные заметки и локальные сборщики, но нельзя оставлять важные правила только там.
-Если во время работы в `temp/` появилась инструкция, решение по стилю, TTS, лицензиям, QA или процессу,
+Если во время работы в `tmp/` появилась инструкция, решение по стилю, TTS, лицензиям, QA или процессу,
 перенеси её в этот документ или другой профильный файл в `docs/` до завершения задачи.
 
 Пересборка демо:
 
 ```bash
-node temp/visual-riddle-demos/create-internet-cards.mjs
-ELEVENLABS_API_KEYS="key1,key2,key3" node temp/visual-riddle-demos/build-demos.mjs
+node tmp/visual-riddle-demos/create-internet-cards.mjs
+ELEVENLABS_API_KEYS="key1,key2,key3" node tmp/visual-riddle-demos/build-demos.mjs
 ```
 
 В интерактивной работе лучше передавать ключи через stdin/окружение и не печатать их в команду,
 markdown или git diff. Скрипт сам перебирает ключи при `401`/`402`, повторяет `429`, кэширует уже
-созданные `temp/visual-riddle-demos/voice/*.mp3` и обновляет только pack `visual-riddles` в
+созданные `tmp/visual-riddle-demos/voice/*.mp3` и обновляет только pack `visual-riddles` в
 `admin-demos/manifest.json`. `create-internet-cards.mjs` перед сборкой очищает старые numbered PNG,
 пересоздаёт `cards.json` и `sources.json`, скачивает только явно license-safe Commons-источники,
 подтягивает public-domain Project Gutenberg иллюстрации и рендерит финальные карточки. Для финального
@@ -871,7 +870,7 @@ Deck зарегистрирован в `src/anecdotes/decks.ts` (`id: "visual-ri
 - финальный визуал брать из готового license-safe источника: public-domain puzzle books, Wikimedia
   Commons/Openverse/Openclipart/PublicDomainVectors/CC0 или другой источник с явной лицензией;
 - по каждому финальному визуалу хранить source URL, автора/книгу, license и локальный путь в
-  `temp/visual-riddle-demos/sources.json`;
+  `tmp/visual-riddle-demos/sources.json`;
 - текущая финальная схема: 80 карточек: 5 public-domain цветовых карточек из Wikimedia
   Commons/Ishihara, 45 оригинальных развлекательных pseudo-Ishihara SVG, 24 визуальные задачи из
   Project Gutenberg puzzle books и 6 hidden-object/counting карточек с животными. Если набор
@@ -904,7 +903,7 @@ Deck зарегистрирован в `src/anecdotes/decks.ts` (`id: "visual-ri
 node --input-type=module -e 'import fs from "node:fs"; import path from "node:path"; const m=JSON.parse(fs.readFileSync("data/output/admin-demos/manifest.json","utf8")); const p=m.packs.find(p=>p.id==="visual-riddles"); const v=JSON.parse(fs.readFileSync("data/visual-riddles/videos.json","utf8")); const missing=v.filter(x=>!fs.existsSync(path.join("assets/fact-videos",x.file))).map(x=>x.file); console.log({title:p?.title,manifestItems:p?.items?.length,deckVideos:v.length,missing:missing.length});'
 node --input-type=module -e 'import fs from "node:fs"; const m=JSON.parse(fs.readFileSync("data/output/admin-demos/manifest.json","utf8")); const p=m.packs.find(p=>p.id==="visual-riddles"); const own=(p?.items||[]).filter(x=>String(x.source||"").includes("own")); console.log({items:p?.items?.length,ownSource:own.length});'
 for f in data/output/admin-demos/vr_*.mp4; do printf "%s " "$f"; ffprobe -v error -show_entries format=duration:stream=codec_type -of compact=p=0:nk=1 "$f" | tr "\n" " "; printf "\n"; done
-node_modules/ffmpeg-static/ffmpeg -y -pattern_type glob -framerate 1 -i 'data/output/admin-demos/vr_*.jpg' -vf 'scale=120:213,tile=8x10' -frames:v 1 temp/visual-riddle-demos/contact-sheet.jpg
+node_modules/ffmpeg-static/ffmpeg -y -pattern_type glob -framerate 1 -i 'data/output/admin-demos/vr_*.jpg' -vf 'scale=120:213,tile=8x10' -frames:v 1 tmp/visual-riddle-demos/contact-sheet.jpg
 ```
 
 Если меняются только файлы в `data/output/admin-demos/`, перезапуск сервера не нужен: `/clip-demos`
@@ -925,7 +924,7 @@ LLM НЕ нужен: фигуры — это математика, заголо�
 нет вообще, а фон — сгенерированный синтез-дрон (не TTS).
 
 Тулинг (committed в `scripts/illusions-3d/`; генерируемые манифесты и немые мастера — в gitignored
-`temp/illusions-3d/`; вдохновение-референс — `scripts/illusions-3d/reference/ambiguous_3d_illusions.html`):
+`tmp/illusions-3d/`; вдохновение-референс — `scripts/illusions-3d/reference/ambiguous_3d_illusions.html`):
 - `renderer.html` — детерминированный покадровый canvas-рендер 1080×1920. 20 фигур (cube, tetra, octa,
   icosa, dodeca, stella, tesseract, torus, mobius, orbital, pyramid, bipyramid, prism, antiprism,
   cubocta, helix, dna, trefoil, fivecell, sixteencell). `window.setup({shape,title,palette,dir,turns,
@@ -940,7 +939,7 @@ LLM НЕ нужен: фигуры — это математика, заголо�
 - `publish-pack.mjs` — после рендера: мьюксит музыку в каждый немой мастер и раскладывает RU+DE по
   нарезкам (`admin-demos/`) и канальным декам (`assets/fact-videos/<deck>/` + `data/<deck>/videos.json`),
   обновляет пак в `admin-demos/manifest.json` (чужие паки не трогает).
-- Мастера (немые): `temp/illusions-3d/out-ru/*.mp4` + `out-de/*.mp4` (+ `.jpg` постеры).
+- Мастера (немые): `tmp/illusions-3d/out-ru/*.mp4` + `out-de/*.mp4` (+ `.jpg` постеры).
 
 Звук: общий мелодичный трек `assets/audio/long-videos/fats-waller-swingin-the-operas-1939.opus`.
 Drone/ambient-подложки для этих паков не используются.
@@ -948,8 +947,8 @@ Drone/ambient-подложки для этих паков не использу�
 Полная пересборка с нуля:
 ```bash
 node scripts/illusions-3d/gen-manifest.mjs
-SKIP_EXISTING=1 DUR=8 FPS=30 node scripts/illusions-3d/build.mjs temp/illusions-3d/ru-manifest.json --outdir temp/illusions-3d/out-ru
-SKIP_EXISTING=1 DUR=8 FPS=30 node scripts/illusions-3d/build.mjs temp/illusions-3d/de-manifest.json --outdir temp/illusions-3d/out-de
+SKIP_EXISTING=1 DUR=8 FPS=30 node scripts/illusions-3d/build.mjs tmp/illusions-3d/ru-manifest.json --outdir tmp/illusions-3d/out-ru
+SKIP_EXISTING=1 DUR=8 FPS=30 node scripts/illusions-3d/build.mjs tmp/illusions-3d/de-manifest.json --outdir tmp/illusions-3d/out-de
 node scripts/illusions-3d/publish-pack.mjs
 npm run web:build && sudo systemctl restart shorts.service
 ```
@@ -1249,39 +1248,6 @@ node src/scripts/build-religious-quotes-decks.mjs
 node -e 'for (const p of ["data/islamic-quotes-ar/titled.json","data/christian-quotes-en/titled.json"]) { const a=JSON.parse(require("fs").readFileSync(p,"utf8")); console.log(p, a.length, a[0]); }'
 ```
 
-## Что выберешь? (`choose`)
-
-Дека-карточка «A или B» (id `choose`, RU, по умолчанию admin-only): вопрос сверху + два варианта с
-**реальными бесплатными фото Pexels** (лицензия Pexels — свободно для коммерции, без атрибуции, без
-апскейла), подписи и короткие описания. Движок вовлечения — комментарии («пиши свой выбор») + реплей.
-Статичная card-style дека (как мемы): вся карточка хранится как JSON в `text`, MP4 собирается только
-при использовании/сохранении в библиотеку.
-
-- **Где результат:** `data/choose/cards.json` — массив `{q, a:{label,desc,photoFile}, b:{label,desc,photoFile}}`;
-  фото в `data/choose/photos/*.jpg` (+ `sources.jsonl` — аудит лицензий); `data/choose/index.json` — счётчики.
-- **Шаблон/рендер:** `templates/choose.html` (два столбца, «ИЛИ»-пилюля, авто-фит описаний — длинный текст
-  не обрезается) + `src/choose/render.ts` (`buildChooseHtml` + `choosePhotoDataUri`). Диспетч по флагу
-  `choose:true` в `src/anecdotes/render.ts` (`renderChoose`). Реестр/метаданные — `src/anecdotes/decks.ts`
-  (+ `DECK_LANG`), `src/anecdotes/library.ts` (загрузчик), `src/anecdotes/yt-meta.ts` (читаемые title/desc),
-  веб `web/src/lib/deck.ts`.
-- **Безопасная зона шортса:** заложена в `choose.html` — контент в верхней части кадра, правый край ≤950px
-  (не под колонку кнопок), нижние ~500px пустые. Соблюдать при любой правке вёрстки и проверять кадрами.
-- **Создать с нуля / пополнить:** `node --import tsx src/choose/build.ts` — берёт массив `CARDS` (правь его),
-  под каждый вариант качает квадратное фото Pexels по `query`, пишет `cards.json` + `index.json`. Качает
-  только недостающие фото; `--refetch` — перекачать все. Нужен `PEXELS_API_KEY` в `.env`.
-- **⚠️ Грабли подбора фото:** топ-результат Pexels часто НЕ тот (особенно крупные кошки — «lion»/«tiger»
-  отдают пуму/леопарда/зебру). Для масштабной генерации ОБЯЗАТЕЛЕН VISION-этап: на каждый вариант скачать
-  8–12 кандидатов и vision-моделью выбрать верное фото, отбраковать неподходящие/с лицами/логотипами/брендами.
-  Разовая ручная починка одного фото — `src/choose/refetch-one.ts` (`dump "<query>" <prefix>` → сетка
-  кандидатов в scratch → `pick <prefix> <index> <destFile>`). Модель для генерации дилемм/vision — СНАЧАЛА
-  спросить у пользователя (правило про модель workflow).
-- **Проверка:** `node --import tsx src/choose/verify.ts` — рендерит все карточки через настоящий путь движка
-  (`decks`+`library`+`renderAnecdote`+`ytMeta`) в `data/output/choose-deck/`; затем просмотреть кадры глазами.
-  Дубли — по тексту вопроса `q`.
-- **Перезапуск:** правки `decks.ts`/`render.ts`/`library.ts`/`yt-meta.ts` (бэкенд) → нужен
-  `sudo systemctl restart shorts.service`. Только `cards.json`/фото — кэш `_titledCache` живёт до рестарта,
-  так что при правке готового набора на живом сервере всё равно перезапусти.
-
 ## Pre-built video packs (`fact-en`, `quotes-de`, `space`, `prayers-de`)
 
 Эти деки не рендерят карточку. Runtime выбирает готовый MP4 из `assets/fact-videos/`, копирует его в
@@ -1309,8 +1275,8 @@ node -e 'for (const p of ["data/islamic-quotes-ar/titled.json","data/christian-q
 ### Space montage pack / admin clip demos
 
 `space` пополняется локальным free-stack монтажным конвейером. **Инструмент живёт в отслеживаемом
-`src/scripts/space-montage/`** (раньше был в gitignored `temp/clip-demo/` и из-за этого был утерян — НЕ
-держи монтажный код в `temp/`). Источник теперь — **NASA Scientific Visualization Studio**
+`src/scripts/space-montage/`** (раньше был в gitignored `tmp/clip-demo/` и из-за этого был утерян — НЕ
+держи монтажный код в `tmp/`). Источник теперь — **NASA Scientific Visualization Studio**
 (`svs.gsfc.nasa.gov`, public domain, прямые MP4) с фолбэком Hubble/Webb; общая NASA Image&Video Library
 шумная (пресс-ролики/железо/«говорящие головы») и для этого пака не годится.
 
@@ -1329,7 +1295,7 @@ node -e 'for (const p of ["data/islamic-quotes-ar/titled.json","data/christian-q
   текст, тёмная обводка, активное слово в золотой плашке `#fbbf24`; см. `captionCss()`), рендер каждого
   слова в прозрачный PNG → alpha-оверлей через ffmpeg `concat` → рефрейм в 1080×1920 (футаж-бан ~42%
   высоты + тёмный размытый фон, без чёрных полос) + кредит источника → синк в деку.
-- scratch (gitignored): `temp/space-build/{src,voice,cap,base,sources.json}`;
+- scratch (gitignored): `tmp/space-build/{src,voice,cap,base,sources.json}`;
 - готовая админ-галерея: `data/output/admin-demos/<id>.mp4`, `<id>.jpg`, `manifest.json`;
 - канал-selectable deck: `assets/fact-videos/space/<id>.mp4` и `data/space/videos.json`;
 - страница просмотра: `/clip-demos` (`web/src/pages/ClipDemos.tsx`).
@@ -1339,7 +1305,7 @@ node -e 'for (const p of ["data/islamic-quotes-ar/titled.json","data/christian-q
 1. Добавь новые темы в `topics.json` (и в `TOPICS` внутри `find-svs-sources.workflow.mjs`), используя
    только `id`, которых нет в `data/output/admin-demos/manifest.json`.
 2. Найди источники: `Workflow find-svs-sources.workflow.mjs` → распарсь результат и скачай MP4 в
-   `temp/space-build/src/<id>.mp4`, собери `temp/space-build/sources.json`
+   `tmp/space-build/src/<id>.mp4`, собери `tmp/space-build/sources.json`
    (`{id:{file,credit,description,subject,...}}`). Визуально отбракуй слабые клипы (контактный лист
    ffmpeg `tile`), замени плохие точечным WebSearch+WebFetch+curl.
 3. Тексты: **сначала спроси у пользователя модель**, затем `Workflow write-narration.workflow.mjs`
@@ -1356,7 +1322,7 @@ node -e 'for (const p of ["data/islamic-quotes-ar/titled.json","data/christian-q
 субтитры в мобильной safe-zone (не у самого низа/правого края). Пайплайн (всё в `src/scripts/space-montage/`):
 - `find-narrated-docs.mjs` — ищет в NASA Image&Video Library озвученные видео **с `.srt`** по астро- и
   МКС-темам (ScienceCasts + produced-ролики), отсеивает talking-head/панели/брифинги/подкасты;
-- `dl-narrated-docs.mjs` — качает mp4(medium)+srt в `temp/space-build/doc/`;
+- `dl-narrated-docs.mjs` — качает mp4(medium)+srt в `tmp/space-build/doc/`;
 - `doc-contactsheets.mjs` — по каждому источнику: размеченный таймкодами контактный лист кадров
   (`/tmp/doc-cs`) + srt-сводка (`/tmp/doc-srt`);
 - `curate-doc.workflow.mjs` — Workflow (Opus): по агенту на источник читает лист+транскрипт и выбирает
@@ -1364,7 +1330,7 @@ node -e 'for (const p of ["data/islamic-quotes-ar/titled.json","data/christian-q
   скриншотов/ведущего/слайдов/титров), на границах предложений;
 - `build-doc.mjs` — режет фрагмент (`-ss/-t`), **оставляет дорожку источника** (`-map 0:a`), full-bleed
   1080×1920, karaoke-сабы из `.srt` (`wordsFromCues`), угловой кредит, синк (`--sync-only`). Spec —
-  `temp/space-build/docs.json` `[{id,title,src,srt,start,end,corner,credit,zoom?}]`.
+  `tmp/space-build/docs.json` `[{id,title,src,srt,start,end,corner,credit,zoom?}]`.
 Финальная Opus-QA обязательна (ловит просочившиеся кадры ведущего / вшитые именные плашки / не-космос).
 Батч документалок = 29 клипов (из 39 собранных, 10 отсеяла QA). **Честно:** «чужая нарезка + их голос +
 субтитры» легальна при свободной лицензии, но это слабейший формат по YouTube «reused content» —
@@ -1454,7 +1420,7 @@ python3 -u scripts/build-quotes-de-cards.py --count 300 --start-id 244 --fetch-w
   generic fallback;
 - отбраковывает markup/source artifacts, policy-risk terms и прямые violence terms;
 - генерирует музыку локальным синтезом в `data/quotes-de/music/` (нет внешнего аудио-источника);
-- рендерит карточки в `temp/quotes-de-cards/`, контакт-листы в `temp/quotes-de-contact/`;
+- рендерит карточки в `tmp/quotes-de-cards/`, контакт-листы в `tmp/quotes-de-contact/`;
 - пишет источники в `data/quotes-de/sources.json` и layout metrics в `data/quotes-de/layout-report.json`;
 - обновляет `data/quotes-de/videos.json`, `index.json` и MP4 в `assets/fact-videos/`.
 
@@ -1512,7 +1478,7 @@ grep -niE "ratten|warmer bruder|bedingungslosen gehorsam|totalen krieg|tel aviv|
 - готовые MP4 для генерации каналов: `assets/fact-videos/prayers-de/gebet_de_*.mp4`;
 - админ-галерея `/clip-demos`: `data/output/admin-demos/gebet_de_*.mp4`, `.jpg` и pack `prayers-de`
   в `data/output/admin-demos/manifest.json`;
-- визуальная проверка: `temp/prayers-de/contact.jpg`.
+- визуальная проверка: `tmp/prayers-de/contact.jpg`.
 
 Регистрация:
 
@@ -1544,7 +1510,7 @@ python3 scripts/build-prayers-de-pack.py
    node --input-type=module -e 'import fs from "node:fs"; import path from "node:path"; const v=JSON.parse(fs.readFileSync("data/prayers-de/videos.json","utf8")); const m=JSON.parse(fs.readFileSync("data/output/admin-demos/manifest.json","utf8")); const p=m.packs.find(x=>x.id==="prayers-de"); const missing=v.filter(x=>!fs.existsSync(path.resolve("assets/fact-videos",x.file))).map(x=>x.file); console.log({deckVideos:v.length, adminItems:p?.items?.length, missing:missing.length});'
    for f in assets/fact-videos/prayers-de/*.mp4; do printf "%s " "$f"; ffprobe -v error -show_entries format=duration:stream=codec_type,width,height -of compact=p=0:nk=1 "$f" | tr "\n" " "; printf "\n"; done
    ```
-5. Открой `temp/prayers-de/contact.jpg` глазами: текст должен читаться, без случайного тега, без
+5. Открой `tmp/prayers-de/contact.jpg` глазами: текст должен читаться, без случайного тега, без
    перекрытия лиц и без низкого контраста.
 
 Если меняются только `data/prayers-de/*`, `assets/fact-videos/prayers-de/*` и
@@ -1678,7 +1644,7 @@ note/question/myth/micro/ai → armen. Совместимость шаблоно
 ## Template-pack: Curiosaurs English Facts
 
 Это локальный deterministic pack для детских фактов. LLM не нужен: факты зашиты в
-`src/scripts/build-curiosaurs-english.ts`, шаблонные PNG берутся из `temp/timur`, результат пишется в
+`src/scripts/build-curiosaurs-english.ts`, шаблонные PNG берутся из `tmp/timur`, результат пишется в
 `assets/template-packs/curiosaurs-english/`.
 
 Малый визуальный прогон:
@@ -1799,7 +1765,7 @@ Legacy warning: встроенные `memes-*` больше не подключ�
 
 Где лежит:
 
-- вход: `temp/meme/translated/<lang>/*.jpg` + `temp/meme2/translated/<lang>/*.jpg`;
+- вход: `tmp/meme/translated/<lang>/*.jpg` + `tmp/meme2/translated/<lang>/*.jpg`;
 - runtime assets: `assets/template-packs/new-memes/<lang>/*.jpg`;
 - live packs: `data/packs/new-memes-<lang>-superadmin.json`;
 - сборщик: `scripts/build-translated-meme-packs.mjs`.
@@ -1835,13 +1801,13 @@ jq '{id,name,lang,cards:(.cards|length),templates:(.templates|length),autoExpire
 - **⚠️ Лицензия НЕ подтверждена** (сторонние мем-шаблоны). Поэтому дека `adminOnly`, плюс риск
   демонетизации (статичная картинка + подпись без озвучки = «inauthentic», см. memory
   youtube-monetization-strategy). Использовать осознанно; не выдавать за «точно чистое».
-- Каталог всех 157 с кратким описанием — `temp/meme-recheck/catalog.json` (+ `local-assets/Генератор мемов/КАТАЛОГ.md`):
+- Каталог всех 157 с кратким описанием — `tmp/meme-recheck/catalog.json` (+ `local-assets/Генератор мемов/КАТАЛОГ.md`):
   поля `desc/mood/memeUse/hasText` на картинку (сгенерированы Opus-vision по превью).
 
 ### Конвейер (модель caption-workflow — **Opus**, пользователь зафиксировал; для новых прогонов спросить заново)
-1. **Превью + каталог:** `python3 temp/meme-recheck/scout2.py` → `thumbs2/` (превью с крупным `#idx`) +
+1. **Превью + каталог:** `python3 tmp/meme-recheck/scout2.py` → `thumbs2/` (превью с крупным `#idx`) +
    `manifest2.json`. Описания картинок — Workflow `meme-describe` (Opus-vision) → `catalog.json`.
-2. **Отбор пула:** `python3 temp/meme-recheck/select200.py` → `selection200.json` + даунскейл исходников
+2. **Отбор пула:** `python3 tmp/meme-recheck/select200.py` → `selection200.json` + даунскейл исходников
    до ≤1600px в `src-scaled/meme_src_<idx>.jpg` (12-МБ PNG иначе вешают `setContent`) + батч-файлы
    `cap-batches/` (только `hasText=false`, без фонов-подложек). (Старый `select20.py` — для мини-теста.)
 3. **🔒 Image-safety gate (ОБЯЗАТЕЛЕН):** Workflow `meme-image-safety` (Opus-vision) судит САМУ картинку
@@ -1876,8 +1842,8 @@ jq '{id,name,lang,cards:(.cards|length),templates:(.templates|length),autoExpire
 
 ### Проверка
 - Все 5 дек на ЖИВОМ сервере (генераторы + рендер карточки сервером):
-  `node --experimental-sqlite --import tsx src/scripts/check-deck-live.ts` → `temp/meme-recheck/deck-verify/live-memes-<lang>.jpg`.
-- Контактный лист RU-выборки — `temp/meme-recheck/contact-sheet.png`.
+  `node --experimental-sqlite --import tsx src/scripts/check-deck-live.ts` → `tmp/meme-recheck/deck-verify/live-memes-<lang>.jpg`.
+- Контактный лист RU-выборки — `tmp/meme-recheck/contact-sheet.png`.
 - Бэкенд-правки (decks/render/photos) → **рестарт сервера**; фронт (дропдаун) → `npm run web:build`; `data/` gitignored.
 
 ## Мем-слот-шаблоны — «текст В слоте» (`memes-*`, no-copyright Pexels)
@@ -1894,8 +1860,8 @@ board-карточка + поле **`slot:{x,y,w,h}`** (доли 0..1 карти
 (whole-word fit, без переноса посреди слова), тёмный текст + белый ореол для читаемости на светлых
 табличках; нижние 196px — safe-зона Shorts.
 
-Конвейер (всё в `temp/meme-recheck/`; `PEXELS_API_KEY` в `.env`):
-1. **Сбор:** `node temp/meme-recheck/pull-slots.mjs` — Pexels по insert-slot темам (человек с пустой
+Конвейер (всё в `tmp/meme-recheck/`; `PEXELS_API_KEY` в `.env`):
+1. **Сбор:** `node tmp/meme-recheck/pull-slots.mjs` — Pexels по insert-slot темам (человек с пустой
    табличкой/листом, билборд, пустой экран, рамка) → `newimg/slots/*.jpg` + `manifest.jsonl`.
 2. **Авто-детект слота (чистый PIL, без numpy):** находит крупную яркую ровную прямоугольную область =
    слот (BFS по downscale-маске V>0.72 & S<0.18; score = площадь×заполненность×(1−border)). Пишет
@@ -1904,11 +1870,11 @@ board-карточка + поле **`slot:{x,y,w,h}`** (доли 0..1 карти
    (boardIdx с 158, `photoFile=board-<idx>.jpg` в `data/memes/photos/`, `slot`). Масштаб ≤1600px.
    Дропать слоты с `w<0.32` (узкие ломают русские длинные слова) и где текст не попал на сам слот.
 4. **Рендер-проверка:** `node --import tsx src/scripts/slot-render-test.ts` (тест-подписи) и
-   `slot-verify.ts` (реальные) → монтаж → глазами. E2E через сервер: `temp/meme-recheck/e2e-slot.ts`.
+   `slot-verify.ts` (реальные) → монтаж → глазами. E2E через сервер: `tmp/meme-recheck/e2e-slot.ts`.
 5. **Подписи (СНАЧАЛА спросить модель у пользователя; были Sonnet):** агенты ВИДЯТ картинку →
    `4 RU + 2 EN + 2 DE + 2 FR + 2 IT` на шаблон, короткие под слот, нативные (не перевод), YouTube-safe →
    `newimg/cap-out/slotcap-NN.json` (батчи `cap-batches/slotbatch-NN.json`).
-6. **Сборка:** `node temp/meme-recheck/assemble-slots.mjs` — дописывает карточки
+6. **Сборка:** `node tmp/meme-recheck/assemble-slots.mjs` — дописывает карточки
    `{caption, photoFile, format:"board", theme, slot}` в `data/memes-<lang>/cards.json` (бэкап
    `.bak-preslot`). **Рестарт сервера** (правка `src/memes/render.ts` + deck-кэш).
 
@@ -1949,8 +1915,8 @@ hypnotic tunnel, kinetic depth dots, aperture bars, neon ladder, ray afterimage 
 4. **Перевод** хуков: воркфлоу `scratchpad/illusions-en-translate.js` (Opus, по агенту на язык; хуки
    ЗАШИТЫ в скрипт — `args` через Workflow-тул не доходил надёжно) → `assemble-localize.mjs <out>` →
    `localize.json` `{id:{en,de,it,es,ru}}` (afterimage пустой — рисует свой текст сам).
-5. `build-base.mjs` (`SKIP_EXISTING=1`) → 77 titleless-mp4 в `temp/illusions-en/base/`.
-6. `make-titles.mjs` → 380 прозрачных подписей `temp/illusions-en/titles/<id>_<lang>.png`.
+5. `build-base.mjs` (`SKIP_EXISTING=1`) → 77 titleless-mp4 в `tmp/illusions-en/base/`.
+6. `make-titles.mjs` → 380 прозрачных подписей `tmp/illusions-en/titles/<id>_<lang>.png`.
 7. `compose-publish.mjs` → на каждый (lang×дизайн): оверлей подписи (или без — для afterimage) + эмбиент →
    `assets/fact-videos/illusions-<lang>/<id>.mp4`, **хардлинк** в `data/output/admin-demos/<lang>-<id>.mp4`
    (+постер), запись `data/illusions-<lang>/videos.json` и пакета в `admin-demos/manifest.json`.

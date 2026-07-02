@@ -8,7 +8,7 @@
 //   node src/scripts/space-montage/build.mjs --only black_hole_disk --no-sync
 //
 // Inputs:
-//   temp/space-build/sources.json            { id: { file, credit, source, title, description, subject } }
+//   tmp/space-build/sources.json            { id: { file, credit, source, title, description, subject } }
 //   src/scripts/space-montage/narration.json [ { id, title, narration } ]
 import fs from "node:fs";
 import path from "node:path";
@@ -18,7 +18,7 @@ import puppeteer from "puppeteer-core";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../../..");
-const BUILD = path.join(ROOT, "temp/space-build");
+const BUILD = path.join(ROOT, "tmp/space-build");
 const SRC_DIR = path.join(BUILD, "src");
 const VOICE_DIR = path.join(BUILD, "voice");
 const CAP_DIR = path.join(BUILD, "cap");

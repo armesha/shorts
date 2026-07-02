@@ -159,7 +159,7 @@ export function appendCards(
   const all = readAllCards(file);
   const stamped = cards.map((c) => ({ ...c, addedAt: now, source: "upload" }));
   all.push(...stamped);
-  // Atomic write: temp + rename so a crash can't truncate the tracked deck file.
+  // Atomic write: tmp file + rename so a crash can't truncate the tracked deck file.
   const tmp = `${file}.tmp`;
   writeFileSync(tmp, JSON.stringify(all, null, 2));
   renameSync(tmp, file);

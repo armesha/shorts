@@ -59,6 +59,7 @@ const CREATOR_DESIGN_STATE_BYTES = 2_500_000;
 const CREATOR_TEMPLATE_W = 1080;
 const CREATOR_TEMPLATE_H = 1920;
 const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
+const CREATOR_HEX_COLOR_RE = /^#[0-9a-f]{6}$/i;
 
 function sendRateLimit(
   reply: { header: (k: string, v: string) => unknown; code: (n: number) => { send: (b: unknown) => unknown } },
@@ -135,6 +136,21 @@ function validCreatorBackground(src: string): string {
   throw new TemplateValidationError("background: разрешены только сервисные assets/template-packs или загруженный data:image");
 }
 
+function cleanCreatorHexColor(value: unknown, fallback: string): string {
+  return typeof value === "string" && CREATOR_HEX_COLOR_RE.test(value) ? value : fallback;
+}
+
+function cleanCreatorOutlineColor(value: unknown): string {
+  if (value === "none") return "none";
+  return cleanCreatorHexColor(value, "none");
+}
+
+function cleanCreatorTextBackground(value: unknown, fallback: number): number {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return fallback;
+  return Math.max(0, Math.min(80, Math.round(numeric)));
+}
+
 function cleanCreatorDesignState(raw: unknown): unknown | undefined {
   if (raw === undefined) return undefined;
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return undefined;
@@ -142,7 +158,21 @@ function cleanCreatorDesignState(raw: unknown): unknown | undefined {
   if (Buffer.byteLength(json, "utf8") > CREATOR_DESIGN_STATE_BYTES) {
     throw new TemplateValidationError("designState: состояние шаблона слишком большое");
   }
-  return JSON.parse(json) as unknown;
+  const parsed = JSON.parse(json) as unknown;
+  if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+    const state = parsed as Record<string, unknown>;
+    const textStyle = state.textStyle;
+    if (textStyle && typeof textStyle === "object" && !Array.isArray(textStyle)) {
+      const src = textStyle as Record<string, unknown>;
+      state.textStyle = {
+        ...src,
+        color: cleanCreatorHexColor(src.color, "#111827"),
+        outline: cleanCreatorOutlineColor(src.outline),
+        background: cleanCreatorTextBackground(src.background, 44),
+      };
+    }
+  }
+  return parsed;
 }
 
 type CreatorTextRole = "heading" | "body";

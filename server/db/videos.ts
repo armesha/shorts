@@ -1,9 +1,47 @@
 // Library video data-access methods (the rendered-but-not-yet-posted queue + post-claim atomics).
 // Method shorthand so createVideo→this.getVideo and nextUnpostedVideoForDecks→this.nextUnpostedVideo
 // resolve on the merged store.
-import type { DatabaseSync } from "node:sqlite";
+import type { DatabaseSync, SQLInputValue } from "node:sqlite";
+import { randomUUID } from "node:crypto";
 import { rowToVideo, type Row } from "./mappers.ts";
 import type { Video } from "./types.ts";
+import { invalidateReadCache } from "../services/read-cache.ts";
+
+export type LibraryReservation =
+  | { ok: true; token: string; reserved: number }
+  | { ok: false; cap: number; current: number; reserved: number; queued: number; available: number };
+
+export type VideoPageSort = "date" | "title" | "posts";
+export type VideoDeckFilter = { includeDecks?: string[]; excludeDecks?: string[]; postCountGt?: number };
+
+function normalizeDecks(ids: string[] | undefined): string[] {
+  return [...new Set((ids ?? []).map((id) => String(id || "").trim()).filter(Boolean))];
+}
+
+function deckFilterSql(filter: VideoDeckFilter | undefined, args: SQLInputValue[]): string {
+  const includeDecks = normalizeDecks(filter?.includeDecks);
+  const excludeDecks = normalizeDecks(filter?.excludeDecks);
+  const parts: string[] = [];
+  if (includeDecks.length) {
+    parts.push(`deck IN (${includeDecks.map(() => "?").join(",")})`);
+    args.push(...includeDecks);
+  }
+  if (excludeDecks.length) {
+    parts.push(`deck NOT IN (${excludeDecks.map(() => "?").join(",")})`);
+    args.push(...excludeDecks);
+  }
+  if (filter?.postCountGt != null) {
+    parts.push("post_count > ?");
+    args.push(filter.postCountGt);
+  }
+  return parts.length ? ` AND ${parts.join(" AND ")}` : "";
+}
+
+function videoOrder(sort: VideoPageSort | undefined): string {
+  if (sort === "title") return "title COLLATE NOCASE ASC, id DESC";
+  if (sort === "posts") return "post_count ASC, id DESC";
+  return "id DESC";
+}
 
 function stableHash(seed: string): number {
   let h = 2166136261;
@@ -48,6 +86,7 @@ export function videoMethods(db: DatabaseSync) {
           "INSERT INTO videos (account_id,title,text,bg,music,deck,video_rel,image_rel) VALUES (?,?,?,?,?,?,?,?)",
         )
         .run(v.accountId, v.title, v.text, v.bg, v.music, v.deck, v.videoRel, v.imageRel);
+      invalidateReadCache();
       return this.getVideo(Number(info.lastInsertRowid))!;
     },
     getVideo(id: number): Video | null {
@@ -58,6 +97,99 @@ export function videoMethods(db: DatabaseSync) {
       return (
         db.prepare("SELECT * FROM videos WHERE account_id = ? ORDER BY id DESC").all(accountId) as Row[]
       ).map(rowToVideo);
+    },
+    listVideosPage(input: {
+      accountId: number;
+      limit: number;
+      offset: number;
+      sort?: VideoPageSort;
+      filter?: VideoDeckFilter;
+    }): Video[] {
+      const limit = Math.max(1, Math.min(100, Math.floor(Number(input.limit) || 1)));
+      const offset = Math.max(0, Math.floor(Number(input.offset) || 0));
+      const args: SQLInputValue[] = [input.accountId];
+      const filterSql = deckFilterSql(input.filter, args);
+      const rows = db
+        .prepare(
+          `SELECT * FROM videos
+            WHERE account_id = ?${filterSql}
+            ORDER BY ${videoOrder(input.sort)}
+            LIMIT ? OFFSET ?`,
+        )
+        .all(...args, limit, offset) as Row[];
+      return rows.map(rowToVideo);
+    },
+    countVideosByAccount(accountId: number): number {
+      const r = db.prepare("SELECT COUNT(*) AS n FROM videos WHERE account_id = ?").get(accountId) as Row;
+      return Number(r.n) || 0;
+    },
+    countVideosByAccountFiltered(accountId: number, filter?: VideoDeckFilter): number {
+      const args: SQLInputValue[] = [accountId];
+      const filterSql = deckFilterSql(filter, args);
+      const r = db.prepare(`SELECT COUNT(*) AS n FROM videos WHERE account_id = ?${filterSql}`).get(...args) as Row;
+      return Number(r.n) || 0;
+    },
+    videoDeckCountsForAccount(accountId: number): Record<string, number> {
+      const rows = db
+        .prepare("SELECT deck, COUNT(*) AS n FROM videos WHERE account_id = ? GROUP BY deck")
+        .all(accountId) as Row[];
+      return Object.fromEntries(rows.map((row) => [String(row.deck ?? ""), Number(row.n) || 0]));
+    },
+    libraryReservationsForAccount(accountId: number): number {
+      db.prepare("DELETE FROM library_reservations WHERE created_at < datetime('now','-6 hours')").run();
+      const r = db.prepare("SELECT COALESCE(SUM(count), 0) AS n FROM library_reservations WHERE account_id = ?").get(accountId) as Row;
+      return Number(r.n) || 0;
+    },
+    reserveLibrarySlots(
+      accountId: number,
+      cap: number,
+      count = 1,
+      opts: { excludeGenerationJobId?: string } = {},
+    ): LibraryReservation {
+      const requested = Math.max(1, Math.floor(Number(count) || 1));
+      const token = randomUUID();
+      db.exec("BEGIN IMMEDIATE");
+      try {
+        db.prepare("DELETE FROM library_reservations WHERE created_at < datetime('now','-6 hours')").run();
+        const currentRow = db.prepare("SELECT COUNT(*) AS n FROM videos WHERE account_id = ?").get(accountId) as Row;
+        const reservedRow = db
+          .prepare("SELECT COALESCE(SUM(count), 0) AS n FROM library_reservations WHERE account_id = ?")
+          .get(accountId) as Row;
+        const queuedRow = db
+          .prepare(
+            `SELECT COALESCE(SUM(MAX(total - done, 0)), 0) AS n
+               FROM generation_jobs
+              WHERE account_id = ?
+                AND state IN ('queued','running')
+                AND (? IS NULL OR id != ?)`,
+          )
+          .get(accountId, opts.excludeGenerationJobId ?? null, opts.excludeGenerationJobId ?? null) as Row;
+        const current = Number(currentRow.n) || 0;
+        const reserved = Number(reservedRow.n) || 0;
+        const queued = Number(queuedRow.n) || 0;
+        const available = Math.max(0, cap - current - reserved - queued);
+        if (requested > available) {
+          db.exec("ROLLBACK");
+          return { ok: false, cap, current, reserved, queued, available };
+        }
+        db.prepare("INSERT INTO library_reservations (token, account_id, count) VALUES (?,?,?)").run(
+          token,
+          accountId,
+          requested,
+        );
+        db.exec("COMMIT");
+        return { ok: true, token, reserved: requested };
+      } catch (e) {
+        try {
+          db.exec("ROLLBACK");
+        } catch {
+          /* already closed */
+        }
+        throw e;
+      }
+    },
+    releaseLibraryReservation(token: string): void {
+      db.prepare("DELETE FROM library_reservations WHERE token = ?").run(token);
     },
     videoCountsByAccount(accountIds?: number[]): { accountId: number; deck: string; count: number }[] {
       const ids = Array.isArray(accountIds)
@@ -97,6 +229,7 @@ export function videoMethods(db: DatabaseSync) {
     },
     deleteVideo(id: number): void {
       db.prepare("DELETE FROM videos WHERE id = ?").run(id);
+      invalidateReadCache();
     },
     // «Бесконечный пак» (infinite-packs): вместо удаления после успешной выкладки возвращаем ролик в
     // очередь (post_count→0), СОХРАНЯЯ файлы и last_posted_at (время этой выкладки). next-unposted

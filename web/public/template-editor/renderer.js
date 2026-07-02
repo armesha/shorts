@@ -94,6 +94,8 @@ function mountElement(el, content, showKillboxOutline) {
       font-weight:${el.font.weight};
       color:${el.font.color};
       line-height:${el.font.lineHeight};
+      direction:${el.dir || "ltr"};
+      unicode-bidi:plaintext;
       text-shadow:${el.textShadow || "none"};
     `;
     // содержимое килбокса
@@ -112,6 +114,8 @@ function mountElement(el, content, showKillboxOutline) {
       font-weight:${el.font.weight};
       color:${el.font.color};
       line-height:${el.font.lineHeight};
+      direction:${el.dir || "ltr"};
+      unicode-bidi:plaintext;
       text-shadow:${el.textShadow || "none"};
     `;
     div.textContent = el.text;

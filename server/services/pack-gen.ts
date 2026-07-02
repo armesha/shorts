@@ -6,7 +6,7 @@ import type { Db, Video } from "../db.ts";
 import { loadBaseConfig } from "../config.ts";
 import { deriveRules, getPack, type Pack, type CardValues } from "../../src/packs/store.ts";
 import { renderTemplateCard, type TemplateDoc } from "../../src/template/render.ts";
-import { resolveAudio, type AudioDeckHint } from "../../src/video.ts";
+import { pickJokeMotionOverlay, resolveAudio, type AudioDeckHint } from "../../src/video.ts";
 import { buildStillVideoFiles, cardReadable } from "../infra/media.ts";
 import { anecdoteKey } from "../../src/anecdotes/library.ts";
 
@@ -207,15 +207,19 @@ export async function buildPackLibraryVideo(input: {
   music?: string;
 }) {
   const { db, accountId, pack, picked } = input; // userId: бронь карточки делает вызывающий (claimAnecdote)
-  const { music, audioPath } = resolveAudio(input.music, audioHintForPack(pack), { packId: pack.id });
+  const hint = audioHintForPack(pack);
+  const { music, audioPath } = resolveAudio(input.music, hint, { packId: pack.id });
+  const { title, text } = cardReadable(picked.values, deriveRules(pack.templates[0]));
+  const motionOverlay =
+    hint?.audioProfile === "jokes" ? pickJokeMotionOverlay(`${pack.id}|${picked.key}|${title}|${text}`, text.length) : null;
   const { imgRel, vidRel } = await buildStillVideoFiles({
     prefix: "pack",
     outputDir: OUTPUT_DIR,
     audioPath,
+    motionOverlay,
     // editor-exported pack templates carry id/x/y at runtime; PackTemplate type just doesn't declare them
     render: (imgAbs) => renderTemplateCard(picked.tpl as TemplateDoc, picked.values, imgAbs),
   });
-  const { title, text } = cardReadable(picked.values, deriveRules(pack.templates[0]));
   const v = db.createVideo({
     accountId,
     title,

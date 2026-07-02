@@ -19,11 +19,13 @@ import {
   queuedRemainingForUser as genQueuedRemainingForUser,
   queuedRemainingForOwnerDecks as genQueuedRemainingForOwnerDecks,
   queuedRemainingForAccountDecks as genQueuedRemainingForAccountDecks,
+  queuedRemainingForAccount as genQueuedRemainingForAccount,
 } from "../services/gen-queue.ts";
 import { makeGenQueueWorker } from "../services/gen-queue-worker.ts";
 import { publicGenWorkerStatus } from "../services/gen-worker-heartbeat.ts";
 import { uid } from "../infra/auth-session.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
+import { USER_BATCH_VIDEO_CAP, channelLibraryVideoCap, isMgsUser } from "../infra/account-limits.ts";
 import type { RouteDeps } from "./deps.ts";
 import { thematicBlockDeckSequenceForGeneration } from "./super-admin-channel-blocks.ts";
 
@@ -56,10 +58,11 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
       const err = validateAccountSourceDeck(req, deckId, acc.channelLang);
       if (err) return reply.code(err.startsWith("Неизвестный") ? 400 : 403).send({ error: err });
     }
-    const isAdmin = db.getUserById(uid(req))?.role === "admin";
-    const perRequestCap = isAdmin ? Number.MAX_SAFE_INTEGER : 50;
+    const requesterIsAdmin = db.getUserById(uid(req))?.role === "admin";
+    const ownerIsMgs = isMgsUser(db.getUserById(ownerId));
+    const perRequestCap = requesterIsAdmin || ownerIsMgs ? Number.MAX_SAFE_INTEGER : USER_BATCH_VIDEO_CAP;
     let total = Math.max(1, Math.min(perRequestCap, Math.floor(Number(body.count) || 1)));
-    if (!isAdmin) {
+    if (!requesterIsAdmin && !ownerIsMgs) {
       const queued = genQueuedRemainingForUser(uid(req));
       const remaining = Math.max(0, USER_GEN_QUEUE_CAP - queued);
       if (total > remaining)
@@ -69,6 +72,19 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
               ? `В вашей очереди уже ${queued} видео. Можно добавить ещё максимум ${remaining}.`
               : `В вашей очереди уже максимум ${USER_GEN_QUEUE_CAP} видео — дождитесь завершения части задач.`,
         });
+    }
+    const owner = db.getUserById(ownerId);
+    const libraryCap = channelLibraryVideoCap(owner?.role === "admin", isMgsUser(owner));
+    if (libraryCap != null) {
+      const current = db.countVideosByAccount(body.accountId);
+      const queued = genQueuedRemainingForAccount(body.accountId);
+      const reserved = db.libraryReservationsForAccount(body.accountId);
+      const available = Math.max(0, libraryCap - current - queued - reserved);
+      if (available <= 0)
+        return reply.code(400).send({
+          error: `В библиотеке канала максимум ${libraryCap} видео. Сейчас ${current}${queued + reserved > 0 ? `, ещё ${queued + reserved} уже стоит в генерации` : ""}, можно добавить ещё 0.`,
+        });
+      total = Math.min(total, available);
     }
     // Never queue more videos than the owner has FREE (unused) cards: a job can only build a video
     // from an unused card, so any surplus would silently no-op ("exhausted"). Subtract cards already
@@ -128,8 +144,21 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
       deckIds = mixedDeckIds;
       total = Math.min(total, mixedDeckIds.length);
     }
-    const job = genEnqueue(uid(req), body.accountId, total, ownerId, deckIds);
-    return { jobId: job.id, total: job.total };
+    const libraryReservation = libraryCap == null ? null : db.reserveLibrarySlots(body.accountId, libraryCap, total);
+    if (libraryReservation && !libraryReservation.ok)
+      return reply.code(400).send({
+        error: `В библиотеке канала максимум ${libraryReservation.cap} видео. Сейчас ${libraryReservation.current}${
+          libraryReservation.queued + libraryReservation.reserved > 0
+            ? `, ещё ${libraryReservation.queued + libraryReservation.reserved} уже стоит в генерации`
+            : ""
+        }, можно добавить ещё ${libraryReservation.available}.`,
+      });
+    try {
+      const job = genEnqueue(uid(req), body.accountId, total, ownerId, deckIds);
+      return { jobId: job.id, total: job.total };
+    } finally {
+      if (libraryReservation?.ok) db.releaseLibraryReservation(libraryReservation.token);
+    }
   });
 
   app.get("/api/gen-queue", async (req) => {

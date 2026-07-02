@@ -18,9 +18,9 @@ const _argstr = (flag, def) => { const i = _argv.indexOf(flag); return i >= 0 ? 
 const DECK = _argstr('--deck', 'visual-riddles');
 const TITLE = _argstr('--title', 'Вижу Ответ');
 const LANG = _argstr('--lang', 'ru');
-const BATCH = _argval('--batch', resolve(ROOT, 'temp/visual-riddle-demos/batch-out'));
-const BUILD_MANIFEST = _argval('--manifest', resolve(ROOT, 'temp/visual-riddle-demos/build-manifest.json'));
-const SRC_SOURCES = _argval('--sources', resolve(ROOT, 'temp/visual-riddle-demos/sources.json'));
+const BATCH = _argval('--batch', resolve(ROOT, 'tmp/visual-riddle-demos/batch-out'));
+const BUILD_MANIFEST = _argval('--manifest', resolve(ROOT, 'tmp/visual-riddle-demos/build-manifest.json'));
+const SRC_SOURCES = _argval('--sources', resolve(ROOT, 'tmp/visual-riddle-demos/sources.json'));
 const ASSETS = resolve(ROOT, 'assets/fact-videos/' + DECK);
 const ADMIN = resolve(ROOT, 'data/output/admin-demos');
 const VIDEOS_JSON = resolve(ROOT, 'data/' + DECK + '/videos.json');

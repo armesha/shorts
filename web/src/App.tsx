@@ -66,7 +66,8 @@ function Gate() {
             <Route path="/studio" element={<Studio />} />
             <Route path="/gallery" element={user.role === "admin" ? <Gallery /> : <Navigate to="/channels" replace />} />
             <Route path="/cards" element={<Cards />} />
-            <Route path="/packs" element={<Packs />} />
+            <Route path="/library" element={<Packs />} />
+            <Route path="/packs" element={<Navigate to="/library" replace />} />
             <Route path="/queue" element={user.role === "admin" ? <QueuePage /> : <Navigate to="/channels" replace />} />
             <Route path="/notifications" element={user.role === "admin" ? <Notifications /> : <Navigate to="/channels" replace />} />
             <Route path="/accounts" element={<Navigate to="/channels" replace />} />
@@ -79,7 +80,7 @@ function Gate() {
             <Route path="/long-videos" element={<LongVideos />} />
             <Route path="/limits" element={user.role === "admin" ? <Limits /> : <Navigate to="/channels" replace />} />
             <Route path="/creator" element={<CreatorExternalRedirect />} />
-            <Route path="/register" element={<CreatorExternalRedirect />} />
+            <Route path="/register" element={<Navigate to="/channels" replace />} />
             <Route path="/login" element={defaultRoute} />
             <Route path="/changelog" element={<Changelog />} />
             <Route path="/errors" element={<Errors />} />

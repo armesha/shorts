@@ -3,7 +3,7 @@ import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
 
 // Admin-only gallery of montage Shorts, grouped into themed PACKS. Reads a manifest (written live by
-// temp/clip-demo/buildpack.mjs). Pure viewer — watch and download mp4, no posting.
+// tmp/clip-demo/buildpack.mjs). Pure viewer — watch and download mp4, no posting.
 const V = "12"; // bump to bust browser/Cloudflare cache on every clip change
 
 type Item = { id: string; title: string; theme?: string; voice?: string; dur?: string; createdAt?: string; updatedAt?: string };

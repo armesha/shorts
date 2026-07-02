@@ -48,7 +48,7 @@ ok(
   "неизвестные поля пункта отбрасываются при сохранении",
 );
 
-// --- append + list on the temp file ---
+// --- append + list on the tmp file ---
 const r1 = appendCards(gv.cards, TMP, "2026-06-14T10:00:00.000Z");
 ok(r1.added === good.length && r1.total === good.length, `дозаписано ${r1.added}, всего ${r1.total}`);
 const r2 = appendCards([gv.cards[0]], TMP, "2026-06-14T11:00:00.000Z");

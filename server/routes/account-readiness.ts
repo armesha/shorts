@@ -4,6 +4,7 @@ import type { Account, Db } from "../db.ts";
 import type { RouteDeps } from "./deps.ts";
 import { MANUAL_VIDEO_DECK } from "../../src/anecdotes/decks.ts";
 import { getReadinessLimits } from "../services/readiness-limits.ts";
+import { createDeckAvailabilityContext } from "../services/deck-availability.ts";
 
 type ReadinessLevel = "ready" | "warning" | "blocked";
 
@@ -61,12 +62,15 @@ export function registerAccountReadinessRoutes(app: FastifyInstance, db: Db, dep
       ...sourceDecks,
       ...Array.from(scheduledByDeck.keys()),
     ].filter(Boolean));
+    const availabilityCtx = createDeckAvailabilityContext();
+    const cardDeckIds = deckIds.filter((deckId) => deckId !== MANUAL_VIDEO_DECK);
+    const availability = deps.deckAccess.availableUnusedByDeck(ownerId, cardDeckIds, availabilityCtx);
     const queuedVideos = deckIds.reduce((sum, deckId) => sum + (queuedByDeck.get(deckId) ?? 0), 0);
     const decks = deckIds.map((deckId) => {
       const queued = queuedByDeck.get(deckId) ?? 0;
       const deckPostsPerDay = scheduledByDeck.get(deckId) ?? 0;
       const deckRunwayDays = deckPostsPerDay > 0 ? queued / deckPostsPerDay : null;
-      const available = deckId === MANUAL_VIDEO_DECK ? null : deps.deckAccess.availableUnusedForDecks(ownerId, [deckId]);
+      const available = deckId === MANUAL_VIDEO_DECK ? null : (availability.get(deckId) ?? 0);
       const status =
         deckPostsPerDay <= 0
           ? "idle"
@@ -106,7 +110,8 @@ export function registerAccountReadinessRoutes(app: FastifyInstance, db: Db, dep
     }
 
     const cardSourceDecks = sourceDecks.filter((deckId) => deckId !== MANUAL_VIDEO_DECK);
-    const availableNow = cardSourceDecks.length > 0 ? deps.deckAccess.availableUnusedForDecks(ownerId, cardSourceDecks) : 0;
+    const availableNow =
+      cardSourceDecks.length > 0 ? deps.deckAccess.availableUnusedForDecks(ownerId, cardSourceDecks, availabilityCtx) : 0;
     if (availableNow <= 0 && cardSourceDecks.length > 0) warnings.push("no_fresh_cards");
     if (runwayDays != null && queuedVideos > 0 && runwayDays < readinessLimits.minRunwayDays) warnings.push("low_runway");
     if (decks.some((deck) => deck.postsPerDay > 0 && (deck.status === "low" || deck.status === "empty")))

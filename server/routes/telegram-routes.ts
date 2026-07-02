@@ -11,6 +11,7 @@ import { hashPassword, isSuperAdminUser, newSessionToken, SESSION_TTL_DAYS } fro
 import { sendBotMessage, getBotUsername, setBotWebhook, botStartLink, setBotCommands } from "../telegram.ts";
 import { makeBotStats, type BotCallbackQuery } from "../services/telegram-stats.ts";
 import { COMMERCIAL_CREATOR_FEATURE } from "../services/creator-assets.ts";
+import { grantDefaultRegisteredUserDecks } from "../services/default-user-decks.ts";
 
 const DAY_MS = 86_400_000;
 const LINK_TTL_MIN = 10; // a bot-handshake token is valid 10 min
@@ -310,6 +311,7 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
         passwordSet: false,
       });
       db.setFeature(user.id, COMMERCIAL_CREATOR_FEATURE, true);
+      grantDefaultRegisteredUserDecks(db, user.id);
       db.setUserTelegram(user.id, tgId, label);
       db.updateTelegramLink(token, { telegramId: tgId, telegramUsername: label, chatId: String(chatId ?? ""), status: "ready", userId: user.id });
       await dm(`✅ Аккаунт создан: ${username}\n\nПароль не нужен. Если захотите входить по паролю — установите его в настройках.`);

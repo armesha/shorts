@@ -4,8 +4,8 @@ import { basename, extname, resolve } from "node:path";
 
 const ROOT = process.cwd();
 const SOURCE_ROOTS = [
-  { path: resolve(ROOT, "temp/meme/translated"), label: "temp/meme/translated", addedAt: "2026-06-28T00:00:00.000Z" },
-  { path: resolve(ROOT, "temp/meme2/translated"), label: "temp/meme2/translated", addedAt: "2026-06-29T00:00:00.000Z" },
+  { path: resolve(ROOT, "tmp/meme/translated"), label: "tmp/meme/translated", addedAt: "2026-06-28T00:00:00.000Z" },
+  { path: resolve(ROOT, "tmp/meme2/translated"), label: "tmp/meme2/translated", addedAt: "2026-06-29T00:00:00.000Z" },
 ].filter((source) => existsSync(source.path));
 const ASSET_ROOT = resolve(ROOT, "assets/template-packs/new-memes");
 const PACK_ROOT = resolve(ROOT, "data/packs");

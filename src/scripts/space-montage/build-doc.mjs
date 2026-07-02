@@ -6,7 +6,7 @@
 //   node src/scripts/space-montage/build-doc.mjs            # build all in docs.json
 //   node src/scripts/space-montage/build-doc.mjs --only blackholes_myth --no-sync
 //
-// Spec: temp/space-build/docs.json = [{ id, title, src, srt, start, end, corner, credit, zoom? }]
+// Spec: tmp/space-build/docs.json = [{ id, title, src, srt, start, end, corner, credit, zoom? }]
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -15,7 +15,7 @@ import puppeteer from "puppeteer-core";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../../..");
-const BUILD = path.join(ROOT, "temp/space-build");
+const BUILD = path.join(ROOT, "tmp/space-build");
 const DOC = path.join(BUILD, "doc");
 const CAP_DIR = path.join(BUILD, "cap");
 const ADMIN = path.join(ROOT, "data/output/admin-demos");

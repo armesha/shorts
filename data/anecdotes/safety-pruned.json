@@ -2,13 +2,19 @@
   "generatedAt": "2026-06-27T04:25:56.528Z",
   "sourceTotal": 507,
   "kept": 504,
-  "removed": 3,
+  "removed": 4,
   "blockedItems": [
     {
       "index": 17,
       "key": "ab7aotm-316",
       "title": "В поезде",
       "reason": "protected_class_sexual"
+    },
+    {
+      "index": 615,
+      "key": "a13dnnyi-335",
+      "title": "Про работу",
+      "reason": "protected_class_or_adult_context"
     }
   ],
   "removedSample": [

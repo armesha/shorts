@@ -2,7 +2,7 @@
 // Source: NASA Image & Video Library (images-api.nasa.gov) — public domain.
 // For each topic in topics.json: search videos, rank toward visualizations
 // (away from talking-head/host series), download a ~medium mp4 into
-// temp/space-build/src/<id>.mp4, and record metadata to temp/space-build/sources.json.
+// tmp/space-build/src/<id>.mp4, and record metadata to tmp/space-build/sources.json.
 //
 // Idempotent: already-downloaded ids are skipped.
 //   node src/scripts/space-montage/fetch-sources.mjs
@@ -15,8 +15,8 @@ import { execFileSync } from "node:child_process";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../../..");
-const SRC_DIR = path.join(ROOT, "temp/space-build/src");
-const META = path.join(ROOT, "temp/space-build/sources.json");
+const SRC_DIR = path.join(ROOT, "tmp/space-build/src");
+const META = path.join(ROOT, "tmp/space-build/sources.json");
 fs.mkdirSync(SRC_DIR, { recursive: true });
 
 const args = process.argv.slice(2);

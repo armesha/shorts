@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 const ROOT = process.cwd();
-const CACHE_FILE = resolve(ROOT, "temp/facts-space-es-translation-cache.json");
+const CACHE_FILE = resolve(ROOT, "tmp/facts-space-es-translation-cache.json");
 const JOBS = [
   {
     id: "fact-es",

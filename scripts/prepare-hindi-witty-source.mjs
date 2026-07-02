@@ -3,7 +3,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 const ROOT = process.cwd();
-const OUT_DIR = resolve(ROOT, "temp/hi-witty-sources");
+const OUT_DIR = resolve(ROOT, "tmp/hi-witty-sources");
 const PAGES_PATH = resolve(OUT_DIR, "pages.json");
 const EXCERPTS_PATH = resolve(OUT_DIR, "candidate-excerpts.json");
 const SOURCES_PATH = resolve(OUT_DIR, "sources.json");

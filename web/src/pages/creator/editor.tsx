@@ -372,7 +372,6 @@ export function DesignEditor({
   return (
     <div className="creator-compose-card creator-unified-editor" ref={rootRef}>
       <div className="creator-compose-head">
-        <h2 className="creator-editor-title">{t("creator.composeTitle")}</h2>
         <div className="creator-editor-history">
           <button type="button" className="creator-designer-icon-button" onClick={undoDesign} disabled={!canUndoDesign} aria-label={t("creator.undo")} title={t("creator.undo")}>
             <Undo2 size={15} />
@@ -574,7 +573,7 @@ function TextPane({
           >
             <input
               type="color"
-              value={colorInputValue(textStyle.outline, DEFAULT_TEXT_STYLE.outline)}
+              value={colorInputValue(textStyle.outline, DEFAULT_TEXT_STYLE.color)}
               onChange={(event) => update({ outline: event.target.value })}
               aria-label={t("creator.customColor")}
             />

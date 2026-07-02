@@ -1,6 +1,6 @@
 // Graceful shutdown orchestration — pure & testable (all side effects injected as deps).
 // On a stop signal: stop taking NEW work (scheduler + generation queue), WAIT for the in-flight
-// render/upload to finish (so nothing is left half-done / no orphan temp files / no double-post),
+// render/upload to finish (so nothing is left half-done / no orphan scratch files / no double-post),
 // then close the HTTP server and the DB. After this, a restart starts clean.
 
 export interface ShutdownDeps {

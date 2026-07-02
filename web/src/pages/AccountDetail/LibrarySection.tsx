@@ -15,7 +15,7 @@ type SortMode = "date" | "title" | "posts";
 type LibrarySectionProps = {
   account: Account;
   accountId: string;
-  videos: VideoItem[];
+  totalVideos: number;
   pageVideos: VideoItem[];
   sort: SortMode;
   setSort: Dispatch<SetStateAction<SortMode>>;
@@ -31,6 +31,8 @@ type LibrarySectionProps = {
   setGenerateDeck: Dispatch<SetStateAction<string>>;
   canGenerateAllSources: boolean;
   maxBatch: number;
+  libraryFull: boolean;
+  libraryCap: number | null;
   batchN: number;
   setBatchN: Dispatch<SetStateAction<number>>;
   sourcesDirty: boolean;
@@ -66,7 +68,7 @@ type LibrarySectionProps = {
 export default function LibrarySection({
   account,
   accountId,
-  videos,
+  totalVideos,
   pageVideos,
   sort,
   setSort,
@@ -82,6 +84,8 @@ export default function LibrarySection({
   setGenerateDeck,
   canGenerateAllSources,
   maxBatch,
+  libraryFull,
+  libraryCap,
   batchN,
   setBatchN,
   sourcesDirty,
@@ -117,9 +121,9 @@ export default function LibrarySection({
     <section id="channel-content" className="card bg-base-100 border border-base-300">
       <div className="card-body">
         <div className="flex items-center justify-between gap-2 flex-wrap">
-          <h2 className="card-title text-base">{t("account.libraryTitle", { n: videos.length })}</h2>
+          <h2 className="card-title text-base">{t("account.libraryTitle", { n: totalVideos })}</h2>
           <div className="flex items-center gap-2">
-            {videos.length > 0 && (
+            {totalVideos > 0 && (
               <button
                 className="btn btn-sm btn-error btn-outline gap-1"
                 onClick={clearLibrary}
@@ -221,7 +225,7 @@ export default function LibrarySection({
                 aria-label={t("account.howManyVideosAria")}
               />
               <span className="text-xs text-base-content/50 shrink-0">
-                {maxBatch < 1 ? t("account.noCards") : `1–${maxBatch}`}
+                {libraryFull && libraryCap != null ? t("account.libraryLimitReached", { n: libraryCap }) : maxBatch < 1 ? t("account.noCards") : `1–${maxBatch}`}
               </span>
               <button
                 className="btn btn-sm btn-primary gap-1"
@@ -229,7 +233,7 @@ export default function LibrarySection({
                   if (sourcesDirty && !(await save())) return;
                   queue.run(accountId, Math.min(batchN, maxBatch), generateDeckIds);
                 }}
-                disabled={langMismatch || saving || maxBatch < 1 || !isConnected}
+                disabled={langMismatch || saving || maxBatch < 1 || !isConnected || libraryFull}
                 title={langMismatch ? t("account.genTitleMismatch") : t("account.generateSelectedTitle")}
               >
                 <Plus size={14} /> {t("account.generateButton")}
@@ -258,14 +262,19 @@ export default function LibrarySection({
                 n: manualUploadsPerHour,
               })}
             </p>
-            <label className={`btn btn-sm btn-outline gap-1 w-full ${manualUploading || !isConnected ? "btn-disabled" : ""}`}>
+            {libraryFull && libraryCap != null && (
+              <div className="text-xs text-warning mb-2 flex items-center gap-1.5">
+                <AppIcon name="warning" size={13} /> {t("account.libraryLimitReached", { n: libraryCap })}
+              </div>
+            )}
+            <label className={`btn btn-sm btn-outline gap-1 w-full ${manualUploading || !isConnected || libraryFull ? "btn-disabled" : ""}`}>
               {manualUploading ? <Loader2 className="animate-spin" size={14} /> : <Upload size={14} />}
               {manualUploading ? t("account.manualUploading") : t("account.manualUploadButton")}
               <input
                 type="file"
                 className="hidden"
                 accept="video/mp4,.mp4"
-                disabled={manualUploading || !isConnected}
+                disabled={manualUploading || !isConnected || libraryFull}
                 onChange={(e) => {
                   const file = e.currentTarget.files?.[0] ?? null;
                   e.currentTarget.value = "";
@@ -289,7 +298,7 @@ export default function LibrarySection({
               </span>
             </div>
           )}
-          {sourcesDirty && videos.length > 0 && <span className="xl:col-span-3 text-xs text-warning">{t("account.oldVideosWarn")}</span>}
+          {sourcesDirty && totalVideos > 0 && <span className="xl:col-span-3 text-xs text-warning">{t("account.oldVideosWarn")}</span>}
           {postedTwicePlus > 0 && (
             <div className="xl:col-span-3 flex justify-end">
               <button className="btn btn-sm btn-ghost text-error gap-1" onClick={removePosted} disabled={queue.running} title={t("account.removePostedTitle")}>
@@ -314,7 +323,7 @@ export default function LibrarySection({
             </span>
           </div>
         )}
-        {videos.length === 0 ? (
+        {totalVideos === 0 ? (
           <div className="text-sm text-base-content/50 py-6 text-center">{t("account.libraryEmpty")}</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-3 gap-y-4 mt-3">

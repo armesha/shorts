@@ -12,13 +12,13 @@ import {
   SESSION_TTL_DAYS,
 } from "../auth.ts";
 import { checkRateLimit } from "../infra/rate-limits.ts";
+import { grantDefaultRegisteredUserDecks } from "../services/default-user-decks.ts";
 import {
   SESSION_COOKIE,
   ADMIN_SESSION_COOKIE,
   DAY_MS,
   getCookie,
   sessionCookieHeader,
-  adminSessionCookieHeader,
   clearSessionCookieHeader,
   clearAdminSessionCookieHeader,
   setSessionCookie,
@@ -29,7 +29,7 @@ import type { RouteDeps } from "./deps.ts";
 
 const REGISTER_LIMIT = { limit: 8, windowMs: 15 * 60 * 1000 };
 const MIN_PASSWORD_LEN = 3;
-const RESERVED_USERNAMES = new Set(["admin", "root", "system", "support", "shareboard"]);
+const RESERVED_USERNAMES = new Set(["admin", "root", "system", "support", "shareboard", "mgs"]);
 
 function registerClientKey(req: { headers: Record<string, unknown>; ip?: string }): string {
   const cf = typeof req.headers["cf-connecting-ip"] === "string" ? req.headers["cf-connecting-ip"] : "";
@@ -68,6 +68,7 @@ export function registerAuthRoutes(app: FastifyInstance, db: Db, deps: RouteDeps
     try {
       const user = db.createUser({ username, passHash: hashPassword(password), role: "user", passwordSet: true });
       db.setFeature(user.id, COMMERCIAL_CREATOR_FEATURE, true);
+      grantDefaultRegisteredUserDecks(db, user.id);
       const token = newSessionToken();
       db.createSession(token, user.id, new Date(Date.now() + SESSION_TTL_DAYS * DAY_MS).toISOString());
       setSessionCookie(reply, token);

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import { execFileSync, spawnSync } from "node:child_process";
 const ROOT = "/home/davtian/Documents/shorts";
-const DOC = `${ROOT}/temp/space-build/doc`;
+const DOC = `${ROOT}/tmp/space-build/doc`;
 const CS = "/tmp/doc-cs"; const SRTD = "/tmp/doc-srt";
 fs.rmSync(CS, { recursive: true, force: true }); fs.rmSync(SRTD, { recursive: true, force: true });
 fs.mkdirSync(CS, { recursive: true }); fs.mkdirSync(SRTD, { recursive: true });

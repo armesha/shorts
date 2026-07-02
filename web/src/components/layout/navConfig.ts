@@ -33,13 +33,9 @@ export const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
   {
     labelKey: "layout.groupContent",
     items: [
-      { to: "/packs", labelKey: "nav.packs", icon: "packs", end: false },
-      { to: "/long-videos", labelKey: "nav.longVideos", icon: "video", end: false },
-      { to: "/cards", labelKey: "nav.cards", icon: "cards", end: false },
-      { to: "/gallery", labelKey: "nav.gallery", icon: "library", end: false, adminOnly: true, adminBadge: true },
-      // Редактор шаблонов НЕ выносим отдельной вкладкой: на него уже есть переход из «Паки и карточки»
-      // (/cards → форма создания пака → ссылка «Нарисуйте шаблон в /editor», CreatePackForm.tsx).
-      // Роут /editor (App.tsx) остаётся рабочим по прямой ссылке.
+      { to: "/library", labelKey: "nav.library", icon: "library", end: false },
+      // Карточки, длинные видео, галерея и редактор шаблонов остаются рабочими внутренними
+      // экранами, но не занимают отдельные пункты бокового меню: вход к ним теперь из «Библиотеки».
     ],
   },
   {
@@ -78,7 +74,7 @@ export const ADMIN_BOTTOM_NAV: NavItem[] = [
 export const USER_BOTTOM_NAV: NavItem[] = [
   { to: "/channels", labelKey: "nav.channels", icon: "accounts", end: false },
   { to: "/studio", labelKey: "nav.studio", icon: "studio", end: false },
-  { to: "/packs", labelKey: "nav.packs", icon: "packs", end: false },
+  { to: "/library", labelKey: "nav.library", icon: "library", end: false },
   { to: "/statistics", labelKey: "nav.statistics", icon: "analytics", end: false },
 ];
 

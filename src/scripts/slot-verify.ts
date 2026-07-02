@@ -7,16 +7,16 @@ import { chromePath } from "../render.ts";
 import { buildMemeBoardHtml, type MemeCard } from "../memes/render.ts";
 import { photoDataUri } from "../memes/photos.ts";
 
-const sel = JSON.parse(readFileSync("temp/meme-recheck/newimg/slots-selection.json", "utf8")) as Array<{
+const sel = JSON.parse(readFileSync("tmp/meme-recheck/newimg/slots-selection.json", "utf8")) as Array<{
   boardIdx: number; photoFile: string; slot: MemeCard["slot"];
 }>;
 const caps = new Map<number, string[]>();
 for (const n of ["01", "02", "03"]) {
-  const f = `temp/meme-recheck/newimg/cap-out/slotcap-${n}.json`;
+  const f = `tmp/meme-recheck/newimg/cap-out/slotcap-${n}.json`;
   if (!existsSync(f)) continue;
   for (const e of JSON.parse(readFileSync(f, "utf8")) as Array<{ boardIdx: number; ru: string[] }>) caps.set(e.boardIdx, e.ru);
 }
-const OUT = resolve("temp/meme-recheck/newimg/verify");
+const OUT = resolve("tmp/meme-recheck/newimg/verify");
 mkdirSync(OUT, { recursive: true });
 
 const browser = await launch({

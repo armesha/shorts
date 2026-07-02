@@ -8,11 +8,13 @@ import { fmtCacheTime, readCache, writeCache } from "../lib/cache";
 import { useAuth } from "../lib/auth";
 import { isMainAdmin } from "../lib/authz";
 import { langTag } from "../lib/deck";
+import { isMgsLegacyUser } from "../lib/accountLimits";
 
 const ChannelBlocks = lazy(() => import("./ChannelBlocks"));
 
 const ACCOUNTS_CACHE_KEY = "sf.accounts.v2";
-const DEFAULT_DAILY_KEY_CAP = 92; // Safer default for regular users.
+const DEFAULT_DAILY_KEY_CAP = 50; // Regular users.
+const MGS_DAILY_KEY_CAP = 92; // Legacy profile for mgs.
 const SUPER_ADMIN_DAILY_KEY_CAP = 100; // Main admin uses the full YouTube project quota.
 type AccountSourceStat = {
   id: string;
@@ -35,7 +37,11 @@ type AccountsCache = {
 function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
   const { t } = useT();
   const { user } = useAuth();
-  const dailyKeyCap = isMainAdmin(user) ? SUPER_ADMIN_DAILY_KEY_CAP : DEFAULT_DAILY_KEY_CAP;
+  const dailyKeyCap = isMainAdmin(user)
+    ? SUPER_ADMIN_DAILY_KEY_CAP
+    : isMgsLegacyUser(user)
+      ? MGS_DAILY_KEY_CAP
+      : DEFAULT_DAILY_KEY_CAP;
   const cached = readCache<AccountsCache>(ACCOUNTS_CACHE_KEY);
   const [accounts, setAccounts] = useState<Account[]>(cached?.value.accounts ?? []);
   const [status, setStatus] = useState<AppStatus | null>(cached?.value.status ?? null);

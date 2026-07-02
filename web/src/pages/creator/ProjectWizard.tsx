@@ -124,10 +124,6 @@ export function ProjectWizard({
   return (
     <section className="creator-wizard">
       <header className="creator-wizard-head">
-        <div className="creator-wizard-title">
-          <h1>{t("creator.newProject")}</h1>
-          <span>{templateNameValue.trim() || t("creator.newProjectHint")}</span>
-        </div>
         <ol className="creator-wizard-steps" aria-label={t("creator.flowAria")}>
           {WIZARD_STEPS.map((id, index) => (
             <li key={id}>

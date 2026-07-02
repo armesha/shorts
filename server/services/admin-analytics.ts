@@ -174,15 +174,6 @@ function num(v: unknown): number {
   return Number(v) || 0;
 }
 
-function safeJsonArrayLen(raw: unknown): number {
-  try {
-    const parsed = JSON.parse(String(raw || "[]"));
-    return Array.isArray(parsed) ? parsed.length : 0;
-  } catch {
-    return 0;
-  }
-}
-
 function safeJsonStringArray(raw: unknown, fallback: string[] = []): string[] {
   try {
     const parsed = JSON.parse(String(raw || "[]"));

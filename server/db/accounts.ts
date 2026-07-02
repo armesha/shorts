@@ -4,6 +4,7 @@
 import type { DatabaseSync } from "node:sqlite";
 import { rowToAccount, type Row } from "./mappers.ts";
 import { DEFAULT_CHANNEL_NAME, type Account } from "./types.ts";
+import { invalidateReadCache } from "../services/read-cache.ts";
 
 export function accountMethods(db: DatabaseSync) {
   // "Uploaded today" per channel — count of published history rows dated today (UTC).
@@ -21,7 +22,9 @@ export function accountMethods(db: DatabaseSync) {
       db
         .prepare(
           `SELECT a.*, COALESCE(today.uploads_today, 0) AS uploads_today
+                  , u.username AS owner_username, u.role AS owner_role, u.is_super_admin AS owner_is_super_admin
              FROM accounts a
+             LEFT JOIN users u ON u.id = a.user_id
              LEFT JOIN (
                SELECT account_id, COUNT(*) AS uploads_today
                  FROM history
@@ -48,7 +51,14 @@ export function accountMethods(db: DatabaseSync) {
       db.prepare("UPDATE accounts SET user_id = ? WHERE user_id IS NULL").run(userId);
     },
     getAccount(id: number): Account | null {
-      const r = db.prepare("SELECT * FROM accounts WHERE id = ?").get(id) as Row | undefined;
+      const r = db
+        .prepare(
+          `SELECT a.*, u.username AS owner_username, u.role AS owner_role, u.is_super_admin AS owner_is_super_admin
+             FROM accounts a
+             LEFT JOIN users u ON u.id = a.user_id
+            WHERE a.id = ?`,
+        )
+        .get(id) as Row | undefined;
       if (!r) return null;
       return { ...rowToAccount(r), uploadsToday: countUploadsToday(r.id) };
     },
@@ -72,6 +82,7 @@ export function accountMethods(db: DatabaseSync) {
           input.avatar ?? null,
           avatarSource,
         );
+      invalidateReadCache();
       return this.getAccount(Number(info.lastInsertRowid))!;
     },
     updateAccount(id: number, input: Partial<Account>): Account | null {
@@ -96,10 +107,12 @@ export function accountMethods(db: DatabaseSync) {
         hasAvatar ? (input.avatarSource ?? "manual") : cur.avatarSource,
         id,
       );
+      invalidateReadCache();
       return this.getAccount(id);
     },
     deleteAccount(id: number): void {
       db.prepare("DELETE FROM accounts WHERE id = ?").run(id);
+      invalidateReadCache();
     },
     setYouTube(
       id: number,

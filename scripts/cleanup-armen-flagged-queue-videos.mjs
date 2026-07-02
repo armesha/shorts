@@ -7,8 +7,8 @@ const ROOT = resolve(new URL("..", import.meta.url).pathname);
 const DB_PATH = resolve(ROOT, "data/app.db");
 const OUTPUT_DIR = resolve(ROOT, "data/output");
 const OUTPUT_PREFIX = `${OUTPUT_DIR}/`;
-const REPORT_PATH = resolve(ROOT, "temp/armen-pack-safety-audit.json");
-const BACKUP_DIR = resolve(ROOT, "temp/cleanup-backups");
+const REPORT_PATH = resolve(ROOT, "tmp/armen-pack-safety-audit.json");
+const BACKUP_DIR = resolve(ROOT, "tmp/cleanup-backups");
 const USERNAME = "armen";
 const apply = process.argv.includes("--apply");
 

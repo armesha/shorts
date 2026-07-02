@@ -1,5 +1,5 @@
 // Standalone test renderer for the meme-board layout (caption band on top + template image below).
-// Reads temp/meme-recheck/selection20.json (image paths) + captions.json (idx -> caption), renders
+// Reads tmp/meme-recheck/selection20.json (image paths) + captions.json (idx -> caption), renders
 // each to a real 1080x1920 PNG via system Chrome (same engine/auto-fit as production), and writes a
 // render report. No server / deck registration needed — this validates the look before wiring the deck.
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
@@ -9,9 +9,9 @@ import { chromePath } from "../render.ts";
 
 const ROOT = process.cwd();
 const TPL = resolve(ROOT, "templates/meme-board.html");
-const SEL = resolve(ROOT, "temp/meme-recheck/selection20.json");
-const CAPS = resolve(ROOT, "temp/meme-recheck/captions.json");
-const OUTDIR = resolve(ROOT, "temp/meme-recheck/memes-test");
+const SEL = resolve(ROOT, "tmp/meme-recheck/selection20.json");
+const CAPS = resolve(ROOT, "tmp/meme-recheck/captions.json");
+const OUTDIR = resolve(ROOT, "tmp/meme-recheck/memes-test");
 
 interface Sel { idx: number; filename: string; original: string; mood: string; desc: string }
 interface Cap { idx: number; caption: string; charCount?: number; safe?: boolean }
@@ -42,7 +42,7 @@ async function main() {
     for (const s of sel) {
       const cap = capByIdx.get(s.idx);
       if (!cap) { report.push({ idx: s.idx, error: "no caption" }); continue; }
-      const scaled = resolve(ROOT, `temp/meme-recheck/src-scaled/meme_src_${String(s.idx).padStart(3, "0")}.jpg`);
+      const scaled = resolve(ROOT, `tmp/meme-recheck/src-scaled/meme_src_${String(s.idx).padStart(3, "0")}.jpg`);
       const imgFile = existsSync(scaled) ? scaled : s.original;
       if (!existsSync(imgFile)) { report.push({ idx: s.idx, error: "image missing", original: s.original }); continue; }
       const out = resolve(OUTDIR, `meme_${String(s.idx).padStart(3, "0")}.png`);

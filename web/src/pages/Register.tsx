@@ -26,7 +26,7 @@ export default function Register() {
   function done(user?: AuthUser) {
     if (!user) return;
     setUser(user);
-    window.location.replace("/creator");
+    window.location.replace("/channels");
   }
 
   async function submit(e: FormEvent) {

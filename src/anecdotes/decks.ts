@@ -20,9 +20,6 @@ export interface Deck {
   /** When true (together with meme), render via the "board" layout — caption band on top + the
    *  template image below (templates/meme-board.html) — instead of the caption-overlay meme.html. */
   memeBoard?: boolean;
-  /** When true, this deck's items are «Что выберешь?» cards (whole card as JSON in `text`:
-   *  {q, a:{label,desc,photoFile}, b:{label,desc,photoFile}}), rendered via templates/choose.html. */
-  choose?: boolean;
   /** When true, this deck renders DETERMINISTICALLY per card (fixed visual, no random bg) → it is a
    *  static "gallery" pack: shown in the Gallery page where you browse cards and pick a specific one. */
   gallery?: boolean;
@@ -396,19 +393,6 @@ export const DECKS: Deck[] = [
     memeBoard: true,
     gallery: true,
     adminOnly: true,
-  },
-  {
-    id: "choose",
-    name: "Что выберешь?",
-    dir: "data/choose", // cards.json: {q, a:{label,desc,photoFile}, b:{label,desc,photoFile}}; whole card as JSON in `text`
-    source: "",
-    emoji: "🤔",
-    hashtags: "#чтовыберешь #выбор #тест #опрос #дилемма #shorts",
-    tags: ["что выберешь", "выбор", "тест", "опрос", "дилемма", "или или", "shorts"],
-    genericTitles: ["Что выберешь?", "А ты что выберешь?", "Сложный выбор", "Выбирай", "Что бы ты выбрал?"],
-    choose: true,
-    gallery: true, // детерминированный рендер per-card → браузится в Галерее (админ)
-    adminOnly: true, // новый пак — по умолчанию только админ (как мемы/christian); снять, когда готов к публике
   },
   {
     id: "fact-en",
@@ -1144,7 +1128,7 @@ export function isPackDeckId(id?: string | null): boolean {
 }
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
-  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ar: "ar", hi: "hi", id: "id", choose: "ru", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-ru": "ru", "fact-es": "es", "fact-de": "de", "fact-it": "it", "fact-fr": "fr", "fact-pt": "pt", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
+  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ar: "ar", hi: "hi", id: "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-ru": "ru", "fact-es": "es", "fact-de": "de", "fact-it": "it", "fact-fr": "fr", "fact-pt": "pt", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-es": "es", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar",
 };
 export function deckLang(id: string): string {
@@ -1237,7 +1221,6 @@ export function isPlainAnecdoteDeck(deck: Deck): boolean {
     !deck.christian &&
     !deck.meme &&
     !deck.memeBoard &&
-    !deck.choose &&
     !deck.preFact &&
     !deck.quote &&
     !deck.quoteVideo &&

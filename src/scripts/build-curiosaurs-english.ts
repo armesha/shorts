@@ -1,4 +1,4 @@
-// Build the EN kid-fact pack from the 10 Curiosaurs PNG templates in temp/timur.
+// Build the EN kid-fact pack from the 10 Curiosaurs PNG templates in tmp/timur.
 // Run a small visual pass:
 //   node --import tsx --experimental-sqlite src/scripts/build-curiosaurs-english.ts --count=60
 // Build and seed the full live pack:
@@ -18,7 +18,7 @@ const CTA = "Follow for more!";
 const COUNT = Number(process.argv.find((a) => a.startsWith("--count="))?.split("=")[1] ?? 800);
 const SEED = process.argv.includes("--seed");
 
-const SOURCE_DIR = resolve("temp/timur");
+const SOURCE_DIR = resolve("tmp/timur");
 const PACK_DIR = resolve("assets/template-packs/curiosaurs-english");
 const BG_DIR = resolve(PACK_DIR, "backgrounds");
 const TEMPLATE_DIR = resolve(PACK_DIR, "templates");

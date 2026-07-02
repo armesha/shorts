@@ -11,6 +11,7 @@ import type {
   PackMusicUploadResult, MusicTrack, StatRow, ChannelTotals, PlatformSummary, StatPoint,
   AdminAnalytics, UserAnalytics, ErrorLogItem, NotificationItem, NotificationCounts, SystemStatus,
   ContentCatalogResponse, AccountReadiness, QueueOverview, LongVideoCatalog, VideoCountsResponse,
+  VideoLibraryKind, VideoLibraryPage, VideoLibrarySort,
   ChannelThemeBlockAccount, ChannelThemeBlocksResponse, ChannelThemeBlockGenerateResult,
   ChannelThemeBlockNormalizeResult, ChannelThemeBlockScheduleResult, ChannelThemeBlockSourceGroup,
 } from "./types";
@@ -242,6 +243,17 @@ export const apiClient = {
     send<GeneratedVideo>("/generate/anecdote-video", "POST", body ?? {}),
   videoCounts: (scope?: "all") => get<VideoCountsResponse>(`/videos/counts${scope === "all" ? "?scope=all" : ""}`),
   videos: (accountId: number | string) => get<VideoItem[]>(`/videos?accountId=${accountId}`),
+  videosPage: (
+    accountId: number | string,
+    opts?: { kind?: VideoLibraryKind; page?: number; pageSize?: number; sort?: VideoLibrarySort },
+  ) => {
+    const qs = new URLSearchParams({ accountId: String(accountId) });
+    if (opts?.kind) qs.set("kind", opts.kind);
+    if (opts?.page != null) qs.set("page", String(opts.page));
+    if (opts?.pageSize != null) qs.set("pageSize", String(opts.pageSize));
+    if (opts?.sort) qs.set("sort", opts.sort);
+    return get<VideoLibraryPage>(`/videos/page?${qs.toString()}`);
+  },
   saveVideo: (body: { accountId: number; text: string; title: string; bg?: string; music?: string; deck?: string }) =>
     send<VideoItem>("/videos", "POST", body),
   uploadVideo: (body: { accountId: number; name: string; type: string; size: number; dataUrl: string; title?: string }) =>

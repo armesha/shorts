@@ -1,11 +1,11 @@
 {
-  "total": 94,
-  "packs": 1,
+  "total": 556,
+  "packs": 2,
   "packSize": 300,
-  "target": 120,
+  "target": 700,
   "range": [
-    151,
-    404
+    150,
+    554
   ],
   "safety": {
     "filters": "Arabic Wikisource source ledger + religion/politics/violence/adult/protected-class/regional-stereotype blocklists + card length/readability checks.",

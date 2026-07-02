@@ -25,13 +25,21 @@ export const isSuperAdminScheduleTimeAllowed = (time: string): boolean => {
 export const cleanSuperAdminScheduleTimes = (times: string[]): string[] =>
   times.filter(isSuperAdminScheduleTimeAllowed);
 
-// Per-channel daily slot cap follows the channel OWNER's role: admins keep 20/day, every non-admin 18/day.
+// Per-channel daily slot cap follows the channel OWNER's profile: admins keep 20/day, mgs keeps the
+// legacy regular-user profile, every other non-admin is capped at 5/day.
 // (Backend mirror: server/infra/account-limits.ts — it's the authoritative enforcement.)
 export const ADMIN_ACCOUNT_DAILY_SLOT_CAP = 20;
-export const USER_ACCOUNT_DAILY_SLOT_CAP = 18;
-export const accountDailySlotCap = (ownerIsAdmin: boolean): number =>
-  ownerIsAdmin ? ADMIN_ACCOUNT_DAILY_SLOT_CAP : USER_ACCOUNT_DAILY_SLOT_CAP;
-export const USER_DAILY_SLOT_CAP = 92;
+export const USER_ACCOUNT_DAILY_SLOT_CAP = 5;
+export const MGS_ACCOUNT_DAILY_SLOT_CAP = 18;
+export const USER_DAILY_SLOT_CAP = 50;
+export const MGS_DAILY_SLOT_CAP = 92;
+export const SUPER_ADMIN_DAILY_SLOT_CAP = 100;
+export const USER_BATCH_VIDEO_CAP = 10;
+export const USER_CHANNEL_LIBRARY_CAP = 50;
+export const accountDailySlotCap = (ownerIsAdmin: boolean, ownerIsMgs = false): number =>
+  ownerIsAdmin ? ADMIN_ACCOUNT_DAILY_SLOT_CAP : ownerIsMgs ? MGS_ACCOUNT_DAILY_SLOT_CAP : USER_ACCOUNT_DAILY_SLOT_CAP;
+export const googleKeyDailySlotCap = (ownerIsSuperAdmin: boolean, ownerIsMgs = false): number =>
+  ownerIsSuperAdmin ? SUPER_ADMIN_DAILY_SLOT_CAP : ownerIsMgs ? MGS_DAILY_SLOT_CAP : USER_DAILY_SLOT_CAP;
 
 export const randomDayTimes = (
   n: number,

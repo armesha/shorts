@@ -40,7 +40,7 @@ const headers = { cookie: `sid=${token}` };
 try {
   const gens = (await fetch(`${BASE}/api/generators`, { headers }).then((r) => r.json())) as Array<Record<string, unknown>>;
   console.log(`/api/generators → ${gens.length} packs visible to admin\n`);
-  mkdirSync("temp/meme-recheck/deck-verify", { recursive: true });
+  mkdirSync("tmp/meme-recheck/deck-verify", { recursive: true });
   for (const DECK of DECKS) {
     const g = gens.find((x) => x.id === DECK);
     const cr = await fetch(`${BASE}/api/gallery/${DECK}/cards`, { headers });
@@ -51,7 +51,7 @@ try {
     const buf = Buffer.from(await tr.arrayBuffer());
     let saved = "";
     if (tr.ok && ct.includes("image")) {
-      const p = `temp/meme-recheck/deck-verify/live-${DECK}.jpg`;
+      const p = `tmp/meme-recheck/deck-verify/live-${DECK}.jpg`;
       writeFileSync(p, buf); saved = ` → ${p}`;
     }
     const sample = (cards.cards || []).slice(0, 2).map((c) => "«" + (c.caption || "").replace(/\n/g, " / ") + "»").join(" ");

@@ -14,6 +14,7 @@ import { readElevenLabsKeys, fetchElevenLabsLimit } from "../services/elevenlabs
 import { getManualVideoLimits, setManualVideoLimits } from "../services/manual-videos.ts";
 import { getReadinessLimits, setReadinessLimits } from "../services/readiness-limits.ts";
 import { buildAdminAnalytics } from "../services/admin-analytics.ts";
+import { grantDefaultRegisteredUserDecks, registeredUserDefaultGrantIds } from "../services/default-user-decks.ts";
 import { parseStringArray, type Row } from "../db/mappers.ts";
 import {
   DAY_MS,
@@ -88,6 +89,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       const valid = body.hidden.filter((id) => DECKS.some((d) => d.id === id && !isGrantableBuiltinDeck(d)));
       if (valid.length) db.setHiddenDecks(u.id, valid);
     }
+    if (role !== "admin") grantDefaultRegisteredUserDecks(db, u.id);
     return { id: u.id, username: u.username, role: u.role, isSuperAdmin: isSuperAdminUser(u) };
   });
 
@@ -206,6 +208,12 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   // All packs (matrix columns).
   app.get("/api/admin/decks", async (req, reply) => {
     if (!requireAdmin(req, reply)) return;
+    const defaultGrants = registeredUserDefaultGrantIds();
+    const defaultDeckIds = new Set([
+      ...defaultGrants.deckIds,
+      ...defaultGrants.longVideoDeckIds,
+      ...defaultGrants.packDeckIds,
+    ]);
     // встроенные деки + кастомные паки (всегда показываем паки колонками; id = "pack:<id>").
     // Возвращаем ВСЕ деки (вкл. чисто admin-only): для строк-юзеров такие колонки рисуются «—»
     // (им недоступно), а в СВОЕЙ строке админ может скрыть любую деку/пак лично у себя (opt-out).
@@ -217,8 +225,12 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
         grantable: !!(d.adminOnly && d.grantable),
         adminOnly: !!d.adminOnly,
         longVideo: !!d.longVideo,
+        defaultForNewUser: defaultDeckIds.has(d.id),
       })),
-      ...listAllPacks().map((p) => ({ id: `pack:${p.id}`, name: p.name, pack: true, grantable: false, adminOnly: false })),
+      ...listAllPacks().map((p) => {
+        const id = `pack:${p.id}`;
+        return { id, name: p.name, pack: true, grantable: false, adminOnly: false, defaultForNewUser: defaultDeckIds.has(id) };
+      }),
     ];
   });
 

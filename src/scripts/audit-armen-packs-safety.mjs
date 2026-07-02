@@ -7,7 +7,7 @@ import { filterSafetyPrunedItems } from "../anecdotes/library.ts";
 
 const ROOT = process.cwd();
 const DB_PATH = process.env.DATABASE_PATH || resolve(ROOT, "data/app.db");
-const OUT = resolve(ROOT, "temp/armen-pack-safety-audit.json");
+const OUT = resolve(ROOT, "tmp/armen-pack-safety-audit.json");
 
 const CHECKS = [
   {
@@ -260,7 +260,7 @@ report.summary.flags += queueFlags.length;
 report.summary.highFlags += queueHighFlags;
 report.summary.reviewFlags += queueReviewFlags;
 
-mkdirSync(resolve(ROOT, "temp"), { recursive: true });
+mkdirSync(resolve(ROOT, "tmp"), { recursive: true });
 writeFileSync(OUT, `${JSON.stringify(report, null, 2)}\n`);
 console.log(`wrote ${OUT}`);
 console.log(JSON.stringify(report.summary, null, 2));

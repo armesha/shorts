@@ -6,10 +6,12 @@ import type { Db, Account } from "../db.ts";
 import { isSuperAdminUser } from "../auth.ts";
 import { DECKS, isPackDeckId, deckLang } from "../../src/anecdotes/decks.ts";
 import { getPack } from "../../src/packs/store.ts";
-import { libraryStats } from "../../src/anecdotes/library.ts";
-import { packCardKey } from "./pack-gen.ts";
-import { INFINITE_PACKS_FEATURE } from "./infinite-packs.ts";
 import { isForbiddenSuperAdminSourceDeck } from "./super-admin-optical-decks.ts";
+import {
+  availableUnusedByDeck,
+  availableUnusedForDecks,
+  type DeckAvailabilityContext,
+} from "./deck-availability.ts";
 
 type Replyish = { code: (n: number) => { send: (b: unknown) => unknown } };
 const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
@@ -22,7 +24,8 @@ export interface DeckAccess {
   deckAllowedForUser: (userId: number, deckId: string) => boolean;
   cleanDeckIds: (ids: unknown) => string[];
   accountSourceDecks: (account: Account) => string[];
-  availableUnusedForDecks: (ownerId: number, deckIds: string[]) => number;
+  availableUnusedByDeck: (ownerId: number, deckIds: string[], ctx?: DeckAvailabilityContext) => Map<string, number>;
+  availableUnusedForDecks: (ownerId: number, deckIds: string[], ctx?: DeckAvailabilityContext) => number;
   deckExists: (req: unknown, deckId: string) => boolean;
   deckContentLang: (req: unknown, deckId: string) => string;
   validateAccountSourceDeck: (req: unknown, deckId: string, channelLang: string) => string | null;
@@ -100,62 +103,12 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
   // How many UNUSED cards the content owner still has across the given decks/packs (free pool).
   // Built-in decks are counted by DISTINCT item_key so aggregate decks plus legacy split decks do not
   // inflate the same quote/card pool.
-  function availableUnusedForDecks(ownerId: number, deckIds: string[]): number {
-    const ownerIsSuperAdmin = isSuperAdminUser(db.getUserById(ownerId));
-    const clean = [...new Set(deckIds.map((deckId) => String(deckId || "").trim()).filter(Boolean))].filter(
-      (deckId) => !ownerIsSuperAdmin || !isForbiddenSuperAdminSourceDeck(deckId),
-    );
-    if (!clean.length) return 0;
-    const builtinIds = clean.filter((deckId) => !isPackDeckId(deckId));
-    const packIds = clean.filter((deckId) => isPackDeckId(deckId));
-    if (db.hasFeature(ownerId, INFINITE_PACKS_FEATURE)) {
-      let total = 0;
-      if (builtinIds.length) {
-        try {
-          const ph = builtinIds.map(() => "?").join(",");
-          const row = db.db
-            .prepare(`SELECT COUNT(DISTINCT item_key) AS n FROM content_items WHERE deck_id IN (${ph})`)
-            .get(...builtinIds) as { n?: number } | undefined;
-          total += Number(row?.n) || 0;
-        } catch {
-          for (const deckId of builtinIds) total += libraryStats(deckId, new Set()).total;
-        }
-      }
-      for (const deckId of packIds) {
-        if (isPackDeckId(deckId)) {
-          total += getPack(deckId.slice(5), ownerId, ownerIsSuperAdmin)?.cards.length ?? 0;
-        }
-      }
-      return total;
-    }
-    const usedKeys = db.usedAnecdoteKeys(ownerId);
-    let total = 0;
-    if (builtinIds.length) {
-      try {
-        const ph = builtinIds.map(() => "?").join(",");
-        const row = db.db
-          .prepare(
-            `SELECT COUNT(DISTINCT ci.item_key) AS n
-               FROM content_items ci
-               LEFT JOIN user_used_anecdotes used ON used.user_id = ? AND used.key = ci.item_key
-              WHERE ci.deck_id IN (${ph}) AND used.key IS NULL`,
-          )
-          .get(ownerId, ...builtinIds) as { n?: number } | undefined;
-        total += Number(row?.n) || 0;
-      } catch {
-        for (const deckId of builtinIds) total += libraryStats(deckId, usedKeys).available;
-      }
-    }
-    for (const deckId of packIds) {
-      if (isPackDeckId(deckId)) {
-        const pack = getPack(deckId.slice(5), ownerId, ownerIsSuperAdmin);
-        if (!pack) continue;
-        let used = 0;
-        for (const c of pack.cards) if (usedKeys.has(packCardKey(c.values))) used++;
-        total += Math.max(0, pack.cards.length - used);
-      }
-    }
-    return total;
+  function availableUnusedByDeckForOwner(ownerId: number, deckIds: string[], ctx?: DeckAvailabilityContext): Map<string, number> {
+    return availableUnusedByDeck(db, ownerId, deckIds, ctx);
+  }
+
+  function availableUnusedForDecksForOwner(ownerId: number, deckIds: string[], ctx?: DeckAvailabilityContext): number {
+    return availableUnusedForDecks(db, ownerId, deckIds, ctx);
   }
 
     function deckExists(req: unknown, deckId: string): boolean {
@@ -213,7 +166,8 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
     deckAllowedForUser,
     cleanDeckIds,
     accountSourceDecks,
-    availableUnusedForDecks,
+    availableUnusedByDeck: availableUnusedByDeckForOwner,
+    availableUnusedForDecks: availableUnusedForDecksForOwner,
     deckExists,
     deckContentLang,
     validateAccountSourceDeck,

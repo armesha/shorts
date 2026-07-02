@@ -9,7 +9,7 @@ import {
 import { basename, resolve } from "node:path";
 
 const ROOT = process.cwd();
-const INPUT_DIR = resolve(ROOT, "temp/localization-input");
+const INPUT_DIR = resolve(ROOT, "tmp/localization-input");
 const FACT_SOURCE = resolve(ROOT, "data/fact-videos/videos.json");
 const PSYCHOLOGY_BASE_PACK = resolve(ROOT, "data/packs/psychology-ru-superadmin.json");
 const CREATED_AT = "2026-06-30T00:00:00.000Z";

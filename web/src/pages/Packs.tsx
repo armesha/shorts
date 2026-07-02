@@ -15,7 +15,7 @@ import { useAuth } from "../lib/auth";
 import { isMainAdmin } from "../lib/authz";
 import { useT } from "../lib/i18n";
 import { CONTENT_LANGS, DECK_LANG, langTag } from "../lib/deck";
-import { AppIcon } from "../components/AppIcon";
+import { AppIcon, type AppIconName } from "../components/AppIcon";
 
 const fmt = (n: number) => n.toLocaleString("ru-RU");
 const CATALOG_PAGE_SIZE = 12;
@@ -266,6 +266,13 @@ export default function Packs() {
           </select>
         )}
       </header>
+
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
+        <LibraryLink to="/cards" icon="cards" title={t("packs.libraryCards")} hint={t("packs.libraryCardsHint")} />
+        <LibraryLink to="/editor" icon="skin" title={t("packs.libraryTemplates")} hint={t("packs.libraryTemplatesHint")} />
+        <LibraryLink to="/long-videos" icon="video" title={t("packs.libraryLongVideos")} hint={t("packs.libraryLongVideosHint")} />
+        {isAdmin && <LibraryLink to="/gallery" icon="library" title={t("packs.libraryGallery")} hint={t("packs.libraryGalleryHint")} />}
+      </div>
 
       {actionErr && (
         <div className="alert alert-error text-sm" role="alert">
@@ -684,6 +691,22 @@ export default function Packs() {
         </div>
       )}
     </div>
+  );
+}
+
+function LibraryLink({ to, icon, title, hint }: { to: string; icon: AppIconName; title: string; hint: string }) {
+  return (
+    <Link to={to} className="rounded-lg border border-base-300 bg-base-100 p-3 transition-colors hover:border-primary/50 hover:bg-base-200/60">
+      <div className="flex items-start gap-3">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-primary/10 text-primary">
+          <AppIcon name={icon} size={18} />
+        </span>
+        <span className="min-w-0">
+          <span className="block text-sm font-semibold">{title}</span>
+          <span className="block truncate text-xs text-base-content/55">{hint}</span>
+        </span>
+      </div>
+    </Link>
   );
 }
 

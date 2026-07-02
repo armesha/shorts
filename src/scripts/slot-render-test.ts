@@ -1,5 +1,5 @@
 // Render the selected insert-slot templates with sample captions to verify the caption lands inside
-// the blank slot. Reads temp/meme-recheck/newimg/slots-selection.json; writes PNGs to .../render/.
+// the blank slot. Reads tmp/meme-recheck/newimg/slots-selection.json; writes PNGs to .../render/.
 import { readFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { launch } from "puppeteer-core";
@@ -8,7 +8,7 @@ import { buildMemeBoardHtml, type MemeCard } from "../memes/render.ts";
 import { photoDataUri } from "../memes/photos.ts";
 
 const sel = JSON.parse(
-  readFileSync("temp/meme-recheck/newimg/slots-selection.json", "utf8"),
+  readFileSync("tmp/meme-recheck/newimg/slots-selection.json", "utf8"),
 ) as Array<{ boardIdx: number; photoFile: string; slot: MemeCard["slot"] }>;
 
 const CAPS = [
@@ -32,7 +32,7 @@ const CAPS = [
   "Когда увидел счёт за интернет",
 ];
 
-const OUT = resolve("temp/meme-recheck/newimg/render");
+const OUT = resolve("tmp/meme-recheck/newimg/render");
 mkdirSync(OUT, { recursive: true });
 
 const browser = await launch({

@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, '../..');
-const WORK = resolve(ROOT, 'temp/illusions-3d'); // generated manifests live in the gitignored work dir
+const WORK = resolve(ROOT, 'tmp/illusions-3d'); // generated manifests live in the gitignored work dir
 mkdirSync(WORK, { recursive: true });
 
 const FIGURES = [

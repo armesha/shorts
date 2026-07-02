@@ -11,7 +11,6 @@ import { buildChristianHtml, pickChristianBg } from "../christian/render.ts";
 import { buildRussianHtml, pickRussianBg } from "./russian-bg.ts";
 import { buildMemeHtml, buildMemeBoardHtml, memeBackdropFor, type MemeCard } from "../memes/render.ts";
 import { photoCss, photoDataUri } from "../memes/photos.ts";
-import { buildChooseHtml, type ChooseCard } from "../choose/render.ts";
 import type { PackItem } from "./library.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -133,7 +132,6 @@ export async function renderAnecdote(
   if (deck.russianBg) return renderRussian(a, outPath);
   if (deck.memeBoard) return renderMemeBoard(a, outPath);
   if (deck.meme) return renderMeme(a, outPath);
-  if (deck.choose) return renderChoose(a, outPath);
   if (isPlainAnecdoteDeck(deck) && !a.bg) return renderJokePop(a, outPath);
   const bgName = a.bg ?? randomDifferent(listBackgrounds(), a.avoidBg) ?? "";
   const bgCss = backgroundCss(bgName);
@@ -667,21 +665,4 @@ async function renderMemeBoard(
   const html = buildMemeBoardHtml(card, img);
   const fontPx = await captureCard(html, outPath);
   return { path: outPath, fontPx, bg: card.photoFile || "board" };
-}
-
-/** Render one «Что выберешь?» card (two photo options + labels + descriptions; whole card JSON in a.text). */
-async function renderChoose(
-  a: Anecdote,
-  outPath: string,
-): Promise<{ path: string; fontPx: number; bg: string }> {
-  let card: ChooseCard;
-  try {
-    card = JSON.parse(a.text) as ChooseCard;
-  } catch {
-    // a.text wasn't a serialized card — degrade to a minimal card so render never crashes.
-    card = { q: a.title || "Что выберешь?", a: { label: "", desc: a.text }, b: { label: "", desc: "" } };
-  }
-  const html = buildChooseHtml(card);
-  const fontPx = await captureCard(html, outPath);
-  return { path: outPath, fontPx, bg: "choose" };
 }

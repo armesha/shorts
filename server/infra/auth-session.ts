@@ -5,7 +5,7 @@
 // module only provides the cookie writers + session/impersonation lookups the routes need. index.ts
 // builds ONE instance via makeAuthSession(db) and threads the pieces into each route module's `deps`.
 import type { Db } from "../db.ts";
-import { isSuperAdminUser, newSessionToken, SESSION_TTL_DAYS } from "../auth.ts";
+import { isSuperAdminUser, SESSION_TTL_DAYS } from "../auth.ts";
 
 export const SESSION_COOKIE = "sid";
 export const ADMIN_SESSION_COOKIE = "admin_sid";

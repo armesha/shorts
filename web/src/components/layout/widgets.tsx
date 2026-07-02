@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Lang } from "../../lib/i18n";
 import { useSkin } from "../../lib/skin";
 import { AppIcon } from "../AppIcon";
@@ -33,11 +33,13 @@ export function NetworkIndicator({ t }: { t: (key: string, vars?: Record<string,
   const [state, setState] = useState<"online" | "checking" | "offline">(() =>
     navigator.onLine ? "online" : "offline",
   );
+  const failedChecks = useRef(0);
 
   useEffect(() => {
     let alive = true;
     const check = async (visible = false) => {
       if (!navigator.onLine) {
+        failedChecks.current = 0;
         if (alive) setState("offline");
         return;
       }
@@ -46,9 +48,16 @@ export function NetworkIndicator({ t }: { t: (key: string, vars?: Record<string,
       const timer = window.setTimeout(() => ctrl.abort(), 4_000);
       try {
         const r = await fetch("/api/health", { cache: "no-store", signal: ctrl.signal });
-        if (alive) setState(r.ok ? "online" : "offline");
+        if (r.ok) {
+          failedChecks.current = 0;
+          if (alive) setState("online");
+        } else {
+          failedChecks.current += 1;
+          if (alive && failedChecks.current >= 3) setState("offline");
+        }
       } catch {
-        if (alive) setState("offline");
+        failedChecks.current += 1;
+        if (alive && failedChecks.current >= 3) setState("offline");
       } finally {
         window.clearTimeout(timer);
       }

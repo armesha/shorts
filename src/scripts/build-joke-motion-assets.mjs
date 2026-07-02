@@ -5,7 +5,7 @@ import puppeteer from "puppeteer-core";
 
 const ROOT = process.cwd();
 const OUT_DIR = resolve(ROOT, "assets/motion/jokes");
-const TMP_DIR = resolve(ROOT, "temp/joke-motion-build");
+const TMP_DIR = resolve(ROOT, "tmp/joke-motion-build");
 
 function chromePath() {
   const candidates = [

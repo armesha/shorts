@@ -5,7 +5,7 @@ import ffmpegPath from "ffmpeg-static";
 
 const ROOT = process.cwd();
 const OUT_DIR = resolve(ROOT, "assets/fact-videos/joke-backgrounds");
-const TMP_DIR = resolve(ROOT, "temp/joke-video-backgrounds");
+const TMP_DIR = resolve(ROOT, "tmp/joke-video-backgrounds");
 const LEDGER = resolve(ROOT, "data/joke-video-backgrounds/sources.json");
 const FFMPEG = ffmpegPath || "ffmpeg";
 

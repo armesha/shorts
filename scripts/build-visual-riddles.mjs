@@ -154,8 +154,8 @@ async function assemble(png, voiceMp3, music, outMp4, voiceDur) {
 async function main() {
   const args = process.argv.slice(2);
   const outIdx = args.indexOf('--outdir');
-  const outDir = outIdx >= 0 ? resolve(args[outIdx + 1]) : resolve(ROOT, 'temp/visual-riddle-demos/sample-out');
-  const manifestPath = resolve(args.find((a) => a.endsWith('.json')) || resolve(ROOT, 'temp/visual-riddle-demos/build-manifest.json'));
+  const outDir = outIdx >= 0 ? resolve(args[outIdx + 1]) : resolve(ROOT, 'tmp/visual-riddle-demos/sample-out');
+  const manifestPath = resolve(args.find((a) => a.endsWith('.json')) || resolve(ROOT, 'tmp/visual-riddle-demos/build-manifest.json'));
   const specs = JSON.parse(await readFile(manifestPath, 'utf8'));
   await mkdir(outDir, { recursive: true }); // ensure output dir exists before prepImage writes the first work file
   const REUSE = process.env.VR_REUSE === '1'; // reuse existing card PNG + voice mp3, re-assemble only (e.g. to toggle zoom)

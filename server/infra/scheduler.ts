@@ -14,7 +14,7 @@ import {
 } from "../services/super-admin-optical-decks.ts";
 import { cleanupDrainedAutoExpireDecksForAccount } from "../services/auto-expire-packs.ts";
 import { markPackLibraryVideoUsed } from "../services/pack-gen.ts";
-import { googleKeyDailyScheduleCap } from "./account-limits.ts";
+import { accountDailyScheduleCap, googleKeyDailyScheduleCap, isMgsUser } from "./account-limits.ts";
 import { isSuperAdminUser } from "../auth.ts";
 import * as metrics from "./metrics.ts";
 
@@ -167,6 +167,7 @@ export function startScheduler(opts: SchedulerOpts) {
       }
 
       let claimedVideoId: number | null = null; // set once we atomically claim a video → release on error
+      let uploadReservationToken: string | null = null;
       try {
         opts.log(`[sched] account ${acc.id} (${acc.channelName}) firing at ${hhmm}`);
 
@@ -191,7 +192,13 @@ export function startScheduler(opts: SchedulerOpts) {
         }
         // Daily per-Google-key upload cap (REAL uploads) — shared with manual post-now so the two
         // together can't blow the Cloud project's YouTube quota for channels on the same key.
-        const keyCap = googleKeyDailyScheduleCap(isSuperAdminUser(acc.userId != null ? opts.db.getUserById(acc.userId) : null));
+        const owner = acc.userId != null ? opts.db.getUserById(acc.userId) : null;
+        const accountCap = accountDailyScheduleCap(owner?.role === "admin", isMgsUser(owner));
+        if (opts.db.uploadsTodayForAccount(acc.id) >= accountCap) {
+          opts.log(`[sched] account ${acc.id}: дневной лимит ${accountCap} публикаций на канал достигнут — пропуск`);
+          continue;
+        }
+        const keyCap = googleKeyDailyScheduleCap(isSuperAdminUser(owner), isMgsUser(owner));
         if (acc.oauthClientId != null && opts.db.uploadsTodayForKey(acc.oauthClientId) >= keyCap) {
           opts.log(`[sched] account ${acc.id}: дневной лимит ${keyCap} на Google-ключ достигнут — пропуск`);
           continue;
@@ -202,6 +209,23 @@ export function startScheduler(opts: SchedulerOpts) {
           continue;
         }
         claimedVideoId = lib.id;
+        const uploadReservation = opts.db.reserveDailyUploadQuota({
+          accountId: acc.id,
+          oauthClientId: acc.oauthClientId,
+          accountCap,
+          keyCap: acc.oauthClientId != null ? keyCap : null,
+        });
+        if (!uploadReservation.ok) {
+          opts.db.releaseVideoPost(lib.id);
+          claimedVideoId = null;
+          opts.log(
+            `[sched] account ${acc.id}: дневной лимит ${uploadReservation.cap} публикаций ${
+              uploadReservation.scope === "account" ? "на канал" : "на Google-ключ"
+            } достигнут — пропуск`,
+          );
+          continue;
+        }
+        uploadReservationToken = uploadReservation.token;
         const meta = ytMeta(getDeck(lib.deck), lib.title, lib.text);
         const videoId = await metrics.track("upload", () =>
           uploadShort(creds, opts.redirectUri, token, {
@@ -220,7 +244,10 @@ export function startScheduler(opts: SchedulerOpts) {
           publishedAt: new Date().toISOString(),
           error: videoId ? null : "YouTube не вернул id ролика — загрузка не удалась.",
           deck: lib.deck,
+          oauthClientId: acc.oauthClientId,
         });
+        opts.db.releaseDailyUploadReservation(uploadReservation.token);
+        uploadReservationToken = null;
         if (videoId) {
           metrics.notePost(); // last successful auto-post timestamp
           opts.db.clearAuthError(acc.id); // token works → drop any stale "needs reconnect" flag
@@ -247,6 +274,7 @@ export function startScheduler(opts: SchedulerOpts) {
           opts.log(`[sched] account ${acc.id}: upload returned no id, keeping video`);
         }
       } catch (err) {
+        if (uploadReservationToken) opts.db.releaseDailyUploadReservation(uploadReservationToken);
         if (claimedVideoId != null) opts.db.releaseVideoPost(claimedVideoId); // un-claim on upload error
         const reason = ytErrorReason(err);
         // Dead/revoked token → flag the channel so /channels shows "needs reconnect" (not just a history line).
@@ -258,6 +286,7 @@ export function startScheduler(opts: SchedulerOpts) {
           title: "ошибка автозагрузки",
           status: "failed",
           error: reason,
+          oauthClientId: acc.oauthClientId,
         });
         opts.log(`[sched] account ${acc.id} FAILED: ${String(err)}`);
       }

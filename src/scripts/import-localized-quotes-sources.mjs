@@ -1,7 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 
-const INPUT_DIR = "temp/localization-input";
+const INPUT_DIR = "tmp/localization-input";
 const IMPORTED_AT = process.env.IMPORT_TIMESTAMP || "2026-06-30T12:00:00.000Z";
 
 const FACT_LANGS = ["de", "it", "fr", "pt"];

@@ -451,17 +451,24 @@ export default function Creator() {
       appliedProjectRef.current = "";
       setActivePack(null);
       setTemplateSourcePackId("");
+      setLoadingPack(false);
       return;
     }
-    if (!summary || featureDisabled) return;
+    if (!summary) return;
+    if (featureDisabled) {
+      setLoadingPack(false);
+      return;
+    }
     if (appliedProjectRef.current === projectId) return;
-    appliedProjectRef.current = projectId;
     let cancelled = false;
     setLoadingPack(true);
+    setActivePack((current) => (current && packId(current) === projectId ? current : null));
+    setTemplateSourcePackId("");
     (async () => {
       try {
         const pack = await get<CreatorPack>(`/creator/packs/${encodeURIComponent(projectId)}`);
         if (cancelled) return;
+        appliedProjectRef.current = projectId;
         setActivePack(pack);
         setTemplateNameValue(String(pack.name || ""));
         const restored = readCreatorDesignState(pack.creatorDesignState);
@@ -799,7 +806,16 @@ export default function Creator() {
         </div>
       ) : view === "project" ? (
         <div className="creator-view" key={`project-${projectId}`}>
-          {loadingPack || !activePack ? (
+          {featureDisabled ? (
+            <ProjectsHome
+              packs={packs}
+              onOpen={(pack) => openProject(pack, "cards")}
+              onNewPack={startNewProject}
+              onDelete={deletePackFromHome}
+              disabled
+              busy={busy}
+            />
+          ) : loadingPack || !activePack ? (
             <div className="flex items-center gap-2 py-16 text-base-content/60">
               <span className="loading loading-spinner loading-lg text-primary" />
               {t("creator.loading")}

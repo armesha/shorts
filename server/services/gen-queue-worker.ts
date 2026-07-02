@@ -16,6 +16,7 @@ import {
 import { removeAutoExpiredDeckFromAccount } from "./auto-expire-packs.ts";
 import { buildFactLibraryVideo } from "./fact-gen.ts";
 import { INFINITE_PACKS_FEATURE } from "./infinite-packs.ts";
+import { channelLibraryVideoCap, isMgsUser } from "../infra/account-limits.ts";
 import type { GenWorker, Job } from "./gen-queue.ts";
 import type { DeckAccess } from "./deck-access.ts";
 import type { BuildLibraryVideo } from "./library-build.ts";
@@ -34,6 +35,8 @@ export function makeGenQueueWorker(
     const acc = db.getAccount(job.accountId);
     if (!acc) throw new Error("Канал не найден");
     const ownerId = job.ownerUserId ?? job.userId;
+    const owner = db.getUserById(ownerId);
+    const libraryCap = channelLibraryVideoCap(owner?.role === "admin", isMgsUser(owner));
     const seen = new Set<string>(db.usedAnecdoteKeys(ownerId));
     const infinite = db.hasFeature(ownerId, INFINITE_PACKS_FEATURE);
     const sources = job.deckIds?.length ? job.deckIds : accountSourceDecks(acc);
@@ -117,11 +120,20 @@ export function makeGenQueueWorker(
       }
     };
 
-    for (let offset = 0; offset < Math.max(1, sources.length); offset++) {
-      const sourceDeck = sources[(job.done + offset) % Math.max(1, sources.length)] || acc.lang;
-      const result = await generateFromSource(sourceDeck);
-      if (result === "made") return "made";
+    const libraryReservation =
+      libraryCap == null
+        ? null
+        : db.reserveLibrarySlots(job.accountId, libraryCap, 1, { excludeGenerationJobId: job.id });
+    if (libraryReservation && !libraryReservation.ok) return "exhausted";
+    try {
+      for (let offset = 0; offset < Math.max(1, sources.length); offset++) {
+        const sourceDeck = sources[(job.done + offset) % Math.max(1, sources.length)] || acc.lang;
+        const result = await generateFromSource(sourceDeck);
+        if (result === "made") return "made";
+      }
+      return "exhausted";
+    } finally {
+      if (libraryReservation?.ok) db.releaseLibraryReservation(libraryReservation.token);
     }
-    return "exhausted";
   };
 }

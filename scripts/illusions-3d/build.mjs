@@ -2,7 +2,7 @@
 // Builder for the "illusions-3d" pack: ambiguous rotating 3D particle figures (Necker-cube style).
 //   renderer.html (deterministic per-frame canvas)  ->  N PNG frames via headless Chrome
 //   -> ffmpeg encode to a seamless-loop 1080x1920 MP4 (no audio).
-// Usage: node temp/illusions-3d/build.mjs [manifest.json] [--outdir DIR] [--only id1,id2]
+// Usage: node tmp/illusions-3d/build.mjs [manifest.json] [--outdir DIR] [--only id1,id2]
 //   DUR (s, default 8), FPS (default 30), PALETTE (override) via env.
 
 import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
@@ -59,7 +59,7 @@ async function poster(framesDir, outJpg, frame) {
 async function main() {
   const argv = process.argv.slice(2);
   const outIdx = argv.indexOf('--outdir');
-  const outDir = outIdx >= 0 ? resolve(argv[outIdx + 1]) : resolve(ROOT, 'temp/illusions-3d/out');
+  const outDir = outIdx >= 0 ? resolve(argv[outIdx + 1]) : resolve(ROOT, 'tmp/illusions-3d/out');
   const onlyIdx = argv.indexOf('--only');
   const only = onlyIdx >= 0 ? new Set(argv[onlyIdx + 1].split(',')) : null;
   const manifestPath = argv.find((a) => a.endsWith('.json'));

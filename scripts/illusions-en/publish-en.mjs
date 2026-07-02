@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Publish the illusions-en pack (run AFTER build-en renders temp/illusions-en/out/).
+// Publish the illusions-en pack (run AFTER build-en renders tmp/illusions-en/out/).
 // For each clip:  mux quiet music into the silent master ->
 //   data/output/admin-demos/<id>.mp4 (+ .jpg poster)   -> /clip-demos gallery
 //   assets/fact-videos/illusions-en/<id>.mp4           -> channel deck source
@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, '../..');
-const OUTDIR = resolve(ROOT, 'temp/illusions-en/out');
+const OUTDIR = resolve(ROOT, 'tmp/illusions-en/out');
 const ADMIN = resolve(ROOT, 'data/output/admin-demos');
 const MANIFEST = resolve(ADMIN, 'manifest.json');
 const MUSIC = resolve(ROOT, 'assets/audio/long-videos/fats-waller-swingin-the-operas-1939.opus');

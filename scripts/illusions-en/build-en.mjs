@@ -39,7 +39,7 @@ async function poster(framesDir, outJpg, frame) {
 async function main() {
   const argv = process.argv.slice(2);
   const outIdx = argv.indexOf('--outdir');
-  const outDir = outIdx >= 0 ? resolve(argv[outIdx + 1]) : resolve(ROOT, 'temp/illusions-en/out');
+  const outDir = outIdx >= 0 ? resolve(argv[outIdx + 1]) : resolve(ROOT, 'tmp/illusions-en/out');
   const onlyIdx = argv.indexOf('--only');
   const only = onlyIdx >= 0 ? new Set(argv[onlyIdx + 1].split(',')) : null;
   const manifestPath = argv.find((a) => a.endsWith('.json')) || resolve(HERE, 'manifest.json');

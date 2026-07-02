@@ -21,6 +21,9 @@ export interface Account {
   oauthClientId?: number | null; // which uploaded Google key the channel was connected with
   authError?: string | null; // YouTube rejected the token (revoked/expired) → канал нужно переподключить
   authFailedAt?: string | null; // когда токен начал отклоняться (ISO) — для «отвалился …»
+  ownerUsername?: string | null;
+  ownerRole?: string | null;
+  ownerIsSuperAdmin?: boolean;
 }
 
 export interface HistoryItem {
@@ -160,6 +163,7 @@ export interface DeckInfo {
   grantable?: boolean; // встроенный admin-only deck, который админ выдает opt-in галочкой
   adminOnly?: boolean; // admin-only дека: юзеру недоступна («—» в матрице), но админ может скрыть её у себя
   longVideo?: boolean; // длинный video-pack: отдельная таблица выдачи в админке
+  defaultForNewUser?: boolean; // серверный дефолт для нового обычного пользователя
 }
 /** One row of the admin pack-visibility matrix: a user + which packs are hidden / actually used. */
 export interface UserDeckRow {
@@ -289,6 +293,20 @@ export interface VideoCountsRow {
 
 export interface VideoCountsResponse {
   accounts: VideoCountsRow[];
+}
+
+export type VideoLibraryKind = "regular" | "long" | "all";
+export type VideoLibrarySort = "date" | "title" | "posts";
+
+export interface VideoLibraryPage {
+  items: VideoItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  pageCount: number;
+  byDeck: Record<string, number>;
+  postedTwicePlus: number;
+  totalAll: number;
 }
 
 export interface AuthUser {

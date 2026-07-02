@@ -4,7 +4,7 @@ import { dirname, resolve } from "node:path";
 
 const ROOT = process.cwd();
 const SOURCE = resolve(ROOT, "data/fact-videos/videos.json");
-const CACHE_FILE = resolve(ROOT, "temp/static-facts-translation-cache.json");
+const CACHE_FILE = resolve(ROOT, "tmp/static-facts-translation-cache.json");
 const LIMIT = Number(process.env.STATIC_FACTS_LIMIT || 160);
 const LANGS = [
   {

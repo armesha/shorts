@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSy
 import { dirname, resolve } from "node:path";
 
 const ROOT = process.cwd();
-const OUT = resolve(ROOT, "temp/superadmin-visual-audit.json");
+const OUT = resolve(ROOT, "tmp/superadmin-visual-audit.json");
 const DB_PATH = process.env.DATABASE_PATH || resolve(ROOT, "data/app.db");
 const USERNAME = process.argv.find((arg) => arg.startsWith("--user="))?.slice("--user=".length) || "armen";
 

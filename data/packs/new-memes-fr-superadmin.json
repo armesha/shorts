@@ -52944,9 +52944,9 @@
   "grants": [],
   "autoExpireMode": "per_account",
   "notes": {
-    "source": "temp/meme2/translated; user-provided translated meme cards rendered before pack assembly.",
+    "source": "tmp/meme2/translated; user-provided translated meme cards rendered before pack assembly.",
     "sourceCounts": {
-      "temp/meme2/translated": 370
+      "tmp/meme2/translated": 370
     },
     "policy": [
       "These packs replace legacy memes-* sources for armen foreign thematic blocks.",

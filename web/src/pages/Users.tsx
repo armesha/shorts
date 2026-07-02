@@ -1,13 +1,17 @@
-import { useEffect, useState } from "react";
-import { Users, Plus, Check, AlertTriangle, Crown, LogIn, Send, Infinity as InfinityIcon, Wand2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Users, Plus, Check, AlertTriangle, Crown, LogIn, Send, Infinity as InfinityIcon, Wand2, Search } from "lucide-react";
 import { apiClient, ApiError, type AdminUser, type DeckInfo, type UserDeckRow, type PackSummary, type PackUsageItem } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { isMainAdmin } from "../lib/authz";
 import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
+import { isMgsLegacyUser } from "../lib/accountLimits";
 
-const DEFAULT_DAILY_KEY_CAP = 92;
+const DEFAULT_DAILY_KEY_CAP = 50;
+const MGS_DAILY_KEY_CAP = 92;
 const SUPER_ADMIN_DAILY_KEY_CAP = 100;
+const dailyKeyCapForUser = (row: { userId: number; username: string; isSuperAdmin?: boolean }) =>
+  row.isSuperAdmin ? SUPER_ADMIN_DAILY_KEY_CAP : isMgsLegacyUser({ id: row.userId, username: row.username }) ? MGS_DAILY_KEY_CAP : DEFAULT_DAILY_KEY_CAP;
 
 // Admin-only section: create accounts + control which packs each user sees.
 export default function UsersPage() {
@@ -32,6 +36,10 @@ export default function UsersPage() {
   );
 }
 
+function defaultNewVisibleFor(decks: DeckInfo[]): Set<string> {
+  return new Set(decks.filter((d) => d.defaultForNewUser).map((d) => d.id));
+}
+
 function AdminUsers() {
   const { user, setUser } = useAuth();
   const { t } = useT();
@@ -45,7 +53,7 @@ function AdminUsers() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("user");
-  const [newVisible, setNewVisible] = useState<Set<string>>(new Set()); // packs GRANTED to the new user (default: none)
+  const [newVisible, setNewVisible] = useState<Set<string>>(new Set()); // opt-in packs granted to the next new user
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [created, setCreated] = useState("");
@@ -69,6 +77,7 @@ function AdminUsers() {
   const [noticeBusy, setNoticeBusy] = useState(false);
   const [noticeState, setNoticeState] = useState<"idle" | "sent" | "error">("idle");
   const [noticeErr, setNoticeErr] = useState("");
+  const [userSearch, setUserSearch] = useState("");
 
   const loadUsers = () => apiClient.adminUsers().then(setUsers).catch(() => {});
   const loadMatrix = () => apiClient.adminUserDecks().then(setRows).catch(() => {});
@@ -81,7 +90,10 @@ function AdminUsers() {
     loadUsers();
     if (canManagePackVisibility) {
       loadMatrix();
-      apiClient.adminDecks().then(setDecks).catch(() => {});
+      apiClient.adminDecks().then((items) => {
+        setDecks(items);
+        setNewVisible(defaultNewVisibleFor(items));
+      }).catch(() => {});
     } else {
       setRows([]);
       setDecks([]);
@@ -132,12 +144,12 @@ function AdminUsers() {
         ? userLongVideoDecks.filter((d) => d.grantable && newVisible.has(d.id)).map((d) => d.id)
         : [];
       const u = await apiClient.createUser(username.trim(), password, nextRole, hidden);
-      if (canManageRights && (grants.length || longVideoGrants.length)) await apiClient.setUserDecks(u.id, hidden, grants, longVideoGrants);
+      if (canManageRights && nextRole !== "admin") await apiClient.setUserDecks(u.id, hidden, grants, longVideoGrants);
       setCreated(t("users.created", { name: u.username, role: u.role === "admin" ? t("users.roleAdmin") : t("users.roleUser") }));
       setUsername("");
       setPassword("");
       setRole("user");
-      setNewVisible(new Set());
+      setNewVisible(defaultNewVisibleFor(decks));
       loadUsers();
       if (canManagePackVisibility) loadMatrix();
     } catch (err) {
@@ -346,6 +358,17 @@ function AdminUsers() {
   const longVideoAccessDecks = decks.filter((d) => d.longVideo);
   const userAccessDecks = userDecks.filter((d) => !d.longVideo);
   const userLongVideoDecks = userDecks.filter((d) => d.longVideo);
+  const normalizedUserSearch = userSearch.trim().toLowerCase();
+  const filteredUsers = useMemo(
+    () =>
+      normalizedUserSearch
+        ? users.filter((u) => u.username.toLowerCase().includes(normalizedUserSearch))
+        : users,
+    [users, normalizedUserSearch],
+  );
+  const visibleUsers = filteredUsers;
+  const visibleUserIds = useMemo(() => new Set(visibleUsers.map((u) => u.id)), [visibleUsers]);
+  const visibleRows = rows.filter((r) => visibleUserIds.has(r.userId));
 
   const isCellVisible = (row: UserDeckRow, d: DeckInfo): boolean => {
     const isAdminRow = row.role === "admin";
@@ -532,8 +555,24 @@ function AdminUsers() {
           <p className="text-sm font-medium mb-2 flex items-center gap-2">
             <Users size={15} className="text-primary" /> {t("users.registeredHeading")}
           </p>
-          <div className="flex flex-wrap gap-1.5">
-            {users.map((u) => (
+          <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <label className="input input-bordered input-sm flex min-w-0 items-center gap-2 sm:w-72">
+              <Search size={14} className="text-base-content/45" />
+              <input
+                className="grow"
+                value={userSearch}
+                onChange={(e) => setUserSearch(e.target.value)}
+                placeholder={t("users.searchPlaceholder")}
+                autoComplete="off"
+              />
+            </label>
+            <div className="text-xs text-base-content/60">
+              {t("users.searchSummary", { shown: filteredUsers.length, total: users.length })}
+            </div>
+          </div>
+          <div className="max-h-40 overflow-auto overscroll-contain pr-1">
+            <div className="flex flex-wrap gap-1.5">
+            {visibleUsers.map((u) => (
               <span key={u.id} className="inline-flex items-center gap-1 rounded border border-base-300 px-2 py-1 text-xs">
                 <span className="font-medium">{u.username}</span>
                 {u.isSuperAdmin ? (
@@ -544,6 +583,10 @@ function AdminUsers() {
                 {u.locked && <span className="badge badge-error badge-xs">{t("users.locked")}</span>}
               </span>
             ))}
+            {visibleUsers.length === 0 && (
+              <span className="text-sm text-base-content/50">{t("users.searchEmpty")}</span>
+            )}
+            </div>
           </div>
         </div>
 
@@ -659,13 +702,13 @@ function AdminUsers() {
                 </span>
               )}
             </p>
-            <div className="overflow-x-auto rounded-lg border border-base-300">
+            <div className="max-h-[56rem] overflow-auto overscroll-contain rounded-lg border border-base-300">
               <table className="table table-xs">
                 <thead>
                   <tr>
-                    <th className="sticky left-0 z-20 bg-base-100 border-r border-base-300">{t("users.colUser")}</th>
+                    <th className="sticky left-0 top-0 z-30 bg-base-100 border-r border-base-300">{t("users.colUser")}</th>
                     {accessDecks.map((d) => (
-                      <th key={d.id} className="text-center whitespace-nowrap font-normal">
+                      <th key={d.id} className="sticky top-0 z-20 bg-base-100 text-center whitespace-nowrap font-normal">
                         <span className="inline-flex items-center gap-1">
                           {d.adminOnly && !d.grantable && (
                             <AppIcon name="admin" size={11} className="text-primary/70" title={t("users.colAdminOnly")} />
@@ -677,7 +720,7 @@ function AdminUsers() {
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((row) => {
+                  {visibleRows.map((row) => {
                     return (
                       <tr key={row.userId}>
                         <td className="font-medium whitespace-nowrap sticky left-0 z-10 bg-base-100 border-r border-base-300">
@@ -732,8 +775,8 @@ function AdminUsers() {
                             })()}
                             {t("users.scheduledPerDay", {
                               n: row.scheduled,
-                              limit: `/${row.isSuperAdmin ? SUPER_ADMIN_DAILY_KEY_CAP : DEFAULT_DAILY_KEY_CAP}`,
                             })}
+                            {" · " + t("users.keyDailyCap", { n: dailyKeyCapForUser(row) })}
                             {row.library > 0 ? " · " + t("users.inLibrary", { n: row.library }) : ""}
                           </div>
                           {canManageRights && (
@@ -783,13 +826,13 @@ function AdminUsers() {
             <p className="text-sm font-medium mb-2 flex items-center gap-2">
               {t("users.longVideoMatrixHeading")}
             </p>
-            <div className="overflow-x-auto rounded-lg border border-base-300">
+            <div className="max-h-[32rem] overflow-auto overscroll-contain rounded-lg border border-base-300">
               <table className="table table-xs">
                 <thead>
                   <tr>
-                    <th className="sticky left-0 z-20 bg-base-100 border-r border-base-300">{t("users.colUser")}</th>
+                    <th className="sticky left-0 top-0 z-30 bg-base-100 border-r border-base-300">{t("users.colUser")}</th>
                     {longVideoAccessDecks.map((d) => (
-                      <th key={d.id} className="text-center whitespace-nowrap font-normal">
+                      <th key={d.id} className="sticky top-0 z-20 bg-base-100 text-center whitespace-nowrap font-normal">
                         <span className="inline-flex items-center gap-1">
                           {d.adminOnly && !d.grantable && (
                             <AppIcon name="admin" size={11} className="text-primary/70" title={t("users.colAdminOnly")} />
@@ -801,7 +844,7 @@ function AdminUsers() {
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((row) => (
+                  {visibleRows.map((row) => (
                     <tr key={row.userId}>
                       <td className="font-medium whitespace-nowrap sticky left-0 z-10 bg-base-100 border-r border-base-300">
                         <div className="flex items-center gap-1.5">

@@ -28,6 +28,7 @@ function client(creds: ClientCreds, redirectUri: string) {
 }
 
 const SCOPES = [
+  "https://www.googleapis.com/auth/youtube",
   "https://www.googleapis.com/auth/youtube.upload",
   "https://www.googleapis.com/auth/youtube.readonly",
   "https://www.googleapis.com/auth/yt-analytics.readonly",
@@ -196,4 +197,56 @@ export async function uploadShort(
     media: { body: createReadStream(o.videoPath) },
   });
   return res.data.id ?? null;
+}
+
+const CHANNEL_BRANDING_FIELDS = [
+  "country",
+  "defaultLanguage",
+  "description",
+  "keywords",
+  "trackingAnalyticsAccountId",
+  "unsubscribedTrailer",
+] as const;
+
+/**
+ * Update only the public channel description while preserving the channel's existing mutable
+ * branding settings. YouTube currently forbids changing brandingSettings.channel.title via API, so
+ * this deliberately omits title even if channels.list returns it.
+ */
+export async function updateChannelDescription(
+  creds: ClientCreds,
+  redirectUri: string,
+  refreshToken: string,
+  description: string,
+): Promise<{ channelId: string | null; title: string | null; description: string }> {
+  const oauth = client(creds, redirectUri);
+  oauth.setCredentials({ refresh_token: refreshToken });
+  const yt = google.youtube({ version: "v3", auth: oauth });
+  const current = await yt.channels.list({ part: ["brandingSettings", "snippet"], mine: true });
+  const channel = current.data.items?.[0];
+  if (!channel?.id) throw new Error("YouTube channel not found for this token");
+
+  const existingChannel = channel.brandingSettings?.channel ?? {};
+  const brandingChannel: Record<string, unknown> = {};
+  for (const field of CHANNEL_BRANDING_FIELDS) {
+    const value = (existingChannel as Record<string, unknown>)[field];
+    if (value != null) brandingChannel[field] = value;
+  }
+  brandingChannel.description = sanitizeYtText(description).slice(0, 1000);
+
+  await yt.channels.update({
+    part: ["brandingSettings"],
+    requestBody: {
+      id: channel.id,
+      brandingSettings: {
+        channel: brandingChannel,
+      },
+    },
+  });
+
+  return {
+    channelId: channel.id,
+    title: channel.snippet?.title ?? existingChannel.title ?? null,
+    description: String(brandingChannel.description),
+  };
 }

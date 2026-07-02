@@ -15,6 +15,7 @@ import { useGenQueue } from "../lib/genQueue";
 import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
 import { isMainAdmin } from "../lib/authz";
+import { isMgsLegacyUser } from "../lib/accountLimits";
 
 const bgLabel = (f: string) => f.replace(/\.(jpe?g|png)$/i, "");
 const musicLabel = (f: string) => f.split("/").pop()!.replace(/\.\w+$/, "");
@@ -47,6 +48,7 @@ export default function Studio() {
   const [musicList, setMusicList] = useState<string[]>([]);
   const [music, setMusic] = useState("");
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [videoCounts, setVideoCounts] = useState<Record<number, number>>({});
   const [channelId, setChannelId] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -57,7 +59,6 @@ export default function Studio() {
   const sourcePacks = forbiddenSourceIds
     ? packs.filter((p) => !forbiddenSourceIds.has(`pack:${p.id}`))
     : packs;
-  const roleMax = user?.role === "admin" ? 100 : 50; // потолок «за раз»: админ 100, обычный юзер 50
   const [batchN, setBatchN] = useState(5);
   const q = useGenQueue();
 
@@ -74,14 +75,32 @@ export default function Studio() {
   // «За раз» не больше, чем осталось СВОБОДНЫХ (неиспользованных) карточек в выбранной деке/паке —
   // для всех (и юзеров, и админов). Для пака берём available (cards − used), не общее число карточек.
   const remaining = isPack ? curPack?.available ?? curPack?.cards ?? 0 : g?.available ?? 0;
-  const maxBatch = Math.max(0, Math.min(roleMax, remaining));
   // Сохранять ролик можно ТОЛЬКО в канал, у которого этот пак (встроенный/свой) выбран источником —
   // иначе планировщик его не выложит (постит по точному паку канала) и язык бы не совпал.
   const accountSources = (a: Account) => (a.sourceDecks?.length ? a.sourceDecks : [a.lang]);
   const saveAccounts = accounts.filter((a) => accountSources(a).includes(deck));
+  const selectedAccount = accounts.find((a) => String(a.id) === channelId) ?? null;
+  const selectedOwnerId = selectedAccount?.userId ?? user?.id ?? null;
+  const selectedOwnerUsername = selectedAccount?.ownerUsername ?? user?.username ?? "";
+  const selectedOwnerRole = selectedAccount?.ownerRole ?? user?.role ?? "";
+  const selectedOwnerIsMgs = isMgsLegacyUser({ id: selectedOwnerId, username: selectedOwnerUsername });
+  const roleMax = user?.role === "admin" || selectedOwnerIsMgs ? 100 : 10; // потолок «за раз»: админ/mgs выше, обычный юзер 10
+  const selectedLibraryCap = selectedOwnerRole === "admin" || selectedOwnerIsMgs ? null : 50;
+  const selectedLibraryUsed = selectedAccount ? videoCounts[selectedAccount.id] ?? 0 : 0;
+  const selectedInFlight = q.accountId === Number(channelId) ? Math.max(0, q.total - q.done) : 0;
+  const selectedLibraryAvailable =
+    selectedLibraryCap == null ? Number.MAX_SAFE_INTEGER : Math.max(0, selectedLibraryCap - selectedLibraryUsed - selectedInFlight);
+  const libraryFull = selectedLibraryCap != null && selectedLibraryAvailable <= 0;
+  const maxBatch = Math.max(0, Math.min(roleMax, remaining, selectedLibraryAvailable));
 
   // Единый пикер: встроенные деки + кастомные паки в одном списке, сгруппированы только по языку.
   const deckGroups = buildDeckGroups(gens, sourcePacks, { requireTotal: true, excludeIds: forbiddenSourceIds });
+
+  const reloadVideoCounts = () =>
+    apiClient
+      .videoCounts()
+      .then((res) => setVideoCounts(Object.fromEntries(res.accounts.map((row) => [row.accountId, row.total]))))
+      .catch(() => {});
 
   useEffect(() => {
     apiClient.generators().then(setGens).catch(() => {});
@@ -89,6 +108,7 @@ export default function Studio() {
     apiClient.backgrounds().then(setBgs).catch(() => {});
     apiClient.music().then(setMusicList).catch(() => {});
     apiClient.accounts().then(setAccounts).catch(() => {});
+    reloadVideoCounts();
   }, []);
 
   // Сменили деку/пак с меньшим остатком — подожмём «за раз» к новому максимуму, чтоб не превысить.
@@ -102,6 +122,7 @@ export default function Studio() {
     if (!q.completions) return;
     apiClient.generators().then(setGens).catch(() => {});
     apiClient.packs().then(setPacks).catch(() => {});
+    reloadVideoCounts();
   }, [q.completions]);
 
   useEffect(() => {
@@ -118,12 +139,17 @@ export default function Studio() {
 
   async function saveToLibrary() {
     if (!preview || !channelId) return;
+    if (libraryFull && selectedLibraryCap != null) {
+      setErr(t("account.libraryLimitReached", { n: selectedLibraryCap }));
+      return;
+    }
     setSaving(true);
     setSaved(false);
     setErr(null);
     try {
       if (isPack) {
         await apiClient.packBuildVideo(packId, packIdx, { accountId: Number(channelId), music });
+        reloadVideoCounts();
         setSaved(true);
         setTimeout(() => setSaved(false), 2500);
         return;
@@ -137,6 +163,7 @@ export default function Studio() {
         deck,
       });
       setSaved(true);
+      reloadVideoCounts();
       setTimeout(() => setSaved(false), 2500);
     } catch (e) {
       setErr(e instanceof Error ? e.message : t("studio.saveFailed"));
@@ -439,7 +466,7 @@ export default function Studio() {
                   <button
                     className="btn btn-sm btn-accent gap-2 justify-self-start"
                     onClick={saveToLibrary}
-                    disabled={saving || !channelId}
+                    disabled={saving || !channelId || libraryFull}
                   >
                     {saving ? (
                       <Loader2 className="animate-spin" size={16} />
@@ -466,12 +493,16 @@ export default function Studio() {
                       aria-label={t("studio.batchCountLabel")}
                     />
                     <span className="text-xs text-base-content/50">
-                      {maxBatch < 1 ? t("studio.noFreeCards") : t("studio.batchRange", { n: maxBatch })}
+                      {libraryFull && selectedLibraryCap != null
+                        ? t("account.libraryLimitReached", { n: selectedLibraryCap })
+                        : maxBatch < 1
+                          ? t("studio.noFreeCards")
+                          : t("studio.batchRange", { n: maxBatch })}
                     </span>
                     <button
                       className="btn btn-sm btn-outline gap-1"
                       onClick={() => q.run(channelId, Math.min(batchN, maxBatch), [deck])}
-                      disabled={!channelId || maxBatch < 1}
+                      disabled={!channelId || maxBatch < 1 || libraryFull}
                       title={t("studio.batchQueueTitle")}
                     >
                       <Plus size={14} /> {t("common.generate")}

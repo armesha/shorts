@@ -80,6 +80,9 @@ export const rowToAccount = (r: Row): Account => ({
   oauthClientId: r.oauth_client_id ?? null,
   authError: r.auth_error ?? null,
   authFailedAt: r.auth_failed_at ?? null,
+  ownerUsername: r.owner_username ?? null,
+  ownerRole: r.owner_role ?? null,
+  ownerIsSuperAdmin: r.owner_is_super_admin == null ? undefined : Number(r.owner_is_super_admin) !== 0,
 });
 
 export const rowToVideo = (r: Row): Video => ({

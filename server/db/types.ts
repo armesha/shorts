@@ -31,6 +31,9 @@ export interface Account {
   oauthClientId: number | null; // which uploaded Google key this channel was connected with (oauth_clients.id)
   authError: string | null; // last definitive OAuth/token rejection (RU) → channel needs reconnect; NULL = healthy
   authFailedAt: string | null; // ISO time the token first started being rejected — drives "disconnected since" UX
+  ownerUsername?: string | null;
+  ownerRole?: string | null;
+  ownerIsSuperAdmin?: boolean;
 }
 
 // One uploaded Google OAuth client (client_secret.json) belonging to a user. A user may store up to

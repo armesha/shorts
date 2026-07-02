@@ -21,10 +21,9 @@ import {
   withActiveLimit,
   withGlobalRenderSlot,
 } from "../infra/rate-limits.ts";
-import { dailyScheduleLimitError, forbiddenSuperAdminScheduleTimes } from "../infra/account-limits.ts";
+import { dailyScheduleLimitError, forbiddenSuperAdminScheduleTimes, isMgsUser } from "../infra/account-limits.ts";
 import {
   youtubeAnalyticsRange,
-  summarizeStoredAnalytics,
   asArray,
 } from "../services/analytics-range.ts";
 
@@ -153,12 +152,14 @@ export function makeRouteDeps(input: {
       return true;
     }
     const otherSlots = acc?.oauthClientId != null ? db.scheduleSlotsForKey(acc.oauthClientId, excludeAccountId) : 0;
-    // Per-channel cap follows the channel OWNER's role: admins keep 20/day, every non-admin channel 18/day.
+    // Per-channel cap follows the channel OWNER's profile: admins keep 20/day, mgs keeps the legacy
+    // profile, every other non-admin channel is capped at 5/day.
     // On create (acc === null) the owner is the requester (createAccount sets userId: uid(req)).
     const ownerId = acc?.userId ?? uid(req);
     const owner = db.getUserById(ownerId);
     const isAdminOwner = owner?.role === "admin";
     const isSuperAdminOwner = isSuperAdminUser(owner);
+    const isMgsOwner = isMgsUser(owner);
     if (isSuperAdminOwner) {
       const forbiddenTimes = forbiddenSuperAdminScheduleTimes(schedule);
       if (forbiddenTimes.length) {
@@ -166,7 +167,7 @@ export function makeRouteDeps(input: {
         return true;
       }
     }
-    const limitError = dailyScheduleLimitError(schedule.length, otherSlots, isAdminOwner, isSuperAdminOwner);
+    const limitError = dailyScheduleLimitError(schedule.length, otherSlots, isAdminOwner, isSuperAdminOwner, isMgsOwner);
     if (!limitError) return false;
     reply.code(400).send({ error: limitError });
     return true;

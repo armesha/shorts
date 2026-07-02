@@ -9,7 +9,7 @@ const pexec = promisify(execFile);
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const OUT_DIR = resolve(ROOT, "assets/fact-videos/prayers-en");
 const DATA_DIR = resolve(ROOT, "data/prayers-en");
-const TEMP_DIR = resolve(ROOT, "temp/prayers-en-render");
+const TEMP_DIR = resolve(ROOT, "tmp/prayers-en-render");
 const COUNT = Math.max(1, Number(process.argv[2] || 160));
 
 function chromePath() {

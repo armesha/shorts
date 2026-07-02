@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Render TITLELESS base clips (renderBase) for the localized pack. One render per design (type+variant);
 // localized titles are overlaid later (compose-publish.mjs), so geometry renders ONCE for all languages.
-// Reads matrix.json: [{ id, key, html, variant, dur, fps }]. Output: temp/illusions-en/base/<id>.mp4 (+ .jpg)
+// Reads matrix.json: [{ id, key, html, variant, dur, fps }]. Output: tmp/illusions-en/base/<id>.mp4 (+ .jpg)
 // Usage: node build-base.mjs [matrix.json] [--only id1,id2] ; SKIP_EXISTING=1 reuses existing base mp4s.
 import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -14,7 +14,7 @@ import puppeteer from 'puppeteer-core';
 const pexec = promisify(execFile);
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, '../..');
-const BASE = resolve(ROOT, 'temp/illusions-en/base');
+const BASE = resolve(ROOT, 'tmp/illusions-en/base');
 function chromePath() {
   for (const c of [process.env.CHROME_PATH, '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable',
     '/usr/bin/chromium', '/usr/bin/chromium-browser', '/snap/bin/chromium'].filter(Boolean)) if (existsSync(c)) return c;

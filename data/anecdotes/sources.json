@@ -1,1395 +1,3981 @@
 {
-  "updatedAt": "2026-06-27T04:25:56.358Z",
-  "source": "local-assets/Русские анекдоты/anek_djvu.txt",
-  "derivedPool": "local-assets/corpora/ru-gen/cand-*.json + keep-*.json",
-  "note": "Top-up pairs are assembled from previously mined and reviewed local Russian joke candidates. No AI-written jokes are introduced by this script.",
-  "addedBy": "scripts/top-up-ru-anecdotes-from-ru-gen.mjs",
-  "addedCount": 154,
+  "updatedAt": "2026-07-02T15:01:13.285Z",
+  "deck": "ru",
+  "source": "data/open_jokes_cc0/dataset.json",
+  "sourceReadme": "data/open_jokes_cc0/README.md",
+  "license": "cc0-1.0",
+  "note": "Top-up cards are assembled from the local CC0 Dialogs from Jokes corpus. No AI-written jokes are introduced by this script.",
+  "addedBy": "scripts/top-up-ru-anecdotes-from-cc0.mjs",
+  "addedCount": 400,
+  "filters": [
+    "dialogue turns only",
+    "dedupe against existing deck components",
+    "profanity/adult/coarse blocklist",
+    "politics/religion/violence/protected-class blocklist",
+    "card length/readability bounds"
+  ],
   "selected": [
     {
-      "sourceIds": [
-        1524,
-        46
+      "sourceLines": [
+        31650,
+        68880,
+        26429
       ],
-      "theme": "разное",
-      "chars": 397,
+      "parts": 3,
+      "chars": 317,
       "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        1388,
-        1148
+      "sourceLines": [
+        13412,
+        80973,
+        84679
       ],
-      "theme": "работа",
-      "chars": 378,
+      "parts": 3,
+      "chars": 301,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        4528,
+        56337,
+        16146
+      ],
+      "parts": 3,
+      "chars": 307,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        83591,
+        19876,
+        52374
+      ],
+      "parts": 3,
+      "chars": 341,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        14981,
+        71820,
+        83351
+      ],
+      "parts": 3,
+      "chars": 301,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        70898,
+        28318,
+        77141
+      ],
+      "parts": 3,
+      "chars": 315,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        10282,
+        31419,
+        2476
+      ],
+      "parts": 3,
+      "chars": 309,
       "title": "Про работу"
     },
     {
-      "sourceIds": [
-        1422,
-        584
+      "sourceLines": [
+        9851,
+        1784,
+        72193
       ],
-      "theme": "деньги",
-      "chars": 379,
-      "title": "Про деньги"
-    },
-    {
-      "sourceIds": [
-        1453,
-        560
-      ],
-      "theme": "деньги",
-      "chars": 385,
-      "title": "Про деньги"
-    },
-    {
-      "sourceIds": [
-        4,
-        971
-      ],
-      "theme": "семья",
-      "chars": 382,
+      "parts": 3,
+      "chars": 416,
       "title": "Про семью"
     },
     {
-      "sourceIds": [
-        1915,
-        1912
+      "sourceLines": [
+        29695,
+        63770,
+        51146
       ],
-      "theme": "работа",
-      "chars": 376,
-      "title": "Про работу"
-    },
-    {
-      "sourceIds": [
-        1384,
-        267
-      ],
-      "theme": "разное",
-      "chars": 383,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        1724,
-        543
-      ],
-      "theme": "разное",
-      "chars": 396,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        155,
-        128
-      ],
-      "theme": "разное",
-      "chars": 382,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        1537,
-        1680
-      ],
-      "theme": "семья",
-      "chars": 381,
+      "parts": 3,
+      "chars": 301,
       "title": "Про семью"
     },
     {
-      "sourceIds": [
-        1367,
-        925
+      "sourceLines": [
+        21146,
+        37570,
+        39843
       ],
-      "theme": "разное",
-      "chars": 388,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        1534,
-        1513
-      ],
-      "theme": "семья",
-      "chars": 381,
+      "parts": 3,
+      "chars": 392,
       "title": "Про семью"
     },
     {
-      "sourceIds": [
-        1703,
-        223
+      "sourceLines": [
+        78562,
+        21784,
+        75803
       ],
-      "theme": "дети",
-      "chars": 361,
-      "title": "Про детей"
-    },
-    {
-      "sourceIds": [
-        805,
-        722
-      ],
-      "theme": "разное",
-      "chars": 394,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        2280,
-        1225
-      ],
-      "theme": "технологии",
-      "chars": 352,
-      "title": "Цифровая жизнь"
-    },
-    {
-      "sourceIds": [
-        373,
-        1231
-      ],
-      "theme": "разное",
-      "chars": 386,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        645,
-        1663
-      ],
-      "theme": "застолье",
-      "chars": 409,
-      "title": "Про застолье"
-    },
-    {
-      "sourceIds": [
-        2129,
-        1408
-      ],
-      "theme": "животные",
+      "parts": 3,
       "chars": 384,
-      "title": "Про зверьё"
+      "title": "Про семью"
     },
     {
-      "sourceIds": [
-        188,
-        2187
+      "sourceLines": [
+        51606,
+        61296,
+        7910
       ],
-      "theme": "разное",
-      "chars": 385,
-      "title": "Анекдоты"
+      "parts": 3,
+      "chars": 342,
+      "title": "Про семью"
     },
     {
-      "sourceIds": [
-        1982,
-        1034
+      "sourceLines": [
+        16552,
+        31441,
+        31963
       ],
-      "theme": "армия",
-      "chars": 390,
-      "title": "Армейское"
+      "parts": 3,
+      "chars": 321,
+      "title": "Про семью"
     },
     {
-      "sourceIds": [
-        529,
-        765
+      "sourceLines": [
+        78060,
+        23754,
+        59949
       ],
-      "theme": "разное",
-      "chars": 380,
-      "title": "Анекдоты"
+      "parts": 3,
+      "chars": 334,
+      "title": "Про семью"
     },
     {
-      "sourceIds": [
-        2155,
-        835
+      "sourceLines": [
+        50347,
+        67600,
+        20132
       ],
-      "theme": "технологии",
-      "chars": 371,
-      "title": "Цифровая жизнь"
+      "parts": 3,
+      "chars": 355,
+      "title": "Про семью"
     },
     {
-      "sourceIds": [
-        1030,
-        608
+      "sourceLines": [
+        29821,
+        38867,
+        84791
       ],
-      "theme": "технологии",
-      "chars": 374,
-      "title": "Цифровая жизнь"
-    },
-    {
-      "sourceIds": [
-        642,
-        950
-      ],
-      "theme": "разное",
+      "parts": 3,
       "chars": 382,
-      "title": "Анекдоты"
+      "title": "Про семью"
     },
     {
-      "sourceIds": [
-        547,
-        1109
+      "sourceLines": [
+        40197,
+        87609
       ],
-      "theme": "работа",
-      "chars": 388,
+      "parts": 2,
+      "chars": 316,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        61765,
+        37120,
+        18296
+      ],
+      "parts": 3,
+      "chars": 349,
       "title": "Про работу"
     },
     {
-      "sourceIds": [
-        551,
-        885
+      "sourceLines": [
+        42168,
+        35108,
+        14539
       ],
-      "theme": "разное",
-      "chars": 387,
+      "parts": 3,
+      "chars": 362,
       "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        667,
-        1823
+      "sourceLines": [
+        4214,
+        42463,
+        5985
       ],
-      "theme": "дети",
-      "chars": 363,
-      "title": "Про детей"
-    },
-    {
-      "sourceIds": [
-        480,
-        348
-      ],
-      "theme": "технологии",
-      "chars": 352,
-      "title": "Цифровая жизнь"
-    },
-    {
-      "sourceIds": [
-        1862,
-        2247
-      ],
-      "theme": "разное",
-      "chars": 384,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        1466,
-        1268
-      ],
-      "theme": "животные",
-      "chars": 390,
-      "title": "Про зверьё"
-    },
-    {
-      "sourceIds": [
-        1333,
-        1477
-      ],
-      "theme": "животные",
-      "chars": 407,
-      "title": "Про зверьё"
-    },
-    {
-      "sourceIds": [
-        1495,
-        142
-      ],
-      "theme": "разное",
-      "chars": 386,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        263,
-        1502
-      ],
-      "theme": "семья",
-      "chars": 378,
+      "parts": 3,
+      "chars": 345,
       "title": "Про семью"
     },
     {
-      "sourceIds": [
-        488,
-        1219
+      "sourceLines": [
+        14799,
+        23068,
+        12532
       ],
-      "theme": "врачи",
-      "chars": 398,
-      "title": "У врача"
-    },
-    {
-      "sourceIds": [
-        1767,
-        26
-      ],
-      "theme": "старость",
-      "chars": 395,
-      "title": "Про возраст"
-    },
-    {
-      "sourceIds": [
-        451,
-        1605
-      ],
-      "theme": "разное",
-      "chars": 385,
+      "parts": 3,
+      "chars": 373,
       "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        1323,
-        13
+      "sourceLines": [
+        78453,
+        36338,
+        19571
       ],
-      "theme": "деньги",
-      "chars": 385,
-      "title": "Про деньги"
-    },
-    {
-      "sourceIds": [
-        1161,
-        1847
-      ],
-      "theme": "разное",
-      "chars": 387,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        1005,
-        1381
-      ],
-      "theme": "разное",
-      "chars": 389,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        990,
-        1385
-      ],
-      "theme": "разное",
-      "chars": 379,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        1775,
-        1267
-      ],
-      "theme": "технологии",
-      "chars": 378,
-      "title": "Цифровая жизнь"
-    },
-    {
-      "sourceIds": [
-        665,
-        1288
-      ],
-      "theme": "разное",
-      "chars": 389,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        2325,
-        1304
-      ],
-      "theme": "разное",
-      "chars": 394,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        1410,
-        1369
-      ],
-      "theme": "деньги",
-      "chars": 379,
-      "title": "Про деньги"
-    },
-    {
-      "sourceIds": [
-        554,
-        886
-      ],
-      "theme": "разное",
-      "chars": 383,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        2134,
-        960
-      ],
-      "theme": "семья",
-      "chars": 410,
-      "title": "Про семью"
-    },
-    {
-      "sourceIds": [
-        2250,
-        154
-      ],
-      "theme": "разное",
-      "chars": 397,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        1389,
-        2209
-      ],
-      "theme": "разное",
-      "chars": 384,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        1855,
-        485
-      ],
-      "theme": "животные",
-      "chars": 409,
-      "title": "Про зверьё"
-    },
-    {
-      "sourceIds": [
-        586,
-        800
-      ],
-      "theme": "разное",
-      "chars": 385,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        302,
-        820
-      ],
-      "theme": "разное",
-      "chars": 390,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        1866,
-        2228
-      ],
-      "theme": "разное",
-      "chars": 378,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        1105,
-        324
-      ],
-      "theme": "семья",
-      "chars": 390,
-      "title": "Про семью"
-    },
-    {
-      "sourceIds": [
-        759,
-        1941
-      ],
-      "theme": "разное",
-      "chars": 387,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        1248,
-        191
-      ],
-      "theme": "студенты",
-      "chars": 361,
-      "title": "Студенческое"
-    },
-    {
-      "sourceIds": [
-        958,
-        173
-      ],
-      "theme": "студенты",
-      "chars": 369,
-      "title": "Студенческое"
-    },
-    {
-      "sourceIds": [
-        666,
-        857
-      ],
-      "theme": "семья",
-      "chars": 383,
-      "title": "Про семью"
-    },
-    {
-      "sourceIds": [
-        542,
-        1379
-      ],
-      "theme": "семья",
-      "chars": 398,
-      "title": "Про семью"
-    },
-    {
-      "sourceIds": [
-        1042,
-        22
-      ],
-      "theme": "застолье",
-      "chars": 421,
-      "title": "Про застолье"
-    },
-    {
-      "sourceIds": [
-        1121,
-        1508
-      ],
-      "theme": "семья",
-      "chars": 410,
-      "title": "Про семью"
-    },
-    {
-      "sourceIds": [
-        924,
-        1976
-      ],
-      "theme": "животные",
-      "chars": 383,
-      "title": "Про зверьё"
-    },
-    {
-      "sourceIds": [
-        162,
-        814
-      ],
-      "theme": "врачи",
-      "chars": 377,
-      "title": "У врача"
-    },
-    {
-      "sourceIds": [
-        1070,
-        788
-      ],
-      "theme": "семья",
-      "chars": 380,
-      "title": "Про семью"
-    },
-    {
-      "sourceIds": [
-        112,
-        783
-      ],
-      "theme": "животные",
-      "chars": 386,
-      "title": "Про зверьё"
-    },
-    {
-      "sourceIds": [
-        512,
-        97
-      ],
-      "theme": "школа",
-      "chars": 374,
-      "title": "Школьное"
-    },
-    {
-      "sourceIds": [
-        2065,
-        1066
-      ],
-      "theme": "семья",
-      "chars": 378,
-      "title": "Про семью"
-    },
-    {
-      "sourceIds": [
-        1320,
-        1251
-      ],
-      "theme": "дети",
-      "chars": 359,
-      "title": "Про детей"
-    },
-    {
-      "sourceIds": [
-        140,
-        1943
-      ],
-      "theme": "разное",
-      "chars": 397,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        113,
-        1901
-      ],
-      "theme": "семья",
-      "chars": 366,
-      "title": "Про семью"
-    },
-    {
-      "sourceIds": [
-        59,
-        768
-      ],
-      "theme": "животные",
-      "chars": 410,
-      "title": "Про зверьё"
-    },
-    {
-      "sourceIds": [
-        2152,
-        446
-      ],
-      "theme": "разное",
-      "chars": 401,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        604,
-        2138
-      ],
-      "theme": "деньги",
-      "chars": 386,
-      "title": "Про деньги"
-    },
-    {
-      "sourceIds": [
-        1144,
-        31
-      ],
-      "theme": "разное",
-      "chars": 382,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        1275,
-        352
-      ],
-      "theme": "семья",
-      "chars": 377,
-      "title": "Про семью"
-    },
-    {
-      "sourceIds": [
-        1995,
-        344
-      ],
-      "theme": "разное",
-      "chars": 408,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        888,
-        1246
-      ],
-      "theme": "работа",
-      "chars": 385,
-      "title": "Про работу"
-    },
-    {
-      "sourceIds": [
-        2243,
-        797
-      ],
-      "theme": "разное",
-      "chars": 376,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        2350,
-        1102
-      ],
-      "theme": "разное",
-      "chars": 378,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        303,
-        1565
-      ],
-      "theme": "работа",
-      "chars": 378,
-      "title": "Про работу"
-    },
-    {
-      "sourceIds": [
-        801,
-        1328
-      ],
-      "theme": "школа",
+      "parts": 3,
       "chars": 393,
-      "title": "Школьное"
-    },
-    {
-      "sourceIds": [
-        2121,
-        375
-      ],
-      "theme": "разное",
-      "chars": 395,
       "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        849,
-        1260
+      "sourceLines": [
+        67765,
+        26708,
+        31013
       ],
-      "theme": "врачи",
-      "chars": 395,
-      "title": "У врача"
-    },
-    {
-      "sourceIds": [
-        243,
-        2133
-      ],
-      "theme": "разное",
-      "chars": 390,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        1563,
-        253
-      ],
-      "theme": "школа",
-      "chars": 377,
-      "title": "Школьное"
-    },
-    {
-      "sourceIds": [
-        1993,
-        147
-      ],
-      "theme": "семья",
-      "chars": 375,
-      "title": "Про семью"
-    },
-    {
-      "sourceIds": [
-        1172,
-        1366
-      ],
-      "theme": "семья",
-      "chars": 383,
-      "title": "Про семью"
-    },
-    {
-      "sourceIds": [
-        260,
-        392
-      ],
-      "theme": "семья",
-      "chars": 382,
-      "title": "Про семью"
-    },
-    {
-      "sourceIds": [
-        1387,
-        1162
-      ],
-      "theme": "разное",
-      "chars": 379,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        484,
-        404
-      ],
-      "theme": "деньги",
-      "chars": 383,
-      "title": "Про деньги"
-    },
-    {
-      "sourceIds": [
-        1446,
-        1256
-      ],
-      "theme": "животные",
-      "chars": 391,
-      "title": "Про зверьё"
-    },
-    {
-      "sourceIds": [
-        1731,
-        1015
-      ],
-      "theme": "технологии",
+      "parts": 3,
       "chars": 350,
-      "title": "Цифровая жизнь"
-    },
-    {
-      "sourceIds": [
-        878,
-        2160
-      ],
-      "theme": "разное",
-      "chars": 379,
       "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        1028,
-        791
+      "sourceLines": [
+        82888,
+        23974,
+        24785
       ],
-      "theme": "студенты",
+      "parts": 3,
       "chars": 384,
-      "title": "Студенческое"
-    },
-    {
-      "sourceIds": [
-        913,
-        1457
-      ],
-      "theme": "семья",
-      "chars": 379,
       "title": "Про семью"
     },
     {
-      "sourceIds": [
-        2356,
-        895
+      "sourceLines": [
+        51947,
+        44776,
+        12080
       ],
-      "theme": "разное",
-      "chars": 387,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        2236,
-        1205
-      ],
-      "theme": "врачи",
-      "chars": 408,
-      "title": "У врача"
-    },
-    {
-      "sourceIds": [
-        1851,
-        2345
-      ],
-      "theme": "тёща",
-      "chars": 409,
-      "title": "Про тёщу"
-    },
-    {
-      "sourceIds": [
-        936,
-        1122
-      ],
-      "theme": "разное",
-      "chars": 388,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        815,
-        1644
-      ],
-      "theme": "семья",
-      "chars": 409,
-      "title": "Про семью"
-    },
-    {
-      "sourceIds": [
-        1180,
-        509
-      ],
-      "theme": "разное",
-      "chars": 387,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        1455,
-        696
-      ],
-      "theme": "дети",
+      "parts": 3,
       "chars": 365,
-      "title": "Про детей"
-    },
-    {
-      "sourceIds": [
-        598,
-        2145
-      ],
-      "theme": "школа",
-      "chars": 371,
-      "title": "Школьное"
-    },
-    {
-      "sourceIds": [
-        1937,
-        65
-      ],
-      "theme": "разное",
-      "chars": 387,
       "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        1154,
-        1816
+      "sourceLines": [
+        16238,
+        9485,
+        24492
       ],
-      "theme": "разное",
-      "chars": 388,
+      "parts": 3,
+      "chars": 310,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        65559,
+        53667,
+        59099
+      ],
+      "parts": 3,
+      "chars": 312,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        52724,
+        66507
+      ],
+      "parts": 2,
+      "chars": 302,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        37586,
+        72370,
+        41313
+      ],
+      "parts": 3,
+      "chars": 342,
       "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        2118,
-        2022
+      "sourceLines": [
+        16150,
+        14827,
+        26568
       ],
-      "theme": "школа",
-      "chars": 376,
-      "title": "Школьное"
-    },
-    {
-      "sourceIds": [
-        873,
-        1891
-      ],
-      "theme": "разное",
-      "chars": 378,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        794,
-        1465
-      ],
-      "theme": "врачи",
+      "parts": 3,
       "chars": 364,
-      "title": "У врача"
-    },
-    {
-      "sourceIds": [
-        2330,
-        929
-      ],
-      "theme": "врачи",
-      "chars": 381,
-      "title": "У врача"
-    },
-    {
-      "sourceIds": [
-        1271,
-        129
-      ],
-      "theme": "работа",
-      "chars": 403,
-      "title": "Про работу"
-    },
-    {
-      "sourceIds": [
-        361,
-        178
-      ],
-      "theme": "разное",
-      "chars": 386,
       "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        1158,
-        1215
+      "sourceLines": [
+        54889,
+        5884,
+        76093
       ],
-      "theme": "разное",
-      "chars": 387,
+      "parts": 3,
+      "chars": 339,
       "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        1985,
-        1339
+      "sourceLines": [
+        16919,
+        52708,
+        25140
       ],
-      "theme": "работа",
-      "chars": 378,
+      "parts": 3,
+      "chars": 350,
       "title": "Про работу"
     },
     {
-      "sourceIds": [
-        2097,
-        1578
+      "sourceLines": [
+        57472,
+        39326,
+        1909
       ],
-      "theme": "работа",
-      "chars": 403,
-      "title": "Про работу"
+      "parts": 3,
+      "chars": 392,
+      "title": "Про семью"
     },
     {
-      "sourceIds": [
-        84,
-        2180
+      "sourceLines": [
+        46101,
+        80626,
+        23317
       ],
-      "theme": "разное",
-      "chars": 386,
+      "parts": 3,
+      "chars": 310,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        52144,
+        61361,
+        41554
+      ],
+      "parts": 3,
+      "chars": 414,
       "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        1296,
-        592
+      "sourceLines": [
+        45005,
+        56217,
+        38604
       ],
-      "theme": "семья",
+      "parts": 3,
+      "chars": 327,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        10245,
+        27034,
+        80327
+      ],
+      "parts": 3,
+      "chars": 370,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        66731,
+        57650,
+        13586
+      ],
+      "parts": 3,
+      "chars": 356,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        1412,
+        65851,
+        33198
+      ],
+      "parts": 3,
       "chars": 398,
       "title": "Про семью"
     },
     {
-      "sourceIds": [
-        898,
-        463
+      "sourceLines": [
+        45900,
+        79072,
+        21094
       ],
-      "theme": "разное",
-      "chars": 387,
+      "parts": 3,
+      "chars": 393,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        38632,
+        80506,
+        9920
+      ],
+      "parts": 3,
+      "chars": 334,
       "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        995,
-        456
+      "sourceLines": [
+        23998,
+        22070,
+        31582
       ],
-      "theme": "врачи",
-      "chars": 406,
-      "title": "У врача"
+      "parts": 3,
+      "chars": 358,
+      "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        383,
-        1159
+      "sourceLines": [
+        54228,
+        13250,
+        24491
       ],
-      "theme": "работа",
-      "chars": 407,
+      "parts": 3,
+      "chars": 369,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        86215,
+        76539,
+        33164
+      ],
+      "parts": 3,
+      "chars": 358,
       "title": "Про работу"
     },
     {
-      "sourceIds": [
-        12,
-        902
+      "sourceLines": [
+        15613,
+        48585,
+        33714
       ],
-      "theme": "деньги",
-      "chars": 386,
+      "parts": 3,
+      "chars": 323,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        79283,
+        32414,
+        62893
+      ],
+      "parts": 3,
+      "chars": 316,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        83680,
+        11607,
+        19953
+      ],
+      "parts": 3,
+      "chars": 332,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        36939,
+        46694,
+        50080
+      ],
+      "parts": 3,
+      "chars": 397,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        9105,
+        52839,
+        31966
+      ],
+      "parts": 3,
+      "chars": 318,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        69727,
+        85390,
+        24096
+      ],
+      "parts": 3,
+      "chars": 363,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        85703,
+        74545,
+        45434
+      ],
+      "parts": 3,
+      "chars": 380,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        60495,
+        28250,
+        9450
+      ],
+      "parts": 3,
+      "chars": 367,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        1729,
+        85742,
+        6214
+      ],
+      "parts": 3,
+      "chars": 374,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        65509,
+        51003,
+        22954
+      ],
+      "parts": 3,
+      "chars": 319,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        24451,
+        64528,
+        51706
+      ],
+      "parts": 3,
+      "chars": 379,
       "title": "Про деньги"
     },
     {
-      "sourceIds": [
-        1512,
-        2274
+      "sourceLines": [
+        67637,
+        45674,
+        84619
       ],
-      "theme": "разное",
-      "chars": 384,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        2320,
-        1380
-      ],
-      "theme": "разное",
-      "chars": 381,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        2315,
-        2089
-      ],
-      "theme": "семья",
-      "chars": 381,
+      "parts": 3,
+      "chars": 330,
       "title": "Про семью"
     },
     {
-      "sourceIds": [
-        540,
-        1222
+      "sourceLines": [
+        42016,
+        23507
       ],
-      "theme": "разное",
-      "chars": 387,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        1337,
-        124
-      ],
-      "theme": "животные",
-      "chars": 393,
-      "title": "Про зверьё"
-    },
-    {
-      "sourceIds": [
-        1127,
-        2059
-      ],
-      "theme": "разное",
-      "chars": 384,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        2173,
-        1018
-      ],
-      "theme": "работа",
-      "chars": 396,
-      "title": "Про работу"
-    },
-    {
-      "sourceIds": [
-        1805,
-        692
-      ],
-      "theme": "студенты",
-      "chars": 383,
-      "title": "Студенческое"
-    },
-    {
-      "sourceIds": [
-        1349,
-        2132
-      ],
-      "theme": "семья",
-      "chars": 387,
+      "parts": 2,
+      "chars": 327,
       "title": "Про семью"
     },
     {
-      "sourceIds": [
-        158,
-        532
+      "sourceLines": [
+        11437,
+        36958,
+        17962
       ],
-      "theme": "разное",
+      "parts": 3,
       "chars": 376,
-      "title": "Анекдоты"
-    },
-    {
-      "sourceIds": [
-        192,
-        563
-      ],
-      "theme": "врачи",
-      "chars": 383,
       "title": "У врача"
     },
     {
-      "sourceIds": [
-        620,
-        83
+      "sourceLines": [
+        31899,
+        5664,
+        59956
       ],
-      "theme": "полиция",
-      "chars": 366,
-      "title": "Гаишник и Ко"
+      "parts": 3,
+      "chars": 388,
+      "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        603,
-        754
+      "sourceLines": [
+        82433,
+        15689,
+        38715
       ],
-      "theme": "застолье",
-      "chars": 393,
-      "title": "Про застолье"
-    },
-    {
-      "sourceIds": [
-        1475,
-        2038
-      ],
-      "theme": "семья",
-      "chars": 397,
+      "parts": 3,
+      "chars": 331,
       "title": "Про семью"
     },
     {
-      "sourceIds": [
-        1572,
-        2329
+      "sourceLines": [
+        76653,
+        75323,
+        43307
       ],
-      "theme": "разное",
+      "parts": 3,
+      "chars": 356,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        86703,
+        84489,
+        20397
+      ],
+      "parts": 3,
+      "chars": 332,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        82713,
+        5299,
+        39287
+      ],
+      "parts": 3,
+      "chars": 323,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        55979,
+        7274,
+        21927
+      ],
+      "parts": 3,
+      "chars": 418,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        22047,
+        47211,
+        58051
+      ],
+      "parts": 3,
       "chars": 392,
       "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        1819,
-        661
+      "sourceLines": [
+        44527,
+        55962,
+        332
       ],
-      "theme": "семья",
-      "chars": 386,
+      "parts": 3,
+      "chars": 355,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        65892,
+        39018,
+        86711
+      ],
+      "parts": 3,
+      "chars": 345,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        37767,
+        61205,
+        32543
+      ],
+      "parts": 3,
+      "chars": 347,
       "title": "Про семью"
     },
     {
-      "sourceIds": [
-        2290,
-        179
+      "sourceLines": [
+        2508,
+        32421,
+        40392
       ],
-      "theme": "дети",
-      "chars": 364,
-      "title": "Про детей"
+      "parts": 3,
+      "chars": 303,
+      "title": "Про семью"
     },
     {
-      "sourceIds": [
-        56,
-        836
+      "sourceLines": [
+        72974,
+        79035,
+        17398
       ],
-      "theme": "разное",
-      "chars": 380,
+      "parts": 3,
+      "chars": 322,
       "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        206,
-        2397
+      "sourceLines": [
+        19354,
+        8477,
+        73547
       ],
-      "theme": "работа",
-      "chars": 376,
+      "parts": 3,
+      "chars": 342,
       "title": "Про работу"
     },
     {
-      "sourceIds": [
-        1480,
-        386
+      "sourceLines": [
+        35286,
+        68640,
+        37215
       ],
-      "theme": "работа",
-      "chars": 393,
+      "parts": 3,
+      "chars": 381,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        43435,
+        42302,
+        38397
+      ],
+      "parts": 3,
+      "chars": 368,
       "title": "Про работу"
     },
     {
-      "sourceIds": [
-        517,
-        88
+      "sourceLines": [
+        50607,
+        26607
       ],
-      "theme": "технологии",
-      "chars": 351,
+      "parts": 2,
+      "chars": 311,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        60380,
+        11967
+      ],
+      "parts": 2,
+      "chars": 333,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        51575,
+        4591,
+        68379
+      ],
+      "parts": 3,
+      "chars": 333,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        54218,
+        79215,
+        39141
+      ],
+      "parts": 3,
+      "chars": 358,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        51620,
+        80918,
+        51063
+      ],
+      "parts": 3,
+      "chars": 350,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        14311,
+        83821,
+        65511
+      ],
+      "parts": 3,
+      "chars": 360,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        13967,
+        75533,
+        20844
+      ],
+      "parts": 3,
+      "chars": 342,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        59755,
+        38191,
+        45828
+      ],
+      "parts": 3,
+      "chars": 363,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        5650,
+        46349,
+        9212
+      ],
+      "parts": 3,
+      "chars": 327,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        9599,
+        47510,
+        34547
+      ],
+      "parts": 3,
+      "chars": 319,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        49185,
+        51977,
+        86164
+      ],
+      "parts": 3,
+      "chars": 318,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        24070,
+        4830,
+        74074
+      ],
+      "parts": 3,
+      "chars": 334,
       "title": "Цифровая жизнь"
     },
     {
-      "sourceIds": [
-        2378,
-        1766
+      "sourceLines": [
+        2704,
+        43013,
+        12546
       ],
-      "theme": "застолье",
-      "chars": 412,
-      "title": "Про застолье"
+      "parts": 3,
+      "chars": 345,
+      "title": "Про семью"
     },
     {
-      "sourceIds": [
-        510,
-        526
+      "sourceLines": [
+        778,
+        50697,
+        58923
       ],
-      "theme": "животные",
-      "chars": 385,
-      "title": "Про зверьё"
+      "parts": 3,
+      "chars": 339,
+      "title": "Про семью"
     },
     {
-      "sourceIds": [
-        1336,
-        2081
+      "sourceLines": [
+        52845,
+        60241,
+        36569
       ],
-      "theme": "работа",
-      "chars": 391,
+      "parts": 3,
+      "chars": 373,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        46589,
+        85517,
+        75996
+      ],
+      "parts": 3,
+      "chars": 380,
       "title": "Про работу"
     },
     {
-      "sourceIds": [
-        848,
-        1152
+      "sourceLines": [
+        29483,
+        28813
       ],
-      "theme": "животные",
-      "chars": 407,
-      "title": "Про зверьё"
+      "parts": 2,
+      "chars": 341,
+      "title": "Про работу"
     },
     {
-      "sourceIds": [
-        1085,
-        1
+      "sourceLines": [
+        3982,
+        54882,
+        11088
       ],
-      "theme": "разное",
+      "parts": 3,
+      "chars": 370,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        19289,
+        61464,
+        69697
+      ],
+      "parts": 3,
+      "chars": 352,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        26773,
+        15979,
+        61499
+      ],
+      "parts": 3,
+      "chars": 319,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        52350,
+        25362
+      ],
+      "parts": 2,
+      "chars": 328,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        57928,
+        66971,
+        6629
+      ],
+      "parts": 3,
+      "chars": 362,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        2648,
+        86105,
+        16330
+      ],
+      "parts": 3,
+      "chars": 319,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        84552,
+        79709,
+        72695
+      ],
+      "parts": 3,
+      "chars": 305,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        9928,
+        48029,
+        4000
+      ],
+      "parts": 3,
+      "chars": 339,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        62186,
+        53398,
+        77244
+      ],
+      "parts": 3,
+      "chars": 328,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        4341,
+        14065
+      ],
+      "parts": 2,
+      "chars": 377,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        50479,
+        2951,
+        30350
+      ],
+      "parts": 3,
+      "chars": 338,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        38475,
+        1160,
+        11246
+      ],
+      "parts": 3,
+      "chars": 310,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        55064,
+        54447,
+        57231
+      ],
+      "parts": 3,
+      "chars": 356,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        31112,
+        77907,
+        65680
+      ],
+      "parts": 3,
+      "chars": 343,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        76599,
+        65852,
+        87401
+      ],
+      "parts": 3,
+      "chars": 325,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        20362,
+        14025,
+        21266
+      ],
+      "parts": 3,
+      "chars": 329,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        79564,
+        2837,
+        13609
+      ],
+      "parts": 3,
+      "chars": 356,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        2998,
+        73756,
+        2640
+      ],
+      "parts": 3,
       "chars": 385,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        87224,
+        16009,
+        19804
+      ],
+      "parts": 3,
+      "chars": 335,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        53799,
+        26619,
+        18191
+      ],
+      "parts": 3,
+      "chars": 346,
       "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        1745,
-        1264
+      "sourceLines": [
+        20343,
+        73391,
+        65832
       ],
-      "theme": "разное",
-      "chars": 386,
+      "parts": 3,
+      "chars": 368,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        59833,
+        28565,
+        8519
+      ],
+      "parts": 3,
+      "chars": 302,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        46938,
+        64867
+      ],
+      "parts": 2,
+      "chars": 367,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        63422,
+        84164,
+        56143
+      ],
+      "parts": 3,
+      "chars": 378,
       "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        1654,
-        226
+      "sourceLines": [
+        14016,
+        44579,
+        83020
       ],
-      "theme": "деньги",
+      "parts": 3,
+      "chars": 378,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        62112,
+        12856,
+        50219
+      ],
+      "parts": 3,
+      "chars": 391,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        19260,
+        18140,
+        60978
+      ],
+      "parts": 3,
+      "chars": 357,
+      "title": "Школьное"
+    },
+    {
+      "sourceLines": [
+        35995,
+        15694,
+        80937
+      ],
+      "parts": 3,
+      "chars": 313,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        22384,
+        82813,
+        48032
+      ],
+      "parts": 3,
+      "chars": 344,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        65592,
+        38576,
+        42121
+      ],
+      "parts": 3,
+      "chars": 337,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        87322,
+        23346,
+        26260
+      ],
+      "parts": 3,
+      "chars": 390,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        12292,
+        77758,
+        37116
+      ],
+      "parts": 3,
+      "chars": 315,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        24318,
+        52809,
+        343
+      ],
+      "parts": 3,
+      "chars": 302,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        41260,
+        29651,
+        37319
+      ],
+      "parts": 3,
+      "chars": 381,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        1770,
+        73625,
+        56429
+      ],
+      "parts": 3,
+      "chars": 355,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        3422,
+        85946,
+        41966
+      ],
+      "parts": 3,
       "chars": 381,
       "title": "Про деньги"
     },
     {
-      "sourceIds": [
-        1485,
-        1557
+      "sourceLines": [
+        39108,
+        43824,
+        71783
       ],
-      "theme": "разное",
-      "chars": 386,
+      "parts": 3,
+      "chars": 332,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        18548,
+        13069,
+        82803
+      ],
+      "parts": 3,
+      "chars": 397,
       "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        2296,
-        858
+      "sourceLines": [
+        36235,
+        22265,
+        49217
       ],
-      "theme": "дети",
+      "parts": 3,
+      "chars": 366,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        2487,
+        81379,
+        30863
+      ],
+      "parts": 3,
+      "chars": 360,
+      "title": "Школьное"
+    },
+    {
+      "sourceLines": [
+        9197,
+        26414,
+        4853
+      ],
+      "parts": 3,
+      "chars": 349,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        65783,
+        15905,
+        62711
+      ],
+      "parts": 3,
+      "chars": 364,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        46910,
+        27383,
+        20001
+      ],
+      "parts": 3,
+      "chars": 330,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        82948,
+        60539,
+        14455
+      ],
+      "parts": 3,
+      "chars": 384,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        11245,
+        84988,
+        15006
+      ],
+      "parts": 3,
+      "chars": 322,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        77092,
+        49009,
+        71673
+      ],
+      "parts": 3,
+      "chars": 395,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        13039,
+        55211,
+        64091
+      ],
+      "parts": 3,
+      "chars": 407,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        20818,
+        31425,
+        76467
+      ],
+      "parts": 3,
+      "chars": 321,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        85030,
+        87465
+      ],
+      "parts": 2,
+      "chars": 356,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        45384,
+        60036,
+        788
+      ],
+      "parts": 3,
+      "chars": 340,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        53802,
+        25403,
+        1931
+      ],
+      "parts": 3,
+      "chars": 346,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        52061,
+        28554,
+        41341
+      ],
+      "parts": 3,
+      "chars": 341,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        68367,
+        86835,
+        75492
+      ],
+      "parts": 3,
+      "chars": 324,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        57301,
+        37245,
+        20085
+      ],
+      "parts": 3,
+      "chars": 320,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        5864,
+        4918,
+        47330
+      ],
+      "parts": 3,
+      "chars": 346,
+      "title": "Школьное"
+    },
+    {
+      "sourceLines": [
+        16562,
+        85945,
+        5737
+      ],
+      "parts": 3,
+      "chars": 320,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        45185,
+        7773
+      ],
+      "parts": 2,
+      "chars": 316,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        70591,
+        66116,
+        82378
+      ],
+      "parts": 3,
+      "chars": 330,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        31857,
+        71362,
+        83948
+      ],
+      "parts": 3,
+      "chars": 379,
+      "title": "Цифровая жизнь"
+    },
+    {
+      "sourceLines": [
+        79113,
+        78161,
+        63167
+      ],
+      "parts": 3,
+      "chars": 316,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        25109,
+        76719,
+        50461
+      ],
+      "parts": 3,
+      "chars": 396,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        64878,
+        71954,
+        46043
+      ],
+      "parts": 3,
+      "chars": 390,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        83357,
+        56955,
+        52668
+      ],
+      "parts": 3,
+      "chars": 384,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        11867,
+        28005,
+        49736
+      ],
+      "parts": 3,
+      "chars": 398,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        63042,
+        30835,
+        19605
+      ],
+      "parts": 3,
+      "chars": 316,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        64535,
+        83515,
+        43431
+      ],
+      "parts": 3,
+      "chars": 339,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        62108,
+        87712,
+        77864
+      ],
+      "parts": 3,
+      "chars": 318,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        44994,
+        42548,
+        67671
+      ],
+      "parts": 3,
+      "chars": 328,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        21631,
+        58976,
+        36733
+      ],
+      "parts": 3,
+      "chars": 348,
+      "title": "Цифровая жизнь"
+    },
+    {
+      "sourceLines": [
+        1154,
+        21644,
+        15772
+      ],
+      "parts": 3,
+      "chars": 313,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        3214,
+        20943,
+        35244
+      ],
+      "parts": 3,
+      "chars": 334,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        19151,
+        37624,
+        74715
+      ],
+      "parts": 3,
+      "chars": 305,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        53589,
+        81212,
+        15968
+      ],
+      "parts": 3,
+      "chars": 329,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        57915,
+        53124
+      ],
+      "parts": 2,
+      "chars": 391,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        54236,
+        82751,
+        36074
+      ],
+      "parts": 3,
       "chars": 365,
-      "title": "Про детей"
+      "title": "Про семью"
     },
     {
-      "sourceIds": [
-        853,
-        829
+      "sourceLines": [
+        27748,
+        60187,
+        3499
       ],
-      "theme": "семья",
+      "parts": 3,
       "chars": 369,
       "title": "Про семью"
     },
     {
-      "sourceIds": [
-        1071,
-        1432
+      "sourceLines": [
+        72053,
+        44982,
+        21340
       ],
-      "theme": "семья",
-      "chars": 369,
+      "parts": 3,
+      "chars": 328,
       "title": "Про семью"
     },
     {
-      "sourceIds": [
-        843,
-        317
+      "sourceLines": [
+        79031,
+        19072,
+        53757
       ],
-      "theme": "тёща",
-      "chars": 409,
-      "title": "Про тёщу"
+      "parts": 3,
+      "chars": 347,
+      "title": "Про семью"
     },
     {
-      "sourceIds": [
-        68,
-        2189
+      "sourceLines": [
+        12558,
+        28456,
+        51872
       ],
-      "theme": "разное",
-      "chars": 386,
+      "parts": 3,
+      "chars": 315,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        75414,
+        63208,
+        60826
+      ],
+      "parts": 3,
+      "chars": 349,
       "title": "Анекдоты"
     },
     {
-      "sourceIds": [
-        778,
-        194
+      "sourceLines": [
+        48800,
+        2849
       ],
-      "theme": "разное",
+      "parts": 2,
+      "chars": 343,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        42736,
+        33125
+      ],
+      "parts": 2,
+      "chars": 303,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        59548,
+        19903
+      ],
+      "parts": 2,
+      "chars": 306,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        46501,
+        76720,
+        62054
+      ],
+      "parts": 3,
+      "chars": 328,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        12875,
+        14327,
+        61460
+      ],
+      "parts": 3,
+      "chars": 313,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        54634,
+        1972,
+        53722
+      ],
+      "parts": 3,
+      "chars": 420,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        13993,
+        13784,
+        1743
+      ],
+      "parts": 3,
+      "chars": 329,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        68209,
+        76715,
+        40826
+      ],
+      "parts": 3,
+      "chars": 415,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        67679,
+        78225,
+        1422
+      ],
+      "parts": 3,
+      "chars": 331,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        81678,
+        25343,
+        23788
+      ],
+      "parts": 3,
+      "chars": 345,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        72654,
+        81419
+      ],
+      "parts": 2,
+      "chars": 393,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        41120,
+        16903,
+        40639
+      ],
+      "parts": 3,
+      "chars": 351,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        59912,
+        66036,
+        51117
+      ],
+      "parts": 3,
+      "chars": 303,
+      "title": "Школьное"
+    },
+    {
+      "sourceLines": [
+        75329,
+        81501,
+        66989
+      ],
+      "parts": 3,
+      "chars": 380,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        2611,
+        183,
+        6539
+      ],
+      "parts": 3,
+      "chars": 355,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        44405,
+        82144,
+        20165
+      ],
+      "parts": 3,
+      "chars": 371,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        85199,
+        46226,
+        77020
+      ],
+      "parts": 3,
+      "chars": 319,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        84313,
+        41865,
+        41193
+      ],
+      "parts": 3,
+      "chars": 347,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        69339,
+        84478,
+        54379
+      ],
+      "parts": 3,
       "chars": 385,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        64652,
+        76376,
+        78076
+      ],
+      "parts": 3,
+      "chars": 354,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        63623,
+        2134,
+        14501
+      ],
+      "parts": 3,
+      "chars": 301,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        81601,
+        33503,
+        69523
+      ],
+      "parts": 3,
+      "chars": 314,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        33056,
+        59454,
+        59664
+      ],
+      "parts": 3,
+      "chars": 326,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        8574,
+        1851,
+        32111
+      ],
+      "parts": 3,
+      "chars": 369,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        59723,
+        54988,
+        53816
+      ],
+      "parts": 3,
+      "chars": 326,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        19470,
+        60192,
+        10659
+      ],
+      "parts": 3,
+      "chars": 361,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        61612,
+        53449,
+        38505
+      ],
+      "parts": 3,
+      "chars": 377,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        519,
+        71175,
+        57785
+      ],
+      "parts": 3,
+      "chars": 343,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        11238,
+        49091,
+        28088
+      ],
+      "parts": 3,
+      "chars": 386,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        69723,
+        22405,
+        3608
+      ],
+      "parts": 3,
+      "chars": 390,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        40931,
+        79066,
+        60218
+      ],
+      "parts": 3,
+      "chars": 369,
+      "title": "Школьное"
+    },
+    {
+      "sourceLines": [
+        46170,
+        27817,
+        5250
+      ],
+      "parts": 3,
+      "chars": 317,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        23024,
+        85487,
+        52903
+      ],
+      "parts": 3,
+      "chars": 401,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        85891,
+        16388,
+        5927
+      ],
+      "parts": 3,
+      "chars": 314,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        53113,
+        43178,
+        58367
+      ],
+      "parts": 3,
+      "chars": 302,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        14818,
+        20004,
+        81698
+      ],
+      "parts": 3,
+      "chars": 386,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        14766,
+        46468
+      ],
+      "parts": 2,
+      "chars": 321,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        5976,
+        53675,
+        8297
+      ],
+      "parts": 3,
+      "chars": 417,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        80244,
+        64390,
+        38468
+      ],
+      "parts": 3,
+      "chars": 341,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        58598,
+        5516,
+        78498
+      ],
+      "parts": 3,
+      "chars": 374,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        23406,
+        20013,
+        18194
+      ],
+      "parts": 3,
+      "chars": 322,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        3003,
+        76359,
+        80862
+      ],
+      "parts": 3,
+      "chars": 315,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        72372,
+        56771,
+        83534
+      ],
+      "parts": 3,
+      "chars": 343,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        58201,
+        59915,
+        87240
+      ],
+      "parts": 3,
+      "chars": 339,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        19865,
+        86511,
+        42420
+      ],
+      "parts": 3,
+      "chars": 410,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        27240,
+        8762,
+        55859
+      ],
+      "parts": 3,
+      "chars": 325,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        72301,
+        16960
+      ],
+      "parts": 2,
+      "chars": 335,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        563,
+        35142,
+        52323
+      ],
+      "parts": 3,
+      "chars": 308,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        27292,
+        73304,
+        45789
+      ],
+      "parts": 3,
+      "chars": 409,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        35740,
+        17548,
+        52369
+      ],
+      "parts": 3,
+      "chars": 346,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        36626,
+        2359,
+        76237
+      ],
+      "parts": 3,
+      "chars": 346,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        13936,
+        26524,
+        76041
+      ],
+      "parts": 3,
+      "chars": 380,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        66990,
+        77404,
+        68890
+      ],
+      "parts": 3,
+      "chars": 410,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        5458,
+        716,
+        9886
+      ],
+      "parts": 3,
+      "chars": 414,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        61588,
+        82185,
+        9473
+      ],
+      "parts": 3,
+      "chars": 369,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        24498,
+        77811,
+        84924
+      ],
+      "parts": 3,
+      "chars": 314,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        3268,
+        71841,
+        14083
+      ],
+      "parts": 3,
+      "chars": 313,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        82500,
+        65761,
+        29526
+      ],
+      "parts": 3,
+      "chars": 357,
+      "title": "Цифровая жизнь"
+    },
+    {
+      "sourceLines": [
+        78239,
+        12699,
+        25481
+      ],
+      "parts": 3,
+      "chars": 356,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        58824,
+        43477,
+        34961
+      ],
+      "parts": 3,
+      "chars": 399,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        85549,
+        41824,
+        35989
+      ],
+      "parts": 3,
+      "chars": 424,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        68910,
+        34709,
+        12106
+      ],
+      "parts": 3,
+      "chars": 335,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        29495,
+        26709,
+        31339
+      ],
+      "parts": 3,
+      "chars": 321,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        44999,
+        22635
+      ],
+      "parts": 2,
+      "chars": 323,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        61818,
+        73287,
+        23545
+      ],
+      "parts": 3,
+      "chars": 320,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        59636,
+        36855,
+        65597
+      ],
+      "parts": 3,
+      "chars": 353,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        24175,
+        56180,
+        70254
+      ],
+      "parts": 3,
+      "chars": 376,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        60,
+        16755,
+        4465
+      ],
+      "parts": 3,
+      "chars": 352,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        86312,
+        78196,
+        4103
+      ],
+      "parts": 3,
+      "chars": 325,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        48370,
+        43584,
+        73870
+      ],
+      "parts": 3,
+      "chars": 378,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        9368,
+        31316,
+        52550
+      ],
+      "parts": 3,
+      "chars": 389,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        52520,
+        1174,
+        78229
+      ],
+      "parts": 3,
+      "chars": 354,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        3016,
+        48499,
+        5061
+      ],
+      "parts": 3,
+      "chars": 343,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        66845,
+        43841,
+        13281
+      ],
+      "parts": 3,
+      "chars": 317,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        49931,
+        11889,
+        8305
+      ],
+      "parts": 3,
+      "chars": 369,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        29692,
+        73293
+      ],
+      "parts": 2,
+      "chars": 350,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        1758,
+        66084,
+        10637
+      ],
+      "parts": 3,
+      "chars": 309,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        60686,
+        85376,
+        15622
+      ],
+      "parts": 3,
+      "chars": 311,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        64900,
+        5525,
+        31370
+      ],
+      "parts": 3,
+      "chars": 335,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        84618,
+        39921
+      ],
+      "parts": 2,
+      "chars": 327,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        11112,
+        67555,
+        24476
+      ],
+      "parts": 3,
+      "chars": 389,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        63075,
+        8258,
+        45127
+      ],
+      "parts": 3,
+      "chars": 350,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        59520,
+        87004,
+        26108
+      ],
+      "parts": 3,
+      "chars": 307,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        11004,
+        22423,
+        25424
+      ],
+      "parts": 3,
+      "chars": 374,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        21682,
+        57004,
+        53114
+      ],
+      "parts": 3,
+      "chars": 314,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        48240,
+        19277,
+        48779
+      ],
+      "parts": 3,
+      "chars": 305,
+      "title": "Цифровая жизнь"
+    },
+    {
+      "sourceLines": [
+        15859,
+        70194,
+        61481
+      ],
+      "parts": 3,
+      "chars": 300,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        85442,
+        30508,
+        66043
+      ],
+      "parts": 3,
+      "chars": 390,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        70981,
+        49347,
+        62147
+      ],
+      "parts": 3,
+      "chars": 331,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        46248,
+        79379
+      ],
+      "parts": 2,
+      "chars": 309,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        17360,
+        77057,
+        65746
+      ],
+      "parts": 3,
+      "chars": 424,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        7834,
+        2470,
+        42843
+      ],
+      "parts": 3,
+      "chars": 343,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        54700,
+        69786,
+        83676
+      ],
+      "parts": 3,
+      "chars": 343,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        77525,
+        33557,
+        20559
+      ],
+      "parts": 3,
+      "chars": 331,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        11614,
+        27491
+      ],
+      "parts": 2,
+      "chars": 307,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        64703,
+        72026,
+        23501
+      ],
+      "parts": 3,
+      "chars": 337,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        16845,
+        77682,
+        52277
+      ],
+      "parts": 3,
+      "chars": 349,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        23167,
+        81211,
+        20891
+      ],
+      "parts": 3,
+      "chars": 359,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        82230,
+        11312,
+        19795
+      ],
+      "parts": 3,
+      "chars": 362,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        66179,
+        32231,
+        75696
+      ],
+      "parts": 3,
+      "chars": 389,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        46572,
+        475,
+        17993
+      ],
+      "parts": 3,
+      "chars": 306,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        5142,
+        46652
+      ],
+      "parts": 2,
+      "chars": 300,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        3510,
+        28965,
+        82058
+      ],
+      "parts": 3,
+      "chars": 312,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        36704,
+        17692,
+        86714
+      ],
+      "parts": 3,
+      "chars": 329,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        37497,
+        34155,
+        70296
+      ],
+      "parts": 3,
+      "chars": 335,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        35243,
+        14785,
+        10165
+      ],
+      "parts": 3,
+      "chars": 393,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        1911,
+        84210,
+        81376
+      ],
+      "parts": 3,
+      "chars": 338,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        50386,
+        40927,
+        87623
+      ],
+      "parts": 3,
+      "chars": 327,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        7607,
+        67814,
+        25692
+      ],
+      "parts": 3,
+      "chars": 323,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        64518,
+        82777,
+        81580
+      ],
+      "parts": 3,
+      "chars": 304,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        1417,
+        77499,
+        42754
+      ],
+      "parts": 3,
+      "chars": 346,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        86248,
+        81952,
+        35034
+      ],
+      "parts": 3,
+      "chars": 339,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        84787,
+        87375,
+        51554
+      ],
+      "parts": 3,
+      "chars": 367,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        79102,
+        63344,
+        33047
+      ],
+      "parts": 3,
+      "chars": 385,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        56269,
+        20125,
+        55914
+      ],
+      "parts": 3,
+      "chars": 318,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        45114,
+        42276,
+        7077
+      ],
+      "parts": 3,
+      "chars": 329,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        12833,
+        25376,
+        27107
+      ],
+      "parts": 3,
+      "chars": 337,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        74226,
+        15116,
+        14416
+      ],
+      "parts": 3,
+      "chars": 346,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        27663,
+        9038,
+        48387
+      ],
+      "parts": 3,
+      "chars": 322,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        82443,
+        23659,
+        80669
+      ],
+      "parts": 3,
+      "chars": 403,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        22873,
+        16039,
+        69536
+      ],
+      "parts": 3,
+      "chars": 326,
+      "title": "Цифровая жизнь"
+    },
+    {
+      "sourceLines": [
+        26758,
+        68699,
+        2710
+      ],
+      "parts": 3,
+      "chars": 325,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        24960,
+        33539,
+        2322
+      ],
+      "parts": 3,
+      "chars": 368,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        7881,
+        79875,
+        30683
+      ],
+      "parts": 3,
+      "chars": 336,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        7482,
+        33396,
+        26042
+      ],
+      "parts": 3,
+      "chars": 387,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        32227,
+        1768,
+        30468
+      ],
+      "parts": 3,
+      "chars": 318,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        83908,
+        46594,
+        4924
+      ],
+      "parts": 3,
+      "chars": 407,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        14122,
+        35038,
+        27446
+      ],
+      "parts": 3,
+      "chars": 376,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        74505,
+        44314
+      ],
+      "parts": 2,
+      "chars": 309,
+      "title": "Цифровая жизнь"
+    },
+    {
+      "sourceLines": [
+        2229,
+        43170
+      ],
+      "parts": 2,
+      "chars": 315,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        35816,
+        18007,
+        74041
+      ],
+      "parts": 3,
+      "chars": 349,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        20958,
+        13427,
+        15478
+      ],
+      "parts": 3,
+      "chars": 332,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        32251,
+        24732,
+        72144
+      ],
+      "parts": 3,
+      "chars": 345,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        83444,
+        58447
+      ],
+      "parts": 2,
+      "chars": 333,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        48417,
+        17370
+      ],
+      "parts": 2,
+      "chars": 420,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        39854,
+        56740,
+        3495
+      ],
+      "parts": 3,
+      "chars": 389,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        45367,
+        40458,
+        48999
+      ],
+      "parts": 3,
+      "chars": 355,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        23267,
+        48608,
+        23636
+      ],
+      "parts": 3,
+      "chars": 392,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        86391,
+        13043,
+        28177
+      ],
+      "parts": 3,
+      "chars": 334,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        81174,
+        41368
+      ],
+      "parts": 2,
+      "chars": 335,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        34600,
+        15857,
+        81172
+      ],
+      "parts": 3,
+      "chars": 364,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        51371,
+        86407,
+        61386
+      ],
+      "parts": 3,
+      "chars": 365,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        56798,
+        41223,
+        24015
+      ],
+      "parts": 3,
+      "chars": 349,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        18821,
+        24927,
+        32590
+      ],
+      "parts": 3,
+      "chars": 382,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        79817,
+        43802,
+        32512
+      ],
+      "parts": 3,
+      "chars": 338,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        10612,
+        61708,
+        78592
+      ],
+      "parts": 3,
+      "chars": 355,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        80559,
+        9448,
+        60673
+      ],
+      "parts": 3,
+      "chars": 318,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        37236,
+        40909,
+        78545
+      ],
+      "parts": 3,
+      "chars": 421,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        26864,
+        74958
+      ],
+      "parts": 2,
+      "chars": 386,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        27794,
+        83759,
+        46295
+      ],
+      "parts": 3,
+      "chars": 310,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        81382,
+        3072,
+        23931
+      ],
+      "parts": 3,
+      "chars": 318,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        4225,
+        37052,
+        26378
+      ],
+      "parts": 3,
+      "chars": 318,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        8845,
+        23951,
+        77793
+      ],
+      "parts": 3,
+      "chars": 374,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        35941,
+        11918
+      ],
+      "parts": 2,
+      "chars": 305,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        38431,
+        33576,
+        56908
+      ],
+      "parts": 3,
+      "chars": 397,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        83355,
+        64932,
+        38924
+      ],
+      "parts": 3,
+      "chars": 378,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        40945,
+        76944,
+        72537
+      ],
+      "parts": 3,
+      "chars": 307,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        7799,
+        24978
+      ],
+      "parts": 2,
+      "chars": 308,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        48391,
+        76079,
+        6094
+      ],
+      "parts": 3,
+      "chars": 341,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        86919,
+        78086,
+        24558
+      ],
+      "parts": 3,
+      "chars": 362,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        68066,
+        20351
+      ],
+      "parts": 2,
+      "chars": 345,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        35311,
+        9524,
+        32566
+      ],
+      "parts": 3,
+      "chars": 398,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        61664,
+        78853,
+        7828
+      ],
+      "parts": 3,
+      "chars": 372,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        21595,
+        78969,
+        41392
+      ],
+      "parts": 3,
+      "chars": 351,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        73127,
+        61813,
+        45574
+      ],
+      "parts": 3,
+      "chars": 362,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        66413,
+        29418,
+        87452
+      ],
+      "parts": 3,
+      "chars": 308,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        33233,
+        59129,
+        33945
+      ],
+      "parts": 3,
+      "chars": 418,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        83091,
+        83683,
+        13304
+      ],
+      "parts": 3,
+      "chars": 408,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        46433,
+        15801,
+        51456
+      ],
+      "parts": 3,
+      "chars": 313,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        4098,
+        47380,
+        44891
+      ],
+      "parts": 3,
+      "chars": 307,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        42023,
+        86913,
+        25314
+      ],
+      "parts": 3,
+      "chars": 319,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        13185,
+        74210,
+        84152
+      ],
+      "parts": 3,
+      "chars": 320,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        60062,
+        41141,
+        44920
+      ],
+      "parts": 3,
+      "chars": 362,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        29390,
+        30589,
+        35970
+      ],
+      "parts": 3,
+      "chars": 420,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        85691,
+        65779,
+        12326
+      ],
+      "parts": 3,
+      "chars": 351,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        37419,
+        72845,
+        59112
+      ],
+      "parts": 3,
+      "chars": 310,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        21554,
+        78253
+      ],
+      "parts": 2,
+      "chars": 309,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        83660,
+        55766,
+        43662
+      ],
+      "parts": 3,
+      "chars": 355,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        66157,
+        18041,
+        36039
+      ],
+      "parts": 3,
+      "chars": 429,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        60372,
+        38929,
+        21874
+      ],
+      "parts": 3,
+      "chars": 410,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        68931,
+        14097,
+        70245
+      ],
+      "parts": 3,
+      "chars": 359,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        65323,
+        50582,
+        12724
+      ],
+      "parts": 3,
+      "chars": 361,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        23959,
+        48638,
+        84382
+      ],
+      "parts": 3,
+      "chars": 342,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        85628,
+        25348,
+        1064
+      ],
+      "parts": 3,
+      "chars": 392,
+      "title": "Школьное"
+    },
+    {
+      "sourceLines": [
+        74389,
+        46915
+      ],
+      "parts": 2,
+      "chars": 356,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        15875,
+        4365,
+        54625
+      ],
+      "parts": 3,
+      "chars": 372,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        4013,
+        31790,
+        48315
+      ],
+      "parts": 3,
+      "chars": 386,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        66675,
+        47723,
+        15471
+      ],
+      "parts": 3,
+      "chars": 383,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        72252,
+        84900,
+        75075
+      ],
+      "parts": 3,
+      "chars": 369,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        10301,
+        77050,
+        13785
+      ],
+      "parts": 3,
+      "chars": 373,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        15305,
+        42980,
+        1067
+      ],
+      "parts": 3,
+      "chars": 356,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        26213,
+        27412,
+        24783
+      ],
+      "parts": 3,
+      "chars": 339,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        61848,
+        17458,
+        15477
+      ],
+      "parts": 3,
+      "chars": 320,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        26387,
+        46486,
+        53880
+      ],
+      "parts": 3,
+      "chars": 367,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        65670,
+        60029,
+        20801
+      ],
+      "parts": 3,
+      "chars": 317,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        84,
+        42362,
+        34338
+      ],
+      "parts": 3,
+      "chars": 301,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        61976,
+        44162,
+        80344
+      ],
+      "parts": 3,
+      "chars": 348,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        27940,
+        28632,
+        81143
+      ],
+      "parts": 3,
+      "chars": 338,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        21225,
+        17971,
+        73852
+      ],
+      "parts": 3,
+      "chars": 354,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        83754,
+        14976,
+        43976
+      ],
+      "parts": 3,
+      "chars": 377,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        52255,
+        44435,
+        80035
+      ],
+      "parts": 3,
+      "chars": 344,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        74404,
+        11831,
+        79036
+      ],
+      "parts": 3,
+      "chars": 358,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        78345,
+        62472,
+        53365
+      ],
+      "parts": 3,
+      "chars": 322,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        28915,
+        48537,
+        17190
+      ],
+      "parts": 3,
+      "chars": 326,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        6123,
+        83386,
+        48272
+      ],
+      "parts": 3,
+      "chars": 373,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        25010,
+        11514,
+        65459
+      ],
+      "parts": 3,
+      "chars": 353,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        3209,
+        8512,
+        80228
+      ],
+      "parts": 3,
+      "chars": 303,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        35418,
+        74475,
+        20348
+      ],
+      "parts": 3,
+      "chars": 321,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        38514,
+        27445,
+        42381
+      ],
+      "parts": 3,
+      "chars": 379,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        9595,
+        19892,
+        27442
+      ],
+      "parts": 3,
+      "chars": 303,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        51348,
+        43093,
+        35500
+      ],
+      "parts": 3,
+      "chars": 326,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        54301,
+        86006,
+        81808
+      ],
+      "parts": 3,
+      "chars": 339,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        32398,
+        9352,
+        33855
+      ],
+      "parts": 3,
+      "chars": 373,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        26216,
+        50252,
+        34590
+      ],
+      "parts": 3,
+      "chars": 399,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        9829,
+        29683,
+        9854
+      ],
+      "parts": 3,
+      "chars": 311,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        78757,
+        55016
+      ],
+      "parts": 2,
+      "chars": 302,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        28119,
+        1256,
+        86034
+      ],
+      "parts": 3,
+      "chars": 349,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        26360,
+        56532,
+        56601
+      ],
+      "parts": 3,
+      "chars": 310,
+      "title": "Про деньги"
+    },
+    {
+      "sourceLines": [
+        3758,
+        87357,
+        79538
+      ],
+      "parts": 3,
+      "chars": 328,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        71541,
+        43832,
+        6027
+      ],
+      "parts": 3,
+      "chars": 310,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        65533,
+        11051,
+        59179
+      ],
+      "parts": 3,
+      "chars": 359,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        27307,
+        1686,
+        25231
+      ],
+      "parts": 3,
+      "chars": 409,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        10358,
+        44985,
+        28190
+      ],
+      "parts": 3,
+      "chars": 399,
+      "title": "Про семью"
+    },
+    {
+      "sourceLines": [
+        51239,
+        25956,
+        41238
+      ],
+      "parts": 3,
+      "chars": 380,
+      "title": "У врача"
+    },
+    {
+      "sourceLines": [
+        16542,
+        12562
+      ],
+      "parts": 2,
+      "chars": 334,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        27023,
+        45073,
+        81594
+      ],
+      "parts": 3,
+      "chars": 309,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        86239,
+        20932,
+        74531
+      ],
+      "parts": 3,
+      "chars": 338,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        33000,
+        44616,
+        5665
+      ],
+      "parts": 3,
+      "chars": 327,
+      "title": "Анекдоты"
+    },
+    {
+      "sourceLines": [
+        48593,
+        28194,
+        25720
+      ],
+      "parts": 3,
+      "chars": 319,
+      "title": "Про работу"
+    },
+    {
+      "sourceLines": [
+        85100,
+        19092,
+        52499
+      ],
+      "parts": 3,
+      "chars": 301,
       "title": "Анекдоты"
     }
   ]

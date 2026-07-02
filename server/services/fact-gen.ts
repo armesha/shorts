@@ -107,7 +107,7 @@ async function buildLocalizedFactVideo(input: {
   voice: string;
 }): Promise<{ music: string }> {
   if (!existsSync(TTS_PYTHON)) throw new Error(`edge-tts не найден: ${TTS_PYTHON}`);
-  const tempDir = resolve(process.cwd(), `temp/fact-${input.lang}-render`);
+  const tempDir = resolve(process.cwd(), `tmp/fact-${input.lang}-render`);
   mkdirSync(tempDir, { recursive: true });
   const speech = cleanForSpeech(input.text || input.title);
   const spoken = speech.length > 520 ? `${speech.slice(0, 500).replace(/\s+\S*$/, "")}.` : speech;

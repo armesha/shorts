@@ -2,6 +2,7 @@
 // and per-user / per-key schedule-slot aggregates. No sibling this.-calls here.
 import type { DatabaseSync } from "node:sqlite";
 import { parseStringArray, type Row } from "./mappers.ts";
+import { invalidateReadCache } from "../services/read-cache.ts";
 
 export function deckMethods(db: DatabaseSync) {
   return {
@@ -11,6 +12,7 @@ export function deckMethods(db: DatabaseSync) {
       db.prepare(
         "INSERT INTO user_used_anecdotes (user_id, key) VALUES (?, ?) ON CONFLICT(user_id, key) DO NOTHING",
       ).run(userId, key);
+      invalidateReadCache();
     },
     // Atomic claim: mark a card used and report whether WE were the one who claimed it (changes>0).
     // Lets concurrent generation paths reserve a card BEFORE the slow render so the same card is
@@ -21,10 +23,12 @@ export function deckMethods(db: DatabaseSync) {
           "INSERT INTO user_used_anecdotes (user_id, key) VALUES (?, ?) ON CONFLICT(user_id, key) DO NOTHING",
         )
         .run(userId, key);
+      if (Number(info.changes) > 0) invalidateReadCache();
       return Number(info.changes) > 0;
     },
     releaseAnecdote(userId: number, key: string): void {
       db.prepare("DELETE FROM user_used_anecdotes WHERE user_id = ? AND key = ?").run(userId, key);
+      invalidateReadCache();
     },
     usedAnecdoteKeys(userId: number): Set<string> {
       const rows = db
@@ -47,6 +51,7 @@ export function deckMethods(db: DatabaseSync) {
       try {
         for (const key of uniq) removed += Number(del.run(userId, key).changes) || 0;
         db.exec("COMMIT");
+        if (removed > 0) invalidateReadCache();
       } catch (err) {
         db.exec("ROLLBACK");
         throw err;
@@ -74,6 +79,7 @@ export function deckMethods(db: DatabaseSync) {
       db.prepare("DELETE FROM user_granted_decks WHERE user_id = ?").run(userId);
       const ins = db.prepare("INSERT OR IGNORE INTO user_granted_decks (user_id, deck_id) VALUES (?, ?)");
       for (const id of [...new Set(deckIds)]) if (id) ins.run(userId, id);
+      invalidateReadCache();
     },
     grantedLongVideoDecksFor(userId: number): string[] {
       return (db.prepare("SELECT deck_id FROM user_granted_long_video_decks WHERE user_id = ?").all(userId) as Row[]).map(
@@ -87,12 +93,14 @@ export function deckMethods(db: DatabaseSync) {
       db.prepare("DELETE FROM user_granted_long_video_decks WHERE user_id = ?").run(userId);
       const ins = db.prepare("INSERT OR IGNORE INTO user_granted_long_video_decks (user_id, deck_id) VALUES (?, ?)");
       for (const id of [...new Set(deckIds)]) if (id) ins.run(userId, id);
+      invalidateReadCache();
     },
     // Replace the user's hidden-deck set with exactly `deckIds`.
     setHiddenDecks(userId: number, deckIds: string[]): void {
       db.prepare("DELETE FROM user_hidden_decks WHERE user_id = ?").run(userId);
       const ins = db.prepare("INSERT OR IGNORE INTO user_hidden_decks (user_id, deck_id) VALUES (?, ?)");
       for (const id of [...new Set(deckIds)]) if (id) ins.run(userId, id);
+      invalidateReadCache();
     },
     // All hidden decks across users → { userId: [deckId,…] } (for the admin matrix).
     hiddenDecksByUser(): Record<number, string[]> {

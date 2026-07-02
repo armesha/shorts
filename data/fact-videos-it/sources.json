@@ -3,7 +3,7 @@
   "deck": "fact-it",
   "sourceDeck": "fact-en",
   "sourceFile": "data/fact-videos/videos.json",
-  "translationFile": "temp/localization-input/fact-videos-it.json",
+  "translationFile": "tmp/localization-input/fact-videos-it.json",
   "localization": "it",
   "note": "IT title/text localization of the existing Interesting Facts corpus. Generation reuses local source footage and rebuilds localized overlay/voiceover.",
   "rights": "Uses existing local pre-built videos as source footage. Live generation rebuilds the selected video with localized overlay text and edge-tts voiceover. No external web images or AP/news imagery are imported by this localization step."

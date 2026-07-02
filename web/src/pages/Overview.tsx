@@ -276,7 +276,7 @@ export default function Overview() {
               <Panel
                 title={t("overview.runwayTitle")}
                 subtitle={t("overview.runwaySubtitle")}
-                action={<Link to="/packs" className="admin-inline-action">{t("nav.packs")}</Link>}
+                action={<Link to="/library" className="admin-inline-action">{t("nav.library")}</Link>}
               >
                 {topRunway.length === 0 ? (
                   <EmptyInline icon="check" text={t("overview.runwayOk")} />
@@ -341,7 +341,7 @@ export default function Overview() {
                 ) : (
                   <div className="space-y-1.5">
                     {data.lowDecks.slice(0, 5).map((p) => (
-                      <Link key={`${p.userId}-${p.deckId}`} to="/packs" className="block rounded-md border border-base-300 px-3 py-2 hover:bg-base-200/60">
+                      <Link key={`${p.userId}-${p.deckId}`} to="/library" className="block rounded-md border border-base-300 px-3 py-2 hover:bg-base-200/60">
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-sm font-medium truncate">{p.deckName}</span>
                           <span className="badge badge-warning badge-sm">{p.available}</span>
@@ -399,7 +399,7 @@ function buildAttention(data: OverviewData, notConnectedCount: number, t: (key: 
       title: t("overview.attentionPacks", { n: data.lowDecks.length }),
       detail: data.lowDecks[0]?.deckName || t("overview.attentionPacksDetail"),
       tone: "warning",
-      to: "/packs",
+      to: "/library",
       icon: "packs",
     });
   }

@@ -8,14 +8,14 @@
 
 Live-сайт открыт через Playwright под временной админ-сессией. Снимки текущего интерфейса сохранены здесь:
 
-- `temp/design/research/current-ui/shorts-statistics-desktop.png`
-- `temp/design/research/current-ui/shorts-accounts-desktop.png`
-- `temp/design/research/current-ui/shorts-studio-desktop.png`
-- `temp/design/research/current-ui/shorts-packs-desktop.png`
-- `temp/design/research/current-ui/shorts-clip-demos-desktop.png`
-- `temp/design/research/current-ui/shorts-users-desktop.png`
-- `temp/design/research/current-ui/shorts-errors-desktop.png`
-- мобильные варианты: `temp/design/research/current-ui/*-mobile.png`
+- `tmp/design/research/current-ui/shorts-statistics-desktop.png`
+- `tmp/design/research/current-ui/shorts-accounts-desktop.png`
+- `tmp/design/research/current-ui/shorts-studio-desktop.png`
+- `tmp/design/research/current-ui/shorts-packs-desktop.png`
+- `tmp/design/research/current-ui/shorts-clip-demos-desktop.png`
+- `tmp/design/research/current-ui/shorts-users-desktop.png`
+- `tmp/design/research/current-ui/shorts-errors-desktop.png`
+- мобильные варианты: `tmp/design/research/current-ui/*-mobile.png`
 
 Внешние референсы и сохраненные снимки:
 
