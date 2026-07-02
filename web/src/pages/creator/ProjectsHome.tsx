@@ -15,10 +15,45 @@ const TYPE_EMOJI: Array<[RegExp, string]> = [
   [/fact|kids/, "📚"],
 ];
 
+const EMPTY_GHOST_PACKS = [
+  {
+    name: "Мемный фон",
+    meta: "RU · memes",
+    previewSrc: "assets/template-packs/creator-clean-backgrounds/meme-image.png",
+  },
+  {
+    name: "Анекдот короткий",
+    meta: "RU · jokes",
+    previewSrc: "assets/template-packs/creator-clean-backgrounds/joke-image.png",
+  },
+  {
+    name: "Мотивация",
+    meta: "EN · motivation",
+    previewSrc: "assets/template-packs/creator-clean-backgrounds/motivation-image.png",
+  },
+] as const;
+
 function typeEmoji(templateType: string): string {
   const type = templateType.toLowerCase();
   for (const [re, emoji] of TYPE_EMOJI) if (re.test(type)) return emoji;
   return "✨";
+}
+
+function GhostPackTile({ ghost }: { ghost: (typeof EMPTY_GHOST_PACKS)[number] }) {
+  const preview = creatorServiceAssetUrl(ghost.previewSrc);
+  return (
+    <article className="creator-project-tile creator-project-tile-ghost" aria-hidden="true">
+      <span className="creator-project-tile-main">
+        <span className="creator-project-thumb" style={{ backgroundImage: `url("${cssUrl(preview)}")` }}>
+          <span className="creator-project-count">0 карт.</span>
+        </span>
+        <span className="creator-project-info">
+          <strong>{ghost.name}</strong>
+          <span>{ghost.meta}</span>
+        </span>
+      </span>
+    </article>
+  );
 }
 
 export function ProjectsHome({
@@ -79,7 +114,14 @@ export function ProjectsHome({
     return (
       <div className="creator-home">
         <section className="creator-empty-home" aria-label={t("creator.myProjects")}>
-          {createButton}
+          <div className="creator-empty-ghost-grid">
+            {EMPTY_GHOST_PACKS.map((ghost) => (
+              <GhostPackTile key={ghost.name} ghost={ghost} />
+            ))}
+          </div>
+          <div className="creator-empty-action">
+            {createButton}
+          </div>
         </section>
       </div>
     );
@@ -134,6 +176,9 @@ export function ProjectsHome({
               </article>
             );
           })}
+          {packs.length < EMPTY_GHOST_PACKS.length && EMPTY_GHOST_PACKS.slice(packs.length).map((ghost) => (
+            <GhostPackTile key={`ghost-${ghost.name}`} ghost={ghost} />
+          ))}
         </div>
       </section>
       {deleteModal}

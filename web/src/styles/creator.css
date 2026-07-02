@@ -2330,15 +2330,36 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
 }
 
 .creator-empty-home {
-  display: flex;
-  min-height: min(44vh, 360px);
-  align-items: center;
-  justify-content: center;
+  position: relative;
+  display: grid;
+  min-height: min(58vh, 520px);
+  place-items: center;
+  overflow: hidden;
 }
 
 .creator-main-cta {
   border-radius: 999px !important;
   padding-inline: 18px;
+}
+
+.creator-empty-ghost-grid {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 230px));
+  gap: 14px;
+  width: min(730px, calc(100vw - 48px));
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.creator-empty-action {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  min-width: 0;
 }
 
 .creator-projects-section {
@@ -2385,6 +2406,37 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
   border-color: var(--commercial-line-strong);
   box-shadow: 0 16px 34px rgba(15, 23, 42, 0.10);
   transform: translateY(-2px);
+}
+
+.creator-project-tile-ghost {
+  border-style: dashed;
+  background: rgba(255, 255, 255, 0.62);
+  opacity: 0.42;
+  pointer-events: none;
+  filter: grayscale(0.25) saturate(0.72);
+  box-shadow: none;
+}
+
+.creator-project-tile-ghost:hover {
+  border-color: var(--commercial-line);
+  box-shadow: none;
+  transform: none;
+}
+
+.creator-project-tile-ghost::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(247, 248, 251, 0.38);
+  pointer-events: none;
+}
+
+.creator-project-tile-ghost .creator-project-tile-main {
+  cursor: default;
+}
+
+.creator-project-tile-ghost .creator-project-count {
+  background: rgba(51, 65, 85, 0.42);
 }
 
 .creator-project-tile-main {
@@ -3629,6 +3681,15 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
 }
 
 @media (max-width: 900px) {
+  .creator-empty-home {
+    min-height: 430px;
+  }
+
+  .creator-empty-ghost-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(500px, calc(100vw - 28px));
+  }
+
   .creator-project-head {
     flex-wrap: wrap;
   }
