@@ -50,9 +50,12 @@ export const creatorRu: Record<string, string> = {
   "creator.templateFallbackName": "Шаблон {n}",
   "creator.templateTargetPack": "В пак: {name}",
   "creator.createDestinationTitle": "Куда создать шаблон?",
+  "creator.createDestinationHint": "Выберите перед созданием — шаблон сохранится туда.",
   "creator.createDestinationNewPack": "В новый пак",
   "creator.createDestinationNewPackHint": "Создадим отдельный пак с этим шаблоном.",
+  "creator.createDestinationExistingPack": "В существующий пак",
   "creator.createDestinationExistingPackHint": "Добавить сюда новый шаблон · {count} карт.",
+  "creator.createDestinationPickPack": "Выберите пак ниже",
   // карточки проекта
   "creator.addCardsAria": "Способ добавления карточек",
   "creator.addSingle": "По одной",

@@ -50,9 +50,12 @@ export const creatorEn: Record<string, string> = {
   "creator.templateFallbackName": "Template {n}",
   "creator.templateTargetPack": "Pack: {name}",
   "creator.createDestinationTitle": "Where should this template go?",
+  "creator.createDestinationHint": "Choose before creating — the template will be saved there.",
   "creator.createDestinationNewPack": "New pack",
   "creator.createDestinationNewPackHint": "Create a separate pack with this template.",
+  "creator.createDestinationExistingPack": "Existing pack",
   "creator.createDestinationExistingPackHint": "Add a new template here · {count} cards",
+  "creator.createDestinationPickPack": "Pick a pack below",
   // project cards
   "creator.addCardsAria": "How to add cards",
   "creator.addSingle": "One by one",

@@ -100,10 +100,6 @@ export function CardsPanel({
               })}
             </select>
           </label>
-          <button type="button" className="btn btn-sm btn-outline gap-2" onClick={onCreateTemplate}>
-            <Plus size={15} />
-            {t("creator.createTemplate")}
-          </button>
         </div>
         <div className="creator-adder-head">
           <div

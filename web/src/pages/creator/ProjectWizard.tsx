@@ -4,10 +4,11 @@ import { ArrowRight, Check, ChevronLeft, FileImage, Loader2, X } from "lucide-re
 import { langTag } from "../../lib/deck";
 import { useT } from "../../lib/i18n";
 import { CreatorPreviewPanel, DesignEditor, type Capacities, type FontSizes } from "./editor";
-import { creatorServiceAssetUrl, cssUrl, firstTemplateImageSrc, templateTone, usableBackgroundUrl } from "./model";
+import { creatorServiceAssetUrl, cssUrl, firstTemplateImageSrc, packCards, packId, templateTone, usableBackgroundUrl } from "./model";
 import type {
   CardValues,
   CreatorAsset,
+  CreatorPack,
   MediaSettings,
   StickerOverlay,
   TemplatePreset,
@@ -53,7 +54,9 @@ export function ProjectWizard({
   creating,
   onCancel,
   onCreate,
-  targetPackName,
+  packs,
+  targetPackId,
+  setTargetPackId,
 }: {
   presets: TemplatePreset[];
   presetId: string;
@@ -89,7 +92,9 @@ export function ProjectWizard({
   creating: boolean;
   onCancel: () => void;
   onCreate: () => void;
-  targetPackName?: string;
+  packs: CreatorPack[];
+  targetPackId: string;
+  setTargetPackId: (id: string) => void;
 }) {
   const { t } = useT();
   const [step, setStep] = useState<WizardStep>("basis");
@@ -99,6 +104,8 @@ export function ProjectWizard({
     design: t("creator.wizardDesign"),
   };
   const canCreate = !creating;
+  const firstPackId = packId(packs[0]);
+  const selectedExistingPack = targetPackId ? packs.find((pack) => packId(pack) === targetPackId) ?? null : null;
 
   const handleBackgroundUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const input = event.currentTarget;
@@ -119,7 +126,7 @@ export function ProjectWizard({
       <header className="creator-wizard-head">
         <div className="creator-wizard-title">
           <h1>{t("creator.newProject")}</h1>
-          <span>{targetPackName ? t("creator.templateTargetPack", { name: targetPackName }) : templateNameValue.trim() || t("creator.newProjectHint")}</span>
+          <span>{templateNameValue.trim() || t("creator.newProjectHint")}</span>
         </div>
         <ol className="creator-wizard-steps" aria-label={t("creator.flowAria")}>
           {WIZARD_STEPS.map((id, index) => (
@@ -203,32 +210,84 @@ export function ProjectWizard({
             <CreatorPreviewPanel activePreset={activePreset} background={background} />
           </div>
         ) : (
-          <div className="creator-card">
-            <DesignEditor
-              activePreset={activePreset}
-              values={values}
-              updateValue={updateValue}
-              textLayout={textLayout}
-              setTextLayout={setTextLayout}
-              textStyle={textStyle}
-              setTextStyle={setTextStyle}
-              sticker={sticker}
-              setSticker={setSticker}
-              uploadSticker={uploadSticker}
-              motion={motion}
-              music={music}
-              uploadMusic={uploadMusic}
-              mediaSettings={mediaSettings}
-              setMediaSettings={setMediaSettings}
-              uploadMotionGif={uploadMotionGif}
-              background={background}
-              capacities={capacities}
-              fontSizes={fontSizes}
-              canUndoDesign={canUndoDesign}
-              canRedoDesign={canRedoDesign}
-              undoDesign={undoDesign}
-              redoDesign={redoDesign}
-            />
+          <div className="creator-wizard-design-step">
+            <div className="creator-card">
+              <DesignEditor
+                activePreset={activePreset}
+                values={values}
+                updateValue={updateValue}
+                textLayout={textLayout}
+                setTextLayout={setTextLayout}
+                textStyle={textStyle}
+                setTextStyle={setTextStyle}
+                sticker={sticker}
+                setSticker={setSticker}
+                uploadSticker={uploadSticker}
+                motion={motion}
+                music={music}
+                uploadMusic={uploadMusic}
+                mediaSettings={mediaSettings}
+                setMediaSettings={setMediaSettings}
+                uploadMotionGif={uploadMotionGif}
+                background={background}
+                capacities={capacities}
+                fontSizes={fontSizes}
+                canUndoDesign={canUndoDesign}
+                canRedoDesign={canRedoDesign}
+                undoDesign={undoDesign}
+                redoDesign={redoDesign}
+              />
+            </div>
+            {packs.length > 0 && (
+              <section className="creator-card creator-save-target" aria-label={t("creator.createDestinationTitle")}>
+                <div className="creator-save-target-head">
+                  <strong>{t("creator.createDestinationTitle")}</strong>
+                  <span>{t("creator.createDestinationHint")}</span>
+                </div>
+                <div className="creator-save-target-options">
+                  <button
+                    type="button"
+                    className={`creator-save-target-option ${!targetPackId ? "is-active" : ""}`}
+                    onClick={() => setTargetPackId("")}
+                    disabled={creating}
+                  >
+                    <span className="creator-save-target-radio" aria-hidden="true" />
+                    <span>
+                      <strong>{t("creator.createDestinationNewPack")}</strong>
+                      <small>{t("creator.createDestinationNewPackHint")}</small>
+                    </span>
+                  </button>
+                  <div className={`creator-save-target-option is-select ${targetPackId ? "is-active" : ""}`}>
+                    <button
+                      type="button"
+                      onClick={() => setTargetPackId(selectedExistingPack ? targetPackId : firstPackId)}
+                      disabled={creating || !firstPackId}
+                    >
+                      <span className="creator-save-target-radio" aria-hidden="true" />
+                      <span>
+                        <strong>{t("creator.createDestinationExistingPack")}</strong>
+                        <small>{selectedExistingPack ? t("creator.createDestinationExistingPackHint", { count: packCards(selectedExistingPack) }) : t("creator.createDestinationPickPack")}</small>
+                      </span>
+                    </button>
+                    <select
+                      className="select select-bordered select-sm"
+                      value={targetPackId || firstPackId}
+                      onChange={(event) => setTargetPackId(event.target.value)}
+                      disabled={creating || !targetPackId}
+                    >
+                      {packs.map((pack) => {
+                        const id = packId(pack);
+                        return (
+                          <option key={id} value={id}>
+                            {pack.name || t("creator.untitledPack")}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+                </div>
+              </section>
+            )}
           </div>
         )}
       </div>

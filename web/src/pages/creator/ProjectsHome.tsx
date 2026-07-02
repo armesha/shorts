@@ -1,6 +1,6 @@
 // Главный экран /creator: паки как плитки + главное действие создания шаблона.
 import { useState } from "react";
-import { ArrowRight, Loader2, Plus, Trash2, X } from "lucide-react";
+import { ArrowRight, Loader2, Plus, Trash2 } from "lucide-react";
 import { langTag } from "../../lib/deck";
 import { useT } from "../../lib/i18n";
 import { creatorServiceAssetUrl, cssUrl, packCards, packId, templateTone } from "./model";
@@ -25,7 +25,6 @@ export function ProjectsHome({
   packs,
   onOpen,
   onNewPack,
-  onNewInPack,
   onDelete,
   disabled,
   busy,
@@ -33,76 +32,19 @@ export function ProjectsHome({
   packs: CreatorPack[];
   onOpen: (pack: CreatorPack) => void;
   onNewPack: () => void;
-  onNewInPack: (pack: CreatorPack) => void;
   onDelete: (pack: CreatorPack) => Promise<boolean>;
   disabled: boolean;
   busy: string | null;
 }) {
   const { t } = useT();
-  const [destinationOpen, setDestinationOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<CreatorPack | null>(null);
 
   const createButton = (
-    <button type="button" className="btn btn-primary gap-2 creator-main-cta" onClick={() => setDestinationOpen(true)} disabled={disabled || busy !== null}>
+    <button type="button" className="btn btn-primary gap-2 creator-main-cta" onClick={onNewPack} disabled={disabled || busy !== null}>
       <Plus size={18} />
       {t("creator.newProject")}
     </button>
   );
-
-  const destinationModal = destinationOpen ? (
-    <div className="creator-modal" role="dialog" aria-modal="true" aria-label={t("creator.createDestinationTitle")} onClick={() => setDestinationOpen(false)}>
-      <div className="creator-modal-box creator-destination-modal" onClick={(event) => event.stopPropagation()}>
-        <header>
-          <strong>{t("creator.createDestinationTitle")}</strong>
-          <button type="button" className="btn btn-ghost btn-xs btn-square" onClick={() => setDestinationOpen(false)} aria-label={t("creator.close")}>
-            <X size={14} />
-          </button>
-        </header>
-        <div className="creator-destination-list">
-          <button
-            type="button"
-            className="creator-destination-option"
-            onClick={() => {
-              setDestinationOpen(false);
-              onNewPack();
-            }}
-            disabled={disabled || busy !== null}
-          >
-            <span className="creator-destination-icon">
-              <Plus size={18} />
-            </span>
-            <span>
-              <strong>{t("creator.createDestinationNewPack")}</strong>
-              <small>{t("creator.createDestinationNewPackHint")}</small>
-            </span>
-          </button>
-          {packs.map((pack) => {
-            const id = packId(pack);
-            return (
-              <button
-                type="button"
-                key={id}
-                className="creator-destination-option"
-                onClick={() => {
-                  setDestinationOpen(false);
-                  onNewInPack(pack);
-                }}
-                disabled={disabled || busy !== null || !id}
-              >
-                <span className="creator-destination-icon">
-                  <ArrowRight size={17} />
-                </span>
-                <span>
-                  <strong>{pack.name || t("creator.untitledPack")}</strong>
-                  <small>{t("creator.createDestinationExistingPackHint", { count: packCards(pack) })}</small>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  ) : null;
 
   const deleteModal = deleteTarget ? (
     <div className="creator-modal" role="dialog" aria-modal="true" aria-label={t("creator.deletePackConfirmTitle")} onClick={() => setDeleteTarget(null)}>
@@ -139,7 +81,6 @@ export function ProjectsHome({
         <section className="creator-empty-home" aria-label={t("creator.myProjects")}>
           {createButton}
         </section>
-        {destinationModal}
       </div>
     );
   }
@@ -195,7 +136,6 @@ export function ProjectsHome({
           })}
         </div>
       </section>
-      {destinationModal}
       {deleteModal}
     </div>
   );

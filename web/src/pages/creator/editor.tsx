@@ -102,6 +102,10 @@ type PaletteDragPayload =
   | { kind: "emoji"; value: string }
   | { kind: "motion"; id: string };
 
+type PaletteDragPreview =
+  | { kind: "emoji"; value: string }
+  | { kind: "image"; src: string; label: string };
+
 type EditorClipboard =
   | { kind: "text"; role: TextBoxRole; value: string; box: TextBoxRect }
   | { kind: "sticker"; sticker: StickerOverlay & TextBoxRect }
@@ -122,10 +126,51 @@ function offsetPastedBox(box: TextBoxRect): TextBoxRect {
   return { ...box, x: box.x + 36, y: box.y + 36 };
 }
 
-function writePaletteDragData(event: ReactDragEvent<HTMLElement>, payload: PaletteDragPayload) {
+function squareBox(box: TextBoxRect, min: number, max = 560): TextBoxRect {
+  const size = Math.min(max, Math.max(min, Math.round(Math.min(box.w, box.h))));
+  const centerX = box.x + box.w / 2;
+  const centerY = box.y + box.h / 2;
+  return {
+    ...box,
+    x: centerX - size / 2,
+    y: centerY - size / 2,
+    w: size,
+    h: size,
+  };
+}
+
+function squareStickerBox(box: TextBoxRect): TextBoxRect {
+  return clampStickerBox(squareBox(box, 72));
+}
+
+function squareMotionBox(box: TextBoxRect): TextBoxRect {
+  return clampMotionBox(squareBox(box, 96));
+}
+
+function setPaletteDragImage(event: ReactDragEvent<HTMLElement>, preview: PaletteDragPreview) {
+  const node = document.createElement("div");
+  node.className = `creator-palette-drag-image is-${preview.kind}`;
+  if (preview.kind === "emoji") {
+    node.textContent = preview.value;
+  } else if (preview.src) {
+    const image = document.createElement("img");
+    image.src = preview.src;
+    image.alt = "";
+    node.appendChild(image);
+  } else {
+    node.textContent = preview.label;
+  }
+  document.body.appendChild(node);
+  const rect = node.getBoundingClientRect();
+  event.dataTransfer.setDragImage(node, rect.width / 2, rect.height / 2);
+  window.setTimeout(() => node.remove(), 0);
+}
+
+function writePaletteDragData(event: ReactDragEvent<HTMLElement>, payload: PaletteDragPayload, preview: PaletteDragPreview) {
   event.dataTransfer.effectAllowed = "copy";
   event.dataTransfer.setData(CREATOR_PALETTE_DRAG_TYPE, JSON.stringify(payload));
   event.dataTransfer.setData("text/plain", payload.kind === "emoji" ? payload.value : payload.id);
+  setPaletteDragImage(event, preview);
 }
 
 function readPaletteDragData(event: ReactDragEvent<HTMLElement>): PaletteDragPayload | null {
@@ -370,7 +415,6 @@ export function DesignEditor({
               values={values}
               updateValue={updateValue}
               selection={selection === "body" ? "body" : "heading"}
-              selectElement={selectElement}
               textLayout={textLayout}
               setTextLayout={setTextLayout}
               textStyle={textStyle}
@@ -418,7 +462,6 @@ function TextPane({
   values,
   updateValue,
   selection,
-  selectElement,
   textLayout,
   setTextLayout,
   textStyle,
@@ -429,7 +472,6 @@ function TextPane({
   values: CardValues;
   updateValue: (key: keyof CardValues, value: string) => void;
   selection: TextBoxRole;
-  selectElement: (element: DesignerElement) => void;
   textLayout: TextLayout;
   setTextLayout: (layout: TextLayout) => void;
   textStyle: TextStyle;
@@ -453,15 +495,6 @@ function TextPane({
 
   return (
     <div className="creator-editor-pane creator-text-pane" role="tabpanel" aria-label={t("creator.paneText")}>
-      <div className="creator-element-switch" role="radiogroup" aria-label={t("creator.designerElement")}>
-        <button type="button" className={selection === "heading" ? "is-active" : ""} onClick={() => selectElement("heading")}>
-          {t("creator.layoutHeading")}
-        </button>
-        <button type="button" className={selection === "body" ? "is-active" : ""} onClick={() => selectElement("body")}>
-          {t("creator.layoutBody")}
-        </button>
-      </div>
-
       <label className="form-control">
         <span className="label-text">
           {selection === "heading" ? t("creator.heading") : t("creator.body")}
@@ -595,7 +628,7 @@ function StickerPane({
     setSticker({
       kind: "emoji",
       value: emoji,
-      ...clampStickerBox(sticker ?? DEFAULT_STICKER_BOX),
+      ...squareStickerBox(sticker ?? DEFAULT_STICKER_BOX),
     });
     selectElement("sticker");
     setEmojiUsage((current) => bumpCreatorUsage(CREATOR_EMOJI_USAGE_KEY, current, emoji));
@@ -616,7 +649,7 @@ function StickerPane({
       type="button"
       className={`creator-telegram-emoji ${sticker?.kind === "emoji" && sticker.value === emoji ? "is-active" : ""}`}
       draggable
-      onDragStart={(event) => writePaletteDragData(event, { kind: "emoji", value: emoji })}
+      onDragStart={(event) => writePaletteDragData(event, { kind: "emoji", value: emoji }, { kind: "emoji", value: emoji })}
       onClick={() => updateEmoji(emoji)}
       aria-label={emoji}
     >
@@ -705,7 +738,7 @@ function GifPane({
         className={`creator-telegram-gif ${mediaSettings.motion === id ? "is-active" : ""}`}
         aria-label={String(item.name || item.id || id)}
         draggable
-        onDragStart={(event) => writePaletteDragData(event, { kind: "motion", id })}
+        onDragStart={(event) => writePaletteDragData(event, { kind: "motion", id }, { kind: "image", src: url, label: String(item.name || item.id || id) })}
         onClick={() => pickMotion(id)}
       >
         {url ? <img src={url} alt="" loading="lazy" /> : <span>{item.name || item.id}</span>}
@@ -1170,13 +1203,13 @@ function TextLayoutEditor({
     if (!payload) return;
     event.preventDefault();
     if (payload.kind === "emoji") {
-      const box = boxAtDropPoint(event, sticker ? clampStickerBox(sticker) : DEFAULT_STICKER_BOX, clampStickerBox);
+      const box = boxAtDropPoint(event, squareStickerBox(sticker ?? DEFAULT_STICKER_BOX), squareStickerBox);
       setSticker({ kind: "emoji", value: payload.value, ...box });
       setActiveElement("sticker");
       stageRef.current?.focus({ preventScroll: true });
       return;
     }
-    const box = boxAtDropPoint(event, clampMotionBox(mediaSettings.motionBox), clampMotionBox);
+    const box = boxAtDropPoint(event, squareMotionBox(mediaSettings.motionBox), squareMotionBox);
     setMediaSettings((current) => ({ ...current, motion: payload.id, motionBox: box }));
     setActiveElement("motion");
     stageRef.current?.focus({ preventScroll: true });

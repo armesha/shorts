@@ -402,23 +402,48 @@
   background: #151922 !important;
 }
 
-.creator-moveable .moveable-rotation-control {
-  width: 24px !important;
-  height: 24px !important;
-  margin-left: -12px !important;
-  border: 2px solid #ffffff !important;
+.creator-moveable .moveable-rotation-control,
+.creator-moveable.is-active .moveable-control.moveable-rotation-control {
+  width: 30px !important;
+  height: 30px !important;
+  margin-top: -15px !important;
+  margin-left: -15px !important;
+  border: 1px solid rgba(17, 24, 39, 0.16) !important;
   border-radius: 999px !important;
-  background: #151922 !important;
-  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.25) !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  box-shadow:
+    0 12px 26px rgba(15, 23, 42, 0.24),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.7) !important;
 }
 
-.creator-moveable .moveable-rotation-control::after {
+.creator-moveable .moveable-rotation-control::before,
+.creator-moveable.is-active .moveable-control.moveable-rotation-control::before {
   content: "";
   position: absolute;
-  inset: 5px;
-  border: 2px solid #ffffff;
+  left: 7px;
+  top: 7px;
+  width: 13px;
+  height: 13px;
+  border: 2px solid #151922;
   border-left-color: transparent;
+  border-bottom-color: transparent;
   border-radius: 999px;
+  transform: rotate(18deg);
+}
+
+.creator-moveable .moveable-rotation-control::after,
+.creator-moveable.is-active .moveable-control.moveable-rotation-control::after {
+  content: "";
+  position: absolute;
+  right: 7px;
+  top: 6px;
+  width: 0;
+  height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 6px solid #151922;
+  transform: rotate(34deg);
+  transform-origin: center;
 }
 
 .creator-moveable .moveable-rotation .moveable-rotation-line {
@@ -704,7 +729,7 @@ button.creator-music-option {
   z-index: 3;
   display: grid;
   place-items: center;
-  cursor: grab;
+  cursor: default;
   touch-action: none;
   user-select: none;
 }
@@ -714,7 +739,7 @@ button.creator-music-option {
 }
 
 .creator-motion-preview-box:active {
-  cursor: grabbing;
+  cursor: default;
 }
 
 .creator-motion-preview-box.is-active {
@@ -1018,7 +1043,7 @@ button.creator-music-option {
   border: 1px solid transparent;
   border-radius: 8px;
   background: transparent;
-  cursor: grab;
+  cursor: pointer;
   font-size: 1.35rem;
   line-height: 1;
   transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
@@ -1051,7 +1076,7 @@ button.creator-music-option {
   border-radius: 8px;
   background: var(--asset-panel);
   color: var(--asset-muted);
-  cursor: grab;
+  cursor: pointer;
   font-size: 0.72rem;
   font-weight: 850;
   transition: border-color 0.14s ease, transform 0.14s ease, filter 0.14s ease;
@@ -1079,6 +1104,40 @@ button.creator-music-option {
   display: block;
   width: 100%;
   height: 84px;
+  object-fit: contain;
+}
+
+.creator-palette-drag-image {
+  position: fixed;
+  left: -1000px;
+  top: -1000px;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.22);
+  pointer-events: none;
+}
+
+.creator-palette-drag-image.is-emoji {
+  font-size: 2.35rem;
+  line-height: 1;
+}
+
+.creator-palette-drag-image.is-image {
+  width: 82px;
+  height: 82px;
+}
+
+.creator-palette-drag-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 
@@ -1587,7 +1646,7 @@ button.creator-music-option {
   display: grid;
   grid-template-rows: minmax(0, 1fr);
   overflow: hidden;
-  cursor: grab;
+  cursor: default;
   border: 2px solid rgba(255, 255, 255, 0.92);
   border-radius: 10px;
   background: var(--creator-text-bg, rgba(255, 255, 255, 0.18));
@@ -1656,7 +1715,7 @@ button.creator-music-option {
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.16);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.20);
-  cursor: grab;
+  cursor: default;
   container-type: size;
   touch-action: none;
   user-select: none;
@@ -1682,7 +1741,7 @@ button.creator-music-option {
 }
 
 .creator-sticker-box:active {
-  cursor: grabbing;
+  cursor: default;
 }
 
 .creator-sticker-box img {
@@ -2177,16 +2236,25 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
   }
 }
 
-.creator-notice {
+.creator-notice-stack {
   position: fixed;
   right: 24px;
   bottom: 24px;
   z-index: 95;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
+  justify-items: end;
   gap: 10px;
   width: min(360px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.creator-notice {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  width: 100%;
   margin: 0;
   border: 1px solid rgba(148, 163, 184, 0.28);
   border-radius: 16px;
@@ -2198,6 +2266,7 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
     0 2px 8px rgba(15, 23, 42, 0.08);
   backdrop-filter: blur(14px) saturate(1.2);
   animation: creatorToastIn 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: auto;
 }
 
 @keyframes creatorToastIn {
@@ -2251,24 +2320,6 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
 .creator-notice.is-info .creator-notice-icon {
   background: #dbeafe;
   color: #2563eb;
-}
-
-.creator-notice-close {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: #64748b;
-  cursor: pointer;
-  transition: background 0.16s ease, color 0.16s ease;
-}
-
-.creator-notice-close:hover {
-  background: #f1f5f9;
-  color: #0f172a;
 }
 
 /* ── главная: паки + основное действие ── */
@@ -2645,6 +2696,107 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
   gap: 12px;
 }
 
+.creator-wizard-design-step {
+  display: grid;
+  gap: 14px;
+}
+
+.creator-save-target {
+  display: grid;
+  gap: 12px;
+}
+
+.creator-save-target-head {
+  display: grid;
+  gap: 2px;
+}
+
+.creator-save-target-head strong {
+  font-size: 0.92rem;
+  font-weight: 850;
+}
+
+.creator-save-target-head span {
+  color: var(--commercial-muted);
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.creator-save-target-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.creator-save-target-option,
+.creator-save-target-option > button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: 1px solid var(--commercial-line);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--commercial-text);
+  padding: 11px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.creator-save-target-option.is-active,
+.creator-save-target-option.is-select.is-active {
+  border-color: #151922;
+  background: #fbfcfd;
+  box-shadow: inset 0 0 0 1px #151922;
+}
+
+.creator-save-target-option.is-select {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(170px, 240px);
+  gap: 10px;
+  padding: 0;
+}
+
+.creator-save-target-option.is-select > button {
+  border: 0;
+  background: transparent;
+  padding: 11px 0 11px 11px;
+}
+
+.creator-save-target-option strong,
+.creator-save-target-option small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.creator-save-target-option small {
+  color: var(--commercial-muted);
+  font-size: 0.74rem;
+}
+
+.creator-save-target-radio {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #a8b3c3;
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.creator-save-target-option.is-active .creator-save-target-radio {
+  border-color: #151922;
+  box-shadow: inset 0 0 0 3px #ffffff;
+  background: #151922;
+}
+
+.creator-save-target-option select {
+  align-self: center;
+  margin-right: 11px;
+}
+
 /* ── шапка проекта и вкладки ── */
 
 .creator-workspace-shell {
@@ -2854,7 +3006,7 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
 
 .creator-template-picker {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
   align-items: end;
   margin-bottom: 12px;
@@ -2880,8 +3032,8 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
 
 .creator-single-form {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(170px, 210px);
-  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(262px, 320px);
+  gap: 22px;
   align-items: start;
 }
 
@@ -2939,8 +3091,8 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
 }
 
 .creator-card-preview-phone {
-  width: min(100%, 210px);
-  max-width: 210px;
+  width: min(100%, 262px);
+  max-width: 262px;
 }
 
 .creator-card-preview-phone .creator-phone-screen {
@@ -3613,7 +3765,6 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
   min-height: clamp(500px, calc(100vh - 300px), 620px);
 }
 
-.creator-text-pane .creator-element-switch,
 .creator-text-pane .form-control,
 .creator-text-pane .creator-capacity-hint {
   grid-column: 1 / -1;
@@ -3621,35 +3772,6 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
 
 .creator-text-pane .creator-designer-textarea {
   min-height: clamp(120px, calc(100vh - 720px), 210px);
-}
-
-.creator-element-switch {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
-}
-
-.creator-element-switch button {
-  min-height: 32px;
-  border: 1px solid var(--commercial-line);
-  border-radius: 8px;
-  background: #ffffff;
-  color: var(--commercial-text);
-  font-size: 0.74rem;
-  font-weight: 850;
-  padding: 5px 8px;
-  transition: background 0.16s ease, border-color 0.16s ease;
-}
-
-.creator-element-switch button:hover {
-  border-color: var(--commercial-line-strong);
-  background: var(--commercial-soft);
-}
-
-.creator-element-switch button.is-active {
-  border-color: var(--commercial-accent);
-  background: var(--commercial-soft);
-  color: var(--commercial-accent-strong);
 }
 
 .creator-capacity-hint {
@@ -3739,7 +3861,7 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
 }
 
 .creator-layout-box:active {
-  cursor: grabbing;
+  cursor: default;
 }
 
 .creator-motion-preview-box.is-active,
@@ -3837,29 +3959,6 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
   display: none !important;
 }
 
-.creator-moveable.is-active .moveable-control.moveable-rotation-control {
-  width: 24px !important;
-  height: 24px !important;
-  margin-top: -12px !important;
-  margin-left: -12px !important;
-  border: 2px solid #ffffff !important;
-  border-radius: 999px !important;
-  background: #151922 !important;
-  box-shadow: 0 7px 18px rgba(15, 23, 42, 0.26) !important;
-}
-
-.creator-moveable.is-active .moveable-control.moveable-rotation-control::before {
-  content: "↻";
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 900;
-  line-height: 1;
-}
-
 /* ── вкладка «Видео»: настройки из шаблона ── */
 
 .creator-template-settings {
@@ -3943,7 +4042,21 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
     order: 2;
   }
 
-  .creator-notice {
+  .creator-save-target-options,
+  .creator-save-target-option.is-select {
+    grid-template-columns: 1fr;
+  }
+
+  .creator-save-target-option.is-select > button {
+    padding-right: 11px;
+  }
+
+  .creator-save-target-option select {
+    margin: 0 11px 11px;
+    width: calc(100% - 22px);
+  }
+
+  .creator-notice-stack {
     right: 12px;
     bottom: 12px;
     width: calc(100vw - 24px);

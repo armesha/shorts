@@ -7,7 +7,6 @@ import {
   AlertTriangle,
   Check,
   Info,
-  X,
 } from "lucide-react";
 import { ApiError, get, send } from "../lib/api/http";
 import { useT } from "../lib/i18n";
@@ -76,7 +75,7 @@ export default function Creator() {
   const [summary, setSummary] = useState<CreatorSummary | null>(null);
   const [loadingSummary, setLoadingSummary] = useState(true);
   const [summaryError, setSummaryError] = useState<string | null>(null);
-  const [notice, setNoticeState] = useState<Notice>(null);
+  const [notices, setNotices] = useState<Array<Exclude<Notice, null> & { id: number }>>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
 
@@ -86,7 +85,8 @@ export default function Creator() {
   const [autosaveStatus, setAutosaveStatus] = useState<AutosaveStatus>("idle");
   const lastSavedDesignRef = useRef("");
   const autosaveStatusTimerRef = useRef<number | null>(null);
-  const noticeTimerRef = useRef<number | null>(null);
+  const noticeTimersRef = useRef<number[]>([]);
+  const noticeSeqRef = useRef(0);
   const appliedProjectRef = useRef("");
 
   // ── состояние редактора шаблона (общий для мастера и вкладки «Шаблон») ──
@@ -96,6 +96,7 @@ export default function Creator() {
   const [presetId, setPresetId] = useState(initialPreset.id);
   const [background, setBackground] = useState("");
   const [backgroundName, setBackgroundName] = useState("");
+  const [templateTargetPackId, setTemplateTargetPackId] = useState("");
   const [textLayout, setTextLayout] = useState<TextLayout>(() => cloneTextLayout(DEFAULT_TEXT_LAYOUT));
   const [textStyle, setTextStyle] = useState<TextStyle>(() => ({ ...DEFAULT_TEXT_STYLE }));
   const [sticker, setSticker] = useState<StickerOverlay | null>(null);
@@ -111,11 +112,19 @@ export default function Creator() {
   const [values, setValues] = useState<CardValues>(initialPreset.defaults);
 
   const setNotice = useCallback((next: Notice) => {
-    if (noticeTimerRef.current) window.clearTimeout(noticeTimerRef.current);
-    setNoticeState(next);
-    if (next && next.type !== "error") {
-      noticeTimerRef.current = window.setTimeout(() => setNoticeState(null), 4200);
+    if (!next) {
+      for (const timer of noticeTimersRef.current) window.clearTimeout(timer);
+      noticeTimersRef.current = [];
+      setNotices([]);
+      return;
     }
+    const id = ++noticeSeqRef.current;
+    setNotices((current) => [...current, { ...next, id }].slice(-5));
+    const timer = window.setTimeout(() => {
+      setNotices((current) => current.filter((notice) => notice.id !== id));
+      noticeTimersRef.current = noticeTimersRef.current.filter((item) => item !== timer);
+    }, next.type === "error" ? 7000 : 4200);
+    noticeTimersRef.current.push(timer);
   }, []);
 
   const loadSummary = useCallback(async (quiet = false) => {
@@ -138,7 +147,8 @@ export default function Creator() {
 
   useEffect(() => () => {
     if (autosaveStatusTimerRef.current) window.clearTimeout(autosaveStatusTimerRef.current);
-    if (noticeTimerRef.current) window.clearTimeout(noticeTimerRef.current);
+    for (const timer of noticeTimersRef.current) window.clearTimeout(timer);
+    noticeTimersRef.current = [];
   }, []);
 
   const packs = summary?.packs ?? [];
@@ -384,7 +394,6 @@ export default function Creator() {
   // ── маршрутизация страницы: главная / мастер / проект ──
   const projectId = searchParams.get("project") ?? "";
   const wizardOpen = searchParams.get("new") === "1";
-  const templateTargetPackId = wizardOpen ? searchParams.get("targetPack") ?? "" : "";
   const tabParam = searchParams.get("tab");
   const projectTab: ProjectTab = tabParam === "template" || tabParam === "videos" ? tabParam : "cards";
 
@@ -408,6 +417,7 @@ export default function Creator() {
     setTemplateNameValue("");
     setBackground("");
     setBackgroundName("");
+    setTemplateTargetPackId("");
     setPresetId(preset.id);
     setTemplateType(preset.templateType);
     setPackLang(preset.lang || "ru");
@@ -432,14 +442,6 @@ export default function Creator() {
   const startNewProject = useCallback(() => {
     resetEditorForNewProject();
     setSearchParams({ new: "1" }, { replace: false });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [availablePresets, fallbackPresets, setSearchParams]);
-
-  const startNewTemplateInPack = useCallback((pack: CreatorPack) => {
-    const id = packId(pack);
-    if (!id) return;
-    resetEditorForNewProject();
-    setSearchParams({ new: "1", targetPack: id }, { replace: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [availablePresets, fallbackPresets, setSearchParams]);
 
@@ -720,7 +722,6 @@ export default function Creator() {
 
   const view: "home" | "wizard" | "project" = wizardOpen ? "wizard" : projectId ? "project" : "home";
   const showAutosaveStatus = view === "project" && Boolean(templateSourcePackId) && autosaveStatus !== "idle";
-  const templateTargetPack = templateTargetPackId ? packs.find((pack) => packId(pack) === templateTargetPackId) ?? null : null;
 
   return (
     <div className="creator-page creator-projects-page">
@@ -736,15 +737,16 @@ export default function Creator() {
           <span>{t("creator.featureDisabled")}</span>
         </div>
       )}
-      {notice && (
-        <div className={`creator-notice is-${notice.type}`} role="status">
-          <span className="creator-notice-icon">
-            {notice.type === "error" ? <AlertTriangle size={17} /> : notice.type === "success" ? <Check size={17} /> : <Info size={17} />}
-          </span>
-          <span>{notice.text}</span>
-          <button type="button" className="creator-notice-close" onClick={() => setNotice(null)} aria-label={t("creator.close")}>
-            <X size={14} />
-          </button>
+      {notices.length > 0 && (
+        <div className="creator-notice-stack" aria-live="polite" aria-relevant="additions">
+          {notices.map((notice) => (
+            <div key={notice.id} className={`creator-notice is-${notice.type}`} role="status">
+              <span className="creator-notice-icon">
+                {notice.type === "error" ? <AlertTriangle size={17} /> : notice.type === "success" ? <Check size={17} /> : <Info size={17} />}
+              </span>
+              <span>{notice.text}</span>
+            </div>
+          ))}
         </div>
       )}
 
@@ -790,7 +792,9 @@ export default function Creator() {
             creating={creating}
             onCancel={goHome}
             onCreate={() => void createProject()}
-            targetPackName={templateTargetPack?.name ? String(templateTargetPack.name) : ""}
+            packs={packs}
+            targetPackId={templateTargetPackId}
+            setTargetPackId={setTemplateTargetPackId}
           />
         </div>
       ) : view === "project" ? (
@@ -889,7 +893,6 @@ export default function Creator() {
             packs={packs}
             onOpen={(pack) => openProject(pack, "cards")}
             onNewPack={startNewProject}
-            onNewInPack={startNewTemplateInPack}
             onDelete={deletePackFromHome}
             disabled={featureDisabled}
             busy={busy}
