@@ -2181,28 +2181,94 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
   position: fixed;
   right: 24px;
   bottom: 24px;
-  z-index: 80;
-  width: min(380px, calc(100vw - 32px));
+  z-index: 95;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  width: min(360px, calc(100vw - 32px));
   margin: 0;
-  border-radius: 12px;
-  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.22);
-  animation: creatorToastIn 0.18s ease-out;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #172033;
+  padding: 12px 12px 12px 13px;
+  box-shadow:
+    0 22px 55px rgba(15, 23, 42, 0.18),
+    0 2px 8px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(14px) saturate(1.2);
+  animation: creatorToastIn 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 @keyframes creatorToastIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translate3d(12px, 12px, 0) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
 .creator-notice > span {
   flex: 1 1 auto;
   min-width: 0;
+}
+
+.creator-notice.is-success {
+  border-color: rgba(20, 184, 166, 0.34);
+}
+
+.creator-notice.is-error {
+  border-color: rgba(239, 68, 68, 0.34);
+}
+
+.creator-notice.is-info {
+  border-color: rgba(59, 130, 246, 0.30);
+}
+
+.creator-notice-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: #eef2f7;
+  color: #334155;
+}
+
+.creator-notice.is-success .creator-notice-icon {
+  background: #dff8ee;
+  color: #047857;
+}
+
+.creator-notice.is-error .creator-notice-icon {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.creator-notice.is-info .creator-notice-icon {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.creator-notice-close {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.creator-notice-close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
 }
 
 /* ── главная: паки + основное действие ── */
@@ -2255,8 +2321,6 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
 
 .creator-project-tile {
   position: relative;
-  display: grid;
-  gap: 0;
   overflow: hidden;
   border: 1px solid var(--commercial-line);
   border-radius: 12px;
@@ -2270,6 +2334,23 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
   border-color: var(--commercial-line-strong);
   box-shadow: 0 16px 34px rgba(15, 23, 42, 0.10);
   transform: translateY(-2px);
+}
+
+.creator-project-tile-main {
+  position: relative;
+  display: grid;
+  gap: 0;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.creator-project-tile-main:disabled {
+  cursor: default;
 }
 
 .creator-project-thumb {
@@ -2346,6 +2427,97 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
 .creator-project-tile:hover .creator-project-open {
   opacity: 1;
   transform: translateX(0);
+}
+
+.creator-project-delete-home {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.84);
+  color: #334155;
+  opacity: 0;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(10px);
+  transform: translateY(-3px);
+  transition: opacity 0.16s ease, transform 0.16s ease, background 0.16s ease, color 0.16s ease;
+}
+
+.creator-project-tile:hover .creator-project-delete-home,
+.creator-project-delete-home:focus-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.creator-project-delete-home:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.creator-destination-modal {
+  max-width: 520px;
+}
+
+.creator-destination-list {
+  display: grid;
+  gap: 8px;
+}
+
+.creator-destination-option {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: 1px solid var(--commercial-line);
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 11px;
+  color: var(--commercial-text);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+}
+
+.creator-destination-option:hover {
+  border-color: var(--commercial-line-strong);
+  background: #f8fafc;
+  transform: translateY(-1px);
+}
+
+.creator-destination-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: var(--commercial-soft);
+  color: var(--commercial-text);
+}
+
+.creator-destination-option span:last-child {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.creator-destination-option strong,
+.creator-destination-option small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.creator-destination-option small {
+  color: var(--commercial-muted);
+  font-size: 0.76rem;
 }
 
 /* ── мастер нового проекта ── */
@@ -2653,6 +2825,12 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
   font-size: 1.7rem;
 }
 
+.creator-mini-card.is-phone-preview {
+  height: 100%;
+  border-radius: 0;
+  aspect-ratio: auto;
+}
+
 .creator-mini-sticker img {
   width: 100%;
   height: 100%;
@@ -2756,6 +2934,33 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
 .creator-single-preview {
   position: sticky;
   top: 78px;
+  display: grid;
+  justify-items: center;
+}
+
+.creator-card-preview-phone {
+  width: min(100%, 210px);
+  max-width: 210px;
+}
+
+.creator-card-preview-phone .creator-phone-screen {
+  border-radius: 32px;
+}
+
+.creator-card-preview-phone .creator-device-island {
+  top: 9px;
+  width: 68px;
+  height: 20px;
+}
+
+.creator-card-preview-phone .creator-device-button.is-left {
+  top: 70px;
+  height: 48px;
+}
+
+.creator-card-preview-phone .creator-device-button.is-right {
+  top: 112px;
+  height: 66px;
 }
 
 /* ── массовый импорт ── */

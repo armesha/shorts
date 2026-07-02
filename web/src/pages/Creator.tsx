@@ -384,6 +384,7 @@ export default function Creator() {
   // ── маршрутизация страницы: главная / мастер / проект ──
   const projectId = searchParams.get("project") ?? "";
   const wizardOpen = searchParams.get("new") === "1";
+  const templateTargetPackId = wizardOpen ? searchParams.get("targetPack") ?? "" : "";
   const tabParam = searchParams.get("tab");
   const projectTab: ProjectTab = tabParam === "template" || tabParam === "videos" ? tabParam : "cards";
 
@@ -431,6 +432,14 @@ export default function Creator() {
   const startNewProject = useCallback(() => {
     resetEditorForNewProject();
     setSearchParams({ new: "1" }, { replace: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [availablePresets, fallbackPresets, setSearchParams]);
+
+  const startNewTemplateInPack = useCallback((pack: CreatorPack) => {
+    const id = packId(pack);
+    if (!id) return;
+    resetEditorForNewProject();
+    setSearchParams({ new: "1", targetPack: id }, { replace: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [availablePresets, fallbackPresets, setSearchParams]);
 
@@ -500,17 +509,51 @@ export default function Creator() {
     }
   }
 
+  function namedTemplates(name: string): unknown[] {
+    const cleanName = name.trim() || activePreset.label || t("creator.createTemplate");
+    return activeTemplatePayload.map((template, index) => {
+      if (!template || typeof template !== "object" || Array.isArray(template)) return template;
+      return {
+        ...(template as CreatorRecord),
+        name: activeTemplatePayload.length > 1 ? `${cleanName} ${index + 1}` : cleanName,
+      };
+    });
+  }
+
   async function createProject(): Promise<void> {
     const name = templateNameValue.trim() || activePreset.label || t("creator.untitledPack");
     setNotice(null);
     setCreating(true);
     try {
+      const templates = namedTemplates(name);
+      if (templateTargetPackId) {
+        const existing = await get<CreatorPack>(`/creator/packs/${encodeURIComponent(templateTargetPackId)}`);
+        const previousTemplates = Array.isArray(existing.templates) ? existing.templates : [];
+        const res = await send<{ pack: CreatorPack }>(`/creator/packs/${encodeURIComponent(templateTargetPackId)}/design`, "PATCH", {
+          templates: [...previousTemplates, ...templates],
+          templateType,
+          background: background || undefined,
+          layout: textLayout,
+          designState,
+        });
+        const pack = res.pack;
+        const id = packId(pack);
+        lastSavedDesignRef.current = serializedDesignState;
+        appliedProjectRef.current = id;
+        setActivePack(pack);
+        setTemplateSourcePackId(id);
+        syncPackEverywhere(pack);
+        setSearchParams({ project: id, tab: "cards" }, { replace: false });
+        setNotice({ type: "success", text: t("creator.templateCreatedInPack", { name: pack.name || t("creator.untitledPack") }) });
+        void loadSummary(true);
+        return;
+      }
       const res = await send<{ pack: CreatorPack }>("/creator/packs", "POST", {
         name,
         lang: activePreset.lang || packLang,
         templateType,
         presetId: activePreset.id,
-        templates: activeTemplatePayload,
+        templates,
         background: background || undefined,
         layout: textLayout,
         designState,
@@ -549,12 +592,24 @@ export default function Creator() {
   async function deleteProject() {
     const id = projectId;
     if (!id) return;
+    await deletePackById(id, true);
+  }
+
+  async function deletePackById(id: string, navigateHome: boolean): Promise<boolean> {
     const res = await run("delete-pack", () => send(`/creator/packs/${encodeURIComponent(id)}`, "DELETE"));
     if (res !== null) {
       setSummary((current) => current ? { ...current, packs: current.packs.filter((pack) => packId(pack) !== id) } : current);
       setNotice({ type: "success", text: t("creator.projectDeleted") });
-      goHome();
+      if (navigateHome) goHome();
+      return true;
     }
+    return false;
+  }
+
+  async function deletePackFromHome(pack: CreatorPack): Promise<boolean> {
+    const id = packId(pack);
+    if (!id) return false;
+    return deletePackById(id, false);
   }
 
   const cardsOps: CardsOps = {
@@ -665,6 +720,7 @@ export default function Creator() {
 
   const view: "home" | "wizard" | "project" = wizardOpen ? "wizard" : projectId ? "project" : "home";
   const showAutosaveStatus = view === "project" && Boolean(templateSourcePackId) && autosaveStatus !== "idle";
+  const templateTargetPack = templateTargetPackId ? packs.find((pack) => packId(pack) === templateTargetPackId) ?? null : null;
 
   return (
     <div className="creator-page creator-projects-page">
@@ -681,10 +737,12 @@ export default function Creator() {
         </div>
       )}
       {notice && (
-        <div className={`creator-notice alert text-sm ${notice.type === "error" ? "alert-error" : notice.type === "success" ? "alert-success" : "alert-info"}`} role="status">
-          {notice.type === "error" ? <AlertTriangle size={18} /> : notice.type === "success" ? <Check size={18} /> : <Info size={18} />}
+        <div className={`creator-notice is-${notice.type}`} role="status">
+          <span className="creator-notice-icon">
+            {notice.type === "error" ? <AlertTriangle size={17} /> : notice.type === "success" ? <Check size={17} /> : <Info size={17} />}
+          </span>
           <span>{notice.text}</span>
-          <button type="button" className="btn btn-ghost btn-xs btn-square" onClick={() => setNotice(null)} aria-label={t("creator.close")}>
+          <button type="button" className="creator-notice-close" onClick={() => setNotice(null)} aria-label={t("creator.close")}>
             <X size={14} />
           </button>
         </div>
@@ -732,6 +790,7 @@ export default function Creator() {
             creating={creating}
             onCancel={goHome}
             onCreate={() => void createProject()}
+            targetPackName={templateTargetPack?.name ? String(templateTargetPack.name) : ""}
           />
         </div>
       ) : view === "project" ? (
@@ -829,8 +888,11 @@ export default function Creator() {
           <ProjectsHome
             packs={packs}
             onOpen={(pack) => openProject(pack, "cards")}
-            onNew={startNewProject}
+            onNewPack={startNewProject}
+            onNewInPack={startNewTemplateInPack}
+            onDelete={deletePackFromHome}
             disabled={featureDisabled}
+            busy={busy}
           />
         </div>
       )}

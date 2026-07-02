@@ -53,6 +53,7 @@ export function ProjectWizard({
   creating,
   onCancel,
   onCreate,
+  targetPackName,
 }: {
   presets: TemplatePreset[];
   presetId: string;
@@ -88,6 +89,7 @@ export function ProjectWizard({
   creating: boolean;
   onCancel: () => void;
   onCreate: () => void;
+  targetPackName?: string;
 }) {
   const { t } = useT();
   const [step, setStep] = useState<WizardStep>("basis");
@@ -117,7 +119,7 @@ export function ProjectWizard({
       <header className="creator-wizard-head">
         <div className="creator-wizard-title">
           <h1>{t("creator.newProject")}</h1>
-          <span>{templateNameValue.trim() || t("creator.newProjectHint")}</span>
+          <span>{targetPackName ? t("creator.templateTargetPack", { name: targetPackName }) : templateNameValue.trim() || t("creator.newProjectHint")}</span>
         </div>
         <ol className="creator-wizard-steps" aria-label={t("creator.flowAria")}>
           {WIZARD_STEPS.map((id, index) => (

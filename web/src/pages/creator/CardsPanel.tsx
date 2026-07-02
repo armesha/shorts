@@ -150,6 +150,32 @@ function CharCounter({ value, max }: { value: number; max: number }) {
   return <span className={`creator-char-counter ${value > max ? "is-over" : ""}`}>{value}/{max}</span>;
 }
 
+function PhoneMiniPreview({
+  styling,
+  title,
+  text,
+}: {
+  styling: MiniCardStyling;
+  title: string;
+  text: string;
+}) {
+  return (
+    <div className={`creator-phone creator-card-preview-phone ${styling.tone}`}>
+      <span className="creator-device-button is-left" aria-hidden="true" />
+      <span className="creator-device-button is-right" aria-hidden="true" />
+      <div className="creator-phone-screen">
+        <span className="creator-device-island" aria-hidden="true" />
+        <MiniCard
+          styling={styling}
+          title={title}
+          text={text}
+          className="is-large is-phone-preview"
+        />
+      </div>
+    </div>
+  );
+}
+
 function SingleCardForm({
   limits,
   styling,
@@ -224,11 +250,10 @@ function SingleCardForm({
         </div>
       </div>
       <div className="creator-single-preview">
-        <MiniCard
+        <PhoneMiniPreview
           styling={styling}
           title={title.trim() || t("creator.previewHeadingFallback")}
           text={text.trim() || t("creator.previewBodyFallback")}
-          className="is-large"
         />
       </div>
     </div>
@@ -542,7 +567,7 @@ function EditCardModal({
             )}
           </div>
           <div className="creator-single-preview">
-            <MiniCard styling={styling} title={title.trim() || t("creator.previewHeadingFallback")} text={text.trim() || t("creator.previewBodyFallback")} className="is-large" />
+            <PhoneMiniPreview styling={styling} title={title.trim() || t("creator.previewHeadingFallback")} text={text.trim() || t("creator.previewBodyFallback")} />
           </div>
         </div>
         <footer>
