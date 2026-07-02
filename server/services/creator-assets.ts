@@ -141,7 +141,6 @@ function fromExistingPacks(): CreatorPreset[] {
     { file: "data/packs/motivation-ru-superadmin.json", id: "motivation-ru", name: "Мотивация RU", templateType: "motivation", lang: "ru" },
     { file: "data/packs/psychology-ru-superadmin.json", id: "psychology-ru", name: "Психология RU", templateType: "psychology", lang: "ru" },
     { file: "data/packs/chistes-es-public-domain.json", id: "jokes-es", name: "Анекдоты ES", templateType: "jokes", lang: "es" },
-    { file: "data/packs/curiosaurs-english-facts-mqgt20em.json", id: "kids-facts-en", name: "Kids Facts EN", templateType: "facts", lang: "en" },
   ];
   for (const candidate of dataPackCandidates) {
     const abs = resolve(process.cwd(), candidate.file);
@@ -156,7 +155,7 @@ function fromExistingPacks(): CreatorPreset[] {
         templateType: candidate.templateType,
         lang: candidate.lang,
         templates,
-        sample: pack.cards?.[0]?.values ?? sampleForType(candidate.templateType),
+      sample: sampleForType(candidate.templateType),
       });
     } catch {
       /* optional local packs may be absent or stale */
@@ -168,21 +167,21 @@ function fromExistingPacks(): CreatorPreset[] {
 function sampleForType(type: string): Record<string, string | string[]> {
   if (type === "memes") {
     return {
-      title: "Когда сказал: «сейчас быстро»",
-      text: "и через три часа всё ещё выбираешь идеальный фон",
+      title: "Заголовок мема",
+      text: "Текст мема",
       source: "мем",
     };
   }
   if (type === "motivation") {
-    return { title: "Три правила спокойного дня", points: ["Начни с малого", "Убери лишний шум", "Заверши одно дело"], source: "сервисный шаблон" };
+    return { title: "Заголовок мотивации", points: ["Первый пункт", "Второй пункт", "Третий пункт"], source: "мотивация" };
   }
   if (type === "psychology") {
-    return { title: "Признаки усталости", text: ["Раздражают мелочи", "Сложно начать", "Нужна пауза"], source: "сервисный шаблон" };
+    return { title: "Заголовок психологии", text: ["Первый пункт", "Второй пункт", "Третий пункт"], source: "психология" };
   }
   if (type === "facts") {
-    return { title: "Короткий факт", text: "Человеческий мозг лучше запоминает истории, чем сухие списки.", source: "сервисный шаблон" };
+    return { title: "Заголовок факта", text: "Текст факта", source: "факт" };
   }
-  return { title: "Короткий анекдот", text: "Сначала герой всё понял неправильно. Потом оказалось, что именно это и было самым смешным.", source: "сервисный шаблон" };
+  return { title: "Заголовок анекдота", text: "Текст анекдота", source: "анекдот" };
 }
 
 export function creatorPresets(): CreatorPreset[] {
@@ -223,8 +222,8 @@ export function creatorPresets(): CreatorPreset[] {
         }),
       ],
       sample: {
-        title: "Встречаются два друга",
-        text: "— Ты почему такой довольный?\n— Нашёл кнопку «сделать красиво».\n— И где она?\n— Пока ищу.",
+        title: "Заголовок анекдота",
+        text: "Текст анекдота",
         source: "анекдот",
         cta: "ещё",
       },
@@ -248,10 +247,10 @@ export function creatorPresets(): CreatorPreset[] {
         }),
       ],
       sample: {
-        title: "Keep moving",
-        points: ["Small steps count", "Quiet focus wins", "Finish one thing today"],
-        source: "daily drive",
-        cta: "Start now",
+        title: "Motivation title",
+        points: ["First point", "Second point", "Third point"],
+        source: "motivation",
+        cta: "Action",
       },
     },
   ];

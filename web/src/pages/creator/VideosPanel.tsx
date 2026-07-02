@@ -1,4 +1,5 @@
 // Вкладка «Видео» проекта: собрать MP4/PNG по карточке, ZIP по паку и галерея готовых файлов.
+// Длительность/музыка/GIF берутся из настроек шаблона (правятся на вкладке «Шаблон»).
 import { useMemo, useState } from "react";
 import {
   Archive,
@@ -7,19 +8,20 @@ import {
   FileImage,
   Loader2,
   Mic,
+  Music,
+  Pencil,
+  Timer,
   Trash2,
 } from "lucide-react";
 import { useT } from "../../lib/i18n";
 import { MiniCard, type MiniCardStyling } from "./MiniCard";
 import { cardTitleText, packCardItems, parseUtcDate, type GalleryItem } from "./model";
-import type { CreatorAsset, CreatorPack } from "./types";
+import type { CreatorAsset, CreatorPack, MediaSettings } from "./types";
 
 export type ExportOptions = {
   index: number;
   format: "mp4" | "png";
   voiceover: boolean;
-  durationSec: number;
-  music: string;
 };
 
 export type VideosOps = {
@@ -33,8 +35,9 @@ export function VideosPanel({
   styling,
   gallery,
   music,
-  defaultDurationSec,
-  defaultMusic,
+  motion,
+  mediaSettings,
+  onOpenTemplate,
   ops,
   busy,
 }: {
@@ -42,8 +45,9 @@ export function VideosPanel({
   styling: MiniCardStyling;
   gallery: GalleryItem[];
   music: CreatorAsset[];
-  defaultDurationSec: number;
-  defaultMusic: string;
+  motion: CreatorAsset[];
+  mediaSettings: MediaSettings;
+  onOpenTemplate: () => void;
   ops: VideosOps;
   busy: string | null;
 }) {
@@ -52,8 +56,6 @@ export function VideosPanel({
   const [index, setIndex] = useState(0);
   const [format, setFormat] = useState<"mp4" | "png">("mp4");
   const [voiceover, setVoiceover] = useState(false);
-  const [durationSec, setDurationSec] = useState(defaultDurationSec);
-  const [musicId, setMusicId] = useState(defaultMusic);
   const [zipLimit, setZipLimit] = useState(Math.max(1, Math.min(cards.length || 1, 12)));
   const [deleteArmedId, setDeleteArmedId] = useState<number | null>(null);
 
@@ -71,12 +73,27 @@ export function VideosPanel({
     [locale],
   );
 
+  const musicLabel = useMemo(() => {
+    const tracks = mediaSettings.musicTracks;
+    if (!tracks.length) return t("creator.noMusic");
+    if (tracks.includes("auto")) return t("creator.musicAuto");
+    const names = tracks
+      .map((id) => String(music.find((item) => String(item.id) === id)?.name || id).trim())
+      .filter(Boolean);
+    if (names.length === 1) return names[0];
+    return t("creator.summaryMusicMany", { count: names.length });
+  }, [mediaSettings.musicTracks, music, t]);
+
+  const gifLabel = useMemo(() => {
+    if (mediaSettings.motion === "none") return "";
+    if (mediaSettings.motion === "custom") return mediaSettings.customMotionName || t("creator.customGif");
+    return String(motion.find((item) => String(item.id) === mediaSettings.motion)?.name || mediaSettings.motion);
+  }, [mediaSettings.customMotionName, mediaSettings.motion, motion, t]);
+
   const exportOptions = (): ExportOptions => ({
     index: safeIndex,
     format,
     voiceover,
-    durationSec,
-    music: musicId,
   });
 
   if (!cards.length) {
@@ -135,38 +152,28 @@ export function VideosPanel({
           </div>
 
           {format === "mp4" && (
-            <>
-              <div className="creator-video-duration">
-                <span className="creator-tool-label">
-                  {t("creator.durationSec")}
-                  <span className="creator-range-value">{t("creator.secondsShort", { count: durationSec })}</span>
-                </span>
-                <input
-                  className="creator-range"
-                  type="range"
-                  min="6"
-                  max="30"
-                  step="1"
-                  value={durationSec}
-                  onChange={(event) => setDurationSec(Number(event.target.value))}
-                  aria-label={t("creator.durationSec")}
-                />
-              </div>
+            <div className="creator-template-settings" role="note">
+              <span className="creator-template-settings-item">
+                <Timer size={13} aria-hidden="true" />
+                {t("creator.secondsShort", { count: mediaSettings.durationSec })}
+              </span>
               {!voiceover && (
-                <label className="form-control">
-                  <span className="label-text">{t("creator.music")}</span>
-                  <select className="select select-bordered select-sm" value={musicId} onChange={(event) => setMusicId(event.target.value)}>
-                    <option value="none">{t("creator.noMusic")}</option>
-                    <option value="auto">{t("creator.musicAuto")}</option>
-                    {music.map((track) => (
-                      <option key={String(track.id)} value={String(track.id)}>
-                        {String(track.name || track.id)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                <span className="creator-template-settings-item">
+                  <Music size={13} aria-hidden="true" />
+                  {musicLabel}
+                </span>
               )}
-            </>
+              {gifLabel && (
+                <span className="creator-template-settings-item">
+                  <Clapperboard size={13} aria-hidden="true" />
+                  {gifLabel}
+                </span>
+              )}
+              <button type="button" className="creator-template-settings-edit" onClick={onOpenTemplate}>
+                <Pencil size={12} aria-hidden="true" />
+                {t("creator.editInTemplate")}
+              </button>
+            </div>
           )}
 
           <button

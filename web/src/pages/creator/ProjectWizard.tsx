@@ -1,14 +1,13 @@
-// Мастер нового проекта: 1) основа (название+фон) → 2) дизайн → 3) музыка и видео → создать.
+// Мастер нового проекта: 1) основа (название + фон) → 2) дизайн и музыка (одно пространство) → создать.
 import { type ChangeEvent, type CSSProperties, type Dispatch, type SetStateAction, useState } from "react";
 import { ArrowRight, Check, ChevronLeft, FileImage, Loader2, X } from "lucide-react";
 import { langTag } from "../../lib/deck";
 import { useT } from "../../lib/i18n";
-import { CreatorPreviewPanel, DesignEditor, MediaSettingsPanel } from "./editor";
+import { CreatorPreviewPanel, DesignEditor, type Capacities, type FontSizes } from "./editor";
 import { creatorServiceAssetUrl, cssUrl, firstTemplateImageSrc, templateTone, usableBackgroundUrl } from "./model";
 import type {
   CardValues,
   CreatorAsset,
-  CreatorDesignState,
   MediaSettings,
   StickerOverlay,
   TemplatePreset,
@@ -16,7 +15,7 @@ import type {
   TextStyle,
 } from "./types";
 
-const WIZARD_STEPS = ["basis", "design", "media"] as const;
+const WIZARD_STEPS = ["basis", "design"] as const;
 type WizardStep = (typeof WIZARD_STEPS)[number];
 
 export function ProjectWizard({
@@ -44,7 +43,8 @@ export function ProjectWizard({
   setMediaSettings,
   uploadMotionGif,
   uploadMusic,
-  applyDesignState,
+  capacities,
+  fontSizes,
   canUndoDesign,
   canRedoDesign,
   undoDesign,
@@ -78,7 +78,8 @@ export function ProjectWizard({
   setMediaSettings: Dispatch<SetStateAction<MediaSettings>>;
   uploadMotionGif: (file: File) => Promise<void>;
   uploadMusic: (file: File) => Promise<void>;
-  applyDesignState: (state: CreatorDesignState) => void;
+  capacities: Capacities;
+  fontSizes: FontSizes;
   canUndoDesign: boolean;
   canRedoDesign: boolean;
   undoDesign: () => void;
@@ -94,9 +95,8 @@ export function ProjectWizard({
   const stepLabels: Record<WizardStep, string> = {
     basis: t("creator.wizardBasis"),
     design: t("creator.wizardDesign"),
-    media: t("creator.wizardMedia"),
   };
-  const canCreate = Boolean(templateNameValue.trim());
+  const canCreate = !creating;
 
   const handleBackgroundUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const input = event.currentTarget;
@@ -200,10 +200,9 @@ export function ProjectWizard({
             </div>
             <CreatorPreviewPanel activePreset={activePreset} background={background} />
           </div>
-        ) : step === "design" ? (
+        ) : (
           <div className="creator-card">
             <DesignEditor
-              templateNameValue={templateNameValue}
               activePreset={activePreset}
               values={values}
               updateValue={updateValue}
@@ -215,28 +214,18 @@ export function ProjectWizard({
               setSticker={setSticker}
               uploadSticker={uploadSticker}
               motion={motion}
+              music={music}
+              uploadMusic={uploadMusic}
               mediaSettings={mediaSettings}
               setMediaSettings={setMediaSettings}
               uploadMotionGif={uploadMotionGif}
               background={background}
-              applyDesignState={applyDesignState}
+              capacities={capacities}
+              fontSizes={fontSizes}
               canUndoDesign={canUndoDesign}
               canRedoDesign={canRedoDesign}
               undoDesign={undoDesign}
               redoDesign={redoDesign}
-            />
-          </div>
-        ) : (
-          <div className="creator-card">
-            <MediaSettingsPanel
-              activePreset={activePreset}
-              values={values}
-              background={background}
-              music={music}
-              motion={motion}
-              mediaSettings={mediaSettings}
-              setMediaSettings={setMediaSettings}
-              uploadMusic={uploadMusic}
             />
           </div>
         )}
@@ -257,9 +246,9 @@ export function ProjectWizard({
             <ArrowRight size={16} />
           </button>
         ) : (
-          <button type="button" className="btn btn-sm btn-primary gap-2" onClick={onCreate} disabled={creating || !canCreate}>
+          <button type="button" className="btn btn-sm btn-primary gap-2" onClick={onCreate} disabled={!canCreate}>
             {creating ? <Loader2 className="animate-spin" size={16} /> : <Check size={16} />}
-            {t("creator.createProject")}
+            {t("creator.createTemplate")}
           </button>
         )}
       </footer>

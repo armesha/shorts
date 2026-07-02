@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import TelegramConnect from "../components/TelegramConnect";
 import { AppIcon } from "../components/AppIcon";
 import { apiClient, ApiError, type AuthUser } from "../lib/api";
@@ -9,7 +9,6 @@ import { useT } from "../lib/i18n";
 export default function Register() {
   const { t } = useT();
   const { setUser } = useAuth();
-  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
@@ -27,7 +26,7 @@ export default function Register() {
   function done(user?: AuthUser) {
     if (!user) return;
     setUser(user);
-    navigate("/creator", { replace: true });
+    window.location.replace("/creator");
   }
 
   async function submit(e: FormEvent) {

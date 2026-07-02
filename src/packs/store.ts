@@ -37,6 +37,8 @@ export type CardValues = Record<string, string | string[]>;
 export interface StoredCard {
   values: CardValues;
   addedAt: string;
+  /** Which pack template this creator card should render with. Older cards omit it and keep round-robin fallback. */
+  templateIndex?: number;
   /** Optional text to synthesize with TTS for creator exports. Falls back to readable card text. */
   narration?: string;
 }
@@ -438,16 +440,29 @@ export function addCards(
 export interface CreatorCardInput {
   values?: CardValues;
   narration?: string;
+  templateIndex?: number;
   [role: string]: unknown;
 }
 
-function cardValuesFromCreatorInput(input: unknown): { values: unknown; narration?: string } {
+function cardValuesFromCreatorInput(input: unknown): { values: unknown; narration?: string; templateIndex?: number } {
   if (!input || typeof input !== "object" || Array.isArray(input)) return { values: input };
   const raw = input as CreatorCardInput;
   const narration = typeof raw.narration === "string" ? raw.narration.trim().slice(0, 5_000) : undefined;
-  if (raw.values && typeof raw.values === "object" && !Array.isArray(raw.values)) return { values: raw.values, narration };
-  const { narration: _narration, values: _values, ...rest } = raw;
-  return { values: rest, narration };
+  const templateIndex = Number.isInteger(raw.templateIndex) ? raw.templateIndex : undefined;
+  if (raw.values && typeof raw.values === "object" && !Array.isArray(raw.values)) return { values: raw.values, narration, templateIndex };
+  const { narration: _narration, values: _values, templateIndex: _templateIndex, ...rest } = raw;
+  return { values: rest, narration, templateIndex };
+}
+
+function cleanCardTemplateIndex(value: unknown, templateCount: number): number {
+  const index = Math.round(Number(value));
+  if (!Number.isInteger(index) || index < 0 || index >= templateCount) return 0;
+  return index;
+}
+
+function creatorRulesForTemplate(pack: Pack, templateIndex: number): RoleRule[] {
+  const template = pack.templates[templateIndex] ?? pack.templates[0];
+  return deriveRules(pack.creator ? stripCreatorTemplateMetaForRules(template) : template);
 }
 
 function normalizeCreatorValues(raw: unknown, rules: RoleRule[]): CardValues {
@@ -514,22 +529,29 @@ export function addCreatorCards(
   if (!p || !canEdit(p, userId, isSuperAdmin)) return { ok: false, reason: "not_found" };
   if (!p.templates.length) return { ok: false, reason: "no_template" };
   const entries = Array.isArray(input) ? input : input ? [input] : [];
-  const rules = deriveRules(p.creator ? stripCreatorTemplateMetaForRules(p.templates[0]) : p.templates[0]);
   const normalized = entries.map(cardValuesFromCreatorInput);
-  const normalizedValues = normalized.map((entry) => normalizeCreatorValues(entry.values, rules));
-  let result: ValidationResult;
-  try {
-    result = validateBatch(normalizedValues, rules);
-  } catch {
-    return { ok: false, reason: "invalid", result: { cards: [], errors: [{ index: 0, messages: ["Неверный JSON"] }], parsed: 0 } };
-  }
-  if (result.parsed === 0 || result.errors.length) return { ok: false, reason: "invalid", result };
-  result.cards.forEach((values, i) => {
-    const narration = normalized[i]?.narration;
-    p.cards.push({ values, addedAt: now, ...(narration ? { narration } : {}) });
+  if (!normalized.length) return { ok: false, reason: "invalid", result: { cards: [], errors: [], parsed: 0 } };
+  const nextCards: StoredCard[] = [];
+  const errors: CardError[] = [];
+  normalized.forEach((entry, i) => {
+    const templateIndex = cleanCardTemplateIndex(entry.templateIndex, p.templates.length);
+    const rules = creatorRulesForTemplate(p, templateIndex);
+    try {
+      const result = validateBatch([normalizeCreatorValues(entry.values, rules)], rules);
+      if (result.parsed === 0 || result.errors.length) {
+        errors.push(...result.errors.map((error) => ({ ...error, index: i })));
+        return;
+      }
+      const values = result.cards[0];
+      nextCards.push({ values, addedAt: now, templateIndex, ...(entry.narration ? { narration: entry.narration } : {}) });
+    } catch {
+      errors.push({ index: i, messages: ["Неверный JSON"] });
+    }
   });
+  if (errors.length) return { ok: false, reason: "invalid", result: { cards: [], errors, parsed: normalized.length } };
+  p.cards.push(...nextCards);
   writeAtomic(packFile(id), p);
-  return { ok: true, added: result.cards.length, total: p.cards.length, pack: p };
+  return { ok: true, added: nextCards.length, total: p.cards.length, pack: p };
 }
 
 /** Обновить одну creator-карточку по индексу (валидация как при добавлении). Только canEdit. */
@@ -544,19 +566,20 @@ export function updateCreatorCard(
   if (!p || !canEdit(p, userId, isSuperAdmin)) return { ok: false, reason: "not_found" };
   if (!Number.isInteger(index) || index < 0 || index >= p.cards.length) return { ok: false, reason: "not_found" };
   if (!p.templates.length) return { ok: false, reason: "no_template" };
-  const rules = deriveRules(p.creator ? stripCreatorTemplateMetaForRules(p.templates[0]) : p.templates[0]);
-  const { values, narration } = cardValuesFromCreatorInput(input);
+  const prev = p.cards[index];
+  const parsed = cardValuesFromCreatorInput(input);
+  const templateIndex = cleanCardTemplateIndex(parsed.templateIndex ?? prev.templateIndex, p.templates.length);
+  const rules = creatorRulesForTemplate(p, templateIndex);
   let result: ValidationResult;
   try {
-    result = validateBatch([normalizeCreatorValues(values, rules)], rules);
+    result = validateBatch([normalizeCreatorValues(parsed.values, rules)], rules);
   } catch {
     return { ok: false, reason: "invalid", result: { cards: [], errors: [{ index: 0, messages: ["Неверный JSON"] }], parsed: 0 } };
   }
   if (result.parsed === 0 || result.errors.length) return { ok: false, reason: "invalid", result };
-  const prev = p.cards[index];
   // narration: undefined → не трогаем, "" → убираем, строка → заменяем
-  const nextNarration = narration === undefined ? prev.narration : narration || undefined;
-  p.cards[index] = { values: result.cards[0], addedAt: prev.addedAt, ...(nextNarration ? { narration: nextNarration } : {}) };
+  const nextNarration = parsed.narration === undefined ? prev.narration : parsed.narration || undefined;
+  p.cards[index] = { values: result.cards[0], addedAt: prev.addedAt, templateIndex, ...(nextNarration ? { narration: nextNarration } : {}) };
   writeAtomic(packFile(id), p);
   return { ok: true, pack: p };
 }

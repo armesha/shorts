@@ -348,19 +348,60 @@ function cleanCreatorDurationSec(value: unknown): number {
   return Math.max(6, Math.min(30, Math.round(Number(value) || 6)));
 }
 
+/** Список выбранных треков из body/designState: строка или массив → чистый массив id. */
+function cleanMusicPool(value: unknown): string[] {
+  const raw = Array.isArray(value) ? value : typeof value === "string" && value.trim() ? [value] : [];
+  const out: string[] = [];
+  for (const item of raw) {
+    const id = String(item ?? "").trim();
+    if (!id || out.includes(id)) continue;
+    out.push(id);
+    if (out.length >= 24) break;
+  }
+  return out;
+}
+
 function creatorExportSettings(pack: NonNullable<ReturnType<typeof getPack>>, body: { durationSec?: unknown; music?: unknown; motion?: unknown; motionBox?: unknown }) {
   const media = creatorDesignMedia(pack);
   const savedMotion = optionalString(media.motion);
+  const bodyPool = cleanMusicPool(body.music);
+  const savedTracks = cleanMusicPool(media.musicTracks);
+  const savedPool = media.musicTracks !== undefined
+    ? (savedTracks.length ? savedTracks : cleanMusicPool(media.music))
+    : cleanMusicPool(media.music);
   return {
     durationSec: cleanCreatorDurationSec(body.durationSec ?? media.durationSec),
-    music: optionalString(body.music) ?? optionalString(media.music),
+    musicPool: bodyPool.length ? bodyPool : savedPool,
     motion: optionalString(body.motion) ?? (savedMotion === "custom" ? optionalString(media.customMotion) : savedMotion),
     motionBox: body.motionBox ?? media.motionBox,
   };
 }
 
+function creatorAudioProfile(pack: NonNullable<ReturnType<typeof getPack>>): "jokes" | "motivation" | undefined {
+  const type = cleanType(pack.templateType);
+  return type === "jokes" ? "jokes" : type === "motivation" ? "motivation" : undefined;
+}
+
+/** Аудио для одного видео: из пула берётся СЛУЧАЙНЫЙ трек (мультивыбор музыки на пак).
+ *  Пул пуст или "auto" → случайный фон по профилю; "none" → тишина; иначе трек юзера/сервиса. */
+function pickCreatorAudio(
+  userId: number,
+  pool: string[],
+  pack: NonNullable<ReturnType<typeof getPack>>,
+): { music: string; audioPath: string | null } {
+  const pick = pool.length ? pool[Math.floor(Math.random() * pool.length)] : undefined;
+  if (pick === "none") return { music: "none", audioPath: null };
+  if (!pick || pick === "auto") {
+    return resolveAudio(undefined, { audioProfile: creatorAudioProfile(pack) }, { packId: pack.id });
+  }
+  const customAudio = creatorMusicPath(userId, pick);
+  if (customAudio) return { music: pick, audioPath: customAudio };
+  return resolveAudio(pick, { audioProfile: creatorAudioProfile(pack) }, { packId: pack.id });
+}
+
 function readableFor(pack: NonNullable<ReturnType<typeof getPack>>, card: StoredCard) {
-  const readable = cardReadable(card.values, deriveRules(pack.templates[0]));
+  const templateIndex = Number.isInteger(card.templateIndex) && card.templateIndex! >= 0 && card.templateIndex! < pack.templates.length ? card.templateIndex! : 0;
+  const readable = cardReadable(card.values, deriveRules(pack.templates[templateIndex] ?? pack.templates[0]));
   return {
     title: readable.title,
     text: readable.text,
@@ -372,7 +413,9 @@ async function renderCreatorImage(pack: NonNullable<ReturnType<typeof getPack>>,
   const card = pack.cards[index];
   if (!card) throw new Error("Нет такой карточки");
   if (!pack.templates.length) throw new Error("У пака нет шаблона");
-  const tpl = pack.templates[index % pack.templates.length] as TemplateDoc;
+  const storedIndex = Number(card.templateIndex);
+  const templateIndex = Number.isInteger(storedIndex) && storedIndex >= 0 && storedIndex < pack.templates.length ? storedIndex : index % pack.templates.length;
+  const tpl = pack.templates[templateIndex] as TemplateDoc;
   const imgRel = stamp("preview", "png");
   const imgAbs = outputAbs(imgRel);
   await renderTemplateCard(tpl, card.values, imgAbs);
@@ -770,7 +813,7 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
         durationSec?: number;
         voiceover?: boolean;
         addToGallery?: boolean;
-        music?: string;
+        music?: string | string[];
         motion?: string;
         motionBox?: unknown;
       }) ?? {};
@@ -798,15 +841,9 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
           music = voice.music;
           durationSec = Math.max(durationSec, voice.durationSec);
         } else {
-          const customAudio = exportSettings.music ? creatorMusicPath(userId, exportSettings.music) : null;
-          if (customAudio) {
-            audioPath = customAudio;
-            music = exportSettings.music || "custom";
-          } else {
-            const resolved = resolveAudio(exportSettings.music, { audioProfile: cleanType(pack.templateType) === "jokes" ? "jokes" : cleanType(pack.templateType) === "motivation" ? "motivation" : undefined }, { packId: pack.id });
-            audioPath = resolved.audioPath;
-            music = resolved.music;
-          }
+          const picked = pickCreatorAudio(userId, exportSettings.musicPool, pack);
+          audioPath = picked.audioPath;
+          music = picked.music;
         }
         const vidRel = stamp("exports", "mp4");
         await assembleStillVideo(imgAbs, outputAbs(vidRel), {
@@ -858,7 +895,7 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
       if (!hit.ok) return sendRateLimit(reply, hit);
     }
     const id = (req.params as { id: string }).id;
-    const body = (req.body as { limit?: number; durationSec?: number; voiceover?: boolean; format?: "png" | "mp4"; music?: string; motion?: string; motionBox?: unknown }) ?? {};
+    const body = (req.body as { limit?: number; durationSec?: number; voiceover?: boolean; format?: "png" | "mp4"; music?: string | string[]; motion?: string; motionBox?: unknown }) ?? {};
     const pack = getPack(id, userId, isSuperAdminUser(db.getUserById(userId)));
     if (!pack || !pack.creator) return reply.code(404).send({ error: "Пак не найден" });
     const exportSettings = creatorExportSettings(pack, body);
@@ -886,15 +923,10 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
             music = voice.music;
             durationSec = Math.max(durationSec, voice.durationSec);
           } else {
-            const customAudio = exportSettings.music ? creatorMusicPath(userId, exportSettings.music) : null;
-            if (customAudio) {
-              audioPath = customAudio;
-              music = exportSettings.music || "custom";
-            } else {
-              const resolved = resolveAudio(exportSettings.music, { audioProfile: cleanType(pack.templateType) === "jokes" ? "jokes" : undefined }, { packId: pack.id });
-              audioPath = resolved.audioPath;
-              music = resolved.music;
-            }
+            // на каждую карточку — свой случайный трек из выбранных
+            const picked = pickCreatorAudio(userId, exportSettings.musicPool, pack);
+            audioPath = picked.audioPath;
+            music = picked.music;
           }
           const vidRel = stamp("exports", "mp4");
           await assembleStillVideo(imgAbs, outputAbs(vidRel), {
@@ -925,7 +957,7 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
         text: `${out.count} files`,
         format: "zip",
         zipRel: out.zipRel,
-        music: body.voiceover ? "edge-tts" : body.music || "mixed",
+        music: body.voiceover ? "edge-tts" : exportSettings.musicPool.join(", ").slice(0, 120) || "mixed",
       });
       return { item, url: fileUrl(out.zipRel), count: out.count };
     } catch (e) {

@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import { AuthProvider, useAuth } from "./lib/auth";
@@ -29,9 +29,15 @@ const ClipDemos = lazy(pageLoaders.clipDemos);
 const LongVideos = lazy(pageLoaders.longVideos);
 const Limits = lazy(pageLoaders.limits);
 const TemplateEditor = lazy(pageLoaders.templateEditor);
-const Creator = lazy(pageLoaders.creator);
 const Login = lazy(pageLoaders.login);
 const Register = lazy(pageLoaders.register);
+
+function CreatorExternalRedirect() {
+  useEffect(() => {
+    window.location.replace("/creator");
+  }, []);
+  return <BootShell />;
+}
 
 function Gate() {
   const { user, loading } = useAuth();
@@ -47,14 +53,14 @@ function Gate() {
       </Suspense>
     );
   }
-  const defaultPath = user.role === "admin" ? "/channels" : "/creator";
+  const defaultRoute = user.role === "admin" ? <Navigate to="/channels" replace /> : <CreatorExternalRedirect />;
   return (
     <GenQueueProvider>
       <GenProgressToast />
       <Layout>
         <Suspense fallback={<PageFallback />}>
           <Routes>
-            <Route path="/" element={<Navigate to={defaultPath} replace />} />
+            <Route path="/" element={defaultRoute} />
             <Route path="/channels" element={<Accounts />} />
             <Route path="/overview" element={user.role === "admin" ? <Overview /> : <Navigate to="/channels" replace />} />
             <Route path="/studio" element={<Studio />} />
@@ -72,16 +78,16 @@ function Gate() {
             <Route path="/clip-demos" element={<ClipDemos />} />
             <Route path="/long-videos" element={<LongVideos />} />
             <Route path="/limits" element={user.role === "admin" ? <Limits /> : <Navigate to="/channels" replace />} />
-            <Route path="/creator" element={<Creator />} />
-            <Route path="/register" element={<Navigate to="/creator" replace />} />
-            <Route path="/login" element={<Navigate to={defaultPath} replace />} />
+            <Route path="/creator" element={<CreatorExternalRedirect />} />
+            <Route path="/register" element={<CreatorExternalRedirect />} />
+            <Route path="/login" element={defaultRoute} />
             <Route path="/changelog" element={<Changelog />} />
             <Route path="/errors" element={<Errors />} />
             <Route path="/system" element={<System />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/editor" element={<TemplateEditor />} />
             <Route path="/users" element={<Users />} />
-            <Route path="*" element={<Navigate to={defaultPath} replace />} />
+            <Route path="*" element={defaultRoute} />
           </Routes>
         </Suspense>
       </Layout>

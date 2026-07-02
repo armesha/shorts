@@ -39,6 +39,7 @@ images/
 
 # scratch / temp working dir — not source
 temp/
+tmp/
 data/**/safety-review-*.json
 .playwright-mcp/
 

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      try {
+        const allowed = ["atelier", "harbor", "berry", "classic"];
+        const saved = localStorage.getItem("sf.design");
+        document.documentElement.dataset.design = allowed.includes(saved) ? saved : "atelier";
+      } catch {
+        document.documentElement.dataset.design = "atelier";
+      }
+    </script>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>Creator — ShareBoard</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/creator-main.tsx"></script>
+  </body>
+</html>

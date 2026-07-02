@@ -1,0 +1,62 @@
+# Front door for shareboard.live — cloudflared (shareboard.live + www) -> Caddy (:8090).
+# Main app stays on :8080. Creator is isolated on :8091 and can restart independently.
+{
+	auto_https off
+}
+
+http://:8090 {
+	bind 127.0.0.1
+
+	handle /api/creator* {
+		reverse_proxy 127.0.0.1:8091 {
+			lb_try_duration 2s
+		}
+	}
+
+	handle /creator* {
+		reverse_proxy 127.0.0.1:8091 {
+			lb_try_duration 2s
+		}
+	}
+
+	handle {
+		reverse_proxy 127.0.0.1:8080 {
+			lb_try_duration 2s
+		}
+	}
+
+	handle_errors {
+		@down expression {err.status_code} in [502, 503, 504]
+		header @down Retry-After 20
+		header @down Cache-Control "no-store, must-revalidate"
+		header @down Content-Type "text/html; charset=utf-8"
+		respond @down `<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="15">
+<title>Обновляемся — ShareBoard</title>
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(135deg,#f6f7fb,#e9eef7);color:#1f2733;padding:24px}
+.card{max-width:440px;width:100%;background:#fff;border:1px solid #e6e9f0;border-radius:18px;padding:40px 32px;text-align:center;box-shadow:0 12px 44px rgba(20,30,60,.10)}
+.spin{width:46px;height:46px;margin:0 auto 22px;border:4px solid #e3e8f2;border-top-color:#3b82f6;border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+h1{font-size:22px;margin:0 0 10px;font-weight:700}
+p{margin:6px 0;color:#5b6675;line-height:1.55}
+.muted{font-size:13px;color:#9aa4b2;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="card">
+<div class="spin"></div>
+<h1>Обновляемся</h1>
+<p>Загружаем обновления — сайт вернётся через пару минут.</p>
+<p class="muted">Страница обновится автоматически.</p>
+</div>
+</body>
+</html>` 503
+	}
+}

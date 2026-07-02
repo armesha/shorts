@@ -1,12 +1,14 @@
-// Компоненты редактора шаблона: канва с Moveable, панели стиля/дизайнера,
-// настройки видео (музыка/длительность/GIF) и телефон-превью.
-// Вынесены из Creator.tsx при переходе на проектную структуру страницы.
+// Единый редактор шаблона: канва с Moveable (снап к центру/краям/элементам,
+// стрелки, двойной клик — правка текста) + панели Текст / Эмодзи / GIF / Музыка
+// в одном пространстве. Музыка выбирается несколькими треками (на видео — случайный).
 import {
   type ChangeEvent,
   type CSSProperties,
   type Dispatch,
-  type PointerEvent as ReactPointerEvent,
+  type DragEvent as ReactDragEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
   type SetStateAction,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -14,12 +16,30 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import Moveable from "react-moveable";
-import { Copy, Palette, Redo2, RotateCcw, SlidersHorizontal, Undo2 } from "lucide-react";
+import {
+  AlignCenterHorizontal,
+  AlignCenterVertical,
+  AlignEndHorizontal,
+  AlignEndVertical,
+  AlignStartHorizontal,
+  AlignStartVertical,
+  Clapperboard,
+  Music,
+  MoveHorizontal,
+  RotateCw,
+  Palette,
+  Redo2,
+  RotateCcw,
+  Shuffle,
+  Smile,
+  Type,
+  Undo2,
+  VolumeX,
+} from "lucide-react";
 import { useT } from "../../lib/i18n";
 import type {
   CardValues,
   CreatorAsset,
-  CreatorDesignState,
   DesignerElement,
   MediaSettings,
   StickerOverlay,
@@ -32,7 +52,6 @@ import type {
 import {
   ALL_EMOJI_SET,
   ALL_EMOJIS,
-  CHAR_LIMITS,
   CREATOR_EMOJI_USAGE_KEY,
   CREATOR_GIF_USAGE_KEY,
   DEFAULT_MOTION_BOX,
@@ -46,14 +65,12 @@ import {
   TEXT_COLOR_CHOICES,
 } from "./config";
 import {
-  buildCreatorDesignState,
   clampMotionBox,
   clampRotation,
   clampStickerBox,
   clampTextBox,
   cloneTextLayout,
   colorInputValue,
-  parseCreatorDesignState,
   textBackgroundCss,
   textOutlineShadow,
 } from "./designState";
@@ -67,8 +84,73 @@ import {
 } from "./model";
 import { handleRovingTabKey } from "./keyboard";
 
+// Нижние 400px кадра — зона кнопок YouTube Shorts: подсвечиваем и снапим к границе.
+const SAFE_BOTTOM_Y = 1520;
+
+type EditorPane = "text" | "sticker" | "gif" | "music";
+
+const PANES: Array<{ id: EditorPane; labelKey: string; icon: typeof Type }> = [
+  { id: "text", labelKey: "creator.paneText", icon: Type },
+  { id: "sticker", labelKey: "creator.paneSticker", icon: Smile },
+  { id: "gif", labelKey: "creator.paneGif", icon: Clapperboard },
+  { id: "music", labelKey: "creator.paneMusic", icon: Music },
+];
+
+const CREATOR_PALETTE_DRAG_TYPE = "application/x-creator-palette-item";
+
+type PaletteDragPayload =
+  | { kind: "emoji"; value: string }
+  | { kind: "motion"; id: string };
+
+type EditorClipboard =
+  | { kind: "text"; role: TextBoxRole; value: string; box: TextBoxRect }
+  | { kind: "sticker"; sticker: StickerOverlay & TextBoxRect }
+  | {
+      kind: "motion";
+      id: string;
+      box: TextBoxRect;
+      customMotion?: string;
+      customMotionName?: string;
+    };
+
+function isEditableShortcutTarget(target: EventTarget | null): boolean {
+  const element = target instanceof HTMLElement ? target : null;
+  return Boolean(element?.closest("input, textarea, select, [contenteditable='true']"));
+}
+
+function offsetPastedBox(box: TextBoxRect): TextBoxRect {
+  return { ...box, x: box.x + 36, y: box.y + 36 };
+}
+
+function writePaletteDragData(event: ReactDragEvent<HTMLElement>, payload: PaletteDragPayload) {
+  event.dataTransfer.effectAllowed = "copy";
+  event.dataTransfer.setData(CREATOR_PALETTE_DRAG_TYPE, JSON.stringify(payload));
+  event.dataTransfer.setData("text/plain", payload.kind === "emoji" ? payload.value : payload.id);
+}
+
+function readPaletteDragData(event: ReactDragEvent<HTMLElement>): PaletteDragPayload | null {
+  try {
+    const raw = event.dataTransfer.getData(CREATOR_PALETTE_DRAG_TYPE);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<PaletteDragPayload>;
+    if (parsed.kind === "emoji" && typeof parsed.value === "string" && parsed.value) return { kind: "emoji", value: parsed.value };
+    if (parsed.kind === "motion" && typeof parsed.id === "string" && parsed.id) return { kind: "motion", id: parsed.id };
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function paneForElement(element: DesignerElement): EditorPane {
+  if (element === "sticker") return "sticker";
+  if (element === "motion") return "gif";
+  return "text";
+}
+
+export type FontSizes = Record<TextBoxRole, number>;
+export type Capacities = Record<TextBoxRole, number>;
+
 export function DesignEditor({
-  templateNameValue,
   activePreset,
   values,
   updateValue,
@@ -80,17 +162,19 @@ export function DesignEditor({
   setSticker,
   uploadSticker,
   motion,
+  music,
+  uploadMusic,
   mediaSettings,
   setMediaSettings,
   uploadMotionGif,
   background,
-  applyDesignState,
+  capacities,
+  fontSizes,
   canUndoDesign,
   canRedoDesign,
   undoDesign,
   redoDesign,
 }: {
-  templateNameValue: string;
   activePreset: TemplatePreset;
   values: CardValues;
   updateValue: (key: keyof CardValues, value: string) => void;
@@ -102,19 +186,46 @@ export function DesignEditor({
   setSticker: (sticker: StickerOverlay | null) => void;
   uploadSticker: (file: File) => Promise<void>;
   motion: CreatorAsset[];
+  music: CreatorAsset[];
+  uploadMusic: (file: File) => Promise<void>;
   mediaSettings: MediaSettings;
   setMediaSettings: Dispatch<SetStateAction<MediaSettings>>;
   uploadMotionGif: (file: File) => Promise<void>;
   background: string;
-  applyDesignState: (state: CreatorDesignState) => void;
+  capacities: Capacities;
+  fontSizes: FontSizes;
   canUndoDesign: boolean;
   canRedoDesign: boolean;
   undoDesign: () => void;
   redoDesign: () => void;
 }) {
   const { t } = useT();
-  const [designerMode, setDesignerMode] = useState(false);
-  const [designerSelection, setDesignerSelection] = useState<DesignerElement>("heading");
+  const rootRef = useRef<HTMLDivElement>(null);
+  const clipboardRef = useRef<EditorClipboard | null>(null);
+  const [pane, setPane] = useState<EditorPane>("text");
+  const [selection, setSelection] = useState<DesignerElement>("heading");
+
+  const selectElement = (element: DesignerElement) => {
+    setSelection(element);
+    setPane(paneForElement(element));
+  };
+
+  const openPane = (next: EditorPane) => {
+    setPane(next);
+    if (next === "text" && selection !== "heading" && selection !== "body") setSelection("heading");
+    if (next === "sticker" && sticker) setSelection("sticker");
+    if (next === "gif" && mediaSettings.motion !== "none") setSelection("motion");
+  };
+
+  const resetDesign = () => {
+    setTextLayout(cloneTextLayout(DEFAULT_TEXT_LAYOUT));
+    setTextStyle({ ...DEFAULT_TEXT_STYLE });
+    setSticker(null);
+    setMediaSettings((current) => ({ ...current, motion: "none", motionBox: DEFAULT_MOTION_BOX }));
+    setSelection("heading");
+    setPane("text");
+  };
+
   const selectedMotion = motion.find((item) => item.id === mediaSettings.motion);
   const motionPreview =
     mediaSettings.motion === "custom"
@@ -122,84 +233,165 @@ export function DesignEditor({
       : selectedMotion?.src
         ? creatorServiceAssetUrl(selectedMotion.src)
         : "";
+  const paneIndex = PANES.findIndex((item) => item.id === pane);
+
+  const copySelection = useCallback(() => {
+    if (selection === "heading" || selection === "body") {
+      clipboardRef.current = {
+        kind: "text",
+        role: selection,
+        value: values[selection],
+        box: { ...textLayout[selection] },
+      };
+      return;
+    }
+    if (selection === "sticker" && sticker) {
+      clipboardRef.current = { kind: "sticker", sticker: { ...sticker, ...clampStickerBox(sticker) } };
+      return;
+    }
+    if (selection === "motion" && mediaSettings.motion !== "none") {
+      clipboardRef.current = {
+        kind: "motion",
+        id: mediaSettings.motion,
+        box: { ...clampMotionBox(mediaSettings.motionBox) },
+        customMotion: mediaSettings.customMotion,
+        customMotionName: mediaSettings.customMotionName,
+      };
+    }
+  }, [mediaSettings.customMotion, mediaSettings.customMotionName, mediaSettings.motion, mediaSettings.motionBox, selection, sticker, textLayout, values]);
+
+  const pasteSelection = useCallback(() => {
+    const payload = clipboardRef.current;
+    if (!payload) return;
+    if (payload.kind === "text") {
+      const target = selection === "heading" || selection === "body" ? selection : payload.role;
+      const next = cloneTextLayout(textLayout);
+      next[target] = clampTextBox(offsetPastedBox(payload.box), target);
+      setTextLayout(next);
+      updateValue(target, payload.value);
+      selectElement(target);
+      return;
+    }
+    if (payload.kind === "sticker") {
+      const box = clampStickerBox(offsetPastedBox(payload.sticker));
+      setSticker({ ...payload.sticker, ...box });
+      selectElement("sticker");
+      return;
+    }
+    const box = clampMotionBox(offsetPastedBox(payload.box));
+    setMediaSettings((current) => ({
+      ...current,
+      motion: payload.id,
+      customMotion: payload.customMotion ?? current.customMotion,
+      customMotionName: payload.customMotionName ?? current.customMotionName,
+      motionBox: box,
+    }));
+    selectElement("motion");
+  }, [selection, setMediaSettings, setSticker, setTextLayout, textLayout, updateValue]);
+
+  useEffect(() => {
+    const handleShortcut = (event: KeyboardEvent) => {
+      const root = rootRef.current;
+      if (!root || !root.contains(event.target as Node) || isEditableShortcutTarget(event.target)) return;
+      if (!event.ctrlKey && !event.metaKey) return;
+      const key = event.key.toLowerCase();
+      if (key === "z") {
+        event.preventDefault();
+        if (event.shiftKey) {
+          if (canRedoDesign) redoDesign();
+        } else if (canUndoDesign) {
+          undoDesign();
+        }
+        return;
+      }
+      if (key === "y") {
+        event.preventDefault();
+        if (canRedoDesign) redoDesign();
+        return;
+      }
+      if (key === "c") {
+        event.preventDefault();
+        copySelection();
+        return;
+      }
+      if (key === "v") {
+        event.preventDefault();
+        pasteSelection();
+      }
+    };
+
+    document.addEventListener("keydown", handleShortcut);
+    return () => document.removeEventListener("keydown", handleShortcut);
+  }, [canRedoDesign, canUndoDesign, copySelection, pasteSelection, redoDesign, undoDesign]);
 
   return (
-    <div className={`creator-compose-card ${designerMode ? "is-designer-mode" : ""}`}>
+    <div className="creator-compose-card creator-unified-editor" ref={rootRef}>
       <div className="creator-compose-head">
         <h2 className="creator-editor-title">{t("creator.composeTitle")}</h2>
-        <div
-          className="creator-mode-switch"
-          role="tablist"
-          aria-label={t("creator.designerMode")}
-          onKeyDown={(event) => handleRovingTabKey(event, designerMode ? 1 : 0, 2, (index) => setDesignerMode(index === 1))}
-        >
-          <button
-            type="button"
-            className={!designerMode ? "is-active" : ""}
-            role="tab"
-            aria-selected={!designerMode}
-            aria-controls="creator-card-tools-panel"
-            tabIndex={!designerMode ? 0 : -1}
-            onClick={() => setDesignerMode(false)}
-          >
-            {t("creator.cardMode")}
+        <div className="creator-editor-history">
+          <button type="button" className="creator-designer-icon-button" onClick={undoDesign} disabled={!canUndoDesign} aria-label={t("creator.undo")} title={t("creator.undo")}>
+            <Undo2 size={15} />
           </button>
-          <button
-            type="button"
-            className={designerMode ? "is-active" : ""}
-            role="tab"
-            aria-selected={designerMode}
-            aria-controls="creator-designer-tools-panel"
-            tabIndex={designerMode ? 0 : -1}
-            onClick={() => setDesignerMode(true)}
-          >
-            <SlidersHorizontal size={15} />
-            {t("creator.designerMode")}
+          <button type="button" className="creator-designer-icon-button" onClick={redoDesign} disabled={!canRedoDesign} aria-label={t("creator.redo")} title={t("creator.redo")}>
+            <Redo2 size={15} />
+          </button>
+          <button type="button" className="creator-designer-icon-button" onClick={resetDesign} aria-label={t("creator.resetDesign")} title={t("creator.resetDesign")}>
+            <RotateCcw size={15} />
           </button>
         </div>
       </div>
 
-      <div className={`creator-compose-layout ${designerMode ? "is-designer" : ""}`}>
-        {designerMode ? (
-          <TemplateDesignerControls
-            panelId="creator-designer-tools-panel"
-            panelLabel={t("creator.designerMode")}
-            templateNameValue={templateNameValue}
-            activePreset={activePreset}
-            values={values}
-            updateValue={updateValue}
-            textLayout={textLayout}
-            setTextLayout={setTextLayout}
-            textStyle={textStyle}
-            setTextStyle={setTextStyle}
-            sticker={sticker}
-            setSticker={setSticker}
-            mediaSettings={mediaSettings}
-            setMediaSettings={setMediaSettings}
-            background={background}
-            selection={designerSelection}
-            setSelection={setDesignerSelection}
-            applyDesignState={applyDesignState}
-            canUndoDesign={canUndoDesign}
-            canRedoDesign={canRedoDesign}
-            undoDesign={undoDesign}
-            redoDesign={redoDesign}
-          />
-        ) : (
-          <TextStyleControls
-            panelId="creator-card-tools-panel"
-            panelLabel={t("creator.cardMode")}
-            textStyle={textStyle}
-            setTextStyle={setTextStyle}
-            sticker={sticker}
-            setSticker={setSticker}
-            uploadSticker={uploadSticker}
-            motion={motion}
-            mediaSettings={mediaSettings}
-            setMediaSettings={setMediaSettings}
-            uploadMotionGif={uploadMotionGif}
-          />
-        )}
+      <div className="creator-compose-layout creator-editor-layout">
+        <div className="creator-editor-tools">
+          <nav
+            className="creator-editor-nav"
+            role="tablist"
+            aria-label={t("creator.editorNavAria")}
+            onKeyDown={(event) => handleRovingTabKey(event, paneIndex, PANES.length, (index) => openPane(PANES[index].id))}
+          >
+            {PANES.map(({ id, labelKey, icon: Icon }) => (
+              <button
+                key={id}
+                type="button"
+                role="tab"
+                aria-selected={pane === id}
+                tabIndex={pane === id ? 0 : -1}
+                className={pane === id ? "is-active" : ""}
+                onClick={() => openPane(id)}
+              >
+                <Icon size={15} />
+                {t(labelKey)}
+              </button>
+            ))}
+          </nav>
+
+          {pane === "text" ? (
+            <TextPane
+              values={values}
+              updateValue={updateValue}
+              selection={selection === "body" ? "body" : "heading"}
+              selectElement={selectElement}
+              textLayout={textLayout}
+              setTextLayout={setTextLayout}
+              textStyle={textStyle}
+              setTextStyle={setTextStyle}
+              capacities={capacities}
+              fontSizes={fontSizes}
+            />
+          ) : pane === "sticker" ? (
+            <StickerPane sticker={sticker} setSticker={setSticker} uploadSticker={uploadSticker} selectElement={selectElement} />
+          ) : pane === "gif" ? (
+            <GifPane
+              motion={motion}
+              mediaSettings={mediaSettings}
+              setMediaSettings={setMediaSettings}
+              uploadMotionGif={uploadMotionGif}
+              selectElement={selectElement}
+            />
+          ) : (
+            <MusicPane music={music} mediaSettings={mediaSettings} setMediaSettings={setMediaSettings} uploadMusic={uploadMusic} />
+          )}
+        </div>
 
         <TextLayoutEditor
           activePreset={activePreset}
@@ -214,323 +406,92 @@ export function DesignEditor({
           mediaSettings={mediaSettings}
           setMediaSettings={setMediaSettings}
           motionPreview={motionPreview}
-          activeElement={designerSelection}
-          setActiveElement={setDesignerSelection}
+          activeElement={selection}
+          setActiveElement={selectElement}
         />
       </div>
     </div>
   );
 }
 
-export function MediaSettingsPanel({
-  activePreset,
+function TextPane({
   values,
-  background,
-  music,
-  motion,
-  mediaSettings,
-  setMediaSettings,
-  uploadMusic,
-}: {
-  activePreset: TemplatePreset;
-  values: CardValues;
-  background: string;
-  music: CreatorAsset[];
-  motion: CreatorAsset[];
-  mediaSettings: MediaSettings;
-  setMediaSettings: Dispatch<SetStateAction<MediaSettings>>;
-  uploadMusic: (file: File) => Promise<void>;
-}) {
-  const { t } = useT();
-  const [previewMusicId, setPreviewMusicId] = useState("");
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const tone = templateTone(activePreset.templateType);
-  const backgroundUrl = usableBackgroundUrl(background);
-  const presetBackgroundUrl = creatorServiceAssetUrl(activePreset.previewSrc ?? firstTemplateImageSrc(activePreset.templates));
-  const previewBackgroundUrl = backgroundUrl || presetBackgroundUrl;
-  const selectedMotion = motion.find((item) => item.id === mediaSettings.motion);
-  const motionPreview =
-    mediaSettings.motion === "custom"
-      ? mediaSettings.customMotion
-      : selectedMotion?.src
-        ? creatorServiceAssetUrl(selectedMotion.src)
-        : "";
-  const screenRef = useRef<HTMLDivElement>(null);
-  const motionGesture = useRef<{
-    mode: "move" | "resize";
-    startX: number;
-    startY: number;
-    scaleX: number;
-    scaleY: number;
-    box: TextBoxRect;
-  } | null>(null);
-  const previewStyle = previewBackgroundUrl
-    ? ({ backgroundImage: `url("${cssUrl(previewBackgroundUrl)}")` } as CSSProperties)
-    : undefined;
-  const update = (patch: Partial<MediaSettings>) => setMediaSettings((current) => ({ ...current, ...patch }));
-  const stopMusicPreview = () => {
-    const audio = audioRef.current;
-    if (audio) {
-      audio.pause();
-      audio.removeAttribute("src");
-    }
-    setPreviewMusicId("");
-  };
-  const playMusicPreview = (track: CreatorAsset) => {
-    const audio = audioRef.current;
-    if (!audio || !track.url || !track.id) return;
-    if (previewMusicId === track.id && !audio.paused) {
-      stopMusicPreview();
-      return;
-    }
-    audio.src = String(track.url);
-    audio.currentTime = 0;
-    setPreviewMusicId(String(track.id));
-    void audio.play().catch(() => setPreviewMusicId(""));
-  };
-  const handleMusicUpload = (event: ChangeEvent<HTMLInputElement>) => {
-    const input = event.currentTarget;
-    const file = input.files?.[0];
-    if (!file) return;
-    void uploadMusic(file).finally(() => {
-      input.value = "";
-    });
-  };
-  const startMotionGesture = (event: ReactPointerEvent<HTMLElement>, mode: "move" | "resize") => {
-    const screen = screenRef.current?.getBoundingClientRect();
-    if (!screen || !motionPreview) return;
-    event.preventDefault();
-    event.stopPropagation();
-    event.currentTarget.setPointerCapture(event.pointerId);
-    motionGesture.current = {
-      mode,
-      startX: event.clientX,
-      startY: event.clientY,
-      scaleX: TEMPLATE_W / screen.width,
-      scaleY: TEMPLATE_H / screen.height,
-      box: clampMotionBox(mediaSettings.motionBox),
-    };
-  };
-  const moveMotionGesture = (event: ReactPointerEvent<HTMLElement>) => {
-    const current = motionGesture.current;
-    if (!current) return;
-    event.preventDefault();
-    const dx = (event.clientX - current.startX) * current.scaleX;
-    const dy = (event.clientY - current.startY) * current.scaleY;
-    const nextBox = current.mode === "move"
-      ? { ...current.box, x: current.box.x + dx, y: current.box.y + dy }
-      : { ...current.box, w: current.box.w + dx, h: current.box.h + dy };
-    update({ motionBox: clampMotionBox(nextBox) });
-  };
-  const endMotionGesture = (event: ReactPointerEvent<HTMLElement>) => {
-    if (!motionGesture.current) return;
-    try {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    } catch {
-      /* pointer may already be released */
-    }
-    motionGesture.current = null;
-  };
-
-  return (
-    <div className="creator-media-card">
-      <div className="creator-media-layout">
-        <div className="creator-media-tools">
-          <div className="creator-video-settings">
-            <audio ref={audioRef} className="creator-audio-hidden" onEnded={() => setPreviewMusicId("")} />
-
-            <div className="creator-video-duration">
-              <span className="creator-tool-label">
-                {t("creator.durationSec")}
-                <span className="creator-range-value">{t("creator.secondsShort", { count: mediaSettings.durationSec })}</span>
-              </span>
-              <input
-                className="creator-range"
-                type="range"
-                min="6"
-                max="30"
-                step="1"
-                value={mediaSettings.durationSec}
-                onChange={(event) => update({ durationSec: Number(event.target.value) })}
-                aria-label={t("creator.durationSec")}
-              />
-            </div>
-
-            <div className="creator-tool-group creator-video-music">
-              <div className="creator-music-head">
-                <span className="creator-tool-label">{t("creator.music")}</span>
-                <label className="btn btn-xs btn-outline">
-                  {t("creator.uploadMusic")}
-                  <input type="file" accept="audio/mpeg,audio/mp3,audio/mp4,audio/aac,audio/wav,audio/ogg,audio/opus,.mp3,.m4a,.aac,.wav,.ogg,.opus" onChange={handleMusicUpload} />
-                </label>
-              </div>
-              <div className="creator-music-list">
-                <button
-                  type="button"
-                  className={`creator-music-option ${mediaSettings.music === "none" ? "is-active" : ""}`}
-                  onClick={() => {
-                    update({ music: "none" });
-                    stopMusicPreview();
-                  }}
-                >
-                  <span>{t("creator.noMusic")}</span>
-                </button>
-                {music.map((track) => (
-                  <button
-                    type="button"
-                    key={String(track.id)}
-                    className={`creator-music-option ${mediaSettings.music === track.id ? "is-active" : ""}`}
-                    onClick={() => {
-                      update({ music: String(track.id) });
-                      playMusicPreview(track);
-                    }}
-                  >
-                    <span className="creator-music-name">
-                      {track.name || track.id}
-                    </span>
-                    {track.url && (
-                      <span className={`creator-music-meter ${previewMusicId === track.id ? "is-playing" : ""}`} aria-hidden="true">
-                        <span />
-                        <span />
-                        <span />
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="creator-media-preview">
-          <div className={`creator-phone creator-layout-phone ${tone}`}>
-            <span className="creator-device-button is-left" aria-hidden="true" />
-            <span className="creator-device-button is-right" aria-hidden="true" />
-            <div className="creator-phone-screen">
-              <span className="creator-device-island" aria-hidden="true" />
-              <div
-                className="creator-phone-card creator-media-canvas is-clean-background"
-                style={previewStyle}
-                ref={screenRef}
-                onPointerMove={moveMotionGesture}
-                onPointerUp={endMotionGesture}
-                onPointerCancel={endMotionGesture}
-              >
-                <div className="creator-media-copy">
-                  <strong>{values.heading}</strong>
-                  <span>{values.body}</span>
-                </div>
-                {motionPreview && (
-                  <div
-                    className="creator-motion-preview-box"
-                    style={{
-                      left: `${(clampMotionBox(mediaSettings.motionBox).x / TEMPLATE_W) * 100}%`,
-                      top: `${(clampMotionBox(mediaSettings.motionBox).y / TEMPLATE_H) * 100}%`,
-                      width: `${(clampMotionBox(mediaSettings.motionBox).w / TEMPLATE_W) * 100}%`,
-                      height: `${(clampMotionBox(mediaSettings.motionBox).h / TEMPLATE_H) * 100}%`,
-                      transform: `rotate(${clampMotionBox(mediaSettings.motionBox).rot ?? 0}deg)`,
-                      transformOrigin: "center center",
-                    }}
-                    onPointerDown={(event) => startMotionGesture(event, "move")}
-                  >
-                    <img className="creator-motion-preview-gif" src={motionPreview} alt="" draggable={false} />
-                    <span
-                      className="creator-layout-resize"
-                      aria-hidden="true"
-                      onPointerDown={(event) => startMotionGesture(event, "resize")}
-                    />
-                  </div>
-                )}
-                <span className="creator-video-pill">{t("creator.secondsShort", { count: mediaSettings.durationSec })}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TextStyleControls({
-  panelId,
-  panelLabel,
+  updateValue,
+  selection,
+  selectElement,
+  textLayout,
+  setTextLayout,
   textStyle,
   setTextStyle,
-  sticker,
-  setSticker,
-  uploadSticker,
-  motion,
-  mediaSettings,
-  setMediaSettings,
-  uploadMotionGif,
+  capacities,
+  fontSizes,
 }: {
-  panelId: string;
-  panelLabel: string;
+  values: CardValues;
+  updateValue: (key: keyof CardValues, value: string) => void;
+  selection: TextBoxRole;
+  selectElement: (element: DesignerElement) => void;
+  textLayout: TextLayout;
+  setTextLayout: (layout: TextLayout) => void;
   textStyle: TextStyle;
   setTextStyle: (style: TextStyle) => void;
-  sticker: StickerOverlay | null;
-  setSticker: (sticker: StickerOverlay | null) => void;
-  uploadSticker: (file: File) => Promise<void>;
-  motion: CreatorAsset[];
-  mediaSettings: MediaSettings;
-  setMediaSettings: Dispatch<SetStateAction<MediaSettings>>;
-  uploadMotionGif: (file: File) => Promise<void>;
+  capacities: Capacities;
+  fontSizes: FontSizes;
 }) {
   const { t } = useT();
-  const [assetTab, setAssetTab] = useState<"emoji" | "gif">("emoji");
-  const [emojiUsage, setEmojiUsage] = useState<Record<string, number>>(() => readCreatorUsage(CREATOR_EMOJI_USAGE_KEY));
-  const [gifUsage, setGifUsage] = useState<Record<string, number>>(() => readCreatorUsage(CREATOR_GIF_USAGE_KEY));
-  const frequentEmojis = useMemo(() => {
-    const ordered = Object.entries(emojiUsage)
-      .filter(([emoji]) => ALL_EMOJI_SET.has(emoji))
-      .sort((a, b) => b[1] - a[1])
-      .map(([emoji]) => emoji);
-    return ordered.slice(0, 16);
-  }, [emojiUsage]);
-  const motionItems = useMemo(() => (
-    mediaSettings.customMotion
-      ? [{ id: "custom", name: mediaSettings.customMotionName || t("creator.customGif"), src: mediaSettings.customMotion } as CreatorAsset, ...motion]
-      : motion
-  ), [mediaSettings.customMotion, mediaSettings.customMotionName, motion, t]);
-  const frequentMotion = useMemo(() => {
-    const byId = new Map(motionItems.map((item) => [String(item.id), item]));
-    const ordered = Object.entries(gifUsage)
-      .sort((a, b) => b[1] - a[1])
-      .map(([id]) => byId.get(id))
-      .filter((item): item is CreatorAsset => Boolean(item));
-    return ordered.slice(0, 6);
-  }, [gifUsage, motionItems]);
   const update = (patch: Partial<TextStyle>) => setTextStyle({ ...textStyle, ...patch });
-  const updateMedia = (patch: Partial<MediaSettings>) => setMediaSettings((current) => ({ ...current, ...patch }));
   const textCustomColorSelected = !TEXT_COLOR_CHOICES.includes(textStyle.color);
   const outlineCustomColorSelected = textStyle.outline !== "none" && !OUTLINE_COLOR_CHOICES.includes(textStyle.outline);
-  const updateEmoji = (emoji: string) => {
-    setSticker({
-      kind: "emoji",
-      value: emoji,
-      ...clampStickerBox(sticker ?? DEFAULT_STICKER_BOX),
-    });
-    setEmojiUsage((current) => bumpCreatorUsage(CREATOR_EMOJI_USAGE_KEY, current, emoji));
-  };
-  const handleStickerUpload = (event: ChangeEvent<HTMLInputElement>) => {
-    const input = event.currentTarget;
-    const file = input.files?.[0];
-    if (!file) return;
-    void uploadSticker(file).finally(() => {
-      input.value = "";
-    });
-  };
-  const handleGifUpload = (event: ChangeEvent<HTMLInputElement>) => {
-    const input = event.currentTarget;
-    const file = input.files?.[0];
-    if (!file) return;
-    void uploadMotionGif(file).finally(() => {
-      input.value = "";
-    });
+  const capacity = capacities[selection];
+  const length = values[selection].length;
+  const fontSize = textLayout[selection].fs ?? fontSizes[selection];
+
+  const setFontSize = (size: number) => {
+    const next = cloneTextLayout(textLayout);
+    next[selection] = clampTextBox({ ...next[selection], fs: size }, selection);
+    setTextLayout(next);
   };
 
   return (
-    <div id={panelId} className="creator-compose-tools" role="tabpanel" aria-label={panelLabel}>
+    <div className="creator-editor-pane creator-text-pane" role="tabpanel" aria-label={t("creator.paneText")}>
+      <div className="creator-element-switch" role="radiogroup" aria-label={t("creator.designerElement")}>
+        <button type="button" className={selection === "heading" ? "is-active" : ""} onClick={() => selectElement("heading")}>
+          {t("creator.layoutHeading")}
+        </button>
+        <button type="button" className={selection === "body" ? "is-active" : ""} onClick={() => selectElement("body")}>
+          {t("creator.layoutBody")}
+        </button>
+      </div>
+
+      <label className="form-control">
+        <span className="label-text">
+          {selection === "heading" ? t("creator.heading") : t("creator.body")}
+          <span className={`creator-char-counter ${length > capacity ? "is-over" : ""}`}>{length}/≈{capacity}</span>
+        </span>
+        <textarea
+          className="textarea textarea-bordered textarea-sm creator-designer-textarea"
+          value={values[selection]}
+          onChange={(event) => updateValue(selection, event.target.value)}
+        />
+      </label>
+      <p className="creator-capacity-hint">{t("creator.capacityHint", { count: capacity })}</p>
+
+      <div className="creator-tool-group">
+        <span className="creator-tool-label">
+          {t("creator.fontSize")}
+          <span className="creator-range-value">{fontSize} px</span>
+        </span>
+        <input
+          className="creator-range"
+          type="range"
+          min="26"
+          max="96"
+          step="2"
+          value={fontSize}
+          onChange={(event) => setFontSize(Number(event.target.value))}
+          aria-label={t("creator.fontSize")}
+        />
+      </div>
+
       <div className="creator-tool-group">
         <span className="creator-tool-label">{t("creator.textColor")}</span>
         <div className="creator-swatch-row">
@@ -605,488 +566,320 @@ function TextStyleControls({
           aria-label={t("creator.textBackground")}
         />
       </div>
+    </div>
+  );
+}
 
-      <div className="creator-tool-group creator-tool-group-assets">
-        <span className="creator-tool-label">{t("creator.assetPicker")}</span>
-        <div className="creator-asset-picker">
-          <div
-            className="creator-asset-tabs"
-            role="tablist"
-            aria-label={t("creator.assetPicker")}
-            onKeyDown={(event) => handleRovingTabKey(event, assetTab === "gif" ? 1 : 0, 2, (index) => setAssetTab(index === 0 ? "emoji" : "gif"))}
-          >
-            <button
-              type="button"
-              className={assetTab === "emoji" ? "is-active" : ""}
-              role="tab"
-              aria-selected={assetTab === "emoji"}
-              aria-controls="creator-emoji-panel"
-              tabIndex={assetTab === "emoji" ? 0 : -1}
-              onClick={() => setAssetTab("emoji")}
-            >
-              {t("creator.emoji")}
-            </button>
-            <button
-              type="button"
-              className={assetTab === "gif" ? "is-active" : ""}
-              role="tab"
-              aria-selected={assetTab === "gif"}
-              aria-controls="creator-gif-panel"
-              tabIndex={assetTab === "gif" ? 0 : -1}
-              onClick={() => setAssetTab("gif")}
-            >
-              {t("creator.gif")}
-            </button>
+function StickerPane({
+  sticker,
+  setSticker,
+  uploadSticker,
+  selectElement,
+}: {
+  sticker: StickerOverlay | null;
+  setSticker: (sticker: StickerOverlay | null) => void;
+  uploadSticker: (file: File) => Promise<void>;
+  selectElement: (element: DesignerElement) => void;
+}) {
+  const { t } = useT();
+  const [emojiUsage, setEmojiUsage] = useState<Record<string, number>>(() => readCreatorUsage(CREATOR_EMOJI_USAGE_KEY));
+  const frequentEmojis = useMemo(() => {
+    const ordered = Object.entries(emojiUsage)
+      .filter(([emoji]) => ALL_EMOJI_SET.has(emoji))
+      .sort((a, b) => b[1] - a[1])
+      .map(([emoji]) => emoji);
+    return ordered.slice(0, 16);
+  }, [emojiUsage]);
+
+  const updateEmoji = (emoji: string) => {
+    setSticker({
+      kind: "emoji",
+      value: emoji,
+      ...clampStickerBox(sticker ?? DEFAULT_STICKER_BOX),
+    });
+    selectElement("sticker");
+    setEmojiUsage((current) => bumpCreatorUsage(CREATOR_EMOJI_USAGE_KEY, current, emoji));
+  };
+
+  const handleStickerUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const input = event.currentTarget;
+    const file = input.files?.[0];
+    if (!file) return;
+    void uploadSticker(file).then(() => selectElement("sticker")).finally(() => {
+      input.value = "";
+    });
+  };
+
+  const emojiButton = (emoji: string, key: string) => (
+    <button
+      key={key}
+      type="button"
+      className={`creator-telegram-emoji ${sticker?.kind === "emoji" && sticker.value === emoji ? "is-active" : ""}`}
+      draggable
+      onDragStart={(event) => writePaletteDragData(event, { kind: "emoji", value: emoji })}
+      onClick={() => updateEmoji(emoji)}
+      aria-label={emoji}
+    >
+      {emoji}
+    </button>
+  );
+
+  return (
+    <div className="creator-editor-pane creator-sticker-pane" role="tabpanel" aria-label={t("creator.paneSticker")}>
+      <div className="creator-asset-scroll creator-pane-scroll">
+        {frequentEmojis.length > 0 && (
+          <div className="creator-asset-frequent creator-telegram-emoji-grid">
+            {frequentEmojis.map((emoji, index) => emojiButton(emoji, `frequent-${emoji}-${index}`))}
           </div>
-
-          {assetTab === "emoji" ? (
-            <div id="creator-emoji-panel" className="creator-asset-scroll" role="tabpanel" aria-label={t("creator.emoji")}>
-              {frequentEmojis.length > 0 && (
-                <div className="creator-asset-frequent creator-telegram-emoji-grid">
-                  {frequentEmojis.map((emoji, index) => (
-                    <button
-                      key={`frequent-${emoji}-${index}`}
-                      type="button"
-                      className={`creator-telegram-emoji ${sticker?.kind === "emoji" && sticker.value === emoji ? "is-active" : ""}`}
-                      onClick={() => updateEmoji(emoji)}
-                      aria-label={emoji}
-                    >
-                      {emoji}
-                    </button>
-                  ))}
-                </div>
-              )}
-              <div className="creator-telegram-emoji-grid">
-                {ALL_EMOJIS.map((emoji, index) => (
-                  <button
-                    key={`${emoji}-${index}`}
-                    type="button"
-                    className={`creator-telegram-emoji ${sticker?.kind === "emoji" && sticker.value === emoji ? "is-active" : ""}`}
-                    onClick={() => updateEmoji(emoji)}
-                    aria-label={emoji}
-                  >
-                    {emoji}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div id="creator-gif-panel" className="creator-asset-scroll is-gif" role="tabpanel" aria-label={t("creator.gif")}>
-              {frequentMotion.length > 0 && (
-                <div className="creator-asset-frequent creator-telegram-gif-grid">
-                  {frequentMotion.map((item) => {
-                    const id = String(item.id);
-                    const url = creatorServiceAssetUrl(item.src);
-                    return (
-                      <button
-                        key={`frequent-${id}`}
-                        type="button"
-                        className={`creator-telegram-gif ${mediaSettings.motion === id ? "is-active" : ""}`}
-                        aria-label={String(item.name || item.id || id)}
-                        onClick={() => {
-                          updateMedia({ motion: id });
-                          setGifUsage((current) => bumpCreatorUsage(CREATOR_GIF_USAGE_KEY, current, id));
-                        }}
-                      >
-                        {url ? <img src={url} alt="" loading="lazy" /> : <span>{item.name || item.id}</span>}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-              <div className="creator-telegram-gif-grid">
-                {motionItems.map((item) => {
-                  const id = String(item.id);
-                  const url = creatorServiceAssetUrl(item.src);
-                  return (
-                    <button
-                      key={id}
-                      type="button"
-                      className={`creator-telegram-gif ${mediaSettings.motion === id ? "is-active" : ""}`}
-                      aria-label={String(item.name || item.id || id)}
-                      onClick={() => {
-                        updateMedia({ motion: id });
-                        setGifUsage((current) => bumpCreatorUsage(CREATOR_GIF_USAGE_KEY, current, id));
-                      }}
-                    >
-                      {url ? <img src={url} alt="" loading="lazy" /> : <span>{item.name || item.id}</span>}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          <div className="creator-asset-upload-bar">
-            <span>{t("creator.assetUploads")}</span>
-            <div>
-              <label className="btn btn-xs btn-outline">
-                {t("creator.uploadSticker")}
-                <input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleStickerUpload} />
-              </label>
-              <label className="btn btn-xs btn-outline">
-                {t("creator.uploadGif")}
-                <input type="file" accept="image/gif,.gif" onChange={handleGifUpload} />
-              </label>
-              {sticker && (
-                <button type="button" className="btn btn-xs btn-ghost" onClick={() => setSticker(null)}>
-                  {t("creator.noSticker")}
-                </button>
-              )}
-              {mediaSettings.motion !== "none" && (
-                <button type="button" className="btn btn-xs btn-ghost" onClick={() => updateMedia({ motion: "none" })}>
-                  {t("creator.removeGif")}
-                </button>
-              )}
-            </div>
-          </div>
+        )}
+        <div className="creator-telegram-emoji-grid">
+          {ALL_EMOJIS.map((emoji, index) => emojiButton(emoji, `${emoji}-${index}`))}
         </div>
+      </div>
+      <div className="creator-pane-actions">
+        <label className="btn btn-xs btn-outline">
+          {t("creator.uploadSticker")}
+          <input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleStickerUpload} />
+        </label>
+        {sticker && (
+          <button type="button" className="btn btn-xs btn-ghost" onClick={() => setSticker(null)}>
+            {t("creator.noSticker")}
+          </button>
+        )}
       </div>
     </div>
   );
 }
 
-function TemplateDesignerControls({
-  panelId,
-  panelLabel,
-  templateNameValue,
-  activePreset,
-  values,
-  updateValue,
-  textLayout,
-  setTextLayout,
-  textStyle,
-  setTextStyle,
-  sticker,
-  setSticker,
+function GifPane({
+  motion,
   mediaSettings,
   setMediaSettings,
-  background,
-  selection,
-  setSelection,
-  applyDesignState,
-  canUndoDesign,
-  canRedoDesign,
-  undoDesign,
-  redoDesign,
+  uploadMotionGif,
+  selectElement,
 }: {
-  panelId: string;
-  panelLabel: string;
-  templateNameValue: string;
-  activePreset: TemplatePreset;
-  values: CardValues;
-  updateValue: (key: keyof CardValues, value: string) => void;
-  textLayout: TextLayout;
-  setTextLayout: (layout: TextLayout) => void;
-  textStyle: TextStyle;
-  setTextStyle: (style: TextStyle) => void;
-  sticker: StickerOverlay | null;
-  setSticker: (sticker: StickerOverlay | null) => void;
+  motion: CreatorAsset[];
   mediaSettings: MediaSettings;
   setMediaSettings: Dispatch<SetStateAction<MediaSettings>>;
-  background: string;
-  selection: DesignerElement;
-  setSelection: (selection: DesignerElement) => void;
-  applyDesignState: (state: CreatorDesignState) => void;
-  canUndoDesign: boolean;
-  canRedoDesign: boolean;
-  undoDesign: () => void;
-  redoDesign: () => void;
+  uploadMotionGif: (file: File) => Promise<void>;
+  selectElement: (element: DesignerElement) => void;
 }) {
   const { t } = useT();
-  const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
-  const [importText, setImportText] = useState("");
-  const [importState, setImportState] = useState<"idle" | "error">("idle");
-  const designState = useMemo(() => buildCreatorDesignState({
-    templateName: templateNameValue,
-    presetId: activePreset.id,
-    background,
-    values,
-    layout: textLayout,
-    textStyle,
-    sticker,
-    mediaSettings,
-  }), [activePreset.id, background, mediaSettings, sticker, templateNameValue, textLayout, textStyle, values]);
-  const exportText = useMemo(() => JSON.stringify(designState, null, 2), [designState]);
-  const textCustomColorSelected = !TEXT_COLOR_CHOICES.includes(textStyle.color);
-  const outlineCustomColorSelected = textStyle.outline !== "none" && !OUTLINE_COLOR_CHOICES.includes(textStyle.outline);
-  const selectedBox = (() => {
-    if (selection === "heading") return clampTextBox(textLayout.heading, "heading");
-    if (selection === "body") return clampTextBox(textLayout.body, "body");
-    if (selection === "sticker") return sticker ? clampStickerBox(sticker) : null;
-    return mediaSettings.motion !== "none" ? clampMotionBox(mediaSettings.motionBox) : null;
-  })();
-  const updateStyle = (patch: Partial<TextStyle>) => setTextStyle({ ...textStyle, ...patch });
-  const updateSelectedBox = (patch: Partial<TextBoxRect>) => {
-    if (!selectedBox) return;
-    const nextBox = { ...selectedBox, ...patch };
-    if (selection === "heading" || selection === "body") {
-      setTextLayout({
-        ...cloneTextLayout(textLayout),
-        [selection]: clampTextBox(nextBox, selection),
-      });
-      return;
-    }
-    if (selection === "sticker" && sticker) {
-      setSticker({ ...sticker, ...clampStickerBox(nextBox) });
-      return;
-    }
-    if (selection === "motion") {
-      setMediaSettings((current) => ({ ...current, motionBox: clampMotionBox(nextBox) }));
-    }
+  const [gifUsage, setGifUsage] = useState<Record<string, number>>(() => readCreatorUsage(CREATOR_GIF_USAGE_KEY));
+  const motionItems = useMemo(() => (
+    mediaSettings.customMotion
+      ? [{ id: "custom", name: mediaSettings.customMotionName || t("creator.customGif"), src: mediaSettings.customMotion } as CreatorAsset, ...motion]
+      : motion
+  ), [mediaSettings.customMotion, mediaSettings.customMotionName, motion, t]);
+  const frequentMotion = useMemo(() => {
+    const byId = new Map(motionItems.map((item) => [String(item.id), item]));
+    const ordered = Object.entries(gifUsage)
+      .sort((a, b) => b[1] - a[1])
+      .map(([id]) => byId.get(id))
+      .filter((item): item is CreatorAsset => Boolean(item));
+    return ordered.slice(0, 6);
+  }, [gifUsage, motionItems]);
+
+  const pickMotion = (id: string) => {
+    setMediaSettings((current) => ({ ...current, motion: id }));
+    selectElement("motion");
+    setGifUsage((current) => bumpCreatorUsage(CREATOR_GIF_USAGE_KEY, current, id));
   };
-  const alignSelected = (xAlign: "left" | "center" | "right") => {
-    if (!selectedBox) return;
-    const x = xAlign === "left" ? 72 : xAlign === "center" ? (TEMPLATE_W - selectedBox.w) / 2 : TEMPLATE_W - selectedBox.w - 72;
-    updateSelectedBox({ x });
+
+  const handleGifUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const input = event.currentTarget;
+    const file = input.files?.[0];
+    if (!file) return;
+    void uploadMotionGif(file).then(() => selectElement("motion")).finally(() => {
+      input.value = "";
+    });
   };
-  const placeSelected = (yAlign: "top" | "middle" | "bottom") => {
-    if (!selectedBox) return;
-    const y = yAlign === "top" ? 160 : yAlign === "middle" ? (TEMPLATE_H - selectedBox.h) / 2 : TEMPLATE_H - selectedBox.h - 180;
-    updateSelectedBox({ y });
+
+  const gifButton = (item: CreatorAsset, keyPrefix = "") => {
+    const id = String(item.id);
+    const url = id === "custom" ? mediaSettings.customMotion : creatorServiceAssetUrl(item.src);
+    return (
+      <button
+        key={`${keyPrefix}${id}`}
+        type="button"
+        className={`creator-telegram-gif ${mediaSettings.motion === id ? "is-active" : ""}`}
+        aria-label={String(item.name || item.id || id)}
+        draggable
+        onDragStart={(event) => writePaletteDragData(event, { kind: "motion", id })}
+        onClick={() => pickMotion(id)}
+      >
+        {url ? <img src={url} alt="" loading="lazy" /> : <span>{item.name || item.id}</span>}
+      </button>
+    );
   };
-  const resetDesign = () => {
-    setTextLayout(cloneTextLayout(DEFAULT_TEXT_LAYOUT));
-    setTextStyle({ ...DEFAULT_TEXT_STYLE });
-    setSticker(null);
-    setMediaSettings((current) => ({ ...current, motion: "none", motionBox: DEFAULT_MOTION_BOX }));
-    setSelection("heading");
-  };
-  const copyDesignState = async () => {
-    setCopyState("idle");
-    try {
-      await navigator.clipboard.writeText(exportText);
-      setCopyState("copied");
-      window.setTimeout(() => setCopyState("idle"), 1600);
-    } catch {
-      setCopyState("error");
-    }
-  };
-  const importDesignState = () => {
-    try {
-      const nextState = parseCreatorDesignState(importText);
-      applyDesignState(nextState);
-      setImportState("idle");
-      setSelection("heading");
-    } catch {
-      setImportState("error");
-    }
-  };
-  const setNumber = (key: keyof TextBoxRect, value: string) => {
-    const numeric = Number(value);
-    if (!Number.isFinite(numeric)) return;
-    updateSelectedBox({ [key]: numeric });
-  };
-  const selectionItems: Array<{ id: DesignerElement; label: string; disabled?: boolean }> = [
-    { id: "heading", label: t("creator.layoutHeading") },
-    { id: "body", label: t("creator.layoutBody") },
-    { id: "sticker", label: t("creator.sticker"), disabled: !sticker },
-    { id: "motion", label: t("creator.gif"), disabled: mediaSettings.motion === "none" },
-  ];
 
   return (
-    <div id={panelId} className="creator-compose-tools creator-designer-tools" role="tabpanel" aria-label={panelLabel}>
-      <div className="creator-designer-panel">
-        <div className="creator-designer-title">
-          <span><SlidersHorizontal size={16} />{t("creator.designerMode")}</span>
-          <div className="creator-designer-icon-row">
-            <button type="button" className="creator-designer-icon-button" onClick={undoDesign} disabled={!canUndoDesign} aria-label={t("creator.undo")} title={t("creator.undo")}>
-              <Undo2 size={14} />
-            </button>
-            <button type="button" className="creator-designer-icon-button" onClick={redoDesign} disabled={!canRedoDesign} aria-label={t("creator.redo")} title={t("creator.redo")}>
-              <Redo2 size={14} />
-            </button>
+    <div className="creator-editor-pane creator-gif-pane" role="tabpanel" aria-label={t("creator.paneGif")}>
+      <div className="creator-asset-scroll is-gif creator-pane-scroll">
+        {frequentMotion.length > 0 && (
+          <div className="creator-asset-frequent creator-telegram-gif-grid">
+            {frequentMotion.map((item) => gifButton(item, "frequent-"))}
           </div>
-        </div>
-
-        <div className="creator-designer-layer-grid" role="radiogroup" aria-label={t("creator.designerElement")}>
-          {selectionItems.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className={selection === item.id ? "is-active" : ""}
-              disabled={item.disabled}
-              onClick={() => setSelection(item.id)}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-
-        {(selection === "heading" || selection === "body") && (
-          <label className="form-control">
-            <span className="label-text">{selection === "heading" ? t("creator.heading") : t("creator.body")}</span>
-            <textarea
-              className="textarea textarea-bordered textarea-sm creator-designer-textarea"
-              value={selection === "heading" ? values.heading : values.body}
-              onChange={(event) => updateValue(selection, event.target.value)}
-              maxLength={CHAR_LIMITS[selection] * 2}
-            />
-          </label>
         )}
-
-        <div className="creator-designer-grid">
-          {(["x", "y", "w", "h", "rot"] as const).map((key) => (
-            <label key={key}>
-              <span>{key.toUpperCase()}</span>
-              <input
-                type="number"
-                value={selectedBox ? selectedBox[key] ?? 0 : ""}
-                disabled={!selectedBox}
-                onChange={(event) => setNumber(key, event.target.value)}
-              />
-            </label>
-          ))}
-        </div>
-
-        <div className="creator-designer-actions">
-          <button type="button" onClick={() => alignSelected("left")} disabled={!selectedBox}>{t("creator.alignLeft")}</button>
-          <button type="button" onClick={() => alignSelected("center")} disabled={!selectedBox}>{t("creator.alignCenter")}</button>
-          <button type="button" onClick={() => alignSelected("right")} disabled={!selectedBox}>{t("creator.alignRight")}</button>
-          <button type="button" onClick={() => placeSelected("top")} disabled={!selectedBox}>{t("creator.alignTop")}</button>
-          <button type="button" onClick={() => placeSelected("middle")} disabled={!selectedBox}>{t("creator.alignMiddle")}</button>
-          <button type="button" onClick={() => placeSelected("bottom")} disabled={!selectedBox}>{t("creator.alignBottom")}</button>
+        <div className="creator-telegram-gif-grid">
+          {motionItems.map((item) => gifButton(item))}
         </div>
       </div>
-
-      <div className="creator-designer-panel">
-        <div className="creator-tool-group">
-          <span className="creator-tool-label">{t("creator.textColor")}</span>
-          <div className="creator-swatch-row">
-            {TEXT_COLOR_CHOICES.map((color) => (
-              <button
-                key={color}
-                type="button"
-                className={`creator-swatch ${textStyle.color === color ? "is-active" : ""}`}
-                style={{ background: color }}
-                onClick={() => updateStyle({ color })}
-                aria-label={t("creator.textColor")}
-              />
-            ))}
-            <label
-              className={`creator-custom-color-button ${textCustomColorSelected ? "is-active" : ""}`}
-              style={textCustomColorSelected ? ({ "--creator-custom-color": textStyle.color } as CSSProperties) : undefined}
-              title={t("creator.customColor")}
-            >
-              <input
-                type="color"
-                value={colorInputValue(textStyle.color, DEFAULT_TEXT_STYLE.color)}
-                onChange={(event) => updateStyle({ color: event.target.value })}
-                aria-label={t("creator.customColor")}
-              />
-              {textCustomColorSelected ? <span aria-hidden="true" /> : <Palette size={15} aria-hidden="true" />}
-            </label>
-          </div>
-        </div>
-
-        <div className="creator-tool-group">
-          <span className="creator-tool-label">{t("creator.textOutline")}</span>
-          <div className="creator-swatch-row">
-            {OUTLINE_COLOR_CHOICES.map((color) => (
-              <button
-                key={color}
-                type="button"
-                className={`creator-swatch ${color === "none" ? "is-none" : ""} ${textStyle.outline === color ? "is-active" : ""}`}
-                style={color === "none" ? undefined : { background: color }}
-                onClick={() => updateStyle({ outline: color })}
-                aria-label={color === "none" ? t("creator.textOutlineNone") : t("creator.textOutline")}
-              />
-            ))}
-            <label
-              className={`creator-custom-color-button ${outlineCustomColorSelected ? "is-active" : ""}`}
-              style={outlineCustomColorSelected ? ({ "--creator-custom-color": textStyle.outline } as CSSProperties) : undefined}
-              title={t("creator.customColor")}
-            >
-              <input
-                type="color"
-                value={colorInputValue(textStyle.outline, DEFAULT_TEXT_STYLE.outline)}
-                onChange={(event) => updateStyle({ outline: event.target.value })}
-                aria-label={t("creator.customColor")}
-              />
-              {outlineCustomColorSelected ? <span aria-hidden="true" /> : <Palette size={15} aria-hidden="true" />}
-            </label>
-          </div>
-        </div>
-
-        <div className="creator-tool-group">
-          <span className="creator-tool-label">
-            {t("creator.textBackground")}
-            <span className="creator-range-value">{Math.round(textStyle.background)}%</span>
-          </span>
-          <input
-            className="creator-range"
-            type="range"
-            min="0"
-            max="80"
-            step="1"
-            value={textStyle.background}
-            onChange={(event) => updateStyle({ background: Number(event.target.value) })}
-            aria-label={t("creator.textBackground")}
-          />
-        </div>
-      </div>
-
-      <div className="creator-designer-panel">
-        <div className="creator-designer-title">
-          <span>{t("creator.timeline")}</span>
-          <button type="button" className="creator-designer-icon-button" onClick={copyDesignState} aria-label={t("creator.copyDesignState")}>
-            <Copy size={15} />
+      <div className="creator-pane-actions">
+        <label className="btn btn-xs btn-outline">
+          {t("creator.uploadGif")}
+          <input type="file" accept="image/gif,.gif" onChange={handleGifUpload} />
+        </label>
+        {mediaSettings.motion !== "none" && (
+          <button type="button" className="btn btn-xs btn-ghost" onClick={() => setMediaSettings((current) => ({ ...current, motion: "none" }))}>
+            {t("creator.removeGif")}
           </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function MusicPane({
+  music,
+  mediaSettings,
+  setMediaSettings,
+  uploadMusic,
+}: {
+  music: CreatorAsset[];
+  mediaSettings: MediaSettings;
+  setMediaSettings: Dispatch<SetStateAction<MediaSettings>>;
+  uploadMusic: (file: File) => Promise<void>;
+}) {
+  const { t } = useT();
+  const [previewMusicId, setPreviewMusicId] = useState("");
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const tracks = mediaSettings.musicTracks;
+  const selectedCount = tracks.filter((id) => id !== "auto").length;
+  const isNone = tracks.length === 0;
+  const isAuto = tracks.includes("auto");
+
+  const stopMusicPreview = () => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.removeAttribute("src");
+    }
+    setPreviewMusicId("");
+  };
+
+  const playMusicPreview = (track: CreatorAsset) => {
+    const audio = audioRef.current;
+    if (!audio || !track.url || !track.id) return;
+    if (previewMusicId === track.id && !audio.paused) {
+      stopMusicPreview();
+      return;
+    }
+    audio.src = String(track.url);
+    audio.currentTime = 0;
+    setPreviewMusicId(String(track.id));
+    void audio.play().catch(() => setPreviewMusicId(""));
+  };
+
+  const toggleTrack = (track: CreatorAsset) => {
+    const id = String(track.id ?? "");
+    if (!id) return;
+    setMediaSettings((current) => {
+      const base = current.musicTracks.filter((item) => item !== "auto");
+      const next = base.includes(id) ? base.filter((item) => item !== id) : [...base, id];
+      return { ...current, musicTracks: next };
+    });
+    if (!tracks.includes(String(track.id))) playMusicPreview(track);
+    else stopMusicPreview();
+  };
+
+  const handleMusicUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const input = event.currentTarget;
+    const file = input.files?.[0];
+    if (!file) return;
+    void uploadMusic(file).finally(() => {
+      input.value = "";
+    });
+  };
+
+  return (
+    <div className="creator-editor-pane creator-music-pane" role="tabpanel" aria-label={t("creator.paneMusic")}>
+      <audio ref={audioRef} className="creator-audio-hidden" onEnded={() => setPreviewMusicId("")} />
+
+      <div className="creator-video-duration">
+        <span className="creator-tool-label">
+          {t("creator.durationSec")}
+          <span className="creator-range-value">{t("creator.secondsShort", { count: mediaSettings.durationSec })}</span>
+        </span>
+        <input
+          className="creator-range"
+          type="range"
+          min="6"
+          max="30"
+          step="1"
+          value={mediaSettings.durationSec}
+          onChange={(event) => setMediaSettings((current) => ({ ...current, durationSec: Number(event.target.value) }))}
+          aria-label={t("creator.durationSec")}
+        />
+      </div>
+
+      <div className="creator-tool-group creator-video-music">
+        <div className="creator-music-head">
+          <span className="creator-tool-label">{t("creator.music")}</span>
+          <label className="btn btn-xs btn-outline">
+            {t("creator.uploadMusic")}
+            <input type="file" accept="audio/mpeg,audio/mp3,audio/mp4,audio/aac,audio/wav,audio/ogg,audio/opus,.mp3,.m4a,.aac,.wav,.ogg,.opus" onChange={handleMusicUpload} />
+          </label>
         </div>
-        <div className="creator-designer-timeline" aria-label={t("creator.timeline")}>
-          <div className="creator-designer-timebar">
-            <span>{t("creator.secondsShort", { count: 0 })}</span>
-            <span>{t("creator.secondsShort", { count: mediaSettings.durationSec })}</span>
-          </div>
-          {[
-            { id: "background", label: t("creator.background"), active: false, width: 100 },
-            { id: "heading", label: t("creator.layoutHeading"), active: selection === "heading", width: 72 },
-            { id: "body", label: t("creator.layoutBody"), active: selection === "body", width: 86 },
-            ...(sticker ? [{ id: "sticker", label: t("creator.sticker"), active: selection === "sticker", width: 34 }] : []),
-            ...(mediaSettings.motion !== "none" ? [{ id: "motion", label: t("creator.gif"), active: selection === "motion", width: 44 }] : []),
-          ].map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className={`creator-designer-track ${item.active ? "is-active" : ""}`}
-              onClick={() => {
-                if (item.id === "heading" || item.id === "body" || item.id === "sticker" || item.id === "motion") {
-                  setSelection(item.id);
-                }
-              }}
-            >
-              <span>{item.label}</span>
-              <i style={{ width: `${item.width}%` }} />
-            </button>
-          ))}
-        </div>
-        <details className="creator-designer-advanced">
-          <summary>{t("creator.designState")}</summary>
-          <textarea className="creator-design-state" value={exportText} readOnly aria-label={t("creator.designState")} />
-          <div className="creator-designer-footer">
-            <button type="button" className="btn btn-xs btn-outline gap-1" onClick={copyDesignState}>
-              <Copy size={14} />
-              {copyState === "copied" ? t("creator.designStateCopied") : t("creator.copyDesignState")}
-            </button>
-            <button type="button" className="btn btn-xs btn-ghost gap-1" onClick={resetDesign}>
-              <RotateCcw size={14} />
-              {t("creator.resetDesign")}
-            </button>
-          </div>
-          <textarea
-            className="creator-design-state is-import"
-            value={importText}
-            onChange={(event) => {
-              setImportText(event.target.value);
-              setImportState("idle");
+        <p className="creator-capacity-hint">{t("creator.musicMultiHint")}</p>
+        <div className="creator-music-list">
+          <button
+            type="button"
+            className={`creator-music-option ${isNone ? "is-active" : ""}`}
+            onClick={() => {
+              setMediaSettings((current) => ({ ...current, musicTracks: [] }));
+              stopMusicPreview();
             }}
-            placeholder={t("creator.importDesignState")}
-            aria-label={t("creator.importDesignState")}
-          />
-          <button type="button" className="btn btn-xs btn-primary" onClick={importDesignState} disabled={!importText.trim()}>
-            {importState === "error" ? t("creator.designStateInvalid") : t("creator.applyDesignState")}
+          >
+            <VolumeX size={14} aria-hidden="true" />
+            <span>{t("creator.noMusic")}</span>
           </button>
-        </details>
+          <button
+            type="button"
+            className={`creator-music-option ${isAuto ? "is-active" : ""}`}
+            onClick={() => {
+              setMediaSettings((current) => ({ ...current, musicTracks: current.musicTracks.includes("auto") ? [] : ["auto"] }));
+              stopMusicPreview();
+            }}
+          >
+            <Shuffle size={14} aria-hidden="true" />
+            <span>{t("creator.musicAuto")}</span>
+          </button>
+          {music.map((track) => {
+            const id = String(track.id);
+            const checked = tracks.includes(id);
+            return (
+              <button
+                type="button"
+                key={id}
+                className={`creator-music-option is-track ${checked ? "is-active is-checked" : ""}`}
+                aria-pressed={checked}
+                onClick={() => toggleTrack(track)}
+              >
+                <span className={`creator-music-check ${checked ? "is-on" : ""}`} aria-hidden="true" />
+                <span className="creator-music-name">{track.name || track.id}</span>
+                {track.url && (
+                  <span className={`creator-music-meter ${previewMusicId === track.id ? "is-playing" : ""}`} aria-hidden="true">
+                    <span />
+                    <span />
+                    <span />
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+        {selectedCount > 1 && <p className="creator-capacity-hint is-accent">{t("creator.musicSelectedMany", { count: selectedCount })}</p>}
       </div>
     </div>
   );
@@ -1124,44 +917,27 @@ function TextLayoutEditor({
   setActiveElement: (element: DesignerElement) => void;
 }) {
   const { t } = useT();
-  const screenRef = useRef<HTMLDivElement>(null);
-  const gesture = useRef<{
-    role: TextBoxRole;
-    mode: "move" | "resize";
-    startX: number;
-    startY: number;
-    scaleX: number;
-    scaleY: number;
-    layout: TextLayout;
-  } | null>(null);
-  const stickerGesture = useRef<{
-    mode: "move" | "resize";
-    startX: number;
-    startY: number;
-    scaleX: number;
-    scaleY: number;
-    box: TextBoxRect;
-  } | null>(null);
-  const motionGesture = useRef<{
-    mode: "move" | "resize";
-    startX: number;
-    startY: number;
-    scaleX: number;
-    scaleY: number;
-    box: TextBoxRect;
-  } | null>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const stickerRef = useRef<HTMLDivElement>(null);
   const motionRef = useRef<HTMLDivElement>(null);
+  const editingTextareaRef = useRef<HTMLTextAreaElement>(null);
   const moveableGesture = useRef<{
     element: DesignerElement;
     box: TextBoxRect;
     scaleX: number;
     scaleY: number;
+    resizeStartClientX?: number;
+    resizeStartClientY?: number;
+    resizeDirection?: number[];
+    keepRatio?: boolean;
   } | null>(null);
-  const [moveableTarget, setMoveableTarget] = useState<HTMLElement | null>(null);
   const [screenPixels, setScreenPixels] = useState({ w: 0, h: 0 });
+  const [targets, setTargets] = useState<Partial<Record<DesignerElement, HTMLElement | null>>>({});
+  const [editingRole, setEditingRole] = useState<TextBoxRole | null>(null);
+
   const tone = templateTone(activePreset.templateType);
   const backgroundUrl = usableBackgroundUrl(background);
   const presetBackgroundUrl = creatorServiceAssetUrl(activePreset.previewSrc ?? firstTemplateImageSrc(activePreset.templates));
@@ -1169,6 +945,12 @@ function TextLayoutEditor({
   const previewStyle = previewBackgroundUrl
     ? ({ backgroundImage: `url("${cssUrl(previewBackgroundUrl)}")` } as CSSProperties)
     : undefined;
+
+  const hasElement = (element: DesignerElement): boolean => {
+    if (element === "sticker") return Boolean(sticker);
+    if (element === "motion") return Boolean(motionPreview);
+    return true;
+  };
 
   const selectedBoxForElement = (element: DesignerElement): TextBoxRect | null => {
     if (element === "heading" || element === "body") return clampTextBox(layout[element], element);
@@ -1188,127 +970,55 @@ function TextLayoutEditor({
       return;
     }
     if (element === "motion") {
-      updateMotionBox(box);
+      setMediaSettings((current) => ({ ...current, motionBox: clampMotionBox(box) }));
     }
   };
 
-  const resolveMoveableTarget = (): HTMLElement | null => {
-    if (activeElement === "heading") return headingRef.current;
-    if (activeElement === "body") return bodyRef.current;
-    if (activeElement === "sticker") return stickerRef.current;
-    if (activeElement === "motion") return motionRef.current;
-    return null;
-  };
-
+  // Актуальные DOM-цели для Moveable (после маунта/смены элементов)
   useEffect(() => {
-    const updateTarget = () => setMoveableTarget((current) => {
-      const next = resolveMoveableTarget();
-      return current === next ? current : next;
+    const resolved: Partial<Record<DesignerElement, HTMLElement | null>> = {
+      heading: headingRef.current,
+      body: bodyRef.current,
+      sticker: sticker ? stickerRef.current : null,
+      motion: motionPreview ? motionRef.current : null,
+    };
+    setTargets((current) => {
+      for (const key of ["heading", "body", "sticker", "motion"] as DesignerElement[]) {
+        if ((current[key] ?? null) !== (resolved[key] ?? null)) return resolved;
+      }
+      return current;
     });
-    updateTarget();
   });
 
   useEffect(() => {
-    const screen = screenRef.current;
-    if (!screen) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
     const updateSize = () => {
-      const rect = screen.getBoundingClientRect();
+      const rect = canvas.getBoundingClientRect();
       setScreenPixels({ w: rect.width, h: rect.height });
     };
     updateSize();
     const observer = new ResizeObserver(updateSize);
-    observer.observe(screen);
+    observer.observe(canvas);
     return () => observer.disconnect();
   }, []);
 
-  const startGesture = (event: ReactPointerEvent<HTMLElement>, role: TextBoxRole, mode: "move" | "resize") => {
-    const screen = screenRef.current?.getBoundingClientRect();
-    if (!screen) return;
-    event.preventDefault();
-    event.stopPropagation();
-    event.currentTarget.setPointerCapture(event.pointerId);
-    setActiveElement(role);
-    gesture.current = {
-      role,
-      mode,
-      startX: event.clientX,
-      startY: event.clientY,
-      scaleX: TEMPLATE_W / screen.width,
-      scaleY: TEMPLATE_H / screen.height,
-      layout: cloneTextLayout(layout),
-    };
-  };
-
-  const moveGesture = (event: ReactPointerEvent<HTMLElement>) => {
-    const current = gesture.current;
-    if (!current) return;
-    event.preventDefault();
-    const dx = (event.clientX - current.startX) * current.scaleX;
-    const dy = (event.clientY - current.startY) * current.scaleY;
-    const base = current.layout[current.role];
-    const nextBox = current.mode === "move"
-      ? { ...base, x: base.x + dx, y: base.y + dy }
-      : { ...base, w: base.w + dx, h: base.h + dy };
-    const next = cloneTextLayout(current.layout);
-    next[current.role] = clampTextBox(nextBox, current.role);
-    setLayout(next);
-  };
-
-  const endGesture = (event: ReactPointerEvent<HTMLElement>) => {
-    if (!gesture.current) return;
-    try {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    } catch {
-      /* pointer may already be released */
+  useEffect(() => {
+    if (editingRole) {
+      const area = editingTextareaRef.current;
+      if (area) {
+        area.focus();
+        area.setSelectionRange(area.value.length, area.value.length);
+      }
     }
-    gesture.current = null;
-  };
+  }, [editingRole]);
 
-  const startStickerGesture = (event: ReactPointerEvent<HTMLElement>, mode: "move" | "resize") => {
-    if (!sticker) return;
-    const screen = screenRef.current?.getBoundingClientRect();
-    if (!screen) return;
-    event.preventDefault();
-    event.stopPropagation();
-    event.currentTarget.setPointerCapture(event.pointerId);
-    stickerGesture.current = {
-      mode,
-      startX: event.clientX,
-      startY: event.clientY,
-      scaleX: TEMPLATE_W / screen.width,
-      scaleY: TEMPLATE_H / screen.height,
-      box: clampStickerBox(sticker),
-    };
-  };
-
-  const moveStickerGesture = (event: ReactPointerEvent<HTMLElement>) => {
-    const current = stickerGesture.current;
-    if (!current) return;
-    event.preventDefault();
-    const dx = (event.clientX - current.startX) * current.scaleX;
-    const dy = (event.clientY - current.startY) * current.scaleY;
-    const nextBox = current.mode === "move"
-      ? { ...current.box, x: current.box.x + dx, y: current.box.y + dy }
-      : { ...current.box, w: current.box.w + dx, h: current.box.h + dy };
-    setSticker(sticker ? { ...sticker, ...clampStickerBox(nextBox) } : null);
-  };
-
-  const endStickerGesture = (event: ReactPointerEvent<HTMLElement>) => {
-    if (!stickerGesture.current) return;
-    try {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    } catch {
-      /* pointer may already be released */
-    }
-    stickerGesture.current = null;
-  };
-
-  const updateMotionBox = (box: TextBoxRect) => {
-    setMediaSettings((current) => ({ ...current, motionBox: clampMotionBox(box) }));
-  };
-
-  const startMoveableGesture = (element: DesignerElement) => {
-    const screen = screenRef.current?.getBoundingClientRect();
+  const startMoveableGesture = (
+    element: DesignerElement,
+    event?: { clientX?: number; clientY?: number; direction?: number[] },
+    keepRatio = false,
+  ) => {
+    const screen = canvasRef.current?.getBoundingClientRect();
     const box = selectedBoxForElement(element);
     if (!screen || !box) {
       moveableGesture.current = null;
@@ -1319,6 +1029,10 @@ function TextLayoutEditor({
       box,
       scaleX: TEMPLATE_W / screen.width,
       scaleY: TEMPLATE_H / screen.height,
+      resizeStartClientX: event?.clientX,
+      resizeStartClientY: event?.clientY,
+      resizeDirection: event?.direction,
+      keepRatio,
     };
   };
 
@@ -1333,16 +1047,66 @@ function TextLayoutEditor({
     });
   };
 
-  const updateMoveableResize = (event: { width?: number; height?: number; drag?: { beforeTranslate?: number[]; translate?: number[] } }) => {
+  const updateMoveableResize = (event: {
+    width?: number;
+    height?: number;
+    clientX?: number;
+    clientY?: number;
+    direction?: number[];
+    drag?: { beforeTranslate?: number[]; translate?: number[] };
+  }) => {
     const current = moveableGesture.current;
-    if (!current || !event.width || !event.height) return;
-    const [dx = 0, dy = 0] = event.drag?.beforeTranslate ?? event.drag?.translate ?? [];
+    if (!current) return;
+    const [dragDx = 0, dragDy = 0] = event.drag?.beforeTranslate ?? event.drag?.translate ?? [];
+    const pointerDx =
+      typeof current.resizeStartClientX === "number" && typeof event.clientX === "number"
+        ? event.clientX - current.resizeStartClientX
+        : dragDx;
+    const pointerDy =
+      typeof current.resizeStartClientY === "number" && typeof event.clientY === "number"
+        ? event.clientY - current.resizeStartClientY
+        : dragDy;
+    const [dirX = 1, dirY = 1] = current.resizeDirection ?? event.direction ?? [];
+    const dx = pointerDx * current.scaleX;
+    const dy = pointerDy * current.scaleY;
+    let x = current.box.x;
+    let y = current.box.y;
+    let w = current.box.w;
+    let h = current.box.h;
+
+    if (dirX > 0) w = current.box.w + dx;
+    if (dirX < 0) {
+      w = current.box.w - dx;
+      x = current.box.x + dx;
+    }
+    if (dirY > 0) h = current.box.h + dy;
+    if (dirY < 0) {
+      h = current.box.h - dy;
+      y = current.box.y + dy;
+    }
+
+    if (current.keepRatio) {
+      const ratio = current.box.w / Math.max(1, current.box.h);
+      if (dirX && dirY) {
+        const widthChange = Math.abs(w - current.box.w) / Math.max(1, current.box.w);
+        const heightChange = Math.abs(h - current.box.h) / Math.max(1, current.box.h);
+        if (widthChange >= heightChange) h = w / ratio;
+        else w = h * ratio;
+      } else if (dirX) {
+        h = w / ratio;
+      } else if (dirY) {
+        w = h * ratio;
+      }
+      if (dirX < 0) x = current.box.x + current.box.w - w;
+      if (dirY < 0) y = current.box.y + current.box.h - h;
+    }
+
     updateBoxForElement(current.element, {
       ...current.box,
-      x: current.box.x + dx * current.scaleX,
-      y: current.box.y + dy * current.scaleY,
-      w: event.width * current.scaleX,
-      h: event.height * current.scaleY,
+      x,
+      y,
+      w,
+      h,
     });
   };
 
@@ -1355,49 +1119,93 @@ function TextLayoutEditor({
     });
   };
 
-  const startMotionGesture = (event: ReactPointerEvent<HTMLElement>, mode: "move" | "resize") => {
-    if (!motionPreview) return;
-    const screen = screenRef.current?.getBoundingClientRect();
-    if (!screen) return;
-    event.preventDefault();
-    event.stopPropagation();
-    event.currentTarget.setPointerCapture(event.pointerId);
-    motionGesture.current = {
-      mode,
-      startX: event.clientX,
-      startY: event.clientY,
-      scaleX: TEMPLATE_W / screen.width,
-      scaleY: TEMPLATE_H / screen.height,
-      box: clampMotionBox(mediaSettings.motionBox),
-    };
-  };
-
-  const moveMotionGesture = (event: ReactPointerEvent<HTMLElement>) => {
-    const current = motionGesture.current;
-    if (!current) return;
-    event.preventDefault();
-    const dx = (event.clientX - current.startX) * current.scaleX;
-    const dy = (event.clientY - current.startY) * current.scaleY;
-    const nextBox = current.mode === "move"
-      ? { ...current.box, x: current.box.x + dx, y: current.box.y + dy }
-      : { ...current.box, w: current.box.w + dx, h: current.box.h + dy };
-    updateMotionBox(nextBox);
-  };
-
-  const endMotionGesture = (event: ReactPointerEvent<HTMLElement>) => {
-    if (!motionGesture.current) return;
-    try {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    } catch {
-      /* pointer may already be released */
+  // Стрелки — сдвиг активного элемента; Delete — убрать стикер/GIF
+  const handleStageKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    if (target.tagName === "TEXTAREA" || target.tagName === "INPUT" || target.tagName === "SELECT") return;
+    const box = selectedBoxForElement(activeElement);
+    if (!box) return;
+    const step = event.shiftKey ? 60 : 12;
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight" || event.key === "ArrowUp" || event.key === "ArrowDown") {
+      event.preventDefault();
+      const dx = event.key === "ArrowLeft" ? -step : event.key === "ArrowRight" ? step : 0;
+      const dy = event.key === "ArrowUp" ? -step : event.key === "ArrowDown" ? step : 0;
+      updateBoxForElement(activeElement, { ...box, x: box.x + dx, y: box.y + dy });
+      return;
     }
-    motionGesture.current = null;
+    if ((event.key === "Delete" || event.key === "Backspace") && (activeElement === "sticker" || activeElement === "motion")) {
+      event.preventDefault();
+      if (activeElement === "sticker") setSticker(null);
+      else setMediaSettings((current) => ({ ...current, motion: "none" }));
+      setActiveElement("heading");
+    }
   };
 
-  const renderBox = (role: TextBoxRole) => {
+  const selectAndFocus = (element: DesignerElement) => {
+    setActiveElement(element);
+    stageRef.current?.focus({ preventScroll: true });
+  };
+
+  const boxAtDropPoint = (
+    event: ReactDragEvent<HTMLElement>,
+    box: TextBoxRect,
+    clamp: (box: TextBoxRect) => TextBoxRect,
+  ) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return clamp(box);
+    const rect = canvas.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * TEMPLATE_W - box.w / 2;
+    const y = ((event.clientY - rect.top) / rect.height) * TEMPLATE_H - box.h / 2;
+    return clamp({ ...box, x, y });
+  };
+
+  const handleCanvasDragOver = (event: ReactDragEvent<HTMLDivElement>) => {
+    if (!Array.from(event.dataTransfer.types).includes(CREATOR_PALETTE_DRAG_TYPE)) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "copy";
+  };
+
+  const handleCanvasDrop = (event: ReactDragEvent<HTMLDivElement>) => {
+    const payload = readPaletteDragData(event);
+    if (!payload) return;
+    event.preventDefault();
+    if (payload.kind === "emoji") {
+      const box = boxAtDropPoint(event, sticker ? clampStickerBox(sticker) : DEFAULT_STICKER_BOX, clampStickerBox);
+      setSticker({ kind: "emoji", value: payload.value, ...box });
+      setActiveElement("sticker");
+      stageRef.current?.focus({ preventScroll: true });
+      return;
+    }
+    const box = boxAtDropPoint(event, clampMotionBox(mediaSettings.motionBox), clampMotionBox);
+    setMediaSettings((current) => ({ ...current, motion: payload.id, motionBox: box }));
+    setActiveElement("motion");
+    stageRef.current?.focus({ preventScroll: true });
+  };
+
+  // ── тулбар выравнивания активного элемента ──
+  const activeBox = selectedBoxForElement(activeElement);
+  const isTextActive = activeElement === "heading" || activeElement === "body";
+  const align = (patch: (box: TextBoxRect) => Partial<TextBoxRect>) => {
+    const box = selectedBoxForElement(activeElement);
+    if (!box) return;
+    updateBoxForElement(activeElement, { ...box, ...patch(box) });
+    stageRef.current?.focus({ preventScroll: true });
+  };
+
+  const toolbarButtons: Array<{ key: string; icon: typeof AlignStartVertical; labelKey: string; action: () => void; hidden?: boolean }> = [
+    { key: "left", icon: AlignStartVertical, labelKey: "creator.alignLeft", action: () => align(() => ({ x: 72 })) },
+    { key: "center-x", icon: AlignCenterVertical, labelKey: "creator.alignCenter", action: () => align((box) => ({ x: (TEMPLATE_W - box.w) / 2 })) },
+    { key: "right", icon: AlignEndVertical, labelKey: "creator.alignRight", action: () => align((box) => ({ x: TEMPLATE_W - box.w - 72 })) },
+    { key: "top", icon: AlignStartHorizontal, labelKey: "creator.alignTop", action: () => align(() => ({ y: 160 })) },
+    { key: "center-y", icon: AlignCenterHorizontal, labelKey: "creator.alignMiddle", action: () => align((box) => ({ y: (TEMPLATE_H - box.h) / 2 })) },
+    { key: "bottom", icon: AlignEndHorizontal, labelKey: "creator.alignBottom", action: () => align((box) => ({ y: SAFE_BOTTOM_Y - box.h - 24 })) },
+    { key: "full", icon: MoveHorizontal, labelKey: "creator.fullWidth", action: () => align(() => ({ x: 72, w: TEMPLATE_W - 144 })), hidden: !isTextActive },
+  ];
+
+  const renderTextBox = (role: TextBoxRole) => {
     const box = clampTextBox(layout[role], role);
-    const label = role === "heading" ? t("creator.layoutHeading") : t("creator.layoutBody");
     const value = role === "heading" ? values.heading : values.body;
+    const editing = editingRole === role;
     const style = {
       left: `${(box.x / TEMPLATE_W) * 100}%`,
       top: `${(box.y / TEMPLATE_H) * 100}%`,
@@ -1413,34 +1221,38 @@ function TextLayoutEditor({
       <div
         ref={role === "heading" ? headingRef : bodyRef}
         key={role}
-        className={`creator-layout-box is-${role} ${activeElement === role ? "is-active" : ""}`}
+        className={`creator-layout-box is-${role} ${activeElement === role ? "is-active" : ""} ${editing ? "is-editing" : ""}`}
         style={style}
-        onFocus={() => setActiveElement(role)}
-        onPointerMove={moveGesture}
-        onPointerUp={endGesture}
-        onPointerCancel={endGesture}
+        onPointerDown={() => {
+          if (!editing) selectAndFocus(role);
+        }}
+        onDoubleClick={() => {
+          setActiveElement(role);
+          setEditingRole(role);
+        }}
       >
-        <button
-          type="button"
-          className="creator-layout-box-label"
-          onPointerDown={(event) => startGesture(event, role, "move")}
-        >
-          {label}
-        </button>
-        <textarea
-          className="creator-layout-box-input"
-          value={value}
-          maxLength={CHAR_LIMITS[role] * 2}
-          onChange={(event) => updateValue(role, event.target.value)}
-          onFocus={() => setActiveElement(role)}
-          onPointerDown={(event) => event.stopPropagation()}
-          aria-label={label}
-        />
-        <span
-          className="creator-layout-resize"
-          aria-hidden="true"
-          onPointerDown={(event) => startGesture(event, role, "resize")}
-        />
+        {editing ? (
+          <textarea
+            ref={editingTextareaRef}
+            className="creator-layout-box-input is-editor-input"
+            value={value}
+            tabIndex={0}
+            onChange={(event) => updateValue(role, event.target.value)}
+            onBlur={() => setEditingRole((current) => (current === role ? null : current))}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                event.stopPropagation();
+                setEditingRole(null);
+                stageRef.current?.focus({ preventScroll: true });
+              }
+            }}
+            aria-label={role === "heading" ? t("creator.layoutHeading") : t("creator.layoutBody")}
+          />
+        ) : (
+          <div className="creator-layout-box-input creator-layout-box-preview" aria-label={role === "heading" ? t("creator.layoutHeading") : t("creator.layoutBody")}>
+            {value}
+          </div>
+        )}
       </div>
     );
   };
@@ -1461,27 +1273,13 @@ function TextLayoutEditor({
         ref={stickerRef}
         className={`creator-sticker-box is-${sticker.kind} ${activeElement === "sticker" ? "is-active" : ""}`}
         style={style}
-        onPointerDown={(event) => {
-          setActiveElement("sticker");
-          startStickerGesture(event, "move");
-        }}
-        onPointerMove={moveStickerGesture}
-        onPointerUp={endStickerGesture}
-        onPointerCancel={endStickerGesture}
+        onPointerDown={() => selectAndFocus("sticker")}
       >
         {sticker.kind === "image" ? (
           <img src={sticker.value} alt="" draggable={false} />
         ) : (
           <span className="creator-sticker-emoji">{sticker.value}</span>
         )}
-        <span
-          className="creator-layout-resize"
-          aria-hidden="true"
-          onPointerDown={(event) => {
-            setActiveElement("sticker");
-            startStickerGesture(event, "resize");
-          }}
-        />
       </div>
     );
   };
@@ -1502,87 +1300,151 @@ function TextLayoutEditor({
         ref={motionRef}
         className={`creator-motion-preview-box is-editor ${activeElement === "motion" ? "is-active" : ""}`}
         style={style}
-        onPointerDown={(event) => {
-          setActiveElement("motion");
-          startMotionGesture(event, "move");
-        }}
-        onPointerMove={moveMotionGesture}
-        onPointerUp={endMotionGesture}
-        onPointerCancel={endMotionGesture}
+        onPointerDown={() => selectAndFocus("motion")}
       >
         <img className="creator-motion-preview-gif" src={motionPreview} alt="" draggable={false} />
-        <span
-          className="creator-layout-resize"
-          aria-hidden="true"
-          onPointerDown={(event) => {
-            setActiveElement("motion");
-            startMotionGesture(event, "resize");
-          }}
-        />
       </div>
     );
   };
 
-  const moveableOverlay = moveableTarget && screenRef.current ? createPortal(
-    <Moveable
-      target={moveableTarget}
-      container={screenRef.current}
-      className={MOVEABLE_CLASS_NAME}
-      draggable
-      resizable
-      rotatable
-      snappable
-      snapContainer={screenRef.current}
-      verticalGuidelines={[0, screenPixels.w / 2, screenPixels.w].filter(Boolean)}
-      horizontalGuidelines={[0, screenPixels.h / 2, screenPixels.h].filter(Boolean)}
-      snapThreshold={7}
-      snapGap
-      isDisplaySnapDigit={false}
-      origin={false}
-      keepRatio={activeElement === "sticker" || activeElement === "motion"}
-      throttleDrag={1}
-      throttleResize={1}
-      throttleRotate={1}
-      renderDirections={["nw", "n", "ne", "w", "e", "sw", "s", "se"]}
-      preventClickEventOnDrag
-      checkInput
-      useResizeObserver
-      useMutationObserver
-      onDragStart={() => startMoveableGesture(activeElement)}
-      onDrag={updateMoveableDrag}
-      onResizeStart={(event) => {
-        startMoveableGesture(activeElement);
-        if (event.dragStart) event.dragStart.set([0, 0]);
-      }}
-      onResize={updateMoveableResize}
-      onRotateStart={(event) => {
-        const box = selectedBoxForElement(activeElement);
-        event.set?.(box?.rot ?? 0);
-        startMoveableGesture(activeElement);
-      }}
-      onRotate={updateMoveableRotation}
-      onDragEnd={() => { moveableGesture.current = null; }}
-      onResizeEnd={() => { moveableGesture.current = null; }}
-      onRotateEnd={() => { moveableGesture.current = null; }}
-    />,
-    screenRef.current,
-  ) : null;
+  const safeGuideline = screenPixels.h * (SAFE_BOTTOM_Y / TEMPLATE_H);
+  const renderMoveable = (element: DesignerElement) => {
+    const target = targets[element];
+    if (!target || !canvasRef.current || !hasElement(element)) return null;
+    const active = activeElement === element;
+    const keepRatio = element === "sticker" || element === "motion";
+    const elementGuidelines = (["heading", "body", "sticker", "motion"] as DesignerElement[])
+      .filter((other) => other !== element)
+      .map((other) => targets[other])
+      .filter((el): el is HTMLElement => Boolean(el));
+    return (
+      <Moveable
+        key={element}
+        target={target}
+        container={canvasRef.current}
+        className={`${MOVEABLE_CLASS_NAME} ${active ? "is-active" : "is-passive"}`}
+        draggable={editingRole !== element}
+        resizable={active}
+        rotatable={active}
+        origin={false}
+        keepRatio={keepRatio}
+        throttleDrag={1}
+        throttleResize={1}
+        throttleRotate={1}
+        renderDirections={active ? (keepRatio ? ["nw", "ne", "sw", "se"] : ["nw", "n", "ne", "w", "e", "sw", "s", "se"]) : []}
+        hideDefaultLines={!active}
+        snappable
+        snapContainer={canvasRef.current}
+        snapDirections={{ top: true, left: true, bottom: true, right: true, center: true, middle: true }}
+        elementSnapDirections={{ top: true, left: true, bottom: true, right: true, center: true, middle: true }}
+        elementGuidelines={elementGuidelines}
+        verticalGuidelines={[0, screenPixels.w / 2, screenPixels.w].filter(Number.isFinite)}
+        horizontalGuidelines={[0, screenPixels.h / 2, safeGuideline, screenPixels.h].filter(Number.isFinite)}
+        snapThreshold={6}
+        isDisplaySnapDigit={false}
+        preventClickEventOnDrag
+        clickable
+        checkInput
+        useResizeObserver
+        useMutationObserver
+        onClick={(event) => {
+          // двойной клик по выбранному тексту — правка (оверлей Moveable перехватывает dblclick DOM-узла)
+          if (event.isDouble && (element === "heading" || element === "body")) {
+            setActiveElement(element);
+            setEditingRole(element);
+          }
+        }}
+        onDragStart={() => {
+          if (!active) setActiveElement(element);
+          startMoveableGesture(element);
+        }}
+        onDrag={updateMoveableDrag}
+        onResizeStart={(event) => {
+          startMoveableGesture(element, event, keepRatio);
+          if (event.dragStart) event.dragStart.set([0, 0]);
+        }}
+        onResize={updateMoveableResize}
+        onRotateStart={(event) => {
+          const box = selectedBoxForElement(element);
+          event.set?.(box?.rot ?? 0);
+          startMoveableGesture(element);
+        }}
+        onRotate={updateMoveableRotation}
+        onDragEnd={() => { moveableGesture.current = null; }}
+        onResizeEnd={() => { moveableGesture.current = null; }}
+        onRotateEnd={() => { moveableGesture.current = null; }}
+      />
+    );
+  };
+
+  const moveableOverlay = canvasRef.current
+    ? createPortal(
+        <>
+          {renderMoveable("heading")}
+          {renderMoveable("body")}
+          {renderMoveable("sticker")}
+          {renderMoveable("motion")}
+        </>,
+        canvasRef.current,
+      )
+    : null;
 
   return (
     <div className="creator-layout-stage">
-      <div className={`creator-phone creator-layout-phone ${tone}`}>
-        <span className="creator-device-button is-left" aria-hidden="true" />
-        <span className="creator-device-button is-right" aria-hidden="true" />
-        <div className="creator-phone-screen" ref={screenRef}>
-          <span className="creator-device-island" aria-hidden="true" />
-          <div className="creator-phone-card creator-layout-canvas is-clean-background" style={previewStyle}>
-            {renderBox("heading")}
-            {renderBox("body")}
-            {renderSticker()}
-            {renderMotion()}
+      <div
+        className="creator-layout-stage-inner"
+        ref={stageRef}
+        tabIndex={-1}
+        onKeyDown={handleStageKeyDown}
+      >
+        <div className={`creator-phone creator-layout-phone ${tone}`}>
+          <span className="creator-device-button is-left" aria-hidden="true" />
+          <span className="creator-device-button is-right" aria-hidden="true" />
+          <div className="creator-phone-screen">
+            <span className="creator-device-island" aria-hidden="true" />
+            <div
+              className="creator-phone-card creator-layout-canvas is-clean-background"
+              ref={canvasRef}
+              style={previewStyle}
+              onDragOver={handleCanvasDragOver}
+              onDrop={handleCanvasDrop}
+            >
+              {renderTextBox("heading")}
+              {renderTextBox("body")}
+              {renderSticker()}
+              {renderMotion()}
+              <div className="creator-safe-zone" aria-hidden="true">
+                <span>{t("creator.safeZone")}</span>
+              </div>
+            </div>
+            {moveableOverlay}
           </div>
-          {moveableOverlay}
         </div>
+      </div>
+
+      <div className="creator-canvas-toolbar" role="toolbar" aria-label={t("creator.alignToolbarAria")}>
+        {toolbarButtons.filter((button) => !button.hidden).map(({ key, icon: Icon, labelKey, action }) => (
+          <button
+            key={key}
+            type="button"
+            onClick={action}
+            disabled={!activeBox}
+            title={t(labelKey)}
+            aria-label={t(labelKey)}
+          >
+            <Icon size={15} />
+          </button>
+        ))}
+        {activeBox && (
+          <button type="button" className="creator-toolbar-rotate" onClick={() => align((box) => ({ rot: (box.rot ?? 0) + 15 }))} title={t("creator.rotateElement")} aria-label={t("creator.rotateElement")}>
+            <RotateCw size={15} />
+          </button>
+        )}
+        {Boolean(activeBox?.rot) && (
+          <button type="button" onClick={() => align(() => ({ rot: 0 }))} title={t("creator.resetRotation")} aria-label={t("creator.resetRotation")}>
+            <span className="creator-toolbar-zero">0°</span>
+          </button>
+        )}
       </div>
     </div>
   );

@@ -55,7 +55,6 @@ import { registerContentCatalogRoutes } from "./routes/content-catalog.ts";
 import { registerQueueRoutes } from "./routes/queue.ts";
 import { registerAccountReadinessRoutes } from "./routes/account-readiness.ts";
 import { registerSuperAdminChannelBlockRoutes } from "./routes/super-admin-channel-blocks.ts";
-import { registerCreatorRoutes } from "./routes/creator.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -197,6 +196,7 @@ if (existsSync(resolve(WEB_DIST, "index.html"))) {
     if (
       (req.method === "GET" || req.method === "HEAD") &&
       !req.url.startsWith("/api/") &&
+      !req.url.startsWith("/creator") &&
       !req.url.startsWith("/files/") &&
       !req.url.startsWith("/audio/") &&
       !req.url.startsWith("/fact-videos/") &&
@@ -318,7 +318,6 @@ const deps = makeRouteDeps({
 registerPasswordRoutes(app, db);
 registerPsychCardsRoutes(app, db);
 registerPacksRoutes(app, db);
-registerCreatorRoutes(app, db);
 // Telegram login + account binding + bot-delivered password recovery (public routes whitelisted above)
 // + the in-bot channel-statistics menu (mirrors the website's Statistics tab; reuses refreshAccountStats).
 registerTelegramRoutes(app, db, {

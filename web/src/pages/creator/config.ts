@@ -10,8 +10,8 @@ export const FALLBACK_PRESETS: TemplatePreset[] = [
     templates: [],
     defaults: {
       badge: "мем",
-      heading: "Когда сказал: «сейчас быстро»",
-      body: "и через три часа всё ещё выбираешь идеальный фон",
+      heading: "Заголовок мема",
+      body: "Текст мема",
       text: "",
       cta: "жиза",
     },
@@ -25,8 +25,8 @@ export const FALLBACK_PRESETS: TemplatePreset[] = [
     templates: [],
     defaults: {
       badge: "анекдот",
-      heading: "Встречаются два друга",
-      body: "— Ты почему такой довольный?\n— Нашёл кнопку «сделать красиво».\n— И где она?\n— Пока ищу.",
+      heading: "Заголовок анекдота",
+      body: "Текст анекдота",
       text: "",
       cta: "ещё",
     },
@@ -39,19 +39,14 @@ export const FALLBACK_PRESETS: TemplatePreset[] = [
     previewSrc: "assets/template-packs/creator-clean-backgrounds/motivation-image.png",
     templates: [],
     defaults: {
-      badge: "daily drive",
-      heading: "Keep moving",
-      body: "Small steps count\nQuiet focus wins\nFinish one thing today",
+      badge: "motivation",
+      heading: "Motivation title",
+      body: "First point\nSecond point\nThird point",
       text: "",
-      cta: "Start now",
+      cta: "Action",
     },
   },
 ];
-
-export const CHAR_LIMITS = {
-  heading: 72,
-  body: 300,
-};
 
 export const TEMPLATE_W = 1080;
 export const TEMPLATE_H = 1920;
@@ -66,7 +61,7 @@ export const DEFAULT_MOTION_BOX: TextBoxRect = { x: 736, y: 1240, w: 220, h: 220
 
 export const DEFAULT_TEXT_STYLE: TextStyle = {
   color: "#111827",
-  outline: "#ffffff",
+  outline: "none",
   background: 44,
 };
 

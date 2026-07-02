@@ -1,0 +1,22 @@
+[Unit]
+Description=shorts-factory Creator service (Fastify on :8091)
+Documentation=https://github.com/armesha/shorts
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=davtian
+Group=davtian
+WorkingDirectory=/home/davtian/Documents/shorts
+Environment=CREATOR_PORT=8091
+ExecStart=/usr/bin/node --import tsx --experimental-sqlite server/creator-index.ts
+Restart=always
+RestartSec=5
+TimeoutStopSec=20
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=shorts-creator
+
+[Install]
+WantedBy=multi-user.target

@@ -1,11 +1,9 @@
-// Вкладка «Карточки» проекта: добавление по одной, массовый импорт из текста/файла
+// Вкладка «Карточки» проекта: выбор шаблона, добавление по одной, массовый импорт из текста/файла
 // (формат «заголовок + текст», разделитель — пустая строка; или JSON) и сетка карточек.
-import { type ChangeEvent, useMemo, useRef, useState } from "react";
+import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   Check,
-  Copy,
-  Download,
   Eye,
   FileUp,
   Loader2,
@@ -23,6 +21,7 @@ import {
   validateImportedCard,
   type CardLimits,
   type ImportedCard,
+  limitsFromTemplate,
 } from "./importCards";
 import { cardAddedAt, cardTitleText, packCardItems } from "./model";
 import type { CreatorPack, CreatorRecord } from "./types";
@@ -34,28 +33,78 @@ export type CardsOps = {
   renderPreview: (index: number) => Promise<string | null>;
 };
 
-const AI_COUNT_CHOICES = [10, 20, 30, 50];
-
 export function CardsPanel({
   pack,
   limits,
   styling,
   ops,
   busy,
+  onCreateTemplate,
 }: {
   pack: CreatorPack;
   limits: CardLimits;
   styling: MiniCardStyling;
   ops: CardsOps;
   busy: string | null;
+  onCreateTemplate: () => void;
 }) {
   const { t } = useT();
   const cards = packCardItems(pack);
   const [adderMode, setAdderMode] = useState<"single" | "bulk">("single");
+  const templates = useMemo(() => (Array.isArray(pack.templates) ? pack.templates : []), [pack.templates]);
+  const [templateIndex, setTemplateIndex] = useState(0);
+  const selectedTemplate = templates[templateIndex] ?? templates[0] ?? null;
+  const selectedLimits = useMemo(
+    () => (selectedTemplate ? limitsFromTemplate(selectedTemplate) : limits),
+    [limits, selectedTemplate],
+  );
+
+  useEffect(() => {
+    if (templateIndex >= templates.length) setTemplateIndex(Math.max(0, templates.length - 1));
+  }, [templateIndex, templates.length]);
+
+  if (!templates.length) {
+    return (
+      <div className="creator-cards-panel">
+        <section className="creator-card creator-cards-empty">
+          <p>{t("creator.noTemplatesTitle")}</p>
+          <span>{t("creator.noTemplatesText")}</span>
+          <button type="button" className="btn btn-sm btn-primary gap-2" onClick={onCreateTemplate}>
+            <Plus size={15} />
+            {t("creator.createTemplate")}
+          </button>
+        </section>
+        <CardsGrid pack={pack} cards={cards} limits={limits} styling={styling} ops={ops} busy={busy} />
+      </div>
+    );
+  }
 
   return (
     <div className="creator-cards-panel">
       <section className="creator-card creator-adder-card">
+        <div className="creator-template-picker">
+          <label>
+            <span>{t("creator.templatePickerLabel")}</span>
+            <select
+              className="select select-bordered select-sm"
+              value={templateIndex}
+              onChange={(event) => setTemplateIndex(Number(event.target.value))}
+            >
+              {templates.map((template, index) => {
+                const name = String((template as CreatorRecord)?.name ?? "").trim() || t("creator.templateFallbackName", { n: index + 1 });
+                return (
+                  <option key={index} value={index}>
+                    {name}
+                  </option>
+                );
+              })}
+            </select>
+          </label>
+          <button type="button" className="btn btn-sm btn-outline gap-2" onClick={onCreateTemplate}>
+            <Plus size={15} />
+            {t("creator.createTemplate")}
+          </button>
+        </div>
         <div className="creator-adder-head">
           <div
             className="creator-mode-switch"
@@ -86,13 +135,13 @@ export function CardsPanel({
           <span className="creator-adder-count">{t("creator.cardsCount", { count: cards.length })}</span>
         </div>
         {adderMode === "single" ? (
-          <SingleCardForm limits={limits} styling={styling} ops={ops} busy={busy} />
+          <SingleCardForm limits={selectedLimits} styling={styling} ops={ops} busy={busy} templateIndex={templateIndex} />
         ) : (
-          <BulkImportForm pack={pack} limits={limits} ops={ops} busy={busy} />
+          <BulkImportForm limits={selectedLimits} ops={ops} busy={busy} templateIndex={templateIndex} />
         )}
       </section>
 
-      <CardsGrid pack={pack} cards={cards} limits={limits} styling={styling} ops={ops} busy={busy} />
+      <CardsGrid pack={pack} cards={cards} limits={selectedLimits} styling={styling} ops={ops} busy={busy} />
     </div>
   );
 }
@@ -106,11 +155,13 @@ function SingleCardForm({
   styling,
   ops,
   busy,
+  templateIndex,
 }: {
   limits: CardLimits;
   styling: MiniCardStyling;
   ops: CardsOps;
   busy: string | null;
+  templateIndex: number;
 }) {
   const { t } = useT();
   const [title, setTitle] = useState("");
@@ -121,7 +172,7 @@ function SingleCardForm({
   const canAdd = issues.length === 0 && !busy;
 
   const add = async () => {
-    const ok = await ops.addCards([toCardPayload(card)]);
+    const ok = await ops.addCards([toCardPayload(card, templateIndex)]);
     if (ok) {
       setTitle("");
       setText("");
@@ -185,54 +236,23 @@ function SingleCardForm({
 }
 
 function BulkImportForm({
-  pack,
   limits,
   ops,
   busy,
+  templateIndex,
 }: {
-  pack: CreatorPack;
   limits: CardLimits;
   ops: CardsOps;
   busy: string | null;
+  templateIndex: number;
 }) {
   const { t } = useT();
   const [raw, setRaw] = useState("");
   const [fileName, setFileName] = useState("");
-  const [aiCount, setAiCount] = useState(20);
-  const [copied, setCopied] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const parsed = useMemo(() => parseImport(raw, limits), [raw, limits]);
   const valid = parsed.entries.filter((entry) => entry.issues.length === 0);
   const invalid = parsed.entries.filter((entry) => entry.issues.length > 0);
-
-  const langLabel = String(pack.lang ?? "ru").toUpperCase();
-  const aiPrompt = t("creator.aiPromptTemplate", {
-    count: aiCount,
-    lang: langLabel,
-    titleMax: limits.titleMax,
-    textMin: Math.max(limits.textMin, 60),
-    textMax: limits.textMax,
-  });
-
-  const copyPrompt = async () => {
-    try {
-      await navigator.clipboard.writeText(aiPrompt);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1800);
-    } catch {
-      /* clipboard unavailable — user can copy manually from the details block */
-    }
-  };
-
-  const downloadExample = () => {
-    const blob = new Blob([t("creator.exampleFile")], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "cards-example.txt";
-    link.click();
-    URL.revokeObjectURL(url);
-  };
 
   const handleFile = (event: ChangeEvent<HTMLInputElement>) => {
     const input = event.currentTarget;
@@ -248,7 +268,7 @@ function BulkImportForm({
 
   const add = async () => {
     if (!valid.length) return;
-    const ok = await ops.addCards(valid.map((entry) => toCardPayload(entry.card)));
+    const ok = await ops.addCards(valid.map((entry) => toCardPayload(entry.card, templateIndex)));
     if (ok) {
       setRaw("");
       setFileName("");
@@ -258,32 +278,13 @@ function BulkImportForm({
   return (
     <div className="creator-bulk-form">
       <div className="creator-bulk-help">
-        <p className="creator-bulk-format">
+        <div className="creator-import-guide" role="note">
           <Sparkles size={15} aria-hidden="true" />
-          <span>{t("creator.bulkFormatHint", { titleMax: limits.titleMax, textMax: limits.textMax })}</span>
-        </p>
-        <div className="creator-bulk-help-actions">
-          <label className="creator-ai-count">
-            {t("creator.aiCount")}
-            <select className="select select-bordered select-xs" value={aiCount} onChange={(event) => setAiCount(Number(event.target.value))}>
-              {AI_COUNT_CHOICES.map((count) => (
-                <option key={count} value={count}>{count}</option>
-              ))}
-            </select>
-          </label>
-          <button type="button" className="btn btn-xs btn-outline gap-1" onClick={() => void copyPrompt()}>
-            {copied ? <Check size={13} /> : <Copy size={13} />}
-            {copied ? t("creator.aiPromptCopied") : t("creator.aiPromptCopy")}
-          </button>
-          <button type="button" className="btn btn-xs btn-ghost gap-1" onClick={downloadExample}>
-            <Download size={13} />
-            {t("creator.exampleDownload")}
-          </button>
+          <div>
+            <strong>{t("creator.bulkGuideTitle")}</strong>
+            <p>{t("creator.bulkFormatHint", { titleMax: limits.titleMax, textMax: limits.textMax })}</p>
+          </div>
         </div>
-        <details className="creator-ai-prompt-details">
-          <summary>{t("creator.aiPromptShow")}</summary>
-          <textarea className="creator-design-state" readOnly value={aiPrompt} aria-label={t("creator.aiPromptShow")} />
-        </details>
       </div>
 
       <div className="creator-bulk-input">

@@ -56,7 +56,8 @@ export type CardValues = {
 };
 
 export type TextBoxRole = "heading" | "body";
-export type TextBoxRect = { x: number; y: number; w: number; h: number; rot?: number };
+/** fs — желаемый размер шрифта (только для текстовых боксов; не задан → размер из пресета). */
+export type TextBoxRect = { x: number; y: number; w: number; h: number; rot?: number; fs?: number };
 export type TextLayout = Record<TextBoxRole, TextBoxRect>;
 
 export type TextStyle = {
@@ -78,7 +79,8 @@ export type StickerOverlay = {
 };
 
 export type MediaSettings = {
-  music: string;
+  /** Выбранные треки: [] = без музыки, ["auto"] = случайный фон, иначе id треков (на видео берётся случайный из списка). */
+  musicTracks: string[];
   customMusicName: string;
   motion: string;
   customMotion: string;
@@ -99,7 +101,8 @@ export type CreatorDesignState = {
   layout: TextLayout;
   textStyle: TextStyle;
   sticker: StickerOverlay | null;
-  media: Pick<MediaSettings, "music" | "customMusicName" | "motion" | "customMotion" | "customMotionName" | "durationSec" | "motionBox">;
+  /** music — legacy-строка для старых читателей (первый трек / "" = авто / "none"). */
+  media: Pick<MediaSettings, "musicTracks" | "customMusicName" | "motion" | "customMotion" | "customMotionName" | "durationSec" | "motionBox"> & { music: string };
 };
 
 export type Notice = { type: "success" | "error" | "info"; text: string } | null;

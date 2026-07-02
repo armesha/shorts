@@ -31,6 +31,19 @@ export type ParsedImport = {
 export const DEFAULT_LIMITS: CardLimits = { titleMin: 1, titleMax: 72, textMin: 1, textMax: 420 };
 
 type RoleRuleLike = { role?: unknown; min?: unknown; max?: unknown };
+type TemplateElementLike = {
+  type?: unknown;
+  role?: unknown;
+  w?: unknown;
+  h?: unknown;
+  padX?: unknown;
+  padY?: unknown;
+  fitMin?: unknown;
+  maxChars?: unknown;
+  minChars?: unknown;
+  bullet?: unknown;
+  font?: { lineHeight?: unknown };
+};
 
 const TITLE_ROLES = new Set(["title", "heading", "hook"]);
 const TEXT_ROLES = new Set(["text", "body", "fact", "points", "items"]);
@@ -54,6 +67,32 @@ export function limitsFromRules(rules: unknown): CardLimits {
     }
   }
   return out;
+}
+
+function estimateCapacity(el: TemplateElementLike): number {
+  const fitMin = Math.max(8, Number(el.fitMin) || 24);
+  const lineHeight = Number(el.font?.lineHeight) || 1.2;
+  const padX = Number(el.padX) || 0;
+  const padY = Number(el.padY) || 0;
+  const width = Math.max(0, (Number(el.w) || 0) - 2 * padX);
+  const height = Math.max(0, (Number(el.h) || 0) - 2 * padY);
+  const lines = Math.max(1, Math.floor(height / (fitMin * lineHeight)));
+  const charsPerLine = Math.max(1, Math.floor(width / (0.52 * fitMin)));
+  return Math.max(1, Math.floor(lines * charsPerLine * 0.9));
+}
+
+export function limitsFromTemplate(template: unknown): CardLimits {
+  const elements = Array.isArray((template as { elements?: unknown })?.elements)
+    ? ((template as { elements: TemplateElementLike[] }).elements)
+    : [];
+  const rules = elements
+    .filter((el) => String(el.type ?? "") === "killbox" && String(el.role ?? "").trim())
+    .map((el) => ({
+      role: String(el.role ?? ""),
+      min: Math.max(0, Math.round(Number(el.minChars) || 0)),
+      max: Number(el.maxChars) && Number(el.maxChars) > 0 ? Math.round(Number(el.maxChars)) : estimateCapacity(el),
+    }));
+  return limitsFromRules(rules);
 }
 
 export function validateImportedCard(card: ImportedCard, limits: CardLimits): CardIssue[] {
@@ -129,9 +168,10 @@ export function parseImport(raw: string, limits: CardLimits): ParsedImport {
 }
 
 /** Payload для POST /creator/packs/:id/cards. */
-export function toCardPayload(card: ImportedCard): CreatorRecord {
+export function toCardPayload(card: ImportedCard, templateIndex?: number): CreatorRecord {
   return {
     values: { title: card.title.trim(), text: card.text.trim() },
     ...(card.narration?.trim() ? { narration: card.narration.trim() } : {}),
+    ...(Number.isInteger(templateIndex) ? { templateIndex } : {}),
   };
 }

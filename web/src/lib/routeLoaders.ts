@@ -19,7 +19,6 @@ const routeLoaders = {
   longVideos: () => import("../pages/LongVideos"),
   limits: () => import("../pages/Limits"),
   templateEditor: () => import("../pages/TemplateEditor"),
-  creator: () => import("../pages/Creator"),
   login: () => import("../pages/Login"),
   register: () => import("../pages/Register"),
 };
@@ -84,8 +83,6 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
       return "settings";
     case "/editor":
       return "templateEditor";
-    case "/creator":
-      return "creator";
     case "/users":
       return "users";
     case "/login":

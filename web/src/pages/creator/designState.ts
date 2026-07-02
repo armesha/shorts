@@ -17,6 +17,12 @@ import type {
   TextStyle,
 } from "./types";
 
+export function clampFontSize(value: unknown): number | undefined {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric) || numeric <= 0) return undefined;
+  return Math.max(22, Math.min(120, Math.round(numeric)));
+}
+
 export function clampTextBox(box: TextBoxRect, role: TextBoxRole): TextBoxRect {
   const minW = role === "heading" ? 280 : 320;
   const minH = role === "heading" ? 92 : 160;
@@ -24,7 +30,8 @@ export function clampTextBox(box: TextBoxRect, role: TextBoxRole): TextBoxRect {
   const h = Math.min(TEMPLATE_H, Math.max(minH, Math.round(box.h)));
   const x = Math.min(TEMPLATE_W - w, Math.max(0, Math.round(box.x)));
   const y = Math.min(TEMPLATE_H - h, Math.max(0, Math.round(box.y)));
-  return { x, y, w, h, rot: clampRotation(box.rot) };
+  const fs = clampFontSize(box.fs);
+  return { x, y, w, h, rot: clampRotation(box.rot), ...(fs ? { fs } : {}) };
 }
 
 export function cloneTextLayout(layout: TextLayout): TextLayout {
@@ -104,7 +111,32 @@ function cleanBox(value: unknown, fallback: TextBoxRect, clamp: (box: TextBoxRec
     w: Number(src.w ?? fallback.w),
     h: Number(src.h ?? fallback.h),
     rot: Number(src.rot ?? fallback.rot ?? 0),
+    ...(src.fs !== undefined || fallback.fs !== undefined ? { fs: Number(src.fs ?? fallback.fs) } : {}),
   });
+}
+
+/** Чистый список выбранных треков: [] = без музыки, ["auto"] = случайный, иначе id. */
+export function cleanMusicTracks(value: unknown, legacyMusic?: unknown): string[] {
+  const raw = Array.isArray(value)
+    ? value
+    : typeof legacyMusic === "string" && legacyMusic && legacyMusic !== "none"
+      ? [legacyMusic]
+      : [];
+  const out: string[] = [];
+  for (const item of raw) {
+    const id = String(item ?? "").trim();
+    if (!id || id === "none" || out.includes(id)) continue;
+    out.push(id);
+    if (out.length >= 24) break;
+  }
+  return out.includes("auto") ? ["auto"] : out;
+}
+
+/** Legacy-строка music для старых читателей designState. */
+export function legacyMusicFromTracks(tracks: string[]): string {
+  if (!tracks.length) return "none";
+  if (tracks[0] === "auto") return "";
+  return tracks[0];
 }
 
 function cleanSticker(value: unknown): StickerOverlay | null {
@@ -147,7 +179,8 @@ export function buildCreatorDesignState(input: {
     textStyle: cleanTextStyle(input.textStyle, DEFAULT_TEXT_STYLE),
     sticker: input.sticker ? { ...input.sticker, ...clampStickerBox(input.sticker) } : null,
     media: {
-      music: input.mediaSettings.music,
+      music: legacyMusicFromTracks(input.mediaSettings.musicTracks),
+      musicTracks: cleanMusicTracks(input.mediaSettings.musicTracks),
       customMusicName: input.mediaSettings.customMusicName,
       motion: input.mediaSettings.motion,
       customMotion: input.mediaSettings.customMotion,
@@ -178,7 +211,8 @@ export function normalizeCreatorDesignState(parsed: Partial<CreatorDesignState>)
     textStyle: cleanTextStyle(parsed.textStyle, DEFAULT_TEXT_STYLE),
     sticker: cleanSticker(parsed.sticker),
     media: {
-      music: cleanString((media as Partial<MediaSettings>).music, "none"),
+      music: cleanString((media as Record<string, unknown>).music, "none"),
+      musicTracks: cleanMusicTracks((media as Partial<MediaSettings>).musicTracks, (media as Record<string, unknown>).music),
       customMusicName: cleanString((media as Partial<MediaSettings>).customMusicName),
       motion: cleanString((media as Partial<MediaSettings>).motion, "none"),
       customMotion: cleanString((media as Partial<MediaSettings>).customMotion),

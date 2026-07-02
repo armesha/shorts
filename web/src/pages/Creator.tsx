@@ -1,23 +1,15 @@
-// /creator — проектная студия: проект (creator-пак) = шаблон + карточки + видео.
-// Главная = плитки проектов; мастер создаёт проект; внутри проекта — вкладки
+// /creator — отдельная студия: пак = шаблон + карточки + видео.
+// Главная = плитки паков; мастер создаёт шаблон; внутри пака — вкладки
 // «Карточки» (по одной / пачкой из файла), «Шаблон» (дизайн + музыка), «Видео» (экспорт + галерея).
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   AlertTriangle,
   Check,
-  ChevronLeft,
-  Clapperboard,
   Info,
-  LayoutTemplate,
-  Loader2,
-  Pencil,
-  StickyNote,
-  Trash2,
   X,
 } from "lucide-react";
 import { ApiError, get, send } from "../lib/api/http";
-import { langTag } from "../lib/deck";
 import { useT } from "../lib/i18n";
 import type {
   AutosaveStatus,
@@ -60,29 +52,20 @@ import {
   localizedFallbackPresets,
   normalizeGalleryItem,
   normalizeSummary,
-  packCards,
-  packHasTemplates,
   packId,
   templateTone,
   usableBackgroundUrl,
   type GalleryItem,
 } from "./creator/model";
-import { applyTextLayoutToTemplates } from "./creator/templateTransforms";
+import { applyTextLayoutToTemplates, capacityForRole, fontSizeForRole } from "./creator/templateTransforms";
 import { limitsFromRules } from "./creator/importCards";
 import type { MiniCardStyling } from "./creator/MiniCard";
 import { ProjectsHome } from "./creator/ProjectsHome";
 import { ProjectWizard } from "./creator/ProjectWizard";
 import { CardsPanel, type CardsOps } from "./creator/CardsPanel";
 import { VideosPanel, type VideosOps } from "./creator/VideosPanel";
-import { DesignEditor, MediaSettingsPanel } from "./creator/editor";
-
-type ProjectTab = "cards" | "template" | "videos";
-
-const PROJECT_TABS: Array<{ id: ProjectTab; labelKey: string; icon: typeof StickyNote }> = [
-  { id: "cards", labelKey: "creator.tabCards", icon: StickyNote },
-  { id: "template", labelKey: "creator.tabTemplate", icon: LayoutTemplate },
-  { id: "videos", labelKey: "creator.tabVideos", icon: Clapperboard },
-];
+import { ProjectWorkspace, type ProjectTab } from "./creator/ProjectWorkspace";
+import { DesignEditor, type Capacities, type FontSizes } from "./creator/editor";
 
 export default function Creator() {
   const { t } = useT();
@@ -117,7 +100,7 @@ export default function Creator() {
   const [textStyle, setTextStyle] = useState<TextStyle>(() => ({ ...DEFAULT_TEXT_STYLE }));
   const [sticker, setSticker] = useState<StickerOverlay | null>(null);
   const [mediaSettings, setMediaSettings] = useState<MediaSettings>({
-    music: "none",
+    musicTracks: [],
     customMusicName: "",
     motion: "none",
     customMotion: "",
@@ -235,7 +218,7 @@ export default function Creator() {
     setSticker(state.sticker);
     setMediaSettings((current) => ({
       ...current,
-      music: state.media.music || current.music || "none",
+      musicTracks: state.media.musicTracks,
       customMusicName: state.media.customMusicName || current.customMusicName,
       motion: state.media.motion || current.motion || "none",
       customMotion: state.media.customMotion || current.customMotion,
@@ -379,9 +362,10 @@ export default function Creator() {
       });
       const asset = res.asset;
       if (asset?.id) {
+        // загруженный трек сразу добавляем к выбранным (не сбрасывая остальные)
         setMediaSettings((current) => ({
           ...current,
-          music: String(asset.id),
+          musicTracks: [...current.musicTracks.filter((id) => id !== "auto" && id !== String(asset.id)), String(asset.id)],
           customMusicName: String(asset.name || file.name || t("creator.customMusic")),
         }));
         setSummary((current) => current ? { ...current, music: [asset, ...current.music.filter((item) => item.id !== asset.id)] } : current);
@@ -431,7 +415,7 @@ export default function Creator() {
     setTextStyle({ ...DEFAULT_TEXT_STYLE });
     setSticker(null);
     setMediaSettings({
-      music: "none",
+      musicTracks: [],
       customMusicName: "",
       motion: "none",
       customMotion: "",
@@ -517,11 +501,7 @@ export default function Creator() {
   }
 
   async function createProject(): Promise<void> {
-    const name = templateNameValue.trim();
-    if (!name) {
-      setNotice({ type: "error", text: t("creator.errPackNameRequired") });
-      return;
-    }
+    const name = templateNameValue.trim() || activePreset.label || t("creator.untitledPack");
     setNotice(null);
     setCreating(true);
     try {
@@ -610,14 +590,17 @@ export default function Creator() {
     },
   };
 
+  // Музыка для экспорта: [] = без музыки, иначе выбранные треки (сервер берёт случайный на каждое видео)
+  const exportMusicPayload = mediaSettings.musicTracks.length ? mediaSettings.musicTracks : "none";
+
   const videosOps: VideosOps = {
     exportCard: async (opts) => {
       const res = await run("export-card", () => send<{ item: CreatorRecord | null; url: string }>(`/creator/packs/${encodeURIComponent(projectId)}/export`, "POST", {
         index: opts.index,
         format: opts.format,
         voiceover: opts.voiceover,
-        durationSec: opts.durationSec,
-        music: opts.music,
+        durationSec: mediaSettings.durationSec,
+        music: exportMusicPayload,
         addToGallery: true,
       }));
       if (!res) return null;
@@ -633,8 +616,8 @@ export default function Creator() {
         limit: opts.limit,
         format: opts.format,
         voiceover: opts.voiceover,
-        durationSec: opts.durationSec,
-        music: opts.music,
+        durationSec: mediaSettings.durationSec,
+        music: exportMusicPayload,
       }));
       if (!res) return false;
       if (res.item) {
@@ -661,6 +644,17 @@ export default function Creator() {
   }), [activePreset.previewSrc, activePreset.templates, background, sticker, templateType, textLayout, textStyle]);
 
   const cardLimits = useMemo(() => limitsFromRules(activePack?.rules), [activePack?.rules]);
+
+  // Лимиты символов и эффективный размер шрифта считаются из уже трансформированного шаблона —
+  // ровно то, что увидит сервер в deriveRules (просчёт на этапе проектирования)
+  const capacities: Capacities = useMemo(() => ({
+    heading: capacityForRole(activeTemplatePayload, "heading"),
+    body: capacityForRole(activeTemplatePayload, "body"),
+  }), [activeTemplatePayload]);
+  const fontSizes: FontSizes = useMemo(() => ({
+    heading: fontSizeForRole(activeTemplatePayload, "heading"),
+    body: fontSizeForRole(activeTemplatePayload, "body"),
+  }), [activeTemplatePayload]);
 
   const projectGallery: GalleryItem[] = useMemo(() => {
     const items = (summary?.gallery ?? [])
@@ -728,7 +722,8 @@ export default function Creator() {
             setMediaSettings={setMediaSettings}
             uploadMotionGif={uploadMotionGif}
             uploadMusic={uploadMusic}
-            applyDesignState={applyDesignStateToEditor}
+            capacities={capacities}
+            fontSizes={fontSizes}
             canUndoDesign={canUndoDesign}
             canRedoDesign={canRedoDesign}
             undoDesign={undoDesign}
@@ -764,6 +759,7 @@ export default function Creator() {
                   styling={miniStyling}
                   ops={cardsOps}
                   busy={busy}
+                  onCreateTemplate={() => setProjectTab("template")}
                 />
               ) : projectTab === "template" ? (
                 <div className="creator-template-tab">
@@ -786,7 +782,6 @@ export default function Creator() {
                   )}
                   <div className="creator-card">
                     <DesignEditor
-                      templateNameValue={templateNameValue}
                       activePreset={activePreset}
                       values={values}
                       updateValue={updateValue}
@@ -798,28 +793,18 @@ export default function Creator() {
                       setSticker={setSticker}
                       uploadSticker={uploadSticker}
                       motion={summary?.motion ?? []}
+                      music={summary?.music ?? []}
+                      uploadMusic={uploadMusic}
                       mediaSettings={mediaSettings}
                       setMediaSettings={setMediaSettings}
                       uploadMotionGif={uploadMotionGif}
                       background={background}
-                      applyDesignState={applyDesignStateToEditor}
+                      capacities={capacities}
+                      fontSizes={fontSizes}
                       canUndoDesign={canUndoDesign}
                       canRedoDesign={canRedoDesign}
                       undoDesign={undoDesign}
                       redoDesign={redoDesign}
-                    />
-                  </div>
-                  <div className="creator-card">
-                    <h2 className="creator-editor-title creator-media-title">{t("creator.mediaTitle")}</h2>
-                    <MediaSettingsPanel
-                      activePreset={activePreset}
-                      values={values}
-                      background={background}
-                      music={summary?.music ?? []}
-                      motion={summary?.motion ?? []}
-                      mediaSettings={mediaSettings}
-                      setMediaSettings={setMediaSettings}
-                      uploadMusic={uploadMusic}
                     />
                   </div>
                 </div>
@@ -829,8 +814,9 @@ export default function Creator() {
                   styling={miniStyling}
                   gallery={projectGallery}
                   music={summary?.music ?? []}
-                  defaultDurationSec={mediaSettings.durationSec}
-                  defaultMusic={mediaSettings.music || "none"}
+                  motion={summary?.motion ?? []}
+                  mediaSettings={mediaSettings}
+                  onOpenTemplate={() => setProjectTab("template")}
                   ops={videosOps}
                   busy={busy}
                 />
@@ -842,132 +828,12 @@ export default function Creator() {
         <div className="creator-view" key="home">
           <ProjectsHome
             packs={packs}
-            onOpen={(pack) => openProject(pack, packHasTemplates(pack) ? "cards" : "template")}
+            onOpen={(pack) => openProject(pack, "cards")}
             onNew={startNewProject}
             disabled={featureDisabled}
           />
         </div>
       )}
     </div>
-  );
-}
-
-function ProjectWorkspace({
-  pack,
-  tab,
-  setTab,
-  onBack,
-  onRename,
-  onDelete,
-  busy,
-  autosaveStatus,
-  children,
-}: {
-  pack: CreatorPack;
-  tab: ProjectTab;
-  setTab: (tab: ProjectTab) => void;
-  onBack: () => void;
-  onRename: (name: string) => Promise<void>;
-  onDelete: () => void;
-  busy: string | null;
-  autosaveStatus: AutosaveStatus | null;
-  children: React.ReactNode;
-}) {
-  const { t } = useT();
-  const [editingName, setEditingName] = useState(false);
-  const [nameValue, setNameValue] = useState(String(pack.name ?? ""));
-  const [deleteArmed, setDeleteArmed] = useState(false);
-
-  useEffect(() => {
-    setNameValue(String(pack.name ?? ""));
-    setEditingName(false);
-    setDeleteArmed(false);
-  }, [pack.name]);
-
-  const commitName = () => {
-    setEditingName(false);
-    const trimmed = nameValue.trim();
-    if (trimmed && trimmed !== String(pack.name ?? "").trim()) void onRename(trimmed);
-    else setNameValue(String(pack.name ?? ""));
-  };
-
-  return (
-    <section className="creator-workspace-shell">
-      <header className="creator-project-head">
-        <button type="button" className="btn btn-ghost btn-sm btn-square creator-back-button" onClick={onBack} aria-label={t("creator.backToProjects")} title={t("creator.backToProjects")}>
-          <ChevronLeft size={19} />
-        </button>
-        <div className="creator-project-title">
-          {editingName ? (
-            <input
-              className="input input-bordered input-sm creator-project-name-input"
-              value={nameValue}
-              autoFocus
-              maxLength={60}
-              onChange={(event) => setNameValue(event.target.value)}
-              onBlur={commitName}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") commitName();
-                if (event.key === "Escape") {
-                  setNameValue(String(pack.name ?? ""));
-                  setEditingName(false);
-                }
-              }}
-            />
-          ) : (
-            <button type="button" className="creator-project-name" onClick={() => setEditingName(true)} title={t("creator.renameProject")}>
-              <h1>{pack.name || t("creator.untitledPack")}</h1>
-              <Pencil size={14} aria-hidden="true" />
-            </button>
-          )}
-          <span className="creator-project-meta">
-            {langTag(String(pack.lang ?? "")) || String(pack.lang ?? "").toUpperCase()}
-            {" · "}
-            {t("creator.cardsCount", { count: packCards(pack) })}
-            {autosaveStatus && (
-              <span className={`creator-autosave-status is-${autosaveStatus}`} role={autosaveStatus === "error" ? "alert" : "status"}>
-                {autosaveStatus === "saving" ? <Loader2 className="animate-spin" size={12} /> : autosaveStatus === "error" ? <AlertTriangle size={12} /> : <Check size={12} />}
-                {t(`creator.autosave.${autosaveStatus}`)}
-              </span>
-            )}
-          </span>
-        </div>
-        <nav className="creator-project-tabs" aria-label={t("creator.projectSectionsAria")}>
-          {PROJECT_TABS.map(({ id, labelKey, icon: Icon }) => (
-            <button
-              key={id}
-              type="button"
-              className={`creator-project-tab ${tab === id ? "is-active" : ""}`}
-              onClick={() => setTab(id)}
-              aria-current={tab === id ? "page" : undefined}
-            >
-              <Icon size={15} />
-              {t(labelKey)}
-            </button>
-          ))}
-        </nav>
-        <button
-          type="button"
-          className={`btn btn-sm ${deleteArmed ? "btn-error" : "btn-ghost"} btn-square creator-project-delete`}
-          title={deleteArmed ? t("creator.confirmDeletePack") : t("creator.deletePack")}
-          aria-label={t("creator.deletePack")}
-          onClick={() => {
-            if (!deleteArmed) {
-              setDeleteArmed(true);
-              window.setTimeout(() => setDeleteArmed(false), 2600);
-              return;
-            }
-            onDelete();
-          }}
-          disabled={busy === "delete-pack"}
-        >
-          {busy === "delete-pack" ? <Loader2 className="animate-spin" size={15} /> : <Trash2 size={15} />}
-        </button>
-      </header>
-
-      <div className="creator-project-body" key={tab}>
-        {children}
-      </div>
-    </section>
   );
 }
