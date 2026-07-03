@@ -9,6 +9,8 @@ import { renderTemplateCard, type TemplateDoc } from "../../src/template/render.
 import { pickJokeMotionOverlay, resolveAudio, type AudioDeckHint } from "../../src/video.ts";
 import { buildStillVideoFiles, cardReadable } from "../infra/media.ts";
 import { anecdoteKey } from "../../src/anecdotes/library.ts";
+import { customPackTemplateMarker, resolveAllowedCustomJokePackTemplateIndex } from "../../src/anecdotes/joke-template-pool.ts";
+import { jokePopVariantFor, renderAnecdote } from "../../src/anecdotes/render.ts";
 
 const OUTPUT_DIR = loadBaseConfig().outputDir;
 
@@ -29,8 +31,13 @@ function packKeyOf(text: string): string {
 function audioHintForPack(pack: Pack): AudioDeckHint | undefined {
   const haystack = `${pack.id} ${pack.name}`.toLowerCase();
   if (/(motivation|motivaci|motivaц|мотивац|мотивация|motivier)/i.test(haystack)) return { audioProfile: "motivation" };
-  if (/(chistes|joke|jokes|witz|witze|barzellette|blague|piada|анекдот|шутк)/i.test(haystack)) return { audioProfile: "jokes" };
+  if (isJokePack(pack)) return { audioProfile: "jokes" };
   return undefined;
+}
+
+export function isJokePack(pack: Pack): boolean {
+  const haystack = `${pack.id} ${pack.name} ${pack.templateType ?? ""}`.toLowerCase();
+  return /(chistes?|jokes?|witz|witze|barzellette|blagues?|piadas?|anedotas?|анекдот|шутк|юмор)/iu.test(haystack);
 }
 
 function stableHash(seed: string): number {
@@ -64,6 +71,20 @@ export interface PickedPackCard {
   key: string;
 }
 
+export function packTemplateIndexForCard(pack: Pack, cardIndex: number): number {
+  return resolveAllowedCustomJokePackTemplateIndex(pack.id, cardIndex, pack.templates.length);
+}
+
+export function packTemplateForCard(pack: Pack, cardIndex: number): Pack["templates"][number] {
+  return pack.templates[packTemplateIndexForCard(pack, cardIndex)] ?? pack.templates[0];
+}
+
+export function packTemplateVideoBg(pack: Pack, picked: Pick<PickedPackCard, "idx" | "key">): string {
+  return isLeastPostedRepeatPack(pack)
+    ? repeatPackBg(picked.key)
+    : customPackTemplateMarker(pack.id, packTemplateIndexForCard(pack, picked.idx));
+}
+
 /** Случайная карточка пака, чей ключ НЕ в usedKeys. null — все использованы/пусто. */
 export function pickUnusedPackCard(pack: Pack, usedKeys: ReadonlySet<string>, seed?: string): PickedPackCard | null {
   if (!pack.templates.length || !pack.cards.length) return null;
@@ -73,7 +94,7 @@ export function pickUnusedPackCard(pack: Pack, usedKeys: ReadonlySet<string>, se
   if (!fresh.length) return null;
   const pick = seed ? seededPick(fresh, `${pack.id}|${seed}`, (card) => card.key) : fresh[Math.floor(Math.random() * fresh.length)];
   if (!pick) return null;
-  return { idx: pick.idx, values: pick.values, tpl: pack.templates[pick.idx % pack.templates.length], key: pick.key };
+  return { idx: pick.idx, values: pick.values, tpl: packTemplateForCard(pack, pick.idx), key: pick.key };
 }
 
 /** Fixed card for "infinite pack" mode: always the first card/template, regardless of used-history. */
@@ -81,7 +102,7 @@ export function pickFixedPackCard(pack: Pack): PickedPackCard | null {
   if (!pack.templates.length || !pack.cards.length) return null;
   const idx = 0;
   const values = pack.cards[idx].values;
-  return { idx, values, tpl: pack.templates[idx % pack.templates.length], key: packCardKey(values) };
+  return { idx, values, tpl: packTemplateForCard(pack, idx), key: packCardKey(values) };
 }
 
 function repeatPackBg(key: string): string {
@@ -194,7 +215,7 @@ export function pickLeastPostedPackCard(db: Db, accountId: number, pack: Pack, s
   const least = candidates.filter((candidate) => candidate.count === min);
   const picked = seed ? seededPick(least, `${pack.id}|least-posted|${seed}`, (card) => card.key) : least[0];
   if (!picked) return null;
-  return { idx: picked.idx, values: picked.values, tpl: pack.templates[picked.idx % pack.templates.length], key: picked.key };
+  return { idx: picked.idx, values: picked.values, tpl: packTemplateForCard(pack, picked.idx), key: picked.key };
 }
 
 /** Собрать ОДНО видео из заранее выбранной карточки пака в библиотеку канала + пометить использованной. */
@@ -210,23 +231,28 @@ export async function buildPackLibraryVideo(input: {
   const hint = audioHintForPack(pack);
   const { music, audioPath } = resolveAudio(input.music, hint, { packId: pack.id });
   const { title, text } = cardReadable(picked.values, deriveRules(pack.templates[0]));
-  const motionOverlay =
-    hint?.audioProfile === "jokes" ? pickJokeMotionOverlay(`${pack.id}|${picked.key}|${title}|${text}`, text.length) : null;
-  const { imgRel, vidRel } = await buildStillVideoFiles({
+  const jokePack = isJokePack(pack);
+  const deckId = `pack:${pack.id}`;
+  const visualVariant = jokePack ? jokePopVariantFor({ deck: deckId, title, text }) : undefined;
+  const motionOverlay = jokePack ? pickJokeMotionOverlay(`${pack.id}|${picked.key}|${title}|${text}`, text.length, visualVariant) : null;
+  const { imgRel, vidRel, render: rendered } = await buildStillVideoFiles<string | { path: string; fontPx: number; bg: string }>({
     prefix: "pack",
     outputDir: OUTPUT_DIR,
     audioPath,
     motionOverlay,
-    // editor-exported pack templates carry id/x/y at runtime; PackTemplate type just doesn't declare them
-    render: (imgAbs) => renderTemplateCard(picked.tpl as TemplateDoc, picked.values, imgAbs),
+    render: (imgAbs) =>
+      jokePack
+        ? renderAnecdote({ title, text, channel: pack.name, deck: deckId, visualVariant }, imgAbs)
+        : // editor-exported pack templates carry id/x/y at runtime; PackTemplate type just doesn't declare them
+          renderTemplateCard(picked.tpl as TemplateDoc, picked.values, imgAbs),
   });
   const v = db.createVideo({
     accountId,
     title,
     text,
-    bg: isLeastPostedRepeatPack(pack) ? repeatPackBg(picked.key) : "",
+    bg: jokePack && typeof rendered === "object" && rendered && "bg" in rendered ? String(rendered.bg) : packTemplateVideoBg(pack, picked),
     music,
-    deck: `pack:${pack.id}`,
+    deck: deckId,
     videoRel: vidRel,
     imageRel: imgRel,
   });

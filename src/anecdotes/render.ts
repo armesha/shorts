@@ -9,6 +9,7 @@ import { buildPsychHtml } from "../psych/render.ts";
 import { buildIslamicHtml, pickIslamicBg } from "../islamic/render.ts";
 import { buildChristianHtml, pickChristianBg } from "../christian/render.ts";
 import { buildRussianHtml, pickRussianBg } from "./russian-bg.ts";
+import { isJokeAnimatedVariant, JOKE_ANIMATED_MAX_TEXT_LEN, JOKE_ANIMATED_VARIANTS } from "./joke-animated-templates.ts";
 import { buildMemeHtml, buildMemeBoardHtml, memeBackdropFor, type MemeCard } from "../memes/render.ts";
 import { photoCss, photoDataUri } from "../memes/photos.ts";
 import type { PackItem } from "./library.ts";
@@ -132,7 +133,7 @@ export async function renderAnecdote(
   if (deck.russianBg) return renderRussian(a, outPath);
   if (deck.memeBoard) return renderMemeBoard(a, outPath);
   if (deck.meme) return renderMeme(a, outPath);
-  if (isPlainAnecdoteDeck(deck) && !a.bg) return renderJokePop(a, outPath);
+  if (isPlainAnecdoteDeck(deck)) return renderJokePop(a, outPath);
   const bgName = a.bg ?? randomDifferent(listBackgrounds(), a.avoidBg) ?? "";
   const bgCss = backgroundCss(bgName);
   const lang = deckLang(a.deck ?? "") || "ru";
@@ -150,7 +151,7 @@ export async function renderAnecdote(
   return { path: outPath, fontPx, bg: bgName };
 }
 
-export const JOKE_POP_VARIANTS = [
+const STATIC_JOKE_POP_VARIANTS = [
   "v-orange-card",
   "v-lemon-blob",
   "v-yellow-doodle",
@@ -172,6 +173,7 @@ export const JOKE_POP_VARIANTS = [
   "v-sticker-board",
   "v-speech-bubble",
 ] as const;
+export const JOKE_POP_VARIANTS = [...JOKE_ANIMATED_VARIANTS, ...STATIC_JOKE_POP_VARIANTS] as const;
 
 const JOKE_EMOJIS = ["😂", "🤣", "😆", "😹", "😁"];
 const JOKE_DOODLES = ["HA!", "LOL", "WOW", ":-)", "!!", "HEH", "FUN"];
@@ -186,11 +188,12 @@ function stableHashString(seed: string): number {
   return h >>> 0;
 }
 
-function jokeVariant(input: Anecdote): string {
+export function jokePopVariantFor(input: Pick<Anecdote, "title" | "text"> & { deck?: string; visualVariant?: string }): string {
   if (input.visualVariant && JOKE_POP_VARIANTS.includes(input.visualVariant as (typeof JOKE_POP_VARIANTS)[number]))
     return input.visualVariant;
   const h = stableHashString(`${input.deck}|${input.title}|${input.text}`);
-  return JOKE_POP_VARIANTS[h % JOKE_POP_VARIANTS.length];
+  const pool = input.text.length <= JOKE_ANIMATED_MAX_TEXT_LEN ? JOKE_POP_VARIANTS : STATIC_JOKE_POP_VARIANTS;
+  return pool[h % pool.length];
 }
 
 function buildJokePopHtml(input: {
@@ -205,8 +208,9 @@ function buildJokePopHtml(input: {
   const rtl = lang === "ar";
   const seed = `${deck.id}|${input.title}|${input.text}`;
   const h = stableHashString(seed);
-  const variant = jokeVariant({ title: input.title, text: input.text, channel: deck.name, deck: deck.id, visualVariant: input.visualVariant });
-  const dense = input.text.length > 430 || /\n(?:.*\n){7,}/.test(input.text);
+  const variant = jokePopVariantFor({ title: input.title, text: input.text, deck: deck.id, visualVariant: input.visualVariant });
+  const animated = isJokeAnimatedVariant(variant);
+  const dense = input.text.length > JOKE_ANIMATED_MAX_TEXT_LEN || /\n(?:.*\n){7,}/.test(input.text);
   const emoji = JOKE_EMOJIS[(h >>> 3) % JOKE_EMOJIS.length];
   const doodle = JOKE_DOODLES[(h >>> 7) % JOKE_DOODLES.length];
   const tpl = readFileSync(POP_JOKE_TEMPLATE, "utf8");
@@ -218,9 +222,10 @@ function buildJokePopHtml(input: {
       .replaceAll("{{TEXT_ALIGN}}", rtl ? "right" : "center")
       .replaceAll("{{VARIANT}}", variant)
       .replaceAll("{{DENSE}}", dense ? "dense" : "")
+      .replaceAll("{{ANIMATED}}", animated ? "animated-gif-template" : "")
       .replaceAll("{{MOTION_OVERLAY}}", input.motionOverlay ? "motion-overlay" : "")
-      .replaceAll("{{EMOJI}}", emoji)
-      .replaceAll("{{DOODLE}}", esc(doodle))
+      .replaceAll("{{EMOJI}}", animated ? "" : emoji)
+      .replaceAll("{{DOODLE}}", esc(animated ? "GIF" : doodle))
       .replaceAll("{{AI_BG}}", dataUriFromRootRel(JOKE_AI_BG) ?? "")
       .replaceAll("{{TITLE}}", esc(input.title || deck.name))
       .replace("{{TEXT}}", esc(input.text)),

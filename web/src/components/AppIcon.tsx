@@ -10,6 +10,7 @@ import {
   CircleUserRound,
   Clock3,
   Clapperboard,
+  Copy,
   ExternalLink,
   FileText,
   Globe2,
@@ -27,6 +28,7 @@ import {
   PackageOpen,
   Plus,
   RefreshCw,
+  Search,
   Settings2,
   ShieldCheck,
   SquareLibrary,
@@ -51,6 +53,7 @@ export type AppIconName =
   | "chevron-right"
   | "clips"
   | "close"
+  | "copy"
   | "deck"
   | "drag"
   | "errors"
@@ -69,6 +72,7 @@ export type AppIconName =
   | "plus"
   | "queue"
   | "refresh"
+  | "search"
   | "settings"
   | "skin"
   | "studio"
@@ -97,6 +101,7 @@ const ICONS: Record<AppIconName, LucideIcon> = {
   "chevron-right": ChevronRight,
   clips: Clapperboard,
   close: X,
+  copy: Copy,
   deck: BookOpen,
   drag: GripVertical,
   errors: AlertTriangle,
@@ -115,6 +120,7 @@ const ICONS: Record<AppIconName, LucideIcon> = {
   plus: Plus,
   queue: ListPlus,
   refresh: RefreshCw,
+  search: Search,
   settings: Settings2,
   skin: Palette,
   studio: Languages,

@@ -2,7 +2,7 @@ import { resolve } from "node:path";
 import { randomAnecdote, packItemKey } from "./library.ts";
 import { getDeck, isPlainAnecdoteDeck } from "./decks.ts";
 import { ytMeta } from "./yt-meta.ts";
-import { renderAnecdote, renderJokeMotionOverlay } from "./render.ts";
+import { jokePopVariantFor, renderAnecdote, renderJokeMotionOverlay } from "./render.ts";
 import {
   assembleStillVideo,
   assembleVideoBackground,
@@ -36,13 +36,14 @@ export async function produceAnecdoteVideo(
   const imagePath = resolve(outputDir, `out/anek-${stamp}.png`);
   const videoPath = resolve(outputDir, `out/anek-${stamp}.mp4`);
   const seed = `${deck.id}|${a.profession ?? ""}|${a.title}|${a.text}`;
-  const motionOverlay = isPlainAnecdoteDeck(deck) ? pickJokeMotionOverlay(seed, a.text.length) : null;
+  const visualVariant = isPlainAnecdoteDeck(deck) ? jokePopVariantFor({ deck: deck.id, title: a.title, text: a.text }) : undefined;
+  const motionOverlay = isPlainAnecdoteDeck(deck) ? pickJokeMotionOverlay(seed, a.text.length, visualVariant) : null;
   const videoBg = isPlainAnecdoteDeck(deck) ? pickJokeVideoBackground(seed, a.text.length) : null;
   const audio = resolveAudio(undefined, deck);
   const r = videoBg
-    ? await renderJokeMotionOverlay({ title: a.title, text: a.text, channel: deck.name, deck: deck.id }, imagePath)
+    ? await renderJokeMotionOverlay({ title: a.title, text: a.text, channel: deck.name, deck: deck.id, visualVariant }, imagePath)
     : await renderAnecdote(
-        { title: a.title, text: a.text, channel: deck.name, deck: deck.id, profession: a.profession },
+        { title: a.title, text: a.text, channel: deck.name, deck: deck.id, profession: a.profession, visualVariant },
         imagePath,
       );
   if (videoBg) {

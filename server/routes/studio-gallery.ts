@@ -8,7 +8,7 @@ import type { Db } from "../db.ts";
 import { getDeck, isPlainAnecdoteDeck, pickGenericTitle } from "../../src/anecdotes/decks.ts";
 import { randomAnecdote, firstAnecdote, libraryStats, anecdoteKey, packItemKey, deckCards } from "../../src/anecdotes/library.ts";
 import type { PackItem } from "../../src/anecdotes/library.ts";
-import { renderAnecdote, renderJokeMotionOverlay, listBackgrounds } from "../../src/anecdotes/render.ts";
+import { jokePopVariantFor, renderAnecdote, renderJokeMotionOverlay, listBackgrounds } from "../../src/anecdotes/render.ts";
 import {
   assembleStillVideo,
   assembleVideoBackground,
@@ -201,12 +201,13 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
       const imgOut = resolve(process.cwd(), outputDir, imgRel);
       const vidOut = resolve(process.cwd(), outputDir, vidRel);
       const seed = `${deck.id}|${profession ?? ""}|${title}|${text}`;
-      const motionOverlay = isPlainAnecdoteDeck(deck) ? pickJokeMotionOverlay(seed, text.length) : null;
+      const visualVariant = isPlainAnecdoteDeck(deck) ? jokePopVariantFor({ deck: deck.id, title, text }) : undefined;
+      const motionOverlay = isPlainAnecdoteDeck(deck) ? pickJokeMotionOverlay(seed, text.length, visualVariant) : null;
       const videoBg = isPlainAnecdoteDeck(deck) ? pickJokeVideoBackground(seed, text.length) : null;
       const r = await metrics.track("render", async () => {
         const rr = videoBg
-          ? await renderJokeMotionOverlay({ title, text, channel: deck.name, deck: deck.id }, imgOut)
-          : await renderAnecdote({ title, text, channel: deck.name, bg: body.bg, deck: deck.id, profession }, imgOut, pickedItem);
+          ? await renderJokeMotionOverlay({ title, text, channel: deck.name, deck: deck.id, visualVariant }, imgOut)
+          : await renderAnecdote({ title, text, channel: deck.name, bg: body.bg, deck: deck.id, profession, visualVariant }, imgOut, pickedItem);
         if (videoBg) await assembleVideoBackground(videoBg, imgOut, vidOut, { durationSec: 6, audioPath, motionOverlay });
         else await assembleStillVideo(imgOut, vidOut, { durationSec: 6, audioPath, motionOverlay });
         return rr;

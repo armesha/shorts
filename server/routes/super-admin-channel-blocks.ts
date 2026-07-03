@@ -80,32 +80,6 @@ const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
   ar: ["pack:new-memes-ar-superadmin"],
 };
 
-const QUOTE_VIDEO_DECK_BY_LANG: Record<string, string[]> = {
-  ar: ["quote-video-ar"],
-  ru: ["quote-video-ru"],
-  en: ["quote-video-en"],
-  it: ["quote-video-it"],
-  es: ["quote-video-es"],
-  de: ["quote-video-de"],
-  fr: ["quote-video-fr"],
-  pt: ["quote-video-pt"],
-  hi: ["quote-video-hi"],
-  id: ["quote-video-id"],
-};
-
-const QUOTE_STATIC_DECK_BY_LANG: Record<string, string[]> = {
-  ar: ["quotes-ar"],
-  ru: ["quotes-ru"],
-  en: ["quotes-en"],
-  it: ["quotes-it"],
-  es: ["quotes-es"],
-  de: ["quotes-de"],
-  fr: ["quotes-fr"],
-  pt: ["quotes-pt"],
-  hi: ["quotes-hi"],
-  id: ["quotes-id"],
-};
-
 const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
   {
     id: "jokes",
@@ -118,18 +92,6 @@ const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
     title: "Мемы",
     defaultWeight: 4,
     sources: JOKE_MEME_DECK_BY_LANG,
-  },
-  {
-    id: "video_quotes",
-    title: "Видеоцитаты",
-    defaultWeight: 1,
-    sources: QUOTE_VIDEO_DECK_BY_LANG,
-  },
-  {
-    id: "static_quotes",
-    title: "Статичные цитаты",
-    defaultWeight: 2,
-    sources: QUOTE_STATIC_DECK_BY_LANG,
   },
 ];
 
@@ -150,8 +112,7 @@ export const BLOCKS: BlockDef[] = [
       "Анекдоты внутри блока остаются отдельным источником микса; не смешивать бытовые советы и шутки внутри одной карточки.",
       "Мемы брать только из pack:new-memes-<lang>-superadmin после проверки прав и оскорбительного контекста.",
       "Декоративные смеющиеся emoji/GIF разрешены, если они не перекрывают текст и не выглядят как плашка/водяной знак канала.",
-      "Видео-цитаты и статичные цитаты держать отдельными источниками микса.",
-      "Запрещены AP/неясные фото, misattribution, экстремистские/насильственные цитаты и protected-class hate.",
+      "Цитатные паки больше не подключать к каналам armen.",
       "Не давать медицинских диагнозов/обещаний лечения; формулировать как общие наблюдения и self-help.",
       "Локализации должны сохранять осторожный тон и избегать травматичных/опасных советов.",
     ],

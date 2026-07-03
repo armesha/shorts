@@ -7,9 +7,10 @@
 import type { Db } from "../db.ts";
 import { DECKS, getDeck, isPlainAnecdoteDeck, pickGenericTitle } from "../../src/anecdotes/decks.ts";
 import type { PackItem } from "../../src/anecdotes/library.ts";
-import { renderAnecdote } from "../../src/anecdotes/render.ts";
+import { jokePopVariantFor, renderAnecdote } from "../../src/anecdotes/render.ts";
 import { pickJokeMotionOverlay, resolveAudio } from "../../src/video.ts";
 import { buildStillVideoFiles } from "../infra/media.ts";
+import { isBuiltInDeckGloballyVisible } from "./global-pack-visibility.ts";
 import { quoteVoiceover } from "./quote-voiceover.ts";
 
 export type BuildLibraryVideo = (input: {
@@ -37,17 +38,17 @@ export function makeBuildLibraryVideo(deps: {
     const deck = getDeck(input.deck);
     const builtInDeck = DECKS.find((d) => d.id === deck.id);
     // Backstop (covers save, batch, and the gen-queue worker): never build a deck the user cannot access.
-    if (
-      db.getUserById(input.userId)?.role !== "admin" &&
-      (!builtInDeck || !builtinDeckVisibleForUser(input.userId, builtInDeck))
-    )
+    if (!builtInDeck || !isBuiltInDeckGloballyVisible(db, builtInDeck))
+      throw new Error("Этот пак вам недоступен");
+    if (db.getUserById(input.userId)?.role !== "admin" && !builtinDeckVisibleForUser(input.userId, builtInDeck))
       throw new Error("Этот пак вам недоступен");
     const title = input.title || pickGenericTitle(deck);
     const audio = deck.quoteVideo
       ? await quoteVoiceover({ deck, title, text: input.text })
       : { ...resolveAudio(input.music, deck), durationSec: undefined as number | undefined };
+    const visualVariant = isPlainAnecdoteDeck(deck) ? jokePopVariantFor({ deck: deck.id, title, text: input.text }) : undefined;
     const motionOverlay = isPlainAnecdoteDeck(deck)
-      ? pickJokeMotionOverlay(`${deck.id}|${title}|${input.text}`, input.text.length)
+      ? pickJokeMotionOverlay(`${deck.id}|${title}|${input.text}`, input.text.length, visualVariant)
       : null;
     const { imgRel, vidRel, render: r } = await buildStillVideoFiles({
       prefix: "vid",
@@ -59,7 +60,7 @@ export function makeBuildLibraryVideo(deps: {
       motionOverlay,
       render: (imgAbs) =>
         renderAnecdote(
-          { title, text: input.text, channel: deck.name, bg: input.bg, deck: deck.id, profession: input.profession },
+          { title, text: input.text, channel: deck.name, bg: input.bg, deck: deck.id, profession: input.profession, visualVariant },
           imgAbs,
           input.item,
         ),

@@ -10,7 +10,7 @@ const deps = {
   isSuperAdminReq: () => false,
 };
 
-test("accountSourceDecks hides forbidden source decks only for the super admin owner", () => {
+test("accountSourceDecks hides globally hidden decks for everyone and forbidden source decks for the super admin owner", () => {
   const db = openDb(":memory:");
   const armen = db.createUser({ username: SUPER_ADMIN_USERNAME, passHash: "x", role: "admin", isSuperAdmin: true });
   const user = db.createUser({ username: "regular", passHash: "x", role: "user" });
@@ -35,9 +35,7 @@ test("accountSourceDecks hides forbidden source decks only for the super admin o
   assert.deepEqual(access.accountSourceDecks(regularAccount), [
     "en",
     "illusions-en",
-    "visual-riddles-en",
     "illusions-3d-en",
     "memes-en",
-    "pack:motivation-en-superadmin",
   ]);
 });

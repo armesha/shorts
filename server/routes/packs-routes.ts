@@ -27,8 +27,9 @@ import {
   validateTemplateList,
   type TemplateDoc,
 } from "../../src/template/render.ts";
-import { packCardKey } from "../services/pack-gen.ts";
-import { listAudio, packAudioPathFor, resolveAudio } from "../../src/video.ts";
+import { isJokePack, packCardKey, packTemplateForCard, packTemplateVideoBg } from "../services/pack-gen.ts";
+import { listAudio, packAudioPathFor, pickJokeMotionOverlay, resolveAudio } from "../../src/video.ts";
+import { jokePopVariantFor, renderAnecdote } from "../../src/anecdotes/render.ts";
 import { buildStillVideoFiles, cardReadable } from "../infra/media.ts";
 import {
   RATE_LIMIT_MESSAGE,
@@ -53,6 +54,10 @@ import {
 } from "../services/pack-audio.ts";
 import { INFINITE_PACKS_FEATURE, infiniteCounts } from "../services/infinite-packs.ts";
 import { isForbiddenSuperAdminSourceDeck } from "../services/super-admin-forbidden-source-decks.ts";
+import {
+  filterGloballyVisibleCustomPacks,
+  isCustomPackGloballyVisible,
+} from "../services/global-pack-visibility.ts";
 
 const OUTPUT_DIR = loadBaseConfig().outputDir;
 const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
@@ -131,6 +136,10 @@ function builtinMusicTracks() {
 export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof openDb>) {
   const adminReq = (req: unknown): boolean => db.getUserById(uid(req))?.role === "admin";
   const superAdminReq = (req: unknown): boolean => isSuperAdminUser(db.getUserById(uid(req)));
+  const visiblePack = (id: string, userId: number, isSuperAdmin: boolean) => {
+    const pack = getPack(id, userId, isSuperAdmin);
+    return pack && isCustomPackGloballyVisible(db, pack) ? pack : null;
+  };
   const reserveLibrarySlot = (
     reply: { code: (n: number) => { send: (b: unknown) => unknown } },
     accountId: number,
@@ -158,14 +167,14 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const all = isSuperAdmin && includeHidden;
     const usedKeys = db.usedAnecdoteKeys(userId);
     const infinite = db.hasFeature(userId, INFINITE_PACKS_FEATURE);
-    const base = all ? listAllPacks() : listPacks(userId, isSuperAdmin);
+    const base = filterGloballyVisibleCustomPacks(db, all ? listAllPacks() : listPacks(userId, isSuperAdmin));
     const visibleBase = includeHidden ? base : base.filter((s) => !db.isDeckHiddenFor(userId, `pack:${s.id}`));
     const visible =
       isSuperAdmin && !includeHidden
         ? visibleBase.filter((s) => !isForbiddenSuperAdminSourceDeck(`pack:${s.id}`))
         : visibleBase;
     return visible.map((s) => {
-      const pack = getPack(s.id, userId, isSuperAdmin);
+      const pack = visiblePack(s.id, userId, isSuperAdmin);
       if (!pack) return { ...s, used: 0, available: s.cards };
       if (infinite && pack.cards.length > 0) {
         const c = infiniteCounts(pack.cards.length);
@@ -179,7 +188,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
 
   // Один пак + выведенные из шаблона правила (роли, min/max, списки) — для формы добавления.
   app.get("/api/packs/:id", async (req, reply) => {
-    const p = getPack((req.params as { id: string }).id, uid(req), superAdminReq(req));
+    const p = visiblePack((req.params as { id: string }).id, uid(req), superAdminReq(req));
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
     return { ...p, rules: p.templates[0] ? deriveRules(p.templates[0]) : [] };
   });
@@ -210,6 +219,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const input = body.cards ?? body.raw ?? null;
     if (input == null || (typeof body.raw === "string" && !body.raw.trim()))
       return reply.code(400).send({ error: "Пусто: вставь JSON карточек" });
+    if (!visiblePack(id, uid(req), superAdminReq(req))) return reply.code(404).send({ error: "Пак не найден или нет прав на редактирование" });
     const r = addCards(id, uid(req), superAdminReq(req), input);
     if (!r.ok) {
       if (r.reason === "not_found") return reply.code(404).send({ error: "Пак не найден или нет прав на редактирование" });
@@ -231,6 +241,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
   app.delete("/api/packs/:id/cards/:index", async (req, reply) => {
     const { id, index } = req.params as { id: string; index: string };
     const addedAt = (req.query as Record<string, string>)?.addedAt;
+    if (!visiblePack(id, uid(req), superAdminReq(req))) return reply.code(404).send({ error: "Не найдено" });
     const r = deleteCard(id, uid(req), superAdminReq(req), Number(index), addedAt);
     if (!r.deleted)
       return reply
@@ -243,6 +254,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
   app.delete("/api/packs/:id", async (req, reply) => {
     const id = (req.params as { id: string }).id;
     const me = db.getUserById(uid(req));
+    if (!visiblePack(id, uid(req), superAdminReq(req))) return reply.code(404).send({ error: "Пак не найден или нет прав на удаление" });
     const ok = deletePack(id, uid(req), superAdminReq(req), { isAdmin: me?.role === "admin" });
     if (!ok) return reply.code(404).send({ error: "Пак не найден или нет прав на удаление" });
     deletePackMusicDir(id);
@@ -254,7 +266,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const id = (req.params as { id: string }).id;
     const lang = String((req.body as { lang?: string })?.lang || "").trim().toLowerCase();
     if (!/^[a-z]{2}$/.test(lang)) return reply.code(400).send({ error: "Неверный код языка (2 буквы, напр. ru/de/en)" });
-    const p = getPack(id, uid(req), superAdminReq(req));
+    const p = visiblePack(id, uid(req), superAdminReq(req));
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
     if (!canEdit(p, uid(req), superAdminReq(req))) return reply.code(403).send({ error: "Менять язык может только владелец пака" });
     setPackLang(id, lang);
@@ -266,7 +278,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const id = (req.params as { id: string }).id;
     const name = String((req.body as { name?: string })?.name || "").trim();
     if (!name) return reply.code(400).send({ error: "Имя не может быть пустым" });
-    const p = getPack(id, uid(req), superAdminReq(req));
+    const p = visiblePack(id, uid(req), superAdminReq(req));
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
     if (!canEdit(p, uid(req), superAdminReq(req))) return reply.code(403).send({ error: "Переименовать может только владелец пака" });
     setPackName(id, name);
@@ -278,7 +290,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const id = (req.params as { id: string }).id;
     const userId = uid(req);
     const isSuperAdmin = superAdminReq(req);
-    const p = getPack(id, userId, isSuperAdmin);
+    const p = visiblePack(id, userId, isSuperAdmin);
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
     return {
       builtin: builtinMusicTracks(),
@@ -296,7 +308,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
       const id = (req.params as { id: string }).id;
       const userId = uid(req);
       const isSuperAdmin = superAdminReq(req);
-      const p = getPack(id, userId, isSuperAdmin);
+      const p = visiblePack(id, userId, isSuperAdmin);
       if (!p) return reply.code(404).send({ error: "Пак не найден" });
       if (!canEdit(p, userId, isSuperAdmin)) return reply.code(403).send({ error: "Музыку пака может менять только владелец" });
       const body = (req.body as { files?: PackMusicUploadInput[] }) ?? {};
@@ -310,7 +322,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
 
   app.get("/api/packs/:id/music/:file", async (req, reply) => {
     const { id, file } = req.params as { id: string; file: string };
-    const p = getPack(id, uid(req), superAdminReq(req));
+    const p = visiblePack(id, uid(req), superAdminReq(req));
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
     let abs: string;
     try {
@@ -326,7 +338,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const { id, file } = req.params as { id: string; file: string };
     const userId = uid(req);
     const isSuperAdmin = superAdminReq(req);
-    const p = getPack(id, userId, isSuperAdmin);
+    const p = visiblePack(id, userId, isSuperAdmin);
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
     if (!canEdit(p, userId, isSuperAdmin)) return reply.code(403).send({ error: "Музыку пака может менять только владелец" });
     let deleted = false;
@@ -344,7 +356,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const userId = uid(req);
     const isAdmin = adminReq(req);
     if (!enforceWindow(reply, userId, isAdmin, "pack-preview", PACK_PREVIEW_LIMIT)) return;
-    const p = getPack((req.params as { id: string }).id, uid(req), superAdminReq(req));
+    const p = visiblePack((req.params as { id: string }).id, uid(req), superAdminReq(req));
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
     if (superAdminReq(req) && isForbiddenSuperAdminSourceDeck(`pack:${p.id}`)) {
       return reply.code(403).send({ error: "Этот пак отключён как источник для супер-админа." });
@@ -354,7 +366,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const card = p.cards[i];
     if (!card) return reply.code(404).send({ error: "Нет такой карточки" });
     if (!p.templates.length) return reply.code(400).send({ error: "У пака нет шаблона" });
-    const tpl = p.templates[i % p.templates.length];
+    const tpl = packTemplateForCard(p, i);
     const rel = `packs/${p.id}-${i}.png`;
     try {
       const rendered = await runHeavyLimited(reply, userId, isAdmin, "pack-preview", () =>
@@ -377,7 +389,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const userId = uid(req);
     const isAdmin = adminReq(req);
     if (!enforceWindow(reply, userId, isAdmin, "pack-video", PACK_VIDEO_LIMIT)) return;
-    const p = getPack(id, userId, superAdminReq(req));
+    const p = visiblePack(id, userId, superAdminReq(req));
     if (!p) return reply.code(404).send({ error: "Пак не найден" });
     if (superAdminReq(req) && isForbiddenSuperAdminSourceDeck(`pack:${p.id}`)) {
       return reply.code(403).send({ error: "Этот пак отключён как источник для супер-админа." });
@@ -387,7 +399,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     const card = p.cards[idx];
     if (!card) return reply.code(404).send({ error: "Нет такой карточки" });
     if (!p.templates.length) return reply.code(400).send({ error: "У пака нет шаблона" });
-    const tpl = p.templates[idx % p.templates.length];
+    const tpl = packTemplateForCard(p, idx);
     let libraryReservation: { ok: true; token: string | null } | { ok: false } | null = null;
     // владелец целевого канала (если сохраняем)
     if (body.accountId != null) {
@@ -412,19 +424,31 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
         return reply.code(400).send({ error: audioError(e) });
       }
       const { music, audioPath } = resolvedAudio;
+      const { title, text } = cardReadable(card.values, deriveRules(p.templates[0]));
+      const jokePack = isJokePack(p);
+      const deckId = `pack:${p.id}`;
+      const visualVariant = jokePack ? jokePopVariantFor({ deck: deckId, title, text }) : undefined;
+      const motionOverlay = jokePack ? pickJokeMotionOverlay(`${p.id}|${packCardKey(card.values)}|${title}|${text}`, text.length, visualVariant) : null;
       let imgRel: string;
       let vidRel: string;
+      let renderedBg: string | null = null;
       try {
         const built = await runHeavyLimited(reply, userId, isAdmin, "pack-video", () =>
-          buildStillVideoFiles({
+          buildStillVideoFiles<string | { path: string; fontPx: number; bg: string }>({
             prefix: "pack",
             outputDir: OUTPUT_DIR,
             audioPath,
-            render: (imgAbs) => renderTemplateCard(tpl as TemplateDoc, card.values, imgAbs),
+            motionOverlay,
+            render: (imgAbs) =>
+              jokePack
+                ? renderAnecdote({ title, text, channel: p.name, deck: deckId, visualVariant }, imgAbs)
+                : renderTemplateCard(tpl as TemplateDoc, card.values, imgAbs),
           }),
         );
         if (!built || typeof built !== "object" || !("imgRel" in built) || !("vidRel" in built)) return;
         ({ imgRel, vidRel } = built as { imgRel: string; vidRel: string });
+        const renderResult = "render" in built ? (built as { render?: unknown }).render : null;
+        renderedBg = renderResult && typeof renderResult === "object" && "bg" in renderResult ? String((renderResult as { bg: unknown }).bg) : null;
         rememberOutputOwner([imgRel, vidRel], userId);
       } catch (e) {
         const msg = templateError(e);
@@ -433,14 +457,13 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
       }
       let saved = false;
       if (body.accountId != null) {
-        const { title, text } = cardReadable(card.values, deriveRules(p.templates[0]));
         db.createVideo({
           accountId: Number(body.accountId),
           title,
           text,
-          bg: "",
+          bg: jokePack && renderedBg ? renderedBg : packTemplateVideoBg(p, { idx, key: packCardKey(card.values) }),
           music,
-          deck: `pack:${p.id}`,
+          deck: deckId,
           videoRel: vidRel,
           imageRel: imgRel,
         });

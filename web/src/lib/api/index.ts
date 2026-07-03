@@ -14,6 +14,7 @@ import type {
   VideoLibraryKind, VideoLibraryPage, VideoLibrarySort,
   ChannelThemeBlockAccount, ChannelThemeBlocksResponse, ChannelThemeBlockGenerateResult,
   ChannelThemeBlockNormalizeResult, ChannelThemeBlockScheduleResult, ChannelThemeBlockSourceGroup,
+  AnecdoteTemplateExamplesResponse,
 } from "./types";
 
 export const apiClient = {
@@ -100,6 +101,7 @@ export const apiClient = {
     get<{ userId: number; username: string; items: PackUsageItem[] }>(`/admin/users/${userId}/pack-usage`),
   myDecks: (userId?: number) => get<MyDecks>(`/my-decks${userId != null ? `?userId=${userId}` : ""}`),
   contentCatalog: () => get<ContentCatalogResponse>("/content-catalog"),
+  anecdoteTemplateExamples: () => get<AnecdoteTemplateExamplesResponse>("/examples/anecdote-templates"),
   channelThemeBlocks: () => get<ChannelThemeBlocksResponse>("/super-admin/channel-blocks"),
   createChannelThemeBlockAccount: (blockId: string, lang: string) =>
     send<ChannelThemeBlockAccount>(

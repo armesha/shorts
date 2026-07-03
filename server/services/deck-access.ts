@@ -12,6 +12,11 @@ import {
   availableUnusedForDecks,
   type DeckAvailabilityContext,
 } from "./deck-availability.ts";
+import {
+  filterGloballyVisibleBuiltInDecks,
+  isBuiltInDeckGloballyVisible,
+  isCustomPackGloballyVisible,
+} from "./global-pack-visibility.ts";
 
 type Replyish = { code: (n: number) => { send: (b: unknown) => unknown } };
 const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
@@ -47,6 +52,7 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
 
   function builtinDeckVisibleForUser(userId: number, deck: (typeof DECKS)[number]): boolean {
     const user = db.getUserById(userId);
+    if (!isBuiltInDeckGloballyVisible(db, deck)) return false;
     if (isSuperAdminUser(user) && isForbiddenSuperAdminSourceDeck(deck.id)) return false;
     // Админ видит ВСЁ (вкл. admin-only) по умолчанию, КРОМЕ того, что он скрыл лично у себя
     // (тот же per-user hidden-набор, что и у юзеров — он опционален и легко снимается в матрице
@@ -64,10 +70,14 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
       const user = db.getUserById(uid(req));
       if (isSuperAdminUser(user) && isForbiddenSuperAdminSourceDeck(deckId)) return false;
       // Кастомные паки: доступ по владению/гранту (getPack применяет canAccess), а не по hidden.
-      if (isPackDeckId(deckId)) return getPack(deckId.slice(5), uid(req), isSuperAdminReq(req)) !== null;
-      if (isAdminReq(req)) return true;
+      if (isPackDeckId(deckId)) {
+        const pack = getPack(deckId.slice(5), uid(req), isSuperAdminReq(req));
+        return !!pack && isCustomPackGloballyVisible(db, pack);
+      }
       const deck = DECKS.find((d) => d.id === deckId);
-      return !!deck && builtinDeckVisibleForUser(uid(req), deck);
+      if (!deck || !isBuiltInDeckGloballyVisible(db, deck)) return false;
+      if (isAdminReq(req)) return true;
+      return builtinDeckVisibleForUser(uid(req), deck);
     }
 
   // Same as deckAllowed but keyed by a bare userId (no req) — used by the file streamer's authz gate,
@@ -76,15 +86,26 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
       const user = db.getUserById(userId);
       if (isSuperAdminUser(user) && isForbiddenSuperAdminSourceDeck(deckId)) return false;
       if (isPackDeckId(deckId)) {
-        return getPack(deckId.slice(5), userId, isSuperAdminUser(user)) !== null;
+        const pack = getPack(deckId.slice(5), userId, isSuperAdminUser(user));
+        return !!pack && isCustomPackGloballyVisible(db, pack);
       }
       const deck = DECKS.find((d) => d.id === deckId);
+      if (deck && !isBuiltInDeckGloballyVisible(db, deck)) return false;
       return !!deck && builtinDeckVisibleForUser(userId, deck);
   }
 
   function cleanDeckIds(ids: unknown): string[] {
     if (!Array.isArray(ids)) return [];
     return [...new Set(ids.map((x) => String(x || "").trim()).filter(Boolean))];
+  }
+
+  function sourceDeckGloballyVisible(deckId: string, ownerId: number | null | undefined, ownerIsSuperAdmin: boolean): boolean {
+    if (isPackDeckId(deckId)) {
+      const pack = getPack(deckId.slice(5), ownerId ?? 0, ownerIsSuperAdmin);
+      return !!pack && isCustomPackGloballyVisible(db, pack);
+    }
+    const deck = DECKS.find((d) => d.id === deckId);
+    return !!deck && isBuiltInDeckGloballyVisible(db, deck);
   }
 
   function accountSourceDecks(account: Account): string[] {
@@ -95,6 +116,7 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
         ids
           .map((x) => String(x || "").trim())
           .filter((deckId) => deckId && !DECKS.find((deck) => deck.id === deckId)?.longVideo)
+          .filter((deckId) => sourceDeckGloballyVisible(deckId, account.userId, ownerIsSuperAdmin))
           .filter((deckId) => !ownerIsSuperAdmin || !isForbiddenSuperAdminSourceDeck(deckId)),
       ),
     ];
@@ -112,8 +134,11 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
   }
 
     function deckExists(req: unknown, deckId: string): boolean {
-      if (DECKS.some((d) => d.id === deckId)) return true;
-      return isPackDeckId(deckId) && !!getPack(deckId.slice(5), uid(req), isSuperAdminReq(req));
+      const deck = DECKS.find((d) => d.id === deckId);
+      if (deck) return isBuiltInDeckGloballyVisible(db, deck);
+      if (!isPackDeckId(deckId)) return false;
+      const pack = getPack(deckId.slice(5), uid(req), isSuperAdminReq(req));
+      return !!pack && isCustomPackGloballyVisible(db, pack);
     }
 
     function deckContentLang(req: unknown, deckId: string): string {
@@ -155,7 +180,7 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
   // Pack overview for the «Паки» tab (any logged-in user): their VISIBLE packs with total/used/remaining/posted.
   // Decks a user may see/use: per-user not hidden AND (admin OR not an admin-only deck).
   function visibleDecksForUser(userId: number) {
-    return DECKS.filter((d) => builtinDeckVisibleForUser(userId, d));
+    return filterGloballyVisibleBuiltInDecks(db, DECKS).filter((d) => builtinDeckVisibleForUser(userId, d));
   }
 
   return {

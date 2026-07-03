@@ -19,6 +19,7 @@ import { INFINITE_PACKS_FEATURE } from "./infinite-packs.ts";
 import { channelLibraryVideoCap, isMgsUser } from "../infra/account-limits.ts";
 import type { GenWorker, Job } from "./gen-queue.ts";
 import type { DeckAccess } from "./deck-access.ts";
+import { isBuiltInDeckGloballyVisible, isCustomPackGloballyVisible } from "./global-pack-visibility.ts";
 import type { BuildLibraryVideo } from "./library-build.ts";
 
 export function makeGenQueueWorker(
@@ -46,6 +47,7 @@ export function makeGenQueueWorker(
       if (isPackDeckId(sourceDeck)) {
         const pack = getPack(sourceDeck.slice(5), ownerId, isSuperAdminUser(db.getUserById(ownerId)));
         if (!pack || !pack.templates.length) throw new Error(`Пак «${sourceDeck}» не найден или без шаблона`);
+        if (!isCustomPackGloballyVisible(db, pack)) throw new Error("Этот пак вам недоступен");
         let attempts = 0;
         for (;;) {
           const perAccountAutoExpire = isPerAccountAutoExpirePack(pack);
@@ -85,6 +87,7 @@ export function makeGenQueueWorker(
 
       const channelDeck = DECKS.find((d) => d.id === sourceDeck);
       if (!channelDeck) throw new Error(`У канала язык «${sourceDeck}» без пака`);
+      if (!isBuiltInDeckGloballyVisible(db, channelDeck)) throw new Error("Этот пак вам недоступен");
       if (db.getUserById(ownerId)?.role !== "admin" && !builtinDeckVisibleForUser(ownerId, channelDeck))
         throw new Error("Этот пак вам недоступен");
       let attempts = 0;

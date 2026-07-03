@@ -78,6 +78,38 @@ export interface AppSettings {
   hasGoogleKey: boolean;
 }
 
+export interface AnecdoteTemplateExampleItem {
+  no: string;
+  key: string;
+  imageId: string;
+  imageUrl: string;
+  imageReady: boolean;
+  mediaType: "image" | "video";
+  videoUrl?: string;
+  videoReady?: boolean;
+  family: "joke-animated" | "joke-pop" | "russian-bg" | "custom-pack";
+  title: string;
+  subtitle: string;
+  sourceDecks: string[];
+  languageCodes: string[];
+  accountCount: number;
+  accounts: { id: number; channelName: string }[];
+  templateName: string;
+  sampleTitle: string;
+  sampleText: string;
+}
+
+export interface AnecdoteTemplateExamplesResponse {
+  owner: { id: number; username: string };
+  generatedAt: string;
+  outputDir: string;
+  sourceDecks: string[];
+  languageCodes: string[];
+  accountCount: number;
+  total: number;
+  items: AnecdoteTemplateExampleItem[];
+}
+
 // One uploaded Google OAuth key (client_secret.json). The secret itself never reaches the client —
 // only this display metadata does.
 export interface OAuthClient {

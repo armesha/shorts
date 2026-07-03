@@ -9,7 +9,7 @@ import type { Account, Db } from "../db.ts";
 import { DECKS, getDeck, isPackDeckId } from "../../src/anecdotes/decks.ts";
 import { ytMeta } from "../../src/anecdotes/yt-meta.ts";
 import { randomAnecdote, firstAnecdote, anecdoteKey, packItemKey } from "../../src/anecdotes/library.ts";
-import { getPack } from "../../src/packs/store.ts";
+import { getPack, listAllPacks } from "../../src/packs/store.ts";
 import {
   pickUnusedPackCard,
   pickFixedPackCard,
@@ -45,6 +45,10 @@ import { uid } from "../infra/auth-session.ts";
 import { isSuperAdminUser } from "../auth.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
 import { queuedRemainingForAccount as genQueuedRemainingForAccount } from "../services/gen-queue.ts";
+import {
+  filterGloballyVisibleBuiltInDecks,
+  filterGloballyVisibleCustomPacks,
+} from "../services/global-pack-visibility.ts";
 import type { RouteDeps, LimitedReplyish } from "./deps.ts";
 
 const BATCH_VIDEO_LIMIT = { limit: 2, windowMs: 30 * 60 * 1000 };
@@ -54,6 +58,14 @@ const MANUAL_VIDEO_UPLOAD_WINDOW_MS = 60 * 60 * 1000;
 
 export function canPostVideoDeckForAccount(videoDeck: string, acc: { longVideoDecks?: string[] }, selectedSourceDecks: string[]): boolean {
   return videoDeck === MANUAL_VIDEO_DECK || selectedSourceDecks.includes(videoDeck) || (acc.longVideoDecks ?? []).includes(videoDeck);
+}
+
+export function visibleLibraryDeckIds(db: Db): Set<string> {
+  return new Set([
+    MANUAL_VIDEO_DECK,
+    ...filterGloballyVisibleBuiltInDecks(db, DECKS).map((deck) => deck.id),
+    ...filterGloballyVisibleCustomPacks(db, listAllPacks()).map((pack) => `pack:${pack.id}`),
+  ]);
 }
 
 export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
@@ -74,6 +86,30 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
   const { deckAllowed, resolveAccountSourceDeck, accountSourceDecks, deckContentLang } = deps.deckAccess;
   const REDIRECT_URI = redirectUri;
 
+  const globalVideoFilter = () => ({ includeDecks: [...visibleLibraryDeckIds(db)] });
+
+  const mergeVideoFilters = (
+    left: { includeDecks?: string[]; excludeDecks?: string[]; postCountGt?: number },
+    right: { includeDecks?: string[]; excludeDecks?: string[]; postCountGt?: number },
+  ) => {
+    const leftInclude = left.includeDecks ? new Set(left.includeDecks) : null;
+    const rightInclude = right.includeDecks ? new Set(right.includeDecks) : null;
+    const includeDecks = leftInclude && rightInclude
+      ? [...leftInclude].filter((deckId) => rightInclude.has(deckId))
+      : [...(leftInclude ?? rightInclude ?? new Set<string>())];
+    const hasInclude = !!leftInclude || !!rightInclude;
+    return {
+      ...(hasInclude ? { includeDecks: includeDecks.length ? includeDecks : ["__none__"] } : {}),
+      excludeDecks: [...new Set([...(left.excludeDecks ?? []), ...(right.excludeDecks ?? [])])],
+      postCountGt: right.postCountGt ?? left.postCountGt,
+    };
+  };
+
+  const visibleVideos = (videos: ReturnType<Db["listVideos"]>) => {
+    const visibleDecks = visibleLibraryDeckIds(db);
+    return videos.filter((video) => visibleDecks.has(video.deck));
+  };
+
   const longDeckIdsForAccount = (acc: Account): string[] => [
     ...new Set([
       ...DECKS.filter((deck) => deck.longVideo).map((deck) => deck.id),
@@ -92,7 +128,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     const owner = db.getUserById(accountOwnerId(req, acc));
     const cap = channelLibraryVideoCap(owner?.role === "admin", isMgsUser(owner));
     if (cap == null) return null;
-    const current = db.countVideosByAccount(acc.id);
+    const current = db.countVideosByAccountFiltered(acc.id, globalVideoFilter());
     const queued = genQueuedRemainingForAccount(acc.id);
     const reserved = db.libraryReservationsForAccount(acc.id);
     const occupied = current + queued + reserved;
@@ -138,7 +174,9 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     const rowsByAccount = new Map<number, { accountId: number; total: number; byDeck: Record<string, number> }>(
       accounts.map((account) => [account.id, { accountId: account.id, total: 0, byDeck: {} }]),
     );
+    const visibleDecks = visibleLibraryDeckIds(db);
     for (const row of db.videoCountsByAccount(accounts.map((account) => account.id))) {
+      if (!visibleDecks.has(row.deck)) continue;
       const entry = rowsByAccount.get(row.accountId);
       if (!entry) continue;
       entry.byDeck[row.deck] = row.count;
@@ -158,7 +196,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     const accountId = Number((req.query as { accountId?: string }).accountId ?? 0);
     if (!accountId) return [];
     if (!accessibleAccount(req, reply, accountId)) return;
-    return db.listVideos(accountId);
+    return visibleVideos(db.listVideos(accountId));
   });
 
   app.get("/api/videos/page", async (req, reply) => {
@@ -175,7 +213,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     if (!acc) return;
     const pageSize = Math.min(100, Math.max(1, Number(q.pageSize) || 6));
     const page = Math.max(1, Number(q.page) || 1);
-    const filter = videoKindFilter(acc, q.kind);
+    const filter = mergeVideoFilters(videoKindFilter(acc, q.kind), globalVideoFilter());
     const total = db.countVideosByAccountFiltered(accountId, filter);
     const pageCount = Math.max(1, Math.ceil(total / pageSize));
     const clampedPage = Math.min(page, pageCount);
@@ -186,16 +224,19 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
       sort: q.sort === "title" || q.sort === "posts" ? q.sort : "date",
       filter,
     });
-    const regularFilter = videoKindFilter(acc, "regular");
+    const regularFilter = mergeVideoFilters(videoKindFilter(acc, "regular"), globalVideoFilter());
+    const byDeck = Object.fromEntries(
+      Object.entries(db.videoDeckCountsForAccount(accountId)).filter(([deckId]) => visibleLibraryDeckIds(db).has(deckId)),
+    );
     return {
       items,
       total,
       page: clampedPage,
       pageSize,
       pageCount,
-      byDeck: db.videoDeckCountsForAccount(accountId),
+      byDeck,
       postedTwicePlus: db.countVideosByAccountFiltered(accountId, { ...regularFilter, postCountGt: 1 }),
-      totalAll: db.countVideosByAccount(accountId),
+      totalAll: db.countVideosByAccountFiltered(accountId, globalVideoFilter()),
     };
   });
 

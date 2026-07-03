@@ -4,6 +4,11 @@ import { mkdir, readdir } from "node:fs/promises";
 import { existsSync, readdirSync } from "node:fs";
 import { dirname, resolve, extname, isAbsolute, relative } from "node:path";
 import ffmpegPath from "ffmpeg-static";
+import {
+  isJokeAnimatedVariant,
+  JOKE_ANIMATED_MAX_TEXT_LEN,
+  jokeAnimatedTemplateForVariant,
+} from "./anecdotes/joke-animated-templates.ts";
 
 const pexec = promisify(execFile);
 const FFMPEG = ffmpegPath as unknown as string;
@@ -276,8 +281,20 @@ function stableHash(s: string): number {
   return h >>> 0;
 }
 
-export function pickJokeMotionOverlay(seed: string, textLen = 0): MotionOverlay | null {
-  if (textLen > 560 || !existsSync(CREATOR_MOTION_DIR)) return null;
+export function jokeMotionOverlayForVariant(variant?: string | null, textLen = 0): MotionOverlay | null {
+  if (textLen > JOKE_ANIMATED_MAX_TEXT_LEN || !existsSync(CREATOR_MOTION_DIR)) return null;
+  const template = jokeAnimatedTemplateForVariant(variant);
+  if (!template) return null;
+  const path = resolve(CREATOR_MOTION_DIR, template.gif);
+  if (!existsSync(path)) return null;
+  return { path, width: textLen > 460 ? Math.max(128, Math.round(template.width * 0.78)) : template.width, x: template.x, y: template.y };
+}
+
+export function pickJokeMotionOverlay(seed: string, textLen = 0, visualVariant?: string | null): MotionOverlay | null {
+  const forced = jokeMotionOverlayForVariant(visualVariant, textLen);
+  if (forced) return forced;
+  if (visualVariant && isJokeAnimatedVariant(visualVariant)) return null;
+  if (textLen > JOKE_ANIMATED_MAX_TEXT_LEN || !existsSync(CREATOR_MOTION_DIR)) return null;
   const files = readdirSync(CREATOR_MOTION_DIR)
     .map((f) => f.toString())
     .filter((f) => /\.gif$/i.test(f) && CREATOR_JOKE_MOTION_FILES.has(f))

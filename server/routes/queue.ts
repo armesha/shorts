@@ -8,6 +8,7 @@ import { uid } from "../infra/auth-session.ts";
 import { listStatuses as listGenStatuses } from "../services/gen-queue.ts";
 import { publicGenWorkerStatus } from "../services/gen-worker-heartbeat.ts";
 import type { RouteDeps } from "./deps.ts";
+import { visibleLibraryDeckIds } from "./videos.ts";
 
 type QueueQuery = { scope?: string };
 const genQueueRunnerMode = (): "embedded" | "external" =>
@@ -101,7 +102,9 @@ export function registerQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const accountById = new Map(accounts.map((account) => [account.id, account]));
     const userById = new Map(db.listUsers().map((user) => [user.id, user]));
     const countsByAccount = new Map<number, { deck: string; count: number }[]>();
+    const visibleVideoDeckIds = visibleLibraryDeckIds(db);
     for (const row of db.videoCountsByAccount(accounts.map((account) => account.id))) {
+      if (!visibleVideoDeckIds.has(row.deck)) continue;
       const list = countsByAccount.get(row.accountId) ?? [];
       list.push({ deck: row.deck, count: row.count });
       countsByAccount.set(row.accountId, list);

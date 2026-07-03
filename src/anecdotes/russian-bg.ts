@@ -3,6 +3,7 @@
 // Модель — как у christian/islamic (карта SAFE + pickBg). de/it/fr этого НЕ используют.
 import { resolve } from "node:path";
 import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { listAllowedRussianJokeBackgrounds } from "./joke-template-pool.ts";
 
 const TEMPLATE = resolve(process.cwd(), "templates/anecdote-russian.html");
 const BG_DIR = resolve(process.cwd(), "assets/backgrounds/russian_jokes");
@@ -55,7 +56,7 @@ const esc = (s: unknown): string =>
 
 export function listRussianBgs(): string[] {
   if (!existsSync(BG_DIR)) return [];
-  return readdirSync(BG_DIR).filter((f) => /\.(jpe?g|png)$/i.test(f)).sort();
+  return listAllowedRussianJokeBackgrounds(readdirSync(BG_DIR).filter((f) => /\.(jpe?g|png)$/i.test(f)).sort());
 }
 
 export function isRussianBgName(name?: string | null): boolean {

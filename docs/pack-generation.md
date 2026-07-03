@@ -47,6 +47,16 @@ public-domain книги, Wikisource/Internet Archive/Gutenberg, open-source д�
 безопасных боковых/нижних зонах; верхнюю область заголовка не занимать. Старые брендовые подписи канала
 внизу карточек не возвращать.
 
+Все языки анекдотов используют общий управляемый пул разрешённых визуальных шаблонов. Не добавляй
+языковые исключения с собственным неограниченным набором шаблонов: исключения и allowlist держатся в
+`src/anecdotes/joke-template-pool.ts` и применяются к `/examples`, рендеру библиотеки, превью и ручной
+сборке pack-видео. На 2026-07-03 из RU-сцен исключены `russian_apartment_hallway.jpg`,
+`russian_banya.jpg`, `russian_kitchen_table.jpg`, `russian_train_compartment.jpg`; для
+`pack:chistes-es-public-domain` разрешён только template index `4` (карточка A035 на странице
+примеров). Новые animated-шаблоны `joke-gif:*` используют реальные GIF из `assets/creator/motion`
+и входят в тот же общий пул анекдотов; на `/examples` они должны идти первыми и показываться как MP4
+preview.
+
 Для motion-вариантов анекдотов разрешены только локально сохранённые Pexels/CC0/собственно
 сгенерированные видеофоны без узнаваемых лиц, логотипов и чужих мем-шаблонов. Фон должен быть затемнён,
 а текст — отдельным прозрачным overlay/panel поверх него. Ledger источников: `data/joke-video-backgrounds/sources.json`;

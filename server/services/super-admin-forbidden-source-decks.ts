@@ -60,6 +60,29 @@ export const RETIRED_SUPER_ADMIN_STATIC_FACT_DECKS = new Set([
   "pack:static-facts-es-superadmin",
 ]);
 
+export const RETIRED_SUPER_ADMIN_QUOTE_DECKS = new Set([
+  "quote-video-ar",
+  "quote-video-ru",
+  "quote-video-en",
+  "quote-video-it",
+  "quote-video-es",
+  "quote-video-de",
+  "quote-video-fr",
+  "quote-video-pt",
+  "quote-video-hi",
+  "quote-video-id",
+  "quotes-ar",
+  "quotes-ru",
+  "quotes-en",
+  "quotes-it",
+  "quotes-es",
+  "quotes-de",
+  "quotes-fr",
+  "quotes-pt",
+  "quotes-hi",
+  "quotes-id",
+]);
+
 export const RETIRED_SUPER_ADMIN_RUSSIAN_MOTIVATION_DECKS = new Set([
   "pack:motivation-ru-superadmin",
 ]);
@@ -116,6 +139,10 @@ export const FORBIDDEN_SUPER_ADMIN_SOURCE_GROUPS = [
   {
     group: "retired armen static fact decks",
     decks: [...RETIRED_SUPER_ADMIN_STATIC_FACT_DECKS],
+  },
+  {
+    group: "retired armen quote decks",
+    decks: [...RETIRED_SUPER_ADMIN_QUOTE_DECKS],
   },
   {
     group: "retired armen russian motivation decks",

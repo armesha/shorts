@@ -49,6 +49,10 @@ import {
 } from "../services/creator-assets.ts";
 import { deletePackMusicDir } from "../services/pack-audio.ts";
 import { writeZipFile } from "../services/zip.ts";
+import {
+  filterGloballyVisibleCustomPacks,
+  isCustomPackGloballyVisible,
+} from "../services/global-pack-visibility.ts";
 
 const OUTPUT_DIR = loadBaseConfig().outputDir;
 const CREATOR_LIMIT = { limit: 12, windowMs: 10 * 60 * 1000 };
@@ -537,6 +541,10 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
     reply.code(403).send({ error: "Creator доступ не включён для этого пользователя" });
     return false;
   };
+  const visibleCreatorPack = (id: string, userId: number, isSuperAdmin: boolean) => {
+    const pack = getPack(id, userId, isSuperAdmin);
+    return pack && pack.creator && isCustomPackGloballyVisible(db, pack) ? pack : null;
+  };
 
   app.get("/api/creator/summary", async (req) => {
     const userId = uid(req);
@@ -546,7 +554,7 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
     }
     return {
       feature: true,
-      packs: listCreatorPacks(userId, isSuperAdminUser(db.getUserById(userId))),
+      packs: filterGloballyVisibleCustomPacks(db, listCreatorPacks(userId, isSuperAdminUser(db.getUserById(userId)))),
       gallery: db.listCreatorGalleryItems(userId),
       backgrounds: creatorBackgrounds(),
       userBackgrounds: await listUserBackgrounds(userId),
@@ -586,8 +594,8 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
 
   app.get("/api/creator/packs/:id", async (req, reply) => {
     if (!requireCreator(req, reply)) return;
-    const pack = getPack((req.params as { id: string }).id, uid(req), isSuperAdminUser(db.getUserById(uid(req))));
-    if (!pack || !pack.creator) return reply.code(404).send({ error: "Пак не найден" });
+    const pack = visibleCreatorPack((req.params as { id: string }).id, uid(req), isSuperAdminUser(db.getUserById(uid(req))));
+    if (!pack) return reply.code(404).send({ error: "Пак не найден" });
     return fullPackPayload(pack);
   });
 
@@ -627,6 +635,9 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
     const id = (req.params as { id: string }).id;
     const body = (req.body as { templates?: PackTemplate[]; background?: string; layout?: unknown; templateType?: string; designState?: unknown }) ?? {};
     if (!Array.isArray(body.templates) || !body.templates.length) return reply.code(400).send({ error: "Нужен шаблон" });
+    if (!visibleCreatorPack(id, uid(req), isSuperAdminUser(db.getUserById(uid(req))))) {
+      return reply.code(404).send({ error: "Пак не найден или нет прав на редактирование" });
+    }
     let templates = body.templates;
     try {
       templates = applyBackground(templates, body.background);
@@ -655,6 +666,9 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
     if (Array.isArray(body.templates) || body.designState !== undefined || body.layout !== undefined || body.background !== undefined || body.templateType !== undefined) {
       return reply.code(400).send({ error: "Шаблон сохраняется отдельно от карточек" });
     }
+    if (!visibleCreatorPack(id, uid(req), isSuperAdminUser(db.getUserById(uid(req))))) {
+      return reply.code(404).send({ error: "Пак не найден или нет прав на редактирование" });
+    }
     const r = addCreatorCards(id, uid(req), isSuperAdminUser(db.getUserById(uid(req))), body.cards ?? []);
     if (!r.ok) {
       if (r.reason === "not_found") return reply.code(404).send({ error: "Пак не найден или нет прав на редактирование" });
@@ -667,6 +681,9 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
   app.patch("/api/creator/packs/:id/cards/:index", { bodyLimit: CREATOR_UPLOAD_BYTES }, async (req, reply) => {
     if (!requireCreator(req, reply)) return;
     const { id, index } = req.params as { id: string; index: string };
+    if (!visibleCreatorPack(id, uid(req), isSuperAdminUser(db.getUserById(uid(req))))) {
+      return reply.code(404).send({ error: "Карточка не найдена или нет прав" });
+    }
     const r = updateCreatorCard(id, uid(req), isSuperAdminUser(db.getUserById(uid(req))), Number(index), req.body ?? {});
     if (!r.ok) {
       if (r.reason === "not_found") return reply.code(404).send({ error: "Карточка не найдена или нет прав" });
@@ -681,8 +698,8 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
     const { id, index } = req.params as { id: string; index: string };
     const userId = uid(req);
     const isSuper = isSuperAdminUser(db.getUserById(userId));
-    const pack = getPack(id, userId, isSuper);
-    if (!pack || !pack.creator) return reply.code(404).send({ error: "Пак не найден" });
+    const pack = visibleCreatorPack(id, userId, isSuper);
+    if (!pack) return reply.code(404).send({ error: "Пак не найден" });
     const addedAt = (req.query as Record<string, string> | undefined)?.addedAt;
     const r = deleteCard(id, userId, isSuper, Number(index), addedAt);
     if (!r.deleted) {
@@ -708,8 +725,8 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
     const body = (req.body as { name?: string }) ?? {};
     const userId = uid(req);
     const isSuper = isSuperAdminUser(db.getUserById(userId));
-    const pack = getPack(id, userId, isSuper);
-    if (!pack || !pack.creator || !canEdit(pack, userId, isSuper)) return reply.code(404).send({ error: "Пак не найден или нет прав" });
+    const pack = visibleCreatorPack(id, userId, isSuper);
+    if (!pack || !canEdit(pack, userId, isSuper)) return reply.code(404).send({ error: "Пак не найден или нет прав" });
     const name = String(body.name || "").trim();
     if (!name) return reply.code(400).send({ error: "Нужно название пака" });
     if (!setPackName(id, name)) return reply.code(400).send({ error: "Не удалось переименовать пак" });
@@ -723,8 +740,8 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
     const userId = uid(req);
     const user = db.getUserById(userId);
     const isSuper = isSuperAdminUser(user);
-    const pack = getPack(id, userId, isSuper);
-    if (!pack || !pack.creator) return reply.code(404).send({ error: "Пак не найден или нет прав на удаление" });
+    const pack = visibleCreatorPack(id, userId, isSuper);
+    if (!pack) return reply.code(404).send({ error: "Пак не найден или нет прав на удаление" });
     const ok = deletePack(id, userId, isSuper, { isAdmin: user?.role === "admin" });
     if (!ok) return reply.code(404).send({ error: "Пак не найден или нет прав на удаление" });
     deletePackMusicDir(id);
@@ -810,8 +827,8 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
       const hit = checkRateLimit(`user:${userId}:creator-preview`, CREATOR_LIMIT);
       if (!hit.ok) return sendRateLimit(reply, hit);
     }
-    const pack = getPack((req as { params: { id: string } }).params.id, userId, isSuperAdminUser(db.getUserById(userId)));
-    if (!pack || !pack.creator) return reply.code(404).send({ error: "Пак не найден" });
+    const pack = visibleCreatorPack((req as { params: { id: string } }).params.id, userId, isSuperAdminUser(db.getUserById(userId)));
+    if (!pack) return reply.code(404).send({ error: "Пак не найден" });
     const index = Math.max(0, Math.floor(Number(((req as { body?: { index?: number } }).body?.index ?? 0))));
     try {
       const rendered = await runHeavyLimited(reply, userId, isAdmin, "creator-preview", () => renderCreatorImage(pack, index));
@@ -847,8 +864,8 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
         motion?: string;
         motionBox?: unknown;
       }) ?? {};
-    const pack = getPack(id, userId, isSuperAdminUser(db.getUserById(userId)));
-    if (!pack || !pack.creator) return reply.code(404).send({ error: "Пак не найден" });
+    const pack = visibleCreatorPack(id, userId, isSuperAdminUser(db.getUserById(userId)));
+    if (!pack) return reply.code(404).send({ error: "Пак не найден" });
     if (!canEdit(pack, userId, isSuperAdminUser(db.getUserById(userId)))) return reply.code(403).send({ error: "Нет прав на экспорт" });
     const exportSettings = creatorExportSettings(pack, body);
     const index = Math.max(0, Math.floor(Number(body.index ?? 0)));
@@ -926,8 +943,8 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
     }
     const id = (req.params as { id: string }).id;
     const body = (req.body as { limit?: number; durationSec?: number; voiceover?: boolean; format?: "png" | "mp4"; music?: string | string[]; motion?: string; motionBox?: unknown }) ?? {};
-    const pack = getPack(id, userId, isSuperAdminUser(db.getUserById(userId)));
-    if (!pack || !pack.creator) return reply.code(404).send({ error: "Пак не найден" });
+    const pack = visibleCreatorPack(id, userId, isSuperAdminUser(db.getUserById(userId)));
+    if (!pack) return reply.code(404).send({ error: "Пак не найден" });
     const exportSettings = creatorExportSettings(pack, body);
     const limit = Math.max(1, Math.min(50, Math.floor(Number(body.limit) || Math.min(pack.cards.length, 12))));
     const format = body.format === "png" ? "png" : "mp4";

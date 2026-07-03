@@ -55,6 +55,7 @@ import { registerContentCatalogRoutes } from "./routes/content-catalog.ts";
 import { registerQueueRoutes } from "./routes/queue.ts";
 import { registerAccountReadinessRoutes } from "./routes/account-readiness.ts";
 import { registerSuperAdminChannelBlockRoutes } from "./routes/super-admin-channel-blocks.ts";
+import { registerExamplesRoutes } from "./routes/examples.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -346,6 +347,7 @@ registerContentCatalogRoutes(app, db, deps);
 registerQueueRoutes(app, db, deps);
 registerAccountReadinessRoutes(app, db, deps);
 registerSuperAdminChannelBlockRoutes(app, db, deps);
+registerExamplesRoutes(app, db, deps);
 
 app
   .listen({ port: base.port, host: "0.0.0.0" })

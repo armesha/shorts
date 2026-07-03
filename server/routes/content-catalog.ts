@@ -11,6 +11,7 @@ import { listPacks } from "../../src/packs/store.ts";
 import { INFINITE_PACKS_FEATURE, infiniteCounts } from "../services/infinite-packs.ts";
 import { createDeckAvailabilityContext } from "../services/deck-availability.ts";
 import { cachedRead } from "../services/read-cache.ts";
+import { filterGloballyVisibleCustomPacks } from "../services/global-pack-visibility.ts";
 
 type CatalogKind = "builtin" | "custom_pack" | "manual" | "clip_demo";
 
@@ -89,7 +90,7 @@ export function registerContentCatalogRoutes(app: FastifyInstance, db: Db, deps:
     const seen = new Set<string>();
 
     const visibleDecks = deps.deckAccess.visibleDecksForUser(userId);
-    const packs = listPacks(userId, isSuperAdmin);
+    const packs = filterGloballyVisibleCustomPacks(db, listPacks(userId, isSuperAdmin));
     const availabilityCtx = createDeckAvailabilityContext();
     const availability = deps.deckAccess.availableUnusedByDeck(
       userId,

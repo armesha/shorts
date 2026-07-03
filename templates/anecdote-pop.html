@@ -148,9 +148,10 @@
     filter: drop-shadow(0 10px 18px rgba(0,0,0,.18));
   }
   .dense .art { display: none; }
-  .dense .panel { padding-top: 48px; }
-  .dense .title { margin-bottom: 16px; }
-  .dense .footer { min-height: 66px; padding-top: 6px; }
+  .dense .panel { padding: 38px 52px 32px; }
+  .dense .title { margin-bottom: 12px; }
+  .dense .body { padding-top: 0; }
+  .dense .footer { display: none; min-height: 0; padding-top: 0; }
   .dense .emoji { font-size: 72px; }
 
   .v-orange-card { --bg:#ff8800; --bg2:#ff9f1c; --panel:#fffdf8; --panel2:#ffffff; --accent:#101010; --accent2:#ffe066; --radius:28px; }
@@ -248,6 +249,50 @@
   }
   .v-speech-bubble .footer { justify-content: flex-end; }
 
+  .animated-gif-template .panel {
+    padding-bottom: 34px;
+  }
+  .animated-gif-template .art,
+  .animated-gif-template .emoji {
+    display: none;
+  }
+  .animated-gif-template .footer {
+    min-height: 208px;
+  }
+  .animated-gif-template.dense .footer {
+    min-height: 150px;
+  }
+
+  .v-gif-joy-note { --bg:#f97316; --bg2:#facc15; --panel:#fffaf0; --panel2:#ffffff; --accent:#7c2d12; --accent2:#0f766e; --radius:26px; }
+  .v-gif-joy-note .panel { border: 8px solid rgba(124,45,18,.18); }
+
+  .v-gif-rofl-pop { --bg:#06b6d4; --bg2:#f0f9ff; --panel:#ffffff; --panel2:#ecfeff; --accent:#164e63; --accent2:#f59e0b; --radius:42px; }
+  .v-gif-rofl-pop .panel { border-bottom-left-radius: 138px; }
+
+  .v-gif-laughing-ticket { --bg:#ef4444; --bg2:#fb7185; --panel:#fff7ed; --panel2:#ffffff; --accent:#7f1d1d; --accent2:#111827; --radius:18px; }
+  .v-gif-laughing-ticket .panel { border: 7px dashed rgba(127,29,29,.48); }
+
+  .v-gif-mind-blown { --bg:#312e81; --bg2:#a78bfa; --panel:#faf5ff; --panel2:#ffffff; --accent:#2e1065; --accent2:#facc15; --radius:30px; }
+  .v-gif-mind-blown .title { background:#2e1065; color:#fff7ed; border-radius:18px; padding:12px 20px; }
+
+  .v-gif-star-struck { --bg:#0f766e; --bg2:#99f6e4; --panel:#f8fffb; --panel2:#ffffff; --accent:#064e3b; --accent2:#f59e0b; --radius:34px; }
+  .v-gif-star-struck .panel { box-shadow: inset 0 0 0 8px rgba(15,118,110,.14), 0 22px 54px rgba(0,0,0,.16); }
+
+  .v-gif-fire-punchline { --bg:#111827; --bg2:#4b5563; --panel:#fff7db; --panel2:#ffffff; --accent:#111827; --accent2:#f97316; --radius:20px; }
+  .v-gif-fire-punchline .panel { border: 10px solid #f97316; }
+
+  .v-gif-party-face { --bg:#7c3aed; --bg2:#22d3ee; --panel:#ffffff; --panel2:#fdf4ff; --accent:#3b0764; --accent2:#fde047; --radius:44px; }
+  .v-gif-party-face .art .doodle { transform: rotate(4deg); background:#fde047; }
+
+  .v-gif-clap-card { --bg:#15803d; --bg2:#86efac; --panel:#f7fee7; --panel2:#ffffff; --accent:#14532d; --accent2:#f97316; --radius:14px; }
+  .v-gif-clap-card .panel { border-left: 18px solid #14532d; }
+
+  .v-gif-thumbs-up { --bg:#2563eb; --bg2:#93c5fd; --panel:#ffffff; --panel2:#eff6ff; --accent:#1e3a8a; --accent2:#facc15; --radius:54px; }
+  .v-gif-thumbs-up .panel { border: 12px solid rgba(30,58,138,.20); }
+
+  .v-gif-sparkles { --bg:#fef3c7; --bg2:#fde68a; --panel:#ffffff; --panel2:#fff7ed; --accent:#78350f; --accent2:#10b981; --radius:32px; }
+  .v-gif-sparkles::before { border-color: rgba(16,185,129,.34); }
+
   .motion-overlay {
     background: transparent !important;
     padding: 116px 84px 108px;
@@ -291,7 +336,7 @@
 </style>
 </head>
 <body>
-  <div class="card {{VARIANT}} {{DENSE}} {{MOTION_OVERLAY}}">
+  <div class="card {{VARIANT}} {{DENSE}} {{ANIMATED}} {{MOTION_OVERLAY}}">
     <main class="panel">
       <div class="art"><span>{{EMOJI}}</span><span class="doodle">{{DOODLE}}</span></div>
       <div class="title">{{TITLE}}</div>
@@ -316,7 +361,8 @@
             titleEl.style.fontSize = ts + 'px';
           }
         }
-        var min = 24, max = document.querySelector('.card').classList.contains('dense') ? 58 : 74, best = min;
+        var isDense = document.querySelector('.card').classList.contains('dense');
+        var min = isDense ? 18 : 24, max = isDense ? 50 : 74, best = min;
         while (min <= max) {
           var mid = (min + max) >> 1;
           text.style.fontSize = mid + 'px';
