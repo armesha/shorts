@@ -1146,6 +1146,7 @@ const NEW_MEMES_META: Record<string, { name: string; hashtags: string; tags: str
   pt: { name: "Memes novos", hashtags: "#memes #humor #engraçado #relatable #shorts", tags: ["memes", "meme", "humor", "engraçado", "relatable", "shorts"] },
   fr: { name: "Nouveaux mèmes", hashtags: "#mèmes #humour #drôle #relatable #shorts", tags: ["mèmes", "mème", "humour", "drôle", "relatable", "shorts"] },
   ar: { name: "ميمز جديدة", hashtags: "#ميمز #ضحك #كوميديا #relatable #shorts", tags: ["ميمز", "ضحك", "كوميديا", "relatable", "shorts"] },
+  ja: { name: "新しいミーム", hashtags: "#ミーム #あるある #おもしろい #笑える #shorts", tags: ["ミーム", "あるある", "おもしろい", "笑える", "relatable", "shorts"] },
 };
 function synthPackDeck(id: string): Deck {
   const meme = /^pack:new-memes-([a-z]{2})-superadmin$/.exec(id);
