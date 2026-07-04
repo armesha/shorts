@@ -37,6 +37,7 @@ const BLOCK_LANGS = [
   { code: "pt", label: "PT" },
   { code: "hi", label: "HI" },
   { code: "id", label: "ID" },
+  { code: "ja", label: "JA" },
 ] as const;
 
 type BlockDef = {
@@ -67,6 +68,7 @@ const JOKE_TEXT_DECK_BY_LANG: Record<string, string[]> = {
   ar: ["ar"],
   hi: ["hi"],
   id: ["id"],
+  ja: ["ja"],
 };
 
 const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
@@ -78,6 +80,7 @@ const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
   es: ["pack:new-memes-es-superadmin"],
   pt: ["pack:new-memes-pt-superadmin"],
   ar: ["pack:new-memes-ar-superadmin"],
+  ja: ["pack:new-memes-ja-superadmin"],
 };
 
 const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
@@ -423,6 +426,18 @@ export function visibleLanguageDefsForAccounts(accounts: Array<Pick<Account, "ch
       .filter(Boolean),
   );
   return BLOCK_LANGS.filter((lang) => active.has(lang.code));
+}
+
+/**
+ * Languages to expose for a block: those already used by a channel PLUS those with prepared default
+ * sources (anecdotes/memes) even if no channel exists yet. The latter drives the "add a new language"
+ * picker — otherwise a freshly-prepared language (e.g. JA) could never get its first channel.
+ */
+function addableLanguageDefsForBlock(db: Db, blockId: string, accounts: Array<Pick<Account, "channelLang" | "lang">>): BlockLangDef[] {
+  const active = new Set(visibleLanguageDefsForAccounts(accounts).map((lang) => lang.code));
+  return BLOCK_LANGS.filter(
+    (lang) => active.has(lang.code) || blockDefaultSourcesForDb(db, blockId, lang.code).length > 0,
+  );
 }
 
 type ScheduledDeckGapInput = {
@@ -1064,7 +1079,13 @@ function buildPayload(db: Db, deps: RouteDeps) {
   normalizeSourceWeightSettings(db);
   cleanupDrainedAutoExpireDecksForUser(db, ownerId);
   const accounts = db.listAccountsByUser(ownerId);
-  const languages = visibleLanguageDefsForAccounts(accounts);
+  // Expose every language that has a channel OR has prepared default sources in any block, so a
+  // freshly-prepared language (e.g. JA) is addable before it has its first channel.
+  const languageCodes = new Set<string>(visibleLanguageDefsForAccounts(accounts).map((lang) => lang.code));
+  for (const block of BLOCKS) {
+    for (const lang of addableLanguageDefsForBlock(db, block.id, accounts)) languageCodes.add(lang.code);
+  }
+  const languages = BLOCK_LANGS.filter((lang) => languageCodes.has(lang.code));
   const ctx = makeBlockContext(db, accounts);
   const byId = new Map(accounts.map((account) => [account.id, account]));
   const assigned = new Set<number>();
@@ -1073,7 +1094,7 @@ function buildPayload(db: Db, deps: RouteDeps) {
   const blocks = BLOCKS.map((block) => {
     const blockAccounts = accounts.filter((account) => accountBelongsToBlock(deps, block, account));
     const blockAccountIds = new Set(blockAccounts.map((account) => account.id));
-    const blockLangs = visibleLanguageDefsForAccounts(blockAccounts);
+    const blockLangs = addableLanguageDefsForBlock(db, block.id, blockAccounts);
     const cells = blockLangs.map((lang) => {
       const cellAccounts = [...blockAccountIds]
         .map((id) => byId.get(id))
