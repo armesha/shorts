@@ -362,7 +362,7 @@ function quoteHtml(input: { quote: string; author: string; lang: string; deckId?
   * { box-sizing: border-box; }
   html, body { width: 1080px; height: 1920px; margin: 0; overflow: hidden; }
   body {
-    font-family: "Noto Serif Display", "Noto Serif", "Noto Naskh Arabic", "Noto Serif Devanagari", "Noto Sans", serif;
+    font-family: "Noto Serif Display", "Noto Serif", "Noto Naskh Arabic", "Noto Serif Devanagari", "Noto Serif CJK JP", "Noto Sans CJK JP", "Noto Sans", serif;
     color: #121212;
     background: ${pageBg};
   }

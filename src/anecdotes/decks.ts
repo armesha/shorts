@@ -219,6 +219,20 @@ export const DECKS: Deck[] = [
     audioProfile: "jokes",
   },
   {
+    id: "ja",
+    name: "日本の笑い話",
+    dir: "data/anecdotes-ja",
+    source: "Translated/adapted from this project's own RU anecdote corpus (data/anecdotes/titled.json); only anecdotes without untranslatable wordplay, without Russia-specific cultural dependencies, and safe for general audience were selected — see data/anecdotes-ja/sources.json",
+    emoji: "😂",
+    hashtags: "#笑い話 #ジョーク #お笑い #面白い #shorts",
+    tags: ["笑い話", "ジョーク", "お笑い", "面白い", "小話", "shorts"],
+    genericTitles: ["笑い話", "面白い話", "小話", "今日の一笑", "クスッと笑える話"],
+    adminOnly: true,
+    grantable: true,
+    gallery: true,
+    audioProfile: "jokes",
+  },
+  {
     id: "psych",
     name: "Psychologie (DE)",
     dir: "data/psych", // cards.json (structured psychology cards), not pack-*.json
@@ -1127,7 +1141,7 @@ export function isPackDeckId(id?: string | null): boolean {
 }
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
-  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ar: "ar", hi: "hi", id: "id", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-ru": "ru", "fact-es": "es", "fact-de": "de", "fact-it": "it", "fact-fr": "fr", "fact-pt": "pt", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
+  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ar: "ar", hi: "hi", id: "id", ja: "ja", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-ru": "ru", "fact-es": "es", "fact-de": "de", "fact-it": "it", "fact-fr": "fr", "fact-pt": "pt", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-es": "es", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar",
 };
 export function deckLang(id: string): string {

@@ -1,0 +1,14 @@
+{
+  "method": "Translated/adapted from this project's own Russian anecdote corpus (data/anecdotes/titled.json, 1203 anecdotes). Every source anecdote was read and judged against three drop rules before translation: (1) unsafe/inappropriate for a general audience, (2) humor relies on untranslatable Russian wordplay/pun/rhyme, (3) humor requires Russian/Soviet-specific cultural or political knowledge. Anecdotes clearing all three were adapted into natural colloquial Japanese (not literal translation) with a fresh short title; nothing was invented — every kept anecdote traces to a real source row in data/anecdotes/titled.json. Some source rows bundle 2-3 unrelated jokes separated by \"— — —\"; each was judged independently, so a bundled row can yield 0-3 final Japanese cards.",
+  "reviewed_source_anecdotes": 1203,
+  "result_records_after_splitting_bundles": 1578,
+  "kept_final_cards": 1346,
+  "dropped": {
+    "unsafe": 102,
+    "cultural": 81,
+    "wordplay": 36,
+    "other_incomplete_or_missing_translation": 12
+  },
+  "built": "2026-07-04",
+  "model": "Sonnet 5 (batches 1-10) + Haiku 4.5 via Workflow (remaining batches, after a Sonnet rate-limit-storm from too many concurrent raw agent calls)"
+}
