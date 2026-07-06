@@ -76,6 +76,7 @@ export interface Video {
   deck: string;
   videoRel: string;
   imageRel: string | null;
+  tags: string[];
   postCount: number;
   lastPostedAt: string | null;
   createdAt: string;

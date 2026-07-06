@@ -25,7 +25,8 @@ import {
   googleKeyDailySlotCap,
   USER_BATCH_VIDEO_CAP,
   USER_CHANNEL_LIBRARY_CAP,
-  SUPER_ADMIN_SCHEDULE_WINDOW,
+  describeShortsSchedulePolicy,
+  shortsScheduleWindowsForLanguage,
   cleanSuperAdminScheduleTimes,
   isSuperAdminScheduleTimeAllowed,
 } from "./schedule";
@@ -76,6 +77,8 @@ export default function AccountDetail() {
   const justConnected = params.get("connected") === "1";
   const connectError = params.get("error");
   const [account, setAccount] = useState<Account | null>(null);
+  const [accountLoading, setAccountLoading] = useState(true);
+  const [accountLoadError, setAccountLoadError] = useState<string | null>(null);
   const [channelName, setChannelName] = useState("");
   const [theme, setTheme] = useState("");
   const [lang, setLang] = useState("de");
@@ -160,7 +163,7 @@ export default function AccountDetail() {
   // (Бэкенд — источник истины; здесь это только для UX-валидации/счётчиков.)
   const ownerIsAdmin = ownerRole === "admin";
   const ownerIsSuperAdminAccount = account?.ownerIsSuperAdmin ?? (user?.isSuperAdmin === true && ownedByMeForLimits);
-  const scheduleWindow = ownerIsSuperAdminAccount ? SUPER_ADMIN_SCHEDULE_WINDOW : undefined;
+  const scheduleWindow = ownerIsSuperAdminAccount ? shortsScheduleWindowsForLanguage(channelLang) : undefined;
   const perChannelCap = accountDailySlotCap(ownerIsAdmin, ownerIsMgs);
   const perGoogleKeyCap = googleKeyDailySlotCap(ownerIsSuperAdminAccount, ownerIsMgs);
   const libraryCap = ownerIsAdmin || ownerIsMgs ? null : USER_CHANNEL_LIBRARY_CAP;
@@ -200,9 +203,14 @@ export default function AccountDetail() {
   }, []);
 
   useEffect(() => {
+    let alive = true;
+    setAccount(null);
+    setAccountLoading(true);
+    setAccountLoadError(null);
     apiClient
       .account(id!)
       .then((a) => {
+        if (!alive) return;
         setAccount(a);
         setChannelName(a.channelName);
         setTheme(a.theme);
@@ -214,7 +222,7 @@ export default function AccountDetail() {
         }
         setLongVideoDecks(a.longVideoDecks ?? []);
         setChannelLang(a.channelLang || DECK_LANG[a.lang] || "ru");
-        setTimes(user?.isSuperAdmin === true && (!a.userId || a.userId === user.id) ? cleanSuperAdminScheduleTimes(a.schedule) : a.schedule);
+        setTimes(user?.isSuperAdmin === true && (!a.userId || a.userId === user.id) ? cleanSuperAdminScheduleTimes(a.schedule, a.channelLang || a.lang) : a.schedule);
         setSlotVideos(a.slotVideos || {});
         setSlotDecks(a.slotDecks || {});
         console.log("[привязка] канал загружен:", {
@@ -224,7 +232,13 @@ export default function AccountDetail() {
           ytChannelTitle: a.ytChannelTitle,
         });
       })
-      .catch(() => {});
+      .catch((e) => {
+        if (!alive) return;
+        setAccountLoadError(e instanceof Error ? e.message : String(e));
+      })
+      .finally(() => {
+        if (alive) setAccountLoading(false);
+      });
     apiClient.manualVideoLimits().then(setManualLimits).catch(() => {});
     apiClient.generators().then(setGens).catch(() => {});
     apiClient.packs().then(setPacks).catch(() => {}); // доступные паки → в дропдаун канала (по имени)
@@ -241,6 +255,9 @@ export default function AccountDetail() {
         setOtherTimes(others.flatMap((a) => a.schedule ?? []));
       })
       .catch(() => {});
+    return () => {
+      alive = false;
+    };
   }, [id, user?.id, user?.isSuperAdmin]);
 
   useEffect(() => {
@@ -305,10 +322,10 @@ export default function AccountDetail() {
       const cleanLongVideoDecks = [...new Set(longVideoDecksRef.current.filter(Boolean))];
       const sourceLangs = [...new Set(cleanSources.map(contentLang).filter(Boolean))];
       const effectiveChannelLang = sourceLangs.length === 1 ? sourceLangs[0] : channelLangRef.current || channelLang;
-      const effectiveTimes = ownerIsSuperAdminAccount ? cleanSuperAdminScheduleTimes(times) : times;
+      const effectiveTimes = ownerIsSuperAdminAccount ? cleanSuperAdminScheduleTimes(times, effectiveChannelLang) : times;
       if (effectiveTimes.length !== times.length) {
         setTimes(effectiveTimes);
-        notify("Для каналов главного админа разрешено только 08:00-23:59.", "info", t("account.scheduleLimitToastTitle"));
+        notify(`Для каналов главного админа используются языковые Shorts-окна: ${describeShortsSchedulePolicy(effectiveChannelLang)}.`, "info", t("account.scheduleLimitToastTitle"));
       }
       const cleanSlotDecks = Object.fromEntries(
         Object.entries(slotDecks).filter(([time, deck]) => effectiveTimes.includes(time) && (cleanSources.includes(deck) || deck === "manual")),
@@ -369,8 +386,8 @@ export default function AccountDetail() {
 
   // Which Google key this channel is bound to — for the "connected via" badge (resolvable for the owner).
   const boundClient = account?.oauthClientId ? clients.find((c) => c.id === account.oauthClientId) ?? null : null;
-  // Option B: until a channel is connected to YouTube you can't schedule it or prepare/queue videos.
   const isConnected = account?.status === "connected";
+  const canPrepareLibrary = isConnected || user?.isSuperAdmin === true;
 
   // Decide how to connect: 0 keys → prompt; 1 key → use it; >1 → let the user pick which Google key.
   async function startConnect() {
@@ -677,7 +694,27 @@ export default function AccountDetail() {
     return { label: t("account.deckReadinessActionOk", { days: days ?? 0 }), className: "text-success", title };
   };
 
-  if (!account) return <div className="text-base-content/60">{t("common.loading")}</div>;
+  if (accountLoading) {
+    return (
+      <div className="flex items-center gap-2 text-base-content/60">
+        <Loader2 className="animate-spin" size={16} />
+        {t("common.loading")}
+      </div>
+    );
+  }
+  if (!account) {
+    return (
+      <div className="max-w-xl space-y-3">
+        <div className="alert alert-error text-sm">
+          <AppIcon name="warning" size={18} />
+          <span>{t("account.loadFailed", { error: accountLoadError || t("account.loadFailedUnknown") })}</span>
+        </div>
+        <Link to="/channels" className="btn btn-sm btn-ghost gap-2">
+          <ArrowLeft size={16} /> {t("account.backToChannels")}
+        </Link>
+      </div>
+    );
+  }
   const youtubeChannelUrl = account.ytChannelId ? `https://www.youtube.com/channel/${account.ytChannelId}` : null;
   const avatarNode = account.avatar ? (
     <img
@@ -990,8 +1027,8 @@ export default function AccountDetail() {
                     notify(t("account.invalidTime"), "error");
                     return;
                   }
-                  if (ownerIsSuperAdminAccount && !isSuperAdminScheduleTimeAllowed(v)) {
-                    notify("Для каналов главного админа разрешено только 08:00-23:59.", "error", t("account.scheduleLimitToastTitle"));
+                  if (ownerIsSuperAdminAccount && !isSuperAdminScheduleTimeAllowed(v, channelLang)) {
+                    notify(`Время вне языкового Shorts-окна: ${describeShortsSchedulePolicy(channelLang)}.`, "error", t("account.scheduleLimitToastTitle"));
                     return;
                   }
                   if (times.length >= perChannelCap) {
@@ -1061,6 +1098,7 @@ export default function AccountDetail() {
         updateSources={updateSources}
         deckOptions={deckOptions}
         isConnected={isConnected}
+        canPrepareLibrary={canPrepareLibrary}
         activeGenerateDeck={activeGenerateDeck}
         setGenerateDeck={setGenerateDeck}
         canGenerateAllSources={canGenerateAllSources}
@@ -1107,6 +1145,10 @@ export default function AccountDetail() {
           onClose={() => setPreview(null)}
           onRemove={removeVid}
           onPost={postNow}
+          onSaved={(v) => {
+            setPreview(v);
+            void reloadVideos();
+          }}
           t={t}
         />
       )}
@@ -1177,13 +1219,15 @@ export default function AccountDetail() {
                       <button
                         type="button"
                         className="btn btn-xs btn-primary gap-1 shrink-0"
-                        disabled={!checked || !isConnected || busy || saving || remaining < 1}
+                        disabled={!checked || !canPrepareLibrary || busy || saving || remaining < 1}
                         title={
                           !checked
                             ? t("account.longVideoEnableFirst")
-                            : remaining < 1
-                              ? t("account.longVideoNoFresh")
-                              : t("account.longVideoAddTitle")
+                            : !canPrepareLibrary
+                              ? t("account.connectFirst")
+                              : remaining < 1
+                                ? t("account.longVideoNoFresh")
+                                : t("account.longVideoAddTitle")
                         }
                         onClick={(e) => {
                           e.preventDefault();

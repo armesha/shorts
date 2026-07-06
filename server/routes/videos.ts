@@ -5,7 +5,7 @@
 import type { FastifyInstance } from "fastify";
 import { resolve } from "node:path";
 import { unlinkSync } from "node:fs";
-import type { Account, Db } from "../db.ts";
+import type { Account, Db, Video } from "../db.ts";
 import { DECKS, getDeck, isPackDeckId } from "../../src/anecdotes/decks.ts";
 import { ytMeta } from "../../src/anecdotes/yt-meta.ts";
 import { randomAnecdote, firstAnecdote, anecdoteKey, packItemKey } from "../../src/anecdotes/library.ts";
@@ -56,6 +56,22 @@ const LONG_VIDEO_LIBRARY_LIMIT = { limit: 4, windowMs: 60 * 60 * 1000 };
 const POST_NOW_LIMIT = { limit: 15, windowMs: 10 * 60 * 1000 }; // burst guard on manual «Опубликовать»
 const MANUAL_VIDEO_UPLOAD_WINDOW_MS = 60 * 60 * 1000;
 
+type PostLibraryVideoSuccess = {
+  ok: true;
+  youtubeId: string | null;
+  url: string | null;
+  scheduled: boolean;
+  removed: boolean;
+};
+
+type PostLibraryVideoFailure = {
+  ok: false;
+  status: number;
+  error: string;
+};
+
+type PostLibraryVideoResult = PostLibraryVideoSuccess | PostLibraryVideoFailure;
+
 export function canPostVideoDeckForAccount(videoDeck: string, acc: { longVideoDecks?: string[] }, selectedSourceDecks: string[]): boolean {
   return videoDeck === MANUAL_VIDEO_DECK || selectedSourceDecks.includes(videoDeck) || (acc.longVideoDecks ?? []).includes(videoDeck);
 }
@@ -66,6 +82,10 @@ export function visibleLibraryDeckIds(db: Db): Set<string> {
     ...filterGloballyVisibleBuiltInDecks(db, DECKS).map((deck) => deck.id),
     ...filterGloballyVisibleCustomPacks(db, listAllPacks()).map((pack) => `pack:${pack.id}`),
   ]);
+}
+
+export function canPrepareLibraryForAccount(account: Pick<Account, "status">, requesterIsSuperAdmin: boolean): boolean {
+  return account.status === "connected" || requesterIsSuperAdmin;
 }
 
 export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
@@ -85,6 +105,10 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
   const { isAdminReq } = deps.auth;
   const { deckAllowed, resolveAccountSourceDeck, accountSourceDecks, deckContentLang } = deps.deckAccess;
   const REDIRECT_URI = redirectUri;
+  const rejectIfCannotPrepareLibrary = (req: unknown, reply: LimitedReplyish, acc: Account): boolean => {
+    if (canPrepareLibraryForAccount(acc, deps.auth.isSuperAdminReq(req))) return false;
+    return rejectIfNotConnected(reply, acc);
+  };
 
   const globalVideoFilter = () => ({ includeDecks: [...visibleLibraryDeckIds(db)] });
 
@@ -108,6 +132,139 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
   const visibleVideos = (videos: ReturnType<Db["listVideos"]>) => {
     const visibleDecks = visibleLibraryDeckIds(db);
     return videos.filter((video) => visibleDecks.has(video.deck));
+  };
+
+  const postLibraryVideoNow = async (
+    req: unknown,
+    acc: Account,
+    v: Video,
+    opts: { publishAt?: string | null; rateLimit?: boolean } = {},
+  ): Promise<PostLibraryVideoResult> => {
+    const token = db.getRefreshToken(v.accountId);
+    if (!token) return { ok: false, status: 400, error: "Канал не подключён к YouTube" };
+    // Токен в БД есть, но помечен мёртвым (auth_error) → не пытаемся выкладывать (был бы 500 каждый раз):
+    // канал «отвалился» от YouTube, просим переподключить. setYouTube при переподключении чистит флаг.
+    if (acc.authError)
+      return { ok: false, status: 400, error: "Канал нужно переподключить к YouTube — прежний доступ больше не действует." };
+    const creds = accountCreds(acc);
+    if (!creds) return { ok: false, status: 400, error: "Google-ключ канала не найден — переподключите канал в Настройках" };
+    // HARD source guard: never post a video whose deck is not selected for this channel.
+    if (!canPostVideoDeckForAccount(v.deck, acc, accountSourceDecks(acc)))
+      return { ok: false, status: 400, error: `Пак ролика (${v.deck}) не выбран у канала — не выложено.` };
+    // Burst guard (non-admin): manual posting must not be scriptable into a quota-burning loop.
+    if (opts.rateLimit !== false && !isAdminReq(req)) {
+      const rl = checkRateLimit(`user:${uid(req)}:post-now:window`, POST_NOW_LIMIT);
+      if (!rl.ok) return { ok: false, status: 429, error: "Слишком частые публикации — подождите немного." };
+    }
+    // Daily per-Google-key upload cap (counts REAL uploads, not planned slots): post-now shares the
+    // scheduler's budget so it can't blow the Cloud project's YouTube quota for co-bound channels.
+    const owner = db.getUserById(accountOwnerId(req, acc));
+    const accountCap = accountDailyScheduleCap(owner?.role === "admin", isMgsUser(owner));
+    if (db.uploadsTodayForAccount(acc.id) >= accountCap)
+      return {
+        ok: false,
+        status: 429,
+        error: `Достигнут дневной лимит ${accountCap} публикаций на этот канал — попробуйте завтра.`,
+      };
+    const keyCap = googleKeyDailyScheduleCap(isSuperAdminUser(owner), isMgsUser(owner));
+    if (acc.oauthClientId != null && db.uploadsTodayForKey(acc.oauthClientId) >= keyCap)
+      return {
+        ok: false,
+        status: 429,
+        error: `Достигнут дневной лимит ${keyCap} публикаций на этот Google-ключ — попробуйте позже.`,
+      };
+    // Atomic claim: flip this unposted video to in-flight so a double-click (or the scheduler) can't post it twice.
+    if (!db.claimVideoForPost(v.id))
+      return { ok: false, status: 409, error: "Этот ролик уже публикуется или опубликован — обновите список." };
+    const uploadReservation = db.reserveDailyUploadQuota({
+      accountId: acc.id,
+      oauthClientId: acc.oauthClientId,
+      accountCap,
+      keyCap: acc.oauthClientId != null ? keyCap : null,
+    });
+    if (!uploadReservation.ok) {
+      db.releaseVideoPost(v.id);
+      return {
+        ok: false,
+        status: 429,
+        error:
+          uploadReservation.scope === "account"
+            ? `Достигнут дневной лимит ${uploadReservation.cap} публикаций на этот канал — попробуйте завтра.`
+            : `Достигнут дневной лимит ${uploadReservation.cap} публикаций на этот Google-ключ — попробуйте позже.`,
+      };
+    }
+    let uploadReservationToken: string | null = uploadReservation.token;
+    const publishAt = (opts.publishAt || "").trim() || null;
+    try {
+      const meta = ytMeta(getDeck(v.deck), v.title, v.text);
+      if (v.tags.length) meta.tags = v.tags; // per-video override from the library editor
+      const youtubeId = await metrics.track("upload", () =>
+        uploadShort(creds, REDIRECT_URI, token, {
+          videoPath: resolve(process.cwd(), outputDir, v.videoRel),
+          title: meta.title,
+          description: meta.description,
+          tags: meta.tags,
+          publishAt,
+        }),
+      );
+      db.addHistory({
+        accountId: v.accountId,
+        title: v.title,
+        status: youtubeId ? (publishAt ? "scheduled" : "published") : "failed",
+        youtubeId,
+        videoPath: v.videoRel,
+        publishedAt: publishAt ?? new Date().toISOString(),
+        deck: v.deck,
+        oauthClientId: acc.oauthClientId,
+      });
+      db.releaseDailyUploadReservation(uploadReservation.token);
+      uploadReservationToken = null;
+      if (youtubeId) {
+        db.clearAuthError(v.accountId); // token works → drop any stale "needs reconnect" flag
+        // posted once → remove from the library (files + row) so it never reposts
+        if (isPackDeckId(v.deck)) markPackLibraryVideoUsed(db, accountOwnerId(req, acc), acc.id, v.deck, v, isAdminReq(req));
+        for (const rel of [v.videoRel, v.imageRel]) {
+          if (rel) {
+            try {
+              unlinkSync(resolve(process.cwd(), outputDir, rel));
+            } catch {
+              /* already gone */
+            }
+          }
+        }
+        db.deleteVideo(v.id);
+        cleanupDrainedAutoExpireDecksForAccount(db, acc);
+      } else {
+        db.releaseVideoPost(v.id); // YouTube returned no id → un-claim so it can be retried later
+      }
+      return {
+        ok: true,
+        youtubeId,
+        url: youtubeId ? `https://youtu.be/${youtubeId}` : null,
+        scheduled: !!publishAt,
+        removed: !!youtubeId,
+      };
+    } catch (err) {
+      if (uploadReservationToken) db.releaseDailyUploadReservation(uploadReservationToken);
+      db.releaseVideoPost(v.id); // upload threw → un-claim so the video stays postable
+      app.log.error(err);
+      // Dead/revoked token → flag the channel so /channels shows "needs reconnect", not just history.
+      // First failure (healthy→broken edge) → alert the owner once: inbox + Telegram DM if linked.
+      if (isYtAuthError(err)) {
+        const freshAccount = db.getAccount(v.accountId);
+        const reason = ytErrorReason(err);
+        if (db.markAuthError(v.accountId, reason, new Date().toISOString()) && freshAccount)
+          void notifier.notifyChannelDisconnected(freshAccount, reason);
+      }
+      db.addError({
+        source: "server",
+        message: "Загрузка видео: " + String((err as Error)?.message ?? err),
+        detail: (err as Error)?.stack ?? null,
+        context: `post-now account=${v.accountId} video=${v.id}`,
+        userId: uid(req),
+      });
+      return { ok: false, status: 500, error: "Ошибка загрузки: " + String(err).slice(0, 200) };
+    }
   };
 
   const longDeckIdsForAccount = (acc: Account): string[] => [
@@ -245,7 +402,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     if (!body.accountId || !body.text) return reply.code(400).send({ error: "accountId и text обязательны" });
     const acc = accessibleAccount(req, reply, body.accountId);
     if (!acc) return;
-    if (rejectIfNotConnected(reply, acc)) return;
+    if (rejectIfCannotPrepareLibrary(req, reply as LimitedReplyish, acc)) return;
     const ownerId = accountOwnerId(req, acc);
     const sourceDeckId = resolveAccountSourceDeck(req, reply, acc, body.deck);
     if (!sourceDeckId) return;
@@ -333,7 +490,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     if (!deckId) return reply.code(400).send({ error: "deck обязателен" });
     const acc = accessibleAccount(req, reply, accountId);
     if (!acc) return;
-    if (rejectIfNotConnected(reply, acc)) return;
+    if (rejectIfCannotPrepareLibrary(req, reply as LimitedReplyish, acc)) return;
     if (!enforceGenerationWindow(req, reply as LimitedReplyish, "videos-long", LONG_VIDEO_LIBRARY_LIMIT)) return;
     return runHeavyGenerationLimited(req, reply as LimitedReplyish, "videos-long", async () => {
       const reservation = reserveChannelLibrarySlots(req, reply as LimitedReplyish, acc);
@@ -346,6 +503,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
           ownerId: accountOwnerId(req, acc),
           deckAllowed: (id) => deckAllowed(req, id),
           deckContentLang: (id) => deckContentLang(req, id),
+          allowDisconnected: deps.auth.isSuperAdminReq(req),
         });
       } catch (e) {
         if (e instanceof LongVideoLibraryError) return reply.code(e.statusCode).send({ error: e.message });
@@ -363,7 +521,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     const accountId = body.accountId;
     const acc = accessibleAccount(req, reply, accountId);
     if (!acc) return;
-    if (rejectIfNotConnected(reply, acc)) return;
+    if (rejectIfCannotPrepareLibrary(req, reply as LimitedReplyish, acc)) return;
     if (!enforceGenerationWindow(req, reply as LimitedReplyish, "videos-batch", BATCH_VIDEO_LIMIT)) return;
     return runHeavyGenerationLimited(req, reply as LimitedReplyish, "videos-batch", async () => {
       const ownerId = accountOwnerId(req, acc);
@@ -475,6 +633,24 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     });
   });
 
+  app.post("/api/videos/:id/meta", async (req, reply) => {
+    const v = db.getVideo(Number((req.params as { id: string }).id));
+    if (!v) return reply.code(404).send({ error: "not found" });
+    const acc = accessibleAccount(req, reply, v.accountId);
+    if (!acc) return;
+    const body = (req.body as { title?: unknown; text?: unknown; tags?: unknown }) ?? {};
+    const title = String(body.title ?? "").trim();
+    const text = String(body.text ?? "").trim();
+    const rawTags = Array.isArray(body.tags) ? body.tags : String(body.tags ?? "").split(",");
+    const tags = [...new Set(rawTags.map((tag) => String(tag ?? "").trim().replace(/^#/, "")).filter(Boolean))];
+    if (!title) return reply.code(400).send({ error: "Название не может быть пустым." });
+    if (title.length > 100) return reply.code(400).send({ error: "Название длиннее 100 символов." });
+    if (text.length > 4500) return reply.code(400).send({ error: "Описание длиннее 4500 символов." });
+    // YouTube caps the whole tags field at ~500 chars.
+    if (tags.join(",").length > 480) return reply.code(400).send({ error: "Теги слишком длинные (лимит YouTube ~500 символов)." });
+    return db.updateVideoMeta(v.id, { title, text, tags });
+  });
+
   app.delete("/api/videos/:id", async (req, reply) => {
     const v = db.getVideo(Number((req.params as { id: string }).id));
     if (!v) return reply.code(404).send({ error: "not found" });
@@ -487,133 +663,97 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     return { ok: true };
   });
 
+  app.post("/api/videos/post-now/all", async (req, reply) => {
+    if (!deps.auth.requireSuperAdmin(req, reply)) return;
+    const owner = db.getSuperAdminUser();
+    if (!owner) return reply.code(404).send({ error: "Главный админ не найден." });
+    const accounts = db.listAccountsByUser(owner.id);
+    const items: {
+      accountId: number;
+      channelName: string;
+      videoId?: number;
+      title?: string;
+      status: "published" | "failed" | "skipped";
+      reason?: string;
+      youtubeId?: string | null;
+      url?: string | null;
+    }[] = [];
+
+    for (const acc of accounts) {
+      const channelName = acc.ytChannelTitle || acc.channelName;
+      if (!acc.enabled) {
+        items.push({ accountId: acc.id, channelName, status: "skipped", reason: "Канал выключен." });
+        continue;
+      }
+      const token = db.getRefreshToken(acc.id);
+      if (!token) {
+        items.push({ accountId: acc.id, channelName, status: "skipped", reason: "Канал не подключён к YouTube." });
+        continue;
+      }
+      if (acc.authError) {
+        items.push({ accountId: acc.id, channelName, status: "skipped", reason: "Канал нужно переподключить к YouTube." });
+        continue;
+      }
+      const decks = [...new Set([...accountSourceDecks(acc), MANUAL_VIDEO_DECK].filter(Boolean))];
+      const video = db.nextUnpostedVideoForDecks(acc.id, decks, `bulk-post-now:${new Date().toISOString().slice(0, 10)}:${acc.id}`);
+      if (!video) {
+        items.push({ accountId: acc.id, channelName, status: "skipped", reason: "Нет готового шорта в библиотеке." });
+        continue;
+      }
+      const result = await postLibraryVideoNow(req, acc, video, { rateLimit: false });
+      if (result.ok && result.youtubeId) {
+        items.push({
+          accountId: acc.id,
+          channelName,
+          videoId: video.id,
+          title: video.title,
+          status: "published",
+          youtubeId: result.youtubeId,
+          url: result.url,
+        });
+      } else if (result.ok) {
+        items.push({
+          accountId: acc.id,
+          channelName,
+          videoId: video.id,
+          title: video.title,
+          status: "failed",
+          reason: "YouTube не вернул id ролика.",
+          youtubeId: result.youtubeId,
+          url: result.url,
+        });
+      } else {
+        items.push({
+          accountId: acc.id,
+          channelName,
+          videoId: video.id,
+          title: video.title,
+          status: result.status >= 500 ? "failed" : "skipped",
+          reason: result.error,
+        });
+      }
+    }
+
+    return {
+      ok: true,
+      total: items.length,
+      attempted: items.filter((item) => item.videoId != null).length,
+      published: items.filter((item) => item.status === "published").length,
+      skipped: items.filter((item) => item.status === "skipped").length,
+      failed: items.filter((item) => item.status === "failed").length,
+      items,
+    };
+  });
+
   app.post("/api/videos/:id/post-now", async (req, reply) => {
     const v = db.getVideo(Number((req.params as { id: string }).id));
     if (!v) return reply.code(404).send({ error: "not found" });
     const acc = accessibleAccount(req, reply, v.accountId);
     if (!acc) return;
-    const token = db.getRefreshToken(v.accountId);
-    if (!token) return reply.code(400).send({ error: "Канал не подключён к YouTube" });
-    // Токен в БД есть, но помечен мёртвым (auth_error) → не пытаемся выкладывать (был бы 500 каждый раз):
-    // канал «отвалился» от YouTube, просим переподключить. setYouTube при переподключении чистит флаг.
-    if (acc.authError) return reply.code(400).send({ error: "Канал нужно переподключить к YouTube — прежний доступ больше не действует." });
-    const creds = accountCreds(acc);
-    if (!creds) return reply.code(400).send({ error: "Google-ключ канала не найден — переподключите канал в Настройках" });
-    // HARD source guard: never post a video whose deck is not selected for this channel.
-    if (!canPostVideoDeckForAccount(v.deck, acc, accountSourceDecks(acc)))
-      return reply.code(400).send({ error: `Пак ролика (${v.deck}) не выбран у канала — не выложено.` });
-    // Burst guard (non-admin): manual posting must not be scriptable into a quota-burning loop.
-    if (!isAdminReq(req)) {
-      const rl = checkRateLimit(`user:${uid(req)}:post-now:window`, POST_NOW_LIMIT);
-      if (!rl.ok) {
-        reply.header("Retry-After", String(Math.max(1, Math.ceil((rl.retryAfterMs ?? 1_000) / 1000))));
-        return reply.code(429).send({ error: "Слишком частые публикации — подождите немного." });
-      }
-    }
-    // Daily per-Google-key upload cap (counts REAL uploads, not planned slots): post-now shares the
-    // scheduler's budget so it can't blow the Cloud project's YouTube quota for co-bound channels.
-    const owner = db.getUserById(accountOwnerId(req, acc));
-    const accountCap = accountDailyScheduleCap(owner?.role === "admin", isMgsUser(owner));
-    if (db.uploadsTodayForAccount(acc.id) >= accountCap)
-      return reply
-        .code(429)
-        .send({ error: `Достигнут дневной лимит ${accountCap} публикаций на этот канал — попробуйте завтра.` });
-    const keyCap = googleKeyDailyScheduleCap(isSuperAdminUser(owner), isMgsUser(owner));
-    if (acc.oauthClientId != null && db.uploadsTodayForKey(acc.oauthClientId) >= keyCap)
-      return reply
-        .code(429)
-        .send({ error: `Достигнут дневной лимит ${keyCap} публикаций на этот Google-ключ — попробуйте позже.` });
-    // Atomic claim: flip this unposted video to in-flight so a double-click (or the scheduler) can't post it twice.
-    if (!db.claimVideoForPost(v.id))
-      return reply.code(409).send({ error: "Этот ролик уже публикуется или опубликован — обновите список." });
-    const uploadReservation = db.reserveDailyUploadQuota({
-      accountId: acc.id,
-      oauthClientId: acc.oauthClientId,
-      accountCap,
-      keyCap: acc.oauthClientId != null ? keyCap : null,
-    });
-    if (!uploadReservation.ok) {
-      db.releaseVideoPost(v.id);
-      return reply
-        .code(429)
-        .send({
-          error:
-            uploadReservation.scope === "account"
-              ? `Достигнут дневной лимит ${uploadReservation.cap} публикаций на этот канал — попробуйте завтра.`
-              : `Достигнут дневной лимит ${uploadReservation.cap} публикаций на этот Google-ключ — попробуйте позже.`,
-        });
-    }
-    let uploadReservationToken: string | null = uploadReservation.token;
     // Optional publishAt (RFC3339) → scheduled (private until then); empty → publish now.
     const publishAt = ((req.body as { publishAt?: string })?.publishAt || "").trim() || null;
-    try {
-      const meta = ytMeta(getDeck(v.deck), v.title, v.text);
-      const youtubeId = await metrics.track("upload", () =>
-        uploadShort(creds, REDIRECT_URI, token, {
-          videoPath: resolve(process.cwd(), outputDir, v.videoRel),
-          title: meta.title,
-          description: meta.description,
-          tags: meta.tags,
-          publishAt,
-        }),
-      );
-      db.addHistory({
-        accountId: v.accountId,
-        title: v.title,
-        status: youtubeId ? (publishAt ? "scheduled" : "published") : "failed",
-        youtubeId,
-        videoPath: v.videoRel,
-        publishedAt: publishAt ?? new Date().toISOString(),
-        deck: v.deck,
-        oauthClientId: acc.oauthClientId,
-      });
-      db.releaseDailyUploadReservation(uploadReservation.token);
-      uploadReservationToken = null;
-      if (youtubeId) {
-        db.clearAuthError(v.accountId); // token works → drop any stale "needs reconnect" flag
-        // posted once → remove from the library (files + row) so it never reposts
-        if (isPackDeckId(v.deck)) markPackLibraryVideoUsed(db, accountOwnerId(req, acc), acc.id, v.deck, v, isAdminReq(req));
-        for (const rel of [v.videoRel, v.imageRel]) {
-          if (rel) {
-            try {
-              unlinkSync(resolve(process.cwd(), outputDir, rel));
-            } catch {
-              /* already gone */
-            }
-          }
-        }
-        db.deleteVideo(v.id);
-        cleanupDrainedAutoExpireDecksForAccount(db, acc);
-      } else {
-        db.releaseVideoPost(v.id); // YouTube returned no id → un-claim so it can be retried later
-      }
-      return {
-        ok: true,
-        youtubeId,
-        url: youtubeId ? `https://youtu.be/${youtubeId}` : null,
-        scheduled: !!publishAt,
-        removed: !!youtubeId,
-      };
-    } catch (err) {
-      if (uploadReservationToken) db.releaseDailyUploadReservation(uploadReservationToken);
-      db.releaseVideoPost(v.id); // upload threw → un-claim so the video stays postable
-      app.log.error(err);
-      // Dead/revoked token → flag the channel so /channels shows "needs reconnect", not just history.
-      // First failure (healthy→broken edge) → alert the owner once: inbox + Telegram DM if linked.
-      if (isYtAuthError(err)) {
-        const reason = ytErrorReason(err);
-        const acc = db.getAccount(v.accountId);
-        if (db.markAuthError(v.accountId, reason, new Date().toISOString()) && acc)
-          void notifier.notifyChannelDisconnected(acc, reason);
-      }
-      db.addError({
-        source: "server",
-        message: "Загрузка видео: " + String((err as Error)?.message ?? err),
-        detail: (err as Error)?.stack ?? null,
-        context: `post-now account=${v.accountId} video=${v.id}`,
-        userId: uid(req),
-      });
-      return reply.code(500).send({ error: "Ошибка загрузки: " + String(err).slice(0, 200) });
-    }
+    const result = await postLibraryVideoNow(req, acc, v, { publishAt });
+    if (!result.ok) return reply.code(result.status).send({ error: result.error });
+    return result;
   });
 }

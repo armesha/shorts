@@ -298,6 +298,7 @@ export function applySchema(db: DatabaseSync): void {
     "UPDATE accounts SET avatar = yt_channel_avatar, avatar_source = 'youtube' WHERE yt_channel_avatar IS NOT NULL AND TRIM(yt_channel_avatar) != ''",
   ).run();
   addColumn("videos", "deck TEXT NOT NULL DEFAULT 'ru'");
+  addColumn("videos", "tags TEXT NOT NULL DEFAULT ''"); // comma-separated per-video YouTube tags override ('' = deck tags)
   addColumn("accounts", "user_id INTEGER");
   addColumn("accounts", "oauth_client_id INTEGER"); // which uploaded Google key the channel is bound to
   addColumn("accounts", "auth_error TEXT"); // last OAuth/token rejection → channel surfaced as "needs reconnect"

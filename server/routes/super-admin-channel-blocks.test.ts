@@ -4,6 +4,7 @@ import type { Account, Db, Video } from "../db.ts";
 import type { RouteDeps } from "./deps.ts";
 import {
   BLOCKS,
+  addableLanguageDefsForBlock,
   blockDefaultSourcesForDb,
   planChannelBlockNormalize,
   normalizeSourceWeightSettings,
@@ -77,6 +78,7 @@ function video(id: number, accountId: number, deck: string): Video {
     deck,
     videoRel: "",
     imageRel: null,
+    tags: [],
     postCount: 0,
     lastPostedAt: null,
     createdAt: "",
@@ -108,6 +110,7 @@ test("single block has localized joke and meme sources and retires armen's fact,
     de: ["de", "pack:new-memes-de-superadmin"],
     it: ["it", "pack:new-memes-it-superadmin"],
     es: ["pack:chistes-es-public-domain", "pack:new-memes-es-superadmin"],
+    pl: ["pack:dowcipy-pl-mit", "pack:new-memes-pl-superadmin"],
     fr: ["fr", "pack:new-memes-fr-superadmin"],
     pt: ["pt", "pack:new-memes-pt-superadmin"],
   };
@@ -302,6 +305,16 @@ test("visible thematic languages follow armen's actual channel languages", () =>
   assert.deepEqual(langs, ["ru", "de", "pt"]);
   assert.ok(!langs.includes("hi"));
   assert.ok(!langs.includes("id"));
+});
+
+test("prepared block languages are addable before a first channel exists", () => {
+  const langs = addableLanguageDefsForBlock(db(), "quotes", []).map((lang) => lang.code);
+
+  assert.ok(langs.includes("pl"));
+  assert.ok(langs.includes("ja"));
+  assert.ok(!langs.includes("hi"));
+  assert.ok(!langs.includes("id"));
+  assert.deepEqual(blockDefaultSourcesForDb(db(), "quotes", "pl"), ["pack:dowcipy-pl-mit", "pack:new-memes-pl-superadmin"]);
 });
 
 test("source weight settings are canonicalized and stale groups are pruned", () => {

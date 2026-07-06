@@ -227,6 +227,7 @@ export function startScheduler(opts: SchedulerOpts) {
         }
         uploadReservationToken = uploadReservation.token;
         const meta = ytMeta(getDeck(lib.deck), lib.title, lib.text);
+        if (lib.tags.length) meta.tags = lib.tags; // per-video override from the library editor
         const videoId = await metrics.track("upload", () =>
           uploadShort(creds, opts.redirectUri, token, {
             videoPath: resolve(opts.outputDir, lib.videoRel),

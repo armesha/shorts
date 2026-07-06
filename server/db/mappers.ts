@@ -95,6 +95,7 @@ export const rowToVideo = (r: Row): Video => ({
   deck: r.deck ?? "ru",
   videoRel: r.video_rel,
   imageRel: r.image_rel ?? null,
+  tags: String(r.tags ?? "").split(",").map((t) => t.trim()).filter(Boolean),
   postCount: r.post_count,
   lastPostedAt: r.last_posted_at ?? null,
   createdAt: r.created_at,

@@ -11,7 +11,7 @@ import type {
   PackMusicUploadResult, MusicTrack, StatRow, ChannelTotals, PlatformSummary, StatPoint,
   AdminAnalytics, UserAnalytics, ErrorLogItem, NotificationItem, NotificationCounts, SystemStatus,
   ContentCatalogResponse, AccountReadiness, QueueOverview, LongVideoCatalog, VideoCountsResponse,
-  VideoLibraryKind, VideoLibraryPage, VideoLibrarySort,
+  VideoLibraryKind, VideoLibraryPage, VideoLibrarySort, BulkPostNowResponse,
   ChannelThemeBlockAccount, ChannelThemeBlocksResponse, ChannelThemeBlockGenerateResult,
   ChannelThemeBlockNormalizeResult, ChannelThemeBlockScheduleResult, ChannelThemeBlockSourceGroup,
   AnecdoteTemplateExamplesResponse,
@@ -261,6 +261,8 @@ export const apiClient = {
   uploadVideo: (body: { accountId: number; name: string; type: string; size: number; dataUrl: string; title?: string }) =>
     send<VideoItem>("/videos/upload", "POST", body),
   deleteVideo: (id: number | string) => send<{ ok: boolean }>(`/videos/${id}`, "DELETE"),
+  updateVideoMeta: (id: number | string, body: { title: string; text: string; tags: string[] }) =>
+    send<VideoItem>(`/videos/${id}/meta`, "POST", body),
   batchVideos: (accountId: number | string, count: number, deck?: string) =>
     send<{ created: VideoItem[]; requested: number; made: number; exhausted: boolean }>(
       "/videos/batch",
@@ -281,6 +283,7 @@ export const apiClient = {
       "POST",
       { publishAt },
     ),
+  postOneShortToAllChannels: () => send<BulkPostNowResponse>("/videos/post-now/all", "POST", {}),
   // Statistics: every user sees their own channels; admins may pass scope="all" for all channels.
   // days = analytics window (7/30/90), summarized server-side from stored per-day rows.
   stats: (scope?: "mine" | "all", days?: number) => {
@@ -290,10 +293,10 @@ export const apiClient = {
     const s = qs.toString();
     return get<StatRow[]>(`/stats${s ? "?" + s : ""}`);
   },
-  // Aggregate subscribers/views/videos across visible channels (Мои/Все) — for the dashboard KPIs.
+  // Aggregate subscribers/views/videos across visible channels (Мои/Все) — "Все" is admin-only.
   statsTotals: (scope?: "mine" | "all") =>
     get<ChannelTotals>(`/stats/totals${scope === "all" ? "?scope=all" : ""}`),
-  // Platform-wide production totals, shown to every user on /statistics.
+  // Platform-wide production totals, shown only in admin all-channels views.
   summary: () => get<PlatformSummary>(`/summary`),
   refreshStats: (scope?: "mine" | "all") =>
     send<StatRow[]>(`/stats/refresh${scope === "all" ? "?scope=all" : ""}`, "POST", {}),

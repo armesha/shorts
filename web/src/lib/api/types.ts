@@ -312,6 +312,7 @@ export interface VideoItem {
   deck: string;
   videoRel: string;
   imageRel: string | null;
+  tags: string[];
   postCount: number;
   lastPostedAt: string | null;
   createdAt: string;
@@ -339,6 +340,27 @@ export interface VideoLibraryPage {
   byDeck: Record<string, number>;
   postedTwicePlus: number;
   totalAll: number;
+}
+
+export interface BulkPostNowItem {
+  accountId: number;
+  channelName: string;
+  videoId?: number;
+  title?: string;
+  status: "published" | "failed" | "skipped";
+  reason?: string;
+  youtubeId?: string | null;
+  url?: string | null;
+}
+
+export interface BulkPostNowResponse {
+  ok: boolean;
+  total: number;
+  attempted: number;
+  published: number;
+  skipped: number;
+  failed: number;
+  items: BulkPostNowItem[];
 }
 
 export interface AuthUser {

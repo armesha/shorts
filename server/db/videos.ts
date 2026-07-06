@@ -231,6 +231,16 @@ export function videoMethods(db: DatabaseSync) {
       db.prepare("DELETE FROM videos WHERE id = ?").run(id);
       invalidateReadCache();
     },
+    updateVideoMeta(id: number, meta: { title: string; text: string; tags: string[] }): Video | null {
+      db.prepare("UPDATE videos SET title = ?, text = ?, tags = ? WHERE id = ?").run(
+        meta.title,
+        meta.text,
+        meta.tags.join(","),
+        id,
+      );
+      invalidateReadCache();
+      return this.getVideo(id);
+    },
     // «Бесконечный пак» (infinite-packs): вместо удаления после успешной выкладки возвращаем ролик в
     // очередь (post_count→0), СОХРАНЯЯ файлы и last_posted_at (время этой выкладки). next-unposted
     // сортировка ставит уже выложенные в конец круга (NULL last_posted_at — впереди) → реальные ~50
