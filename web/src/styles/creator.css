@@ -2718,6 +2718,11 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
   gap: 14px;
 }
 
+.creator-wizard-destination-step {
+  display: grid;
+  gap: 14px;
+}
+
 .creator-save-target {
   display: grid;
   gap: 12px;
@@ -3011,6 +3016,132 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
 .creator-cards-panel {
   display: grid;
   gap: 14px;
+}
+
+.creator-template-overview {
+  display: grid;
+  gap: 12px;
+}
+
+.creator-template-overview-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.creator-template-overview-head div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.creator-template-overview-head strong {
+  color: var(--commercial-text);
+  font-size: 0.94rem;
+  font-weight: 850;
+}
+
+.creator-template-overview-head span {
+  color: var(--commercial-muted);
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.creator-template-overview-head .creator-template-overview-count {
+  flex: 0 0 auto;
+  border: 1px solid var(--commercial-line);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--commercial-muted);
+  padding: 4px 10px;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.creator-template-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 10px;
+}
+
+.creator-template-choice {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr) 22px;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 72px;
+  border: 1px solid var(--commercial-line);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--commercial-text);
+  padding: 8px;
+  text-align: left;
+  transition: border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+}
+
+.creator-template-choice:hover {
+  border-color: var(--commercial-line-strong);
+  background: #fafbfc;
+}
+
+.creator-template-choice.is-active {
+  border-color: #151922;
+  background: #fbfcfd;
+  box-shadow: inset 0 0 0 1px #151922;
+}
+
+.creator-template-thumb {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 8px;
+  background: var(--creator-template-image, var(--commercial-soft));
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: var(--commercial-muted);
+  overflow: hidden;
+}
+
+.creator-template-choice-body {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.creator-template-choice-body strong,
+.creator-template-choice-body small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.creator-template-choice-body strong {
+  font-size: 0.84rem;
+  font-weight: 850;
+}
+
+.creator-template-choice-body small {
+  color: var(--commercial-muted);
+  font-size: 0.73rem;
+  font-weight: 700;
+}
+
+.creator-template-choice-check {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  color: #ffffff;
+}
+
+.creator-template-choice.is-active .creator-template-choice-check {
+  background: #151922;
 }
 
 .creator-adder-head {
@@ -3331,6 +3462,22 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
   padding: 1px 8px;
   font-size: 0.68rem;
   font-weight: 800;
+}
+
+.creator-card-tile-template {
+  position: absolute;
+  right: 10px;
+  top: 12px;
+  max-width: calc(100% - 66px);
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  color: var(--commercial-text);
+  padding: 1px 8px;
+  font-size: 0.67rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .creator-card-tile-actions {

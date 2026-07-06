@@ -5,7 +5,7 @@
 // module only provides the cookie writers + session/impersonation lookups the routes need. index.ts
 // builds ONE instance via makeAuthSession(db) and threads the pieces into each route module's `deps`.
 import type { Db } from "../db.ts";
-import { isSuperAdminUser, SESSION_TTL_DAYS } from "../auth.ts";
+import { isAdminLikeUser, isAdminRole, isSuperAdminUser, SESSION_TTL_DAYS } from "../auth.ts";
 
 export const SESSION_COOKIE = "sid";
 export const ADMIN_SESSION_COOKIE = "admin_sid";
@@ -90,8 +90,10 @@ export interface AuthSession {
     impersonator: SessionUser | null;
   };
   requireAdmin: (req: unknown, reply: Replyish) => boolean;
+  requireAdminLike: (req: unknown, reply: Replyish) => boolean;
   requireSuperAdmin: (req: unknown, reply: Replyish) => boolean;
   isAdminReq: (req: unknown) => boolean;
+  isAdminLikeReq: (req: unknown) => boolean;
   isSuperAdminReq: (req: unknown) => boolean;
 }
 
@@ -109,7 +111,7 @@ export function makeAuthSession(db: Db): AuthSession {
   function impersonatorUser(req: unknown): SessionUser | null {
     const currentId = (req as { userId?: number }).userId ?? null;
     const admin = validSessionUser(getCookie(req as { headers: { cookie?: string } }, ADMIN_SESSION_COOKIE));
-    if (!admin || admin.role !== "admin" || admin.id === currentId) return null;
+    if (!admin || !isAdminRole(admin.role) || admin.id === currentId) return null;
     return admin;
   }
 
@@ -126,15 +128,28 @@ export function makeAuthSession(db: Db): AuthSession {
 
   function requireAdmin(req: unknown, reply: Replyish): boolean {
     const u = db.getUserById(uid(req));
-    if (u?.role !== "admin") {
+    if (!isAdminRole(u?.role)) {
       reply.code(403).send({ error: "Только для администратора" });
       return false;
     }
     return true;
   }
 
+  function requireAdminLike(req: unknown, reply: Replyish): boolean {
+    const u = db.getUserById(uid(req));
+    if (!isAdminLikeUser(u)) {
+      reply.code(403).send({ error: "Только для администратора или модератора" });
+      return false;
+    }
+    return true;
+  }
+
   function isAdminReq(req: unknown): boolean {
-    return db.getUserById(uid(req))?.role === "admin";
+    return isAdminRole(db.getUserById(uid(req))?.role);
+  }
+
+  function isAdminLikeReq(req: unknown): boolean {
+    return isAdminLikeUser(db.getUserById(uid(req)));
   }
 
   function requireSuperAdmin(req: unknown, reply: Replyish): boolean {
@@ -150,5 +165,15 @@ export function makeAuthSession(db: Db): AuthSession {
     return isSuperAdminUser(db.getUserById(uid(req)));
   }
 
-  return { validSessionUser, impersonatorUser, publicUser, requireAdmin, requireSuperAdmin, isAdminReq, isSuperAdminReq };
+  return {
+    validSessionUser,
+    impersonatorUser,
+    publicUser,
+    requireAdmin,
+    requireAdminLike,
+    requireSuperAdmin,
+    isAdminReq,
+    isAdminLikeReq,
+    isSuperAdminReq,
+  };
 }

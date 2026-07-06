@@ -1,11 +1,12 @@
 // Вкладка «Карточки» проекта: выбор шаблона, добавление по одной, массовый импорт из текста/файла
 // (формат «заголовок + текст», разделитель — пустая строка; или JSON) и сетка карточек.
-import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type ChangeEvent, type CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   Check,
   Eye,
   FileUp,
+  LayoutTemplate,
   Loader2,
   Pencil,
   Plus,
@@ -23,7 +24,7 @@ import {
   type ImportedCard,
   limitsFromTemplate,
 } from "./importCards";
-import { cardAddedAt, cardTitleText, packCardItems } from "./model";
+import { cardAddedAt, cardTitleText, creatorServiceAssetUrl, cssUrl, firstTemplateImageSrc, packCardItems } from "./model";
 import type { CreatorPack, CreatorRecord } from "./types";
 
 export type CardsOps = {
@@ -40,6 +41,7 @@ export function CardsPanel({
   ops,
   busy,
   onCreateTemplate,
+  initialTemplateIndex = 0,
 }: {
   pack: CreatorPack;
   limits: CardLimits;
@@ -47,17 +49,34 @@ export function CardsPanel({
   ops: CardsOps;
   busy: string | null;
   onCreateTemplate: () => void;
+  initialTemplateIndex?: number;
 }) {
   const { t } = useT();
   const cards = packCardItems(pack);
   const [adderMode, setAdderMode] = useState<"single" | "bulk">("single");
   const templates = useMemo(() => (Array.isArray(pack.templates) ? pack.templates : []), [pack.templates]);
-  const [templateIndex, setTemplateIndex] = useState(0);
+  const initialTemplateIndexRef = useRef<number | null>(null);
+  const [templateIndex, setTemplateIndex] = useState(() => cleanTemplateIndex(initialTemplateIndex, Math.max(1, templates.length)));
   const selectedTemplate = templates[templateIndex] ?? templates[0] ?? null;
   const selectedLimits = useMemo(
     () => (selectedTemplate ? limitsFromTemplate(selectedTemplate) : limits),
     [limits, selectedTemplate],
   );
+  const templateCounts = useMemo(() => {
+    const counts = Array.from({ length: templates.length }, () => 0);
+    cards.forEach((card, index) => {
+      const nextIndex = cardTemplateIndex(card, index, templates.length);
+      if (counts[nextIndex] !== undefined) counts[nextIndex] += 1;
+    });
+    return counts;
+  }, [cards, templates.length]);
+
+  useEffect(() => {
+    const nextIndex = cleanTemplateIndex(initialTemplateIndex, Math.max(1, templates.length));
+    if (initialTemplateIndexRef.current === nextIndex) return;
+    initialTemplateIndexRef.current = nextIndex;
+    setTemplateIndex(nextIndex);
+  }, [initialTemplateIndex, templates.length]);
 
   useEffect(() => {
     if (templateIndex >= templates.length) setTemplateIndex(Math.max(0, templates.length - 1));
@@ -74,13 +93,53 @@ export function CardsPanel({
             {t("creator.createTemplate")}
           </button>
         </section>
-        <CardsGrid pack={pack} cards={cards} limits={limits} styling={styling} ops={ops} busy={busy} />
+        <CardsGrid pack={pack} cards={cards} limits={limits} styling={styling} ops={ops} busy={busy} templates={templates} />
       </div>
     );
   }
 
   return (
     <div className="creator-cards-panel">
+      <section className="creator-card creator-template-overview" aria-label={t("creator.templatesInPack")}>
+        <div className="creator-template-overview-head">
+          <div>
+            <strong>{t("creator.templatesInPack")}</strong>
+            <span>{t("creator.templatesInPackHint")}</span>
+          </div>
+          <span className="creator-template-overview-count">{t("creator.templatesCount", { count: templates.length })}</span>
+        </div>
+        <div className="creator-template-list">
+          {templates.map((template, index) => {
+            const name = templateName(template, index, t);
+            const imageUrl = templatePreviewUrl(template);
+            const style = imageUrl
+              ? ({ "--creator-template-image": `url("${cssUrl(imageUrl)}")` } as CSSProperties)
+              : undefined;
+            const active = index === templateIndex;
+            return (
+              <button
+                key={index}
+                type="button"
+                className={`creator-template-choice ${active ? "is-active" : ""}`}
+                onClick={() => setTemplateIndex(index)}
+                aria-pressed={active}
+              >
+                <span className="creator-template-thumb" style={style} aria-hidden="true">
+                  {!imageUrl && <LayoutTemplate size={19} />}
+                </span>
+                <span className="creator-template-choice-body">
+                  <strong>{name}</strong>
+                  <small>{t("creator.templateCardCount", { count: templateCounts[index] ?? 0 })}</small>
+                </span>
+                <span className="creator-template-choice-check" aria-hidden="true">
+                  {active && <Check size={14} />}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
       <section className="creator-card creator-adder-card">
         <div className="creator-template-picker">
           <label>
@@ -137,9 +196,30 @@ export function CardsPanel({
         )}
       </section>
 
-      <CardsGrid pack={pack} cards={cards} limits={selectedLimits} styling={styling} ops={ops} busy={busy} />
+      <CardsGrid pack={pack} cards={cards} limits={selectedLimits} styling={styling} ops={ops} busy={busy} templates={templates} />
     </div>
   );
+}
+
+function cleanTemplateIndex(value: unknown, templateCount: number): number {
+  const index = Math.floor(Number(value));
+  if (!Number.isInteger(index) || index < 0) return 0;
+  return Math.min(index, Math.max(0, templateCount - 1));
+}
+
+function cardTemplateIndex(card: CreatorRecord, cardIndex: number, templateCount: number): number {
+  if (templateCount <= 0) return 0;
+  const stored = Number(card.templateIndex);
+  if (Number.isInteger(stored) && stored >= 0 && stored < templateCount) return stored;
+  return cardIndex % templateCount;
+}
+
+function templateName(template: unknown, index: number, t: (key: string, vars?: Record<string, string | number>) => string): string {
+  return String((template as CreatorRecord)?.name ?? "").trim() || t("creator.templateFallbackName", { n: index + 1 });
+}
+
+function templatePreviewUrl(template: unknown): string {
+  return creatorServiceAssetUrl(firstTemplateImageSrc([template]));
 }
 
 function CharCounter({ value, max }: { value: number; max: number }) {
@@ -383,6 +463,7 @@ function CardsGrid({
   styling,
   ops,
   busy,
+  templates,
 }: {
   pack: CreatorPack;
   cards: CreatorRecord[];
@@ -390,6 +471,7 @@ function CardsGrid({
   styling: MiniCardStyling;
   ops: CardsOps;
   busy: string | null;
+  templates: unknown[];
 }) {
   const { t } = useT();
   const [editIndex, setEditIndex] = useState<number | null>(null);
@@ -426,12 +508,15 @@ function CardsGrid({
       <div className="creator-cards-grid">
         {cards.map((card, index) => {
           const { title, text } = cardTitleText(card);
+          const templateIndex = cardTemplateIndex(card, index, templates.length);
+          const name = templates[templateIndex] ? templateName(templates[templateIndex], templateIndex, t) : "";
           return (
             <article className="creator-card-tile" key={`${cardAddedAt(card)}-${index}`}>
               <button type="button" className="creator-card-tile-preview" onClick={() => setEditIndex(index)} title={t("creator.editCard")}>
                 <MiniCard styling={styling} title={title} text={text} />
               </button>
               <span className="creator-card-tile-number">#{index + 1}</span>
+              {name && <span className="creator-card-tile-template" title={name}>{name}</span>}
               <div className="creator-card-tile-actions">
                 <button type="button" title={t("creator.previewRender")} aria-label={t("creator.previewRender")} onClick={() => void openPreview(index)} disabled={busy !== null}>
                   <Eye size={14} />

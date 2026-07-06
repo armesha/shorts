@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { apiClient, type QueueJob, type QueueOverview } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { isAdminLike, isAdminRole } from "../lib/authz";
 import { useT } from "../lib/i18n";
 
 const activeStates = new Set(["queued", "running"]);
@@ -37,7 +38,8 @@ function formatAgeMs(ageMs: number | null): string {
 export default function QueuePage() {
   const { t } = useT();
   const { user } = useAuth();
-  const isAdmin = user?.role === "admin";
+  const canViewAll = isAdminLike(user);
+  const canCancelAny = isAdminRole(user);
   const [scope, setScope] = useState<"mine" | "all">("mine");
   const [channelPage, setChannelPage] = useState(1);
   const [data, setData] = useState<QueueOverview | null>(null);
@@ -87,8 +89,12 @@ export default function QueuePage() {
   const cancelJob = async (jobId: string) => {
     setCanceling(jobId);
     try {
-      await apiClient.cancelGen(jobId);
+      setError(null);
+      const result = await apiClient.cancelGen(jobId);
+      if (!result.ok) setError(t("queue.cancelFailed"));
       await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
     } finally {
       setCanceling(null);
     }
@@ -102,7 +108,7 @@ export default function QueuePage() {
             <h1 className="text-3xl font-black">{t("queue.title")}</h1>
           </div>
           <div className="flex flex-wrap gap-2">
-            {isAdmin && (
+            {canViewAll && (
               <div className="join">
                 <button className={`btn join-item btn-sm ${scope === "mine" ? "btn-primary" : "btn-ghost"}`} onClick={() => setScope("mine")}>
                   {t("queue.scopeMine")}
@@ -167,13 +173,16 @@ export default function QueuePage() {
                         {job.state} · {job.done}/{job.total} · {job.deckIds?.join(", ") || t("queue.channelSources")}
                       </div>
                     </div>
-                    <button
-                      className={`btn btn-xs btn-outline ${canceling === job.id ? "loading" : ""}`}
-                      disabled={canceling === job.id}
-                      onClick={() => void cancelJob(job.id)}
-                    >
-                      {t("queue.cancel")}
-                    </button>
+                    {(canCancelAny || job.userId === user?.id) && (
+                      <button
+                        className={`btn btn-xs btn-outline btn-error ${canceling === job.id ? "loading" : ""}`}
+                        disabled={canceling === job.id}
+                        title={t("queue.cancelTitle")}
+                        onClick={() => void cancelJob(job.id)}
+                      >
+                        {canceling === job.id ? t("queue.canceling") : t("queue.cancel")}
+                      </button>
+                    )}
                   </div>
                   <progress className="progress progress-primary mt-4 w-full" max={100} value={pct(job)} />
                   <div className="mt-2 text-xs text-base-content/50">

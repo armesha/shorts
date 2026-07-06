@@ -3,7 +3,7 @@
 // Handlers moved VERBATIM from index.ts.
 import type { FastifyInstance } from "fastify";
 import type { Db } from "../db.ts";
-import { hashPassword, isSuperAdminUser, newSessionToken, SESSION_TTL_DAYS } from "../auth.ts";
+import { hashPassword, isAdminRole, isSuperAdminUser, newSessionToken, normalizeUserRole, SESSION_TTL_DAYS } from "../auth.ts";
 import { DECKS, deckLang } from "../../src/anecdotes/decks.ts";
 import { listAllPacks, setGrant, setPackOwners, getPack, canAccess } from "../../src/packs/store.ts";
 import { libraryStats, deckAnecdoteKeys } from "../../src/anecdotes/library.ts";
@@ -33,7 +33,7 @@ import {
 import type { RouteDeps } from "./deps.ts";
 
 export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
-  const { requireAdmin, requireSuperAdmin } = deps.auth;
+  const { requireAdmin, requireAdminLike, requireSuperAdmin } = deps.auth;
   const { emitNotificationChange } = deps.notifier;
   const { isGrantableBuiltinDeck, isGrantableBuiltinDeckId, builtinDeckVisibleForUser, visibleDecksForUser } =
     deps.deckAccess;
@@ -66,7 +66,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
 
   // ---- Admin: user management (admin creates accounts for friends) ----
   app.get("/api/admin/users", async (req, reply) => {
-    if (!requireAdmin(req, reply)) return;
+    if (!requireAdminLike(req, reply)) return;
     return db.listUsers().map((u) => ({
       id: u.id,
       username: u.username,
@@ -82,10 +82,10 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const body = (req.body as { username?: string; password?: string; role?: string; hidden?: string[] }) ?? {};
     const username = (body.username ?? "").trim();
     const password = body.password ?? "";
-    const role = body.role === "admin" ? "admin" : "user";
+    const role = normalizeUserRole(body.role);
     const isSuperAdmin = deps.auth.isSuperAdminReq(req);
-    if (role === "admin" && !isSuperAdmin) {
-      return reply.code(403).send({ error: "Роль админа может выдавать только главный администратор" });
+    if ((role === "admin" || role === "moder") && !isSuperAdmin) {
+      return reply.code(403).send({ error: "Роли админа и модера может выдавать только главный администратор" });
     }
     if (!isSuperAdmin && Array.isArray(body.hidden) && body.hidden.length > 0) {
       return reply.code(403).send({ error: "Паки нового пользователя может настраивать только главный администратор" });
@@ -95,12 +95,13 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     if (db.listUsers().some((u) => u.username.trim().toLowerCase() === username.toLowerCase()))
       return reply.code(409).send({ error: "Такой логин уже есть" });
     const u = db.createUser({ username, passHash: hashPassword(password), role });
-    // Optionally hide some packs for the new user from the start (admins are never restricted).
-    if (role !== "admin" && Array.isArray(body.hidden)) {
+    // Optionally hide some packs for a regular new user from the start. Moderator is a read-only
+    // visual role, not a pack preset target.
+    if (role === "user" && Array.isArray(body.hidden)) {
       const valid = body.hidden.filter((id) => DECKS.some((d) => d.id === id && !isGrantableBuiltinDeck(d)));
       if (valid.length) db.setHiddenDecks(u.id, valid);
     }
-    if (role !== "admin") grantDefaultRegisteredUserDecks(db, u.id);
+    if (role === "user") grantDefaultRegisteredUserDecks(db, u.id);
     return { id: u.id, username: u.username, role: u.role, isSuperAdmin: isSuperAdminUser(u) };
   });
 
@@ -109,7 +110,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const targetId = Number((req.params as { id: string }).id);
     const target = db.getUserById(targetId);
     if (!target) return reply.code(404).send({ error: "Пользователь не найден" });
-    const role = (req.body as { role?: string } | null)?.role === "admin" ? "admin" : "user";
+    const role = normalizeUserRole((req.body as { role?: string } | null)?.role);
     if (isSuperAdminUser(target) && role !== "admin") {
       return reply.code(400).send({ error: "Супер-админа нельзя понизить" });
     }
@@ -436,7 +437,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     // Встроенные деки: видимые юзеру ИЛИ уже использованные (чтобы ничего сбрасываемого не пряталось).
     for (const d of DECKS) {
       if (!isBuiltInDeckGloballyVisible(db, d)) continue;
-      const visible = target.role === "admin" || builtinDeckVisibleForUser(id, d);
+      const visible = isAdminRole(target.role) || builtinDeckVisibleForUser(id, d);
       const s = libraryStats(d.id, usedKeys);
       if (!visible && s.used === 0) continue;
       items.push({ id: d.id, name: d.name, pack: false, total: s.total, used: s.used, available: s.available });

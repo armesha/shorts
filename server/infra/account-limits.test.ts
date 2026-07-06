@@ -15,6 +15,7 @@ import {
   channelLibraryLimitError,
   channelLibraryVideoCap,
   dailyScheduleLimitError,
+  describeShortsSchedulePolicy,
   forbiddenSuperAdminScheduleTimes,
   googleKeyDailyScheduleCap,
   isMgsUser,
@@ -91,4 +92,11 @@ test("super admin schedule window starts at 08:00", () => {
   assert.equal(isSuperAdminScheduleTimeAllowed("08:00"), true);
   assert.equal(isSuperAdminScheduleTimeAllowed("23:59"), true);
   assert.deepEqual(forbiddenSuperAdminScheduleTimes(["00:00", "07:59", "08:00", "12:00"]), ["00:00", "07:59"]);
+});
+
+test("polish channels use dedicated Warsaw shorts windows", () => {
+  assert.equal(
+    describeShortsSchedulePolicy("pl"),
+    "PL (Poland / PL, Europe/Warsaw): постить 09:30-11:00, 12:00-14:00, 17:30-22:00; не постить 00:00-08:59, 22:30-23:59",
+  );
 });

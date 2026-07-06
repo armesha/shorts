@@ -16,7 +16,14 @@ import {
   listStatuses as genListStatuses,
 } from "../services/gen-queue.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
-import { accountDailyScheduleCap, googleKeyDailyScheduleCap, isMgsUser, SUPER_ADMIN_SCHEDULE_START_HOUR } from "../infra/account-limits.ts";
+import {
+  accountDailyScheduleCap,
+  googleKeyDailyScheduleCap,
+  isMgsUser,
+  shortsScheduleWindowsForLanguage,
+  SUPER_ADMIN_SCHEDULE_START_HOUR,
+  type ScheduleWindow,
+} from "../infra/account-limits.ts";
 import { cleanSuperAdminSourceDecks, isForbiddenSuperAdminSourceDeck } from "../services/super-admin-optical-decks.ts";
 import {
   availableUnusedForDecks as availableUnusedForDecksBatched,
@@ -32,6 +39,7 @@ const BLOCK_LANGS = [
   { code: "en", label: "EN" },
   { code: "it", label: "IT" },
   { code: "es", label: "ES" },
+  { code: "pl", label: "PL" },
   { code: "de", label: "DE" },
   { code: "fr", label: "FR" },
   { code: "pt", label: "PT" },
@@ -62,6 +70,7 @@ const JOKE_TEXT_DECK_BY_LANG: Record<string, string[]> = {
   de: ["de"],
   it: ["it"],
   es: ["pack:chistes-es-public-domain"],
+  pl: ["pack:dowcipy-pl-mit"],
   fr: ["fr"],
   en: ["en"],
   pt: ["pt"],
@@ -78,6 +87,7 @@ const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
   fr: ["pack:new-memes-fr-superadmin"],
   en: ["pack:new-memes-en-superadmin"],
   es: ["pack:new-memes-es-superadmin"],
+  pl: ["pack:new-memes-pl-superadmin"],
   pt: ["pack:new-memes-pt-superadmin"],
   ar: ["pack:new-memes-ar-superadmin"],
   ja: ["pack:new-memes-ja-superadmin"],
@@ -402,6 +412,12 @@ export function blockDefaultSourcesForDb(db: Db, blockId: string, lang: string):
   return [];
 }
 
+function hasCompletePreparedDefaultsForBlock(db: Db, blockId: string, lang: string): boolean {
+  const canonical = canonicalBlockId(blockId);
+  const groups = sourceGroupsForBlock(canonical).filter((group) => !isAutoExpiredSourceGroup(db, canonical, group.id));
+  return groups.length > 0 && groups.every((group) => (group.sources[lang] ?? []).length > 0);
+}
+
 function sameDeckSet(a: string[], b: string[]): boolean {
   if (a.length !== b.length) return false;
   const aa = [...a].sort();
@@ -428,15 +444,10 @@ export function visibleLanguageDefsForAccounts(accounts: Array<Pick<Account, "ch
   return BLOCK_LANGS.filter((lang) => active.has(lang.code));
 }
 
-/**
- * Languages to expose for a block: those already used by a channel PLUS those with prepared default
- * sources (anecdotes/memes) even if no channel exists yet. The latter drives the "add a new language"
- * picker — otherwise a freshly-prepared language (e.g. JA) could never get its first channel.
- */
-function addableLanguageDefsForBlock(db: Db, blockId: string, accounts: Array<Pick<Account, "channelLang" | "lang">>): BlockLangDef[] {
+export function addableLanguageDefsForBlock(db: Db, blockId: string, accounts: Array<Pick<Account, "channelLang" | "lang">>): BlockLangDef[] {
   const active = new Set(visibleLanguageDefsForAccounts(accounts).map((lang) => lang.code));
   return BLOCK_LANGS.filter(
-    (lang) => active.has(lang.code) || blockDefaultSourcesForDb(db, blockId, lang.code).length > 0,
+    (lang) => active.has(lang.code) || hasCompletePreparedDefaultsForBlock(db, blockId, lang.code),
   );
 }
 
@@ -1079,8 +1090,6 @@ function buildPayload(db: Db, deps: RouteDeps) {
   normalizeSourceWeightSettings(db);
   cleanupDrainedAutoExpireDecksForUser(db, ownerId);
   const accounts = db.listAccountsByUser(ownerId);
-  // Expose every language that has a channel OR has prepared default sources in any block, so a
-  // freshly-prepared language (e.g. JA) is addable before it has its first channel.
   const languageCodes = new Set<string>(visibleLanguageDefsForAccounts(accounts).map((lang) => lang.code));
   for (const block of BLOCKS) {
     for (const lang of addableLanguageDefsForBlock(db, block.id, accounts)) languageCodes.add(lang.code);
@@ -1423,17 +1432,37 @@ function toMin(time: string): number {
   return h * 60 + m;
 }
 
-type ScheduleWindow = { startMinute: number; endMinute: number };
 const FULL_DAY_SCHEDULE_WINDOW: ScheduleWindow = { startMinute: 0, endMinute: 1440 };
 const SUPER_ADMIN_SCHEDULE_WINDOW: ScheduleWindow = { startMinute: SUPER_ADMIN_SCHEDULE_START_HOUR * 60, endMinute: 1440 };
 
-function randomDayTimes(n: number, avoid: Set<number> = new Set(), window = FULL_DAY_SCHEDULE_WINDOW): string[] {
+function normalizeScheduleWindows(windows: ScheduleWindow | ScheduleWindow[]): ScheduleWindow[] {
+  const list = Array.isArray(windows) ? windows : [windows];
+  return list.filter((window) => window.endMinute > window.startMinute);
+}
+
+function countsByWindow(n: number, windows: ScheduleWindow[]): number[] {
+  const weights = windows.map((window) => Math.max(1, window.endMinute - window.startMinute) * Math.max(0.1, window.weight ?? 1));
+  const total = weights.reduce((sum, weight) => sum + weight, 0);
+  const exact = weights.map((weight) => (n * weight) / total);
+  const counts = exact.map(Math.floor);
+  let remaining = n - counts.reduce((sum, count) => sum + count, 0);
+  const order = exact
+    .map((value, index) => ({ index, rest: value - Math.floor(value) }))
+    .sort((a, b) => b.rest - a.rest);
+  for (const item of order) {
+    if (remaining <= 0) break;
+    counts[item.index] += 1;
+    remaining -= 1;
+  }
+  return counts;
+}
+
+function randomWindowTimes(n: number, avoid: Set<number>, used: Set<number>, window: ScheduleWindow): number[] {
   if (n <= 0) return [];
   const windowMinutes = Math.max(1, window.endMinute - window.startMinute);
   const interval = windowMinutes / n;
   const phase = window.startMinute + Math.random() * interval;
   const jitter = Math.min(interval * 0.35, 20);
-  const used = new Set<number>();
   const mins: number[] = [];
   for (let i = 0; i < n; i++) {
     let m = Math.round(phase + i * interval + (Math.random() * 2 - 1) * jitter);
@@ -1447,6 +1476,16 @@ function randomDayTimes(n: number, avoid: Set<number> = new Set(), window = FULL
     used.add(m);
     mins.push(m);
   }
+  return mins;
+}
+
+function randomDayTimes(n: number, avoid: Set<number> = new Set(), windows: ScheduleWindow | ScheduleWindow[] = FULL_DAY_SCHEDULE_WINDOW): string[] {
+  if (n <= 0) return [];
+  const normalized = normalizeScheduleWindows(windows);
+  if (!normalized.length) return randomDayTimes(n, avoid, SUPER_ADMIN_SCHEDULE_WINDOW);
+  const counts = countsByWindow(n, normalized);
+  const used = new Set<number>();
+  const mins = normalized.flatMap((window, index) => randomWindowTimes(counts[index] ?? 0, avoid, used, window));
   return mins
     .sort((a, b) => a - b)
     .map((m) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`);
@@ -1642,7 +1681,8 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
           continue;
         }
       }
-      const schedule = randomDayTimes(perDay, taken, ownerIsSuperAdmin ? SUPER_ADMIN_SCHEDULE_WINDOW : FULL_DAY_SCHEDULE_WINDOW);
+      const scheduleWindows = ownerIsSuperAdmin ? shortsScheduleWindowsForLanguage(account.channelLang || account.lang) : FULL_DAY_SCHEDULE_WINDOW;
+      const schedule = randomDayTimes(perDay, taken, scheduleWindows);
       for (const time of schedule) taken.add(toMin(time));
       const sourceDecks = cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account));
       const queuedByDeck = videosByDeck(db.listVideos(account.id));

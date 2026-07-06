@@ -1,6 +1,6 @@
 import type { AppIconName } from "../AppIcon";
 import type { AuthUser } from "../../lib/api";
-import { isMainAdmin } from "../../lib/authz";
+import { isAdminLike, isAdminRole, isMainAdmin } from "../../lib/authz";
 
 export const PINNED_NAV_STORAGE_KEY = "sidebarPinnedNavItems";
 export const HIDDEN_NAV_STORAGE_KEY = "sidebarHiddenNavItems";
@@ -11,6 +11,7 @@ export type NavItem = {
   icon: AppIconName;
   end: boolean;
   adminOnly?: boolean;
+  staffOnly?: boolean;
   superOnly?: boolean;
   adminBadge?: boolean;
   userOnly?: boolean;
@@ -22,10 +23,10 @@ export const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
     labelKey: "layout.groupWork",
     items: [
       { to: "/channels", labelKey: "nav.channels", icon: "accounts", end: false, userOnly: true },
-      { to: "/channels", labelKey: "nav.channels", icon: "accounts", end: false, adminOnly: true },
+      { to: "/channels", labelKey: "nav.channels", icon: "accounts", end: false, staffOnly: true },
       { to: "/overview", labelKey: "nav.overview", icon: "home", end: false, adminOnly: true, adminBadge: true },
       { to: "/studio", labelKey: "nav.studio", icon: "studio", end: false },
-      { to: "/queue", labelKey: "nav.queue", icon: "queue", end: false, adminOnly: true, adminBadge: true },
+      { to: "/queue", labelKey: "nav.queue", icon: "queue", end: false, staffOnly: true, adminBadge: true },
       { to: "/history", labelKey: "nav.history", icon: "history", end: false },
       { to: "/clip-demos", labelKey: "nav.clipdemos", icon: "clips", end: false, clipDemos: true },
     ],
@@ -65,9 +66,9 @@ export const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
   },
 ];
 export const ADMIN_BOTTOM_NAV: NavItem[] = [
-  { to: "/channels", labelKey: "nav.channels", icon: "accounts", end: false },
-  { to: "/overview", labelKey: "nav.overview", icon: "home", end: false, adminBadge: true },
-  { to: "/queue", labelKey: "nav.queue", icon: "queue", end: false },
+  { to: "/channels", labelKey: "nav.channels", icon: "accounts", end: false, staffOnly: true },
+  { to: "/overview", labelKey: "nav.overview", icon: "home", end: false, adminOnly: true, adminBadge: true },
+  { to: "/queue", labelKey: "nav.queue", icon: "queue", end: false, staffOnly: true },
   { to: "/statistics", labelKey: "nav.statistics", icon: "analytics", end: false },
   { to: "/history", labelKey: "nav.history", icon: "history", end: false },
 ];
@@ -79,11 +80,12 @@ export const USER_BOTTOM_NAV: NavItem[] = [
 ];
 
 export function canSeeNav(item: NavItem, user: AuthUser, ctx?: { hasClipDemos?: boolean }): boolean {
-  if (item.adminOnly && user.role !== "admin") return false;
+  if (item.adminOnly && !isAdminRole(user)) return false;
+  if (item.staffOnly && !isAdminLike(user)) return false;
   if (item.superOnly && !isMainAdmin(user)) return false;
-  if (item.userOnly && user.role === "admin") return false;
+  if (item.userOnly && isAdminLike(user)) return false;
   // clip-demos: visible to all, but hidden for non-admins with no accessible packs.
-  if (item.clipDemos && user.role !== "admin" && !ctx?.hasClipDemos) return false;
+  if (item.clipDemos && !isAdminLike(user) && !ctx?.hasClipDemos) return false;
   return true;
 }
 

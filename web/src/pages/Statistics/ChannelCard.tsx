@@ -52,21 +52,36 @@ export function ChannelCard({ row, isAdmin, avatar, days }: { row: StatRow; isAd
     : row.latest
       ? t("stats.updatedAgo", { ago: timeAgo(row.latest.takenAt, t) })
       : t("stats.noSnapshots");
+  const youtubeUrl = row.ytChannelId ? `https://www.youtube.com/channel/${row.ytChannelId}` : null;
+  const avatarNode = avatar ? (
+    <img
+      src={avatar}
+      alt=""
+      className="w-11 h-11 rounded-full object-cover border border-base-300 bg-base-200 shrink-0"
+    />
+  ) : (
+    <div className="bg-primary/10 text-primary rounded-full w-11 h-11 flex items-center justify-center shrink-0">
+      <AppIcon name="analytics" size={20} />
+    </div>
+  );
 
   return (
     <div className="card bg-base-100 border border-base-300">
       <div className="card-body gap-4">
         <div className="flex items-center gap-3 flex-wrap">
-          {avatar ? (
-            <img
-              src={avatar}
-              alt=""
-              className="w-11 h-11 rounded-full object-cover border border-base-300 bg-base-200 shrink-0"
-            />
+          {youtubeUrl ? (
+            <a
+              href={youtubeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 rounded-full transition hover:opacity-80"
+              title={t("stats.openOnYoutube")}
+              aria-label={t("stats.openOnYoutube")}
+            >
+              {avatarNode}
+            </a>
           ) : (
-            <div className="bg-primary/10 text-primary rounded-full w-11 h-11 flex items-center justify-center shrink-0">
-              <AppIcon name="analytics" size={20} />
-            </div>
+            avatarNode
           )}
           <div className="flex-1 min-w-0">
             <div className="font-semibold truncate">{title}</div>
@@ -85,11 +100,11 @@ export function ChannelCard({ row, isAdmin, avatar, days }: { row: StatRow; isAd
           ) : !row.connected ? (
             <span className="badge badge-warning badge-sm">{t("stats.badgeNotConnected")}</span>
           ) : (
-            row.ytChannelId && (
+            youtubeUrl && (
               <a
-                href={`https://www.youtube.com/channel/${row.ytChannelId}`}
+                href={youtubeUrl}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="btn btn-ghost btn-xs text-error"
                 title={t("stats.openOnYoutube")}
               >

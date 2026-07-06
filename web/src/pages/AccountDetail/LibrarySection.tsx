@@ -1,5 +1,5 @@
 import type { Dispatch, ReactNode, SetStateAction } from "react";
-import { AlertTriangle, ChevronLeft, ChevronRight, Loader2, Play, Plus, Trash2, Upload } from "lucide-react";
+import { AlertTriangle, ChevronLeft, ChevronRight, Loader2, Play, Plus, Square, Trash2, Upload } from "lucide-react";
 import type { Account, VideoItem } from "../../lib/api";
 import type { useGenQueue } from "../../lib/genQueue";
 import type { useT } from "../../lib/i18n";
@@ -27,6 +27,7 @@ type LibrarySectionProps = {
   updateSources: (next: string[]) => void;
   deckOptions: (excludeSelected?: boolean) => ReactNode;
   isConnected: boolean;
+  canPrepareLibrary: boolean;
   activeGenerateDeck: string;
   setGenerateDeck: Dispatch<SetStateAction<string>>;
   canGenerateAllSources: boolean;
@@ -80,6 +81,7 @@ export default function LibrarySection({
   updateSources,
   deckOptions,
   isConnected,
+  canPrepareLibrary,
   activeGenerateDeck,
   setGenerateDeck,
   canGenerateAllSources,
@@ -197,7 +199,7 @@ export default function LibrarySection({
             <div className="font-medium text-sm mb-2">{t("account.generateToLibrary")}</div>
             {!isConnected && (
               <div className="text-xs text-warning mb-2 flex items-center gap-1.5">
-                <AppIcon name="warning" size={13} /> {t("account.connectFirstHint")}
+                <AppIcon name="warning" size={13} /> {t(canPrepareLibrary ? "account.superAdminLibraryPrepHint" : "account.connectFirstHint")}
               </div>
             )}
             <div className="flex flex-wrap items-center gap-2">
@@ -233,7 +235,7 @@ export default function LibrarySection({
                   if (sourcesDirty && !(await save())) return;
                   queue.run(accountId, Math.min(batchN, maxBatch), generateDeckIds);
                 }}
-                disabled={langMismatch || saving || maxBatch < 1 || !isConnected || libraryFull}
+                disabled={langMismatch || saving || maxBatch < 1 || !canPrepareLibrary || libraryFull}
                 title={langMismatch ? t("account.genTitleMismatch") : t("account.generateSelectedTitle")}
               >
                 <Plus size={14} /> {t("account.generateButton")}
@@ -241,8 +243,14 @@ export default function LibrarySection({
             </div>
             <div className="flex flex-wrap justify-end gap-2 mt-2">
               {queue.running && (
-                <button className="btn btn-sm btn-outline btn-error gap-1" onClick={queue.cancel}>
-                  <Loader2 className="animate-spin" size={14} /> {t("account.stop")}
+                <button
+                  className="btn btn-sm btn-outline btn-error gap-1"
+                  onClick={() => void queue.cancel()}
+                  disabled={queue.canceling}
+                  title={t("account.cancelQueueTitle")}
+                >
+                  {queue.canceling ? <Loader2 className="animate-spin" size={14} /> : <Square size={14} />}
+                  {queue.canceling ? t("account.cancelingQueue") : t("account.cancelQueue")}
                 </button>
               )}
             </div>

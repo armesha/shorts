@@ -178,6 +178,7 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
   const [perDay, setPerDay] = useState(12);
   const [sourceWeights, setSourceWeights] = useState<Record<string, number>>({});
   const [busy, setBusy] = useState<BusyState>(null);
+  const [publishingAll, setPublishingAll] = useState(false);
   const [notice, setNotice] = useState("");
 
   const load = () =>
@@ -366,6 +367,34 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
     }
   }
 
+  async function postOneToAllChannels() {
+    setPublishingAll(true);
+    setNotice("");
+    try {
+      const res = await apiClient.postOneShortToAllChannels();
+      const details = res.items
+        .filter((item) => item.status !== "published")
+        .slice(0, 4)
+        .map((item) => `${item.channelName} — ${item.reason ?? item.status}`)
+        .join("; ");
+      setNotice(
+        t("channelBlocks.bulkPostDone", {
+          published: res.published,
+          skipped: res.skipped,
+          failed: res.failed,
+          total: res.total,
+          details: details ? ` (${details}${res.items.filter((item) => item.status !== "published").length > 4 ? "; ..." : ""})` : "",
+        }),
+      );
+      await load();
+      loadOps();
+    } catch (e) {
+      setNotice(e instanceof Error ? e.message : String(e));
+    } finally {
+      setPublishingAll(false);
+    }
+  }
+
   return (
     <div className="space-y-5">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
@@ -378,6 +407,15 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <button
+            className="btn btn-sm btn-error gap-2"
+            disabled={publishingAll}
+            onClick={() => void postOneToAllChannels()}
+            title={t("channelBlocks.bulkPostTitle")}
+          >
+            {publishingAll ? <span className="loading loading-spinner loading-xs" /> : <BrandIcon name="youtube" size={15} />}
+            {t("channelBlocks.bulkPost")}
+          </button>
           <button className="btn btn-sm btn-outline gap-2" onClick={onShowClassic}>
             <AppIcon name="library" size={15} />
             {t("channelBlocks.classicView")}

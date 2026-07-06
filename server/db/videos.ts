@@ -80,12 +80,13 @@ export function videoMethods(db: DatabaseSync) {
       deck: string;
       videoRel: string;
       imageRel: string | null;
+      tags?: string[];
     }): Video {
       const info = db
         .prepare(
-          "INSERT INTO videos (account_id,title,text,bg,music,deck,video_rel,image_rel) VALUES (?,?,?,?,?,?,?,?)",
+          "INSERT INTO videos (account_id,title,text,bg,music,deck,video_rel,image_rel,tags) VALUES (?,?,?,?,?,?,?,?,?)",
         )
-        .run(v.accountId, v.title, v.text, v.bg, v.music, v.deck, v.videoRel, v.imageRel);
+        .run(v.accountId, v.title, v.text, v.bg, v.music, v.deck, v.videoRel, v.imageRel, normalizeDecks(v.tags).join(","));
       invalidateReadCache();
       return this.getVideo(Number(info.lastInsertRowid))!;
     },

@@ -70,7 +70,7 @@ export const apiClient = {
       role,
       hidden,
     }),
-  setUserRole: (userId: number | string, role: "admin" | "user") =>
+  setUserRole: (userId: number | string, role: "admin" | "moder" | "user") =>
     send<{ ok: boolean; role: string; isSuperAdmin?: boolean }>(`/admin/users/${userId}/role`, "PUT", { role }),
   impersonateUser: (userId: number | string) =>
     send<AuthUser>(`/admin/users/${userId}/impersonate`, "POST", {}),

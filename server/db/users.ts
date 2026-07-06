@@ -3,6 +3,7 @@
 import type { DatabaseSync } from "node:sqlite";
 import { rowToUserAuth, type Row } from "./mappers.ts";
 import type { UserAuth } from "./types.ts";
+import { normalizeUserRole, type UserRole } from "../auth.ts";
 
 export function userMethods(db: DatabaseSync) {
   return {
@@ -12,15 +13,17 @@ export function userMethods(db: DatabaseSync) {
       return Number(r.n) || 0;
     },
     createUser(u: { username: string; passHash: string; role?: string; passwordSet?: boolean; isSuperAdmin?: boolean }): UserAuth {
+      const role = normalizeUserRole(u.role);
       const info = db
         .prepare("INSERT INTO users (username, pass_hash, password_set, role, is_super_admin) VALUES (?,?,?,?,?)")
-        .run(u.username, u.passHash, u.passwordSet === false ? 0 : 1, u.role ?? "user", u.isSuperAdmin ? 1 : 0);
+        .run(u.username, u.passHash, u.passwordSet === false ? 0 : 1, role, u.isSuperAdmin && role === "admin" ? 1 : 0);
       return this.getUserById(Number(info.lastInsertRowid))!;
     },
-    updateUserRole(id: number, role: "admin" | "user"): UserAuth | null {
+    updateUserRole(id: number, role: UserRole): UserAuth | null {
+      const nextRole = normalizeUserRole(role);
       db.prepare("UPDATE users SET role = ?, is_super_admin = CASE WHEN ? = 'admin' THEN is_super_admin ELSE 0 END WHERE id = ?").run(
-        role,
-        role,
+        nextRole,
+        nextRole,
         id,
       );
       return this.getUserById(id);

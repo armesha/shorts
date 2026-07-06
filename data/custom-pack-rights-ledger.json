@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-27T07:55:00.000Z",
+  "updatedAt": "2026-07-05T00:00:00.000Z",
   "packs": {
     "chistes-es-public-domain": {
       "status": "public_domain_source_required_per_card",
@@ -19,6 +19,37 @@
         "Keep source labels attached to cards or equivalent metadata.",
         "Do not mix modern joke corpora into this pack without a separate source/license record.",
         "Run safety review before broad queue top-up."
+      ]
+    },
+    "dowcipy-pl-mit": {
+      "status": "mit_labelled_third_party_corpus_with_source_caveat",
+      "livePath": "data/packs/dowcipy-pl-mit.json",
+      "note": "Polish joke cards are mechanically filtered from the Hugging Face dataset JonaszPotoniec/dowcipy-polish-jokes-dataset. The dataset metadata says MIT, but the dataset card also says the text was dumped from jeja.pl community submissions, so do not describe it as public-domain-clean.",
+      "sourceLedger": "local-assets/corpora/polish-jokes-dataset/sources.json",
+      "safetyReport": "local-assets/corpora/polish-jokes-dataset/safety-report.json",
+      "textSources": [
+        {
+          "label": "Hugging Face: JonaszPotoniec/dowcipy-polish-jokes-dataset",
+          "status": "license label MIT; source caveat jeja.pl community submissions"
+        }
+      ],
+      "rules": [
+        "Keep the source caveat visible in internal provenance notes.",
+        "Do not merge this pack into public-domain packs.",
+        "Keep deterministic length/vote/duplicate/advertiser-safety filtering before queue use."
+      ]
+    },
+    "new-memes-pl-superadmin": {
+      "status": "localized_derivative_of_existing_ready_made_meme_pack",
+      "livePath": "data/packs/new-memes-pl-superadmin.json",
+      "note": "Polish meme cards reuse the image/photo composition from pack:new-memes-ru-superadmin and redraw detected caption areas with machine translated ru->pl text. This does not create a new rights claim for the underlying meme/photo material.",
+      "sourcePack": "data/packs/new-memes-ru-superadmin.json",
+      "translationCache": "tmp/new-memes-pl-translation-cache.json",
+      "templateAssets": "assets/template-packs/new-memes/pl/*.jpg",
+      "rules": [
+        "Keep this pack tied to the same rights and safety assumptions as pack:new-memes-ru-superadmin.",
+        "Do not describe these cards as public-domain-clean.",
+        "Review machine translations before broad queue use when wording quality matters."
       ]
     },
     "psychology-ru-superadmin": {

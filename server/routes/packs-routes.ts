@@ -30,6 +30,8 @@ import {
 import { isJokePack, packCardKey, packTemplateForCard, packTemplateVideoBg } from "../services/pack-gen.ts";
 import { listAudio, packAudioPathFor, pickJokeMotionOverlay, resolveAudio } from "../../src/video.ts";
 import { jokePopVariantFor, renderAnecdote } from "../../src/anecdotes/render.ts";
+import { getDeck } from "../../src/anecdotes/decks.ts";
+import { videoTags } from "../../src/anecdotes/video-tags.ts";
 import { buildStillVideoFiles, cardReadable } from "../infra/media.ts";
 import {
   RATE_LIMIT_MESSAGE,
@@ -405,7 +407,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
     if (body.accountId != null) {
       const acc = db.getAccount(Number(body.accountId));
       if (!acc || acc.userId !== userId) return reply.code(403).send({ error: "Канал не ваш" });
-      if (acc.status !== "connected")
+      if (acc.status !== "connected" && !superAdminReq(req))
         return reply.code(400).send({ error: "Сначала подключите канал к YouTube — до подключения нельзя готовить видео в очередь." });
       // Бэкстоп: ролик из пака можно класть только в канал, где этот пак выбран источником.
       // Иначе планировщик не должен его выкладывать.
@@ -457,6 +459,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
       }
       let saved = false;
       if (body.accountId != null) {
+        const ownerTags = db.getUserById(userId)?.username?.toLowerCase() === "armen" ? videoTags(getDeck(deckId), title, text) : undefined;
         db.createVideo({
           accountId: Number(body.accountId),
           title,
@@ -466,6 +469,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
           deck: deckId,
           videoRel: vidRel,
           imageRel: imgRel,
+          tags: ownerTags,
         });
         saved = true;
       }

@@ -92,11 +92,12 @@ function nextSlots(db: Db, accounts: Account[], deps: RouteDeps, limit = 40) {
 
 export function registerQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
   app.get("/api/queue", async (req, reply) => {
-    // Очередь — только для админов (и главного админа): регулярным пользователям недоступна.
-    if (!deps.auth.requireAdmin(req, reply)) return;
+    // Очередь — read-only visual surface for admins/moderators; mutating queue controls stay
+    // checked in their own routes.
+    if (!deps.auth.requireAdminLike(req, reply)) return;
     const query = (req.query ?? {}) as QueueQuery;
     const userId = uid(req);
-    const all = query.scope === "all" && deps.auth.isAdminReq(req);
+    const all = query.scope === "all" && deps.auth.isAdminLikeReq(req);
     const accounts = all ? db.listAccounts() : db.listAccountsByUser(userId);
     const visibleAccountIds = new Set(accounts.map((account) => account.id));
     const accountById = new Map(accounts.map((account) => [account.id, account]));

@@ -17,6 +17,7 @@ import {
 } from "../../lib/api";
 import { AppIcon } from "../../components/AppIcon";
 import { useAuth } from "../../lib/auth";
+import { isAdminLike, isAdminRole } from "../../lib/authz";
 import { compactNumber } from "../../lib/format";
 import { useT } from "../../lib/i18n";
 import { fmt } from "../../lib/statsFormat";
@@ -53,7 +54,8 @@ function loadFilters(): SavedFilters {
 export default function Statistics() {
   const { t } = useT();
   const { user } = useAuth();
-  const isAdmin = user?.role === "admin";
+  const canViewAll = isAdminLike(user);
+  const canRefreshAll = isAdminRole(user);
   const [saved] = useState(loadFilters); // last-used filters (localStorage), restored on mount
   const [rows, setRows] = useState<StatRow[]>([]);
   const [analytics, setAnalytics] = useState<UserAnalytics | null>(null); // own publishing activity
@@ -63,7 +65,7 @@ export default function Statistics() {
     const d = saved.days ?? 30;
     return DAYS_OPTIONS.includes(d as 7 | 30 | 90) ? d : 30;
   });
-  const scope: Scope = view === "all" ? "all" : "mine";
+  const scope: Scope = canViewAll && view === "all" ? "all" : "mine";
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -84,6 +86,10 @@ export default function Statistics() {
     const t = setTimeout(() => setResult(null), 2200);
     return () => clearTimeout(t);
   }, [result]);
+
+  useEffect(() => {
+    if (!canViewAll && view === "all") setView("mine");
+  }, [canViewAll, view]);
 
   useEffect(() => {
     setLoading(true);
@@ -109,12 +115,12 @@ export default function Statistics() {
   // Publishing analytics: the user's OWN channels, but admins on «Все каналы» get every channel —
   // so the activity section/chart follows the same scope toggle as the rest of the page.
   useEffect(() => {
-    const allChannels = isAdmin && scope === "all";
+    const allChannels = canViewAll && scope === "all";
     apiClient
       .analytics(allChannels ? "all" : undefined)
       .then(setAnalytics)
       .catch(() => {});
-  }, [scope, isAdmin]);
+  }, [scope, canViewAll]);
 
   // Platform-wide production totals belong only to the "All channels" view.
   useEffect(() => {
@@ -147,9 +153,8 @@ export default function Statistics() {
     setError(null);
     setResult(null);
     try {
-      // Non-admins always refresh ONLY their own channels (even while viewing «Все каналы»);
-      // admins refresh the current tab (мои → свои, все → каналы всех пользователей).
-      const refreshScope: Scope = isAdmin ? scope : "mine";
+      // Moderators may view all-channel aggregates, but only real admins refresh all channels.
+      const refreshScope: Scope = canRefreshAll ? scope : "mine";
       const r = await apiClient.refreshStats(refreshScope);
       // Re-read the visible list for the selected tab + period (refresh returns a default window).
       setRows(await apiClient.stats(scope, days));
@@ -162,7 +167,7 @@ export default function Statistics() {
         );
         setResult({
           ok: false,
-          text: t(isAdmin ? "stats.refreshPartialAdmin" : "stats.refreshPartial", {
+          text: t(canRefreshAll ? "stats.refreshPartialAdmin" : "stats.refreshPartial", {
             ok: connected.length - failed.length,
             total: connected.length,
             failed: failed.length,
@@ -186,7 +191,7 @@ export default function Statistics() {
     () => [...new Set(rows.map((r) => r.ownerUsername).filter((x): x is string => !!x))].sort(),
     [rows],
   );
-  const activeOwnerFilter = isAdmin && scope === "all" ? ownerFilter : "";
+  const activeOwnerFilter = canViewAll && scope === "all" ? ownerFilter : "";
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return rows.filter((r) => {
@@ -240,25 +245,27 @@ export default function Statistics() {
               </button>
             ))}
           </div>
-          <div className="join">
-            <button
-              className={`btn btn-sm join-item ${view === "mine" ? "btn-primary" : "btn-ghost"}`}
-              onClick={() => setView("mine")}
-            >
-              {t("stats.scopeMine")}
-            </button>
-            <button
-              className={`btn btn-sm join-item ${view === "all" ? "btn-primary" : "btn-ghost"}`}
-              onClick={() => setView("all")}
-            >
-              {t("stats.scopeAll")}
-            </button>
-          </div>
+          {canViewAll && (
+            <div className="join">
+              <button
+                className={`btn btn-sm join-item ${view === "mine" ? "btn-primary" : "btn-ghost"}`}
+                onClick={() => setView("mine")}
+              >
+                {t("stats.scopeMine")}
+              </button>
+              <button
+                className={`btn btn-sm join-item ${view === "all" ? "btn-primary" : "btn-ghost"}`}
+                onClick={() => setView("all")}
+              >
+                {t("stats.scopeAll")}
+              </button>
+            </div>
+          )}
           <button
             className="btn btn-sm btn-primary gap-2"
             onClick={refresh}
             disabled={refreshing || loading}
-            title={!isAdmin && view === "all" ? t("stats.refreshMineHint") : t("stats.refreshTitle")}
+            title={t("stats.refreshTitle")}
           >
             {refreshing ? (
               <span className="loading loading-spinner loading-sm" />
@@ -269,10 +276,6 @@ export default function Statistics() {
           </button>
         </div>
       </header>
-
-      {!isAdmin && view === "all" && (
-        <p className="text-xs text-base-content/50 -mt-3">{t("stats.refreshMineHint")}</p>
-      )}
 
       {error && (
         <div className="alert alert-error text-sm py-2 items-start">
@@ -311,7 +314,7 @@ export default function Statistics() {
 
       <>
       {scope === "all" && summary && <PlatformBand s={summary} />}
-      <SourceStats overview={scopeOverview} days={days} isAdmin={!!isAdmin} />
+      <SourceStats overview={scopeOverview} days={days} isAdmin={!!canViewAll} />
 
       {analytics &&
         analytics.summary.published + analytics.summary.scheduled + analytics.summary.failed + analytics.summary.queuedVideos > 0 && (
@@ -319,7 +322,7 @@ export default function Statistics() {
             <div className="card-body gap-4">
               <h2 className="card-title text-base">
                 {t("stats.publishActivity")} ·{" "}
-                {isAdmin && scope === "all" ? t("stats.publishScopeAll") : t("stats.publishScopeMine")}
+                {canViewAll && scope === "all" ? t("stats.publishScopeAll") : t("stats.publishScopeMine")}
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="rounded-xl border border-base-300 p-3">
@@ -408,7 +411,7 @@ export default function Statistics() {
                 <AppIcon name="chevron-right" size={15} className={sortDir === "asc" ? "-rotate-90" : "rotate-90"} />
                 {sortDir === "asc" ? t("stats.ascending") : t("stats.descending")}
               </button>
-              {isAdmin && scope === "all" && owners.length > 1 && (
+              {canViewAll && scope === "all" && owners.length > 1 && (
                 <select
                   className="select select-bordered select-sm"
                   aria-label={t("stats.owner")}
@@ -441,7 +444,7 @@ export default function Statistics() {
           ) : (
             <div className="space-y-4">
               {paged.map((r) => (
-                <ChannelCard key={r.accountId} row={r} isAdmin={!!isAdmin} avatar={avatarMap[r.accountId]} days={days} />
+                <ChannelCard key={r.accountId} row={r} isAdmin={!!canViewAll} avatar={avatarMap[r.accountId]} days={days} />
               ))}
             </div>
           )}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import {
   LineChart,
@@ -25,6 +25,18 @@ import {
 import type { OverviewTopChannel, OverviewTopVideo, StatsOverviewData } from "./overview";
 
 export type OverviewMetric = "views" | "watch" | "engaged" | "subscribers";
+
+const OVERVIEW_LAYOUT_STORAGE_KEY = "statsOverview.layoutShare.v1";
+const DEFAULT_CHART_SHARE = 60;
+const MIN_CHART_SHARE = 45;
+const MAX_CHART_SHARE = 75;
+
+function readOverviewChartShare(): number {
+  if (typeof window === "undefined") return DEFAULT_CHART_SHARE;
+  const raw = Number(window.localStorage.getItem(OVERVIEW_LAYOUT_STORAGE_KEY));
+  if (!Number.isFinite(raw)) return DEFAULT_CHART_SHARE;
+  return Math.min(MAX_CHART_SHARE, Math.max(MIN_CHART_SHARE, raw));
+}
 
 export function SourceStats({ overview, days, isAdmin }: { overview: StatsOverviewData; days: number; isAdmin: boolean }) {
   const { t } = useT();
@@ -80,6 +92,20 @@ export function StatsOverview({
   days: number;
 }) {
   const { t } = useT();
+  const [chartShare, setChartShare] = useState(readOverviewChartShare);
+  const topVideosShare = 100 - chartShare;
+  const overviewGridStyle = {
+    "--stats-overview-columns": `minmax(0, ${chartShare}fr) minmax(18rem, ${topVideosShare}fr)`,
+  } as CSSProperties;
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(OVERVIEW_LAYOUT_STORAGE_KEY, String(chartShare));
+    } catch {
+      /* localStorage unavailable — ignore */
+    }
+  }, [chartShare]);
+
   if (overview.channels === 0) return null;
   const hookRate = overview.analyticsViews > 0 ? (overview.engagedViews / overview.analyticsViews) * 100 : null;
   const likeRatio = overview.likes + overview.dislikes > 0 ? (overview.likes / (overview.likes + overview.dislikes)) * 100 : null;
@@ -110,7 +136,7 @@ export function StatsOverview({
           <div>
             <div className="font-semibold">{t("stats.overviewTitle")}</div>
           </div>
-          <div className="min-w-0 max-w-full overflow-x-auto pb-1">
+          <div className="flex min-w-0 max-w-full flex-wrap items-center justify-end gap-3">
             <div className="join min-w-max">
               {(["views", "watch", "engaged", "subscribers"] as OverviewMetric[]).map((key) => (
                 <button
@@ -122,6 +148,23 @@ export function StatsOverview({
                 </button>
               ))}
             </div>
+            <label
+              className="hidden xl:flex items-center gap-2 text-xs text-base-content/55"
+              title={t("stats.overviewLayoutTitle", { chart: chartShare, top: topVideosShare })}
+            >
+              <span className="w-16 text-right tabular-nums">{t("stats.overviewChartShort")} {chartShare}%</span>
+              <input
+                type="range"
+                min={MIN_CHART_SHARE}
+                max={MAX_CHART_SHARE}
+                step={5}
+                value={chartShare}
+                onChange={(event) => setChartShare(Number(event.currentTarget.value))}
+                className="range range-xs range-primary w-28"
+                aria-label={t("stats.overviewLayoutAria")}
+              />
+              <span className="w-14 tabular-nums">{t("stats.topVideosShort")} {topVideosShare}%</span>
+            </label>
           </div>
         </div>
 
@@ -135,7 +178,7 @@ export function StatsOverview({
           <MiniStat label={t("stats.netSubscribers")} value={signed(overview.subscribersGained - overview.subscribersLost)} />
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.9fr)] gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-[var(--stats-overview-columns)] gap-4" style={overviewGridStyle}>
           <div className="rounded-lg bg-base-200/50 p-3 min-w-0">
             <div className="flex items-center justify-between gap-3 mb-2">
               <div className="text-sm font-semibold">{t("stats.overviewChart")}</div>

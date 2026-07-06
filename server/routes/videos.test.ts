@@ -4,7 +4,7 @@ import { SUPER_ADMIN_USERNAME } from "../auth.ts";
 import { openDb } from "../db.ts";
 import { makeDeckAccess } from "../services/deck-access.ts";
 import { MANUAL_VIDEO_DECK } from "../services/manual-videos.ts";
-import { canPostVideoDeckForAccount, visibleLibraryDeckIds } from "./videos.ts";
+import { canPostVideoDeckForAccount, canPrepareLibraryForAccount, visibleLibraryDeckIds } from "./videos.ts";
 
 const deps = {
   isAdminReq: () => true,
@@ -79,4 +79,10 @@ test("video library visibility excludes globally hidden unused pack rows", () =>
   } finally {
     db.db.close();
   }
+});
+
+test("super-admin can prepare a disconnected channel library without enabling publishing", () => {
+  assert.equal(canPrepareLibraryForAccount({ status: "connected" }, false), true);
+  assert.equal(canPrepareLibraryForAccount({ status: "draft" }, false), false);
+  assert.equal(canPrepareLibraryForAccount({ status: "draft" }, true), true);
 });

@@ -308,7 +308,7 @@ function languagesForDecks(deckIds: string[]): string[] {
 
 function isAnecdotePack(deckId: string, pack: Pack): boolean {
   const haystack = `${deckId} ${pack.id} ${pack.name} ${pack.templateType ?? ""}`.toLowerCase();
-  return /(chistes?|jokes?|witz|witze|barzellette|blagues?|piadas?|anedotas?|анекдот|шутк|юмор)/iu.test(haystack);
+  return /(chistes?|jokes?|witz|witze|barzellette|blagues?|piadas?|anedotas?|dowcipy?|żarty?|zarty?|kawały?|kawaly?|анекдот|шутк|юмор)/iu.test(haystack);
 }
 
 function sourceSort(a: string, b: string): number {

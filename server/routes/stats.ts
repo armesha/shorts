@@ -12,7 +12,7 @@ import { uid } from "../infra/auth-session.ts";
 import type { RouteDeps } from "./deps.ts";
 
 export function registerStatsRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
-  const { requireAdmin } = deps.auth;
+  const { requireAdmin, requireAdminLike, isAdminLikeReq } = deps.auth;
   const { visibleAccounts, visibleAccount, statRow, accountCreds, statsRefreshHooks, redirectUri } = deps;
   const REDIRECT_URI = redirectUri;
   const summarizeStored = (accountId: number, from: string, to: string) =>
@@ -22,8 +22,8 @@ export function registerStatsRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const q = req.query as { scope?: string; days?: string };
     const days = clampStatDays(q.days);
     const me = uid(req);
-    const isAdmin = db.getUserById(me)?.role === "admin";
-    // Everyone may view all channels' stats; the owner's identity is hidden from non-admins.
+    const isAdmin = isAdminLikeReq(req);
+    // Admins may view all channels; regular users are always limited to their own channels.
     return visibleAccounts(req, q.scope, true).map((a) => {
       const row = statRow(a, null, days);
       if (!isAdmin && a.userId !== me) row.ownerUsername = null;
@@ -33,10 +33,11 @@ export function registerStatsRoutes(app: FastifyInstance, db: Db, deps: RouteDep
 
   // Aggregate audience totals (subscribers / views / videos) summed from each visible channel's LATEST
   // snapshot. Lightweight: DB-only, no YouTube calls — powers the dashboard «Аудитория» KPIs and its
-  // Мои/Все toggle. Same read access as GET /api/stats (scope=all readable by anyone; refresh stays
-  // admin-gated elsewhere). `withData` = how many of the channels actually have a stored snapshot yet.
+  // Мои/Все toggle. `scope=all` is admin-only; `withData` = how many of the channels actually have
+  // a stored snapshot yet.
   app.get("/api/stats/totals", async (req) => {
     const scope = (req.query as { scope?: string }).scope;
+    const all = scope === "all" && isAdminLikeReq(req);
     const accounts = visibleAccounts(req, scope, true);
     let subscribers = 0;
     let views = 0;
@@ -50,18 +51,21 @@ export function registerStatsRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       videos += s.videos;
       withData += 1;
     }
-    return { scope: scope === "all" ? "all" : "mine", channels: accounts.length, withData, subscribers, views, videos };
+    return { scope: all ? "all" : "mine", channels: accounts.length, withData, subscribers, views, videos };
   });
 
-  // Platform-wide production totals (queue / uploaded / scheduled / channels) — visible to every
-  // signed-in user. No per-user breakdown or PII; just the aggregate counters.
-  app.get("/api/summary", async () => db.platformSummary());
+  // Platform-wide production totals (queue / uploaded / scheduled / channels) belong to the
+  // admin-only "All channels" views.
+  app.get("/api/summary", async (req, reply) => {
+    if (!requireAdminLike(req, reply)) return;
+    return db.platformSummary();
+  });
 
   // Per-user analytics — any signed-in user, scoped to their OWN channels. Admins may pass
   // ?scope=all to aggregate publishing activity across EVERY channel (matches the «Все каналы» tab).
   app.get("/api/analytics", async (req) => {
     const q = (req.query as { from?: string; to?: string; scope?: string }) ?? {};
-    const allChannels = q.scope === "all" && db.getUserById(uid(req))?.role === "admin";
+    const allChannels = q.scope === "all" && isAdminLikeReq(req);
     return buildUserAnalytics(db, uid(req), { from: q.from, to: q.to }, { allChannels });
   });
 
@@ -171,8 +175,7 @@ export function registerStatsRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   });
 
   app.get("/api/stats/:id/history", async (req, reply) => {
-    // Read-only snapshot history of any channel — visible to every signed-in user (matches the
-    // «Все каналы» stats view; same harmless subscribers/views series already shown on the card).
+    // Read-only snapshot history: admins can inspect any channel; regular users only their own.
     const a = visibleAccount(req, Number((req.params as { id: string }).id), true);
     if (!a) return reply.code(404).send({ error: "Канал не найден" });
     return db.listChannelSnapshots(a.id);

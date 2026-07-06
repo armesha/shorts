@@ -1157,6 +1157,7 @@ const NEW_MEMES_META: Record<string, { name: string; hashtags: string; tags: str
   de: { name: "Neue Memes", hashtags: "#memes #humor #lustig #relatable #shorts", tags: ["memes", "meme", "humor", "lustig", "relatable", "shorts"] },
   it: { name: "Nuovi meme", hashtags: "#meme #umorismo #divertente #relatable #shorts", tags: ["meme", "umorismo", "divertente", "relatable", "ironia", "shorts"] },
   es: { name: "Memes nuevos", hashtags: "#memes #humor #gracioso #relatable #shorts", tags: ["memes", "meme", "humor", "gracioso", "relatable", "shorts"] },
+  pl: { name: "Nowe memy", hashtags: "#memy #humor #smiech #zarty #shorts", tags: ["memy", "mem", "humor", "smiech", "zarty", "relatable", "shorts"] },
   pt: { name: "Memes novos", hashtags: "#memes #humor #engraçado #relatable #shorts", tags: ["memes", "meme", "humor", "engraçado", "relatable", "shorts"] },
   fr: { name: "Nouveaux mèmes", hashtags: "#mèmes #humour #drôle #relatable #shorts", tags: ["mèmes", "mème", "humour", "drôle", "relatable", "shorts"] },
   ar: { name: "ميمز جديدة", hashtags: "#ميمز #ضحك #كوميديا #relatable #shorts", tags: ["ميمز", "ضحك", "كوميديا", "relatable", "shorts"] },
@@ -1178,8 +1179,20 @@ function synthPackDeck(id: string): Deck {
       meme: true, // ytMeta meme branch: title = caption first line, description = full caption + hashtags
     };
   }
-  // Spanish classic-joke packs (pack:chistes-*): each card carries a real per-joke title + the joke body,
+  // Spanish/Polish classic-joke packs: each card carries a real per-joke title + the joke body,
   // so the generic ytMeta branch already produces «title 😂 #shorts» + the joke; just give it joke branding.
+  if (/^pack:dowcipy-/.test(id)) {
+    return {
+      id,
+      name: "Dowcipy",
+      dir: "",
+      source: "",
+      emoji: "😂",
+      hashtags: "#dowcipy #humor #smiech #zarty #shorts",
+      tags: ["dowcipy", "dowcip", "humor", "śmiech", "żarty", "komedia", "shorts"],
+      genericTitles: ["Dowcip", "Do śmiechu", "Krótki żart"],
+    };
+  }
   if (/^pack:chistes-/.test(id)) {
     return {
       id,

@@ -11,6 +11,8 @@ import { buildStillVideoFiles, cardReadable } from "../infra/media.ts";
 import { anecdoteKey } from "../../src/anecdotes/library.ts";
 import { customPackTemplateMarker, resolveAllowedCustomJokePackTemplateIndex } from "../../src/anecdotes/joke-template-pool.ts";
 import { jokePopVariantFor, renderAnecdote } from "../../src/anecdotes/render.ts";
+import { getDeck } from "../../src/anecdotes/decks.ts";
+import { videoTags } from "../../src/anecdotes/video-tags.ts";
 
 const OUTPUT_DIR = loadBaseConfig().outputDir;
 
@@ -37,7 +39,7 @@ function audioHintForPack(pack: Pack): AudioDeckHint | undefined {
 
 export function isJokePack(pack: Pack): boolean {
   const haystack = `${pack.id} ${pack.name} ${pack.templateType ?? ""}`.toLowerCase();
-  return /(chistes?|jokes?|witz|witze|barzellette|blagues?|piadas?|anedotas?|анекдот|шутк|юмор)/iu.test(haystack);
+  return /(chistes?|jokes?|witz|witze|barzellette|blagues?|piadas?|anedotas?|dowcipy?|żarty?|zarty?|kawały?|kawaly?|анекдот|шутк|юмор)/iu.test(haystack);
 }
 
 function stableHash(seed: string): number {
@@ -219,6 +221,10 @@ export function pickLeastPostedPackCard(db: Db, accountId: number, pack: Pack, s
 }
 
 /** Собрать ОДНО видео из заранее выбранной карточки пака в библиотеку канала + пометить использованной. */
+function shouldWriteOwnerTags(db: Db, userId: number): boolean {
+  return db.getUserById(userId)?.username?.toLowerCase() === "armen";
+}
+
 export async function buildPackLibraryVideo(input: {
   db: Db;
   userId: number;
@@ -255,6 +261,7 @@ export async function buildPackLibraryVideo(input: {
     deck: deckId,
     videoRel: vidRel,
     imageRel: imgRel,
+    tags: shouldWriteOwnerTags(db, input.userId) ? videoTags(getDeck(deckId), title, text) : undefined,
   });
   // NB: «использованность» карточки бронируется ВЫЗЫВАЮЩИМ ДО рендера (db.claimAnecdote), чтобы две
   // параллельные генерации не собрали одну карту дважды. Здесь не помечаем (иначе бронь была бы after-await).

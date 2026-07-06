@@ -395,6 +395,7 @@ export default function Creator() {
   const projectId = searchParams.get("project") ?? "";
   const wizardOpen = searchParams.get("new") === "1";
   const tabParam = searchParams.get("tab");
+  const initialTemplateIndex = Math.max(0, Math.floor(Number(searchParams.get("template") ?? 0)) || 0);
   const projectTab: ProjectTab = tabParam === "template" || tabParam === "videos" ? tabParam : "cards";
 
   const goHome = useCallback(() => {
@@ -538,6 +539,7 @@ export default function Creator() {
       if (templateTargetPackId) {
         const existing = await get<CreatorPack>(`/creator/packs/${encodeURIComponent(templateTargetPackId)}`);
         const previousTemplates = Array.isArray(existing.templates) ? existing.templates : [];
+        const createdTemplateIndex = previousTemplates.length;
         const res = await send<{ pack: CreatorPack }>(`/creator/packs/${encodeURIComponent(templateTargetPackId)}/design`, "PATCH", {
           templates: [...previousTemplates, ...templates],
           templateType,
@@ -552,7 +554,7 @@ export default function Creator() {
         setActivePack(pack);
         setTemplateSourcePackId(id);
         syncPackEverywhere(pack);
-        setSearchParams({ project: id, tab: "cards" }, { replace: false });
+        setSearchParams({ project: id, tab: "cards", template: String(createdTemplateIndex) }, { replace: false });
         setNotice({ type: "success", text: t("creator.templateCreatedInPack", { name: pack.name || t("creator.untitledPack") }) });
         void loadSummary(true);
         return;
@@ -577,7 +579,7 @@ export default function Creator() {
         const normalized = current ?? { feature: true, packs: [], gallery: [], backgrounds: [], userBackgrounds: [], presets: [], music: [], motion: [] };
         return { ...normalized, packs: [pack, ...normalized.packs.filter((item) => packId(item) !== id)] };
       });
-      setSearchParams({ project: id, tab: "cards" }, { replace: false });
+      setSearchParams({ project: id, tab: "cards", template: "0" }, { replace: false });
       setNotice({ type: "success", text: t("creator.projectCreated", { name }) });
       void loadSummary(true);
     } catch (err) {
@@ -839,6 +841,7 @@ export default function Creator() {
                   ops={cardsOps}
                   busy={busy}
                   onCreateTemplate={() => setProjectTab("template")}
+                  initialTemplateIndex={initialTemplateIndex}
                 />
               ) : projectTab === "template" ? (
                 <div className="creator-template-tab">

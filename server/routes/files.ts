@@ -5,6 +5,7 @@ import type { FastifyInstance } from "fastify";
 import { createReadStream, readFileSync, statSync } from "node:fs";
 import { extname, isAbsolute, relative, resolve } from "node:path";
 import type { Db } from "../db.ts";
+import { isAdminLikeUser } from "../auth.ts";
 import { getPack } from "../../src/packs/store.ts";
 import { getCookie, SESSION_COOKIE } from "../infra/auth-session.ts";
 import { rememberedOutputOwner } from "../infra/output-access.ts";
@@ -79,7 +80,7 @@ export function registerFilesRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   }
 
   function canReadOutputFile(rel: string, user: { id: number; role: string }): boolean {
-    if (user.role === "admin") return true;
+    if (isAdminLikeUser(user)) return true;
     const rememberedOwner = rememberedOutputOwner(rel);
     if (rememberedOwner != null) return rememberedOwner === user.id;
     if (rel.startsWith("preview/")) return true;

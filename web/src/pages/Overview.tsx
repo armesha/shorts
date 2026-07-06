@@ -15,6 +15,7 @@ import {
 import { AppIcon } from "../components/AppIcon";
 import { compactNumber } from "../lib/format";
 import { cleanDisplayText } from "../lib/text";
+import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
 import { fmtCacheTime, readCache, writeCache } from "../lib/cache";
 
@@ -44,6 +45,8 @@ const OVERVIEW_CACHE_KEY = "sf.adminOverview.v1";
 
 export default function Overview() {
   const { t } = useT();
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
   const cached = useMemo(() => readCache<OverviewData>(OVERVIEW_CACHE_KEY), []);
   const [data, setData] = useState<OverviewData>(cached?.value ?? EMPTY_DATA);
   const [cacheSavedAt, setCacheSavedAt] = useState(cached?.savedAt ?? "");
@@ -58,10 +61,14 @@ export default function Overview() {
   const [totalsLoading, setTotalsLoading] = useState(true);
 
   useEffect(() => {
+    if (!isAdmin && audScope === "all") setAudScope("mine");
+  }, [isAdmin, audScope]);
+
+  useEffect(() => {
     let alive = true;
     setTotalsLoading(true);
     apiClient
-      .statsTotals(audScope)
+      .statsTotals(isAdmin && audScope === "all" ? "all" : "mine")
       .then((d) => alive && setTotals(d))
       .catch(() => {})
       .finally(() => {
@@ -70,7 +77,7 @@ export default function Overview() {
     return () => {
       alive = false;
     };
-  }, [audScope]);
+  }, [audScope, isAdmin]);
 
   useEffect(() => {
     let alive = true;
@@ -165,7 +172,7 @@ export default function Overview() {
         </div>
       )}
 
-      <AudienceSummary scope={audScope} onScope={setAudScope} totals={totals} loading={totalsLoading} t={t} />
+      <AudienceSummary scope={audScope} onScope={setAudScope} totals={totals} loading={totalsLoading} isAdmin={isAdmin} t={t} />
 
       {loading ? (
         <OverviewSkeleton />
@@ -411,12 +418,14 @@ function AudienceSummary({
   onScope,
   totals,
   loading,
+  isAdmin,
   t,
 }: {
   scope: "mine" | "all";
   onScope: (s: "mine" | "all") => void;
   totals: ChannelTotals | null;
   loading: boolean;
+  isAdmin: boolean;
   t: (key: string, vars?: Record<string, string | number>) => string;
 }) {
   return (
@@ -427,20 +436,22 @@ function AudienceSummary({
             <h2 className="text-sm font-bold leading-tight">{t("overview.audienceTitle")}</h2>
             <p className="text-xs text-base-content/55 mt-0.5">{t("overview.audienceHint", { n: totals?.withData ?? 0 })}</p>
           </div>
-          <div className="join shrink-0">
-            <button
-              className={`btn btn-xs join-item ${scope === "mine" ? "btn-primary" : "btn-ghost"}`}
-              onClick={() => onScope("mine")}
-            >
-              {t("stats.scopeMine")}
-            </button>
-            <button
-              className={`btn btn-xs join-item ${scope === "all" ? "btn-primary" : "btn-ghost"}`}
-              onClick={() => onScope("all")}
-            >
-              {t("stats.scopeAll")}
-            </button>
-          </div>
+          {isAdmin && (
+            <div className="join shrink-0">
+              <button
+                className={`btn btn-xs join-item ${scope === "mine" ? "btn-primary" : "btn-ghost"}`}
+                onClick={() => onScope("mine")}
+              >
+                {t("stats.scopeMine")}
+              </button>
+              <button
+                className={`btn btn-xs join-item ${scope === "all" ? "btn-primary" : "btn-ghost"}`}
+                onClick={() => onScope("all")}
+              >
+                {t("stats.scopeAll")}
+              </button>
+            </div>
+          )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <BigStat icon="analytics" tone="blue" label={t("stats.totalViews")} value={totals?.views ?? 0} loading={loading} />

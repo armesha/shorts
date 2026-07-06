@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Users, Plus, Check, AlertTriangle, Crown, LogIn, Send, Infinity as InfinityIcon, Wand2, Search } from "lucide-react";
 import { apiClient, ApiError, type AdminUser, type DeckInfo, type UserDeckRow, type PackSummary, type PackUsageItem } from "../lib/api";
 import { useAuth } from "../lib/auth";
-import { isMainAdmin } from "../lib/authz";
+import { isAdminRole, isMainAdmin, roleLabelKey } from "../lib/authz";
 import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
 import { isMgsLegacyUser } from "../lib/accountLimits";
@@ -44,9 +44,9 @@ function AdminUsers() {
   const { user, setUser } = useAuth();
   const { t } = useT();
   const canManageRights = isMainAdmin(user);
-  const canManagePackVisibility = user?.role === "admin";
-  const canManagePackOwners = user?.role === "admin";
-  const canResetPackHistory = user?.role === "admin";
+  const canManagePackVisibility = isAdminRole(user);
+  const canManagePackOwners = isAdminRole(user);
+  const canResetPackHistory = isAdminRole(user);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [decks, setDecks] = useState<DeckInfo[]>([]);
   const [rows, setRows] = useState<UserDeckRow[]>([]);
@@ -134,18 +134,18 @@ function AdminUsers() {
     try {
       // обычные встроенные паки — opt-out; кастомные и grantable admin-only built-in паки — opt-in.
       const nextRole = canManageRights ? role : "user";
-      const hidden = canManageRights && nextRole !== "admin"
+      const hidden = canManageRights && nextRole === "user"
         ? userDecks.filter((d) => !d.pack && !d.grantable && !newVisible.has(d.id)).map((d) => d.id)
         : [];
-      const grants = canManageRights && nextRole !== "admin"
+      const grants = canManageRights && nextRole === "user"
         ? userAccessDecks.filter((d) => (d.pack || d.grantable) && newVisible.has(d.id)).map((d) => d.id)
         : [];
-      const longVideoGrants = canManageRights && nextRole !== "admin"
+      const longVideoGrants = canManageRights && nextRole === "user"
         ? userLongVideoDecks.filter((d) => d.grantable && newVisible.has(d.id)).map((d) => d.id)
         : [];
       const u = await apiClient.createUser(username.trim(), password, nextRole, hidden);
-      if (canManageRights && nextRole !== "admin") await apiClient.setUserDecks(u.id, hidden, grants, longVideoGrants);
-      setCreated(t("users.created", { name: u.username, role: u.role === "admin" ? t("users.roleAdmin") : t("users.roleUser") }));
+      if (canManageRights && nextRole === "user") await apiClient.setUserDecks(u.id, hidden, grants, longVideoGrants);
+      setCreated(t("users.created", { name: u.username, role: t(roleLabelKey(u.role)) }));
       setUsername("");
       setPassword("");
       setRole("user");
@@ -267,7 +267,7 @@ function AdminUsers() {
     }
   }
 
-  async function setRowRole(row: UserDeckRow, nextRole: "admin" | "user") {
+  async function setRowRole(row: UserDeckRow, nextRole: "admin" | "moder" | "user") {
     if (!canManageRights || row.isSuperAdmin) return;
     setSavingCell(`role:${row.userId}`);
     setSaveState("saving");
@@ -465,6 +465,7 @@ function AdminUsers() {
                   onChange={(e) => setRole(e.target.value)}
                 >
                   <option value="user">{t("users.roleUser")}</option>
+                  <option value="moder">{t("users.roleModer")}</option>
                   <option value="admin">{t("users.roleAdmin")}</option>
                 </select>
               </label>
@@ -479,7 +480,7 @@ function AdminUsers() {
             </button>
           </div>
 
-          {canManageRights && role !== "admin" && userDecks.length > 0 && (
+          {canManageRights && role === "user" && userDecks.length > 0 && (
             <div className="mt-2">
               <span className="text-xs text-base-content/60">
                 {t("users.newUserPacksHint1")} <b>{t("users.newUserPacksHintNew")}</b> {t("users.newUserPacksHint2")}{" "}
@@ -577,8 +578,8 @@ function AdminUsers() {
                 <span className="font-medium">{u.username}</span>
                 {u.isSuperAdmin ? (
                   <span className="badge badge-primary badge-xs">{t("users.superAdmin")}</span>
-                ) : u.role === "admin" ? (
-                  <span className="badge badge-ghost badge-xs">{t("users.roleAdmin")}</span>
+                ) : u.role !== "user" ? (
+                  <span className="badge badge-ghost badge-xs">{t(roleLabelKey(u.role))}</span>
                 ) : null}
                 {u.locked && <span className="badge badge-error badge-xs">{t("users.locked")}</span>}
               </span>
@@ -605,7 +606,7 @@ function AdminUsers() {
                 <option value="">{t("users.notifyPickUser")}</option>
                 {users.map((u) => (
                   <option key={u.id} value={u.id}>
-                    {u.username}{u.role === "admin" ? ` (${t("common.admin")})` : ""}
+                    {u.username}{u.role !== "user" ? ` (${t(roleLabelKey(u.role))})` : ""}
                   </option>
                 ))}
               </select>
@@ -725,26 +726,32 @@ function AdminUsers() {
                       <tr key={row.userId}>
                         <td className="font-medium whitespace-nowrap sticky left-0 z-10 bg-base-100 border-r border-base-300">
                           <div className="flex items-center gap-1.5">
-                            {row.role === "admin" && <AppIcon name="admin" size={13} className="text-primary" />}
+                            {row.role !== "user" && <AppIcon name="admin" size={13} className="text-primary" />}
                             {row.username}
                             {row.isSuperAdmin && <span className="badge badge-primary badge-xs">{t("users.superAdmin")}</span>}
                             {canManageRights && !row.isSuperAdmin && (
-                              <button
-                                type="button"
-                                className="btn btn-ghost btn-xs gap-1"
-                                disabled={savingCell === `role:${row.userId}`}
-                                onClick={() => setRowRole(row, row.role === "admin" ? "user" : "admin")}
-                                title={row.role === "admin" ? t("users.makeUserTitle") : t("users.makeAdminTitle")}
+                              <label className="inline-flex items-center gap-1">
+                                {savingCell === `role:${row.userId}` && <span className="loading loading-spinner loading-xs" />}
+                                <select
+                                  className="select select-bordered select-xs h-7 min-h-7"
+                                  value={row.role === "admin" || row.role === "moder" ? row.role : "user"}
+                                  onChange={(e) => setRowRole(row, e.target.value as "admin" | "moder" | "user")}
+                                  disabled={savingCell === `role:${row.userId}`}
+                                  title={t("users.roleLabel")}
+                                >
+                                  <option value="user">{t("users.roleUser")}</option>
+                                  <option value="moder">{t("users.roleModer")}</option>
+                                  <option value="admin">{t("users.roleAdmin")}</option>
+                                </select>
+                              </label>
+                            )}
+                            {!canManageRights && row.role !== "user" && (
+                              <span
+                                className={`badge badge-xs ${row.role === "admin" ? "badge-ghost" : "badge-warning"}`}
+                                title={t("users.roleLabel")}
                               >
-                                {savingCell === `role:${row.userId}` ? (
-                                  <span className="loading loading-spinner loading-xs" />
-                                ) : row.role === "admin" ? (
-                                  <Crown size={11} />
-                                ) : (
-                                  <Users size={11} />
-                                )}
-                                {row.role === "admin" ? t("users.roleAdmin") : t("users.roleUser")}
-                              </button>
+                                {t(roleLabelKey(row.role))}
+                              </span>
                             )}
                             {users.find((u) => u.id === row.userId)?.locked && (
                               <span className="badge badge-error badge-xs">{t("users.locked")}</span>
@@ -848,7 +855,7 @@ function AdminUsers() {
                     <tr key={row.userId}>
                       <td className="font-medium whitespace-nowrap sticky left-0 z-10 bg-base-100 border-r border-base-300">
                         <div className="flex items-center gap-1.5">
-                          {row.role === "admin" && <AppIcon name="admin" size={13} className="text-primary" />}
+                          {row.role !== "user" && <AppIcon name="admin" size={13} className="text-primary" />}
                           {row.username}
                           {row.isSuperAdmin && <span className="badge badge-primary badge-xs">{t("users.superAdmin")}</span>}
                         </div>
@@ -949,7 +956,7 @@ function AdminUsers() {
             {[...resetRows].sort((a, b) => b.usedTotal - a.usedTotal).map((r) => (
               <option key={r.userId} value={r.userId}>
                 {r.username}
-                {r.role === "admin" ? ` · ${t("users.roleAdmin")}` : ""} ({r.usedTotal})
+                {r.role !== "user" ? ` · ${t(roleLabelKey(r.role))}` : ""} ({r.usedTotal})
               </option>
             ))}
           </select>

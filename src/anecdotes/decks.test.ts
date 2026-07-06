@@ -61,6 +61,9 @@ test("getDeck: synthetic deck for pack ids, default for unknown", () => {
   const pack = getDeck("pack:xyz");
   assert.equal(pack.id, "pack:xyz");
   assert.equal(pack.name, "Свой пак");
+  const polishJokes = getDeck("pack:dowcipy-pl-mit");
+  assert.equal(polishJokes.name, "Dowcipy");
+  assert.ok(polishJokes.hashtags.includes("#dowcipy"));
   assert.equal(getDeck(undefined).id, "ru"); // default
   assert.equal(getDeck("nope").id, "ru"); // unknown → default
   assert.equal(getDeck("islamic").islamic, true);

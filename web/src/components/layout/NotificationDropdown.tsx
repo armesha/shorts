@@ -10,6 +10,7 @@ import {
   notificationSeverityText,
   type NotificationGroup,
 } from "../../lib/notificationGroups";
+import { isAdminRole } from "../../lib/authz";
 
 export function NotificationDropdown({
   user,
@@ -134,7 +135,7 @@ export function NotificationDropdown({
           </button>
         </div>
 
-        {user.role === "admin" && (
+        {isAdminRole(user) && (
           <Link to="/notifications" onClick={close} className="admin-inline-action mx-3 mt-2 inline-flex">
             {t("notifications.adminCenter")}
           </Link>

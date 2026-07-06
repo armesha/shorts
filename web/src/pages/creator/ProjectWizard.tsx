@@ -1,5 +1,5 @@
-// Мастер нового проекта: 1) основа (название + фон) → 2) дизайн и музыка (одно пространство) → создать.
-import { type ChangeEvent, type CSSProperties, type Dispatch, type SetStateAction, useState } from "react";
+// Мастер нового проекта: 1) основа (название + фон) → 2) дизайн и музыка (одно пространство) → 3) пак → создать.
+import { type ChangeEvent, type CSSProperties, type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { ArrowRight, Check, ChevronLeft, FileImage, Loader2, X } from "lucide-react";
 import { langTag } from "../../lib/deck";
 import { useT } from "../../lib/i18n";
@@ -16,8 +16,7 @@ import type {
   TextStyle,
 } from "./types";
 
-const WIZARD_STEPS = ["basis", "design"] as const;
-type WizardStep = (typeof WIZARD_STEPS)[number];
+type WizardStep = "basis" | "design" | "destination";
 
 export function ProjectWizard({
   presets,
@@ -98,14 +97,20 @@ export function ProjectWizard({
 }) {
   const { t } = useT();
   const [step, setStep] = useState<WizardStep>("basis");
-  const stepIndex = WIZARD_STEPS.indexOf(step);
+  const steps: WizardStep[] = packs.length > 0 ? ["basis", "design", "destination"] : ["basis", "design"];
+  const stepIndex = Math.max(0, steps.indexOf(step));
   const stepLabels: Record<WizardStep, string> = {
     basis: t("creator.wizardBasis"),
     design: t("creator.wizardDesign"),
+    destination: t("creator.wizardDestination"),
   };
   const canCreate = !creating;
   const firstPackId = packId(packs[0]);
   const selectedExistingPack = targetPackId ? packs.find((pack) => packId(pack) === targetPackId) ?? null : null;
+
+  useEffect(() => {
+    if (step === "destination" && !packs.length) setStep("design");
+  }, [packs.length, step]);
 
   const handleBackgroundUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const input = event.currentTarget;
@@ -125,7 +130,7 @@ export function ProjectWizard({
     <section className="creator-wizard">
       <header className="creator-wizard-head">
         <ol className="creator-wizard-steps" aria-label={t("creator.flowAria")}>
-          {WIZARD_STEPS.map((id, index) => (
+          {steps.map((id, index) => (
             <li key={id}>
               <button
                 type="button"
@@ -205,7 +210,7 @@ export function ProjectWizard({
             </div>
             <CreatorPreviewPanel activePreset={activePreset} background={background} />
           </div>
-        ) : (
+        ) : step === "design" ? (
           <div className="creator-wizard-design-step">
             <div className="creator-card">
               <DesignEditor
@@ -234,73 +239,78 @@ export function ProjectWizard({
                 redoDesign={redoDesign}
               />
             </div>
-            {packs.length > 0 && (
-              <section className="creator-card creator-save-target" aria-label={t("creator.createDestinationTitle")}>
-                <div className="creator-save-target-head">
-                  <strong>{t("creator.createDestinationTitle")}</strong>
-                  <span>{t("creator.createDestinationHint")}</span>
-                </div>
-                <div className="creator-save-target-options">
+          </div>
+        ) : (
+          <div className="creator-wizard-destination-step">
+            <section className="creator-card creator-save-target" aria-label={t("creator.createDestinationTitle")}>
+              <div className="creator-save-target-head">
+                <strong>{t("creator.createDestinationTitle")}</strong>
+                <span>{t("creator.createDestinationHint")}</span>
+              </div>
+              <div className="creator-save-target-options">
+                <button
+                  type="button"
+                  className={`creator-save-target-option ${!targetPackId ? "is-active" : ""}`}
+                  onClick={() => setTargetPackId("")}
+                  disabled={creating}
+                >
+                  <span className="creator-save-target-radio" aria-hidden="true" />
+                  <span>
+                    <strong>{t("creator.createDestinationNewPack")}</strong>
+                    <small>{t("creator.createDestinationNewPackHint")}</small>
+                  </span>
+                </button>
+                <div className={`creator-save-target-option is-select ${targetPackId ? "is-active" : ""}`}>
                   <button
                     type="button"
-                    className={`creator-save-target-option ${!targetPackId ? "is-active" : ""}`}
-                    onClick={() => setTargetPackId("")}
-                    disabled={creating}
+                    onClick={() => setTargetPackId(selectedExistingPack ? targetPackId : firstPackId)}
+                    disabled={creating || !firstPackId}
                   >
                     <span className="creator-save-target-radio" aria-hidden="true" />
                     <span>
-                      <strong>{t("creator.createDestinationNewPack")}</strong>
-                      <small>{t("creator.createDestinationNewPackHint")}</small>
+                      <strong>{t("creator.createDestinationExistingPack")}</strong>
+                      <small>{selectedExistingPack ? t("creator.createDestinationExistingPackHint", { count: packCards(selectedExistingPack) }) : t("creator.createDestinationPickPack")}</small>
                     </span>
                   </button>
-                  <div className={`creator-save-target-option is-select ${targetPackId ? "is-active" : ""}`}>
-                    <button
-                      type="button"
-                      onClick={() => setTargetPackId(selectedExistingPack ? targetPackId : firstPackId)}
-                      disabled={creating || !firstPackId}
-                    >
-                      <span className="creator-save-target-radio" aria-hidden="true" />
-                      <span>
-                        <strong>{t("creator.createDestinationExistingPack")}</strong>
-                        <small>{selectedExistingPack ? t("creator.createDestinationExistingPackHint", { count: packCards(selectedExistingPack) }) : t("creator.createDestinationPickPack")}</small>
-                      </span>
-                    </button>
-                    <select
-                      className="select select-bordered select-sm"
-                      value={targetPackId || firstPackId}
-                      onChange={(event) => setTargetPackId(event.target.value)}
-                      disabled={creating || !targetPackId}
-                    >
-                      {packs.map((pack) => {
-                        const id = packId(pack);
-                        return (
-                          <option key={id} value={id}>
-                            {pack.name || t("creator.untitledPack")}
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </div>
+                  <select
+                    className="select select-bordered select-sm"
+                    value={targetPackId || firstPackId}
+                    onChange={(event) => setTargetPackId(event.target.value)}
+                    disabled={creating || !targetPackId}
+                  >
+                    {packs.map((pack) => {
+                      const id = packId(pack);
+                      return (
+                        <option key={id} value={id}>
+                          {pack.name || t("creator.untitledPack")}
+                        </option>
+                      );
+                    })}
+                  </select>
                 </div>
-              </section>
-            )}
+              </div>
+            </section>
           </div>
         )}
       </div>
 
       <footer className="creator-wizard-footer">
         {stepIndex > 0 ? (
-          <button type="button" className="btn btn-sm btn-ghost gap-2" onClick={() => setStep(WIZARD_STEPS[stepIndex - 1])} disabled={creating}>
+          <button type="button" className="btn btn-sm btn-ghost gap-2" onClick={() => setStep(steps[stepIndex - 1]!)} disabled={creating}>
             <ChevronLeft size={16} />
             {t("creator.prev")}
           </button>
         ) : (
           <span />
         )}
-        {stepIndex < WIZARD_STEPS.length - 1 ? (
-          <button type="button" className="btn btn-sm btn-primary gap-2" onClick={() => setStep(WIZARD_STEPS[stepIndex + 1])}>
-            {t("creator.next")}
-            <ArrowRight size={16} />
+        {stepIndex < steps.length - 1 ? (
+          <button
+            type="button"
+            className="btn btn-sm btn-primary gap-2"
+            onClick={() => setStep(steps[stepIndex + 1]!)}
+          >
+            {step === "design" && packs.length > 0 ? t("creator.createTemplate") : t("creator.next")}
+            {step === "design" && packs.length > 0 ? <Check size={16} /> : <ArrowRight size={16} />}
           </button>
         ) : (
           <button type="button" className="btn btn-sm btn-primary gap-2" onClick={onCreate} disabled={!canCreate}>

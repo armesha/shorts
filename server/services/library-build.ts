@@ -12,6 +12,7 @@ import { pickJokeMotionOverlay, resolveAudio } from "../../src/video.ts";
 import { buildStillVideoFiles } from "../infra/media.ts";
 import { isBuiltInDeckGloballyVisible } from "./global-pack-visibility.ts";
 import { quoteVoiceover } from "./quote-voiceover.ts";
+import { videoTags } from "../../src/anecdotes/video-tags.ts";
 
 export type BuildLibraryVideo = (input: {
   userId: number;
@@ -37,10 +38,11 @@ export function makeBuildLibraryVideo(deps: {
   return async function buildLibraryVideo(input) {
     const deck = getDeck(input.deck);
     const builtInDeck = DECKS.find((d) => d.id === deck.id);
+    const owner = db.getUserById(input.userId);
     // Backstop (covers save, batch, and the gen-queue worker): never build a deck the user cannot access.
     if (!builtInDeck || !isBuiltInDeckGloballyVisible(db, builtInDeck))
       throw new Error("Этот пак вам недоступен");
-    if (db.getUserById(input.userId)?.role !== "admin" && !builtinDeckVisibleForUser(input.userId, builtInDeck))
+    if (owner?.role !== "admin" && !builtinDeckVisibleForUser(input.userId, builtInDeck))
       throw new Error("Этот пак вам недоступен");
     const title = input.title || pickGenericTitle(deck);
     const audio = deck.quoteVideo
@@ -74,6 +76,7 @@ export function makeBuildLibraryVideo(deps: {
       deck: deck.id,
       videoRel: vidRel,
       imageRel: imgRel,
+      tags: owner?.username?.toLowerCase() === "armen" ? videoTags(deck, title, input.text) : undefined,
     });
     // NB: the anecdote is reserved by the CALLER via db.claimAnecdote BEFORE this render starts
     // (batch/queue), or marked right after by the single-save route — never here (that would be

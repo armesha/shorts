@@ -21,11 +21,12 @@ export async function addLongVideoToLibrary(input: {
   ownerId: number;
   deckAllowed: (deckId: string) => boolean;
   deckContentLang: (deckId: string) => string;
+  allowDisconnected?: boolean;
 }): Promise<Video> {
-  const { db, account, deckId, ownerId, deckAllowed, deckContentLang } = input;
+  const { db, account, deckId, ownerId, deckAllowed, deckContentLang, allowDisconnected = false } = input;
   const deck = DECKS.find((d) => d.id === deckId);
   if (!deck || !deck.preFact || !deck.longVideo) throw new LongVideoLibraryError(400, "Это не long-video пак.");
-  if (account.status !== "connected")
+  if (account.status !== "connected" && !allowDisconnected)
     throw new LongVideoLibraryError(400, "Сначала подключите канал к YouTube — до подключения нельзя готовить видео в очередь.");
   if (!deckAllowed(deckId)) throw new LongVideoLibraryError(403, "Этот long-video пак вам недоступен.");
   if (!(account.longVideoDecks ?? []).includes(deckId))

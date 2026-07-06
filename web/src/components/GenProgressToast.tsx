@@ -239,9 +239,9 @@ export function GenProgressToast() {
                   {q.worker.mode === "external" && workerAge && <span className="text-current/70">· {workerAge}</span>}
                 </div>
               )}
-              <button className="btn btn-xs btn-outline btn-error self-end gap-1" onClick={q.cancel}>
-                <Square size={12} />
-                Стоп
+              <button className="btn btn-xs btn-outline btn-error self-end gap-1" onClick={() => void q.cancel()} disabled={q.canceling}>
+                {q.canceling ? <Loader2 className="animate-spin" size={12} /> : <Square size={12} />}
+                {q.canceling ? "Отменяю..." : "Отменить"}
               </button>
             </>
           ) : (

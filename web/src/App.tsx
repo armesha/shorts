@@ -8,6 +8,7 @@ import { GenProgressToast } from "./components/GenProgressToast";
 import { ConfirmHost } from "./lib/confirm";
 import { I18nProvider } from "./lib/i18n";
 import { pageLoaders } from "./lib/routeLoaders";
+import { isAdminLike, isAdminRole } from "./lib/authz";
 
 const Overview = lazy(pageLoaders.overview);
 const Studio = lazy(pageLoaders.studio);
@@ -54,7 +55,13 @@ function Gate() {
       </Suspense>
     );
   }
-  const defaultRoute = user.role === "admin" ? <Navigate to="/channels" replace /> : <CreatorExternalRedirect />;
+  const adminVisual = isAdminLike(user);
+  const realAdmin = isAdminRole(user);
+  const defaultRoute = realAdmin
+    ? <Navigate to="/channels" replace />
+    : adminVisual
+      ? <Navigate to="/statistics" replace />
+      : <CreatorExternalRedirect />;
   return (
     <GenQueueProvider>
       <GenProgressToast />
@@ -63,14 +70,14 @@ function Gate() {
           <Routes>
             <Route path="/" element={defaultRoute} />
             <Route path="/channels" element={<Accounts />} />
-            <Route path="/overview" element={user.role === "admin" ? <Overview /> : <Navigate to="/channels" replace />} />
+            <Route path="/overview" element={realAdmin ? <Overview /> : <Navigate to="/statistics" replace />} />
             <Route path="/studio" element={<Studio />} />
-            <Route path="/gallery" element={user.role === "admin" ? <Gallery /> : <Navigate to="/channels" replace />} />
+            <Route path="/gallery" element={realAdmin ? <Gallery /> : <Navigate to="/channels" replace />} />
             <Route path="/cards" element={<Cards />} />
             <Route path="/library" element={<Packs />} />
             <Route path="/packs" element={<Navigate to="/library" replace />} />
-            <Route path="/queue" element={user.role === "admin" ? <QueuePage /> : <Navigate to="/channels" replace />} />
-            <Route path="/notifications" element={user.role === "admin" ? <Notifications /> : <Navigate to="/channels" replace />} />
+            <Route path="/queue" element={adminVisual ? <QueuePage /> : <Navigate to="/channels" replace />} />
+            <Route path="/notifications" element={realAdmin ? <Notifications /> : <Navigate to="/channels" replace />} />
             <Route path="/accounts" element={<Navigate to="/channels" replace />} />
             <Route path="/accounts/:id" element={<AccountDetail />} />
             <Route path="/history" element={<History />} />
@@ -80,16 +87,16 @@ function Gate() {
             <Route path="/clip-demos" element={<ClipDemos />} />
             <Route path="/examples" element={user.isSuperAdmin ? <Examples /> : <Navigate to="/channels" replace />} />
             <Route path="/long-videos" element={<LongVideos />} />
-            <Route path="/limits" element={user.role === "admin" ? <Limits /> : <Navigate to="/channels" replace />} />
+            <Route path="/limits" element={realAdmin ? <Limits /> : <Navigate to="/channels" replace />} />
             <Route path="/creator" element={<CreatorExternalRedirect />} />
             <Route path="/register" element={<Navigate to="/channels" replace />} />
             <Route path="/login" element={defaultRoute} />
             <Route path="/changelog" element={<Changelog />} />
-            <Route path="/errors" element={<Errors />} />
+            <Route path="/errors" element={realAdmin ? <Errors /> : <Navigate to="/statistics" replace />} />
             <Route path="/system" element={<System />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/editor" element={<TemplateEditor />} />
-            <Route path="/users" element={<Users />} />
+            <Route path="/users" element={realAdmin ? <Users /> : <Navigate to="/statistics" replace />} />
             <Route path="*" element={defaultRoute} />
           </Routes>
         </Suspense>

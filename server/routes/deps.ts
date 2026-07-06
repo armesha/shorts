@@ -21,7 +21,7 @@ import {
   withActiveLimit,
   withGlobalRenderSlot,
 } from "../infra/rate-limits.ts";
-import { dailyScheduleLimitError, forbiddenSuperAdminScheduleTimes, isMgsUser } from "../infra/account-limits.ts";
+import { dailyScheduleLimitError, describeShortsSchedulePolicy, forbiddenSuperAdminScheduleTimes, isMgsUser } from "../infra/account-limits.ts";
 import {
   youtubeAnalyticsRange,
   asArray,
@@ -60,7 +60,7 @@ export interface RouteDeps {
   // Account access
   accessibleAccount: (req: unknown, reply: Replyish, id: number) => Account | null;
   accountOwnerId: (req: unknown, account: Account) => number;
-  rejectScheduleLimit: (req: unknown, reply: Replyish, schedule: unknown, acc: Account | null, excludeAccountId?: number) => boolean;
+  rejectScheduleLimit: (req: unknown, reply: Replyish, schedule: unknown, acc: Account | null, excludeAccountId?: number, channelLang?: string | null) => boolean;
   rejectIfNotConnected: (reply: Replyish, acc: Account) => boolean;
   visibleAccounts: (req: unknown, scope?: string, readonly?: boolean) => Account[];
   visibleAccount: (req: unknown, id: number, readonly?: boolean) => Account | null;
@@ -88,7 +88,7 @@ export function makeRouteDeps(input: {
   listAvatarFiles: () => string[];
 }): RouteDeps {
   const { db, auth, deckAccess, notifier, buildLibraryVideo, statsRefreshHooks, outputDir, redirectUri, webOrigin, accountCreds } = input;
-    const { isAdminReq, isSuperAdminReq } = auth;
+    const { isAdminReq, isAdminLikeReq, isSuperAdminReq } = auth;
 
   function sendGenerationRateLimit(reply: LimitedReplyish, retryAfterMs = 1_000): unknown {
     reply.header("Retry-After", String(Math.max(1, Math.ceil(retryAfterMs / 1000))));
@@ -145,7 +145,14 @@ export function makeRouteDeps(input: {
 
   // Schedule guard: (option B) only a CONNECTED channel may carry a posting schedule, and the daily cap
   // is counted PER Google key (oauth_client) — YouTube's upload quota is per Cloud project, not per channel.
-  function rejectScheduleLimit(req: unknown, reply: Replyish, schedule: unknown, acc: Account | null, excludeAccountId?: number): boolean {
+  function rejectScheduleLimit(
+    req: unknown,
+    reply: Replyish,
+    schedule: unknown,
+    acc: Account | null,
+    excludeAccountId?: number,
+    channelLang?: string | null,
+  ): boolean {
     if (!Array.isArray(schedule)) return false;
     if (schedule.length > 0 && (!acc || acc.status !== "connected")) {
       reply.code(400).send({ error: "Подключите канал к YouTube — расписание можно задавать только у подключённого канала." });
@@ -161,9 +168,12 @@ export function makeRouteDeps(input: {
     const isSuperAdminOwner = isSuperAdminUser(owner);
     const isMgsOwner = isMgsUser(owner);
     if (isSuperAdminOwner) {
-      const forbiddenTimes = forbiddenSuperAdminScheduleTimes(schedule);
+      const scheduleLang = channelLang ?? acc?.channelLang ?? acc?.lang ?? null;
+      const forbiddenTimes = forbiddenSuperAdminScheduleTimes(schedule, scheduleLang);
       if (forbiddenTimes.length) {
-        reply.code(400).send({ error: `Для каналов главного админа расписание разрешено только с 08:00 до 23:59. Уберите: ${forbiddenTimes.join(", ")}.` });
+        reply.code(400).send({
+          error: `Для каналов главного админа расписание должно попадать в языковые Shorts-окна. ${describeShortsSchedulePolicy(scheduleLang)}. Уберите: ${forbiddenTimes.join(", ")}.`,
+        });
         return true;
       }
     }
@@ -185,19 +195,19 @@ export function makeRouteDeps(input: {
     return !!n && (isAdminReq(req) || n.userId === uid(req));
   }
 
-  // ---- Channel stats visibility ----
-  // Reads (`readonly`): ANY signed-in user may view every channel's stats (?scope=all).
-  // Writes/refresh (default): ?scope=all targets every channel ONLY for admins.
-    function visibleAccounts(req: unknown, scope?: string, readonly = false): Account[] {
-      if (scope === "all" && (readonly || isSuperAdminReq(req))) return db.listAccounts();
-      return db.listAccountsByUser(uid(req));
-    }
+  // ---- Channel visibility ----
+  // `scope=all` is available to admins and moderators for read-only views. Mutating flows still
+  // require the real admin role, so a moderator cannot turn a visual aggregate into write access.
+  function visibleAccounts(req: unknown, scope?: string, readonly = false): Account[] {
+    if (scope === "all" && (readonly ? isAdminLikeReq(req) : isAdminReq(req))) return db.listAccounts();
+    return db.listAccountsByUser(uid(req));
+  }
   function visibleAccount(req: unknown, id: number, readonly = false): Account | null {
     const a = db.getAccount(id);
-      if (!a) return null;
-      if (readonly) return a;
-      return a.userId === uid(req) || isSuperAdminReq(req) ? a : null;
-    }
+    if (!a) return null;
+    if (readonly && isAdminLikeReq(req)) return a;
+    return a.userId === uid(req) || isSuperAdminReq(req) ? a : null;
+  }
 
   function accountAnalyticsPayload(accountId: number, days = 30) {
     const latest = db.latestSnapshot(accountId);

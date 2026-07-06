@@ -31,11 +31,28 @@ export function newSessionToken(): string {
 // ---- Admin / brute-force / session policy ----
 // Bootstrap-only fallback for existing installs. Runtime permissions must use is_super_admin from users.
 export const SUPER_ADMIN_USERNAME = "armen";
+export type UserRole = "admin" | "moder" | "user";
+export function normalizeUserRole(role: string | null | undefined): UserRole {
+  return role === "admin" || role === "moder" ? role : "user";
+}
+export function isAdminRole(role: string | null | undefined): boolean {
+  return normalizeUserRole(role) === "admin";
+}
+export function isModeratorRole(role: string | null | undefined): boolean {
+  return normalizeUserRole(role) === "moder";
+}
+export function isAdminLikeRole(role: string | null | undefined): boolean {
+  const normalized = normalizeUserRole(role);
+  return normalized === "admin" || normalized === "moder";
+}
+export function isAdminLikeUser(user: { role?: string | null } | null | undefined): boolean {
+  return isAdminLikeRole(user?.role);
+}
 export function isSuperAdminUser(
   user: { role?: string | null; isSuperAdmin?: boolean | number | null; is_super_admin?: boolean | number | null } | null | undefined,
 ): boolean {
   const flag = user?.isSuperAdmin ?? user?.is_super_admin ?? false;
-  return user?.role === "admin" && (flag === true || flag === 1);
+  return isAdminRole(user?.role) && (flag === true || flag === 1);
 }
 
 export const MAX_FAILED_ATTEMPTS = Math.max(1, Number(process.env.AUTH_MAX_ATTEMPTS ?? 10));

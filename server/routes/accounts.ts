@@ -16,21 +16,22 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
     rejectScheduleLimit,
     listAvatarFiles,
     visibleAccounts,
+    visibleAccount,
   } = deps;
   const { validateAccountSourceDeck, cleanDeckIds, accountSourceDecks, deckContentLang, deckExists, deckAllowed } = deps.deckAccess;
 
   // ---- Accounts ----
-  // Regular users see/edit only their own channels. Admins may pass ?scope=all to list every user's
-  // channels and may open/edit a specific /accounts/:id directly.
-  app.get("/api/accounts", async (req) => visibleAccounts(req, (req.query as { scope?: string })?.scope));
+  // Regular users see only their own channels. Admins may pass ?scope=all and may open
+  // channels from aggregate admin screens; mutation still goes through accessibleAccount below.
+  app.get("/api/accounts", async (req) => visibleAccounts(req, (req.query as { scope?: string })?.scope, true));
   app.get("/api/accounts/:id", async (req, reply) => {
-    const a = accessibleAccount(req, reply, Number((req.params as { id: string }).id));
-    if (!a) return;
+    const a = visibleAccount(req, Number((req.params as { id: string }).id), true);
+    if (!a) return reply.code(404).send({ error: "Канал не найден" });
     return a;
   });
   app.post("/api/accounts", async (req, reply) => {
     const body = (req.body as Partial<Account>) ?? {};
-    if (rejectScheduleLimit(req, reply, body.schedule, null)) return;
+    if (rejectScheduleLimit(req, reply, body.schedule, null, undefined, body.channelLang ?? body.lang ?? null)) return;
     return db.createAccount({
       ...body,
       userId: uid(req),
@@ -146,7 +147,7 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
     }
     // Caps are about platform load: regular users get 5/day per channel and 50/day per Google key;
     // mgs keeps the legacy 18/92 profile; admins/super-admin keep their higher ceilings.
-    if (rejectScheduleLimit(req, reply, body.schedule, acc, id)) return;
+    if (rejectScheduleLimit(req, reply, body.schedule, acc, id, (body.channelLang ?? acc.channelLang) as string)) return;
     const a = db.updateAccount(id, body);
     if (!a) return reply.code(404).send({ error: "not found" });
     return a;
@@ -163,9 +164,9 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
   const historyFilterForReq = (
     req: FastifyRequest,
     q: { scope?: string; userId?: string; accountId?: string },
+    canUseAllScope = deps.auth.isAdminLikeReq(req),
   ): { ownerId?: number; accountId?: number } => {
-    const isAdmin = db.getUserById(uid(req))?.role === "admin";
-    if (!isAdmin) return { ownerId: uid(req) };
+    if (!canUseAllScope) return { ownerId: uid(req) };
     if (q.accountId) return { accountId: Number(q.accountId) };
     if (q.userId) return { ownerId: Number(q.userId) };
     if (q.scope === "all") return {};
@@ -198,7 +199,7 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
         userId?: string;
         accountId?: string;
       }) ?? {};
-    const removed = db.deleteHistoryErrors(historyFilterForReq(req, q));
+    const removed = db.deleteHistoryErrors(historyFilterForReq(req, q, deps.auth.isAdminReq(req)));
     return { ok: true, removed };
   });
 }

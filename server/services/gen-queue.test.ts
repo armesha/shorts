@@ -129,6 +129,30 @@ test("queuedRemainingForAccount: sums unfinished videos per CHANNEL across its j
   q.drain();
 });
 
+test("cancel: canceled queued jobs stop counting as unfinished immediately", () => {
+  const q = createGenQueue();
+  const job = q.enqueue(1, 1, 4);
+
+  assert.equal(q.queuedRemainingForUser(1), 4);
+  assert.equal(q.queuedRemainingForAccount(1), 4);
+  assert.equal(q.cancelJob(job.id, 1), true);
+
+  const st = q.jobStatus(job.id)!;
+  assert.equal(st.state, "canceled");
+  assert.equal(q.queuedRemainingForUser(1), 0);
+  assert.equal(q.queuedRemainingForAccount(1), 0);
+});
+
+test("cancel: only the owner or a forced admin cancel can stop a job", () => {
+  const q = createGenQueue();
+  const job = q.enqueue(1, 1, 2);
+
+  assert.equal(q.cancelJob(job.id, 2), false);
+  assert.equal(q.jobStatus(job.id)!.state, "queued");
+  assert.equal(q.cancelJob(job.id, 2, true), true);
+  assert.equal(q.jobStatus(job.id)!.state, "canceled");
+});
+
 test("exhausted: worker reporting 'exhausted' stops the job softly", async () => {
   const q = createGenQueue();
   let calls = 0;

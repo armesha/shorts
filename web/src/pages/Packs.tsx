@@ -12,7 +12,7 @@ import {
   type ContentCatalogItem,
 } from "../lib/api";
 import { useAuth } from "../lib/auth";
-import { isMainAdmin } from "../lib/authz";
+import { isMainAdmin, roleLabelKey } from "../lib/authz";
 import { useT } from "../lib/i18n";
 import { CONTENT_LANGS, DECK_LANG, langTag } from "../lib/deck";
 import { AppIcon, type AppIconName } from "../components/AppIcon";
@@ -260,7 +260,7 @@ export default function Packs() {
               .map((u) => (
                 <option key={u.id} value={u.id}>
                   {u.username}
-                  {u.role === "admin" ? ` ${t("packs.adminSuffix")}` : ""}
+                  {u.role !== "user" ? ` (${t(roleLabelKey(u.role))})` : ""}
                 </option>
               ))}
           </select>

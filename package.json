@@ -71,5 +71,16 @@
     "@types/node-cron": "^3.0.11",
     "concurrently": "^10.0.3",
     "playwright": "^1.60.0"
-  }
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/armesha/shorts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/armesha/shorts/issues"
+  },
+  "homepage": "https://github.com/armesha/shorts#readme"
 }

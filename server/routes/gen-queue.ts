@@ -48,6 +48,11 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
     if (!body.accountId) return reply.code(400).send({ error: "accountId обязателен" });
     const acc = accessibleAccount(req, reply, body.accountId);
     if (!acc) return;
+    const requester = db.getUserById(uid(req));
+    const requesterIsSuperAdmin = isSuperAdminUser(requester);
+    if (acc.status !== "connected" && !requesterIsSuperAdmin) {
+      return reply.code(400).send({ error: "Сначала подключите канал к YouTube — до подключения нельзя готовить видео в очередь." });
+    }
     const ownerId = accountOwnerId(req, acc);
     const requestedDecks = cleanDeckIds(body.deckIds);
     const sources = accountSourceDecks(acc);
@@ -58,7 +63,7 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
       const err = validateAccountSourceDeck(req, deckId, acc.channelLang);
       if (err) return reply.code(err.startsWith("Неизвестный") ? 400 : 403).send({ error: err });
     }
-    const requesterIsAdmin = db.getUserById(uid(req))?.role === "admin";
+    const requesterIsAdmin = requester?.role === "admin";
     const ownerIsMgs = isMgsUser(db.getUserById(ownerId));
     const perRequestCap = requesterIsAdmin || ownerIsMgs ? Number.MAX_SAFE_INTEGER : USER_BATCH_VIDEO_CAP;
     let total = Math.max(1, Math.min(perRequestCap, Math.floor(Number(body.count) || 1)));

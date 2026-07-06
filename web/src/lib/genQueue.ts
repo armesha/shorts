@@ -21,9 +21,10 @@ export interface GenQueueUI {
   worker: GenWorkerStatus | null;
   accountId: number | null; // which channel this batch fills (for in-place refresh)
   completions: number; // bumps each time a job reaches a terminal state
+  canceling: boolean;
   run: (accountId: number | string, count: number, deckIds?: string[]) => Promise<void>;
   trackJobs: (jobs: { jobId: string; accountId?: number | null; total?: number }[]) => void;
-  cancel: () => void;
+  cancel: () => Promise<void>;
   dismiss: () => void; // hide the finished-message toast
 }
 
@@ -40,6 +41,7 @@ function useProvideGenQueue(): GenQueueUI {
   const [worker, setWorker] = useState<GenWorkerStatus | null>(null);
   const [accountId, setAccountId] = useState<number | null>(null);
   const [completions, setCompletions] = useState(0);
+  const [canceling, setCanceling] = useState(false);
   const activeJobIdsRef = useRef<string[]>([]);
   const timerRef = useRef<number | null>(null);
   const workerPollAtRef = useRef(0);
@@ -86,6 +88,7 @@ function useProvideGenQueue(): GenQueueUI {
     let terminalDone = 0;
     let terminalJobs = 0;
     let terminalAccountId: number | null = null;
+    const terminalStates: Record<string, number> = {};
     let firstActive: { ahead: number; position: number; state: string } | null = null;
 
     for (const st of statuses) {
@@ -95,6 +98,7 @@ function useProvideGenQueue(): GenQueueUI {
         terminalTotal += st.total;
         terminalDone += st.done;
         terminalAccountId = st.accountId;
+        terminalStates[st.state] = (terminalStates[st.state] ?? 0) + 1;
         continue;
       }
       keep.push(st.id);
@@ -105,10 +109,26 @@ function useProvideGenQueue(): GenQueueUI {
 
     setActiveJobIds(keep);
     if (terminalJobs > 0) {
+      const allCanceled = terminalStates.canceled === terminalJobs;
+      const hasErrors = (terminalStates.error ?? 0) > 0;
+      const hasExhausted = (terminalStates.exhausted ?? 0) > 0;
+      const progressText = `Добавлено ${terminalDone} из ${terminalTotal}.`;
       setMsg(
-        terminalJobs === 1
-          ? `Задача завершена: добавлено ${terminalDone} из ${terminalTotal}.`
-          : `Завершено задач: ${terminalJobs}. Добавлено ${terminalDone} из ${terminalTotal}.`,
+        allCanceled
+          ? terminalJobs === 1
+            ? `Задача отменена. ${progressText}`
+            : `Отменено задач: ${terminalJobs}. ${progressText}`
+          : hasErrors
+            ? terminalJobs === 1
+              ? `Задача остановлена с ошибкой. ${progressText}`
+              : `Часть задач остановилась с ошибкой. ${progressText}`
+            : hasExhausted
+              ? terminalJobs === 1
+                ? `Свободные карточки закончились. ${progressText}`
+                : `Часть задач завершилась из-за нехватки карточек. ${progressText}`
+              : terminalJobs === 1
+                ? `Задача завершена. ${progressText}`
+                : `Завершено задач: ${terminalJobs}. ${progressText}`,
       );
       if (terminalAccountId != null) setAccountId(terminalAccountId);
       setCompletions((c) => c + terminalJobs);
@@ -212,15 +232,43 @@ function useProvideGenQueue(): GenQueueUI {
     startPolling();
   }
 
-  function cancel() {
-    for (const id of activeJobIdsRef.current) apiClient.cancelGen(id).catch(() => {});
+  async function cancel() {
+    const ids = [...activeJobIdsRef.current];
+    if (!ids.length || canceling) return;
+    setCanceling(true);
+    setMsg(null);
+    try {
+      const results = await Promise.allSettled(
+        ids.map(async (id) => {
+          const result = await apiClient.cancelGen(id);
+          if (!result.ok) throw new Error("cancel rejected");
+        }),
+      );
+      const failed = results.filter((result) => result.status === "rejected").length;
+      if (failed) {
+        setMsg(
+          failed === ids.length
+            ? "Не удалось отменить очередь."
+            : `Часть задач не удалось отменить: ${failed} из ${ids.length}.`,
+        );
+      } else {
+        setMsg(
+          ids.length === 1
+            ? "Отмена отправлена. Уже начатый ролик может завершиться."
+            : `Отмена отправлена для ${ids.length} задач. Уже начатый ролик может завершиться.`,
+        );
+      }
+      await pollActiveJobs().catch(() => {});
+    } finally {
+      setCanceling(false);
+    }
   }
 
   function dismiss() {
     setMsg(null);
   }
 
-  return { running, total, done, ahead, position, state, msg, worker, accountId, completions, run, trackJobs, cancel, dismiss };
+  return { running, total, done, ahead, position, state, msg, worker, accountId, completions, canceling, run, trackJobs, cancel, dismiss };
 }
 
 export function GenQueueProvider({ children }: { children: ReactNode }) {

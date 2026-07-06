@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { AlertTriangle, Bell, ExternalLink, RefreshCw, Send, Trash2 } from "lucide-react";
 import { apiClient, type AdminUser, type NotificationItem } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { roleLabelKey } from "../lib/authz";
 import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
 import {
@@ -170,7 +171,7 @@ export default function Notifications() {
             <option value="all">{t("notifications.scopeAll")}</option>
             {users.map((u) => (
               <option key={u.id} value={u.id}>
-                {u.username} · {u.role === "admin" ? t("common.admin") : t("common.user")}
+                {u.username} · {t(roleLabelKey(u.role))}
               </option>
             ))}
           </select>
@@ -195,7 +196,7 @@ export default function Notifications() {
                   <option value="">{t("users.notifyPickUser")}</option>
                   {users.map((u) => (
                     <option key={u.id} value={u.id}>
-                      {u.username}{u.role === "admin" ? ` (${t("common.admin")})` : ""}
+                      {u.username}{u.role !== "user" ? ` (${t(roleLabelKey(u.role))})` : ""}
                     </option>
                   ))}
                 </select>

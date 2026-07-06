@@ -166,17 +166,23 @@ async function checkSuperAdminThemeBlocks() {
     if (forbidden.length) {
       throw new Error(`forbidden super-admin source decks in theme blocks API: ${forbidden.join(", ")}`);
     }
+    const addableLangs = new Set();
+    for (const block of body?.blocks ?? []) {
+      for (const cell of block?.cells ?? []) {
+        if ((cell?.defaultSourceDecks ?? []).length) addableLangs.add(String(cell.lang || ""));
+      }
+    }
     const activeLangs = activeSuperAdminLanguages();
     const staleLangs = (body?.languages ?? [])
       .map((lang) => String(lang?.code || ""))
-      .filter((lang) => lang && !activeLangs.has(lang));
+      .filter((lang) => lang && !activeLangs.has(lang) && !addableLangs.has(lang));
     if (staleLangs.length) {
       throw new Error(`unused super-admin languages in theme blocks API: ${staleLangs.join(", ")}`);
     }
     const emptyCells = [];
     for (const block of body?.blocks ?? []) {
       for (const cell of block?.cells ?? []) {
-        if (!(cell?.accounts ?? []).length) emptyCells.push(`${block.id}:${cell.lang}`);
+        if (!(cell?.accounts ?? []).length && !(cell?.defaultSourceDecks ?? []).length) emptyCells.push(`${block.id}:${cell.lang}`);
       }
     }
     if (emptyCells.length) {

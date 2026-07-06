@@ -7,7 +7,7 @@ type DbWithHandle = Pick<Db, "db">;
 type PackLike = Pick<PackSummary, "id" | "name" | "templateType"> | Pick<Pack, "id" | "name" | "templateType">;
 
 const JOKE_OR_MEME_RE =
-  /(анекдот|анекдоты|шутк|юмор|мем|мемы|meme|memes|joke|jokes|anecdote|anecdotes|witz|witze|barzellette|chistes|blague|blagues|piada|piadas|humor|humour|lucu|نوادر|طرائف|ضحك|हास्य|चुटकुले)/i;
+  /(анекдот|анекдоты|шутк|юмор|мем|мемы|meme|memes|joke|jokes|anecdote|anecdotes|witz|witze|barzellette|chistes|blague|blagues|piada|piadas|dowcip|dowcipy|żart|zart|żarty|zarty|kawał|kawal|humor|humour|lucu|نوادر|طرائف|ضحك|हास्य|चुटकुले)/i;
 
 const FORCE_HIDDEN_BUILT_IN_DECKS = new Set([
   "visual-riddles",

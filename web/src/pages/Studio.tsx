@@ -509,8 +509,9 @@ export default function Studio() {
                     </button>
                     {q.running && (
                       <>
-                        <button className="btn btn-sm btn-outline btn-error gap-1" onClick={q.cancel}>
-                          <Square size={13} /> {t("studio.stop")}
+                        <button className="btn btn-sm btn-outline btn-error gap-1" onClick={() => void q.cancel()} disabled={q.canceling}>
+                          {q.canceling ? <Loader2 className="animate-spin" size={13} /> : <Square size={13} />}
+                          {q.canceling ? t("account.cancelingQueue") : t("account.cancelQueue")}
                         </button>
                         <span className="text-xs text-base-content/60 flex items-center gap-1">
                           <Loader2 className="animate-spin" size={12} />

@@ -6,6 +6,7 @@ import { useT, type Lang } from "../lib/i18n";
 import { AppIcon } from "./AppIcon";
 import { apiClient, type AuthUser } from "../lib/api";
 import { groupNotifications } from "../lib/notificationGroups";
+import { isAdminLike, isAdminRole, roleLabelKey } from "../lib/authz";
 import {
   ADMIN_NAV_GROUPS,
   ADMIN_BOTTOM_NAV,
@@ -136,11 +137,11 @@ function AdminLayout({
   const [routeSettling, setRouteSettling] = useState(false);
   const [pinnedNavKeys, setPinnedNavKeys] = useState<string[]>(readPinnedNavKeys);
   const [hiddenNavKeys, setHiddenNavKeys] = useState<string[]>(readHiddenNavKeys);
-  const bottomNav = user.role === "admin" ? ADMIN_BOTTOM_NAV : USER_BOTTOM_NAV;
+  const bottomNav = isAdminLike(user) ? ADMIN_BOTTOM_NAV : USER_BOTTOM_NAV;
   // Clip-demos (нарезки) is open to all, but the nav item only shows if the user has ≥1 accessible pack.
-  const [hasClipDemos, setHasClipDemos] = useState(user.role === "admin");
+  const [hasClipDemos, setHasClipDemos] = useState(isAdminLike(user));
   useEffect(() => {
-    if (user.role === "admin") { setHasClipDemos(true); return; }
+    if (isAdminLike(user)) { setHasClipDemos(true); return; }
     let alive = true;
     fetch("/api/clip-demos/packs", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : { packs: [] }))
@@ -189,7 +190,7 @@ function AdminLayout({
   const regularNavGroups = visibleNavGroups
     .map((group) => ({ ...group, items: group.items.filter((item) => !pinnedNavKeySet.has(item.navKey)) }))
     .filter((group) => group.items.length > 0);
-  const visibleBottomNav = bottomNav.filter((item) => !hiddenNavKeySet.has(navKeyFor(item)));
+  const visibleBottomNav = bottomNav.filter((item) => canSeeNav(item, user, { hasClipDemos }) && !hiddenNavKeySet.has(navKeyFor(item)));
 
   function renderSidebarItem({ to, labelKey, icon, end, adminBadge, navKey }: SidebarNavItem) {
     return (
@@ -295,7 +296,7 @@ function AdminLayout({
     <div className="admin-shell drawer lg:drawer-open min-h-screen overflow-x-hidden bg-base-200 text-base-content" onClickCapture={handleRouteClick}>
       <input id={DRAWER_ID} type="checkbox" className="drawer-toggle" />
 
-      <div className="drawer-content flex min-w-0 flex-col overflow-x-hidden pb-16 lg:pb-0">
+      <div className="drawer-content flex min-w-0 flex-col overflow-x-hidden pb-16 lg:pl-72 lg:pb-0">
         <header className="sticky top-0 z-30 border-b border-base-300 bg-base-100/95 backdrop-blur">
           <div className="h-14 px-3 sm:px-5 flex items-center gap-3">
             <label htmlFor={DRAWER_ID} className="btn btn-ghost btn-sm btn-square lg:hidden" aria-label={t("layout.openMenu")}>
@@ -367,9 +368,9 @@ function AdminLayout({
         )}
       </div>
 
-      <div className="drawer-side z-40">
+      <div className="drawer-side z-40 lg:fixed lg:inset-y-0 lg:left-0 lg:right-auto lg:h-dvh lg:overflow-hidden">
         <label htmlFor={DRAWER_ID} className="drawer-overlay" aria-label={t("layout.closeMenu")}></label>
-        <aside className="w-72 min-h-screen bg-base-100 border-r border-base-300 flex flex-col">
+        <aside className="w-72 min-h-screen bg-base-100 border-r border-base-300 flex flex-col lg:h-dvh lg:min-h-0">
           <Link
             to="/"
             onFocus={() => preloadRoutePath("/")}
@@ -413,10 +414,14 @@ function AdminLayout({
                 <div className="min-w-0">
                   <div className="text-sm font-semibold truncate">{user.username}</div>
                   <div className="text-xs text-base-content/55">
-                    {user.role === "admin" ? t("common.admin") : t("common.user")}
+                    {t(roleLabelKey(user.role))}
                   </div>
                 </div>
-                {user.role === "admin" && <span className="badge badge-error badge-sm">adm</span>}
+                {isAdminRole(user) ? (
+                  <span className="badge badge-error badge-sm">adm</span>
+                ) : user.role === "moder" ? (
+                  <span className="badge badge-warning badge-sm">mod</span>
+                ) : null}
               </div>
             </div>
             <LanguageToggle lang={lang} setLang={setLang} t={t} className="w-full mb-2 sm:hidden" />

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronLeft, ChevronRight, ExternalLink, Trash2 } from "lucide-react";
 import { apiClient, type HistoryItem, type AdminUser, type Account } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { isAdminLike, isAdminRole, roleLabelKey } from "../lib/authz";
 import { useT } from "../lib/i18n";
 import { cleanDisplayText } from "../lib/text";
 import { formatDateTime } from "../lib/format";
@@ -26,7 +27,8 @@ function watchUrl(h: HistoryItem): string | null {
 export default function History() {
   const { t } = useT();
   const { user } = useAuth();
-  const isAdmin = user?.role === "admin";
+  const canViewAll = isAdminLike(user);
+  const canMutateAll = isAdminRole(user);
 
   const [items, setItems] = useState<HistoryItem[]>([]);
   const [total, setTotal] = useState(0);
@@ -55,11 +57,18 @@ export default function History() {
 
   // Accounts (for channel avatars + admin channel filter) + admin user list.
   useEffect(() => {
-    apiClient.accounts(isAdmin ? "all" : undefined).then(setAllAccounts).catch(() => {});
-    if (isAdmin) apiClient.adminUsers().then(setUsers).catch(() => {});
-  }, [isAdmin]);
+    apiClient.accounts(canViewAll ? "all" : undefined).then(setAllAccounts).catch(() => {});
+    if (canViewAll) apiClient.adminUsers().then(setUsers).catch(() => {});
+  }, [canViewAll]);
   const avatarMap = useMemo(
     () => Object.fromEntries(allAccounts.map((a) => [a.id, a.avatar])) as Record<number, string | null | undefined>,
+    [allAccounts],
+  );
+  const youtubeUrlMap = useMemo(
+    () =>
+      Object.fromEntries(
+        allAccounts.map((a) => [a.id, a.ytChannelId ? `https://www.youtube.com/channel/${a.ytChannelId}` : null]),
+      ) as Record<number, string | null>,
     [allAccounts],
   );
 
@@ -69,13 +78,13 @@ export default function History() {
     accountId?: number;
   } => {
     const params: { scope?: "mine" | "all"; userId?: number; accountId?: number } = {};
-    if (isAdmin && scopeAll) {
+    if (canViewAll && scopeAll) {
       if (accountId !== "") params.accountId = Number(accountId);
       else if (userId !== "") params.userId = Number(userId);
       else params.scope = "all";
     }
     return params;
-  }, [isAdmin, scopeAll, userId, accountId]);
+  }, [canViewAll, scopeAll, userId, accountId]);
 
   const load = useCallback(
     (p: number) => {
@@ -104,6 +113,7 @@ export default function History() {
   );
 
   const clearFailedItems = useCallback(async () => {
+    if (scopeAll && !canMutateAll) return;
     if (!window.confirm(t("history.clearErrorsConfirm"))) return;
     setClearingErrors(true);
     setError(null);
@@ -117,7 +127,7 @@ export default function History() {
     } finally {
       setClearingErrors(false);
     }
-  }, [historyScopeParams, load, t]);
+  }, [canMutateAll, historyScopeParams, load, scopeAll, t]);
 
   // Reload from page 1 whenever the filter changes.
   useEffect(() => {
@@ -130,7 +140,8 @@ export default function History() {
     [allAccounts, userId],
   );
 
-  const showOwner = isAdmin && scopeAll;
+  const showOwner = canViewAll && scopeAll;
+  const canClearErrors = !scopeAll || canMutateAll;
 
   return (
     <div className="space-y-6">
@@ -145,7 +156,7 @@ export default function History() {
       {/* Filter bar: admin scope (Мои/Все + user/channel) only for admins; «Только с ошибками» — for everyone. */}
       <div className="card bg-base-100 border border-base-300">
         <div className="card-body py-3 flex-row flex-wrap items-center gap-3">
-          {isAdmin && (
+          {canViewAll && (
             <>
               <div className="join">
                 <button
@@ -181,7 +192,7 @@ export default function History() {
                     {users.map((u) => (
                       <option key={u.id} value={u.id}>
                         {u.username}
-                        {u.role === "admin" ? ` (${t("common.admin")})` : ""}
+                        {u.role !== "user" ? ` (${t(roleLabelKey(u.role))})` : ""}
                       </option>
                     ))}
                   </select>
@@ -206,16 +217,18 @@ export default function History() {
           )}
 
           <div className="ml-auto flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              className="btn btn-sm btn-error gap-1"
-              onClick={clearFailedItems}
-              disabled={clearingErrors || loading || (onlyErrors && total === 0)}
-              title={t("history.clearErrorsTitle")}
-            >
-              {clearingErrors ? <span className="loading loading-spinner loading-xs" /> : <Trash2 size={14} />}
-              {t("history.clearErrors")}
-            </button>
+            {canClearErrors && (
+              <button
+                type="button"
+                className="btn btn-sm btn-error gap-1"
+                onClick={clearFailedItems}
+                disabled={clearingErrors || loading || (onlyErrors && total === 0)}
+                title={t("history.clearErrorsTitle")}
+              >
+                {clearingErrors ? <span className="loading loading-spinner loading-xs" /> : <Trash2 size={14} />}
+                {t("history.clearErrors")}
+              </button>
+            )}
             <button
               type="button"
               className={`btn btn-sm gap-1 ${onlyErrors ? "btn-error" : "btn-ghost"}`}
@@ -266,17 +279,36 @@ export default function History() {
                   <tbody>
                     {items.map((h) => {
                       const url = watchUrl(h);
+                      const youtubeUrl = youtubeUrlMap[h.accountId];
+                      const avatar = avatarMap[h.accountId];
                       return (
                         <tr key={h.id}>
                           <td className="font-medium">{cleanDisplayText(h.title)}</td>
                           <td>
                             <span className="flex items-center gap-2">
-                              {avatarMap[h.accountId] && (
-                                <img
-                                  src={avatarMap[h.accountId] as string}
-                                  alt=""
-                                  className="w-6 h-6 rounded-full object-cover bg-base-200 shrink-0"
-                                />
+                              {avatar && (
+                                youtubeUrl ? (
+                                  <a
+                                    href={youtubeUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title={t("stats.openOnYoutube")}
+                                    aria-label={t("stats.openOnYoutube")}
+                                    className="shrink-0 rounded-full transition hover:opacity-80"
+                                  >
+                                    <img
+                                      src={avatar}
+                                      alt=""
+                                      className="w-6 h-6 rounded-full object-cover bg-base-200"
+                                    />
+                                  </a>
+                                ) : (
+                                  <img
+                                    src={avatar}
+                                    alt=""
+                                    className="w-6 h-6 rounded-full object-cover bg-base-200 shrink-0"
+                                  />
+                                )
                               )}
                               <span className="truncate">{h.channelName || `#${h.accountId}`}</span>
                             </span>
