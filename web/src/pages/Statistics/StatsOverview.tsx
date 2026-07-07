@@ -1,15 +1,15 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import {
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   Tooltip,
   CartesianGrid,
+  ReferenceDot,
   ResponsiveContainer,
 } from "recharts";
-import type { YoutubeBreakdownRow } from "../../lib/api";
 import { AppIcon } from "../../components/AppIcon";
 import { useT } from "../../lib/i18n";
 import { cleanDisplayText } from "../../lib/text";
@@ -20,9 +20,15 @@ import {
   formatWatchMinutes,
   formatSeconds,
   formatMetricValue,
-  labelValue,
 } from "../../lib/statsFormat";
-import type { OverviewTopChannel, OverviewTopVideo, StatsOverviewData } from "./overview";
+import {
+  reportRangeTitle,
+  type OverviewReportRange,
+  type OverviewTopChannel,
+  type OverviewTopVideo,
+  type StatsOverviewData,
+} from "./overview";
+import { ChartTip, CompositionStrip, LedgerStrip, RankBadge, Sparkline } from "./viz";
 
 export type OverviewMetric = "views" | "watch" | "engaged" | "subscribers";
 
@@ -38,43 +44,30 @@ function readOverviewChartShare(): number {
   return Math.min(MAX_CHART_SHARE, Math.max(MIN_CHART_SHARE, raw));
 }
 
+// Slim per-source ledgers instead of two boxy KPI cards: Analytics for everyone, Data API — admin.
 export function SourceStats({ overview, days, isAdmin }: { overview: StatsOverviewData; days: number; isAdmin: boolean }) {
   const { t } = useT();
   return (
     <div className={`grid grid-cols-1 gap-4 ${isAdmin ? "xl:grid-cols-2" : ""}`}>
-      <section className="card bg-base-100 border border-base-300">
-        <div className="card-body gap-3">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h2 className="card-title text-base">{t("stats.youtubeAnalyticsTitle")}</h2>
-            </div>
-            <span className="badge badge-info badge-sm">Analytics</span>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <MiniStat label={t("stats.viewsForDays", { n: days })} value={fmt(overview.analyticsViews)} title={t("stats.periodViewsHint")} />
-            <MiniStat label={t("stats.watchTime")} value={formatWatchMinutes(overview.watchMinutes)} />
-            <MiniStat label={t("stats.engagedViews")} value={fmt(overview.engagedViews)} />
-            <MiniStat label={t("stats.avgDuration")} value={formatSeconds(overview.avgViewDuration)} />
-          </div>
-        </div>
-      </section>
+      <LedgerStrip
+        tag={<span className="badge badge-info badge-sm">Analytics</span>}
+        items={[
+          { label: t("stats.viewsForDays", { n: days }), value: fmt(overview.analyticsViews), hint: t("stats.periodViewsHint") },
+          { label: t("stats.watchTime"), value: formatWatchMinutes(overview.watchMinutes) },
+          { label: t("stats.engagedViews"), value: fmt(overview.engagedViews) },
+          { label: t("stats.avgDuration"), value: formatSeconds(overview.avgViewDuration) },
+        ]}
+      />
       {isAdmin && (
-        <section className="card bg-base-100 border border-base-300">
-          <div className="card-body gap-3">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h2 className="card-title text-base">{t("stats.youtubeDataTitle")}</h2>
-              </div>
-              <span className="badge badge-outline badge-sm shrink-0 whitespace-nowrap">Data API</span>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <MiniStat label={t("stats.totalSubscribers")} value={fmt(overview.subscribers)} />
-              <MiniStat label={t("stats.totalViews")} value={fmt(overview.publicViews)} />
-              <MiniStat label={t("stats.videos")} value={fmt(overview.videos)} />
-              <MiniStat label={t("stats.channelsConnected")} value={`${overview.connected} / ${overview.channels}`} />
-            </div>
-          </div>
-        </section>
+        <LedgerStrip
+          tag={<span className="badge badge-outline badge-sm shrink-0 whitespace-nowrap">Data API</span>}
+          items={[
+            { label: t("stats.totalSubscribers"), value: fmt(overview.subscribers) },
+            { label: t("stats.totalViews"), value: fmt(overview.publicViews) },
+            { label: t("stats.videos"), value: fmt(overview.videos) },
+            { label: t("stats.channelsConnected"), value: `${overview.connected} / ${overview.channels}` },
+          ]}
+        />
       )}
     </div>
   );
@@ -110,98 +103,135 @@ export function StatsOverview({
   const hookRate = overview.analyticsViews > 0 ? (overview.engagedViews / overview.analyticsViews) * 100 : null;
   const likeRatio = overview.likes + overview.dislikes > 0 ? (overview.likes / (overview.likes + overview.dislikes)) * 100 : null;
 
+  const metricValue = (p: StatsOverviewData["daily"][number], key: OverviewMetric): number =>
+    key === "watch"
+      ? Math.round((p.watchMinutes / 60) * 10) / 10
+      : key === "engaged"
+        ? p.engagedViews
+        : key === "subscribers"
+          ? p.subscribersGained - p.subscribersLost
+          : p.views;
+
+  // KPI tiles double as the chart metric switch; each carries its own halftone sparkline.
+  const netSubscribers = overview.subscribersGained - overview.subscribersLost;
+  const tiles: { key: OverviewMetric; label: string; value: string; hint?: string }[] = [
+    { key: "views", label: t("stats.viewsForDays", { n: days }), value: fmt(overview.analyticsViews), hint: t("stats.periodViewsHint") },
+    { key: "watch", label: t("stats.watchTime"), value: formatWatchMinutes(overview.watchMinutes) },
+    { key: "engaged", label: t("stats.engagedViews"), value: fmt(overview.engagedViews) },
+    { key: "subscribers", label: t("stats.netSubscribers"), value: signed(netSubscribers) },
+  ];
+
   const metricLabels: Record<OverviewMetric, string> = {
     views: t("stats.metricViews"),
     watch: t("stats.watchHours"),
     engaged: t("stats.engagedViews"),
     subscribers: t("stats.netSubscribers"),
   };
-  const chart = overview.daily.map((p) => {
-    const value =
-      metric === "watch"
-        ? Math.round((p.watchMinutes / 60) * 10) / 10
-        : metric === "engaged"
-          ? p.engagedViews
-          : metric === "subscribers"
-            ? p.subscribersGained - p.subscribersLost
-            : p.views;
-    return { date: shortDate(p.date), value };
-  });
+  const chart = overview.daily.map((p) => ({ date: shortDate(p.date), value: metricValue(p, metric) }));
+  const peak = chart.reduce<{ date: string; value: number } | null>(
+    (best, p) => (p.value > 0 && (!best || p.value > best.value) ? p : best),
+    null,
+  );
   const hasBreakdowns = overview.trafficSources.length > 0 || overview.devices.length > 0 || overview.countries.length > 0;
+  const dataContext = [
+    t("stats.contextPeriod", { n: days }),
+    overview.dataThrough ? t("stats.contextDataThrough", { date: shortDate(overview.dataThrough) }) : "",
+    t("stats.contextChannels", { ready: overview.analyticsChannels, total: overview.channels }),
+  ].filter(Boolean);
+  const quietStats: { label: string; value: string; hint?: string }[] = [
+    { label: t("stats.hookRate"), value: hookRate == null ? "—" : `${hookRate.toFixed(0)}%`, hint: t("stats.hookRateHint") },
+    { label: t("stats.avgDuration"), value: formatSeconds(overview.avgViewDuration) },
+    {
+      label: t("stats.likeRatio"),
+      value: likeRatio == null ? "—" : `${likeRatio.toFixed(0)}%`,
+      hint: t("stats.likeRatioHint", { likes: fmt(overview.likes), dislikes: fmt(overview.dislikes) }),
+    },
+    { label: t("stats.likes"), value: fmt(overview.likes) },
+    { label: t("stats.comments"), value: fmt(overview.comments) },
+    { label: t("stats.sharesStat"), value: fmt(overview.shares) },
+  ];
+  const breakdownSubtitle = reportRangeTitle(t, overview.breakdownsRange, days);
 
   return (
     <section className="card bg-base-100 border border-base-300">
       <div className="card-body gap-5">
         <div className="flex items-start justify-between gap-3 flex-wrap">
-          <div>
+          <div className="min-w-0">
             <div className="font-semibold">{t("stats.overviewTitle")}</div>
-          </div>
-          <div className="flex min-w-0 max-w-full flex-wrap items-center justify-end gap-3">
-            <div className="join min-w-max">
-              {(["views", "watch", "engaged", "subscribers"] as OverviewMetric[]).map((key) => (
-                <button
-                  key={key}
-                  className={`btn btn-xs join-item ${metric === key ? "btn-primary" : "btn-ghost"}`}
-                  onClick={() => onMetric(key)}
-                >
-                  {metricLabels[key]}
-                </button>
+            <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-base-content/55">
+              {dataContext.map((item) => (
+                <span key={item}>{item}</span>
               ))}
             </div>
-            <label
-              className="hidden xl:flex items-center gap-2 text-xs text-base-content/55"
-              title={t("stats.overviewLayoutTitle", { chart: chartShare, top: topVideosShare })}
-            >
-              <span className="w-16 text-right tabular-nums">{t("stats.overviewChartShort")} {chartShare}%</span>
-              <input
-                type="range"
-                min={MIN_CHART_SHARE}
-                max={MAX_CHART_SHARE}
-                step={5}
-                value={chartShare}
-                onChange={(event) => setChartShare(Number(event.currentTarget.value))}
-                className="range range-xs range-primary w-28"
-                aria-label={t("stats.overviewLayoutAria")}
-              />
-              <span className="w-14 tabular-nums">{t("stats.topVideosShort")} {topVideosShare}%</span>
-            </label>
           </div>
+          <label
+            className="hidden xl:flex items-center gap-2 text-xs text-base-content/55"
+            title={t("stats.overviewLayoutTitle", { chart: chartShare, top: topVideosShare })}
+          >
+            <span className="w-16 text-right tabular-nums">{t("stats.overviewChartShort")} {chartShare}%</span>
+            <input
+              type="range"
+              min={MIN_CHART_SHARE}
+              max={MAX_CHART_SHARE}
+              step={5}
+              value={chartShare}
+              onChange={(event) => setChartShare(Number(event.currentTarget.value))}
+              className="range range-xs range-primary w-28"
+              aria-label={t("stats.overviewLayoutAria")}
+            />
+            <span className="w-14 tabular-nums">{t("stats.topVideosShort")} {topVideosShare}%</span>
+          </label>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-          <MiniStat label={t("stats.viewsForDays", { n: days })} value={fmt(overview.analyticsViews)} />
-          <MiniStat label={t("stats.watchTime")} value={formatWatchMinutes(overview.watchMinutes)} />
-          <MiniStat label={t("stats.hookRate")} value={hookRate == null ? "—" : `${hookRate.toFixed(0)}%`} title={t("stats.hookRateHint")} />
-          <MiniStat label={t("stats.engagedViews")} value={fmt(overview.engagedViews)} />
-          <MiniStat label={t("stats.avgDuration")} value={formatSeconds(overview.avgViewDuration)} />
-          <MiniStat label={t("stats.likeRatio")} value={likeRatio == null ? "—" : `${likeRatio.toFixed(0)}%`} title={t("stats.likeRatioHint", { likes: fmt(overview.likes), dislikes: fmt(overview.dislikes) })} />
-          <MiniStat label={t("stats.netSubscribers")} value={signed(overview.subscribersGained - overview.subscribersLost)} />
+        <div>
+          <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+            {tiles.map((tile) => (
+              <button
+                key={tile.key}
+                type="button"
+                className={`stx-tile ${metric === tile.key ? "is-on" : ""}`}
+                aria-pressed={metric === tile.key}
+                onClick={() => onMetric(tile.key)}
+                title={tile.hint ?? t("stats.tileSwitchHint")}
+              >
+                <span className="stx-cap">{tile.label}</span>
+                <span className="stx-num stx-tile-value text-2xl font-bold leading-none">{tile.value}</span>
+                <span className="mt-auto block pt-1">
+                  <Sparkline values={overview.daily.map((p) => metricValue(p, tile.key))} height={26} className="w-full" />
+                </span>
+              </button>
+            ))}
+          </div>
+          <div className="stx-quiet-row mt-3 text-sm">
+            {quietStats.map((s) => (
+              <span key={s.label} title={s.hint} className={s.hint ? "cursor-help" : undefined}>
+                <span className="stx-num font-bold">{s.value}</span>{" "}
+                <span className="stx-cap">{s.label}</span>
+              </span>
+            ))}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-[var(--stats-overview-columns)] gap-4" style={overviewGridStyle}>
-          <div className="rounded-lg bg-base-200/50 p-3 min-w-0">
-            <div className="flex items-center justify-between gap-3 mb-2">
+          <div className="stx-panel p-3">
+            <div className="flex items-center justify-between gap-3 mb-2 flex-wrap">
               <div className="text-sm font-semibold">{t("stats.overviewChart")}</div>
-              <div className="text-xs text-base-content/50">{metricLabels[metric]}</div>
+              <div className="flex items-center gap-3 text-xs text-base-content/50">
+                {peak && chart.length > 1 && (
+                  <span className="stx-num" title={t("stats.peakDayHint")}>
+                    <span
+                      className="mr-1 inline-block h-2 w-2 rounded-full align-middle"
+                      style={{ background: "var(--stx-peak-fill)", boxShadow: "0 0 0 1.5px var(--stx-peak-ring) inset" }}
+                      aria-hidden="true"
+                    />
+                    {t("stats.peakDay", { date: peak.date, value: formatMetricValue(peak.value, metric) })}
+                  </span>
+                )}
+                <span>{metricLabels[metric]}</span>
+              </div>
             </div>
             {chart.length > 1 ? (
-              <div className="h-72 w-full min-w-0">
-                <ResponsiveContainer
-                  width="100%"
-                  height="100%"
-                  minWidth={0}
-                  minHeight={288}
-                  initialDimension={{ width: 320, height: 288 }}
-                >
-                  <LineChart data={chart} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis dataKey="date" fontSize={12} tickMargin={6} minTickGap={24} />
-                    <YAxis fontSize={12} width={46} allowDecimals={metric === "watch"} tickFormatter={(value) => formatMetricValue(Number(value), metric)} />
-                    <Tooltip formatter={(value) => formatMetricValue(Number(value), metric)} />
-                    <Line type="monotone" dataKey="value" name={metricLabels[metric]} stroke="#0f766e" strokeWidth={2.5} dot={false} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+              <OverviewChart chart={chart} metric={metric} peak={peak} name={metricLabels[metric]} />
             ) : (
               <div className="h-72 flex items-center justify-center text-sm text-base-content/45 text-center px-4">
                 {t("stats.noAnalyticsChart")}
@@ -209,18 +239,18 @@ export function StatsOverview({
             )}
           </div>
 
-          <TopVideosPanel videos={overview.topVideos} />
+          <TopVideosPanel videos={overview.topVideos} range={overview.topVideosRange} days={days} />
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_22rem] gap-4 items-start">
           {hasBreakdowns ? (
             <div className="grid grid-cols-1 gap-3">
-              <Breakdown title={t("stats.trafficSources")} rows={overview.trafficSources} />
-              <Breakdown title={t("stats.devices")} rows={overview.devices} />
-              <Breakdown title={t("stats.countries")} rows={overview.countries} />
+              <CompositionStrip title={t("stats.trafficSources")} subtitle={breakdownSubtitle} rows={overview.trafficSources} t={t} cap={5} />
+              <CompositionStrip title={t("stats.devices")} subtitle={breakdownSubtitle} rows={overview.devices} t={t} cap={4} />
+              <CompositionStrip title={t("stats.countries")} subtitle={breakdownSubtitle} rows={overview.countries} t={t} cap={5} />
             </div>
           ) : (
-            <div className="rounded-lg bg-base-200/50 p-3 min-h-32 flex items-center justify-center text-center text-sm text-base-content/45">
+            <div className="stx-panel p-3 min-h-32 flex items-center justify-center text-center text-sm text-base-content/45">
               {t("stats.noBreakdowns")}
             </div>
           )}
@@ -231,21 +261,97 @@ export function StatsOverview({
   );
 }
 
-export function MiniStat({ label, value, title }: { label: string; value: ReactNode; title?: string }) {
+// The hero area chart: ink line + soft halftone fill, solid faint grid, square editorial
+// tooltip, the best day marked with the accent dot.
+function OverviewChart({
+  chart,
+  metric,
+  peak,
+  name,
+}: {
+  chart: { date: string; value: number }[];
+  metric: OverviewMetric;
+  peak: { date: string; value: number } | null;
+  name: string;
+}) {
+  const gradientId = `stx-area-${useId().replace(/:/g, "")}`;
   return (
-    <div className="relative flex min-h-24 flex-col rounded-lg border border-base-300/70 bg-base-100 p-3 shadow-sm" title={title}>
-      <div className="min-h-9 pr-5 text-xs leading-snug text-base-content/55">
-        {label}
-      </div>
-      {title && <span className="absolute right-3 top-3 text-base-content/30 cursor-help">ⓘ</span>}
-      <div className="mt-auto pt-2 text-xl font-bold leading-none tracking-normal">{value}</div>
+    <div className="h-72 w-full min-w-0">
+      <ResponsiveContainer
+        width="100%"
+        height="100%"
+        minWidth={0}
+        minHeight={288}
+        initialDimension={{ width: 320, height: 288 }}
+      >
+        <AreaChart data={chart} margin={{ top: 10, right: 12, left: 0, bottom: 0 }}>
+          <defs>
+            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="var(--stx-area-from)" />
+              <stop offset="100%" stopColor="var(--stx-area-to)" />
+            </linearGradient>
+          </defs>
+          <CartesianGrid vertical={false} stroke="var(--stx-grid)" />
+          <XAxis
+            dataKey="date"
+            fontSize={11}
+            tickMargin={6}
+            minTickGap={28}
+            tickLine={false}
+            axisLine={{ stroke: "var(--stx-grid)" }}
+            tick={{ fill: "var(--stx-axis)" }}
+          />
+          <YAxis
+            fontSize={11}
+            width={46}
+            allowDecimals={metric === "watch"}
+            tickLine={false}
+            axisLine={false}
+            tick={{ fill: "var(--stx-axis)" }}
+            tickFormatter={(value) => formatMetricValue(Number(value), metric)}
+          />
+          <Tooltip
+            content={<ChartTip format={(v) => formatMetricValue(v, metric)} />}
+            cursor={{ stroke: "var(--stx-axis)", strokeDasharray: "3 3" }}
+          />
+          <Area
+            type="monotone"
+            dataKey="value"
+            name={name}
+            stroke="var(--stx-series)"
+            strokeWidth={2}
+            fill={`url(#${gradientId})`}
+            dot={false}
+            activeDot={{ r: 3.5, fill: "var(--stx-series)", stroke: "var(--stx-peak-ring)", strokeWidth: 1 }}
+            isAnimationActive={false}
+          />
+          {peak && (
+            <ReferenceDot
+              x={peak.date}
+              y={peak.value}
+              r={4.5}
+              fill="var(--stx-peak-fill)"
+              stroke="var(--stx-peak-ring)"
+              strokeWidth={1.5}
+            />
+          )}
+        </AreaChart>
+      </ResponsiveContainer>
     </div>
   );
 }
 
 const TOP_VIDEOS_CAP = 100;
 
-export function TopVideosPanel({ videos: allVideos }: { videos: OverviewTopVideo[] }) {
+export function TopVideosPanel({
+  videos: allVideos,
+  range,
+  days,
+}: {
+  videos: OverviewTopVideo[];
+  range: OverviewReportRange | null;
+  days: number;
+}) {
   const { t } = useT();
   // Показываем максимум 100 лучших роликов (overview.topVideos уже отсортирован по просмотрам).
   const videos = allVideos.length > TOP_VIDEOS_CAP ? allVideos.slice(0, TOP_VIDEOS_CAP) : allVideos;
@@ -273,24 +379,44 @@ export function TopVideosPanel({ videos: allVideos }: { videos: OverviewTopVideo
   }, [videos.length, visible]);
 
   return (
-    <div className="rounded-lg bg-base-200/50 p-3 min-w-0">
-      <div className="flex items-center justify-between gap-3 mb-3">
-        <div className="text-sm font-semibold">{t("stats.topVideosAll")}</div>
-        {videos.length > 0 && <span className="badge badge-ghost badge-sm">{shown.length} / {videos.length}</span>}
+    <div className="stx-panel p-3">
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div className="min-w-0">
+          <div className="text-sm font-semibold">{t("stats.topVideosAll")}</div>
+          <div className="mt-0.5 text-xs text-base-content/50 truncate" title={reportRangeTitle(t, range, days)}>
+            {reportRangeTitle(t, range, days)}
+          </div>
+        </div>
+        {videos.length > 0 && <span className="badge badge-ghost badge-sm stx-num">{shown.length} / {videos.length}</span>}
       </div>
       {videos.length === 0 ? (
         <div className="h-72 flex items-center justify-center text-sm text-base-content/45 text-center px-4">
           {t("stats.noTopVideos")}
         </div>
       ) : (
-        <>
-        <div ref={listRef} className="space-y-2 max-h-72 overflow-auto pr-1">
+        <div ref={listRef} className="space-y-2 max-h-80 overflow-auto pr-1">
           {shown.map((v, index) => (
             <div
               key={`${v.accountId}:${v.videoId}`}
-              className="grid grid-cols-[1.5rem_minmax(0,1fr)_auto] items-center gap-3 rounded-lg bg-base-100/70 p-2 hover:bg-base-100"
+              className="grid grid-cols-[1.25rem_minmax(0,1fr)_auto] sm:grid-cols-[1.25rem_4rem_minmax(0,1fr)_auto] items-center gap-2.5 rounded-lg bg-base-100/70 p-2 hover:bg-base-100"
             >
-              <div className="text-xs text-base-content/45 text-right shrink-0">{index + 1}</div>
+              <RankBadge rank={index + 1} />
+              <a
+                href={`https://www.youtube.com/shorts/${v.videoId}`}
+                target="_blank"
+                rel="noreferrer"
+                className="relative hidden h-9 w-16 shrink-0 overflow-hidden rounded bg-base-300 sm:block"
+                title={t("stats.openOnYoutube")}
+                tabIndex={-1}
+              >
+                {v.thumbnailUrl ? (
+                  <img src={v.thumbnailUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="flex h-full w-full items-center justify-center text-base-content/30">
+                    <AppIcon name="video" size={16} />
+                  </span>
+                )}
+              </a>
               <div className="min-w-0">
                 <a
                   href={`https://www.youtube.com/shorts/${v.videoId}`}
@@ -310,7 +436,7 @@ export function TopVideosPanel({ videos: allVideos }: { videos: OverviewTopVideo
                 </Link>
               </div>
               <div className="text-right shrink-0">
-                <div className="text-sm font-semibold tabular-nums">{fmt(v.views)}</div>
+                <div className="text-sm font-semibold stx-num">{fmt(v.views)}</div>
                 <div className="text-[11px] text-base-content/45">
                   {t("stats.views").toLowerCase()} · {formatWatchMinutes(v.watchMinutes)}
                 </div>
@@ -319,7 +445,6 @@ export function TopVideosPanel({ videos: allVideos }: { videos: OverviewTopVideo
           ))}
           {videos.length > visible && <div ref={sentinelRef} className="h-8" aria-hidden="true" />}
         </div>
-        </>
       )}
     </div>
   );
@@ -359,131 +484,98 @@ export function TopChannelsPanel({ rows }: { rows: OverviewTopChannel[] }) {
     <aside className="card bg-base-100 border border-base-300">
       <div className="card-body p-4 gap-3">
         <div className="flex items-start justify-between gap-3">
-          <div>
-            <div className="text-sm font-semibold">{t("stats.topChannels")}</div>
-          </div>
+          <div className="text-sm font-semibold">{t("stats.topChannels")}</div>
           {ranked.some((r) => !r.hasAnalytics) && (
             <span className="badge badge-ghost badge-sm shrink-0">{t("stats.totalFallbackShort")}</span>
           )}
         </div>
-      {rows.length === 0 ? (
-        <div className="text-sm text-base-content/45 py-6 text-center">{t("stats.noTopChannels")}</div>
-      ) : (
-        <div ref={listRef} className="space-y-2 max-h-[56rem] overflow-auto pr-1">
-          {ranked.map((r, index) => {
-            const pct = Math.max(3, Math.round((r.mainViews / maxViews) * 100));
-            return (
-              <div
-                key={r.accountId}
-                className={`rounded-lg border px-3 py-2.5 ${
-                  r.hasAnalytics ? "bg-base-200/45 border-base-300" : "bg-base-200/20 border-base-300/70"
-                }`}
-              >
-                <div className="grid grid-cols-[1.5rem_minmax(0,1fr)_auto] items-center gap-2.5">
-                  <div className="text-xs font-semibold text-base-content/45 tabular-nums">
-                    {index + 1}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <Link
-                        to={`/accounts/${r.accountId}`}
-                        className="font-medium line-clamp-2 break-words link-hover"
-                        title={r.channelTitle}
-                      >
-                        {r.channelTitle}
-                      </Link>
-                      {r.ytChannelId && (
-                        <a
-                          href={`https://www.youtube.com/channel/${r.ytChannelId}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="badge badge-ghost badge-xs shrink-0"
-                          title={t("stats.openOnYoutube")}
+        {rows.length === 0 ? (
+          <div className="text-sm text-base-content/45 py-6 text-center">{t("stats.noTopChannels")}</div>
+        ) : (
+          <div ref={listRef} className="space-y-2 max-h-[56rem] overflow-auto pr-1">
+            {ranked.map((r, index) => {
+              const pct = Math.max(3, Math.round((r.mainViews / maxViews) * 100));
+              return (
+                <div
+                  key={r.accountId}
+                  className={`rounded-lg border px-3 py-2.5 ${
+                    r.hasAnalytics ? "bg-base-200/45 border-base-300" : "bg-base-200/20 border-base-300/70"
+                  }`}
+                >
+                  <div className="grid grid-cols-[1.5rem_minmax(0,1fr)_auto] items-center gap-2.5">
+                    <RankBadge rank={index + 1} />
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Link
+                          to={`/accounts/${r.accountId}`}
+                          className="font-medium line-clamp-2 break-words link-hover"
+                          title={r.channelTitle}
                         >
-                          YouTube
-                        </a>
-                      )}
+                          {r.channelTitle}
+                        </Link>
+                        {r.ytChannelId && (
+                          <a
+                            href={`https://www.youtube.com/channel/${r.ytChannelId}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="badge badge-ghost badge-xs shrink-0"
+                            title={t("stats.openOnYoutube")}
+                          >
+                            YouTube
+                          </a>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-base-content/45 min-w-0">
+                        {r.ownerUsername && <span className="truncate">@{r.ownerUsername}</span>}
+                        {!r.hasAnalytics && <span className="badge badge-ghost badge-xs">{t("stats.noPeriodAnalyticsShort")}</span>}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-base-content/45 min-w-0">
-                      {r.ownerUsername && <span className="truncate">@{r.ownerUsername}</span>}
-                      {!r.hasAnalytics && <span className="badge badge-ghost badge-xs">{t("stats.noPeriodAnalyticsShort")}</span>}
+                    <div className="text-right shrink-0">
+                      <div className="text-xl font-bold leading-none stx-num">{fmt(r.mainViews)}</div>
+                      <div className="text-[11px] uppercase tracking-wide text-base-content/45">
+                        {r.hasAnalytics ? t("stats.periodShort") : t("stats.totalShort")}
+                      </div>
                     </div>
                   </div>
-                  <div className="text-right shrink-0">
-                    <div className="text-xl font-bold leading-none tabular-nums">{fmt(r.mainViews)}</div>
-                    <div className="text-[11px] uppercase tracking-wide text-base-content/45">
-                      {r.hasAnalytics ? t("stats.periodShort") : t("stats.totalShort")}
-                    </div>
+
+                  <div className="h-1 rounded-full bg-base-300/70 overflow-hidden mt-2.5">
+                    <div
+                      className={`h-full rounded-full ${r.hasAnalytics ? "bg-primary" : "bg-base-content/25"}`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+
+                  <div className="mt-2 flex items-center justify-between gap-2 text-xs">
+                    {r.hasAnalytics ? (
+                      <div className="min-w-0 text-base-content/55 truncate">
+                        {formatWatchMinutes(r.watchMinutes)} · {formatSeconds(r.avgViewDuration)} ·{" "}
+                        <span className={r.subscribersNet > 0 ? "text-success" : r.subscribersNet < 0 ? "text-error" : ""}>
+                          {signed(r.subscribersNet)}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="min-w-0 text-base-content/45 truncate">{t("stats.totalFallbackShort")}</div>
+                    )}
+                    {r.ytChannelId && (
+                      <a
+                        href={`https://www.youtube.com/channel/${r.ytChannelId}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn btn-ghost btn-xs btn-square shrink-0"
+                        title={t("stats.openOnYoutube")}
+                        aria-label={t("stats.openOnYoutube")}
+                      >
+                        <AppIcon name="external" size={14} />
+                      </a>
+                    )}
                   </div>
                 </div>
-
-                <div className="h-1 rounded-full bg-base-300/70 overflow-hidden mt-2.5">
-                  <div
-                    className={`h-full rounded-full ${r.hasAnalytics ? "bg-primary" : "bg-base-content/25"}`}
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
-
-                <div className="mt-2 flex items-center justify-between gap-2 text-xs">
-                  {r.hasAnalytics ? (
-                    <div className="min-w-0 text-base-content/55 truncate">
-                      {formatWatchMinutes(r.watchMinutes)} · {formatSeconds(r.avgViewDuration)} ·{" "}
-                      <span className={r.subscribersNet > 0 ? "text-success" : r.subscribersNet < 0 ? "text-error" : ""}>
-                        {signed(r.subscribersNet)}
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="min-w-0 text-base-content/45 truncate">{t("stats.totalFallbackShort")}</div>
-                  )}
-                  {r.ytChannelId && (
-                    <a
-                      href={`https://www.youtube.com/channel/${r.ytChannelId}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="btn btn-ghost btn-xs btn-square shrink-0"
-                      title={t("stats.openOnYoutube")}
-                      aria-label={t("stats.openOnYoutube")}
-                    >
-                      <AppIcon name="external" size={14} />
-                    </a>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-          {rows.length > visible && <div ref={sentinelRef} className="h-8" aria-hidden="true" />}
-        </div>
-      )}
+              );
+            })}
+            {rows.length > visible && <div ref={sentinelRef} className="h-8" aria-hidden="true" />}
+          </div>
+        )}
       </div>
     </aside>
-  );
-}
-
-export function Breakdown({ title, rows }: { title: string; rows: YoutubeBreakdownRow[] }) {
-  if (!rows.length) return null;
-  const total = rows.reduce((sum, r) => sum + r.views, 0);
-  return (
-    <div className="rounded-lg bg-base-200/60 p-3">
-      <div className="font-semibold text-sm mb-2">{title}</div>
-      <div className="space-y-2 max-h-[18rem] overflow-auto pr-1">
-        {rows.map((r) => {
-          const pct = total > 0 ? Math.round((r.views / total) * 100) : 0;
-          return (
-            <div key={r.key} className="rounded-md border border-base-300/70 bg-base-100/65 px-3 py-2">
-              <div className="flex items-center justify-between gap-3">
-                <span className="min-w-0 truncate text-sm">{labelValue(r.key)}</span>
-                <span className="shrink-0 text-right text-sm font-semibold tabular-nums">{fmt(r.views)}</span>
-              </div>
-              <div className="mt-1 flex items-center gap-2">
-                <div className="h-1.5 flex-1 rounded bg-base-300 overflow-hidden">
-                  <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
-                </div>
-                <span className="w-8 shrink-0 text-right text-[11px] text-base-content/45 tabular-nums">{pct}%</span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
   );
 }

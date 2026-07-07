@@ -1,5 +1,5 @@
-import type { StatRow, YoutubeBreakdownRow, YoutubeTopVideo } from "../../lib/api";
-import { trimLeadingEmptyDays, trimTrailingEmptyDays } from "../../lib/statsFormat";
+import type { StatRow, YoutubeBreakdownRow, YoutubeReportRange, YoutubeTopVideo } from "../../lib/api";
+import { shortDate, trimLeadingEmptyDays, trimTrailingEmptyDays } from "../../lib/statsFormat";
 
 export interface OverviewDailyPoint {
   date: string;
@@ -14,6 +14,15 @@ export interface OverviewTopVideo extends YoutubeTopVideo {
   accountId: number;
   channelTitle: string;
   ownerUsername: string | null;
+  reportRange: YoutubeReportRange | null;
+}
+
+export interface OverviewReportRange {
+  from: string;
+  to: string;
+  takenAt: string;
+  exact: boolean;
+  mixed: boolean;
 }
 
 export interface OverviewTopChannel {
@@ -48,12 +57,33 @@ export interface StatsOverviewData {
   subscribersGained: number;
   subscribersLost: number;
   dataThrough: string | null;
+  topVideosRange: OverviewReportRange | null;
+  breakdownsRange: OverviewReportRange | null;
   daily: OverviewDailyPoint[];
   topVideos: OverviewTopVideo[];
   topChannels: OverviewTopChannel[];
   trafficSources: YoutubeBreakdownRow[];
   devices: YoutubeBreakdownRow[];
   countries: YoutubeBreakdownRow[];
+}
+
+// «{from}–{to} · источник · свежесть» — подпись диапазона отчёта под заголовками панелей.
+export function reportRangeTitle(
+  t: (key: string, vars?: Record<string, string | number>) => string,
+  range: OverviewReportRange | YoutubeReportRange | null,
+  days: number,
+): string {
+  if (!range) return t("stats.reportRangeMissing", { n: days });
+  const from = "from" in range ? range.from : range.rangeFrom;
+  const to = "to" in range ? range.to : range.rangeTo;
+  const mixed = "mixed" in range ? range.mixed : false;
+  const rangeText = t(mixed ? "stats.reportRangeMixed" : "stats.reportRange", {
+    from: shortDate(from),
+    to: shortDate(to),
+  });
+  const freshness = range.takenAt ? t("stats.reportUpdated", { date: shortDate(range.takenAt.slice(0, 10)) }) : "";
+  const source = range.exact ? t("stats.reportExact") : t("stats.reportCached");
+  return [rangeText, source, freshness].filter(Boolean).join(" · ");
 }
 
 export function buildOverview(rows: StatRow[]): StatsOverviewData {
@@ -82,6 +112,8 @@ export function buildOverview(rows: StatRow[]): StatsOverviewData {
     subscribersGained: 0,
     subscribersLost: 0,
     dataThrough: null,
+    topVideosRange: null,
+    breakdownsRange: null,
     daily: [],
     topVideos,
     topChannels,
@@ -91,6 +123,8 @@ export function buildOverview(rows: StatRow[]): StatsOverviewData {
   };
   let durationWeighted = 0;
   let percentageWeighted = 0;
+  const topVideoRanges: YoutubeReportRange[] = [];
+  const breakdownRanges: YoutubeReportRange[] = [];
 
   for (const row of rows) {
     if (row.connected) overview.connected += 1;
@@ -142,12 +176,15 @@ export function buildOverview(rows: StatRow[]): StatsOverviewData {
     }
 
     const channelTitle = row.ytChannelTitle || row.channelName;
+    const topVideosRange = row.analytics.reportRanges?.topVideos ?? null;
+    if (analytics.topVideos.length > 0 && topVideosRange) topVideoRanges.push(topVideosRange);
     for (const video of analytics.topVideos) {
       topVideos.push({
         ...video,
         accountId: row.accountId,
         channelTitle,
         ownerUsername: row.ownerUsername,
+        reportRange: topVideosRange,
       });
     }
     topChannels.push({
@@ -165,6 +202,10 @@ export function buildOverview(rows: StatRow[]): StatsOverviewData {
     trafficSources.push(...analytics.trafficSources);
     devices.push(...analytics.devices);
     countries.push(...analytics.countries);
+    for (const key of ["trafficSources", "devices", "countries"] as const) {
+      const range = row.analytics.reportRanges?.[key] ?? null;
+      if (range && row.analytics[key].length > 0) breakdownRanges.push(range);
+    }
   }
 
   if (overview.analyticsViews > 0) {
@@ -186,12 +227,26 @@ export function buildOverview(rows: StatRow[]): StatsOverviewData {
     isEmptyDay,
   );
   overview.topVideos = topVideos.sort((a, b) => b.views - a.views);
+  overview.topVideosRange = combineReportRanges(topVideoRanges);
   overview.topChannels = topChannels
     .sort((a, b) => (b.analyticsViews || b.publicViews) - (a.analyticsViews || a.publicViews));
   overview.trafficSources = mergeBreakdowns(trafficSources);
   overview.devices = mergeBreakdowns(devices);
   overview.countries = mergeBreakdowns(countries);
+  overview.breakdownsRange = combineReportRanges(breakdownRanges);
   return overview;
+}
+
+function combineReportRanges(ranges: YoutubeReportRange[]): OverviewReportRange | null {
+  if (!ranges.length) return null;
+  const combos = new Set(ranges.map((r) => `${r.rangeFrom}|${r.rangeTo}|${r.takenAt}|${r.exact ? 1 : 0}`));
+  return {
+    from: ranges.reduce((min, r) => (r.rangeFrom < min ? r.rangeFrom : min), ranges[0]?.rangeFrom ?? ""),
+    to: ranges.reduce((max, r) => (r.rangeTo > max ? r.rangeTo : max), ranges[0]?.rangeTo ?? ""),
+    takenAt: ranges.reduce((max, r) => (r.takenAt > max ? r.takenAt : max), ranges[0]?.takenAt ?? ""),
+    exact: ranges.every((r) => r.exact),
+    mixed: combos.size > 1,
+  };
 }
 
 export function mergeBreakdowns(rows: YoutubeBreakdownRow[]): YoutubeBreakdownRow[] {

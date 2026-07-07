@@ -5,7 +5,6 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend,
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
@@ -20,10 +19,11 @@ import { useAuth } from "../../lib/auth";
 import { isAdminLike, isAdminRole } from "../../lib/authz";
 import { compactNumber } from "../../lib/format";
 import { useT } from "../../lib/i18n";
-import { fmt } from "../../lib/statsFormat";
+import { fmt, shortDate } from "../../lib/statsFormat";
 import { buildOverview } from "./overview";
 import { SourceStats, StatsOverview, type OverviewMetric } from "./StatsOverview";
 import { ChannelCard, AnalyticsFootnote, PlatformBand, Empty } from "./ChannelCard";
+import { ChartTip } from "./viz";
 
 type Scope = "mine" | "all";
 type View = "mine" | "all";
@@ -49,6 +49,22 @@ function loadFilters(): SavedFilters {
   } catch {
     return {};
   }
+}
+
+// Publish-activity chart series: status colours from the --stx-* tokens; a series that is zero
+// for the whole window (usually «запланировано»/«ошибки») is dropped so an alarm-coloured flat
+// line does not hug the axis.
+function activitySeries(
+  daily: NonNullable<UserAnalytics["daily"]>,
+  t: (key: string, vars?: Record<string, string | number>) => string,
+): { key: "published" | "scheduled" | "failed"; label: string; color: string }[] {
+  return (
+    [
+      { key: "published", label: t("stats.published"), color: "var(--stx-ok)" },
+      { key: "scheduled", label: t("stats.scheduled"), color: "var(--stx-mid)" },
+      { key: "failed", label: t("stats.failed"), color: "var(--stx-bad)" },
+    ] as const
+  ).filter((s) => daily.some((d) => d[s.key] > 0));
 }
 
 export default function Statistics() {
@@ -227,53 +243,70 @@ export default function Statistics() {
 
   return (
     <div className="space-y-6">
-      <header className="flex items-start justify-between gap-2 flex-wrap">
+      <header className="space-y-3">
         <div>
           <h1 className="text-2xl font-bold">{t("nav.statistics")}</h1>
           <p className="text-base-content/60">{t("stats.subtitle")}</p>
         </div>
-        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
-          <div className="join" role="group" aria-label={t("stats.period")}>
-            {DAYS_OPTIONS.map((d) => (
+        <div className="rounded-lg border border-base-300 bg-base-100 p-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-base-content/50">
+                {t("stats.analyticsPeriod")}
+              </span>
+              <div className="join" role="group" aria-label={t("stats.period")}>
+                {DAYS_OPTIONS.map((d) => (
+                  <button
+                    key={d}
+                    className={`btn btn-sm join-item ${days === d ? "btn-primary" : "btn-ghost"}`}
+                    onClick={() => setDays(d)}
+                    title={t("stats.periodDaysTitle", { n: d })}
+                  >
+                    {t("stats.daysShort", { n: d })}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {canViewAll && (
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                <span className="text-xs font-semibold uppercase tracking-wide text-base-content/50">
+                  {t("stats.scope")}
+                </span>
+                <div className="join">
+                  <button
+                    className={`btn btn-sm join-item ${view === "mine" ? "btn-primary" : "btn-ghost"}`}
+                    onClick={() => setView("mine")}
+                  >
+                    {t("stats.scopeMine")}
+                  </button>
+                  <button
+                    className={`btn btn-sm join-item ${view === "all" ? "btn-primary" : "btn-ghost"}`}
+                    onClick={() => setView("all")}
+                  >
+                    {t("stats.scopeAll")}
+                  </button>
+                </div>
+              </div>
+            )}
+            <div className="ml-auto flex min-w-0 items-center gap-2">
+              <span className="hidden md:inline text-xs text-base-content/50">
+                {t("stats.contextChannels", { ready: scopeOverview.analyticsChannels, total: scopeOverview.channels })}
+              </span>
               <button
-                key={d}
-                className={`btn btn-sm join-item ${days === d ? "btn-primary" : "btn-ghost"}`}
-                onClick={() => setDays(d)}
-                title={t("stats.periodDaysTitle", { n: d })}
+                className="btn btn-sm btn-primary gap-2"
+                onClick={refresh}
+                disabled={refreshing || loading}
+                title={t("stats.refreshTitle")}
               >
-                {t("stats.daysShort", { n: d })}
-              </button>
-            ))}
-          </div>
-          {canViewAll && (
-            <div className="join">
-              <button
-                className={`btn btn-sm join-item ${view === "mine" ? "btn-primary" : "btn-ghost"}`}
-                onClick={() => setView("mine")}
-              >
-                {t("stats.scopeMine")}
-              </button>
-              <button
-                className={`btn btn-sm join-item ${view === "all" ? "btn-primary" : "btn-ghost"}`}
-                onClick={() => setView("all")}
-              >
-                {t("stats.scopeAll")}
+                {refreshing ? (
+                  <span className="loading loading-spinner loading-sm" />
+                ) : (
+                  <AppIcon name="refresh" size={18} />
+                )}
+                {t("stats.refresh")}
               </button>
             </div>
-          )}
-          <button
-            className="btn btn-sm btn-primary gap-2"
-            onClick={refresh}
-            disabled={refreshing || loading}
-            title={t("stats.refreshTitle")}
-          >
-            {refreshing ? (
-              <span className="loading loading-spinner loading-sm" />
-            ) : (
-              <AppIcon name="refresh" size={18} />
-            )}
-            {t("stats.refresh")}
-          </button>
+          </div>
         </div>
       </header>
 
@@ -320,42 +353,84 @@ export default function Statistics() {
         analytics.summary.published + analytics.summary.scheduled + analytics.summary.failed + analytics.summary.queuedVideos > 0 && (
           <section className="card bg-base-100 border border-base-300">
             <div className="card-body gap-4">
-              <h2 className="card-title text-base">
-                {t("stats.publishActivity")} ·{" "}
-                {canViewAll && scope === "all" ? t("stats.publishScopeAll") : t("stats.publishScopeMine")}
-              </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="rounded-xl border border-base-300 p-3">
-                  <div className="text-xs text-base-content/60">{t("stats.published")}</div>
-                  <div className="text-2xl font-bold text-success">{fmt(analytics.summary.published)}</div>
-                </div>
-                <div className="rounded-xl border border-base-300 p-3">
-                  <div className="text-xs text-base-content/60">{t("stats.scheduled")}</div>
-                  <div className="text-2xl font-bold">{fmt(analytics.summary.scheduled)}</div>
-                </div>
-                <div className="rounded-xl border border-base-300 p-3">
-                  <div className="text-xs text-base-content/60">{t("stats.failed")}</div>
-                  <div className={`text-2xl font-bold ${analytics.summary.failed > 0 ? "text-error" : ""}`}>
-                    {fmt(analytics.summary.failed)}
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="card-title text-base">
+                  {t("stats.publishActivity")} ·{" "}
+                  {canViewAll && scope === "all" ? t("stats.publishScopeAll") : t("stats.publishScopeMine")}
+                </h2>
+                {analytics.daily.length > 1 && (
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-base-content/60">
+                    {activitySeries(analytics.daily, t).map((s) => (
+                      <span key={s.key} className="flex items-center gap-1.5">
+                        <span className="inline-block h-2 w-2" style={{ background: s.color }} aria-hidden="true" />
+                        {s.label}
+                      </span>
+                    ))}
                   </div>
-                </div>
-                <div className="rounded-xl border border-base-300 p-3">
-                  <div className="text-xs text-base-content/60">{t("stats.queued")}</div>
-                  <div className="text-2xl font-bold">{fmt(analytics.summary.queuedVideos)}</div>
-                </div>
+                )}
+              </div>
+              <div className="stx-quiet-row text-sm">
+                <span>
+                  <span className="stx-num font-bold text-success">{fmt(analytics.summary.published)}</span>{" "}
+                  <span className="stx-cap">{t("stats.published")}</span>
+                </span>
+                <span>
+                  <span className="stx-num font-bold">{fmt(analytics.summary.scheduled)}</span>{" "}
+                  <span className="stx-cap">{t("stats.scheduled")}</span>
+                </span>
+                <span>
+                  <span className={`stx-num font-bold ${analytics.summary.failed > 0 ? "text-error" : ""}`}>
+                    {fmt(analytics.summary.failed)}
+                  </span>{" "}
+                  <span className="stx-cap">{t("stats.failed")}</span>
+                </span>
+                <span>
+                  <span className="stx-num font-bold">{fmt(analytics.summary.queuedVideos)}</span>{" "}
+                  <span className="stx-cap">{t("stats.queued")}</span>
+                </span>
               </div>
               {analytics.daily.length > 1 && (
-                <div style={{ height: 220 }}>
+                <div className="stx-panel p-3" style={{ height: 230 }}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={analytics.daily} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" fontSize={11} />
-                      <YAxis allowDecimals={false} fontSize={11} width={40} tickFormatter={(value) => compactNumber(Number(value))} />
-                      <Tooltip formatter={(value) => compactNumber(Number(value))} />
-                      <Legend />
-                      <Line type="monotone" dataKey="published" name={t("stats.published")} stroke="#166534" dot={false} strokeWidth={2} />
-                      <Line type="monotone" dataKey="scheduled" name={t("stats.scheduled")} stroke="#605dff" dot={false} strokeWidth={2} />
-                      <Line type="monotone" dataKey="failed" name={t("stats.failed")} stroke="#dc2626" dot={false} strokeWidth={2} />
+                    <LineChart
+                      data={analytics.daily.map((d) => ({ ...d, date: shortDate(d.date) }))}
+                      margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+                    >
+                      <CartesianGrid vertical={false} stroke="var(--stx-grid)" />
+                      <XAxis
+                        dataKey="date"
+                        fontSize={11}
+                        tickMargin={6}
+                        minTickGap={28}
+                        tickLine={false}
+                        axisLine={{ stroke: "var(--stx-grid)" }}
+                        tick={{ fill: "var(--stx-axis)" }}
+                      />
+                      <YAxis
+                        allowDecimals={false}
+                        fontSize={11}
+                        width={40}
+                        tickLine={false}
+                        axisLine={false}
+                        tick={{ fill: "var(--stx-axis)" }}
+                        tickFormatter={(value) => compactNumber(Number(value))}
+                      />
+                      <Tooltip
+                        content={<ChartTip format={(v) => compactNumber(v)} />}
+                        cursor={{ stroke: "var(--stx-axis)", strokeDasharray: "3 3" }}
+                      />
+                      {activitySeries(analytics.daily, t).map((s) => (
+                        <Line
+                          key={s.key}
+                          type="monotone"
+                          dataKey={s.key}
+                          name={s.label}
+                          stroke={s.color}
+                          dot={false}
+                          strokeWidth={2}
+                          isAnimationActive={false}
+                        />
+                      ))}
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
