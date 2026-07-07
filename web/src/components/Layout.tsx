@@ -273,7 +273,7 @@ function AdminLayout({
         </header>
         {user.impersonator && (
           <div className="sticky top-14 z-20 bg-warning text-warning-content border-b border-warning/30 px-4 sm:px-6 py-2">
-            <div className="max-w-[1320px] mx-auto flex items-center justify-between gap-3">
+            <div className="max-w-[1600px] mx-auto flex items-center justify-between gap-3">
               <div className="text-sm">
                 {t("layout.impersonating", { user: user.username, admin: user.impersonator.username })}
               </div>
@@ -283,7 +283,7 @@ function AdminLayout({
             </div>
           </div>
         )}
-        <main className="max-w-[1320px] mx-auto px-4 sm:px-6 py-5 sm:py-6">
+        <main className="max-w-[1600px] mx-auto px-4 sm:px-6 py-5 sm:py-6">
           <div key={`${location.pathname}${location.search}`} className="route-page">
             {children}
           </div>
@@ -322,7 +322,7 @@ function AdminLayout({
 
         {user.impersonator && (
           <div className="sticky top-14 z-20 bg-warning text-warning-content border-b border-warning/30 px-4 sm:px-6 py-2">
-            <div className="max-w-[1320px] mx-auto flex items-center justify-between gap-3">
+            <div className="max-w-[1600px] mx-auto flex items-center justify-between gap-3">
               <div className="text-sm">
                 {t("layout.impersonating", { user: user.username, admin: user.impersonator.username })}
               </div>
@@ -334,7 +334,7 @@ function AdminLayout({
         )}
 
         <main className="flex-1 min-w-0">
-          <div className="max-w-[1320px] mx-auto px-4 sm:px-6 py-5 sm:py-6">
+          <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-5 sm:py-6">
             <div key={`${location.pathname}${location.search}`} className="route-page">
               {children}
             </div>

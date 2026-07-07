@@ -17,6 +17,7 @@ import {
   GripVertical,
   History,
   House,
+  Info,
   KeyRound,
   Languages,
   Library,
@@ -61,6 +62,7 @@ export type AppIconName =
   | "globe"
   | "history"
   | "home"
+  | "info"
   | "library"
   | "limits"
   | "login"
@@ -109,6 +111,7 @@ const ICONS: Record<AppIconName, LucideIcon> = {
   globe: Globe2,
   history: History,
   home: House,
+  info: Info,
   library: Library,
   limits: KeyRound,
   login: LogIn,

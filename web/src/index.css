@@ -214,31 +214,126 @@ body {
   padding-inline: 0.22rem;
 }
 
-.admin-shell .stats-success-chip {
-  display: inline-flex;
-  width: fit-content;
-  align-items: center;
-  gap: 0.35rem;
-  border: 1px solid #9ad8ac;
-  border-radius: 999px;
-  background: #eefbf2;
-  color: #176b31;
-  padding: 0.35rem 0.65rem;
-  font-size: 0.78rem;
-  font-weight: 700;
-  line-height: 1;
-  animation: success-chip-in 160ms ease-out both;
+/* ── Floating toasts (bottom-right), shared app-wide — same visual language as the Creator
+   studio notices (.creator-notice). Rendered by components/Toasts.tsx via a <body> portal. ── */
+.app-toast-stack {
+  position: fixed;
+  right: 16px;
+  bottom: 84px; /* clear the mobile bottom nav */
+  z-index: 95;
+  display: grid;
+  justify-items: end;
+  gap: 10px;
+  width: min(380px, calc(100vw - 32px));
+  pointer-events: none;
 }
 
-@keyframes success-chip-in {
+@media (min-width: 1024px) {
+  .app-toast-stack {
+    right: 24px;
+    bottom: 24px;
+  }
+}
+
+.app-toast {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #172033;
+  padding: 11px 10px 11px 13px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  box-shadow:
+    0 22px 55px rgba(15, 23, 42, 0.18),
+    0 2px 8px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(14px) saturate(1.2);
+  animation: app-toast-in 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: auto;
+}
+
+@keyframes app-toast-in {
   from {
     opacity: 0;
-    transform: translateY(-3px);
+    transform: translate3d(12px, 12px, 0) scale(0.98);
   }
   to {
     opacity: 1;
-  transform: translateY(0);
+    transform: translate3d(0, 0, 0) scale(1);
   }
+}
+
+.app-toast-text {
+  min-width: 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.app-toast-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: #eef2f7;
+  color: #334155;
+}
+
+.app-toast.is-success {
+  border-color: rgba(20, 184, 166, 0.34);
+}
+
+.app-toast.is-success .app-toast-icon {
+  background: #dff8ee;
+  color: #047857;
+}
+
+.app-toast.is-error {
+  border-color: rgba(239, 68, 68, 0.34);
+}
+
+.app-toast.is-error .app-toast-icon {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.app-toast.is-warning {
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.app-toast.is-warning .app-toast-icon {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.app-toast.is-info {
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.app-toast.is-info .app-toast-icon {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.app-toast-close {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  color: rgba(23, 32, 51, 0.45);
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.app-toast-close:hover {
+  background: rgba(15, 23, 42, 0.07);
+  color: #172033;
 }
 
 .admin-shell .notification-dropdown > summary {

@@ -33,6 +33,7 @@ import { ChartTip, CompositionStrip, LedgerStrip, RankBadge, Sparkline } from ".
 export type OverviewMetric = "views" | "watch" | "engaged" | "subscribers";
 
 const OVERVIEW_LAYOUT_STORAGE_KEY = "statsOverview.layoutShare.v1";
+const TOP_VIDEOS_HIDDEN_KEY = "statsOverview.topVideosHidden.v1";
 const DEFAULT_CHART_SHARE = 60;
 const MIN_CHART_SHARE = 45;
 const MAX_CHART_SHARE = 75;
@@ -109,6 +110,15 @@ export function StatsOverview({
   const { t } = useT();
   const [chartShare, setChartShare] = useState(readOverviewChartShare);
   const [dragging, setDragging] = useState(false);
+  // The top-videos panel is hideable (persisted): hidden → the chart takes the full row and a
+  // small restore button lives in the chart header.
+  const [topVideosHidden, setTopVideosHidden] = useState(() => {
+    try {
+      return window.localStorage.getItem(TOP_VIDEOS_HIDDEN_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
   const splitRef = useRef<HTMLDivElement | null>(null);
   const topVideosShare = 100 - chartShare;
   const overviewGridStyle = {
@@ -122,6 +132,14 @@ export function StatsOverview({
       /* localStorage unavailable — ignore */
     }
   }, [chartShare]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(TOP_VIDEOS_HIDDEN_KEY, topVideosHidden ? "1" : "0");
+    } catch {
+      /* localStorage unavailable — ignore */
+    }
+  }, [topVideosHidden]);
 
   // The chart/top-videos divider is dragged with the mouse (pointer capture keeps the drag
   // alive outside the handle); double-click resets, arrow keys nudge it.
@@ -216,7 +234,7 @@ export function StatsOverview({
 
         <div
           ref={splitRef}
-          className={`grid grid-cols-1 xl:grid-cols-[var(--stats-overview-columns)] gap-4 xl:gap-0 ${dragging ? "select-none" : ""}`}
+          className={`grid grid-cols-1 ${topVideosHidden ? "" : "xl:grid-cols-[var(--stats-overview-columns)]"} gap-4 xl:gap-0 ${dragging ? "select-none" : ""}`}
           style={overviewGridStyle}
         >
           <div className="stx-panel p-3 min-w-0">
@@ -234,6 +252,17 @@ export function StatsOverview({
                   </span>
                 )}
                 <span>{metricLabels[metric]}</span>
+                {topVideosHidden && (
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-xs gap-1"
+                    onClick={() => setTopVideosHidden(false)}
+                    title={t("stats.topVideosShowTitle")}
+                  >
+                    <AppIcon name="video" size={13} />
+                    {t("stats.topVideosShow")}
+                  </button>
+                )}
               </div>
             </div>
             {chart.length > 1 ? (
@@ -245,6 +274,7 @@ export function StatsOverview({
             )}
           </div>
 
+          {!topVideosHidden && (
           <div
             role="separator"
             aria-orientation="vertical"
@@ -279,8 +309,16 @@ export function StatsOverview({
           >
             <span className="stx-gutter-bar" aria-hidden="true" />
           </div>
+          )}
 
-          <TopVideosPanel videos={overview.topVideos} range={overview.topVideosRange} days={days} />
+          {!topVideosHidden && (
+            <TopVideosPanel
+              videos={overview.topVideos}
+              range={overview.topVideosRange}
+              days={days}
+              onHide={() => setTopVideosHidden(true)}
+            />
+          )}
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_22rem] gap-4">
@@ -392,10 +430,12 @@ export function TopVideosPanel({
   videos: allVideos,
   range,
   days,
+  onHide,
 }: {
   videos: OverviewTopVideo[];
   range: OverviewReportRange | null;
   days: number;
+  onHide?: () => void;
 }) {
   const { t } = useT();
   // Показываем максимум 100 лучших роликов (overview.topVideos уже отсортирован по просмотрам).
@@ -432,11 +472,24 @@ export function TopVideosPanel({
             {reportRangeTitle(t, range, days)}
           </div>
         </div>
-        {videos.length > 0 && (
-          <span className="badge badge-ghost badge-sm stx-num shrink-0 whitespace-nowrap">
-            {shown.length} / {videos.length}
-          </span>
-        )}
+        <div className="flex items-center gap-1 shrink-0">
+          {videos.length > 0 && (
+            <span className="badge badge-ghost badge-sm stx-num whitespace-nowrap">
+              {shown.length} / {videos.length}
+            </span>
+          )}
+          {onHide && (
+            <button
+              type="button"
+              className="btn btn-ghost btn-xs btn-square text-base-content/40 hover:text-base-content"
+              onClick={onHide}
+              title={t("stats.topVideosHideTitle")}
+              aria-label={t("stats.topVideosHideTitle")}
+            >
+              <AppIcon name="close" size={13} />
+            </button>
+          )}
+        </div>
       </div>
       {videos.length === 0 ? (
         <div className="h-72 flex items-center justify-center text-sm text-base-content/45 text-center px-4">

@@ -15,6 +15,7 @@ import {
   type PlatformSummary,
 } from "../../lib/api";
 import { AppIcon } from "../../components/AppIcon";
+import { ToastStack, useToasts } from "../../components/Toasts";
 import { useAuth } from "../../lib/auth";
 import { isAdminLike, isAdminRole } from "../../lib/authz";
 import { compactNumber } from "../../lib/format";
@@ -87,7 +88,9 @@ export default function Statistics() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
+  // Refresh outcomes surface as floating bottom-right toasts (like the Creator studio), not
+  // inline banners that push the page content around.
+  const { toasts, push: pushToast, dismiss: dismissToast } = useToasts();
   const [avatarMap, setAvatarMap] = useState<Record<number, string | null | undefined>>({});
   // Controls (persisted): search, sort, owner filter, only-connected (default ON), pagination.
   const [search, setSearch] = useState(saved.search ?? "");
@@ -100,13 +103,6 @@ export default function Statistics() {
   // Source tab: the page is Analytics-first; «Data API» collects everything built on the
   // public lifetime counters (totals ledger, snapshot deltas, history charts).
   const [source, setSource] = useState<Source>(saved.source === "data" ? "data" : "analytics");
-
-  // Successful refreshes should feel like a small confirmation, not a dismissible alert.
-  useEffect(() => {
-    if (!result?.ok) return;
-    const t = setTimeout(() => setResult(null), 2200);
-    return () => clearTimeout(t);
-  }, [result]);
 
   useEffect(() => {
     if (!canViewAll && view === "all") setView("mine");
@@ -172,7 +168,6 @@ export default function Statistics() {
   async function refresh() {
     setRefreshing(true);
     setError(null);
-    setResult(null);
     try {
       // Moderators may view all-channel aggregates, but only real admins refresh all channels.
       const refreshScope: Scope = canRefreshAll ? scope : "mine";
@@ -186,23 +181,24 @@ export default function Statistics() {
           `[Статистика] ошибки обновления у ${failed.length} канал(ов):`,
           failed.map((x) => ({ канал: x.ytChannelTitle || x.channelName, ошибка: x.error })),
         );
-        setResult({
-          ok: false,
+        pushToast({
+          type: "warning",
           text: t(canRefreshAll ? "stats.refreshPartialAdmin" : "stats.refreshPartial", {
             ok: connected.length - failed.length,
             total: connected.length,
             failed: failed.length,
           }),
+          // The non-admin text is a step-by-step fix guide — keep it up until closed.
+          duration: canRefreshAll ? undefined : null,
         });
       } else if (connected.length === 0) {
-        setResult({ ok: false, text: t("stats.refreshNoneConnected") });
+        pushToast({ type: "info", text: t("stats.refreshNoneConnected") });
       } else {
-        setResult({ ok: true, text: t("stats.refreshOkShort", { n: connected.length }) });
+        pushToast({ type: "success", text: t("stats.refreshOkShort", { n: connected.length }) });
       }
     } catch (e) {
       console.error("[Статистика] запрос /stats/refresh упал:", e);
-      setError(t("stats.refreshError"));
-      setResult({ ok: false, text: t("stats.refreshErrorBanner") });
+      pushToast({ type: "error", text: t("stats.refreshErrorBanner") });
     } finally {
       setRefreshing(false);
     }
@@ -335,26 +331,7 @@ export default function Statistics() {
           </button>
         </div>
       )}
-      {result?.ok && (
-        <div className="stats-success-chip" role="status" aria-live="polite">
-          <AppIcon name="check" size={14} />
-          <span>{result.text}</span>
-        </div>
-      )}
-      {result && !result.ok && (
-        <div className="alert alert-warning text-sm py-2 items-start">
-          <AppIcon name="warning" size={17} className="mt-0.5 shrink-0" />
-          <span className="whitespace-pre-line flex-1">{result.text}</span>
-          <button
-            className="btn btn-ghost btn-xs btn-square"
-            onClick={() => setResult(null)}
-            aria-label={t("common.close")}
-            title={t("common.close")}
-          >
-            <AppIcon name="close" size={14} />
-          </button>
-        </div>
-      )}
+      <ToastStack toasts={toasts} onDismiss={dismissToast} />
 
       <>
       {scope === "all" && summary && <PlatformBand s={summary} />}

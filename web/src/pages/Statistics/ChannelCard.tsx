@@ -14,6 +14,7 @@ import {
   type StatPoint,
   type PlatformSummary,
   type YoutubeAnalyticsPayload,
+  type YoutubeDailyPoint,
   type YoutubeDemographicsRow,
   type YoutubeSharingRow,
 } from "../../lib/api";
@@ -24,6 +25,7 @@ import { useT } from "../../lib/i18n";
 import { cleanDisplayText } from "../../lib/text";
 import {
   fmt,
+  shortDate,
   formatWatchMinutes,
   formatSeconds,
   genderLabel,
@@ -105,7 +107,19 @@ export function ChannelCard({
             avatarNode
           )}
           <div className="flex-1 min-w-0">
-            <div className="font-semibold truncate">{title}</div>
+            {youtubeUrl ? (
+              <a
+                href={youtubeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold truncate link-hover block w-fit max-w-full"
+                title={t("stats.openOnYoutube")}
+              >
+                {title}
+              </a>
+            ) : (
+              <div className="font-semibold truncate">{title}</div>
+            )}
             <div className="text-sm text-base-content/60 truncate">
               {isAdmin && row.ownerUsername ? (
                 <span className="text-base-content/80">@{row.ownerUsername}</span>
@@ -233,6 +247,7 @@ function ChannelAnalytics({ analytics, days }: { analytics: YoutubeAnalyticsPayl
       {analytics.days !== 90 && (
         <div className="text-xs text-base-content/45">{t("stats.breakdownPeriodNote")}</div>
       )}
+      <ChannelDailyCharts daily={analytics.daily} />
       {analytics.topVideos.length > 0 && (
         <div>
           <div className="font-semibold text-sm mb-2">{t("stats.topVideos")}</div>
@@ -282,6 +297,26 @@ function ChannelAnalytics({ analytics, days }: { analytics: YoutubeAnalyticsPayl
         <Demographics rows={analytics.demographics} />
         <Sharing rows={analytics.sharing} />
       </div>
+    </div>
+  );
+}
+
+// Per-channel daily Analytics charts — views + watch hours as two aligned small multiples
+// (same shape as the Data API history pair). The unfinalized zero tail is trimmed like the
+// header sparkline so the last days don't fake a crash to zero.
+function ChannelDailyCharts({ daily }: { daily: YoutubeDailyPoint[] }) {
+  const { t } = useT();
+  const trimmed = trimTrailingEmptyDays(daily, (p) => p.views === 0);
+  if (trimmed.length < 2) return null;
+  const data = trimmed.map((p) => ({
+    t: shortDate(p.date),
+    views: p.views,
+    watch: Math.round((p.watchMinutes / 60) * 10) / 10,
+  }));
+  return (
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+      <HistoryChart data={data} dataKey="views" name={t("stats.metricViews")} color="var(--stx-series)" />
+      <HistoryChart data={data} dataKey="watch" name={t("stats.watchHours")} color="var(--stx-series-2)" />
     </div>
   );
 }
@@ -377,8 +412,8 @@ function ChannelHistory({ points }: { points: StatPoint[] | null }) {
   }));
   return (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-      <HistoryChart data={data} dataKey="subscribers" name={t("stats.subscribers")} color="var(--stx-series)" />
-      <HistoryChart data={data} dataKey="views" name={t("stats.views")} color="var(--stx-series-2)" />
+      <HistoryChart data={data} dataKey="subscribers" name={t("stats.subscribers")} color="var(--stx-series)" srcData />
+      <HistoryChart data={data} dataKey="views" name={t("stats.views")} color="var(--stx-series-2)" srcData />
     </div>
   );
 }
@@ -388,15 +423,18 @@ function HistoryChart({
   dataKey,
   name,
   color,
+  srcData,
 }: {
   data: Record<string, string | number>[];
-  dataKey: "subscribers" | "views";
+  dataKey: string;
   name: string;
   color: string;
+  /** Data API panels carry the hatched stx-src-data material; Analytics ones stay plain. */
+  srcData?: boolean;
 }) {
   const gradientId = `stx-hist-${useId().replace(/:/g, "")}`;
   return (
-    <div className="stx-panel stx-src-data p-3">
+    <div className={`stx-panel p-3 ${srcData ? "stx-src-data" : ""}`}>
       <div className="mb-1 flex items-center justify-between gap-3">
         <span className="text-sm font-semibold">{name}</span>
         <span

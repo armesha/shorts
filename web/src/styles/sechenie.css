@@ -720,12 +720,35 @@ html[data-skin="sechenie"] .divider::after {
 /* ============================================================================================
    Coverage corrections (from audit) — app-specific chrome the token remap can't reach
    ============================================================================================ */
-/* Statistics success chip — square + editorial green (index.css hardcodes a classic mint pill) */
-html[data-skin="sechenie"] .stats-success-chip {
+/* Floating toasts (components/Toasts.tsx) — square editorial cards with the hard offset shadow
+   (index.css hardcodes classic glassy rounded cards) */
+html[data-skin="sechenie"] .app-toast {
   border-radius: 0;
+  border: 1px solid var(--sx-line-strong);
+  background: var(--sx-surface);
+  color: var(--sx-ink);
+  box-shadow: 4px 4px 0 0 var(--sx-line-strong);
+  backdrop-filter: none;
+}
+html[data-skin="sechenie"] .app-toast-icon,
+html[data-skin="sechenie"] .app-toast-close {
+  border-radius: 0;
+}
+html[data-skin="sechenie"] .app-toast.is-success .app-toast-icon {
   background: color-mix(in srgb, var(--sx-green) 16%, var(--sx-paper));
-  border-color: var(--sx-green);
   color: #0a5e3c;
+}
+html[data-skin="sechenie"] .app-toast.is-error .app-toast-icon {
+  background: color-mix(in srgb, var(--sx-red) 14%, var(--sx-paper));
+  color: var(--sx-red);
+}
+html[data-skin="sechenie"] .app-toast.is-warning .app-toast-icon {
+  background: color-mix(in srgb, var(--sx-orange) 16%, var(--sx-paper));
+  color: #a04a00;
+}
+html[data-skin="sechenie"] .app-toast.is-info .app-toast-icon {
+  background: color-mix(in srgb, var(--sx-blue) 14%, var(--sx-paper));
+  color: #16236e;
 }
 /* badge-info — editorial blue tint (index.css hardcodes a powder blue) */
 html[data-skin="sechenie"] .badge-info {
