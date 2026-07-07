@@ -22,6 +22,7 @@ const routeLoaders = {
   templateEditor: () => import("../pages/TemplateEditor"),
   login: () => import("../pages/Login"),
   register: () => import("../pages/Register"),
+  telegramMiniApp: () => import("../pages/TelegramMiniApp"),
 };
 
 export const pageLoaders = routeLoaders;
@@ -48,6 +49,7 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
   if (pathname === "/" || pathname === "/channels" || pathname === "/accounts") return "accounts";
   if (pathname.startsWith("/accounts/")) return "accountDetail";
   if (pathname === "/admin/analytics") return "statistics";
+  if (pathname === "/tg") return "telegramMiniApp";
 
   switch (pathname) {
     case "/overview":

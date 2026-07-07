@@ -2,8 +2,52 @@
 // createUser→this.getUserById resolves on the merged store.
 import type { DatabaseSync } from "node:sqlite";
 import { rowToUserAuth, type Row } from "./mappers.ts";
-import type { UserAuth } from "./types.ts";
+import type { TelegramDigestFrequency, TelegramPreferences, UserAuth } from "./types.ts";
 import { normalizeUserRole, type UserRole } from "../auth.ts";
+
+const TELEGRAM_DIGESTS = new Set<TelegramDigestFrequency>(["off", "daily", "weekly"]);
+const DEFAULT_TELEGRAM_PREFERENCES: TelegramPreferences = {
+  postSuccess: false,
+  postFailures: true,
+  generationDone: true,
+  quotaWarnings: true,
+  channelAlerts: true,
+  statsDigest: "weekly",
+};
+
+function asBool(value: unknown, fallback: boolean): boolean {
+  if (value == null) return fallback;
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") return value !== 0;
+  if (typeof value === "string") return ["1", "true", "yes", "on"].includes(value.toLowerCase());
+  return fallback;
+}
+
+function asDigest(value: unknown, fallback: TelegramDigestFrequency): TelegramDigestFrequency {
+  return TELEGRAM_DIGESTS.has(value as TelegramDigestFrequency) ? (value as TelegramDigestFrequency) : fallback;
+}
+
+function rowToTelegramPreferences(r?: Row): TelegramPreferences {
+  return {
+    postSuccess: asBool(r?.post_success, DEFAULT_TELEGRAM_PREFERENCES.postSuccess),
+    postFailures: asBool(r?.post_failures, DEFAULT_TELEGRAM_PREFERENCES.postFailures),
+    generationDone: asBool(r?.generation_done, DEFAULT_TELEGRAM_PREFERENCES.generationDone),
+    quotaWarnings: asBool(r?.quota_warnings, DEFAULT_TELEGRAM_PREFERENCES.quotaWarnings),
+    channelAlerts: asBool(r?.channel_alerts, DEFAULT_TELEGRAM_PREFERENCES.channelAlerts),
+    statsDigest: asDigest(r?.stats_digest, DEFAULT_TELEGRAM_PREFERENCES.statsDigest),
+  };
+}
+
+function normalizeTelegramPreferences(input: Partial<TelegramPreferences>, base: TelegramPreferences): TelegramPreferences {
+  return {
+    postSuccess: asBool(input.postSuccess, base.postSuccess),
+    postFailures: asBool(input.postFailures, base.postFailures),
+    generationDone: asBool(input.generationDone, base.generationDone),
+    quotaWarnings: asBool(input.quotaWarnings, base.quotaWarnings),
+    channelAlerts: asBool(input.channelAlerts, base.channelAlerts),
+    statsDigest: asDigest(input.statsDigest, base.statsDigest),
+  };
+}
 
 export function userMethods(db: DatabaseSync) {
   return {
@@ -190,6 +234,31 @@ export function userMethods(db: DatabaseSync) {
     },
     deleteTelegramLink(token: string): void {
       db.prepare("DELETE FROM telegram_links WHERE token = ?").run(token);
+    },
+    getTelegramPreferences(userId: number): TelegramPreferences {
+      const r = db.prepare("SELECT * FROM user_telegram_preferences WHERE user_id = ?").get(userId) as Row | undefined;
+      return rowToTelegramPreferences(r);
+    },
+    updateTelegramPreferences(userId: number, input: Partial<TelegramPreferences>): TelegramPreferences {
+      const next = normalizeTelegramPreferences(input, this.getTelegramPreferences(userId));
+      db.prepare(
+        "INSERT INTO user_telegram_preferences " +
+          "(user_id, post_success, post_failures, generation_done, quota_warnings, channel_alerts, stats_digest, updated_at) " +
+          "VALUES (?,?,?,?,?,?,?,datetime('now')) " +
+          "ON CONFLICT(user_id) DO UPDATE SET " +
+          "post_success=excluded.post_success, post_failures=excluded.post_failures, " +
+          "generation_done=excluded.generation_done, quota_warnings=excluded.quota_warnings, " +
+          "channel_alerts=excluded.channel_alerts, stats_digest=excluded.stats_digest, updated_at=datetime('now')",
+      ).run(
+        userId,
+        next.postSuccess ? 1 : 0,
+        next.postFailures ? 1 : 0,
+        next.generationDone ? 1 : 0,
+        next.quotaWarnings ? 1 : 0,
+        next.channelAlerts ? 1 : 0,
+        next.statsDigest,
+      );
+      return this.getTelegramPreferences(userId);
     },
   };
 }

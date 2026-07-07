@@ -224,6 +224,8 @@ const PUBLIC_API = new Set([
   "/api/auth/telegram/login/start", // login via bot: mint a /start deep-link token
   "/api/auth/telegram/login/status", // login via bot: poll until the user pressed Start
   "/api/telegram/webhook", // Telegram pushes bot updates (/start) here
+  "/api/tg/auth", // Telegram Mini App: validates signed initData before issuing a session
+  "/api/tg/preferences", // Telegram Mini App: save settings by signed initData when cookies are unavailable
   "/api/auth/recover/start", // password recovery: ask the bot to DM a code
   "/api/auth/recover/complete", // password recovery: submit code + new password
   "/api/auth/impersonation/stop", // restore admin session from admin_sid while impersonating

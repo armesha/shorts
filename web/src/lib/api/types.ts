@@ -78,6 +78,55 @@ export interface AppSettings {
   hasGoogleKey: boolean;
 }
 
+export type TelegramDigestFrequency = "off" | "daily" | "weekly";
+
+export interface TelegramPreferences {
+  postSuccess: boolean;
+  postFailures: boolean;
+  generationDone: boolean;
+  quotaWarnings: boolean;
+  channelAlerts: boolean;
+  statsDigest: TelegramDigestFrequency;
+}
+
+export interface TelegramMiniPanel {
+  user: AuthUser;
+  summary: {
+    accounts: number;
+    connected: number;
+    views: number;
+    subscribers: number;
+    videos: number;
+    openNotifications: number;
+    unreadNotifications: number;
+  };
+  preferences: TelegramPreferences;
+  accounts: {
+    id: number;
+    name: string;
+    status: string;
+    enabled: boolean;
+    uploadsToday: number;
+    scheduleCount: number;
+    youtubeUrl: string | null;
+    stats: {
+      views: number;
+      subscribers: number;
+      videos: number;
+      analyticsStatus: string | null;
+      analyticsError: string | null;
+      takenAt: string | null;
+    } | null;
+  }[];
+  notifications: {
+    id: number;
+    severity: "info" | "warning" | "error";
+    title: string;
+    message: string;
+    lastSeenAt: string | null;
+  }[];
+}
+
 export interface AnecdoteTemplateExampleItem {
   no: string;
   key: string;
@@ -444,6 +493,13 @@ export interface YoutubeTopVideo {
   subscribersLost: number;
 }
 
+export interface YoutubeReportRange {
+  rangeFrom: string;
+  rangeTo: string;
+  takenAt: string;
+  exact: boolean;
+}
+
 export interface YoutubeRetention {
   videoId: string;
   title: string;
@@ -478,6 +534,16 @@ export interface YoutubeAnalyticsPayload {
     subscribersLost: number;
   };
   daily: YoutubeDailyPoint[];
+  reportRanges: {
+    topVideos: YoutubeReportRange | null;
+    trafficSources: YoutubeReportRange | null;
+    devices: YoutubeReportRange | null;
+    countries: YoutubeReportRange | null;
+    subscribedStatus: YoutubeReportRange | null;
+    demographics: YoutubeReportRange | null;
+    sharing: YoutubeReportRange | null;
+    retention: YoutubeReportRange | null;
+  };
   topVideos: YoutubeTopVideo[];
   trafficSources: YoutubeBreakdownRow[];
   devices: YoutubeBreakdownRow[];

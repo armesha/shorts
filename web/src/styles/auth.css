@@ -125,6 +125,15 @@
   color: var(--auth-muted);
 }
 
+.auth-screen .password-input__toggle {
+  color: var(--auth-muted);
+}
+
+.auth-screen .password-input__toggle:hover:not(:disabled) {
+  background: #eef4ff;
+  color: var(--auth-primary);
+}
+
 .auth-input--code {
   text-align: center;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;

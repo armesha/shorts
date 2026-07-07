@@ -6,6 +6,7 @@ import { isAdminRole, isMainAdmin, roleLabelKey } from "../lib/authz";
 import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
 import { isMgsLegacyUser } from "../lib/accountLimits";
+import PasswordInput from "../components/PasswordInput";
 
 const DEFAULT_DAILY_KEY_CAP = 50;
 const MGS_DAILY_KEY_CAP = 92;
@@ -448,12 +449,13 @@ function AdminUsers() {
             </label>
             <label className="form-control w-44">
               <span className="label-text">{t("users.passwordLabel")}</span>
-              <input
-                type="password"
-                className="input input-bordered input-sm font-mono"
+              <PasswordInput
+                inputClassName="input input-bordered input-sm font-mono"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="off"
+                showLabel={t("common.showPassword")}
+                hideLabel={t("common.hidePassword")}
               />
             </label>
             {canManageRights && (

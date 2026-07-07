@@ -5,6 +5,7 @@ import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
 import TelegramConnect from "../components/TelegramConnect";
 import { AppIcon } from "../components/AppIcon";
+import PasswordInput from "../components/PasswordInput";
 
 export default function Login() {
   const { t } = useT();
@@ -88,15 +89,16 @@ function LoginForm({ onRecover }: { onRecover: () => void }) {
 
         <label className="auth-field">
           <span className="auth-label">{t("login.password")}</span>
-          <input
+          <PasswordInput
             id="login-password"
             name="password"
-            type="password"
-            className="auth-input"
+            inputClassName="auth-input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={busy}
             autoComplete="current-password"
+            showLabel={t("common.showPassword")}
+            hideLabel={t("common.hidePassword")}
           />
         </label>
 
@@ -238,24 +240,26 @@ function RecoverForm({ onBack }: { onBack: () => void }) {
           </label>
           <label className="auth-field">
             <span className="auth-label">{t("login.newPassword")}</span>
-            <input
-              type="password"
-              className="auth-input"
+            <PasswordInput
+              inputClassName="auth-input"
               value={pw}
               onChange={(e) => setPw(e.target.value)}
               disabled={busy}
               autoComplete="new-password"
+              showLabel={t("common.showPassword")}
+              hideLabel={t("common.hidePassword")}
             />
           </label>
           <label className="auth-field">
             <span className="auth-label">{t("login.repeatPassword")}</span>
-            <input
-              type="password"
-              className="auth-input"
+            <PasswordInput
+              inputClassName="auth-input"
               value={pw2}
               onChange={(e) => setPw2(e.target.value)}
               disabled={busy}
               autoComplete="new-password"
+              showLabel={t("common.showPassword")}
+              hideLabel={t("common.hidePassword")}
             />
           </label>
         </>

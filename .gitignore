@@ -33,6 +33,7 @@ data/space/*
 !data/space/sources.json
 data/funny-animals/
 data/memes/photos/
+data/audio-candidates/
 
 # stray generated preview images (not source)
 images/

@@ -18,6 +18,12 @@ export interface TgUser {
 }
 
 export type TgVerify = { ok: true; user: TgUser } | { ok: false; reason: string };
+export type TgWebAppVerify = {
+  ok: true;
+  user: TgUser;
+  queryId?: string;
+  startParam?: string;
+} | { ok: false; reason: string };
 
 const str = (v: unknown): string | undefined =>
   typeof v === "string" ? v : v == null ? undefined : String(v);
@@ -69,11 +75,65 @@ export function verifyTelegramAuth(
   };
 }
 
+/** Verify Telegram Mini App initData. The HMAC scheme differs from the Login Widget. */
+export function verifyTelegramWebAppInitData(
+  initData: string,
+  botToken: string,
+  maxAgeSec = 86_400,
+): TgWebAppVerify {
+  if (!botToken) return { ok: false, reason: "Telegram-вход не настроен" };
+  const params = new URLSearchParams(initData);
+  const hash = params.get("hash") || "";
+  if (!hash) return { ok: false, reason: "Нет подписи Telegram" };
+  params.delete("hash");
+
+  const dataCheckString = [...params.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([k, v]) => `${k}=${v}`)
+    .join("\n");
+  const secretKey = createHmac("sha256", "WebAppData").update(botToken).digest();
+  const computed = createHmac("sha256", secretKey).update(dataCheckString).digest("hex");
+  const a = Buffer.from(computed, "hex");
+  const b = Buffer.from(hash, "hex");
+  if (a.length === 0 || a.length !== b.length || !timingSafeEqual(a, b))
+    return { ok: false, reason: "Подпись Telegram неверна" };
+
+  const authDate = Number(params.get("auth_date"));
+  if (!Number.isFinite(authDate)) return { ok: false, reason: "Нет даты авторизации" };
+  const ageSec = Math.floor(Date.now() / 1000) - authDate;
+  if (ageSec > maxAgeSec || ageSec < -300) return { ok: false, reason: "Данные Telegram устарели — откройте Mini App заново" };
+
+  let rawUser: Record<string, unknown>;
+  try {
+    rawUser = JSON.parse(params.get("user") || "{}") as Record<string, unknown>;
+  } catch {
+    return { ok: false, reason: "Не удалось прочитать пользователя Telegram" };
+  }
+  const id = rawUser.id != null ? String(rawUser.id) : "";
+  if (!id) return { ok: false, reason: "Нет id пользователя Telegram" };
+  return {
+    ok: true,
+    queryId: str(params.get("query_id")),
+    startParam: str(params.get("start_param")),
+    user: {
+      id,
+      first_name: str(rawUser.first_name),
+      last_name: str(rawUser.last_name),
+      username: str(rawUser.username),
+      photo_url: str(rawUser.photo_url),
+      auth_date: authDate,
+    },
+  };
+}
+
 // ---- Inline keyboards (for the in-bot stats menu) ------------------------------------------------
 export interface InlineKeyboardButton {
   text: string;
   callback_data?: string; // ≤64 bytes (Telegram limit) — keep our s:* tokens compact
   url?: string;
+  web_app?: { url: string };
+  style?: "danger" | "success" | "primary";
+  copy_text?: { text: string };
 }
 export interface InlineKeyboard {
   inline_keyboard: InlineKeyboardButton[][];
@@ -175,6 +235,25 @@ export async function setBotCommands(
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ commands }),
+    });
+    const j = (await r.json().catch(() => ({}))) as { ok?: boolean; description?: string };
+    return j.ok ? { ok: true } : { ok: false, error: j.description || `HTTP ${r.status}` };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+}
+
+/** Configure the private-chat Menu button. `commands` keeps Telegram's native command drawer visible. */
+export async function setChatMenuButton(
+  botToken: string,
+  menuButton: { type: "commands" } | { type: "default" } | { type: "web_app"; text: string; web_app: { url: string } },
+): Promise<{ ok: boolean; error?: string }> {
+  if (!botToken) return { ok: false, error: "no bot token" };
+  try {
+    const r = await fetch(`https://api.telegram.org/bot${botToken}/setChatMenuButton`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ menu_button: menuButton }),
     });
     const j = (await r.json().catch(() => ({}))) as { ok?: boolean; description?: string };
     return j.ok ? { ok: true } : { ok: false, error: j.description || `HTTP ${r.status}` };

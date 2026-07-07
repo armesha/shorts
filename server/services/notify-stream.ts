@@ -27,6 +27,24 @@ export function makeNotifier(db: Db, opts: { botToken?: () => string } = {}): No
   // Same source as telegram-routes: the bot token from env (overridable for tests).
   const botToken = opts.botToken ?? (() => (process.env.TELEGRAM_BOT_TOKEN || "").trim());
 
+  async function sendTelegramNotice(
+    userId: number,
+    pref: "channelAlerts" | "quotaWarnings",
+    text: string,
+  ): Promise<void> {
+    const token = botToken();
+    if (!token) return;
+    const owner = db.getUserById(userId);
+    if (!owner?.telegramId) return;
+    const prefs = db.getTelegramPreferences(userId);
+    if (!prefs[pref]) return;
+    try {
+      await sendBotMessage(token, owner.telegramId, text);
+    } catch {
+      /* best-effort — the in-app notification already covers it */
+    }
+  }
+
   function writeNotificationEvent(client: NotificationStreamClient, event: string, data: unknown) {
     try {
       client.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
@@ -73,6 +91,11 @@ export function makeNotifier(db: Db, opts: { botToken?: () => string } = {}): No
       context: `analytics refresh account=${account.id}`,
     });
     emitNotificationChange(notification.userId);
+    void sendTelegramNotice(
+      notification.userId,
+      "quotaWarnings",
+      `⚠️ ${notification.title}\n\n${notification.message}\n\n${notification.solution}`,
+    );
   }
 
   function notifyStatsRefreshIssue(account: Account, err: unknown, message: string) {
@@ -93,6 +116,11 @@ export function makeNotifier(db: Db, opts: { botToken?: () => string } = {}): No
       context: `stats refresh account=${account.id}`,
     });
     emitNotificationChange(notification.userId);
+    void sendTelegramNotice(
+      notification.userId,
+      "quotaWarnings",
+      `⚠️ ${notification.title}\n\n${notification.message}\n\n${notification.solution}`,
+    );
   }
 
   // A channel's YouTube token was definitively rejected (revoked/expired) → it needs reconnecting.
@@ -121,11 +149,7 @@ export function makeNotifier(db: Db, opts: { botToken?: () => string } = {}): No
     });
     emitNotificationChange(notification.userId);
 
-    // Telegram DM — only if the bot is configured AND the owner linked their Telegram. Best-effort.
-    const token = botToken();
-    if (!token) return;
-    const owner = db.getUserById(account.userId);
-    if (!owner?.telegramId) return;
+    // Telegram DM — only if the bot is configured, owner linked Telegram, and their bot prefs allow it.
     const base = (process.env.PUBLIC_BASE_URL || "https://shareboard.live").trim().replace(/\/+$/, "");
     const text =
       `⚠️ Канал отвязался — нужно переподключить\n\n` +
@@ -133,11 +157,7 @@ export function makeNotifier(db: Db, opts: { botToken?: () => string } = {}): No
       `Причина: ${reason}\n\n` +
       `Откройте канал и нажмите «Переподключить»:\n` +
       `${base}${actionUrl}`;
-    try {
-      await sendBotMessage(token, owner.telegramId, text);
-    } catch {
-      /* best-effort — the in-app notification already covers it */
-    }
+    await sendTelegramNotice(account.userId, "channelAlerts", text);
   }
 
   return {

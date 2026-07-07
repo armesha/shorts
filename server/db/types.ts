@@ -115,6 +115,17 @@ export interface UserAuth {
   createdAt: string;
 }
 
+export type TelegramDigestFrequency = "off" | "daily" | "weekly";
+
+export interface TelegramPreferences {
+  postSuccess: boolean;
+  postFailures: boolean;
+  generationDone: boolean;
+  quotaWarnings: boolean;
+  channelAlerts: boolean;
+  statsDigest: TelegramDigestFrequency;
+}
+
 /** One snapshot of a channel's YouTube totals (subscribers/views/videos) at a point in time. */
 export interface ChannelSnapshot {
   id: number;

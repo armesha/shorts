@@ -213,6 +213,27 @@ export function makeRouteDeps(input: {
     const latest = db.latestSnapshot(accountId);
     const range = youtubeAnalyticsRange(new Date(), days);
     const daily = db.listDailyAnalytics([accountId], range.from, range.to);
+    const reportCache = (reportKey: string) =>
+      db.getReportCache(accountId, reportKey, range.from, range.to) ?? db.latestReportCache(accountId, reportKey);
+    const reportMeta = (report: ReturnType<typeof reportCache>) =>
+      report
+        ? {
+            rangeFrom: report.rangeFrom,
+            rangeTo: report.rangeTo,
+            takenAt: report.takenAt,
+            exact: report.rangeFrom === range.from && report.rangeTo === range.to,
+          }
+        : null;
+    const reports = {
+      topVideos: reportCache("topVideos"),
+      trafficSources: reportCache("trafficSources"),
+      devices: reportCache("devices"),
+      countries: reportCache("countries"),
+      subscribedStatus: reportCache("subscribedStatus"),
+      demographics: reportCache("demographics"),
+      sharing: reportCache("sharing"),
+      retention: reportCache("retention"),
+    };
     const summary = daily.reduce(
       (acc, r) => {
         acc.views += r.views;
@@ -260,14 +281,24 @@ export function makeRouteDeps(input: {
       takenAt: latest?.analyticsTakenAt ?? null,
       summary: cleanSummary,
       daily,
-      topVideos: asArray(db.latestReportCache(accountId, "topVideos")?.payload),
-      trafficSources: asArray(db.latestReportCache(accountId, "trafficSources")?.payload),
-      devices: asArray(db.latestReportCache(accountId, "devices")?.payload),
-      countries: asArray(db.latestReportCache(accountId, "countries")?.payload),
-      subscribedStatus: asArray(db.latestReportCache(accountId, "subscribedStatus")?.payload),
-      demographics: asArray(db.latestReportCache(accountId, "demographics")?.payload),
-      sharing: asArray(db.latestReportCache(accountId, "sharing")?.payload),
-      retention: asArray(db.latestReportCache(accountId, "retention")?.payload),
+      reportRanges: {
+        topVideos: reportMeta(reports.topVideos),
+        trafficSources: reportMeta(reports.trafficSources),
+        devices: reportMeta(reports.devices),
+        countries: reportMeta(reports.countries),
+        subscribedStatus: reportMeta(reports.subscribedStatus),
+        demographics: reportMeta(reports.demographics),
+        sharing: reportMeta(reports.sharing),
+        retention: reportMeta(reports.retention),
+      },
+      topVideos: asArray(reports.topVideos?.payload),
+      trafficSources: asArray(reports.trafficSources?.payload),
+      devices: asArray(reports.devices?.payload),
+      countries: asArray(reports.countries?.payload),
+      subscribedStatus: asArray(reports.subscribedStatus?.payload),
+      demographics: asArray(reports.demographics?.payload),
+      sharing: asArray(reports.sharing?.payload),
+      retention: asArray(reports.retention?.payload),
     };
   }
 

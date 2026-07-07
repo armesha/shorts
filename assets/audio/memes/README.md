@@ -8,6 +8,8 @@ This folder contains short background beds for meme, joke and funny-quote packs.
 - Per-file provenance is stored in `_beds-cc0-provenance.json`.
 - The ledger records source URL, download URL, original file name, composer, performer/author, license, cut point and duration.
 - Keep `_beds-cc0-provenance.json` with these files when moving or replacing them.
+- `cc0-20260706-001.mp3` through `cc0-20260706-050.mp3` are user-approved CC0/no-attribution short cuts
+  for the active random meme pool. Per-file provenance is stored in `_cc0-openverse-20260706-provenance.json`.
 
 ## Local synth beds
 

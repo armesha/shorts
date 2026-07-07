@@ -14,7 +14,7 @@ import type {
   VideoLibraryKind, VideoLibraryPage, VideoLibrarySort, BulkPostNowResponse,
   ChannelThemeBlockAccount, ChannelThemeBlocksResponse, ChannelThemeBlockGenerateResult,
   ChannelThemeBlockNormalizeResult, ChannelThemeBlockScheduleResult, ChannelThemeBlockSourceGroup,
-  AnecdoteTemplateExamplesResponse,
+  AnecdoteTemplateExamplesResponse, TelegramMiniPanel, TelegramPreferences,
 } from "./types";
 
 export const apiClient = {
@@ -30,6 +30,14 @@ export const apiClient = {
     get<{ enabled: boolean; bot: string | null; linked: boolean; username: string | null }>(
       "/auth/telegram/me",
     ),
+  telegramPreferences: () => get<TelegramPreferences>("/auth/telegram/preferences"),
+  updateTelegramPreferences: (prefs: TelegramPreferences) =>
+    send<TelegramPreferences>("/auth/telegram/preferences", "PUT", prefs),
+  telegramMiniAuth: (initData: string) =>
+    send<TelegramMiniPanel>("/tg/auth", "POST", { initData }),
+  telegramMiniPanel: () => get<TelegramMiniPanel>("/tg/panel"),
+  updateTelegramMiniPreferences: (initData: string, preferences: TelegramPreferences) =>
+    send<TelegramPreferences>("/tg/preferences", "POST", { initData, preferences }),
   telegramUnbind: () => send<{ ok: boolean }>("/auth/telegram/unbind", "POST", {}),
   tgBindStart: () =>
     send<{ token: string; url: string; bot: string }>("/auth/telegram/bind/start", "POST", {}),

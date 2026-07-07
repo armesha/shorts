@@ -13,8 +13,9 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { apiClient, ApiError, type OAuthClient, type OAuthClientsResponse } from "../lib/api";
+import { apiClient, ApiError, type OAuthClient, type OAuthClientsResponse, type TelegramPreferences } from "../lib/api";
 import TelegramConnect from "../components/TelegramConnect";
+import PasswordInput from "../components/PasswordInput";
 import { confirmDialog } from "../lib/confirm";
 import { AppIcon } from "../components/AppIcon";
 import { DEFAULT_DESIGN, DESIGNS, getSavedDesign, saveDesign, type DesignId } from "../lib/design";
@@ -707,14 +708,20 @@ function TelegramLink() {
     linked: boolean;
     username: string | null;
   } | null>(null);
+  const [prefs, setPrefs] = useState<TelegramPreferences | null>(null);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
-  const load = () =>
+  const load = () => {
     apiClient
       .telegramStatus()
       .then(setSt)
       .catch(() => setSt({ enabled: false, bot: null, linked: false, username: null }));
+    apiClient
+      .telegramPreferences()
+      .then(setPrefs)
+      .catch(() => setPrefs(null));
+  };
   useEffect(() => {
     load();
   }, []);
@@ -735,6 +742,11 @@ function TelegramLink() {
   }
 
   if (!st) return null; // still loading
+  const botMenuUrl = st.bot ? `https://t.me/${st.bot}?start=menu` : "";
+  const botSettingsUrl = st.bot ? `https://t.me/${st.bot}?start=settings` : "";
+  const enabledPrefs = prefs
+    ? [prefs.channelAlerts, prefs.quotaWarnings, prefs.postFailures, prefs.postSuccess, prefs.generationDone].filter(Boolean).length
+    : null;
 
   return (
     <section className="card bg-base-100 border border-base-300">
@@ -759,10 +771,21 @@ function TelegramLink() {
             <p className="text-sm text-base-content/70">
               {t("settings.tgLinkedPre")} <b>{st.username}</b>. {t("settings.tgLinkedPost")}
             </p>
-            <div>
+            <div className="flex flex-wrap gap-2">
+              <a className="btn btn-primary btn-sm gap-1" href={botSettingsUrl || undefined} target="_blank" rel="noreferrer">
+                <Send size={14} /> {t("settings.tgOpenSettings")}
+              </a>
+              <a className="btn btn-outline btn-sm gap-1" href={botMenuUrl || undefined} target="_blank" rel="noreferrer">
+                {t("settings.tgOpenPanel")}
+              </a>
               <button className="btn btn-ghost btn-sm text-error gap-1" onClick={unbind} disabled={busy}>
                 <Trash2 size={14} /> {t("settings.tgUnbind")}
               </button>
+            </div>
+            <div className="flex flex-wrap gap-1.5 text-xs">
+              <span className="badge badge-ghost badge-sm">{t("settings.tgChipStats")}</span>
+              <span className="badge badge-ghost badge-sm">{t("settings.tgChipAlerts", { n: enabledPrefs ?? "…" })}</span>
+              <span className="badge badge-ghost badge-sm">{t("settings.tgChipDigest", { value: prefs ? t(`settings.tgDigestValue.${prefs.statsDigest}`) : "…" })}</span>
             </div>
           </>
         ) : (
@@ -851,33 +874,36 @@ function ChangePassword() {
           {passwordSet && (
             <label className="form-control w-44">
               <span className="label-text">{t("settings.pwCurrent")}</span>
-              <input
-                type="password"
-                className="input input-bordered input-sm"
+              <PasswordInput
+                inputClassName="input input-bordered input-sm"
                 value={cur}
                 onChange={(e) => setCur(e.target.value)}
                 autoComplete="current-password"
+                showLabel={t("common.showPassword")}
+                hideLabel={t("common.hidePassword")}
               />
             </label>
           )}
           <label className="form-control w-44">
             <span className="label-text">{t("settings.pwNew")}</span>
-            <input
-              type="password"
-              className="input input-bordered input-sm"
+            <PasswordInput
+              inputClassName="input input-bordered input-sm"
               value={next}
               onChange={(e) => setNext(e.target.value)}
               autoComplete="new-password"
+              showLabel={t("common.showPassword")}
+              hideLabel={t("common.hidePassword")}
             />
           </label>
           <label className="form-control w-44">
             <span className="label-text">{t("settings.pwRepeat")}</span>
-            <input
-              type="password"
-              className="input input-bordered input-sm"
+            <PasswordInput
+              inputClassName="input input-bordered input-sm"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               autoComplete="new-password"
+              showLabel={t("common.showPassword")}
+              hideLabel={t("common.hidePassword")}
             />
           </label>
           <button type="submit" className="btn btn-primary btn-sm gap-1" disabled={busy || !valid}>

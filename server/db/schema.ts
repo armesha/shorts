@@ -202,6 +202,16 @@ export function applySchema(db: DatabaseSync): void {
       status TEXT NOT NULL DEFAULT 'pending', -- pending|ready|consumed|nomatch|conflict
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+    CREATE TABLE IF NOT EXISTS user_telegram_preferences (
+      user_id INTEGER PRIMARY KEY,
+      post_success INTEGER NOT NULL DEFAULT 0,
+      post_failures INTEGER NOT NULL DEFAULT 1,
+      generation_done INTEGER NOT NULL DEFAULT 1,
+      quota_warnings INTEGER NOT NULL DEFAULT 1,
+      channel_alerts INTEGER NOT NULL DEFAULT 1,
+      stats_digest TEXT NOT NULL DEFAULT 'weekly',
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
     CREATE TABLE IF NOT EXISTS oauth_clients (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,

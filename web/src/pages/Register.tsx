@@ -5,6 +5,7 @@ import { AppIcon } from "../components/AppIcon";
 import { apiClient, ApiError, type AuthUser } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
+import PasswordInput from "../components/PasswordInput";
 
 export default function Register() {
   const { t } = useT();
@@ -71,25 +72,27 @@ export default function Register() {
 
           <label className="auth-field">
             <span className="auth-label">{t("login.password")}</span>
-            <input
-              type="password"
-              className="auth-input"
+            <PasswordInput
+              inputClassName="auth-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={busy}
               autoComplete="new-password"
+              showLabel={t("common.showPassword")}
+              hideLabel={t("common.hidePassword")}
             />
           </label>
 
           <label className="auth-field">
             <span className="auth-label">{t("register.repeatPassword")}</span>
-            <input
-              type="password"
-              className="auth-input"
+            <PasswordInput
+              inputClassName="auth-input"
               value={password2}
               onChange={(e) => setPassword2(e.target.value)}
               disabled={busy}
               autoComplete="new-password"
+              showLabel={t("common.showPassword")}
+              hideLabel={t("common.hidePassword")}
             />
           </label>
 

@@ -33,6 +33,7 @@ const Limits = lazy(pageLoaders.limits);
 const TemplateEditor = lazy(pageLoaders.templateEditor);
 const Login = lazy(pageLoaders.login);
 const Register = lazy(pageLoaders.register);
+const TelegramMiniApp = lazy(pageLoaders.telegramMiniApp);
 
 function CreatorExternalRedirect() {
   useEffect(() => {
@@ -102,6 +103,22 @@ function Gate() {
         </Suspense>
       </Layout>
     </GenQueueProvider>
+  );
+}
+
+function RootRoutes() {
+  return (
+    <Routes>
+      <Route
+        path="/tg"
+        element={
+          <Suspense fallback={<TelegramMiniAppFallback />}>
+            <TelegramMiniApp />
+          </Suspense>
+        }
+      />
+      <Route path="*" element={<Gate />} />
+    </Routes>
   );
 }
 
@@ -187,12 +204,16 @@ function BootShell() {
   );
 }
 
+function TelegramMiniAppFallback() {
+  return <div className="tg-mini tg-mini--loading">Загрузка панели…</div>;
+}
+
 export default function App() {
   return (
     <I18nProvider>
       <AuthProvider>
         <SkinProvider>
-          <Gate />
+          <RootRoutes />
           <ConfirmHost />
         </SkinProvider>
       </AuthProvider>

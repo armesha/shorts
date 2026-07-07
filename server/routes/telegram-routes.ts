@@ -4,11 +4,11 @@
 // Public routes here are whitelisted in PUBLIC_API in index.ts; bind/* + me + unbind stay gated.
 import { createHash, randomBytes, randomInt, timingSafeEqual } from "node:crypto";
 import type { FastifyInstance } from "fastify";
-import type { Db, Account } from "../db.ts";
+import type { Db, Account, TelegramPreferences } from "../db.ts";
 import type { ClientCreds } from "../services/youtube.ts";
 import type { RefreshHooks, SnapshotAnalyticsFields } from "../services/stats-refresh.ts";
 import { hashPassword, isSuperAdminUser, newSessionToken, SESSION_TTL_DAYS } from "../auth.ts";
-import { sendBotMessage, getBotUsername, setBotWebhook, botStartLink, setBotCommands } from "../telegram.ts";
+import { sendBotMessage, getBotUsername, setBotWebhook, botStartLink, setBotCommands, setChatMenuButton, verifyTelegramWebAppInitData } from "../telegram.ts";
 import { makeBotStats, type BotCallbackQuery } from "../services/telegram-stats.ts";
 import { COMMERCIAL_CREATOR_FEATURE } from "../services/creator-assets.ts";
 import { grantDefaultRegisteredUserDecks } from "../services/default-user-decks.ts";
@@ -104,13 +104,20 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
   // Register the webhook on boot so Telegram pushes updates to us (needs a public HTTPS URL).
   void (async () => {
     if (!enabled()) return;
-    // Show «/stats» in the bot's command menu (independent of the webhook — works even without a base URL).
-    await setBotCommands(botToken(), [{ command: "stats", description: "📊 Статистика каналов" }]);
+    // Native Telegram menu: quick access even before the user remembers slash commands.
+    await setBotCommands(botToken(), [
+      { command: "menu", description: "Главное меню" },
+      { command: "stats", description: "Статистика каналов" },
+      { command: "settings", description: "Настройки уведомлений" },
+      { command: "help", description: "Что умеет бот" },
+    ]);
     const base = (process.env.PUBLIC_BASE_URL || "").trim().replace(/\/+$/, "");
     if (!base) {
+      await setChatMenuButton(botToken(), { type: "commands" });
       app.log.warn("[telegram] PUBLIC_BASE_URL not set — bot webhook NOT registered (bot login/bind/stats won't work; password recovery still does)");
       return;
     }
+    await setChatMenuButton(botToken(), { type: "web_app", text: "Панель", web_app: { url: `${base}/tg` } });
     const url = `${base}/api/telegram/webhook`;
     const r = await setBotWebhook(botToken(), url, webhookSecret());
     if (r.ok) app.log.info(`[telegram] webhook set → ${url}`);
@@ -121,6 +128,57 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
     const token = newSessionToken();
     db.createSession(token, userId, new Date(Date.now() + SESSION_TTL_DAYS * DAY_MS).toISOString());
     deps.setSessionCookie(reply, token);
+  }
+
+  function miniAppPayload(userId: number) {
+    const user = db.getUserById(userId);
+    if (!user) return null;
+    const accounts = db.listAccountsByUser(userId).map((a) => {
+      const latest = db.latestSnapshot(a.id);
+      return {
+        id: a.id,
+        name: a.ytChannelTitle || a.channelName || `#${a.id}`,
+        status: a.status,
+        enabled: a.enabled,
+        uploadsToday: a.uploadsToday,
+        scheduleCount: a.schedule.length,
+        youtubeUrl: a.ytChannelId ? `https://www.youtube.com/channel/${a.ytChannelId}` : null,
+        stats: latest
+          ? {
+              views: latest.views,
+              subscribers: latest.subscribers,
+              videos: latest.videos,
+              analyticsStatus: latest.analyticsStatus,
+              analyticsError: latest.analyticsError,
+              takenAt: latest.takenAt,
+            }
+          : null,
+      };
+    });
+    const summary = accounts.reduce(
+      (acc, a) => {
+        if (a.status === "connected") acc.connected += 1;
+        acc.views += a.stats?.views ?? 0;
+        acc.subscribers += a.stats?.subscribers ?? 0;
+        acc.videos += a.stats?.videos ?? 0;
+        return acc;
+      },
+      { accounts: accounts.length, connected: 0, views: 0, subscribers: 0, videos: 0 },
+    );
+    const counts = db.notificationCounts(userId);
+    return {
+      user: authUser(user),
+      summary: { ...summary, openNotifications: counts.open, unreadNotifications: counts.unread },
+      preferences: db.getTelegramPreferences(userId),
+      accounts,
+      notifications: db.listNotifications({ userId, limit: 5 }).map((n) => ({
+        id: n.id,
+        severity: n.severity,
+        title: n.title,
+        message: n.message,
+        lastSeenAt: n.lastSeenAt,
+      })),
+    };
   }
 
   // ---- Public: is Telegram offered here + bot @username ----
@@ -140,6 +198,51 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
       linked: !!u?.telegramId,
       username: u?.telegramUsername ?? null,
     };
+  });
+
+  app.get("/api/auth/telegram/preferences", async (req, reply) => {
+    const userId = (req as { userId?: number }).userId;
+    if (!userId) return reply.code(401).send({ error: "Не авторизован" });
+    return db.getTelegramPreferences(userId);
+  });
+
+  app.put("/api/auth/telegram/preferences", async (req, reply) => {
+    const userId = (req as { userId?: number }).userId;
+    if (!userId) return reply.code(401).send({ error: "Не авторизован" });
+    const body = ((req.body ?? {}) as Partial<TelegramPreferences>) || {};
+    return db.updateTelegramPreferences(userId, body);
+  });
+
+  app.post("/api/tg/auth", async (req, reply) => {
+    if (!enabled()) return reply.code(404).send({ error: "Telegram не настроен" });
+    const initData = String((req.body as { initData?: string })?.initData ?? "");
+    const verified = verifyTelegramWebAppInitData(initData, botToken());
+    if (!verified.ok) return reply.code(401).send({ error: verified.reason });
+    const user = db.getUserByTelegramId(verified.user.id);
+    if (!user) {
+      return reply.code(403).send({
+        error: "Этот Telegram не привязан к аккаунту Shorts Factory.",
+        bot: await getBotUsername(botToken()),
+      });
+    }
+    issueSession(reply, user.id);
+    return miniAppPayload(user.id);
+  });
+
+  app.post("/api/tg/preferences", async (req, reply) => {
+    if (!enabled()) return reply.code(404).send({ error: "Telegram не настроен" });
+    const body = ((req.body ?? {}) as { initData?: string; preferences?: Partial<TelegramPreferences> }) || {};
+    const verified = verifyTelegramWebAppInitData(String(body.initData ?? ""), botToken());
+    if (!verified.ok) return reply.code(401).send({ error: verified.reason });
+    const user = db.getUserByTelegramId(verified.user.id);
+    if (!user) return reply.code(403).send({ error: "Этот Telegram не привязан к аккаунту Shorts Factory." });
+    return db.updateTelegramPreferences(user.id, body.preferences ?? {});
+  });
+
+  app.get("/api/tg/panel", async (req, reply) => {
+    const userId = (req as { userId?: number }).userId;
+    if (!userId) return reply.code(401).send({ error: "Не авторизован" });
+    return miniAppPayload(userId);
   });
 
   // ---- Gated: start binding via the bot → returns a t.me deep link to press Start ----
@@ -257,11 +360,18 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
     const label = tgLabel(msg.from);
     const dm = (t: string) => (chatId != null ? sendBotMessage(botToken(), chatId, t) : Promise.resolve({ ok: false }));
 
-    // /stats or a bare /start → open the in-bot statistics menu (it handles linked vs not-linked).
-    if (text.startsWith("/stats")) return void (await botStats.entry(msg));
+    // Commands without a site-minted token open the in-bot UI (it handles linked vs not-linked).
+    if (text.startsWith("/stats")) return void (await botStats.entry(msg, "stats"));
+    if (text.startsWith("/settings")) return void (await botStats.entry(msg, "settings"));
+    if (text.startsWith("/help")) return void (await botStats.entry(msg, "help"));
+    if (text.startsWith("/menu")) return void (await botStats.entry(msg, "home"));
     if (!text.startsWith("/start")) return;
     const token = text.slice("/start".length).trim();
-    if (!token) return void (await botStats.entry(msg));
+    if (!token) return void (await botStats.entry(msg, "home"));
+    if (token === "menu") return void (await botStats.entry(msg, "home"));
+    if (token === "stats") return void (await botStats.entry(msg, "stats"));
+    if (token === "settings") return void (await botStats.entry(msg, "settings"));
+    if (token === "help") return void (await botStats.entry(msg, "help"));
 
     // ---- /start <token>: site-minted handshake for account binding / login (unchanged) ----
     const link = db.getTelegramLink(token);
@@ -280,7 +390,7 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
       }
       db.setUserTelegram(link.userId, tgId, label);
       db.updateTelegramLink(token, { telegramId: tgId, telegramUsername: label, chatId: String(chatId ?? ""), status: "consumed" });
-      await dm("✅ Telegram привязан. Теперь можно входить через Telegram и получать здесь коды для сброса пароля.");
+      await dm("✅ Telegram привязан.\n\nОткройте /menu — там статистика, уведомления и настройки бота прямо в Telegram.");
       return;
     }
 
