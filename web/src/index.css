@@ -1381,16 +1381,23 @@ textarea:focus-visible {
   color: var(--color-primary-content);
 }
 
-/* Quiet secondary-stat row under the KPI tiles. */
+/* Quiet secondary-stat row under the KPI tiles — each metric wears its own outlined chip
+   so neighbouring «number + caption» pairs don't run together into one line. */
 .stx-quiet-row {
   display: flex;
   flex-wrap: wrap;
-  column-gap: 1.5rem;
-  row-gap: 0.35rem;
+  gap: 0.5rem;
   align-items: baseline;
 }
 .stx-quiet-row > span {
   white-space: nowrap;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.28rem 0.6rem;
+  border: 1px solid var(--color-base-300);
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--color-base-200) 35%, transparent);
 }
 
 /* Draggable divider between the overview chart and the top-videos panel (xl+). */

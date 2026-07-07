@@ -875,6 +875,11 @@ html[data-skin="sechenie"] .stx-rank1 {
   color: var(--sx-ink);
   border: 1px solid var(--sx-ink);
 }
+html[data-skin="sechenie"] .stx-quiet-row > span {
+  border-radius: 0;
+  border-color: var(--sx-line);
+  background: var(--sx-paper-2);
+}
 /* The big KPI value inside a tile follows the skin's heavy tabular numerals. */
 html[data-skin="sechenie"] .stx-tile .stx-tile-value {
   font-weight: 900;
