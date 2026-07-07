@@ -1080,6 +1080,7 @@ export const ru: Record<string, string> = {
   "stats.peakDay": "пик {date} · {value}",
   "stats.peakDayHint": "Лучший день периода по выбранной метрике",
   "stats.tileSwitchHint": "Показать метрику на графике",
+  "stats.avgDurationShort": "Ср. длительность",
   "stats.refreshMineHint": "Кнопка «Обновить» обновляет только ваши каналы.",
   "stats.scopeSystem": "Сводка",
   "stats.platTitle": "Платформа",

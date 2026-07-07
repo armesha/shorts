@@ -1392,3 +1392,29 @@ textarea:focus-visible {
 .stx-quiet-row > span {
   white-space: nowrap;
 }
+
+/* Draggable divider between the overview chart and the top-videos panel (xl+). */
+.stx-gutter {
+  width: 1.1rem;
+  align-items: center;
+  justify-content: center;
+  cursor: col-resize;
+  touch-action: none;
+  user-select: none;
+}
+.stx-gutter-bar {
+  width: 4px;
+  height: 3rem;
+  border-radius: 999px;
+  background: var(--color-base-300);
+  transition: background-color 0.15s ease, height 0.15s ease;
+}
+.stx-gutter:hover .stx-gutter-bar,
+.stx-gutter:focus-visible .stx-gutter-bar {
+  background: color-mix(in srgb, var(--color-base-content) 45%, transparent);
+  height: 4.5rem;
+}
+.stx-gutter:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -4px;
+}

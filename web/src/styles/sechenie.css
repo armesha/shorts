@@ -880,6 +880,18 @@ html[data-skin="sechenie"] .stx-tile .stx-tile-value {
   font-weight: 900;
   letter-spacing: -0.04em;
 }
+html[data-skin="sechenie"] .stx-gutter-bar {
+  border-radius: 0;
+  width: 3px;
+  background: var(--sx-line);
+}
+html[data-skin="sechenie"] .stx-gutter:hover .stx-gutter-bar,
+html[data-skin="sechenie"] .stx-gutter:focus-visible .stx-gutter-bar {
+  background: var(--sx-ink);
+}
+html[data-skin="sechenie"] .stx-gutter:focus-visible {
+  outline-color: var(--sx-ink);
+}
 
 /* ============================================================================================
    Reveal-on-route — short staggered entrance (fill backwards → never stuck hidden)

@@ -248,44 +248,34 @@ export default function Statistics() {
           <h1 className="text-2xl font-bold">{t("nav.statistics")}</h1>
           <p className="text-base-content/60">{t("stats.subtitle")}</p>
         </div>
-        <div className="rounded-lg border border-base-300 bg-base-100 p-3">
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex min-w-0 flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-base-content/50">
-                {t("stats.analyticsPeriod")}
-              </span>
-              <div className="join" role="group" aria-label={t("stats.period")}>
-                {DAYS_OPTIONS.map((d) => (
-                  <button
-                    key={d}
-                    className={`btn btn-sm join-item ${days === d ? "btn-primary" : "btn-ghost"}`}
-                    onClick={() => setDays(d)}
-                    title={t("stats.periodDaysTitle", { n: d })}
-                  >
-                    {t("stats.daysShort", { n: d })}
-                  </button>
-                ))}
-              </div>
+        <div className="rounded-lg border border-base-300 bg-base-100 px-3 py-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="join" role="group" aria-label={t("stats.period")}>
+              {DAYS_OPTIONS.map((d) => (
+                <button
+                  key={d}
+                  className={`btn btn-sm join-item ${days === d ? "btn-primary" : "btn-ghost"}`}
+                  onClick={() => setDays(d)}
+                  title={t("stats.periodDaysTitle", { n: d })}
+                >
+                  {t("stats.daysShort", { n: d })}
+                </button>
+              ))}
             </div>
             {canViewAll && (
-              <div className="flex min-w-0 flex-wrap items-center gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wide text-base-content/50">
-                  {t("stats.scope")}
-                </span>
-                <div className="join">
-                  <button
-                    className={`btn btn-sm join-item ${view === "mine" ? "btn-primary" : "btn-ghost"}`}
-                    onClick={() => setView("mine")}
-                  >
-                    {t("stats.scopeMine")}
-                  </button>
-                  <button
-                    className={`btn btn-sm join-item ${view === "all" ? "btn-primary" : "btn-ghost"}`}
-                    onClick={() => setView("all")}
-                  >
-                    {t("stats.scopeAll")}
-                  </button>
-                </div>
+              <div className="join" role="group" aria-label={t("stats.scope")}>
+                <button
+                  className={`btn btn-sm join-item ${view === "mine" ? "btn-primary" : "btn-ghost"}`}
+                  onClick={() => setView("mine")}
+                >
+                  {t("stats.scopeMine")}
+                </button>
+                <button
+                  className={`btn btn-sm join-item ${view === "all" ? "btn-primary" : "btn-ghost"}`}
+                  onClick={() => setView("all")}
+                >
+                  {t("stats.scopeAll")}
+                </button>
               </div>
             )}
             <div className="ml-auto flex min-w-0 items-center gap-2">
@@ -352,7 +342,7 @@ export default function Statistics() {
       {analytics &&
         analytics.summary.published + analytics.summary.scheduled + analytics.summary.failed + analytics.summary.queuedVideos > 0 && (
           <section className="card bg-base-100 border border-base-300">
-            <div className="card-body gap-4">
+            <div className="card-body gap-3">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="card-title text-base">
                   {t("stats.publishActivity")} ·{" "}
@@ -390,7 +380,7 @@ export default function Statistics() {
                 </span>
               </div>
               {analytics.daily.length > 1 && (
-                <div className="stx-panel p-3" style={{ height: 230 }}>
+                <div className="stx-panel p-3" style={{ height: 190 }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart
                       data={analytics.daily.map((d) => ({ ...d, date: shortDate(d.date) }))}

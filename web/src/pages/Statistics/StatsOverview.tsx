@@ -39,7 +39,9 @@ const MAX_CHART_SHARE = 75;
 
 function readOverviewChartShare(): number {
   if (typeof window === "undefined") return DEFAULT_CHART_SHARE;
-  const raw = Number(window.localStorage.getItem(OVERVIEW_LAYOUT_STORAGE_KEY));
+  const stored = window.localStorage.getItem(OVERVIEW_LAYOUT_STORAGE_KEY);
+  if (!stored) return DEFAULT_CHART_SHARE; // Number(null) is 0, which would clamp to the minimum
+  const raw = Number(stored);
   if (!Number.isFinite(raw)) return DEFAULT_CHART_SHARE;
   return Math.min(MAX_CHART_SHARE, Math.max(MIN_CHART_SHARE, raw));
 }
@@ -50,12 +52,17 @@ export function SourceStats({ overview, days, isAdmin }: { overview: StatsOvervi
   return (
     <div className={`grid grid-cols-1 gap-4 ${isAdmin ? "xl:grid-cols-2" : ""}`}>
       <LedgerStrip
-        tag={<span className="badge badge-info badge-sm">Analytics</span>}
+        tag={
+          <>
+            <span className="badge badge-info badge-sm">Analytics</span>
+            <span className="stx-cap">{t("stats.daysShort", { n: days })}</span>
+          </>
+        }
         items={[
-          { label: t("stats.viewsForDays", { n: days }), value: fmt(overview.analyticsViews), hint: t("stats.periodViewsHint") },
+          { label: t("stats.metricViews"), value: fmt(overview.analyticsViews), hint: t("stats.periodViewsHint") },
           { label: t("stats.watchTime"), value: formatWatchMinutes(overview.watchMinutes) },
           { label: t("stats.engagedViews"), value: fmt(overview.engagedViews) },
-          { label: t("stats.avgDuration"), value: formatSeconds(overview.avgViewDuration) },
+          { label: t("stats.avgDurationShort"), value: formatSeconds(overview.avgViewDuration), hint: t("stats.avgDuration") },
         ]}
       />
       {isAdmin && (
@@ -86,9 +93,11 @@ export function StatsOverview({
 }) {
   const { t } = useT();
   const [chartShare, setChartShare] = useState(readOverviewChartShare);
+  const [dragging, setDragging] = useState(false);
+  const splitRef = useRef<HTMLDivElement | null>(null);
   const topVideosShare = 100 - chartShare;
   const overviewGridStyle = {
-    "--stats-overview-columns": `minmax(0, ${chartShare}fr) minmax(18rem, ${topVideosShare}fr)`,
+    "--stats-overview-columns": `minmax(0, ${chartShare}fr) auto minmax(18rem, ${topVideosShare}fr)`,
   } as CSSProperties;
 
   useEffect(() => {
@@ -98,6 +107,15 @@ export function StatsOverview({
       /* localStorage unavailable — ignore */
     }
   }, [chartShare]);
+
+  // The chart/top-videos divider is dragged with the mouse (pointer capture keeps the drag
+  // alive outside the handle); double-click resets, arrow keys nudge it.
+  const shareFromPointer = (clientX: number) => {
+    const rect = splitRef.current?.getBoundingClientRect();
+    if (!rect || rect.width <= 0) return;
+    const pct = ((clientX - rect.left) / rect.width) * 100;
+    setChartShare(Math.round(Math.min(MAX_CHART_SHARE, Math.max(MIN_CHART_SHARE, pct))));
+  };
 
   if (overview.channels === 0) return null;
   const hookRate = overview.analyticsViews > 0 ? (overview.engagedViews / overview.analyticsViews) * 100 : null;
@@ -133,11 +151,6 @@ export function StatsOverview({
     null,
   );
   const hasBreakdowns = overview.trafficSources.length > 0 || overview.devices.length > 0 || overview.countries.length > 0;
-  const dataContext = [
-    t("stats.contextPeriod", { n: days }),
-    overview.dataThrough ? t("stats.contextDataThrough", { date: shortDate(overview.dataThrough) }) : "",
-    t("stats.contextChannels", { ready: overview.analyticsChannels, total: overview.channels }),
-  ].filter(Boolean);
   const quietStats: { label: string; value: string; hint?: string }[] = [
     { label: t("stats.hookRate"), value: hookRate == null ? "—" : `${hookRate.toFixed(0)}%`, hint: t("stats.hookRateHint") },
     { label: t("stats.avgDuration"), value: formatSeconds(overview.avgViewDuration) },
@@ -155,33 +168,7 @@ export function StatsOverview({
   return (
     <section className="card bg-base-100 border border-base-300">
       <div className="card-body gap-5">
-        <div className="flex items-start justify-between gap-3 flex-wrap">
-          <div className="min-w-0">
-            <div className="font-semibold">{t("stats.overviewTitle")}</div>
-            <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-base-content/55">
-              {dataContext.map((item) => (
-                <span key={item}>{item}</span>
-              ))}
-            </div>
-          </div>
-          <label
-            className="hidden xl:flex items-center gap-2 text-xs text-base-content/55"
-            title={t("stats.overviewLayoutTitle", { chart: chartShare, top: topVideosShare })}
-          >
-            <span className="w-16 text-right tabular-nums">{t("stats.overviewChartShort")} {chartShare}%</span>
-            <input
-              type="range"
-              min={MIN_CHART_SHARE}
-              max={MAX_CHART_SHARE}
-              step={5}
-              value={chartShare}
-              onChange={(event) => setChartShare(Number(event.currentTarget.value))}
-              className="range range-xs range-primary w-28"
-              aria-label={t("stats.overviewLayoutAria")}
-            />
-            <span className="w-14 tabular-nums">{t("stats.topVideosShort")} {topVideosShare}%</span>
-          </label>
-        </div>
+        <div className="font-semibold">{t("stats.overviewTitle")}</div>
 
         <div>
           <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
@@ -212,8 +199,12 @@ export function StatsOverview({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-[var(--stats-overview-columns)] gap-4" style={overviewGridStyle}>
-          <div className="stx-panel p-3">
+        <div
+          ref={splitRef}
+          className={`grid grid-cols-1 xl:grid-cols-[var(--stats-overview-columns)] gap-4 xl:gap-0 ${dragging ? "select-none" : ""}`}
+          style={overviewGridStyle}
+        >
+          <div className="stx-panel p-3 min-w-0">
             <div className="flex items-center justify-between gap-3 mb-2 flex-wrap">
               <div className="text-sm font-semibold">{t("stats.overviewChart")}</div>
               <div className="flex items-center gap-3 text-xs text-base-content/50">
@@ -239,12 +230,47 @@ export function StatsOverview({
             )}
           </div>
 
+          <div
+            role="separator"
+            aria-orientation="vertical"
+            aria-valuenow={chartShare}
+            aria-valuemin={MIN_CHART_SHARE}
+            aria-valuemax={MAX_CHART_SHARE}
+            aria-label={t("stats.overviewLayoutAria")}
+            title={t("stats.overviewLayoutTitle", { chart: chartShare, top: topVideosShare })}
+            tabIndex={0}
+            className="stx-gutter hidden xl:flex"
+            onPointerDown={(e) => {
+              e.preventDefault();
+              e.currentTarget.setPointerCapture(e.pointerId);
+              setDragging(true);
+              shareFromPointer(e.clientX);
+            }}
+            onPointerMove={(e) => {
+              if (dragging) shareFromPointer(e.clientX);
+            }}
+            onPointerUp={(e) => {
+              e.currentTarget.releasePointerCapture(e.pointerId);
+              setDragging(false);
+            }}
+            onDoubleClick={() => setChartShare(DEFAULT_CHART_SHARE)}
+            onKeyDown={(e) => {
+              if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+                e.preventDefault();
+                const delta = e.key === "ArrowLeft" ? -5 : 5;
+                setChartShare((s) => Math.min(MAX_CHART_SHARE, Math.max(MIN_CHART_SHARE, s + delta)));
+              }
+            }}
+          >
+            <span className="stx-gutter-bar" aria-hidden="true" />
+          </div>
+
           <TopVideosPanel videos={overview.topVideos} range={overview.topVideosRange} days={days} />
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_22rem] gap-4 items-start">
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_22rem] gap-4">
           {hasBreakdowns ? (
-            <div className="grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-1 gap-3 content-start">
               <CompositionStrip title={t("stats.trafficSources")} subtitle={breakdownSubtitle} rows={overview.trafficSources} t={t} cap={5} />
               <CompositionStrip title={t("stats.devices")} subtitle={breakdownSubtitle} rows={overview.devices} t={t} cap={4} />
               <CompositionStrip title={t("stats.countries")} subtitle={breakdownSubtitle} rows={overview.countries} t={t} cap={5} />
@@ -254,7 +280,11 @@ export function StatsOverview({
               {t("stats.noBreakdowns")}
             </div>
           )}
-          <TopChannelsPanel rows={overview.topChannels} />
+          {/* The channels column must not drive the row height: it absolutely fills its cell
+              (height = breakdowns column) and scrolls inside, so no dead space on either side. */}
+          <div className="relative xl:min-h-[24rem]">
+            <TopChannelsPanel rows={overview.topChannels} />
+          </div>
         </div>
       </div>
     </section>
@@ -379,7 +409,7 @@ export function TopVideosPanel({
   }, [videos.length, visible]);
 
   return (
-    <div className="stx-panel p-3">
+    <div className="stx-panel p-3 @container">
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="min-w-0">
           <div className="text-sm font-semibold">{t("stats.topVideosAll")}</div>
@@ -387,7 +417,11 @@ export function TopVideosPanel({
             {reportRangeTitle(t, range, days)}
           </div>
         </div>
-        {videos.length > 0 && <span className="badge badge-ghost badge-sm stx-num">{shown.length} / {videos.length}</span>}
+        {videos.length > 0 && (
+          <span className="badge badge-ghost badge-sm stx-num shrink-0 whitespace-nowrap">
+            {shown.length} / {videos.length}
+          </span>
+        )}
       </div>
       {videos.length === 0 ? (
         <div className="h-72 flex items-center justify-center text-sm text-base-content/45 text-center px-4">
@@ -398,14 +432,14 @@ export function TopVideosPanel({
           {shown.map((v, index) => (
             <div
               key={`${v.accountId}:${v.videoId}`}
-              className="grid grid-cols-[1.25rem_minmax(0,1fr)_auto] sm:grid-cols-[1.25rem_4rem_minmax(0,1fr)_auto] items-center gap-2.5 rounded-lg bg-base-100/70 p-2 hover:bg-base-100"
+              className="grid grid-cols-[1.25rem_minmax(0,1fr)_auto] @[24rem]:grid-cols-[1.25rem_4rem_minmax(0,1fr)_auto] items-center gap-2.5 rounded-lg bg-base-100/70 p-2 hover:bg-base-100"
             >
               <RankBadge rank={index + 1} />
               <a
                 href={`https://www.youtube.com/shorts/${v.videoId}`}
                 target="_blank"
                 rel="noreferrer"
-                className="relative hidden h-9 w-16 shrink-0 overflow-hidden rounded bg-base-300 sm:block"
+                className="relative hidden h-9 w-16 shrink-0 overflow-hidden rounded bg-base-300 @[24rem]:block"
                 title={t("stats.openOnYoutube")}
                 tabIndex={-1}
               >
@@ -481,8 +515,8 @@ export function TopChannelsPanel({ rows }: { rows: OverviewTopChannel[] }) {
   }, [rows.length, visible]);
 
   return (
-    <aside className="card bg-base-100 border border-base-300">
-      <div className="card-body p-4 gap-3">
+    <aside className="card bg-base-100 border border-base-300 xl:absolute xl:inset-0">
+      <div className="card-body p-4 gap-3 xl:min-h-0">
         <div className="flex items-start justify-between gap-3">
           <div className="text-sm font-semibold">{t("stats.topChannels")}</div>
           {ranked.some((r) => !r.hasAnalytics) && (
@@ -492,23 +526,23 @@ export function TopChannelsPanel({ rows }: { rows: OverviewTopChannel[] }) {
         {rows.length === 0 ? (
           <div className="text-sm text-base-content/45 py-6 text-center">{t("stats.noTopChannels")}</div>
         ) : (
-          <div ref={listRef} className="space-y-2 max-h-[56rem] overflow-auto pr-1">
+          <div ref={listRef} className="space-y-1.5 max-h-[24rem] overflow-auto pr-1 xl:max-h-none xl:min-h-0 xl:flex-1">
             {ranked.map((r, index) => {
               const pct = Math.max(3, Math.round((r.mainViews / maxViews) * 100));
               return (
                 <div
                   key={r.accountId}
-                  className={`rounded-lg border px-3 py-2.5 ${
+                  className={`rounded-lg border px-2.5 py-2 ${
                     r.hasAnalytics ? "bg-base-200/45 border-base-300" : "bg-base-200/20 border-base-300/70"
                   }`}
                 >
-                  <div className="grid grid-cols-[1.5rem_minmax(0,1fr)_auto] items-center gap-2.5">
+                  <div className="grid grid-cols-[1.25rem_minmax(0,1fr)_auto] items-center gap-2.5">
                     <RankBadge rank={index + 1} />
                     <div className="min-w-0">
-                      <div className="flex items-center gap-2 min-w-0">
+                      <div className="flex items-center gap-1 min-w-0">
                         <Link
                           to={`/accounts/${r.accountId}`}
-                          className="font-medium line-clamp-2 break-words link-hover"
+                          className="text-sm font-medium truncate link-hover"
                           title={r.channelTitle}
                         >
                           {r.channelTitle}
@@ -518,56 +552,40 @@ export function TopChannelsPanel({ rows }: { rows: OverviewTopChannel[] }) {
                             href={`https://www.youtube.com/channel/${r.ytChannelId}`}
                             target="_blank"
                             rel="noreferrer"
-                            className="badge badge-ghost badge-xs shrink-0"
+                            className="btn btn-ghost btn-xs btn-square shrink-0 -my-0.5 text-base-content/40 hover:text-base-content"
                             title={t("stats.openOnYoutube")}
+                            aria-label={t("stats.openOnYoutube")}
                           >
-                            YouTube
+                            <AppIcon name="external" size={12} />
                           </a>
                         )}
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-base-content/45 min-w-0">
-                        {r.ownerUsername && <span className="truncate">@{r.ownerUsername}</span>}
-                        {!r.hasAnalytics && <span className="badge badge-ghost badge-xs">{t("stats.noPeriodAnalyticsShort")}</span>}
+                      <div className="truncate text-xs text-base-content/45">
+                        {r.ownerUsername ? `@${r.ownerUsername} · ` : ""}
+                        {r.hasAnalytics ? (
+                          <>
+                            {formatWatchMinutes(r.watchMinutes)} · {formatSeconds(r.avgViewDuration)} ·{" "}
+                            <span className={r.subscribersNet > 0 ? "text-success" : r.subscribersNet < 0 ? "text-error" : ""}>
+                              {signed(r.subscribersNet)}
+                            </span>
+                          </>
+                        ) : (
+                          t("stats.totalFallbackShort")
+                        )}
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <div className="text-xl font-bold leading-none stx-num">{fmt(r.mainViews)}</div>
-                      <div className="text-[11px] uppercase tracking-wide text-base-content/45">
+                      <div className="text-lg font-bold leading-none stx-num">{fmt(r.mainViews)}</div>
+                      <div className="text-[10px] uppercase tracking-wide text-base-content/45">
                         {r.hasAnalytics ? t("stats.periodShort") : t("stats.totalShort")}
                       </div>
                     </div>
                   </div>
-
-                  <div className="h-1 rounded-full bg-base-300/70 overflow-hidden mt-2.5">
+                  <div className="h-0.5 rounded-full bg-base-300/70 overflow-hidden mt-1.5">
                     <div
                       className={`h-full rounded-full ${r.hasAnalytics ? "bg-primary" : "bg-base-content/25"}`}
                       style={{ width: `${pct}%` }}
                     />
-                  </div>
-
-                  <div className="mt-2 flex items-center justify-between gap-2 text-xs">
-                    {r.hasAnalytics ? (
-                      <div className="min-w-0 text-base-content/55 truncate">
-                        {formatWatchMinutes(r.watchMinutes)} · {formatSeconds(r.avgViewDuration)} ·{" "}
-                        <span className={r.subscribersNet > 0 ? "text-success" : r.subscribersNet < 0 ? "text-error" : ""}>
-                          {signed(r.subscribersNet)}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="min-w-0 text-base-content/45 truncate">{t("stats.totalFallbackShort")}</div>
-                    )}
-                    {r.ytChannelId && (
-                      <a
-                        href={`https://www.youtube.com/channel/${r.ytChannelId}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="btn btn-ghost btn-xs btn-square shrink-0"
-                        title={t("stats.openOnYoutube")}
-                        aria-label={t("stats.openOnYoutube")}
-                      >
-                        <AppIcon name="external" size={14} />
-                      </a>
-                    )}
                   </div>
                 </div>
               );

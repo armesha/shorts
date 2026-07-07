@@ -1076,6 +1076,7 @@ export const en: Record<string, string> = {
   "stats.peakDay": "peak {date} · {value}",
   "stats.peakDayHint": "Best day of the period for the selected metric",
   "stats.tileSwitchHint": "Show this metric on the chart",
+  "stats.avgDurationShort": "Avg duration",
   "stats.refreshMineHint": "“Refresh” updates only your own channels.",
   "stats.scopeSystem": "Overview",
   "stats.platTitle": "Platform",

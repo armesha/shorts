@@ -186,7 +186,7 @@ export function CompositionStrip({
           />
         ))}
       </div>
-      <div className="mt-2.5 grid grid-cols-1 gap-x-5 gap-y-1 sm:grid-cols-2">
+      <div className="mt-2.5 grid grid-cols-1 gap-y-1">
         {segments.map((s) => (
           <div key={s.key} className="flex items-center justify-between gap-3 text-xs">
             <span className="flex min-w-0 items-center gap-1.5">
@@ -207,7 +207,7 @@ export function CompositionStrip({
           <summary className="cursor-pointer select-none text-xs text-base-content/45 hover:text-base-content/70">
             {t("stats.showMore")} · {tail.length}
           </summary>
-          <div className="mt-1.5 grid max-h-48 grid-cols-1 gap-x-5 gap-y-1 overflow-auto pr-1 sm:grid-cols-2">
+          <div className="mt-1.5 grid max-h-48 grid-cols-1 gap-y-1 overflow-auto pr-1">
             {tail.map((r) => (
               <div key={r.key} className="flex items-center justify-between gap-3 text-xs">
                 <span className="min-w-0 truncate text-base-content/60">{labelValue(r.key)}</span>
@@ -228,7 +228,8 @@ export function CompositionStrip({
 
 /* ------------------------------------------------------------------------- Ledger strip */
 
-// A slim one-line "press ledger": big tabular number + tiny caption pairs separated by rules.
+// A slim "press ledger": a small source tag on top, then a symmetric grid of aligned
+// value-over-caption cells (2×2 on narrow widths, one row of 4 from md up).
 export function LedgerStrip({
   tag,
   items,
@@ -240,17 +241,19 @@ export function LedgerStrip({
 }) {
   return (
     <div className="card bg-base-100 border border-base-300">
-      <div className="card-body flex-row flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
-        <div className="flex shrink-0 items-center gap-2">{tag}</div>
-        <div className="stx-ledger flex min-w-0 flex-1 flex-wrap items-center gap-x-6 gap-y-2">
+      <div className="card-body gap-2.5 px-4 py-3">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-2">{tag}</div>
+          {trailing}
+        </div>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-2.5 md:grid-cols-4">
           {items.map((it) => (
-            <div key={it.label} className="stx-ledger-item flex items-baseline gap-1.5" title={it.hint}>
-              <span className="stx-num text-lg font-extrabold leading-none">{it.value}</span>
-              <span className="stx-cap">{it.label}</span>
+            <div key={it.label} className="min-w-0" title={it.hint}>
+              <div className="stx-num text-lg font-extrabold leading-tight">{it.value}</div>
+              <div className="stx-cap leading-snug">{it.label}</div>
             </div>
           ))}
         </div>
-        {trailing}
       </div>
     </div>
   );
