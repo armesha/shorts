@@ -234,13 +234,15 @@ export function LedgerStrip({
   tag,
   items,
   trailing,
+  className = "",
 }: {
   tag: ReactNode;
   items: { label: string; value: ReactNode; hint?: string }[];
   trailing?: ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="card bg-base-100 border border-base-300">
+    <div className={`card bg-base-100 border border-base-300 ${className}`}>
       <div className="card-body gap-2.5 px-4 py-3">
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">{tag}</div>

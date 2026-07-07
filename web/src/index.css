@@ -1418,3 +1418,13 @@ textarea:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: -4px;
 }
+
+/* Data API source marker: public lifetime counters wear a faint diagonal hatch so they read
+   as different material from the YouTube Analytics period metrics (both skins). */
+.stx-src-data {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    color-mix(in srgb, var(--color-base-content) 4%, transparent) 0 5px,
+    transparent 5px 10px
+  );
+}

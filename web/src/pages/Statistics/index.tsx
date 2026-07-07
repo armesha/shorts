@@ -27,6 +27,7 @@ import { ChartTip } from "./viz";
 
 type Scope = "mine" | "all";
 type View = "mine" | "all";
+type Source = "analytics" | "data";
 type SortKey = "name" | "subscribers" | "views" | "videos" | "delta" | "analyticsViews" | "watchMinutes";
 const PAGE_SIZE = 10;
 
@@ -41,6 +42,7 @@ type SavedFilters = {
   view?: View; // legacy only; the page now always opens on "mine"
   days?: number; // analytics window: 7 / 30 / 90
   scope?: Scope; // legacy (pre-«Сводка» tab) — still honoured when restoring
+  source?: Source; // «Analytics» (period metrics, default) vs «Data API» (public counters)
 };
 const DAYS_OPTIONS = [7, 30, 90] as const;
 function loadFilters(): SavedFilters {
@@ -95,6 +97,9 @@ export default function Statistics() {
   const [onlyConnected, setOnlyConnected] = useState(saved.onlyConnected ?? true);
   const [page, setPage] = useState(1);
   const [overviewMetric, setOverviewMetric] = useState<OverviewMetric>("views");
+  // Source tab: the page is Analytics-first; «Data API» collects everything built on the
+  // public lifetime counters (totals ledger, snapshot deltas, history charts).
+  const [source, setSource] = useState<Source>(saved.source === "data" ? "data" : "analytics");
 
   // Successful refreshes should feel like a small confirmation, not a dismissible alert.
   useEffect(() => {
@@ -157,12 +162,12 @@ export default function Statistics() {
     try {
       localStorage.setItem(
         STORE_KEY,
-        JSON.stringify({ search, sortKey, sortDir, ownerFilter, onlyConnected, days }),
+        JSON.stringify({ search, sortKey, sortDir, ownerFilter, onlyConnected, days, source }),
       );
     } catch {
       /* localStorage unavailable — ignore */
     }
-  }, [search, sortKey, sortDir, ownerFilter, onlyConnected, days]);
+  }, [search, sortKey, sortDir, ownerFilter, onlyConnected, days, source]);
 
   async function refresh() {
     setRefreshing(true);
@@ -278,6 +283,22 @@ export default function Statistics() {
                 </button>
               </div>
             )}
+            <div className="join" role="group" aria-label={t("stats.sourceTabsAria")}>
+              <button
+                className={`btn btn-sm join-item ${source === "analytics" ? "btn-primary" : "btn-ghost"}`}
+                onClick={() => setSource("analytics")}
+                title={t("stats.sourceAnalyticsHint")}
+              >
+                Analytics
+              </button>
+              <button
+                className={`btn btn-sm join-item ${source === "data" ? "btn-primary" : "btn-ghost"}`}
+                onClick={() => setSource("data")}
+                title={t("stats.sourceDataHint")}
+              >
+                Data API
+              </button>
+            </div>
             <div className="ml-auto flex min-w-0 items-center gap-2">
               <span className="hidden md:inline text-xs text-base-content/50">
                 {t("stats.contextChannels", { ready: scopeOverview.analyticsChannels, total: scopeOverview.channels })}
@@ -337,9 +358,9 @@ export default function Statistics() {
 
       <>
       {scope === "all" && summary && <PlatformBand s={summary} />}
-      <SourceStats overview={scopeOverview} days={days} isAdmin={!!canViewAll} />
+      <SourceStats overview={scopeOverview} days={days} source={source} />
 
-      {analytics &&
+      {source === "analytics" && analytics &&
         analytics.summary.published + analytics.summary.scheduled + analytics.summary.failed + analytics.summary.queuedVideos > 0 && (
           <section className="card bg-base-100 border border-base-300">
             <div className="card-body gap-3">
@@ -442,7 +463,9 @@ export default function Statistics() {
         />
       ) : (
         <>
-          <StatsOverview overview={overview} metric={overviewMetric} onMetric={setOverviewMetric} days={days} />
+          {source === "analytics" && (
+            <StatsOverview overview={overview} metric={overviewMetric} onMetric={setOverviewMetric} days={days} />
+          )}
 
           {/* Controls: search / sort / direction / owner filter / only-connected */}
           <div className="card bg-base-100 border border-base-300">
@@ -509,7 +532,14 @@ export default function Statistics() {
           ) : (
             <div className="space-y-4">
               {paged.map((r) => (
-                <ChannelCard key={r.accountId} row={r} isAdmin={!!canViewAll} avatar={avatarMap[r.accountId]} days={days} />
+                <ChannelCard
+                  key={r.accountId}
+                  row={r}
+                  isAdmin={!!canViewAll}
+                  avatar={avatarMap[r.accountId]}
+                  days={days}
+                  source={source}
+                />
               ))}
             </div>
           )}
@@ -538,7 +568,7 @@ export default function Statistics() {
             </div>
           )}
 
-          <AnalyticsFootnote rows={sorted} />
+          {source === "analytics" && <AnalyticsFootnote rows={sorted} />}
         </>
       )}
       </>

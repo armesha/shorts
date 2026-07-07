@@ -36,13 +36,25 @@ import { ChartTip, CompositionStrip, DeltaChip, LedgerStrip, Sparkline } from ".
 type MetricKey = "subscribers" | "views" | "videos";
 type T = (key: string, vars?: Record<string, string | number>) => string;
 
-export function ChannelCard({ row, isAdmin, avatar, days }: { row: StatRow; isAdmin: boolean; avatar?: string | null; days: number }) {
+export function ChannelCard({
+  row,
+  isAdmin,
+  avatar,
+  days,
+  source,
+}: {
+  row: StatRow;
+  isAdmin: boolean;
+  avatar?: string | null;
+  days: number;
+  source: "analytics" | "data";
+}) {
   const { t } = useT();
   const [open, setOpen] = useState(false);
   const [points, setPoints] = useState<StatPoint[] | null>(null);
 
   useEffect(() => {
-    if (open && points == null) {
+    if (open && source === "data" && points == null) {
       apiClient
         .statsHistory(row.accountId)
         .then(setPoints)
@@ -51,7 +63,7 @@ export function ChannelCard({ row, isAdmin, avatar, days }: { row: StatRow; isAd
           setPoints([]);
         });
     }
-  }, [open, points, row.accountId]);
+  }, [open, points, row.accountId, source]);
 
   const title = row.ytChannelTitle || row.channelName;
   const subtitle = !row.connected
@@ -102,7 +114,7 @@ export function ChannelCard({ row, isAdmin, avatar, days }: { row: StatRow; isAd
               {subtitle}
             </div>
           </div>
-          {sparkValues.length > 1 && (
+          {source === "analytics" && sparkValues.length > 1 && (
             <div className="hidden sm:block w-32 shrink-0" title={t("stats.viewsForDays", { n: days })}>
               <Sparkline values={sparkValues} height={30} className="w-full" />
             </div>
@@ -136,13 +148,15 @@ export function ChannelCard({ row, isAdmin, avatar, days }: { row: StatRow; isAd
           </div>
         )}
 
-        <div className="stx-panel grid grid-cols-3 divide-x divide-base-300/70 py-2.5">
-          <Metric label={t("stats.subscribers")} value={row.latest?.subscribers} delta={delta(row, "subscribers")} t={t} />
-          <Metric label={t("stats.views")} value={row.latest?.views} delta={delta(row, "views")} t={t} />
-          <Metric label={t("stats.videos")} value={row.latest?.videos} delta={delta(row, "videos")} t={t} />
-        </div>
+        {source === "data" && (
+          <div className="stx-panel stx-src-data grid grid-cols-3 divide-x divide-base-300/70 py-2.5">
+            <Metric label={t("stats.subscribers")} value={row.latest?.subscribers} delta={delta(row, "subscribers")} t={t} />
+            <Metric label={t("stats.views")} value={row.latest?.views} delta={delta(row, "views")} t={t} />
+            <Metric label={t("stats.videos")} value={row.latest?.videos} delta={delta(row, "videos")} t={t} />
+          </div>
+        )}
 
-        {row.analytics.summary.views > 0 && (
+        {source === "analytics" && row.analytics.summary.views > 0 && (
           <div className="stx-quiet-row text-sm">
             <span>
               <span className="stx-num font-bold">{fmt(row.analytics.summary.views)}</span>{" "}
@@ -172,17 +186,24 @@ export function ChannelCard({ row, isAdmin, avatar, days }: { row: StatRow; isAd
         <button
           className="btn btn-ghost btn-sm gap-1 w-fit"
           onClick={() => setOpen((v) => !v)}
-          disabled={!row.latest}
+          disabled={
+            source === "data"
+              ? !row.latest
+              : !row.analytics.error && row.analytics.summary.views <= 0 && row.analytics.topVideos.length === 0
+          }
         >
           <AppIcon name="analytics" size={15} />
-          {open ? t("stats.hideChart") : t("stats.showChart")}
+          {open ? t("stats.hideChart") : source === "data" ? t("stats.showChart") : t("stats.showDetails")}
           <AppIcon name="chevron-right" size={15} className={open ? "rotate-90 transition-transform" : "transition-transform"} />
         </button>
 
         {open && (
           <div className="space-y-4">
-            <ChannelHistory points={points} />
-            <ChannelAnalytics analytics={row.analytics} days={days} />
+            {source === "data" ? (
+              <ChannelHistory points={points} />
+            ) : (
+              <ChannelAnalytics analytics={row.analytics} days={days} />
+            )}
           </div>
         )}
       </div>
@@ -375,7 +396,7 @@ function HistoryChart({
 }) {
   const gradientId = `stx-hist-${useId().replace(/:/g, "")}`;
   return (
-    <div className="stx-panel p-3">
+    <div className="stx-panel stx-src-data p-3">
       <div className="mb-1 flex items-center justify-between gap-3">
         <span className="text-sm font-semibold">{name}</span>
         <span

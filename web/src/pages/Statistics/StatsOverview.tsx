@@ -46,37 +46,52 @@ function readOverviewChartShare(): number {
   return Math.min(MAX_CHART_SHARE, Math.max(MIN_CHART_SHARE, raw));
 }
 
-// Slim per-source ledgers instead of two boxy KPI cards: Analytics for everyone, Data API — admin.
-export function SourceStats({ overview, days, isAdmin }: { overview: StatsOverviewData; days: number; isAdmin: boolean }) {
+// One slim ledger per source tab: Analytics period totals on the main tab, public Data API
+// lifetime counters (hatched — different material) on the «Data API» tab.
+export function SourceStats({
+  overview,
+  days,
+  source,
+}: {
+  overview: StatsOverviewData;
+  days: number;
+  source: "analytics" | "data";
+}) {
   const { t } = useT();
-  return (
-    <div className={`grid grid-cols-1 gap-4 ${isAdmin ? "xl:grid-cols-2" : ""}`}>
+  if (source === "data") {
+    return (
       <LedgerStrip
+        className="stx-src-data"
         tag={
           <>
-            <span className="badge badge-info badge-sm">Analytics</span>
-            <span className="stx-cap">{t("stats.daysShort", { n: days })}</span>
+            <span className="badge badge-outline badge-sm shrink-0 whitespace-nowrap">Data API</span>
+            <span className="stx-cap">{t("stats.sourceDataTag")}</span>
           </>
         }
         items={[
-          { label: t("stats.metricViews"), value: fmt(overview.analyticsViews), hint: t("stats.periodViewsHint") },
-          { label: t("stats.watchTime"), value: formatWatchMinutes(overview.watchMinutes) },
-          { label: t("stats.engagedViews"), value: fmt(overview.engagedViews) },
-          { label: t("stats.avgDurationShort"), value: formatSeconds(overview.avgViewDuration), hint: t("stats.avgDuration") },
+          { label: t("stats.totalSubscribers"), value: fmt(overview.subscribers) },
+          { label: t("stats.totalViews"), value: fmt(overview.publicViews) },
+          { label: t("stats.videos"), value: fmt(overview.videos) },
+          { label: t("stats.channelsConnected"), value: `${overview.connected} / ${overview.channels}` },
         ]}
       />
-      {isAdmin && (
-        <LedgerStrip
-          tag={<span className="badge badge-outline badge-sm shrink-0 whitespace-nowrap">Data API</span>}
-          items={[
-            { label: t("stats.totalSubscribers"), value: fmt(overview.subscribers) },
-            { label: t("stats.totalViews"), value: fmt(overview.publicViews) },
-            { label: t("stats.videos"), value: fmt(overview.videos) },
-            { label: t("stats.channelsConnected"), value: `${overview.connected} / ${overview.channels}` },
-          ]}
-        />
-      )}
-    </div>
+    );
+  }
+  return (
+    <LedgerStrip
+      tag={
+        <>
+          <span className="badge badge-info badge-sm">Analytics</span>
+          <span className="stx-cap">{t("stats.daysShort", { n: days })}</span>
+        </>
+      }
+      items={[
+        { label: t("stats.metricViews"), value: fmt(overview.analyticsViews), hint: t("stats.periodViewsHint") },
+        { label: t("stats.watchTime"), value: formatWatchMinutes(overview.watchMinutes) },
+        { label: t("stats.engagedViews"), value: fmt(overview.engagedViews) },
+        { label: t("stats.avgDurationShort"), value: formatSeconds(overview.avgViewDuration), hint: t("stats.avgDuration") },
+      ]}
+    />
   );
 }
 
