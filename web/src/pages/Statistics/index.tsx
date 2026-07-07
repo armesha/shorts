@@ -254,8 +254,8 @@ export default function Statistics() {
           <p className="text-base-content/60">{t("stats.subtitle")}</p>
         </div>
         <div className="rounded-lg border border-base-300 bg-base-100 px-3 py-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="join" role="group" aria-label={t("stats.period")}>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <div className="join overflow-hidden rounded-lg border border-base-300" role="group" aria-label={t("stats.period")}>
               {DAYS_OPTIONS.map((d) => (
                 <button
                   key={d}
@@ -268,7 +268,7 @@ export default function Statistics() {
               ))}
             </div>
             {canViewAll && (
-              <div className="join" role="group" aria-label={t("stats.scope")}>
+              <div className="join overflow-hidden rounded-lg border border-base-300" role="group" aria-label={t("stats.scope")}>
                 <button
                   className={`btn btn-sm join-item ${view === "mine" ? "btn-primary" : "btn-ghost"}`}
                   onClick={() => setView("mine")}
@@ -283,7 +283,7 @@ export default function Statistics() {
                 </button>
               </div>
             )}
-            <div className="join" role="group" aria-label={t("stats.sourceTabsAria")}>
+            <div className="join overflow-hidden rounded-lg border border-base-300" role="group" aria-label={t("stats.sourceTabsAria")}>
               <button
                 className={`btn btn-sm join-item ${source === "analytics" ? "btn-primary" : "btn-ghost"}`}
                 onClick={() => setSource("analytics")}
