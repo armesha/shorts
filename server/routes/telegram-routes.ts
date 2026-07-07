@@ -130,11 +130,66 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
     deps.setSessionCookie(reply, token);
   }
 
+  // 30-day visual analytics for the Mini App: the same stored channel_analytics_daily rows the
+  // /statistics page reads, aggregated by date (chart) and by account (per-channel sparklines).
+  const MINI_ANALYTICS_DAYS = 30;
+
+  function miniAnalytics(accountIds: number[]) {
+    const range = deps.analyticsRange(MINI_ANALYTICS_DAYS);
+    const dates: string[] = [];
+    const end = new Date(`${range.to}T00:00:00Z`).getTime();
+    for (let t = new Date(`${range.from}T00:00:00Z`).getTime(); t <= end; t += DAY_MS) {
+      dates.push(new Date(t).toISOString().slice(0, 10));
+    }
+    const dateIndex = new Map(dates.map((d, i) => [d, i]));
+    const views = dates.map(() => 0);
+    const engagedViews = dates.map(() => 0);
+    const sparkByAccount = new Map<number, number[]>();
+    const totals = { views: 0, engagedViews: 0, watchMinutes: 0, likes: 0, comments: 0, shares: 0, durationWeighted: 0 };
+    for (const r of db.listDailyAnalytics(accountIds, range.from, range.to)) {
+      const i = dateIndex.get(r.date);
+      if (i == null) continue;
+      views[i] += r.views;
+      engagedViews[i] += r.engagedViews;
+      totals.views += r.views;
+      totals.engagedViews += r.engagedViews;
+      totals.watchMinutes += r.watchMinutes;
+      totals.likes += r.likes;
+      totals.comments += r.comments;
+      totals.shares += r.shares;
+      if (r.views > 0) totals.durationWeighted += r.avgViewDuration * r.views;
+      let spark = sparkByAccount.get(r.accountId);
+      if (!spark) sparkByAccount.set(r.accountId, (spark = dates.map(() => 0)));
+      spark[i] += r.views;
+    }
+    return {
+      sparkByAccount,
+      analytics: {
+        days: MINI_ANALYTICS_DAYS,
+        from: range.from,
+        to: range.to,
+        daily: dates.map((date, i) => ({ date, views: views[i], engagedViews: engagedViews[i] })),
+        summary: {
+          views: totals.views,
+          engagedViews: totals.engagedViews,
+          watchMinutes: totals.watchMinutes,
+          avgViewDuration: totals.views > 0 ? totals.durationWeighted / totals.views : 0,
+          likes: totals.likes,
+          comments: totals.comments,
+          shares: totals.shares,
+        },
+      },
+    };
+  }
+
   function miniAppPayload(userId: number) {
     const user = db.getUserById(userId);
     if (!user) return null;
-    const accounts = db.listAccountsByUser(userId).map((a) => {
+    const userAccounts = db.listAccountsByUser(userId);
+    const { sparkByAccount, analytics } = miniAnalytics(userAccounts.map((a) => a.id));
+    const accounts = userAccounts.map((a) => {
       const latest = db.latestSnapshot(a.id);
+      const spark = sparkByAccount.get(a.id) ?? [];
       return {
         id: a.id,
         name: a.ytChannelTitle || a.channelName || `#${a.id}`,
@@ -143,6 +198,8 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
         uploadsToday: a.uploadsToday,
         scheduleCount: a.schedule.length,
         youtubeUrl: a.ytChannelId ? `https://www.youtube.com/channel/${a.ytChannelId}` : null,
+        periodViews: spark.reduce((sum, v) => sum + v, 0),
+        spark,
         stats: latest
           ? {
               views: latest.views,
@@ -170,6 +227,7 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
       user: authUser(user),
       summary: { ...summary, openNotifications: counts.open, unreadNotifications: counts.unread },
       preferences: db.getTelegramPreferences(userId),
+      analytics,
       accounts,
       notifications: db.listNotifications({ userId, limit: 5 }).map((n) => ({
         id: n.id,

@@ -89,6 +89,22 @@ export interface TelegramPreferences {
   statsDigest: TelegramDigestFrequency;
 }
 
+export interface TelegramMiniAnalytics {
+  days: number;
+  from: string;
+  to: string;
+  daily: { date: string; views: number; engagedViews: number }[];
+  summary: {
+    views: number;
+    engagedViews: number;
+    watchMinutes: number;
+    avgViewDuration: number;
+    likes: number;
+    comments: number;
+    shares: number;
+  };
+}
+
 export interface TelegramMiniPanel {
   user: AuthUser;
   summary: {
@@ -101,6 +117,7 @@ export interface TelegramMiniPanel {
     unreadNotifications: number;
   };
   preferences: TelegramPreferences;
+  analytics: TelegramMiniAnalytics;
   accounts: {
     id: number;
     name: string;
@@ -109,6 +126,8 @@ export interface TelegramMiniPanel {
     uploadsToday: number;
     scheduleCount: number;
     youtubeUrl: string | null;
+    periodViews: number;
+    spark: number[];
     stats: {
       views: number;
       subscribers: number;

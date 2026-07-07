@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import {
   AlertTriangle,
   BarChart3,
@@ -8,7 +8,15 @@ import {
   RefreshCw,
   Settings2,
 } from "lucide-react";
-import { apiClient, ApiError, type TelegramMiniPanel, type TelegramPreferences } from "../lib/api";
+import { apiClient, ApiError, type TelegramMiniAnalytics, type TelegramMiniPanel, type TelegramPreferences } from "../lib/api";
+import {
+  fmt,
+  formatSeconds,
+  formatWatchMinutes,
+  shortDate,
+  trimLeadingEmptyDays,
+  trimTrailingEmptyDays,
+} from "../lib/statsFormat";
 
 type Tab = "overview" | "channels" | "settings";
 type TelegramPrefKey = "channelAlerts" | "quotaWarnings" | "postFailures" | "postSuccess" | "generationDone";
@@ -62,7 +70,7 @@ function formatInt(n: number): string {
   return Math.round(n || 0).toLocaleString("ru-RU");
 }
 
-function shortDate(value: string | null | undefined): string {
+function snapshotDate(value: string | null | undefined): string {
   if (!value) return "нет данных";
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return "нет данных";
@@ -208,7 +216,7 @@ export default function TelegramMiniApp() {
 
       <section className="tg-metrics" aria-label="Сводка">
         <Metric label="Каналы" value={`${panel.summary.connected}/${panel.summary.accounts}`} />
-        <Metric label="Просмотры" value={formatInt(panel.summary.views)} />
+        <Metric label="Просмотры · всего" value={formatInt(panel.summary.views)} />
         <Metric label="Подписчики" value={formatInt(panel.summary.subscribers)} />
         <Metric label="События" value={formatInt(panel.summary.openNotifications)} />
       </section>
@@ -269,6 +277,114 @@ function TabButton({
   );
 }
 
+// Daily bars (aggregate chart + channel sparklines). Pure SVG — Recharts would triple the
+// mini-app bundle. preserveAspectRatio="none" is safe: only rects, all text lives in HTML.
+function Bars({
+  values,
+  active = -1,
+  height,
+  onPick,
+}: {
+  values: number[];
+  active?: number;
+  height: number;
+  onPick?: (index: number) => void;
+}) {
+  const W = 320;
+  const max = Math.max(1, ...values);
+  const step = W / values.length;
+  const gap = Math.min(2.5, step * 0.22);
+  const pick = onPick
+    ? (e: ReactPointerEvent<SVGSVGElement>) => {
+        const box = e.currentTarget.getBoundingClientRect();
+        const x = (e.clientX - box.left) / Math.max(1, box.width);
+        onPick(Math.min(values.length - 1, Math.max(0, Math.floor(x * values.length))));
+      }
+    : undefined;
+  return (
+    <svg
+      viewBox={`0 0 ${W} ${height}`}
+      preserveAspectRatio="none"
+      className="tg-bars"
+      style={{ height }}
+      onPointerDown={pick}
+      onPointerMove={pick ? (e) => e.buttons > 0 && pick(e) : undefined}
+      aria-hidden="true"
+    >
+      {values.map((v, i) => {
+        const h = v > 0 ? Math.max(2, (v / max) * (height - 2)) : 1.5;
+        return (
+          <rect
+            key={i}
+            x={i * step + gap / 2}
+            y={height - h}
+            width={Math.max(0.5, step - gap)}
+            height={h}
+            className={i === active ? "tg-bars__bar tg-bars__bar--active" : "tg-bars__bar"}
+          />
+        );
+      })}
+    </svg>
+  );
+}
+
+// The visual-statistics block: 30-day views chart (tap/drag a bar to inspect a day) + the
+// period KPIs the site's /statistics shows. Hidden until analytics rows exist.
+function AnalyticsPanel({ analytics }: { analytics: TelegramMiniAnalytics | undefined }) {
+  const [sel, setSel] = useState(-1);
+  const rows = useMemo(() => {
+    const daily = analytics?.daily ?? [];
+    return trimLeadingEmptyDays(
+      trimTrailingEmptyDays(daily, (d) => d.views === 0),
+      (d) => d.views === 0,
+    );
+  }, [analytics]);
+  if (!analytics || !rows.length || analytics.summary.views <= 0) return null;
+  const values = rows.map((r) => r.views);
+  let peak = 0;
+  values.forEach((v, i) => {
+    if (v > values[peak]) peak = i;
+  });
+  const active = sel >= 0 && sel < rows.length ? sel : peak;
+  const day = rows[active];
+  const s = analytics.summary;
+  const hook = s.views > 0 ? Math.round((s.engagedViews / s.views) * 100) : 0;
+  return (
+    <section className="tg-panel">
+      <div className="tg-section-title">Просмотры · {analytics.days} дней</div>
+      <div className="tg-chart-head">
+        <b>{fmt(s.views)}</b>
+        <span>
+          {sel < 0 ? "пик · " : ""}
+          {shortDate(day.date)} · {fmt(day.views)}
+        </span>
+      </div>
+      <Bars values={values} active={active} height={92} onPick={setSel} />
+      <div className="tg-chart-axis">
+        <span>{shortDate(rows[0].date)}</span>
+        <span>{shortDate(rows[rows.length - 1].date)}</span>
+      </div>
+      <div className="tg-quiet">
+        <span>
+          <b>{hook}%</b> хук-рейт
+        </span>
+        <span>
+          <b>{formatWatchMinutes(s.watchMinutes)}</b> время просмотра
+        </span>
+        <span>
+          <b>{formatSeconds(s.avgViewDuration)}</b> средняя
+        </span>
+        <span>
+          <b>{fmt(s.engagedViews)}</b> вовлечённые
+        </span>
+        <span>
+          <b>{fmt(s.likes)}</b> лайки
+        </span>
+      </div>
+    </section>
+  );
+}
+
 function Overview({
   panel,
   enabledPrefs,
@@ -283,6 +399,7 @@ function Overview({
   const top = panel.notifications.slice(0, 3);
   return (
     <section className="tg-stack">
+      <AnalyticsPanel analytics={panel.analytics} />
       <div className="tg-row-list">
         <button className="tg-action" type="button" onClick={onOpenChannels}>
           <MonitorPlay size={18} />
@@ -349,8 +466,14 @@ function Channels({ panel }: { panel: TelegramMiniPanel }) {
             <div className="tg-channel__stats">
               <span>{formatInt(a.stats?.views ?? 0)} просмотров</span>
               <span>{formatInt(a.stats?.subscribers ?? 0)} подписчиков</span>
-              <span>{shortDate(a.stats?.takenAt)}</span>
+              <span>{snapshotDate(a.stats?.takenAt)}</span>
             </div>
+            {(a.spark ?? []).some((v) => v > 0) && (
+              <div className="tg-channel__spark" title="Просмотры по дням за 30 дней">
+                <Bars values={trimTrailingEmptyDays(a.spark, (v) => v === 0)} height={26} />
+                <span>{fmt(a.periodViews)} за 30 дн.</span>
+              </div>
+            )}
           </article>
         );
       })}
