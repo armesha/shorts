@@ -137,6 +137,20 @@ function signed(n: number): string {
   return value > 0 ? `+${fmt(value)}` : fmt(value);
 }
 
+function pluralRu(n: number, one: string, few: string, many: string): string {
+  const value = Math.abs(Math.round(Number(n) || 0));
+  const lastTwo = value % 100;
+  const last = value % 10;
+  if (lastTwo >= 11 && lastTwo <= 14) return many;
+  if (last === 1) return one;
+  if (last >= 2 && last <= 4) return few;
+  return many;
+}
+
+function count(n: number, one: string, few: string, many: string): string {
+  return `${fmt(n)} ${pluralRu(n, one, few, many)}`;
+}
+
 function ruDate(ymd: string): string {
   const [y, m, d] = ymd.split("-");
   return y && m && d ? `${d}.${m}.${y}` : ymd;
@@ -182,34 +196,31 @@ export function buildTelegramDigestText(db: Db, user: UserAuth, period: Telegram
   const summary = data.summary;
   const totals = userChannelTotals(db, user.id);
   const hasAnalyticsRows = data.youtubeDaily.length > 0;
-  const title = period.frequency === "daily" ? "Ежедневный дайджест" : "Еженедельный дайджест";
   const url = `${baseUrl(opts)}/statistics`;
+  const publicationParts: string[] = [];
+  if (summary.published > 0) publicationParts.push(`${fmt(summary.published)} опубликовано`);
+  if (summary.scheduled > 0) publicationParts.push(`${fmt(summary.scheduled)} запланировано`);
+  if (summary.failed > 0) publicationParts.push(count(summary.failed, "ошибка", "ошибки", "ошибок"));
 
   const lines = [
-    `📈 ${title} Shorts Factory`,
-    `Аккаунт: ${user.username}`,
-    `Период: ${period.label}`,
+    "📈 Дайджест Shorts Factory",
+    `За ${period.label}`,
     "",
-    `Каналы: ${fmt(totals.channels)} · подключено: ${fmt(totals.connected)}`,
-    `Публикации: ${fmt(summary.published)} опубликовано · ${fmt(summary.scheduled)} запланировано · ${fmt(summary.failed)} ошибок`,
-    `Библиотека: ${fmt(summary.queuedVideos)} готовых видео`,
-    "",
+    `Публикации: ${publicationParts.length ? publicationParts.join(", ") : "нет изменений"}`,
   ];
 
   if (hasAnalyticsRows) {
+    const subscribersNet = summary.subscribersGained - summary.subscribersLost;
     lines.push(
-      `YouTube за период: ${fmt(summary.views)} просмотров · ${fmt(summary.engagedViews)} вовлечённых`,
-      `Подписчики за период: ${signed(summary.subscribersGained - summary.subscribersLost)} · лайки: ${fmt(summary.likes)} · комментарии: ${fmt(summary.comments)} · шеры: ${fmt(summary.shares)}`,
+      `YouTube: ${count(summary.views, "просмотр", "просмотра", "просмотров")}, ${signed(subscribersNet)} ${pluralRu(subscribersNet, "подписчик", "подписчика", "подписчиков")}`,
     );
-    if (summary.dataThrough) lines.push(`Данные Analytics по: ${ruDate(summary.dataThrough)}`);
   } else {
-    lines.push("YouTube Analytics: данных за период пока нет.");
+    lines.push("YouTube: нет данных");
   }
 
   lines.push(
-    "",
-    `Текущие итоги: ${fmt(totals.subscribers)} подписчиков · ${fmt(totals.views)} просмотров · ${fmt(totals.videos)} видео`,
-    `Открыть статистику: ${url}`,
+    `Всего: ${count(totals.subscribers, "подписчик", "подписчика", "подписчиков")}, ${count(totals.views, "просмотр", "просмотра", "просмотров")}`,
+    url,
   );
 
   return lines.join("\n");

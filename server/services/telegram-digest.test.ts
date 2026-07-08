@@ -89,12 +89,18 @@ test("digest text uses the user's stored stats and current totals", () => {
 
   const text = buildTelegramDigestText(db, user, period, { db, baseUrl: () => "https://shareboard.live" });
 
-  assert.match(text, /Ежедневный дайджест/);
-  assert.match(text, /Период: 07\.07\.2026/);
-  assert.match(text, /1 опубликовано .* 1 ошибок/);
-  assert.match(text, /42 просмотров/);
-  assert.match(text, /100 подписчиков .* 1\s?000 просмотров .* 10 видео/);
+  assert.ok(text.split("\n").length <= 7);
+  assert.match(text, /Дайджест Shorts Factory/);
+  assert.match(text, /За 07\.07\.2026/);
+  assert.match(text, /Публикации: 1 опубликовано, 1 ошибка/);
+  assert.match(text, /YouTube: 42 просмотра, \+3 подписчика/);
+  assert.match(text, /Всего: 100 подписчиков, 1\s?000 просмотров/);
   assert.match(text, /https:\/\/shareboard\.live\/statistics/);
+  assert.doesNotMatch(text, /Аккаунт:/);
+  assert.doesNotMatch(text, /Каналы:/);
+  assert.doesNotMatch(text, /Библиотека:/);
+  assert.doesNotMatch(text, /лайки|комментарии|шеры|Данные Analytics/);
+  assert.doesNotMatch(text, /10 видео/);
 });
 
 test("digest cycle sends once per user and period", async () => {
