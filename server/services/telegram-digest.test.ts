@@ -89,13 +89,14 @@ test("digest text uses the user's stored stats and current totals", () => {
 
   const text = buildTelegramDigestText(db, user, period, { db, baseUrl: () => "https://shareboard.live" });
 
-  assert.ok(text.split("\n").length <= 7);
-  assert.match(text, /Дайджест Shorts Factory/);
-  assert.match(text, /За 07\.07\.2026/);
-  assert.match(text, /Публикации: 1 опубликовано, 1 ошибка/);
-  assert.match(text, /YouTube: 42 просмотра, \+3 подписчика/);
-  assert.match(text, /Всего: 100 подписчиков, 1\s?000 просмотров/);
-  assert.match(text, /https:\/\/shareboard\.live\/statistics/);
+  assert.ok(text.split("\n").length <= 8);
+  assert.match(text, /<b>Дайджест Shorts Factory<\/b>/);
+  assert.match(text, /За <b>07\.07\.2026<\/b>/);
+  assert.match(text, /<b>Публикации<\/b>: <b>1<\/b> опубликовано, <b>1<\/b> ошибка/);
+  assert.match(text, /<b>YouTube<\/b>: <b>42<\/b> просмотра, <b>\+3<\/b> подписчика/);
+  assert.match(text, /<b>Всего<\/b>: <b>100<\/b> подписчиков, <b>1\s?000<\/b> просмотров/);
+  assert.match(text, /<a href="https:\/\/shareboard\.live\/statistics">Открыть статистику<\/a>/);
+  assert.doesNotMatch(text, /https:\/\/shareboard\.live\/statistics$/);
   assert.doesNotMatch(text, /Аккаунт:/);
   assert.doesNotMatch(text, /Каналы:/);
   assert.doesNotMatch(text, /Библиотека:/);
@@ -106,12 +107,14 @@ test("digest text uses the user's stored stats and current totals", () => {
 test("digest cycle sends once per user and period", async () => {
   const { db, user } = seededDb();
   const sent: string[] = [];
+  const parseModes: Array<string | undefined> = [];
 
   const first = await runTelegramDigestCycle({
     db,
     now: () => new Date("2026-07-08T07:10:00Z"),
-    sendMessage: async (_chatId, text) => {
+    sendMessage: async (_chatId, text, opts) => {
       sent.push(text);
+      parseModes.push(opts?.parseMode);
       return { ok: true, messageId: 77 };
     },
   });
@@ -128,6 +131,7 @@ test("digest cycle sends once per user and period", async () => {
   assert.equal(first[0]?.sent, true);
   assert.equal(second.length, 0);
   assert.equal(sent.length, 1);
+  assert.deepEqual(parseModes, ["HTML"]);
   assert.equal(db.getSetting(telegramDigestSentSettingKey(user.id, "daily")), "daily:2026-07-07");
 });
 

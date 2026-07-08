@@ -1,6 +1,6 @@
 import cron from "node-cron";
 import type { Db, TelegramDigestFrequency, UserAuth } from "../db.ts";
-import { sendBotMessage } from "../telegram.ts";
+import { sendBotMessage, type SendOpts } from "../telegram.ts";
 import { addDays } from "./analytics-range.ts";
 import { normalizeTimeZone } from "./timezone.ts";
 import { buildUserAnalytics } from "./user-analytics.ts";
@@ -9,7 +9,7 @@ export const DEFAULT_TELEGRAM_DIGEST_TIME = "09:00";
 export const DEFAULT_TELEGRAM_DIGEST_CRON = "*/15 * * * *";
 
 type SendResult = { ok: boolean; error?: string; messageId?: number };
-type SendMessage = (chatId: string | number, text: string) => Promise<SendResult>;
+type SendMessage = (chatId: string | number, text: string, opts?: SendOpts) => Promise<SendResult>;
 
 export interface TelegramDigestPeriod {
   frequency: Exclude<TelegramDigestFrequency, "off">;
@@ -132,6 +132,14 @@ function fmt(n: number): string {
   return Math.round(Number(n) || 0).toLocaleString("ru-RU");
 }
 
+function html(value: string | number): string {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
 function signed(n: number): string {
   const value = Math.round(Number(n) || 0);
   return value > 0 ? `+${fmt(value)}` : fmt(value);
@@ -147,8 +155,8 @@ function pluralRu(n: number, one: string, few: string, many: string): string {
   return many;
 }
 
-function count(n: number, one: string, few: string, many: string): string {
-  return `${fmt(n)} ${pluralRu(n, one, few, many)}`;
+function boldCount(n: number, one: string, few: string, many: string): string {
+  return `<b>${html(fmt(n))}</b> ${pluralRu(n, one, few, many)}`;
 }
 
 function ruDate(ymd: string): string {
@@ -198,29 +206,30 @@ export function buildTelegramDigestText(db: Db, user: UserAuth, period: Telegram
   const hasAnalyticsRows = data.youtubeDaily.length > 0;
   const url = `${baseUrl(opts)}/statistics`;
   const publicationParts: string[] = [];
-  if (summary.published > 0) publicationParts.push(`${fmt(summary.published)} опубликовано`);
-  if (summary.scheduled > 0) publicationParts.push(`${fmt(summary.scheduled)} запланировано`);
-  if (summary.failed > 0) publicationParts.push(count(summary.failed, "ошибка", "ошибки", "ошибок"));
+  if (summary.published > 0) publicationParts.push(`<b>${html(fmt(summary.published))}</b> опубликовано`);
+  if (summary.scheduled > 0) publicationParts.push(`<b>${html(fmt(summary.scheduled))}</b> запланировано`);
+  if (summary.failed > 0) publicationParts.push(boldCount(summary.failed, "ошибка", "ошибки", "ошибок"));
 
   const lines = [
-    "📈 Дайджест Shorts Factory",
-    `За ${period.label}`,
+    "📈 <b>Дайджест Shorts Factory</b>",
+    `За <b>${html(period.label)}</b>`,
     "",
-    `Публикации: ${publicationParts.length ? publicationParts.join(", ") : "нет изменений"}`,
+    `<b>Публикации</b>: ${publicationParts.length ? publicationParts.join(", ") : "нет изменений"}`,
   ];
 
   if (hasAnalyticsRows) {
     const subscribersNet = summary.subscribersGained - summary.subscribersLost;
     lines.push(
-      `YouTube: ${count(summary.views, "просмотр", "просмотра", "просмотров")}, ${signed(subscribersNet)} ${pluralRu(subscribersNet, "подписчик", "подписчика", "подписчиков")}`,
+      `<b>YouTube</b>: ${boldCount(summary.views, "просмотр", "просмотра", "просмотров")}, <b>${html(signed(subscribersNet))}</b> ${pluralRu(subscribersNet, "подписчик", "подписчика", "подписчиков")}`,
     );
   } else {
-    lines.push("YouTube: нет данных");
+    lines.push("<b>YouTube</b>: нет данных");
   }
 
   lines.push(
-    `Всего: ${count(totals.subscribers, "подписчик", "подписчика", "подписчиков")}, ${count(totals.views, "просмотр", "просмотра", "просмотров")}`,
-    url,
+    `<b>Всего</b>: ${boldCount(totals.subscribers, "подписчик", "подписчика", "подписчиков")}, ${boldCount(totals.views, "просмотр", "просмотра", "просмотров")}`,
+    "",
+    `🔎 <a href="${html(url)}">Открыть статистику</a>`,
   );
 
   return lines.join("\n");
@@ -234,7 +243,7 @@ export async function runTelegramDigestCycle(opts: TelegramDigestOptions): Promi
   const now = opts.now?.() ?? new Date();
   const token = (opts.botToken?.() ?? process.env.TELEGRAM_BOT_TOKEN ?? "").trim();
   if (!token && !opts.sendMessage) return [];
-  const send = opts.sendMessage ?? ((chatId: string | number, text: string) => sendBotMessage(token, chatId, text));
+  const send = opts.sendMessage ?? ((chatId: string | number, text: string, sendOpts?: SendOpts) => sendBotMessage(token, chatId, text, sendOpts));
   const sendTime = normalizeDigestTime(opts.sendTime ?? process.env.TELEGRAM_DIGEST_TIME);
   const results: TelegramDigestCycleResult[] = [];
 
@@ -249,7 +258,7 @@ export async function runTelegramDigestCycle(opts: TelegramDigestOptions): Promi
 
     try {
       const text = buildTelegramDigestText(opts.db, user, period, opts);
-      const res = await send(user.telegramId, text);
+      const res = await send(user.telegramId, text, { parseMode: "HTML" });
       if (res.ok) {
         opts.db.setSetting(settingKey, period.key);
         opts.log?.(`[telegram-digest] sent ${period.frequency} to ${user.username} (${period.key})`);
