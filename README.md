@@ -49,8 +49,10 @@ YouTube Data/Analytics API · Telegram Bot API.
 
 ## For agents / contributors
 
-- **`CLAUDE.md`** — mandatory working rules (language, 24h time format, server-restart regimen,
-  security, git workflow). Read it first.
+- **`AGENTS.md`** — shared mandatory working rules (language, 24h time format, server-restart
+  regimen, security, git workflow). Read it first.
+- **`CLAUDE.md`** — Claude Code compatibility wrapper; it imports `AGENTS.md` and should only contain
+  Claude-specific notes.
 - **`docs/REORG-PLAN.md`** — repository layout map + the SOLID monolith-split & cleanup plan.
 - **`docs/STACK.md`** — architecture & research.
 - **`docs/pack-generation.md`** — how every built-in deck / video pack / template-pack is built,
