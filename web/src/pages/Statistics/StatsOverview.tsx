@@ -70,8 +70,8 @@ export function SourceStats({
           </>
         }
         items={[
-          { label: t("stats.totalSubscribers"), value: fmt(overview.subscribers) },
           { label: t("stats.totalViews"), value: fmt(overview.publicViews) },
+          { label: t("stats.totalSubscribers"), value: fmt(overview.subscribers) },
           { label: t("stats.videos"), value: fmt(overview.videos) },
           { label: t("stats.channelsConnected"), value: `${overview.connected} / ${overview.channels}` },
         ]}

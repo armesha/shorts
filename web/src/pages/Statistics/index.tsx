@@ -267,22 +267,6 @@ export default function Statistics() {
                 </button>
               ))}
             </div>
-            {canViewAll && (
-              <div className="join overflow-hidden rounded-lg border border-base-300" role="group" aria-label={t("stats.scope")}>
-                <button
-                  className={`btn btn-sm join-item ${view === "mine" ? "btn-primary" : "btn-ghost"}`}
-                  onClick={() => setView("mine")}
-                >
-                  {t("stats.scopeMine")}
-                </button>
-                <button
-                  className={`btn btn-sm join-item ${view === "all" ? "btn-primary" : "btn-ghost"}`}
-                  onClick={() => setView("all")}
-                >
-                  {t("stats.scopeAll")}
-                </button>
-              </div>
-            )}
             <div className="join overflow-hidden rounded-lg border border-base-300" role="group" aria-label={t("stats.sourceTabsAria")}>
               <button
                 className={`btn btn-sm join-item ${source === "analytics" ? "btn-primary" : "btn-ghost"}`}
@@ -300,6 +284,21 @@ export default function Statistics() {
               </button>
             </div>
             <div className="ml-auto flex min-w-0 items-center gap-2">
+              {canViewAll && (
+                <label
+                  className="label cursor-pointer gap-2 py-0 text-xs text-base-content/60"
+                  title={t("stats.scopeAll")}
+                >
+                  <span className="hidden sm:inline whitespace-nowrap">{t("stats.scopeAll")}</span>
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-sm"
+                    checked={view === "all"}
+                    onChange={(e) => setView(e.target.checked ? "all" : "mine")}
+                    aria-label={t("stats.scope")}
+                  />
+                </label>
+              )}
               <span className="hidden md:inline text-xs text-base-content/50">
                 {t("stats.contextChannels", { ready: scopeOverview.analyticsChannels, total: scopeOverview.channels })}
               </span>
