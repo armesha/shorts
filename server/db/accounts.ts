@@ -5,6 +5,7 @@ import type { DatabaseSync } from "node:sqlite";
 import { rowToAccount, type Row } from "./mappers.ts";
 import { DEFAULT_CHANNEL_NAME, type Account } from "./types.ts";
 import { invalidateReadCache } from "../services/read-cache.ts";
+import { normalizeTimeZone } from "../services/timezone.ts";
 
 export function accountMethods(db: DatabaseSync) {
   // "Uploaded today" per channel — count of published history rows dated today (UTC).
@@ -66,7 +67,7 @@ export function accountMethods(db: DatabaseSync) {
       const avatarSource = input.avatarSource ?? "youtube";
       const info = db
         .prepare(
-          "INSERT INTO accounts (user_id, channel_name, theme, lang, source_decks, long_video_decks, channel_lang, schedule, template, status, avatar, avatar_source) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+          "INSERT INTO accounts (user_id, channel_name, theme, lang, source_decks, long_video_decks, channel_lang, timezone, schedule, template, status, avatar, avatar_source) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
         )
         .run(
           input.userId ?? null,
@@ -76,6 +77,7 @@ export function accountMethods(db: DatabaseSync) {
           JSON.stringify(input.sourceDecks?.length ? input.sourceDecks : [input.lang ?? "de"]),
           JSON.stringify(input.longVideoDecks ?? []),
           input.channelLang ?? input.lang ?? "de",
+          normalizeTimeZone(input.timezone),
           JSON.stringify(input.schedule ?? ["12:00"]),
           input.template ?? "1 · Kraft Paper",
           input.status ?? "needs_auth",
@@ -89,8 +91,9 @@ export function accountMethods(db: DatabaseSync) {
       const cur = this.getAccount(id);
       if (!cur) return null;
       const hasAvatar = Object.prototype.hasOwnProperty.call(input, "avatar");
+      const hasTimezone = Object.prototype.hasOwnProperty.call(input, "timezone");
       db.prepare(
-        "UPDATE accounts SET channel_name=?, theme=?, lang=?, source_decks=?, long_video_decks=?, channel_lang=?, schedule=?, template=?, enabled=?, slot_videos=?, slot_decks=?, avatar=?, avatar_source=? WHERE id=?",
+        "UPDATE accounts SET channel_name=?, theme=?, lang=?, source_decks=?, long_video_decks=?, channel_lang=?, timezone=?, schedule=?, template=?, enabled=?, slot_videos=?, slot_decks=?, avatar=?, avatar_source=? WHERE id=?",
       ).run(
         input.channelName ?? cur.channelName,
         input.theme ?? cur.theme,
@@ -98,6 +101,7 @@ export function accountMethods(db: DatabaseSync) {
         JSON.stringify(input.sourceDecks ?? cur.sourceDecks),
         JSON.stringify(input.longVideoDecks ?? cur.longVideoDecks),
         input.channelLang ?? cur.channelLang,
+        hasTimezone ? normalizeTimeZone(input.timezone) : cur.timezone,
         JSON.stringify(input.schedule ?? cur.schedule),
         input.template ?? cur.template,
         (input.enabled ?? cur.enabled) ? 1 : 0,

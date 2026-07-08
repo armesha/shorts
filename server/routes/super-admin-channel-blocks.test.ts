@@ -30,6 +30,7 @@ function account(id: number): Account {
     sourceDecks: FOREIGN_EN_SOURCES,
     longVideoDecks: [],
     channelLang: "en",
+    timezone: "Europe/Prague",
     schedule: [],
     template: "",
     status: "connected",
@@ -113,6 +114,9 @@ test("single block has localized joke and meme sources and retires armen's fact,
     pl: ["pack:dowcipy-pl-mit", "pack:new-memes-pl-superadmin"],
     fr: ["fr", "pack:new-memes-fr-superadmin"],
     pt: ["pt", "pack:new-memes-pt-superadmin"],
+    ro: ["ro", "pack:new-memes-ro-superadmin"],
+    cs: ["cs", "pack:new-memes-cs-superadmin"],
+    nl: ["nl", "pack:new-memes-nl-superadmin"],
   };
   for (const [lang, sources] of Object.entries(expected)) {
     assert.deepEqual(blockDefaultSourcesForDb(dbMock, "quotes", lang), sources);
@@ -312,9 +316,15 @@ test("prepared block languages are addable before a first channel exists", () =>
 
   assert.ok(langs.includes("pl"));
   assert.ok(langs.includes("ja"));
+  assert.ok(langs.includes("ro"));
+  assert.ok(langs.includes("cs"));
+  assert.ok(langs.includes("nl"));
   assert.ok(!langs.includes("hi"));
   assert.ok(!langs.includes("id"));
   assert.deepEqual(blockDefaultSourcesForDb(db(), "quotes", "pl"), ["pack:dowcipy-pl-mit", "pack:new-memes-pl-superadmin"]);
+  assert.deepEqual(blockDefaultSourcesForDb(db(), "quotes", "ro"), ["ro", "pack:new-memes-ro-superadmin"]);
+  assert.deepEqual(blockDefaultSourcesForDb(db(), "quotes", "cs"), ["cs", "pack:new-memes-cs-superadmin"]);
+  assert.deepEqual(blockDefaultSourcesForDb(db(), "quotes", "nl"), ["nl", "pack:new-memes-nl-superadmin"]);
 });
 
 test("source weight settings are canonicalized and stale groups are pruned", () => {

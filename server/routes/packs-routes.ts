@@ -27,8 +27,8 @@ import {
   validateTemplateList,
   type TemplateDoc,
 } from "../../src/template/render.ts";
-import { isJokePack, packCardKey, packTemplateForCard, packTemplateVideoBg } from "../services/pack-gen.ts";
-import { listAudio, packAudioPathFor, pickJokeMotionOverlay, resolveAudio } from "../../src/video.ts";
+import { isJokePack, packCardKey, packMotionOverlayForCard, packTemplateForCard, packTemplateVideoBg } from "../services/pack-gen.ts";
+import { listAudio, packAudioPathFor, resolveAudio } from "../../src/video.ts";
 import { jokePopVariantFor, renderAnecdote } from "../../src/anecdotes/render.ts";
 import { getDeck } from "../../src/anecdotes/decks.ts";
 import { videoTags } from "../../src/anecdotes/video-tags.ts";
@@ -430,7 +430,7 @@ export function registerPacksRoutes(app: FastifyInstance, db: ReturnType<typeof 
       const jokePack = isJokePack(p);
       const deckId = `pack:${p.id}`;
       const visualVariant = jokePack ? jokePopVariantFor({ deck: deckId, title, text }) : undefined;
-      const motionOverlay = jokePack ? pickJokeMotionOverlay(`${p.id}|${packCardKey(card.values)}|${title}|${text}`, text.length, visualVariant) : null;
+      const motionOverlay = packMotionOverlayForCard(p, `${p.id}|${packCardKey(card.values)}|${title}|${text}`, text.length, visualVariant);
       let imgRel: string;
       let vidRel: string;
       let renderedBg: string | null = null;

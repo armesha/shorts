@@ -7,6 +7,7 @@ export interface Account {
   sourceDecks?: string[]; // выбранные источники канала; старые аккаунты используют lang
   longVideoDecks?: string[]; // длинные видео-паки: только ручное добавление в библиотеку + ручная выкладка
   channelLang?: string; // язык канала (ru/de/it/fr/en/ar) — пак должен совпадать по языку
+  timezone?: string; // IANA timezone used for schedule HH:MM values
   schedule: string[];
   template: string;
   status: "connected" | "needs_auth" | string;
@@ -436,6 +437,7 @@ export interface AuthUser {
   username: string;
   role: string;
   isSuperAdmin?: boolean;
+  timezone?: string;
   passwordSet?: boolean;
   impersonator?: { id: number; username: string; role: string; isSuperAdmin?: boolean } | null;
 }
@@ -771,6 +773,8 @@ export interface ErrorLogItem {
   detail: string | null;
   context: string | null;
   userId: number | null;
+  username?: string | null;
+  users?: string | null;
   createdAt: string;
   firstCreatedAt?: string;
   count?: number;

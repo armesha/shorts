@@ -135,6 +135,7 @@ export function registerAdminRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       username: target.username,
       role: target.role,
       isSuperAdmin: isSuperAdminUser(target),
+      timezone: target.timezone,
       impersonator: { id: admin.id, username: admin.username, role: admin.role, isSuperAdmin: isSuperAdminUser(admin) },
     };
   });

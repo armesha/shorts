@@ -17,6 +17,8 @@ export const MAX_MANUAL_VIDEO_UPLOAD_BYTES = Math.ceil(HARD_MAX_MANUAL_VIDEO_FIL
 
 const SETTINGS_MAX_FILE_MB = "manualVideo.maxFileMb";
 const SETTINGS_UPLOADS_PER_HOUR = "manualVideo.uploadsPerHour";
+const SETTINGS_ACCOUNT_DEFAULTS_PREFIX = "manualVideo.accountDefaults.";
+const DEFAULT_MANUAL_VIDEO_CATEGORY_ID = "23";
 
 export interface ManualVideoLimits {
   maxFileMb: number;
@@ -27,6 +29,13 @@ export interface ManualVideoLimits {
 export interface ManualVideoSettingsStore {
   getSetting(key: string): string | null;
   setSetting(key: string, value: string): void;
+}
+
+export interface ManualVideoAccountDefaults {
+  title: string;
+  description: string;
+  tags: string[];
+  categoryId: string;
 }
 
 export interface ManualVideoUploadInput {
@@ -41,12 +50,91 @@ export interface SavedManualVideo {
   title: string;
   text: string;
   videoRel: string;
+  tags?: string[];
 }
 
 function clampInt(raw: unknown, fallback: number, min: number, max: number): number {
   const n = Math.floor(Number(raw));
   if (!Number.isFinite(n)) return fallback;
   return Math.max(min, Math.min(max, n));
+}
+
+function cleanTag(raw: unknown): string {
+  return String(raw ?? "").trim().replace(/^#/, "");
+}
+
+function normalizeTags(tags: unknown): string[] {
+  const raw = Array.isArray(tags) ? tags : String(tags ?? "").split(",");
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const tag of raw) {
+    const clean = cleanTag(tag);
+    if (!clean) continue;
+    const key = clean.toLocaleLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(clean);
+  }
+  return out;
+}
+
+function cleanCategoryId(raw: unknown): string {
+  const value = String(raw ?? "").trim();
+  return /^\d{1,3}$/.test(value) ? value : DEFAULT_MANUAL_VIDEO_CATEGORY_ID;
+}
+
+export function manualVideoAccountDefaultsSettingKey(accountId: number): string {
+  return `${SETTINGS_ACCOUNT_DEFAULTS_PREFIX}${Math.max(0, Math.floor(Number(accountId) || 0))}`;
+}
+
+export function parseManualVideoAccountDefaults(raw: string | null): ManualVideoAccountDefaults | null {
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as { title?: unknown; description?: unknown; tags?: unknown; categoryId?: unknown };
+    const title = String(parsed.title ?? "").trim().slice(0, 100);
+    const description = String(parsed.description ?? "").trim().slice(0, 4500);
+    const tags = normalizeTags(parsed.tags);
+    const categoryId = cleanCategoryId(parsed.categoryId);
+    if (!title && !description && tags.length === 0 && categoryId === DEFAULT_MANUAL_VIDEO_CATEGORY_ID) return null;
+    return { title, description, tags, categoryId };
+  } catch {
+    return null;
+  }
+}
+
+export function getManualVideoAccountDefaults(
+  store: Pick<ManualVideoSettingsStore, "getSetting">,
+  accountId: number,
+): ManualVideoAccountDefaults | null {
+  return parseManualVideoAccountDefaults(store.getSetting(manualVideoAccountDefaultsSettingKey(accountId)));
+}
+
+export function setManualVideoAccountDefaults(
+  store: Pick<ManualVideoSettingsStore, "setSetting">,
+  accountId: number,
+  input: Partial<ManualVideoAccountDefaults>,
+): ManualVideoAccountDefaults {
+  const defaults = {
+    title: String(input.title ?? "").trim().slice(0, 100),
+    description: String(input.description ?? "").trim().slice(0, 4500),
+    tags: normalizeTags(input.tags),
+    categoryId: cleanCategoryId(input.categoryId),
+  };
+  store.setSetting(manualVideoAccountDefaultsSettingKey(accountId), JSON.stringify(defaults));
+  return defaults;
+}
+
+export function applyManualVideoAccountDefaults(
+  saved: SavedManualVideo,
+  defaults: ManualVideoAccountDefaults | null,
+): SavedManualVideo {
+  if (!defaults) return saved;
+  return {
+    ...saved,
+    title: defaults.title || saved.title,
+    text: defaults.description || saved.text,
+    tags: defaults.tags.length ? defaults.tags : saved.tags,
+  };
 }
 
 export function getManualVideoLimits(store: Pick<ManualVideoSettingsStore, "getSetting">): ManualVideoLimits {

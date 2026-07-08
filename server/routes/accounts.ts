@@ -32,9 +32,11 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
   app.post("/api/accounts", async (req, reply) => {
     const body = (req.body as Partial<Account>) ?? {};
     if (rejectScheduleLimit(req, reply, body.schedule, null, undefined, body.channelLang ?? body.lang ?? null)) return;
+    const owner = db.getUserById(uid(req));
     return db.createAccount({
       ...body,
       userId: uid(req),
+      timezone: owner?.timezone ?? body.timezone,
       avatar: null,
       avatarSource: "youtube",
     });

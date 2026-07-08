@@ -16,6 +16,8 @@ import { cleanupDrainedAutoExpireDecksForAccount } from "../services/auto-expire
 import { markPackLibraryVideoUsed } from "../services/pack-gen.ts";
 import { accountDailyScheduleCap, googleKeyDailyScheduleCap, isMgsUser } from "./account-limits.ts";
 import { isSuperAdminUser } from "../auth.ts";
+import { getManualVideoAccountDefaults } from "../services/manual-videos.ts";
+import { timePartsInTimeZone } from "../services/timezone.ts";
 import * as metrics from "./metrics.ts";
 
 /** Delete a posted video's rendered files (best-effort). */
@@ -144,10 +146,10 @@ export function startScheduler(opts: SchedulerOpts) {
   const task = cron.schedule("* * * * *", async () => {
     metrics.noteSchedulerTick(); // heartbeat: proves the per-minute cron is alive
     const now = new Date();
-    const hhmm = now.toTimeString().slice(0, 5);
-    const day = now.toISOString().slice(0, 10);
 
     for (const acc of opts.db.listAccounts()) {
+      const owner = acc.userId != null ? opts.db.getUserById(acc.userId) : null;
+      const { day, hhmm, timeZone } = timePartsInTimeZone(now, owner?.timezone || acc.timezone);
       if (!acc.enabled) continue;
       const token = opts.db.getRefreshToken(acc.id);
       if (!token) continue; // channel not connected
@@ -169,7 +171,7 @@ export function startScheduler(opts: SchedulerOpts) {
       let claimedVideoId: number | null = null; // set once we atomically claim a video → release on error
       let uploadReservationToken: string | null = null;
       try {
-        opts.log(`[sched] account ${acc.id} (${acc.channelName}) firing at ${hhmm}`);
+        opts.log(`[sched] account ${acc.id} (${acc.channelName}) firing at ${hhmm} ${timeZone}`);
 
         // Post-once queue: a pinned video (legacy, if present and still valid), else the next
         // unposted video from the slot's selected pack. If that selected pack is empty, fall back to
@@ -192,7 +194,6 @@ export function startScheduler(opts: SchedulerOpts) {
         }
         // Daily per-Google-key upload cap (REAL uploads) — shared with manual post-now so the two
         // together can't blow the Cloud project's YouTube quota for channels on the same key.
-        const owner = acc.userId != null ? opts.db.getUserById(acc.userId) : null;
         const accountCap = accountDailyScheduleCap(owner?.role === "admin", isMgsUser(owner));
         if (opts.db.uploadsTodayForAccount(acc.id) >= accountCap) {
           opts.log(`[sched] account ${acc.id}: дневной лимит ${accountCap} публикаций на канал достигнут — пропуск`);
@@ -228,17 +229,24 @@ export function startScheduler(opts: SchedulerOpts) {
         uploadReservationToken = uploadReservation.token;
         const meta = ytMeta(getDeck(lib.deck), lib.title, lib.text);
         if (lib.tags.length) meta.tags = lib.tags; // per-video override from the library editor
+        const manualDefaults = lib.deck === MANUAL_VIDEO_DECK ? getManualVideoAccountDefaults(opts.db, acc.id) : null;
+        if (manualDefaults?.title) meta.title = manualDefaults.title;
+        if (manualDefaults?.description) meta.description = manualDefaults.description;
+        if (manualDefaults?.tags.length) meta.tags = manualDefaults.tags;
         const videoId = await metrics.track("upload", () =>
           uploadShort(creds, opts.redirectUri, token, {
             videoPath: resolve(opts.outputDir, lib.videoRel),
             title: meta.title,
             description: meta.description,
             tags: meta.tags,
+            categoryId: manualDefaults?.categoryId,
           }),
         );
         opts.db.addHistory({
           accountId: acc.id,
           title: meta.title,
+          description: meta.description,
+          tags: meta.tags,
           status: videoId ? "published" : "failed",
           youtubeId: videoId,
           videoPath: lib.videoRel,

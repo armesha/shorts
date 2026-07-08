@@ -25,7 +25,20 @@ test("videoTags localizes synthetic meme and custom joke pack tags", () => {
   assert.ok(jokes.includes("humor rodzinny"));
 });
 
+test("videoTags localizes new Romanian, Czech and Dutch meme packs", () => {
+  const ro = videoTags(getDeck("pack:new-memes-ro-superadmin"), "Șeful la birou", "Pisica a cumpărat un telefon nou");
+  const cs = videoTags(getDeck("pack:new-memes-cs-superadmin"), "Šéf v kanceláři", "Kočka zapomněla heslo");
+  const nl = videoTags(getDeck("pack:new-memes-nl-superadmin"), "Baas op kantoor", "De kat kocht een nieuwe telefoon");
+
+  assert.ok(ro.includes("umor de birou"));
+  assert.ok(ro.includes("animale"));
+  assert.ok(cs.includes("kancelářský humor"));
+  assert.ok(cs.includes("technologie"));
+  assert.ok(nl.includes("kantoorhumor"));
+  assert.ok(nl.includes("tech humor"));
+  assert.ok(nl.includes("dieren"));
+});
+
 test("videoTags falls back to deck tags for non joke/meme decks", () => {
   assert.deepEqual(videoTags(getDeck("fact-en"), "Fact", "Space"), getDeck("fact-en").tags);
 });
-

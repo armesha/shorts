@@ -135,6 +135,51 @@ const LOCALES: Record<string, LocaleTags> = {
       travel: ["viagem", "estrada"],
     },
   },
+  ro: {
+    jokeBase: ["glume", "umor", "amuzant", "glume scurte", "shorts"],
+    memeBase: ["meme", "umor", "amuzant", "relatable", "shorts"],
+    jokePool: ["gluma zilei", "povești amuzante", "comedie", "râs", "umor zilnic", "glume rapide", "shorts amuzante", "momente haioase"],
+    memePool: ["meme amuzante", "meme zilnice", "relatable", "umor de internet", "meme shorts", "viața de zi cu zi", "râsete", "momente amuzante"],
+    topics: {
+      family: ["umor de familie", "relații"],
+      work: ["umor de birou", "muncă"],
+      tech: ["umor tech", "internet"],
+      animals: ["animale", "animale de companie"],
+      food: ["mâncare", "bucătărie"],
+      money: ["bani", "cumpărături"],
+      travel: ["călătorii", "drum"],
+    },
+  },
+  cs: {
+    jokeBase: ["vtipy", "humor", "vtipné", "krátké vtipy", "shorts"],
+    memeBase: ["memy", "mem", "humor", "vtipné", "shorts"],
+    jokePool: ["vtip dne", "vtipné příběhy", "komedie", "smích", "každodenní humor", "rychlé vtipy", "vtipné shorts", "zábava"],
+    memePool: ["vtipné memy", "denní memy", "relatable", "internetový humor", "meme shorts", "každodenní život", "smích", "vtipné momenty"],
+    topics: {
+      family: ["rodinný humor", "vztahy"],
+      work: ["kancelářský humor", "práce"],
+      tech: ["technologie", "internet"],
+      animals: ["zvířata", "mazlíčci"],
+      food: ["jídlo", "kuchyně"],
+      money: ["peníze", "nakupování"],
+      travel: ["cestování", "cesta"],
+    },
+  },
+  nl: {
+    jokeBase: ["grappen", "humor", "grappig", "korte grappen", "shorts"],
+    memeBase: ["memes", "meme", "humor", "grappig", "shorts"],
+    jokePool: ["grap van de dag", "grappige verhalen", "komedie", "lachen", "dagelijkse humor", "snelle grappen", "grappige shorts", "leuke momenten"],
+    memePool: ["grappige memes", "dagelijkse memes", "relatable", "internethumor", "meme shorts", "dagelijks leven", "lachen", "grappige momenten"],
+    topics: {
+      family: ["familiehumor", "relaties"],
+      work: ["kantoorhumor", "werk"],
+      tech: ["tech humor", "internet"],
+      animals: ["dieren", "huisdieren"],
+      food: ["eten", "keuken"],
+      money: ["geld", "winkelen"],
+      travel: ["reizen", "onderweg"],
+    },
+  },
   ar: {
     jokeBase: ["نوادر", "طرائف", "ضحك", "كوميديا", "shorts"],
     memeBase: ["ميمز", "ضحك", "كوميديا", "مضحك", "shorts"],
@@ -169,19 +214,19 @@ const LOCALES: Record<string, LocaleTags> = {
 
 const TOPIC_PATTERNS: Record<Topic, RegExp> = {
   family:
-    /(муж|жена|мама|папа|сын|дочь|дет|семь|wife|husband|mom|mother|father|dad|child|family|frau|mann|mutter|vater|kind|famil|mari|femme|enfant|moglie|marito|figli|espos|niñ|familia|żona|mąż|dziec|rodzin|妻|夫|子供|家族|زوج|زوجة|أم|أب|طفل)/iu,
+    /(муж|жена|мама|папа|сын|дочь|дет|семь|wife|husband|mom|mother|father|dad|child|family|frau|mann|mutter|vater|kind|famil|mari|femme|enfant|moglie|marito|figli|espos|niñ|familia|żona|mąż|dziec|rodzin|soț|soție|mamă|tată|copil|rodin|manžel|manželka|dítě|gezin|vrouw|kind|妻|夫|子供|家族|زوج|زوجة|أم|أب|طفل)/iu,
   work:
-    /(работ|офис|начальник|коллег|work|office|boss|job|arbeit|büro|chef|travail|bureau|patron|lavor|ufficio|capo|trabajo|oficina|jefe|praca|biuro|szef|仕事|会社|上司|عمل|مكتب|مدير)/iu,
+    /(работ|офис|начальник|коллег|work|office|boss|job|arbeit|büro|chef|travail|bureau|patron|lavor|ufficio|capo|trabajo|oficina|jefe|praca|biuro|szef|munc|birou|șef|práce|kancelář|šéf|werk|kantoor|baas|仕事|会社|上司|عمل|مكتب|مدير)/iu,
   tech:
-    /(компьютер|телефон|ноутбук|парол|интернет|сайт|computer|phone|laptop|password|internet|wifi|handy|ordinateur|téléphone|mot de passe|telefono|portatile|contraseña|komputer|telefon|hasło|パソコン|スマホ|ネット|حاسوب|هاتف|إنترنت)/iu,
+    /(компьютер|телефон|ноутбук|парол|интернет|сайт|computer|phone|laptop|password|internet|wifi|handy|ordinateur|téléphone|mot de passe|telefono|portatile|contraseña|komputer|telefon|hasło|parolă|calculator|telefon|počítač|heslo|notebook|telefoon|wachtwoord|パソコン|スマホ|ネット|حاسوب|هاتف|إنترنت)/iu,
   animals:
-    /(кот|кошка|собак|пес|ворон|животн|cat|dog|pet|animal|katze|hund|tier|chat|chien|animal|gatto|cane|animale|gato|perro|zwierz|kot|pies|猫|犬|動物|قطة|كلب|حيوان)/iu,
+    /(кот|кошка|собак|пес|ворон|животн|cat|dog|pet|animal|katze|hund|tier|chat|chien|animal|gatto|cane|animale|gato|perro|zwierz|kot|pies|pisic|câine|animal|kočka|pes|zvíř|kat|hond|dier|猫|犬|動物|قطة|كلب|حيوان)/iu,
   food:
-    /(еда|суп|кухн|обед|ужин|рецепт|плита|food|soup|kitchen|lunch|dinner|recipe|küche|essen|cuisine|repas|ricetta|cocina|comida|jedzenie|kuchnia|食べ物|料理|طعام|مطبخ)/iu,
+    /(еда|суп|кухн|обед|ужин|рецепт|плита|food|soup|kitchen|lunch|dinner|recipe|küche|essen|cuisine|repas|ricetta|cocina|comida|jedzenie|kuchnia|mâncare|bucătăr|jídlo|kuchyn|eten|keuken|食べ物|料理|طعام|مطبخ)/iu,
   money:
-    /(деньг|доллар|рубл|магазин|купил|money|dollar|shop|buy|geld|kaufen|einkauf|argent|acheter|soldi|comprare|dinero|comprar|pieniądze|sklep|お金|買|مال|تسوق)/iu,
+    /(деньг|доллар|рубл|магазин|купил|money|dollar|shop|buy|geld|kaufen|einkauf|argent|acheter|soldi|comprare|dinero|comprar|pieniądze|sklep|bani|cumpăr|peníze|nakup|winkel|kopen|お金|買|مال|تسوق)/iu,
   travel:
-    /(машин|такси|поезд|самолет|дорог|тур|car|taxi|train|plane|travel|road|auto|zug|reise|voiture|taxi|train|viaggio|coche|tren|podróż|samochód|車|旅行|قطار|سيارة|سفر)/iu,
+    /(машин|такси|поезд|самолет|дорог|тур|car|taxi|train|plane|travel|road|auto|zug|reise|voiture|taxi|train|viaggio|coche|tren|podróż|samochód|mașin|tren|călător|cest|vlak|auto|reis|車|旅行|قطار|سيارة|سفر)/iu,
 };
 
 function stableHash(text: string): number {
@@ -257,4 +302,3 @@ export function videoTags(deck: Deck, title: string, text: string): string[] {
 
   return limitTags([...base, ...topicTags, ...pickTags(pool, seed, MAX_TAGS)]);
 }
-

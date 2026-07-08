@@ -61,6 +61,7 @@ const authUser = (user: NonNullable<ReturnType<Db["getUserById"]>>) => ({
   username: user.username,
   role: user.role,
   isSuperAdmin: isSuperAdminUser(user),
+  timezone: user.timezone,
   passwordSet: user.passwordSet,
 });
 

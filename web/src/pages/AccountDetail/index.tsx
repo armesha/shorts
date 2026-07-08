@@ -115,6 +115,7 @@ export default function AccountDetail() {
   const q = useGenQueue();
   const [clearing, setClearing] = useState(false);
   const [manualUploading, setManualUploading] = useState(false);
+  const [manualUploadProgress, setManualUploadProgress] = useState<{ current: number; total: number } | null>(null);
   const [manualLimits, setManualLimits] = useState<{ maxFileMb: number; uploadsPerHour: number; durationSec: number } | null>(null);
   const [page, setPage] = useState(1);
   const [gens, setGens] = useState<Generator[]>([]);
@@ -137,7 +138,7 @@ export default function AccountDetail() {
   };
 
   const reloadReadiness = () => apiClient.accountReadiness(id!).then(setReadiness).catch(() => {});
-  const reloadVideos = (nextPage = page, nextSort = sort) =>
+  const reloadVideos = (nextPage = page, nextSort = sort, opts: { skipReadiness?: boolean } = {}) =>
     Promise.all([
       apiClient.videosPage(id!, { kind: "regular", page: nextPage, pageSize: LIBRARY_PAGE_SIZE, sort: nextSort }),
       apiClient.videosPage(id!, { kind: "long", page: 1, pageSize: LONG_LIBRARY_PAGE_SIZE, sort: "date" }),
@@ -151,7 +152,8 @@ export default function AccountDetail() {
       })
       .catch(() => {})
       .finally(() => {
-        void reloadReadiness();
+        // Пагинация/сортировка — навигация по уже загруженному списку, готовность канала от неё не меняется.
+        if (!opts.skipReadiness) void reloadReadiness();
       });
 
   const ownedByMeForLimits = !account?.userId || account.userId === user?.id;
@@ -163,7 +165,8 @@ export default function AccountDetail() {
   // (Бэкенд — источник истины; здесь это только для UX-валидации/счётчиков.)
   const ownerIsAdmin = ownerRole === "admin";
   const ownerIsSuperAdminAccount = account?.ownerIsSuperAdmin ?? (user?.isSuperAdmin === true && ownedByMeForLimits);
-  const scheduleWindow = ownerIsSuperAdminAccount ? shortsScheduleWindowsForLanguage(channelLang) : undefined;
+  const ownerTimeZone = ownedByMeForLimits ? user?.timezone || account?.timezone || "Europe/Prague" : account?.timezone || "Europe/Prague";
+  const scheduleWindow = ownerIsSuperAdminAccount ? shortsScheduleWindowsForLanguage(channelLang, new Date(), ownerTimeZone) : undefined;
   const perChannelCap = accountDailySlotCap(ownerIsAdmin, ownerIsMgs);
   const perGoogleKeyCap = googleKeyDailySlotCap(ownerIsSuperAdminAccount, ownerIsMgs);
   const libraryCap = ownerIsAdmin || ownerIsMgs ? null : USER_CHANNEL_LIBRARY_CAP;
@@ -222,7 +225,11 @@ export default function AccountDetail() {
         }
         setLongVideoDecks(a.longVideoDecks ?? []);
         setChannelLang(a.channelLang || DECK_LANG[a.lang] || "ru");
-        setTimes(user?.isSuperAdmin === true && (!a.userId || a.userId === user.id) ? cleanSuperAdminScheduleTimes(a.schedule, a.channelLang || a.lang) : a.schedule);
+        setTimes(
+          user?.isSuperAdmin === true && (!a.userId || a.userId === user.id)
+            ? cleanSuperAdminScheduleTimes(a.schedule, a.channelLang || a.lang, user?.timezone || a.timezone)
+            : a.schedule,
+        );
         setSlotVideos(a.slotVideos || {});
         setSlotDecks(a.slotDecks || {});
         console.log("[привязка] канал загружен:", {
@@ -258,10 +265,15 @@ export default function AccountDetail() {
     return () => {
       alive = false;
     };
-  }, [id, user?.id, user?.isSuperAdmin]);
+  }, [id, user?.id, user?.isSuperAdmin, user?.timezone]);
 
+  const videosLoadedForIdRef = useRef<string | undefined>(undefined);
   useEffect(() => {
-    void reloadVideos();
+    const isNewAccount = videosLoadedForIdRef.current !== id;
+    videosLoadedForIdRef.current = id;
+    // Смена канала → нужна свежая готовность; смена страницы/сортировки — чисто клиентская
+    // навигация по уже загруженному списку, лишний запрос готовности тут не нужен.
+    void reloadVideos(page, sort, { skipReadiness: !isNewAccount });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, page, sort]);
 
@@ -322,7 +334,7 @@ export default function AccountDetail() {
       const cleanLongVideoDecks = [...new Set(longVideoDecksRef.current.filter(Boolean))];
       const sourceLangs = [...new Set(cleanSources.map(contentLang).filter(Boolean))];
       const effectiveChannelLang = sourceLangs.length === 1 ? sourceLangs[0] : channelLangRef.current || channelLang;
-      const effectiveTimes = ownerIsSuperAdminAccount ? cleanSuperAdminScheduleTimes(times, effectiveChannelLang) : times;
+      const effectiveTimes = ownerIsSuperAdminAccount ? cleanSuperAdminScheduleTimes(times, effectiveChannelLang, ownerTimeZone) : times;
       if (effectiveTimes.length !== times.length) {
         setTimes(effectiveTimes);
         notify(`Для каналов главного админа используются языковые Shorts-окна: ${describeShortsSchedulePolicy(effectiveChannelLang)}.`, "info", t("account.scheduleLimitToastTitle"));
@@ -439,33 +451,85 @@ export default function AccountDetail() {
     }
   }
 
-  async function uploadManualVideo(file: File | null) {
-    if (!file) return;
-    if (!/\.mp4$/i.test(file.name)) {
-      notify(t("account.manualUploadTypeError"), "error");
-      return;
-    }
+  async function uploadManualVideos(inputFiles: File[]) {
+    if (!inputFiles.length || manualUploading) return;
     const maxFileMb = manualLimits?.maxFileMb ?? 40;
-    if (file.size > maxFileMb * 1024 * 1024) {
-      notify(t("account.manualUploadTooBig", { mb: maxFileMb }), "error");
+    const maxBytes = maxFileMb * 1024 * 1024;
+    const files: File[] = [];
+    let typeErrors = 0;
+    let sizeErrors = 0;
+    for (const file of inputFiles) {
+      if (!/\.mp4$/i.test(file.name)) {
+        typeErrors += 1;
+      } else if (file.size > maxBytes) {
+        sizeErrors += 1;
+      } else {
+        files.push(file);
+      }
+    }
+    if (typeErrors > 0) {
+      notify(
+        typeErrors === 1 ? t("account.manualUploadTypeError") : t("account.manualUploadTypeErrorMany", { n: typeErrors }),
+        "error",
+      );
+    }
+    if (sizeErrors > 0) {
+      notify(
+        sizeErrors === 1
+          ? t("account.manualUploadTooBig", { mb: maxFileMb })
+          : t("account.manualUploadTooBigMany", { n: sizeErrors, mb: maxFileMb }),
+        "error",
+      );
+    }
+    if (!files.length) return;
+
+    const available = libraryCap == null ? files.length : Math.max(0, Math.floor(libraryAvailable));
+    if (available <= 0) {
+      notify(t("account.libraryLimitReached", { n: libraryCap ?? 0 }), "error");
       return;
     }
+    const uploadFiles = files.slice(0, available);
+    if (uploadFiles.length < files.length) {
+      notify(t("account.manualUploadLibraryLimited", { selected: files.length, n: uploadFiles.length }), "info");
+    }
+
     setManualUploading(true);
+    setManualUploadProgress({ current: 1, total: uploadFiles.length });
+    let added = 0;
+    let failed = 0;
+    let firstError = "";
     try {
-      const dataUrl = await readDataUrl(file);
-      await apiClient.uploadVideo({
-        accountId: Number(id),
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        dataUrl,
-      });
-      setPage(1);
-      await reloadVideos(1, sort);
-      notify(t("account.manualUploadSuccess"), "success");
-    } catch (e) {
-      notify(t("account.manualUploadFailed") + " " + String(e), "error");
+      for (let index = 0; index < uploadFiles.length; index += 1) {
+        const file = uploadFiles[index];
+        setManualUploadProgress({ current: index + 1, total: uploadFiles.length });
+        try {
+          const dataUrl = await readDataUrl(file);
+          await apiClient.uploadVideo({
+            accountId: Number(id),
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            dataUrl,
+          });
+          added += 1;
+        } catch (e) {
+          failed += 1;
+          if (!firstError) firstError = `${file.name}: ${String(e)}`;
+        }
+      }
+      if (added > 0) {
+        setPage(1);
+        await reloadVideos(1, sort);
+      }
+      if (added > 0 && failed > 0) {
+        notify(`${t("account.manualUploadPartial", { ok: added, failed })} ${firstError}`, "info");
+      } else if (added > 0) {
+        notify(added === 1 ? t("account.manualUploadSuccess") : t("account.manualUploadSuccessMany", { n: added }), "success");
+      } else if (firstError) {
+        notify(t("account.manualUploadFailed") + " " + firstError, "error");
+      }
     } finally {
+      setManualUploadProgress(null);
       setManualUploading(false);
     }
   }
@@ -1027,7 +1091,7 @@ export default function AccountDetail() {
                     notify(t("account.invalidTime"), "error");
                     return;
                   }
-                  if (ownerIsSuperAdminAccount && !isSuperAdminScheduleTimeAllowed(v, channelLang)) {
+                  if (ownerIsSuperAdminAccount && !isSuperAdminScheduleTimeAllowed(v, channelLang, ownerTimeZone)) {
                     notify(`Время вне языкового Shorts-окна: ${describeShortsSchedulePolicy(channelLang)}.`, "error", t("account.scheduleLimitToastTitle"));
                     return;
                   }
@@ -1117,7 +1181,8 @@ export default function AccountDetail() {
         manualDurationSec={manualDurationSec}
         manualUploadsPerHour={manualUploadsPerHour}
         manualUploading={manualUploading}
-        uploadManualVideo={uploadManualVideo}
+        manualUploadProgress={manualUploadProgress}
+        uploadManualVideos={uploadManualVideos}
         mismatchedSources={mismatchedSources}
         contentLang={contentLang}
         curContentLang={curContentLang}

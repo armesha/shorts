@@ -8,6 +8,8 @@ import {
   pickUnusedPackCard,
   usedPackCardKeysForAccount,
   packCardKey,
+  isNewMemePack,
+  packMotionOverlayForCard,
 } from "./pack-gen.ts";
 import type { Pack } from "../../src/packs/store.ts";
 
@@ -123,4 +125,34 @@ test("per-account auto-expire availability treats existing library videos as use
   );
   assert.equal(availablePackCardsForAccount(pack, 20, used, [{ bg: "", title: "Card 1", text: "Card 1\n\nBody 1" }]), pack.cards.length - 1);
   assert.equal(secondKey, packCardKey(pack.cards[1].values));
+});
+
+test("new meme packs receive one lower safe-area creator motion overlay", () => {
+  const regular = demoPack();
+  assert.equal(isNewMemePack(regular), false);
+  assert.equal(packMotionOverlayForCard(regular, "regular-seed"), null);
+
+  const memePack = {
+    ...regular,
+    id: "new-memes-ro-superadmin",
+    name: "Meme noi",
+    templateType: "memes",
+  } satisfies Pack;
+  const motion = packMotionOverlayForCard(memePack, "meme-seed", 180);
+
+  assert.equal(isNewMemePack(memePack), true);
+  assert.ok(motion);
+  assert.equal(motion.width, 92);
+  assert.equal(motion.height, 92);
+  assert.match(motion.y, /^main_h-overlay_h-(16|24)$/);
+  assert.ok(
+    [
+      "64",
+      "198",
+      "(main_w-overlay_w)/2",
+      "main_w-overlay_w-198",
+      "main_w-overlay_w-64",
+    ].includes(motion.x),
+  );
+  assert.match(motion.path, /assets\/creator\/motion\/.+\.gif$/);
 });

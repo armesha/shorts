@@ -64,6 +64,15 @@ test("getDeck: synthetic deck for pack ids, default for unknown", () => {
   const polishJokes = getDeck("pack:dowcipy-pl-mit");
   assert.equal(polishJokes.name, "Dowcipy");
   assert.ok(polishJokes.hashtags.includes("#dowcipy"));
+  const roMemes = getDeck("pack:new-memes-ro-superadmin");
+  const csMemes = getDeck("pack:new-memes-cs-superadmin");
+  const nlMemes = getDeck("pack:new-memes-nl-superadmin");
+  assert.equal(roMemes.name, "Meme noi");
+  assert.equal(csMemes.name, "Nové memy");
+  assert.equal(nlMemes.name, "Nieuwe memes");
+  assert.equal(roMemes.meme, true);
+  assert.ok(csMemes.hashtags.includes("#memy"));
+  assert.ok(nlMemes.tags.includes("grappig"));
   assert.equal(getDeck(undefined).id, "ru"); // default
   assert.equal(getDeck("nope").id, "ru"); // unknown → default
   assert.equal(getDeck("islamic").islamic, true);

@@ -1,6 +1,8 @@
 // Per-channel daily video cap (= number of schedule slots on ONE channel). The ceiling follows the
 // channel OWNER's profile: admins keep the historical 20/day; mgs keeps the legacy regular-user
 // profile; every other non-admin channel is capped at 5/day.
+import { normalizeTimeZone } from "../services/timezone.ts";
+
 export const ADMIN_ACCOUNT_DAILY_SCHEDULE_CAP = 20;
 export const USER_ACCOUNT_DAILY_SCHEDULE_CAP = 5;
 export const MGS_ACCOUNT_DAILY_SCHEDULE_CAP = 18;
@@ -213,14 +215,6 @@ export function scheduleTimeMinutes(time: string): number | null {
   return Number(match[1]) * 60 + Number(match[2]);
 }
 
-function localTimeZone(): string {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Prague";
-  } catch {
-    return "Europe/Prague";
-  }
-}
-
 function zoneOffsetMinutes(timeZone: string, referenceDate: Date): number {
   const parts = new Intl.DateTimeFormat("en-GB", {
     timeZone,
@@ -237,10 +231,15 @@ function zoneOffsetMinutes(timeZone: string, referenceDate: Date): number {
   return Math.round((asUtc - referenceDate.getTime()) / 60_000);
 }
 
-function localMinuteToSystemMinute(localMinute: number, targetTimeZone: string, referenceDate: Date): number {
+function localMinuteToScheduleMinute(
+  localMinute: number,
+  targetTimeZone: string,
+  referenceDate: Date,
+  scheduleTimeZone: string,
+): number {
   const targetOffset = zoneOffsetMinutes(targetTimeZone, referenceDate);
-  const systemOffset = zoneOffsetMinutes(localTimeZone(), referenceDate);
-  return ((localMinute - targetOffset + systemOffset) % 1440 + 1440) % 1440;
+  const scheduleOffset = zoneOffsetMinutes(normalizeTimeZone(scheduleTimeZone), referenceDate);
+  return ((localMinute - targetOffset + scheduleOffset) % 1440 + 1440) % 1440;
 }
 
 function splitWindow(startMinute: number, endMinute: number, weight = 1): ScheduleWindow[] {
@@ -259,15 +258,17 @@ export function shortsSchedulePolicyForLanguage(lang: string | null | undefined)
 export function shortsScheduleWindowsForLanguage(
   lang: string | null | undefined,
   referenceDate = new Date(),
+  scheduleTimeZone?: string | null,
 ): ScheduleWindow[] {
   const policy = shortsSchedulePolicyForLanguage(lang);
+  const localScheduleTimeZone = normalizeTimeZone(scheduleTimeZone);
   return policy.windows.flatMap((window) => {
     const start = scheduleTimeMinutes(window.start);
     const end = scheduleTimeMinutes(window.end);
     if (start == null || end == null) return [];
     return splitWindow(
-      localMinuteToSystemMinute(start, policy.timeZone, referenceDate),
-      localMinuteToSystemMinute(end, policy.timeZone, referenceDate),
+      localMinuteToScheduleMinute(start, policy.timeZone, referenceDate, localScheduleTimeZone),
+      localMinuteToScheduleMinute(end, policy.timeZone, referenceDate, localScheduleTimeZone),
       window.weight ?? 1,
     );
   });
@@ -284,18 +285,28 @@ export function describeShortsSchedulePolicy(lang: string | null | undefined): s
   return `${policy.lang.toUpperCase()} (${policy.audience}, ${policy.timeZone}): постить ${windows}; не постить ${avoid}`;
 }
 
-export function isSuperAdminScheduleTimeAllowed(time: string, channelLang?: string | null): boolean {
+export function isSuperAdminScheduleTimeAllowed(
+  time: string,
+  channelLang?: string | null,
+  scheduleTimeZone?: string | null,
+  referenceDate = new Date(),
+): boolean {
   const minutes = scheduleTimeMinutes(time);
   if (minutes == null) return false;
-  if (channelLang) return isMinuteInWindows(minutes, shortsScheduleWindowsForLanguage(channelLang));
+  if (channelLang) return isMinuteInWindows(minutes, shortsScheduleWindowsForLanguage(channelLang, referenceDate, scheduleTimeZone));
   return minutes >= SUPER_ADMIN_SCHEDULE_START_HOUR * 60;
 }
 
-export function forbiddenSuperAdminScheduleTimes(schedule: unknown, channelLang?: string | null): string[] {
+export function forbiddenSuperAdminScheduleTimes(
+  schedule: unknown,
+  channelLang?: string | null,
+  scheduleTimeZone?: string | null,
+  referenceDate = new Date(),
+): string[] {
   if (!Array.isArray(schedule)) return [];
   return schedule
     .map((time) => String(time || "").trim())
-    .filter((time) => time && !isSuperAdminScheduleTimeAllowed(time, channelLang));
+    .filter((time) => time && !isSuperAdminScheduleTimeAllowed(time, channelLang, scheduleTimeZone, referenceDate));
 }
 
 export function dailyScheduleLimitError(

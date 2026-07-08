@@ -193,26 +193,45 @@ export function notifMethods(db: DatabaseSync) {
       ).run();
     },
     listErrors(limit = 200): ErrorLogItem[] {
-      const rows = db.prepare("SELECT * FROM error_log ORDER BY id DESC LIMIT 1000").all() as Row[];
+      const rows = db
+        .prepare(
+          `SELECT e.*, u.username
+           FROM error_log e
+           LEFT JOIN users u ON u.id = e.user_id
+           ORDER BY e.id DESC
+           LIMIT 1000`,
+        )
+        .all() as Row[];
       const groups = new Map<
         string,
-        ErrorLogItem & { _contexts: Set<string>; _firstCreatedAt: string }
+        ErrorLogItem & { _contexts: Set<string>; _users: Set<string>; _firstCreatedAt: string }
       >();
       for (const r of rows) {
         const key = [r.source, r.level, r.message].map((x) => String(x ?? "")).join("\u0000");
         let g = groups.get(key);
         if (!g) {
-          g = { ...rowToError(r), count: 0, _contexts: new Set<string>(), _firstCreatedAt: r.created_at };
+          g = {
+            ...rowToError(r),
+            count: 0,
+            _contexts: new Set<string>(),
+            _users: new Set<string>(),
+            _firstCreatedAt: r.created_at,
+          };
           groups.set(key, g);
         }
         g.count = (g.count ?? 0) + 1;
         g._firstCreatedAt = r.created_at;
         if (r.context) g._contexts.add(String(r.context));
+        if (r.user_id) g._users.add(r.username ? `${r.username} #${r.user_id}` : `#${r.user_id}`);
+        else g._users.add("без пользователя");
       }
       return [...groups.values()].slice(0, Math.max(1, limit)).map((g) => {
         const contexts = [...g._contexts];
         const shown = contexts.slice(0, 8);
         const rest = contexts.length - shown.length;
+        const users = [...g._users];
+        const shownUsers = users.slice(0, 8);
+        const restUsers = users.length - shownUsers.length;
         return {
           id: g.id,
           source: g.source,
@@ -221,6 +240,8 @@ export function notifMethods(db: DatabaseSync) {
           detail: g.detail,
           context: shown.length ? shown.join(", ") + (rest > 0 ? `, +${rest}` : "") : g.context,
           userId: g.userId,
+          username: g.username,
+          users: shownUsers.length ? shownUsers.join(", ") + (restUsers > 0 ? `, +${restUsers}` : "") : null,
           createdAt: g.createdAt,
           firstCreatedAt: g._firstCreatedAt,
           count: g.count,

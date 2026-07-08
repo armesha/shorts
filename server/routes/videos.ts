@@ -9,7 +9,7 @@ import type { Account, Db, Video } from "../db.ts";
 import { DECKS, getDeck, isPackDeckId } from "../../src/anecdotes/decks.ts";
 import { ytMeta } from "../../src/anecdotes/yt-meta.ts";
 import { randomAnecdote, firstAnecdote, anecdoteKey, packItemKey } from "../../src/anecdotes/library.ts";
-import { getPack, listAllPacks } from "../../src/packs/store.ts";
+import { getPack, listPackVisibilitySummaries } from "../../src/packs/store.ts";
 import {
   pickUnusedPackCard,
   pickFixedPackCard,
@@ -28,6 +28,8 @@ import { uploadShort, isYtAuthError, ytErrorReason } from "../services/youtube.t
 import {
   MANUAL_VIDEO_DECK,
   MAX_MANUAL_VIDEO_UPLOAD_BYTES,
+  applyManualVideoAccountDefaults,
+  getManualVideoAccountDefaults,
   getManualVideoLimits,
   saveManualVideoUpload,
   type ManualVideoUploadInput,
@@ -49,6 +51,7 @@ import {
   filterGloballyVisibleBuiltInDecks,
   filterGloballyVisibleCustomPacks,
 } from "../services/global-pack-visibility.ts";
+import { cachedRead } from "../services/read-cache.ts";
 import type { RouteDeps, LimitedReplyish } from "./deps.ts";
 
 const BATCH_VIDEO_LIMIT = { limit: 2, windowMs: 30 * 60 * 1000 };
@@ -77,11 +80,13 @@ export function canPostVideoDeckForAccount(videoDeck: string, acc: { longVideoDe
 }
 
 export function visibleLibraryDeckIds(db: Db): Set<string> {
-  return new Set([
-    MANUAL_VIDEO_DECK,
-    ...filterGloballyVisibleBuiltInDecks(db, DECKS).map((deck) => deck.id),
-    ...filterGloballyVisibleCustomPacks(db, listAllPacks()).map((pack) => `pack:${pack.id}`),
-  ]);
+  return cachedRead("visible-library-deck-ids", 30_000, () =>
+    new Set([
+      MANUAL_VIDEO_DECK,
+      ...filterGloballyVisibleBuiltInDecks(db, DECKS).map((deck) => deck.id),
+      ...filterGloballyVisibleCustomPacks(db, listPackVisibilitySummaries()).map((pack) => `pack:${pack.id}`),
+    ]),
+  );
 }
 
 export function canPrepareLibraryForAccount(account: Pick<Account, "status">, requesterIsSuperAdmin: boolean): boolean {
@@ -198,18 +203,25 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
     try {
       const meta = ytMeta(getDeck(v.deck), v.title, v.text);
       if (v.tags.length) meta.tags = v.tags; // per-video override from the library editor
+      const manualDefaults = v.deck === MANUAL_VIDEO_DECK ? getManualVideoAccountDefaults(db, v.accountId) : null;
+      if (manualDefaults?.title) meta.title = manualDefaults.title;
+      if (manualDefaults?.description) meta.description = manualDefaults.description;
+      if (manualDefaults?.tags.length) meta.tags = manualDefaults.tags;
       const youtubeId = await metrics.track("upload", () =>
         uploadShort(creds, REDIRECT_URI, token, {
           videoPath: resolve(process.cwd(), outputDir, v.videoRel),
           title: meta.title,
           description: meta.description,
           tags: meta.tags,
+          categoryId: manualDefaults?.categoryId,
           publishAt,
         }),
       );
       db.addHistory({
         accountId: v.accountId,
-        title: v.title,
+        title: meta.title,
+        description: meta.description,
+        tags: meta.tags,
         status: youtubeId ? (publishAt ? "scheduled" : "published") : "failed",
         youtubeId,
         videoPath: v.videoRel,
@@ -459,7 +471,10 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
       const reservation = reserveChannelLibrarySlots(req, reply as LimitedReplyish, acc);
       if (!reservation.ok) return;
       try {
-        const saved = await saveManualVideoUpload(outputDir, body, manualLimits);
+        const saved = applyManualVideoAccountDefaults(
+          await saveManualVideoUpload(outputDir, body, manualLimits),
+          getManualVideoAccountDefaults(db, acc.id),
+        );
         return db.createVideo({
           accountId: body.accountId,
           title: saved.title,
@@ -469,6 +484,7 @@ export function registerVideosRoutes(app: FastifyInstance, db: Db, deps: RouteDe
           deck: MANUAL_VIDEO_DECK,
           videoRel: saved.videoRel,
           imageRel: null,
+          tags: saved.tags,
         });
       } catch (e) {
         return reply.code(400).send({ error: e instanceof Error ? e.message : "Не удалось загрузить видео" });

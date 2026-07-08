@@ -7,7 +7,18 @@
 // «Правила» добавления карточек НЕ хардкодятся (как у psych), а ВЫВОДЯТСЯ из шаблона: роли килбоксов
 // + min/max символов (minChars / maxChars; при maxChars=0 — авто-ёмкость по геометрии и fitMin) +
 // признак списка (bullet). Карточка = {role → значение} — ровно то, что ест renderTemplateCard.
-import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, readdirSync, unlinkSync } from "node:fs";
+import {
+  readFileSync,
+  writeFileSync,
+  renameSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  unlinkSync,
+  openSync,
+  readSync,
+  closeSync,
+} from "node:fs";
 import { resolve } from "node:path";
 
 const PACKS_DIR = resolve(process.cwd(), "data/packs");
@@ -91,6 +102,7 @@ export interface PackSummary {
   /** Сервисный фон первого шаблона (assets/template-packs/...) — для плиток creator-проектов. */
   previewSrc?: string;
 }
+export type PackVisibilitySummary = Pick<PackSummary, "id" | "name" | "templateType">;
 /** Правило для одной роли, выведенное из шаблона. */
 export interface RoleRule {
   role: string;
@@ -222,6 +234,44 @@ function readPackFile(id: string): Pack | null {
   }
 }
 
+function decodeJsonString(raw: string | undefined): string | undefined {
+  if (raw == null) return undefined;
+  try {
+    return JSON.parse(`"${raw}"`) as string;
+  } catch {
+    return raw.replace(/\\"/g, '"');
+  }
+}
+
+function topLevelString(head: string, field: string): string | undefined {
+  const match = new RegExp(`"${field}"\\s*:\\s*"((?:\\\\.|[^"\\\\])*)"`).exec(head);
+  return decodeJsonString(match?.[1]);
+}
+
+export function getPackVisibilitySummary(id: string): PackVisibilitySummary | null {
+  const cleanId = String(id || "").trim();
+  if (!cleanId) return null;
+  const file = packFile(cleanId);
+  if (!existsSync(file)) return null;
+  let fd: number | null = null;
+  try {
+    fd = openSync(file, "r");
+    const buf = Buffer.alloc(64 * 1024);
+    const bytes = readSync(fd, buf, 0, buf.length, 0);
+    const head = buf.toString("utf8", 0, bytes);
+    const packId = topLevelString(head, "id") || cleanId;
+    return {
+      id: packId,
+      name: topLevelString(head, "name") || packId,
+      templateType: topLevelString(head, "templateType"),
+    };
+  } catch {
+    return null;
+  } finally {
+    if (fd != null) closeSync(fd);
+  }
+}
+
 function creatorPackPreviewSrc(p: Pack): string | undefined {
   const el = p.templates[0]?.elements?.find(
     (item) => item.type === "image" && typeof item.src === "string" && (item.src as string).startsWith("assets/template-packs/"),
@@ -310,6 +360,18 @@ export function listAllPacks(): PackSummary[] {
     out.push(summary(p));
   }
   out.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+  return out;
+}
+
+export function listPackVisibilitySummaries(): PackVisibilitySummary[] {
+  if (!existsSync(PACKS_DIR)) return [];
+  const out: PackVisibilitySummary[] = [];
+  for (const f of readdirSync(PACKS_DIR)) {
+    if (!f.endsWith(".json") || f.endsWith(".tmp")) continue;
+    const p = getPackVisibilitySummary(f.replace(/\.json$/, ""));
+    if (p) out.push(p);
+  }
+  out.sort((a, b) => a.id.localeCompare(b.id));
   return out;
 }
 

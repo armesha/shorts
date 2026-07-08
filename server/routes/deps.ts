@@ -169,7 +169,7 @@ export function makeRouteDeps(input: {
     const isMgsOwner = isMgsUser(owner);
     if (isSuperAdminOwner) {
       const scheduleLang = channelLang ?? acc?.channelLang ?? acc?.lang ?? null;
-      const forbiddenTimes = forbiddenSuperAdminScheduleTimes(schedule, scheduleLang);
+      const forbiddenTimes = forbiddenSuperAdminScheduleTimes(schedule, scheduleLang, owner?.timezone ?? acc?.timezone);
       if (forbiddenTimes.length) {
         reply.code(400).send({
           error: `Для каналов главного админа расписание должно попадать в языковые Shorts-окна. ${describeShortsSchedulePolicy(scheduleLang)}. Уберите: ${forbiddenTimes.join(", ")}.`,

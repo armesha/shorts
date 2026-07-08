@@ -44,6 +44,8 @@ export default function Settings() {
 
       <SkinSettings />
 
+      <TimezoneSettings />
+
       <DesignSettings />
 
       <FavoriteNavSettings />
@@ -54,6 +56,106 @@ export default function Settings() {
 
       <ChangePassword />
     </div>
+  );
+}
+
+const COMMON_TIME_ZONES = [
+  "Europe/Prague",
+  "Europe/Berlin",
+  "Europe/Moscow",
+  "Asia/Yerevan",
+  "Asia/Riyadh",
+  "America/New_York",
+  "America/Los_Angeles",
+  "America/Sao_Paulo",
+  "Asia/Kolkata",
+  "Asia/Jakarta",
+  "Asia/Tokyo",
+  "UTC",
+];
+
+function browserTimeZone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Prague";
+  } catch {
+    return "Europe/Prague";
+  }
+}
+
+function TimezoneSettings() {
+  const { t } = useT();
+  const { user, setUser } = useAuth();
+  const browserZone = browserTimeZone();
+  const [timezone, setTimezone] = useState(user?.timezone || browserZone);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  useEffect(() => {
+    setTimezone(user?.timezone || browserZone);
+  }, [browserZone, user?.timezone]);
+
+  if (!user) return null;
+
+  const options = [...new Set([timezone, user.timezone ?? "", browserZone, ...COMMON_TIME_ZONES])].filter(Boolean);
+  const changed = timezone !== (user.timezone || "Europe/Prague");
+
+  async function save(nextTimezone = timezone) {
+    setBusy(true);
+    setMsg(null);
+    try {
+      const nextUser = await apiClient.updateTimezone(nextTimezone);
+      setUser(nextUser);
+      setTimezone(nextUser.timezone || nextTimezone);
+      setMsg({ ok: true, text: t("settings.timezoneSaved") });
+    } catch (err) {
+      setMsg({ ok: false, text: err instanceof ApiError ? err.message : t("settings.timezoneSaveErr") });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section className="card bg-base-100 border border-base-300">
+      <div className="card-body gap-4">
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div className="flex items-start gap-2">
+            <AppIcon name="time" className="text-primary mt-0.5" size={18} />
+            <div>
+              <h2 className="card-title text-base">{t("settings.timezoneTitle")}</h2>
+              <p className="text-sm text-base-content/60 mt-1">{t("settings.timezoneIntro")}</p>
+            </div>
+          </div>
+          <span className="badge badge-ghost">{timezone}</span>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+          <label className="form-control">
+            <span className="label-text text-xs font-medium">{t("settings.timezoneLabel")}</span>
+            <select className="select select-bordered w-full" value={timezone} onChange={(e) => setTimezone(e.target.value)}>
+              {options.map((zone) => (
+                <option key={zone} value={zone}>
+                  {zone}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" className="btn btn-sm btn-ghost" disabled={busy || timezone === browserZone} onClick={() => setTimezone(browserZone)}>
+              {t("settings.timezoneUseBrowser")}
+            </button>
+            <button type="button" className="btn btn-sm btn-primary gap-1" disabled={busy || !changed} onClick={() => void save()}>
+              <Check size={14} />
+              {busy ? t("settings.timezoneSaving") : t("common.save")}
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 text-xs text-base-content/60">
+          <span>{t("settings.timezoneBrowser", { value: browserZone })}</span>
+          {msg && <span className={msg.ok ? "text-success" : "text-error"}>{msg.text}</span>}
+        </div>
+      </div>
+    </section>
   );
 }
 

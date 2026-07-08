@@ -94,6 +94,13 @@ test("super admin schedule window starts at 08:00", () => {
   assert.deepEqual(forbiddenSuperAdminScheduleTimes(["00:00", "07:59", "08:00", "12:00"]), ["00:00", "07:59"]);
 });
 
+test("language shorts windows are interpreted in the owner's posting timezone", () => {
+  const referenceDate = new Date("2026-07-08T12:00:00Z");
+
+  assert.deepEqual(forbiddenSuperAdminScheduleTimes(["11:00"], "de", "America/New_York", referenceDate), []);
+  assert.deepEqual(forbiddenSuperAdminScheduleTimes(["17:00"], "de", "America/New_York", referenceDate), ["17:00"]);
+});
+
 test("polish channels use dedicated Warsaw shorts windows", () => {
   assert.equal(
     describeShortsSchedulePolicy("pl"),

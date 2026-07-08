@@ -10,6 +10,7 @@ import type {
   ErrorLogItem,
   NotificationItem,
 } from "./types.ts";
+import { normalizeTimeZone } from "../services/timezone.ts";
 
 export type Row = Record<string, any>;
 
@@ -64,6 +65,7 @@ export const rowToAccount = (r: Row): Account => ({
   sourceDecks: parseStringArray(r.source_decks, r.lang ? [r.lang] : []),
   longVideoDecks: parseStringArray(r.long_video_decks, []),
   channelLang: r.channel_lang ?? "",
+  timezone: normalizeTimeZone(r.timezone),
   schedule: JSON.parse(r.schedule),
   template: r.template,
   status: r.auth_error ? "needs_auth" : r.yt_refresh_token ? "connected" : r.status || "needs_auth",
@@ -108,6 +110,7 @@ export const rowToUserAuth = (r: Row): UserAuth => ({
   passwordSet: Number(r.password_set ?? 1) !== 0,
   role: r.role,
   isSuperAdmin: Number(r.is_super_admin ?? 0) !== 0,
+  timezone: normalizeTimeZone(r.timezone),
   failedAttempts: Number(r.failed_attempts) || 0,
   lockedUntil: r.locked_until ?? null,
   telegramId: r.telegram_id ?? null,
@@ -178,6 +181,7 @@ export const rowToError = (r: Row): ErrorLogItem => ({
   detail: r.detail ?? null,
   context: r.context ?? null,
   userId: r.user_id ?? null,
+  username: r.username ?? null,
   createdAt: r.created_at,
 });
 

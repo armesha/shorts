@@ -17,12 +17,21 @@ import type {
   AnecdoteTemplateExamplesResponse, TelegramMiniPanel, TelegramPreferences,
 } from "./types";
 
+function browserTimeZone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Prague";
+  } catch {
+    return "Europe/Prague";
+  }
+}
+
 export const apiClient = {
   me: () => get<AuthUser>("/auth/me"),
   login: (username: string, password: string) =>
     send<AuthUser>("/auth/login", "POST", { username, password }),
   register: (username: string, password: string) =>
-    send<AuthUser>("/auth/register", "POST", { username, password }),
+    send<AuthUser>("/auth/register", "POST", { username, password, timezone: browserTimeZone() }),
+  updateTimezone: (timezone: string) => send<AuthUser>("/auth/timezone", "PUT", { timezone }),
   logout: () => send<{ ok: boolean }>("/auth/logout", "POST", {}),
   // Telegram via the bot (press Start): info / link-status / bind / login / unbind.
   telegramInfo: () => get<{ enabled: boolean; bot: string | null }>("/auth/telegram/info"),
@@ -152,7 +161,7 @@ export const apiClient = {
   accounts: (scope?: "all") => get<Account[]>(`/accounts${scope === "all" ? "?scope=all" : ""}`),
   account: (id: number | string) => get<Account>(`/accounts/${id}`),
   accountReadiness: (id: number | string) => get<AccountReadiness>(`/accounts/${id}/readiness`),
-  createAccount: () => send<Account>("/accounts", "POST", {}),
+  createAccount: () => send<Account>("/accounts", "POST", { timezone: browserTimeZone() }),
   updateAccount: (id: number | string, data: Partial<Account>) =>
     send<Account>(`/accounts/${id}`, "PUT", data),
   deleteAccount: (id: number | string) => send<{ ok: boolean }>(`/accounts/${id}`, "DELETE"),

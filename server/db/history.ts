@@ -13,6 +13,8 @@ export function historyMethods(db: DatabaseSync) {
     addHistory(h: {
       accountId: number;
       title: string;
+      description?: string | null;
+      tags?: string[] | null;
       status: string;
       youtubeId?: string | null;
       videoPath?: string | null;
@@ -22,10 +24,12 @@ export function historyMethods(db: DatabaseSync) {
       oauthClientId?: number | null;
     }): void {
       db.prepare(
-        "INSERT INTO history (account_id, title, status, youtube_id, video_path, published_at, error, deck, oauth_client_id) VALUES (?,?,?,?,?,?,?,?,?)",
+        "INSERT INTO history (account_id, title, description, tags, status, youtube_id, video_path, published_at, error, deck, oauth_client_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
       ).run(
         h.accountId,
         h.title,
+        h.description ?? "",
+        (h.tags ?? []).join(","),
         h.status,
         h.youtubeId ?? null,
         h.videoPath ?? null,

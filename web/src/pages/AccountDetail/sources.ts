@@ -25,7 +25,7 @@ export const sourceRemaining = (packs: PackSummary[], gens: Generator[], deckId:
   return gens.find((gg) => gg.id === deckId)?.available ?? 0;
 };
 
-const SUFFIX_LANGS = new Set(["ru", "ar", "en", "it", "es", "de", "fr", "pt", "hi", "id"]);
+const SUFFIX_LANGS = new Set(["ru", "ar", "en", "it", "es", "de", "fr", "pt", "ro", "cs", "nl", "hi", "id"]);
 
 const inferredBuiltinLang = (id: string): string => {
   if (DECK_LANG[id]) return DECK_LANG[id];

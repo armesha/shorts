@@ -27,6 +27,7 @@ import { makeAuthSession, getCookie, SESSION_COOKIE, setSessionCookie } from "./
 import { makeDeckAccess } from "./services/deck-access.ts";
 import { makeNotifier } from "./services/notify-stream.ts";
 import { makeBuildLibraryVideo } from "./services/library-build.ts";
+import { startTelegramDigestScheduler } from "./services/telegram-digest.ts";
 import { youtubeAnalyticsRange, summarizeStoredAnalytics } from "./services/analytics-range.ts";
 import { ytErrorMessage } from "./services/youtube-errors.ts";
 import { syncContentLibraryIndex } from "./services/content-library-index.ts";
@@ -56,6 +57,7 @@ import { registerQueueRoutes } from "./routes/queue.ts";
 import { registerAccountReadinessRoutes } from "./routes/account-readiness.ts";
 import { registerSuperAdminChannelBlockRoutes } from "./routes/super-admin-channel-blocks.ts";
 import { registerExamplesRoutes } from "./routes/examples.ts";
+import { registerCarSeatBookingRoutes } from "./routes/car-seat-bookings.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -350,6 +352,7 @@ registerQueueRoutes(app, db, deps);
 registerAccountReadinessRoutes(app, db, deps);
 registerSuperAdminChannelBlockRoutes(app, db, deps);
 registerExamplesRoutes(app, db, deps);
+registerCarSeatBookingRoutes(app, db);
 
 app
   .listen({ port: base.port, host: "0.0.0.0" })
@@ -363,6 +366,10 @@ app
       log: (m) => app.log.info(m),
       notifier, // alert the channel owner (inbox + Telegram) when a token dies mid-schedule
     });
+    const telegramDigestScheduler = startTelegramDigestScheduler({
+      db,
+      log: (m) => app.log.info(m),
+    });
     metrics.startSampler(resolve(process.cwd(), base.outputDir));
 
     // ---- Graceful shutdown: drain in-flight render/upload, then close cleanly (SIGTERM/SIGINT) ----
@@ -375,7 +382,10 @@ app
       try {
         await gracefulShutdown({
           log: (m) => app.log.info("[shutdown] " + m),
-          stopScheduler: () => scheduler.stop(),
+          stopScheduler: () => {
+            scheduler.stop();
+            telegramDigestScheduler.stop();
+          },
           drainQueue: () => genDrainQueue(),
           activeCounts: () => metrics.activeCounts(),
           closeServer: () => app.close(),

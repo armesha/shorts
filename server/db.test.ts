@@ -24,6 +24,15 @@ test("users table enforces a single super-admin flag", () => {
   );
 });
 
+test("user timezone is stored as an account-level posting preference", () => {
+  const db = openDb(":memory:");
+  const user = db.createUser({ username: "tz-user", passHash: "x", timezone: "America/New_York" });
+
+  assert.equal(user.timezone, "America/New_York");
+  assert.equal(db.setUserTimezone(user.id, "Asia/Yerevan")?.timezone, "Asia/Yerevan");
+  assert.equal(db.setUserTimezone(user.id, "not/a-zone")?.timezone, "Europe/Prague");
+});
+
 // Atomic card claim (H1: anti double-spend). Two concurrent generation paths must not both build
 // the same card — the loser of the claim re-picks; a released card becomes claimable again.
 test("claimAnecdote: first claim wins, a second loses, release reopens it", () => {

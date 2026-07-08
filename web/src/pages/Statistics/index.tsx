@@ -236,6 +236,10 @@ export default function Statistics() {
       return (va - vb) * dir;
     });
   }, [filtered, sortKey, sortDir]);
+  const activityChartData = useMemo(
+    () => (analytics ? analytics.daily.map((d) => ({ ...d, date: shortDate(d.date) })) : []),
+    [analytics],
+  );
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
   const clampedPage = Math.min(page, totalPages);
   const paged = sorted.slice((clampedPage - 1) * PAGE_SIZE, clampedPage * PAGE_SIZE);
@@ -381,7 +385,7 @@ export default function Statistics() {
                 <div className="stx-panel p-3" style={{ height: 190 }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart
-                      data={analytics.daily.map((d) => ({ ...d, date: shortDate(d.date) }))}
+                      data={activityChartData}
                       margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
                     >
                       <CartesianGrid vertical={false} stroke="var(--stx-grid)" />

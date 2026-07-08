@@ -165,6 +165,7 @@ export interface UploadOptions {
   title: string;
   description: string;
   tags: string[];
+  categoryId?: string | null;
   /** RFC3339 timestamp → schedule (video stays private until then). Omit = publish now. */
   publishAt?: string | null;
 }
@@ -186,7 +187,7 @@ export async function uploadShort(
         title: sanitizeYtText(o.title).slice(0, 100),
         description: sanitizeYtText(o.description).slice(0, 4900),
         tags: o.tags,
-        categoryId: "23", // Comedy
+        categoryId: o.categoryId ?? "23", // Comedy fallback
       },
       status: {
         privacyStatus: o.publishAt ? "private" : "public",

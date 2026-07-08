@@ -185,6 +185,15 @@ export function applySchema(db: DatabaseSync): void {
       granted_at TEXT NOT NULL DEFAULT (datetime('now')),
       PRIMARY KEY (user_id, feature)
     );
+    CREATE TABLE IF NOT EXISTS car_seat_bookings (
+      namespace TEXT NOT NULL,
+      car_id TEXT NOT NULL,
+      seat_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+      PRIMARY KEY (namespace, car_id, seat_id)
+    );
     CREATE TABLE IF NOT EXISTS password_resets (
       user_id INTEGER PRIMARY KEY,
       code_hash TEXT NOT NULL,
@@ -299,6 +308,7 @@ export function applySchema(db: DatabaseSync): void {
   db.prepare("DELETE FROM user_granted_decks WHERE deck_id LIKE 'long-%'").run();
   db.prepare("UPDATE accounts SET source_decks = json_array(lang) WHERE source_decks IS NULL OR source_decks = '[]'").run();
   addColumn("accounts", "channel_lang TEXT DEFAULT ''");
+  addColumn("accounts", "timezone TEXT DEFAULT ''");
   addColumn("accounts", "avatar TEXT");
   addColumn("accounts", "yt_channel_avatar TEXT");
   addColumn("accounts", "avatar_source TEXT NOT NULL DEFAULT 'random'");
@@ -316,6 +326,7 @@ export function applySchema(db: DatabaseSync): void {
   addColumn("users", "client_secret_json TEXT");
   addColumn("users", "password_set INTEGER NOT NULL DEFAULT 1");
   addColumn("users", "is_super_admin INTEGER NOT NULL DEFAULT 0");
+  addColumn("users", "timezone TEXT DEFAULT ''");
   addColumn("channel_analytics_daily", "dislikes INTEGER NOT NULL DEFAULT 0");
   addColumn("history", "error TEXT");
   addColumn("history", "deck TEXT"); // deck a post was actually published with (old rows NULL → fall back to channel lang)

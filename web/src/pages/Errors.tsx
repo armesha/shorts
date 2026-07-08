@@ -74,6 +74,7 @@ export default function Errors() {
                 <thead>
                   <tr>
                     <th>{t("errors.colTime")}</th>
+                    <th>{t("errors.colUser")}</th>
                     <th>{t("errors.colSource")}</th>
                     <th>{t("errors.colMessage")}</th>
                     <th>{t("errors.colContext")}</th>
@@ -102,6 +103,11 @@ export default function Errors() {
                           )}
                           {fmtTime(e.createdAt)}
                         </td>
+                        <td className="text-xs text-base-content/70">
+                          <div className="max-w-[14rem] truncate" title={e.users ?? ""}>
+                            {e.users ?? "—"}
+                          </div>
+                        </td>
                         <td>
                           {e.source === "client" ? (
                             <span className="badge badge-sm badge-warning gap-1">
@@ -129,7 +135,7 @@ export default function Errors() {
                       </tr>
                       {expanded === e.id && e.detail && (
                         <tr>
-                          <td colSpan={4} className="bg-base-200/50">
+                          <td colSpan={5} className="bg-base-200/50">
                             {(e.count ?? 1) > 1 && (
                               <div className="text-xs text-base-content/60 px-2 pt-2">
                                 {t("errors.groupInfo", {

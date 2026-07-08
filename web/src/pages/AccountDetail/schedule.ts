@@ -52,12 +52,15 @@ const SHORTS_SCHEDULE_POLICIES: Record<string, LanguageSchedulePolicy> = {
 };
 
 const timeToMin = (time: string): number | null => (/^([01]\d|2[0-3]):[0-5]\d$/.test(time) ? toMin(time) : null);
+const DEFAULT_SCHEDULE_TIME_ZONE = "Europe/Prague";
 
-const localTimeZone = (): string => {
+const normalizeTimeZone = (raw?: string | null): string => {
+  const timeZone = String(raw ?? "").trim();
+  if (!timeZone) return DEFAULT_SCHEDULE_TIME_ZONE;
   try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Prague";
+    return Intl.DateTimeFormat("en-US", { timeZone }).resolvedOptions().timeZone || DEFAULT_SCHEDULE_TIME_ZONE;
   } catch {
-    return "Europe/Prague";
+    return DEFAULT_SCHEDULE_TIME_ZONE;
   }
 };
 
@@ -77,10 +80,15 @@ const zoneOffsetMinutes = (timeZone: string, referenceDate: Date): number => {
   return Math.round((asUtc - referenceDate.getTime()) / 60_000);
 };
 
-const localMinuteToSystemMinute = (localMinute: number, targetTimeZone: string, referenceDate: Date): number => {
+const localMinuteToScheduleMinute = (
+  localMinute: number,
+  targetTimeZone: string,
+  referenceDate: Date,
+  scheduleTimeZone?: string | null,
+): number => {
   const targetOffset = zoneOffsetMinutes(targetTimeZone, referenceDate);
-  const systemOffset = zoneOffsetMinutes(localTimeZone(), referenceDate);
-  return ((localMinute - targetOffset + systemOffset) % 1440 + 1440) % 1440;
+  const scheduleOffset = zoneOffsetMinutes(normalizeTimeZone(scheduleTimeZone), referenceDate);
+  return ((localMinute - targetOffset + scheduleOffset) % 1440 + 1440) % 1440;
 };
 
 const splitWindow = (startMinute: number, endMinute: number, weight = 1): WeightedScheduleWindow[] => {
@@ -98,6 +106,7 @@ export const shortsSchedulePolicyForLanguage = (lang: string | null | undefined)
 export const shortsScheduleWindowsForLanguage = (
   lang: string | null | undefined,
   referenceDate = new Date(),
+  scheduleTimeZone?: string | null,
 ): WeightedScheduleWindow[] => {
   const policy = shortsSchedulePolicyForLanguage(lang);
   return policy.windows.flatMap((window) => {
@@ -105,8 +114,8 @@ export const shortsScheduleWindowsForLanguage = (
     const end = timeToMin(window.end);
     if (start == null || end == null) return [];
     return splitWindow(
-      localMinuteToSystemMinute(start, policy.timeZone, referenceDate),
-      localMinuteToSystemMinute(end, policy.timeZone, referenceDate),
+      localMinuteToScheduleMinute(start, policy.timeZone, referenceDate, scheduleTimeZone),
+      localMinuteToScheduleMinute(end, policy.timeZone, referenceDate, scheduleTimeZone),
       window.weight ?? 1,
     );
   });
@@ -122,15 +131,20 @@ export const describeShortsSchedulePolicy = (lang: string | null | undefined): s
     .join(", ")}`;
 };
 
-export const isSuperAdminScheduleTimeAllowed = (time: string, channelLang?: string | null): boolean => {
+export const isSuperAdminScheduleTimeAllowed = (
+  time: string,
+  channelLang?: string | null,
+  scheduleTimeZone?: string | null,
+  referenceDate = new Date(),
+): boolean => {
   const minute = timeToMin(time);
   if (minute == null) return false;
-  if (channelLang) return isMinuteInWindows(minute, shortsScheduleWindowsForLanguage(channelLang));
+  if (channelLang) return isMinuteInWindows(minute, shortsScheduleWindowsForLanguage(channelLang, referenceDate, scheduleTimeZone));
   return minute >= SUPER_ADMIN_SCHEDULE_WINDOW.startMinute;
 };
 
-export const cleanSuperAdminScheduleTimes = (times: string[], channelLang?: string | null): string[] =>
-  times.filter((time) => isSuperAdminScheduleTimeAllowed(time, channelLang));
+export const cleanSuperAdminScheduleTimes = (times: string[], channelLang?: string | null, scheduleTimeZone?: string | null): string[] =>
+  times.filter((time) => isSuperAdminScheduleTimeAllowed(time, channelLang, scheduleTimeZone));
 
 // Per-channel daily slot cap follows the channel OWNER's profile: admins keep 20/day, mgs keeps the
 // legacy regular-user profile, every other non-admin is capped at 5/day.

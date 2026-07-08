@@ -15,6 +15,7 @@ export interface Account {
   sourceDecks: string[]; // все паки/деки, из которых канал может генерировать и выкладывать
   longVideoDecks: string[]; // длинные видео-паки: только ручное добавление в библиотеку + ручная выкладка
   channelLang: string; // ЯЗЫК канала (ru/de/it/fr/en/ar) — стабилен; пак должен совпадать по языку
+  timezone: string; // IANA timezone used to interpret schedule HH:MM values
   schedule: string[];
   template: string;
   status: string;
@@ -108,6 +109,7 @@ export interface UserAuth {
   passwordSet: boolean;
   role: string;
   isSuperAdmin: boolean;
+  timezone: string;
   failedAttempts: number;
   lockedUntil: string | null;
   telegramId: string | null; // linked Telegram user id (for "Login with Telegram" + recovery)
@@ -183,6 +185,8 @@ export interface ErrorLogItem {
   detail: string | null; // stack / extra
   context: string | null; // route, page url, accountId…
   userId: number | null;
+  username?: string | null;
+  users?: string | null;
   createdAt: string;
   firstCreatedAt?: string;
   count?: number;

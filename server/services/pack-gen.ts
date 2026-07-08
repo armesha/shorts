@@ -6,7 +6,7 @@ import type { Db, Video } from "../db.ts";
 import { loadBaseConfig } from "../config.ts";
 import { deriveRules, getPack, type Pack, type CardValues } from "../../src/packs/store.ts";
 import { renderTemplateCard, type TemplateDoc } from "../../src/template/render.ts";
-import { pickJokeMotionOverlay, resolveAudio, type AudioDeckHint } from "../../src/video.ts";
+import { pickJokeMotionOverlay, pickMemeMotionOverlay, resolveAudio, type AudioDeckHint, type MotionOverlay } from "../../src/video.ts";
 import { buildStillVideoFiles, cardReadable } from "../infra/media.ts";
 import { anecdoteKey } from "../../src/anecdotes/library.ts";
 import { customPackTemplateMarker, resolveAllowedCustomJokePackTemplateIndex } from "../../src/anecdotes/joke-template-pool.ts";
@@ -33,13 +33,29 @@ function packKeyOf(text: string): string {
 function audioHintForPack(pack: Pack): AudioDeckHint | undefined {
   const haystack = `${pack.id} ${pack.name}`.toLowerCase();
   if (/(motivation|motivaci|motivaц|мотивац|мотивация|motivier)/i.test(haystack)) return { audioProfile: "motivation" };
+  if (isNewMemePack(pack)) return { audioProfile: "memes" };
   if (isJokePack(pack)) return { audioProfile: "jokes" };
   return undefined;
+}
+
+export function isNewMemePack(pack: Pick<Pack, "id">): boolean {
+  return /^new-memes-[a-z]{2}-superadmin$/.test(pack.id);
 }
 
 export function isJokePack(pack: Pack): boolean {
   const haystack = `${pack.id} ${pack.name} ${pack.templateType ?? ""}`.toLowerCase();
   return /(chistes?|jokes?|witz|witze|barzellette|blagues?|piadas?|anedotas?|dowcipy?|żarty?|zarty?|kawały?|kawaly?|анекдот|шутк|юмор)/iu.test(haystack);
+}
+
+export function packMotionOverlayForCard(
+  pack: Pack,
+  seed: string,
+  textLen = 0,
+  visualVariant?: string | null,
+): MotionOverlay | null {
+  if (isJokePack(pack)) return pickJokeMotionOverlay(seed, textLen, visualVariant);
+  if (isNewMemePack(pack)) return pickMemeMotionOverlay(seed);
+  return null;
 }
 
 function stableHash(seed: string): number {
@@ -240,7 +256,7 @@ export async function buildPackLibraryVideo(input: {
   const jokePack = isJokePack(pack);
   const deckId = `pack:${pack.id}`;
   const visualVariant = jokePack ? jokePopVariantFor({ deck: deckId, title, text }) : undefined;
-  const motionOverlay = jokePack ? pickJokeMotionOverlay(`${pack.id}|${picked.key}|${title}|${text}`, text.length, visualVariant) : null;
+  const motionOverlay = packMotionOverlayForCard(pack, `${pack.id}|${picked.key}|${title}|${text}`, text.length, visualVariant);
   const { imgRel, vidRel, render: rendered } = await buildStillVideoFiles<string | { path: string; fontPx: number; bg: string }>({
     prefix: "pack",
     outputDir: OUTPUT_DIR,

@@ -12,6 +12,12 @@ import {
 
 const pexec = promisify(execFile);
 const FFMPEG = ffmpegPath as unknown as string;
+const ffmpegThreadArgs = (): string[] => {
+  const raw = process.env.VIDEO_FFMPEG_THREADS ?? process.env.FFMPEG_THREADS ?? "";
+  const n = Number(raw);
+  if (!Number.isInteger(n) || n <= 0) return [];
+  return ["-threads", String(Math.min(n, 16))];
+};
 const AUDIO_DIR = resolve(process.cwd(), "assets/audio");
 const CREATOR_MOTION_DIR = resolve(process.cwd(), "assets/creator/motion");
 const CREATOR_JOKE_MOTION_FILES = new Set([
@@ -38,6 +44,7 @@ const CREATOR_JOKE_MOTION_FILES = new Set([
   "gesture-raising-hands.gif",
   "gesture-ok.gif",
 ]);
+const CREATOR_MEME_MOTION_FILES = CREATOR_JOKE_MOTION_FILES;
 const JOKE_VIDEO_BG_DIR = resolve(process.cwd(), "assets/fact-videos/joke-backgrounds");
 export const AUDIO_EXT = new Set([".mp3", ".m4a", ".aac", ".wav", ".ogg", ".opus"]);
 export const PACK_AUDIO_PREFIX = "pack-audio/";
@@ -314,6 +321,25 @@ export function pickJokeMotionOverlay(seed: string, textLen = 0, visualVariant?:
   };
 }
 
+export function pickMemeMotionOverlay(seed: string): MotionOverlay | null {
+  if (!existsSync(CREATOR_MOTION_DIR)) return null;
+  const files = readdirSync(CREATOR_MOTION_DIR)
+    .map((f) => f.toString())
+    .filter((f) => /\.gif$/i.test(f) && CREATOR_MEME_MOTION_FILES.has(f))
+    .sort();
+  if (files.length === 0) return null;
+  const h = stableHash(seed);
+  const xPositions = ["64", "198", "(main_w-overlay_w)/2", "main_w-overlay_w-198", "main_w-overlay_w-64"];
+  const yPositions = ["main_h-overlay_h-16", "main_h-overlay_h-24"];
+  return {
+    path: resolve(CREATOR_MOTION_DIR, files[h % files.length]),
+    width: 92,
+    height: 92,
+    x: xPositions[(h >>> 5) % xPositions.length],
+    y: yPositions[(h >>> 11) % yPositions.length],
+  };
+}
+
 export function pickJokeVideoBackground(seed: string, textLen = 0): string | null {
   if (textLen > 520 || !existsSync(JOKE_VIDEO_BG_DIR)) return null;
   const files = readdirSync(JOKE_VIDEO_BG_DIR)
@@ -359,6 +385,7 @@ export async function assembleVideoBackground(
   args.push(
     "-c:v", "libx264",
     "-preset", "veryfast",
+    ...ffmpegThreadArgs(),
     "-profile:v", "high",
     "-pix_fmt", "yuv420p",
     "-r", "30",
@@ -425,6 +452,7 @@ export async function assembleStillVideo(
   args.push(
     "-c:v", "libx264",
     "-preset", "veryfast",
+    ...ffmpegThreadArgs(),
     "-profile:v", "high",
     "-pix_fmt", "yuv420p",
     "-r", "30",

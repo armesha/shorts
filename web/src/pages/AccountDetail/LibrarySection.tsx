@@ -46,7 +46,8 @@ type LibrarySectionProps = {
   manualDurationSec: number;
   manualUploadsPerHour: number;
   manualUploading: boolean;
-  uploadManualVideo: (file: File | null) => void | Promise<void>;
+  manualUploadProgress: { current: number; total: number } | null;
+  uploadManualVideos: (files: File[]) => void | Promise<void>;
   mismatchedSources: string[];
   contentLang: (deckId: string) => string;
   curContentLang: string;
@@ -100,7 +101,8 @@ export default function LibrarySection({
   manualDurationSec,
   manualUploadsPerHour,
   manualUploading,
-  uploadManualVideo,
+  manualUploadProgress,
+  uploadManualVideos,
   mismatchedSources,
   contentLang,
   curContentLang,
@@ -119,6 +121,13 @@ export default function LibrarySection({
   setPage,
   t,
 }: LibrarySectionProps) {
+  const manualUploadButtonText =
+    manualUploading && manualUploadProgress && manualUploadProgress.total > 1
+      ? t("account.manualUploadingProgress", { current: manualUploadProgress.current, total: manualUploadProgress.total })
+      : manualUploading
+        ? t("account.manualUploading")
+        : t("account.manualUploadButton");
+
   return (
     <section id="channel-content" className="card bg-base-100 border border-base-300">
       <div className="card-body">
@@ -277,16 +286,17 @@ export default function LibrarySection({
             )}
             <label className={`btn btn-sm btn-outline gap-1 w-full ${manualUploading || !isConnected || libraryFull ? "btn-disabled" : ""}`}>
               {manualUploading ? <Loader2 className="animate-spin" size={14} /> : <Upload size={14} />}
-              {manualUploading ? t("account.manualUploading") : t("account.manualUploadButton")}
+              {manualUploadButtonText}
               <input
                 type="file"
                 className="hidden"
                 accept="video/mp4,.mp4"
+                multiple
                 disabled={manualUploading || !isConnected || libraryFull}
                 onChange={(e) => {
-                  const file = e.currentTarget.files?.[0] ?? null;
+                  const files = Array.from(e.currentTarget.files ?? []);
                   e.currentTarget.value = "";
-                  void uploadManualVideo(file);
+                  void uploadManualVideos(files);
                 }}
               />
             </label>

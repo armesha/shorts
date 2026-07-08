@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { apiClient, type QueueJob, type QueueOverview } from "../lib/api";
 import { useAuth } from "../lib/auth";
@@ -46,8 +46,11 @@ export default function QueuePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [canceling, setCanceling] = useState<string | null>(null);
+  const loadingRef = useRef(false);
 
-  const load = async () => {
+  const load = useCallback(async (opts: { skipIfBusy?: boolean } = {}) => {
+    if (opts.skipIfBusy && loadingRef.current) return;
+    loadingRef.current = true;
     try {
       setError(null);
       const overview = await apiClient.queueOverview(scope === "all" ? "all" : undefined);
@@ -55,17 +58,29 @@ export default function QueuePage() {
     } catch (e) {
       setError((e as Error).message);
     } finally {
+      loadingRef.current = false;
       setLoading(false);
     }
-  };
+  }, [scope]);
 
   useEffect(() => {
     setChannelPage(1);
     setLoading(true);
     void load();
-    const timer = window.setInterval(() => void load(), 5000);
-    return () => window.clearInterval(timer);
-  }, [scope]);
+    const tick = () => {
+      if (document.visibilityState === "hidden") return;
+      void load({ skipIfBusy: true });
+    };
+    const onVisible = () => {
+      if (document.visibilityState === "visible") tick();
+    };
+    const timer = window.setInterval(tick, 15_000);
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [load]);
 
   const activeJobs = useMemo(() => data?.generationJobs.filter((job) => activeStates.has(job.state)) ?? [], [data]);
   const historyJobs = useMemo(() => data?.generationJobs.filter((job) => !activeStates.has(job.state)) ?? [], [data]);

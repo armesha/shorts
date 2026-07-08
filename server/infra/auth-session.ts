@@ -76,7 +76,14 @@ export const uid = (req: unknown): number => (req as { userId?: number }).userId
 export type Replyish = { code: (n: number) => { send: (b: unknown) => unknown } };
 
 export type SessionUser = { id: number; username: string; role: string; isSuperAdmin: boolean };
-type PublicUserInput = { id: number; username: string; role: string; isSuperAdmin?: boolean; passwordSet?: boolean };
+type PublicUserInput = {
+  id: number;
+  username: string;
+  role: string;
+  isSuperAdmin?: boolean;
+  passwordSet?: boolean;
+  timezone?: string;
+};
 
 export interface AuthSession {
   validSessionUser: (token: string | null) => SessionUser | null;
@@ -86,6 +93,7 @@ export interface AuthSession {
     username: string;
     role: string;
     isSuperAdmin: boolean;
+    timezone: string | undefined;
     passwordSet: boolean;
     impersonator: SessionUser | null;
   };
@@ -121,6 +129,7 @@ export function makeAuthSession(db: Db): AuthSession {
       username: user.username,
       role: user.role,
       isSuperAdmin: user.isSuperAdmin ?? isSuperAdminUser(user),
+      timezone: user.timezone,
       passwordSet: user.passwordSet ?? true,
       impersonator,
     };

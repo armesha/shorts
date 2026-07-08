@@ -5,21 +5,17 @@ import type { RouteDeps } from "./deps.ts";
 import { MANUAL_VIDEO_DECK } from "../../src/anecdotes/decks.ts";
 import { getReadinessLimits } from "../services/readiness-limits.ts";
 import { createDeckAvailabilityContext } from "../services/deck-availability.ts";
+import { nextLocalTimeAt } from "../services/timezone.ts";
 
 type ReadinessLevel = "ready" | "warning" | "blocked";
 
-function nextSlotAt(account: Account): string | null {
-  const now = new Date();
-  let best: Date | null = null;
+function nextSlotAt(account: Account, timezone: string): string | null {
+  let best: string | null = null;
   for (const time of account.schedule ?? []) {
-    const [hh, mm] = String(time).split(":").map((x) => Number(x));
-    if (!Number.isFinite(hh) || !Number.isFinite(mm)) continue;
-    const at = new Date(now);
-    at.setHours(hh, mm, 0, 0);
-    if (at <= now) at.setDate(at.getDate() + 1);
-    if (!best || at < best) best = at;
+    const at = nextLocalTimeAt(String(time), timezone);
+    if (at && (!best || at < best)) best = at;
   }
-  return best ? best.toISOString() : null;
+  return best;
 }
 
 function unique<T>(items: T[]): T[] {
@@ -54,6 +50,7 @@ export function registerAccountReadinessRoutes(app: FastifyInstance, db: Db, dep
 
     const sourceDecks = deps.deckAccess.accountSourceDecks(account);
     const ownerId = deps.accountOwnerId(req, account);
+    const owner = db.getUserById(ownerId);
     const readinessLimits = getReadinessLimits(db);
     const postsPerDay = account.schedule?.length ?? 0;
     const queuedByDeck = videoCountsByDeck(db, account);
@@ -137,7 +134,7 @@ export function registerAccountReadinessRoutes(app: FastifyInstance, db: Db, dep
       runwayDays,
       minRunwayDays: readinessLimits.minRunwayDays,
       decks,
-      nextSlotAt: nextSlotAt(account),
+      nextSlotAt: nextSlotAt(account, owner?.timezone || account.timezone),
       sourceDecks,
       availableNow,
     };

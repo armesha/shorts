@@ -13,6 +13,7 @@ import {
 } from "../auth.ts";
 import { checkRateLimit } from "../infra/rate-limits.ts";
 import { grantDefaultRegisteredUserDecks } from "../services/default-user-decks.ts";
+import { normalizeTimeZone } from "../services/timezone.ts";
 import {
   SESSION_COOKIE,
   ADMIN_SESSION_COOKIE,
@@ -52,7 +53,7 @@ export function registerAuthRoutes(app: FastifyInstance, db: Db, deps: RouteDeps
       return reply.code(429).send({ error: "Слишком много регистраций. Попробуйте чуть позже." });
     }
 
-    const body = (req.body as { username?: string; password?: string }) ?? {};
+    const body = (req.body as { username?: string; password?: string; timezone?: string }) ?? {};
     const username = cleanRegisterUsername(body.username);
     const password = body.password ?? "";
     if (!/^[a-z0-9][a-z0-9._-]{2,31}$/.test(username) || RESERVED_USERNAMES.has(username)) {
@@ -66,7 +67,13 @@ export function registerAuthRoutes(app: FastifyInstance, db: Db, deps: RouteDeps
     }
 
     try {
-      const user = db.createUser({ username, passHash: hashPassword(password), role: "user", passwordSet: true });
+      const user = db.createUser({
+        username,
+        passHash: hashPassword(password),
+        role: "user",
+        passwordSet: true,
+        timezone: body.timezone,
+      });
       db.setFeature(user.id, COMMERCIAL_CREATOR_FEATURE, true);
       grantDefaultRegisteredUserDecks(db, user.id);
       const token = newSessionToken();
@@ -131,6 +138,14 @@ export function registerAuthRoutes(app: FastifyInstance, db: Db, deps: RouteDeps
 
   app.get("/api/auth/me", async (req, reply) => {
     const user = db.getUserById(uid(req));
+    if (!user) return reply.code(401).send({ error: "Не авторизован" });
+    return publicUser(req, user);
+  });
+
+  app.put("/api/auth/timezone", async (req, reply) => {
+    const body = (req.body as { timezone?: string }) ?? {};
+    const timezone = normalizeTimeZone(body.timezone);
+    const user = db.setUserTimezone(uid(req), timezone);
     if (!user) return reply.code(401).send({ error: "Не авторизован" });
     return publicUser(req, user);
   });

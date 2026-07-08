@@ -4,6 +4,7 @@ import type { DatabaseSync } from "node:sqlite";
 import { rowToUserAuth, type Row } from "./mappers.ts";
 import type { TelegramDigestFrequency, TelegramPreferences, UserAuth } from "./types.ts";
 import { normalizeUserRole, type UserRole } from "../auth.ts";
+import { normalizeTimeZone } from "../services/timezone.ts";
 
 const TELEGRAM_DIGESTS = new Set<TelegramDigestFrequency>(["off", "daily", "weekly"]);
 const DEFAULT_TELEGRAM_PREFERENCES: TelegramPreferences = {
@@ -56,11 +57,25 @@ export function userMethods(db: DatabaseSync) {
       const r = db.prepare("SELECT COUNT(*) AS n FROM users").get() as Row;
       return Number(r.n) || 0;
     },
-    createUser(u: { username: string; passHash: string; role?: string; passwordSet?: boolean; isSuperAdmin?: boolean }): UserAuth {
+    createUser(u: {
+      username: string;
+      passHash: string;
+      role?: string;
+      passwordSet?: boolean;
+      isSuperAdmin?: boolean;
+      timezone?: string;
+    }): UserAuth {
       const role = normalizeUserRole(u.role);
       const info = db
-        .prepare("INSERT INTO users (username, pass_hash, password_set, role, is_super_admin) VALUES (?,?,?,?,?)")
-        .run(u.username, u.passHash, u.passwordSet === false ? 0 : 1, role, u.isSuperAdmin && role === "admin" ? 1 : 0);
+        .prepare("INSERT INTO users (username, pass_hash, password_set, role, is_super_admin, timezone) VALUES (?,?,?,?,?,?)")
+        .run(
+          u.username,
+          u.passHash,
+          u.passwordSet === false ? 0 : 1,
+          role,
+          u.isSuperAdmin && role === "admin" ? 1 : 0,
+          normalizeTimeZone(u.timezone),
+        );
       return this.getUserById(Number(info.lastInsertRowid))!;
     },
     updateUserRole(id: number, role: UserRole): UserAuth | null {
@@ -102,6 +117,11 @@ export function userMethods(db: DatabaseSync) {
     getUserByUsername(username: string): UserAuth | null {
       const r = db.prepare("SELECT * FROM users WHERE username = ?").get(username) as Row | undefined;
       return r ? rowToUserAuth(r) : null;
+    },
+    setUserTimezone(id: number, timezone: string): UserAuth | null {
+      if (!this.getUserById(id)) return null;
+      db.prepare("UPDATE users SET timezone = ? WHERE id = ?").run(normalizeTimeZone(timezone), id);
+      return this.getUserById(id);
     },
     incFailedAttempts(id: number): number {
       db.prepare("UPDATE users SET failed_attempts = failed_attempts + 1 WHERE id = ?").run(id);

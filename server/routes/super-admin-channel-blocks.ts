@@ -43,6 +43,9 @@ const BLOCK_LANGS = [
   { code: "de", label: "DE" },
   { code: "fr", label: "FR" },
   { code: "pt", label: "PT" },
+  { code: "ro", label: "RO" },
+  { code: "cs", label: "CS" },
+  { code: "nl", label: "NL" },
   { code: "hi", label: "HI" },
   { code: "id", label: "ID" },
   { code: "ja", label: "JA" },
@@ -78,6 +81,9 @@ const JOKE_TEXT_DECK_BY_LANG: Record<string, string[]> = {
   hi: ["hi"],
   id: ["id"],
   ja: ["ja"],
+  ro: ["ro"],
+  cs: ["cs"],
+  nl: ["nl"],
 };
 
 const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
@@ -91,6 +97,9 @@ const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
   pt: ["pack:new-memes-pt-superadmin"],
   ar: ["pack:new-memes-ar-superadmin"],
   ja: ["pack:new-memes-ja-superadmin"],
+  ro: ["pack:new-memes-ro-superadmin"],
+  cs: ["pack:new-memes-cs-superadmin"],
+  nl: ["pack:new-memes-nl-superadmin"],
 };
 
 const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
@@ -1681,7 +1690,9 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
           continue;
         }
       }
-      const scheduleWindows = ownerIsSuperAdmin ? shortsScheduleWindowsForLanguage(account.channelLang || account.lang) : FULL_DAY_SCHEDULE_WINDOW;
+      const scheduleWindows = ownerIsSuperAdmin
+        ? shortsScheduleWindowsForLanguage(account.channelLang || account.lang, new Date(), owner?.timezone ?? account.timezone)
+        : FULL_DAY_SCHEDULE_WINDOW;
       const schedule = randomDayTimes(perDay, taken, scheduleWindows);
       for (const time of schedule) taken.add(toMin(time));
       const sourceDecks = cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account));

@@ -1,26 +1,30 @@
 import type { FastifyInstance } from "fastify";
 
 import { DECKS, isPackDeckId, MANUAL_VIDEO_DECK } from "../../src/anecdotes/decks.ts";
-import { getPack } from "../../src/packs/store.ts";
+import { listPackVisibilitySummaries } from "../../src/packs/store.ts";
 import { isSuperAdminUser } from "../auth.ts";
 import type { Account, Db } from "../db.ts";
 import { uid } from "../infra/auth-session.ts";
 import { listStatuses as listGenStatuses } from "../services/gen-queue.ts";
 import { publicGenWorkerStatus } from "../services/gen-worker-heartbeat.ts";
+import { isForbiddenSuperAdminSourceDeck } from "../services/super-admin-optical-decks.ts";
+import { nextLocalTimeAt } from "../services/timezone.ts";
 import type { RouteDeps } from "./deps.ts";
 import { visibleLibraryDeckIds } from "./videos.ts";
 
 type QueueQuery = { scope?: string };
+const QUEUE_OVERVIEW_TTL_MS = 15_000;
+const queueOverviewCache = new Map<string, { expiresAt: number; value: unknown }>();
+
 const genQueueRunnerMode = (): "embedded" | "external" =>
   process.env.GEN_QUEUE_RUNNER === "0" || process.env.GEN_QUEUE_RUNNER === "external" ? "external" : "embedded";
 
-function deckName(db: Db, ownerId: number | null | undefined, deckId: string | null | undefined): string | null {
+function deckName(deckId: string | null | undefined, packNames: Map<string, string>): string | null {
   const id = String(deckId || "").trim();
   if (!id) return null;
   if (id === MANUAL_VIDEO_DECK) return "Manual videos";
   if (isPackDeckId(id)) {
-    const owner = ownerId ? db.getUserById(ownerId) : null;
-    return getPack(id.slice(5), ownerId ?? 0, isSuperAdminUser(owner))?.name ?? id;
+    return packNames.get(id.slice(5)) ?? id;
   }
   return DECKS.find((deck) => deck.id === id)?.name ?? id;
 }
@@ -31,8 +35,7 @@ function deckCounts(rows: { deck: string; count: number }[]): Record<string, num
   return counts;
 }
 
-function scheduledCountsByDeck(account: Account, deps: RouteDeps): Record<string, number> {
-  const sources = deps.deckAccess.accountSourceDecks(account);
+function scheduledCountsByDeck(account: Account, sources: string[]): Record<string, number> {
   const counts: Record<string, number> = Object.fromEntries(sources.map((deckId) => [deckId, 0]));
   for (const [index, time] of (account.schedule ?? []).entries()) {
     const explicit = account.slotDecks?.[time];
@@ -50,7 +53,31 @@ function runwayDays(_byDeck: Record<string, number>, _scheduledByDeck: Record<st
   return queued / postsPerDay;
 }
 
-function nextSlots(db: Db, accounts: Account[], deps: RouteDeps, limit = 40) {
+function queueSourceDecks(
+  account: Account,
+  userById: Map<number, { timezone?: string; isSuperAdmin?: boolean }>,
+  globallyVisibleDeckIds: Set<string>,
+): string[] {
+  const ownerIsSuperAdmin = account.userId != null && !!userById.get(account.userId)?.isSuperAdmin;
+  const ids = account.sourceDecks?.length ? account.sourceDecks : [account.lang];
+  return [
+    ...new Set(
+      ids
+        .map((x) => String(x || "").trim())
+        .filter((deckId) => deckId && !DECKS.find((deck) => deck.id === deckId)?.longVideo)
+        .filter((deckId) => globallyVisibleDeckIds.has(deckId))
+        .filter((deckId) => !ownerIsSuperAdmin || !isForbiddenSuperAdminSourceDeck(deckId)),
+    ),
+  ];
+}
+
+function nextSlots(
+  accounts: Account[],
+  userById: Map<number, { timezone?: string }>,
+  sourceDecksByAccount: Map<number, string[]>,
+  packNames: Map<string, string>,
+  limit = 40,
+) {
   const now = new Date();
   const horizonMs = 48 * 60 * 60 * 1000;
   const slots: {
@@ -63,31 +90,35 @@ function nextSlots(db: Db, accounts: Account[], deps: RouteDeps, limit = 40) {
   }[] = [];
 
   for (const account of accounts) {
-    const sources = deps.deckAccess.accountSourceDecks(account);
+    const sources = sourceDecksByAccount.get(account.id) ?? [];
     for (const time of account.schedule ?? []) {
-      const [hh, mm] = String(time).split(":").map((x) => Number(x));
-      if (!Number.isFinite(hh) || !Number.isFinite(mm)) continue;
-      for (let day = 0; day < 3; day++) {
-        const at = new Date(now);
-        at.setDate(now.getDate() + day);
-        at.setHours(hh, mm, 0, 0);
-        const delta = at.getTime() - now.getTime();
-        if (delta <= 0 || delta > horizonMs) continue;
-        const explicit = account.slotDecks?.[time];
-        const deck = explicit && sources.includes(explicit) ? explicit : sources[0] ?? account.lang ?? null;
-        slots.push({
-          accountId: account.id,
-          channelName: account.channelName,
-          time,
-          at: at.toISOString(),
-          deck,
-          deckName: deckName(db, account.userId, deck),
-        });
-      }
+      const at = nextLocalTimeAt(String(time), account.userId ? userById.get(account.userId)?.timezone || account.timezone : account.timezone, now);
+      if (!at) continue;
+      const delta = new Date(at).getTime() - now.getTime();
+      if (delta <= 0 || delta > horizonMs) continue;
+      const explicit = account.slotDecks?.[time];
+      const deck = explicit && sources.includes(explicit) ? explicit : sources[0] ?? account.lang ?? null;
+      slots.push({
+        accountId: account.id,
+        channelName: account.channelName,
+        time,
+        at,
+        deck,
+        deckName: deckName(deck, packNames),
+      });
     }
   }
 
   return slots.sort((a, b) => a.at.localeCompare(b.at)).slice(0, limit);
+}
+
+function cachedQueueOverview(key: string, build: () => unknown): unknown {
+  const now = Date.now();
+  const cached = queueOverviewCache.get(key);
+  if (cached && cached.expiresAt > now) return cached.value;
+  const value = build();
+  queueOverviewCache.set(key, { value, expiresAt: now + QUEUE_OVERVIEW_TTL_MS });
+  return value;
 }
 
 export function registerQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
@@ -98,69 +129,69 @@ export function registerQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     const query = (req.query ?? {}) as QueueQuery;
     const userId = uid(req);
     const all = query.scope === "all" && deps.auth.isAdminLikeReq(req);
-    const accounts = all ? db.listAccounts() : db.listAccountsByUser(userId);
-    const visibleAccountIds = new Set(accounts.map((account) => account.id));
-    const accountById = new Map(accounts.map((account) => [account.id, account]));
-    const userById = new Map(db.listUsers().map((user) => [user.id, user]));
-    const countsByAccount = new Map<number, { deck: string; count: number }[]>();
-    const visibleVideoDeckIds = visibleLibraryDeckIds(db);
-    for (const row of db.videoCountsByAccount(accounts.map((account) => account.id))) {
-      if (!visibleVideoDeckIds.has(row.deck)) continue;
-      const list = countsByAccount.get(row.accountId) ?? [];
-      list.push({ deck: row.deck, count: row.count });
-      countsByAccount.set(row.accountId, list);
-    }
+    return cachedQueueOverview(`queue:${all ? "all" : userId}`, () => {
+      const accounts = all ? db.listAccounts() : db.listAccountsByUser(userId);
+      const visibleAccountIds = new Set(accounts.map((account) => account.id));
+      const accountById = new Map(accounts.map((account) => [account.id, account]));
+      const userById = new Map(db.listUsers().map((user) => [user.id, user]));
+      const countsByAccount = new Map<number, { deck: string; count: number }[]>();
+      const visibleVideoDeckIds = visibleLibraryDeckIds(db);
+      const sourceDecksByAccount = new Map(
+        accounts.map((account) => [account.id, queueSourceDecks(account, userById, visibleVideoDeckIds)]),
+      );
+      const packNames = new Map(listPackVisibilitySummaries().map((pack) => [pack.id, pack.name]));
+      for (const row of db.videoCountsByAccount(accounts.map((account) => account.id))) {
+        if (!visibleVideoDeckIds.has(row.deck)) continue;
+        const list = countsByAccount.get(row.accountId) ?? [];
+        list.push({ deck: row.deck, count: row.count });
+        countsByAccount.set(row.accountId, list);
+      }
 
-    const generationJobs = listGenStatuses(all ? undefined : userId)
-      .filter((job) => visibleAccountIds.has(job.accountId))
-      .map((job) => {
-        const account = accountById.get(job.accountId);
-        const owner = job.userId != null ? userById.get(job.userId) : null;
+      const generationJobs = listGenStatuses(all ? undefined : userId)
+        .filter((job) => visibleAccountIds.has(job.accountId))
+        .map((job) => {
+          const account = accountById.get(job.accountId);
+          const owner = job.userId != null ? userById.get(job.userId) : null;
+          return {
+            ...job,
+            channelName: account?.channelName ?? `#${job.accountId}`,
+            ownerUsername: owner?.username ?? null,
+          };
+        });
+
+      const channelQueues = accounts.map((account) => {
+        const byDeck = deckCounts(countsByAccount.get(account.id) ?? []);
+        const sourceDecks = sourceDecksByAccount.get(account.id) ?? [];
+        const scheduledByDeck = scheduledCountsByDeck(account, sourceDecks);
+        const deckIds = [...new Set([...Object.keys(byDeck), ...sourceDecks, ...Object.keys(scheduledByDeck)])];
+        const sourceSet = new Set(sourceDecks);
+        const queued = sourceDecks.length
+          ? Object.entries(byDeck).reduce((sum, [deckId, n]) => (sourceSet.has(deckId) ? sum + n : sum), 0)
+          : Object.values(byDeck).reduce((sum, n) => sum + n, 0);
+        const postsPerDay = account.schedule?.length ?? 0;
         return {
-          ...job,
-          channelName: account?.channelName ?? `#${job.accountId}`,
-          ownerUsername: owner?.username ?? null,
+          accountId: account.id,
+          channelName: account.channelName,
+          ownerUsername: account.userId ? userById.get(account.userId)?.username ?? null : null,
+          connected: account.status === "connected",
+          enabled: account.enabled,
+          schedule: account.schedule ?? [],
+          sourceDecks,
+          byDeck,
+          deckNames: Object.fromEntries(deckIds.map((deckId) => [deckId, deckName(deckId, packNames) ?? deckId])),
+          scheduledByDeck,
+          queued,
+          postsPerDay,
+          runwayDays: runwayDays(byDeck, scheduledByDeck, queued, postsPerDay),
         };
       });
 
-    const channelQueues = accounts.map((account) => {
-      const byDeck = deckCounts(countsByAccount.get(account.id) ?? []);
-      const deckIds = [
-        ...new Set([
-          ...Object.keys(byDeck),
-          ...deps.deckAccess.accountSourceDecks(account),
-          ...Object.keys(scheduledCountsByDeck(account, deps)),
-        ]),
-      ];
-      const sourceDecks = deps.deckAccess.accountSourceDecks(account);
-      const sourceSet = new Set(sourceDecks);
-      const queued = sourceDecks.length
-        ? Object.entries(byDeck).reduce((sum, [deckId, n]) => (sourceSet.has(deckId) ? sum + n : sum), 0)
-        : Object.values(byDeck).reduce((sum, n) => sum + n, 0);
-      const postsPerDay = account.schedule?.length ?? 0;
-      const scheduledByDeck = scheduledCountsByDeck(account, deps);
       return {
-        accountId: account.id,
-        channelName: account.channelName,
-        ownerUsername: account.userId ? userById.get(account.userId)?.username ?? null : null,
-        connected: account.status === "connected",
-        enabled: account.enabled,
-        schedule: account.schedule ?? [],
-        sourceDecks,
-        byDeck,
-        deckNames: Object.fromEntries(deckIds.map((deckId) => [deckId, deckName(db, account.userId, deckId) ?? deckId])),
-        scheduledByDeck,
-        queued,
-        postsPerDay,
-        runwayDays: runwayDays(byDeck, scheduledByDeck, queued, postsPerDay),
+        worker: publicGenWorkerStatus(db, { mode: genQueueRunnerMode() }),
+        generationJobs,
+        channelQueues,
+        upcomingSlots: nextSlots(accounts, userById, sourceDecksByAccount, packNames),
       };
     });
-
-    return {
-      worker: publicGenWorkerStatus(db, { mode: genQueueRunnerMode() }),
-      generationJobs,
-      channelQueues,
-      upcomingSlots: nextSlots(db, accounts, deps),
-    };
   });
 }

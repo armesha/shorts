@@ -14,6 +14,12 @@ import * as metrics from "../infra/metrics.ts";
 
 const pexec = promisify(execFile);
 const FFMPEG = ffmpegPath as unknown as string;
+const ffmpegThreadArgs = (): string[] => {
+  const raw = process.env.VIDEO_FFMPEG_THREADS ?? process.env.FFMPEG_THREADS ?? "";
+  const n = Number(raw);
+  if (!Number.isInteger(n) || n <= 0) return [];
+  return ["-threads", String(Math.min(n, 16))];
+};
 const OUTPUT_DIR = loadBaseConfig().outputDir;
 const FACT_DIR = resolve(process.cwd(), "assets/fact-videos");
 const TTS_PYTHON = resolve(process.cwd(), ".venv-tts/bin/python");
@@ -149,6 +155,7 @@ async function buildLocalizedFactVideo(input: {
       "libx264",
       "-preset",
       "veryfast",
+      ...ffmpegThreadArgs(),
       "-crf",
       "24",
       "-pix_fmt",

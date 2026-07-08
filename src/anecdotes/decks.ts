@@ -177,6 +177,34 @@ export const DECKS: Deck[] = [
     audioProfile: "jokes",
   },
   {
+    id: "ro",
+    name: "Bancuri Românești",
+    dir: "data/anecdotes-ro",
+    source: "Translated/adapted from this project's own RU/IT/DE anecdote corpora (data/anecdotes, data/anecdotes-it, data/anecdotes-de); only jokes without untranslatable wordplay, without source-country-specific cultural dependencies, and safe for a general audience were selected — see data/anecdotes-ro/sources.json",
+    emoji: "😂",
+    hashtags: "#bancuri #umor #haios #comedie #shorts",
+    tags: ["bancuri", "umor", "haios", "comedie", "banc", "shorts"],
+    genericTitles: ["Banc", "Bancul zilei", "De râs", "Poveste scurtă", "Ascultă asta", "Banc clasic"],
+    adminOnly: true,
+    grantable: true,
+    gallery: true,
+    audioProfile: "jokes",
+  },
+  {
+    id: "cs",
+    name: "České vtipy",
+    dir: "data/anecdotes-cs",
+    source: "Translated/adapted from this project's own RU/IT/DE anecdote corpora (data/anecdotes, data/anecdotes-it, data/anecdotes-de); only jokes without untranslatable wordplay, without source-country-specific cultural dependencies, and safe for a general audience were selected — see data/anecdotes-cs/sources.json",
+    emoji: "😂",
+    hashtags: "#vtipy #humor #legrace #komedie #shorts",
+    tags: ["vtipy", "humor", "legrace", "komedie", "vtip", "shorts"],
+    genericTitles: ["Vtip", "Vtip dne", "Pro smích", "Krátký příběh", "Poslechni si tohle", "Klasický vtip"],
+    adminOnly: true,
+    grantable: true,
+    gallery: true,
+    audioProfile: "jokes",
+  },
+  {
     id: "ar",
     name: "نوادر عربية",
     dir: "data/anecdotes-ar",
@@ -1141,7 +1169,7 @@ export function isPackDeckId(id?: string | null): boolean {
 }
 // Язык встроенной деки (для проверки «язык контента = язык канала»). Паки несут свой lang отдельно.
 const DECK_LANG: Record<string, string> = {
-  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ar: "ar", hi: "hi", id: "id", ja: "ja", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-ru": "ru", "fact-es": "es", "fact-de": "de", "fact-it": "it", "fact-fr": "fr", "fact-pt": "pt", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
+  ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ro: "ro", cs: "cs", ar: "ar", hi: "hi", id: "id", ja: "ja", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-ru": "ru", "fact-es": "es", "fact-de": "de", "fact-it": "it", "fact-fr": "fr", "fact-pt": "pt", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-es": "es", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar",
 };
 export function deckLang(id: string): string {
@@ -1162,6 +1190,9 @@ const NEW_MEMES_META: Record<string, { name: string; hashtags: string; tags: str
   fr: { name: "Nouveaux mèmes", hashtags: "#mèmes #humour #drôle #relatable #shorts", tags: ["mèmes", "mème", "humour", "drôle", "relatable", "shorts"] },
   ar: { name: "ميمز جديدة", hashtags: "#ميمز #ضحك #كوميديا #relatable #shorts", tags: ["ميمز", "ضحك", "كوميديا", "relatable", "shorts"] },
   ja: { name: "新しいミーム", hashtags: "#ミーム #あるある #おもしろい #笑える #shorts", tags: ["ミーム", "あるある", "おもしろい", "笑える", "relatable", "shorts"] },
+  ro: { name: "Meme noi", hashtags: "#meme #umor #amuzant #relatable #shorts", tags: ["meme", "umor", "amuzant", "relatable", "shorts"] },
+  cs: { name: "Nové memy", hashtags: "#memy #humor #vtipné #relatable #shorts", tags: ["memy", "mem", "humor", "vtipné", "relatable", "shorts"] },
+  nl: { name: "Nieuwe memes", hashtags: "#memes #humor #grappig #relatable #shorts", tags: ["memes", "meme", "humor", "grappig", "relatable", "shorts"] },
 };
 function synthPackDeck(id: string): Deck {
   const meme = /^pack:new-memes-([a-z]{2})-superadmin$/.exec(id);

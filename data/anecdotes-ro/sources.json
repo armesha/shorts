@@ -1,0 +1,21 @@
+{
+  "method": "Selected + translated from this project's own RU/IT/DE anecdote corpora (data/anecdotes, data/anecdotes-it, data/anecdotes-de). Each candidate joke was passed through an LLM filter with three drop rules in order: (1) unsafe — inappropriate for general YouTube audience, (2) wordplay — humor mechanism depends on untranslatable source-language wordplay/rhyme/homophony, (3) cultural — joke requires source-country-specific knowledge to land (being merely SET in an everyday RU/IT/DE context is not itself a reason to drop). Everything that survived was translated into natural conversational Romanian with a new title. Nothing was invented by the LLM — every final card traces back to a real line in the source titled.json files.",
+  "builtWith": "Claude Sonnet 5, Workflow tool, 131 batches of ~30 candidates each",
+  "candidatesReviewed": 3919,
+  "keptAfterFilter": 2938,
+  "droppedByReason": {
+    "unsafe": 342,
+    "wordplay": 320,
+    "cultural": 319,
+    "other": 0
+  },
+  "malformedOrDuplicateDropped": 0,
+  "dedupedCount": 2937,
+  "finalCardCount": 1000,
+  "finalLangMix": {
+    "ru": 436,
+    "de": 380,
+    "it": 184
+  },
+  "builtOn": "2026-07-08"
+}

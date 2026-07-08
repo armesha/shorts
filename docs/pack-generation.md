@@ -17,6 +17,18 @@
 
 ## Общее правило анекдотов и шуток
 
+**ЖЁСТКОЕ ПРАВИЛО: анекдоты и шутки НЕЛЬЗЯ придумывать самому.**
+
+Для joke/anecdote-паков текст должен быть source-backed: брать только из внешнего корпуса с проверяемой
+свободной лицензией или public-domain/open-license источника из интернета. Нужны URL, название
+источника, автор/составитель если известен, license/rights note и дата/способ получения в
+`sources.json` или рядом лежащем ledger.
+
+Запрещено делать "оригинальные", "шаблонные", "сгенерированные", "вдохновлённые современным юмором" или
+LLM-written анекдоты вместо настоящего лицензированного корпуса. Если подходящего источника нет, надо
+остановиться и честно сказать пользователю, что свободный корпус не найден, а не заполнять пак
+придуманным текстом.
+
 Новые анекдотные/joke-паки не генерируй "с нуля" через ИИ. Для них сначала ищи внешний корпус:
 public-domain книги, Wikisource/Internet Archive/Gutenberg, open-source датасеты с явной лицензией
 или другой проверяемый источник, где можно записать evidence в `sources.json`/ledger. ИИ допустим
@@ -157,6 +169,53 @@ ingestion/safety проход:
   public-domain in the USA и подходит как legal source base для будущих localized Nasreddin/Juha-style
   joke packs. Это не "готовый локальный корпус": перед переводом/адаптацией на `ar`/`hi`/`id` нужен
   отдельный LLM/localization workflow с вопросом пользователю о модели, source ledger и safety pass.
+
+Проверенные кандидаты/тупики для `ro`/`cs`/`nl` на 2026-07-08:
+
+- Жесткий вывод по modern pass `1950+`: готовых native-корпусов `ro`/`cs`/`nl` на ~1500
+  YouTube-safe карточек с коммерчески пригодной открытой лицензией пока не найдено. Нельзя добивать
+  объем придуманными LLM-анекдотами. Если легальный source меньше target, pack остается маленьким или
+  нужен отдельно согласованный source-backed translation/adaptation workflow.
+- `ro`: лучший найденный источник - Internet Archive
+  `https://archive.org/details/0228-diversi-de-ale-lui-pacala-snoave-populare-1964`
+  (`De-ale lui Păcală. Snoave populare`, 1964), `licenseurl=https://creativecommons.org/publicdomain/mark/1.0/`,
+  OCR `0228 diverși, De-ale lui Păcală Snoave populare, 1964_djvu.txt` (~258 KB). Это source-backed
+  кандидат для маленького Romanian pack, но не на 1500 карточек: в книге много разделов про попов,
+  армию, политику/классовую сатиру, поэтому нужен строгий safety pass. Wikisource `Categorie:Snoave` и
+  `Snoave sau povești populare` (`https://ro.wikisource.org/wiki/Categorie:Snoave`,
+  `https://ro.wikisource.org/wiki/Snoave_sau_pove%C8%99ti_populare`) тоже source-backed кандидаты, но
+  там мало страниц. Modern rejects: IA `Bancuri1` (2014) найден без `licenseurl`, IA `Basme, legende,
+  snoave` (1960) имеет `CC BY-NC-ND 4.0`, а infoarena forum `bancuri` (2006) имеет только
+  `CC BY-NC 2.5` и содержит protected-class/unsafe jokes; не использовать для YouTube pack.
+  Modern candidate `https://github.com/tutyamxx/Romanian-Jokes-API` имеет MIT repo и README "Over 600
+  jokes available", но joke DB не лежит в repo (только Mongo wrapper), Heroku API сейчас `404 No such
+  app`, а лицензия самих данных не доказана; не использовать как готовый source, пока нет export или
+  author confirmation на данные. Internet Archive `https://archive.org/details/ispraviile-lui-pacala-petre-dulfu`
+  помечен Public Domain Mark, но OCR-издание внутри говорит `Toate drepturile rezervate` для издания
+  2001; не использовать без отдельной rights-проверки.
+- `cs`: найден Internet Archive `https://archive.org/details/valecne-anekdoty-1939-1945`
+  (`Válečné Anekdoty 1939 1945`, 1945),
+  `licenseurl=https://creativecommons.org/publicdomain/zero/1.0/`, OCR ~214 KB. Это явный CC0
+  источник, но он военный/политический, старше requested 1950+, и почти весь должен резаться для
+  YouTube-safe joke pack. `Smích za železnou oponou` (1952) найден, но без licenseurl; не использовать,
+  пока права не доказаны. Modern open candidate: JokeAPI v2 (`https://v2.jokeapi.dev/info`,
+  source `https://git.sv443.net/Sv443/JokeAPI-v2`) MIT 2018-2025, но `jokes-cs.json` содержит только
+  4 Czech jokes, из них safe-mode count = 2; можно считать tiny seed, не pack. Czech Wikisource содержит
+  `Židovské anekdoty`, но это protected-class тема и не подходит для безопасного YouTube-пака.
+- `nl`: найден старый public-domain кандидат Internet Archive
+  `https://archive.org/details/vermakelijkeane00lenngoog` (`Vermakelijke anekdoten, en historische
+  herinneringen`, 1870), OCR ~484 KB; это не 1950+ и язык старый, но по возрасту/source notice это
+  чистый Dutch кандидат. Более удобная копия того же текста есть в Gutenberg mirror на IA:
+  `https://archive.org/details/vermakelijkeanek37402gut`, rights `Public domain in the USA`.
+  Internet Archive `https://archive.org/details/1851JoligeReisNaarDeTentoonstellungTeLondon` имеет
+  Public Domain Mark, но это travel-humor, а не готовая база коротких moppen. Современные Dutch
+  moppen-книги на IA (`1001 moppen`, `101 leuke moppen`, `De 249 beste moppen` и т.п.) без открытой
+  лицензии/обычно borrow-only; не использовать. IA modern search `1950+` также нашел `1001 moppen &
+  cartoons` (1992) и `Een vlieg op je vork: moppen en raadsels` (2013), оба `NO_LICENSE`; не использовать.
+  Research-корпус `Dutch Humor Detection by Generating Negative Examples` сообщает про 3235 собранных
+  jokes из Kidsweek/DeBesteMoppen/LachJeKrom; GitHub repo без license и jokes scraped из сторонних сайтов,
+  поэтому не использовать как YouTube corpus без отдельной лицензии/разрешения. HumorDB на Hugging Face
+  имеет `CC BY 4.0`, но это visual-humor/image dataset, не текстовый native Dutch/Romanian/Czech corpus.
 
 ## Общее правило озвучки
 
