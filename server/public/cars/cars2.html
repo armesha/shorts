@@ -91,7 +91,7 @@
   /* ---------- машина (вид сверху) ---------- */
   .car{
     position:relative;
-    width:190px; height:292px;
+    width:250px; height:330px;
     margin:10px auto 0;
   }
   @media (prefers-reduced-motion: no-preference){
@@ -153,12 +153,16 @@
     display:flex; flex-direction:column; gap:8px;
   }
   .cabin-row{display:grid; gap:7px; flex:1}
-  .cabin-row--front{grid-template-columns:1fr 1fr}
-  .cabin-row--back{grid-template-columns:1fr 1fr 1fr}
-  .cabin-row--back .seat{font-size:10px; padding:10px 3px 3px}
+  .cabin-row--front{grid-template-columns:repeat(2, minmax(0,1fr))}
+  .cabin-row--back{grid-template-columns:repeat(3, minmax(0,1fr))}
+  .cabin-row--back .seat{font-size:10.5px; padding:10px 3px 4px}
+  .cabin-row--back .seat .lbl{font-size:9.5px}
+  .cabin-row--back .seat .plus{font-size:17px}
+  .cabin-row--back .seat--taken .name{-webkit-line-clamp:3; line-clamp:3; padding:0 2px}
   .seat{
     font-family:var(--body);
     position:relative;
+    min-width:0; overflow:hidden;
     border-radius:13px 13px 9px 9px;
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
     font-size:11.5px; line-height:1.15;
@@ -187,10 +191,11 @@
     background:var(--paint); color:var(--ink);
   }
   .seat--taken::before{background:rgba(0,0,0,.25)}
-  .seat--taken .name{
-    font-weight:700; max-width:100%;
-    overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 5px;
+  .seat .name{
+    max-width:100%; overflow:hidden; text-align:center; overflow-wrap:anywhere;
+    display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2;
   }
+  .seat--taken .name{font-weight:700; line-height:1.12; padding:0 4px}
   .seat--taken .lbl{font-size:9.5px; color:rgba(29,31,36,.6); text-transform:lowercase}
   .seat--taken:hover{box-shadow:0 0 0 3px rgba(242,240,233,.25)}
   .seat--driver{
@@ -313,7 +318,6 @@
   @media (max-width:360px){
     body{padding-inline:10px}
     .car{transform:scale(.92); transform-origin:top center; margin-bottom:-20px}
-    .car--sx4{transform:scale(.9); transform-origin:top center}
   }
 </style>
 </head>
