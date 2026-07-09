@@ -9,16 +9,47 @@ type ThreeAvatarCanvasProps = {
   onCanvasReady: (canvas: HTMLCanvasElement | null) => void;
 };
 
-type MorphKind = "mouth" | "blink" | "smile" | "laugh" | "surprise" | "angry" | "sad";
+type MorphKind = "mouth" | "aa" | "ih" | "ou" | "ee" | "oh" | "blink" | "smile" | "laugh" | "surprise" | "angry" | "sad" | "relaxed";
+
+type MorphMesh = {
+  name?: string;
+  morphTargetInfluences?: number[];
+  morphTargetDictionary?: Record<string, number>;
+};
 
 type MorphBinding = {
-  mesh: {
-    morphTargetInfluences?: number[];
-    morphTargetDictionary?: Record<string, number>;
-  };
+  mesh: MorphMesh;
   index: number;
   kind: MorphKind;
   weight: number;
+};
+
+type LoadedGltf = {
+  scene: import("three").Object3D;
+  parser?: {
+    json?: VrmGltfJson;
+    associations?: Map<import("three").Object3D, { nodes?: number }>;
+  };
+};
+
+type VrmGltfJson = {
+  nodes?: Array<{ name?: string }>;
+  extensions?: {
+    VRMC_vrm?: {
+      expressions?: {
+        preset?: Record<string, VrmExpression | undefined>;
+        custom?: Record<string, VrmExpression | undefined>;
+      };
+    };
+  };
+};
+
+type VrmExpression = {
+  morphTargetBinds?: Array<{
+    node?: number;
+    index?: number;
+    weight?: number;
+  }>;
 };
 
 export function ThreeAvatarCanvas({ modelUrl, modelName, stage, getFrame, onCanvasReady }: ThreeAvatarCanvasProps) {
@@ -81,9 +112,16 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, getFrame, onCanv
       root.name = modelName;
       scene.add(root);
       normalizeModel(THREE, root);
-      const bindings = collectMorphBindings(root);
+      const vrmBindings = collectVrmExpressionBindings(gltf as LoadedGltf, root);
+      const bindings = vrmBindings.length ? vrmBindings : collectMorphBindings(root);
       setMorphCount(bindings.length);
-      setStatus(bindings.length ? `Модель загружена · morph targets: ${bindings.length}` : "Модель загружена · morph targets не найдены");
+      setStatus(
+        bindings.length
+          ? vrmBindings.length
+            ? `Модель загружена · VRM expressions: ${bindings.length}`
+            : `Модель загружена · morph targets: ${bindings.length}`
+          : "Модель загружена · morph targets не найдены",
+      );
 
       const animate = () => {
         const activeStage = stageRef.current;
@@ -137,13 +175,42 @@ function normalizeModel(THREE: typeof import("three"), root: import("three").Obj
 function collectMorphBindings(root: import("three").Object3D): MorphBinding[] {
   const bindings: MorphBinding[] = [];
   root.traverse((node) => {
-    const mesh = node as MorphBinding["mesh"];
+    const mesh = node as MorphMesh;
     if (!mesh.morphTargetDictionary || !mesh.morphTargetInfluences) return;
     for (const [name, index] of Object.entries(mesh.morphTargetDictionary)) {
       const binding = classifyMorph(name);
       if (binding) bindings.push({ mesh, index, ...binding });
     }
   });
+  return bindings;
+}
+
+function collectVrmExpressionBindings(gltf: LoadedGltf, root: import("three").Object3D): MorphBinding[] {
+  const expressions = gltf.parser?.json?.extensions?.VRMC_vrm?.expressions;
+  if (!expressions) return [];
+  const jsonNodes = gltf.parser?.json?.nodes ?? [];
+  const groups = [
+    ...Object.entries(expressions.preset ?? {}),
+    ...Object.entries(expressions.custom ?? {}),
+  ];
+  const bindings: MorphBinding[] = [];
+  const seen = new Set<string>();
+  for (const [name, expression] of groups) {
+    const kind = classifyVrmExpression(name);
+    if (!kind || !expression?.morphTargetBinds?.length) continue;
+    for (const bind of expression.morphTargetBinds) {
+      const nodeIndex = Number(bind.node);
+      const morphIndex = Number(bind.index);
+      if (!Number.isInteger(nodeIndex) || !Number.isInteger(morphIndex) || morphIndex < 0) continue;
+      const nodeName = jsonNodes[nodeIndex]?.name ?? "";
+      const mesh = findMorphMesh(gltf, root, nodeName, nodeIndex, morphIndex);
+      if (!mesh) continue;
+      const key = `${nodeName}:${morphIndex}:${kind}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      bindings.push({ mesh, index: morphIndex, kind, weight: normalizeVrmWeight(bind.weight) });
+    }
+  }
   return bindings;
 }
 
@@ -157,6 +224,73 @@ function classifyMorph(name: string): { kind: MorphKind; weight: number } | null
   if (/sad|sorrow|悲/.test(n)) return { kind: "sad", weight: 0.85 };
   if (/viseme|mouthopen|jawopen|aa|ih|ee|ou|oh|aah|vowel|あ|い|う|え|お/.test(n)) return { kind: "mouth", weight: 1 };
   return null;
+}
+
+function classifyVrmExpression(name: string): MorphKind | null {
+  const n = name.trim().toLowerCase();
+  switch (n) {
+    case "aa":
+    case "ih":
+    case "ou":
+    case "ee":
+    case "oh":
+      return n;
+    case "blink":
+    case "blinkleft":
+    case "blinkright":
+      return "blink";
+    case "happy":
+      return "smile";
+    case "laugh":
+      return "laugh";
+    case "surprised":
+      return "surprise";
+    case "angry":
+      return "angry";
+    case "sad":
+      return "sad";
+    case "relaxed":
+      return "relaxed";
+    default:
+      return null;
+  }
+}
+
+function findMorphMesh(gltf: LoadedGltf, root: import("three").Object3D, nodeName: string, nodeIndex: number, morphIndex: number): MorphMesh | null {
+  const associations = gltf.parser?.associations;
+  let associated: MorphMesh | null = null;
+  let exact: MorphMesh | null = null;
+  let normalized: MorphMesh | null = null;
+  const target = normalizeNodeName(nodeName);
+  root.traverse((node) => {
+    if (associated) return;
+    const mesh = node as MorphMesh;
+    if (!mesh.morphTargetInfluences || morphIndex >= mesh.morphTargetInfluences.length) return;
+    const association = associations?.get(node);
+    if (association?.nodes === nodeIndex) {
+      associated = mesh;
+      return;
+    }
+    if (nodeName && mesh.name === nodeName) {
+      exact = mesh;
+      return;
+    }
+    if (!normalized && target && normalizeNodeName(mesh.name ?? "") === target) {
+      normalized = mesh;
+    }
+  });
+  return associated ?? exact ?? normalized;
+}
+
+function normalizeNodeName(value: string): string {
+  return value.toLowerCase().replace(/[^a-zа-я0-9]/gi, "");
+}
+
+function normalizeVrmWeight(value: unknown): number {
+  const parsed = Number(value ?? 1);
+  if (!Number.isFinite(parsed)) return 1;
+  const normalized = parsed > 1 ? parsed / 100 : parsed;
+  return Math.max(0, Math.min(1, normalized));
 }
 
 function applyMorphs(bindings: MorphBinding[], frame: AvatarFrame) {
@@ -173,6 +307,16 @@ function morphValue(kind: MorphKind, frame: AvatarFrame): number {
   switch (kind) {
     case "mouth":
       return Math.min(1, frame.mouth + frame.laugh * 0.18 + frame.surprise * 0.2);
+    case "aa":
+      return Math.min(1, frame.mouth * (0.72 + Math.sin(frame.time * 15) * 0.1) + frame.laugh * 0.18);
+    case "ih":
+      return Math.min(1, frame.mouth * 0.2 + frame.whisper * 0.16);
+    case "ou":
+      return Math.min(1, frame.mouth * 0.14 + frame.surprise * 0.14);
+    case "ee":
+      return Math.min(1, frame.mouth * 0.18 + frame.smile * 0.1);
+    case "oh":
+      return Math.min(1, frame.mouth * 0.12 + frame.surprise * 0.4);
     case "blink":
       return Math.min(1, frame.blink + frame.laugh * 0.18);
     case "smile":
@@ -185,5 +329,7 @@ function morphValue(kind: MorphKind, frame: AvatarFrame): number {
       return Math.min(1, frame.anger);
     case "sad":
       return Math.min(1, frame.sad);
+    case "relaxed":
+      return Math.min(1, frame.whisper * 0.35 + frame.smile * 0.12);
   }
 }

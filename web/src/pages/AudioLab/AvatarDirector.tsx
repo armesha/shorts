@@ -18,6 +18,22 @@ type AudioSource = {
 };
 
 type RendererMode = "procedural" | "model";
+type AvatarModelSource = "server" | "file";
+type AvatarModelFile = {
+  name: string;
+  size: number;
+  url: string;
+  source: AvatarModelSource;
+  description: string;
+};
+
+const DEFAULT_AVATAR_MODEL: AvatarModelFile = {
+  name: "Вика",
+  size: 679_652,
+  url: "/api/audio/avatar/model/vika.vrm",
+  source: "server",
+  description: "Встроенная VRM 1.0 модель с visemes, эмоциями, морганием и смехом.",
+};
 
 const MANUAL_TIMELINE = `0.0 look_left
 0.5 smile
@@ -40,9 +56,9 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
   const [currentTime, setCurrentTime] = useState(0);
   const [manualTimeline, setManualTimeline] = useState(MANUAL_TIMELINE);
   const [instantCommand, setInstantCommand] = useState<TimelineCue | null>(null);
-  const [rendererMode, setRendererMode] = useState<RendererMode>("procedural");
+  const [rendererMode, setRendererMode] = useState<RendererMode>("model");
   const [stageId, setStageId] = useState<StagePresetId>("studio");
-  const [modelFile, setModelFile] = useState<{ name: string; size: number; url: string } | null>(null);
+  const [modelFile, setModelFile] = useState<AvatarModelFile | null>(DEFAULT_AVATAR_MODEL);
   const [notice, setNotice] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
   const [recordUrl, setRecordUrl] = useState<string | null>(null);
@@ -114,7 +130,7 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
 
   useEffect(() => {
     return () => {
-      if (modelFile) URL.revokeObjectURL(modelFile.url);
+      if (modelFile?.source === "file") URL.revokeObjectURL(modelFile.url);
     };
   }, [modelFile]);
 
@@ -197,12 +213,16 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
       setNotice("Нужен файл .vrm или .glb");
       return;
     }
-    setModelFile((prev) => {
-      if (prev) URL.revokeObjectURL(prev.url);
-      return { name: file.name, size: file.size, url: URL.createObjectURL(file) };
-    });
+    setModelFile({ name: file.name, size: file.size, url: URL.createObjectURL(file), source: "file", description: "Локально загруженная модель для проверки." });
     setRendererMode("model");
     setNotice(`Модель загружена: ${file.name}`);
+    window.setTimeout(() => setNotice(null), 1800);
+  }
+
+  function restoreDefaultModel() {
+    setModelFile(DEFAULT_AVATAR_MODEL);
+    setRendererMode("model");
+    setNotice("Встроенная Вика подключена");
     window.setTimeout(() => setNotice(null), 1800);
   }
 
@@ -231,6 +251,7 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
       rendererMode,
       stageId,
       modelFileName: modelFile?.name ?? null,
+      modelSource: modelFile?.source ?? null,
       selectedSourceId,
       duration,
       transcript,
@@ -328,6 +349,7 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
             <span className="font-semibold">Вика · движок v1</span>
             <span className="badge badge-ghost badge-sm">локально</span>
             <span className="badge badge-ghost badge-sm">{rendererMode === "model" ? "3D model" : "procedural"}</span>
+            {rendererMode === "model" && modelFile?.source === "server" && <span className="badge badge-success badge-sm">встроенная</span>}
             <span className="badge badge-ghost badge-sm">{Math.round(progress)}%</span>
           </div>
           <div className="flex gap-2">
@@ -389,14 +411,23 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
             </button>
           </div>
           <div className="mt-3 grid gap-2">
+            <button type="button" className="btn btn-sm btn-ghost border border-base-300 justify-start gap-2" onClick={restoreDefaultModel}>
+              <AppIcon name="skin" size={15} />
+              Встроенная Вика
+            </button>
             <label className="form-control">
-              <span className="label-text mb-1 font-medium">Файл модели</span>
+              <span className="label-text mb-1 font-medium">Проверить другую модель</span>
               <input type="file" accept=".vrm,.glb,model/gltf-binary" className="file-input file-input-bordered file-input-sm w-full" onChange={(event) => loadModel(event.target.files?.[0] ?? null)} />
             </label>
             <div className="rounded-md bg-base-200 px-3 py-2 text-xs leading-relaxed text-base-content/60">
-              Жду итог второго агента: `tmp/vika-avatar/vika.vrm` или `vika.glb`. Через это поле можно сразу проверить модель в движке.
+              Вика грузится через защищённый админский API. Загрузка файла нужна только для проверки другой модели.
             </div>
-            {modelFile && <Info label="Модель" value={`${modelFile.name} · ${formatBytes(modelFile.size)}`} />}
+            {modelFile && (
+              <div className="grid gap-2">
+                <Info label="Модель" value={`${modelFile.name} · ${formatBytes(modelFile.size)}`} />
+                <Info label="Источник" value={modelFile.source === "server" ? "админский API" : "локальный файл"} />
+              </div>
+            )}
           </div>
         </Panel>
 

@@ -1,4 +1,6 @@
 import type { FastifyInstance } from "fastify";
+import { createReadStream, existsSync, statSync } from "node:fs";
+import { resolve } from "node:path";
 import type { Db } from "../db.ts";
 import type { RouteDeps } from "./deps.ts";
 import {
@@ -17,6 +19,22 @@ import {
   listGeminiTtsCharacters,
   renameGeminiTtsCharacter,
 } from "../services/gemini-tts-characters.ts";
+
+const AUDIO_AVATAR_MODEL_DIR = resolve(process.cwd(), "data/audio-avatars");
+const AUDIO_AVATAR_MODELS: Record<string, { name: string; file: string; contentType: string; description: string }> = {
+  "vika.vrm": {
+    name: "Вика",
+    file: "vika.vrm",
+    contentType: "model/gltf-binary",
+    description: "Оригинальный VRM 1.0 персонаж для вертикальных Shorts с анекдотами и мемами.",
+  },
+  "vika.glb": {
+    name: "Вика GLB",
+    file: "vika.glb",
+    contentType: "model/gltf-binary",
+    description: "GLB-экспорт того же персонажа для проверки совместимости.",
+  },
+};
 
 export function registerAudioRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
   app.get("/api/audio/gemini/options", async (req, reply) => {
@@ -75,5 +93,36 @@ export function registerAudioRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       req.log.error(error);
       return reply.code(500).send({ error: "Не удалось открыть аудиопример." });
     }
+  });
+
+  app.get("/api/audio/avatar/models", async (req, reply) => {
+    if (!deps.auth.requireSuperAdmin(req, reply)) return;
+    return {
+      models: Object.entries(AUDIO_AVATAR_MODELS).map(([id, model]) => {
+        const abs = resolve(AUDIO_AVATAR_MODEL_DIR, model.file);
+        return {
+          id,
+          name: model.name,
+          file: model.file,
+          description: model.description,
+          available: existsSync(abs),
+          size: existsSync(abs) ? statSync(abs).size : null,
+          url: `/api/audio/avatar/model/${encodeURIComponent(id)}`,
+        };
+      }),
+    };
+  });
+
+  app.get("/api/audio/avatar/model/:file", async (req, reply) => {
+    if (!deps.auth.requireSuperAdmin(req, reply)) return;
+    const file = String((req.params as { file?: string }).file ?? "");
+    const model = AUDIO_AVATAR_MODELS[file];
+    if (!model) return reply.code(404).send({ error: "avatar model not found" });
+    const abs = resolve(AUDIO_AVATAR_MODEL_DIR, model.file);
+    if (!existsSync(abs)) return reply.code(404).send({ error: "avatar model file is missing" });
+    const stat = statSync(abs);
+    reply.header("Cache-Control", "private, max-age=86400");
+    reply.header("Content-Length", String(stat.size));
+    return reply.type(model.contentType).send(createReadStream(abs));
   });
 }

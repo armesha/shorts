@@ -34,6 +34,9 @@ data/space/*
 data/funny-animals/
 data/memes/photos/
 data/audio-candidates/
+data/audio-avatars/*.vrm
+data/audio-avatars/*.glb
+data/audio-avatars/*.png
 
 # stray generated preview images (not source)
 images/
