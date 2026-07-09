@@ -14,11 +14,18 @@ const WORKER_SERVICE = process.env.SHORTS_WORKER_SERVICE || "shorts-gen-worker.s
 const LOG_FILE = resolve(ROOT, "logs/server.log");
 const DB_PATH = process.env.DATABASE_PATH || resolve(ROOT, "data/app.db");
 const HEALTH_URL = `http://127.0.0.1:${PORT}/api/health`;
+const HEALTH_WAIT_MS = durationMs(process.env.SHORTS_HEALTH_WAIT_MS, 90_000, 10_000, 300_000);
 const WORKER_HEARTBEAT_KEY = "generationWorker.heartbeat.v1";
 const WORKER_HEARTBEAT_STALE_MS = 12_000;
 
 function log(message) {
   process.stdout.write(`[restart] ${message}\n`);
+}
+
+function durationMs(value, fallback, min, max) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) return fallback;
+  return Math.max(min, Math.min(max, Math.round(parsed)));
 }
 
 async function run(command, args, options = {}) {
@@ -153,7 +160,16 @@ async function waitForHealth() {
     } catch {
       return false;
     }
-  }, 30_000, 500);
+  }, HEALTH_WAIT_MS, 500);
+}
+
+async function healthFailureDetails() {
+  const [active, pid, listeners] = await Promise.all([
+    serviceActiveState(),
+    serviceMainPid(),
+    portPids(),
+  ]);
+  return `${SERVICE}: ${active || "unknown"}; pid=${pid || "none"}; listeners=${listeners.join(", ") || "none"}`;
 }
 
 function readWorkerHeartbeat() {
@@ -230,8 +246,14 @@ async function restartSystemd() {
   await run("sudo", ["-n", "systemctl", "start", SERVICE], { timeout: 20_000 });
   const workerStartAfter = Date.now();
   if (hasWorkerService) await run("sudo", ["-n", "systemctl", "start", WORKER_SERVICE], { timeout: 20_000 });
+  const healthStartedAt = Date.now();
+  log(`waiting up to ${Math.round(HEALTH_WAIT_MS / 1000)}s for ${HEALTH_URL}`);
   const ok = await waitForHealth();
-  if (!ok) throw new Error(`${HEALTH_URL} did not become healthy after systemd start`);
+  if (!ok) {
+    const details = await healthFailureDetails();
+    throw new Error(`${HEALTH_URL} did not become healthy within ${Math.round(HEALTH_WAIT_MS / 1000)}s after systemd start (${details})`);
+  }
+  log(`health ready after ${((Date.now() - healthStartedAt) / 1000).toFixed(1)}s`);
   const pid = await serviceMainPid();
   const active = await serviceActiveState();
   log(`${SERVICE}: ${active}; pid=${pid}`);
@@ -251,8 +273,14 @@ async function restartFallback() {
   log("systemd service is unavailable; using detached npm fallback");
   await stopPids([...(await portPids()), ...repoAppPids()]);
   await startDetachedFallback();
+  const healthStartedAt = Date.now();
+  log(`waiting up to ${Math.round(HEALTH_WAIT_MS / 1000)}s for ${HEALTH_URL}`);
   const ok = await waitForHealth();
-  if (!ok) throw new Error(`${HEALTH_URL} did not become healthy after detached start`);
+  if (!ok) {
+    const details = await healthFailureDetails();
+    throw new Error(`${HEALTH_URL} did not become healthy within ${Math.round(HEALTH_WAIT_MS / 1000)}s after detached start (${details})`);
+  }
+  log(`health ready after ${((Date.now() - healthStartedAt) / 1000).toFixed(1)}s`);
 }
 
 async function main() {
