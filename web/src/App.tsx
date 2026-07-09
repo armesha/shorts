@@ -28,6 +28,7 @@ const Settings = lazy(pageLoaders.settings);
 const Users = lazy(pageLoaders.users);
 const ClipDemos = lazy(pageLoaders.clipDemos);
 const Examples = lazy(pageLoaders.examples);
+const AudioLab = lazy(pageLoaders.audioLab);
 const LongVideos = lazy(pageLoaders.longVideos);
 const Limits = lazy(pageLoaders.limits);
 const TemplateEditor = lazy(pageLoaders.templateEditor);
@@ -87,6 +88,7 @@ function Gate() {
             <Route path="/admin/analytics" element={<Navigate to="/statistics" replace />} />
             <Route path="/clip-demos" element={<ClipDemos />} />
             <Route path="/examples" element={user.isSuperAdmin ? <Examples /> : <Navigate to="/channels" replace />} />
+            <Route path="/audio" element={user.isSuperAdmin ? <AudioLab /> : <Navigate to="/channels" replace />} />
             <Route path="/long-videos" element={<LongVideos />} />
             <Route path="/limits" element={realAdmin ? <Limits /> : <Navigate to="/channels" replace />} />
             <Route path="/creator" element={<CreatorExternalRedirect />} />

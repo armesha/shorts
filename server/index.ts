@@ -57,6 +57,7 @@ import { registerQueueRoutes } from "./routes/queue.ts";
 import { registerAccountReadinessRoutes } from "./routes/account-readiness.ts";
 import { registerSuperAdminChannelBlockRoutes } from "./routes/super-admin-channel-blocks.ts";
 import { registerExamplesRoutes } from "./routes/examples.ts";
+import { registerAudioRoutes } from "./routes/audio.ts";
 import { registerCarSeatBookingRoutes } from "./routes/car-seat-bookings.ts";
 
 const base = loadBaseConfig();
@@ -352,6 +353,7 @@ registerQueueRoutes(app, db, deps);
 registerAccountReadinessRoutes(app, db, deps);
 registerSuperAdminChannelBlockRoutes(app, db, deps);
 registerExamplesRoutes(app, db, deps);
+registerAudioRoutes(app, db, deps);
 registerCarSeatBookingRoutes(app, db);
 
 app

@@ -1222,3 +1222,61 @@ export interface QueueOverview {
   channelQueues: QueueChannel[];
   upcomingSlots: QueueSlot[];
 }
+
+export interface GeminiTtsLanguage {
+  code: string;
+  label: string;
+  promptName: string;
+  accountCount: number;
+  channelNames: string[];
+}
+
+export interface GeminiTtsVoice {
+  id: string;
+  tone: string;
+}
+
+export interface GeminiTtsPreset {
+  id: string;
+  label: string;
+  voice: string;
+  style: string;
+  pace: string;
+  accent: string;
+  scene: string;
+  energy: number;
+  sampleText: string;
+}
+
+export interface GeminiTtsOptions {
+  model: string;
+  serverKeyConfigured: boolean;
+  languages: GeminiTtsLanguage[];
+  voices: GeminiTtsVoice[];
+  presets: GeminiTtsPreset[];
+}
+
+export interface GeminiTtsPreviewRequest {
+  text: string;
+  language: string;
+  voice: string;
+  style?: string;
+  pace?: string;
+  accent?: string;
+  scene?: string;
+  energy?: number;
+  apiKey?: string;
+}
+
+export interface GeminiTtsPreviewResult {
+  model: string;
+  voice: string;
+  language: string;
+  languageLabel: string;
+  mimeType: "audio/wav";
+  audioDataUrl: string;
+  durationSec: number;
+  inputChars: number;
+  prompt: string;
+  usage?: unknown;
+}

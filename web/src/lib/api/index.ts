@@ -15,6 +15,7 @@ import type {
   ChannelThemeBlockAccount, ChannelThemeBlocksResponse, ChannelThemeBlockGenerateResult,
   ChannelThemeBlockNormalizeResult, ChannelThemeBlockScheduleResult, ChannelThemeBlockSourceGroup,
   AnecdoteTemplateExamplesResponse, TelegramMiniPanel, TelegramPreferences,
+  GeminiTtsOptions, GeminiTtsPreviewRequest, GeminiTtsPreviewResult,
 } from "./types";
 
 function browserTimeZone(): string {
@@ -119,6 +120,9 @@ export const apiClient = {
   myDecks: (userId?: number) => get<MyDecks>(`/my-decks${userId != null ? `?userId=${userId}` : ""}`),
   contentCatalog: () => get<ContentCatalogResponse>("/content-catalog"),
   anecdoteTemplateExamples: () => get<AnecdoteTemplateExamplesResponse>("/examples/anecdote-templates"),
+  geminiTtsOptions: () => get<GeminiTtsOptions>("/audio/gemini/options"),
+  geminiTtsPreview: (body: GeminiTtsPreviewRequest) =>
+    send<GeminiTtsPreviewResult>("/audio/gemini/preview", "POST", body),
   channelThemeBlocks: () => get<ChannelThemeBlocksResponse>("/super-admin/channel-blocks"),
   createChannelThemeBlockAccount: (blockId: string, lang: string) =>
     send<ChannelThemeBlockAccount>(

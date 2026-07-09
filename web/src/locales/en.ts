@@ -62,6 +62,7 @@ export const en: Record<string, string> = {
   "nav.settings": "Settings",
   "nav.notifications": "Notifications",
   "nav.clipdemos": "Clips",
+  "nav.audio": "Audio",
   "clipdemos.title": "Clips",
   "clipdemos.subtitle": "Montage Shorts from local/no-API pipelines. Watch, sort, and filter by pack. Stored here — admin-only for now.",
   "clipdemos.note": "Source: NASA «Moonbound» (public domain). Free stack — ffmpeg, no paid APIs. «Center-crop» = full-bleed; «Blurred pad» = full 16:9 over a blurred background. Admin-only preview.",

@@ -35,6 +35,7 @@ export const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
     labelKey: "layout.groupContent",
     items: [
       { to: "/library", labelKey: "nav.library", icon: "library", end: false },
+      { to: "/audio", labelKey: "nav.audio", icon: "music", end: false, superOnly: true, adminBadge: true },
       // Карточки, длинные видео, галерея и редактор шаблонов остаются рабочими внутренними
       // экранами, но не занимают отдельные пункты бокового меню: вход к ним теперь из «Библиотеки».
     ],
