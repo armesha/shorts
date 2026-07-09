@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AppIcon } from "../../components/AppIcon";
 import type { GeminiTtsCharacter, GeminiTtsPreviewResult } from "../../lib/api";
+import { COMMANDS, STAGE_PRESETS, TAG_TO_COMMAND, type AvatarCommand, type AvatarFrame, type StagePreset, type StagePresetId, type TimelineCue } from "./avatarEngine";
+import { ThreeAvatarCanvas } from "./ThreeAvatarCanvas";
 
 type AvatarDirectorProps = {
   transcript: string;
@@ -15,42 +17,7 @@ type AudioSource = {
   durationSec: number;
 };
 
-type AvatarCommand =
-  | "neutral"
-  | "smile"
-  | "laugh"
-  | "surprised"
-  | "angry"
-  | "sad"
-  | "sarcastic"
-  | "whisper"
-  | "look_left"
-  | "look_right"
-  | "nod"
-  | "blink";
-
-type TimelineCue = {
-  at: number;
-  command: AvatarCommand;
-  duration: number;
-  source: "tag" | "manual";
-};
-
-type AvatarFrame = {
-  time: number;
-  mouth: number;
-  blink: number;
-  smile: number;
-  surprise: number;
-  anger: number;
-  sad: number;
-  laugh: number;
-  whisper: number;
-  gazeX: number;
-  gazeY: number;
-  headTilt: number;
-  headBob: number;
-};
+type RendererMode = "procedural" | "model";
 
 const MANUAL_TIMELINE = `0.0 look_left
 0.5 smile
@@ -59,47 +26,28 @@ const MANUAL_TIMELINE = `0.0 look_left
 3.1 laugh
 4.0 blink`;
 
-const COMMANDS: { command: AvatarCommand; label: string }[] = [
-  { command: "smile", label: "улыбка" },
-  { command: "laugh", label: "смех" },
-  { command: "surprised", label: "удивление" },
-  { command: "sarcastic", label: "сарказм" },
-  { command: "angry", label: "злость" },
-  { command: "sad", label: "грусть" },
-  { command: "whisper", label: "шёпот" },
-  { command: "look_left", label: "влево" },
-  { command: "look_right", label: "вправо" },
-  { command: "nod", label: "кивок" },
-  { command: "blink", label: "моргнуть" },
-];
-
-const TAG_TO_COMMAND: Record<string, AvatarCommand> = {
-  "[laughs]": "laugh",
-  "[whispers]": "whisper",
-  "[sighs]": "sad",
-  "[sarcastic]": "sarcastic",
-  "[excited]": "smile",
-  "[short pause]": "blink",
-  "[very fast]": "nod",
-  "[very slow]": "neutral",
-};
-
 export function AvatarDirector({ transcript, generatedAudio, characters }: AvatarDirectorProps) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const audioDataRef = useRef<Uint8Array<ArrayBuffer> | null>(null);
   const sourceConnectedRef = useRef(false);
   const timelineRef = useRef<TimelineCue[]>([]);
-  const durationRef = useRef(8);
-  const selectedSourceRef = useRef<AudioSource | null>(null);
+  const activeCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [selectedSourceId, setSelectedSourceId] = useState("");
   const [playing, setPlaying] = useState(false);
   const [duration, setDuration] = useState(8);
   const [currentTime, setCurrentTime] = useState(0);
   const [manualTimeline, setManualTimeline] = useState(MANUAL_TIMELINE);
   const [instantCommand, setInstantCommand] = useState<TimelineCue | null>(null);
+  const [rendererMode, setRendererMode] = useState<RendererMode>("procedural");
+  const [stageId, setStageId] = useState<StagePresetId>("studio");
+  const [modelFile, setModelFile] = useState<{ name: string; size: number; url: string } | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [recording, setRecording] = useState(false);
+  const [recordUrl, setRecordUrl] = useState<string | null>(null);
+
+  const stage = useMemo(() => STAGE_PRESETS.find((item) => item.id === stageId) ?? STAGE_PRESETS[0], [stageId]);
 
   const sources = useMemo<AudioSource[]>(() => {
     const result: AudioSource[] = [];
@@ -147,9 +95,7 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
   }, [cues, instantCommand]);
 
   useEffect(() => {
-    selectedSourceRef.current = selectedSource;
     const nextDuration = selectedSource?.durationSec || estimateDuration(transcript);
-    durationRef.current = nextDuration;
     setDuration(nextDuration);
     setCurrentTime(0);
     setPlaying(false);
@@ -161,28 +107,28 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
   }, [selectedSource, transcript]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    let frameId = 0;
-    const loop = () => {
-      const audio = audioRef.current;
-      const time = audio?.currentTime ?? currentTime;
-      const amplitude = readAmplitude(analyserRef.current, audioDataRef.current, playing, time);
-      const frame = buildFrame(time, amplitude, timelineRef.current, playing);
-      drawAvatar(ctx, frame);
-      frameId = window.requestAnimationFrame(loop);
-    };
-    loop();
-    return () => window.cancelAnimationFrame(frameId);
-  }, [currentTime, playing]);
-
-  useEffect(() => {
     return () => {
       void audioContextRef.current?.close();
     };
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (modelFile) URL.revokeObjectURL(modelFile.url);
+    };
+  }, [modelFile]);
+
+  useEffect(() => {
+    return () => {
+      if (recordUrl) URL.revokeObjectURL(recordUrl);
+    };
+  }, [recordUrl]);
+
+  const getCurrentFrame = useCallback((): AvatarFrame => {
+    const time = audioRef.current?.currentTime ?? currentTime;
+    const amplitude = readAmplitude(analyserRef.current, audioDataRef.current, playing, time);
+    return buildFrame(time, amplitude, timelineRef.current, playing);
+  }, [currentTime, playing]);
 
   async function ensureAudioGraph() {
     if (sourceConnectedRef.current) {
@@ -238,6 +184,139 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
     setManualTimeline((prev) => `${prev.trim()}\n${at.toFixed(1)} ${command}`.trim());
   }
 
+  function autoDirect() {
+    const timelineDuration = selectedSource?.durationSec || duration || estimateDuration(transcript);
+    setManualTimeline(buildAutoDirection(transcript, timelineDuration));
+    setNotice("Таймлайн собран по тексту и длительности аудио");
+    window.setTimeout(() => setNotice(null), 1800);
+  }
+
+  function loadModel(file: File | null) {
+    if (!file) return;
+    if (!/\.(vrm|glb)$/i.test(file.name)) {
+      setNotice("Нужен файл .vrm или .glb");
+      return;
+    }
+    setModelFile((prev) => {
+      if (prev) URL.revokeObjectURL(prev.url);
+      return { name: file.name, size: file.size, url: URL.createObjectURL(file) };
+    });
+    setRendererMode("model");
+    setNotice(`Модель загружена: ${file.name}`);
+    window.setTimeout(() => setNotice(null), 1800);
+  }
+
+  const setActiveCanvas = useCallback((canvas: HTMLCanvasElement | null) => {
+    activeCanvasRef.current = canvas;
+  }, []);
+
+  function downloadFrame() {
+    const canvas = activeCanvasRef.current;
+    if (!canvas) {
+      setNotice("Нет активного canvas для кадра");
+      return;
+    }
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        setNotice("Не удалось собрать кадр");
+        return;
+      }
+      downloadBlob(blob, `avatar-frame-${Date.now()}.png`);
+    }, "image/png");
+  }
+
+  function exportProject() {
+    const payload = {
+      version: 1,
+      rendererMode,
+      stageId,
+      modelFileName: modelFile?.name ?? null,
+      selectedSourceId,
+      duration,
+      transcript,
+      manualTimeline,
+      cues,
+      createdAt: new Date().toISOString(),
+    };
+    downloadBlob(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }), `avatar-project-${Date.now()}.json`);
+  }
+
+  function importProject(file: File | null) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(String(reader.result ?? "{}")) as Partial<{
+          rendererMode: RendererMode;
+          stageId: StagePresetId;
+          selectedSourceId: string;
+          manualTimeline: string;
+        }>;
+        if (parsed.rendererMode === "procedural" || parsed.rendererMode === "model") setRendererMode(parsed.rendererMode);
+        if (parsed.stageId && STAGE_PRESETS.some((item) => item.id === parsed.stageId)) setStageId(parsed.stageId);
+        if (parsed.selectedSourceId) setSelectedSourceId(parsed.selectedSourceId);
+        if (typeof parsed.manualTimeline === "string") setManualTimeline(parsed.manualTimeline);
+        setNotice("Проект импортирован");
+        window.setTimeout(() => setNotice(null), 1800);
+      } catch {
+        setNotice("Не удалось прочитать JSON проекта");
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  async function recordPreview() {
+    const canvas = activeCanvasRef.current;
+    const audio = audioRef.current;
+    if (!canvas || !audio || !selectedSource) {
+      setNotice("Нужен canvas и аудио");
+      return;
+    }
+    const CanvasCtor = canvas as HTMLCanvasElement & { captureStream?: (fps?: number) => MediaStream };
+    const AudioCtor = audio as HTMLAudioElement & { captureStream?: () => MediaStream };
+    if (!CanvasCtor.captureStream || typeof MediaRecorder === "undefined") {
+      setNotice("Браузер не поддерживает запись canvas");
+      return;
+    }
+    setRecording(true);
+    setNotice(null);
+    if (recordUrl) {
+      URL.revokeObjectURL(recordUrl);
+      setRecordUrl(null);
+    }
+    try {
+      audio.pause();
+      audio.currentTime = 0;
+      setCurrentTime(0);
+      await ensureAudioGraph();
+      const stream = CanvasCtor.captureStream(30);
+      const audioStream = AudioCtor.captureStream?.();
+      for (const track of audioStream?.getAudioTracks() ?? []) stream.addTrack(track);
+      const mimeType = ["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"].find((type) => MediaRecorder.isTypeSupported(type)) ?? "";
+      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+      const chunks: Blob[] = [];
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) chunks.push(event.data);
+      };
+      const done = new Promise<Blob>((resolve) => {
+        recorder.onstop = () => resolve(new Blob(chunks, { type: recorder.mimeType || "video/webm" }));
+      });
+      recorder.start(250);
+      await audio.play();
+      await waitForAudioEnd(audio, Math.max(1, duration) + 1);
+      if (recorder.state !== "inactive") recorder.stop();
+      const blob = await done;
+      setRecordUrl(URL.createObjectURL(blob));
+      setNotice("Черновое видео записано");
+      window.setTimeout(() => setNotice(null), 1800);
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "Не удалось записать видео");
+    } finally {
+      setRecording(false);
+      setPlaying(false);
+    }
+  }
+
   const safeDuration = Math.max(0.01, duration);
   const progress = Math.min(100, Math.max(0, (currentTime / safeDuration) * 100));
 
@@ -246,8 +325,9 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
       <div className="rounded-lg border border-base-300 bg-base-100 p-3 shadow-sm">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <span className="font-semibold">Вика · движок v0</span>
+            <span className="font-semibold">Вика · движок v1</span>
             <span className="badge badge-ghost badge-sm">локально</span>
+            <span className="badge badge-ghost badge-sm">{rendererMode === "model" ? "3D model" : "procedural"}</span>
             <span className="badge badge-ghost badge-sm">{Math.round(progress)}%</span>
           </div>
           <div className="flex gap-2">
@@ -262,8 +342,14 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
           </div>
         </div>
 
+        {notice && <div className="mb-3 rounded-md border border-success/30 bg-success/10 px-3 py-2 text-sm font-semibold text-success-content">{notice}</div>}
+
         <div className="mx-auto aspect-[9/16] max-h-[74vh] w-full max-w-[430px] overflow-hidden rounded-md bg-neutral shadow-inner">
-          <canvas ref={canvasRef} width={720} height={1280} className="h-full w-full" aria-label="Превью аватара" />
+          {rendererMode === "model" && modelFile ? (
+            <ThreeAvatarCanvas modelUrl={modelFile.url} modelName={modelFile.name} stage={stage} getFrame={getCurrentFrame} onCanvasReady={setActiveCanvas} />
+          ) : (
+            <ProceduralAvatarCanvas stage={stage} getFrame={getCurrentFrame} onCanvasReady={setActiveCanvas} />
+          )}
         </div>
 
         <audio
@@ -274,7 +360,6 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
           onLoadedMetadata={(event) => {
             const next = event.currentTarget.duration;
             if (Number.isFinite(next) && next > 0) {
-              durationRef.current = next;
               setDuration(next);
             }
           }}
@@ -289,6 +374,48 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
       </div>
 
       <aside className="space-y-4 xl:sticky xl:top-4 xl:self-start">
+        <Panel title="Рендер" icon="video">
+          <div className="grid grid-cols-2 gap-2">
+            <button type="button" className={`btn btn-sm ${rendererMode === "procedural" ? "btn-primary" : "btn-ghost border border-base-300"}`} onClick={() => setRendererMode("procedural")}>
+              Procedural
+            </button>
+            <button
+              type="button"
+              className={`btn btn-sm ${rendererMode === "model" ? "btn-primary" : "btn-ghost border border-base-300"}`}
+              disabled={!modelFile}
+              onClick={() => setRendererMode("model")}
+            >
+              VRM/GLB
+            </button>
+          </div>
+          <div className="mt-3 grid gap-2">
+            <label className="form-control">
+              <span className="label-text mb-1 font-medium">Файл модели</span>
+              <input type="file" accept=".vrm,.glb,model/gltf-binary" className="file-input file-input-bordered file-input-sm w-full" onChange={(event) => loadModel(event.target.files?.[0] ?? null)} />
+            </label>
+            <div className="rounded-md bg-base-200 px-3 py-2 text-xs leading-relaxed text-base-content/60">
+              Жду итог второго агента: `tmp/vika-avatar/vika.vrm` или `vika.glb`. Через это поле можно сразу проверить модель в движке.
+            </div>
+            {modelFile && <Info label="Модель" value={`${modelFile.name} · ${formatBytes(modelFile.size)}`} />}
+          </div>
+        </Panel>
+
+        <Panel title="Сцена" icon="skin">
+          <div className="grid grid-cols-2 gap-2">
+            {STAGE_PRESETS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`btn btn-sm justify-start gap-2 ${stageId === item.id ? "btn-primary" : "btn-ghost border border-base-300"}`}
+                onClick={() => setStageId(item.id)}
+              >
+                <span className="inline-block h-3 w-3 rounded-full border border-base-300" style={{ background: item.middle }} />
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </Panel>
+
         <Panel title="Источник аудио" icon="music">
           <select className="select select-bordered w-full" value={selectedSource?.id ?? ""} onChange={(event) => setSelectedSourceId(event.target.value)}>
             {sources.length ? (
@@ -318,6 +445,15 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
         </Panel>
 
         <Panel title="Таймлайн" icon="cards">
+          <div className="mb-2 flex flex-wrap gap-2">
+            <button type="button" className="btn btn-xs btn-primary gap-1" onClick={autoDirect}>
+              <AppIcon name="refresh" size={13} />
+              Авто-режиссура
+            </button>
+            <button type="button" className="btn btn-xs btn-ghost border border-base-300" onClick={() => setManualTimeline(MANUAL_TIMELINE)}>
+              Сбросить
+            </button>
+          </div>
           <textarea
             className="textarea textarea-bordered min-h-40 w-full font-mono text-xs leading-relaxed"
             value={manualTimeline}
@@ -333,6 +469,34 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
                 </button>
               );
             })}
+          </div>
+        </Panel>
+
+        <Panel title="Экспорт" icon="external">
+          <div className="grid gap-2">
+            <button type="button" className="btn btn-sm btn-ghost border border-base-300 gap-2" onClick={downloadFrame}>
+              <AppIcon name="external" size={15} />
+              Скачать кадр PNG
+            </button>
+            <button type="button" className="btn btn-sm btn-primary gap-2" disabled={recording || !selectedSource} onClick={() => void recordPreview()}>
+              {recording ? <span className="loading loading-spinner loading-xs" /> : <AppIcon name="video" size={15} />}
+              Записать preview WebM
+            </button>
+            {recordUrl && (
+              <a href={recordUrl} download={`avatar-preview-${Date.now()}.webm`} className="btn btn-sm btn-ghost border border-base-300 gap-2">
+                <AppIcon name="external" size={15} />
+                Скачать WebM
+              </a>
+            )}
+            <div className="grid grid-cols-2 gap-2">
+              <button type="button" className="btn btn-xs btn-ghost border border-base-300" onClick={exportProject}>
+                JSON проекта
+              </button>
+              <label className="btn btn-xs btn-ghost border border-base-300">
+                Импорт JSON
+                <input type="file" accept="application/json,.json" className="hidden" onChange={(event) => importProject(event.target.files?.[0] ?? null)} />
+              </label>
+            </div>
           </div>
         </Panel>
 
@@ -378,6 +542,26 @@ function buildTagTimeline(text: string, duration: number): TimelineCue[] {
     cues.push({ at, command, duration: command === "blink" ? 0.35 : 1.25, source: "tag" });
   }
   return cues;
+}
+
+function buildAutoDirection(text: string, duration: number): string {
+  const clean = text.replace(/\[[^\]]+\]/g, " ").replace(/\s+/g, " ").trim();
+  const base: Array<[number, AvatarCommand]> = [
+    [0, "look_left"],
+    [Math.min(duration * 0.12, 0.8), "smile"],
+    [duration * 0.26, "nod"],
+    [duration * 0.42, "look_right"],
+    [duration * 0.58, "sarcastic"],
+    [duration * 0.74, "look_left"],
+    [Math.max(0, duration - 1.1), "blink"],
+  ];
+  if (/[!?]/.test(clean)) base.push([duration * 0.5, "surprised"]);
+  if (/ха|смеш|лол|угар|ржу|сме/i.test(clean) || /\[laughs\]/.test(text)) base.push([Math.max(0, duration - 1.6), "laugh"]);
+  if (/\.\.\.|—/.test(clean)) base.push([duration * 0.34, "whisper"]);
+  return base
+    .sort((a, b) => a[0] - b[0])
+    .map(([at, command]) => `${Math.max(0, Math.min(duration, at)).toFixed(1)} ${command}`)
+    .join("\n");
 }
 
 function normalizeCommand(value: string | undefined): AvatarCommand | null {
@@ -488,11 +672,51 @@ function autoBlink(time: number): number {
   return 0;
 }
 
-function drawAvatar(ctx: CanvasRenderingContext2D, frame: AvatarFrame) {
+function ProceduralAvatarCanvas({
+  stage,
+  getFrame,
+  onCanvasReady,
+}: {
+  stage: StagePreset;
+  getFrame: () => AvatarFrame;
+  onCanvasReady: (canvas: HTMLCanvasElement | null) => void;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const getFrameRef = useRef(getFrame);
+
+  useEffect(() => {
+    getFrameRef.current = getFrame;
+  }, [getFrame]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return undefined;
+    onCanvasReady(canvas);
+    return () => onCanvasReady(null);
+  }, [onCanvasReady]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return undefined;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return undefined;
+    let frameId = 0;
+    const loop = () => {
+      drawAvatar(ctx, getFrameRef.current(), stage);
+      frameId = window.requestAnimationFrame(loop);
+    };
+    loop();
+    return () => window.cancelAnimationFrame(frameId);
+  }, [stage]);
+
+  return <canvas ref={canvasRef} width={720} height={1280} className="h-full w-full" aria-label="Превью аватара" />;
+}
+
+function drawAvatar(ctx: CanvasRenderingContext2D, frame: AvatarFrame, stage: StagePreset) {
   const w = ctx.canvas.width;
   const h = ctx.canvas.height;
   ctx.clearRect(0, 0, w, h);
-  drawBackground(ctx, w, h);
+  drawBackground(ctx, w, h, stage);
 
   ctx.save();
   ctx.translate(w / 2, 578 + frame.headBob);
@@ -502,18 +726,18 @@ function drawAvatar(ctx: CanvasRenderingContext2D, frame: AvatarFrame) {
   ctx.restore();
 }
 
-function drawBackground(ctx: CanvasRenderingContext2D, w: number, h: number) {
+function drawBackground(ctx: CanvasRenderingContext2D, w: number, h: number, stage: StagePreset) {
   const gradient = ctx.createLinearGradient(0, 0, 0, h);
-  gradient.addColorStop(0, "#193634");
-  gradient.addColorStop(0.52, "#204844");
-  gradient.addColorStop(1, "#131a22");
+  gradient.addColorStop(0, stage.top);
+  gradient.addColorStop(0.52, stage.middle);
+  gradient.addColorStop(1, stage.bottom);
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = "rgba(255,255,255,0.06)";
+  ctx.fillStyle = stage.grid;
   for (let i = 0; i < 10; i += 1) {
     ctx.fillRect(90 + i * 64, 0, 1, h);
   }
-  ctx.fillStyle = "rgba(0,0,0,0.18)";
+  ctx.fillStyle = stage.floor;
   ctx.fillRect(0, h * 0.7, w, h * 0.3);
 }
 
@@ -683,6 +907,38 @@ function roundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: num
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function waitForAudioEnd(audio: HTMLAudioElement, timeoutSec: number): Promise<void> {
+  return new Promise((resolve) => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      audio.removeEventListener("ended", finish);
+      window.clearTimeout(timeoutId);
+      resolve();
+    };
+    const timeoutId = window.setTimeout(finish, Math.max(1, timeoutSec) * 1000);
+    audio.addEventListener("ended", finish, { once: true });
+  });
+}
+
+function formatBytes(value: number): string {
+  if (!Number.isFinite(value) || value <= 0) return "0 KB";
+  if (value < 1024 * 1024) return `${Math.round(value / 1024)} KB`;
+  return `${(value / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 function Panel({ title, icon, children }: { title: string; icon: Parameters<typeof AppIcon>[0]["name"]; children: React.ReactNode }) {
