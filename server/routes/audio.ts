@@ -38,6 +38,22 @@ const AUDIO_AVATAR_MODELS: Record<string, { name: string; file: string; contentT
     license: "Project-owned custom asset",
     source: "tmp/vika-avatar/vika.glb",
   },
+  "vityok.vrm": {
+    name: "Витёк",
+    file: "vityok.vrm",
+    contentType: "model/gltf-binary",
+    description: "Оригинальный полуреалистичный VRM 1.0 ведущий с полным набором visemes и эмоций.",
+    license: "Project-owned custom asset",
+    source: "tmp/vityok-avatar/vityok.vrm",
+  },
+  "vityok.glb": {
+    name: "Витёк GLB",
+    file: "vityok.glb",
+    contentType: "model/gltf-binary",
+    description: "GLB-экспорт Витька для проверки совместимости с glTF-пайплайнами.",
+    license: "Project-owned custom asset",
+    source: "tmp/vityok-avatar/vityok.glb",
+  },
   "coolbanana.vrm": {
     name: "Cool Banana",
     file: "coolbanana.vrm",

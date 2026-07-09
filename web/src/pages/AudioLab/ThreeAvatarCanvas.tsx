@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type PointerEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { AvatarFrame, StagePreset } from "./avatarEngine";
 
 type ThreeAvatarCanvasProps = {
@@ -6,7 +6,7 @@ type ThreeAvatarCanvasProps = {
   modelName: string;
   stage: StagePreset;
   modelView: AvatarModelView;
-  onModelViewChange: (patch: Partial<AvatarModelView>) => void;
+  resetToken: number;
   getFrame: () => AvatarFrame;
   onCanvasReady: (canvas: HTMLCanvasElement | null) => void;
 };
@@ -53,15 +53,39 @@ type LiveRig = {
 
 type LoadedGltf = {
   scene: import("three").Object3D;
+  userData?: { vrm?: VrmRuntime };
   parser?: {
     json?: VrmGltfJson;
     associations?: Map<import("three").Object3D, { nodes?: number; meshes?: number }>;
   };
 };
 
+type VrmExpressionRuntime = {
+  expressionName: string;
+};
+
+type VrmExpressionManagerRuntime = {
+  expressions: VrmExpressionRuntime[];
+  setValue: (name: string, value: number) => void;
+};
+
+type VrmRuntime = {
+  scene: import("three").Object3D;
+  expressionManager?: VrmExpressionManagerRuntime;
+  humanoid?: {
+    getNormalizedBoneNode: (name: string) => RigBone | null;
+  };
+  update: (delta: number) => void;
+};
+
+type VrmExpressionDriver = {
+  manager: VrmExpressionManagerRuntime;
+  names: Set<string>;
+};
+
 type VrmGltfJson = {
   meshes?: Array<{ name?: string }>;
-  nodes?: Array<{ name?: string }>;
+  nodes?: Array<{ name?: string; mesh?: number }>;
   extensions?: {
     VRMC_vrm?: {
       expressions?: {
@@ -95,12 +119,12 @@ type Vrm0BlendShapeGroup = {
   }>;
 };
 
-export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, onModelViewChange, getFrame, onCanvasReady }: ThreeAvatarCanvasProps) {
+export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, resetToken, getFrame, onCanvasReady }: ThreeAvatarCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const frameRef = useRef(getFrame);
   const stageRef = useRef(stage);
   const modelViewRef = useRef(modelView);
-  const dragRef = useRef<{ pointerId: number; startX: number; startYawDeg: number } | null>(null);
+  const cameraResetRef = useRef<() => void>(() => undefined);
   const [status, setStatus] = useState("Загрузка модели");
   const [morphCount, setMorphCount] = useState(0);
   const [dragging, setDragging] = useState(false);
@@ -118,6 +142,10 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, onMod
   }, [modelView]);
 
   useEffect(() => {
+    cameraResetRef.current();
+  }, [resetToken]);
+
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return undefined;
     onCanvasReady(canvas);
@@ -131,12 +159,18 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, onMod
     let disposed = false;
     let frameId = 0;
     let renderer: { dispose: () => void } | null = null;
+    let controls: import("three/examples/jsm/controls/OrbitControls.js").OrbitControls | null = null;
+    let resetCamera: (() => void) | null = null;
 
     async function boot() {
       setStatus("Загрузка модели");
       setMorphCount(0);
-      const THREE = await import("three");
-      const { GLTFLoader } = await import("three/examples/jsm/loaders/GLTFLoader.js");
+      const [THREE, { GLTFLoader }, { OrbitControls }, { VRMLoaderPlugin, VRMUtils }] = await Promise.all([
+        import("three"),
+        import("three/examples/jsm/loaders/GLTFLoader.js"),
+        import("three/examples/jsm/controls/OrbitControls.js"),
+        import("@pixiv/three-vrm"),
+      ]);
       if (disposed) return;
 
       const scene = new THREE.Scene();
@@ -148,6 +182,41 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, onMod
       webglRenderer.setSize(targetCanvas.width, targetCanvas.height, false);
       webglRenderer.render(scene, camera);
 
+      const orbit = new OrbitControls(camera, targetCanvas);
+      controls = orbit;
+      orbit.target.set(0, 0.15, 0);
+      orbit.enableDamping = true;
+      orbit.dampingFactor = 0.08;
+      orbit.rotateSpeed = 0.72;
+      orbit.zoomSpeed = 0.9;
+      orbit.panSpeed = 0.78;
+      orbit.screenSpacePanning = true;
+      orbit.minDistance = 1.2;
+      orbit.maxDistance = 12;
+      orbit.minPolarAngle = Math.PI * 0.08;
+      orbit.maxPolarAngle = Math.PI * 0.92;
+      orbit.mouseButtons.LEFT = THREE.MOUSE.ROTATE;
+      orbit.mouseButtons.MIDDLE = THREE.MOUSE.DOLLY;
+      orbit.mouseButtons.RIGHT = THREE.MOUSE.PAN;
+      orbit.touches.ONE = THREE.TOUCH.ROTATE;
+      orbit.touches.TWO = THREE.TOUCH.DOLLY_PAN;
+      orbit.addEventListener("start", () => setDragging(true));
+      orbit.addEventListener("end", () => setDragging(false));
+      orbit.update();
+      orbit.saveState();
+      resetCamera = () => {
+        const damping = orbit.enableDamping;
+        orbit.enableDamping = false;
+        orbit.update();
+        camera.position.set(0, 0.45, 5.7);
+        orbit.target.set(0, 0.15, 0);
+        orbit.update();
+        orbit.enableDamping = damping;
+        orbit.saveState();
+      };
+      cameraResetRef.current = resetCamera;
+      targetCanvas.addEventListener("dblclick", resetCamera);
+
       const ambient = new THREE.HemisphereLight(0xffffff, 0x293241, 2.25);
       scene.add(ambient);
       const key = new THREE.DirectionalLight(0xffffff, 2.3);
@@ -157,22 +226,34 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, onMod
       fill.position.set(-3.8, 2.2, 3.6);
       scene.add(fill);
 
-      const gltf = await new GLTFLoader().loadAsync(modelUrl);
+      const loader = new GLTFLoader();
+      loader.register((parser) => new VRMLoaderPlugin(parser));
+      const gltf = await loader.loadAsync(modelUrl);
       if (disposed) return;
-      const root = gltf.scene;
+      const loadedVrm = (gltf as LoadedGltf).userData?.vrm;
+      if (loadedVrm) VRMUtils.rotateVRM0(loadedVrm as Parameters<typeof VRMUtils.rotateVRM0>[0]);
+      const root = loadedVrm?.scene ?? gltf.scene;
       root.name = modelName;
+      root.traverse((node) => {
+        node.frustumCulled = false;
+      });
       scene.add(root);
       normalizeModel(THREE, root);
+      const presenterMode = modelUrl.toLowerCase().includes("vityok") || modelName.toLocaleLowerCase("ru-RU").includes("витёк");
       const basePosition = root.position.clone();
       const baseScale = root.scale.x || 1;
-      const vrmBindings = collectVrmExpressionBindings(gltf as LoadedGltf, root);
-      const vrm0Bindings = vrmBindings.length ? [] : collectVrm0BlendShapeBindings(gltf as LoadedGltf, root);
-      const bindings = vrmBindings.length ? vrmBindings : vrm0Bindings.length ? vrm0Bindings : collectMorphBindings(root);
-      const rig = collectLiveRig(root);
-      setMorphCount(bindings.length);
+      const expressionDriver = createVrmExpressionDriver(loadedVrm?.expressionManager);
+      const vrmBindings = expressionDriver ? [] : collectVrmExpressionBindings(gltf as LoadedGltf, root);
+      const vrm0Bindings = expressionDriver || vrmBindings.length ? [] : collectVrm0BlendShapeBindings(gltf as LoadedGltf, root);
+      const bindings = expressionDriver ? [] : vrmBindings.length ? vrmBindings : vrm0Bindings.length ? vrm0Bindings : collectMorphBindings(root);
+      const rig = loadedVrm?.humanoid ? collectVrmLiveRig(loadedVrm) : collectLiveRig(root);
+      const expressionCount = expressionDriver?.names.size ?? bindings.length;
+      setMorphCount(expressionCount);
       setStatus(
-        bindings.length
-          ? vrmBindings.length
+        expressionCount
+          ? expressionDriver
+            ? `Модель загружена · VRM expressions: ${expressionCount}`
+            : vrmBindings.length
             ? `Модель загружена · VRM expressions: ${bindings.length}`
             : vrm0Bindings.length
               ? `Модель загружена · VRM 0.x expressions: ${bindings.length}`
@@ -180,18 +261,29 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, onMod
           : "Модель загружена · morph targets не найдены",
       );
 
+      let previousFrameAt = performance.now();
       const animate = () => {
+        const frameAt = performance.now();
+        const delta = Math.min(0.1, Math.max(0, (frameAt - previousFrameAt) / 1000));
+        previousFrameAt = frameAt;
         const activeStage = stageRef.current;
         scene.background = new THREE.Color(activeStage.middle);
         const frame = frameRef.current();
         const activeView = modelViewRef.current;
         const yaw = (activeView.yawDeg * Math.PI) / 180;
         root.scale.setScalar(baseScale * activeView.scale);
-        root.rotation.set(-frame.gazeY * 0.18, yaw + frame.gazeX * 0.42, frame.headTilt * 0.85);
+        root.rotation.set(
+          presenterMode ? 0 : -frame.gazeY * 0.18,
+          yaw + (presenterMode ? 0 : frame.gazeX * 0.42),
+          presenterMode ? 0 : frame.headTilt * 0.85,
+        );
         root.position.copy(basePosition);
-        root.position.y += activeView.yOffset + frame.headBob * 0.004;
-        applyRigMotion(rig, frame, activeView);
-        applyMorphs(bindings, frame);
+        root.position.y += activeView.yOffset + frame.headBob * (presenterMode ? 0.00025 : 0.004);
+        applyRigMotion(rig, frame, activeView, presenterMode);
+        if (expressionDriver) applyVrmExpressions(expressionDriver, frame);
+        else applyMorphs(bindings, frame);
+        loadedVrm?.update(delta);
+        orbit.update();
         webglRenderer.render(scene, camera);
         frameId = window.requestAnimationFrame(animate);
       };
@@ -206,33 +298,12 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, onMod
     return () => {
       disposed = true;
       window.cancelAnimationFrame(frameId);
+      if (resetCamera) targetCanvas.removeEventListener("dblclick", resetCamera);
+      cameraResetRef.current = () => undefined;
+      controls?.dispose();
       renderer?.dispose();
     };
   }, [modelName, modelUrl]);
-
-  function startDrag(event: PointerEvent<HTMLCanvasElement>) {
-    if (event.button !== 0 && event.pointerType === "mouse") return;
-    dragRef.current = { pointerId: event.pointerId, startX: event.clientX, startYawDeg: modelViewRef.current.yawDeg };
-    event.currentTarget.setPointerCapture(event.pointerId);
-    setDragging(true);
-  }
-
-  function moveDrag(event: PointerEvent<HTMLCanvasElement>) {
-    const drag = dragRef.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
-    const nextYaw = normalizeDegrees(drag.startYawDeg + (event.clientX - drag.startX) * 0.42);
-    onModelViewChange({ yawDeg: nextYaw });
-  }
-
-  function endDrag(event: PointerEvent<HTMLCanvasElement>) {
-    const drag = dragRef.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
-    dragRef.current = null;
-    setDragging(false);
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-  }
 
   return (
     <div className="relative h-full w-full">
@@ -242,10 +313,7 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, onMod
         height={1280}
         className={`h-full w-full touch-none ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
         aria-label="Превью 3D-аватара"
-        onPointerDown={startDrag}
-        onPointerMove={moveDrag}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
+        onContextMenu={(event) => event.preventDefault()}
       />
       <div className="pointer-events-none absolute left-3 top-3 max-w-[calc(100%-24px)] rounded-md bg-base-100/90 px-2 py-1 text-xs font-semibold text-base-content shadow">
         {status}
@@ -297,11 +365,37 @@ function collectLiveRig(root: import("three").Object3D): LiveRig {
   rig.rightLowerArm = findBone(byName, ["rightlowerarm", "rightforearm", "mixamorigrightforearm"]);
   rig.rightHand = findBone(byName, ["righthand", "mixamorigrighthand"]);
 
+  captureRigRest(rig);
+  return rig;
+}
+
+function collectVrmLiveRig(vrm: VrmRuntime): LiveRig {
+  const get = (name: string) => vrm.humanoid?.getNormalizedBoneNode(name) ?? undefined;
+  const rig: LiveRig = {
+    hips: get("hips"),
+    spine: get("spine"),
+    chest: get("chest"),
+    neck: get("neck"),
+    head: get("head"),
+    leftShoulder: get("leftShoulder"),
+    leftUpperArm: get("leftUpperArm"),
+    leftLowerArm: get("leftLowerArm"),
+    leftHand: get("leftHand"),
+    rightShoulder: get("rightShoulder"),
+    rightUpperArm: get("rightUpperArm"),
+    rightLowerArm: get("rightLowerArm"),
+    rightHand: get("rightHand"),
+    rest: new Map(),
+  };
+  captureRigRest(rig);
+  return rig;
+}
+
+function captureRigRest(rig: LiveRig) {
   for (const bone of Object.values(rig)) {
     if (!bone || bone instanceof Map) continue;
     rig.rest.set(bone, bone.rotation.clone());
   }
-  return rig;
 }
 
 function findBone(byName: Map<string, RigBone>, names: string[]): RigBone | undefined {
@@ -312,7 +406,11 @@ function findBone(byName: Map<string, RigBone>, names: string[]): RigBone | unde
   return undefined;
 }
 
-function applyRigMotion(rig: LiveRig, frame: AvatarFrame, view: AvatarModelView) {
+function applyRigMotion(rig: LiveRig, frame: AvatarFrame, view: AvatarModelView, presenterMode: boolean) {
+  if (presenterMode) {
+    applyPresenterRigMotion(rig, frame);
+    return;
+  }
   const t = frame.time;
   const breathe = Math.sin(t * 1.25);
   const sway = Math.sin(t * 0.72);
@@ -339,6 +437,23 @@ function applyRigMotion(rig: LiveRig, frame: AvatarFrame, view: AvatarModelView)
   setBoneRotation(rig, rig.rightLowerArm, 0.06 + talk * 0.04, -0.02, (-0.28 + rightWave * 0.8) * sideDampen);
   setBoneRotation(rig, rig.leftHand, Math.sin(t * 2.1) * 0.04, 0, Math.sin(t * 1.4) * 0.04);
   setBoneRotation(rig, rig.rightHand, Math.sin(t * 2.0 + 0.8) * 0.04, 0, Math.sin(t * 1.3 + 0.5) * 0.04);
+}
+
+function applyPresenterRigMotion(rig: LiveRig, frame: AvatarFrame) {
+  const breathe = Math.sin(frame.time * 1.05);
+  setBoneRotation(rig, rig.hips, 0, 0, 0);
+  setBoneRotation(rig, rig.spine, breathe * 0.003, 0, 0);
+  setBoneRotation(rig, rig.chest, -0.018 + breathe * 0.006, frame.gazeX * 0.008, frame.headTilt * 0.025);
+  setBoneRotation(rig, rig.neck, -frame.gazeY * 0.035, frame.gazeX * 0.045, frame.headTilt * 0.055);
+  setBoneRotation(rig, rig.head, -frame.gazeY * 0.055 + frame.surprise * 0.012, frame.gazeX * 0.07, frame.headTilt * 0.09);
+  setBoneRotation(rig, rig.leftShoulder, 0, 0, -0.05);
+  setBoneRotation(rig, rig.rightShoulder, 0, 0, 0.05);
+  setBoneRotation(rig, rig.leftUpperArm, 0.04, 0.025, -1.15);
+  setBoneRotation(rig, rig.rightUpperArm, 0.04, -0.025, 1.15);
+  setBoneRotation(rig, rig.leftLowerArm, 0.05, 0.01, -0.12);
+  setBoneRotation(rig, rig.rightLowerArm, 0.05, -0.01, 0.12);
+  setBoneRotation(rig, rig.leftHand, 0, 0, 0);
+  setBoneRotation(rig, rig.rightHand, 0, 0, 0);
 }
 
 function setBoneRotation(rig: LiveRig, bone: RigBone | undefined, x = 0, y = 0, z = 0) {
@@ -370,7 +485,7 @@ function collectVrmExpressionBindings(gltf: LoadedGltf, root: import("three").Ob
     ...Object.entries(expressions.custom ?? {}),
   ];
   const bindings: MorphBinding[] = [];
-  const seen = new Set<string>();
+  const seen = new WeakMap<object, Set<string>>();
   for (const [name, expression] of groups) {
     const kind = classifyVrmExpression(name);
     if (!kind || !expression?.morphTargetBinds?.length) continue;
@@ -378,13 +493,13 @@ function collectVrmExpressionBindings(gltf: LoadedGltf, root: import("three").Ob
       const nodeIndex = Number(bind.node);
       const morphIndex = Number(bind.index);
       if (!Number.isInteger(nodeIndex) || !Number.isInteger(morphIndex) || morphIndex < 0) continue;
-      const nodeName = jsonNodes[nodeIndex]?.name ?? "";
-      const mesh = findMorphMesh(gltf, root, nodeName, nodeIndex, morphIndex);
-      if (!mesh) continue;
-      const key = `${nodeName}:${morphIndex}:${kind}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      bindings.push({ mesh, index: morphIndex, kind, weight: normalizeVrmWeight(bind.weight) });
+      const jsonNode = jsonNodes[nodeIndex];
+      const nodeName = jsonNode?.name ?? "";
+      const meshes = findMorphMeshes(gltf, root, nodeName, nodeIndex, Number(jsonNode?.mesh), morphIndex);
+      for (const mesh of meshes) {
+        if (!rememberBinding(seen, mesh, `${morphIndex}:${kind}`)) continue;
+        bindings.push({ mesh, index: morphIndex, kind, weight: normalizeVrmWeight(bind.weight) });
+      }
     }
   }
   return bindings;
@@ -393,7 +508,7 @@ function collectVrmExpressionBindings(gltf: LoadedGltf, root: import("three").Ob
 function collectVrm0BlendShapeBindings(gltf: LoadedGltf, root: import("three").Object3D): MorphBinding[] {
   const groups = gltf.parser?.json?.extensions?.VRM?.blendShapeMaster?.blendShapeGroups ?? [];
   const bindings: MorphBinding[] = [];
-  const seen = new Set<string>();
+  const seen = new WeakMap<object, Set<string>>();
   for (const group of groups) {
     const kind = classifyVrm0Expression(group.presetName || group.name || "");
     if (!kind || !group.binds?.length) continue;
@@ -401,12 +516,11 @@ function collectVrm0BlendShapeBindings(gltf: LoadedGltf, root: import("three").O
       const meshIndex = Number(bind.mesh);
       const morphIndex = Number(bind.index);
       if (!Number.isInteger(meshIndex) || !Number.isInteger(morphIndex) || morphIndex < 0) continue;
-      const mesh = findMorphMeshByMeshIndex(gltf, root, meshIndex, morphIndex);
-      if (!mesh) continue;
-      const key = `${meshIndex}:${morphIndex}:${kind}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      bindings.push({ mesh, index: morphIndex, kind, weight: normalizeVrmWeight(bind.weight) });
+      const meshes = findMorphMeshes(gltf, root, gltf.parser?.json?.meshes?.[meshIndex]?.name ?? "", -1, meshIndex, morphIndex);
+      for (const mesh of meshes) {
+        if (!rememberBinding(seen, mesh, `${morphIndex}:${kind}`)) continue;
+        bindings.push({ mesh, index: morphIndex, kind, weight: normalizeVrmWeight(bind.weight) });
+      }
     }
   }
   return bindings;
@@ -490,68 +604,77 @@ function classifyVrm0Expression(name: string): MorphKind | null {
   }
 }
 
-function findMorphMesh(gltf: LoadedGltf, root: import("three").Object3D, nodeName: string, nodeIndex: number, morphIndex: number): MorphMesh | null {
+function findMorphMeshes(
+  gltf: LoadedGltf,
+  root: import("three").Object3D,
+  nodeName: string,
+  nodeIndex: number,
+  meshIndex: number,
+  morphIndex: number,
+): MorphMesh[] {
   const associations = gltf.parser?.associations;
-  let associated: MorphMesh | null = null;
-  let exact: MorphMesh | null = null;
-  let normalized: MorphMesh | null = null;
+  const associated: MorphMesh[] = [];
+  const exact: MorphMesh[] = [];
+  const normalized: MorphMesh[] = [];
   const target = normalizeNodeName(nodeName);
   root.traverse((node) => {
-    if (associated) return;
     const mesh = node as MorphMesh;
     if (!mesh.morphTargetInfluences || morphIndex >= mesh.morphTargetInfluences.length) return;
     const association = associations?.get(node);
-    if (association?.nodes === nodeIndex) {
-      associated = mesh;
+    if ((nodeIndex >= 0 && association?.nodes === nodeIndex) || (Number.isInteger(meshIndex) && meshIndex >= 0 && association?.meshes === meshIndex)) {
+      associated.push(mesh);
       return;
     }
     if (nodeName && mesh.name === nodeName) {
-      exact = mesh;
+      exact.push(mesh);
       return;
     }
-    if (!normalized && target && normalizeNodeName(mesh.name ?? "") === target) {
-      normalized = mesh;
+    if (target && normalizeNodeName(mesh.name ?? "") === target) {
+      normalized.push(mesh);
     }
   });
-  return associated ?? exact ?? normalized;
+  return uniqueMorphMeshes(associated.length ? associated : exact.length ? exact : normalized);
 }
 
-function findMorphMeshByMeshIndex(gltf: LoadedGltf, root: import("three").Object3D, meshIndex: number, morphIndex: number): MorphMesh | null {
-  const associations = gltf.parser?.associations;
-  const meshName = gltf.parser?.json?.meshes?.[meshIndex]?.name ?? "";
-  let associated: MorphMesh | null = null;
-  let exact: MorphMesh | null = null;
-  let normalized: MorphMesh | null = null;
-  const target = normalizeNodeName(meshName);
-  root.traverse((node) => {
-    if (associated) return;
-    const mesh = node as MorphMesh;
-    if (!mesh.morphTargetInfluences || morphIndex >= mesh.morphTargetInfluences.length) return;
-    const association = associations?.get(node);
-    if (association?.meshes === meshIndex) {
-      associated = mesh;
-      return;
-    }
-    if (meshName && mesh.name === meshName) {
-      exact = mesh;
-      return;
-    }
-    if (!normalized && target && normalizeNodeName(mesh.name ?? "") === target) {
-      normalized = mesh;
-    }
-  });
-  return associated ?? exact ?? normalized;
+function uniqueMorphMeshes(meshes: MorphMesh[]): MorphMesh[] {
+  return [...new Set(meshes)];
+}
+
+function rememberBinding(seen: WeakMap<object, Set<string>>, mesh: MorphMesh, key: string): boolean {
+  const object = mesh as object;
+  const keys = seen.get(object) ?? new Set<string>();
+  if (keys.has(key)) return false;
+  keys.add(key);
+  seen.set(object, keys);
+  return true;
+}
+
+function createVrmExpressionDriver(manager: VrmExpressionManagerRuntime | undefined): VrmExpressionDriver | null {
+  if (!manager?.expressions?.length) return null;
+  return { manager, names: new Set(manager.expressions.map((expression) => expression.expressionName)) };
+}
+
+function applyVrmExpressions(driver: VrmExpressionDriver, frame: AvatarFrame) {
+  for (const name of driver.names) driver.manager.setValue(name, 0);
+  const set = (name: string, value: number) => {
+    if (driver.names.has(name)) driver.manager.setValue(name, Math.max(0, Math.min(1, value)));
+  };
+  set("aa", morphValue("aa", frame));
+  set("ih", morphValue("ih", frame));
+  set("ou", morphValue("ou", frame));
+  set("ee", morphValue("ee", frame));
+  set("oh", morphValue("oh", frame));
+  set("blink", morphValue("blink", frame));
+  set("happy", morphValue("smile", frame));
+  set("laugh", morphValue("laugh", frame));
+  set("surprised", morphValue("surprise", frame));
+  set("angry", morphValue("angry", frame));
+  set("sad", morphValue("sad", frame));
+  set("relaxed", morphValue("relaxed", frame));
 }
 
 function normalizeNodeName(value: string): string {
   return value.toLowerCase().replace(/[^a-zа-я0-9]/gi, "");
-}
-
-function normalizeDegrees(value: number): number {
-  let next = value;
-  while (next > 180) next -= 360;
-  while (next < -180) next += 360;
-  return next;
 }
 
 function normalizeVrmWeight(value: unknown): number {

@@ -38,6 +38,14 @@ const BUILT_IN_AVATAR_MODELS: AvatarModelFile[] = [
     description: "VRM 1.0 модель с visemes, эмоциями, морганием и смехом.",
   },
   {
+    id: "vityok",
+    name: "Витёк",
+    size: 776_212,
+    url: "/api/audio/avatar/model/vityok.vrm",
+    source: "server",
+    description: "Оригинальный полуреалистичный VRM 1.0 ведущий с объёмными губами, пятью visemes и живой мимикой.",
+  },
+  {
     id: "coolbanana",
     name: "Cool Banana",
     size: 1_491_040,
@@ -75,6 +83,7 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
   const [stageId, setStageId] = useState<StagePresetId>("studio");
   const [modelFile, setModelFile] = useState<AvatarModelFile | null>(DEFAULT_AVATAR_MODEL);
   const [modelView, setModelView] = useState<AvatarModelView>(DEFAULT_MODEL_VIEW);
+  const [viewResetToken, setViewResetToken] = useState(0);
   const [notice, setNotice] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
   const [recordUrl, setRecordUrl] = useState<string | null>(null);
@@ -246,6 +255,11 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
     setModelView((prev) => ({ ...prev, [key]: value }));
   }
 
+  function resetModelView() {
+    setModelView(DEFAULT_MODEL_VIEW);
+    setViewResetToken((value) => value + 1);
+  }
+
   const setActiveCanvas = useCallback((canvas: HTMLCanvasElement | null) => {
     activeCanvasRef.current = canvas;
   }, []);
@@ -402,7 +416,7 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
               modelName={modelFile.name}
               stage={stage}
               modelView={modelView}
-              onModelViewChange={(patch) => setModelView((prev) => ({ ...prev, ...patch }))}
+              resetToken={viewResetToken}
               getFrame={getCurrentFrame}
               onCanvasReady={setActiveCanvas}
             />
@@ -555,7 +569,7 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
                 aria-label="Высота персонажа"
               />
             </label>
-            <button type="button" className="btn btn-sm btn-ghost border border-base-300" onClick={() => setModelView(DEFAULT_MODEL_VIEW)}>
+            <button type="button" className="btn btn-sm btn-ghost border border-base-300" onClick={resetModelView}>
               Сбросить кадр
             </button>
           </div>
@@ -743,7 +757,7 @@ function buildFrame(time: number, amplitude: number, cues: TimelineCue[], playin
     mouth: playing ? Math.max(amplitude, Math.max(viseme.aa, viseme.ih, viseme.ou, viseme.ee, viseme.oh) * 0.85) : 0,
     viseme,
     blink: autoBlink(time),
-    smile: 0.18,
+    smile: playing ? 0.08 : 0.14,
     surprise: 0,
     anger: 0,
     sad: 0,
@@ -770,16 +784,16 @@ function buildFrame(time: number, amplitude: number, cues: TimelineCue[], playin
 
 function buildViseme(time: number, amplitude: number, playing: boolean): AvatarFrame["viseme"] {
   if (!playing) return { aa: 0, ih: 0, ou: 0, ee: 0, oh: 0 };
-  const base = Math.max(0.12, Math.min(1, amplitude * 1.7));
-  const phase = Math.floor(time * 9.5) % 5;
-  const pulse = 0.58 + Math.sin(time * 19) * 0.28;
-  const value = Math.max(0.08, Math.min(1, base * pulse));
+  const base = Math.max(0.18, Math.min(1, amplitude * 2.2));
+  const phase = Math.floor(time * 8.2) % 5;
+  const pulse = 0.72 + Math.sin(time * 16.4) * 0.18;
+  const value = Math.max(0.16, Math.min(1, base * pulse * 1.45));
   return {
-    aa: phase === 0 ? value : base * 0.12,
-    ih: phase === 1 ? value * 0.7 : 0,
-    ou: phase === 2 ? value * 0.75 : 0,
-    ee: phase === 3 ? value * 0.65 : 0,
-    oh: phase === 4 ? value * 0.72 : 0,
+    aa: phase === 0 ? value : base * 0.04,
+    ih: phase === 1 ? value * 0.9 : 0,
+    ou: phase === 2 ? value * 0.95 : 0,
+    ee: phase === 3 ? value * 0.85 : 0,
+    oh: phase === 4 ? value * 0.95 : 0,
   };
 }
 
