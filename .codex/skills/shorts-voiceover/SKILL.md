@@ -39,6 +39,7 @@ For jokes and anecdotes, use only source-backed text. Do not invent joke/anecdot
 5. Assemble the short.
    - Output 1080x1920 MP4.
    - Keep readable text away from the bottom UI area and right action column.
+   - Do not add automatic image zoom, Ken Burns movement, or `zoompan` by default. Use a stable frame, sourced motion background, or explicit cuts/transitions unless the user asks for zoom.
    - Normalize speech around `-15 LUFS`; keep music low, usually `0.04`-`0.06` volume before final loudness normalization.
    - For higher meme voices, light post-pitching is usually enough: raise pitch about 5-8% and compensate tempo so duration stays natural.
 
