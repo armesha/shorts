@@ -68,6 +68,20 @@ const EMPTY_VIDEO_PAGE: VideoLibraryPage = {
   totalAll: 0,
 };
 
+type AccountSaveOverrides = {
+  sourceDecks?: string[];
+  slotVideos?: Record<string, number>;
+  slotDecks?: Record<string, string>;
+};
+
+type AccountSaveOptions = {
+  applyResponse?: () => boolean;
+  globalSaving?: boolean;
+  showSaved?: boolean;
+};
+
+type SlotDeckSaveStatus = "idle" | "saving" | "saved" | "error";
+
 export default function AccountDetail() {
   const { t } = useT();
   const { id } = useParams();
@@ -86,6 +100,10 @@ export default function AccountDetail() {
   const [newTime, setNewTime] = useState("12:00");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [slotDeckSaveStatus, setSlotDeckSaveStatus] = useState<SlotDeckSaveStatus>("idle");
+  const slotDeckSaveSeq = useRef(0);
+  const slotDeckSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const slotDeckSaveChain = useRef<Promise<unknown>>(Promise.resolve());
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [videoPage, setVideoPage] = useState<VideoLibraryPage>(EMPTY_VIDEO_PAGE);
   const [longLibraryVideos, setLongLibraryVideos] = useState<VideoItem[]>([]);
@@ -207,6 +225,9 @@ export default function AccountDetail() {
 
   useEffect(() => {
     let alive = true;
+    slotDeckSaveSeq.current += 1;
+    if (slotDeckSaveTimer.current) clearTimeout(slotDeckSaveTimer.current);
+    setSlotDeckSaveStatus("idle");
     setAccount(null);
     setAccountLoading(true);
     setAccountLoadError(null);
@@ -298,6 +319,13 @@ export default function AccountDetail() {
     return () => clearTimeout(t);
   }, [notice]);
 
+  useEffect(() => {
+    return () => {
+      slotDeckSaveSeq.current += 1;
+      if (slotDeckSaveTimer.current) clearTimeout(slotDeckSaveTimer.current);
+    };
+  }, []);
+
   // Результат привязки (возврат из Google OAuth) → тост + лог в консоль (F12).
   useEffect(() => {
     if (justConnected) notify(t("account.connectSuccess"), "success");
@@ -325,11 +353,23 @@ export default function AccountDetail() {
     };
   }, [preview]);
 
-  async function save(): Promise<boolean> {
-    setSaving(true);
-    setSaved(false);
+  function applyAccountUpdate(updated: Account) {
+    setAccount(updated);
+    setLang(updated.lang);
+    setSourceDecks(updated.sourceDecks?.length ? updated.sourceDecks : [updated.lang]);
+    setLongVideoDecks(updated.longVideoDecks ?? []);
+    setChannelLang(updated.channelLang || DECK_LANG[updated.lang] || channelLang);
+    setSlotVideos(updated.slotVideos || {});
+    setSlotDecks(updated.slotDecks || {});
+  }
+
+  async function saveAccount(overrides: AccountSaveOverrides = {}, options: AccountSaveOptions = {}): Promise<boolean> {
+    const useGlobalSaving = options.globalSaving !== false;
+    const showSavedState = options.showSaved !== false;
+    if (useGlobalSaving) setSaving(true);
+    if (showSavedState) setSaved(false);
     try {
-      const latestSources = sourceDecksRef.current.length ? sourceDecksRef.current : sourceDecks;
+      const latestSources = overrides.sourceDecks ?? (sourceDecksRef.current.length ? sourceDecksRef.current : sourceDecks);
       const cleanSources = [...new Set((latestSources.length ? latestSources : [lang]).filter(Boolean))];
       const cleanLongVideoDecks = [...new Set(longVideoDecksRef.current.filter(Boolean))];
       const sourceLangs = [...new Set(cleanSources.map(contentLang).filter(Boolean))];
@@ -339,8 +379,10 @@ export default function AccountDetail() {
         setTimes(effectiveTimes);
         notify(`Для каналов главного админа используются языковые Shorts-окна: ${describeShortsSchedulePolicy(effectiveChannelLang)}.`, "info", t("account.scheduleLimitToastTitle"));
       }
+      const effectiveSlotDecks = overrides.slotDecks ?? slotDecks;
+      const effectiveSlotVideos = overrides.slotVideos ?? slotVideos;
       const cleanSlotDecks = Object.fromEntries(
-        Object.entries(slotDecks).filter(([time, deck]) => effectiveTimes.includes(time) && (cleanSources.includes(deck) || deck === "manual")),
+        Object.entries(effectiveSlotDecks).filter(([time, deck]) => effectiveTimes.includes(time) && (cleanSources.includes(deck) || deck === "manual")),
       );
       if (effectiveTimes.length > perChannelCap) {
         notify(t("account.accountDayLimitReached", { n: perChannelCap }), "error", t("account.scheduleLimitToastTitle"));
@@ -366,25 +408,28 @@ export default function AccountDetail() {
         longVideoDecks: cleanLongVideoDecks,
         channelLang: effectiveChannelLang,
         schedule: effectiveTimes,
-        slotVideos,
+        slotVideos: effectiveSlotVideos,
         slotDecks: cleanSlotDecks,
       });
-      setAccount(updated);
-      setLang(updated.lang);
-      setSourceDecks(updated.sourceDecks?.length ? updated.sourceDecks : [updated.lang]);
-      setLongVideoDecks(updated.longVideoDecks ?? []);
-      setChannelLang(updated.channelLang || DECK_LANG[updated.lang] || channelLang);
-      setSlotDecks(updated.slotDecks || {});
-      setSaved(true);
-      void reloadReadiness();
-      setTimeout(() => setSaved(false), 2000);
+      if (options.applyResponse?.() !== false) {
+        applyAccountUpdate(updated);
+        if (showSavedState) {
+          setSaved(true);
+          setTimeout(() => setSaved(false), 2000);
+        }
+        void reloadReadiness();
+      }
       return true;
     } catch (e) {
       notify(t("account.saveSettingsFailed") + " " + String(e), "error");
       return false;
     } finally {
-      setSaving(false);
+      if (useGlobalSaving) setSaving(false);
     }
+  }
+
+  async function save(): Promise<boolean> {
+    return saveAccount();
   }
 
   async function remove() {
@@ -693,12 +738,59 @@ export default function AccountDetail() {
   );
   const slotDeckOptions = [
     ...selectedSources.filter((deckId) => (libraryDeckCounts.get(deckId) || 0) > 0),
+    ...Array.from(libraryDeckCounts.keys()).filter(
+      (deckId) => deckId !== "manual" && !selectedSources.includes(deckId) && (libraryDeckCounts.get(deckId) || 0) > 0,
+    ),
     ...(libraryDeckCounts.get("manual") ? ["manual"] : []),
   ];
   const librarySourceName = (deckId: string) => deckId === "manual" ? t("account.manualVideoBadge") : deckName(deckId);
   const manualMaxFileMb = manualLimits?.maxFileMb ?? 40;
   const manualDurationSec = manualLimits?.durationSec ?? 60;
   const manualUploadsPerHour = manualLimits?.uploadsPerHour ?? 100;
+
+  const saveSlotDeckAssignment = (time: string, deckId: string) => {
+    const nextSlotVideos = { ...slotVideos };
+    delete nextSlotVideos[time];
+    const nextSlotDecks = { ...slotDecks };
+    if (deckId) nextSlotDecks[time] = deckId;
+    else delete nextSlotDecks[time];
+
+    const currentSources = sourceDecksRef.current.length ? sourceDecksRef.current : sourceDecks;
+    const nextSources = deckId && deckId !== "manual" && !currentSources.includes(deckId)
+      ? [...currentSources, deckId]
+      : currentSources;
+
+    setSlotVideos(nextSlotVideos);
+    setSlotDecks(nextSlotDecks);
+    if (nextSources !== currentSources) {
+      setSourceDecks(nextSources);
+      setLang(nextSources[0] || lang);
+      const sourceLangs = [...new Set(nextSources.map(contentLang).filter(Boolean))];
+      if (sourceLangs.length === 1) setChannelLang(sourceLangs[0]);
+      setGenerateDeck((cur) =>
+        cur === GENERATE_ALL_DECKS && nextSources.length > 1 ? cur : nextSources.includes(cur) ? cur : nextSources[0] || "",
+      );
+    }
+
+    slotDeckSaveSeq.current += 1;
+    const seq = slotDeckSaveSeq.current;
+    if (slotDeckSaveTimer.current) clearTimeout(slotDeckSaveTimer.current);
+    setSlotDeckSaveStatus("saving");
+    const request = slotDeckSaveChain.current.then(() =>
+      saveAccount(
+        { sourceDecks: nextSources, slotVideos: nextSlotVideos, slotDecks: nextSlotDecks },
+        { globalSaving: false, showSaved: false, applyResponse: () => seq === slotDeckSaveSeq.current },
+      ),
+    );
+    slotDeckSaveChain.current = request.catch(() => {});
+    void request.then((ok) => {
+      if (seq !== slotDeckSaveSeq.current) return;
+      setSlotDeckSaveStatus(ok ? "saved" : "error");
+      slotDeckSaveTimer.current = setTimeout(() => {
+        if (seq === slotDeckSaveSeq.current) setSlotDeckSaveStatus("idle");
+      }, ok ? 1800 : 5000);
+    });
+  };
 
   // Per-channel cap: ≤20 slots/day; per-user aggregate cap stays separate.
   const dayUsed = otherSlots + times.length; // posts/day across all the user's channels
@@ -1224,8 +1316,8 @@ export default function AccountDetail() {
         slotDeckOptions={slotDeckOptions}
         libraryDeckCounts={libraryDeckCounts}
         librarySourceName={librarySourceName}
-        setSlotVideos={setSlotVideos}
-        setSlotDecks={setSlotDecks}
+        saveStatus={slotDeckSaveStatus}
+        onSlotDeckChange={saveSlotDeckAssignment}
         t={t}
       />
 

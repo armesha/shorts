@@ -123,6 +123,7 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
       }
       if (!sources.includes(newLang)) body.lang = sources[0] ?? newLang;
     }
+    const hasExplicitSlotDecks = !!body.slotDecks && typeof body.slotDecks === "object" && !Array.isArray(body.slotDecks);
     {
       const schedule = Array.isArray(body.schedule) ? body.schedule : acc.schedule ?? [];
       const sources = body.sourceDecks?.length ? body.sourceDecks : accountSourceDecks(acc);
@@ -133,7 +134,7 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
         schedule,
         channelLang: (body.channelLang ?? acc.channelLang) as string,
       } as Account;
-      const mixedSlotDecks = thematicBlockSlotDecksForAccount(db, deps, mixedAccount, schedule, sources);
+      const mixedSlotDecks = hasExplicitSlotDecks ? null : thematicBlockSlotDecksForAccount(db, deps, mixedAccount, schedule, sources);
       if (mixedSlotDecks) body.slotDecks = mixedSlotDecks;
     }
     if (body.slotDecks && typeof body.slotDecks === "object" && !Array.isArray(body.slotDecks)) {

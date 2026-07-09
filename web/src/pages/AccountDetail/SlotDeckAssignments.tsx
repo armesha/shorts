@@ -1,7 +1,7 @@
-import type { Dispatch, SetStateAction } from "react";
 import type { useT } from "../../lib/i18n";
 
 type TFn = ReturnType<typeof useT>["t"];
+type SlotDeckSaveStatus = "idle" | "saving" | "saved" | "error";
 
 type SlotDeckAssignmentsProps = {
   times: string[];
@@ -9,8 +9,8 @@ type SlotDeckAssignmentsProps = {
   slotDeckOptions: string[];
   libraryDeckCounts: Map<string, number>;
   librarySourceName: (deckId: string) => string;
-  setSlotVideos: Dispatch<SetStateAction<Record<string, number>>>;
-  setSlotDecks: Dispatch<SetStateAction<Record<string, string>>>;
+  saveStatus: SlotDeckSaveStatus;
+  onSlotDeckChange: (time: string, deckId: string) => void;
   t: TFn;
 };
 
@@ -20,11 +20,18 @@ export default function SlotDeckAssignments({
   slotDeckOptions,
   libraryDeckCounts,
   librarySourceName,
-  setSlotVideos,
-  setSlotDecks,
+  saveStatus,
+  onSlotDeckChange,
   t,
 }: SlotDeckAssignmentsProps) {
   if (times.length === 0) return null;
+  const saveHint = saveStatus === "saving"
+    ? t("account.slotAutosaveSaving")
+    : saveStatus === "saved"
+      ? t("account.slotAutosaveSaved")
+      : saveStatus === "error"
+        ? t("account.slotAutosaveError")
+        : t("account.slotAutosaveHint");
 
   return (
     <section className="card bg-base-100 border border-base-300">
@@ -38,20 +45,7 @@ export default function SlotDeckAssignments({
               <select
                 className="select select-bordered select-sm flex-1"
                 value={slotDecks[time] ?? ""}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setSlotVideos((prev) => {
-                    const n = { ...prev };
-                    delete n[time];
-                    return n;
-                  });
-                  setSlotDecks((prev) => {
-                    const n = { ...prev };
-                    if (v) n[time] = v;
-                    else delete n[time];
-                    return n;
-                  });
-                }}
+                onChange={(e) => onSlotDeckChange(time, e.target.value)}
               >
                 <option value="">{t("account.slotAuto")}</option>
                 {slotDeckOptions.map((deckId) => (
@@ -64,7 +58,7 @@ export default function SlotDeckAssignments({
           ))}
         </div>
         <p className="text-xs text-base-content/50 mt-1">
-          {slotDeckOptions.length === 0 ? t("account.slotNeedsLibrary") : t("account.slotSaveReminder")}
+          {slotDeckOptions.length === 0 ? t("account.slotNeedsLibrary") : saveHint}
         </p>
       </div>
     </section>
