@@ -1,0 +1,38 @@
+# Voiceover Presets
+
+Use these as starting points for Gemini TTS fields. Keep the transcript exact unless the user explicitly asks for extra commentary.
+
+## Cat Meme, Sleepy
+
+- Voice: `Leda`
+- Style: playful Russian meme narration, slightly higher-pitched, soft and friendly, with a small smile in the voice
+- Pace: slower first question, short pause, warm answer, small natural laugh at the end
+- Tags: `[curiosity]`, `[friendly]`, `[short pause]`, `[laughs]`
+
+## Cat Meme, Deadpan
+
+- Voice: `Zubenelgenubi` or `Puck`
+- Style: casual confused commentator, amused but not shouting
+- Pace: hesitant setup, sharper punchline, small laugh only if the image makes it fit
+- Tags: `[confusion]`, `[amusement]`, `[sarcasm]`, `[short pause]`
+
+## Anecdote Storyteller
+
+- Voice: `Achird`
+- Style: friendly Russian joke storyteller, conversational and human, small theater smile
+- Pace: setup clear and medium, dry second beat, short pause before punchline, punchline slower with a smile
+- Tags: `[friendly]`, `[neutral]`, `[amusement]`, `[short pause]`, `[laughs]`
+
+## Whisper Reveal
+
+- Voice: `Enceladus`
+- Style: close-mic breathy narrator, quiet but clear
+- Pace: slow setup, tiny reveal pause, soft punchline
+- Tags: `[whispers]`, `[curiosity]`, `[short pause]`, `[relief]`
+
+## Fast Shorts Hook
+
+- Voice: `Puck`, `Fenrir`, or `Laomedeia`
+- Style: upbeat short-form host with clear diction
+- Pace: fast but readable; never let music overpower consonants
+- Tags: `[excitement]`, `[fast]`, `[short pause]`, `[amusement]`
