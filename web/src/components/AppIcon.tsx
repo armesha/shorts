@@ -27,6 +27,8 @@ import {
   Menu,
   Music2,
   PackageOpen,
+  Pause,
+  Play,
   Plus,
   RefreshCw,
   Search,
@@ -71,6 +73,8 @@ export type AppIconName =
   | "music"
   | "notifications"
   | "packs"
+  | "pause"
+  | "play"
   | "plus"
   | "queue"
   | "refresh"
@@ -120,6 +124,8 @@ const ICONS: Record<AppIconName, LucideIcon> = {
   music: Music2,
   notifications: Bell,
   packs: PackageOpen,
+  pause: Pause,
+  play: Play,
   plus: Plus,
   queue: ListPlus,
   refresh: RefreshCw,

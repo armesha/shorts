@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { AppIcon } from "../components/AppIcon";
 import {
   apiClient,
@@ -603,7 +603,7 @@ export default function AudioLab() {
 
                 {result ? (
                   <div className="space-y-3">
-                    <audio className="w-full" controls src={result.audioDataUrl} />
+                    <AudioPreviewPlayer src={result.audioDataUrl} label={`${result.voice} · ${result.languageLabel}`} durationHint={result.durationSec} />
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <Info label="Длительность" value={formatDuration(result.durationSec)} />
                       <Info label="Символы" value={String(result.inputChars)} />
@@ -738,7 +738,7 @@ function CharactersLibrary({
                   </div>
                 </div>
 
-                <audio className="w-full" controls src={character.sampleUrl} />
+                <AudioPreviewPlayer src={character.sampleUrl} label={`${character.voice} · ${formatDuration(character.sampleDurationSec)}`} durationHint={character.sampleDurationSec} compact />
 
                 <button type="button" className="btn btn-primary btn-sm gap-2" onClick={() => onApply(character)}>
                   <AppIcon name="check" size={15} />
@@ -767,6 +767,109 @@ function CharactersLibrary({
         })}
       </div>
     </section>
+  );
+}
+
+function AudioPreviewPlayer({
+  src,
+  label,
+  durationHint,
+  compact = false,
+}: {
+  src: string;
+  label: string;
+  durationHint?: number;
+  compact?: boolean;
+}) {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [playing, setPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(durationHint && durationHint > 0 ? durationHint : 0);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+    setPlaying(false);
+    setCurrentTime(0);
+    setDuration(durationHint && durationHint > 0 ? durationHint : 0);
+  }, [durationHint, src]);
+
+  function togglePlayback() {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (playing) {
+      audio.pause();
+      return;
+    }
+    void audio.play().catch(() => setPlaying(false));
+  }
+
+  function seek(value: string) {
+    const nextTime = Number(value);
+    if (!Number.isFinite(nextTime)) return;
+    const audio = audioRef.current;
+    if (audio) audio.currentTime = nextTime;
+    setCurrentTime(nextTime);
+  }
+
+  function updateDuration() {
+    const nextDuration = audioRef.current?.duration;
+    if (nextDuration && Number.isFinite(nextDuration)) setDuration(nextDuration);
+  }
+
+  const safeDuration = duration > 0 ? duration : 0.01;
+  const progress = safeDuration > 0 ? Math.min(100, Math.max(0, (currentTime / safeDuration) * 100)) : 0;
+
+  return (
+    <div className={`rounded-md border border-base-300 bg-base-200/70 ${compact ? "px-2 py-1.5" : "p-3"}`}>
+      <audio
+        ref={audioRef}
+        preload="metadata"
+        src={src}
+        onLoadedMetadata={updateDuration}
+        onDurationChange={updateDuration}
+        onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        onEnded={() => {
+          setPlaying(false);
+          setCurrentTime(0);
+        }}
+      />
+      <div className={`grid items-center gap-2 ${compact ? "grid-cols-[34px_minmax(0,1fr)_70px]" : "grid-cols-[42px_minmax(0,1fr)_82px]"}`}>
+        <button
+          type="button"
+          className={`btn btn-primary btn-circle ${compact ? "btn-xs" : "btn-sm"}`}
+          onClick={togglePlayback}
+          title={playing ? "Пауза" : "Слушать"}
+          aria-label={playing ? "Пауза" : "Слушать"}
+        >
+          <AppIcon name={playing ? "pause" : "play"} size={compact ? 14 : 16} />
+        </button>
+        <div className="min-w-0">
+          <div className="mb-1 flex items-center justify-between gap-2 text-xs">
+            <span className="truncate font-semibold text-base-content/70">{label}</span>
+            {!compact && <span className="shrink-0 text-base-content/45">{Math.round(progress)}%</span>}
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={safeDuration}
+            step={0.01}
+            value={Math.min(currentTime, safeDuration)}
+            onChange={(event) => seek(event.target.value)}
+            className="range range-primary range-xs w-full"
+            aria-label="Позиция аудио"
+          />
+        </div>
+        <div className="text-right text-xs font-semibold tabular-nums text-base-content/60">
+          {formatDuration(currentTime)} / {formatDuration(duration)}
+        </div>
+      </div>
+    </div>
   );
 }
 
