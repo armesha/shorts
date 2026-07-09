@@ -1,0 +1,31 @@
+{
+  "characters": [
+    {
+      "id": "vitek",
+      "name": "Витёк",
+      "description": "Низковатый, чуть писклявый русский комедийный голос для живых диалогов и анекдотов.",
+      "model": "gemini-3.1-flash-tts-preview",
+      "language": "ru",
+      "voice": "Puck",
+      "style": "lower-pitched but slightly squeaky nasal Russian comedy narrator; lively, not slow; distinct intonation for each dialogue line; no extra spoken words beyond transcript",
+      "pace": "medium-fast; short tight pauses; punchlines a little sharper; do not drag vowels; finish with a quick small laugh",
+      "accent": "natural Russian, casual, clear diction",
+      "scene": "Voiceover for an existing Russian anecdote card from the app library. Short-form comedy timing, close microphone.",
+      "energy": 4,
+      "sampleText": "[fast] Алло, здорово, как дела, чё делаешь?",
+      "sampleFile": "vitek-allo.wav",
+      "sampleDurationSec": 2.3,
+      "postProcessing": {
+        "label": "Ниже, быстрее, носовой комедийный тембр",
+        "ffmpegFilter": "asetrate=24000*0.94,aresample=48000,atempo=1.35,highpass=f=85,equalizer=f=2600:t=q:w=1.1:g=3.0,equalizer=f=4300:t=q:w=1.0:g=1.8,loudnorm=I=-15:TP=-1.5:LRA=9"
+      },
+      "source": {
+        "deck": "ru",
+        "cardId": "558",
+        "phrase": "Алло, здорово, как дела, чё делаешь?"
+      },
+      "createdAt": "2026-07-09T00:00:00.000Z",
+      "updatedAt": "2026-07-09T00:00:00.000Z"
+    }
+  ]
+}

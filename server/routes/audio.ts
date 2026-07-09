@@ -11,6 +11,12 @@ import {
   listArmenTtsLanguages,
   type GeminiTtsPreviewInput,
 } from "../services/gemini-tts.ts";
+import {
+  GeminiTtsCharacterError,
+  geminiTtsCharacterSample,
+  listGeminiTtsCharacters,
+  renameGeminiTtsCharacter,
+} from "../services/gemini-tts-characters.ts";
 
 export function registerAudioRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
   app.get("/api/audio/gemini/options", async (req, reply) => {
@@ -34,6 +40,40 @@ export function registerAudioRoutes(app: FastifyInstance, db: Db, deps: RouteDep
       }
       req.log.error(error);
       return reply.code(500).send({ error: "Не удалось сгенерировать озвучку." });
+    }
+  });
+
+  app.get("/api/audio/gemini/characters", async (req, reply) => {
+    if (!deps.auth.requireSuperAdmin(req, reply)) return;
+    return { characters: listGeminiTtsCharacters() };
+  });
+
+  app.patch("/api/audio/gemini/characters/:id", async (req, reply) => {
+    if (!deps.auth.requireSuperAdmin(req, reply)) return;
+    try {
+      const id = (req.params as { id: string }).id;
+      const body = (req.body ?? {}) as { name?: unknown };
+      return renameGeminiTtsCharacter(id, body.name);
+    } catch (error) {
+      if (error instanceof GeminiTtsCharacterError) {
+        return reply.code(error.statusCode).send({ error: error.message });
+      }
+      req.log.error(error);
+      return reply.code(500).send({ error: "Не удалось сохранить персонажа." });
+    }
+  });
+
+  app.get("/api/audio/gemini/characters/:id/sample", async (req, reply) => {
+    if (!deps.auth.requireSuperAdmin(req, reply)) return;
+    try {
+      const { stream, mimeType } = geminiTtsCharacterSample((req.params as { id: string }).id);
+      return reply.type(mimeType).send(stream);
+    } catch (error) {
+      if (error instanceof GeminiTtsCharacterError) {
+        return reply.code(error.statusCode).send({ error: error.message });
+      }
+      req.log.error(error);
+      return reply.code(500).send({ error: "Не удалось открыть аудиопример." });
     }
   });
 }

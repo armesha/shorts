@@ -1280,3 +1280,35 @@ export interface GeminiTtsPreviewResult {
   prompt: string;
   usage?: unknown;
 }
+
+export interface GeminiTtsCharacter {
+  id: string;
+  name: string;
+  description: string;
+  model: string;
+  language: string;
+  voice: string;
+  style: string;
+  pace: string;
+  accent: string;
+  scene: string;
+  energy: number;
+  sampleText: string;
+  sampleUrl: string;
+  sampleDurationSec: number;
+  postProcessing: {
+    label: string;
+    ffmpegFilter: string;
+  };
+  source: {
+    deck: string;
+    cardId: string;
+    phrase: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GeminiTtsCharactersResponse {
+  characters: GeminiTtsCharacter[];
+}

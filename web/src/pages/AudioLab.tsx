@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { AppIcon } from "../components/AppIcon";
-import { apiClient, ApiError, type GeminiTtsOptions, type GeminiTtsPreset, type GeminiTtsPreviewResult } from "../lib/api";
+import {
+  apiClient,
+  ApiError,
+  type GeminiTtsCharacter,
+  type GeminiTtsOptions,
+  type GeminiTtsPreset,
+  type GeminiTtsPreviewResult,
+} from "../lib/api";
 
 type FormState = {
   language: string;
@@ -28,6 +35,8 @@ type TextTemplate = {
   text: string;
   segments: Omit<Segment, "id">[];
 };
+
+type AudioLabTab = "studio" | "characters";
 
 const EMPTY_FORM: FormState = {
   language: "",
@@ -145,11 +154,17 @@ const TEXT_TEMPLATES: TextTemplate[] = [
 const GROUPS = ["Реакции", "Интро", "Финалы", "Сегменты", "Спокойные"] as const;
 
 export default function AudioLab() {
+  const [activeTab, setActiveTab] = useState<AudioLabTab>("studio");
   const [options, setOptions] = useState<GeminiTtsOptions | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [segments, setSegments] = useState<Segment[]>(() => segmentsFromText(""));
   const [selectedPresetId, setSelectedPresetId] = useState("");
   const [templateGroup, setTemplateGroup] = useState<(typeof GROUPS)[number]>("Реакции");
+  const [characters, setCharacters] = useState<GeminiTtsCharacter[]>([]);
+  const [characterNames, setCharacterNames] = useState<Record<string, string>>({});
+  const [charactersLoading, setCharactersLoading] = useState(true);
+  const [characterSavingId, setCharacterSavingId] = useState<string | null>(null);
+  const [characterNotice, setCharacterNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -174,6 +189,26 @@ export default function AudioLab() {
         if (!alive) return;
         setLoading(false);
         setError(e instanceof Error ? e.message : "Не удалось загрузить настройки Gemini TTS");
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let alive = true;
+    apiClient
+      .geminiTtsCharacters()
+      .then((data) => {
+        if (!alive) return;
+        setCharacters(data.characters);
+        setCharacterNames(Object.fromEntries(data.characters.map((character) => [character.id, character.name])));
+        setCharactersLoading(false);
+      })
+      .catch((e) => {
+        if (!alive) return;
+        setCharactersLoading(false);
+        setError(e instanceof Error ? e.message : "Не удалось загрузить библиотеку персонажей");
       });
     return () => {
       alive = false;
@@ -219,6 +254,42 @@ export default function AudioLab() {
     }
     setSegments(withIds(item.segments));
     setResult(null);
+  }
+
+  function applyCharacter(character: GeminiTtsCharacter) {
+    setSelectedPresetId("");
+    setResult(null);
+    setForm((prev) => ({
+      ...prev,
+      language: character.language,
+      voice: character.voice,
+      style: character.style,
+      pace: character.pace,
+      accent: character.accent,
+      scene: character.scene,
+      energy: character.energy,
+      text: character.sampleText,
+    }));
+    setSegments(segmentsFromText(character.sampleText));
+    setActiveTab("studio");
+    setCharacterNotice(`Настройки «${character.name}» перенесены в студию`);
+    window.setTimeout(() => setCharacterNotice(null), 1800);
+  }
+
+  async function saveCharacterName(character: GeminiTtsCharacter) {
+    setCharacterSavingId(character.id);
+    setError(null);
+    try {
+      const updated = await apiClient.renameGeminiTtsCharacter(character.id, characterNames[character.id] ?? character.name);
+      setCharacters((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
+      setCharacterNames((prev) => ({ ...prev, [updated.id]: updated.name }));
+      setCharacterNotice(`Имя сохранено: ${updated.name}`);
+      window.setTimeout(() => setCharacterNotice(null), 1800);
+    } catch (e) {
+      setError(e instanceof ApiError || e instanceof Error ? e.message : "Не удалось сохранить имя персонажа");
+    } finally {
+      setCharacterSavingId(null);
+    }
   }
 
   function insertTag(tag: string) {
@@ -308,14 +379,34 @@ export default function AudioLab() {
 
       {options && (
         <>
-          <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <Metric label="Языки armen" value={options.languages.length} hint={options.languages.map((item) => item.code.toUpperCase()).join(", ")} />
-            <Metric label="Голоса" value={options.voices.length} hint="Gemini voice library" />
-            <Metric label="Пресеты" value={options.presets.length} hint={activePreset?.label ?? "—"} />
-            <Metric label="Текст" value={form.text.length} hint="символов" />
-          </section>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="tabs tabs-boxed rounded-md bg-base-200 p-1">
+              <button type="button" className={`tab gap-2 ${activeTab === "studio" ? "tab-active" : ""}`} onClick={() => setActiveTab("studio")}>
+                <AppIcon name="studio" size={15} />
+                Студия
+              </button>
+              <button type="button" className={`tab gap-2 ${activeTab === "characters" ? "tab-active" : ""}`} onClick={() => setActiveTab("characters")}>
+                <AppIcon name="users" size={15} />
+                Библиотека персонажей
+              </button>
+            </div>
+            {characterNotice && (
+              <div className="badge badge-success badge-outline h-auto max-w-full justify-start whitespace-normal px-3 py-2 text-left">
+                {characterNotice}
+              </div>
+            )}
+          </div>
 
-          <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_400px]">
+          {activeTab === "studio" ? (
+            <>
+              <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                <Metric label="Языки armen" value={options.languages.length} hint={options.languages.map((item) => item.code.toUpperCase()).join(", ")} />
+                <Metric label="Голоса" value={options.voices.length} hint="Gemini voice library" />
+                <Metric label="Пресеты" value={options.presets.length} hint={activePreset?.label ?? "—"} />
+                <Metric label="Текст" value={form.text.length} hint="символов" />
+              </section>
+
+              <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_400px]">
             <div className="space-y-4">
               <Panel title="Пресет" icon="music">
                 <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -556,10 +647,133 @@ export default function AudioLab() {
                 </Panel>
               )}
             </aside>
-          </section>
+              </section>
+            </>
+          ) : (
+            <CharactersLibrary
+              characters={characters}
+              characterNames={characterNames}
+              loading={charactersLoading}
+              savingId={characterSavingId}
+              onNameChange={(id, name) => setCharacterNames((prev) => ({ ...prev, [id]: name }))}
+              onSaveName={(character) => void saveCharacterName(character)}
+              onApply={applyCharacter}
+            />
+          )}
         </>
       )}
     </div>
+  );
+}
+
+function CharactersLibrary({
+  characters,
+  characterNames,
+  loading,
+  savingId,
+  onNameChange,
+  onSaveName,
+  onApply,
+}: {
+  characters: GeminiTtsCharacter[];
+  characterNames: Record<string, string>;
+  loading: boolean;
+  savingId: string | null;
+  onNameChange: (id: string, name: string) => void;
+  onSaveName: (character: GeminiTtsCharacter) => void;
+  onApply: (character: GeminiTtsCharacter) => void;
+}) {
+  if (loading) {
+    return (
+      <div className="flex items-center gap-2 text-base-content/60">
+        <span className="loading loading-spinner loading-sm" />
+        Загрузка персонажей
+      </div>
+    );
+  }
+
+  if (!characters.length) {
+    return (
+      <div className="rounded-lg border border-dashed border-base-300 p-8 text-center text-sm text-base-content/55">
+        Персонажей пока нет
+      </div>
+    );
+  }
+
+  return (
+    <section className="space-y-4">
+      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <Metric label="Персонажи" value={characters.length} hint="сохранённые профили" />
+        <Metric label="Первый голос" value={characters[0]?.voice ?? "—"} hint={characters[0]?.model ?? "—"} />
+        <Metric label="Язык" value={characters[0]?.language.toUpperCase() ?? "—"} hint="пример персонажа" />
+        <Metric label="Sample" value={formatDuration(characters[0]?.sampleDurationSec ?? 0)} hint="аудиофрагмент" />
+      </section>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        {characters.map((character) => {
+          const draftName = characterNames[character.id] ?? character.name;
+          const saving = savingId === character.id;
+          const canSave = draftName.trim() && draftName.trim() !== character.name && !saving;
+          return (
+            <article key={character.id} className="rounded-lg border border-base-300 bg-base-100 p-4 shadow-sm">
+              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="text-xl font-black tracking-normal">{character.name}</h2>
+                    <span className="badge badge-primary badge-sm">{character.voice}</span>
+                    <span className="badge badge-ghost badge-sm">{character.language.toUpperCase()}</span>
+                  </div>
+                  <p className="mt-1 text-sm leading-relaxed text-base-content/60">{character.description}</p>
+                </div>
+                <button type="button" className="btn btn-primary btn-sm gap-2 md:shrink-0" onClick={() => onApply(character)}>
+                  <AppIcon name="check" size={15} />
+                  Применить
+                </button>
+              </div>
+
+              <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_260px]">
+                <div className="space-y-4">
+                  <Field label="Имя">
+                    <div className="flex gap-2">
+                      <input
+                        className="input input-bordered w-full"
+                        value={draftName}
+                        onChange={(e) => onNameChange(character.id, e.target.value)}
+                        maxLength={60}
+                      />
+                      <button type="button" className="btn btn-ghost border border-base-300 gap-2" disabled={!canSave} onClick={() => onSaveName(character)}>
+                        {saving ? <span className="loading loading-spinner loading-sm" /> : <AppIcon name="check" size={15} />}
+                        Сохранить
+                      </button>
+                    </div>
+                  </Field>
+
+                  <Field label="Пример">
+                    <audio className="w-full" controls src={character.sampleUrl} />
+                  </Field>
+
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <Info label="Модель" value={character.model} />
+                    <Info label="Энергия" value={`${character.energy}/5`} />
+                    <Info label="Deck" value={character.source.deck || "—"} />
+                    <Info label="Card" value={character.source.cardId || "—"} />
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <SettingBlock label="Текст" value={character.sampleText} />
+                  <SettingBlock label="Стиль" value={character.style} />
+                  <SettingBlock label="Темп" value={character.pace} />
+                  <SettingBlock label="Акцент" value={character.accent || "natural"} />
+                  <SettingBlock label="Сцена" value={character.scene} />
+                  <SettingBlock label={character.postProcessing.label || "Постобработка"} value={character.postProcessing.ffmpegFilter} />
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
@@ -654,6 +868,15 @@ function Info({ label, value }: { label: string; value: string }) {
     <div className="rounded-lg bg-base-200 p-2">
       <div className="text-xs text-base-content/50">{label}</div>
       <div className="truncate font-semibold">{value}</div>
+    </div>
+  );
+}
+
+function SettingBlock({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg bg-base-200 p-3">
+      <div className="mb-1 text-xs font-semibold uppercase tracking-normal text-base-content/45">{label}</div>
+      <div className="break-words text-xs leading-relaxed text-base-content/75">{value}</div>
     </div>
   );
 }
