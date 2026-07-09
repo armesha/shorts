@@ -1,10 +1,11 @@
+import { DEFAULT_TEXT_LAYOUT, DEFAULT_TEXT_STYLE } from "./config";
 import {
   clampStickerBox,
   clampTextBox,
   textBackgroundCss,
   textOutlineShadow,
 } from "./designState";
-import type { CreatorRecord, StickerOverlay, TextBoxRole, TextLayout, TextStyle } from "./types";
+import type { CreatorRecord, StickerOverlay, TextBoxRect, TextBoxRole, TextLayout, TextStyle } from "./types";
 
 const HEADING_ROLES = new Set(["title", "heading", "hook"]);
 const BODY_ROLES = new Set(["body", "text", "fact", "points", "items"]);
@@ -61,6 +62,85 @@ function isCreatorMetaElement(el: CreatorRecord): boolean {
   return role === "source" || role === "cta" || role === "badge" || id === "source" || id === "cta" || id === "badge" || id === "panel";
 }
 
+/** Стикер, добавленный прошлым применением дизайна, — вычищается перед повторным применением (идемпотентность). */
+function isCreatorStickerElement(el: CreatorRecord): boolean {
+  const id = String(el.id ?? "");
+  return id === "creator-sticker-image" || id === "creator-sticker-emoji";
+}
+
+const BACKGROUND_SRC_RE = /^(assets\/template-packs\/|data:image\/)/;
+
+/** Фоновая картинка шаблона (сервисный путь или data:image) — для превью и панели «Фон». */
+export function templateBackgroundSrc(template: unknown): string {
+  const elements = (template as CreatorRecord | null)?.elements;
+  if (!Array.isArray(elements)) return "";
+  const image = (elements as CreatorRecord[]).find(
+    (el) => el?.type === "image" && !isCreatorStickerElement(el) && typeof el.src === "string" && BACKGROUND_SRC_RE.test(el.src),
+  );
+  return typeof image?.src === "string" ? image.src : "";
+}
+
+/** Заменить фон одного шаблона (src первой фоновой картинки; если её нет — подложить слоем ниже всех). */
+export function withTemplateBackground(template: unknown, src: string): unknown {
+  if (!src || !template || typeof template !== "object") return template;
+  const copy = JSON.parse(JSON.stringify(template)) as CreatorRecord & { elements?: CreatorRecord[]; canvas?: CreatorRecord };
+  const elements = Array.isArray(copy.elements) ? copy.elements : [];
+  const image = elements.find((el) => el?.type === "image" && !isCreatorStickerElement(el) && typeof el.src === "string");
+  if (image) {
+    image.src = src;
+    image.fit = image.fit ?? "cover";
+  } else {
+    const w = Number(copy.canvas?.w) || 1080;
+    const h = Number(copy.canvas?.h) || 1920;
+    elements.unshift({ id: "creator-background", type: "image", x: 0, y: 0, w, h, rot: 0, src, fit: "cover" });
+  }
+  copy.elements = elements;
+  return copy;
+}
+
+/** Применить фон ко всем шаблонам (мастер нового пака). */
+export function applyBackgroundToTemplates(templates: unknown[], src: string): unknown[] {
+  if (!src) return templates;
+  return templates.map((template) => withTemplateBackground(template, src));
+}
+
+/** Раскладка текста из киллбоксов шаблона — чтобы открыть в редакторе пак без сохранённого designState. */
+export function extractLayoutFromTemplate(template: unknown): TextLayout | null {
+  const heading = templateKillbox([template], "heading");
+  const body = templateKillbox([template], "body");
+  if (!heading && !body) return null;
+  const toBox = (el: CreatorRecord | null, role: TextBoxRole): TextBoxRect => {
+    if (!el) return { ...DEFAULT_TEXT_LAYOUT[role] };
+    const font = (el.font && typeof el.font === "object" ? el.font : {}) as CreatorRecord;
+    const fs = Number(el.fitMax ?? font.size);
+    return clampTextBox({
+      x: Number(el.x) || 0,
+      y: Number(el.y) || 0,
+      w: Number(el.w) || DEFAULT_TEXT_LAYOUT[role].w,
+      h: Number(el.h) || DEFAULT_TEXT_LAYOUT[role].h,
+      rot: Number(el.rot) || 0,
+      ...(Number.isFinite(fs) && fs > 0 ? { fs: Math.round(fs) } : {}),
+    }, role);
+  };
+  return { heading: toBox(heading, "heading"), body: toBox(body, "body") };
+}
+
+const HEX_RE = /#[0-9a-f]{6}/i;
+
+/** Стиль текста из киллбокса шаблона (цвет/обводка/подложка) — для пака без designState. */
+export function extractTextStyleFromTemplate(template: unknown): TextStyle {
+  const el = templateKillbox([template], "heading") ?? templateKillbox([template], "body");
+  const style: TextStyle = { ...DEFAULT_TEXT_STYLE };
+  if (!el) return style;
+  const font = (el.font && typeof el.font === "object" ? el.font : {}) as CreatorRecord;
+  if (typeof font.color === "string" && HEX_RE.test(font.color)) style.color = font.color;
+  const bgMatch = /rgba\(\s*255\s*,\s*255\s*,\s*255\s*,\s*([\d.]+)\s*\)/i.exec(String(el.bg ?? ""));
+  style.background = bgMatch ? Math.max(0, Math.min(80, Math.round(Number(bgMatch[1]) * 100))) : 0;
+  const shadowHex = HEX_RE.exec(String(el.textShadow ?? ""));
+  style.outline = shadowHex ? shadowHex[0] : "none";
+  return style;
+}
+
 function stickerTemplateElement(sticker: StickerOverlay): CreatorRecord {
   const box = clampStickerBox(sticker);
   if (sticker.kind === "image") {
@@ -100,7 +180,7 @@ export function applyTextLayoutToTemplates(templates: unknown[], layout: TextLay
   return templates.map((template) => {
     if (!template || typeof template !== "object") return template;
     const copy = JSON.parse(JSON.stringify(template)) as CreatorRecord & { elements?: CreatorRecord[] };
-    copy.elements = (copy.elements ?? []).filter((el) => !isCreatorMetaElement(el));
+    copy.elements = (copy.elements ?? []).filter((el) => !isCreatorMetaElement(el) && !isCreatorStickerElement(el));
     const boxes = {
       heading: clampTextBox(layout.heading, "heading"),
       body: clampTextBox(layout.body, "body"),

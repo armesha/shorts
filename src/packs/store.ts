@@ -426,6 +426,30 @@ export function setCreatorPackTemplate(
   return { ok: true, pack: p };
 }
 
+/** Удалить один шаблон creator-пака; карточки переиндексируются (== index → 0, > index → сдвиг на -1).
+ *  Последний шаблон удалить нельзя — пак без шаблонов не рендерится. */
+export function deleteCreatorTemplate(
+  id: string,
+  userId: number,
+  isSuperAdmin: boolean,
+  index: number,
+): { ok: true; pack: Pack } | { ok: false; reason: "not_found" | "not_creator" | "last_template" } {
+  const p = readPackFile(id);
+  if (!p || !canEdit(p, userId, isSuperAdmin)) return { ok: false, reason: "not_found" };
+  if (!p.creator) return { ok: false, reason: "not_creator" };
+  if (!Number.isInteger(index) || index < 0 || index >= p.templates.length) return { ok: false, reason: "not_found" };
+  if (p.templates.length <= 1) return { ok: false, reason: "last_template" };
+  p.templates.splice(index, 1);
+  p.cards = p.cards.map((card) => {
+    const current = Number.isInteger(card.templateIndex) ? (card.templateIndex as number) : 0;
+    if (current === index) return { ...card, templateIndex: 0 };
+    if (current > index) return { ...card, templateIndex: current - 1 };
+    return card;
+  });
+  writeAtomic(packFile(id), p);
+  return { ok: true, pack: p };
+}
+
 /** Задать список владельцев пака (0+; проверка админ-права на уровне роута). Пусто = без владельца.
  *  Владельцы убираются из грантов (владельцу грант не нужен). Legacy-поле userId стирается. */
 export function setPackOwners(packId: string, ownerIds: number[]): boolean {

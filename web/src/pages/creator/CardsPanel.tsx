@@ -4,18 +4,20 @@ import { type ChangeEvent, type CSSProperties, useEffect, useMemo, useRef, useSt
 import {
   AlertTriangle,
   Check,
+  Copy,
   Eye,
   FileUp,
   LayoutTemplate,
   Loader2,
   Pencil,
   Plus,
+  Search,
   Sparkles,
   Trash2,
   X,
 } from "lucide-react";
 import { useT } from "../../lib/i18n";
-import { MiniCard, type MiniCardStyling } from "./MiniCard";
+import { MiniCard, stylingForTemplate, type MiniCardStyling } from "./MiniCard";
 import {
   parseImport,
   toCardPayload,
@@ -24,7 +26,7 @@ import {
   type ImportedCard,
   limitsFromTemplate,
 } from "./importCards";
-import { cardAddedAt, cardTitleText, creatorServiceAssetUrl, cssUrl, firstTemplateImageSrc, packCardItems } from "./model";
+import { cardAddedAt, cardTemplateIndex, cardTitleText, creatorServiceAssetUrl, cssUrl, firstTemplateImageSrc, packCardItems } from "./model";
 import type { CreatorPack, CreatorRecord } from "./types";
 
 export type CardsOps = {
@@ -100,66 +102,49 @@ export function CardsPanel({
 
   return (
     <div className="creator-cards-panel">
-      <section className="creator-card creator-template-overview" aria-label={t("creator.templatesInPack")}>
-        <div className="creator-template-overview-head">
-          <div>
-            <strong>{t("creator.templatesInPack")}</strong>
-            <span>{t("creator.templatesInPackHint")}</span>
+      {templates.length > 1 && (
+        <section className="creator-card creator-template-overview" aria-label={t("creator.templatesInPack")}>
+          <div className="creator-template-overview-head">
+            <div>
+              <strong>{t("creator.templatesInPack")}</strong>
+              <span>{t("creator.templatesInPackHint")}</span>
+            </div>
+            <span className="creator-template-overview-count">{t("creator.templatesCount", { count: templates.length })}</span>
           </div>
-          <span className="creator-template-overview-count">{t("creator.templatesCount", { count: templates.length })}</span>
-        </div>
-        <div className="creator-template-list">
-          {templates.map((template, index) => {
-            const name = templateName(template, index, t);
-            const imageUrl = templatePreviewUrl(template);
-            const style = imageUrl
-              ? ({ "--creator-template-image": `url("${cssUrl(imageUrl)}")` } as CSSProperties)
-              : undefined;
-            const active = index === templateIndex;
-            return (
-              <button
-                key={index}
-                type="button"
-                className={`creator-template-choice ${active ? "is-active" : ""}`}
-                onClick={() => setTemplateIndex(index)}
-                aria-pressed={active}
-              >
-                <span className="creator-template-thumb" style={style} aria-hidden="true">
-                  {!imageUrl && <LayoutTemplate size={19} />}
-                </span>
-                <span className="creator-template-choice-body">
-                  <strong>{name}</strong>
-                  <small>{t("creator.templateCardCount", { count: templateCounts[index] ?? 0 })}</small>
-                </span>
-                <span className="creator-template-choice-check" aria-hidden="true">
-                  {active && <Check size={14} />}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </section>
+          <div className="creator-template-list">
+            {templates.map((template, index) => {
+              const name = templateName(template, index, t);
+              const imageUrl = templatePreviewUrl(template);
+              const style = imageUrl
+                ? ({ "--creator-template-image": `url("${cssUrl(imageUrl)}")` } as CSSProperties)
+                : undefined;
+              const active = index === templateIndex;
+              return (
+                <button
+                  key={index}
+                  type="button"
+                  className={`creator-template-choice ${active ? "is-active" : ""}`}
+                  onClick={() => setTemplateIndex(index)}
+                  aria-pressed={active}
+                >
+                  <span className="creator-template-thumb" style={style} aria-hidden="true">
+                    {!imageUrl && <LayoutTemplate size={19} />}
+                  </span>
+                  <span className="creator-template-choice-body">
+                    <strong>{name}</strong>
+                    <small>{t("creator.templateCardCount", { count: templateCounts[index] ?? 0 })}</small>
+                  </span>
+                  <span className="creator-template-choice-check" aria-hidden="true">
+                    {active && <Check size={14} />}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <section className="creator-card creator-adder-card">
-        <div className="creator-template-picker">
-          <label>
-            <span>{t("creator.templatePickerLabel")}</span>
-            <select
-              className="select select-bordered select-sm"
-              value={templateIndex}
-              onChange={(event) => setTemplateIndex(Number(event.target.value))}
-            >
-              {templates.map((template, index) => {
-                const name = String((template as CreatorRecord)?.name ?? "").trim() || t("creator.templateFallbackName", { n: index + 1 });
-                return (
-                  <option key={index} value={index}>
-                    {name}
-                  </option>
-                );
-              })}
-            </select>
-          </label>
-        </div>
         <div className="creator-adder-head">
           <div
             className="creator-mode-switch"
@@ -187,10 +172,20 @@ export function CardsPanel({
               {t("creator.addBulk")}
             </button>
           </div>
-          <span className="creator-adder-count">{t("creator.cardsCount", { count: cards.length })}</span>
+          {templates.length > 1 && (
+            <span className="creator-adder-template-hint">
+              {t("creator.addingToTemplate", { name: templateName(templates[templateIndex], templateIndex, t) })}
+            </span>
+          )}
         </div>
         {adderMode === "single" ? (
-          <SingleCardForm limits={selectedLimits} styling={styling} ops={ops} busy={busy} templateIndex={templateIndex} />
+          <SingleCardForm
+            limits={selectedLimits}
+            styling={stylingForTemplate(styling, templates[templateIndex])}
+            ops={ops}
+            busy={busy}
+            templateIndex={templateIndex}
+          />
         ) : (
           <BulkImportForm limits={selectedLimits} ops={ops} busy={busy} templateIndex={templateIndex} />
         )}
@@ -205,13 +200,6 @@ function cleanTemplateIndex(value: unknown, templateCount: number): number {
   const index = Math.floor(Number(value));
   if (!Number.isInteger(index) || index < 0) return 0;
   return Math.min(index, Math.max(0, templateCount - 1));
-}
-
-function cardTemplateIndex(card: CreatorRecord, cardIndex: number, templateCount: number): number {
-  if (templateCount <= 0) return 0;
-  const stored = Number(card.templateIndex);
-  if (Number.isInteger(stored) && stored >= 0 && stored < templateCount) return stored;
-  return cardIndex % templateCount;
 }
 
 function templateName(template: unknown, index: number, t: (key: string, vars?: Record<string, string | number>) => string): string {
@@ -477,6 +465,18 @@ function CardsGrid({
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [preview, setPreview] = useState<{ index: number; url: string | null } | null>(null);
   const [deleteArmedIndex, setDeleteArmedIndex] = useState<number | null>(null);
+  const [query, setQuery] = useState("");
+
+  const searchable = cards.length > 8;
+  const visibleCards = useMemo(() => {
+    const entries = cards.map((card, index) => ({ card, index }));
+    const needle = query.trim().toLowerCase();
+    if (!searchable || !needle) return entries;
+    return entries.filter(({ card }) => {
+      const { title, text } = cardTitleText(card);
+      return title.toLowerCase().includes(needle) || text.toLowerCase().includes(needle);
+    });
+  }, [cards, query, searchable]);
 
   if (!cards.length) {
     return (
@@ -503,42 +503,76 @@ function CardsGrid({
     await ops.deleteCard(index, cardAddedAt(cards[index]));
   };
 
+  const duplicateCard = async (index: number) => {
+    const card = cards[index];
+    const { title, text, narration } = cardTitleText(card);
+    const templateIndex = cardTemplateIndex(card, index, templates.length);
+    await ops.addCards([toCardPayload({ title, text, ...(narration ? { narration } : {}) }, templateIndex)]);
+  };
+
   return (
     <section className="creator-cards-grid-wrap">
-      <div className="creator-cards-grid">
-        {cards.map((card, index) => {
-          const { title, text } = cardTitleText(card);
-          const templateIndex = cardTemplateIndex(card, index, templates.length);
-          const name = templates[templateIndex] ? templateName(templates[templateIndex], templateIndex, t) : "";
-          return (
-            <article className="creator-card-tile" key={`${cardAddedAt(card)}-${index}`}>
-              <button type="button" className="creator-card-tile-preview" onClick={() => setEditIndex(index)} title={t("creator.editCard")}>
-                <MiniCard styling={styling} title={title} text={text} />
+      <div className="creator-cards-grid-head">
+        <h3>{t("creator.cardsGridTitle", { count: cards.length })}</h3>
+        {searchable && (
+          <label className="creator-cards-search">
+            <Search size={14} aria-hidden="true" />
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={t("creator.cardsSearchPlaceholder")}
+              aria-label={t("creator.cardsSearchPlaceholder")}
+            />
+            {query && (
+              <button type="button" onClick={() => setQuery("")} aria-label={t("creator.bulkClear")}>
+                <X size={13} />
               </button>
-              <span className="creator-card-tile-number">#{index + 1}</span>
-              {name && <span className="creator-card-tile-template" title={name}>{name}</span>}
-              <div className="creator-card-tile-actions">
-                <button type="button" title={t("creator.previewRender")} aria-label={t("creator.previewRender")} onClick={() => void openPreview(index)} disabled={busy !== null}>
-                  <Eye size={14} />
-                </button>
-                <button type="button" title={t("creator.editCard")} aria-label={t("creator.editCard")} onClick={() => setEditIndex(index)}>
-                  <Pencil size={14} />
-                </button>
-                <button
-                  type="button"
-                  className={deleteArmedIndex === index ? "is-danger" : ""}
-                  title={deleteArmedIndex === index ? t("creator.confirmDeleteCard") : t("creator.deleteCard")}
-                  aria-label={t("creator.deleteCard")}
-                  onClick={() => void removeCard(index)}
-                  disabled={busy === "delete-card"}
-                >
-                  <Trash2 size={14} />
-                </button>
-              </div>
-            </article>
-          );
-        })}
+            )}
+          </label>
+        )}
       </div>
+      {visibleCards.length === 0 ? (
+        <p className="creator-cards-search-empty">{t("creator.cardsSearchEmpty")}</p>
+      ) : (
+        <div className="creator-cards-grid">
+          {visibleCards.map(({ card, index }) => {
+            const { title, text } = cardTitleText(card);
+            const templateIndex = cardTemplateIndex(card, index, templates.length);
+            const name = templates[templateIndex] ? templateName(templates[templateIndex], templateIndex, t) : "";
+            return (
+              <article className="creator-card-tile" key={`${cardAddedAt(card)}-${index}`}>
+                <button type="button" className="creator-card-tile-preview" onClick={() => setEditIndex(index)} title={t("creator.editCard")}>
+                  <MiniCard styling={stylingForTemplate(styling, templates[templateIndex])} title={title} text={text} />
+                </button>
+                <span className="creator-card-tile-number">#{index + 1}</span>
+                {name && <span className="creator-card-tile-template" title={name}>{name}</span>}
+                <div className="creator-card-tile-actions">
+                  <button type="button" title={t("creator.previewRender")} aria-label={t("creator.previewRender")} onClick={() => void openPreview(index)} disabled={busy !== null}>
+                    <Eye size={14} />
+                  </button>
+                  <button type="button" title={t("creator.editCard")} aria-label={t("creator.editCard")} onClick={() => setEditIndex(index)}>
+                    <Pencil size={14} />
+                  </button>
+                  <button type="button" title={t("creator.duplicateCard")} aria-label={t("creator.duplicateCard")} onClick={() => void duplicateCard(index)} disabled={busy !== null}>
+                    <Copy size={14} />
+                  </button>
+                  <button
+                    type="button"
+                    className={deleteArmedIndex === index ? "is-danger" : ""}
+                    title={deleteArmedIndex === index ? t("creator.confirmDeleteCard") : t("creator.deleteCard")}
+                    aria-label={t("creator.deleteCard")}
+                    onClick={() => void removeCard(index)}
+                    disabled={busy === "delete-card"}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
 
       {editIndex !== null && cards[editIndex] && (
         <EditCardModal
@@ -547,6 +581,7 @@ function CardsGrid({
           card={cards[editIndex]}
           limits={limits}
           styling={styling}
+          templates={templates}
           busy={busy}
           onClose={() => setEditIndex(null)}
           onSave={async (payload) => {
@@ -585,6 +620,7 @@ function EditCardModal({
   card,
   limits,
   styling,
+  templates,
   busy,
   onClose,
   onSave,
@@ -593,6 +629,7 @@ function EditCardModal({
   card: CreatorRecord;
   limits: CardLimits;
   styling: MiniCardStyling;
+  templates: unknown[];
   busy: string | null;
   onClose: () => void;
   onSave: (payload: CreatorRecord) => Promise<void>;
@@ -602,12 +639,18 @@ function EditCardModal({
   const [title, setTitle] = useState(initial.title);
   const [text, setText] = useState(initial.text);
   const [narration, setNarration] = useState(initial.narration);
-  const issues = validateImportedCard({ title, text }, limits);
+  const [templateIndex, setTemplateIndexState] = useState(() => cardTemplateIndex(card, index, templates.length));
+  const effectiveLimits = useMemo(
+    () => (templates[templateIndex] ? limitsFromTemplate(templates[templateIndex]) : limits),
+    [limits, templateIndex, templates],
+  );
+  const issues = validateImportedCard({ title, text }, effectiveLimits);
 
   const save = () => {
     void onSave({
       values: { title: title.trim(), text: text.trim() },
       narration: narration.trim(),
+      ...(templates.length ? { templateIndex } : {}),
     });
   };
 
@@ -622,17 +665,33 @@ function EditCardModal({
         </header>
         <div className="creator-edit-layout">
           <div className="creator-edit-fields">
+            {templates.length > 1 && (
+              <label className="form-control">
+                <span className="label-text">{t("creator.cardTemplateLabel")}</span>
+                <select
+                  className="select select-bordered select-sm"
+                  value={templateIndex}
+                  onChange={(event) => setTemplateIndexState(Number(event.target.value))}
+                >
+                  {templates.map((template, i) => (
+                    <option key={i} value={i}>
+                      {templateName(template, i, t)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <label className="form-control">
               <span className="label-text">
                 {t("creator.heading")}
-                <CharCounter value={title.trim().length} max={limits.titleMax} />
+                <CharCounter value={title.trim().length} max={effectiveLimits.titleMax} />
               </span>
               <input className="input input-bordered input-sm" value={title} onChange={(event) => setTitle(event.target.value)} />
             </label>
             <label className="form-control">
               <span className="label-text">
                 {t("creator.body")}
-                <CharCounter value={text.trim().length} max={limits.textMax} />
+                <CharCounter value={text.trim().length} max={effectiveLimits.textMax} />
               </span>
               <textarea className="textarea textarea-bordered textarea-sm creator-single-text" value={text} onChange={(event) => setText(event.target.value)} />
             </label>
@@ -648,7 +707,11 @@ function EditCardModal({
             )}
           </div>
           <div className="creator-single-preview">
-            <PhoneMiniPreview styling={styling} title={title.trim() || t("creator.previewHeadingFallback")} text={text.trim() || t("creator.previewBodyFallback")} />
+            <PhoneMiniPreview
+              styling={stylingForTemplate(styling, templates[templateIndex])}
+              title={title.trim() || t("creator.previewHeadingFallback")}
+              text={text.trim() || t("creator.previewBodyFallback")}
+            />
           </div>
         </div>
         <footer>

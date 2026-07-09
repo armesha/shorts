@@ -8,6 +8,7 @@ import { creatorServiceAssetUrl, cssUrl, firstTemplateImageSrc, packCards, packI
 import type {
   CardValues,
   CreatorAsset,
+  CreatorBackground,
   CreatorPack,
   MediaSettings,
   StickerOverlay,
@@ -43,6 +44,12 @@ export function ProjectWizard({
   setMediaSettings,
   uploadMotionGif,
   uploadMusic,
+  templates,
+  templateIndex,
+  setTemplateIndex,
+  backgrounds,
+  userBackgrounds,
+  onPickBackground,
   capacities,
   fontSizes,
   canUndoDesign,
@@ -81,6 +88,12 @@ export function ProjectWizard({
   setMediaSettings: Dispatch<SetStateAction<MediaSettings>>;
   uploadMotionGif: (file: File) => Promise<void>;
   uploadMusic: (file: File) => Promise<void>;
+  templates: unknown[];
+  templateIndex: number;
+  setTemplateIndex: (index: number) => void;
+  backgrounds: CreatorBackground[];
+  userBackgrounds: CreatorBackground[];
+  onPickBackground: (src: string) => void;
   capacities: Capacities;
   fontSizes: FontSizes;
   canUndoDesign: boolean;
@@ -231,6 +244,13 @@ export function ProjectWizard({
                 setMediaSettings={setMediaSettings}
                 uploadMotionGif={uploadMotionGif}
                 background={background}
+                templates={templates}
+                templateIndex={templateIndex}
+                setTemplateIndex={setTemplateIndex}
+                backgrounds={backgrounds}
+                userBackgrounds={userBackgrounds}
+                onPickBackground={onPickBackground}
+                onUploadBackground={uploadBackground}
                 capacities={capacities}
                 fontSizes={fontSizes}
                 canUndoDesign={canUndoDesign}

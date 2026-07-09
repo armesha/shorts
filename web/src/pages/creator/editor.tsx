@@ -24,6 +24,9 @@ import {
   AlignStartHorizontal,
   AlignStartVertical,
   Clapperboard,
+  Image as ImageIcon,
+  LayoutTemplate,
+  Loader2,
   Music,
   MoveHorizontal,
   RotateCw,
@@ -32,6 +35,7 @@ import {
   RotateCcw,
   Shuffle,
   Smile,
+  Trash2,
   Type,
   Undo2,
   VolumeX,
@@ -40,6 +44,8 @@ import { useT } from "../../lib/i18n";
 import type {
   CardValues,
   CreatorAsset,
+  CreatorBackground,
+  CreatorRecord,
   DesignerElement,
   MediaSettings,
   StickerOverlay,
@@ -75,6 +81,7 @@ import {
   textOutlineShadow,
 } from "./designState";
 import { bumpCreatorUsage, readCreatorUsage } from "./usage";
+import { templateBackgroundSrc } from "./templateTransforms";
 import {
   creatorServiceAssetUrl,
   cssUrl,
@@ -87,10 +94,11 @@ import { handleRovingTabKey } from "./keyboard";
 // Нижние 400px кадра — зона кнопок YouTube Shorts: подсвечиваем и снапим к границе.
 const SAFE_BOTTOM_Y = 1520;
 
-type EditorPane = "text" | "sticker" | "gif" | "music";
+type EditorPane = "text" | "background" | "sticker" | "gif" | "music";
 
 const PANES: Array<{ id: EditorPane; labelKey: string; icon: typeof Type }> = [
   { id: "text", labelKey: "creator.paneText", icon: Type },
+  { id: "background", labelKey: "creator.paneBackground", icon: ImageIcon },
   { id: "sticker", labelKey: "creator.paneSticker", icon: Smile },
   { id: "gif", labelKey: "creator.paneGif", icon: Clapperboard },
   { id: "music", labelKey: "creator.paneMusic", icon: Music },
@@ -213,6 +221,14 @@ export function DesignEditor({
   setMediaSettings,
   uploadMotionGif,
   background,
+  templates,
+  templateIndex,
+  setTemplateIndex,
+  backgrounds,
+  userBackgrounds,
+  onPickBackground,
+  onUploadBackground,
+  onDeleteTemplate,
   capacities,
   fontSizes,
   canUndoDesign,
@@ -237,6 +253,16 @@ export function DesignEditor({
   setMediaSettings: Dispatch<SetStateAction<MediaSettings>>;
   uploadMotionGif: (file: File) => Promise<void>;
   background: string;
+  /** База шаблонов текущего вида: шаблоны пака (проект) или пресета с фоном (мастер). */
+  templates: unknown[];
+  templateIndex: number;
+  setTemplateIndex: (index: number) => void;
+  backgrounds: CreatorBackground[];
+  userBackgrounds: CreatorBackground[];
+  onPickBackground: (src: string) => void;
+  onUploadBackground: (file: File) => Promise<void>;
+  /** Удаление шаблона пака (только в проекте, когда шаблонов больше одного). */
+  onDeleteTemplate?: (index: number) => void;
   capacities: Capacities;
   fontSizes: FontSizes;
   canUndoDesign: boolean;
@@ -249,6 +275,13 @@ export function DesignEditor({
   const clipboardRef = useRef<EditorClipboard | null>(null);
   const [pane, setPane] = useState<EditorPane>("text");
   const [selection, setSelection] = useState<DesignerElement>("heading");
+
+  const safeTemplateIndex = Math.max(0, Math.min(templateIndex, Math.max(0, templates.length - 1)));
+  const selectedTemplate = templates[safeTemplateIndex] ?? null;
+  const selectedBackgroundSrc = templateBackgroundSrc(selectedTemplate);
+  const canvasBackground = selectedBackgroundSrc
+    ? (selectedBackgroundSrc.startsWith("data:") ? selectedBackgroundSrc : creatorServiceAssetUrl(selectedBackgroundSrc))
+    : "";
 
   const selectElement = (element: DesignerElement) => {
     setSelection(element);
@@ -372,6 +405,16 @@ export function DesignEditor({
   return (
     <div className="creator-compose-card creator-unified-editor" ref={rootRef}>
       <div className="creator-compose-head">
+        {templates.length > 1 ? (
+          <TemplateStrip
+            templates={templates}
+            activeIndex={safeTemplateIndex}
+            setTemplateIndex={setTemplateIndex}
+            onDeleteTemplate={onDeleteTemplate}
+          />
+        ) : (
+          <span />
+        )}
         <div className="creator-editor-history">
           <button type="button" className="creator-designer-icon-button" onClick={undoDesign} disabled={!canUndoDesign} aria-label={t("creator.undo")} title={t("creator.undo")}>
             <Undo2 size={15} />
@@ -421,6 +464,14 @@ export function DesignEditor({
               capacities={capacities}
               fontSizes={fontSizes}
             />
+          ) : pane === "background" ? (
+            <BackgroundPane
+              backgrounds={backgrounds}
+              userBackgrounds={userBackgrounds}
+              current={selectedBackgroundSrc}
+              onPick={onPickBackground}
+              onUpload={onUploadBackground}
+            />
           ) : pane === "sticker" ? (
             <StickerPane sticker={sticker} setSticker={setSticker} uploadSticker={uploadSticker} selectElement={selectElement} />
           ) : pane === "gif" ? (
@@ -439,7 +490,7 @@ export function DesignEditor({
         <TextLayoutEditor
           activePreset={activePreset}
           values={values}
-          background={background}
+          background={canvasBackground || background}
           layout={textLayout}
           setLayout={setTextLayout}
           textStyle={textStyle}
@@ -452,6 +503,159 @@ export function DesignEditor({
           activeElement={selection}
           setActiveElement={selectElement}
         />
+      </div>
+    </div>
+  );
+}
+
+function TemplateStrip({
+  templates,
+  activeIndex,
+  setTemplateIndex,
+  onDeleteTemplate,
+}: {
+  templates: unknown[];
+  activeIndex: number;
+  setTemplateIndex: (index: number) => void;
+  onDeleteTemplate?: (index: number) => void;
+}) {
+  const { t } = useT();
+  const [deleteArmed, setDeleteArmed] = useState(false);
+  useEffect(() => {
+    if (!deleteArmed) return;
+    const handle = window.setTimeout(() => setDeleteArmed(false), 2600);
+    return () => window.clearTimeout(handle);
+  }, [deleteArmed]);
+  useEffect(() => {
+    setDeleteArmed(false);
+  }, [activeIndex]);
+
+  return (
+    <div className="creator-editor-template-strip" role="tablist" aria-label={t("creator.templateStripAria")}>
+      {templates.map((template, index) => {
+        const src = templateBackgroundSrc(template);
+        const url = src ? (src.startsWith("data:") ? src : creatorServiceAssetUrl(src)) : "";
+        const name = String((template as CreatorRecord)?.name ?? "").trim() || t("creator.templateFallbackName", { n: index + 1 });
+        const active = index === activeIndex;
+        return (
+          <button
+            key={index}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            className={`creator-strip-thumb ${active ? "is-active" : ""}`}
+            style={url ? { backgroundImage: `url("${cssUrl(url)}")` } : undefined}
+            onClick={() => setTemplateIndex(index)}
+            title={name}
+            aria-label={name}
+          >
+            {!url && <LayoutTemplate size={14} aria-hidden="true" />}
+            <span className="creator-strip-thumb-number">{index + 1}</span>
+          </button>
+        );
+      })}
+      {onDeleteTemplate && templates.length > 1 && (
+        <button
+          type="button"
+          className={`creator-strip-delete ${deleteArmed ? "is-danger" : ""}`}
+          title={deleteArmed ? t("creator.confirmDeleteTemplate") : t("creator.deleteTemplate")}
+          aria-label={deleteArmed ? t("creator.confirmDeleteTemplate") : t("creator.deleteTemplate")}
+          onClick={() => {
+            if (!deleteArmed) {
+              setDeleteArmed(true);
+              return;
+            }
+            setDeleteArmed(false);
+            onDeleteTemplate(activeIndex);
+          }}
+        >
+          <Trash2 size={14} />
+          {deleteArmed && <span>{t("creator.confirmDeleteTemplate")}</span>}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function backgroundAssetEntries(list: CreatorBackground[]): Array<{ key: string; src: string; url: string; name: string }> {
+  const out: Array<{ key: string; src: string; url: string; name: string }> = [];
+  for (const [index, item] of list.entries()) {
+    if (typeof item === "string") {
+      out.push({ key: `${item}-${index}`, src: item, url: creatorServiceAssetUrl(item), name: item });
+      continue;
+    }
+    const dataUrl = typeof item.dataUrl === "string" ? item.dataUrl : "";
+    const src = dataUrl || String(item.src ?? "");
+    if (!src) continue;
+    const url = dataUrl || creatorServiceAssetUrl(String(item.src ?? ""));
+    out.push({ key: `${item.id ?? src}-${index}`, src, url, name: String(item.name ?? "") });
+  }
+  return out;
+}
+
+function BackgroundPane({
+  backgrounds,
+  userBackgrounds,
+  current,
+  onPick,
+  onUpload,
+}: {
+  backgrounds: CreatorBackground[];
+  userBackgrounds: CreatorBackground[];
+  current: string;
+  onPick: (src: string) => void;
+  onUpload: (file: File) => Promise<void>;
+}) {
+  const { t } = useT();
+  const [uploading, setUploading] = useState(false);
+  const userEntries = useMemo(() => backgroundAssetEntries(userBackgrounds), [userBackgrounds]);
+  const serviceEntries = useMemo(() => backgroundAssetEntries(backgrounds), [backgrounds]);
+
+  const handleUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const input = event.currentTarget;
+    const file = input.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    void onUpload(file).finally(() => {
+      setUploading(false);
+      input.value = "";
+    });
+  };
+
+  const tile = (entry: { key: string; src: string; url: string; name: string }) => (
+    <button
+      key={entry.key}
+      type="button"
+      className={`creator-background-tile ${current === entry.src ? "is-active" : ""}`}
+      style={entry.url ? { backgroundImage: `url("${cssUrl(entry.url)}")` } : undefined}
+      onClick={() => onPick(entry.src)}
+      title={entry.name}
+      aria-label={entry.name || t("creator.paneBackground")}
+    />
+  );
+
+  return (
+    <div className="creator-editor-pane creator-background-pane" role="tabpanel" aria-label={t("creator.paneBackground")}>
+      <div className="creator-asset-scroll creator-pane-scroll">
+        {userEntries.length > 0 && (
+          <>
+            <span className="creator-pane-subtitle">{t("creator.myBackgrounds")}</span>
+            <div className="creator-background-grid">{userEntries.map(tile)}</div>
+          </>
+        )}
+        {serviceEntries.length > 0 && (
+          <>
+            <span className="creator-pane-subtitle">{t("creator.serviceBackgrounds")}</span>
+            <div className="creator-background-grid">{serviceEntries.map(tile)}</div>
+          </>
+        )}
+      </div>
+      <div className="creator-pane-actions">
+        <label className={`btn btn-xs btn-outline gap-1 ${uploading ? "btn-disabled" : ""}`}>
+          {uploading ? <Loader2 className="animate-spin" size={13} /> : null}
+          {t("creator.uploadBackground")}
+          <input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleUpload} disabled={uploading} />
+        </label>
       </div>
     </div>
   );

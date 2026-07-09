@@ -3,6 +3,8 @@
 import type { CSSProperties } from "react";
 import { TEMPLATE_H, TEMPLATE_W } from "./config";
 import { textBackgroundCss, textOutlineShadow } from "./designState";
+import { creatorServiceAssetUrl } from "./model";
+import { templateBackgroundSrc } from "./templateTransforms";
 import type { StickerOverlay, TextLayout, TextStyle } from "./types";
 
 export type MiniCardStyling = {
@@ -12,6 +14,14 @@ export type MiniCardStyling = {
   textStyle: TextStyle;
   sticker: StickerOverlay | null;
 };
+
+/** Стиль мини-карты с фоном КОНКРЕТНОГО шаблона — карточки пака рендерятся каждая по своему. */
+export function stylingForTemplate(base: MiniCardStyling, template: unknown): MiniCardStyling {
+  const src = templateBackgroundSrc(template);
+  if (!src) return base;
+  const url = src.startsWith("data:") ? src : creatorServiceAssetUrl(src);
+  return url ? { ...base, backgroundUrl: url } : base;
+}
 
 function boxStyle(box: { x: number; y: number; w: number; h: number; rot?: number }): CSSProperties {
   return {

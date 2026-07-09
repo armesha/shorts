@@ -108,6 +108,9 @@ function CreatorStandalone() {
       <header className="creator-liquid-header sticky top-0 z-30">
         <div className="creator-liquid-row">
           <div className="creator-liquid-pill creator-liquid-actions h-11 px-2 flex items-center gap-2">
+            <a href="/" className="btn btn-ghost btn-sm btn-square" title={t("creator.backToApp")} aria-label={t("creator.backToApp")}>
+              <AppIcon name="home" size={16} />
+            </a>
             <a href="/settings" className="btn btn-ghost btn-sm btn-square" title={t("settings.title")} aria-label={t("settings.title")}>
               <AppIcon name="settings" size={16} />
             </a>

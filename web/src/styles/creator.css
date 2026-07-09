@@ -306,7 +306,7 @@
 
 .creator-unified-editor .creator-compose-head {
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   margin-bottom: 10px;
   padding-right: 4px;
 }
@@ -3178,6 +3178,75 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
   font-weight: 750;
 }
 
+.creator-adder-template-hint {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--commercial-muted);
+  font-size: 0.74rem;
+  font-weight: 780;
+}
+
+/* Шапка сетки карточек: заголовок + поиск */
+.creator-cards-grid-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 2px 2px 10px;
+}
+
+.creator-cards-grid-head h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 850;
+}
+
+.creator-cards-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 260px;
+  flex: 0 1 auto;
+  border: 1px solid var(--commercial-line);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--commercial-muted);
+  padding: 5px 10px;
+}
+
+.creator-cards-search input {
+  min-width: 0;
+  flex: 1 1 auto;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--commercial-text);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.creator-cards-search input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.creator-cards-search button {
+  display: inline-flex;
+  border: 0;
+  background: transparent;
+  color: var(--commercial-muted);
+  padding: 1px;
+}
+
+.creator-cards-search-empty {
+  margin: 6px 2px 0;
+  color: var(--commercial-muted);
+  font-size: 0.8rem;
+  font-weight: 720;
+}
+
 .creator-single-form {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(262px, 320px);
@@ -3656,6 +3725,22 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
   gap: 10px;
 }
 
+.creator-export-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.creator-export-picker-row .select {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.creator-tts-preview.is-playing {
+  border-color: var(--commercial-accent);
+  color: var(--commercial-accent-strong);
+}
+
 .creator-voiceover-toggle {
   display: inline-flex;
   align-items: center;
@@ -3864,6 +3949,127 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
   gap: 5px;
   flex: 0 0 auto;
   margin-bottom: 4px;
+}
+
+/* Лента шаблонов пака: выбор «листа», который показывает канва (фон меняется у выбранного) */
+.creator-editor-template-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow-x: auto;
+  padding: 2px;
+  scrollbar-width: thin;
+}
+
+.creator-strip-thumb {
+  position: relative;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 54px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--commercial-line);
+  border-radius: 9px;
+  background: #f1f5f9 center/cover no-repeat;
+  color: var(--commercial-muted);
+  transition: border-color 0.16s ease, transform 0.16s ease;
+}
+
+.creator-strip-thumb:hover {
+  border-color: var(--commercial-line-strong);
+}
+
+.creator-strip-thumb.is-active {
+  border-color: var(--commercial-text);
+  transform: translateY(-1px);
+}
+
+.creator-strip-thumb-number {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  min-width: 15px;
+  padding: 0 3px;
+  border-radius: 6px;
+  background: var(--commercial-text);
+  color: #ffffff;
+  font-size: 0.58rem;
+  font-weight: 850;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.creator-strip-thumb:not(.is-active) .creator-strip-thumb-number {
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.creator-strip-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 0 auto;
+  min-height: 30px;
+  border: 1px dashed var(--commercial-line-strong);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--commercial-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 4px 9px;
+  transition: color 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+}
+
+.creator-strip-delete:hover {
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+.creator-strip-delete.is-danger {
+  color: #ffffff;
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+/* Панель «Фон»: сетка фонов-миниатюр 9:16 */
+.creator-background-pane .creator-pane-scroll {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  overflow-y: auto;
+}
+
+.creator-pane-subtitle {
+  color: var(--commercial-muted);
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.creator-background-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(74px, 1fr));
+  gap: 8px;
+}
+
+.creator-background-tile {
+  aspect-ratio: 9 / 16;
+  border: 2px solid var(--commercial-line);
+  border-radius: 10px;
+  background: #f1f5f9 center/cover no-repeat;
+  transition: border-color 0.16s ease, transform 0.16s ease;
+}
+
+.creator-background-tile:hover {
+  border-color: var(--commercial-line-strong);
+  transform: translateY(-1px);
+}
+
+.creator-background-tile.is-active {
+  border-color: var(--commercial-text);
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.14);
 }
 
 .creator-editor-layout {
@@ -4263,4 +4469,81 @@ html[data-skin="sechenie"] .creator-shell :where(.btn, .input, .select, .textare
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+}
+
+/* ── мобильная полировка вкладок проекта ── */
+@media (max-width: 700px) {
+  /* «Шаблоны в паке»: горизонтальная лента вместо длинного столбца */
+  .creator-template-list {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+
+  .creator-template-choice {
+    flex: 0 0 auto;
+    width: 208px;
+    scroll-snap-align: start;
+  }
+
+  .creator-adder-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .creator-adder-template-hint {
+    text-align: center;
+  }
+
+  .creator-cards-grid-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .creator-cards-search {
+    max-width: none;
+  }
+
+  /* телефон-превью формы: по центру, а не прижат к краю */
+  .creator-single-preview {
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* общий мобильный стиль ужимает .creator-phone до 78px — возвращаем превью читаемый размер */
+  .creator-single-preview .creator-card-preview-phone {
+    max-width: 212px;
+    padding: 6px;
+    border-radius: 34px;
+  }
+
+  .creator-single-preview .creator-card-preview-phone::after {
+    inset: 5px;
+    border-radius: 29px;
+  }
+
+  .creator-single-preview .creator-card-preview-phone .creator-phone-screen {
+    border-radius: 28px;
+  }
+
+  .creator-single-preview .creator-card-preview-phone .creator-device-island {
+    top: 9px;
+    width: 56px;
+    height: 16px;
+  }
+
+  .creator-export-picker-row .btn-square {
+    flex: 0 0 auto;
+  }
+
+  /* лента шаблонов в редакторе — крупнее тап-таргеты */
+  .creator-strip-thumb {
+    width: 38px;
+    height: 60px;
+  }
 }

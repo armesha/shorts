@@ -10,6 +10,7 @@ import {
   canEdit,
   createPack,
   deleteCard,
+  deleteCreatorTemplate,
   deletePack,
   deriveRules,
   getPack,
@@ -49,14 +50,14 @@ import {
 } from "../services/creator-assets.ts";
 import { deletePackMusicDir } from "../services/pack-audio.ts";
 import { writeZipFile } from "../services/zip.ts";
-import {
-  filterGloballyVisibleCustomPacks,
-  isCustomPackGloballyVisible,
-} from "../services/global-pack-visibility.ts";
+import { isCustomPackGloballyVisible } from "../services/global-pack-visibility.ts";
 
 const OUTPUT_DIR = loadBaseConfig().outputDir;
 const CREATOR_LIMIT = { limit: 12, windowMs: 10 * 60 * 1000 };
 const CREATOR_UPLOAD_BYTES = 8 * 1024 * 1024;
+// Шаблоны пака могут нести data:image-фон в каждом шаблоне (~1.9 МБ после фронтового сжатия) —
+// на пак из 6–8 шаблонов нужен запас больше обычного лимита загрузки.
+const CREATOR_TEMPLATES_BODY_BYTES = 24 * 1024 * 1024;
 const CREATOR_GIF_BYTES = 2 * 1024 * 1024;
 const CREATOR_AUDIO_BYTES = 7 * 1024 * 1024;
 const CREATOR_DESIGN_STATE_BYTES = 2_500_000;
@@ -541,9 +542,13 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
     reply.code(403).send({ error: "Creator доступ не включён для этого пользователя" });
     return false;
   };
+  // Владелец (и главный админ) всегда видит свои creator-паки; глобальный фильтр видимости
+  // (шутки/мемы или использование каналом) остаётся только для чужих паков, доступных по гранту.
   const visibleCreatorPack = (id: string, userId: number, isSuperAdmin: boolean) => {
     const pack = getPack(id, userId, isSuperAdmin);
-    return pack && pack.creator && isCustomPackGloballyVisible(db, pack) ? pack : null;
+    if (!pack || !pack.creator) return null;
+    if (canEdit(pack, userId, isSuperAdmin)) return pack;
+    return isCustomPackGloballyVisible(db, pack) ? pack : null;
   };
 
   app.get("/api/creator/summary", async (req) => {
@@ -552,9 +557,12 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
     if (!feature) {
       return { feature: false, packs: [], gallery: [], backgrounds: [], userBackgrounds: [], presets: [], music: [], motion: [] };
     }
+    const isSuper = isSuperAdminUser(db.getUserById(userId));
     return {
       feature: true,
-      packs: filterGloballyVisibleCustomPacks(db, listCreatorPacks(userId, isSuperAdminUser(db.getUserById(userId)))),
+      packs: listCreatorPacks(userId, isSuper).filter(
+        (pack) => isSuper || (pack.owners ?? []).includes(userId) || isCustomPackGloballyVisible(db, pack),
+      ),
       gallery: db.listCreatorGalleryItems(userId),
       backgrounds: creatorBackgrounds(),
       userBackgrounds: await listUserBackgrounds(userId),
@@ -599,7 +607,7 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
     return fullPackPayload(pack);
   });
 
-  app.post("/api/creator/packs", { bodyLimit: CREATOR_UPLOAD_BYTES }, async (req, reply) => {
+  app.post("/api/creator/packs", { bodyLimit: CREATOR_TEMPLATES_BODY_BYTES }, async (req, reply) => {
     if (!requireCreator(req, reply)) return;
     const body =
       (req.body as { name?: string; lang?: string; templateType?: string; presetId?: string; templates?: PackTemplate[]; background?: string; layout?: unknown; designState?: unknown }) ?? {};
@@ -630,7 +638,7 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
     }
   });
 
-  app.patch("/api/creator/packs/:id/design", { bodyLimit: CREATOR_UPLOAD_BYTES }, async (req, reply) => {
+  app.patch("/api/creator/packs/:id/design", { bodyLimit: CREATOR_TEMPLATES_BODY_BYTES }, async (req, reply) => {
     if (!requireCreator(req, reply)) return;
     const id = (req.params as { id: string }).id;
     const body = (req.body as { templates?: PackTemplate[]; background?: string; layout?: unknown; templateType?: string; designState?: unknown }) ?? {};
@@ -709,6 +717,21 @@ export function registerCreatorRoutes(app: FastifyInstance, db: Db) {
     }
     const updated = getPack(id, userId, isSuper);
     return { deleted: true, total: r.total, pack: updated ? fullPackPayload(updated) : null };
+  });
+
+  app.delete("/api/creator/packs/:id/templates/:index", async (req, reply) => {
+    if (!requireCreator(req, reply)) return;
+    const { id, index } = req.params as { id: string; index: string };
+    const userId = uid(req);
+    const isSuper = isSuperAdminUser(db.getUserById(userId));
+    if (!visibleCreatorPack(id, userId, isSuper)) return reply.code(404).send({ error: "Пак не найден или нет прав на редактирование" });
+    const r = deleteCreatorTemplate(id, userId, isSuper, Number(index));
+    if (!r.ok) {
+      if (r.reason === "last_template") return reply.code(400).send({ error: "Нельзя удалить последний шаблон пака" });
+      if (r.reason === "not_creator") return reply.code(400).send({ error: "Это не creator-пак" });
+      return reply.code(404).send({ error: "Шаблон не найден или нет прав" });
+    }
+    return { deleted: true, pack: fullPackPayload(r.pack) };
   });
 
   app.delete("/api/creator/gallery/:id", async (req, reply) => {

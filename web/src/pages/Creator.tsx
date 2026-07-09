@@ -56,7 +56,16 @@ import {
   usableBackgroundUrl,
   type GalleryItem,
 } from "./creator/model";
-import { applyTextLayoutToTemplates, capacityForRole, fontSizeForRole } from "./creator/templateTransforms";
+import {
+  applyBackgroundToTemplates,
+  applyTextLayoutToTemplates,
+  capacityForRole,
+  extractLayoutFromTemplate,
+  extractTextStyleFromTemplate,
+  fontSizeForRole,
+  templateBackgroundSrc,
+  withTemplateBackground,
+} from "./creator/templateTransforms";
 import { limitsFromRules } from "./creator/importCards";
 import type { MiniCardStyling } from "./creator/MiniCard";
 import { ProjectsHome } from "./creator/ProjectsHome";
@@ -82,6 +91,9 @@ export default function Creator() {
   const [activePack, setActivePack] = useState<CreatorPack | null>(null);
   const [loadingPack, setLoadingPack] = useState(false);
   const [templateSourcePackId, setTemplateSourcePackId] = useState("");
+  // База редактора открытого пака: его собственные шаблоны (дизайн применяется поверх, ничего не затирая)
+  const [packTemplates, setPackTemplates] = useState<unknown[]>([]);
+  const [designTemplateIndex, setDesignTemplateIndex] = useState(0);
   const [autosaveStatus, setAutosaveStatus] = useState<AutosaveStatus>("idle");
   const lastSavedDesignRef = useRef("");
   const autosaveStatusTimerRef = useRef<number | null>(null);
@@ -151,6 +163,13 @@ export default function Creator() {
     noticeTimersRef.current = [];
   }, []);
 
+  // ── маршрутизация страницы: главная / мастер / проект (нужна ниже для контекста редактора) ──
+  const projectId = searchParams.get("project") ?? "";
+  const wizardOpen = searchParams.get("new") === "1";
+  const tabParam = searchParams.get("tab");
+  const initialTemplateIndex = Math.max(0, Math.floor(Number(searchParams.get("template") ?? 0)) || 0);
+  const projectTab: ProjectTab = tabParam === "template" || tabParam === "videos" ? tabParam : "cards";
+
   const packs = summary?.packs ?? [];
   const localizedSummaryPresets = useMemo(() => {
     const known = new Map(fallbackPresets.map((preset) => [preset.id, preset]));
@@ -167,9 +186,15 @@ export default function Creator() {
   const featureDisabled = summary?.feature === false;
 
   const activePreset = availablePresets.find((preset) => preset.id === presetId) ?? availablePresets[0] ?? fallbackPresets[0] ?? FALLBACK_PRESETS[0];
+  // Мастер собирает шаблоны из пресета + выбранного фона; открытый проект — из собственных шаблонов пака.
+  const wizardBaseTemplates = useMemo(
+    () => applyBackgroundToTemplates(activePreset.templates, background),
+    [activePreset.templates, background],
+  );
+  const editorBaseTemplates = projectId ? packTemplates : wizardBaseTemplates;
   const activeTemplatePayload = useMemo(
-    () => applyTextLayoutToTemplates(activePreset.templates, textLayout, textStyle, sticker),
-    [activePreset.templates, sticker, textLayout, textStyle],
+    () => applyTextLayoutToTemplates(editorBaseTemplates, textLayout, textStyle, sticker),
+    [editorBaseTemplates, sticker, textLayout, textStyle],
   );
   const designState = useMemo(() => buildCreatorDesignState({
     templateName: templateNameValue.trim() || activePreset.label,
@@ -198,6 +223,7 @@ export default function Creator() {
     const nextPreset = availablePresets.find((preset) => preset.id === nextId) ?? availablePresets[0] ?? fallbackPresets[0] ?? FALLBACK_PRESETS[0];
     setBackground("");
     setBackgroundName("");
+    setDesignTemplateIndex(0);
     setPresetId(nextPreset.id);
     setTemplateType(nextPreset.templateType);
     setValues(nextPreset.defaults);
@@ -272,25 +298,26 @@ export default function Creator() {
     } : current);
   }, []);
 
-  const saveTemplateDesign = useCallback(async (id: string, quiet = false): Promise<CreatorPack | null> => {
+  // Шаблоны уже трансформированы на фронте (layout/стиль/стикер/фон вшиты поверх БАЗЫ пака),
+  // поэтому background/layout серверу не отправляются — иначе он применил бы их ко всем шаблонам.
+  const saveTemplateDesign = useCallback(async (id: string, quiet = false, templatesOverride?: unknown[]): Promise<CreatorPack | null> => {
     if (!id) return null;
     if (!quiet) setSettledAutosaveStatus("saving");
     const res = await send<{ pack: CreatorPack }>(`/creator/packs/${encodeURIComponent(id)}/design`, "PATCH", {
-      templates: activeTemplatePayload,
+      templates: templatesOverride ?? activeTemplatePayload,
       templateType,
-      background: background || undefined,
-      layout: textLayout,
       designState,
     });
     lastSavedDesignRef.current = serializedDesignState;
     syncPackEverywhere(res.pack);
     if (!quiet) setSettledAutosaveStatus("saved");
     return res.pack;
-  }, [activeTemplatePayload, background, designState, serializedDesignState, setSettledAutosaveStatus, syncPackEverywhere, templateType, textLayout]);
+  }, [activeTemplatePayload, designState, serializedDesignState, setSettledAutosaveStatus, syncPackEverywhere, templateType]);
 
   // Автосохранение шаблона открытого проекта
   useEffect(() => {
     if (!templateSourcePackId || loadingSummary || featureDisabled) return;
+    if (templateSourcePackId !== projectId || !packTemplates.length) return;
     if (serializedDesignState === lastSavedDesignRef.current) return;
     const handle = window.setTimeout(() => {
       void saveTemplateDesign(templateSourcePackId).catch(() => {
@@ -298,7 +325,30 @@ export default function Creator() {
       });
     }, 850);
     return () => window.clearTimeout(handle);
-  }, [featureDisabled, loadingSummary, saveTemplateDesign, serializedDesignState, setSettledAutosaveStatus, templateSourcePackId]);
+  }, [featureDisabled, loadingSummary, packTemplates.length, projectId, saveTemplateDesign, serializedDesignState, setSettledAutosaveStatus, templateSourcePackId]);
+
+  // ── фон шаблона ──
+  // Мастер: фон запоминается в background и применяется ко всем шаблонам пресета.
+  // Открытый проект: фон меняется у ВЫБРАННОГО шаблона пака и сразу сохраняется.
+  const pickEditorBackground = useCallback(async (src: string) => {
+    if (!src) return;
+    if (!projectId) {
+      setBackground(src);
+      setBackgroundName(src.startsWith("data:") ? t("creator.backgroundTemplate") : "");
+      return;
+    }
+    if (!packTemplates.length) return;
+    const index = Math.max(0, Math.min(designTemplateIndex, packTemplates.length - 1));
+    const nextTemplates = packTemplates.map((template, i) => (i === index ? withTemplateBackground(template, src) : template));
+    setPackTemplates(nextTemplates);
+    try {
+      await saveTemplateDesign(projectId, false, applyTextLayoutToTemplates(nextTemplates, textLayout, textStyle, sticker));
+      setTemplateSourcePackId(projectId);
+    } catch (err) {
+      setSettledAutosaveStatus("error");
+      setNotice({ type: "error", text: errorText(err, t("creator.errUploadBackground")) });
+    }
+  }, [designTemplateIndex, packTemplates, projectId, saveTemplateDesign, setNotice, setSettledAutosaveStatus, sticker, t, textLayout, textStyle]);
 
   // ── загрузки файлов ──
   async function uploadBackground(file: File) {
@@ -310,8 +360,13 @@ export default function Creator() {
         name: file.name,
         dataUrl,
       });
-      setBackground(String(res.asset?.dataUrl || dataUrl));
-      setBackgroundName(String(res.asset?.name || file.name || t("creator.uploadBackground")));
+      const stored = String(res.asset?.dataUrl || dataUrl);
+      if (projectId) {
+        await pickEditorBackground(stored);
+      } else {
+        setBackground(stored);
+        setBackgroundName(String(res.asset?.name || file.name || t("creator.uploadBackground")));
+      }
       void loadSummary(true);
     } catch (err) {
       const text = err instanceof Error && err.message === "bad-type"
@@ -391,13 +446,6 @@ export default function Creator() {
     }
   }
 
-  // ── маршрутизация страницы: главная / мастер / проект ──
-  const projectId = searchParams.get("project") ?? "";
-  const wizardOpen = searchParams.get("new") === "1";
-  const tabParam = searchParams.get("tab");
-  const initialTemplateIndex = Math.max(0, Math.floor(Number(searchParams.get("template") ?? 0)) || 0);
-  const projectTab: ProjectTab = tabParam === "template" || tabParam === "videos" ? tabParam : "cards";
-
   const goHome = useCallback(() => {
     setSearchParams({}, { replace: false });
   }, [setSearchParams]);
@@ -419,6 +467,7 @@ export default function Creator() {
     setBackground("");
     setBackgroundName("");
     setTemplateTargetPackId("");
+    setDesignTemplateIndex(0);
     setPresetId(preset.id);
     setTemplateType(preset.templateType);
     setPackLang(preset.lang || "ru");
@@ -452,6 +501,8 @@ export default function Creator() {
       appliedProjectRef.current = "";
       setActivePack(null);
       setTemplateSourcePackId("");
+      setPackTemplates([]);
+      setDesignTemplateIndex(0);
       setLoadingPack(false);
       return;
     }
@@ -472,6 +523,9 @@ export default function Creator() {
         appliedProjectRef.current = projectId;
         setActivePack(pack);
         setTemplateNameValue(String(pack.name || ""));
+        const templates = Array.isArray(pack.templates) ? pack.templates : [];
+        setPackTemplates(templates);
+        setDesignTemplateIndex(0);
         const restored = readCreatorDesignState(pack.creatorDesignState);
         if (restored) {
           lastSavedDesignRef.current = JSON.stringify(restored);
@@ -480,6 +534,12 @@ export default function Creator() {
           resetDesignHistoryRef.current(restored);
           applyDesignStateRef.current(restored);
         } else {
+          // Пак без сохранённого дизайна: раскладку и стиль вынимаем из его первого шаблона,
+          // чтобы редактор показывал реальное состояние, а не дефолтный пресет.
+          const extractedLayout = extractLayoutFromTemplate(templates[0]);
+          setTextLayout(extractedLayout ?? cloneTextLayout(DEFAULT_TEXT_LAYOUT));
+          setTextStyle(templates.length ? extractTextStyleFromTemplate(templates[0]) : { ...DEFAULT_TEXT_STYLE });
+          setSticker(null);
           lastSavedDesignRef.current = "";
           setTemplateSourcePackId("");
           resetDesignHistoryRef.current();
@@ -535,24 +595,21 @@ export default function Creator() {
     setNotice(null);
     setCreating(true);
     try {
+      // Шаблоны уже собраны на фронте (фон и раскладка вшиты), поэтому background/layout не отправляем:
+      // сервер применил бы их ко ВСЕМ шаблонам целевого пака и стёр бы их собственные фоны.
       const templates = namedTemplates(name);
       if (templateTargetPackId) {
         const existing = await get<CreatorPack>(`/creator/packs/${encodeURIComponent(templateTargetPackId)}`);
         const previousTemplates = Array.isArray(existing.templates) ? existing.templates : [];
         const createdTemplateIndex = previousTemplates.length;
+        // designState пака не перезаписываем дизайном нового шаблона — у пака остаётся его собственный.
         const res = await send<{ pack: CreatorPack }>(`/creator/packs/${encodeURIComponent(templateTargetPackId)}/design`, "PATCH", {
           templates: [...previousTemplates, ...templates],
-          templateType,
-          background: background || undefined,
-          layout: textLayout,
-          designState,
+          templateType: existing.templateType ?? templateType,
         });
         const pack = res.pack;
         const id = packId(pack);
-        lastSavedDesignRef.current = serializedDesignState;
-        appliedProjectRef.current = id;
-        setActivePack(pack);
-        setTemplateSourcePackId(id);
+        appliedProjectRef.current = "";
         syncPackEverywhere(pack);
         setSearchParams({ project: id, tab: "cards", template: String(createdTemplateIndex) }, { replace: false });
         setNotice({ type: "success", text: t("creator.templateCreatedInPack", { name: pack.name || t("creator.untitledPack") }) });
@@ -565,8 +622,6 @@ export default function Creator() {
         templateType,
         presetId: activePreset.id,
         templates,
-        background: background || undefined,
-        layout: textLayout,
         designState,
       });
       const pack = res.pack;
@@ -575,6 +630,8 @@ export default function Creator() {
       appliedProjectRef.current = id;
       setActivePack(pack);
       setTemplateSourcePackId(id);
+      setPackTemplates(Array.isArray(pack.templates) ? pack.templates : []);
+      setDesignTemplateIndex(0);
       setSummary((current) => {
         const normalized = current ?? { feature: true, packs: [], gallery: [], backgrounds: [], userBackgrounds: [], presets: [], music: [], motion: [] };
         return { ...normalized, packs: [pack, ...normalized.packs.filter((item) => packId(item) !== id)] };
@@ -621,6 +678,20 @@ export default function Creator() {
     const id = packId(pack);
     if (!id) return false;
     return deletePackById(id, false);
+  }
+
+  // Удалить шаблон из открытого пака: карточки переиндексирует сервер.
+  async function deleteDesignTemplate(index: number) {
+    const id = projectId;
+    if (!id) return;
+    const res = await run("delete-template", () => send<{ pack: CreatorPack }>(`/creator/packs/${encodeURIComponent(id)}/templates/${index}`, "DELETE"));
+    if (!res?.pack) return;
+    const templates = Array.isArray(res.pack.templates) ? res.pack.templates : [];
+    setPackTemplates(templates);
+    setDesignTemplateIndex((current) => Math.max(0, Math.min(current > index ? current - 1 : current, templates.length - 1)));
+    setActivePack(res.pack);
+    syncPackEverywhere(res.pack);
+    setNotice({ type: "success", text: t("creator.templateDeleted") });
   }
 
   const cardsOps: CardsOps = {
@@ -698,29 +769,45 @@ export default function Creator() {
       setSummary((current) => current ? { ...current, gallery: current.gallery.filter((item) => Number((item as CreatorRecord).id) !== id) } : current);
       return true;
     },
+    previewTts: async (text) => {
+      const res = await run("tts-preview", () => send<{ url: string }>("/creator/tts/preview", "POST", {
+        text,
+        lang: String(activePack?.lang || "ru"),
+      }));
+      return res?.url ?? null;
+    },
   };
 
   // ── производные для дочерних панелей ──
-  const miniStyling: MiniCardStyling = useMemo(() => ({
-    backgroundUrl: usableBackgroundUrl(background) || creatorServiceAssetUrl(activePreset.previewSrc ?? firstTemplateImageSrc(activePreset.templates)),
-    tone: templateTone(templateType),
-    layout: textLayout,
-    textStyle,
-    sticker,
-  }), [activePreset.previewSrc, activePreset.templates, background, sticker, templateType, textLayout, textStyle]);
+  const miniStyling: MiniCardStyling = useMemo(() => {
+    const projectSrc = projectId ? templateBackgroundSrc(packTemplates[designTemplateIndex] ?? packTemplates[0]) : "";
+    const projectUrl = projectSrc ? (projectSrc.startsWith("data:") ? projectSrc : creatorServiceAssetUrl(projectSrc)) : "";
+    return {
+      backgroundUrl: projectUrl || usableBackgroundUrl(background) || creatorServiceAssetUrl(activePreset.previewSrc ?? firstTemplateImageSrc(activePreset.templates)),
+      tone: templateTone(templateType),
+      layout: textLayout,
+      textStyle,
+      sticker,
+    };
+  }, [activePreset.previewSrc, activePreset.templates, background, designTemplateIndex, packTemplates, projectId, sticker, templateType, textLayout, textStyle]);
 
   const cardLimits = useMemo(() => limitsFromRules(activePack?.rules), [activePack?.rules]);
 
   // Лимиты символов и эффективный размер шрифта считаются из уже трансформированного шаблона —
   // ровно то, что увидит сервер в deriveRules (просчёт на этапе проектирования)
+  const designCapacitySource = useMemo(() => {
+    if (!projectId) return activeTemplatePayload;
+    const selected = activeTemplatePayload[Math.min(designTemplateIndex, Math.max(0, activeTemplatePayload.length - 1))];
+    return selected ? [selected] : activeTemplatePayload;
+  }, [activeTemplatePayload, designTemplateIndex, projectId]);
   const capacities: Capacities = useMemo(() => ({
-    heading: capacityForRole(activeTemplatePayload, "heading"),
-    body: capacityForRole(activeTemplatePayload, "body"),
-  }), [activeTemplatePayload]);
+    heading: capacityForRole(designCapacitySource, "heading"),
+    body: capacityForRole(designCapacitySource, "body"),
+  }), [designCapacitySource]);
   const fontSizes: FontSizes = useMemo(() => ({
-    heading: fontSizeForRole(activeTemplatePayload, "heading"),
-    body: fontSizeForRole(activeTemplatePayload, "body"),
-  }), [activeTemplatePayload]);
+    heading: fontSizeForRole(designCapacitySource, "heading"),
+    body: fontSizeForRole(designCapacitySource, "body"),
+  }), [designCapacitySource]);
 
   const projectGallery: GalleryItem[] = useMemo(() => {
     const items = (summary?.gallery ?? [])
@@ -791,6 +878,12 @@ export default function Creator() {
             setMediaSettings={setMediaSettings}
             uploadMotionGif={uploadMotionGif}
             uploadMusic={uploadMusic}
+            templates={wizardBaseTemplates}
+            templateIndex={designTemplateIndex}
+            setTemplateIndex={setDesignTemplateIndex}
+            backgrounds={summary?.backgrounds ?? []}
+            userBackgrounds={summary?.userBackgrounds ?? []}
+            onPickBackground={(src) => void pickEditorBackground(src)}
             capacities={capacities}
             fontSizes={fontSizes}
             canUndoDesign={canUndoDesign}
@@ -881,6 +974,14 @@ export default function Creator() {
                       setMediaSettings={setMediaSettings}
                       uploadMotionGif={uploadMotionGif}
                       background={background}
+                      templates={packTemplates}
+                      templateIndex={designTemplateIndex}
+                      setTemplateIndex={setDesignTemplateIndex}
+                      backgrounds={summary?.backgrounds ?? []}
+                      userBackgrounds={summary?.userBackgrounds ?? []}
+                      onPickBackground={(src) => void pickEditorBackground(src)}
+                      onUploadBackground={uploadBackground}
+                      onDeleteTemplate={packTemplates.length > 1 ? (index) => void deleteDesignTemplate(index) : undefined}
                       capacities={capacities}
                       fontSizes={fontSizes}
                       canUndoDesign={canUndoDesign}

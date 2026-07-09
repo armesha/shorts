@@ -1,8 +1,10 @@
 // Вкладка «Видео» проекта: собрать MP4/PNG по карточке, ZIP по паку и галерея готовых файлов.
 // Длительность/музыка/GIF берутся из настроек шаблона (правятся на вкладке «Шаблон»).
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Archive,
+  ChevronLeft,
+  ChevronRight,
   Clapperboard,
   Download,
   FileImage,
@@ -10,12 +12,14 @@ import {
   Mic,
   Music,
   Pencil,
+  Play,
+  Square,
   Timer,
   Trash2,
 } from "lucide-react";
 import { useT } from "../../lib/i18n";
-import { MiniCard, type MiniCardStyling } from "./MiniCard";
-import { cardTitleText, packCardItems, parseUtcDate, type GalleryItem } from "./model";
+import { MiniCard, stylingForTemplate, type MiniCardStyling } from "./MiniCard";
+import { cardTemplateIndex, cardTitleText, packCardItems, parseUtcDate, type GalleryItem } from "./model";
 import type { CreatorAsset, CreatorPack, MediaSettings } from "./types";
 
 export type ExportOptions = {
@@ -28,6 +32,8 @@ export type VideosOps = {
   exportCard: (opts: ExportOptions) => Promise<GalleryItem | null>;
   exportZip: (opts: Omit<ExportOptions, "index"> & { limit: number }) => Promise<boolean>;
   deleteGalleryItem: (id: number) => Promise<boolean>;
+  /** Озвучить текст (edge-tts) и вернуть URL аудио для прослушивания. */
+  previewTts: (text: string) => Promise<string | null>;
 };
 
 export function VideosPanel({
@@ -53,15 +59,68 @@ export function VideosPanel({
 }) {
   const { t, lang } = useT();
   const cards = packCardItems(pack);
+  const templates = useMemo(() => (Array.isArray(pack.templates) ? pack.templates : []), [pack.templates]);
   const [index, setIndex] = useState(0);
   const [format, setFormat] = useState<"mp4" | "png">("mp4");
   const [voiceover, setVoiceover] = useState(false);
   const [zipLimit, setZipLimit] = useState(Math.max(1, Math.min(cards.length || 1, 12)));
   const [deleteArmedId, setDeleteArmedId] = useState<number | null>(null);
+  const [ttsState, setTtsState] = useState<"idle" | "loading" | "playing">("idle");
+  const ttsAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const safeIndex = Math.min(index, Math.max(0, cards.length - 1));
   const selected = cards[safeIndex];
   const selectedText = selected ? cardTitleText(selected) : null;
+  const selectedStyling = selected
+    ? stylingForTemplate(styling, templates[cardTemplateIndex(selected, safeIndex, templates.length)])
+    : styling;
+
+  const stopTts = () => {
+    const audio = ttsAudioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.removeAttribute("src");
+    }
+    setTtsState("idle");
+  };
+
+  useEffect(() => () => {
+    ttsAudioRef.current?.pause();
+  }, []);
+
+  // смена карточки останавливает прослушивание озвучки
+  useEffect(() => {
+    stopTts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [safeIndex]);
+
+  const playTts = async () => {
+    if (ttsState === "playing") {
+      stopTts();
+      return;
+    }
+    if (!selectedText || ttsState === "loading") return;
+    const narration = (selectedText.narration || selectedText.text || selectedText.title).trim();
+    if (!narration) return;
+    setTtsState("loading");
+    const url = await ops.previewTts(narration);
+    if (!url) {
+      setTtsState("idle");
+      return;
+    }
+    if (!ttsAudioRef.current) {
+      ttsAudioRef.current = new Audio();
+      ttsAudioRef.current.onended = () => setTtsState("idle");
+      ttsAudioRef.current.onerror = () => setTtsState("idle");
+    }
+    ttsAudioRef.current.src = url;
+    try {
+      await ttsAudioRef.current.play();
+      setTtsState("playing");
+    } catch {
+      setTtsState("idle");
+    }
+  };
   const locale = lang === "en" ? "en-GB" : "ru-RU";
   const dateText = useMemo(
     () => (value: string) => {
@@ -111,20 +170,42 @@ export function VideosPanel({
         <div className="creator-export-settings">
           <label className="form-control creator-export-picker">
             <span className="label-text">{t("creator.exportPickCard")}</span>
-            <select
-              className="select select-bordered select-sm"
-              value={safeIndex}
-              onChange={(event) => setIndex(Number(event.target.value))}
-            >
-              {cards.map((card, cardIndex) => {
-                const { title } = cardTitleText(card);
-                return (
-                  <option key={cardIndex} value={cardIndex}>
-                    #{cardIndex + 1} · {title.slice(0, 48) || t("creator.previewHeadingFallback")}
-                  </option>
-                );
-              })}
-            </select>
+            <div className="creator-export-picker-row">
+              <button
+                type="button"
+                className="btn btn-sm btn-square btn-outline"
+                onClick={() => setIndex(Math.max(0, safeIndex - 1))}
+                disabled={safeIndex <= 0}
+                aria-label={t("creator.prevCard")}
+                title={t("creator.prevCard")}
+              >
+                <ChevronLeft size={15} />
+              </button>
+              <select
+                className="select select-bordered select-sm"
+                value={safeIndex}
+                onChange={(event) => setIndex(Number(event.target.value))}
+              >
+                {cards.map((card, cardIndex) => {
+                  const { title } = cardTitleText(card);
+                  return (
+                    <option key={cardIndex} value={cardIndex}>
+                      #{cardIndex + 1} · {title.slice(0, 48) || t("creator.previewHeadingFallback")}
+                    </option>
+                  );
+                })}
+              </select>
+              <button
+                type="button"
+                className="btn btn-sm btn-square btn-outline"
+                onClick={() => setIndex(Math.min(cards.length - 1, safeIndex + 1))}
+                disabled={safeIndex >= cards.length - 1}
+                aria-label={t("creator.nextCard")}
+                title={t("creator.nextCard")}
+              >
+                <ChevronRight size={15} />
+              </button>
+            </div>
           </label>
 
           <div className="creator-export-row">
@@ -148,6 +229,18 @@ export function VideosPanel({
                 <Mic size={14} />
                 {t("creator.voiceover")}
               </label>
+            )}
+            {format === "mp4" && voiceover && (
+              <button
+                type="button"
+                className={`btn btn-xs btn-outline gap-1 creator-tts-preview ${ttsState === "playing" ? "is-playing" : ""}`}
+                onClick={() => void playTts()}
+                disabled={ttsState === "loading" || busy !== null}
+                title={t("creator.listenVoiceover")}
+              >
+                {ttsState === "loading" ? <Loader2 className="animate-spin" size={13} /> : ttsState === "playing" ? <Square size={12} /> : <Play size={13} />}
+                {ttsState === "playing" ? t("creator.stopListening") : t("creator.listenVoiceover")}
+              </button>
             )}
           </div>
 
@@ -212,7 +305,7 @@ export function VideosPanel({
 
         <div className="creator-export-preview">
           {selectedText && (
-            <MiniCard styling={styling} title={selectedText.title} text={selectedText.text} className="is-large" />
+            <MiniCard styling={selectedStyling} title={selectedText.title} text={selectedText.text} className="is-large" />
           )}
         </div>
       </section>

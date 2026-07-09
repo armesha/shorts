@@ -29,8 +29,10 @@ export function firstTemplateImageSrc(templates: unknown): string | undefined {
   for (const template of list) {
     const elements = Array.isArray((template as CreatorRecord)?.elements) ? ((template as CreatorRecord).elements as unknown[]) : [];
     const image = elements.find((el) => {
-      const src = (el as CreatorRecord)?.src;
-      return (el as CreatorRecord)?.type === "image" && typeof src === "string" && src.startsWith("assets/template-packs/");
+      const record = el as CreatorRecord;
+      const src = record?.src;
+      const id = String(record?.id ?? "");
+      return record?.type === "image" && id !== "creator-sticker-image" && typeof src === "string" && /^(assets\/template-packs\/|data:image\/)/.test(src);
     }) as CreatorRecord | undefined;
     if (typeof image?.src === "string") return image.src;
   }
@@ -154,6 +156,14 @@ export function cardTitleText(card: CreatorRecord): { title: string; text: strin
 
 export function cardAddedAt(card: CreatorRecord): string {
   return typeof card.addedAt === "string" ? card.addedAt : "";
+}
+
+/** Шаблон карточки: сохранённый индекс, иначе раскладка по кругу (как на сервере). */
+export function cardTemplateIndex(card: CreatorRecord, cardIndex: number, templateCount: number): number {
+  if (templateCount <= 0) return 0;
+  const stored = Number(card.templateIndex);
+  if (Number.isInteger(stored) && stored >= 0 && stored < templateCount) return stored;
+  return cardIndex % templateCount;
 }
 
 export type GalleryItem = {
