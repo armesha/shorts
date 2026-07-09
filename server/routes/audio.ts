@@ -21,18 +21,30 @@ import {
 } from "../services/gemini-tts-characters.ts";
 
 const AUDIO_AVATAR_MODEL_DIR = resolve(process.cwd(), "data/audio-avatars");
-const AUDIO_AVATAR_MODELS: Record<string, { name: string; file: string; contentType: string; description: string }> = {
+const AUDIO_AVATAR_MODELS: Record<string, { name: string; file: string; contentType: string; description: string; license: string; source: string }> = {
   "vika.vrm": {
     name: "Вика",
     file: "vika.vrm",
     contentType: "model/gltf-binary",
     description: "Оригинальный VRM 1.0 персонаж для вертикальных Shorts с анекдотами и мемами.",
+    license: "Project-owned custom asset",
+    source: "tmp/vika-avatar/vika.vrm",
   },
   "vika.glb": {
     name: "Вика GLB",
     file: "vika.glb",
     contentType: "model/gltf-binary",
     description: "GLB-экспорт того же персонажа для проверки совместимости.",
+    license: "Project-owned custom asset",
+    source: "tmp/vika-avatar/vika.glb",
+  },
+  "coolbanana.vrm": {
+    name: "Cool Banana",
+    file: "coolbanana.vrm",
+    contentType: "model/gltf-binary",
+    description: "CC0 VRM 0.x маскот из Open Source Avatars / 100Avatars R1.",
+    license: "CC0",
+    source: "https://arweave.net/o4gWzn4PPzYo2KPm-wFXnvBC7KrN6N_R0NNfg1yPPeM",
   },
 };
 
@@ -105,6 +117,8 @@ export function registerAudioRoutes(app: FastifyInstance, db: Db, deps: RouteDep
           name: model.name,
           file: model.file,
           description: model.description,
+          license: model.license,
+          source: model.source,
           available: existsSync(abs),
           size: existsSync(abs) ? statSync(abs).size : null,
           url: `/api/audio/avatar/model/${encodeURIComponent(id)}`,

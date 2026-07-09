@@ -28,11 +28,12 @@ type LoadedGltf = {
   scene: import("three").Object3D;
   parser?: {
     json?: VrmGltfJson;
-    associations?: Map<import("three").Object3D, { nodes?: number }>;
+    associations?: Map<import("three").Object3D, { nodes?: number; meshes?: number }>;
   };
 };
 
 type VrmGltfJson = {
+  meshes?: Array<{ name?: string }>;
   nodes?: Array<{ name?: string }>;
   extensions?: {
     VRMC_vrm?: {
@@ -41,12 +42,27 @@ type VrmGltfJson = {
         custom?: Record<string, VrmExpression | undefined>;
       };
     };
+    VRM?: {
+      blendShapeMaster?: {
+        blendShapeGroups?: Vrm0BlendShapeGroup[];
+      };
+    };
   };
 };
 
 type VrmExpression = {
   morphTargetBinds?: Array<{
     node?: number;
+    index?: number;
+    weight?: number;
+  }>;
+};
+
+type Vrm0BlendShapeGroup = {
+  name?: string;
+  presetName?: string;
+  binds?: Array<{
+    mesh?: number;
     index?: number;
     weight?: number;
   }>;
@@ -90,8 +106,9 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, getFrame, onCanv
       if (disposed) return;
 
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(24, targetCanvas.width / targetCanvas.height, 0.01, 100);
-      camera.position.set(0, 1.15, 5.2);
+      const camera = new THREE.PerspectiveCamera(26, targetCanvas.width / targetCanvas.height, 0.01, 100);
+      camera.position.set(0, 0.45, 5.7);
+      camera.lookAt(0, 0.15, 0);
       const webglRenderer = new THREE.WebGLRenderer({ canvas: targetCanvas, antialias: true, preserveDrawingBuffer: true });
       renderer = webglRenderer;
       webglRenderer.setSize(targetCanvas.width, targetCanvas.height, false);
@@ -113,12 +130,15 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, getFrame, onCanv
       scene.add(root);
       normalizeModel(THREE, root);
       const vrmBindings = collectVrmExpressionBindings(gltf as LoadedGltf, root);
-      const bindings = vrmBindings.length ? vrmBindings : collectMorphBindings(root);
+      const vrm0Bindings = vrmBindings.length ? [] : collectVrm0BlendShapeBindings(gltf as LoadedGltf, root);
+      const bindings = vrmBindings.length ? vrmBindings : vrm0Bindings.length ? vrm0Bindings : collectMorphBindings(root);
       setMorphCount(bindings.length);
       setStatus(
         bindings.length
           ? vrmBindings.length
             ? `Модель загружена · VRM expressions: ${bindings.length}`
+            : vrm0Bindings.length
+              ? `Модель загружена · VRM 0.x expressions: ${bindings.length}`
             : `Модель загружена · morph targets: ${bindings.length}`
           : "Модель загружена · morph targets не найдены",
       );
@@ -160,16 +180,24 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, getFrame, onCanv
 }
 
 function normalizeModel(THREE: typeof import("three"), root: import("three").Object3D) {
+  root.position.set(0, 0, 0);
+  root.scale.setScalar(1);
   const box = new THREE.Box3().setFromObject(root);
   const size = new THREE.Vector3();
   const center = new THREE.Vector3();
   box.getSize(size);
   box.getCenter(center);
   root.position.sub(center);
-  const maxDim = Math.max(size.x, size.y, size.z, 0.01);
-  const scale = 2.9 / maxDim;
+  const height = Math.max(size.y, 0.01);
+  const widthDepth = Math.max(size.x, size.z, 0.01);
+  const scale = Math.min(2.34 / height, 1.72 / widthDepth);
   root.scale.setScalar(scale);
-  root.position.y -= 0.42;
+  const normalizedBox = new THREE.Box3().setFromObject(root);
+  const normalizedCenter = new THREE.Vector3();
+  normalizedBox.getCenter(normalizedCenter);
+  root.position.y += 0.12 - normalizedCenter.y;
+  root.position.x = 0;
+  root.position.z = 0;
 }
 
 function collectMorphBindings(root: import("three").Object3D): MorphBinding[] {
@@ -206,6 +234,28 @@ function collectVrmExpressionBindings(gltf: LoadedGltf, root: import("three").Ob
       const mesh = findMorphMesh(gltf, root, nodeName, nodeIndex, morphIndex);
       if (!mesh) continue;
       const key = `${nodeName}:${morphIndex}:${kind}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      bindings.push({ mesh, index: morphIndex, kind, weight: normalizeVrmWeight(bind.weight) });
+    }
+  }
+  return bindings;
+}
+
+function collectVrm0BlendShapeBindings(gltf: LoadedGltf, root: import("three").Object3D): MorphBinding[] {
+  const groups = gltf.parser?.json?.extensions?.VRM?.blendShapeMaster?.blendShapeGroups ?? [];
+  const bindings: MorphBinding[] = [];
+  const seen = new Set<string>();
+  for (const group of groups) {
+    const kind = classifyVrm0Expression(group.presetName || group.name || "");
+    if (!kind || !group.binds?.length) continue;
+    for (const bind of group.binds) {
+      const meshIndex = Number(bind.mesh);
+      const morphIndex = Number(bind.index);
+      if (!Number.isInteger(meshIndex) || !Number.isInteger(morphIndex) || morphIndex < 0) continue;
+      const mesh = findMorphMeshByMeshIndex(gltf, root, meshIndex, morphIndex);
+      if (!mesh) continue;
+      const key = `${meshIndex}:${morphIndex}:${kind}`;
       if (seen.has(key)) continue;
       seen.add(key);
       bindings.push({ mesh, index: morphIndex, kind, weight: normalizeVrmWeight(bind.weight) });
@@ -256,6 +306,42 @@ function classifyVrmExpression(name: string): MorphKind | null {
   }
 }
 
+function classifyVrm0Expression(name: string): MorphKind | null {
+  const n = name.trim().toLowerCase();
+  switch (n) {
+    case "a":
+    case "aa":
+      return "aa";
+    case "i":
+    case "ih":
+      return "ih";
+    case "u":
+    case "ou":
+      return "ou";
+    case "e":
+    case "ee":
+      return "ee";
+    case "o":
+    case "oh":
+      return "oh";
+    case "blink":
+    case "blink_l":
+    case "blink_r":
+      return "blink";
+    case "joy":
+    case "happy":
+    case "fun":
+      return "smile";
+    case "angry":
+      return "angry";
+    case "sorrow":
+    case "sad":
+      return "sad";
+    default:
+      return null;
+  }
+}
+
 function findMorphMesh(gltf: LoadedGltf, root: import("three").Object3D, nodeName: string, nodeIndex: number, morphIndex: number): MorphMesh | null {
   const associations = gltf.parser?.associations;
   let associated: MorphMesh | null = null;
@@ -272,6 +358,33 @@ function findMorphMesh(gltf: LoadedGltf, root: import("three").Object3D, nodeNam
       return;
     }
     if (nodeName && mesh.name === nodeName) {
+      exact = mesh;
+      return;
+    }
+    if (!normalized && target && normalizeNodeName(mesh.name ?? "") === target) {
+      normalized = mesh;
+    }
+  });
+  return associated ?? exact ?? normalized;
+}
+
+function findMorphMeshByMeshIndex(gltf: LoadedGltf, root: import("three").Object3D, meshIndex: number, morphIndex: number): MorphMesh | null {
+  const associations = gltf.parser?.associations;
+  const meshName = gltf.parser?.json?.meshes?.[meshIndex]?.name ?? "";
+  let associated: MorphMesh | null = null;
+  let exact: MorphMesh | null = null;
+  let normalized: MorphMesh | null = null;
+  const target = normalizeNodeName(meshName);
+  root.traverse((node) => {
+    if (associated) return;
+    const mesh = node as MorphMesh;
+    if (!mesh.morphTargetInfluences || morphIndex >= mesh.morphTargetInfluences.length) return;
+    const association = associations?.get(node);
+    if (association?.meshes === meshIndex) {
+      associated = mesh;
+      return;
+    }
+    if (meshName && mesh.name === meshName) {
       exact = mesh;
       return;
     }
