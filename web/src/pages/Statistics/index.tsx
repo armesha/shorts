@@ -254,7 +254,7 @@ export default function Statistics() {
           <p className="text-base-content/60">{t("stats.subtitle")}</p>
         </div>
         <div className="rounded-lg border border-base-300 bg-base-100 px-3 py-2">
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             <div className="join overflow-hidden rounded-lg border border-base-300" role="group" aria-label={t("stats.period")}>
               {DAYS_OPTIONS.map((d) => (
                 <button
