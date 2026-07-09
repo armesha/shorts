@@ -88,7 +88,7 @@ function Gate() {
             <Route path="/admin/analytics" element={<Navigate to="/statistics" replace />} />
             <Route path="/clip-demos" element={<ClipDemos />} />
             <Route path="/examples" element={user.isSuperAdmin ? <Examples /> : <Navigate to="/channels" replace />} />
-            <Route path="/audio" element={user.isSuperAdmin ? <AudioLab /> : <Navigate to="/channels" replace />} />
+            <Route path="/audio/*" element={user.isSuperAdmin ? <AudioLab /> : <Navigate to="/channels" replace />} />
             <Route path="/long-videos" element={<LongVideos />} />
             <Route path="/limits" element={realAdmin ? <Limits /> : <Navigate to="/channels" replace />} />
             <Route path="/creator" element={<CreatorExternalRedirect />} />

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { AppIcon } from "../components/AppIcon";
 import { PrettyAudioPlayer } from "../components/PrettyAudioPlayer";
 import { AvatarDirector } from "./AudioLab/AvatarDirector";
@@ -39,6 +40,12 @@ type TextTemplate = {
 };
 
 type AudioLabTab = "studio" | "characters" | "avatar";
+
+const AUDIO_TAB_PATHS: Record<AudioLabTab, string> = {
+  studio: "/audio",
+  characters: "/audio/characters",
+  avatar: "/audio/avatar",
+};
 
 const EMPTY_FORM: FormState = {
   language: "",
@@ -156,7 +163,9 @@ const TEXT_TEMPLATES: TextTemplate[] = [
 const GROUPS = ["Реакции", "Интро", "Финалы", "Сегменты", "Спокойные"] as const;
 
 export default function AudioLab() {
-  const [activeTab, setActiveTab] = useState<AudioLabTab>("studio");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const activeTab = tabFromPath(location.pathname);
   const [options, setOptions] = useState<GeminiTtsOptions | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [segments, setSegments] = useState<Segment[]>(() => segmentsFromText(""));
@@ -273,7 +282,7 @@ export default function AudioLab() {
       text: character.sampleText,
     }));
     setSegments(segmentsFromText(character.sampleText));
-    setActiveTab("studio");
+    navigate(AUDIO_TAB_PATHS.studio);
     setCharacterNotice(`Настройки «${character.name}» перенесены в студию`);
     window.setTimeout(() => setCharacterNotice(null), 1800);
   }
@@ -383,18 +392,18 @@ export default function AudioLab() {
         <>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="tabs tabs-boxed rounded-md bg-base-200 p-1">
-              <button type="button" className={`tab gap-2 ${activeTab === "studio" ? "tab-active" : ""}`} onClick={() => setActiveTab("studio")}>
+              <NavLink to={AUDIO_TAB_PATHS.studio} end className={({ isActive }) => `tab gap-2 ${isActive || activeTab === "studio" ? "tab-active" : ""}`}>
                 <AppIcon name="studio" size={15} />
                 Студия
-              </button>
-              <button type="button" className={`tab gap-2 ${activeTab === "characters" ? "tab-active" : ""}`} onClick={() => setActiveTab("characters")}>
+              </NavLink>
+              <NavLink to={AUDIO_TAB_PATHS.characters} className={({ isActive }) => `tab gap-2 ${isActive ? "tab-active" : ""}`}>
                 <AppIcon name="users" size={15} />
                 Библиотека персонажей
-              </button>
-              <button type="button" className={`tab gap-2 ${activeTab === "avatar" ? "tab-active" : ""}`} onClick={() => setActiveTab("avatar")}>
+              </NavLink>
+              <NavLink to={AUDIO_TAB_PATHS.avatar} className={({ isActive }) => `tab gap-2 ${isActive ? "tab-active" : ""}`}>
                 <AppIcon name="video" size={15} />
                 Аватар
-              </button>
+              </NavLink>
             </div>
             {characterNotice && (
               <div className="badge badge-success badge-outline h-auto max-w-full justify-start whitespace-normal px-3 py-2 text-left">
@@ -888,4 +897,10 @@ function formatDuration(value: number): string {
   const minutes = Math.floor(total / 60);
   const seconds = total % 60;
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
+
+function tabFromPath(pathname: string): AudioLabTab {
+  if (pathname.startsWith(AUDIO_TAB_PATHS.characters)) return "characters";
+  if (pathname.startsWith(AUDIO_TAB_PATHS.avatar)) return "avatar";
+  return "studio";
 }

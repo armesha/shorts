@@ -1,12 +1,20 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
 import type { AvatarFrame, StagePreset } from "./avatarEngine";
 
 type ThreeAvatarCanvasProps = {
   modelUrl: string;
   modelName: string;
   stage: StagePreset;
+  modelView: AvatarModelView;
+  onModelViewChange: (patch: Partial<AvatarModelView>) => void;
   getFrame: () => AvatarFrame;
   onCanvasReady: (canvas: HTMLCanvasElement | null) => void;
+};
+
+export type AvatarModelView = {
+  scale: number;
+  yawDeg: number;
+  yOffset: number;
 };
 
 type MorphKind = "mouth" | "aa" | "ih" | "ou" | "ee" | "oh" | "blink" | "smile" | "laugh" | "surprise" | "angry" | "sad" | "relaxed";
@@ -22,6 +30,25 @@ type MorphBinding = {
   index: number;
   kind: MorphKind;
   weight: number;
+};
+
+type RigBone = import("three").Object3D;
+
+type LiveRig = {
+  hips?: RigBone;
+  spine?: RigBone;
+  chest?: RigBone;
+  neck?: RigBone;
+  head?: RigBone;
+  leftShoulder?: RigBone;
+  leftUpperArm?: RigBone;
+  leftLowerArm?: RigBone;
+  leftHand?: RigBone;
+  rightShoulder?: RigBone;
+  rightUpperArm?: RigBone;
+  rightLowerArm?: RigBone;
+  rightHand?: RigBone;
+  rest: Map<RigBone, import("three").Euler>;
 };
 
 type LoadedGltf = {
@@ -68,12 +95,15 @@ type Vrm0BlendShapeGroup = {
   }>;
 };
 
-export function ThreeAvatarCanvas({ modelUrl, modelName, stage, getFrame, onCanvasReady }: ThreeAvatarCanvasProps) {
+export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, onModelViewChange, getFrame, onCanvasReady }: ThreeAvatarCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const frameRef = useRef(getFrame);
   const stageRef = useRef(stage);
+  const modelViewRef = useRef(modelView);
+  const dragRef = useRef<{ pointerId: number; startX: number; startYawDeg: number } | null>(null);
   const [status, setStatus] = useState("Загрузка модели");
   const [morphCount, setMorphCount] = useState(0);
+  const [dragging, setDragging] = useState(false);
 
   useEffect(() => {
     frameRef.current = getFrame;
@@ -82,6 +112,10 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, getFrame, onCanv
   useEffect(() => {
     stageRef.current = stage;
   }, [stage]);
+
+  useEffect(() => {
+    modelViewRef.current = modelView;
+  }, [modelView]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -129,9 +163,12 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, getFrame, onCanv
       root.name = modelName;
       scene.add(root);
       normalizeModel(THREE, root);
+      const basePosition = root.position.clone();
+      const baseScale = root.scale.x || 1;
       const vrmBindings = collectVrmExpressionBindings(gltf as LoadedGltf, root);
       const vrm0Bindings = vrmBindings.length ? [] : collectVrm0BlendShapeBindings(gltf as LoadedGltf, root);
       const bindings = vrmBindings.length ? vrmBindings : vrm0Bindings.length ? vrm0Bindings : collectMorphBindings(root);
+      const rig = collectLiveRig(root);
       setMorphCount(bindings.length);
       setStatus(
         bindings.length
@@ -147,8 +184,13 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, getFrame, onCanv
         const activeStage = stageRef.current;
         scene.background = new THREE.Color(activeStage.middle);
         const frame = frameRef.current();
-        root.rotation.set(-frame.gazeY * 0.18, frame.gazeX * 0.42, frame.headTilt * 0.85);
-        root.position.y = frame.headBob * 0.004;
+        const activeView = modelViewRef.current;
+        const yaw = (activeView.yawDeg * Math.PI) / 180;
+        root.scale.setScalar(baseScale * activeView.scale);
+        root.rotation.set(-frame.gazeY * 0.18, yaw + frame.gazeX * 0.42, frame.headTilt * 0.85);
+        root.position.copy(basePosition);
+        root.position.y += activeView.yOffset + frame.headBob * 0.004;
+        applyRigMotion(rig, frame, activeView);
         applyMorphs(bindings, frame);
         webglRenderer.render(scene, camera);
         frameId = window.requestAnimationFrame(animate);
@@ -168,9 +210,43 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, getFrame, onCanv
     };
   }, [modelName, modelUrl]);
 
+  function startDrag(event: PointerEvent<HTMLCanvasElement>) {
+    if (event.button !== 0 && event.pointerType === "mouse") return;
+    dragRef.current = { pointerId: event.pointerId, startX: event.clientX, startYawDeg: modelViewRef.current.yawDeg };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setDragging(true);
+  }
+
+  function moveDrag(event: PointerEvent<HTMLCanvasElement>) {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const nextYaw = normalizeDegrees(drag.startYawDeg + (event.clientX - drag.startX) * 0.42);
+    onModelViewChange({ yawDeg: nextYaw });
+  }
+
+  function endDrag(event: PointerEvent<HTMLCanvasElement>) {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    dragRef.current = null;
+    setDragging(false);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  }
+
   return (
     <div className="relative h-full w-full">
-      <canvas ref={canvasRef} width={720} height={1280} className="h-full w-full" aria-label="Превью 3D-аватара" />
+      <canvas
+        ref={canvasRef}
+        width={720}
+        height={1280}
+        className={`h-full w-full touch-none ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
+        aria-label="Превью 3D-аватара"
+        onPointerDown={startDrag}
+        onPointerMove={moveDrag}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+      />
       <div className="pointer-events-none absolute left-3 top-3 max-w-[calc(100%-24px)] rounded-md bg-base-100/90 px-2 py-1 text-xs font-semibold text-base-content shadow">
         {status}
         {morphCount > 0 ? "" : " · рот fallback"}
@@ -198,6 +274,78 @@ function normalizeModel(THREE: typeof import("three"), root: import("three").Obj
   root.position.y += 0.12 - normalizedCenter.y;
   root.position.x = 0;
   root.position.z = 0;
+}
+
+function collectLiveRig(root: import("three").Object3D): LiveRig {
+  const rig: LiveRig = { rest: new Map() };
+  const byName = new Map<string, RigBone>();
+  root.traverse((node) => {
+    const key = normalizeNodeName(node.name ?? "");
+    if (key) byName.set(key, node);
+  });
+  rig.hips = findBone(byName, ["hips", "mixamorighips"]);
+  rig.spine = findBone(byName, ["spine", "mixamorigspine", "spine1", "mixamorigspine1"]);
+  rig.chest = findBone(byName, ["chest", "spine2", "mixamorigspine2", "mixamorigchest"]);
+  rig.neck = findBone(byName, ["neck", "mixamorigneck"]);
+  rig.head = findBone(byName, ["head", "mixamorighead"]);
+  rig.leftShoulder = findBone(byName, ["leftshoulder", "mixamorigleftshoulder"]);
+  rig.leftUpperArm = findBone(byName, ["leftupperarm", "leftarm", "mixamorigleftarm"]);
+  rig.leftLowerArm = findBone(byName, ["leftlowerarm", "leftforearm", "mixamorigleftforearm"]);
+  rig.leftHand = findBone(byName, ["lefthand", "mixamoriglefthand"]);
+  rig.rightShoulder = findBone(byName, ["rightshoulder", "mixamorigrightshoulder"]);
+  rig.rightUpperArm = findBone(byName, ["rightupperarm", "rightarm", "mixamorigrightarm"]);
+  rig.rightLowerArm = findBone(byName, ["rightlowerarm", "rightforearm", "mixamorigrightforearm"]);
+  rig.rightHand = findBone(byName, ["righthand", "mixamorigrighthand"]);
+
+  for (const bone of Object.values(rig)) {
+    if (!bone || bone instanceof Map) continue;
+    rig.rest.set(bone, bone.rotation.clone());
+  }
+  return rig;
+}
+
+function findBone(byName: Map<string, RigBone>, names: string[]): RigBone | undefined {
+  for (const name of names) {
+    const found = byName.get(normalizeNodeName(name));
+    if (found) return found;
+  }
+  return undefined;
+}
+
+function applyRigMotion(rig: LiveRig, frame: AvatarFrame, view: AvatarModelView) {
+  const t = frame.time;
+  const breathe = Math.sin(t * 1.25);
+  const sway = Math.sin(t * 0.72);
+  const talk = frame.mouth;
+  const energy = Math.max(frame.laugh, frame.surprise * 0.7, talk * 0.35);
+  const facingSide = Math.abs(view.yawDeg) > 70;
+
+  setBoneRotation(rig, rig.hips, breathe * 0.012, frame.gazeX * 0.035 + sway * 0.018, -sway * 0.018);
+  setBoneRotation(rig, rig.spine, breathe * 0.02, frame.gazeX * 0.055, frame.headTilt * 0.16);
+  setBoneRotation(rig, rig.chest, -0.03 + breathe * 0.035 + energy * 0.03, frame.gazeX * 0.065, frame.headTilt * 0.24 + sway * 0.02);
+  setBoneRotation(rig, rig.neck, -frame.gazeY * 0.12, frame.gazeX * 0.12, frame.headTilt * 0.18);
+  setBoneRotation(rig, rig.head, -frame.gazeY * 0.18 + frame.surprise * 0.06, frame.gazeX * 0.2, frame.headTilt * 0.28);
+
+  const leftWave = Math.sin(t * 1.7) * 0.055 + frame.laugh * Math.sin(t * 9) * 0.08;
+  const rightWave = Math.sin(t * 1.55 + 1.2) * 0.055 - frame.laugh * Math.sin(t * 8.5) * 0.08;
+  const armLift = frame.surprise * 0.18 + frame.laugh * 0.1;
+  const sideDampen = facingSide ? 0.65 : 1;
+
+  setBoneRotation(rig, rig.leftShoulder, 0, 0, (0.18 + leftWave * 0.4) * sideDampen);
+  setBoneRotation(rig, rig.rightShoulder, 0, 0, (-0.18 + rightWave * 0.4) * sideDampen);
+  setBoneRotation(rig, rig.leftUpperArm, 0.05 + breathe * 0.015, 0.04 + frame.gazeX * 0.03, (0.92 - armLift + leftWave) * sideDampen);
+  setBoneRotation(rig, rig.rightUpperArm, 0.05 + breathe * 0.015, -0.04 + frame.gazeX * 0.03, (-0.92 + armLift + rightWave) * sideDampen);
+  setBoneRotation(rig, rig.leftLowerArm, 0.06 + talk * 0.04, 0.02, (0.28 + leftWave * 0.8) * sideDampen);
+  setBoneRotation(rig, rig.rightLowerArm, 0.06 + talk * 0.04, -0.02, (-0.28 + rightWave * 0.8) * sideDampen);
+  setBoneRotation(rig, rig.leftHand, Math.sin(t * 2.1) * 0.04, 0, Math.sin(t * 1.4) * 0.04);
+  setBoneRotation(rig, rig.rightHand, Math.sin(t * 2.0 + 0.8) * 0.04, 0, Math.sin(t * 1.3 + 0.5) * 0.04);
+}
+
+function setBoneRotation(rig: LiveRig, bone: RigBone | undefined, x = 0, y = 0, z = 0) {
+  if (!bone) return;
+  const rest = rig.rest.get(bone);
+  if (!rest) return;
+  bone.rotation.set(rest.x + x, rest.y + y, rest.z + z);
 }
 
 function collectMorphBindings(root: import("three").Object3D): MorphBinding[] {
@@ -399,6 +547,13 @@ function normalizeNodeName(value: string): string {
   return value.toLowerCase().replace(/[^a-zа-я0-9]/gi, "");
 }
 
+function normalizeDegrees(value: number): number {
+  let next = value;
+  while (next > 180) next -= 360;
+  while (next < -180) next += 360;
+  return next;
+}
+
 function normalizeVrmWeight(value: unknown): number {
   const parsed = Number(value ?? 1);
   if (!Number.isFinite(parsed)) return 1;
@@ -421,15 +576,15 @@ function morphValue(kind: MorphKind, frame: AvatarFrame): number {
     case "mouth":
       return Math.min(1, frame.mouth + frame.laugh * 0.18 + frame.surprise * 0.2);
     case "aa":
-      return Math.min(1, frame.mouth * (0.72 + Math.sin(frame.time * 15) * 0.1) + frame.laugh * 0.18);
+      return Math.min(1, Math.max(frame.viseme.aa, frame.mouth * 0.28) + frame.laugh * 0.22);
     case "ih":
-      return Math.min(1, frame.mouth * 0.2 + frame.whisper * 0.16);
+      return Math.min(1, Math.max(frame.viseme.ih, frame.mouth * 0.08) + frame.whisper * 0.16);
     case "ou":
-      return Math.min(1, frame.mouth * 0.14 + frame.surprise * 0.14);
+      return Math.min(1, Math.max(frame.viseme.ou, frame.mouth * 0.08) + frame.surprise * 0.14);
     case "ee":
-      return Math.min(1, frame.mouth * 0.18 + frame.smile * 0.1);
+      return Math.min(1, Math.max(frame.viseme.ee, frame.mouth * 0.08) + frame.smile * 0.1);
     case "oh":
-      return Math.min(1, frame.mouth * 0.12 + frame.surprise * 0.4);
+      return Math.min(1, Math.max(frame.viseme.oh, frame.mouth * 0.08) + frame.surprise * 0.45);
     case "blink":
       return Math.min(1, frame.blink + frame.laugh * 0.18);
     case "smile":

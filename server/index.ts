@@ -197,12 +197,14 @@ if (existsSync(resolve(WEB_DIST, "index.html"))) {
   });
   await app.register(fastifyStatic, { root: WEB_DIST, prefix: "/", decorateReply: false });
   app.setNotFoundHandler((req, reply) => {
+    const path = req.url.split("?")[0] ?? req.url;
+    const isAudioLabRoute = path === "/audio" || path.startsWith("/audio/avatar") || path.startsWith("/audio/characters");
     if (
       (req.method === "GET" || req.method === "HEAD") &&
       !req.url.startsWith("/api/") &&
       !req.url.startsWith("/creator") &&
       !req.url.startsWith("/files/") &&
-      !req.url.startsWith("/audio/") &&
+      (!req.url.startsWith("/audio/") || isAudioLabRoute) &&
       !req.url.startsWith("/fact-videos/") &&
       !req.url.startsWith("/avatars/")
     ) {

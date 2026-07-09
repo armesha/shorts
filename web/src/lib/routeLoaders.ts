@@ -49,6 +49,7 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
 
   if (pathname === "/" || pathname === "/channels" || pathname === "/accounts") return "accounts";
   if (pathname.startsWith("/accounts/")) return "accountDetail";
+  if (pathname.startsWith("/audio")) return "audioLab";
   if (pathname === "/admin/analytics") return "statistics";
   if (pathname === "/tg") return "telegramMiniApp";
 
@@ -77,8 +78,6 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
       return "clipDemos";
     case "/examples":
       return "examples";
-    case "/audio":
-      return "audioLab";
     case "/long-videos":
       return "longVideos";
     case "/limits":

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AppIcon } from "../../components/AppIcon";
 import type { GeminiTtsCharacter, GeminiTtsPreviewResult } from "../../lib/api";
 import { COMMANDS, STAGE_PRESETS, TAG_TO_COMMAND, type AvatarCommand, type AvatarFrame, type StagePreset, type StagePresetId, type TimelineCue } from "./avatarEngine";
-import { ThreeAvatarCanvas } from "./ThreeAvatarCanvas";
+import { ThreeAvatarCanvas, type AvatarModelView } from "./ThreeAvatarCanvas";
 
 type AvatarDirectorProps = {
   transcript: string;
@@ -48,6 +48,7 @@ const BUILT_IN_AVATAR_MODELS: AvatarModelFile[] = [
 ];
 
 const DEFAULT_AVATAR_MODEL = BUILT_IN_AVATAR_MODELS[0];
+const DEFAULT_MODEL_VIEW: AvatarModelView = { scale: 1, yawDeg: 0, yOffset: 0 };
 
 const MANUAL_TIMELINE = `0.0 look_left
 0.5 smile
@@ -73,6 +74,7 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
   const [rendererMode, setRendererMode] = useState<RendererMode>("model");
   const [stageId, setStageId] = useState<StagePresetId>("studio");
   const [modelFile, setModelFile] = useState<AvatarModelFile | null>(DEFAULT_AVATAR_MODEL);
+  const [modelView, setModelView] = useState<AvatarModelView>(DEFAULT_MODEL_VIEW);
   const [notice, setNotice] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
   const [recordUrl, setRecordUrl] = useState<string | null>(null);
@@ -240,6 +242,10 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
     window.setTimeout(() => setNotice(null), 1800);
   }
 
+  function updateModelView<K extends keyof AvatarModelView>(key: K, value: AvatarModelView[K]) {
+    setModelView((prev) => ({ ...prev, [key]: value }));
+  }
+
   const setActiveCanvas = useCallback((canvas: HTMLCanvasElement | null) => {
     activeCanvasRef.current = canvas;
   }, []);
@@ -264,6 +270,7 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
       version: 1,
       rendererMode,
       stageId,
+      modelView,
       modelFileName: modelFile?.name ?? null,
       modelSource: modelFile?.source ?? null,
       selectedSourceId,
@@ -286,11 +293,19 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
           stageId: StagePresetId;
           selectedSourceId: string;
           manualTimeline: string;
+          modelView: Partial<AvatarModelView>;
         }>;
         if (parsed.rendererMode === "procedural" || parsed.rendererMode === "model") setRendererMode(parsed.rendererMode);
         if (parsed.stageId && STAGE_PRESETS.some((item) => item.id === parsed.stageId)) setStageId(parsed.stageId);
         if (parsed.selectedSourceId) setSelectedSourceId(parsed.selectedSourceId);
         if (typeof parsed.manualTimeline === "string") setManualTimeline(parsed.manualTimeline);
+        if (parsed.modelView) {
+          setModelView({
+            scale: clampNumber(parsed.modelView.scale, 0.55, 1.85, DEFAULT_MODEL_VIEW.scale),
+            yawDeg: clampNumber(parsed.modelView.yawDeg, -180, 180, DEFAULT_MODEL_VIEW.yawDeg),
+            yOffset: clampNumber(parsed.modelView.yOffset, -0.65, 0.65, DEFAULT_MODEL_VIEW.yOffset),
+          });
+        }
         setNotice("Проект импортирован");
         window.setTimeout(() => setNotice(null), 1800);
       } catch {
@@ -378,11 +393,19 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
           </div>
         </div>
 
-        {notice && <div className="mb-3 rounded-md border border-success/30 bg-success/10 px-3 py-2 text-sm font-semibold text-success-content">{notice}</div>}
+        {notice && <div className="mb-3 rounded-md border border-success/35 bg-success/10 px-3 py-2 text-sm font-semibold text-success">{notice}</div>}
 
         <div className="mx-auto aspect-[9/16] max-h-[74vh] w-full max-w-[430px] overflow-hidden rounded-md bg-neutral shadow-inner">
           {rendererMode === "model" && modelFile ? (
-            <ThreeAvatarCanvas modelUrl={modelFile.url} modelName={modelFile.name} stage={stage} getFrame={getCurrentFrame} onCanvasReady={setActiveCanvas} />
+            <ThreeAvatarCanvas
+              modelUrl={modelFile.url}
+              modelName={modelFile.name}
+              stage={stage}
+              modelView={modelView}
+              onModelViewChange={(patch) => setModelView((prev) => ({ ...prev, ...patch }))}
+              getFrame={getCurrentFrame}
+              onCanvasReady={setActiveCanvas}
+            />
           ) : (
             <ProceduralAvatarCanvas stage={stage} getFrame={getCurrentFrame} onCanvasReady={setActiveCanvas} />
           )}
@@ -468,6 +491,73 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
                 {item.label}
               </button>
             ))}
+          </div>
+        </Panel>
+
+        <Panel title="Камера" icon="video">
+          <div className="grid gap-3">
+            <label className="grid gap-1">
+              <span className="flex items-center justify-between gap-2 text-xs font-semibold text-base-content/65">
+                <span>Размер</span>
+                <span>{Math.round(modelView.scale * 100)}%</span>
+              </span>
+              <input
+                type="range"
+                min={0.55}
+                max={1.85}
+                step={0.01}
+                value={modelView.scale}
+                onChange={(event) => updateModelView("scale", Number(event.target.value))}
+                className="range range-primary range-sm"
+                aria-label="Размер персонажа"
+              />
+            </label>
+            <label className="grid gap-1">
+              <span className="flex items-center justify-between gap-2 text-xs font-semibold text-base-content/65">
+                <span>Поворот</span>
+                <span>{Math.round(modelView.yawDeg)}°</span>
+              </span>
+              <input
+                type="range"
+                min={-180}
+                max={180}
+                step={1}
+                value={modelView.yawDeg}
+                onChange={(event) => updateModelView("yawDeg", Number(event.target.value))}
+                className="range range-primary range-sm"
+                aria-label="Поворот персонажа"
+              />
+              <div className="grid grid-cols-3 gap-2">
+                <button type="button" className="btn btn-xs btn-ghost border border-base-300" onClick={() => updateModelView("yawDeg", clampNumber(modelView.yawDeg - 15, -180, 180, 0))}>
+                  -15°
+                </button>
+                <button type="button" className="btn btn-xs btn-ghost border border-base-300" onClick={() => updateModelView("yawDeg", 0)}>
+                  0°
+                </button>
+                <button type="button" className="btn btn-xs btn-ghost border border-base-300" onClick={() => updateModelView("yawDeg", clampNumber(modelView.yawDeg + 15, -180, 180, 0))}>
+                  +15°
+                </button>
+              </div>
+            </label>
+            <label className="grid gap-1">
+              <span className="flex items-center justify-between gap-2 text-xs font-semibold text-base-content/65">
+                <span>Высота</span>
+                <span>{Math.round(modelView.yOffset * 100)}%</span>
+              </span>
+              <input
+                type="range"
+                min={-0.65}
+                max={0.65}
+                step={0.01}
+                value={modelView.yOffset}
+                onChange={(event) => updateModelView("yOffset", Number(event.target.value))}
+                className="range range-primary range-sm"
+                aria-label="Высота персонажа"
+              />
+            </label>
+            <button type="button" className="btn btn-sm btn-ghost border border-base-300" onClick={() => setModelView(DEFAULT_MODEL_VIEW)}>
+              Сбросить кадр
+            </button>
           </div>
         </Panel>
 
@@ -585,6 +675,12 @@ function parseManualTimeline(value: string): TimelineCue[] {
   return rows.filter((cue): cue is TimelineCue => cue !== null);
 }
 
+function clampNumber(value: unknown, min: number, max: number, fallback: number): number {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.max(min, Math.min(max, parsed));
+}
+
 function buildTagTimeline(text: string, duration: number): TimelineCue[] {
   const tags = Object.keys(TAG_TO_COMMAND);
   const regex = new RegExp(tags.map(escapeRegExp).join("|"), "g");
@@ -641,9 +737,11 @@ function readAmplitude(analyser: AnalyserNode | null, data: Uint8Array<ArrayBuff
 }
 
 function buildFrame(time: number, amplitude: number, cues: TimelineCue[], playing: boolean): AvatarFrame {
+  const viseme = buildViseme(time, amplitude, playing);
   const frame: AvatarFrame = {
     time,
-    mouth: playing ? amplitude : 0,
+    mouth: playing ? Math.max(amplitude, Math.max(viseme.aa, viseme.ih, viseme.ou, viseme.ee, viseme.oh) * 0.85) : 0,
+    viseme,
     blink: autoBlink(time),
     smile: 0.18,
     surprise: 0,
@@ -665,7 +763,24 @@ function buildFrame(time: number, amplitude: number, cues: TimelineCue[], playin
   }
 
   frame.mouth = Math.min(1, frame.mouth + frame.laugh * 0.22 + frame.surprise * 0.18);
+  if (frame.laugh > 0.1) frame.viseme.aa = Math.max(frame.viseme.aa, frame.laugh * 0.55);
+  if (frame.surprise > 0.1) frame.viseme.oh = Math.max(frame.viseme.oh, frame.surprise * 0.7);
   return frame;
+}
+
+function buildViseme(time: number, amplitude: number, playing: boolean): AvatarFrame["viseme"] {
+  if (!playing) return { aa: 0, ih: 0, ou: 0, ee: 0, oh: 0 };
+  const base = Math.max(0.12, Math.min(1, amplitude * 1.7));
+  const phase = Math.floor(time * 9.5) % 5;
+  const pulse = 0.58 + Math.sin(time * 19) * 0.28;
+  const value = Math.max(0.08, Math.min(1, base * pulse));
+  return {
+    aa: phase === 0 ? value : base * 0.12,
+    ih: phase === 1 ? value * 0.7 : 0,
+    ou: phase === 2 ? value * 0.75 : 0,
+    ee: phase === 3 ? value * 0.65 : 0,
+    oh: phase === 4 ? value * 0.72 : 0,
+  };
 }
 
 function applyCue(frame: AvatarFrame, command: AvatarCommand, strength: number) {

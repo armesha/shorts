@@ -22,6 +22,13 @@ export type TimelineCue = {
 export type AvatarFrame = {
   time: number;
   mouth: number;
+  viseme: {
+    aa: number;
+    ih: number;
+    ou: number;
+    ee: number;
+    oh: number;
+  };
   blink: number;
   smile: number;
   surprise: number;
