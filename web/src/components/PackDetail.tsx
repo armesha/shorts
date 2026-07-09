@@ -15,6 +15,7 @@ import { isMainAdmin } from "../lib/authz";
 import { useT } from "../lib/i18n";
 import { CONTENT_LANGS } from "../lib/deck";
 import { PreviewModal, usePreview } from "./PreviewModal";
+import { PrettyAudioPlayer } from "./PrettyAudioPlayer";
 
 // Вид одного кастомного пака: правила (из шаблона), добавление JSON-карточек, лента карточек с превью/удалением.
 // Редактировать (имя/язык/карточки) может только владелец пака или главный админ; гранчёному пак выдан лишь для использования.
@@ -357,9 +358,7 @@ export default function PackDetail({ packId, onChanged, onDeleted }: { packId: s
               ))}
             </optgroup>
           </select>
-          {selectedMusic && music !== "none" && (
-            <audio controls src={selectedMusic.url} className="h-9 max-w-[260px]" />
-          )}
+          {selectedMusic && music !== "none" && <PrettyAudioPlayer src={selectedMusic.url} label={selectedMusic.name} compact className="min-w-[260px] max-w-full flex-1" />}
           {musicMsg && <span className="text-xs text-success inline-flex items-center gap-1"><Check size={13} /> {musicMsg}</span>}
         </div>
         {customMusic.length > 0 && (

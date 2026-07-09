@@ -1,0 +1,164 @@
+.pretty-audio-player {
+  border: 1px solid var(--color-base-300);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--color-base-100) 94%, white), var(--color-base-100)),
+    var(--color-base-100);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--color-base-content) 7%, transparent);
+  color: var(--color-base-content);
+  padding: 0.75rem;
+}
+
+.pretty-audio-player__label {
+  margin-bottom: 0.45rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--color-base-content) 68%, transparent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.pretty-audio-player .rhap_container {
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  padding: 0;
+}
+
+.pretty-audio-player .rhap_main {
+  gap: 0.45rem;
+}
+
+.pretty-audio-player .rhap_progress-section {
+  min-width: 0;
+}
+
+.pretty-audio-player .rhap_progress-container {
+  margin: 0 0.7rem;
+}
+
+.pretty-audio-player .rhap_time {
+  min-width: 2.45rem;
+  color: color-mix(in srgb, var(--color-base-content) 56%, transparent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.pretty-audio-player .rhap_progress-bar,
+.pretty-audio-player .rhap_download-progress,
+.pretty-audio-player .rhap_volume-bar {
+  background: color-mix(in srgb, var(--color-base-content) 13%, transparent);
+}
+
+.pretty-audio-player .rhap_progress-bar {
+  height: 0.42rem;
+  border-radius: 999px;
+}
+
+.pretty-audio-player .rhap_progress-filled,
+.pretty-audio-player .rhap_volume-filled {
+  background-color: var(--color-primary);
+  border-radius: 999px;
+}
+
+.pretty-audio-player .rhap_progress-indicator {
+  top: -0.34rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-left: -0.52rem;
+  background: var(--color-primary);
+  box-shadow:
+    0 0 0 0.22rem color-mix(in srgb, var(--color-primary) 14%, transparent),
+    0 1px 3px color-mix(in srgb, var(--color-base-content) 18%, transparent);
+}
+
+.pretty-audio-player .rhap_controls-section {
+  gap: 0.55rem;
+}
+
+.pretty-audio-player .rhap_main-controls-button,
+.pretty-audio-player .rhap_volume-button {
+  color: var(--color-primary);
+}
+
+.pretty-audio-player .rhap_play-pause-button {
+  display: inline-flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: var(--color-primary-content);
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--color-primary) 24%, transparent);
+}
+
+.pretty-audio-player .rhap_button-clear:hover {
+  opacity: 1;
+}
+
+.pretty-audio-player .rhap_button-clear:focus-visible,
+.pretty-audio-player .rhap_progress-container:focus-visible,
+.pretty-audio-player .rhap_volume-bar-area:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+  outline-offset: 3px;
+}
+
+.pretty-audio-player .rhap_volume-container {
+  flex-basis: 5rem;
+}
+
+.pretty-audio-player .rhap_volume-indicator {
+  background: var(--color-primary);
+  box-shadow: 0 0 0 0.16rem color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+.pretty-audio-player--compact {
+  padding: 0.5rem 0.6rem;
+}
+
+.pretty-audio-player--compact .pretty-audio-player__label {
+  margin-bottom: 0.25rem;
+  font-size: 0.68rem;
+}
+
+.pretty-audio-player--compact .rhap_horizontal-reverse .rhap_controls-section {
+  margin-right: 0.35rem;
+}
+
+.pretty-audio-player--compact .rhap_play-pause-button {
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem;
+  font-size: 2rem;
+}
+
+.pretty-audio-player--compact .rhap_main-controls-button {
+  width: 2rem;
+  height: 2rem;
+  margin: 0;
+}
+
+.pretty-audio-player--compact .rhap_progress-container {
+  margin: 0 0.45rem;
+}
+
+.pretty-audio-player--compact .rhap_time {
+  min-width: 2.25rem;
+  font-size: 0.68rem;
+}
+
+@media (max-width: 640px) {
+  .pretty-audio-player .rhap_horizontal-reverse {
+    align-items: center;
+  }
+
+  .pretty-audio-player .rhap_time {
+    min-width: 2.15rem;
+  }
+}

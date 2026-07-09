@@ -14,6 +14,7 @@ import { useAuth } from "../lib/auth";
 import { useGenQueue } from "../lib/genQueue";
 import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
+import { PrettyAudioPlayer } from "../components/PrettyAudioPlayer";
 import { isMainAdmin } from "../lib/authz";
 import { isMgsLegacyUser } from "../lib/accountLimits";
 
@@ -423,9 +424,7 @@ export default function Studio() {
                       </option>
                     ))}
                   </select>
-                  {music && music !== "none" && (
-                    <audio controls src={`/audio/${music}`} className="max-w-[200px]" />
-                  )}
+                  {music && music !== "none" && <PrettyAudioPlayer src={`/audio/${music}`} label={musicLabel(music)} compact className="min-w-[240px] max-w-full flex-1" />}
                   <button
                     className="btn btn-secondary gap-2 ml-auto"
                     onClick={buildVideo}
