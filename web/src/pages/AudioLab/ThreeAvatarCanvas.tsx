@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import type { AvatarFrame, StagePreset } from "./avatarEngine";
+import type { AvatarFrame, SpeechViseme, StagePreset } from "./avatarEngine";
 
 type ThreeAvatarCanvasProps = {
   modelUrl: string;
   modelName: string;
   stage: StagePreset;
   modelView: AvatarModelView;
+  framing: "full" | "head";
+  presenterMode: boolean;
   resetToken: number;
   getFrame: () => AvatarFrame;
   onCanvasReady: (canvas: HTMLCanvasElement | null) => void;
@@ -17,7 +19,21 @@ export type AvatarModelView = {
   yOffset: number;
 };
 
-type MorphKind = "mouth" | "aa" | "ih" | "ou" | "ee" | "oh" | "blink" | "smile" | "laugh" | "surprise" | "angry" | "sad" | "relaxed";
+type MorphKind =
+  | "mouth"
+  | "aa"
+  | "ih"
+  | "ou"
+  | "ee"
+  | "oh"
+  | "blink"
+  | "smile"
+  | "laugh"
+  | "surprise"
+  | "angry"
+  | "sad"
+  | "relaxed"
+  | `speech:${SpeechViseme}`;
 
 type MorphMesh = {
   name?: string;
@@ -119,7 +135,7 @@ type Vrm0BlendShapeGroup = {
   }>;
 };
 
-export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, resetToken, getFrame, onCanvasReady }: ThreeAvatarCanvasProps) {
+export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, framing, presenterMode, resetToken, getFrame, onCanvasReady }: ThreeAvatarCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const frameRef = useRef(getFrame);
   const stageRef = useRef(stage);
@@ -165,18 +181,21 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, reset
     async function boot() {
       setStatus("Загрузка модели");
       setMorphCount(0);
-      const [THREE, { GLTFLoader }, { OrbitControls }, { VRMLoaderPlugin, VRMUtils }] = await Promise.all([
+      const [THREE, { GLTFLoader }, { OrbitControls }, { MeshoptDecoder }, { VRMLoaderPlugin, VRMUtils }] = await Promise.all([
         import("three"),
         import("three/examples/jsm/loaders/GLTFLoader.js"),
         import("three/examples/jsm/controls/OrbitControls.js"),
+        import("three/examples/jsm/libs/meshopt_decoder.module.js"),
         import("@pixiv/three-vrm"),
       ]);
       if (disposed) return;
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(26, targetCanvas.width / targetCanvas.height, 0.01, 100);
-      camera.position.set(0, 0.45, 5.7);
-      camera.lookAt(0, 0.15, 0);
+      const cameraHomePosition = new THREE.Vector3(0, 0.45, 5.7);
+      const cameraHomeTarget = new THREE.Vector3(0, 0.15, 0);
+      camera.position.copy(cameraHomePosition);
+      camera.lookAt(cameraHomeTarget);
       const webglRenderer = new THREE.WebGLRenderer({ canvas: targetCanvas, antialias: true, preserveDrawingBuffer: true });
       renderer = webglRenderer;
       webglRenderer.setSize(targetCanvas.width, targetCanvas.height, false);
@@ -184,14 +203,14 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, reset
 
       const orbit = new OrbitControls(camera, targetCanvas);
       controls = orbit;
-      orbit.target.set(0, 0.15, 0);
+      orbit.target.copy(cameraHomeTarget);
       orbit.enableDamping = true;
       orbit.dampingFactor = 0.08;
       orbit.rotateSpeed = 0.72;
       orbit.zoomSpeed = 0.9;
       orbit.panSpeed = 0.78;
       orbit.screenSpacePanning = true;
-      orbit.minDistance = 1.2;
+      orbit.minDistance = framing === "head" ? 0.75 : 1.2;
       orbit.maxDistance = 12;
       orbit.minPolarAngle = Math.PI * 0.08;
       orbit.maxPolarAngle = Math.PI * 0.92;
@@ -208,8 +227,8 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, reset
         const damping = orbit.enableDamping;
         orbit.enableDamping = false;
         orbit.update();
-        camera.position.set(0, 0.45, 5.7);
-        orbit.target.set(0, 0.15, 0);
+        camera.position.copy(cameraHomePosition);
+        orbit.target.copy(cameraHomeTarget);
         orbit.update();
         orbit.enableDamping = damping;
         orbit.saveState();
@@ -227,6 +246,7 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, reset
       scene.add(fill);
 
       const loader = new GLTFLoader();
+      loader.setMeshoptDecoder(MeshoptDecoder);
       loader.register((parser) => new VRMLoaderPlugin(parser));
       const gltf = await loader.loadAsync(modelUrl);
       if (disposed) return;
@@ -238,8 +258,18 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, reset
         node.frustumCulled = false;
       });
       scene.add(root);
-      normalizeModel(THREE, root);
-      const presenterMode = modelUrl.toLowerCase().includes("vityok") || modelName.toLocaleLowerCase("ru-RU").includes("витёк");
+      normalizeModel(THREE, root, framing);
+      if (framing === "head") {
+        const normalizedBox = new THREE.Box3().setFromObject(root);
+        const normalizedSize = new THREE.Vector3();
+        normalizedBox.getSize(normalizedSize);
+        const faceY = normalizedBox.max.y - normalizedSize.y * 0.19;
+        const focusY = faceY + normalizedSize.y * 0.08;
+        cameraHomePosition.set(0, focusY + 0.04, 2.25);
+        cameraHomeTarget.set(0, focusY, 0);
+        resetCamera();
+      }
+      const presenterMotion = presenterMode || modelUrl.toLowerCase().includes("vityok") || modelName.toLocaleLowerCase("ru-RU").includes("витёк");
       const basePosition = root.position.clone();
       const baseScale = root.scale.x || 1;
       const expressionDriver = createVrmExpressionDriver(loadedVrm?.expressionManager);
@@ -273,13 +303,13 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, reset
         const yaw = (activeView.yawDeg * Math.PI) / 180;
         root.scale.setScalar(baseScale * activeView.scale);
         root.rotation.set(
-          presenterMode ? 0 : -frame.gazeY * 0.18,
-          yaw + (presenterMode ? 0 : frame.gazeX * 0.42),
-          presenterMode ? 0 : frame.headTilt * 0.85,
+          presenterMotion ? 0 : -frame.gazeY * 0.18,
+          yaw + (presenterMotion ? 0 : frame.gazeX * 0.42),
+          presenterMotion ? 0 : frame.headTilt * 0.85,
         );
         root.position.copy(basePosition);
-        root.position.y += activeView.yOffset + frame.headBob * (presenterMode ? 0.00025 : 0.004);
-        applyRigMotion(rig, frame, activeView, presenterMode);
+        root.position.y += activeView.yOffset + frame.headBob * (presenterMotion ? 0.00025 : 0.004);
+        applyRigMotion(rig, frame, activeView, presenterMotion);
         if (expressionDriver) applyVrmExpressions(expressionDriver, frame);
         else applyMorphs(bindings, frame);
         loadedVrm?.update(delta);
@@ -303,7 +333,7 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, reset
       controls?.dispose();
       renderer?.dispose();
     };
-  }, [modelName, modelUrl]);
+  }, [framing, modelName, modelUrl, presenterMode]);
 
   return (
     <div className="relative h-full w-full">
@@ -323,7 +353,7 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, reset
   );
 }
 
-function normalizeModel(THREE: typeof import("three"), root: import("three").Object3D) {
+function normalizeModel(THREE: typeof import("three"), root: import("three").Object3D, framing: "full" | "head") {
   root.position.set(0, 0, 0);
   root.scale.setScalar(1);
   const box = new THREE.Box3().setFromObject(root);
@@ -334,7 +364,7 @@ function normalizeModel(THREE: typeof import("three"), root: import("three").Obj
   root.position.sub(center);
   const height = Math.max(size.y, 0.01);
   const widthDepth = Math.max(size.x, size.z, 0.01);
-  const scale = Math.min(2.34 / height, 1.72 / widthDepth);
+  const scale = framing === "head" ? 2.34 / height : Math.min(2.34 / height, 1.72 / widthDepth);
   root.scale.setScalar(scale);
   const normalizedBox = new THREE.Box3().setFromObject(root);
   const normalizedCenter = new THREE.Vector3();
@@ -528,15 +558,64 @@ function collectVrm0BlendShapeBindings(gltf: LoadedGltf, root: import("three").O
 
 function classifyMorph(name: string): { kind: MorphKind; weight: number } | null {
   const n = name.toLowerCase().replace(/[^a-zа-я0-9]/gi, "");
+  const speechViseme = SPEECH_MORPH_NAMES[n];
+  if (speechViseme) return { kind: `speech:${speechViseme}`, weight: SPEECH_MORPH_WEIGHTS[speechViseme] ?? 1 };
+  if (n === "fclmtha") return { kind: "aa", weight: 1 };
+  if (n === "fclmthi") return { kind: "ih", weight: 1 };
+  if (n === "fclmthu") return { kind: "ou", weight: 1 };
+  if (n === "fclmthe") return { kind: "ee", weight: 1 };
+  if (n === "fclmtho") return { kind: "oh", weight: 1 };
   if (/blink|eyeblink|まばたき|まばたき左|まばたき右/.test(n)) return { kind: "blink", weight: 1 };
   if (/laugh|laughing/.test(n)) return { kind: "laugh", weight: 0.9 };
-  if (/smile|happy|joy|fun|relaxed|喜|笑/.test(n)) return { kind: "smile", weight: 0.75 };
-  if (/surpris|shocked|wide|驚/.test(n)) return { kind: "surprise", weight: 0.9 };
-  if (/angry|anger|mad|怒/.test(n)) return { kind: "angry", weight: 0.85 };
-  if (/sad|sorrow|悲/.test(n)) return { kind: "sad", weight: 0.85 };
-  if (/viseme|mouthopen|jawopen|aa|ih|ee|ou|oh|aah|vowel|あ|い|う|え|お/.test(n)) return { kind: "mouth", weight: 1 };
+  if (/cheeksquint|eyesquint/.test(n)) return { kind: "smile", weight: 0.24 };
+  if (/mouthsmile|smile|happy|joy|fun|relaxed|喜|笑/.test(n)) return { kind: "smile", weight: 0.72 };
+  if (/browouterup/.test(n)) return { kind: "surprise", weight: 0.48 };
+  if (/eyewide/.test(n)) return { kind: "surprise", weight: 0.62 };
+  if (/surpris|shocked|驚/.test(n)) return { kind: "surprise", weight: 0.88 };
+  if (/browdown/.test(n)) return { kind: "angry", weight: 0.72 };
+  if (/nosesneer/.test(n)) return { kind: "angry", weight: 0.34 };
+  if (/angry|anger|mad|怒/.test(n)) return { kind: "angry", weight: 0.82 };
+  if (/mouthfrown/.test(n)) return { kind: "sad", weight: 0.68 };
+  if (/browinnerup/.test(n)) return { kind: "sad", weight: 0.42 };
+  if (/sad|sorrow|悲/.test(n)) return { kind: "sad", weight: 0.82 };
+  if (/^(mouthopen|jawopen|aah|vowel|あ|い|う|え|お)$/.test(n)) return { kind: "mouth", weight: 0.28 };
   return null;
 }
+
+const SPEECH_MORPH_NAMES: Record<string, SpeechViseme> = {
+  visemesil: "sil",
+  visemepp: "PP",
+  visemeff: "FF",
+  visemeth: "TH",
+  visemedd: "DD",
+  visemekk: "kk",
+  visemech: "CH",
+  visemess: "SS",
+  visemenn: "nn",
+  visemerr: "RR",
+  visemeaa: "aa",
+  visemee: "E",
+  visemei: "I",
+  visemeo: "O",
+  visemeu: "U",
+};
+
+const SPEECH_MORPH_WEIGHTS: Partial<Record<SpeechViseme, number>> = {
+  PP: 0.72,
+  FF: 0.68,
+  TH: 0.58,
+  DD: 0.7,
+  kk: 0.72,
+  CH: 0.68,
+  SS: 0.62,
+  nn: 0.68,
+  RR: 0.66,
+  aa: 0.76,
+  E: 0.68,
+  I: 0.66,
+  O: 0.74,
+  U: 0.7,
+};
 
 function classifyVrmExpression(name: string): MorphKind | null {
   const n = name.trim().toLowerCase();
@@ -695,6 +774,9 @@ function applyMorphs(bindings: MorphBinding[], frame: AvatarFrame) {
 }
 
 function morphValue(kind: MorphKind, frame: AvatarFrame): number {
+  if (kind.startsWith("speech:")) {
+    return frame.speechViseme[kind.slice("speech:".length) as SpeechViseme] ?? 0;
+  }
   switch (kind) {
     case "mouth":
       return Math.min(1, frame.mouth + frame.laugh * 0.18 + frame.surprise * 0.2);
@@ -723,4 +805,5 @@ function morphValue(kind: MorphKind, frame: AvatarFrame): number {
     case "relaxed":
       return Math.min(1, frame.whisper * 0.35 + frame.smile * 0.12);
   }
+  return 0;
 }

@@ -1,7 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AppIcon } from "../../components/AppIcon";
 import type { GeminiTtsCharacter, GeminiTtsPreviewResult } from "../../lib/api";
-import { COMMANDS, STAGE_PRESETS, TAG_TO_COMMAND, type AvatarCommand, type AvatarFrame, type StagePreset, type StagePresetId, type TimelineCue } from "./avatarEngine";
+import {
+  COMMANDS,
+  STAGE_PRESETS,
+  TAG_TO_COMMAND,
+  type AvatarCommand,
+  type AvatarFrame,
+  type SpeechViseme,
+  type StagePreset,
+  type StagePresetId,
+  type TimelineCue,
+} from "./avatarEngine";
 import { ThreeAvatarCanvas, type AvatarModelView } from "./ThreeAvatarCanvas";
 
 type AvatarDirectorProps = {
@@ -26,9 +36,21 @@ type AvatarModelFile = {
   url: string;
   source: AvatarModelSource;
   description: string;
+  framing?: "full" | "head";
+  presenter?: boolean;
 };
 
 const BUILT_IN_AVATAR_MODELS: AvatarModelFile[] = [
+  {
+    id: "maya",
+    name: "Майя",
+    size: 2_978_504,
+    url: "/api/audio/avatar/model/maya.glb",
+    source: "server",
+    description: "CC0 говорящая голова MakeHuman/MPFB с 52 ARKit-формами лица и 14 речевыми visemes.",
+    framing: "head",
+    presenter: true,
+  },
   {
     id: "vika",
     name: "Вика",
@@ -44,6 +66,7 @@ const BUILT_IN_AVATAR_MODELS: AvatarModelFile[] = [
     url: "/api/audio/avatar/model/vityok.vrm",
     source: "server",
     description: "Оригинальный полуреалистичный VRM 1.0 ведущий с объёмными губами, пятью visemes и живой мимикой.",
+    presenter: true,
   },
   {
     id: "coolbanana",
@@ -89,6 +112,7 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
   const [recordUrl, setRecordUrl] = useState<string | null>(null);
 
   const stage = useMemo(() => STAGE_PRESETS.find((item) => item.id === stageId) ?? STAGE_PRESETS[0], [stageId]);
+  const speechSequence = useMemo(() => buildSpeechSequence(transcript), [transcript]);
 
   const sources = useMemo<AudioSource[]>(() => {
     const result: AudioSource[] = [];
@@ -168,8 +192,8 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
   const getCurrentFrame = useCallback((): AvatarFrame => {
     const time = audioRef.current?.currentTime ?? currentTime;
     const amplitude = readAmplitude(analyserRef.current, audioDataRef.current, playing, time);
-    return buildFrame(time, amplitude, timelineRef.current, playing);
-  }, [currentTime, playing]);
+    return buildFrame(time, amplitude, timelineRef.current, playing, speechSequence, duration);
+  }, [currentTime, duration, playing, speechSequence]);
 
   async function ensureAudioGraph() {
     if (sourceConnectedRef.current) {
@@ -416,6 +440,8 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
               modelName={modelFile.name}
               stage={stage}
               modelView={modelView}
+              framing={modelFile.framing ?? "full"}
+              presenterMode={modelFile.presenter ?? false}
               resetToken={viewResetToken}
               getFrame={getCurrentFrame}
               onCanvasReady={setActiveCanvas}
@@ -750,12 +776,28 @@ function readAmplitude(analyser: AnalyserNode | null, data: Uint8Array<ArrayBuff
   return playing ? 0.18 + Math.sin(time * 14) * 0.08 : 0.02;
 }
 
-function buildFrame(time: number, amplitude: number, cues: TimelineCue[], playing: boolean): AvatarFrame {
-  const viseme = buildViseme(time, amplitude, playing);
+function buildFrame(
+  time: number,
+  amplitude: number,
+  cues: TimelineCue[],
+  playing: boolean,
+  speechSequence: SpeechViseme[],
+  duration: number,
+): AvatarFrame {
+  const speechViseme = buildSpeechViseme(time, amplitude, playing, speechSequence, duration);
+  const viseme: AvatarFrame["viseme"] = {
+    aa: speechViseme.aa,
+    ih: speechViseme.I,
+    ou: speechViseme.U,
+    ee: speechViseme.E,
+    oh: speechViseme.O,
+  };
+  const speechStrength = Math.max(...Object.values(speechViseme));
   const frame: AvatarFrame = {
     time,
-    mouth: playing ? Math.max(amplitude, Math.max(viseme.aa, viseme.ih, viseme.ou, viseme.ee, viseme.oh) * 0.85) : 0,
+    mouth: playing ? Math.max(amplitude * 0.72, speechStrength * 0.82) : 0,
     viseme,
+    speechViseme,
     blink: autoBlink(time),
     smile: playing ? 0.08 : 0.14,
     surprise: 0,
@@ -782,19 +824,71 @@ function buildFrame(time: number, amplitude: number, cues: TimelineCue[], playin
   return frame;
 }
 
-function buildViseme(time: number, amplitude: number, playing: boolean): AvatarFrame["viseme"] {
-  if (!playing) return { aa: 0, ih: 0, ou: 0, ee: 0, oh: 0 };
-  const base = Math.max(0.18, Math.min(1, amplitude * 2.2));
-  const phase = Math.floor(time * 8.2) % 5;
-  const pulse = 0.72 + Math.sin(time * 16.4) * 0.18;
-  const value = Math.max(0.16, Math.min(1, base * pulse * 1.45));
-  return {
-    aa: phase === 0 ? value : base * 0.04,
-    ih: phase === 1 ? value * 0.9 : 0,
-    ou: phase === 2 ? value * 0.95 : 0,
-    ee: phase === 3 ? value * 0.85 : 0,
-    oh: phase === 4 ? value * 0.95 : 0,
+const SPEECH_VISEMES: SpeechViseme[] = ["sil", "PP", "FF", "TH", "DD", "kk", "CH", "SS", "nn", "RR", "aa", "E", "I", "O", "U"];
+
+function buildSpeechSequence(transcript: string): SpeechViseme[] {
+  const sequence: SpeechViseme[] = ["sil"];
+  const add = (viseme: SpeechViseme) => {
+    if (viseme === "sil" && sequence.at(-1) === "sil") return;
+    sequence.push(viseme);
   };
+
+  for (const character of transcript.toLocaleLowerCase("ru-RU")) {
+    const viseme = speechVisemeForCharacter(character);
+    if (viseme) add(viseme);
+    else if (/\s|[.,!?;:()[\]{}\-—]/.test(character)) add("sil");
+  }
+  add("sil");
+  return sequence.length > 2 ? sequence : ["sil", "aa", "I", "U", "E", "O", "sil"];
+}
+
+function speechVisemeForCharacter(character: string): SpeechViseme | null {
+  if (/[аяa]/.test(character)) return "aa";
+  if (/[еэe]/.test(character)) return "E";
+  if (/[иыйiy]/.test(character)) return "I";
+  if (/[оёo]/.test(character)) return "O";
+  if (/[уюuw]/.test(character)) return "U";
+  if (/[пбмpbm]/.test(character)) return "PP";
+  if (/[фвfv]/.test(character)) return "FF";
+  if (/[тдtd]/.test(character)) return "DD";
+  if (/[кгхkgq]/.test(character)) return "kk";
+  if (/[чжшщj]/.test(character)) return "CH";
+  if (/[сзцsczx]/.test(character)) return "SS";
+  if (/[нлnl]/.test(character)) return "nn";
+  if (/[рr]/.test(character)) return "RR";
+  if (/[h]/.test(character)) return "TH";
+  return null;
+}
+
+function buildSpeechViseme(
+  time: number,
+  amplitude: number,
+  playing: boolean,
+  sequence: SpeechViseme[],
+  duration: number,
+): Record<SpeechViseme, number> {
+  const values = Object.fromEntries(SPEECH_VISEMES.map((name) => [name, 0])) as Record<SpeechViseme, number>;
+  if (!playing || !sequence.length) return values;
+
+  const progress = Math.max(0, Math.min(0.999_999, time / Math.max(0.01, duration)));
+  const position = progress * sequence.length;
+  const index = Math.min(sequence.length - 1, Math.floor(position));
+  const nextIndex = Math.min(sequence.length - 1, index + 1);
+  const local = position - index;
+  const transition = smoothstep(0.68, 1, local);
+  if (amplitude < 0.018) return values;
+  const strength = Math.max(0.08, Math.min(0.82, amplitude * 2));
+  const current = sequence[index];
+  const next = sequence[nextIndex];
+
+  if (current !== "sil") values[current] = strength * (1 - transition);
+  if (next !== "sil") values[next] = Math.max(values[next], strength * transition);
+  return values;
+}
+
+function smoothstep(edge0: number, edge1: number, value: number): number {
+  const normalized = Math.max(0, Math.min(1, (value - edge0) / Math.max(0.0001, edge1 - edge0)));
+  return normalized * normalized * (3 - 2 * normalized);
 }
 
 function applyCue(frame: AvatarFrame, command: AvatarCommand, strength: number) {

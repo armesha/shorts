@@ -19,6 +19,23 @@ export type TimelineCue = {
   source: "tag" | "manual";
 };
 
+export type SpeechViseme =
+  | "sil"
+  | "PP"
+  | "FF"
+  | "TH"
+  | "DD"
+  | "kk"
+  | "CH"
+  | "SS"
+  | "nn"
+  | "RR"
+  | "aa"
+  | "E"
+  | "I"
+  | "O"
+  | "U";
+
 export type AvatarFrame = {
   time: number;
   mouth: number;
@@ -29,6 +46,7 @@ export type AvatarFrame = {
     ee: number;
     oh: number;
   };
+  speechViseme: Record<SpeechViseme, number>;
   blink: number;
   smile: number;
   surprise: number;

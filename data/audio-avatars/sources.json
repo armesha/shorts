@@ -27,6 +27,18 @@
       "source": "tmp/vityok-avatar/vityok.vrm",
       "generator": "tmp/vityok-avatar/src/gen.mjs",
       "notes": "Original semi-realistic VRM 1.0 character built from new procedural geometry for this project. No existing avatar, third-party mesh, texture or character design was used. Runtime binary stays local and is not committed."
+    },
+    {
+      "id": "maya.glb",
+      "name": "Майя",
+      "file": "maya.glb",
+      "license": "CC0 1.0",
+      "source_project": "TalkingHead",
+      "source_repository": "https://github.com/met4citizen/TalkingHead",
+      "source_file": "avatars/mpfb.glb",
+      "source_commit": "eed58d198076a7e1e825f804802921c4d3804d46",
+      "source_sha256": "63c645a2a863b9972e9a9c2ed576a1de4c390b8475508e1473e69c87a3ee299c",
+      "notes": "The upstream README explicitly licenses mpfb.glb under CC0. The model was created with Blender and MPFB/MakeHuman and contains 52 ARKit face shapes plus 14 non-silent Oculus visemes. Local runtime copy was losslessly structure-preserved and compressed with glTF-Transform 4.4.1 using Meshopt and WebP; all 66 named facial morph targets remain present. Runtime binary stays local and is not committed."
     }
   ]
 }
