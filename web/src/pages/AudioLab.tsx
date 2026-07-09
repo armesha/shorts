@@ -701,66 +701,59 @@ function CharactersLibrary({
   }
 
   return (
-    <section className="space-y-4">
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <Metric label="Персонажи" value={characters.length} hint="сохранённые профили" />
-        <Metric label="Первый голос" value={characters[0]?.voice ?? "—"} hint={characters[0]?.model ?? "—"} />
-        <Metric label="Язык" value={characters[0]?.language.toUpperCase() ?? "—"} hint="пример персонажа" />
-        <Metric label="Sample" value={formatDuration(characters[0]?.sampleDurationSec ?? 0)} hint="аудиофрагмент" />
-      </section>
+    <section className="space-y-3">
+      <div className="flex flex-wrap items-center gap-2 rounded-md border border-base-300 bg-base-100 px-3 py-2 text-sm text-base-content/65">
+        <span className="font-semibold text-base-content">Персонажи: {characters.length}</span>
+        <span className="badge badge-ghost badge-sm">{characters[0]?.voice ?? "—"}</span>
+        <span className="badge badge-ghost badge-sm">{characters[0]?.language.toUpperCase() ?? "—"}</span>
+        <span className="badge badge-ghost badge-sm">{formatDuration(characters[0]?.sampleDurationSec ?? 0)}</span>
+      </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-3 xl:grid-cols-2">
         {characters.map((character) => {
           const draftName = characterNames[character.id] ?? character.name;
           const saving = savingId === character.id;
           const canSave = draftName.trim() && draftName.trim() !== character.name && !saving;
           return (
-            <article key={character.id} className="rounded-lg border border-base-300 bg-base-100 p-4 shadow-sm">
-              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <article key={character.id} className="rounded-md border border-base-300 bg-base-100 p-3 shadow-sm">
+              <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_210px_120px] lg:items-end">
                 <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="text-xl font-black tracking-normal">{character.name}</h2>
+                  <div className="mb-1 flex flex-wrap items-center gap-2">
+                    <h2 className="text-lg font-black tracking-normal">{character.name}</h2>
                     <span className="badge badge-primary badge-sm">{character.voice}</span>
                     <span className="badge badge-ghost badge-sm">{character.language.toUpperCase()}</span>
                   </div>
-                  <p className="mt-1 text-sm leading-relaxed text-base-content/60">{character.description}</p>
+                  <div className="flex gap-2">
+                    <input
+                      className="input input-bordered input-sm w-full"
+                      value={draftName}
+                      onChange={(e) => onNameChange(character.id, e.target.value)}
+                      maxLength={60}
+                      aria-label="Имя персонажа"
+                    />
+                    <button type="button" className="btn btn-ghost btn-sm border border-base-300 gap-1" disabled={!canSave} onClick={() => onSaveName(character)}>
+                      {saving ? <span className="loading loading-spinner loading-xs" /> : <AppIcon name="check" size={14} />}
+                      Сохранить
+                    </button>
+                  </div>
                 </div>
-                <button type="button" className="btn btn-primary btn-sm gap-2 md:shrink-0" onClick={() => onApply(character)}>
+
+                <audio className="w-full" controls src={character.sampleUrl} />
+
+                <button type="button" className="btn btn-primary btn-sm gap-2" onClick={() => onApply(character)}>
                   <AppIcon name="check" size={15} />
                   Применить
                 </button>
               </div>
 
-              <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_260px]">
-                <div className="space-y-4">
-                  <Field label="Имя">
-                    <div className="flex gap-2">
-                      <input
-                        className="input input-bordered w-full"
-                        value={draftName}
-                        onChange={(e) => onNameChange(character.id, e.target.value)}
-                        maxLength={60}
-                      />
-                      <button type="button" className="btn btn-ghost border border-base-300 gap-2" disabled={!canSave} onClick={() => onSaveName(character)}>
-                        {saving ? <span className="loading loading-spinner loading-sm" /> : <AppIcon name="check" size={15} />}
-                        Сохранить
-                      </button>
-                    </div>
-                  </Field>
-
-                  <Field label="Пример">
-                    <audio className="w-full" controls src={character.sampleUrl} />
-                  </Field>
-
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    <Info label="Модель" value={character.model} />
-                    <Info label="Энергия" value={`${character.energy}/5`} />
-                    <Info label="Deck" value={character.source.deck || "—"} />
-                    <Info label="Card" value={character.source.cardId || "—"} />
-                  </div>
-                </div>
-
-                <div className="space-y-3">
+              <details className="mt-3 rounded-md bg-base-200/55 px-3 py-2 text-sm">
+                <summary className="cursor-pointer font-semibold">Настройки и источник</summary>
+                <p className="mt-2 text-sm leading-relaxed text-base-content/60">{character.description}</p>
+                <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                  <Info label="Модель" value={character.model} />
+                  <Info label="Энергия" value={`${character.energy}/5`} />
+                  <Info label="Deck" value={character.source.deck || "—"} />
+                  <Info label="Card" value={character.source.cardId || "—"} />
                   <SettingBlock label="Текст" value={character.sampleText} />
                   <SettingBlock label="Стиль" value={character.style} />
                   <SettingBlock label="Темп" value={character.pace} />
@@ -768,7 +761,7 @@ function CharactersLibrary({
                   <SettingBlock label="Сцена" value={character.scene} />
                   <SettingBlock label={character.postProcessing.label || "Постобработка"} value={character.postProcessing.ffmpegFilter} />
                 </div>
-              </div>
+              </details>
             </article>
           );
         })}
