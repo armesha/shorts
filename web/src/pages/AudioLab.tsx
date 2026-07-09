@@ -14,6 +14,21 @@ type FormState = {
   apiKey: string;
 };
 
+type Segment = {
+  id: string;
+  tag: string;
+  text: string;
+};
+
+type TextTemplate = {
+  id: string;
+  group: "Реакции" | "Интро" | "Финалы" | "Сегменты" | "Спокойные";
+  title: string;
+  presetId: string;
+  text: string;
+  segments: Omit<Segment, "id">[];
+};
+
 const EMPTY_FORM: FormState = {
   language: "",
   voice: "Puck",
@@ -26,12 +41,115 @@ const EMPTY_FORM: FormState = {
   apiKey: "",
 };
 
-const QUICK_TAGS = ["[laughs]", "[whispers]", "[sighs]", "[sarcastic]", "[excited]", "[short pause]", "[very fast]", "[very slow]"];
+const TAG_OPTIONS = [
+  { value: "", label: "обычно", title: "Без явного тега" },
+  { value: "[laughs]", label: "смех", title: "Смеющаяся или улыбающаяся подача" },
+  { value: "[whispers]", label: "шепот", title: "Тихая close-mic подача" },
+  { value: "[sighs]", label: "вздох", title: "Усталость, ирония или разочарование" },
+  { value: "[sarcastic]", label: "сарказм", title: "Сухая ироничная подача" },
+  { value: "[excited]", label: "энергия", title: "Возбужденный, бодрый тон" },
+  { value: "[short pause]", label: "пауза", title: "Короткая пауза перед следующей фразой" },
+  { value: "[very fast]", label: "быстро", title: "Более быстрый темп для участка" },
+  { value: "[very slow]", label: "медленно", title: "Более медленный темп для участка" },
+] as const;
+
+const TEXT_TEMPLATES: TextTemplate[] = [
+  template("r1", "Реакции", "Неожиданный финал", "meme-punchline", [
+    ["[laughs]", "Я думал, что видел всё."],
+    ["[short pause]", "Но это было до этого момента."],
+  ]),
+  template("r2", "Реакции", "Саркастично", "sarcastic-reaction", [
+    ["[sarcastic]", "Конечно, отличный план."],
+    ["[sighs]", "Что вообще могло пойти не так?"],
+  ]),
+  template("r3", "Реакции", "Растерянно", "confused-commentator", [
+    ["", "Я сначала вообще не понял, что происходит."],
+    ["[short pause]", "Потом понял. И это не помогло."],
+  ]),
+  template("r4", "Реакции", "Чат обсуждает", "meme-gossip", [
+    ["[laughs]", "Я не хотел это обсуждать."],
+    ["[short pause]", "Но раз уж мы все здесь."],
+  ]),
+  template("r5", "Реакции", "Офисный deadpan", "dry-office", [
+    ["", "Да, это точно заслуживает отдельного совещания."],
+    ["[sarcastic]", "Желательно на три часа."],
+  ]),
+  template("i1", "Интро", "Не листай", "high-energy-hook", [
+    ["[excited]", "Стой, не листай."],
+    ["[very fast]", "Тут финал страннее, чем начало."],
+  ]),
+  template("i2", "Интро", "Тихое начало", "whisper-suspense", [
+    ["[whispers]", "Смотри внимательно."],
+    ["[short pause]", "Одна деталь меняет всё."],
+  ]),
+  template("i3", "Интро", "Короткая история", "joke-storyteller", [
+    ["", "Сейчас будет короткая история."],
+    ["[short pause]", "Сначала спокойно, а потом резко."],
+  ]),
+  template("i4", "Интро", "Факт с крючком", "friendly-explainer", [
+    ["", "Сначала это выглядит случайностью."],
+    ["[short pause]", "Но здесь есть маленькая логика."],
+  ]),
+  template("i5", "Интро", "Киношно", "cinematic-reveal", [
+    ["[very slow]", "Все выглядело нормально."],
+    ["[short pause]", "До последней секунды."],
+  ]),
+  template("f1", "Финалы", "Точка в конце", "strict-narrator", [
+    ["", "Правило простое."],
+    ["[short pause]", "Если звучит слишком идеально, проверь детали."],
+  ]),
+  template("f2", "Финалы", "Мягкий вывод", "soft-irony", [
+    ["", "Именно так обычно начинается проблема."],
+    ["[sighs]", "С маленькой уверенной ошибки."],
+  ]),
+  template("f3", "Финалы", "Ночной финал", "calm-night", [
+    ["[very slow]", "Иногда весь смысл появляется только в конце."],
+  ]),
+  template("f4", "Финалы", "Подписочный CTA", "fast-shorts", [
+    ["[excited]", "Если хочешь еще такие разборы, оставайся."],
+    ["[very fast]", "Следующий будет еще страннее."],
+  ]),
+  template("s1", "Сегменты", "Шепот → смех", "breathy-secret", [
+    ["[whispers]", "Есть одна деталь."],
+    ["[short pause]", "И после нее все становится хуже."],
+    ["[laughs]", "Но смешнее."],
+  ]),
+  template("s2", "Сегменты", "Медленно → быстро", "high-energy-hook", [
+    ["[very slow]", "Сначала все спокойно."],
+    ["[short pause]", "Почти слишком спокойно."],
+    ["[very fast]", "А потом начинается хаос."],
+  ]),
+  template("s3", "Сегменты", "Вздох → сарказм", "dry-office", [
+    ["[sighs]", "Я пытался найти нормальное объяснение."],
+    ["[sarcastic]", "Но реальность решила иначе."],
+  ]),
+  template("s4", "Сегменты", "Энергия → пауза", "meme-punchline", [
+    ["[excited]", "Вот этот момент надо пересмотреть."],
+    ["[short pause]", "Теперь понятно, почему все смеются."],
+  ]),
+  template("c1", "Спокойные", "Теплый факт", "warm-explainer", [
+    ["", "Иногда самая простая деталь меняет смысл всей истории."],
+  ]),
+  template("c2", "Спокойные", "Мягкое объяснение", "friendly-explainer", [
+    ["", "Это выглядит случайно, но в этом есть понятный порядок."],
+  ]),
+  template("c3", "Спокойные", "Нейтральный диктор", "strict-narrator", [
+    ["", "Суть в одном: сначала контекст, потом вывод."],
+  ]),
+  template("c4", "Спокойные", "Тихий тизер", "calm-night", [
+    ["[whispers]", "Не все смешное должно звучать громко."],
+    ["[short pause]", "Иногда пауза работает сильнее."],
+  ]),
+];
+
+const GROUPS = ["Реакции", "Интро", "Финалы", "Сегменты", "Спокойные"] as const;
 
 export default function AudioLab() {
   const [options, setOptions] = useState<GeminiTtsOptions | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [segments, setSegments] = useState<Segment[]>(() => segmentsFromText(""));
   const [selectedPresetId, setSelectedPresetId] = useState("");
+  const [templateGroup, setTemplateGroup] = useState<(typeof GROUPS)[number]>("Реакции");
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +168,7 @@ export default function AudioLab() {
         const preset = data.presets[0];
         setSelectedPresetId(preset?.id ?? "");
         setForm((prev) => applyPresetToForm(prev, preset, data.languages[0]?.code ?? "ru"));
+        setSegments(segmentsFromText(preset?.sampleText ?? ""));
       })
       .catch((e) => {
         if (!alive) return;
@@ -71,6 +190,11 @@ export default function AudioLab() {
     [options?.presets, selectedPresetId],
   );
 
+  const visibleTemplates = useMemo(
+    () => TEXT_TEMPLATES.filter((item) => item.group === templateGroup),
+    [templateGroup],
+  );
+
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
@@ -79,10 +203,44 @@ export default function AudioLab() {
     setSelectedPresetId(preset.id);
     setResult(null);
     setForm((prev) => applyPresetToForm(prev, preset, prev.language || options?.languages[0]?.code || "ru"));
+    setSegments(segmentsFromText(preset.sampleText));
+  }
+
+  function applyTextTemplate(item: TextTemplate) {
+    const preset = options?.presets.find((preset) => preset.id === item.presetId);
+    if (preset) {
+      setSelectedPresetId(preset.id);
+      setForm((prev) => ({
+        ...applyPresetToForm(prev, preset, prev.language || options?.languages[0]?.code || "ru"),
+        text: item.text,
+      }));
+    } else {
+      setForm((prev) => ({ ...prev, text: item.text }));
+    }
+    setSegments(withIds(item.segments));
+    setResult(null);
   }
 
   function insertTag(tag: string) {
-    setForm((prev) => ({ ...prev, text: `${tag} ${prev.text}`.trim() }));
+    setForm((prev) => ({ ...prev, text: `${prev.text}${prev.text.trim() ? "\n" : ""}${tag} `.trimEnd() }));
+  }
+
+  function updateSegment(id: string, patch: Partial<Segment>) {
+    setSegments((prev) => prev.map((segment) => (segment.id === id ? { ...segment, ...patch } : segment)));
+  }
+
+  function addSegment(tag = "", text = "") {
+    setSegments((prev) => [...prev, { id: newId(), tag, text }]);
+  }
+
+  function removeSegment(id: string) {
+    setSegments((prev) => (prev.length > 1 ? prev.filter((segment) => segment.id !== id) : prev));
+  }
+
+  function buildFromSegments() {
+    const text = segmentsToText(segments);
+    setForm((prev) => ({ ...prev, text }));
+    setResult(null);
   }
 
   async function generate() {
@@ -157,13 +315,9 @@ export default function AudioLab() {
             <Metric label="Текст" value={form.text.length} hint="символов" />
           </section>
 
-          <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
+          <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_400px]">
             <div className="space-y-4">
-              <div className="rounded-lg border border-base-300 bg-base-100 p-4 shadow-sm">
-                <div className="mb-3 flex items-center gap-2 font-semibold">
-                  <AppIcon name="music" size={18} />
-                  Пресет
-                </div>
+              <Panel title="Пресет" icon="music">
                 <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                   {options.presets.map((preset) => (
                     <button
@@ -177,15 +331,43 @@ export default function AudioLab() {
                       <span className="min-w-0">
                         <span className="block truncate text-sm font-semibold">{preset.label}</span>
                         <span className={`block truncate text-xs ${selectedPresetId === preset.id ? "text-primary-content/75" : "text-base-content/55"}`}>
-                          {preset.voice} · энергия {preset.energy}/5
+                          {preset.voice} · {preset.energy}/5
                         </span>
                       </span>
                     </button>
                   ))}
                 </div>
-              </div>
+              </Panel>
 
-              <div className="rounded-lg border border-base-300 bg-base-100 p-4 shadow-sm">
+              <Panel title="Готовые тексты" icon="library">
+                <div className="mb-3 flex flex-wrap gap-2">
+                  {GROUPS.map((group) => (
+                    <button
+                      key={group}
+                      type="button"
+                      className={`btn btn-xs ${templateGroup === group ? "btn-primary" : "btn-ghost border border-base-300"}`}
+                      onClick={() => setTemplateGroup(group)}
+                    >
+                      {group}
+                    </button>
+                  ))}
+                </div>
+                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                  {visibleTemplates.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className="rounded-md border border-base-300 bg-base-100 p-3 text-left transition-colors hover:bg-base-200"
+                      onClick={() => applyTextTemplate(item)}
+                    >
+                      <span className="block text-sm font-semibold">{item.title}</span>
+                      <span className="mt-1 line-clamp-2 text-xs leading-relaxed text-base-content/55">{item.text}</span>
+                    </button>
+                  ))}
+                </div>
+              </Panel>
+
+              <Panel title="Настройки голоса" icon="settings">
                 <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                   <Field label="Язык">
                     <select className="select select-bordered w-full" value={form.language} onChange={(e) => update("language", e.target.value)}>
@@ -233,34 +415,83 @@ export default function AudioLab() {
                 <Field label="Сцена">
                   <textarea className="textarea textarea-bordered min-h-20 w-full" value={form.scene} onChange={(e) => update("scene", e.target.value)} />
                 </Field>
+              </Panel>
 
-                <Field label="Текст">
-                  <textarea
-                    className="textarea textarea-bordered min-h-56 w-full text-base leading-relaxed"
-                    value={form.text}
-                    onChange={(e) => update("text", e.target.value)}
-                    placeholder="Впиши текст озвучки"
-                  />
-                </Field>
-
-                <div className="flex flex-wrap gap-2">
-                  {QUICK_TAGS.map((tag) => (
-                    <button key={tag} type="button" className="btn btn-xs btn-ghost border border-base-300" onClick={() => insertTag(tag)}>
-                      {tag}
+              <Panel title="Сегменты" icon="cards">
+                <div className="space-y-2">
+                  {segments.map((segment, index) => (
+                    <div key={segment.id} className="grid gap-2 rounded-lg border border-base-300 bg-base-200/45 p-2 md:grid-cols-[150px_minmax(0,1fr)_34px]">
+                      <select
+                        className="select select-bordered select-sm w-full"
+                        value={segment.tag}
+                        onChange={(e) => updateSegment(segment.id, { tag: e.target.value })}
+                        title={TAG_OPTIONS.find((tag) => tag.value === segment.tag)?.title}
+                      >
+                        {TAG_OPTIONS.map((tag) => (
+                          <option key={tag.value || "none"} value={tag.value}>
+                            {tag.label}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        className="input input-bordered input-sm w-full"
+                        value={segment.text}
+                        onChange={(e) => updateSegment(segment.id, { text: e.target.value })}
+                        placeholder={`Фраза ${index + 1}`}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-sm btn-square"
+                        onClick={() => removeSegment(segment.id)}
+                        disabled={segments.length === 1}
+                        title="Удалить сегмент"
+                      >
+                        <AppIcon name="trash" size={15} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {TAG_OPTIONS.filter((tag) => tag.value).map((tag) => (
+                    <button key={tag.value} type="button" className="btn btn-xs btn-ghost border border-base-300" title={tag.title} onClick={() => addSegment(tag.value)}>
+                      {tag.value}
                     </button>
                   ))}
                 </div>
-              </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button type="button" className="btn btn-sm btn-ghost border border-base-300 gap-2" onClick={() => addSegment()}>
+                    <AppIcon name="plus" size={15} />
+                    Сегмент
+                  </button>
+                  <button type="button" className="btn btn-sm btn-primary gap-2" onClick={buildFromSegments}>
+                    <AppIcon name="check" size={15} />
+                    Собрать текст
+                  </button>
+                </div>
+              </Panel>
+
+              <Panel title="Текст" icon="cards">
+                <textarea
+                  className="textarea textarea-bordered min-h-52 w-full text-base leading-relaxed"
+                  value={form.text}
+                  onChange={(e) => update("text", e.target.value)}
+                  placeholder="Впиши или собери текст озвучки"
+                />
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {TAG_OPTIONS.filter((tag) => tag.value).map((tag) => (
+                    <button key={tag.value} type="button" className="btn btn-xs btn-ghost border border-base-300" title={tag.title} onClick={() => insertTag(tag.value)}>
+                      {tag.value}
+                    </button>
+                  ))}
+                </div>
+              </Panel>
             </div>
 
-            <aside className="space-y-4">
-              <div className="rounded-lg border border-base-300 bg-base-100 p-4 shadow-sm">
+            <aside className="space-y-4 xl:sticky xl:top-4 xl:self-start">
+              <Panel title="Генерация" icon="music">
                 <div className="mb-3 flex items-center justify-between gap-3">
-                  <div>
-                    <div className="font-semibold">Генерация</div>
-                    <div className="text-xs text-base-content/55">
-                      {selectedVoice ? `${selectedVoice.id} · ${selectedVoice.tone}` : "голос не выбран"}
-                    </div>
+                  <div className="min-w-0 text-xs text-base-content/55">
+                    {selectedVoice ? `${selectedVoice.id} · ${selectedVoice.tone}` : "голос не выбран"}
                   </div>
                   <button className="btn btn-primary gap-2" disabled={generating || !form.text.trim()} onClick={() => void generate()}>
                     {generating ? <span className="loading loading-spinner loading-sm" /> : <AppIcon name="music" size={16} />}
@@ -298,12 +529,22 @@ export default function AudioLab() {
                     Аудио появится здесь
                   </div>
                 )}
-              </div>
+              </Panel>
+
+              <Panel title="Теги" icon="info">
+                <div className="grid gap-2">
+                  {TAG_OPTIONS.filter((tag) => tag.value).map((tag) => (
+                    <div key={tag.value} className="flex items-center justify-between gap-2 rounded-md bg-base-200 px-3 py-2">
+                      <code className="text-xs font-semibold">{tag.value}</code>
+                      <span className="text-right text-xs text-base-content/55">{tag.title}</span>
+                    </div>
+                  ))}
+                </div>
+              </Panel>
 
               {result && (
-                <div className="rounded-lg border border-base-300 bg-base-100 p-4 shadow-sm">
-                  <div className="mb-2 flex items-center justify-between gap-3">
-                    <div className="font-semibold">Prompt</div>
+                <Panel title="Prompt" icon="copy">
+                  <div className="mb-2 flex justify-end">
                     <button className="btn btn-xs btn-ghost border border-base-300 gap-1" onClick={() => void copyPrompt()}>
                       <AppIcon name={copied ? "check" : "copy"} size={13} />
                       {copied ? "Скопировано" : "Копировать"}
@@ -312,7 +553,7 @@ export default function AudioLab() {
                   <pre className="max-h-[420px] overflow-auto rounded-lg bg-base-200 p-3 text-xs leading-relaxed whitespace-pre-wrap">
                     {result.prompt}
                   </pre>
-                </div>
+                </Panel>
               )}
             </aside>
           </section>
@@ -335,6 +576,56 @@ function applyPresetToForm(prev: FormState, preset: GeminiTtsPreset | undefined,
     energy: preset.energy,
     text: preset.sampleText,
   };
+}
+
+function template(
+  id: TextTemplate["id"],
+  group: TextTemplate["group"],
+  title: TextTemplate["title"],
+  presetId: TextTemplate["presetId"],
+  rows: [string, string][],
+): TextTemplate {
+  const segments = rows.map(([tag, text]) => ({ tag, text }));
+  return { id, group, title, presetId, segments, text: segmentsToText(withIds(segments)) };
+}
+
+function withIds(rows: Omit<Segment, "id">[]): Segment[] {
+  return rows.map((row) => ({ ...row, id: newId() }));
+}
+
+function newId(): string {
+  return Math.random().toString(36).slice(2, 10);
+}
+
+function segmentsFromText(text: string): Segment[] {
+  const trimmed = text.trim();
+  if (!trimmed) return [{ id: newId(), tag: "", text: "" }];
+  const tagValues = TAG_OPTIONS.map((tag) => tag.value).filter(Boolean);
+  const matched = tagValues.find((tag) => trimmed.startsWith(tag));
+  return [{ id: newId(), tag: matched ?? "", text: matched ? trimmed.slice(matched.length).trim() : trimmed }];
+}
+
+function segmentsToText(rows: Segment[]): string {
+  return rows
+    .map((row) => {
+      const text = row.text.trim();
+      if (!text) return "";
+      return row.tag ? `${row.tag} ${text}` : text;
+    })
+    .filter(Boolean)
+    .join("\n");
+}
+
+function Panel({ title, icon, children }: { title: string; icon: Parameters<typeof AppIcon>[0]["name"]; children: ReactNode }) {
+  return (
+    <div className="rounded-lg border border-base-300 bg-base-100 p-4 shadow-sm">
+      <div className="mb-3 flex items-center gap-2 font-semibold">
+        <AppIcon name={icon} size={18} />
+        {title}
+      </div>
+      {children}
+    </div>
+  );
 }
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
