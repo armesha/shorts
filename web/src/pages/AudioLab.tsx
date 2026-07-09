@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { AppIcon } from "../components/AppIcon";
+import { AvatarDirector } from "./AudioLab/AvatarDirector";
 import {
   apiClient,
   ApiError,
@@ -36,7 +37,7 @@ type TextTemplate = {
   segments: Omit<Segment, "id">[];
 };
 
-type AudioLabTab = "studio" | "characters";
+type AudioLabTab = "studio" | "characters" | "avatar";
 
 const EMPTY_FORM: FormState = {
   language: "",
@@ -389,6 +390,10 @@ export default function AudioLab() {
                 <AppIcon name="users" size={15} />
                 Библиотека персонажей
               </button>
+              <button type="button" className={`tab gap-2 ${activeTab === "avatar" ? "tab-active" : ""}`} onClick={() => setActiveTab("avatar")}>
+                <AppIcon name="video" size={15} />
+                Аватар
+              </button>
             </div>
             {characterNotice && (
               <div className="badge badge-success badge-outline h-auto max-w-full justify-start whitespace-normal px-3 py-2 text-left">
@@ -649,7 +654,7 @@ export default function AudioLab() {
             </aside>
               </section>
             </>
-          ) : (
+          ) : activeTab === "characters" ? (
             <CharactersLibrary
               characters={characters}
               characterNames={characterNames}
@@ -659,6 +664,8 @@ export default function AudioLab() {
               onSaveName={(character) => void saveCharacterName(character)}
               onApply={applyCharacter}
             />
+          ) : (
+            <AvatarDirector transcript={form.text} generatedAudio={result} characters={characters} />
           )}
         </>
       )}
