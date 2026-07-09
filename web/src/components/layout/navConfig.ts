@@ -68,8 +68,6 @@ export const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
 ];
 export const ADMIN_BOTTOM_NAV: NavItem[] = [
   { to: "/channels", labelKey: "nav.channels", icon: "accounts", end: false, staffOnly: true },
-  { to: "/overview", labelKey: "nav.overview", icon: "home", end: false, adminOnly: true, adminBadge: true },
-  { to: "/queue", labelKey: "nav.queue", icon: "queue", end: false, staffOnly: true },
   { to: "/statistics", labelKey: "nav.statistics", icon: "analytics", end: false },
   { to: "/history", labelKey: "nav.history", icon: "history", end: false },
 ];
