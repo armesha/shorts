@@ -14,6 +14,7 @@ For jokes and anecdotes, use only source-backed text. Do not invent joke/anecdot
 ## Workflow
 
 1. Select the exact spoken text.
+   - For repo memes/anecdotes, prefer existing library/deck content first: `deckCards(...)`, `randomAnecdote(...)`, built-in packs, or custom pack cards already used by the app.
    - For memes, use a user-provided line or an existing pack/card line.
    - For jokes/anecdotes, preserve the source wording. Expanding numbers for TTS pronunciation is acceptable if `source.json` records the exact source text.
    - Do not add commentary unless the user explicitly asks for commentary. Non-verbal tags such as `[short pause]`, `[sighs]`, `[whispers]`, and `[laughs]` are acceptable when they fit the joke.
@@ -38,6 +39,7 @@ For jokes and anecdotes, use only source-backed text. Do not invent joke/anecdot
 
 5. Assemble the short.
    - Output 1080x1920 MP4.
+   - For built-in anecdote decks, render the card through the current app renderer (`renderAnecdote` / deck template pipeline) instead of inventing a separate visual style.
    - Keep readable text away from the bottom UI area and right action column.
    - Do not add automatic image zoom, Ken Burns movement, or `zoompan` by default. Use a stable frame, sourced motion background, or explicit cuts/transitions unless the user asks for zoom.
    - Normalize speech around `-15 LUFS`; keep music low, usually `0.04`-`0.06` volume before final loudness normalization.
