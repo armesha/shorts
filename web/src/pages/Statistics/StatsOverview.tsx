@@ -497,54 +497,69 @@ export function TopVideosPanel({
         </div>
       ) : (
         <div ref={listRef} className="space-y-2 max-h-80 overflow-auto pr-1">
-          {shown.map((v, index) => (
-            <div
-              key={`${v.accountId}:${v.videoId}`}
-              className="grid grid-cols-[1.25rem_minmax(0,1fr)_auto] @[24rem]:grid-cols-[1.25rem_4rem_minmax(0,1fr)_auto] items-center gap-2.5 rounded-lg bg-base-100/70 p-2 hover:bg-base-100"
-            >
-              <RankBadge rank={index + 1} />
-              <a
-                href={`https://www.youtube.com/shorts/${v.videoId}`}
-                target="_blank"
-                rel="noreferrer"
-                className="relative hidden h-9 w-16 shrink-0 overflow-hidden rounded bg-base-300 @[24rem]:block"
-                title={t("stats.openOnYoutube")}
-                tabIndex={-1}
+          {shown.map((v, index) => {
+            const youtubeChannelUrl = v.ytChannelId ? `https://www.youtube.com/channel/${v.ytChannelId}` : null;
+            return (
+              <div
+                key={`${v.accountId}:${v.videoId}`}
+                className="grid grid-cols-[1.25rem_minmax(0,1fr)_auto] @[24rem]:grid-cols-[1.25rem_4rem_minmax(0,1fr)_auto] items-center gap-2.5 rounded-lg bg-base-100/70 p-2 hover:bg-base-100"
               >
-                {v.thumbnailUrl ? (
-                  <img src={v.thumbnailUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
-                ) : (
-                  <span className="flex h-full w-full items-center justify-center text-base-content/30">
-                    <AppIcon name="video" size={16} />
-                  </span>
-                )}
-              </a>
-              <div className="min-w-0">
+                <RankBadge rank={index + 1} />
                 <a
                   href={`https://www.youtube.com/shorts/${v.videoId}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="font-medium text-sm truncate link-hover block"
+                  className="relative hidden h-9 w-16 shrink-0 overflow-hidden rounded bg-base-300 @[24rem]:block"
                   title={t("stats.openOnYoutube")}
+                  tabIndex={-1}
                 >
-                  {cleanDisplayText(v.title)}
+                  {v.thumbnailUrl ? (
+                    <img src={v.thumbnailUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="flex h-full w-full items-center justify-center text-base-content/30">
+                      <AppIcon name="video" size={16} />
+                    </span>
+                  )}
                 </a>
-                <Link
-                  to={`/accounts/${v.accountId}`}
-                  className="text-xs text-base-content/50 truncate link-hover block"
-                  title={t("stats.openChannel")}
-                >
-                  {v.channelTitle}
-                </Link>
-              </div>
-              <div className="text-right shrink-0">
-                <div className="text-sm font-semibold stx-num">{fmt(v.views)}</div>
-                <div className="text-[11px] text-base-content/45">
-                  {t("stats.views").toLowerCase()} · {formatWatchMinutes(v.watchMinutes)}
+                <div className="min-w-0">
+                  <a
+                    href={`https://www.youtube.com/shorts/${v.videoId}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-medium text-sm truncate link-hover block"
+                    title={t("stats.openOnYoutube")}
+                  >
+                    {cleanDisplayText(v.title)}
+                  </a>
+                  {youtubeChannelUrl ? (
+                    <a
+                      href={youtubeChannelUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs text-base-content/50 truncate link-hover block"
+                      title={t("stats.openOnYoutube")}
+                    >
+                      {v.channelTitle}
+                    </a>
+                  ) : (
+                    <Link
+                      to={`/accounts/${v.accountId}`}
+                      className="text-xs text-base-content/50 truncate link-hover block"
+                      title={t("stats.openChannel")}
+                    >
+                      {v.channelTitle}
+                    </Link>
+                  )}
+                </div>
+                <div className="text-right shrink-0">
+                  <div className="text-sm font-semibold stx-num">{fmt(v.views)}</div>
+                  <div className="text-[11px] text-base-content/45">
+                    {t("stats.views").toLowerCase()} · {formatWatchMinutes(v.watchMinutes)}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           {videos.length > visible && <div ref={sentinelRef} className="h-8" aria-hidden="true" />}
         </div>
       )}

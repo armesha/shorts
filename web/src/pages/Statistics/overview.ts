@@ -13,6 +13,7 @@ export interface OverviewDailyPoint {
 export interface OverviewTopVideo extends YoutubeTopVideo {
   accountId: number;
   channelTitle: string;
+  ytChannelId: string | null;
   ownerUsername: string | null;
   reportRange: YoutubeReportRange | null;
 }
@@ -183,6 +184,7 @@ export function buildOverview(rows: StatRow[]): StatsOverviewData {
         ...video,
         accountId: row.accountId,
         channelTitle,
+        ytChannelId: row.ytChannelId,
         ownerUsername: row.ownerUsername,
         reportRange: topVideosRange,
       });
