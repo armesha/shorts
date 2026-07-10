@@ -1268,16 +1268,53 @@ export interface GeminiTtsPreviewRequest {
   apiKey?: string;
 }
 
+export type GeminiTtsSpeechViseme =
+  | "sil"
+  | "PP"
+  | "FF"
+  | "TH"
+  | "DD"
+  | "kk"
+  | "CH"
+  | "SS"
+  | "nn"
+  | "RR"
+  | "aa"
+  | "E"
+  | "I"
+  | "O"
+  | "U";
+
+export interface GeminiTtsLipSyncCue {
+  start: number;
+  end: number;
+  viseme: GeminiTtsSpeechViseme;
+  phone: string;
+}
+
+export interface GeminiTtsLipSyncTimeline {
+  engine: "mfa-russian";
+  version: 1;
+  model: "russian_mfa@3.1.0";
+  language: "ru";
+  durationSec: number;
+  alignmentMs: number;
+  cached: boolean;
+  cues: GeminiTtsLipSyncCue[];
+}
+
 export interface GeminiTtsPreviewResult {
   model: string;
   voice: string;
   language: string;
   languageLabel: string;
+  transcript: string;
   mimeType: "audio/wav";
   audioDataUrl: string;
   durationSec: number;
   inputChars: number;
   prompt: string;
+  lipSync?: GeminiTtsLipSyncTimeline;
   usage?: unknown;
 }
 

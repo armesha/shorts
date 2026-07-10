@@ -15,10 +15,12 @@ import {
 } from "../services/gemini-tts.ts";
 import {
   GeminiTtsCharacterError,
+  geminiTtsCharacterAlignmentInput,
   geminiTtsCharacterSample,
   listGeminiTtsCharacters,
   renameGeminiTtsCharacter,
 } from "../services/gemini-tts-characters.ts";
+import { alignRussianLipSync, RussianLipSyncError } from "../services/russian-lipsync.ts";
 
 const AUDIO_AVATAR_MODEL_DIR = resolve(process.cwd(), "data/audio-avatars");
 const AUDIO_AVATAR_MODELS: Record<string, { name: string; file: string; contentType: string; description: string; license: string; source: string }> = {
@@ -87,7 +89,18 @@ export function registerAudioRoutes(app: FastifyInstance, db: Db, deps: RouteDep
   app.post("/api/audio/gemini/preview", { bodyLimit: 80_000 }, async (req, reply) => {
     if (!deps.auth.requireSuperAdmin(req, reply)) return;
     try {
-      return await generateGeminiTtsPreview((req.body ?? {}) as GeminiTtsPreviewInput);
+      const result = await generateGeminiTtsPreview((req.body ?? {}) as GeminiTtsPreviewInput);
+      if (result.language === "ru") {
+        try {
+          result.lipSync = await alignRussianLipSync({
+            wav: wavBufferFromDataUrl(result.audioDataUrl),
+            transcript: result.transcript,
+          });
+        } catch (error) {
+          req.log.warn({ err: error }, "Russian MFA lip-sync unavailable; returning audio without aligned visemes");
+        }
+      }
+      return result;
     } catch (error) {
       if (error instanceof GeminiTtsError) {
         return reply.code(error.statusCode).send({ error: error.message });
@@ -131,6 +144,24 @@ export function registerAudioRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     }
   });
 
+  app.get("/api/audio/gemini/characters/:id/lipsync", async (req, reply) => {
+    if (!deps.auth.requireSuperAdmin(req, reply)) return;
+    try {
+      const input = geminiTtsCharacterAlignmentInput((req.params as { id: string }).id);
+      if (input.language !== "ru") return reply.code(400).send({ error: "Для этого примера пока нет локальной языковой модели." });
+      return await alignRussianLipSync({ wavPath: input.wavPath, transcript: input.transcript });
+    } catch (error) {
+      if (error instanceof GeminiTtsCharacterError) {
+        return reply.code(error.statusCode).send({ error: error.message });
+      }
+      if (error instanceof RussianLipSyncError) {
+        return reply.code(503).send({ error: error.message });
+      }
+      req.log.error(error);
+      return reply.code(500).send({ error: "Не удалось рассчитать русскую мимику." });
+    }
+  });
+
   app.get("/api/audio/avatar/models", async (req, reply) => {
     if (!deps.auth.requireSuperAdmin(req, reply)) return;
     return {
@@ -163,4 +194,12 @@ export function registerAudioRoutes(app: FastifyInstance, db: Db, deps: RouteDep
     reply.header("Content-Length", String(stat.size));
     return reply.type(model.contentType).send(createReadStream(abs));
   });
+}
+
+function wavBufferFromDataUrl(value: string): Buffer {
+  const match = /^data:audio\/wav;base64,([A-Za-z0-9+/=]+)$/.exec(value);
+  if (!match) throw new RussianLipSyncError("Не удалось прочитать WAV из ответа Gemini TTS.");
+  const wav = Buffer.from(match[1], "base64");
+  if (!wav.length) throw new RussianLipSyncError("Gemini TTS вернула пустой WAV.");
+  return wav;
 }

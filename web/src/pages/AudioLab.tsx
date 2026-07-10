@@ -624,6 +624,7 @@ export default function AudioLab() {
                       <Info label="Символы" value={String(result.inputChars)} />
                       <Info label="Язык" value={result.languageLabel} />
                       <Info label="Голос" value={result.voice} />
+                      <Info label="Мимика" value={result.lipSync ? `MFA · ${result.lipSync.cues.length} фонем` : "приблизительная"} />
                     </div>
                     <a href={result.audioDataUrl} download={`gemini-tts-${result.language}-${result.voice}.wav`} className="btn btn-sm btn-ghost w-full border border-base-300 gap-2">
                       <AppIcon name="external" size={15} />

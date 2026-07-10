@@ -1,4 +1,5 @@
 import type { Account, Db } from "../db.ts";
+import type { RussianLipSyncTimeline } from "./russian-lipsync.ts";
 
 export const GEMINI_TTS_MODEL = "gemini-3.1-flash-tts-preview";
 const GEMINI_INTERACTIONS_URL = "https://generativelanguage.googleapis.com/v1beta/interactions";
@@ -254,11 +255,13 @@ export interface GeminiTtsPreviewResult {
   voice: string;
   language: string;
   languageLabel: string;
+  transcript: string;
   mimeType: "audio/wav";
   audioDataUrl: string;
   durationSec: number;
   inputChars: number;
   prompt: string;
+  lipSync?: RussianLipSyncTimeline;
   usage?: unknown;
 }
 
@@ -385,6 +388,7 @@ export async function generateGeminiTtsPreview(input: GeminiTtsPreviewInput): Pr
       voice,
       language,
       languageLabel: GEMINI_TTS_LANGUAGES[language].label,
+      transcript: text,
       mimeType: "audio/wav",
       audioDataUrl: `data:audio/wav;base64,${wav.toString("base64")}`,
       durationSec,

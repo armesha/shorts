@@ -16,6 +16,8 @@
     "server:restart": "node --experimental-sqlite scripts/restart-server.mjs",
     "creator:restart": "node --experimental-sqlite scripts/restart-creator.mjs",
     "creator:smoke": "node --experimental-sqlite scripts/smoke-creator.mjs",
+    "audio:lipsync:setup": "node scripts/setup-russian-lipsync.mjs",
+    "audio:lipsync:check": "node --import tsx scripts/check-russian-lipsync.mjs",
     "web": "npm --prefix web run dev",
     "web:build": "npm --prefix web run build",
     "creator:web:build": "npm --prefix web run build:creator",

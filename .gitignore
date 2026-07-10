@@ -37,6 +37,8 @@ data/audio-candidates/
 data/audio-avatars/*.vrm
 data/audio-avatars/*.glb
 data/audio-avatars/*.png
+data/audio-lipsync/runtime/
+data/audio-lipsync/cache/
 
 # stray generated preview images (not source)
 images/

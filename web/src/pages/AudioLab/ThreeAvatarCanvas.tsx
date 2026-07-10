@@ -560,6 +560,7 @@ function classifyMorph(name: string): { kind: MorphKind; weight: number } | null
   const n = name.toLowerCase().replace(/[^a-zа-я0-9]/gi, "");
   const speechViseme = SPEECH_MORPH_NAMES[n];
   if (speechViseme) return { kind: `speech:${speechViseme}`, weight: SPEECH_MORPH_WEIGHTS[speechViseme] ?? 1 };
+  if (n === "mouthclose") return { kind: "speech:sil", weight: 0.22 };
   if (n === "fclmtha") return { kind: "aa", weight: 1 };
   if (n === "fclmthi") return { kind: "ih", weight: 1 };
   if (n === "fclmthu") return { kind: "ou", weight: 1 };

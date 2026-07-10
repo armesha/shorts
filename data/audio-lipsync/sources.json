@@ -1,0 +1,27 @@
+{
+  "engine": {
+    "name": "Montreal Forced Aligner",
+    "version": "3.4.0",
+    "source": "https://github.com/MontrealCorpusTools/Montreal-Forced-Aligner",
+    "license": "MIT"
+  },
+  "models": [
+    {
+      "name": "Russian MFA acoustic model",
+      "version": "3.1.0",
+      "source": "https://mfa-models.readthedocs.io/en/latest/acoustic/Russian/Russian%20MFA%20acoustic%20model%20v3_1_0.html",
+      "license": "CC BY 4.0",
+      "sha256": "bf2cdc58f3ce2cd15ee2ef1f33a56f3c901b28707b3c3fd896129050c03b3bf4",
+      "runtime_file": "runtime/mfa-root/pretrained_models/acoustic/russian_mfa.zip"
+    },
+    {
+      "name": "Russian MFA dictionary",
+      "version": "3.1.0",
+      "source": "https://mfa-models.readthedocs.io/en/latest/dictionary/Russian/Russian%20MFA%20dictionary%20v3_1_0.html",
+      "license": "CC BY 4.0",
+      "sha256": "f225655b9d835b73fbf510baf8283b78c5cf2d3303306005f733854670ff707f",
+      "runtime_file": "runtime/mfa-root/pretrained_models/dictionary/russian_mfa.dict"
+    }
+  ],
+  "notes": "The local runtime is installed by npm run audio:lipsync:setup and remains gitignored. Generated timelines map Russian MFA phone intervals to Oculus visemes and are cached by WAV plus transcript hash."
+}

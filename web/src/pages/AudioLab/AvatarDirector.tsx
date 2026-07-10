@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AppIcon } from "../../components/AppIcon";
-import type { GeminiTtsCharacter, GeminiTtsPreviewResult } from "../../lib/api";
+import { apiClient, type GeminiTtsCharacter, type GeminiTtsLipSyncTimeline, type GeminiTtsPreviewResult } from "../../lib/api";
 import {
   COMMANDS,
   STAGE_PRESETS,
@@ -25,6 +25,10 @@ type AudioSource = {
   label: string;
   src: string;
   durationSec: number;
+  language: string;
+  transcript: string;
+  lipSync?: GeminiTtsLipSyncTimeline | null;
+  characterId?: string;
 };
 
 type RendererMode = "procedural" | "model";
@@ -81,12 +85,7 @@ const BUILT_IN_AVATAR_MODELS: AvatarModelFile[] = [
 const DEFAULT_AVATAR_MODEL = BUILT_IN_AVATAR_MODELS[0];
 const DEFAULT_MODEL_VIEW: AvatarModelView = { scale: 1, yawDeg: 0, yOffset: 0 };
 
-const MANUAL_TIMELINE = `0.0 look_left
-0.5 smile
-1.4 nod
-2.2 look_right
-3.1 laugh
-4.0 blink`;
+const MANUAL_TIMELINE = "";
 
 export function AvatarDirector({ transcript, generatedAudio, characters }: AvatarDirectorProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -110,9 +109,11 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
   const [notice, setNotice] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
   const [recordUrl, setRecordUrl] = useState<string | null>(null);
+  const [sourceLipSync, setSourceLipSync] = useState<Record<string, GeminiTtsLipSyncTimeline | null>>({});
+  const [lipSyncLoadingSourceId, setLipSyncLoadingSourceId] = useState<string | null>(null);
+  const [lipSyncErrorSourceId, setLipSyncErrorSourceId] = useState<string | null>(null);
 
   const stage = useMemo(() => STAGE_PRESETS.find((item) => item.id === stageId) ?? STAGE_PRESETS[0], [stageId]);
-  const speechSequence = useMemo(() => buildSpeechSequence(transcript), [transcript]);
 
   const sources = useMemo<AudioSource[]>(() => {
     const result: AudioSource[] = [];
@@ -122,28 +123,40 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
         label: `Последняя генерация · ${generatedAudio.voice}`,
         src: generatedAudio.audioDataUrl,
         durationSec: generatedAudio.durationSec,
+        language: generatedAudio.language,
+        transcript: generatedAudio.transcript,
+        lipSync: generatedAudio.lipSync ?? null,
       });
     }
     for (const character of characters) {
+      const id = `character:${character.id}`;
       result.push({
-        id: `character:${character.id}`,
+        id,
         label: `${character.name} · ${character.voice}`,
         src: character.sampleUrl,
         durationSec: character.sampleDurationSec,
+        language: character.language,
+        transcript: character.source.phrase || character.sampleText,
+        lipSync: sourceLipSync[id],
+        characterId: character.id,
       });
     }
     return result;
-  }, [characters, generatedAudio]);
+  }, [characters, generatedAudio, sourceLipSync]);
 
   const selectedSource = useMemo(() => {
     if (!sources.length) return null;
     return sources.find((source) => source.id === selectedSourceId) ?? sources[0];
   }, [selectedSourceId, sources]);
 
+  const activeTranscript = selectedSource?.transcript || transcript;
+  const activeLipSync = selectedSource?.lipSync ?? null;
+  const speechSequence = useMemo(() => buildSpeechSequence(activeTranscript), [activeTranscript]);
+
   const cues = useMemo(() => {
-    const timelineDuration = selectedSource?.durationSec || duration || estimateDuration(transcript);
-    return [...buildTagTimeline(transcript, timelineDuration), ...parseManualTimeline(manualTimeline)].sort((a, b) => a.at - b.at);
-  }, [duration, manualTimeline, selectedSource?.durationSec, transcript]);
+    const timelineDuration = selectedSource?.durationSec || duration || estimateDuration(activeTranscript);
+    return [...buildTagTimeline(activeTranscript, timelineDuration), ...parseManualTimeline(manualTimeline)].sort((a, b) => a.at - b.at);
+  }, [activeTranscript, duration, manualTimeline, selectedSource?.durationSec]);
 
   useEffect(() => {
     if (!sources.length) {
@@ -156,11 +169,36 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
   }, [selectedSourceId, sources]);
 
   useEffect(() => {
+    const source = selectedSource;
+    if (!source?.characterId || source.language !== "ru" || Object.hasOwn(sourceLipSync, source.id)) return;
+    let alive = true;
+    setLipSyncLoadingSourceId(source.id);
+    setLipSyncErrorSourceId(null);
+    apiClient
+      .geminiTtsCharacterLipSync(source.characterId)
+      .then((timeline) => {
+        if (!alive) return;
+        setSourceLipSync((current) => ({ ...current, [source.id]: timeline }));
+      })
+      .catch(() => {
+        if (!alive) return;
+        setSourceLipSync((current) => ({ ...current, [source.id]: null }));
+        setLipSyncErrorSourceId(source.id);
+      })
+      .finally(() => {
+        if (alive) setLipSyncLoadingSourceId((current) => (current === source.id ? null : current));
+      });
+    return () => {
+      alive = false;
+    };
+  }, [selectedSource, sourceLipSync]);
+
+  useEffect(() => {
     timelineRef.current = instantCommand ? [...cues, instantCommand].sort((a, b) => a.at - b.at) : cues;
   }, [cues, instantCommand]);
 
   useEffect(() => {
-    const nextDuration = selectedSource?.durationSec || estimateDuration(transcript);
+    const nextDuration = selectedSource?.durationSec || estimateDuration(activeTranscript);
     setDuration(nextDuration);
     setCurrentTime(0);
     setPlaying(false);
@@ -169,7 +207,7 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
       audio.pause();
       audio.currentTime = 0;
     }
-  }, [selectedSource, transcript]);
+  }, [activeTranscript, selectedSource]);
 
   useEffect(() => {
     return () => {
@@ -192,8 +230,8 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
   const getCurrentFrame = useCallback((): AvatarFrame => {
     const time = audioRef.current?.currentTime ?? currentTime;
     const amplitude = readAmplitude(analyserRef.current, audioDataRef.current, playing, time);
-    return buildFrame(time, amplitude, timelineRef.current, playing, speechSequence, duration);
-  }, [currentTime, duration, playing, speechSequence]);
+    return buildFrame(time, amplitude, timelineRef.current, playing, speechSequence, duration, activeLipSync);
+  }, [activeLipSync, currentTime, duration, playing, speechSequence]);
 
   async function ensureAudioGraph() {
     if (sourceConnectedRef.current) {
@@ -250,8 +288,8 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
   }
 
   function autoDirect() {
-    const timelineDuration = selectedSource?.durationSec || duration || estimateDuration(transcript);
-    setManualTimeline(buildAutoDirection(transcript, timelineDuration));
+    const timelineDuration = selectedSource?.durationSec || duration || estimateDuration(activeTranscript);
+    setManualTimeline(buildAutoDirection(activeTranscript, timelineDuration));
     setNotice("Таймлайн собран по тексту и длительности аудио");
     window.setTimeout(() => setNotice(null), 1800);
   }
@@ -313,7 +351,7 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
       modelSource: modelFile?.source ?? null,
       selectedSourceId,
       duration,
-      transcript,
+      transcript: activeTranscript,
       manualTimeline,
       cues,
       createdAt: new Date().toISOString(),
@@ -407,6 +445,13 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
 
   const safeDuration = Math.max(0.01, duration);
   const progress = Math.min(100, Math.max(0, (currentTime / safeDuration) * 100));
+  const lipSyncLoading = !!selectedSource && lipSyncLoadingSourceId === selectedSource.id;
+  const lipSyncFailed = !!selectedSource && lipSyncErrorSourceId === selectedSource.id;
+  const lipSyncLabel = activeLipSync
+    ? `MFA · ${activeLipSync.cues.length} фонем`
+    : lipSyncLoading
+      ? "MFA · расчёт"
+      : "приблизительно";
 
   return (
     <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_420px]">
@@ -417,12 +462,13 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
             <span className="badge badge-ghost badge-sm">локально</span>
             <span className="badge badge-ghost badge-sm">{rendererMode === "model" ? "3D model" : "procedural"}</span>
             {rendererMode === "model" && modelFile?.source === "server" && <span className="badge badge-success badge-sm">встроенная</span>}
+            <span className={`badge badge-sm ${activeLipSync ? "badge-success" : lipSyncLoading ? "badge-warning" : "badge-ghost"}`}>{lipSyncLabel}</span>
             <span className="badge badge-ghost badge-sm">{Math.round(progress)}%</span>
           </div>
           <div className="flex gap-2">
-            <button type="button" className="btn btn-primary btn-sm gap-2" disabled={!selectedSource} onClick={() => void togglePlayback()}>
-              <AppIcon name={playing ? "pause" : "play"} size={15} />
-              {playing ? "Пауза" : "Слушать"}
+            <button type="button" className="btn btn-primary btn-sm gap-2" disabled={!selectedSource || lipSyncLoading} onClick={() => void togglePlayback()}>
+              {lipSyncLoading ? <span className="loading loading-spinner loading-xs" /> : <AppIcon name={playing ? "pause" : "play"} size={15} />}
+              {lipSyncLoading ? "Мимика" : playing ? "Пауза" : "Слушать"}
             </button>
             <button type="button" className="btn btn-ghost btn-sm border border-base-300 gap-2" onClick={resetPlayback}>
               <AppIcon name="refresh" size={15} />
@@ -432,6 +478,7 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
         </div>
 
         {notice && <div className="mb-3 rounded-md border border-success/35 bg-success/10 px-3 py-2 text-sm font-semibold text-success">{notice}</div>}
+        {lipSyncFailed && <div className="mb-3 rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-sm font-semibold text-warning">MFA недоступна, используется приблизительная мимика</div>}
 
         <div className="mx-auto aspect-[9/16] max-h-[74vh] w-full max-w-[430px] overflow-hidden rounded-md bg-neutral shadow-inner">
           {rendererMode === "model" && modelFile ? (
@@ -616,6 +663,8 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
           <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
             <Info label="Длительность" value={formatDuration(duration)} />
             <Info label="Команд" value={String(cues.length)} />
+            <Info label="Губы" value={lipSyncLabel} />
+            <Info label="Фонемы" value={activeLipSync ? String(activeLipSync.cues.length) : "—"} />
           </div>
         </Panel>
 
@@ -776,15 +825,19 @@ function readAmplitude(analyser: AnalyserNode | null, data: Uint8Array<ArrayBuff
   return playing ? 0.18 + Math.sin(time * 14) * 0.08 : 0.02;
 }
 
-function buildFrame(
+export function buildFrame(
   time: number,
   amplitude: number,
   cues: TimelineCue[],
   playing: boolean,
   speechSequence: SpeechViseme[],
   duration: number,
+  lipSync: GeminiTtsLipSyncTimeline | null,
 ): AvatarFrame {
-  const speechViseme = buildSpeechViseme(time, amplitude, playing, speechSequence, duration);
+  const aligned = !!lipSync?.cues.length;
+  const speechViseme = aligned
+    ? buildAlignedSpeechViseme(time, amplitude, playing, lipSync)
+    : buildSpeechViseme(time, amplitude, playing, speechSequence, duration);
   const viseme: AvatarFrame["viseme"] = {
     aa: speechViseme.aa,
     ih: speechViseme.I,
@@ -792,23 +845,24 @@ function buildFrame(
     ee: speechViseme.E,
     oh: speechViseme.O,
   };
-  const speechStrength = Math.max(...Object.values(speechViseme));
+  const speechStrength = Math.max(...SPEECH_VISEMES.filter((name) => name !== "sil").map((name) => speechViseme[name]));
+  const vowelStrength = Math.max(speechViseme.aa, speechViseme.E, speechViseme.I, speechViseme.O, speechViseme.U);
   const frame: AvatarFrame = {
     time,
-    mouth: playing ? Math.max(amplitude * 0.72, speechStrength * 0.82) : 0,
+    mouth: playing ? (aligned ? vowelStrength * 0.12 : Math.max(amplitude * 0.72, speechStrength * 0.82)) : 0,
     viseme,
     speechViseme,
     blink: autoBlink(time),
-    smile: playing ? 0.08 : 0.14,
+    smile: playing ? 0.01 : 0.035,
     surprise: 0,
     anger: 0,
     sad: 0,
     laugh: 0,
     whisper: 0,
-    gazeX: Math.sin(time * 0.55) * 0.08,
-    gazeY: Math.sin(time * 0.4) * 0.04,
-    headTilt: Math.sin(time * 0.62) * 0.03,
-    headBob: Math.sin(time * 1.4) * 3,
+    gazeX: Math.sin(time * 0.42) * 0.018,
+    gazeY: Math.sin(time * 0.34) * 0.008,
+    headTilt: Math.sin(time * 0.38) * 0.008,
+    headBob: 0,
   };
 
   for (const cue of cues) {
@@ -867,7 +921,7 @@ function buildSpeechViseme(
   sequence: SpeechViseme[],
   duration: number,
 ): Record<SpeechViseme, number> {
-  const values = Object.fromEntries(SPEECH_VISEMES.map((name) => [name, 0])) as Record<SpeechViseme, number>;
+  const values = emptySpeechVisemes(playing ? 0 : 0.5);
   if (!playing || !sequence.length) return values;
 
   const progress = Math.max(0, Math.min(0.999_999, time / Math.max(0.01, duration)));
@@ -876,14 +930,94 @@ function buildSpeechViseme(
   const nextIndex = Math.min(sequence.length - 1, index + 1);
   const local = position - index;
   const transition = smoothstep(0.68, 1, local);
-  if (amplitude < 0.018) return values;
+  if (amplitude < 0.018) {
+    values.sil = 0.5;
+    return values;
+  }
   const strength = Math.max(0.08, Math.min(0.82, amplitude * 2));
   const current = sequence[index];
   const next = sequence[nextIndex];
 
-  if (current !== "sil") values[current] = strength * (1 - transition);
-  if (next !== "sil") values[next] = Math.max(values[next], strength * transition);
+  if (current === "sil") values.sil = 0.5 * (1 - transition);
+  else values[current] = strength * (1 - transition);
+  if (next === "sil") values.sil = Math.max(values.sil, 0.5 * transition);
+  else values[next] = Math.max(values[next], strength * transition);
   return values;
+}
+
+export function buildAlignedSpeechViseme(
+  time: number,
+  amplitude: number,
+  playing: boolean,
+  timeline: GeminiTtsLipSyncTimeline,
+): Record<SpeechViseme, number> {
+  const values = emptySpeechVisemes(playing ? 0 : 0.5);
+  if (!playing || !timeline.cues.length) return values;
+
+  const index = cueIndexAtTime(timeline, time);
+  const candidates = [timeline.cues[index - 1], timeline.cues[index], timeline.cues[index + 1]].filter(Boolean);
+  const weighted: Array<{ viseme: SpeechViseme; weight: number }> = [];
+  let weightTotal = 0;
+  for (const cue of candidates) {
+    const fade = Math.min(0.045, Math.max(0.012, (cue.end - cue.start) * 0.32));
+    const weight = intervalEnvelope(time, cue.start, cue.end, fade);
+    if (weight <= 0) continue;
+    weighted.push({ viseme: cue.viseme as SpeechViseme, weight });
+    weightTotal += weight;
+  }
+  if (weightTotal <= 0) {
+    values.sil = 0.5;
+    return values;
+  }
+
+  const baseStrength = Math.max(0.26, Math.min(0.78, 0.3 + amplitude * 1.15));
+  for (const item of weighted) {
+    if (item.viseme === "sil") {
+      values.sil += 0.5 * (item.weight / weightTotal);
+      continue;
+    }
+    const strength = Math.max(baseStrength, ALIGNED_VISEME_FLOORS[item.viseme] ?? 0);
+    values[item.viseme] += strength * (item.weight / weightTotal);
+  }
+  return values;
+}
+
+const ALIGNED_VISEME_FLOORS: Partial<Record<SpeechViseme, number>> = {
+  PP: 0.6,
+  FF: 0.52,
+  DD: 0.46,
+  kk: 0.44,
+  CH: 0.5,
+  SS: 0.48,
+  nn: 0.44,
+  RR: 0.42,
+};
+
+function cueIndexAtTime(timeline: GeminiTtsLipSyncTimeline, time: number): number {
+  let low = 0;
+  let high = timeline.cues.length - 1;
+  let result = 0;
+  while (low <= high) {
+    const middle = (low + high) >> 1;
+    if (timeline.cues[middle].start <= time) {
+      result = middle;
+      low = middle + 1;
+    } else {
+      high = middle - 1;
+    }
+  }
+  return result;
+}
+
+function intervalEnvelope(time: number, start: number, end: number, fade: number): number {
+  if (time < start - fade || time > end + fade) return 0;
+  if (time < start) return smoothstep(start - fade, start, time);
+  if (time > end) return 1 - smoothstep(end, end + fade, time);
+  return 1;
+}
+
+function emptySpeechVisemes(silence = 0): Record<SpeechViseme, number> {
+  return Object.fromEntries(SPEECH_VISEMES.map((name) => [name, name === "sil" ? silence : 0])) as Record<SpeechViseme, number>;
 }
 
 function smoothstep(edge0: number, edge1: number, value: number): number {
@@ -945,7 +1079,7 @@ function applyCue(frame: AvatarFrame, command: AvatarCommand, strength: number) 
 }
 
 function autoBlink(time: number): number {
-  const phase = time % 4.6;
+  const phase = (time + 1.9) % 4.6;
   if (phase < 0.12) return Math.sin((phase / 0.12) * Math.PI);
   return 0;
 }

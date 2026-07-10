@@ -110,6 +110,19 @@ export function geminiTtsCharacterSample(id: string) {
   return { stream: createReadStream(samplePath), mimeType: "audio/wav" as const };
 }
 
+export function geminiTtsCharacterAlignmentInput(id: string) {
+  const character = loadStore().characters.find((item) => item.id === id);
+  if (!character) throw new GeminiTtsCharacterError(404, "Персонаж не найден.");
+  const wavPath = resolveSamplePath(character.sampleFile);
+  if (!existsSync(wavPath)) throw new GeminiTtsCharacterError(404, "Аудиопример персонажа не найден.");
+  return {
+    id: character.id,
+    language: character.language,
+    transcript: character.source.phrase || character.sampleText,
+    wavPath,
+  };
+}
+
 function loadStore(): CharacterStore {
   try {
     if (!existsSync(CHARACTER_STORE_PATH)) return { characters: [...DEFAULT_CHARACTERS] };

@@ -16,6 +16,7 @@ import type {
   ChannelThemeBlockNormalizeResult, ChannelThemeBlockScheduleResult, ChannelThemeBlockSourceGroup,
   AnecdoteTemplateExamplesResponse, TelegramMiniPanel, TelegramPreferences,
   GeminiTtsCharacter, GeminiTtsCharactersResponse, GeminiTtsOptions, GeminiTtsPreviewRequest, GeminiTtsPreviewResult,
+  GeminiTtsLipSyncTimeline,
 } from "./types";
 
 function browserTimeZone(): string {
@@ -124,6 +125,8 @@ export const apiClient = {
   geminiTtsPreview: (body: GeminiTtsPreviewRequest) =>
     send<GeminiTtsPreviewResult>("/audio/gemini/preview", "POST", body),
   geminiTtsCharacters: () => get<GeminiTtsCharactersResponse>("/audio/gemini/characters"),
+  geminiTtsCharacterLipSync: (id: string) =>
+    get<GeminiTtsLipSyncTimeline>(`/audio/gemini/characters/${encodeURIComponent(id)}/lipsync`),
   renameGeminiTtsCharacter: (id: string, name: string) =>
     send<GeminiTtsCharacter>(`/audio/gemini/characters/${encodeURIComponent(id)}`, "PATCH", { name }),
   channelThemeBlocks: () => get<ChannelThemeBlocksResponse>("/super-admin/channel-blocks"),
