@@ -53,6 +53,16 @@ const BUILT_IN_AVATAR_MODELS: AvatarModelFile[] = [
     framing: "head",
     presenter: true,
   },
+  {
+    id: "fumiriya",
+    name: "Фумирия",
+    size: 19_589_760,
+    url: "/api/audio/avatar/model/fumiriya.vrm?v=official-cc0-20260710",
+    source: "server",
+    description: "Официальная мужская CC0-модель VRoid с полудлинными светлыми волосами, мягкой улыбкой и 14 готовыми выражениями для речи и мимики.",
+    framing: "head",
+    presenter: true,
+  },
 ];
 
 const DEFAULT_AVATAR_MODEL = BUILT_IN_AVATAR_MODELS[0];

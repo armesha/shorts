@@ -32,6 +32,14 @@ const AUDIO_AVATAR_MODELS: Record<string, { name: string; file: string; contentT
     license: "CC0 1.0",
     source: "https://vroid.pixiv.help/hc/en-us/articles/360013482714-Sendagaya-Shino",
   },
+  "fumiriya.vrm": {
+    name: "Фумирия",
+    file: "fumiriya.vrm",
+    contentType: "model/gltf-binary",
+    description: "Официальная мужская CC0-модель VRoid с полудлинными светлыми волосами, мягкой улыбкой и 14 готовыми выражениями для речи и мимики.",
+    license: "CC0 1.0",
+    source: "https://vroid.pixiv.help/hc/en-us/articles/360014788554-Sakurada-Fumiriya",
+  },
 };
 
 export function registerAudioRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {

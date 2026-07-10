@@ -35,6 +35,41 @@
       "embedded_allowed_users": "Everyone",
       "embedded_redistribution": "Allow",
       "notes": "The official VRoid page explicitly releases Sendagaya Shino under CC0 and describes her long straight hair and smile. The unchanged runtime VRM includes five vowel expressions, blink variants and emotion presets. Runtime binary stays local and is not committed."
+    },
+    {
+      "id": "fumiriya.vrm",
+      "name": "Фумирия",
+      "file": "fumiriya.vrm",
+      "license": "CC0 1.0",
+      "source_project": "VRoid Studio",
+      "source_author": "VRoid Project / pixiv Inc.",
+      "source_page": "https://vroid.pixiv.help/hc/en-us/articles/360014788554-Sakurada-Fumiriya",
+      "download_mirror": "https://opengameart.org/content/vroid-studio-cc0-models",
+      "source_archive": "sakurada_fumiriya.zip",
+      "source_archive_sha256": "f3c53eea11398c7ed650d686a1e19e0823122068280ed4adc8105c9913e9fc66",
+      "source_file": "Sakurada Fumiriya.vrm",
+      "source_sha256": "a36e91b81518c59f6da0e3f34a176b79090a8c68cc6bd5fe03c1560744b283f3",
+      "vrm_version": "0.x",
+      "expressions": [
+        "Neutral",
+        "A",
+        "I",
+        "U",
+        "E",
+        "O",
+        "Blink",
+        "Blink_L",
+        "Blink_R",
+        "Angry",
+        "Fun",
+        "Joy",
+        "Sorrow",
+        "Surprised"
+      ],
+      "embedded_commercial_use": "Allow",
+      "embedded_allowed_users": "Everyone",
+      "embedded_redistribution": "Allow",
+      "notes": "The official VRoid page explicitly releases Sakurada Fumiriya under CC0 and describes him as a male model with semi-long hair and a gentle smile. The unchanged runtime VRM includes five vowel expressions, blink variants and emotion presets. Runtime binary stays local and is not committed."
     }
   ]
 }

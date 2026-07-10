@@ -785,7 +785,7 @@ function applyVrmExpressions(driver: VrmExpressionDriver, frame: AvatarFrame) {
   set("ee", morphValue("ee", frame));
   set("oh", morphValue("oh", frame));
   set("blink", morphValue("blink", frame));
-  set("happy", frame.smile * 0.22 + frame.laugh * 0.72);
+  set("happy", frame.smile * 0.52 + frame.laugh * 0.72);
   set("laugh", morphValue("laugh", frame));
   set("surprised", morphValue("surprise", frame));
   set("angry", morphValue("angry", frame));
@@ -844,7 +844,7 @@ function morphValue(kind: MorphKind, frame: AvatarFrame): number {
     case "sad":
       return Math.min(1, frame.sad);
     case "relaxed":
-      return Math.min(1, frame.whisper * 0.35 + frame.smile * 0.12);
+      return Math.min(1, frame.whisper * 0.35 + frame.smile * 0.24);
   }
   return 0;
 }
