@@ -853,7 +853,7 @@ export function buildFrame(
     viseme,
     speechViseme,
     blink: autoBlink(time),
-    smile: playing ? 0.01 : 0.035,
+    smile: subtleSmile(time, playing),
     surprise: 0,
     anger: 0,
     sad: 0,
@@ -1078,10 +1078,24 @@ function applyCue(frame: AvatarFrame, command: AvatarCommand, strength: number) 
   }
 }
 
+const BLINK_CYCLE_SECONDS = 23.4;
+const BLINK_STARTS = [1.28, 4.86, 8.72, 13.54, 17.16, 21.05];
+
 function autoBlink(time: number): number {
-  const phase = (time + 1.9) % 4.6;
-  if (phase < 0.12) return Math.sin((phase / 0.12) * Math.PI);
+  const cycleTime = ((time % BLINK_CYCLE_SECONDS) + BLINK_CYCLE_SECONDS) % BLINK_CYCLE_SECONDS;
+  for (const start of BLINK_STARTS) {
+    const elapsed = cycleTime - start;
+    if (elapsed < 0 || elapsed > 0.17) continue;
+    if (elapsed < 0.055) return smoothstep(0, 0.055, elapsed);
+    return 1 - smoothstep(0.055, 0.17, elapsed);
+  }
   return 0;
+}
+
+function subtleSmile(time: number, playing: boolean): number {
+  if (!playing) return 0.06;
+  const warmth = (Math.sin(time * 0.72 - 0.45) + 1) * 0.5;
+  return 0.1 + warmth * 0.08;
 }
 
 function ProceduralAvatarCanvas({
