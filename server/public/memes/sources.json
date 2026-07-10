@@ -1,0 +1,13 @@
+{
+  "title": "ruMeme Descriptions",
+  "dataset": "foldl/rumeme-desc",
+  "author": "foldl",
+  "source_url": "https://huggingface.co/datasets/foldl/rumeme-desc",
+  "upstream_source": "https://vk.com/textmeme",
+  "license": "CC BY-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "retrieved_at": "2026-07-10",
+  "retrieval_method": "Hugging Face datasets-server rows API; images stored locally without content modification",
+  "items": 2508,
+  "notes": "Russian-language meme images and dataset descriptions. Site categories are derived locally from description keywords."
+}

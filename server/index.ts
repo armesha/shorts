@@ -59,6 +59,7 @@ import { registerSuperAdminChannelBlockRoutes } from "./routes/super-admin-chann
 import { registerExamplesRoutes } from "./routes/examples.ts";
 import { registerAudioRoutes } from "./routes/audio.ts";
 import { registerCarSeatBookingRoutes } from "./routes/car-seat-bookings.ts";
+import { registerMemesRoutes } from "./routes/memes.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -357,6 +358,7 @@ registerSuperAdminChannelBlockRoutes(app, db, deps);
 registerExamplesRoutes(app, db, deps);
 registerAudioRoutes(app, db, deps);
 registerCarSeatBookingRoutes(app, db);
+registerMemesRoutes(app);
 
 app
   .listen({ port: base.port, host: "0.0.0.0" })
