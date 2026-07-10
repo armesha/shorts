@@ -23,6 +23,7 @@ For jokes and anecdotes, use only source-backed text. Do not invent joke/anecdot
 2. Analyse the content before directing the voice.
    - Read `references/gemini-tts-direction.md` before creating a new character, using non-verbal tags, or changing a character's acting style. Open the linked official Gemini documentation when its guidance may have changed.
    - Write a short performance plan into `tts-input.json` before generation: literal transcript, visual/contextual trigger, one beat per line, voice arc, allowed non-verbal sounds, and forbidden additions.
+   - Decide explicitly whether the punchline earns one short ending reaction. Add a laugh, breath, sound, or felt interjection only when it follows from the content, the user allows additions, and the exact form is recorded in the plan; otherwise leave the ending clean.
    - Match the voice's natural tone to the role before compensating with prompting. Do not use one global speed for a meme whose emotion changes line by line.
    - Change one directing variable per experiment: base voice, overall character profile, line beats/tags, or pace arc. Keep the chosen transcript and record the result's duration.
 
