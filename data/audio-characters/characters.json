@@ -3,29 +3,29 @@
     {
       "id": "vitek",
       "name": "Витёк",
-      "description": "Низковатый, чуть писклявый русский комедийный голос для живых диалогов и анекдотов.",
+      "description": "Низкий, бодрый русский голос с улыбкой в интонации: спокойно заводит и точно обыгрывает панчлайн.",
       "model": "gemini-3.1-flash-tts-preview",
       "language": "ru",
-      "voice": "Puck",
-      "style": "lower-pitched but slightly squeaky nasal Russian comedy narrator; lively, not slow; distinct intonation for each dialogue line; no extra spoken words beyond transcript",
-      "pace": "medium-fast; short tight pauses; punchlines a little sharper; do not drag vowels; finish with a quick small laugh",
+      "voice": "Gacrux",
+      "style": "Low, chest-resonant adult Russian comedy narrator with clear diction and a contained smile in the voice; lively and confident, never squeaky or nasal. Read only the transcript: no added words, literal laughter, sighs, comments, or closing reaction. Build the humour through intonation, not extra sounds.",
+      "pace": "Start calm and conversational, then tighten each beat; slightly faster on the turn and fastest on the final situation while keeping consonants clear. Use micro-pauses only, no dead air; for a four-line meme aim for a compact 8–9 second read and land the last phrase as a knowing, restrained punchline.",
       "accent": "natural Russian, casual, clear diction",
-      "scene": "Voiceover for an existing Russian anecdote card from the app library. Short-form comedy timing, close microphone.",
+      "scene": "Close-mic Russian vertical-meme voiceover. The speaker notices an everyday escalation and shares the joke with a friend; high projection without shouting, no music, no dead air.",
       "energy": 4,
-      "sampleText": "[fast] Алло, здорово, как дела, чё делаешь?",
-      "sampleFile": "vitek-allo.wav",
-      "sampleDurationSec": 2.3,
+      "sampleText": "Моё сердце.\nГуляю.\nБегу.\nПытаюсь быстро сложить сдачу в кошелёк перед кассиром.",
+      "sampleFile": "vitek-heart-cashier.wav",
+      "sampleDurationSec": 9.68,
       "postProcessing": {
-        "label": "Ниже, быстрее, носовой комедийный тембр",
-        "ffmpegFilter": "asetrate=24000*0.94,aresample=48000,atempo=1.35,highpass=f=85,equalizer=f=2600:t=q:w=1.1:g=3.0,equalizer=f=4300:t=q:w=1.0:g=1.8,loudnorm=I=-15:TP=-1.5:LRA=9"
+        "label": "Естественный низкий тембр и читаемые согласные",
+        "ffmpegFilter": "highpass=f=70,bass=g=2.5:f=150:w=0.6,equalizer=f=2600:t=q:w=1.1:g=1.4,loudnorm=I=-15:TP=-1.5:LRA=9"
       },
       "source": {
-        "deck": "ru",
-        "cardId": "558",
-        "phrase": "Алло, здорово, как дела, чё делаешь?"
+        "deck": "user-provided",
+        "cardId": "heart-cashier",
+        "phrase": "Моё сердце. Гуляю. Бегу. Пытаюсь быстро сложить сдачу в кошелёк перед кассиром."
       },
       "createdAt": "2026-07-09T00:00:00.000Z",
-      "updatedAt": "2026-07-09T00:00:00.000Z"
+      "updatedAt": "2026-07-10T20:04:33.000Z"
     }
   ]
 }
