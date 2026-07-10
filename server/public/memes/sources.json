@@ -9,5 +9,5 @@
   "retrieved_at": "2026-07-10",
   "retrieval_method": "Hugging Face datasets-server rows API; images stored locally without content modification",
   "items": 2508,
-  "notes": "Russian-language meme images and dataset descriptions. Topic categories are derived locally from description keywords. Memes whose images contain English text are kept in a separate English memes filter based on explicit language markers and Latin text recorded in the dataset descriptions."
+  "notes": "Russian-language meme images and dataset descriptions. Topic categories are derived locally from description keywords. Memes whose images contain English text are kept in a separate English memes filter. The top-text layout filters use a strict metadata rule: one top text marker plus a lower image marker, excluding multi-frame, multiple-image, lower-text, and comment descriptions."
 }
