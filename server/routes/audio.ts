@@ -24,13 +24,13 @@ import { alignRussianLipSync, RussianLipSyncError } from "../services/russian-li
 
 const AUDIO_AVATAR_MODEL_DIR = resolve(process.cwd(), "data/audio-avatars");
 const AUDIO_AVATAR_MODELS: Record<string, { name: string; file: string; contentType: string; description: string; license: string; source: string }> = {
-  "maya.glb": {
-    name: "Майя",
-    file: "maya.glb",
+  "shino.vrm": {
+    name: "Шино",
+    file: "shino.vrm",
     contentType: "model/gltf-binary",
-    description: "CC0 говорящая голова MakeHuman/MPFB с волосами, уложенными вперёд у лица, 52 ARKit-формами лица и Oculus-viseme для речи.",
+    description: "Официальная CC0-модель VRoid с длинными прямыми волосами, прядями у лица и 15 готовыми выражениями для речи и мимики.",
     license: "CC0 1.0",
-    source: "https://github.com/met4citizen/TalkingHead/blob/eed58d198076a7e1e825f804802921c4d3804d46/avatars/mpfb.glb",
+    source: "https://vroid.pixiv.help/hc/en-us/articles/360013482714-Sendagaya-Shino",
   },
 };
 

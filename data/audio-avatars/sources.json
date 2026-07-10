@@ -1,27 +1,40 @@
 {
   "models": [
     {
-      "id": "maya.glb",
-      "name": "Майя",
-      "file": "maya.glb",
+      "id": "shino.vrm",
+      "name": "Шино",
+      "file": "shino.vrm",
       "license": "CC0 1.0",
-      "source_project": "TalkingHead",
-      "source_repository": "https://github.com/met4citizen/TalkingHead",
-      "source_file": "avatars/mpfb.glb",
-      "source_commit": "eed58d198076a7e1e825f804802921c4d3804d46",
-      "source_sha256": "63c645a2a863b9972e9a9c2ed576a1de4c390b8475508e1473e69c87a3ee299c",
-      "hair_name": "bob02",
-      "hair_source_repository": "https://github.com/makehumancommunity/makehuman-assets",
-      "hair_source_commit": "8cf9645b975a98eea056b140df11a1d278da0d10",
-      "hair_source_files": [
-        "base/hair/bob02/bob02.obj",
-        "base/hair/bob02/bob02_diffuse.png"
+      "source_project": "VRoid Studio",
+      "source_author": "VRoid Project / pixiv Inc.",
+      "source_page": "https://vroid.pixiv.help/hc/en-us/articles/360013482714-Sendagaya-Shino",
+      "download_mirror": "https://opengameart.org/content/vroid-studio-cc0-models",
+      "source_archive": "sendagaya_shino.zip",
+      "source_archive_sha256": "ff85ff42c1d041fd66dabdb36761a98557d7b55199f635769f3698a41c0a3696",
+      "source_file": "Sendagaya Shino.vrm",
+      "source_sha256": "f11b2648e7e588ae171ad1c32e465f84e5b130b1d1789e3a3702946c0981d2a9",
+      "vrm_version": "0.x",
+      "expressions": [
+        "Neutral",
+        "A",
+        "I",
+        "U",
+        "E",
+        "O",
+        "Blink",
+        "Blink_L",
+        "Blink_R",
+        "Angry",
+        "Fun",
+        "Joy",
+        "Sorrow",
+        "Surprised",
+        "Extra"
       ],
-      "hair_license": "CC0 1.0",
-      "hair_obj_sha256": "30d44038836d786364eb4134a9259cf93ca0c707f883861b0135ebfb149caa08",
-      "hair_texture_sha256": "38c88e6f71631356591f09b1f17a1bb5a99c3bb095b1a29003f1dc3d3e839b0d",
-      "runtime_sha256": "84ebb438db57c5211b66ced8029f58ce4bbeecf6128399f3c4f781bec148ad28",
-      "notes": "The upstream README explicitly licenses mpfb.glb under CC0. The MakeHuman system asset index and source headers license bob02 under CC0. The ponytail mesh was replaced programmatically with bob02 without Blender; the front lock was moved away from the eyes and the source texture was recolored brown. The 52 ARKit face shapes, 14 non-silent Oculus visemes and all existing facial morph targets remain present. The runtime GLB is Meshopt-compressed and embeds a WebP hair texture. Runtime binary stays local and is not committed."
+      "embedded_commercial_use": "Allow",
+      "embedded_allowed_users": "Everyone",
+      "embedded_redistribution": "Allow",
+      "notes": "The official VRoid page explicitly releases Sendagaya Shino under CC0 and describes her long straight hair and smile. The unchanged runtime VRM includes five vowel expressions, blink variants and emotion presets. Runtime binary stays local and is not committed."
     }
   ]
 }

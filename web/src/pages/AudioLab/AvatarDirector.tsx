@@ -44,12 +44,12 @@ type AvatarModelFile = {
 
 const BUILT_IN_AVATAR_MODELS: AvatarModelFile[] = [
   {
-    id: "maya",
-    name: "Майя",
-    size: 3_056_476,
-    url: "/api/audio/avatar/model/maya.glb?v=bob02-20260710",
+    id: "shino",
+    name: "Шино",
+    size: 14_870_776,
+    url: "/api/audio/avatar/model/shino.vrm?v=official-cc0-20260710",
     source: "server",
-    description: "CC0 говорящая голова MakeHuman/MPFB с волосами, уложенными вперёд у лица, 52 ARKit-формами лица и 14 речевыми visemes.",
+    description: "Официальная CC0-модель VRoid с длинными прямыми волосами, прядями у лица и 15 готовыми выражениями для речи и мимики.",
     framing: "head",
     presenter: true,
   },

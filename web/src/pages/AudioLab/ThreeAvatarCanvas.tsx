@@ -46,6 +46,7 @@ type MorphBinding = {
 type RigBone = import("three").Object3D;
 
 type LiveRig = {
+  normalizedVrm?: boolean;
   hips?: RigBone;
   spine?: RigBone;
   chest?: RigBone;
@@ -259,6 +260,11 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, framing, present
       const gltf = await loader.loadAsync(modelUrl);
       if (disposed) return;
       const loadedVrm = (gltf as LoadedGltf).userData?.vrm;
+      if (loadedVrm) {
+        ambient.intensity = 1.35;
+        key.intensity = 1.55;
+        fill.intensity = 0.5;
+      }
       if (loadedVrm) VRMUtils.rotateVRM0(loadedVrm as Parameters<typeof VRMUtils.rotateVRM0>[0]);
       const root = loadedVrm?.scene ?? gltf.scene;
       root.name = modelName;
@@ -280,6 +286,7 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, framing, present
       const presenterMotion = presenterMode;
       const basePosition = root.position.clone();
       const baseScale = root.scale.x || 1;
+      const baseRotation = root.rotation.clone();
       const expressionDriver = createVrmExpressionDriver(loadedVrm?.expressionManager);
       const vrmBindings = expressionDriver ? [] : collectVrmExpressionBindings(gltf as LoadedGltf, root);
       const vrm0Bindings = expressionDriver || vrmBindings.length ? [] : collectVrm0BlendShapeBindings(gltf as LoadedGltf, root);
@@ -309,9 +316,9 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, framing, present
         const frame = frameRef.current();
         root.scale.setScalar(baseScale);
         root.rotation.set(
-          presenterMotion ? 0 : -frame.gazeY * 0.18,
-          presenterMotion ? 0 : frame.gazeX * 0.42,
-          presenterMotion ? 0 : frame.headTilt * 0.85,
+          baseRotation.x + (presenterMotion ? 0 : -frame.gazeY * 0.18),
+          baseRotation.y + (presenterMotion ? 0 : frame.gazeX * 0.42),
+          baseRotation.z + (presenterMotion ? 0 : frame.headTilt * 0.85),
         );
         root.position.copy(basePosition);
         root.position.y += frame.headBob * (presenterMotion ? 0.00025 : 0.004);
@@ -432,6 +439,7 @@ function collectLiveRig(root: import("three").Object3D): LiveRig {
 function collectVrmLiveRig(vrm: VrmRuntime): LiveRig {
   const get = (name: string) => vrm.humanoid?.getNormalizedBoneNode(name) ?? undefined;
   const rig: LiveRig = {
+    normalizedVrm: true,
     hips: get("hips"),
     spine: get("spine"),
     chest: get("chest"),
@@ -453,7 +461,7 @@ function collectVrmLiveRig(vrm: VrmRuntime): LiveRig {
 
 function captureRigRest(rig: LiveRig) {
   for (const bone of Object.values(rig)) {
-    if (!bone || bone instanceof Map) continue;
+    if (!bone || bone instanceof Map || typeof bone !== "object" || !("rotation" in bone)) continue;
     rig.rest.set(bone, bone.rotation.clone());
   }
 }
@@ -500,6 +508,7 @@ function applyRigMotion(rig: LiveRig, frame: AvatarFrame, presenterMode: boolean
 
 function applyPresenterRigMotion(rig: LiveRig, frame: AvatarFrame) {
   const breathe = Math.sin(frame.time * 1.05);
+  const armDirection = rig.normalizedVrm ? 1 : -1;
   setBoneRotation(rig, rig.hips, 0, 0, 0);
   setBoneRotation(rig, rig.spine, breathe * 0.003, 0, 0);
   setBoneRotation(rig, rig.chest, -0.018 + breathe * 0.006, frame.gazeX * 0.008, frame.headTilt * 0.025);
@@ -507,10 +516,10 @@ function applyPresenterRigMotion(rig: LiveRig, frame: AvatarFrame) {
   setBoneRotation(rig, rig.head, -frame.gazeY * 0.055 + frame.surprise * 0.012, frame.gazeX * 0.07, frame.headTilt * 0.09);
   setBoneRotation(rig, rig.leftShoulder, 0, 0, -0.05);
   setBoneRotation(rig, rig.rightShoulder, 0, 0, 0.05);
-  setBoneRotation(rig, rig.leftUpperArm, 0.04, 0.025, -1.15);
-  setBoneRotation(rig, rig.rightUpperArm, 0.04, -0.025, 1.15);
-  setBoneRotation(rig, rig.leftLowerArm, 0.05, 0.01, -0.12);
-  setBoneRotation(rig, rig.rightLowerArm, 0.05, -0.01, 0.12);
+  setBoneRotation(rig, rig.leftUpperArm, 0.04, 0.025, armDirection * 1.15);
+  setBoneRotation(rig, rig.rightUpperArm, 0.04, -0.025, armDirection * -1.15);
+  setBoneRotation(rig, rig.leftLowerArm, 0.05, 0.01, armDirection * 0.12);
+  setBoneRotation(rig, rig.rightLowerArm, 0.05, -0.01, armDirection * -0.12);
   setBoneRotation(rig, rig.leftHand, 0, 0, 0);
   setBoneRotation(rig, rig.rightHand, 0, 0, 0);
 }
@@ -768,13 +777,15 @@ function applyVrmExpressions(driver: VrmExpressionDriver, frame: AvatarFrame) {
   const set = (name: string, value: number) => {
     if (driver.names.has(name)) driver.manager.setValue(name, Math.max(0, Math.min(1, value)));
   };
-  set("aa", morphValue("aa", frame));
-  set("ih", morphValue("ih", frame));
+  const openConsonant = Math.max(frame.speechViseme.TH, frame.speechViseme.DD, frame.speechViseme.kk, frame.speechViseme.RR) * 0.22;
+  const narrowConsonant = Math.max(frame.speechViseme.FF, frame.speechViseme.CH, frame.speechViseme.SS, frame.speechViseme.nn) * 0.2;
+  set("aa", Math.max(morphValue("aa", frame), openConsonant));
+  set("ih", Math.max(morphValue("ih", frame), narrowConsonant));
   set("ou", morphValue("ou", frame));
   set("ee", morphValue("ee", frame));
   set("oh", morphValue("oh", frame));
   set("blink", morphValue("blink", frame));
-  set("happy", morphValue("smile", frame));
+  set("happy", frame.smile * 0.22 + frame.laugh * 0.72);
   set("laugh", morphValue("laugh", frame));
   set("surprised", morphValue("surprise", frame));
   set("angry", morphValue("angry", frame));
