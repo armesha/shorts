@@ -42,7 +42,7 @@ interface CharacterStore {
 }
 
 const DEFAULT_CREATED_AT = "2026-07-09T00:00:00.000Z";
-const VITEK_UPDATED_AT = "2026-07-10T20:04:33.000Z";
+const VITEK_UPDATED_AT = "2026-07-10T20:15:00.000Z";
 
 const DEFAULT_CHARACTERS: StoredGeminiTtsCharacter[] = [
   {
@@ -52,14 +52,14 @@ const DEFAULT_CHARACTERS: StoredGeminiTtsCharacter[] = [
     model: GEMINI_TTS_MODEL,
     language: "ru",
     voice: "Gacrux",
-    style: "Low, chest-resonant adult Russian comedy narrator with clear diction and a contained smile in the voice; lively and confident, never squeaky or nasal. Read only the transcript: no added words, literal laughter, sighs, comments, or closing reaction. Build the humour through intonation, not extra sounds.",
-    pace: "Start calm and conversational, then tighten each beat; slightly faster on the turn and fastest on the final situation while keeping consonants clear. Use micro-pauses only, no dead air; for a four-line meme aim for a compact 8–9 second read and land the last phrase as a knowing, restrained punchline.",
+    style: "Low, chest-resonant adult Russian comedy narrator with clear diction and a contained smile in the voice; lively and confident, never squeaky or nasal. Build humour from the body of the delivery: calm control, a quiet inhale, then air running out. Read only the transcript; perform no non-verbal sound unless it is explicitly written as an inline audio tag.",
+    pace: "Act the beats line by line: title low and calm; walk relaxed with one quiet inhale; run with a brief gasp and breathless voice; then make the cashier-change line quick and airless but articulate. Use no dead air, but do not cut breaths or force the pace to fit an arbitrary duration: let the performance set the length.",
     accent: "natural Russian, casual, clear diction",
     scene: "Close-mic Russian vertical-meme voiceover. The speaker notices an everyday escalation and shares the joke with a friend; high projection without shouting, no music, no dead air.",
     energy: 4,
-    sampleText: "Моё сердце.\nГуляю.\nБегу.\nПытаюсь быстро сложить сдачу в кошелёк перед кассиром.",
-    sampleFile: "vitek-heart-cashier.wav",
-    sampleDurationSec: 9.68,
+    sampleText: "Моё сердце.\n[calm] Гуляю. [quiet inhale]\n[gasp] Бегу.\n[breathless, very fast] Пытаюсь быстро сложить сдачу в кошелёк перед кассиром.",
+    sampleFile: "vitek-heart-cashier-acted.wav",
+    sampleDurationSec: 8.84,
     postProcessing: {
       label: "Естественный низкий тембр и читаемые согласные",
       ffmpegFilter:

@@ -18,6 +18,7 @@ For jokes and anecdotes, use only source-backed text. Do not invent joke/anecdot
    - For memes, use a user-provided line or an existing pack/card line.
    - For jokes/anecdotes, preserve the source wording. Expanding numbers for TTS pronunciation is acceptable if `source.json` records the exact source text.
    - Do not add commentary unless the user explicitly asks for commentary. Non-verbal tags such as `[short pause]`, `[sighs]`, `[whispers]`, and `[laughs]` are acceptable when they fit the joke.
+   - When the user asks to act out a meme, map each source line to one physical or emotional beat before generating. Keep the words unchanged; add inline English audio tags only for the exact breaths, laughs, pauses, or reactions the user requested.
 
 2. Select safe assets.
    - Images: prefer local Pexels-ledgered files such as `data/memes/photos/sources.jsonl`, generated assets, CC0/Public Domain, or explicit compatible licenses.
