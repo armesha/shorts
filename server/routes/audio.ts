@@ -28,7 +28,7 @@ const AUDIO_AVATAR_MODELS: Record<string, { name: string; file: string; contentT
     name: "Майя",
     file: "maya.glb",
     contentType: "model/gltf-binary",
-    description: "CC0 говорящая голова MakeHuman/MPFB с распущенными волосами, 52 ARKit-формами лица и Oculus-viseme для речи.",
+    description: "CC0 говорящая голова MakeHuman/MPFB с волосами, уложенными вперёд у лица, 52 ARKit-формами лица и Oculus-viseme для речи.",
     license: "CC0 1.0",
     source: "https://github.com/met4citizen/TalkingHead/blob/eed58d198076a7e1e825f804802921c4d3804d46/avatars/mpfb.glb",
   },

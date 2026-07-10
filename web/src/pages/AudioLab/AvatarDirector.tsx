@@ -46,10 +46,10 @@ const BUILT_IN_AVATAR_MODELS: AvatarModelFile[] = [
   {
     id: "maya",
     name: "Майя",
-    size: 3_074_048,
-    url: "/api/audio/avatar/model/maya.glb?v=long01-20260710",
+    size: 3_056_476,
+    url: "/api/audio/avatar/model/maya.glb?v=bob02-20260710",
     source: "server",
-    description: "CC0 говорящая голова MakeHuman/MPFB с распущенными волосами, 52 ARKit-формами лица и 14 речевыми visemes.",
+    description: "CC0 говорящая голова MakeHuman/MPFB с волосами, уложенными вперёд у лица, 52 ARKit-формами лица и 14 речевыми visemes.",
     framing: "head",
     presenter: true,
   },
@@ -949,9 +949,9 @@ function autoBlink(time: number): number {
 }
 
 function subtleSmile(time: number, playing: boolean): number {
-  if (!playing) return 0.075;
+  if (!playing) return 0.16;
   const warmth = (Math.sin(time * 0.72 - 0.45) + 1) * 0.5;
-  return 0.13 + warmth * 0.09;
+  return 0.28 + warmth * 0.18;
 }
 
 function escapeRegExp(value: string): string {
