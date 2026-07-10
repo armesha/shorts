@@ -64,14 +64,6 @@ const AUDIO_AVATAR_MODELS: Record<string, { name: string; file: string; contentT
     license: "CC0 1.0",
     source: "https://github.com/met4citizen/TalkingHead/blob/eed58d198076a7e1e825f804802921c4d3804d46/avatars/mpfb.glb",
   },
-  "coolbanana.vrm": {
-    name: "Cool Banana",
-    file: "coolbanana.vrm",
-    contentType: "model/gltf-binary",
-    description: "CC0 VRM 0.x маскот из Open Source Avatars / 100Avatars R1.",
-    license: "CC0",
-    source: "https://arweave.net/o4gWzn4PPzYo2KPm-wFXnvBC7KrN6N_R0NNfg1yPPeM",
-  },
 };
 
 export function registerAudioRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {

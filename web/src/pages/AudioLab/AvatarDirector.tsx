@@ -72,14 +72,6 @@ const BUILT_IN_AVATAR_MODELS: AvatarModelFile[] = [
     description: "Оригинальный полуреалистичный VRM 1.0 ведущий с объёмными губами, пятью visemes и живой мимикой.",
     presenter: true,
   },
-  {
-    id: "coolbanana",
-    name: "Cool Banana",
-    size: 1_491_040,
-    url: "/api/audio/avatar/model/coolbanana.vrm",
-    source: "server",
-    description: "CC0 VRM 0.x маскот с A/E/I/O/U формами рта и морганием.",
-  },
 ];
 
 const DEFAULT_AVATAR_MODEL = BUILT_IN_AVATAR_MODELS[0];
@@ -1093,9 +1085,9 @@ function autoBlink(time: number): number {
 }
 
 function subtleSmile(time: number, playing: boolean): number {
-  if (!playing) return 0.06;
+  if (!playing) return 0.075;
   const warmth = (Math.sin(time * 0.72 - 0.45) + 1) * 0.5;
-  return 0.1 + warmth * 0.08;
+  return 0.13 + warmth * 0.09;
 }
 
 function ProceduralAvatarCanvas({

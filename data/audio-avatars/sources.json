@@ -9,17 +9,6 @@
       "notes": "Original procedural VRM 1.0 character generated for this project. Runtime binary stays local and is not committed."
     },
     {
-      "id": "coolbanana.vrm",
-      "name": "Cool Banana",
-      "file": "coolbanana.vrm",
-      "license": "CC0",
-      "collection": "100avatars-r1",
-      "registry": "https://github.com/ToxSam/open-source-avatars",
-      "model_file_url": "https://arweave.net/o4gWzn4PPzYo2KPm-wFXnvBC7KrN6N_R0NNfg1yPPeM",
-      "thumbnail_url": "https://arweave.net/4X1LoMeFmjPx8gMrJn4NQv0U59CHKCiw1z7ZY4aYYHw",
-      "notes": "Registry project metadata marks 100avatars-r1 as CC0; the VRM meta licenseName is CC0 and commercial usage is Allow. Runtime binary stays local and is not committed."
-    },
-    {
       "id": "vityok.vrm",
       "name": "Витёк",
       "file": "vityok.vrm",
