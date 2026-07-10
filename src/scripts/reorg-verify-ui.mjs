@@ -39,7 +39,7 @@ try {
 const routes = [
   "/", "/channels", "/studio", "/gallery", "/cards", "/packs", "/notifications",
   "/accounts", `/accounts/${accId}`, "/history", "/statistics", "/admin/analytics",
-  "/clip-demos", "/limits", "/changelog", "/errors", "/system", "/settings", "/editor", "/users",
+  "/clip-demos", "/limits", "/errors", "/system", "/settings", "/editor", "/users",
 ];
 
 const browser = await chromium.launch({ channel: "chrome", headless: true });

@@ -56,7 +56,6 @@ export const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
     labelKey: "layout.groupAccount",
     items: [
       { to: "/settings", labelKey: "nav.settings", icon: "settings", end: false },
-      { to: "/changelog", labelKey: "nav.changelog", icon: "updates", end: false },
     ],
   },
   {

@@ -21,7 +21,6 @@ const AccountDetail = lazy(pageLoaders.accountDetail);
 const History = lazy(pageLoaders.history);
 const Notifications = lazy(pageLoaders.notifications);
 const Statistics = lazy(pageLoaders.statistics);
-const Changelog = lazy(pageLoaders.changelog);
 const Errors = lazy(pageLoaders.errors);
 const System = lazy(pageLoaders.system);
 const Settings = lazy(pageLoaders.settings);
@@ -94,7 +93,6 @@ function Gate() {
             <Route path="/creator" element={<CreatorExternalRedirect />} />
             <Route path="/register" element={<Navigate to="/channels" replace />} />
             <Route path="/login" element={defaultRoute} />
-            <Route path="/changelog" element={<Changelog />} />
             <Route path="/errors" element={realAdmin ? <Errors /> : <Navigate to="/statistics" replace />} />
             <Route path="/system" element={<System />} />
             <Route path="/settings" element={<Settings />} />

@@ -8,11 +8,10 @@ import {
   type AvatarCommand,
   type AvatarFrame,
   type SpeechViseme,
-  type StagePreset,
   type StagePresetId,
   type TimelineCue,
 } from "./avatarEngine";
-import { ThreeAvatarCanvas, type AvatarModelView } from "./ThreeAvatarCanvas";
+import { ThreeAvatarCanvas } from "./ThreeAvatarCanvas";
 
 type AvatarDirectorProps = {
   transcript: string;
@@ -31,7 +30,6 @@ type AudioSource = {
   characterId?: string;
 };
 
-type RendererMode = "procedural" | "model";
 type AvatarModelSource = "server" | "file";
 type AvatarModelFile = {
   id: string;
@@ -48,34 +46,16 @@ const BUILT_IN_AVATAR_MODELS: AvatarModelFile[] = [
   {
     id: "maya",
     name: "Майя",
-    size: 2_978_504,
-    url: "/api/audio/avatar/model/maya.glb",
+    size: 3_074_048,
+    url: "/api/audio/avatar/model/maya.glb?v=long01-20260710",
     source: "server",
-    description: "CC0 говорящая голова MakeHuman/MPFB с 52 ARKit-формами лица и 14 речевыми visemes.",
+    description: "CC0 говорящая голова MakeHuman/MPFB с распущенными волосами, 52 ARKit-формами лица и 14 речевыми visemes.",
     framing: "head",
-    presenter: true,
-  },
-  {
-    id: "vika",
-    name: "Вика",
-    size: 679_652,
-    url: "/api/audio/avatar/model/vika.vrm",
-    source: "server",
-    description: "VRM 1.0 модель с visemes, эмоциями, морганием и смехом.",
-  },
-  {
-    id: "vityok",
-    name: "Витёк",
-    size: 776_212,
-    url: "/api/audio/avatar/model/vityok.vrm",
-    source: "server",
-    description: "Оригинальный полуреалистичный VRM 1.0 ведущий с объёмными губами, пятью visemes и живой мимикой.",
     presenter: true,
   },
 ];
 
 const DEFAULT_AVATAR_MODEL = BUILT_IN_AVATAR_MODELS[0];
-const DEFAULT_MODEL_VIEW: AvatarModelView = { scale: 1, yawDeg: 0, yOffset: 0 };
 
 const MANUAL_TIMELINE = "";
 
@@ -93,11 +73,8 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
   const [currentTime, setCurrentTime] = useState(0);
   const [manualTimeline, setManualTimeline] = useState(MANUAL_TIMELINE);
   const [instantCommand, setInstantCommand] = useState<TimelineCue | null>(null);
-  const [rendererMode, setRendererMode] = useState<RendererMode>("model");
   const [stageId, setStageId] = useState<StagePresetId>("studio");
   const [modelFile, setModelFile] = useState<AvatarModelFile | null>(DEFAULT_AVATAR_MODEL);
-  const [modelView, setModelView] = useState<AvatarModelView>(DEFAULT_MODEL_VIEW);
-  const [viewResetToken, setViewResetToken] = useState(0);
   const [notice, setNotice] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
   const [recordUrl, setRecordUrl] = useState<string | null>(null);
@@ -293,25 +270,14 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
       return;
     }
     setModelFile({ id: `file:${file.name}`, name: file.name, size: file.size, url: URL.createObjectURL(file), source: "file", description: "Локально загруженная модель для проверки." });
-    setRendererMode("model");
     setNotice(`Модель загружена: ${file.name}`);
     window.setTimeout(() => setNotice(null), 1800);
   }
 
   function selectBuiltInModel(model: AvatarModelFile) {
     setModelFile(model);
-    setRendererMode("model");
     setNotice(`${model.name} подключён`);
     window.setTimeout(() => setNotice(null), 1800);
-  }
-
-  function updateModelView<K extends keyof AvatarModelView>(key: K, value: AvatarModelView[K]) {
-    setModelView((prev) => ({ ...prev, [key]: value }));
-  }
-
-  function resetModelView() {
-    setModelView(DEFAULT_MODEL_VIEW);
-    setViewResetToken((value) => value + 1);
   }
 
   const setActiveCanvas = useCallback((canvas: HTMLCanvasElement | null) => {
@@ -336,9 +302,7 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
   function exportProject() {
     const payload = {
       version: 1,
-      rendererMode,
       stageId,
-      modelView,
       modelFileName: modelFile?.name ?? null,
       modelSource: modelFile?.source ?? null,
       selectedSourceId,
@@ -357,23 +321,13 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
     reader.onload = () => {
       try {
         const parsed = JSON.parse(String(reader.result ?? "{}")) as Partial<{
-          rendererMode: RendererMode;
           stageId: StagePresetId;
           selectedSourceId: string;
           manualTimeline: string;
-          modelView: Partial<AvatarModelView>;
         }>;
-        if (parsed.rendererMode === "procedural" || parsed.rendererMode === "model") setRendererMode(parsed.rendererMode);
         if (parsed.stageId && STAGE_PRESETS.some((item) => item.id === parsed.stageId)) setStageId(parsed.stageId);
         if (parsed.selectedSourceId) setSelectedSourceId(parsed.selectedSourceId);
         if (typeof parsed.manualTimeline === "string") setManualTimeline(parsed.manualTimeline);
-        if (parsed.modelView) {
-          setModelView({
-            scale: clampNumber(parsed.modelView.scale, 0.55, 1.85, DEFAULT_MODEL_VIEW.scale),
-            yawDeg: clampNumber(parsed.modelView.yawDeg, -180, 180, DEFAULT_MODEL_VIEW.yawDeg),
-            yOffset: clampNumber(parsed.modelView.yOffset, -0.65, 0.65, DEFAULT_MODEL_VIEW.yOffset),
-          });
-        }
         setNotice("Проект импортирован");
         window.setTimeout(() => setNotice(null), 1800);
       } catch {
@@ -452,8 +406,8 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <span className="font-semibold">{modelFile?.name ?? "Avatar"} · движок v1</span>
             <span className="badge badge-ghost badge-sm">локально</span>
-            <span className="badge badge-ghost badge-sm">{rendererMode === "model" ? "3D model" : "procedural"}</span>
-            {rendererMode === "model" && modelFile?.source === "server" && <span className="badge badge-success badge-sm">встроенная</span>}
+            <span className="badge badge-ghost badge-sm">VRM/GLB</span>
+            {modelFile?.source === "server" && <span className="badge badge-success badge-sm">встроенная</span>}
             <span className={`badge badge-sm ${activeLipSync ? "badge-success" : lipSyncLoading ? "badge-warning" : "badge-ghost"}`}>{lipSyncLabel}</span>
             <span className="badge badge-ghost badge-sm">{Math.round(progress)}%</span>
           </div>
@@ -473,21 +427,17 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
         {lipSyncFailed && <div className="mb-3 rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-sm font-semibold text-warning">MFA недоступна, используется приблизительная мимика</div>}
 
         <div className="mx-auto aspect-[9/16] max-h-[74vh] w-full max-w-[430px] overflow-hidden rounded-md bg-neutral shadow-inner">
-          {rendererMode === "model" && modelFile ? (
+          {modelFile ? (
             <ThreeAvatarCanvas
               modelUrl={modelFile.url}
               modelName={modelFile.name}
               stage={stage}
-              modelView={modelView}
               framing={modelFile.framing ?? "full"}
               presenterMode={modelFile.presenter ?? false}
-              resetToken={viewResetToken}
               getFrame={getCurrentFrame}
               onCanvasReady={setActiveCanvas}
             />
-          ) : (
-            <ProceduralAvatarCanvas stage={stage} getFrame={getCurrentFrame} onCanvasReady={setActiveCanvas} />
-          )}
+          ) : null}
         </div>
 
         <audio
@@ -512,22 +462,9 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
       </div>
 
       <aside className="space-y-4 xl:sticky xl:top-4 xl:self-start">
-        <Panel title="Рендер" icon="video">
-          <div className="grid grid-cols-2 gap-2">
-            <button type="button" className={`btn btn-sm ${rendererMode === "procedural" ? "btn-primary" : "btn-ghost border border-base-300"}`} onClick={() => setRendererMode("procedural")}>
-              Procedural
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm ${rendererMode === "model" ? "btn-primary" : "btn-ghost border border-base-300"}`}
-              disabled={!modelFile}
-              onClick={() => setRendererMode("model")}
-            >
-              VRM/GLB
-            </button>
-          </div>
-          <div className="mt-3 grid gap-2">
-            <div className="grid grid-cols-2 gap-2">
+        <Panel title="Модель" icon="video">
+          <div className="grid gap-2">
+            <div className="grid gap-2">
               {BUILT_IN_AVATAR_MODELS.map((model) => (
                 <button
                   key={model.id}
@@ -546,7 +483,7 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
               <input type="file" accept=".vrm,.glb,model/gltf-binary" className="file-input file-input-bordered file-input-sm w-full" onChange={(event) => loadModel(event.target.files?.[0] ?? null)} />
             </label>
             <div className="rounded-md bg-base-200 px-3 py-2 text-xs leading-relaxed text-base-content/60">
-              Встроенные персонажи грузятся через защищённый админский API. Загрузка файла нужна только для проверки другой модели.
+              Встроенная модель грузится через защищённый админский API. Загрузка файла нужна только для проверки другой модели.
             </div>
             {modelFile && (
               <div className="grid gap-2">
@@ -570,73 +507,6 @@ export function AvatarDirector({ transcript, generatedAudio, characters }: Avata
                 {item.label}
               </button>
             ))}
-          </div>
-        </Panel>
-
-        <Panel title="Камера" icon="video">
-          <div className="grid gap-3">
-            <label className="grid gap-1">
-              <span className="flex items-center justify-between gap-2 text-xs font-semibold text-base-content/65">
-                <span>Размер</span>
-                <span>{Math.round(modelView.scale * 100)}%</span>
-              </span>
-              <input
-                type="range"
-                min={0.55}
-                max={1.85}
-                step={0.01}
-                value={modelView.scale}
-                onChange={(event) => updateModelView("scale", Number(event.target.value))}
-                className="range range-primary range-sm"
-                aria-label="Размер персонажа"
-              />
-            </label>
-            <label className="grid gap-1">
-              <span className="flex items-center justify-between gap-2 text-xs font-semibold text-base-content/65">
-                <span>Поворот</span>
-                <span>{Math.round(modelView.yawDeg)}°</span>
-              </span>
-              <input
-                type="range"
-                min={-180}
-                max={180}
-                step={1}
-                value={modelView.yawDeg}
-                onChange={(event) => updateModelView("yawDeg", Number(event.target.value))}
-                className="range range-primary range-sm"
-                aria-label="Поворот персонажа"
-              />
-              <div className="grid grid-cols-3 gap-2">
-                <button type="button" className="btn btn-xs btn-ghost border border-base-300" onClick={() => updateModelView("yawDeg", clampNumber(modelView.yawDeg - 15, -180, 180, 0))}>
-                  -15°
-                </button>
-                <button type="button" className="btn btn-xs btn-ghost border border-base-300" onClick={() => updateModelView("yawDeg", 0)}>
-                  0°
-                </button>
-                <button type="button" className="btn btn-xs btn-ghost border border-base-300" onClick={() => updateModelView("yawDeg", clampNumber(modelView.yawDeg + 15, -180, 180, 0))}>
-                  +15°
-                </button>
-              </div>
-            </label>
-            <label className="grid gap-1">
-              <span className="flex items-center justify-between gap-2 text-xs font-semibold text-base-content/65">
-                <span>Высота</span>
-                <span>{Math.round(modelView.yOffset * 100)}%</span>
-              </span>
-              <input
-                type="range"
-                min={-0.65}
-                max={0.65}
-                step={0.01}
-                value={modelView.yOffset}
-                onChange={(event) => updateModelView("yOffset", Number(event.target.value))}
-                className="range range-primary range-sm"
-                aria-label="Высота персонажа"
-              />
-            </label>
-            <button type="button" className="btn btn-sm btn-ghost border border-base-300" onClick={resetModelView}>
-              Сбросить кадр
-            </button>
           </div>
         </Panel>
 
@@ -754,12 +624,6 @@ function parseManualTimeline(value: string): TimelineCue[] {
       return { at: Math.max(0, at), command, duration: command === "blink" ? 0.35 : 1.35, source: "manual" as const };
     });
   return rows.filter((cue): cue is TimelineCue => cue !== null);
-}
-
-function clampNumber(value: unknown, min: number, max: number, fallback: number): number {
-  const parsed = Number(value);
-  if (!Number.isFinite(parsed)) return fallback;
-  return Math.max(min, Math.min(max, parsed));
 }
 
 function buildTagTimeline(text: string, duration: number): TimelineCue[] {
@@ -1088,239 +952,6 @@ function subtleSmile(time: number, playing: boolean): number {
   if (!playing) return 0.075;
   const warmth = (Math.sin(time * 0.72 - 0.45) + 1) * 0.5;
   return 0.13 + warmth * 0.09;
-}
-
-function ProceduralAvatarCanvas({
-  stage,
-  getFrame,
-  onCanvasReady,
-}: {
-  stage: StagePreset;
-  getFrame: () => AvatarFrame;
-  onCanvasReady: (canvas: HTMLCanvasElement | null) => void;
-}) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const getFrameRef = useRef(getFrame);
-
-  useEffect(() => {
-    getFrameRef.current = getFrame;
-  }, [getFrame]);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return undefined;
-    onCanvasReady(canvas);
-    return () => onCanvasReady(null);
-  }, [onCanvasReady]);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return undefined;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return undefined;
-    let frameId = 0;
-    const loop = () => {
-      drawAvatar(ctx, getFrameRef.current(), stage);
-      frameId = window.requestAnimationFrame(loop);
-    };
-    loop();
-    return () => window.cancelAnimationFrame(frameId);
-  }, [stage]);
-
-  return <canvas ref={canvasRef} width={720} height={1280} className="h-full w-full" aria-label="Превью аватара" />;
-}
-
-function drawAvatar(ctx: CanvasRenderingContext2D, frame: AvatarFrame, stage: StagePreset) {
-  const w = ctx.canvas.width;
-  const h = ctx.canvas.height;
-  ctx.clearRect(0, 0, w, h);
-  drawBackground(ctx, w, h, stage);
-
-  ctx.save();
-  ctx.translate(w / 2, 578 + frame.headBob);
-  ctx.rotate(frame.headTilt);
-  drawBody(ctx, frame);
-  drawHead(ctx, frame);
-  ctx.restore();
-}
-
-function drawBackground(ctx: CanvasRenderingContext2D, w: number, h: number, stage: StagePreset) {
-  const gradient = ctx.createLinearGradient(0, 0, 0, h);
-  gradient.addColorStop(0, stage.top);
-  gradient.addColorStop(0.52, stage.middle);
-  gradient.addColorStop(1, stage.bottom);
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = stage.grid;
-  for (let i = 0; i < 10; i += 1) {
-    ctx.fillRect(90 + i * 64, 0, 1, h);
-  }
-  ctx.fillStyle = stage.floor;
-  ctx.fillRect(0, h * 0.7, w, h * 0.3);
-}
-
-function drawBody(ctx: CanvasRenderingContext2D, frame: AvatarFrame) {
-  ctx.save();
-  ctx.translate(0, 292);
-  ctx.fillStyle = "#f1c7a8";
-  roundedRect(ctx, -46, -86, 92, 110, 36);
-  ctx.fill();
-  ctx.fillStyle = "#335f78";
-  roundedRect(ctx, -178, -8, 356, 330, 76);
-  ctx.fill();
-  ctx.fillStyle = "#ffffff";
-  roundedRect(ctx, -82, -4, 164, 280, 42);
-  ctx.fill();
-  ctx.strokeStyle = "rgba(0,0,0,0.15)";
-  ctx.lineWidth = 8;
-  ctx.beginPath();
-  ctx.moveTo(-72, 8);
-  ctx.quadraticCurveTo(-20, 72 + frame.smile * 6, 0, 128);
-  ctx.quadraticCurveTo(20, 72 + frame.smile * 6, 72, 8);
-  ctx.stroke();
-  ctx.restore();
-}
-
-function drawHead(ctx: CanvasRenderingContext2D, frame: AvatarFrame) {
-  const gazeX = frame.gazeX * 18;
-  const gazeY = frame.gazeY * 12;
-  const faceY = frame.sad * 8 - frame.surprise * 8;
-
-  ctx.save();
-  ctx.translate(0, faceY);
-  ctx.fillStyle = "#2b1e1d";
-  ellipse(ctx, 0, -70, 178, 230);
-  ctx.fill();
-
-  ctx.fillStyle = "#f2c8aa";
-  ellipse(ctx, 0, -42, 152, 196);
-  ctx.fill();
-
-  ctx.fillStyle = "#241818";
-  ctx.beginPath();
-  ctx.moveTo(-132, -114);
-  ctx.bezierCurveTo(-76, -196, 84, -194, 130, -78);
-  ctx.bezierCurveTo(90, -112, 38, -126, -20, -118);
-  ctx.bezierCurveTo(-74, -110, -112, -78, -132, -114);
-  ctx.fill();
-
-  drawEar(ctx, -145, -34);
-  drawEar(ctx, 145, -34);
-  drawEye(ctx, -55, -50, gazeX, gazeY, frame, false);
-  drawEye(ctx, 55, -50, gazeX, gazeY, frame, true);
-  drawNose(ctx, frame);
-  drawMouth(ctx, frame);
-
-  ctx.fillStyle = `rgba(228, 91, 96, ${0.16 + frame.smile * 0.12 + frame.laugh * 0.18})`;
-  ellipse(ctx, -82, 8, 31, 17);
-  ctx.fill();
-  ellipse(ctx, 82, 8, 31, 17);
-  ctx.fill();
-  ctx.restore();
-}
-
-function drawEar(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  ctx.save();
-  ctx.fillStyle = "#edbb9d";
-  ellipse(ctx, x, y, 24, 46);
-  ctx.fill();
-  ctx.strokeStyle = "rgba(120,70,55,0.25)";
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  ctx.arc(x, y + 2, 10, -1.2, 1.2);
-  ctx.stroke();
-  ctx.restore();
-}
-
-function drawEye(ctx: CanvasRenderingContext2D, x: number, y: number, gazeX: number, gazeY: number, frame: AvatarFrame, right: boolean) {
-  const open = Math.max(0.08, 1 - frame.blink - frame.laugh * 0.38);
-  const eyeH = 26 * open + frame.surprise * 12;
-  const browTilt = (right ? -1 : 1) * (frame.anger * 0.22 - frame.sad * 0.12) + frame.surprise * 0.04;
-
-  ctx.save();
-  ctx.strokeStyle = "#3a2520";
-  ctx.lineWidth = 7;
-  ctx.lineCap = "round";
-  ctx.beginPath();
-  ctx.moveTo(x - 32, y - 36 + browTilt * 80);
-  ctx.lineTo(x + 30, y - 42 - browTilt * 80);
-  ctx.stroke();
-
-  ctx.fillStyle = "#fff8ef";
-  ellipse(ctx, x, y, 34, eyeH);
-  ctx.fill();
-  ctx.fillStyle = "#263238";
-  ellipse(ctx, x + gazeX, y + gazeY, 10 + frame.surprise * 3, Math.max(3, 13 * open));
-  ctx.fill();
-  ctx.fillStyle = "rgba(255,255,255,0.9)";
-  ellipse(ctx, x + gazeX + 4, y + gazeY - 4, 3.5, 3.5);
-  ctx.fill();
-  ctx.restore();
-}
-
-function drawNose(ctx: CanvasRenderingContext2D, frame: AvatarFrame) {
-  ctx.save();
-  ctx.strokeStyle = "rgba(122,72,56,0.38)";
-  ctx.lineWidth = 6;
-  ctx.lineCap = "round";
-  ctx.beginPath();
-  ctx.moveTo(0, -25);
-  ctx.quadraticCurveTo(12 + frame.gazeX * 5, 0, -5, 24);
-  ctx.stroke();
-  ctx.fillStyle = "rgba(122,72,56,0.28)";
-  ellipse(ctx, 13, 25, 5, 3);
-  ctx.fill();
-  ellipse(ctx, -10, 25, 5, 3);
-  ctx.fill();
-  ctx.restore();
-}
-
-function drawMouth(ctx: CanvasRenderingContext2D, frame: AvatarFrame) {
-  const mouthOpen = Math.max(0, Math.min(1, frame.mouth));
-  const smile = frame.smile + frame.laugh * 0.7 - frame.sad * 0.8 - frame.anger * 0.25;
-  const y = 74 + frame.sad * 8;
-  const width = 56 + frame.laugh * 34 + frame.surprise * 18 - frame.whisper * 18;
-  const height = 12 + mouthOpen * 58 + frame.laugh * 28 + frame.surprise * 34;
-
-  ctx.save();
-  if (mouthOpen > 0.12 || frame.surprise > 0.25 || frame.laugh > 0.2) {
-    ctx.fillStyle = "#4a1720";
-    ellipse(ctx, 0, y + height * 0.12, Math.max(20, width), Math.max(10, height));
-    ctx.fill();
-    ctx.fillStyle = "rgba(255,143,151,0.82)";
-    ellipse(ctx, 0, y + height * 0.36, width * 0.42, height * 0.22);
-    ctx.fill();
-    if (frame.laugh > 0.2) {
-      ctx.fillStyle = "#fff5ec";
-      roundedRect(ctx, -width * 0.42, y - 4, width * 0.84, 13, 5);
-      ctx.fill();
-    }
-  } else {
-    ctx.strokeStyle = "#6f2730";
-    ctx.lineWidth = 8;
-    ctx.lineCap = "round";
-    ctx.beginPath();
-    ctx.moveTo(-width * 0.5, y);
-    ctx.quadraticCurveTo(0, y + 30 * smile, width * 0.5, y);
-    ctx.stroke();
-  }
-  ctx.restore();
-}
-
-function ellipse(ctx: CanvasRenderingContext2D, x: number, y: number, rx: number, ry: number) {
-  ctx.beginPath();
-  ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
-}
-
-function roundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
-  const radius = Math.min(r, w / 2, h / 2);
-  ctx.beginPath();
-  ctx.moveTo(x + radius, y);
-  ctx.arcTo(x + w, y, x + w, y + h, radius);
-  ctx.arcTo(x + w, y + h, x, y + h, radius);
-  ctx.arcTo(x, y + h, x, y, radius);
-  ctx.arcTo(x, y, x + w, y, radius);
-  ctx.closePath();
 }
 
 function escapeRegExp(value: string): string {

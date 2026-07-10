@@ -496,7 +496,7 @@ function AccountsList({ onShowBlocks }: { onShowBlocks?: () => void }) {
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold truncate">{a.channelName}</div>
                     <div className="text-sm text-base-content/60">
-                      {a.theme || t("accounts.noTheme")} · {a.lang.toUpperCase()}
+                      {a.lang.toUpperCase()}
                     </div>
                   </div>
                   {a.authError ? (

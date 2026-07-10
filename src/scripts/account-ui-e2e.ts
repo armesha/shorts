@@ -61,7 +61,6 @@ if (!account) {
   account = db.createAccount({
     userId: user.id,
     channelName: TEST_CHANNEL,
-    theme: "E2E проверка мультипаков",
     lang: "space",
     sourceDecks: START_SOURCES,
     channelLang: "en",
@@ -72,7 +71,6 @@ if (!account) {
 } else {
   account = db.updateAccount(account.id, {
     channelName: TEST_CHANNEL,
-    theme: "E2E проверка мультипаков",
     lang: "space",
     sourceDecks: START_SOURCES,
     channelLang: "en",
@@ -179,7 +177,6 @@ try {
     : db.createAccount({
         userId: user.id,
         channelName: LIMIT_CHANNEL,
-        theme: "E2E daily schedule cap",
         lang: "space",
         sourceDecks: ["space"],
         channelLang: "en",

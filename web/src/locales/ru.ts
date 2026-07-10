@@ -62,7 +62,6 @@ export const ru: Record<string, string> = {
   "nav.statistics": "Статистика",
   "nav.limits": "Лимиты",
   "nav.analytics": "Аналитика",
-  "nav.changelog": "Обновления",
   "nav.settings": "Настройки",
   "nav.notifications": "Уведомления",
   "nav.clipdemos": "Нарезки",
@@ -253,8 +252,6 @@ export const ru: Record<string, string> = {
   "account.channelPack": "Пак канала:",
   "account.channelPackTitle": "Добавить пак в канал. После выбора нажмите верхнюю кнопку «Сохранить».",
   "account.channelPacks": "Источники канала:",
-  "account.channelTheme": "Общая тема канала",
-  "account.channelThemePlaceholder": "напр. Русские анекдоты",
   "account.charCount": "{n} симв.",
   "account.editMetaTitleLabel": "Название",
   "account.editMetaTextLabel": "Описание",
@@ -425,7 +422,6 @@ export const ru: Record<string, string> = {
   "accounts.needsAuth": "нужна авторизация",
   "accounts.noGoogleKey": "Нет ключа Google",
   "accounts.noSchedule": "расписание не задано",
-  "accounts.noTheme": "тема не задана",
   "accounts.noVideos": "нет видео",
   "accounts.now": "сейчас",
   "accounts.openOnYouTube": "Открыть на YouTube",
@@ -664,14 +660,6 @@ export const ru: Record<string, string> = {
   "cards.uploadHint": "Любая ошибка формата → ничего не загружается, покажем что починить.",
   "cards.uploadOk": "Добавлено карточек: {added}. Всего в паке: {total}.",
   "cards.validateUpload": "Проверить и загрузить",
-
-  // ── changelog ──
-  "changelog.changes": "Изменения",
-  "changelog.current": "текущая",
-  "changelog.empty": "Список изменений пока пуст",
-  "changelog.loadError": "Не удалось загрузить список изменений. Обновите страницу.",
-  "changelog.subtitle": "Последние изменения проекта",
-  "changelog.title": "Обновления",
 
   // ── createPack ──
   "createPack.errCreate": "Не удалось создать пак",

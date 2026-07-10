@@ -1,23 +1,18 @@
 import { useEffect, useRef, useState } from "react";
+import { Focus, MoveDown, MoveUp, RotateCcw, RotateCw, ZoomIn, ZoomOut } from "lucide-react";
 import type { AvatarFrame, SpeechViseme, StagePreset } from "./avatarEngine";
 
 type ThreeAvatarCanvasProps = {
   modelUrl: string;
   modelName: string;
   stage: StagePreset;
-  modelView: AvatarModelView;
   framing: "full" | "head";
   presenterMode: boolean;
-  resetToken: number;
   getFrame: () => AvatarFrame;
   onCanvasReady: (canvas: HTMLCanvasElement | null) => void;
 };
 
-export type AvatarModelView = {
-  scale: number;
-  yawDeg: number;
-  yOffset: number;
-};
+type CameraAction = "rotate-left" | "rotate-right" | "move-up" | "move-down" | "zoom-in" | "zoom-out" | "reset";
 
 type MorphKind =
   | "mouth"
@@ -135,15 +130,15 @@ type Vrm0BlendShapeGroup = {
   }>;
 };
 
-export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, framing, presenterMode, resetToken, getFrame, onCanvasReady }: ThreeAvatarCanvasProps) {
+export function ThreeAvatarCanvas({ modelUrl, modelName, stage, framing, presenterMode, getFrame, onCanvasReady }: ThreeAvatarCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const frameRef = useRef(getFrame);
   const stageRef = useRef(stage);
-  const modelViewRef = useRef(modelView);
-  const cameraResetRef = useRef<() => void>(() => undefined);
+  const cameraActionRef = useRef<(action: CameraAction) => void>(() => undefined);
   const [status, setStatus] = useState("Загрузка модели");
   const [morphCount, setMorphCount] = useState(0);
   const [dragging, setDragging] = useState(false);
+  const [controlsReady, setControlsReady] = useState(false);
 
   useEffect(() => {
     frameRef.current = getFrame;
@@ -152,14 +147,6 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, frami
   useEffect(() => {
     stageRef.current = stage;
   }, [stage]);
-
-  useEffect(() => {
-    modelViewRef.current = modelView;
-  }, [modelView]);
-
-  useEffect(() => {
-    cameraResetRef.current();
-  }, [resetToken]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -181,6 +168,7 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, frami
     async function boot() {
       setStatus("Загрузка модели");
       setMorphCount(0);
+      setControlsReady(false);
       const [THREE, { GLTFLoader }, { OrbitControls }, { MeshoptDecoder }, { VRMLoaderPlugin, VRMUtils }] = await Promise.all([
         import("three"),
         import("three/examples/jsm/loaders/GLTFLoader.js"),
@@ -210,7 +198,7 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, frami
       orbit.zoomSpeed = 0.9;
       orbit.panSpeed = 0.78;
       orbit.screenSpacePanning = true;
-      orbit.minDistance = framing === "head" ? 0.75 : 1.2;
+      orbit.minDistance = framing === "head" ? 0.65 : 1.2;
       orbit.maxDistance = 12;
       orbit.minPolarAngle = Math.PI * 0.08;
       orbit.maxPolarAngle = Math.PI * 0.92;
@@ -233,7 +221,27 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, frami
         orbit.enableDamping = damping;
         orbit.saveState();
       };
-      cameraResetRef.current = resetCamera;
+      cameraActionRef.current = (action) => {
+        if (action === "reset") {
+          resetCamera?.();
+          return;
+        }
+        const offset = camera.position.clone().sub(orbit.target);
+        if (action === "rotate-left" || action === "rotate-right") {
+          offset.applyAxisAngle(new THREE.Vector3(0, 1, 0), action === "rotate-left" ? -Math.PI / 12 : Math.PI / 12);
+          camera.position.copy(orbit.target).add(offset);
+        } else if (action === "zoom-in" || action === "zoom-out") {
+          const factor = action === "zoom-in" ? 0.84 : 1.19;
+          offset.setLength(Math.max(orbit.minDistance, Math.min(orbit.maxDistance, offset.length() * factor)));
+          camera.position.copy(orbit.target).add(offset);
+        } else {
+          const delta = offset.length() * 0.06 * (action === "move-up" ? 1 : -1);
+          camera.position.y += delta;
+          orbit.target.y += delta;
+        }
+        orbit.update();
+      };
+      setControlsReady(true);
       targetCanvas.addEventListener("dblclick", resetCamera);
 
       const ambient = new THREE.HemisphereLight(0xffffff, 0x293241, 2.25);
@@ -265,11 +273,11 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, frami
         normalizedBox.getSize(normalizedSize);
         const faceY = normalizedBox.max.y - normalizedSize.y * 0.19;
         const focusY = faceY + normalizedSize.y * 0.08;
-        cameraHomePosition.set(0, focusY + 0.04, 2.25);
+        cameraHomePosition.set(0, focusY + 0.04, 1.78);
         cameraHomeTarget.set(0, focusY, 0);
         resetCamera();
       }
-      const presenterMotion = presenterMode || modelUrl.toLowerCase().includes("vityok") || modelName.toLocaleLowerCase("ru-RU").includes("витёк");
+      const presenterMotion = presenterMode;
       const basePosition = root.position.clone();
       const baseScale = root.scale.x || 1;
       const expressionDriver = createVrmExpressionDriver(loadedVrm?.expressionManager);
@@ -299,17 +307,15 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, frami
         const activeStage = stageRef.current;
         scene.background = new THREE.Color(activeStage.middle);
         const frame = frameRef.current();
-        const activeView = modelViewRef.current;
-        const yaw = (activeView.yawDeg * Math.PI) / 180;
-        root.scale.setScalar(baseScale * activeView.scale);
+        root.scale.setScalar(baseScale);
         root.rotation.set(
           presenterMotion ? 0 : -frame.gazeY * 0.18,
-          yaw + (presenterMotion ? 0 : frame.gazeX * 0.42),
+          presenterMotion ? 0 : frame.gazeX * 0.42,
           presenterMotion ? 0 : frame.headTilt * 0.85,
         );
         root.position.copy(basePosition);
-        root.position.y += activeView.yOffset + frame.headBob * (presenterMotion ? 0.00025 : 0.004);
-        applyRigMotion(rig, frame, activeView, presenterMotion);
+        root.position.y += frame.headBob * (presenterMotion ? 0.00025 : 0.004);
+        applyRigMotion(rig, frame, presenterMotion);
         if (expressionDriver) applyVrmExpressions(expressionDriver, frame);
         else applyMorphs(bindings, frame);
         loadedVrm?.update(delta);
@@ -329,7 +335,7 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, frami
       disposed = true;
       window.cancelAnimationFrame(frameId);
       if (resetCamera) targetCanvas.removeEventListener("dblclick", resetCamera);
-      cameraResetRef.current = () => undefined;
+      cameraActionRef.current = () => undefined;
       controls?.dispose();
       renderer?.dispose();
     };
@@ -349,7 +355,31 @@ export function ThreeAvatarCanvas({ modelUrl, modelName, stage, modelView, frami
         {status}
         {morphCount > 0 ? "" : " · рот fallback"}
       </div>
+      <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-md border border-base-300/70 bg-base-100/90 p-1 shadow-lg backdrop-blur-sm">
+        <CameraButton label="Повернуть влево" disabled={!controlsReady} onClick={() => cameraActionRef.current("rotate-left")}><RotateCcw size={16} /></CameraButton>
+        <CameraButton label="Повернуть вправо" disabled={!controlsReady} onClick={() => cameraActionRef.current("rotate-right")}><RotateCw size={16} /></CameraButton>
+        <CameraButton label="Поднять кадр" disabled={!controlsReady} onClick={() => cameraActionRef.current("move-up")}><MoveUp size={16} /></CameraButton>
+        <CameraButton label="Опустить кадр" disabled={!controlsReady} onClick={() => cameraActionRef.current("move-down")}><MoveDown size={16} /></CameraButton>
+        <CameraButton label="Отдалить" disabled={!controlsReady} onClick={() => cameraActionRef.current("zoom-out")}><ZoomOut size={16} /></CameraButton>
+        <CameraButton label="Приблизить" disabled={!controlsReady} onClick={() => cameraActionRef.current("zoom-in")}><ZoomIn size={16} /></CameraButton>
+        <CameraButton label="Вернуть крупный план" disabled={!controlsReady} onClick={() => cameraActionRef.current("reset")}><Focus size={16} /></CameraButton>
+      </div>
     </div>
+  );
+}
+
+function CameraButton({ label, disabled, onClick, children }: { label: string; disabled: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      className="btn btn-square btn-sm h-8 min-h-8 w-8"
+      title={label}
+      aria-label={label}
+      disabled={disabled}
+      onClick={onClick}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -436,7 +466,7 @@ function findBone(byName: Map<string, RigBone>, names: string[]): RigBone | unde
   return undefined;
 }
 
-function applyRigMotion(rig: LiveRig, frame: AvatarFrame, view: AvatarModelView, presenterMode: boolean) {
+function applyRigMotion(rig: LiveRig, frame: AvatarFrame, presenterMode: boolean) {
   if (presenterMode) {
     applyPresenterRigMotion(rig, frame);
     return;
@@ -446,7 +476,6 @@ function applyRigMotion(rig: LiveRig, frame: AvatarFrame, view: AvatarModelView,
   const sway = Math.sin(t * 0.72);
   const talk = frame.mouth;
   const energy = Math.max(frame.laugh, frame.surprise * 0.7, talk * 0.35);
-  const facingSide = Math.abs(view.yawDeg) > 70;
 
   setBoneRotation(rig, rig.hips, breathe * 0.012, frame.gazeX * 0.035 + sway * 0.018, -sway * 0.018);
   setBoneRotation(rig, rig.spine, breathe * 0.02, frame.gazeX * 0.055, frame.headTilt * 0.16);
@@ -457,7 +486,7 @@ function applyRigMotion(rig: LiveRig, frame: AvatarFrame, view: AvatarModelView,
   const leftWave = Math.sin(t * 1.7) * 0.055 + frame.laugh * Math.sin(t * 9) * 0.08;
   const rightWave = Math.sin(t * 1.55 + 1.2) * 0.055 - frame.laugh * Math.sin(t * 8.5) * 0.08;
   const armLift = frame.surprise * 0.18 + frame.laugh * 0.1;
-  const sideDampen = facingSide ? 0.65 : 1;
+  const sideDampen = 1;
 
   setBoneRotation(rig, rig.leftShoulder, 0, 0, (0.18 + leftWave * 0.4) * sideDampen);
   setBoneRotation(rig, rig.rightShoulder, 0, 0, (-0.18 + rightWave * 0.4) * sideDampen);

@@ -10,7 +10,6 @@ const routeLoaders = {
   history: () => import("../pages/History"),
   notifications: () => import("../pages/Notifications"),
   statistics: () => import("../pages/Statistics"),
-  changelog: () => import("../pages/Changelog"),
   errors: () => import("../pages/Errors"),
   system: () => import("../pages/System"),
   settings: () => import("../pages/Settings"),
@@ -82,8 +81,6 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
       return "longVideos";
     case "/limits":
       return "limits";
-    case "/changelog":
-      return "changelog";
     case "/errors":
       return "errors";
     case "/system":

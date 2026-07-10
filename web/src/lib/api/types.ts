@@ -2,7 +2,6 @@ export interface Account {
   id: number;
   userId?: number | null; // owner (present on admin scope=all listings)
   channelName: string;
-  theme: string;
   lang: string; // выбор контента: встроенный пак (ru/de/…) или свой пак ("pack:<id>")
   sourceDecks?: string[]; // выбранные источники канала; старые аккаунты используют lang
   longVideoDecks?: string[]; // длинные видео-паки: только ручное добавление в библиотеку + ручная выкладка
@@ -1052,7 +1051,6 @@ export interface ChannelThemeBlockAccount {
   id: number;
   userId?: number | null;
   channelName: string;
-  theme: string;
   channelLang: string;
   enabled: boolean;
   connected: boolean;

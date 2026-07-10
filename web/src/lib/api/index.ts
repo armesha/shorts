@@ -72,7 +72,6 @@ export const apiClient = {
   recoverComplete: (username: string, code: string, newPassword: string) =>
     send<{ ok: boolean }>("/auth/recover/complete", "POST", { username, code, newPassword }),
   status: () => get<AppStatus>("/config"),
-  changelog: () => get<{ raw: string }>("/changelog"),
   settings: () => get<AppSettings>("/settings"),
   // Google keys (client_secret.json) — up to N per user, each channel bound to one.
   youtubeClients: () => get<OAuthClientsResponse>("/youtube/clients"),

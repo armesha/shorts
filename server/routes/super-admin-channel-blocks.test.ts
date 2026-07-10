@@ -25,7 +25,6 @@ function account(id: number): Account {
     id,
     userId: 1,
     channelName: `Channel ${id}`,
-    theme: "",
     lang: "en",
     sourceDecks: FOREIGN_EN_SOURCES,
     longVideoDecks: [],

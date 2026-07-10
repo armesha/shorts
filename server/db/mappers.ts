@@ -60,7 +60,6 @@ export const rowToAccount = (r: Row): Account => ({
   id: r.id,
   userId: r.user_id ?? null,
   channelName: r.yt_channel_title || r.channel_name,
-  theme: r.theme,
   lang: r.lang,
   sourceDecks: parseStringArray(r.source_decks, r.lang ? [r.lang] : []),
   longVideoDecks: parseStringArray(r.long_video_decks, []),

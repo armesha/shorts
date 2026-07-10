@@ -94,7 +94,6 @@ export default function AccountDetail() {
   const [accountLoading, setAccountLoading] = useState(true);
   const [accountLoadError, setAccountLoadError] = useState<string | null>(null);
   const [channelName, setChannelName] = useState("");
-  const [theme, setTheme] = useState("");
   const [lang, setLang] = useState("de");
   const [times, setTimes] = useState<string[]>([]);
   const [newTime, setNewTime] = useState("12:00");
@@ -237,7 +236,6 @@ export default function AccountDetail() {
         if (!alive) return;
         setAccount(a);
         setChannelName(a.channelName);
-        setTheme(a.theme);
         setLang(a.lang);
         {
           const sources = (a.sourceDecks?.length ? a.sourceDecks : [a.lang]).filter(Boolean);
@@ -402,7 +400,6 @@ export default function AccountDetail() {
       }
       const updated = await apiClient.updateAccount(id!, {
         channelName,
-        theme,
         lang: cleanSources[0] || lang,
         sourceDecks: cleanSources,
         longVideoDecks: cleanLongVideoDecks,
@@ -1037,16 +1034,6 @@ export default function AccountDetail() {
               className="input input-bordered"
               value={channelName}
               onChange={(e) => setChannelName(e.target.value)}
-            />
-          </label>
-
-          <label className="form-control">
-            <span className="label-text mb-1">{t("account.channelTheme")}</span>
-            <input
-              className="input input-bordered"
-              value={theme}
-              onChange={(e) => setTheme(e.target.value)}
-              placeholder={t("account.channelThemePlaceholder")}
             />
           </label>
 

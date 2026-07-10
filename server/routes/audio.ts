@@ -24,43 +24,11 @@ import { alignRussianLipSync, RussianLipSyncError } from "../services/russian-li
 
 const AUDIO_AVATAR_MODEL_DIR = resolve(process.cwd(), "data/audio-avatars");
 const AUDIO_AVATAR_MODELS: Record<string, { name: string; file: string; contentType: string; description: string; license: string; source: string }> = {
-  "vika.vrm": {
-    name: "Вика",
-    file: "vika.vrm",
-    contentType: "model/gltf-binary",
-    description: "Оригинальный VRM 1.0 персонаж для вертикальных Shorts с анекдотами и мемами.",
-    license: "Project-owned custom asset",
-    source: "tmp/vika-avatar/vika.vrm",
-  },
-  "vika.glb": {
-    name: "Вика GLB",
-    file: "vika.glb",
-    contentType: "model/gltf-binary",
-    description: "GLB-экспорт того же персонажа для проверки совместимости.",
-    license: "Project-owned custom asset",
-    source: "tmp/vika-avatar/vika.glb",
-  },
-  "vityok.vrm": {
-    name: "Витёк",
-    file: "vityok.vrm",
-    contentType: "model/gltf-binary",
-    description: "Оригинальный полуреалистичный VRM 1.0 ведущий с полным набором visemes и эмоций.",
-    license: "Project-owned custom asset",
-    source: "tmp/vityok-avatar/vityok.vrm",
-  },
-  "vityok.glb": {
-    name: "Витёк GLB",
-    file: "vityok.glb",
-    contentType: "model/gltf-binary",
-    description: "GLB-экспорт Витька для проверки совместимости с glTF-пайплайнами.",
-    license: "Project-owned custom asset",
-    source: "tmp/vityok-avatar/vityok.glb",
-  },
   "maya.glb": {
     name: "Майя",
     file: "maya.glb",
     contentType: "model/gltf-binary",
-    description: "CC0 говорящая голова MakeHuman/MPFB с 52 ARKit-формами лица и Oculus-viseme для речи.",
+    description: "CC0 говорящая голова MakeHuman/MPFB с распущенными волосами, 52 ARKit-формами лица и Oculus-viseme для речи.",
     license: "CC0 1.0",
     source: "https://github.com/met4citizen/TalkingHead/blob/eed58d198076a7e1e825f804802921c4d3804d46/avatars/mpfb.glb",
   },

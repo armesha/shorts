@@ -514,7 +514,6 @@ function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockCo
     id: account.id,
     userId: account.userId,
     channelName: account.ytChannelTitle || account.channelName,
-    theme: account.theme,
     channelLang: account.channelLang,
     enabled: account.enabled,
     connected: account.status === "connected",
@@ -1529,7 +1528,6 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
     const account = db.createAccount({
       userId: ownerId,
       channelName: `${block.title} ${langDef.label}`,
-      theme: block.title,
       lang: sourceDecks[0],
       sourceDecks,
       channelLang: lang,

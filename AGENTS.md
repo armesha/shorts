@@ -45,7 +45,6 @@ Keep shared rules here. Do not duplicate them in `CLAUDE.md`; Claude Code import
 - Architecture details live in `server/ARCHITECTURE.md`, `docs/STACK.md`, and `docs/REORG-PLAN.md`; check them before moving backend boundaries.
 - Keep fixes narrow. Do not turn a small user-visible request into unrelated cleanup.
 - Run focused checks appropriate to the risk: `npm run typecheck`, `npm test`, `npm run web:build`, specific node tests, or live smoke commands.
-- Update `CHANGELOG.md` only for public user-facing app changes. Do not add admin-only/internal/docs-only changes to the public changelog.
 - For completed feature/fix work, commit and push after validation unless the user explicitly asked not to. Stage only relevant files unless the user asks to commit all current work. Never commit secrets or generated/runtime data.
 
 ## Content, packs, and assets

@@ -10,7 +10,6 @@ export function applySchema(db: DatabaseSync): void {
     CREATE TABLE IF NOT EXISTS accounts (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       channel_name TEXT NOT NULL DEFAULT 'Новый канал',
-      theme TEXT NOT NULL DEFAULT '',
       lang TEXT NOT NULL DEFAULT 'de',
       schedule TEXT NOT NULL DEFAULT '["12:00"]',
       template TEXT NOT NULL DEFAULT '1 · Kraft Paper',

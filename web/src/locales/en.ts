@@ -58,7 +58,6 @@ export const en: Record<string, string> = {
   "nav.statistics": "Statistics",
   "nav.limits": "Limits",
   "nav.analytics": "Analytics",
-  "nav.changelog": "Updates",
   "nav.settings": "Settings",
   "nav.notifications": "Notifications",
   "nav.clipdemos": "Clips",
@@ -249,8 +248,6 @@ export const en: Record<string, string> = {
   "account.channelPack": "Channel pack:",
   "account.channelPackTitle": "Add a pack to the channel. After selecting, click the top Save button.",
   "account.channelPacks": "Channel sources:",
-  "account.channelTheme": "Overall channel theme",
-  "account.channelThemePlaceholder": "e.g. Russian jokes",
   "account.charCount": "{n} chars",
   "account.editMetaTitleLabel": "Title",
   "account.editMetaTextLabel": "Description",
@@ -421,7 +418,6 @@ export const en: Record<string, string> = {
   "accounts.needsAuth": "needs authorization",
   "accounts.noGoogleKey": "No Google key",
   "accounts.noSchedule": "no schedule set",
-  "accounts.noTheme": "topic not set",
   "accounts.noVideos": "no videos",
   "accounts.now": "now",
   "accounts.openOnYouTube": "Open on YouTube",
@@ -660,14 +656,6 @@ export const en: Record<string, string> = {
   "cards.uploadHint": "Any format error → nothing is uploaded; we'll show what to fix.",
   "cards.uploadOk": "Cards added: {added}. Total in the pack: {total}.",
   "cards.validateUpload": "Validate & upload",
-
-  // ── changelog ──
-  "changelog.changes": "Changes",
-  "changelog.current": "current",
-  "changelog.empty": "The list of changes is still empty",
-  "changelog.loadError": "Failed to load the list of changes. Refresh the page.",
-  "changelog.subtitle": "Latest project changes",
-  "changelog.title": "Updates",
 
   // ── createPack ──
   "createPack.errCreate": "Failed to create pack",

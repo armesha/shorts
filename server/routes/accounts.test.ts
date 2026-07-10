@@ -62,7 +62,6 @@ test("accounts update preserves explicit slot deck assignments for thematic bloc
       url: `/api/accounts/${account.id}`,
       payload: {
         channelName: account.channelName,
-        theme: account.theme,
         lang: "en",
         sourceDecks: EN_MIX,
         channelLang: "en",

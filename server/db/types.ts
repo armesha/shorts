@@ -10,7 +10,6 @@ export interface Account {
   id: number;
   userId: number | null;
   channelName: string;
-  theme: string;
   lang: string; // выбор КОНТЕНТА канала: встроенная дека (ru/de/…) или пак ("pack:<id>")
   sourceDecks: string[]; // все паки/деки, из которых канал может генерировать и выкладывать
   longVideoDecks: string[]; // длинные видео-паки: только ручное добавление в библиотеку + ручная выкладка

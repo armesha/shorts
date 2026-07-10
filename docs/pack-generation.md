@@ -1038,7 +1038,7 @@ for f in data/output/admin-demos/ilr_001_cube.mp4 data/output/admin-demos/ild_00
 `adminOnly:true`, `DECK_LANG`) и `web/src/lib/deck.ts` (`DECK_GLOSS_RU`, `DECK_LANG`, `BUILTIN_DECKS`).
 Новые id деки → нужны `npm run web:build` + рестарт сервера, иначе селектор источников их не покажет.
 preFact читает `videos.json` свежим → ДОЗАЛИВКА роликов в существующую деку видна без рестарта;
-нарезки читают `admin-demos/manifest.json` на лету. Деки admin-only → в CHANGELOG НЕ писать.
+нарезки читают `admin-demos/manifest.json` на лету.
 
 ## Русские анекдоты (`ru`)
 
@@ -2024,7 +2024,7 @@ board-карточка + поле **`slot:{x,y,w,h}`** (доли 0..1 карти
    `.bak-preslot`). **Рестарт сервера** (правка `src/memes/render.ts` + deck-кэш).
 
 `data/memes/photos/board-*.jpg` и `cards.json` — gitignored (как все memes-данные); воспроизводимо
-повтором pull→detect→select. Деки `memes-*` admin-only → в CHANGELOG не писать.
+повтором pull→detect→select.
 
 ## Оптические иллюзии — `illusions-{en,de,it,es,ru}` (admin-only, 77×5, видео)
 
@@ -2073,7 +2073,7 @@ hypnotic tunnel, kinetic depth dots, aperture bars, neon ladder, ray afterimage 
 Новый ЯЗЫК: добавить в `compose-publish.mjs ALL_LANGS`/`PACK_TITLE`, перевести хуки, зарегать деку.
 Новый ТИП: создать `illusions/<key>.html` от `skeleton-v2.html`, прогнать шаги 2→8.
 **Доступ:** админ видит все 5 в Нарезках без рестарта (`deckAllowed`/`files.ts` admin-bypass, манифест читается
-свежим); рестарт нужен лишь для не-админ-грантов и канал-источника. Admin-only → в CHANGELOG НЕ писать.
+свежим); рестарт нужен лишь для не-админ-грантов и канал-источника.
 ВАЖНО (рендер кириллицы/умляутов/ñ в headless Chrome): титры рисуются шрифтом DejaVu Sans — все 5 языков
 рендерятся корректно (проверено на ru/de/es). Вариации (1 тип → N обликов через `H.v`) — задел готов
 (`variants/<key>.json` + `gen-matrix-from-variants.mjs`), но в текущем паке НЕ используются (77 = по 1 на тип).
