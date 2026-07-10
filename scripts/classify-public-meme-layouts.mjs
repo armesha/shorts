@@ -17,6 +17,13 @@ const MANUAL_EXCLUSIONS = new Set([
   "rumeme-0052", "rumeme-0145", "rumeme-0207", "rumeme-0244", "rumeme-0360",
   "rumeme-0408", "rumeme-0648", "rumeme-0745", "rumeme-0817", "rumeme-1954",
 ]);
+const CURATED_TOP_TEXT = new Set([
+  "nasa-ingenuity-03",
+  "nasa-ingenuity-04",
+  "nasa-ingenuity-06",
+  "nasa-ingenuity-07",
+  "nasa-ingenuity-15",
+]);
 
 function hasTextOutsideTop(meme) {
   const imagePath = resolve(process.cwd(), "server/public/memes", meme.url);
@@ -40,6 +47,11 @@ function hasTextOutsideTop(meme) {
 let russian = 0;
 let english = 0;
 for (const meme of memes) {
+  if (CURATED_TOP_TEXT.has(meme.id)) {
+    meme.layout = "top-text-en";
+    english += 1;
+    continue;
+  }
   const metadataMatch = TOP.test(meme.title) && BELOW.test(meme.title) && !EXCLUDE.test(meme.title);
   const singleTopText =
     metadataMatch &&

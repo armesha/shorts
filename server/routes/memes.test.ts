@@ -16,11 +16,19 @@ test("public memes page and assets are served without auth", async () => {
   const data = await app.inject({ method: "GET", url: "/memes/memes.js" });
   assert.equal(data.statusCode, 200);
   assert.match(data.body.slice(0, 80), /^window\.MEMES=/);
-  const memes = JSON.parse(data.body.replace(/^window\.MEMES=/, "").replace(/;\s*$/, "")) as Array<{ cat: string; layout: string | null }>;
-  assert.equal(memes.length, 2508);
-  assert.equal(memes.filter((meme) => meme.cat === "Английские мемы").length, 380);
+  const memes = JSON.parse(data.body.replace(/^window\.MEMES=/, "").replace(/;\s*$/, "")) as Array<{
+    id: string;
+    cat: string;
+    layout: string | null;
+  }>;
+  assert.equal(memes.length, 2513);
+  assert.equal(memes.filter((meme) => meme.cat === "Английские мемы").length, 385);
   assert.equal(memes.filter((meme) => meme.layout === "top-text-ru").length, 21);
-  assert.equal(memes.filter((meme) => meme.layout === "top-text-en").length, 12);
+  assert.equal(memes.filter((meme) => meme.layout === "top-text-en").length, 17);
+
+  const nasa = memes.filter((meme) => meme.id.startsWith("nasa-ingenuity-"));
+  assert.equal(nasa.length, 5);
+  assert.ok(nasa.every((meme) => meme.layout === "top-text-en"));
 
   const image = await app.inject({ method: "GET", url: "/memes/images/0000.jpg" });
   assert.equal(image.statusCode, 200);

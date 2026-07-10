@@ -1,13 +1,59 @@
 {
-  "title": "ruMeme Descriptions",
-  "dataset": "foldl/rumeme-desc",
-  "author": "foldl",
-  "source_url": "https://huggingface.co/datasets/foldl/rumeme-desc",
-  "upstream_source": "https://vk.com/textmeme",
-  "license": "CC BY-SA 4.0",
-  "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
-  "retrieved_at": "2026-07-10",
-  "retrieval_method": "Hugging Face datasets-server rows API; images stored locally without content modification",
-  "items": 2508,
-  "notes": "Russian-language meme images and dataset descriptions. Topic categories are derived locally from description keywords. Memes whose images contain English text are kept in a separate English memes filter. The top-text layout filters use a strict metadata rule plus OCR coordinates: any reliably recognized text below the upper 30 percent of the image excludes the meme. The remaining shortlist was visually reviewed."
+  "title": "Public meme archive sources",
+  "items": 2513,
+  "sources": [
+    {
+      "id": "rumeme-desc",
+      "title": "ruMeme Descriptions",
+      "dataset": "foldl/rumeme-desc",
+      "author": "foldl",
+      "source_url": "https://huggingface.co/datasets/foldl/rumeme-desc",
+      "upstream_source": "https://vk.com/textmeme",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "retrieved_at": "2026-07-10",
+      "retrieval_method": "Hugging Face datasets-server rows API; images stored locally without content modification",
+      "items": 2508,
+      "notes": "Russian-language meme images and dataset descriptions. Topic categories are derived locally from description keywords. Memes whose images contain English text are kept in a separate English memes filter. The top-text layout filters use a strict metadata rule plus OCR coordinates: any reliably recognized text below the upper 30 percent of the image excludes the meme. The remaining shortlist was visually reviewed."
+    },
+    {
+      "id": "nasa-ingenuity",
+      "title": "Ingenuity memes",
+      "author": "NASA Mars / JPL-Caltech",
+      "source_url": "https://mars.nasa.gov/technology/helicopter/memes/",
+      "license": "Public domain (NASA)",
+      "license_evidence": "Each linked Wikimedia Commons file identifies NASA Mars/JPL-Caltech as author and Public domain as its licence.",
+      "retrieved_at": "2026-07-10",
+      "retrieval_method": "500px JPEG copies downloaded from the individual Wikimedia Commons file pages; SHA-256 verified by scripts/import-nasa-ingenuity-memes.mjs",
+      "items": 5,
+      "selection_rule": "Manually visually checked: one English text treatment in the upper part of the frame only; no text in the center or bottom.",
+      "files": [
+        {
+          "id": "nasa-ingenuity-03",
+          "text": "EXCEEDING EXPECTATIONS SINCE 2021",
+          "file_page": "https://commons.wikimedia.org/wiki/File:Ingenuity_memes_03.jpg"
+        },
+        {
+          "id": "nasa-ingenuity-04",
+          "text": "MISSION ACCOMPLISHED",
+          "file_page": "https://commons.wikimedia.org/wiki/File:Ingenuity_memes_04.jpg"
+        },
+        {
+          "id": "nasa-ingenuity-06",
+          "text": "BYE BUDDY",
+          "file_page": "https://commons.wikimedia.org/wiki/File:Ingenuity_memes_06.jpg"
+        },
+        {
+          "id": "nasa-ingenuity-07",
+          "text": "FRIENDSHIP GOALS",
+          "file_page": "https://commons.wikimedia.org/wiki/File:Ingenuity_memes_07.jpg"
+        },
+        {
+          "id": "nasa-ingenuity-15",
+          "text": "WHEN YOUR BESTIE IS ALSO A ROBOT",
+          "file_page": "https://commons.wikimedia.org/wiki/File:Ingenuity_memes_15.jpg"
+        }
+      ]
+    }
+  ]
 }
