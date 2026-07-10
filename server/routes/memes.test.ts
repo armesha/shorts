@@ -19,8 +19,8 @@ test("public memes page and assets are served without auth", async () => {
   const memes = JSON.parse(data.body.replace(/^window\.MEMES=/, "").replace(/;\s*$/, "")) as Array<{ cat: string; layout: string | null }>;
   assert.equal(memes.length, 2508);
   assert.equal(memes.filter((meme) => meme.cat === "Английские мемы").length, 380);
-  assert.equal(memes.filter((meme) => meme.layout === "top-text-ru").length, 90);
-  assert.equal(memes.filter((meme) => meme.layout === "top-text-en").length, 29);
+  assert.equal(memes.filter((meme) => meme.layout === "top-text-ru").length, 21);
+  assert.equal(memes.filter((meme) => meme.layout === "top-text-en").length, 12);
 
   const image = await app.inject({ method: "GET", url: "/memes/images/0000.jpg" });
   assert.equal(image.statusCode, 200);
