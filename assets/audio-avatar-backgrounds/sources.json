@@ -1,6 +1,13 @@
 {
   "generatedAt": "2026-07-12",
   "generator": "OpenAI built-in image generation",
+  "randomPool": {
+    "manifest": "pool.json",
+    "backgroundCount": 20,
+    "ringColorCount": 20,
+    "selection": "scripts/select-avatar-style.mjs",
+    "notes": "Each background was generated as an original environment-only square plate with a calm center for an avatar. Background and ring color are selected independently with least-used-first history."
+  },
   "items": [
     {
       "file": "shino-cozy-room.png",

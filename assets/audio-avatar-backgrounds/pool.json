@@ -1,0 +1,33 @@
+{
+  "generatedAt": "2026-07-12",
+  "generator": "OpenAI built-in image generation",
+  "rights": "Project-generated original assets",
+  "backgrounds": [
+    { "id": "japanese-room", "file": "pool/bg-01-japanese-room.png" },
+    { "id": "tropical-balcony", "file": "pool/bg-02-tropical-balcony.png" },
+    { "id": "modern-loft", "file": "pool/bg-03-modern-loft.png" },
+    { "id": "night-city", "file": "pool/bg-04-night-city.png" },
+    { "id": "forest-cabin", "file": "pool/bg-05-forest-cabin.png" },
+    { "id": "greenhouse", "file": "pool/bg-06-greenhouse.png" },
+    { "id": "library", "file": "pool/bg-07-library.png" },
+    { "id": "pastel-cafe", "file": "pool/bg-08-pastel-cafe.png" },
+    { "id": "seaside-cottage", "file": "pool/bg-09-seaside-cottage.png" },
+    { "id": "winter-chalet", "file": "pool/bg-10-winter-chalet.png" },
+    { "id": "creator-studio", "file": "pool/bg-11-creator-studio.png" },
+    { "id": "art-studio", "file": "pool/bg-12-art-studio.png" },
+    { "id": "rooftop-garden", "file": "pool/bg-13-rooftop-garden.png" },
+    { "id": "desert-veranda", "file": "pool/bg-14-desert-veranda.png" },
+    { "id": "rainy-window", "file": "pool/bg-15-rainy-window.png" },
+    { "id": "pastel-kitchen", "file": "pool/bg-16-pastel-kitchen.png" },
+    { "id": "observatory", "file": "pool/bg-17-observatory.png" },
+    { "id": "spring-orchard", "file": "pool/bg-18-spring-orchard.png" },
+    { "id": "autumn-sunroom", "file": "pool/bg-19-autumn-sunroom.png" },
+    { "id": "lavender-room", "file": "pool/bg-20-lavender-room.png" }
+  ],
+  "ringColors": [
+    "#F5C7A4", "#FFB7C5", "#CDB4FF", "#A7D8FF", "#8EDFD3",
+    "#B8E986", "#FFE08A", "#FFB36B", "#E7C6A5", "#F6D6E6",
+    "#BFD7EA", "#C6E2C6", "#D8C3F0", "#F2C078", "#E89A9A",
+    "#9DC3E6", "#A8D5BA", "#D6B5A7", "#F0A6CA", "#C9B79C"
+  ]
+}
