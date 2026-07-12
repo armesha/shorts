@@ -36,6 +36,9 @@ const sourceDir = resolve(arg("source-dir", "assets/fact-videos/voiced-memes-ru/
 const configPath = resolve(arg("config", "data/voiced-memes-ru/gameplay-sources.json"));
 const download = process.argv.includes("--download");
 const clean = process.argv.includes("--clean");
+const shardCount = Math.max(1, Number(arg("shard-count", "1")) || 1);
+const shardIndex = Math.max(0, Number(arg("shard-index", "0")) || 0);
+if (shardIndex >= shardCount) throw new Error("--shard-index должен быть меньше --shard-count");
 if (!existsSync(ytdlp)) throw new Error(`yt-dlp не найден: ${ytdlp}`);
 
 if (clean && existsSync(sourceDir)) {
@@ -68,7 +71,8 @@ let downloaded = 0;
 let skipped = 0;
 const failed = [];
 if (download) {
-  for (const source of sources) {
+  for (const [index, source] of sources.entries()) {
+    if (index % shardCount !== shardIndex) continue;
     const output = resolve(source.file);
     if (existsSync(output) && readableVideo(output)) {
       skipped += 1;
@@ -87,4 +91,5 @@ if (download) {
 
 const byType = Object.fromEntries([...new Set(sources.map((source) => source.type))].map((type) => [type, sources.filter((source) => source.type === type).length]));
 const ready = sources.filter((source) => readableVideo(resolve(source.file))).length;
-console.log(JSON.stringify({ channelVideos: playlist.entries?.length ?? 0, verticalSources: sources.length, byType, totalMinutes: Math.round(sources.reduce((sum, source) => sum + source.durationSec, 0) / 60), downloaded, skipped, ready, failed }, null, 2));
+const assigned = sources.filter((_, index) => index % shardCount === shardIndex).length;
+console.log(JSON.stringify({ channelVideos: playlist.entries?.length ?? 0, verticalSources: sources.length, byType, totalMinutes: Math.round(sources.reduce((sum, source) => sum + source.durationSec, 0) / 60), shard: `${shardIndex + 1}/${shardCount}`, assigned, downloaded, skipped, ready, failed }, null, 2));
