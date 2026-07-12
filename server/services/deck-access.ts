@@ -50,9 +50,16 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
     return !!deck && isGrantableBuiltinDeck(deck);
   }
 
+  function builtinDeckOwnedByUser(userId: number, deck: (typeof DECKS)[number]): boolean {
+    if (!deck.exclusiveUsername) return true;
+    const username = db.getUserById(userId)?.username?.trim().toLowerCase();
+    return username === deck.exclusiveUsername.trim().toLowerCase();
+  }
+
   function builtinDeckVisibleForUser(userId: number, deck: (typeof DECKS)[number]): boolean {
     const user = db.getUserById(userId);
     if (!isBuiltInDeckGloballyVisible(db, deck)) return false;
+    if (!builtinDeckOwnedByUser(userId, deck)) return false;
     if (isSuperAdminUser(user) && isForbiddenSuperAdminSourceDeck(deck.id)) return false;
     // Админ видит ВСЁ (вкл. admin-only) по умолчанию, КРОМЕ того, что он скрыл лично у себя
     // (тот же per-user hidden-набор, что и у юзеров — он опционален и легко снимается в матрице
@@ -76,6 +83,7 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
       }
       const deck = DECKS.find((d) => d.id === deckId);
       if (!deck || !isBuiltInDeckGloballyVisible(db, deck)) return false;
+      if (!builtinDeckOwnedByUser(uid(req), deck)) return false;
       if (isAdminReq(req)) return true;
       return builtinDeckVisibleForUser(uid(req), deck);
     }
@@ -91,6 +99,7 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
       }
       const deck = DECKS.find((d) => d.id === deckId);
       if (deck && !isBuiltInDeckGloballyVisible(db, deck)) return false;
+      if (deck && !builtinDeckOwnedByUser(userId, deck)) return false;
       return !!deck && builtinDeckVisibleForUser(userId, deck);
   }
 
@@ -105,7 +114,7 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
       return !!pack && isCustomPackGloballyVisible(db, pack);
     }
     const deck = DECKS.find((d) => d.id === deckId);
-    return !!deck && isBuiltInDeckGloballyVisible(db, deck);
+    return !!deck && ownerId != null && builtinDeckOwnedByUser(ownerId, deck) && isBuiltInDeckGloballyVisible(db, deck);
   }
 
   function accountSourceDecks(account: Account): string[] {
@@ -135,7 +144,7 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
 
     function deckExists(req: unknown, deckId: string): boolean {
       const deck = DECKS.find((d) => d.id === deckId);
-      if (deck) return isBuiltInDeckGloballyVisible(db, deck);
+      if (deck) return builtinDeckOwnedByUser(uid(req), deck) && isBuiltInDeckGloballyVisible(db, deck);
       if (!isPackDeckId(deckId)) return false;
       const pack = getPack(deckId.slice(5), uid(req), isSuperAdminReq(req));
       return !!pack && isCustomPackGloballyVisible(db, pack);

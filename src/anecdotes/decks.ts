@@ -25,6 +25,8 @@ export interface Deck {
   gallery?: boolean;
   /** When true, this deck is visible & usable ONLY by admins — hidden from every non-admin regardless of per-user deck settings. */
   adminOnly?: boolean;
+  /** When set, this built-in deck is private to this exact username. Admin privileges do not bypass it. */
+  exclusiveUsername?: string;
   /** Admin-only built-in deck that can be explicitly granted to non-admin users from /users. */
   grantable?: boolean;
   /** When true, render anecdotes on the themed russian_jokes/* scenes (text in each bg's paper
@@ -832,6 +834,7 @@ export const DECKS: Deck[] = [
     tags: ["мемы", "юмор", "приколы", "реакция", "озвучка мемов", "смешное", "shorts"],
     genericTitles: ["Озвучка мемов", "Мем с реакцией", "Персонаж читает мем"],
     adminOnly: true,
+    exclusiveUsername: "armen",
     preFact: true,
     sequential: true,
   },
