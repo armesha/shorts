@@ -1,4 +1,0 @@
-interface:
-  display_name: "Shorts Voiceover"
-  short_description: "Живая озвучка Shorts через Gemini TTS"
-  default_prompt: "Use $shorts-voiceover to voice and assemble a meme or anecdote short."
