@@ -125,11 +125,22 @@ if (firstAdmin) {
 }
 
 // Self-heal used-anecdote marks PER OWNER (every saved library video is a used anecdote).
+// At boot the pack files cannot change yet; cache them only for this repair pass. Without this,
+// a large library repeatedly reads and parses the same multi-megabyte JSON pack for every video.
+const startupPackCache = new Map<string, ReturnType<typeof getPack>>();
 for (const acc of db.listAccounts()) {
   if (acc.userId == null) continue;
   const ownerIsSuperAdmin = isSuperAdminUser(db.getUserById(acc.userId));
   for (const v of db.listVideos(acc.id)) {
-    if (isPackDeckId(v.deck) && markPackLibraryVideoUsed(db, acc.userId, acc.id, v.deck, v, ownerIsSuperAdmin)) continue;
+    if (isPackDeckId(v.deck)) {
+      const cacheKey = `${acc.userId}:${ownerIsSuperAdmin ? "super" : "user"}:${v.deck}`;
+      let pack = startupPackCache.get(cacheKey);
+      if (pack === undefined) {
+        pack = getPack(v.deck.slice("pack:".length), acc.userId, ownerIsSuperAdmin);
+        startupPackCache.set(cacheKey, pack);
+      }
+      if (markPackLibraryVideoUsed(db, acc.userId, acc.id, v.deck, v, ownerIsSuperAdmin, pack)) continue;
+    }
     db.markAnecdoteUsed(acc.userId, anecdoteKey(v.text));
   }
 }

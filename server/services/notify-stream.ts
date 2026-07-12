@@ -10,6 +10,7 @@ export type NotificationStreamClient = {
   userId: number;
   scopeAll: boolean;
   write: (chunk: string) => void;
+  close?: () => void;
 };
 
 export interface Notifier {

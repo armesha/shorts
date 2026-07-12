@@ -15,6 +15,10 @@ export type NavItem = {
   superOnly?: boolean;
   adminBadge?: boolean;
   userOnly?: boolean;
+  /** Visible only to the one designated Memoteka curator: armen, the main super admin. */
+  armenOnly?: boolean;
+  /** A regular document link rather than a client-side React route. */
+  external?: boolean;
   /** Shown to ALL users, but only when they actually have ≥1 accessible pack (admins always). */
   clipDemos?: boolean;
 };
@@ -36,6 +40,7 @@ export const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
     items: [
       { to: "/library", labelKey: "nav.library", icon: "library", end: false },
       { to: "/audio", labelKey: "nav.audio", icon: "music", end: false, superOnly: true, adminBadge: true },
+      { to: "/memes", labelKey: "nav.memoteka", icon: "globe", end: false, armenOnly: true, external: true, adminBadge: true },
       // Карточки, длинные видео, галерея и редактор шаблонов остаются рабочими внутренними
       // экранами, но не занимают отдельные пункты бокового меню: вход к ним теперь из «Библиотеки».
     ],
@@ -81,6 +86,7 @@ export function canSeeNav(item: NavItem, user: AuthUser, ctx?: { hasClipDemos?: 
   if (item.adminOnly && !isAdminRole(user)) return false;
   if (item.staffOnly && !isAdminLike(user)) return false;
   if (item.superOnly && !isMainAdmin(user)) return false;
+  if (item.armenOnly && !(isMainAdmin(user) && user.username.trim().toLowerCase() === "armen")) return false;
   if (item.userOnly && isAdminLike(user)) return false;
   // clip-demos: visible to all, but hidden for non-admins with no accessible packs.
   if (item.clipDemos && !isAdminLike(user) && !ctx?.hasClipDemos) return false;

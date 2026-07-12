@@ -204,9 +204,10 @@ export function markPackLibraryVideoUsed(
   deckId: string,
   video: Pick<Video, "bg" | "title" | "text">,
   isSuperAdmin = false,
+  preloadedPack?: Pack | null,
 ): boolean {
   if (!deckId.startsWith("pack:")) return false;
-  const pack = getPack(deckId.slice("pack:".length), ownerId, isSuperAdmin);
+  const pack = preloadedPack === undefined ? getPack(deckId.slice("pack:".length), ownerId, isSuperAdmin) : preloadedPack;
   if (!pack) return false;
   const key = packCardKeyFromLibraryVideo(pack, video);
   if (!key) return false;

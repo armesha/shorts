@@ -192,7 +192,18 @@ function AdminLayout({
     .filter((group) => group.items.length > 0);
   const visibleBottomNav = bottomNav.filter((item) => canSeeNav(item, user, { hasClipDemos }) && !hiddenNavKeySet.has(navKeyFor(item)));
 
-  function renderSidebarItem({ to, labelKey, icon, end, adminBadge, navKey }: SidebarNavItem) {
+  function renderSidebarItem({ to, labelKey, icon, end, adminBadge, external, navKey }: SidebarNavItem) {
+    if (external) {
+      return (
+        <li key={navKey}>
+          <a href={to} data-no-route-transition onClick={closeDrawer}>
+            <AppIcon name={icon} size={18} />
+            {t(labelKey)}
+            {adminBadge && <span className="admin-nav-badge ml-auto">adm</span>}
+          </a>
+        </li>
+      );
+    }
     return (
       <li key={navKey}>
         <NavLink

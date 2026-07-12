@@ -11,6 +11,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const PORT = Number(process.env.PORT || 8080);
 const SERVICE = process.env.SHORTS_SERVICE || "shorts.service";
 const WORKER_SERVICE = process.env.SHORTS_WORKER_SERVICE || "shorts-gen-worker.service";
+const CREATOR_SERVICE = process.env.SHORTS_CREATOR_SERVICE || "shorts-creator.service";
 const LOG_FILE = resolve(ROOT, "logs/server.log");
 const DB_PATH = process.env.DATABASE_PATH || resolve(ROOT, "data/app.db");
 const HEALTH_URL = `http://127.0.0.1:${PORT}/api/health`;
@@ -232,6 +233,12 @@ async function restartSystemd() {
   log(`using systemd service ${SERVICE}`);
   const workerLoadState = await serviceLoadState(WORKER_SERVICE);
   const hasWorkerService = workerLoadState && workerLoadState !== "not-found";
+  const creatorLoadState = await serviceLoadState(CREATOR_SERVICE);
+  const hasCreatorService = creatorLoadState && creatorLoadState !== "not-found";
+  if (hasCreatorService) {
+    log(`using systemd creator ${CREATOR_SERVICE}`);
+    await tryRun("sudo", ["-n", "systemctl", "stop", CREATOR_SERVICE], { timeout: 45_000 });
+  }
   if (hasWorkerService) {
     log(`using systemd worker ${WORKER_SERVICE}`);
     await tryRun("sudo", ["-n", "systemctl", "stop", WORKER_SERVICE], { timeout: 45_000 });
@@ -239,13 +246,13 @@ async function restartSystemd() {
   await tryRun("sudo", ["-n", "systemctl", "stop", SERVICE], { timeout: 20_000 });
   await waitFor(async () => (await serviceMainPid()) === 0, 12_000);
   if (hasWorkerService) await waitFor(async () => (await serviceMainPid(WORKER_SERVICE)) === 0, 45_000);
+  if (hasCreatorService) await waitFor(async () => (await serviceMainPid(CREATOR_SERVICE)) === 0, 45_000);
   const leftovers = [...new Set([...(await portPids()), ...repoAppPids()])];
   await stopPids(leftovers);
   await tryRun("sudo", ["-n", "systemctl", "reset-failed", SERVICE]);
   if (hasWorkerService) await tryRun("sudo", ["-n", "systemctl", "reset-failed", WORKER_SERVICE]);
+  if (hasCreatorService) await tryRun("sudo", ["-n", "systemctl", "reset-failed", CREATOR_SERVICE]);
   await run("sudo", ["-n", "systemctl", "start", SERVICE], { timeout: 20_000 });
-  const workerStartAfter = Date.now();
-  if (hasWorkerService) await run("sudo", ["-n", "systemctl", "start", WORKER_SERVICE], { timeout: 20_000 });
   const healthStartedAt = Date.now();
   log(`waiting up to ${Math.round(HEALTH_WAIT_MS / 1000)}s for ${HEALTH_URL}`);
   const ok = await waitForHealth();
@@ -258,6 +265,10 @@ async function restartSystemd() {
   const active = await serviceActiveState();
   log(`${SERVICE}: ${active}; pid=${pid}`);
   if (hasWorkerService) {
+    // The API performs startup migrations/indexing. Starting the worker only after health avoids
+    // two fresh SQLite writers racing over the same schema and causing a restart loop.
+    const workerStartAfter = Date.now();
+    await run("sudo", ["-n", "systemctl", "start", WORKER_SERVICE], { timeout: 20_000 });
     const workerPid = await serviceMainPid(WORKER_SERVICE);
     const workerActive = await serviceActiveState(WORKER_SERVICE);
     const workerOk = await waitForWorkerHeartbeat(workerPid, workerStartAfter);
@@ -266,6 +277,12 @@ async function restartSystemd() {
     const age = heartbeat ? Date.now() - heartbeat.beatAt : null;
     log(`${WORKER_SERVICE}: ${workerActive}; pid=${workerPid}`);
     log(`generation worker heartbeat: pid=${heartbeat?.pid ?? "?"}; age=${age == null ? "?" : `${Math.round(age)}ms`}`);
+  }
+  if (hasCreatorService) {
+    await run("sudo", ["-n", "systemctl", "start", CREATOR_SERVICE], { timeout: 20_000 });
+    const creatorPid = await serviceMainPid(CREATOR_SERVICE);
+    const creatorActive = await serviceActiveState(CREATOR_SERVICE);
+    log(`${CREATOR_SERVICE}: ${creatorActive}; pid=${creatorPid}`);
   }
 }
 

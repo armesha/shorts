@@ -48,6 +48,12 @@ export function registerNotificationsRoutes(app: FastifyInstance, db: Db, deps: 
       userId: uid(req),
       scopeAll,
       write: (chunk) => reply.raw.write(chunk),
+      // Ending an SSE response leaves its keep-alive socket idle; Node's server.close() then waits
+      // for the socket timeout. Destroy only this long-lived SSE socket during shutdown.
+      close: () => {
+        reply.raw.end();
+        reply.raw.destroy();
+      },
     };
     notificationStreams.add(client);
     writeNotificationEvent(client, "ready", { at: new Date().toISOString() });
@@ -65,6 +71,19 @@ export function registerNotificationsRoutes(app: FastifyInstance, db: Db, deps: 
       clearInterval(ping);
       notificationStreams.delete(client);
     });
+  });
+
+  // SSE requests intentionally stay open. End them before Fastify closes its listener so a normal
+  // restart does not wait for systemd's stop timeout while browser tabs are connected.
+  app.addHook("preClose", async () => {
+    for (const client of [...notificationStreams]) {
+      try {
+        client.close?.();
+      } catch {
+        /* a browser may already have disconnected */
+      }
+    }
+    notificationStreams.clear();
   });
 
   app.get("/api/notifications/counts", async (req, reply) => {

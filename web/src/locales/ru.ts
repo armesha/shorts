@@ -66,6 +66,7 @@ export const ru: Record<string, string> = {
   "nav.notifications": "Уведомления",
   "nav.clipdemos": "Нарезки",
   "nav.audio": "Аудио",
+  "nav.memoteka": "Мемотека",
   "clipdemos.title": "Нарезки",
   "clipdemos.subtitle": "Монтажные шортсы из локальных/no-API пайплайнов. Можно смотреть, сортировать и выбирать конкретный пак. Хранятся тут — пока только для админа.",
   "clipdemos.note": "Источник: NASA «Moonbound» (public domain). Бесплатный стек — ffmpeg, без платных API. «Центр-кроп» = во весь кадр; «Блюр-фон» = полный 16:9 на размытом фоне. Превью только для админа.",
