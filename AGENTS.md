@@ -49,9 +49,8 @@ Keep shared rules here. Do not duplicate them in `CLAUDE.md`; Claude Code import
 
 ## Content, packs, and assets
 
-- Before touching built-in decks, generated packs, template packs, anecdotes, jokes, memes, card templates, long videos, voiceover, or source media, read `docs/pack-generation.md`.
+- Before touching built-in decks, generated packs, template packs, memes, card templates, long videos, voiceover, or source media, read `docs/pack-generation.md`.
 - For any LLM/subagent/workflow that generates, cleans, ranks, formats, localizes, or titles pack content, ask the user which model to use before running it. Local parsers, renderers, and validators can run without asking.
-- Jokes and anecdotes must be source-backed. Do not invent joke/anecdote text with AI. Use public-domain/open-license sources with a `sources.json` or equivalent ledger.
 - All visual and audio assets must be copyright-safe: Pexels license, CC0/Public Domain, compatible open license with evidence, or self-generated. Record source and license.
 - Do not use copyrighted movie/game/anime frames, celebrity press/paparazzi/promotional photos, famous meme templates, paid stock, or unclear "found online" assets.
 - For living or recent real people, use only neutral, verifiable facts and only images with explicit usable licensing.
@@ -65,7 +64,7 @@ Keep shared rules here. Do not duplicate them in `CLAUDE.md`; Claude Code import
 Keep `AGENTS.md` concise. Long procedures should move to skills or targeted reference docs instead of growing this file:
 
 - Shorts live ops and restart verification.
-- Source-backed pack/joke/meme sourcing.
+- Source-backed pack and meme sourcing.
 - Armen channel blocks, schedules, and one-short-per-channel publish workflows.
 - YouTube quota/upload-limit diagnosis.
 - Creator/UI live QA.

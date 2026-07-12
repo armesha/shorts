@@ -1,0 +1,763 @@
+{
+  "pack": "voiced-memes-ru",
+  "channel": "https://www.youtube.com/@OrbitalNCG/videos",
+  "selection": "Choose gameplay types evenly; then choose a least-used vertical source within that type at random.",
+  "sources": [
+    {
+      "id": "orbital-AwQSObT2VCo",
+      "type": "subway-surfers",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-AwQSObT2VCo.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=AwQSObT2VCo",
+      "title": "Subway Surfers Gameplay No Copyright (Vertical)",
+      "durationSec": 633,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-EGC13iq9C3U",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-EGC13iq9C3U.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=EGC13iq9C3U",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 606,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-qur568gg2PQ",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-qur568gg2PQ.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=qur568gg2PQ",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 671,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-nRGViTWFNfA",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-nRGViTWFNfA.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=nRGViTWFNfA",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 669,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-m2XZ_HLq43o",
+      "type": "subway-surfers",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-m2XZ_HLq43o.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=m2XZ_HLq43o",
+      "title": "Subway Surfers Gameplay No Copyright (Vertical)",
+      "durationSec": 1110,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-Jd0g9nNfeuY",
+      "type": "forza",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-Jd0g9nNfeuY.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=Jd0g9nNfeuY",
+      "title": "Forza Horizon 6 Gameplay No Copyright (Vertical)",
+      "durationSec": 684,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-pCW_yTzfvQM",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-pCW_yTzfvQM.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=pCW_yTzfvQM",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical) 1 HOUR",
+      "durationSec": 5525,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-3pcGtyan1Ec",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-3pcGtyan1Ec.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=3pcGtyan1Ec",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 620,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-i-KS-Mg6OmI",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-i-KS-Mg6OmI.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=i-KS-Mg6OmI",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 611,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-45mObEzDKbc",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-45mObEzDKbc.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=45mObEzDKbc",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 629,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-g8v2dRTD7aI",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-g8v2dRTD7aI.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=g8v2dRTD7aI",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 604,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-sQLtiPeXACw",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-sQLtiPeXACw.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=sQLtiPeXACw",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 619,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-41nSaAMS8gM",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-41nSaAMS8gM.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=41nSaAMS8gM",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 616,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-VK430XstgRk",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-VK430XstgRk.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=VK430XstgRk",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 609,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-VrWt0REP1x0",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-VrWt0REP1x0.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=VrWt0REP1x0",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 612,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-Gh3R_hiM1_E",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-Gh3R_hiM1_E.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=Gh3R_hiM1_E",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 611,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-4NDZvILKOL8",
+      "type": "subway-surfers",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-4NDZvILKOL8.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=4NDZvILKOL8",
+      "title": "Subway Surfers Gameplay No Copyright (Vertical)",
+      "durationSec": 695,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital--eNkTXwFjpM",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital--eNkTXwFjpM.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=-eNkTXwFjpM",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 639,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-mCopnSsyc8c",
+      "type": "roblox",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-mCopnSsyc8c.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=mCopnSsyc8c",
+      "title": "ROBLOX Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 695,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-bEQTUMAPFZQ",
+      "type": "gta",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-bEQTUMAPFZQ.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=bEQTUMAPFZQ",
+      "title": "GTA 5 Gameplay No Copyright (Mega Ramp) Vertical",
+      "durationSec": 653,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-atR41nYVjB0",
+      "type": "subway-surfers",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-atR41nYVjB0.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=atR41nYVjB0",
+      "title": "Subway Surfers City Gameplay No Copyright (Vertical)",
+      "durationSec": 717,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-zywXZavKy3k",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-zywXZavKy3k.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=zywXZavKy3k",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 648,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-dgHIsHzK3b8",
+      "type": "subway-surfers",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-dgHIsHzK3b8.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=dgHIsHzK3b8",
+      "title": "Subway Surfers City Gameplay No Copyright (Vertical)",
+      "durationSec": 690,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-1QkvPRsgF6c",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-1QkvPRsgF6c.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=1QkvPRsgF6c",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 632,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-eR8CUdqnV50",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-eR8CUdqnV50.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=eR8CUdqnV50",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 642,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-rfRy6bXS5cA",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-rfRy6bXS5cA.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=rfRy6bXS5cA",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 633,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-vL7xADaAWlo",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-vL7xADaAWlo.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=vL7xADaAWlo",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical) 1 HOUR",
+      "durationSec": 5608,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-YozKD4xkz1c",
+      "type": "gta",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-YozKD4xkz1c.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=YozKD4xkz1c",
+      "title": "GTA 5 Gameplay No Copyright (Mega Ramp) Vertical",
+      "durationSec": 686,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-ExRQ6z8kLzo",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-ExRQ6z8kLzo.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=ExRQ6z8kLzo",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 955,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-dLPdXQw0mq0",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-dLPdXQw0mq0.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=dLPdXQw0mq0",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 967,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-tW-HIBg3HU8",
+      "type": "gta",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-tW-HIBg3HU8.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=tW-HIBg3HU8",
+      "title": "GTA 5 Gameplay No Copyright (Mega Ramp) Vertical",
+      "durationSec": 952,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-sOqx3wg4SYQ",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-sOqx3wg4SYQ.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=sOqx3wg4SYQ",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 546,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-oabgjEHLgTA",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-oabgjEHLgTA.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=oabgjEHLgTA",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 1375,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-t3OA3bJawss",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-t3OA3bJawss.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=t3OA3bJawss",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 634,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-FtY3lbUY0AY",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-FtY3lbUY0AY.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=FtY3lbUY0AY",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 725,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-125rxiVY8S0",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-125rxiVY8S0.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=125rxiVY8S0",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 1135,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-WTNGbkOTi68",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-WTNGbkOTi68.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=WTNGbkOTi68",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 660,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-fRwyw7JwulI",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-fRwyw7JwulI.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=fRwyw7JwulI",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 670,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-fw_eWpb7uCE",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-fw_eWpb7uCE.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=fw_eWpb7uCE",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical) 4 HOURS",
+      "durationSec": 17617,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-c9oQFqViIf0",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-c9oQFqViIf0.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=c9oQFqViIf0",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 642,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-iYwZtKMEgpw",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-iYwZtKMEgpw.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=iYwZtKMEgpw",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 666,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-4B3eGcP2iAY",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-4B3eGcP2iAY.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=4B3eGcP2iAY",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 665,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-2e1MlinGA_g",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-2e1MlinGA_g.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=2e1MlinGA_g",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 630,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital--qK8scH4UC8",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital--qK8scH4UC8.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=-qK8scH4UC8",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical) 2 Hours",
+      "durationSec": 10712,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-cKOjLoK7N10",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-cKOjLoK7N10.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=cKOjLoK7N10",
+      "title": "Minecraft Parkour Gameplay No Copyright | Vertical",
+      "durationSec": 634,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-nqxmOqfMt28",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-nqxmOqfMt28.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=nqxmOqfMt28",
+      "title": "Minecraft Parkour Gameplay No Copyright | Vertical",
+      "durationSec": 637,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-Vsep1PP5nD0",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-Vsep1PP5nD0.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=Vsep1PP5nD0",
+      "title": "Minecraft Parkour Gameplay No Copyright | Vertical",
+      "durationSec": 622,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-4KXDs0YIUJ4",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-4KXDs0YIUJ4.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=4KXDs0YIUJ4",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 678,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital--lVgihPljuI",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital--lVgihPljuI.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=-lVgihPljuI",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical) 1 HOUR",
+      "durationSec": 3887,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-vUQrRnNX3ms",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-vUQrRnNX3ms.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=vUQrRnNX3ms",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 754,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-e-NpVhtfWjk",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-e-NpVhtfWjk.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=e-NpVhtfWjk",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 1154,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-DcOt_NCuVgk",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-DcOt_NCuVgk.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=DcOt_NCuVgk",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 1039,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-aF828t3G5Gc",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-aF828t3G5Gc.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=aF828t3G5Gc",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 941,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-R4-d2XBwpaQ",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-R4-d2XBwpaQ.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=R4-d2XBwpaQ",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 1276,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-nE9_mlJZwJo",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-nE9_mlJZwJo.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=nE9_mlJZwJo",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 973,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-McUOY6WHbtI",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-McUOY6WHbtI.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=McUOY6WHbtI",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 623,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-yve_DhR1F8s",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-yve_DhR1F8s.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=yve_DhR1F8s",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 608,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-duflZrEmIig",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-duflZrEmIig.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=duflZrEmIig",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 639,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-QK8PLizB6mY",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-QK8PLizB6mY.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=QK8PLizB6mY",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 823,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-4hdmIONdjeE",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-4hdmIONdjeE.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=4hdmIONdjeE",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 1136,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-wlqqL0BOONY",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-wlqqL0BOONY.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=wlqqL0BOONY",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 1145,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-ZIKGZt-6ogs",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-ZIKGZt-6ogs.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=ZIKGZt-6ogs",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 1278,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-DX8zaCX8okY",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-DX8zaCX8okY.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=DX8zaCX8okY",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 1229,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-urmMypm60rI",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-urmMypm60rI.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=urmMypm60rI",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 699,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-LZWfD_cO3cc",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-LZWfD_cO3cc.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=LZWfD_cO3cc",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 669,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-COXVxAIdAC4",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-COXVxAIdAC4.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=COXVxAIdAC4",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 829,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-f5Rz5xLHcs4",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-f5Rz5xLHcs4.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=f5Rz5xLHcs4",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 672,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-BUJmtj4hhC4",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-BUJmtj4hhC4.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=BUJmtj4hhC4",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 646,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-dvMzleUa4lM",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-dvMzleUa4lM.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=dvMzleUa4lM",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 619,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-75McClC40mw",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-75McClC40mw.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=75McClC40mw",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 414,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-tCBOhczn6Ok",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-tCBOhczn6Ok.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=tCBOhczn6Ok",
+      "title": "Minecraft Parkour Gameplay NO COPYRIGHT (Vertical)",
+      "durationSec": 1280,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-bBOBn1Jx5BY",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-bBOBn1Jx5BY.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=bBOBn1Jx5BY",
+      "title": "Minecraft Parkour Gameplay NO COPYRIGHT (Vertical)",
+      "durationSec": 609,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-S3ZDCz-zQuM",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-S3ZDCz-zQuM.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=S3ZDCz-zQuM",
+      "title": "Minecraft Parkour Gameplay NO COPYRIGHT (Vertical)",
+      "durationSec": 640,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-m9WRa5D5Cxk",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-m9WRa5D5Cxk.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=m9WRa5D5Cxk",
+      "title": "Minecraft Parkour Gameplay NO COPYRIGHT (Vertical)",
+      "durationSec": 1201,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-_H2cLn-OlIU",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-_H2cLn-OlIU.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=_H2cLn-OlIU",
+      "title": "Minecraft Parkour Gameplay NO COPYRIGHT (Vertical)",
+      "durationSec": 1201,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-s600FYgI5-s",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-s600FYgI5-s.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=s600FYgI5-s",
+      "title": "Minecraft Parkour Gameplay NO COPYRIGHT (Vertical)",
+      "durationSec": 966,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital--LZceM7L8AE",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital--LZceM7L8AE.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=-LZceM7L8AE",
+      "title": "Minecraft Parkour Gameplay NO COPYRIGHT (Vertical)",
+      "durationSec": 941,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-cgWTN9tgC5g",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-cgWTN9tgC5g.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=cgWTN9tgC5g",
+      "title": "Minecraft Parkour Gameplay NO COPYRIGHT (Vertical)",
+      "durationSec": 839,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-37_wnD3jUbw",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-37_wnD3jUbw.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=37_wnD3jUbw",
+      "title": "Minecraft Parkour Gameplay NO COPYRIGHT (Vertical)",
+      "durationSec": 752,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-7yl7Wc1dtWc",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-7yl7Wc1dtWc.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=7yl7Wc1dtWc",
+      "title": "Minecraft Parkour Gameplay NO COPYRIGHT (Vertical)",
+      "durationSec": 703,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-8KdXeDSGvZw",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-8KdXeDSGvZw.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=8KdXeDSGvZw",
+      "title": "Minecraft Parkour Gameplay NO COPYRIGHT (Vertical)",
+      "durationSec": 703,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-2SWW4U4TKOA",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-2SWW4U4TKOA.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=2SWW4U4TKOA",
+      "title": "Minecraft Parkour Gameplay NO COPYRIGHT (Vertical)",
+      "durationSec": 501,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-icLXMm9YUeM",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-icLXMm9YUeM.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=icLXMm9YUeM",
+      "title": "Minecraft Parkour Gameplay NO COPYRIGHT (Vertical)",
+      "durationSec": 249,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    },
+    {
+      "id": "orbital-2BFfhOqlUss",
+      "type": "minecraft",
+      "file": "assets/fact-videos/voiced-memes-ru/sources/orbital-2BFfhOqlUss.mp4",
+      "sourceUrl": "https://www.youtube.com/watch?v=2BFfhOqlUss",
+      "title": "Minecraft Parkour Gameplay No Copyright (Vertical)",
+      "durationSec": 1852,
+      "rights": "User selected the OrbitalNCG channel and confirmed its videos are cleared for this use."
+    }
+  ]
+}
