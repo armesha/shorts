@@ -24,7 +24,9 @@ const avatar = resolve(arg("avatar"));
 const gameplay = resolve(arg("gameplay", "assets/fact-videos/voiced-memes-ru/sources/minecraft-parkour-6h.mp4"));
 const output = resolve(arg("output", "tmp/voiced-meme-short.mp4"));
 const history = resolve(arg("history", "tmp/gameplay-segments/history.json"));
-for (const file of [meme, avatar, gameplay]) {
+const avatarBackground = resolve(arg("avatar-background", "assets/audio-avatar-backgrounds/shino-cozy-room.png"));
+const ringColor = arg("ring-color", "#f5c7a4");
+for (const file of [meme, avatar, gameplay, avatarBackground]) {
   if (!file || !existsSync(file)) throw new Error(`Файл не найден: ${file}`);
 }
 
@@ -42,11 +44,13 @@ const filter = [
   "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,eq=brightness=-0.1:saturation=0.9[bg]",
   "[1:v]scale=940:940:force_original_aspect_ratio=decrease,pad=940:940:(ow-iw)/2:(oh-ih)/2:color=white[meme]",
   "[2:v]scale=520:520,format=rgba[avatar]",
-  "color=c=#f5c7a4:s=540x540,format=rgba[ringColor]",
+  "[3:v]scale=520:520:force_original_aspect_ratio=increase,crop=520:520,format=rgba[avatarBg]",
+  "[avatarBg][avatar]overlay=0:0:format=auto[avatarComposed]",
+  `color=c=${ringColor}:s=540x540,format=rgba[ringColor]`,
   "color=c=black:s=540x540,format=gray,geq=lum='if(lte((X-270)*(X-270)+(Y-270)*(Y-270),270*270),255,0)'[ringMask]",
   "[ringColor][ringMask]alphamerge[ring]",
   "color=c=black:s=520x520,format=gray,geq=lum='if(lte((X-260)*(X-260)+(Y-260)*(Y-260),260*260),255,0)'[avatarMask]",
-  "[avatar][avatarMask]alphamerge[avatarCircle]",
+  "[avatarComposed][avatarMask]alphamerge[avatarCircle]",
   "[bg][meme]overlay=70:90[tmp1]",
   "[tmp1][ring]overlay=270:1150:format=auto[tmp2]",
   "[tmp2][avatarCircle]overlay=280:1160:format=auto[outv]",
@@ -58,6 +62,7 @@ const render = spawnSync(ffmpegPath, [
   "-ss", String(segment.start), "-i", gameplay,
   "-loop", "1", "-i", meme,
   "-i", avatar,
+  "-loop", "1", "-i", avatarBackground,
   "-filter_complex", filter,
   "-map", "[outv]", "-map", "2:a?", "-t", String(duration), "-r", "30",
   "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p",
