@@ -3,15 +3,23 @@
   "title": "Озвучка мемов",
   "items": [
     {
-      "id": "vmru_001_every_ten_seconds",
+      "id": "vmru_001_cat_centaur",
       "visualSource": "User-provided meme image in this conversation",
-      "visualRights": "Provided by the user; independent copyright status not verified. Keep this pack admin-only unless rights are confirmed.",
-      "voice": "Gemini TTS, Gacrux voice, character direction: Витёк",
-      "avatar": "Sakurada Fumiriya official VRoid model",
-      "avatarSource": "https://vroid.pixiv.help/hc/en-us/articles/360014788554-Sakurada-Fumiriya",
+      "visualRights": "Provided and approved by the user; independent copyright status not verified. Keep this pack admin-only unless rights are confirmed.",
+      "voice": "Gemini 3.1 Flash TTS, Leda voice, cute youthful female reaction direction",
+      "avatar": "Sendagaya Shino official VRoid model",
+      "avatarSource": "https://vroid.pixiv.help/hc/en-us/articles/360013482714-Sendagaya-Shino",
       "avatarLicense": "CC0 1.0",
+      "avatarBackground": "Project-generated original cozy room background",
+      "gameplaySource": "https://youtu.be/k9AYE6c0ynE",
+      "gameplayRights": "User confirmed the gameplay source is cleared for this use; independent license metadata was not available.",
+      "gameplaySegment": {
+        "startSec": 13727,
+        "endSec": 13732.9,
+        "overlapScore": 0
+      },
       "assembledAt": "2026-07-12",
-      "notes": "Exact user-provided meme text; no added joke copy. Final laugh expression aligned to the actual laugh onset in the approved WAV."
+      "notes": "Exact meme text with no added spoken joke. A brief soft giggle follows the line; avatar laugh expression is aligned to the detected WAV interval around 4.24-4.92 seconds."
     }
   ]
 }

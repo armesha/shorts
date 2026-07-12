@@ -830,7 +830,7 @@ export const DECKS: Deck[] = [
     emoji: "😂",
     hashtags: "#мемы #юмор #приколы #реакция #shorts",
     tags: ["мемы", "юмор", "приколы", "реакция", "озвучка мемов", "смешное", "shorts"],
-    genericTitles: ["Озвучка мемов", "Мем с реакцией", "Витёк читает мем"],
+    genericTitles: ["Озвучка мемов", "Мем с реакцией", "Персонаж читает мем"],
     adminOnly: true,
     preFact: true,
     sequential: true,

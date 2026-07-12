@@ -4,13 +4,13 @@ import { spawnSync } from "node:child_process";
 import ffmpegPath from "ffmpeg-static";
 
 const cwd = process.cwd();
-const input = resolve(cwd, process.argv[2] || "tmp/vitek-death-reaction/vitek-death-reaction-fumiriya.mp4");
+const input = resolve(cwd, process.argv[2] || "tmp/shino-cat-render/cat-centaur-shino-minecraft.mp4");
 const packId = "voiced-memes-ru";
 const item = {
-  id: "vmru_001_every_ten_seconds",
-  title: "Каждые 10 секунд",
+  id: "vmru_001_cat_centaur",
+  title: "Каждую ночь мой кот",
   theme: "мемы",
-  voice: "Витёк · Gacrux · Фумирия",
+  voice: "Шино · Leda · Gemini 3.1 Flash TTS",
 };
 
 if (!existsSync(input)) throw new Error(`Готовый MP4 не найден: ${input}`);
