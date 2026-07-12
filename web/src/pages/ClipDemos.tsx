@@ -50,10 +50,20 @@ function Card({ d, addedLabel, canDelete, deleting, onDelete }: { d: FlatItem; a
   const createdAt = formatCreatedAt(d);
   return (
     <div className="card bg-base-100 border border-base-300 shadow-sm overflow-hidden">
-      <figure className="bg-black">
+      <figure className="relative bg-black">
         <video controls preload="none" poster={POSTER(d.id)} className="w-full max-h-[70vh] aspect-[9/16] object-contain bg-black">
           <source src={SRC(d.id)} type="video/mp4" />
         </video>
+        {canDelete && (
+          <button
+            className="btn btn-error btn-sm absolute right-3 top-3 z-10 h-9 min-h-9 gap-1.5 px-3 text-sm shadow-lg"
+            disabled={deleting}
+            onClick={() => onDelete(d)}
+          >
+            <AppIcon name="trash" size={15} />
+            {deleting ? "Удаляю…" : "Удалить"}
+          </button>
+        )}
       </figure>
       <div className="card-body p-4 gap-2">
         <h2 className="card-title text-base leading-snug">{d.title}</h2>
@@ -76,12 +86,6 @@ function Card({ d, addedLabel, canDelete, deleting, onDelete }: { d: FlatItem; a
             <AppIcon name="external" size={12} />
             mp4
           </a>
-          {canDelete && (
-            <button className="badge badge-error badge-sm gap-1" disabled={deleting} onClick={() => onDelete(d)}>
-              <AppIcon name="trash" size={12} />
-              {deleting ? "Удаление…" : "Удалить"}
-            </button>
-          )}
         </div>
       </div>
     </div>
