@@ -20,6 +20,7 @@ type FormState = {
   accent: string;
   scene: string;
   energy: number;
+  autoMemeDirection: boolean;
   text: string;
   apiKey: string;
 };
@@ -55,6 +56,7 @@ const EMPTY_FORM: FormState = {
   accent: "",
   scene: "",
   energy: 3,
+  autoMemeDirection: true,
   text: "",
   apiKey: "",
 };
@@ -339,6 +341,7 @@ export default function AudioLab() {
         accent: form.accent,
         scene: form.scene,
         energy: form.energy,
+        autoMemeDirection: form.autoMemeDirection,
         apiKey: form.apiKey.trim() || undefined,
       });
       setResult(response);
@@ -521,6 +524,20 @@ export default function AudioLab() {
                 <Field label="Сцена">
                   <textarea className="textarea textarea-bordered min-h-20 w-full" value={form.scene} onChange={(e) => update("scene", e.target.value)} />
                 </Field>
+                <label className="mt-3 flex cursor-pointer items-start gap-3 rounded-lg border border-base-300 bg-base-200/45 p-3">
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-primary mt-0.5"
+                    checked={form.autoMemeDirection}
+                    onChange={(e) => update("autoMemeDirection", e.target.checked)}
+                  />
+                  <span>
+                    <span className="block text-sm font-semibold">Индивидуальная реакция на мем</span>
+                    <span className="mt-0.5 block text-xs leading-relaxed text-base-content/55">
+                      Подбирает паузы, сухой финал, смешок, вздох, недоверие, шёпот и другие приёмы по смыслу конкретного мема. Явные теги имеют приоритет.
+                    </span>
+                  </span>
+                </label>
               </Panel>
 
               <Panel title="Сегменты" icon="cards">

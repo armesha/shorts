@@ -1263,6 +1263,7 @@ export interface GeminiTtsPreviewRequest {
   accent?: string;
   scene?: string;
   energy?: number;
+  autoMemeDirection?: boolean;
   apiKey?: string;
 }
 

@@ -247,8 +247,26 @@ export interface GeminiTtsPreviewInput {
   accent?: string;
   scene?: string;
   energy?: number;
+  autoMemeDirection?: boolean;
   apiKey?: string;
 }
+
+export const GEMINI_MEME_REACTION_TOOLKIT = [
+  "neutral deadpan: dry delivery with no audible reaction after the punchline",
+  "micro-smile: a restrained smile in the voice, without adding words",
+  "soft chuckle: one very short natural chuckle only when laughter strengthens the joke",
+  "disbelieving exhale: a small breath of disbelief near the reveal or after the punchline",
+  "tired sigh: a quiet sigh for relatable frustration, awkwardness, or resignation",
+  "surprised inhale: a brief intake of breath before an absurd or sudden reveal",
+  "skeptical hesitation: a tiny doubtful pause before the questionable detail",
+  "awkward silence: a short clean pause after an embarrassing or intentionally uncomfortable line",
+  "whispered aside: briefly soften into a close-mic secret for conspiratorial or intimate humor",
+  "rising disbelief: gradually become more incredulous as the situation escalates",
+  "contained excitement: speed up slightly through chaos while keeping every word clear",
+  "mock seriousness: read an absurd statement with controlled documentary-like gravity",
+  "gentle sympathy: warm, soft delivery for harmless self-irony or everyday failure",
+  "sharp landing: keep the setup natural, pause briefly, then make only the final phrase firmer",
+] as const;
 
 export interface GeminiTtsPreviewResult {
   model: string;
@@ -311,6 +329,19 @@ export function buildGeminiTtsPrompt(input: GeminiTtsPreviewInput): string {
   const accent = cleanLine(input.accent);
   const scene = cleanLine(input.scene) || "A clean close-mic studio recording for a vertical short.";
   const energy = clampEnergy(input.energy);
+  const memeDirection = input.autoMemeDirection
+    ? [
+        "",
+        "### INDIVIDUAL MEME DIRECTION",
+        "Silently analyze this exact transcript as setup, escalation, pause, and punchline. Choose the most natural performance for its meaning, not a fixed house style.",
+        "Use at most two compatible reactions from this toolkit; often one is enough:",
+        ...GEMINI_MEME_REACTION_TOOLKIT.map((reaction) => `- ${reaction}`),
+        "Do not force laughter. Prefer a dry ending when no reaction clearly improves the joke.",
+        "Place reactions where they make semantic sense: before a reveal, inside an escalation, or after the punchline. Do not scatter reactions through every phrase.",
+        "Never add, remove, paraphrase, repeat, or comment on transcript words. Reactions are performance only.",
+        "Any explicit inline tag in the transcript overrides this automatic direction for that passage.",
+      ]
+    : [];
 
   return [
     "# AUDIO PROFILE",
@@ -328,6 +359,7 @@ export function buildGeminiTtsPrompt(input: GeminiTtsPreviewInput): string {
     accent ? `Accent: ${accent}` : "Accent: natural for the selected language.",
     "Breathing and pauses: keep it human, with short intentional pauses where the transcript suggests them.",
     "If inline audio tags are present, interpret English tags such as [laughs], [whispers], [sighs], [sarcastic], [excited], [short pause], [very fast], [very slow].",
+    ...memeDirection,
     "",
     "#### TRANSCRIPT",
     text,

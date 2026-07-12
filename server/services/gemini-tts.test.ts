@@ -34,3 +34,18 @@ test("pcmToWav wraps raw 24kHz mono PCM in a playable RIFF header", () => {
   assert.equal(wav.readUInt32LE(40), pcm.length);
   assert.equal(wav.length, 44 + pcm.length);
 });
+
+test("buildGeminiTtsPrompt adds bounded individual meme direction without rewriting text", () => {
+  const prompt = buildGeminiTtsPrompt({
+    text: "Сначала всё было нормально. А потом пришёл кот.",
+    language: "ru",
+    voice: "Puck",
+    autoMemeDirection: true,
+  });
+
+  assert.match(prompt, /INDIVIDUAL MEME DIRECTION/);
+  assert.match(prompt, /Use at most two compatible reactions/);
+  assert.match(prompt, /Do not force laughter/);
+  assert.match(prompt, /Never add, remove, paraphrase, repeat, or comment/);
+  assert.match(prompt, /Сначала всё было нормально\. А потом пришёл кот\./);
+});
