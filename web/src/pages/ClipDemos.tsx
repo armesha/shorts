@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
+import { useAuth } from "../lib/auth";
+import { ApiError, apiClient } from "../lib/api";
+import { confirmDialog } from "../lib/confirm";
 
 // Admin-only gallery of montage Shorts, grouped into themed PACKS. Reads a manifest (written live by
 // tmp/clip-demo/buildpack.mjs). Pure viewer — watch and download mp4, no posting.
@@ -43,7 +46,7 @@ const formatCreatedAt = (d: Item) => {
   });
 };
 
-function Card({ d, addedLabel }: { d: FlatItem; addedLabel: string }) {
+function Card({ d, addedLabel, canDelete, deleting, onDelete }: { d: FlatItem; addedLabel: string; canDelete: boolean; deleting: boolean; onDelete: (item: FlatItem) => void }) {
   const createdAt = formatCreatedAt(d);
   return (
     <div className="card bg-base-100 border border-base-300 shadow-sm overflow-hidden">
@@ -73,6 +76,12 @@ function Card({ d, addedLabel }: { d: FlatItem; addedLabel: string }) {
             <AppIcon name="external" size={12} />
             mp4
           </a>
+          {canDelete && (
+            <button className="badge badge-error badge-sm gap-1" disabled={deleting} onClick={() => onDelete(d)}>
+              <AppIcon name="trash" size={12} />
+              {deleting ? "Удаление…" : "Удалить"}
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -81,11 +90,15 @@ function Card({ d, addedLabel }: { d: FlatItem; addedLabel: string }) {
 
 export default function ClipDemos() {
   const { t } = useT();
+  const { user } = useAuth();
   const [packs, setPacks] = useState<Pack[] | null>(null);
   const [err, setErr] = useState(false);
   const [sortMode, setSortMode] = useState<SortMode>("newest");
   const [packId, setPackId] = useState("all");
   const [page, setPage] = useState(1);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const canDeleteVoicedMemes = user?.username.trim().toLowerCase() === "armen";
   const visiblePacks = packs ? (packId === "all" ? packs : packs.filter((pack) => pack.id === packId)) : null;
   const items = visiblePacks
     ? sortItems(
@@ -115,6 +128,22 @@ export default function ClipDemos() {
     const id = setInterval(load, 7000);
     return () => { stop = true; clearInterval(id); };
   }, []);
+
+  async function deleteClip(item: FlatItem) {
+    if (!canDeleteVoicedMemes || item.packId !== "voiced-memes-ru") return;
+    if (!(await confirmDialog(`Удалить «${item.title}» навсегда? Ролик не будет сгенерирован снова.`, { confirmText: "Удалить", danger: true }))) return;
+    setDeleting(item.id);
+    setDeleteError(null);
+    try {
+      await apiClient.deleteClipDemo(item.packId, item.id);
+      setPacks((current) => current?.map((pack) => pack.id === item.packId ? { ...pack, items: pack.items.filter((entry) => entry.id !== item.id) } : pack).filter((pack) => pack.items.length > 0) ?? current);
+      if (packId === item.packId) setPackId("all");
+    } catch (error) {
+      setDeleteError(error instanceof ApiError ? error.message : "Не удалось удалить ролик.");
+    } finally {
+      setDeleting(null);
+    }
+  }
 
   return (
     <div className="space-y-4 max-w-6xl">
@@ -155,6 +184,7 @@ export default function ClipDemos() {
       </div>
 
       {err && <div className="alert alert-warning"><AppIcon name="warning" size={18} /><span>{t("clipdemos.loadFail")}</span></div>}
+      {deleteError && <div className="alert alert-error"><AppIcon name="warning" size={18} /><span>{deleteError}</span></div>}
       {!packs && !err && <div className="flex items-center gap-2 text-base-content/60"><span className="loading loading-spinner loading-sm" />{t("clipdemos.loading")}</div>}
       {packs && !packs.length && <div className="alert"><span>{t("clipdemos.empty")}</span></div>}
 
@@ -169,7 +199,7 @@ export default function ClipDemos() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {pageItems.map((d) => (
-              <Card key={d.id} d={d} addedLabel={t("clipdemos.addedAt")} />
+              <Card key={d.id} d={d} addedLabel={t("clipdemos.addedAt")} canDelete={canDeleteVoicedMemes && d.packId === "voiced-memes-ru"} deleting={deleting === d.id} onDelete={deleteClip} />
             ))}
           </div>
           <Pagination page={page} totalPages={totalPages} setPage={setPage} alignEnd />

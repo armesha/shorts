@@ -33,8 +33,9 @@ function voicedMemesRenderStatus() {
   const safety = readJsonSafe(VOICED_MEMES_SAFETY, { reject: {}, borderline: {} }) as {
     reject?: Record<string, string>;
     borderline?: Record<string, string>;
+    userRemoved?: Record<string, unknown>;
   };
-  const blockedIds = new Set([...Object.keys(safety.reject || {}), ...Object.keys(safety.borderline || {})]);
+  const blockedIds = new Set([...Object.keys(safety.reject || {}), ...Object.keys(safety.borderline || {}), ...Object.keys(safety.userRemoved || {})]);
   const totalAccepted = Array.isArray(acceptedManifest) ? acceptedManifest.length : 0;
   const availableAudio = new Set(listFiles(VOICED_MEMES_AUDIO_DIR, ".wav").map((file) => file.replace(/\.wav$/, "")));
   const target = Array.isArray(acceptedManifest)

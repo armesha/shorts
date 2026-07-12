@@ -166,6 +166,8 @@ export const apiClient = {
       { sourceWeights },
     ),
   longVideos: (cacheBust?: number) => get<LongVideoCatalog>(`/long-videos${cacheBust ? `?t=${cacheBust}` : ""}`),
+  deleteClipDemo: (packId: string, itemId: string) =>
+    send<{ ok: boolean; itemId: string }>(`/clip-demos/packs/${encodeURIComponent(packId)}/items/${encodeURIComponent(itemId)}`, "DELETE"),
   adminLowDecks: () => get<LowDeckRow[]>("/admin/low-decks"),
   accounts: (scope?: "all") => get<Account[]>(`/accounts${scope === "all" ? "?scope=all" : ""}`),
   account: (id: number | string) => get<Account>(`/accounts/${id}`),

@@ -15,7 +15,7 @@ const progress = existsSync(progressPath) ? JSON.parse(readFileSync(progressPath
 const completed = progress.completed?.length ?? 0;
 const manifest = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, "utf8")) : [];
 const safety = existsSync(safetyPath) ? JSON.parse(readFileSync(safetyPath, "utf8")) : { reject: {}, borderline: {} };
-const blocked = new Set([...Object.keys(safety.reject || {}), ...Object.keys(safety.borderline || {})]);
+const blocked = new Set([...Object.keys(safety.reject || {}), ...Object.keys(safety.borderline || {}), ...Object.keys(safety.userRemoved || {})]);
 const target = Array.isArray(manifest)
   ? manifest.filter((item) => !blocked.has(String(item.id)) && existsSync(resolve(audioDir, `${item.id}.wav`))).length
   : 0;

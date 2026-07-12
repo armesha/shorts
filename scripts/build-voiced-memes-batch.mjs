@@ -19,8 +19,6 @@ mkdirSync(outDir, { recursive: true });
 mkdirSync(workDir, { recursive: true });
 
 const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-const safety = existsSync(safetyPath) ? JSON.parse(readFileSync(safetyPath, "utf8")) : { reject: {}, borderline: {} };
-const blocked = new Set([...Object.keys(safety.reject || {}), ...Object.keys(safety.borderline || {})]);
 const progress = existsSync(progressPath) ? JSON.parse(readFileSync(progressPath, "utf8")) : { completed: [], failed: [] };
 const completed = new Set(progress.completed || []);
 const music = spawnSync("bash", ["-lc", "find assets/audio/memes -maxdepth 1 -type f -name 'bed-*.mp3' | sort"], { encoding: "utf8" }).stdout.trim().split("\n").filter(Boolean);
@@ -31,7 +29,7 @@ let built = 0;
 try {
   for (let index = 0; index < manifest.length; index += 1) {
     const item = manifest[index];
-    if (blocked.has(item.id)) continue;
+    if (blockedIds().has(item.id)) continue;
     if (completed.has(item.id)) continue;
     if (limit > 0 && built >= limit) break;
     const wav = resolve(audioDir, `${item.id}.wav`);
@@ -90,4 +88,8 @@ function arg(name, fallback) { const i = process.argv.indexOf(`--${name}`); retu
 function titleFor(item) {
   const text = String(item.transcript || item.introComment || item.id).replace(/\s+/g, " ").trim();
   return text.length > 72 ? `${text.slice(0, 69).trimEnd()}…` : text;
+}
+function blockedIds() {
+  const safety = existsSync(safetyPath) ? JSON.parse(readFileSync(safetyPath, "utf8")) : { reject: {}, borderline: {}, userRemoved: {} };
+  return new Set([...Object.keys(safety.reject || {}), ...Object.keys(safety.borderline || {}), ...Object.keys(safety.userRemoved || {})]);
 }
