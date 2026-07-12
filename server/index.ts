@@ -21,6 +21,7 @@ import { hashPassword, isSuperAdminUser } from "./auth.ts";
 import { gracefulShutdown } from "./infra/shutdown.ts";
 import { attachGenQueueDb, drainQueue as genDrainQueue } from "./services/gen-queue.ts";
 import { ensureSuperAdminBootstrap } from "./services/super-admin-bootstrap.ts";
+import { startGeminiTtsLocalJobRunner } from "./services/gemini-tts-local-jobs.ts";
 
 // ---- Foundation singletons (built once, injected everywhere) ----
 import { makeAuthSession, getCookie, SESSION_COOKIE, setSessionCookie } from "./infra/auth-session.ts";
@@ -376,6 +377,10 @@ app
       db,
       log: (m) => app.log.info(m),
     });
+    const geminiTtsLocalJobs = startGeminiTtsLocalJobRunner({
+      log: (m) => app.log.info(m),
+    });
+    app.log.info(`[gemini-tts-local] очередь готова: ${geminiTtsLocalJobs.directories.inbox}`);
     metrics.startSampler(resolve(process.cwd(), base.outputDir));
 
     // ---- Graceful shutdown: drain in-flight render/upload, then close cleanly (SIGTERM/SIGINT) ----
@@ -391,6 +396,7 @@ app
           stopScheduler: () => {
             scheduler.stop();
             telegramDigestScheduler.stop();
+            geminiTtsLocalJobs.stop();
           },
           drainQueue: () => genDrainQueue(),
           activeCounts: () => metrics.activeCounts(),
