@@ -1059,6 +1059,7 @@ export interface ChannelThemeBlockAccount {
   schedule: string[];
   avatar?: string | null;
   ytChannelId?: string | null;
+  views: number | null;
   queued: number;
   effectiveQueued?: number;
   effectiveRunwayDays?: number | null;
@@ -1101,6 +1102,17 @@ export interface ChannelThemeBlock {
   totalQueued: number;
   totalShortAvailable: number;
   totalPostsPerDay: number;
+  videos: Array<{
+    id: number;
+    accountId: number;
+    channelName: string;
+    channelLang: string;
+    deck: string;
+    title: string;
+    imageRel: string | null;
+    videoRel: string;
+    createdAt: string;
+  }>;
 }
 
 export interface ChannelThemeBlocksResponse {
