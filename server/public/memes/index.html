@@ -60,9 +60,14 @@
     background: var(--card); border: 1px solid #2f3546; color: var(--text);
     padding: 7px 12px; border-radius: 10px; cursor: pointer;
   }
+  .selection-bar input {
+    width: 96px; background: var(--card); border: 1px solid #2f3546; color: var(--text);
+    padding: 7px 10px; border-radius: 10px; outline: none;
+  }
+  .selection-bar input:focus { border-color: var(--accent); }
   .selection-bar button:hover:not(:disabled) { border-color: var(--accent); }
   .selection-bar button:disabled { opacity: 0.45; cursor: default; }
-  #download-delete { display: none; border-color: #ef4444; color: #fecaca; }
+  #delete-selected, #download-delete { display: none; border-color: #ef4444; color: #fecaca; }
   #selected-count { color: var(--muted); font-size: 12px; min-width: 82px; }
 
   #viewport { max-width: 1600px; margin: 0 auto; padding: 16px; }
@@ -134,9 +139,12 @@
   <div class="filter-row"><span class="filter-label">Язык</span><div class="chips" id="language-chips"></div></div>
   <div class="selection-bar">
     <button id="select-visible" type="button">Выбрать все показанные</button>
+    <input id="select-count" type="number" min="1" step="1" inputmode="numeric" placeholder="Сколько" aria-label="Сколько первых мемов выбрать">
+    <button id="select-count-button" type="button">Выбрать</button>
     <button id="clear-selection" type="button" disabled>Снять выбор</button>
     <span id="selected-count">Выбрано: 0</span>
     <button id="download-selected" type="button" disabled>Скачать</button>
+    <button id="delete-selected" type="button" disabled>Удалить</button>
     <button id="download-delete" type="button" disabled>Скачать и удалить</button>
   </div>
 </header>
@@ -169,10 +177,14 @@
   const sortEl = document.getElementById('sort');
   const selectedCountEl = document.getElementById('selected-count');
   const selectVisibleButton = document.getElementById('select-visible');
+  const selectCountInput = document.getElementById('select-count');
+  const selectCountButton = document.getElementById('select-count-button');
   const clearSelectionButton = document.getElementById('clear-selection');
   const downloadButton = document.getElementById('download-selected');
+  const deleteButton = document.getElementById('delete-selected');
   const downloadDeleteButton = document.getElementById('download-delete');
   const selectedIds = new Set();
+  let lastSelectedId = null;
 
   // --- фильтры ---
   let activeCat = null, activeLang = null, query = '', filtered = ALL.slice();
@@ -233,8 +245,27 @@
     selectedCountEl.textContent = `Выбрано: ${selectedIds.size}`;
     clearSelectionButton.disabled = selectedIds.size === 0;
     downloadButton.disabled = selectedIds.size === 0;
+    deleteButton.disabled = selectedIds.size === 0;
     downloadDeleteButton.disabled = selectedIds.size === 0;
     selectVisibleButton.disabled = filtered.length === 0;
+    const requestedCount = Number.parseInt(selectCountInput.value, 10);
+    selectCountButton.disabled = filtered.length === 0 || !Number.isFinite(requestedCount) || requestedCount < 1;
+  }
+
+  function updateRangeSelection(index, selected) {
+    const previousIndex = filtered.findIndex(meme => meme.id === lastSelectedId);
+    if (previousIndex >= 0) {
+      const from = Math.min(previousIndex, index);
+      const to = Math.max(previousIndex, index);
+      for (let rangeIndex = from; rangeIndex <= to; rangeIndex++) {
+        if (selected) selectedIds.add(filtered[rangeIndex].id);
+        else selectedIds.delete(filtered[rangeIndex].id);
+      }
+    } else if (selected) selectedIds.add(filtered[index].id);
+    else selectedIds.delete(filtered[index].id);
+    lastSelectedId = filtered[index].id;
+    updateSelectionBar();
+    layout(true);
   }
 
   // --- виртуальный скролл (грид: рендерим только видимые ряды) ---
@@ -271,6 +302,8 @@
       el.style.cssText = `top:${row * (CARD_H + GAP)}px;left:${col * (colW + GAP)}px;width:${colW}px;height:${CARD_H}px`;
       const img = document.createElement('img');
       img.loading = 'lazy';
+      img.decoding = 'async';
+      img.fetchPriority = 'low';
       img.src = m.thumb;
       img.alt = m.title;
       img.onerror = () => {
@@ -287,14 +320,26 @@
       checkbox.className = 'card-select';
       checkbox.checked = selectedIds.has(m.id);
       checkbox.setAttribute('aria-label', `Выбрать ${m.id}`);
-      checkbox.onclick = event => event.stopPropagation();
-      checkbox.onchange = () => {
+      checkbox.onclick = event => {
+        event.stopPropagation();
+        if (event.shiftKey) {
+          updateRangeSelection(i, checkbox.checked);
+          return;
+        }
         if (checkbox.checked) selectedIds.add(m.id); else selectedIds.delete(m.id);
+        lastSelectedId = m.id;
         el.classList.toggle('selected', checkbox.checked);
         updateSelectionBar();
       };
       el.append(checkbox, img, body);
-      el.onclick = () => openLb(i);
+      el.onclick = event => {
+        if (event.shiftKey) {
+          event.preventDefault();
+          updateRangeSelection(i, true);
+          return;
+        }
+        openLb(i);
+      };
       spacer.appendChild(el);
       rendered.set(i, el);
     }
@@ -340,6 +385,7 @@
     .then(user => {
       canDelete = Boolean(user?.isSuperAdmin);
       lbDelete.style.display = canDelete ? 'block' : 'none';
+      deleteButton.style.display = canDelete ? 'block' : 'none';
       downloadDeleteButton.style.display = canDelete ? 'block' : 'none';
     })
     .catch(() => {});
@@ -364,11 +410,26 @@
 
   selectVisibleButton.onclick = () => {
     for (const meme of filtered) selectedIds.add(meme.id);
+    lastSelectedId = filtered.at(-1)?.id ?? lastSelectedId;
+    updateSelectionBar();
+    layout(true);
+  };
+  selectCountInput.oninput = updateSelectionBar;
+  selectCountInput.onkeydown = event => {
+    if (event.key === 'Enter' && !selectCountButton.disabled) selectCountButton.click();
+  };
+  selectCountButton.onclick = () => {
+    const count = Math.min(filtered.length, Number.parseInt(selectCountInput.value, 10));
+    if (!Number.isFinite(count) || count < 1) return;
+    selectedIds.clear();
+    for (const meme of filtered.slice(0, count)) selectedIds.add(meme.id);
+    lastSelectedId = filtered[count - 1]?.id ?? null;
     updateSelectionBar();
     layout(true);
   };
   clearSelectionButton.onclick = () => {
     selectedIds.clear();
+    lastSelectedId = null;
     updateSelectionBar();
     layout(true);
   };
@@ -399,6 +460,23 @@
     try { await downloadSelected(); }
     catch (error) { alert(error instanceof Error ? error.message : 'Не удалось скачать мемы'); }
     finally { updateSelectionBar(); }
+  };
+
+  deleteButton.onclick = async () => {
+    if (!canDelete || !selectedIds.size || !confirm(`Окончательно удалить ${selectedIds.size} шт. из локальной и публичной Мемотеки?`)) return;
+    deleteButton.disabled = true;
+    try {
+      const response = await fetch('/api/memes/delete', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids: [...selectedIds] }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Не удалось удалить мемы');
+      location.reload();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Не удалось удалить мемы');
+    } finally {
+      updateSelectionBar();
+    }
   };
 
   downloadDeleteButton.onclick = async () => {
