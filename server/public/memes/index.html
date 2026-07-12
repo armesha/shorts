@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <base href="/memes/">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="data:,">
 <title>Мемотека — архив мемов</title>
 <style>
   :root {
@@ -45,9 +44,9 @@
   }
   .source-note { color: var(--muted); font-size: 12px; text-decoration: none; margin-left: auto; }
   .source-note:hover { color: var(--accent); }
-  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; max-width: 1600px; margin-inline: auto; }
-  .chips + .chips { margin-top: 8px; }
-  .chips-label { color: var(--muted); font-size: 11px; align-self: center; padding: 0 2px; }
+  .filter-row { display: flex; align-items: flex-start; gap: 10px; max-width: 1600px; margin: 10px auto 0; }
+  .filter-label { color: var(--muted); font-size: 12px; line-height: 32px; min-width: 42px; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
   .chip {
     background: var(--card); border: 1px solid #2f3546; color: var(--text);
     padding: 6px 14px; border-radius: 16px; font-size: 13px; cursor: pointer;
@@ -112,10 +111,10 @@
       <option value="random">Случайный порядок</option>
       <option value="title">По алфавиту</option>
     </select>
-    <a class="source-note" href="sources.json" target="_blank" rel="noopener">Источники и лицензии ↗</a>
+    <span class="source-note">Личная мемотека · источники в карточках</span>
   </div>
-  <div class="chips" id="chips"></div>
-  <div class="chips" id="layout-chips"></div>
+  <div class="filter-row"><span class="filter-label">Тема</span><div class="chips" id="chips"></div></div>
+  <div class="filter-row"><span class="filter-label">Язык</span><div class="chips" id="language-chips"></div></div>
 </header>
 
 <div id="viewport">
@@ -132,62 +131,60 @@
   <button class="lb-nav" id="lb-next" aria-label="Следующий мем">›</button>
 </div>
 
-<script src="memes.js?v=20260710-nasa-top-text"></script>
+<script src="memes.js?v=20260712-language-filter"></script>
 <script>
 (() => {
   const ALL = (window.MEMES || []).map((m, i) => ({ ...m, _i: i }));
   const spacer = document.getElementById('spacer');
   const chipsEl = document.getElementById('chips');
-  const layoutChipsEl = document.getElementById('layout-chips');
+  const languageChipsEl = document.getElementById('language-chips');
   const countEl = document.getElementById('count');
   const emptyEl = document.getElementById('empty');
   const searchEl = document.getElementById('search');
   const sortEl = document.getElementById('sort');
 
   // --- фильтры ---
-  let activeCat = null, activeLayout = null, query = '', filtered = ALL.slice();
+  let activeCat = null, activeLang = null, query = '', filtered = ALL.slice();
 
   const cats = {};
   for (const m of ALL) cats[m.cat] = (cats[m.cat] || 0) + 1;
+  const languageNames = {
+    ar: 'Арабский', de: 'Немецкий', en: 'Английский', es: 'Испанский',
+    fr: 'Французский', it: 'Итальянский', ja: 'Японский', pl: 'Польский',
+    pt: 'Португальский', ro: 'Румынский', ru: 'Русский',
+  };
+  const languageOf = m => m.lang || (m.cat === 'Английские мемы' ? 'en' : 'ru');
+  const languages = {};
+  for (const m of ALL) {
+    const lang = languageOf(m);
+    languages[lang] = (languages[lang] || 0) + 1;
+  }
 
-  function makeChip(label, n, cat) {
+  function makeChip(label, n, value, active, onSelect) {
     const b = document.createElement('button');
-    b.className = 'chip' + (cat === activeCat && !activeLayout ? ' active' : '');
+    b.className = 'chip' + (value === active ? ' active' : '');
     b.innerHTML = `${label} <span class="n">${n}</span>`;
-    b.onclick = () => { activeCat = cat; activeLayout = null; renderChips(); renderLayoutChips(); applyFilters(); };
+    b.onclick = () => { onSelect(value); renderChips(); applyFilters(); };
     return b;
   }
   function renderChips() {
     chipsEl.innerHTML = '';
-    chipsEl.appendChild(makeChip('Все', ALL.length, null));
+    chipsEl.appendChild(makeChip('Все', ALL.length, null, activeCat, value => { activeCat = value; }));
     for (const [c, n] of Object.entries(cats).sort((a, b) => b[1] - a[1]))
-      chipsEl.appendChild(makeChip(c, n, c));
-  }
+      chipsEl.appendChild(makeChip(c, n, c, activeCat, value => { activeCat = value; }));
 
-  function renderLayoutChips() {
-    layoutChipsEl.innerHTML = '';
-    const layouts = [
-      ['Русские · текст сверху', 'top-text-ru'],
-      ['Английские · текст сверху', 'top-text-en'],
-    ];
-    layoutChipsEl.appendChild(Object.assign(document.createElement('span'), {
-      className: 'chips-label', textContent: 'Формат:'
-    }));
-    for (const [label, key] of layouts) {
-      const count = ALL.filter(m => m.layout === key).length;
-      const b = document.createElement('button');
-      b.className = 'chip' + (key === activeLayout ? ' active' : '');
-      b.innerHTML = `${label} <span class="n">${count}</span>`;
-      b.onclick = () => { activeLayout = key; activeCat = null; renderChips(); renderLayoutChips(); applyFilters(); };
-      layoutChipsEl.appendChild(b);
-    }
+    languageChipsEl.innerHTML = '';
+    languageChipsEl.appendChild(makeChip('Все', ALL.length, null, activeLang, value => { activeLang = value; }));
+    for (const [lang, n] of Object.entries(languages).sort(([a], [b]) =>
+      (languageNames[a] || a).localeCompare(languageNames[b] || b, 'ru')))
+      languageChipsEl.appendChild(makeChip(languageNames[lang] || lang, n, lang, activeLang, value => { activeLang = value; }));
   }
 
   function applyFilters() {
     const q = query.trim().toLowerCase();
     filtered = ALL.filter(m =>
       (!activeCat || m.cat === activeCat) &&
-      (!activeLayout || m.layout === activeLayout) &&
+      (!activeLang || languageOf(m) === activeLang) &&
       (!q || m.title.toLowerCase().includes(q)));
     const s = sortEl.value;
     if (s === 'source') filtered.sort((a, b) => a._i - b._i);
@@ -305,7 +302,6 @@
   sortEl.addEventListener('change', applyFilters);
 
   renderChips();
-  renderLayoutChips();
   applyFilters();
 })();
 </script>
