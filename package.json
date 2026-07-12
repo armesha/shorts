@@ -20,6 +20,7 @@
     "audio:lipsync:check": "node --import tsx scripts/check-russian-lipsync.mjs",
     "voiced-memes:status": "node scripts/voiced-memes-render-status.mjs",
     "voiced-memes:safety-clean": "node scripts/clean-voiced-memes-safety.mjs",
+    "voiced-memes:reset-render": "node scripts/reset-voiced-memes-render.mjs",
     "web": "npm --prefix web run dev",
     "web:build": "npm --prefix web run build",
     "creator:web:build": "npm --prefix web run build:creator",
