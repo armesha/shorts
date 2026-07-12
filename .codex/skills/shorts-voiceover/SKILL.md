@@ -19,21 +19,34 @@ description: Generate or direct voiceover for user-provided memes and reaction S
 
 ## Audio-only meme workflow
 
-1. Transcribe the visible meme text exactly. Preserve wording, punctuation, slang, and profanity.
-2. Decide whether a short visual comment helps:
+1. Inspect every meme image visually. Do not treat OCR or extracted text as the primary analysis:
+   understand the picture, layout, characters, labels, facial expressions, and visible joke together.
+   OCR may help with transcription, but a vision-capable agent must verify it against the image.
+2. Transcribe the visible meme text exactly. Preserve wording, punctuation, slang, and profanity.
+3. Decide whether a short visual comment helps:
    - for a very short meme, allow one brief conversational observation about what is visibly funny;
    - for a long or self-sufficient meme, add no commentary;
    - never explain the joke or invent a new plot.
-3. Analyze setup, escalation, pause, punchline, and emotional turn.
-4. Pick no more than two compatible acting reactions: dry delivery, smile in the voice, short
+4. Analyze setup, escalation, pause, punchline, and emotional turn using both image and text.
+5. Pick no more than two compatible acting reactions: dry delivery, smile in the voice, short
    chuckle, disbelieving exhale, tired sigh, surprised inhale, skeptical pause, awkward silence,
    brief whisper, rising disbelief, contained excitement, mock seriousness, gentle sympathy, or a
    sharper final phrase. Do not force laughter into every meme.
-5. Use a natural adult Russian female delivery when the user asks for the established girl narrator.
+6. Use a natural adult Russian female delivery when the user asks for the established girl narrator.
    Keep the original meme text unchanged after any approved intro comment.
-6. Generate one WAV per meme. Save final audio under `output/speech/` with stable descriptive names.
-7. Validate each file with `ffprobe`: audio stream exists, duration is positive, and the file opens.
+7. Generate one WAV per meme. Save final audio under `output/speech/` with stable descriptive names.
+8. Validate each file with `ffprobe`: audio stream exists, duration is positive, and the file opens.
    Return absolute clickable paths and briefly state the chosen delivery.
+
+## Large image batches
+
+- Split a large archive into visual-review batches of about 50 images per vision-capable subagent.
+- Each subagent must open and inspect every assigned image, not merely run OCR or analyze filenames.
+- For every image, return: exact transcript, concise visual description, whether an intro comment is
+  useful, the approved comment if any, acting direction, and any rejection reason.
+- Keep a stable source filename/id so results can be merged without reordering or mismatching audio.
+- The main agent reviews the merged decisions for consistency before submitting the Gemini Batch job.
+- Do not estimate final quality or choose reactions from text length alone.
 
 ## Runtime pattern
 
