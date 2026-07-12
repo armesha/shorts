@@ -164,7 +164,7 @@
   <button class="lb-nav" id="lb-next" aria-label="Следующий мем">›</button>
 </div>
 
-<script src="memes.js?v=20260712-selection-delete"></script>
+<script src="memes.js?v=20260712-language-audit"></script>
 <script>
 (() => {
   const ALL = (window.MEMES || []).map((m, i) => ({ ...m, _i: i }));
@@ -194,9 +194,9 @@
   const languageNames = {
     ar: 'Арабский', de: 'Немецкий', en: 'Английский', es: 'Испанский',
     fr: 'Французский', it: 'Итальянский', ja: 'Японский', pl: 'Польский',
-    pt: 'Португальский', ro: 'Румынский', ru: 'Русский',
+    pt: 'Португальский', ro: 'Румынский', ru: 'Русский', und: 'Не определён',
   };
-  const languageOf = m => m.lang || (m.cat === 'Английские мемы' ? 'en' : 'ru');
+  const languageOf = m => m.lang || 'und';
   const languages = {};
   for (const m of ALL) {
     const lang = languageOf(m);
