@@ -1,0 +1,17 @@
+{
+  "pack": "voiced-memes-ru",
+  "title": "Озвучка мемов",
+  "items": [
+    {
+      "id": "vmru_001_every_ten_seconds",
+      "visualSource": "User-provided meme image in this conversation",
+      "visualRights": "Provided by the user; independent copyright status not verified. Keep this pack admin-only unless rights are confirmed.",
+      "voice": "Gemini TTS, Gacrux voice, character direction: Витёк",
+      "avatar": "Sakurada Fumiriya official VRoid model",
+      "avatarSource": "https://vroid.pixiv.help/hc/en-us/articles/360014788554-Sakurada-Fumiriya",
+      "avatarLicense": "CC0 1.0",
+      "assembledAt": "2026-07-12",
+      "notes": "Exact user-provided meme text; no added joke copy. Final laugh expression aligned to the actual laugh onset in the approved WAV."
+    }
+  ]
+}
