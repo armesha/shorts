@@ -1,4 +1,7 @@
 import type { FastifyInstance } from "fastify";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { resolve } from "node:path";
+import { spawnSync } from "node:child_process";
 
 import { DECKS, isPackDeckId, MANUAL_VIDEO_DECK } from "../../src/anecdotes/decks.ts";
 import { listPackVisibilitySummaries } from "../../src/packs/store.ts";
@@ -15,6 +18,58 @@ import { visibleLibraryDeckIds } from "./videos.ts";
 type QueueQuery = { scope?: string };
 const QUEUE_OVERVIEW_TTL_MS = 15_000;
 const queueOverviewCache = new Map<string, { expiresAt: number; value: unknown }>();
+const VOICED_MEMES_DIR = resolve(process.cwd(), "tmp/memoteka-267-videos");
+const VOICED_MEMES_WORK_DIR = resolve(process.cwd(), "tmp/memoteka-267-video-work");
+const VOICED_MEMES_AUDIO_DIR = resolve(process.cwd(), "output/speech/memoteka-267-batch/wav");
+const VOICED_MEMES_MANIFEST = resolve(process.cwd(), "output/speech/memoteka-267-batch/manifest.json");
+
+function voicedMemesRenderStatus() {
+  const progressPath = resolve(VOICED_MEMES_DIR, "progress.json");
+  const progress = readJsonSafe(progressPath, { completed: [], failed: [] }) as { completed?: string[]; failed?: unknown[] };
+  const completed = Array.isArray(progress.completed) ? progress.completed.length : 0;
+  const failed = Array.isArray(progress.failed) ? progress.failed.length : 0;
+  const totalAccepted = Array.isArray(readJsonSafe(VOICED_MEMES_MANIFEST, []))
+    ? (readJsonSafe(VOICED_MEMES_MANIFEST, []) as unknown[]).length
+    : 0;
+  const target = listFiles(VOICED_MEMES_AUDIO_DIR, ".wav").length;
+  const videos = listFiles(VOICED_MEMES_DIR, ".mp4").map((file) => statSync(resolve(VOICED_MEMES_DIR, file)));
+  const current = existsSync(VOICED_MEMES_WORK_DIR)
+    ? readdirSync(VOICED_MEMES_WORK_DIR).find((name) => name.startsWith("frames-"))?.slice(7) ?? null
+    : null;
+  const mtimes = videos.map((file) => file.mtimeMs).sort((a, b) => a - b);
+  const avgSecondsPerVideo = mtimes.length > 1 ? (mtimes[mtimes.length - 1] - mtimes[0]) / 1000 / (mtimes.length - 1) : null;
+  const remaining = Math.max(0, target - completed);
+  const service = spawnSync("systemctl", ["--user", "is-active", "shorts-voiced-memes-render.service"], {
+    encoding: "utf8",
+    timeout: 2_000,
+    env: { ...process.env, XDG_RUNTIME_DIR: process.env.XDG_RUNTIME_DIR || `/run/user/${process.getuid?.() ?? 1000}` },
+  });
+  const active = service.stdout.trim() === "active";
+  return {
+    id: "voiced-memes-ru",
+    title: "Озвучка мемов",
+    state: active ? "running" : remaining === 0 && target > 0 ? "done" : "stopped",
+    completed,
+    target,
+    totalAccepted,
+    blocked: Math.max(0, totalAccepted - target),
+    failed,
+    currentId: current,
+    percent: target ? Math.min(100, Math.round((completed / target) * 1000) / 10) : 0,
+    avgSecondsPerVideo: avgSecondsPerVideo == null ? null : Math.round(avgSecondsPerVideo),
+    etaSeconds: avgSecondsPerVideo == null ? null : Math.round(avgSecondsPerVideo * remaining),
+    startedAt: mtimes.length ? new Date(mtimes[0]).toISOString() : null,
+    updatedAt: existsSync(progressPath) ? statSync(progressPath).mtime.toISOString() : null,
+  };
+}
+
+function readJsonSafe(path: string, fallback: unknown): unknown {
+  try { return JSON.parse(readFileSync(path, "utf8")); } catch { return fallback; }
+}
+
+function listFiles(dir: string, suffix: string): string[] {
+  try { return readdirSync(dir).filter((file) => file.endsWith(suffix)); } catch { return []; }
+}
 
 const genQueueRunnerMode = (): "embedded" | "external" =>
   process.env.GEN_QUEUE_RUNNER === "0" || process.env.GEN_QUEUE_RUNNER === "external" ? "external" : "embedded";
@@ -188,6 +243,7 @@ export function registerQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDep
 
       return {
         worker: publicGenWorkerStatus(db, { mode: genQueueRunnerMode() }),
+        voicedMemesRender: voicedMemesRenderStatus(),
         generationJobs,
         channelQueues,
         upcomingSlots: nextSlots(accounts, userById, sourceDecksByAccount, packNames),

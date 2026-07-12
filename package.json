@@ -18,6 +18,7 @@
     "creator:smoke": "node --experimental-sqlite scripts/smoke-creator.mjs",
     "audio:lipsync:setup": "node scripts/setup-russian-lipsync.mjs",
     "audio:lipsync:check": "node --import tsx scripts/check-russian-lipsync.mjs",
+    "voiced-memes:status": "node scripts/voiced-memes-render-status.mjs",
     "web": "npm --prefix web run dev",
     "web:build": "npm --prefix web run build",
     "creator:web:build": "npm --prefix web run build:creator",

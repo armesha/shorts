@@ -1217,6 +1217,22 @@ export interface QueueSlot {
 
 export interface QueueOverview {
   worker: GenWorkerStatus;
+  voicedMemesRender: {
+    id: string;
+    title: string;
+    state: "running" | "done" | "stopped";
+    completed: number;
+    target: number;
+    totalAccepted: number;
+    blocked: number;
+    failed: number;
+    currentId: string | null;
+    percent: number;
+    avgSecondsPerVideo: number | null;
+    etaSeconds: number | null;
+    startedAt: string | null;
+    updatedAt: string | null;
+  };
   generationJobs: QueueJob[];
   channelQueues: QueueChannel[];
   upcomingSlots: QueueSlot[];

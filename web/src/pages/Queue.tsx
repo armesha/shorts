@@ -35,6 +35,15 @@ function formatAgeMs(ageMs: number | null): string {
   return `${min}m`;
 }
 
+function formatDurationSeconds(value: number | null): string {
+  if (value == null) return "рассчитывается";
+  const minutes = Math.max(0, Math.round(value / 60));
+  if (minutes < 60) return `≈ ${minutes} мин`;
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return `≈ ${hours} ч ${rest} мин`;
+}
+
 export default function QueuePage() {
   const { t } = useT();
   const { user } = useAuth();
@@ -168,6 +177,37 @@ export default function QueuePage() {
           </div>
         </div>
       </section>
+
+      {data?.voicedMemesRender && (
+        <section className="overflow-hidden rounded-3xl border border-primary/25 bg-base-100 shadow-sm">
+          <div className="flex flex-col gap-5 p-5 lg:flex-row lg:items-center lg:justify-between">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-xl font-black">Озвучка мемов</h2>
+                <span className={`badge ${data.voicedMemesRender.state === "running" ? "badge-success" : data.voicedMemesRender.state === "done" ? "badge-primary" : "badge-warning"}`}>
+                  {data.voicedMemesRender.state === "running" ? "Рендер идёт" : data.voicedMemesRender.state === "done" ? "Готово" : "Остановлен"}
+                </span>
+                {data.voicedMemesRender.currentId && <span className="badge badge-ghost">Сейчас: {data.voicedMemesRender.currentId}</span>}
+              </div>
+              <div className="mt-3 flex items-end justify-between gap-3 text-sm">
+                <span className="font-semibold">{data.voicedMemesRender.completed} из {data.voicedMemesRender.target} Shorts</span>
+                <span className="text-base-content/55">{data.voicedMemesRender.percent}%</span>
+              </div>
+              <progress className="progress progress-primary mt-2 h-3 w-full" max={100} value={data.voicedMemesRender.percent} />
+            </div>
+            <div className="grid min-w-full grid-cols-2 gap-2 sm:grid-cols-4 lg:min-w-[520px]">
+              <RenderMetric label="Осталось" value={String(Math.max(0, data.voicedMemesRender.target - data.voicedMemesRender.completed))} />
+              <RenderMetric label="Примерно ждать" value={formatDurationSeconds(data.voicedMemesRender.etaSeconds)} />
+              <RenderMetric label="На один ролик" value={data.voicedMemesRender.avgSecondsPerVideo == null ? "—" : `${data.voicedMemesRender.avgSecondsPerVideo} с`} />
+              <RenderMetric label="Исключено" value={String(data.voicedMemesRender.blocked)} hint={data.voicedMemesRender.failed ? `Ошибок: ${data.voicedMemesRender.failed}` : "Ошибок нет"} />
+            </div>
+          </div>
+          <div className="border-t border-base-300 bg-base-200/55 px-5 py-2 text-xs text-base-content/50">
+            Автообновление каждые 15 секунд
+            {data.voicedMemesRender.updatedAt ? ` · обновлено ${new Date(data.voicedMemesRender.updatedAt).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false })}` : ""}
+          </div>
+        </section>
+      )}
 
       <section className={`grid gap-4 ${activeJobs.length ? "xl:grid-cols-[1.1fr_0.9fr]" : ""}`}>
         {!!activeJobs.length && (
@@ -323,6 +363,16 @@ export default function QueuePage() {
           </div>
         </section>
       )}
+    </div>
+  );
+}
+
+function RenderMetric({ label, value, hint }: { label: string; value: string; hint?: string }) {
+  return (
+    <div className="rounded-2xl bg-base-200 p-3">
+      <div className="text-[11px] text-base-content/50">{label}</div>
+      <div className="mt-1 text-lg font-black">{value}</div>
+      {hint && <div className="text-[10px] text-base-content/45">{hint}</div>}
     </div>
   );
 }
