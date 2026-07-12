@@ -497,6 +497,7 @@ export function sourceGapsForScheduledDecks(
 
 function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockContext, blockId?: string) {
   const ownerId = account.userId ?? 0;
+  const views = db.latestSnapshot(account.id)?.views ?? null;
   const sourceDecks = cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account));
   const queuedByDeck = ctx?.queuedByAccountDeck.get(account.id) ?? videosByDeck(db.listVideos(account.id));
   const decks = deckSummaries({ db, deps, ctx, blockId, ownerId, accountId: account.id, deckIds: sourceDecks, queuedByDeck });
@@ -522,6 +523,7 @@ function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockCo
     schedule: account.schedule,
     avatar: account.avatar,
     ytChannelId: account.ytChannelId,
+    views,
     queued: ctx?.queuedByAccount.get(account.id) ?? db.listVideos(account.id).length,
     effectiveQueued: queuedCoverage.effective,
     effectiveRunwayDays: queuedCoverage.runwayDays,

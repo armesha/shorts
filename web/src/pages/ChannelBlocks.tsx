@@ -579,9 +579,13 @@ function BlockDetail({
       return (cell?.accounts.length ?? 0) > 0;
     })
     .sort((a, b) => {
-      const ac = block.cells.find((candidate) => candidate.lang === a.code)?.accounts.length ?? 0;
-      const bc = block.cells.find((candidate) => candidate.lang === b.code)?.accounts.length ?? 0;
-      return bc - ac || a.label.localeCompare(b.label);
+      const aCell = block.cells.find((candidate) => candidate.lang === a.code);
+      const bCell = block.cells.find((candidate) => candidate.lang === b.code);
+      const aViews = aCell ? aCell.accounts.reduce((sum, account) => sum + (account.views ?? 0), 0) : 0;
+      const bViews = bCell ? bCell.accounts.reduce((sum, account) => sum + (account.views ?? 0), 0) : 0;
+      const aHasViews = aCell?.accounts.some((account) => account.views != null) ?? false;
+      const bHasViews = bCell?.accounts.some((account) => account.views != null) ?? false;
+      return Number(bHasViews) - Number(aHasViews) || bViews - aViews || a.label.localeCompare(b.label);
     });
   const addableLangs = languages.filter((lang) => {
     const cell = block.cells.find((candidate) => candidate.lang === lang.code);
@@ -751,9 +755,11 @@ function BlockDetail({
                     </button>
                   </div>
                   <div className={languageChannelsGridClass(cell.accounts.length)}>
-                    {cell.accounts.map((account) => (
+                    {[...cell.accounts]
+                      .sort((a, b) => Number(b.views != null) - Number(a.views != null) || (b.views ?? 0) - (a.views ?? 0) || a.channelName.localeCompare(b.channelName))
+                      .map((account) => (
                       <ChannelCell key={account.id} account={account} t={t} />
-                    ))}
+                      ))}
                   </div>
                 </div>
               );

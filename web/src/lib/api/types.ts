@@ -1059,6 +1059,7 @@ export interface ChannelThemeBlockAccount {
   schedule: string[];
   avatar?: string | null;
   ytChannelId?: string | null;
+  views: number | null;
   queued: number;
   effectiveQueued?: number;
   effectiveRunwayDays?: number | null;
