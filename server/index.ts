@@ -359,7 +359,7 @@ registerSuperAdminChannelBlockRoutes(app, db, deps);
 registerExamplesRoutes(app, db, deps);
 registerAudioRoutes(app, db, deps);
 registerCarSeatBookingRoutes(app, db);
-registerMemesRoutes(app);
+registerMemesRoutes(app, deps);
 
 app
   .listen({ port: base.port, host: "0.0.0.0" })

@@ -55,6 +55,15 @@
   .chip:hover { border-color: var(--accent); }
   .chip.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
   .chip .n { opacity: 0.6; font-size: 11px; }
+  .selection-bar { display: flex; align-items: center; gap: 8px; max-width: 1600px; margin: 10px auto 0; flex-wrap: wrap; }
+  .selection-bar button {
+    background: var(--card); border: 1px solid #2f3546; color: var(--text);
+    padding: 7px 12px; border-radius: 10px; cursor: pointer;
+  }
+  .selection-bar button:hover:not(:disabled) { border-color: var(--accent); }
+  .selection-bar button:disabled { opacity: 0.45; cursor: default; }
+  #download-delete { display: none; border-color: #ef4444; color: #fecaca; }
+  #selected-count { color: var(--muted); font-size: 12px; min-width: 82px; }
 
   #viewport { max-width: 1600px; margin: 0 auto; padding: 16px; }
   #spacer { position: relative; }
@@ -66,6 +75,8 @@
     transition: transform 0.12s, border-color 0.12s;
   }
   .card:hover { transform: translateY(-3px); border-color: var(--accent); }
+  .card.selected { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent); }
+  .card-select { position: absolute; z-index: 2; top: 10px; left: 10px; width: 22px; height: 22px; accent-color: var(--accent); }
   .card img {
     width: 100%; flex: 1; object-fit: cover; min-height: 0;
     background: #171a22; display: block;
@@ -91,6 +102,12 @@
   #lb-title { margin-top: 14px; font-size: 16px; text-align: center; max-width: 800px; }
   #lb-info { margin-top: 6px; font-size: 13px; color: var(--muted); }
   #lb-info a { color: var(--accent); text-decoration: none; }
+  #lb-delete {
+    display: none; margin-top: 14px; padding: 8px 14px; border-radius: 10px;
+    border: 1px solid #ef4444; background: #35191d; color: #fecaca; cursor: pointer;
+  }
+  #lb-delete:hover { background: #4b1d22; }
+  #lb-delete:disabled { opacity: 0.6; cursor: wait; }
   .lb-nav {
     position: fixed; top: 50%; transform: translateY(-50%);
     background: var(--card); border: 1px solid #2f3546; color: var(--text);
@@ -115,6 +132,13 @@
   </div>
   <div class="filter-row"><span class="filter-label">Тема</span><div class="chips" id="chips"></div></div>
   <div class="filter-row"><span class="filter-label">Язык</span><div class="chips" id="language-chips"></div></div>
+  <div class="selection-bar">
+    <button id="select-visible" type="button">Выбрать все показанные</button>
+    <button id="clear-selection" type="button" disabled>Снять выбор</button>
+    <span id="selected-count">Выбрано: 0</span>
+    <button id="download-selected" type="button" disabled>Скачать</button>
+    <button id="download-delete" type="button" disabled>Скачать и удалить</button>
+  </div>
 </header>
 
 <div id="viewport">
@@ -128,10 +152,11 @@
   <img id="lb-img" alt="">
   <div id="lb-title"></div>
   <div id="lb-info"></div>
+  <button id="lb-delete" type="button">Удалить мем</button>
   <button class="lb-nav" id="lb-next" aria-label="Следующий мем">›</button>
 </div>
 
-<script src="memes.js?v=20260712-language-filter"></script>
+<script src="memes.js?v=20260712-selection-delete"></script>
 <script>
 (() => {
   const ALL = (window.MEMES || []).map((m, i) => ({ ...m, _i: i }));
@@ -142,6 +167,12 @@
   const emptyEl = document.getElementById('empty');
   const searchEl = document.getElementById('search');
   const sortEl = document.getElementById('sort');
+  const selectedCountEl = document.getElementById('selected-count');
+  const selectVisibleButton = document.getElementById('select-visible');
+  const clearSelectionButton = document.getElementById('clear-selection');
+  const downloadButton = document.getElementById('download-selected');
+  const downloadDeleteButton = document.getElementById('download-delete');
+  const selectedIds = new Set();
 
   // --- фильтры ---
   let activeCat = null, activeLang = null, query = '', filtered = ALL.slice();
@@ -194,7 +225,16 @@
     }
     countEl.textContent = `— ${filtered.length} шт.`;
     emptyEl.style.display = filtered.length ? 'none' : 'block';
+    updateSelectionBar();
     layout(true);
+  }
+
+  function updateSelectionBar() {
+    selectedCountEl.textContent = `Выбрано: ${selectedIds.size}`;
+    clearSelectionButton.disabled = selectedIds.size === 0;
+    downloadButton.disabled = selectedIds.size === 0;
+    downloadDeleteButton.disabled = selectedIds.size === 0;
+    selectVisibleButton.disabled = filtered.length === 0;
   }
 
   // --- виртуальный скролл (грид: рендерим только видимые ряды) ---
@@ -226,7 +266,7 @@
       const m = filtered[i];
       if (!m) continue;
       const el = document.createElement('div');
-      el.className = 'card';
+      el.className = 'card' + (selectedIds.has(m.id) ? ' selected' : '');
       const row = Math.floor(i / cols), col = i % cols;
       el.style.cssText = `top:${row * (CARD_H + GAP)}px;left:${col * (colW + GAP)}px;width:${colW}px;height:${CARD_H}px`;
       const img = document.createElement('img');
@@ -242,7 +282,18 @@
       body.innerHTML = `
           <div class="title">${esc(m.title)}</div>
           <div class="sub"><span>${esc(m.cat)}</span><span class="badge">${esc(m.id)}</span></div>`;
-      el.append(img, body);
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.className = 'card-select';
+      checkbox.checked = selectedIds.has(m.id);
+      checkbox.setAttribute('aria-label', `Выбрать ${m.id}`);
+      checkbox.onclick = event => event.stopPropagation();
+      checkbox.onchange = () => {
+        if (checkbox.checked) selectedIds.add(m.id); else selectedIds.delete(m.id);
+        el.classList.toggle('selected', checkbox.checked);
+        updateSelectionBar();
+      };
+      el.append(checkbox, img, body);
       el.onclick = () => openLb(i);
       spacer.appendChild(el);
       rendered.set(i, el);
@@ -262,7 +313,9 @@
   const lbImg = document.getElementById('lb-img');
   const lbTitle = document.getElementById('lb-title');
   const lbInfo = document.getElementById('lb-info');
+  const lbDelete = document.getElementById('lb-delete');
   let lbIdx = -1;
+  let canDelete = false;
 
   function openLb(i) {
     lbIdx = i;
@@ -281,6 +334,91 @@
   }
   function closeLb() { lb.classList.remove('open'); document.body.style.overflow = ''; }
   function step(d) { if (filtered.length) openLb((lbIdx + d + filtered.length) % filtered.length); }
+
+  fetch('/api/auth/me')
+    .then(response => response.ok ? response.json() : null)
+    .then(user => {
+      canDelete = Boolean(user?.isSuperAdmin);
+      lbDelete.style.display = canDelete ? 'block' : 'none';
+      downloadDeleteButton.style.display = canDelete ? 'block' : 'none';
+    })
+    .catch(() => {});
+
+  lbDelete.onclick = async event => {
+    event.stopPropagation();
+    const meme = filtered[lbIdx];
+    if (!canDelete || !meme || !confirm(`Удалить мем ${meme.id}? Это действие нельзя отменить.`)) return;
+    lbDelete.disabled = true;
+    lbDelete.textContent = 'Удаление…';
+    try {
+      const response = await fetch(`/api/memes/${encodeURIComponent(meme.id)}`, { method: 'DELETE' });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Не удалось удалить мем');
+      location.reload();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Не удалось удалить мем');
+      lbDelete.disabled = false;
+      lbDelete.textContent = 'Удалить мем';
+    }
+  };
+
+  selectVisibleButton.onclick = () => {
+    for (const meme of filtered) selectedIds.add(meme.id);
+    updateSelectionBar();
+    layout(true);
+  };
+  clearSelectionButton.onclick = () => {
+    selectedIds.clear();
+    updateSelectionBar();
+    layout(true);
+  };
+
+  async function downloadSelected() {
+    const ids = [...selectedIds];
+    const response = await fetch('/api/memes/download', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids }),
+    });
+    if (!response.ok) {
+      const result = await response.json().catch(() => ({}));
+      throw new Error(result.error || 'Не удалось скачать мемы');
+    }
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `memoteka-${ids.length}.zip`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    return ids;
+  }
+
+  downloadButton.onclick = async () => {
+    downloadButton.disabled = true;
+    try { await downloadSelected(); }
+    catch (error) { alert(error instanceof Error ? error.message : 'Не удалось скачать мемы'); }
+    finally { updateSelectionBar(); }
+  };
+
+  downloadDeleteButton.onclick = async () => {
+    if (!canDelete || !selectedIds.size || !confirm(`Скачать ${selectedIds.size} шт., а затем удалить их из локальной и публичной Мемотеки?`)) return;
+    downloadDeleteButton.disabled = true;
+    try {
+      const ids = await downloadSelected();
+      if (!confirm('Архив подготовлен и передан браузеру. Теперь окончательно удалить выбранные мемы?')) return;
+      const response = await fetch('/api/memes/delete', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Не удалось удалить мемы');
+      location.reload();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Операция не выполнена');
+    } finally {
+      updateSelectionBar();
+    }
+  };
 
   document.getElementById('lb-close').onclick = closeLb;
   document.getElementById('lb-prev').onclick = e => { e.stopPropagation(); step(-1); };
