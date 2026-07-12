@@ -1,17 +1,18 @@
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import ffmpegPath from "ffmpeg-static";
 
 const cwd = process.cwd();
-const input = resolve(cwd, process.argv[2] || "tmp/shino-cat-render/cat-centaur-shino-minecraft.mp4");
+const input = resolve(cwd, arg("input", process.argv[2] || "tmp/shino-cat-render/cat-centaur-shino-minecraft.mp4"));
 const packId = "voiced-memes-ru";
 const item = {
-  id: "vmru_001_cat_centaur",
-  title: "Каждую ночь мой кот",
+  id: arg("id", "vmru_001_cat_centaur"),
+  title: arg("title", "Каждую ночь мой кот"),
   theme: "мемы",
-  voice: "Шино · Leda · Gemini 3.1 Flash TTS",
+  voice: "Шино · Aoede · Gemini 3.1 Flash TTS",
 };
+if (!/^[a-z0-9_-]+$/i.test(item.id)) throw new Error(`Некорректный id: ${item.id}`);
 
 if (!existsSync(input)) throw new Error(`Готовый MP4 не найден: ${input}`);
 
@@ -51,6 +52,23 @@ const manifestItem = {
   updatedAt: now,
 };
 pack.items = [...pack.items.filter((entry) => entry.id !== item.id), manifestItem];
-writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
+writeJsonAtomic(manifestPath, manifest);
+
+const videosPath = resolve(cwd, `data/${packId}/videos.json`);
+const videos = existsSync(videosPath) ? JSON.parse(readFileSync(videosPath, "utf8")) : [];
+const videoItem = { file: `${packId}/${item.id}.mp4`, title: item.title, text: item.title };
+writeJsonAtomic(videosPath, [...videos.filter((entry) => entry.file !== videoItem.file), videoItem]);
 
 console.log(JSON.stringify({ packId, item: manifestItem, runtimeVideo, demoVideo, demoPoster }, null, 2));
+
+function arg(name, fallback) {
+  const index = process.argv.indexOf(`--${name}`);
+  return index >= 0 ? process.argv[index + 1] : fallback;
+}
+
+function writeJsonAtomic(path, value) {
+  mkdirSync(dirname(path), { recursive: true });
+  const temporary = `${path}.${process.pid}.tmp`;
+  writeFileSync(temporary, `${JSON.stringify(value, null, 2)}\n`);
+  renameSync(temporary, path);
+}

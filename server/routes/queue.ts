@@ -22,16 +22,24 @@ const VOICED_MEMES_DIR = resolve(process.cwd(), "tmp/memoteka-267-videos");
 const VOICED_MEMES_WORK_DIR = resolve(process.cwd(), "tmp/memoteka-267-video-work");
 const VOICED_MEMES_AUDIO_DIR = resolve(process.cwd(), "output/speech/memoteka-267-batch/wav");
 const VOICED_MEMES_MANIFEST = resolve(process.cwd(), "output/speech/memoteka-267-batch/manifest.json");
+const VOICED_MEMES_SAFETY = resolve(process.cwd(), "data/voiced-memes-ru/safety-review.json");
 
 function voicedMemesRenderStatus() {
   const progressPath = resolve(VOICED_MEMES_DIR, "progress.json");
   const progress = readJsonSafe(progressPath, { completed: [], failed: [] }) as { completed?: string[]; failed?: unknown[] };
   const completed = Array.isArray(progress.completed) ? progress.completed.length : 0;
   const failed = Array.isArray(progress.failed) ? progress.failed.length : 0;
-  const totalAccepted = Array.isArray(readJsonSafe(VOICED_MEMES_MANIFEST, []))
-    ? (readJsonSafe(VOICED_MEMES_MANIFEST, []) as unknown[]).length
+  const acceptedManifest = readJsonSafe(VOICED_MEMES_MANIFEST, []) as Array<{ id?: string }>;
+  const safety = readJsonSafe(VOICED_MEMES_SAFETY, { reject: {}, borderline: {} }) as {
+    reject?: Record<string, string>;
+    borderline?: Record<string, string>;
+  };
+  const blockedIds = new Set([...Object.keys(safety.reject || {}), ...Object.keys(safety.borderline || {})]);
+  const totalAccepted = Array.isArray(acceptedManifest) ? acceptedManifest.length : 0;
+  const availableAudio = new Set(listFiles(VOICED_MEMES_AUDIO_DIR, ".wav").map((file) => file.replace(/\.wav$/, "")));
+  const target = Array.isArray(acceptedManifest)
+    ? acceptedManifest.filter((item) => item.id && !blockedIds.has(item.id) && availableAudio.has(item.id)).length
     : 0;
-  const target = listFiles(VOICED_MEMES_AUDIO_DIR, ".wav").length;
   const videos = listFiles(VOICED_MEMES_DIR, ".mp4").map((file) => statSync(resolve(VOICED_MEMES_DIR, file)));
   const current = existsSync(VOICED_MEMES_WORK_DIR)
     ? readdirSync(VOICED_MEMES_WORK_DIR).find((name) => name.startsWith("frames-"))?.slice(7) ?? null
