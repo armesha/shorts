@@ -68,6 +68,24 @@ type SourceGroupDef = {
   sources: Record<string, string[]>;
 };
 
+const JOKE_TEXT_DECK_BY_LANG: Record<string, string[]> = {
+  ru: ["ru"],
+  de: ["de"],
+  it: ["it"],
+  es: ["pack:chistes-es-public-domain"],
+  pl: ["pack:dowcipy-pl-mit"],
+  fr: ["fr"],
+  en: ["en"],
+  pt: ["pt"],
+  ar: ["ar"],
+  hi: ["hi"],
+  id: ["id"],
+  ja: ["ja"],
+  ro: ["ro"],
+  cs: ["cs"],
+  nl: ["nl"],
+};
+
 const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
   ru: ["pack:new-memes-ru-superadmin"],
   de: ["pack:new-memes-de-superadmin"],
@@ -86,6 +104,12 @@ const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
 
 const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
   {
+    id: "jokes",
+    title: "Анекдоты",
+    defaultWeight: 3,
+    sources: JOKE_TEXT_DECK_BY_LANG,
+  },
+  {
     id: "memes",
     title: "Мемы",
     defaultWeight: 4,
@@ -97,14 +121,17 @@ export const BLOCKS: BlockDef[] = [
   {
     id: "quotes",
     title: "Все каналы",
-    description: "Все 23 канала armen в одном общем миксе только из мемов (без анекдотов).",
+    description: "Все 23 канала armen в одном общем миксе нерелигиозных источников.",
     rules: [
-      "Все каналы супер-админа используют только мемы из pack:new-memes-<lang>-superadmin.",
+      "Все каналы супер-админа используют один общий микс нерелигиозных источников.",
       "Религиозные источники не подключать к каналам armen.",
       "Видео-факты больше не подключать к каналам armen.",
+      "Мемы в этом блоке остаются отдельным источником микса, а не отдельным блоком.",
       "Оптические иллюзии, визуальные загадки и visual-riddles источники больше не подключать к armen-блокам.",
       "Лайфхаки локализовать на одном наборе идей, но бытовые реалии адаптировать под язык.",
-      "Если появится озвучка для лайфхаки, новые voiceover-паки собирать через разрешённый TTS-профиль проекта с учётом текущих квот.",
+      "Если появится озвучка для лайфхаков, новые voiceover-паки собирать через разрешённый TTS-профиль проекта с учётом текущих квот.",
+      "Анекдоты не придумывать ИИ: брать только проверенные внешние/PD/licensed корпуса с источниками.",
+      "Анекдоты внутри блока остаются отдельным источником микса; не смешивать бытовые советы и шутки внутри одной карточки.",
       "Мемы брать только из pack:new-memes-<lang>-superadmin после проверки прав и оскорбительного контекста.",
       "Декоративные смеющиеся emoji/GIF разрешены, если они не перекрывают текст и не выглядят как плашка/водяной знак канала.",
       "Цитатные паки больше не подключать к каналам armen.",
@@ -183,7 +210,6 @@ type BlockContext = {
   accounts: Account[];
   queuedByAccount: Map<number, number>;
   queuedByAccountDeck: Map<number, Record<string, number>>;
-  videosByAccount: Map<number, Video[]>;
   availableCache: Map<string, number>;
   availability: DeckAvailabilityContext;
   contentIndexReady: boolean;
@@ -211,10 +237,6 @@ function makeBlockContext(db: Db, accounts: Account[]): BlockContext {
       queuedByAccountDeck.set(accountId, byDeck);
     }
   }
-  const videosByAccount = new Map<number, Video[]>();
-  for (const id of ids) {
-    videosByAccount.set(id, db.listVideos(id));
-  }
   let contentIndexReady = false;
   try {
     db.db.prepare("SELECT 1 FROM content_items LIMIT 1").get();
@@ -222,7 +244,7 @@ function makeBlockContext(db: Db, accounts: Account[]): BlockContext {
   } catch {
     contentIndexReady = false;
   }
-  return { accounts, queuedByAccount, queuedByAccountDeck, videosByAccount, availableCache: new Map(), availability: createDeckAvailabilityContext(), contentIndexReady };
+  return { accounts, queuedByAccount, queuedByAccountDeck, availableCache: new Map(), availability: createDeckAvailabilityContext(), contentIndexReady };
 }
 
 function availableForDecks(db: Db, deps: RouteDeps, ctx: BlockContext | undefined, ownerId: number, deckIds: string[]): number {
@@ -475,7 +497,6 @@ export function sourceGapsForScheduledDecks(
 
 function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockContext, blockId?: string) {
   const ownerId = account.userId ?? 0;
-  const views = db.latestSnapshot(account.id)?.views ?? null;
   const sourceDecks = cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account));
   const queuedByDeck = ctx?.queuedByAccountDeck.get(account.id) ?? videosByDeck(db.listVideos(account.id));
   const decks = deckSummaries({ db, deps, ctx, blockId, ownerId, accountId: account.id, deckIds: sourceDecks, queuedByDeck });
@@ -501,7 +522,6 @@ function accountSummary(db: Db, deps: RouteDeps, account: Account, ctx?: BlockCo
     schedule: account.schedule,
     avatar: account.avatar,
     ytChannelId: account.ytChannelId,
-    views,
     queued: ctx?.queuedByAccount.get(account.id) ?? db.listVideos(account.id).length,
     effectiveQueued: queuedCoverage.effective,
     effectiveRunwayDays: queuedCoverage.runwayDays,
@@ -1109,35 +1129,6 @@ function buildPayload(db: Db, deps: RouteDeps) {
     });
     const allAccounts = cells.flatMap((cell) => cell.accounts);
     const sync = blockSyncMetrics(allAccounts);
-    // Collect flat list of all videos across accounts in this block for the "common queue" view.
-    const videos: Array<{
-      id: number;
-      accountId: number;
-      channelName: string;
-      channelLang: string;
-      deck: string;
-      title: string;
-      imageRel: string | null;
-      videoRel: string;
-      createdAt: string;
-    }> = [];
-    for (const acc of allAccounts) {
-      const vids = ctx?.videosByAccount?.get(acc.id) ?? [];
-      for (const v of vids) {
-        videos.push({
-          id: v.id,
-          accountId: acc.id,
-          channelName: acc.channelName,
-          channelLang: acc.channelLang,
-          deck: v.deck,
-          title: v.title,
-          imageRel: v.imageRel,
-          videoRel: v.videoRel,
-          createdAt: v.createdAt,
-        });
-      }
-    }
-    videos.sort((a, b) => b.id - a.id);
     return {
       id: block.id,
       title: block.title,
@@ -1153,7 +1144,6 @@ function buildPayload(db: Db, deps: RouteDeps) {
       totalQueued: sync.totalQueued,
       totalShortAvailable: sync.totalShortAvailable,
       totalPostsPerDay: sync.totalPostsPerDay,
-      videos,
     };
   });
 
