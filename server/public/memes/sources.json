@@ -1,8 +1,8 @@
 {
   "title": "Public meme archive sources",
-  "activeCatalogueItems": 2181,
-  "historicalLedgerItems": 3919,
-  "updatedAt": "2026-07-12T16:26:19.724Z",
+  "activeCatalogueItems": 2471,
+  "historicalLedgerItems": 4209,
+  "updatedAt": "2026-07-13T19:41:38.338Z",
   "sources": [
     {
       "id": "rumeme-desc",
@@ -23,6 +23,16 @@
       "title": "Other static meme sources",
       "items": 83,
       "selection_rule": "Source links are preserved in each meme card. Only static images are active; the same visual review, duplicate history, watermark, and animated-character rules apply."
+    },
+    {
+      "id": "armen-unpublished-new-memes-ru",
+      "title": "Unpublished RU memes from armen channel",
+      "source_url": "pack:new-memes-ru-superadmin",
+      "license": "inherits internal pack rights caveat; not claimed as public domain",
+      "retrieved_at": "2026-07-13",
+      "retrieval_method": "Copied from the current curated channel pack after excluding cards already published on YouTube",
+      "items": 290,
+      "selection_rule": "Current pack cards not present in the published set. Previously removed pack cards are not restored."
     }
   ]
 }

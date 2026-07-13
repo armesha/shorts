@@ -32,6 +32,15 @@ const FACT_TTS_VOICE_BY_LANG: Record<string, string> = {
   pt: "pt-BR-FranciscaNeural",
 };
 
+// These decks contain final, already-voiced MP4 files. They must never pass through the
+// localized fact branch: doing so would replace their audio and burn a second subtitle layer in.
+const FINAL_PREBUILT_AUDIO_DECKS = new Set(["voiced-memes-ru"]);
+
+export function localizedFactVoiceForDeck(deckId: string): string | undefined {
+  if (FINAL_PREBUILT_AUDIO_DECKS.has(deckId)) return undefined;
+  return FACT_TTS_VOICE_BY_LANG[deckLang(deckId)];
+}
+
 async function mediaDurationSec(path: string): Promise<number> {
   try {
     const { stdout } = await pexec(
@@ -201,7 +210,7 @@ export async function buildFactLibraryVideo(input: {
   await metrics.track("render", async () => {
     mkdirSync(dirname(vidAbs), { recursive: true });
     const lang = deckLang(deckId);
-    const localizedVoice = FACT_TTS_VOICE_BY_LANG[lang];
+    const localizedVoice = localizedFactVoiceForDeck(deckId);
     if (localizedVoice) {
       const localized = await buildLocalizedFactVideo({
         src,

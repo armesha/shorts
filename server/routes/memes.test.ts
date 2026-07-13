@@ -25,28 +25,26 @@ test("public memes page and assets are served without auth", async () => {
     cat: string;
     lang?: string;
     layout: string | null;
+    url: string;
   }>;
   assert.ok(memes.length >= 2000);
   assert.equal(new Set(memes.map((meme) => meme.id)).size, memes.length);
   assert.ok(memes.some((meme) => meme.lang === "ar"));
   assert.ok(memes.some((meme) => meme.lang === "ja"));
 
-  const image = await app.inject({ method: "GET", url: "/memes/images/0000.jpg" });
-  assert.equal(image.statusCode, 200);
-  assert.equal(image.headers["content-type"], "image/jpeg");
-  assert.ok(image.rawPayload.length > 500);
-
-  const webp = await app.inject({ method: "GET", url: "/memes/images/2509.webp" });
-  assert.equal(webp.statusCode, 200);
-  assert.equal(webp.headers["content-type"], "image/webp");
-
-  const png = await app.inject({ method: "GET", url: "/memes/images/2522.png" });
-  assert.equal(png.statusCode, 200);
-  assert.equal(png.headers["content-type"], "image/png");
-
-  const avif = await app.inject({ method: "GET", url: "/memes/images/2596.avif" });
-  assert.equal(avif.statusCode, 200);
-  assert.equal(avif.headers["content-type"], "image/avif");
+  for (const [extension, contentType] of [
+    [".jpg", "image/jpeg"],
+    [".webp", "image/webp"],
+    [".png", "image/png"],
+    [".avif", "image/avif"],
+  ] as const) {
+    const meme = memes.find((item) => item.url.endsWith(extension));
+    assert.ok(meme, `active ${extension} meme exists`);
+    const image = await app.inject({ method: "GET", url: `/memes/${meme.url}` });
+    assert.equal(image.statusCode, 200);
+    assert.equal(image.headers["content-type"], contentType);
+    assert.ok(image.rawPayload.length > 500);
+  }
 
   const invalid = await app.inject({ method: "GET", url: "/memes/images/not-a-meme.jpg" });
   assert.equal(invalid.statusCode, 404);
