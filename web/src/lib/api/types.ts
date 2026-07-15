@@ -810,6 +810,15 @@ export interface NotificationCounts {
   total: number;
 }
 
+export interface IdeaItem {
+  id: number;
+  title: string;
+  description: string;
+  authorId: number | null;
+  authorName: string;
+  createdAt: string;
+}
+
 /** Live server-health snapshot for the admin «Сервер» page (in-memory history, no DB). */
 export interface SystemStatus {
   now: {

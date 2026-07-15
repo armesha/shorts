@@ -62,6 +62,7 @@ import { registerAudioRoutes } from "./routes/audio.ts";
 import { registerCarSeatBookingRoutes } from "./routes/car-seat-bookings.ts";
 import { registerMemesRoutes } from "./routes/memes.ts";
 import { registerGameRoutes } from "./routes/game.ts";
+import { registerIdeasRoutes } from "./routes/ideas.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -373,6 +374,7 @@ registerAudioRoutes(app, db, deps);
 registerCarSeatBookingRoutes(app, db);
 registerMemesRoutes(app, deps);
 registerGameRoutes(app);
+registerIdeasRoutes(app, db, deps);
 
 app
   .listen({ port: base.port, host: "0.0.0.0" })

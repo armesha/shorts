@@ -33,6 +33,7 @@ export const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
       { to: "/queue", labelKey: "nav.queue", icon: "queue", end: false, staffOnly: true, adminBadge: true },
       { to: "/history", labelKey: "nav.history", icon: "history", end: false },
       { to: "/clip-demos", labelKey: "nav.clipdemos", icon: "clips", end: false, clipDemos: true },
+      { to: "/ideas", labelKey: "nav.ideas", icon: "ideas", end: false, adminOnly: true, adminBadge: true },
     ],
   },
   {

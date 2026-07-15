@@ -284,6 +284,14 @@ export function applySchema(db: DatabaseSync): void {
       duration_sec REAL,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+    CREATE TABLE IF NOT EXISTS ideas (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      description TEXT NOT NULL DEFAULT '',
+      author_id INTEGER,
+      author_name TEXT NOT NULL DEFAULT '',
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 
   // Additive schema migrations. ADD COLUMN is idempotent across restarts, but ONLY the expected
@@ -395,6 +403,25 @@ export function applySchema(db: DatabaseSync): void {
     CREATE INDEX IF NOT EXISTS idx_creator_gallery_user_created ON creator_gallery_items(user_id, id DESC);
     CREATE INDEX IF NOT EXISTS idx_creator_gallery_user_type ON creator_gallery_items(user_id, template_type, id DESC);
     CREATE INDEX IF NOT EXISTS idx_creator_gallery_pack ON creator_gallery_items(pack_id, id DESC);
+    CREATE INDEX IF NOT EXISTS idx_ideas_created ON ideas(created_at DESC, id DESC);
+  `);
+
+  // Первый общий список перенесён из переписки Стаса и Армена. Вставляется только в совсем пустой список.
+  db.exec(`
+    INSERT INTO ideas (title, description, author_name)
+    SELECT title, description, author_name
+    FROM (
+      SELECT 'Длинные видео с автоматической нарезкой' AS title, 'Делать ролики примерно по 10 минут с голосом и сразу получать из них короткие фрагменты для Shorts.' AS description, 'Стас' AS author_name
+      UNION ALL SELECT 'Контекстные Shorts в длинный ролик', 'Генерировать связанные короткие ролики и затем склеивать их в один длинный выпуск.', 'Стас'
+      UNION ALL SELECT 'Разборы популярных роликов', 'Делать собственный пересказ или разбор с оригинальным сценарием и реакцией, без перезалива чужого контента.', 'Стас'
+      UNION ALL SELECT 'Реакционный ИИ-аватар', 'Аватар реагирует на анекдоты и мемы; голос, эмоции и тайминг должны совпадать с роликом.', 'Стас'
+      UNION ALL SELECT 'Анимационные ролики', 'Попробовать короткие смешные мультфильмы и отдельные анимированные форматы.', 'Стас'
+      UNION ALL SELECT 'Дайджест за несколько часов', 'Собирать выжимку событий за 3–4 часа вокруг одного тезиса и выпускать её как один Shorts.', 'Стас'
+      UNION ALL SELECT 'Конвейер локального производства', 'Подготовить поток производства контента на локальной машине и ставить ролики в очередь.', 'Стас'
+      UNION ALL SELECT 'Единый промпт для полного ролика', 'Собрать один подробный запрос, который за запуск создаёт все нужные части ролика.', 'Стас'
+      UNION ALL SELECT 'Новые шаблоны по теме и языку', 'Сделать стандарт: тема и язык вводятся один раз, после чего готовый шаблон сразу появляется на сайте.', 'Армен'
+    )
+    WHERE NOT EXISTS (SELECT 1 FROM ideas)
   `);
 
   // Multi-key OAuth migration (idempotent via MOVE semantics): pull each user's legacy single
