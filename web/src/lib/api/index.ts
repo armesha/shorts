@@ -163,7 +163,12 @@ export const apiClient = {
       { perDay, ...(accountIds ? { accountIds } : {}), ...(sourceWeights ? { sourceWeights } : {}) },
     ),
   saveChannelThemeBlockSourceWeights: (blockId: string, sourceWeights: Record<string, number>) =>
-    send<{ blockId: string; sourceGroups: ChannelThemeBlockSourceGroup[]; sourceWeights: Record<string, number> }>(
+    send<{
+      blockId: string;
+      sourceGroups: ChannelThemeBlockSourceGroup[];
+      sourceWeights: Record<string, number>;
+      updated: { accountId: number; channelName: string; slotDecks: Record<string, string> }[];
+    }>(
       `/super-admin/channel-blocks/${encodeURIComponent(blockId)}/source-weights`,
       "POST",
       { sourceWeights },

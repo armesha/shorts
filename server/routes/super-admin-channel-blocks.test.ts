@@ -4,6 +4,7 @@ import type { Account, Db, Video } from "../db.ts";
 import type { RouteDeps } from "./deps.ts";
 import {
   BLOCKS,
+  accountBelongsToBlock,
   addableLanguageDefsForBlock,
   blockDefaultSourcesForDb,
   planChannelBlockNormalize,
@@ -84,6 +85,61 @@ function video(id: number, accountId: number, deck: string): Video {
     createdAt: "",
   };
 }
+
+test("RU meme channel uses a dedicated 50/50 static and voiced publication block", () => {
+  const voicedBlock = BLOCKS.find((block) => block.id === "voiced_memes_ru");
+  const staticBlock = BLOCKS.find((block) => block.id === "quotes");
+  assert.ok(voicedBlock);
+  assert.ok(staticBlock);
+  assert.equal(voicedBlock.allowAccountCreation, false);
+  assert.deepEqual(blockDefaultSourcesForDb(db(), voicedBlock.id, "ru"), [
+    "pack:new-memes-ru-superadmin",
+    "voiced-memes-ru",
+  ]);
+
+  const voicedAccount = {
+    ...account(7),
+    lang: "voiced-memes-ru",
+    channelLang: "ru",
+    sourceDecks: ["pack:new-memes-ru-superadmin", "voiced-memes-ru"],
+  };
+  const staticAccount = {
+    ...account(65),
+    lang: "pack:new-memes-de-superadmin",
+    channelLang: "de",
+    sourceDecks: ["pack:new-memes-de-superadmin"],
+  };
+
+  assert.equal(accountBelongsToBlock(deps(), voicedBlock, voicedAccount), true);
+  assert.equal(accountBelongsToBlock(deps(), staticBlock, voicedAccount), false);
+  assert.equal(accountBelongsToBlock(deps(), voicedBlock, staticAccount), false);
+  assert.equal(accountBelongsToBlock(deps(), staticBlock, staticAccount), true);
+
+  const schedule = ["08:14", "11:12", "17:09", "17:20", "18:03", "18:36", "19:01", "19:26", "19:55", "20:35", "20:59", "21:24"];
+  const slots = thematicBlockSlotDecksForAccount(db(), deps(), voicedAccount, schedule, voicedAccount.sourceDecks);
+  assert.ok(slots);
+  assert.equal(Object.values(slots).filter((deck) => deck === "pack:new-memes-ru-superadmin").length, 6);
+  assert.equal(Object.values(slots).filter((deck) => deck === "voiced-memes-ru").length, 6);
+});
+
+test("RU meme slider weights immediately produce a matching slot mix", () => {
+  const voicedAccount = {
+    ...account(7),
+    lang: "voiced-memes-ru",
+    channelLang: "ru",
+    sourceDecks: ["pack:new-memes-ru-superadmin", "voiced-memes-ru"],
+  };
+  const weightedDb = {
+    ...db(),
+    getSetting: () => JSON.stringify({ static_memes: 18, voiced_memes: 2 }),
+  } as Db;
+  const schedule = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"];
+  const slots = thematicBlockSlotDecksForAccount(weightedDb, deps(), voicedAccount, schedule, voicedAccount.sourceDecks);
+
+  assert.ok(slots);
+  assert.equal(Object.values(slots).filter((deck) => deck === "pack:new-memes-ru-superadmin").length, 11);
+  assert.equal(Object.values(slots).filter((deck) => deck === "voiced-memes-ru").length, 1);
+});
 
 test("thematic block generation keeps source mix stable but varies order per channel", () => {
   const dbMock = db();

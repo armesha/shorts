@@ -57,6 +57,7 @@ type BlockDef = {
   description: string;
   rules: string[];
   accountIds: number[];
+  allowAccountCreation?: boolean;
   sourceGroups?: SourceGroupDef[];
 };
 
@@ -66,24 +67,6 @@ type SourceGroupDef = {
   defaultWeight: number;
   section?: string;
   sources: Record<string, string[]>;
-};
-
-const JOKE_TEXT_DECK_BY_LANG: Record<string, string[]> = {
-  ru: ["ru"],
-  de: ["de"],
-  it: ["it"],
-  es: ["pack:chistes-es-public-domain"],
-  pl: ["pack:dowcipy-pl-mit"],
-  fr: ["fr"],
-  en: ["en"],
-  pt: ["pt"],
-  ar: ["ar"],
-  hi: ["hi"],
-  id: ["id"],
-  ja: ["ja"],
-  ro: ["ro"],
-  cs: ["cs"],
-  nl: ["nl"],
 };
 
 const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
@@ -104,12 +87,6 @@ const JOKE_MEME_DECK_BY_LANG: Record<string, string[]> = {
 
 const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
   {
-    id: "jokes",
-    title: "Анекдоты",
-    defaultWeight: 3,
-    sources: JOKE_TEXT_DECK_BY_LANG,
-  },
-  {
     id: "memes",
     title: "Мемы",
     defaultWeight: 4,
@@ -117,21 +94,47 @@ const FACT_SOURCE_GROUPS: SourceGroupDef[] = [
   },
 ];
 
+const MIXED_RU_MEME_SOURCE_GROUPS: SourceGroupDef[] = [
+  {
+    id: "static_memes",
+    title: "Статичные мемы",
+    defaultWeight: 1,
+    sources: { ru: ["pack:new-memes-ru-superadmin"] },
+  },
+  {
+    id: "voiced_memes",
+    title: "Озвученные мемы",
+    defaultWeight: 1,
+    sources: { ru: ["voiced-memes-ru"] },
+  },
+];
+
 export const BLOCKS: BlockDef[] = [
   {
-    id: "quotes",
-    title: "Все каналы",
-    description: "Все 23 канала armen в одном общем миксе нерелигиозных источников.",
+    id: "voiced_memes_ru",
+    title: "RU-мемы: статичные + озвученные",
+    description: "Отдельные настройки RU-канала «Прикольные мемы»: 50% статичных и 50% готовых озвученных мемов.",
     rules: [
-      "Все каналы супер-админа используют один общий микс нерелигиозных источников.",
+      "Публиковать 12 раз в день: 6 статичных и 6 готовых озвученных мемов.",
+      "Для озвученной половины использовать финальные MP4 из voiced-memes-ru без повторной озвучки и субтитров.",
+      "Для статичной половины использовать pack:new-memes-ru-superadmin; уже опубликованные карточки повторно не брать.",
+      "Расписание этого канала настраивается независимо от остальных языковых мем-каналов.",
+    ],
+    accountIds: [7],
+    allowAccountCreation: false,
+    sourceGroups: MIXED_RU_MEME_SOURCE_GROUPS,
+  },
+  {
+    id: "quotes",
+    title: "Статичные мемы",
+    description: "Отдельные настройки публикаций остальных языковых мем-каналов armen.",
+    rules: [
+      "Все каналы супер-админа используют только мемы из pack:new-memes-<lang>-superadmin.",
       "Религиозные источники не подключать к каналам armen.",
       "Видео-факты больше не подключать к каналам armen.",
-      "Мемы в этом блоке остаются отдельным источником микса, а не отдельным блоком.",
       "Оптические иллюзии, визуальные загадки и visual-riddles источники больше не подключать к armen-блокам.",
       "Лайфхаки локализовать на одном наборе идей, но бытовые реалии адаптировать под язык.",
-      "Если появится озвучка для лайфхаков, новые voiceover-паки собирать через разрешённый TTS-профиль проекта с учётом текущих квот.",
-      "Анекдоты не придумывать ИИ: брать только проверенные внешние/PD/licensed корпуса с источниками.",
-      "Анекдоты внутри блока остаются отдельным источником микса; не смешивать бытовые советы и шутки внутри одной карточки.",
+      "Если появится озвучка для лайфхаки, новые voiceover-паки собирать через разрешённый TTS-профиль проекта с учётом текущих квот.",
       "Мемы брать только из pack:new-memes-<lang>-superadmin после проверки прав и оскорбительного контекста.",
       "Декоративные смеющиеся emoji/GIF разрешены, если они не перекрывают текст и не выглядят как плашка/водяной знак канала.",
       "Цитатные паки больше не подключать к каналам armen.",
@@ -210,6 +213,7 @@ type BlockContext = {
   accounts: Account[];
   queuedByAccount: Map<number, number>;
   queuedByAccountDeck: Map<number, Record<string, number>>;
+  videosByAccount: Map<number, Video[]>;
   availableCache: Map<string, number>;
   availability: DeckAvailabilityContext;
   contentIndexReady: boolean;
@@ -237,6 +241,10 @@ function makeBlockContext(db: Db, accounts: Account[]): BlockContext {
       queuedByAccountDeck.set(accountId, byDeck);
     }
   }
+  const videosByAccount = new Map<number, Video[]>();
+  for (const id of ids) {
+    videosByAccount.set(id, db.listVideos(id));
+  }
   let contentIndexReady = false;
   try {
     db.db.prepare("SELECT 1 FROM content_items LIMIT 1").get();
@@ -244,7 +252,7 @@ function makeBlockContext(db: Db, accounts: Account[]): BlockContext {
   } catch {
     contentIndexReady = false;
   }
-  return { accounts, queuedByAccount, queuedByAccountDeck, availableCache: new Map(), availability: createDeckAvailabilityContext(), contentIndexReady };
+  return { accounts, queuedByAccount, queuedByAccountDeck, videosByAccount, availableCache: new Map(), availability: createDeckAvailabilityContext(), contentIndexReady };
 }
 
 function availableForDecks(db: Db, deps: RouteDeps, ctx: BlockContext | undefined, ownerId: number, deckIds: string[]): number {
@@ -434,8 +442,9 @@ function sameDeckSet(a: string[], b: string[]): boolean {
   return aa.every((value, index) => value === bb[index]);
 }
 
-function accountBelongsToBlock(deps: RouteDeps, block: BlockDef, account: Account): boolean {
-  if (block.accountIds.includes(account.id)) return true;
+export function accountBelongsToBlock(deps: RouteDeps, block: BlockDef, account: Account): boolean {
+  const explicitBlock = BLOCKS.find((candidate) => candidate.accountIds.includes(account.id));
+  if (explicitBlock) return explicitBlock.id === block.id;
   if (block.id === "quotes") return blockDefaultSources(block.id, account.channelLang).length > 0;
   const defaults = blockDefaultSources(block.id, account.channelLang);
   if (!defaults.length) return false;
@@ -1131,11 +1140,41 @@ function buildPayload(db: Db, deps: RouteDeps) {
     });
     const allAccounts = cells.flatMap((cell) => cell.accounts);
     const sync = blockSyncMetrics(allAccounts);
+    // Collect flat list of all videos across accounts in this block for the "common queue" view.
+    const videos: Array<{
+      id: number;
+      accountId: number;
+      channelName: string;
+      channelLang: string;
+      deck: string;
+      title: string;
+      imageRel: string | null;
+      videoRel: string;
+      createdAt: string;
+    }> = [];
+    for (const acc of allAccounts) {
+      const vids = ctx?.videosByAccount?.get(acc.id) ?? [];
+      for (const v of vids) {
+        videos.push({
+          id: v.id,
+          accountId: acc.id,
+          channelName: acc.channelName,
+          channelLang: acc.channelLang,
+          deck: v.deck,
+          title: v.title,
+          imageRel: v.imageRel,
+          videoRel: v.videoRel,
+          createdAt: v.createdAt,
+        });
+      }
+    }
+    videos.sort((a, b) => b.id - a.id);
     return {
       id: block.id,
       title: block.title,
       description: block.description,
       rules: block.rules,
+      allowAccountCreation: block.allowAccountCreation !== false,
       sourceGroups: publicSourceGroups(db, block),
       cells,
       totalAccounts: allAccounts.length,
@@ -1146,6 +1185,7 @@ function buildPayload(db: Db, deps: RouteDeps) {
       totalQueued: sync.totalQueued,
       totalShortAvailable: sync.totalShortAvailable,
       totalPostsPerDay: sync.totalPostsPerDay,
+      videos,
     };
   });
 
@@ -1516,6 +1556,9 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
     const block = findBlockDef(blockId);
     const langDef = BLOCK_LANGS.find((candidate) => candidate.code === lang);
     if (ownerId == null || !block) return reply.code(404).send({ error: "Тематический блок не найден." });
+    if (block.allowAccountCreation === false) {
+      return reply.code(400).send({ error: "В этом блоке используется уже закреплённый канал." });
+    }
     if (!langDef) return reply.code(400).send({ error: "Этот язык не входит в сетку блока." });
 
     const sourceDecks = blockDefaultSourcesForDb(db, block.id, lang);
@@ -1710,6 +1753,19 @@ export function registerSuperAdminChannelBlockRoutes(app: FastifyInstance, db: D
     const block = findBlockDef(blockId);
     if (!block || !block.sourceGroups?.length) return reply.code(404).send({ error: "Тематический блок не найден." });
     const sourceWeights = requestedSourceWeights(db, block, req.body);
-    return { blockId, sourceGroups: publicSourceGroups(db, block), sourceWeights };
+    // The slider is a live control: changing a mix must immediately change the deck pinned to
+    // every existing future slot. Previously only the preference was saved, leaving old 50/50
+    // slotDecks in place until someone manually re-applied the schedule.
+    const updated: Array<{ accountId: number; channelName: string; slotDecks: Record<string, string> }> = [];
+    for (const account of blockAccounts(db, deps, blockId)) {
+      const ownerId = account.userId ?? superAdminOwnerId(db) ?? uid(req);
+      const sourceDecks = cleanSuperAdminSourceDecks(deps.deckAccess.accountSourceDecks(account));
+      const queuedByDeck = videosByDeck(db.listVideos(account.id));
+      const scheduleDecks = sourceDecksForSchedule(db, deps, ownerId, account, sourceDecks, queuedByDeck);
+      const slotDecks = slotDecksForSchedule(block, account, account.schedule ?? [], scheduleDecks, sourceWeights);
+      const next = db.updateAccount(account.id, { slotDecks });
+      if (next) updated.push({ accountId: next.id, channelName: next.channelName, slotDecks: next.slotDecks });
+    }
+    return { blockId, sourceGroups: publicSourceGroups(db, block), sourceWeights, updated };
   });
 }
