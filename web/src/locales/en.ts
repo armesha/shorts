@@ -787,6 +787,9 @@ export const en: Record<string, string> = {
   "history.user": "User",
   "history.watch": "Watch",
 
+  // ── auth ──
+  "auth.openSourceLicense": "Open source under the MIT License",
+
   // ── login ──
   "login.backToLogin": "Back to sign in",
   "login.changePassword": "Change password",

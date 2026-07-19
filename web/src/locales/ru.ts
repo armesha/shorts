@@ -791,6 +791,9 @@ export const ru: Record<string, string> = {
   "history.user": "Пользователь",
   "history.watch": "Посмотреть",
 
+  // ── auth ──
+  "auth.openSourceLicense": "Открытый исходный код · свободная лицензия MIT",
+
   // ── login ──
   "login.backToLogin": "К входу",
   "login.changePassword": "Сменить пароль",

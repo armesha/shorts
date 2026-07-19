@@ -7,6 +7,7 @@ import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
 import PasswordInput from "../components/PasswordInput";
 import { LanguageToggle } from "../components/layout/widgets";
+import AuthOpenSourceLink from "../components/AuthOpenSourceLink";
 
 export default function Register() {
   const { t, lang, setLang } = useT();
@@ -138,6 +139,7 @@ export default function Register() {
             {t("login.signIn")}
           </Link>
         </p>
+        <AuthOpenSourceLink />
       </section>
     </main>
   );

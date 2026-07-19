@@ -7,6 +7,7 @@ import TelegramConnect from "../components/TelegramConnect";
 import { AppIcon } from "../components/AppIcon";
 import { LanguageToggle } from "../components/layout/widgets";
 import PasswordInput from "../components/PasswordInput";
+import AuthOpenSourceLink from "../components/AuthOpenSourceLink";
 
 export default function Login() {
   const { t, lang, setLang } = useT();
@@ -30,6 +31,7 @@ export default function Login() {
         ) : (
           <RecoverForm onBack={() => setMode("login")} />
         )}
+        <AuthOpenSourceLink />
       </section>
     </main>
   );

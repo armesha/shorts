@@ -306,6 +306,30 @@
   text-align: center;
 }
 
+.auth-open-source {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.auth-open-source__link {
+  color: var(--auth-text);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.auth-open-source__link:hover {
+  color: var(--auth-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.auth-open-source__link:focus-visible {
+  outline: 3px solid rgba(21, 94, 239, 0.2);
+  outline-offset: 3px;
+}
+
 .auth-link {
   color: var(--auth-primary);
   font-weight: 700;
