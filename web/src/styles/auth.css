@@ -42,6 +42,29 @@
   text-align: center;
 }
 
+.auth-screen .auth-language-toggle {
+  width: auto;
+  min-height: 2rem;
+  margin-top: 0.15rem;
+  border: 1px solid var(--auth-line);
+  border-radius: 999px;
+  background: var(--auth-panel);
+  color: var(--auth-text);
+  box-shadow: none;
+  font-size: 0.78rem;
+}
+
+.auth-screen .auth-language-toggle:hover:not(:disabled) {
+  border-color: var(--auth-primary);
+  background: #eef4ff;
+  color: var(--auth-primary);
+}
+
+.auth-screen .auth-language-toggle:focus-visible {
+  outline: 3px solid rgba(21, 94, 239, 0.22);
+  outline-offset: 2px;
+}
+
 .auth-brand {
   display: inline-flex;
   align-items: center;

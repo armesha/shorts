@@ -2,6 +2,7 @@
 node_modules/
 dist/
 *.log
+*.pdf
 
 # stale Python experiments (this is a Node/TS project — kept out of the repo)
 process_anecdotes*.py

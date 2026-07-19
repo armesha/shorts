@@ -6,9 +6,10 @@ import { apiClient, ApiError, type AuthUser } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
 import PasswordInput from "../components/PasswordInput";
+import { LanguageToggle } from "../components/layout/widgets";
 
 export default function Register() {
-  const { t } = useT();
+  const { t, lang, setLang } = useT();
   const { setUser } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -55,6 +56,7 @@ export default function Register() {
             <span>Shorts Factory</span>
           </div>
           <p className="auth-subtitle">{t("register.subtitle")}</p>
+          <LanguageToggle lang={lang} setLang={setLang} t={t} className="auth-language-toggle" />
         </header>
 
         <form className="auth-form" onSubmit={submit}>

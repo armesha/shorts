@@ -5,10 +5,11 @@ import { useAuth } from "../lib/auth";
 import { useT } from "../lib/i18n";
 import TelegramConnect from "../components/TelegramConnect";
 import { AppIcon } from "../components/AppIcon";
+import { LanguageToggle } from "../components/layout/widgets";
 import PasswordInput from "../components/PasswordInput";
 
 export default function Login() {
-  const { t } = useT();
+  const { t, lang, setLang } = useT();
   const [mode, setMode] = useState<"login" | "recover">("login");
 
   return (
@@ -22,6 +23,7 @@ export default function Login() {
           <p className="auth-subtitle">
             {mode === "login" ? t("login.subtitleLogin") : t("login.subtitleRecover")}
           </p>
+          <LanguageToggle lang={lang} setLang={setLang} t={t} className="auth-language-toggle" />
         </header>
         {mode === "login" ? (
           <LoginForm onRecover={() => setMode("recover")} />
