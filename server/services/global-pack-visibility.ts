@@ -60,7 +60,7 @@ export function isJokeOrMemeCustomPack(pack: PackLike): boolean {
 
 export function isBuiltInDeckGloballyVisible(db: DbWithHandle, deck: Deck, used = deckIdsUsedByAnyChannel(db)): boolean {
   if (FORCE_HIDDEN_BUILT_IN_DECKS.has(deck.id)) return false;
-  return used.has(deck.id) || isJokeOrMemeBuiltInDeck(deck);
+  return used.has(deck.id) || !!deck.liveVideo || isJokeOrMemeBuiltInDeck(deck);
 }
 
 export function filterGloballyVisibleBuiltInDecks<T extends Deck>(db: DbWithHandle, decks: T[]): T[] {

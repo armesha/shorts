@@ -23,6 +23,7 @@ import * as metrics from "../infra/metrics.ts";
 import { rememberOutputOwner } from "../infra/output-access.ts";
 import { uid } from "../infra/auth-session.ts";
 import type { RouteDeps, LimitedReplyish } from "./deps.ts";
+import { generateTelegramCircleVideo, telegramCircleTemplateName } from "../services/telegram-circle-video.ts";
 
 const STUDIO_IMAGE_LIMIT = { limit: 10, windowMs: 5 * 60 * 1000 };
 const STUDIO_VIDEO_LIMIT = { limit: 3, windowMs: 10 * 60 * 1000 };
@@ -41,12 +42,15 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
     const infinite = db.hasFeature(userId, INFINITE_PACKS_FEATURE);
     const base = visibleDecksForUser(userId).map((d) => {
       const s = libraryStats(d.id, used);
-      const c = infinite ? infiniteCounts(s.total) : { total: s.total, used: s.used, available: s.available };
+      const c = d.liveVideo
+        ? { total: 1, used: 0, available: 1 }
+        : infinite ? infiniteCounts(s.total) : { total: s.total, used: s.used, available: s.available };
       return {
         id: d.id,
-        name: d.name,
+        name: d.liveVideo ? telegramCircleTemplateName() : d.name,
         ai: false,
         preFact: !!d.preFact, // pre-built video pack (no text render) — Studio shows a random video
+        liveVideo: !!d.liveVideo,
         longVideo: !!d.longVideo, // long compilation built from many short scenes
         gallery: !!d.gallery, // static deck (deterministic per-card render) — browsable in the Gallery page
         total: c.total,
@@ -132,6 +136,7 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
     const body = (req.body as { text?: string; title?: string; bg?: string; avoidBg?: string; deck?: string }) ?? {};
     const deck = getDeck(body.deck);
     if (!deckAllowed(req, deck.id)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
+    if (deck.liveVideo) return { liveVideo: true, deck: deck.id };
     if (!enforceGenerationWindow(req, reply as LimitedReplyish, "studio-image", STUDIO_IMAGE_LIMIT)) return;
     return runHeavyGenerationLimited(req, reply as LimitedReplyish, "studio-image", async () => {
       let text = body.text;
@@ -175,6 +180,21 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
     if (!deckAllowed(req, deck.id)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
     if (!enforceGenerationWindow(req, reply as LimitedReplyish, "studio-video", STUDIO_VIDEO_LIMIT)) return;
     return runHeavyGenerationLimited(req, reply as LimitedReplyish, "studio-video", async () => {
+      if (deck.liveVideo) {
+        videoCounter++;
+        const stamp = `${Date.now()}-${videoCounter}`;
+        const generated = await metrics.track("render", () => generateTelegramCircleVideo(OUTPUT_ROOT, stamp));
+        rememberOutputOwner([generated.videoRel], uid(req));
+        return {
+          videoUrl: `/files/${generated.videoRel}`,
+          title: deck.name,
+          text: "",
+          chars: 0,
+          bg: generated.gameplayFile,
+          music: "none",
+          source: generated.source,
+        };
+      }
       let text = body.text;
       let title = body.title;
       let profession: string | undefined;

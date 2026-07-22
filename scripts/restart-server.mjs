@@ -100,6 +100,19 @@ function repoAppPids() {
 }
 
 async function portPids() {
+  if (process.platform === "win32") {
+    const { stdout } = await tryRun("netstat", ["-ano", "-p", "tcp"]);
+    const ids = new Set();
+    for (const line of stdout.split(/\r?\n/)) {
+      const parts = line.trim().split(/\s+/);
+      if (parts.length < 5 || parts[0] !== "TCP" || parts[3] !== "LISTENING") continue;
+      const local = parts[1] || "";
+      if (!local.endsWith(`:${PORT}`)) continue;
+      const pid = Number(parts[4]);
+      if (Number.isFinite(pid) && pid > 1) ids.add(pid);
+    }
+    return [...ids];
+  }
   const { stdout } = await tryRun("ss", ["-ltnpH", `sport = :${PORT}`]);
   const ids = new Set();
   for (const match of stdout.matchAll(/pid=(\d+)/g)) ids.add(Number(match[1]));
@@ -219,7 +232,7 @@ async function waitForWorkerHeartbeat(workerPid, startAfter) {
 async function startDetachedFallback() {
   mkdirSync(dirname(LOG_FILE), { recursive: true });
   const out = openSync(LOG_FILE, "a");
-  const child = spawn("npm", ["run", "server"], {
+  const child = spawn(process.execPath, ["--import", "tsx", "--experimental-sqlite", "server/index.ts"], {
     cwd: ROOT,
     detached: true,
     stdio: ["ignore", out, out],

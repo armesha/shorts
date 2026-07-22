@@ -2156,3 +2156,19 @@ hypnotic tunnel, kinetic depth dots, aperture bars, neon ladder, ray afterimage 
 ВАЖНО (рендер кириллицы/умляутов/ñ в headless Chrome): титры рисуются шрифтом DejaVu Sans — все 5 языков
 рендерятся корректно (проверено на ru/de/es). Вариации (1 тип → N обликов через `H.v`) — задел готов
 (`variants/<key>.json` + `gen-matrix-from-variants.mjs`), но в текущем паке НЕ используются (77 = по 1 на тип).
+
+## Редактор Telegram-кружков
+
+Во вкладке `/editor` → «Кружочки» находится отдельный редактор компоновки динамического Shorts. Он не является template-pack и не меняет обычный JSON-редактор карточек.
+
+- UI: `web/public/circle-editor/`, React-вкладка: `web/src/pages/TemplateEditor.tsx`.
+- API-мост: `server/routes/circle-editor.ts`; доступ только администраторам.
+- Внешний проект задаётся `TG_CIRCLES_DIR`; без переменной используется соседняя папка `../tg circles`.
+- Раскладка сохраняется в `tg circles/config.json`: координаты и размеры кружка, загадки и баннера.
+- Кнопка генерации запускает `tg circles/src/render-cli.ts`; Telegram-кружок берётся из `downloads/`, gameplay — из `gameplay/`, результат — из `output/`.
+- Режим кружка «Случайно — без повторов» хранит ротацию в `.runtime/render-rotation.json`: каждый доступный кружок используется один раз за цикл.
+- Gameplay-файл разрешено повторять; внутри него сохраняются использованные временные диапазоны, поэтому новый рендер получает другой непересекающийся отрезок, пока в ролике есть свободное место.
+- Математические примеры генерируются случайно и сверяются с той же постоянной историей.
+- Звук берётся только из Telegram-кружка. Gameplay и баннер в итоговом миксе без звука.
+
+Проверка: `npm run typecheck`, `npm run web:build`, затем авторизованный GET `/api/circle-editor` и тестовый POST `/api/circle-editor/render`.

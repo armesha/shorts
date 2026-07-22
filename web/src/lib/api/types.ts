@@ -61,6 +61,7 @@ export interface Generator {
   name: string;
   ai: boolean;
   preFact?: boolean; // pre-built video pack — Studio shows a random video instead of a text card
+  liveVideo?: boolean; // video assembled on demand from an external source
   longVideo?: boolean; // long pre-built compilation assembled from many short scenes
   gallery?: boolean; // static deck (deterministic per-card render) — browsable in the Gallery page
   total: number;
@@ -323,6 +324,8 @@ export interface LowDeckRow {
 }
 
 export interface GeneratedPreview {
+  liveVideo?: boolean;
+  deck?: string;
   imageUrl: string;
   title: string;
   text: string;

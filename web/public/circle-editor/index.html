@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Редактор кружочков</title>
+  <link rel="stylesheet" href="editor.css?v=20260722-5">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <strong>Кружочки</strong>
+      <span>Компоновка Telegram Shorts</span>
+    </div>
+    <div class="top-actions">
+      <label>Имя шаблона <input id="templateName" maxlength="80" value="Telegram-кружочки"></label>
+      <label>Кружок <select id="sourceSelect"></select></label>
+      <label>Gameplay <select id="gameplaySelect"></select></label>
+      <button id="saveButton" class="secondary">Сохранить</button>
+      <button id="renderButton" class="primary">Сгенерировать видео</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <aside class="panel layers-panel">
+      <div class="panel-title">Слои</div>
+      <button class="layer active" data-select="puzzle"><span class="layer-icon">?</span><span><b>Загадка</b><small>белый текст сверху</small></span></button>
+      <button class="layer" data-select="circle"><span class="layer-icon round">●</span><span><b>Кружок</b><small>видео из Telegram</small></span></button>
+      <button class="layer" data-select="banner"><span class="layer-icon">AD</span><span><b>Баннер</b><small>анимация Yuki</small></span></button>
+      <div class="hint">Перетаскивайте блоки прямо на холсте. Потяните розовый маркер в правом нижнем углу, чтобы изменить размер.</div>
+    </aside>
+
+    <section class="stage-column">
+      <div id="stageViewport" class="stage-viewport">
+        <div id="sceneShell" class="scene-shell">
+          <div id="scene" class="scene">
+            <video id="gameplayVideo" class="background" muted autoplay loop playsinline></video>
+            <div class="shade"></div>
+            <div id="puzzle" class="editable puzzle selected" data-kind="puzzle">
+              <div class="puzzle-label">РЕШИ ЗА 3 СЕК</div>
+              <div class="puzzle-example">9 × 4 − 20 = ?</div>
+              <i class="resize-handle" aria-hidden="true"></i>
+            </div>
+            <div id="circle" class="editable circle" data-kind="circle">
+              <video id="circleVideo" muted autoplay loop playsinline></video>
+              <i class="resize-handle" aria-hidden="true"></i>
+            </div>
+            <div id="banner" class="editable banner" data-kind="banner">
+              <img src="/api/circle-editor/banner-preview.png" alt="Баннер Yuki">
+              <i class="resize-handle" aria-hidden="true"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="stage-meta"><span>1080 × 1920</span><span id="zoomValue"></span></div>
+    </section>
+
+    <aside class="panel props-panel">
+      <div class="panel-title">Положение и размер</div>
+      <div id="props"></div>
+      <div class="status-card">
+        <b id="statusTitle">Готово к работе</b>
+        <span id="statusText">Выберите файлы, расставьте элементы и запустите генерацию.</span>
+      </div>
+      <div id="result" class="result" hidden>
+        <video id="resultVideo" controls playsinline></video>
+        <a id="resultLink" target="_blank" rel="noreferrer">Открыть готовое видео</a>
+      </div>
+    </aside>
+  </main>
+
+  <script src="editor.js?v=20260722-5"></script>
+</body>
+</html>
