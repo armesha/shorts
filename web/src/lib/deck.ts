@@ -110,7 +110,7 @@ export const deckLabel = (id: string, name: string): string =>
 /** Content language of each built-in deck (deck id → 2-letter lang). Custom packs carry their own lang. */
 export const DECK_LANG: Record<string, string> = {
   ru: "ru", de: "de", it: "it", fr: "fr", en: "en", pt: "pt", ro: "ro", cs: "cs", nl: "nl", ar: "ar", hi: "hi", id: "id", ja: "ja", psych: "de", islamic: "ar", christian: "en", "fact-en": "en", "fact-ru": "ru", "fact-es": "es", "fact-de": "de", "fact-it": "it", "fact-fr": "fr", "fact-pt": "pt", "quotes-ru": "ru", "quotes-ar": "ar", "islamic-quotes-ar": "ar", "islamic-facts-ar": "ar", "quotes-en": "en", "christian-quotes-en": "en", "christian-facts-en": "en", "quotes-it": "it", "quotes-es": "es", "quotes-fr": "fr", "quotes-pt": "pt", "quotes-hi": "hi", "quotes-id": "id", "quotes-de": "de", "quote-video-ru": "ru", "quote-video-en": "en", "quote-video-es": "es", "quote-video-it": "it", "quote-video-fr": "fr", "quote-video-pt": "pt", "quote-video-hi": "hi", "quote-video-id": "id", "quote-video-ar": "ar", "quote-video-de": "de", "quotes-de-1": "de", "quotes-de-2": "de", "quotes-de-3": "de", "prayers-de": "de", "prayers-en": "en", space: "en", "space-es": "es", "visual-riddles": "ru", "voiced-memes-ru": "ru", "long-anecdotes-ru": "ru", "long-anecdotes-soul-ru": "ru", "long-islamic-ar": "ar", "long-christian-en": "en", "visual-riddles-de": "de", "visual-riddles-en": "en", "visual-riddles-it": "it", "visual-riddles-es": "es", "visual-riddles-fr": "fr", "visual-riddles-pt": "pt", "animal-superheroes": "ru", "animal-superheroes-en": "en", "illusions-3d": "ru", "illusions-3d-de": "de", "illusions-3d-en": "en", "illusions-en": "en", "illusions-de": "de", "illusions-it": "it", "illusions-es": "es", "illusions-ru": "ru", "illusions-fr": "fr", "illusions-pt": "pt", "illusions-hi": "hi", "illusions-id": "id", "illusions-ar": "ar",
-  "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-es": "es", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar",
+  "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-es": "es", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar", "telegram-circles": "ru",
 };
 
 /** Uppercase 2-letter tag for a language code. */
@@ -339,7 +339,7 @@ export type DeckPickItem = {
 
 export type DeckGroup = { key: string; title: string; items: DeckPickItem[] };
 
-type GenLike = { id: string; name: string; total?: number; preFact?: boolean; longVideo?: boolean };
+type GenLike = { id: string; name: string; total?: number; preFact?: boolean; liveVideo?: boolean; longVideo?: boolean };
 type PackLike = { id: string; name: string; lang: string };
 
 /**
@@ -371,7 +371,7 @@ export function buildDeckGroups(
     if (opts.requireTotal && !(g.total && g.total > 0)) continue;
     if (exclude.has(g.id)) continue;
     const lang = DECK_LANG[g.id] || "en";
-    push(lang, { id: g.id, label: deckLabel(g.id, g.name), lang, video: !!g.preFact, longVideo: !!g.longVideo });
+    push(lang, { id: g.id, label: deckLabel(g.id, g.name), lang, video: !!(g.preFact || g.liveVideo), longVideo: !!g.longVideo });
   }
   for (const p of packs) {
     const id = `pack:${p.id}`;

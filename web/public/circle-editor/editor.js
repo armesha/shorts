@@ -129,13 +129,13 @@
   document.querySelectorAll(".layer").forEach((button) => button.addEventListener("click", () => select(button.dataset.select)));
 
   function fillSelect(select, values, withRandom = false) {
-    const random = withRandom ? '<option value="__random__">Случайно — без повторов</option>' : "";
+    const random = withRandom ? '<option value="__telegram__">Прямо из Telegram — без повторов</option><option value="__random__">Из скачанных — без повторов</option>' : "";
     select.innerHTML = random + values.map((value) => `<option value="${value.replace(/&/g, "&amp;").replace(/"/g, "&quot;")}">${value}</option>`).join("");
   }
 
   function updateMedia() {
     if (gameplaySelect.value) $("#gameplayVideo").src = mediaUrl("gameplay", gameplaySelect.value);
-    const previewSource = sourceSelect.value === "__random__"
+    const previewSource = sourceSelect.value === "__random__" || sourceSelect.value === "__telegram__"
       ? sourceFiles[Math.floor(Math.random() * sourceFiles.length)]
       : sourceSelect.value;
     if (previewSource) $("#circleVideo").src = mediaUrl("source", previewSource);
@@ -152,7 +152,7 @@
     if (!layout) return setStatus("Редактор не загружен", "Обновите страницу после запуска backend.", "error");
     setStatus("Сохраняю", "Записываю раскладку в config.json…", "busy");
     await api("/circle-editor/layout", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ layout }) });
-    setStatus("Сохранено", "Следующие автоматические ролики тоже используют эту раскладку.");
+    setStatus("Шаблон сохранён", "Telegram-кружочки теперь видны в библиотеке источников Студии и используют эту раскладку.");
   }
 
   async function generate() {
@@ -196,7 +196,7 @@
       render();
       select("puzzle");
       updateMedia();
-      if (!data.sources.length || !data.gameplays.length) setStatus("Не хватает файлов", "В tg circles должны быть кружки в downloads и gameplay-видео.", "error");
+      if (!data.gameplays.length) setStatus("Нет gameplay", "Добавьте хотя бы одно фоновое видео в tg circles/gameplay.", "error");
     } catch (error) {
       render();
       const message = error.message || String(error);

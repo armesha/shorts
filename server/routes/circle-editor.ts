@@ -192,7 +192,11 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
 
   app.put("/api/circle-editor/layout", async (req, reply) => {
     if (!requireAdmin(req, reply, db)) return;
-    return { layout: await saveLayout((req.body as { layout?: unknown } | undefined)?.layout), saved: true };
+    return {
+      layout: await saveLayout((req.body as { layout?: unknown } | undefined)?.layout),
+      saved: true,
+      template: { id: "telegram-circles", name: "Telegram-кружочки" },
+    };
   });
 
   app.get("/api/circle-editor/media/:kind/:file", async (req, reply) => {
@@ -214,25 +218,24 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
     if (rendering) return reply.code(409).send({ error: "Другой ролик уже генерируется" });
     const body = (req.body || {}) as { source?: string; gameplay?: string; layout?: unknown };
     const requestedSource = String(body.source || "");
-    const source = requestedSource === "__random__" ? "__random__" : basename(requestedSource);
+    const source = requestedSource === "__random__" || requestedSource === "__telegram__" ? requestedSource : basename(requestedSource);
     const gameplay = basename(String(body.gameplay || ""));
-    if (source !== "__random__" && !mediaPath("source", source)) return reply.code(400).send({ error: "Выберите Telegram-кружок" });
+    if (source !== "__random__" && source !== "__telegram__" && !mediaPath("source", source)) return reply.code(400).send({ error: "Выберите Telegram-кружок" });
     if (!mediaPath("gameplay", gameplay)) return reply.code(400).send({ error: "Выберите gameplay" });
     await saveLayout(body.layout);
     rendering = true;
     try {
-      const stdout = await run(
-        process.execPath,
-        [resolve(projectDir(), "node_modules/tsx/dist/cli.mjs"), "src/render-cli.ts", "--source", source, "--gameplay", gameplay, "--message-id", String(Date.now() % 2_000_000_000)],
-        projectDir(),
-      );
+      const args = source === "__telegram__"
+        ? [resolve(projectDir(), "node_modules/tsx/dist/cli.mjs"), "src/render-telegram-cli.ts", "--gameplay", gameplay]
+        : [resolve(projectDir(), "node_modules/tsx/dist/cli.mjs"), "src/render-cli.ts", "--source", source, "--gameplay", gameplay, "--message-id", String(Date.now() % 2_000_000_000)];
+      const stdout = await run(process.execPath, args, projectDir());
       const line = stdout.split(/\r?\n/).reverse().find((value) => value.trim().startsWith("{"));
-      const result = line ? JSON.parse(line) as { file?: string; sourceFile?: string; gameplayFile?: string } : {};
+      const result = line ? JSON.parse(line) as { file?: string; source?: string; sourceFile?: string; gameplayFile?: string } : {};
       const file = basename(result.file || `${source.replace(/\.[^.]+$/, "")}-short.mp4`);
       if (!mediaPath("output", file)) throw new Error("Рендер завершён, но итоговый файл не найден");
       return {
         file,
-        sourceFile: result.sourceFile || source,
+        sourceFile: result.sourceFile || result.source || source,
         gameplayFile: result.gameplayFile || gameplay,
         url: `/api/circle-editor/media/output/${encodeURIComponent(file)}`,
       };

@@ -68,10 +68,10 @@ export default function Studio() {
   const packId = isPack ? deck.slice(5) : "";
   const curPack = sourcePacks.find((p) => `pack:${p.id}` === deck);
   const g = gens.find((x) => x.id === deck) ?? gens[0]; // выбранная встроенная дека (остаток/инфо)
-  const hasVideoSources = gens.some((x) => x.total > 0 && x.preFact);
-  const hasTextSources = gens.some((x) => x.total > 0 && !x.preFact) || sourcePacks.length > 0;
+  const hasVideoSources = gens.some((x) => x.total > 0 && (x.preFact || x.liveVideo));
+  const hasTextSources = gens.some((x) => x.total > 0 && !x.preFact && !x.liveVideo) || sourcePacks.length > 0;
   const showPackKind = hasVideoSources && hasTextSources;
-  const selectedIsVideo = !isPack && !!g?.preFact;
+  const selectedIsVideo = !isPack && !!(g?.preFact || g?.liveVideo);
   const selectedIsLongVideo = !isPack && !!g?.longVideo;
   // «За раз» не больше, чем осталось СВОБОДНЫХ (неиспользованных) карточек в выбранной деке/паке —
   // для всех (и юзеров, и админов). Для пака берём available (cards − used), не общее число карточек.
@@ -180,6 +180,17 @@ export default function Studio() {
     try {
       // preFact deck (e.g. fact-en): not rendered from text — just play a random PRE-BUILT video.
       const cur = gens.find((x) => x.id === deck);
+      if (cur?.liveVideo) {
+        const r = await apiClient.generateAnecdoteVideo({ deck });
+        if ((r as { error?: string })?.error || !r?.videoUrl) {
+          setErr((r as { error?: string })?.error || t("studio.genFailed"));
+          return;
+        }
+        setPreview(null);
+        setText("");
+        setVideo(r);
+        return;
+      }
       if (cur?.preFact) {
         const r = await apiClient.factRandom(deck);
         if (r?.error || !r?.videoUrl) {
