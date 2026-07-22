@@ -41,8 +41,16 @@ data/audio-avatars/*.png
 data/audio-lipsync/runtime/
 data/audio-lipsync/cache/
 
+# large generated/runtime image libraries — kept local, not versioned
+/assets/template-packs/new-memes/
+/server/public/memes/images/
+
+# generated exports and remote audit scratch
+/output/
+/.remote-audit/
+
 # stray generated preview images (not source)
-images/
+/images/
 
 # scratch / tmp working dir — not source
 tmp/
