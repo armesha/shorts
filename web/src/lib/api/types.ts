@@ -324,6 +324,8 @@ export interface LowDeckRow {
 }
 
 export interface GeneratedPreview {
+  liveVideo?: boolean;
+  deck?: string;
   imageUrl: string;
   title: string;
   text: string;

@@ -219,6 +219,17 @@ export default function Studio() {
             ? { text: preview?.text, title: preview?.title, bg: bgName, avoidBg: bgName ? undefined : preview?.bg, deck }
             : { text, title: preview?.title, bg: preview?.bg, deck };
       const p = await apiClient.generateAnecdote(body);
+      if (p.liveVideo || p.deck === "telegram-circles") {
+        const r = await apiClient.generateAnecdoteVideo({ deck: p.deck || deck });
+        if ((r as { error?: string })?.error || !r?.videoUrl) {
+          setErr((r as { error?: string })?.error || t("studio.genFailed"));
+          return;
+        }
+        setPreview(null);
+        setText("");
+        setVideo(r);
+        return;
+      }
       // Server returns { error } with HTTP 200 when the pack is exhausted — handle it, never crash.
       if ((p as { error?: string })?.error || !p?.text) {
         setErr((p as { error?: string })?.error || t("studio.genFailed"));

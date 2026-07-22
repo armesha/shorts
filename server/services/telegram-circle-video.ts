@@ -1,10 +1,20 @@
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { copyFile, mkdir, rm } from "node:fs/promises";
 import { basename, dirname, resolve } from "node:path";
 
 function projectDir(): string {
   return resolve(process.cwd(), process.env.TG_CIRCLES_DIR?.trim() || "../tg circles");
+}
+
+export function telegramCircleTemplateName(): string {
+  try {
+    const config = JSON.parse(readFileSync(resolve(projectDir(), "config.json"), "utf8")) as { templateName?: unknown };
+    const name = typeof config.templateName === "string" ? config.templateName.trim().slice(0, 80) : "";
+    return name || "Telegram-кружочки";
+  } catch {
+    return "Telegram-кружочки";
+  }
 }
 
 function run(command: string, args: string[], cwd: string): Promise<string> {

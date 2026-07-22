@@ -87,10 +87,16 @@ function layoutFromConfig(config: Record<string, unknown>): Layout {
   });
 }
 
-async function saveLayout(layoutValue: unknown): Promise<Layout> {
+function cleanTemplateName(value: unknown): string {
+  return typeof value === "string" ? value.replace(/\s+/g, " ").trim().slice(0, 80) : "";
+}
+
+async function saveLayout(layoutValue: unknown, nameValue?: unknown): Promise<Layout> {
   const layout = sanitizeLayout(layoutValue);
   const file = resolve(projectDir(), "config.json");
   const config = loadCircleConfig();
+  const requestedName = cleanTemplateName(nameValue);
+  if (requestedName) config.templateName = requestedName;
   const video = ((config.video ||= {}) as Record<string, unknown>);
   video.circleLeft = layout.circle.x;
   video.circleTop = layout.circle.y;
@@ -184,6 +190,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
     const config = loadCircleConfig();
     return {
       layout: layoutFromConfig(config),
+      template: { id: "telegram-circles", name: cleanTemplateName(config.templateName) || "Telegram-кружочки" },
       sources: listVideos(resolve(root, "downloads")),
       gameplays: listVideos(resolve(root, "gameplay")),
       rendering,
@@ -192,10 +199,12 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
 
   app.put("/api/circle-editor/layout", async (req, reply) => {
     if (!requireAdmin(req, reply, db)) return;
+    const body = req.body as { layout?: unknown; name?: unknown } | undefined;
+    const name = cleanTemplateName(body?.name) || "Telegram-кружочки";
     return {
-      layout: await saveLayout((req.body as { layout?: unknown } | undefined)?.layout),
+      layout: await saveLayout(body?.layout, name),
       saved: true,
-      template: { id: "telegram-circles", name: "Telegram-кружочки" },
+      template: { id: "telegram-circles", name },
     };
   });
 

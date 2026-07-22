@@ -7,6 +7,7 @@
   const props = $("#props");
   const sourceSelect = $("#sourceSelect");
   const gameplaySelect = $("#gameplaySelect");
+  const templateNameInput = $("#templateName");
   const elements = { puzzle: $("#puzzle"), circle: $("#circle"), banner: $("#banner") };
   let scale = 0.35;
   let selected = "puzzle";
@@ -151,7 +152,9 @@
   async function save() {
     if (!layout) return setStatus("Редактор не загружен", "Обновите страницу после запуска backend.", "error");
     setStatus("Сохраняю", "Записываю раскладку в config.json…", "busy");
-    await api("/circle-editor/layout", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ layout }) });
+    const name = templateNameInput.value.trim();
+    if (!name) throw new Error("Введите имя шаблона");
+    await api("/circle-editor/layout", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ layout, name }) });
     setStatus("Шаблон сохранён", "Telegram-кружочки теперь видны в библиотеке источников Студии и используют эту раскладку.");
   }
 
@@ -189,6 +192,7 @@
     try {
       const data = await api("/circle-editor");
       layout = data.layout;
+      templateNameInput.value = data.template?.name || "Telegram-кружочки";
       sourceFiles = data.sources;
       fillSelect(sourceSelect, data.sources, true);
       fillSelect(gameplaySelect, data.gameplays);
