@@ -14,7 +14,7 @@ export default function TemplateEditor() {
   const { t, lang } = useT();
   const [tab, setTab] = useState<"templates" | "circles">("templates");
   const editorSrc = `${EDITOR_URL}?lang=${lang}&v=${EDITOR_VERSION}`;
-  const circleSrc = `${CIRCLE_EDITOR_URL}?lang=${lang}&v=20260722-2`;
+  const circleSrc = `${CIRCLE_EDITOR_URL}?lang=${lang}&v=20260722-3`;
   const activeSrc = tab === "templates" ? editorSrc : circleSrc;
 
   return (

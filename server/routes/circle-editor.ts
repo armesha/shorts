@@ -213,9 +213,10 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
     if (!requireAdmin(req, reply, db)) return;
     if (rendering) return reply.code(409).send({ error: "Другой ролик уже генерируется" });
     const body = (req.body || {}) as { source?: string; gameplay?: string; layout?: unknown };
-    const source = basename(String(body.source || ""));
+    const requestedSource = String(body.source || "");
+    const source = requestedSource === "__random__" ? "__random__" : basename(requestedSource);
     const gameplay = basename(String(body.gameplay || ""));
-    if (!mediaPath("source", source)) return reply.code(400).send({ error: "Выберите Telegram-кружок" });
+    if (source !== "__random__" && !mediaPath("source", source)) return reply.code(400).send({ error: "Выберите Telegram-кружок" });
     if (!mediaPath("gameplay", gameplay)) return reply.code(400).send({ error: "Выберите gameplay" });
     await saveLayout(body.layout);
     rendering = true;
@@ -226,10 +227,15 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
         projectDir(),
       );
       const line = stdout.split(/\r?\n/).reverse().find((value) => value.trim().startsWith("{"));
-      const result = line ? JSON.parse(line) as { file?: string } : {};
+      const result = line ? JSON.parse(line) as { file?: string; sourceFile?: string; gameplayFile?: string } : {};
       const file = basename(result.file || `${source.replace(/\.[^.]+$/, "")}-short.mp4`);
       if (!mediaPath("output", file)) throw new Error("Рендер завершён, но итоговый файл не найден");
-      return { file, url: `/api/circle-editor/media/output/${encodeURIComponent(file)}` };
+      return {
+        file,
+        sourceFile: result.sourceFile || source,
+        gameplayFile: result.gameplayFile || gameplay,
+        url: `/api/circle-editor/media/output/${encodeURIComponent(file)}`,
+      };
     } finally {
       rendering = false;
     }

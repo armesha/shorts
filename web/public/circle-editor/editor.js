@@ -10,6 +10,7 @@
   const elements = { puzzle: $("#puzzle"), circle: $("#circle"), banner: $("#banner") };
   let scale = 0.35;
   let selected = "puzzle";
+  let sourceFiles = [];
   let layout = {
     circle: { x: 130, y: 300, size: 820 },
     puzzle: { x: 90, y: 92, width: 900, labelSize: 30, puzzleSize: 68, gap: 14 },
@@ -127,13 +128,17 @@
   });
   document.querySelectorAll(".layer").forEach((button) => button.addEventListener("click", () => select(button.dataset.select)));
 
-  function fillSelect(select, values) {
-    select.innerHTML = values.map((value) => `<option value="${value.replace(/&/g, "&amp;").replace(/"/g, "&quot;")}">${value}</option>`).join("");
+  function fillSelect(select, values, withRandom = false) {
+    const random = withRandom ? '<option value="__random__">Случайно — без повторов</option>' : "";
+    select.innerHTML = random + values.map((value) => `<option value="${value.replace(/&/g, "&amp;").replace(/"/g, "&quot;")}">${value}</option>`).join("");
   }
 
   function updateMedia() {
     if (gameplaySelect.value) $("#gameplayVideo").src = mediaUrl("gameplay", gameplaySelect.value);
-    if (sourceSelect.value) $("#circleVideo").src = mediaUrl("source", sourceSelect.value);
+    const previewSource = sourceSelect.value === "__random__"
+      ? sourceFiles[Math.floor(Math.random() * sourceFiles.length)]
+      : sourceSelect.value;
+    if (previewSource) $("#circleVideo").src = mediaUrl("source", previewSource);
   }
 
   async function api(path, options) {
@@ -166,7 +171,7 @@
       $("#resultVideo").src = url;
       $("#resultLink").href = url;
       $("#result").hidden = false;
-      setStatus("Видео готово", result.file);
+      setStatus("Видео готово", `${result.file} · кружок: ${result.sourceFile}`);
     } catch (error) {
       setStatus("Не удалось сгенерировать", error.message || String(error), "error");
     } finally {
@@ -184,7 +189,8 @@
     try {
       const data = await api("/circle-editor");
       layout = data.layout;
-      fillSelect(sourceSelect, data.sources);
+      sourceFiles = data.sources;
+      fillSelect(sourceSelect, data.sources, true);
       fillSelect(gameplaySelect, data.gameplays);
       fit();
       render();
