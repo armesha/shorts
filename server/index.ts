@@ -64,6 +64,7 @@ import { registerMemesRoutes } from "./routes/memes.ts";
 import { registerGameRoutes } from "./routes/game.ts";
 import { registerIdeasRoutes } from "./routes/ideas.ts";
 import { registerSzzRoutes } from "./routes/szz.ts";
+import { registerCircleEditorRoutes } from "./routes/circle-editor.ts";
 
 const base = loadBaseConfig();
 const db = openDb(base.dbPath);
@@ -377,6 +378,7 @@ registerMemesRoutes(app, deps);
 registerGameRoutes(app);
 registerIdeasRoutes(app, db, deps);
 registerSzzRoutes(app);
+registerCircleEditorRoutes(app, db);
 
 app
   .listen({ port: base.port, host: "0.0.0.0" })
