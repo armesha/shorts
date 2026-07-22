@@ -10,7 +10,11 @@
   const elements = { puzzle: $("#puzzle"), circle: $("#circle"), banner: $("#banner") };
   let scale = 0.35;
   let selected = "puzzle";
-  let layout = null;
+  let layout = {
+    circle: { x: 130, y: 300, size: 820 },
+    puzzle: { x: 90, y: 92, width: 900, labelSize: 30, puzzleSize: 68, gap: 14 },
+    banner: { x: 90, y: 830, width: 900, height: 260 },
+  };
   let gesture = null;
 
   const clamp = (n, min, max) => Math.min(max, Math.max(min, Math.round(Number(n) || 0)));
@@ -80,6 +84,7 @@
   }
 
   function beginGesture(event, kind, resize) {
+    if (!layout || !layout[kind]) return;
     if (event.button !== 0) return;
     event.preventDefault();
     select(kind);
@@ -139,12 +144,14 @@
   }
 
   async function save() {
+    if (!layout) return setStatus("Редактор не загружен", "Обновите страницу после запуска backend.", "error");
     setStatus("Сохраняю", "Записываю раскладку в config.json…", "busy");
     await api("/circle-editor/layout", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ layout }) });
     setStatus("Сохранено", "Следующие автоматические ролики тоже используют эту раскладку.");
   }
 
   async function generate() {
+    if (!layout) return setStatus("Редактор не загружен", "Обновите страницу после запуска backend.", "error");
     const button = $("#renderButton");
     button.disabled = true;
     $("#result").hidden = true;
@@ -185,7 +192,15 @@
       updateMedia();
       if (!data.sources.length || !data.gameplays.length) setStatus("Не хватает файлов", "В tg circles должны быть кружки в downloads и gameplay-видео.", "error");
     } catch (error) {
-      setStatus("Редактор недоступен", error.message || String(error), "error");
+      render();
+      const message = error.message || String(error);
+      setStatus(
+        "Редактор недоступен",
+        message.includes("Not Found") || message.includes("404")
+          ? "Backend не подхватил API кружков. Перезапустите Shorts Factory и обновите страницу."
+          : message,
+        "error",
+      );
     }
   })();
 })();
