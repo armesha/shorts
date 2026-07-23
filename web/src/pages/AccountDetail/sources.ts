@@ -35,7 +35,11 @@ const inferredBuiltinLang = (id: string): string => {
 
 /** Язык выбранного контента (встроенный или свой пак) — для тега и проверки совпадения с языком канала. */
 export const contentLang = (packs: PackSummary[], id: string): string =>
-  id.startsWith("pack:") ? packs.find((p) => `pack:${p.id}` === id)?.lang || "" : inferredBuiltinLang(id);
+  id.startsWith("pack:")
+    ? packs.find((p) => `pack:${p.id}` === id)?.lang || ""
+    : id.startsWith("telegram-circles:")
+      ? "ru"
+      : inferredBuiltinLang(id);
 
 /** Источники, чей язык не совпадает с языком канала. */
 export const mismatchedSources = (

@@ -21,12 +21,15 @@ import type { GenWorker, Job } from "./gen-queue.ts";
 import type { DeckAccess } from "./deck-access.ts";
 import { isBuiltInDeckGloballyVisible, isCustomPackGloballyVisible } from "./global-pack-visibility.ts";
 import type { BuildLibraryVideo } from "./library-build.ts";
+import { isCircleDeckId } from "./circle-templates.ts";
+import { buildTelegramCircleLibraryVideo } from "./telegram-circle-video.ts";
 
 export function makeGenQueueWorker(
   db: Db,
   deps: {
     deckAccess: Pick<DeckAccess, "accountSourceDecks" | "builtinDeckVisibleForUser">;
     buildLibraryVideo: BuildLibraryVideo;
+    outputDir: string;
   },
 ): GenWorker {
   const { accountSourceDecks, builtinDeckVisibleForUser } = deps.deckAccess;
@@ -44,6 +47,16 @@ export function makeGenQueueWorker(
     const pickSeed = (sourceDeck: string, offset = 0) => `${job.accountId}|${sourceDeck}|${job.id}|${job.done}|${offset}`;
 
     const generateFromSource = async (sourceDeck: string): Promise<"made" | "exhausted"> => {
+      if (isCircleDeckId(sourceDeck)) {
+        await buildTelegramCircleLibraryVideo({
+          db,
+          outputRoot: deps.outputDir,
+          accountId: job.accountId,
+          deckId: sourceDeck,
+        });
+        return "made";
+      }
+
       if (isPackDeckId(sourceDeck)) {
         const pack = getPack(sourceDeck.slice(5), ownerId, isSuperAdminUser(db.getUserById(ownerId)));
         if (!pack || !pack.templates.length) throw new Error(`Пак «${sourceDeck}» не найден или без шаблона`);

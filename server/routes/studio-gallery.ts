@@ -26,18 +26,16 @@ import type { RouteDeps, LimitedReplyish } from "./deps.ts";
 import { generateTelegramCircleVideo } from "../services/telegram-circle-video.ts";
 import {
   activateCircleTemplate,
-  activeCircleTemplateId,
+  CIRCLE_DECK_ID,
+  CIRCLE_DECK_PREFIX,
+  circleTemplateIdFromDeckId,
   listCircleTemplates,
 } from "../services/circle-templates.ts";
 
 const STUDIO_IMAGE_LIMIT = { limit: 10, windowMs: 5 * 60 * 1000 };
 const STUDIO_VIDEO_LIMIT = { limit: 20, windowMs: 10 * 60 * 1000 };
-const CIRCLE_DECK = "telegram-circles";
-const CIRCLE_DECK_PREFIX = `${CIRCLE_DECK}:`;
-
 function circleTemplateId(deckId?: string): string | null {
-  if (deckId === CIRCLE_DECK) return activeCircleTemplateId();
-  return deckId?.startsWith(CIRCLE_DECK_PREFIX) ? deckId.slice(CIRCLE_DECK_PREFIX.length) : null;
+  return circleTemplateIdFromDeckId(deckId);
 }
 
 export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
@@ -148,7 +146,7 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
   app.post("/api/generate/anecdote", async (req, reply) => {
     const body = (req.body as { text?: string; title?: string; bg?: string; avoidBg?: string; deck?: string }) ?? {};
     const templateId = circleTemplateId(body.deck);
-    const deck = getDeck(templateId ? CIRCLE_DECK : body.deck);
+    const deck = getDeck(templateId ? CIRCLE_DECK_ID : body.deck);
     if (!deckAllowed(req, deck.id)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
     if (deck.liveVideo) return { liveVideo: true, deck: templateId ? `${CIRCLE_DECK_PREFIX}${templateId}` : deck.id };
     if (!enforceGenerationWindow(req, reply as LimitedReplyish, "studio-image", STUDIO_IMAGE_LIMIT)) return;
@@ -191,7 +189,7 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
   app.post("/api/generate/anecdote-video", async (req, reply) => {
     const body = (req.body as { text?: string; title?: string; bg?: string; music?: string; deck?: string }) ?? {};
     const templateId = circleTemplateId(body.deck);
-    const deck = getDeck(templateId ? CIRCLE_DECK : body.deck);
+    const deck = getDeck(templateId ? CIRCLE_DECK_ID : body.deck);
     if (!deckAllowed(req, deck.id)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
     if (!enforceGenerationWindow(req, reply as LimitedReplyish, "studio-video", STUDIO_VIDEO_LIMIT)) return;
     return runHeavyGenerationLimited(req, reply as LimitedReplyish, "studio-video", async () => {

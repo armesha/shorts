@@ -35,7 +35,7 @@ const buildLibraryVideo = makeBuildLibraryVideo({
 });
 
 attachGenQueueDb(db.db, { recoverRunning: true });
-initGenQueue(makeGenQueueWorker(db, { deckAccess, buildLibraryVideo }));
+initGenQueue(makeGenQueueWorker(db, { deckAccess, buildLibraryVideo, outputDir: base.outputDir }));
 const pollMs = Number(process.env.GEN_QUEUE_POLL_MS || 1500);
 const startedAt = Date.now();
 startGenQueuePolling(pollMs);

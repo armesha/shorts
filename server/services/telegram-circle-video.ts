@@ -1,7 +1,14 @@
 import { spawn } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { copyFile, mkdir, rm } from "node:fs/promises";
 import { basename, dirname, resolve } from "node:path";
+import type { Db } from "../db.ts";
+import {
+  activateCircleTemplate,
+  circleTemplateIdFromDeckId,
+  getCircleTemplate,
+} from "./circle-templates.ts";
 
 function projectDir(): string {
   return resolve(process.cwd(), process.env.TG_CIRCLES_DIR?.trim() || "../tg circles");
@@ -63,4 +70,33 @@ export async function generateTelegramCircleVideo(outputRoot: string, stamp: str
     source: result.source || basename(sourceFile),
     gameplayFile: result.gameplayFile || "",
   };
+}
+
+export async function buildTelegramCircleLibraryVideo(input: {
+  db: Db;
+  outputRoot: string;
+  accountId: number;
+  deckId: string;
+}): Promise<ReturnType<Db["createVideo"]>> {
+  const templateId = circleTemplateIdFromDeckId(input.deckId);
+  const template = templateId ? getCircleTemplate(templateId) : null;
+  if (!template) throw new Error("Шаблон Telegram-кружочков не найден.");
+  await activateCircleTemplate(template.id);
+  const stamp = `library-${input.accountId}-${Date.now()}-${randomUUID().slice(0, 8)}`;
+  const generated = await generateTelegramCircleVideo(input.outputRoot, stamp);
+  try {
+    return input.db.createVideo({
+      accountId: input.accountId,
+      title: template.name,
+      text: "",
+      bg: generated.gameplayFile,
+      music: "none",
+      deck: input.deckId,
+      videoRel: generated.videoRel,
+      imageRel: null,
+    });
+  } catch (error) {
+    await rm(resolve(input.outputRoot, generated.videoRel), { force: true });
+    throw error;
+  }
 }

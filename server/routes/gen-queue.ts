@@ -28,6 +28,7 @@ import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
 import { USER_BATCH_VIDEO_CAP, channelLibraryVideoCap, isMgsUser } from "../infra/account-limits.ts";
 import type { RouteDeps } from "./deps.ts";
 import { thematicBlockDeckSequenceForGeneration } from "./super-admin-channel-blocks.ts";
+import { isCircleDeckId } from "../services/circle-templates.ts";
 
 const USER_GEN_QUEUE_CAP = 100;
 const genQueueRunnerMode = (): "embedded" | "external" =>
@@ -107,8 +108,11 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
         const pack = getPack(deckId.slice(5), ownerId, ownerIsSuperAdmin);
         return !!pack && isLeastPostedRepeatPack(pack);
       });
-      const sharedDeckIds = deckIds.filter((deckId) => !perAccountPackIds.includes(deckId) && !repeatPackIds.includes(deckId));
-      let free = 0;
+      const liveDeckIds = deckIds.filter(isCircleDeckId);
+      const sharedDeckIds = deckIds.filter(
+        (deckId) => !perAccountPackIds.includes(deckId) && !repeatPackIds.includes(deckId) && !liveDeckIds.includes(deckId),
+      );
+      let free = liveDeckIds.length ? Number.MAX_SAFE_INTEGER : 0;
       if (repeatPackIds.length) free = Number.MAX_SAFE_INTEGER;
       if (sharedDeckIds.length) {
         free += Math.max(

@@ -24,6 +24,25 @@ export type CircleTemplate = {
   updatedAt: string;
 };
 
+export const CIRCLE_DECK_ID = "telegram-circles";
+export const CIRCLE_DECK_PREFIX = `${CIRCLE_DECK_ID}:`;
+
+export function isCircleDeckId(deckId: unknown): boolean {
+  const value = String(deckId || "").trim();
+  return value === CIRCLE_DECK_ID || value.startsWith(CIRCLE_DECK_PREFIX);
+}
+
+export function circleTemplateDeckId(templateId: unknown): string {
+  return `${CIRCLE_DECK_PREFIX}${safeId(templateId)}`;
+}
+
+export function circleTemplateIdFromDeckId(deckId: unknown): string | null {
+  const value = String(deckId || "").trim();
+  if (value === CIRCLE_DECK_ID) return activeCircleTemplateId();
+  if (!value.startsWith(CIRCLE_DECK_PREFIX)) return null;
+  return safeId(value.slice(CIRCLE_DECK_PREFIX.length)) || null;
+}
+
 type TemplateStore = { version: 1; items: CircleTemplate[] };
 type ConfigRecord = Record<string, unknown>;
 

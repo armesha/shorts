@@ -654,14 +654,21 @@ export default function AccountDetail() {
   // While generators load, show all to avoid an empty dropdown; always keep the channel's current value.
   const currentDeckIds = new Set([lang, ...selectedSources]);
   const gensIds = new Set(normalGens.map((g) => g.id));
-  const visibleDecksBase =
-    gens.length === 0 ? BUILTIN_DECKS : BUILTIN_DECKS.filter(({ id }) => gensIds.has(id) || currentDeckIds.has(id));
+  const dynamicCircleDecks = normalGens
+    .filter((item) => item.liveVideo && item.id.startsWith("telegram-circles:"))
+    .map((item) => ({ id: item.id, label: item.name }));
+  const visibleDecksBase = gens.length === 0
+    ? BUILTIN_DECKS
+    : [
+        ...BUILTIN_DECKS.filter(({ id }) => gensIds.has(id) || currentDeckIds.has(id)),
+        ...dynamicCircleDecks.filter(({ id }) => !BUILTIN_DECKS.some((item) => item.id === id)),
+      ];
   const visibleLangs = isMainAdmin(user)
     ? visibleDecksBase.filter(({ id }) => !isForbiddenSuperAdminSourceDeck(id))
     : visibleDecksBase;
   const genById = (id: string) => srcGenById(normalGens, id);
-  const hasVideoSources = visibleLangs.some(({ id }) => !!genById(id)?.preFact);
-  const hasTextSources = visibleLangs.some(({ id }) => !genById(id)?.preFact) || packs.length > 0;
+  const hasVideoSources = visibleLangs.some(({ id }) => !!(genById(id)?.preFact || genById(id)?.liveVideo));
+  const hasTextSources = visibleLangs.some(({ id }) => !(genById(id)?.preFact || genById(id)?.liveVideo)) || packs.length > 0;
   const showPackKind = hasVideoSources && hasTextSources;
 
   // Опции дропдаунов контента канала: встроенные паки + группа «Кастомные паки» (свои паки по имени) —

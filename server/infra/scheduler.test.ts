@@ -36,6 +36,34 @@ test("scheduler falls back to other channel sources when the slot deck is empty"
   assert.ok(selection.checkedDecks.includes("en"));
 });
 
+test("scheduler selects a generated Telegram-circle template video bound to the channel", () => {
+  const db = openDb(":memory:");
+  const deck = "telegram-circles:default";
+  const account = db.createAccount({
+    channelName: "Circle channel",
+    lang: deck,
+    channelLang: "ru",
+    sourceDecks: [deck],
+    schedule: ["12:00"],
+  });
+  const ready = db.createVideo({
+    accountId: account.id,
+    title: "Circle template",
+    text: "",
+    bg: "minecraft.mp4",
+    music: "none",
+    deck,
+    videoRel: "circle.mp4",
+    imageRel: null,
+  });
+
+  const selection = selectScheduledVideoForSlot(db, account, "12:00", "2026-07-23");
+
+  assert.equal(selection.video?.id, ready.id);
+  assert.equal(selection.video?.deck, deck);
+  assert.ok(selection.checkedDecks.includes(deck));
+});
+
 test("super-admin scheduler can rarely consume retired soviet poster library videos without source binding", () => {
   const db = openDb(":memory:");
   const admin = db.createUser({ username: "armen", passHash: "x", role: "admin", isSuperAdmin: true });

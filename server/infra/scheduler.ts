@@ -39,7 +39,7 @@ function isLongVideoDeckId(deckId: string): boolean {
 
 function isSchedulerSourceDeck(deckId: string): boolean {
   if (isLongVideoDeckId(deckId)) return false;
-  return DECKS.some((deck) => deck.id === deckId) || isPackDeckId(deckId);
+  return DECKS.some((deck) => deck.id === deckId) || isPackDeckId(deckId) || deckId.startsWith("telegram-circles:");
 }
 
 function uniqueDecks(deckIds: string[]): string[] {

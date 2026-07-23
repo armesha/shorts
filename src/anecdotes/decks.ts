@@ -1203,6 +1203,7 @@ const DECK_LANG: Record<string, string> = {
   "memes-ru": "ru", "memes-en": "en", "memes-de": "de", "memes-fr": "fr", "memes-it": "it", "memes-pt": "pt", "memes-es": "es", "memes-hi": "hi", "memes-id": "id", "memes-ar": "ar", "telegram-circles": "ru",
 };
 export function deckLang(id: string): string {
+  if (id.startsWith("telegram-circles:")) return "ru";
   return DECK_LANG[id] || "";
 }
 // Localized YouTube metadata for the super-admin «Новые мемы» packs (pack:new-memes-<lang>-superadmin).
@@ -1294,6 +1295,7 @@ function synthManualDeck(): Deck {
 export function getDeck(id?: string | null): Deck {
   if (id === MANUAL_VIDEO_DECK) return synthManualDeck();
   if (isPackDeckId(id)) return synthPackDeck(id as string);
+  if (id?.startsWith("telegram-circles:")) return DECKS.find((d) => d.id === "telegram-circles")!;
   return DECKS.find((d) => d.id === id) ?? DECKS.find((d) => d.id === DEFAULT_DECK)!;
 }
 

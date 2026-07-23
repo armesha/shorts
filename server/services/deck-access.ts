@@ -17,6 +17,12 @@ import {
   isBuiltInDeckGloballyVisible,
   isCustomPackGloballyVisible,
 } from "./global-pack-visibility.ts";
+import {
+  CIRCLE_DECK_ID,
+  circleTemplateIdFromDeckId,
+  getCircleTemplate,
+  isCircleDeckId,
+} from "./circle-templates.ts";
 
 type Replyish = { code: (n: number) => { send: (b: unknown) => unknown } };
 const uid = (req: unknown): number => (req as { userId?: number }).userId as number;
@@ -40,6 +46,12 @@ export interface DeckAccess {
 
 export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boolean; isSuperAdminReq: (req: unknown) => boolean }): DeckAccess {
   const { isAdminReq, isSuperAdminReq } = deps;
+  const builtInId = (deckId: string): string => isCircleDeckId(deckId) ? CIRCLE_DECK_ID : deckId;
+  const circleTemplateExists = (deckId: string): boolean => {
+    if (!isCircleDeckId(deckId)) return true;
+    const templateId = circleTemplateIdFromDeckId(deckId);
+    return !!templateId && !!getCircleTemplate(templateId);
+  };
 
   function isGrantableBuiltinDeck(deck: (typeof DECKS)[number]): boolean {
     return !!(deck.adminOnly && deck.grantable);
@@ -76,12 +88,13 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
     function deckAllowed(req: unknown, deckId: string): boolean {
       const user = db.getUserById(uid(req));
       if (isSuperAdminUser(user) && isForbiddenSuperAdminSourceDeck(deckId)) return false;
+      if (!circleTemplateExists(deckId)) return false;
       // Кастомные паки: доступ по владению/гранту (getPack применяет canAccess), а не по hidden.
       if (isPackDeckId(deckId)) {
         const pack = getPack(deckId.slice(5), uid(req), isSuperAdminReq(req));
         return !!pack && isCustomPackGloballyVisible(db, pack);
       }
-      const deck = DECKS.find((d) => d.id === deckId);
+      const deck = DECKS.find((d) => d.id === builtInId(deckId));
       if (!deck || !isBuiltInDeckGloballyVisible(db, deck)) return false;
       if (!builtinDeckOwnedByUser(uid(req), deck)) return false;
       if (isAdminReq(req)) return true;
@@ -93,11 +106,12 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
     function deckAllowedForUser(userId: number, deckId: string): boolean {
       const user = db.getUserById(userId);
       if (isSuperAdminUser(user) && isForbiddenSuperAdminSourceDeck(deckId)) return false;
+      if (!circleTemplateExists(deckId)) return false;
       if (isPackDeckId(deckId)) {
         const pack = getPack(deckId.slice(5), userId, isSuperAdminUser(user));
         return !!pack && isCustomPackGloballyVisible(db, pack);
       }
-      const deck = DECKS.find((d) => d.id === deckId);
+      const deck = DECKS.find((d) => d.id === builtInId(deckId));
       if (deck && !isBuiltInDeckGloballyVisible(db, deck)) return false;
       if (deck && !builtinDeckOwnedByUser(userId, deck)) return false;
       return !!deck && builtinDeckVisibleForUser(userId, deck);
@@ -109,11 +123,12 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
   }
 
   function sourceDeckGloballyVisible(deckId: string, ownerId: number | null | undefined, ownerIsSuperAdmin: boolean): boolean {
+    if (!circleTemplateExists(deckId)) return false;
     if (isPackDeckId(deckId)) {
       const pack = getPack(deckId.slice(5), ownerId ?? 0, ownerIsSuperAdmin);
       return !!pack && isCustomPackGloballyVisible(db, pack);
     }
-    const deck = DECKS.find((d) => d.id === deckId);
+    const deck = DECKS.find((d) => d.id === builtInId(deckId));
     return !!deck && ownerId != null && builtinDeckOwnedByUser(ownerId, deck) && isBuiltInDeckGloballyVisible(db, deck);
   }
 
@@ -124,7 +139,7 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
       ...new Set(
         ids
           .map((x) => String(x || "").trim())
-          .filter((deckId) => deckId && !DECKS.find((deck) => deck.id === deckId)?.longVideo)
+          .filter((deckId) => deckId && !DECKS.find((deck) => deck.id === builtInId(deckId))?.longVideo)
           .filter((deckId) => sourceDeckGloballyVisible(deckId, account.userId, ownerIsSuperAdmin))
           .filter((deckId) => !ownerIsSuperAdmin || !isForbiddenSuperAdminSourceDeck(deckId)),
       ),
@@ -143,7 +158,8 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
   }
 
     function deckExists(req: unknown, deckId: string): boolean {
-      const deck = DECKS.find((d) => d.id === deckId);
+      if (!circleTemplateExists(deckId)) return false;
+      const deck = DECKS.find((d) => d.id === builtInId(deckId));
       if (deck) return builtinDeckOwnedByUser(uid(req), deck) && isBuiltInDeckGloballyVisible(db, deck);
       if (!isPackDeckId(deckId)) return false;
       const pack = getPack(deckId.slice(5), uid(req), isSuperAdminReq(req));
@@ -152,13 +168,13 @@ export function makeDeckAccess(db: Db, deps: { isAdminReq: (req: unknown) => boo
 
     function deckContentLang(req: unknown, deckId: string): string {
       if (isPackDeckId(deckId)) return getPack(deckId.slice(5), uid(req), isSuperAdminReq(req))?.lang || "";
-      return deckLang(deckId);
+      return deckLang(builtInId(deckId));
     }
 
   function validateAccountSourceDeck(req: unknown, deckId: string, channelLang: string): string | null {
     if (!deckExists(req, deckId)) return `Неизвестный пак «${deckId}».`;
     if (!deckAllowed(req, deckId)) return "Этот пак вам недоступен — нельзя поставить его источником канала.";
-    if (DECKS.find((deck) => deck.id === deckId)?.longVideo)
+    if (DECKS.find((deck) => deck.id === builtInId(deckId))?.longVideo)
       return "Длинные видео не ставятся в расписание — включите их отдельной галочкой и добавляйте в библиотеку вручную.";
     const contentLang = deckContentLang(req, deckId);
     if (channelLang && contentLang && contentLang !== channelLang)
