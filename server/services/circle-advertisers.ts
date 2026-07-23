@@ -24,8 +24,6 @@ export type CircleAdvertiser = {
   similarity?: number;
   blend?: number;
   fullFrame?: boolean;
-  startSeconds?: number;
-  repeatEverySeconds?: number;
   sourceName?: string;
   logoFile?: string;
   legacy?: boolean;
@@ -45,8 +43,6 @@ type CircleConfig = {
       similarity?: number;
       blend?: number;
       fullFrame?: boolean;
-      startSeconds?: number;
-      repeatEverySeconds?: number;
     };
   };
 };
@@ -69,8 +65,6 @@ const LEGACY_YUKI: CircleAdvertiser = {
   assetType: "video",
   transparent: true,
   fullFrame: true,
-  startSeconds: 0,
-  repeatEverySeconds: 0,
   sourceName: "yuki-shorts-alpha.mov",
   legacy: true,
 };
@@ -329,8 +323,6 @@ export async function upsertCircleAdvertiser(input: Record<string, unknown>): Pr
     similarity: finite(input.similarity, current?.similarity ?? 0.18, 0.01, 1),
     blend: finite(input.blend, current?.blend ?? 0.08, 0, 1),
     fullFrame: uploaded?.fullFrame ?? current?.fullFrame ?? true,
-    startSeconds: finite(input.startSeconds, current?.startSeconds ?? 0, 0, 180),
-    repeatEverySeconds: finite(input.repeatEverySeconds, current?.repeatEverySeconds ?? 0, 0, 180),
     sourceName: uploaded?.sourceName || current?.sourceName,
     logoFile: useVideo ? current?.logoFile : await saveLogo(id, input.logoDataUrl, input.removeLogo === true, current),
   };
@@ -358,8 +350,6 @@ export async function activateCircleAdvertiser(idValue: unknown, enabledValue: u
   banner.similarity = item.similarity ?? 0.18;
   banner.blend = item.blend ?? 0.08;
   banner.fullFrame = item.fullFrame !== false;
-  banner.startSeconds = item.startSeconds ?? 0;
-  banner.repeatEverySeconds = item.repeatEverySeconds ?? 0;
   await saveConfig(config);
 }
 

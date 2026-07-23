@@ -9,7 +9,7 @@ import { useT } from "../lib/i18n";
 const EDITOR_URL = "/template-editor/index.html";
 const EDITOR_VERSION = "20260630-minimal";
 const CIRCLE_EDITOR_URL = "/circle-editor/index.html";
-const CIRCLE_EDITOR_VERSION = "20260723-3";
+const CIRCLE_EDITOR_VERSION = "20260723-4";
 
 export default function TemplateEditor() {
   const { t, lang } = useT();

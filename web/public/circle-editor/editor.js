@@ -22,7 +22,7 @@
   let layout = {
     circle: { x: 130, y: 300, size: 820 },
     puzzle: { x: 90, y: 92, width: 900, labelSize: 30, puzzleSize: 68, gap: 14 },
-    banner: { x: 90, y: 830, width: 900, height: 260 },
+    banner: { x: 90, y: 830, width: 900, height: 260, startSeconds: 0, repeatEverySeconds: 0 },
   };
   let gesture = null;
 
@@ -66,6 +66,7 @@
     ];
     if (kind === "banner") return [
       ["x", "X", -1000, 2080], ["y", "Y", -500, 3000], ["width", "Ширина", 160, 2160], ["height", "Высота", 60, 1080],
+      ["startSeconds", "Первый показ, сек.", 0, 180], ["repeatEverySeconds", "Повтор через, сек.", 0, 180],
     ];
     return [
       ["x", "X", -1000, 2080], ["y", "Y", 0, 1800], ["width", "Ширина", 160, 2160],
@@ -76,7 +77,8 @@
   function renderProps() {
     if (!layout) return;
     const names = { circle: "Кружок", puzzle: "Загадка", banner: "Баннер" };
-    props.innerHTML = `<div class="selection-name">${names[selected]}</div><div class="form-grid">${fieldsFor(selected).map(([key, label, min, max]) => `<label class="field"><span>${label}</span><input type="number" data-field="${key}" min="${min}" max="${max}" value="${layout[selected][key]}"></label>`).join("")}</div>`;
+    const timingHint = selected === "banner" ? '<div class="property-hint">Повтор 0 — баннер крутится непрерывно после первого показа.</div>' : "";
+    props.innerHTML = `<div class="selection-name">${names[selected]}</div><div class="form-grid">${fieldsFor(selected).map(([key, label, min, max]) => `<label class="field"><span>${label}</span><input type="number" data-field="${key}" min="${min}" max="${max}" value="${layout[selected][key] ?? 0}"></label>`).join("")}</div>${timingHint}`;
     props.querySelectorAll("input").forEach((input) => input.addEventListener("input", () => {
       const spec = fieldsFor(selected).find(([key]) => key === input.dataset.field);
       if (!spec) return;

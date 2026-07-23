@@ -71,6 +71,8 @@ function sanitizeLayout(value: unknown): Layout {
       y: num(root.banner?.y, 830, -500, 3000),
       width: num(root.banner?.width, 900, 160, 2160),
       height: num(root.banner?.height, 260, 60, 1080),
+      startSeconds: num(root.banner?.startSeconds, 0, 0, 180),
+      repeatEverySeconds: num(root.banner?.repeatEverySeconds, 0, 0, 180),
     },
   };
 }
@@ -95,7 +97,14 @@ function layoutFromConfig(config: Record<string, unknown>): Layout {
       puzzleSize: puzzle.puzzleFontSize,
       gap: puzzle.lineGap,
     },
-    banner: { x: banner.left, y: banner.top, width: banner.width, height: banner.height },
+    banner: {
+      x: banner.left,
+      y: banner.top,
+      width: banner.width,
+      height: banner.height,
+      startSeconds: banner.startSeconds,
+      repeatEverySeconds: banner.repeatEverySeconds,
+    },
   });
 }
 
@@ -125,6 +134,8 @@ async function saveLayout(layoutValue: unknown, nameValue?: unknown): Promise<La
   banner.top = layout.banner.y;
   banner.width = layout.banner.width;
   banner.height = layout.banner.height;
+  banner.startSeconds = layout.banner.startSeconds;
+  banner.repeatEverySeconds = layout.banner.repeatEverySeconds;
   await writeFile(file, `${JSON.stringify(config, null, 2)}\n`, "utf8");
   return layout;
 }

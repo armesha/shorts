@@ -1395,8 +1395,6 @@ export interface CircleAdvertiser {
   similarity?: number;
   blend?: number;
   fullFrame?: boolean;
-  startSeconds?: number;
-  repeatEverySeconds?: number;
   sourceName?: string;
   legacy?: boolean;
   hasLogo?: boolean;
@@ -1428,7 +1426,5 @@ export interface CircleAdvertiserInput {
   similarity?: number;
   blend?: number;
   fullFrameMode?: "auto" | "canvas" | "banner";
-  startSeconds?: number;
-  repeatEverySeconds?: number;
   activate?: boolean;
 }

@@ -11,7 +11,7 @@ import {
 export type CircleLayout = {
   circle: { x: number; y: number; size: number };
   puzzle: { x: number; y: number; width: number; labelSize: number; puzzleSize: number; gap: number };
-  banner: { x: number; y: number; width: number; height: number };
+  banner: { x: number; y: number; width: number; height: number; startSeconds: number; repeatEverySeconds: number };
 };
 
 export type CircleTemplate = {
@@ -72,6 +72,8 @@ function layoutFromConfig(config: ConfigRecord): CircleLayout {
       y: number(banner.top, 830),
       width: number(banner.width, 900),
       height: number(banner.height, 260),
+      startSeconds: number(banner.startSeconds, 0),
+      repeatEverySeconds: number(banner.repeatEverySeconds, 0),
     },
   };
 }
@@ -124,7 +126,12 @@ async function saveStore(store: TemplateStore): Promise<void> {
 }
 
 export function listCircleTemplates(): CircleTemplate[] {
-  return loadStore().items.map((item) => structuredClone(item));
+  return loadStore().items.map((item) => {
+    const copy = structuredClone(item);
+    copy.layout.banner.startSeconds = number(copy.layout.banner.startSeconds, 0);
+    copy.layout.banner.repeatEverySeconds = number(copy.layout.banner.repeatEverySeconds, 0);
+    return copy;
+  });
 }
 
 export function activeCircleTemplateId(): string {
@@ -157,6 +164,8 @@ async function applyTemplate(template: CircleTemplate): Promise<void> {
   banner.top = template.layout.banner.y;
   banner.width = template.layout.banner.width;
   banner.height = template.layout.banner.height;
+  banner.startSeconds = template.layout.banner.startSeconds ?? 0;
+  banner.repeatEverySeconds = template.layout.banner.repeatEverySeconds ?? 0;
   config.templateId = template.id;
   config.templateName = template.name;
   await saveConfig(config);

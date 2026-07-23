@@ -15,8 +15,6 @@ const EMPTY_FORM: CircleAdvertiserInput = {
   similarity: 0.18,
   blend: 0.08,
   fullFrameMode: "auto",
-  startSeconds: 0,
-  repeatEverySeconds: 0,
   activate: true,
 };
 
@@ -29,8 +27,6 @@ function formFromAdvertiser(item: CircleAdvertiser): CircleAdvertiserInput {
     similarity: item.similarity ?? 0.18,
     blend: item.blend ?? 0.08,
     fullFrameMode: item.fullFrame === false ? "banner" : "canvas",
-    startSeconds: item.startSeconds ?? 0,
-    repeatEverySeconds: item.repeatEverySeconds ?? 0,
     activate: true,
   };
 }
@@ -276,10 +272,6 @@ export default function BannerLibrary() {
                           <div className="min-w-0">
                             <div className="truncate font-bold">{item.name}</div>
                             <div className="truncate text-xs text-base-content/55">{item.sourceName || "Встроенный баннер"}</div>
-                            <div className="mt-1 text-[11px] text-base-content/45">
-                              С {item.startSeconds ?? 0} сек.
-                              {(item.repeatEverySeconds ?? 0) > 0 ? ` · повтор каждые ${item.repeatEverySeconds} сек.` : " · непрерывно"}
-                            </div>
                           </div>
                           {active && <span className="badge badge-primary badge-sm">Активный</span>}
                         </div>
@@ -365,32 +357,6 @@ export default function BannerLibrary() {
               </div>
             )}
 
-            {!selected?.legacy && (selected?.hasVideo || !!form.videoDataUrl) && (
-              <div className="space-y-3 rounded-xl border border-base-300 p-3">
-                <div>
-                  <div className="font-semibold">Когда показывать</div>
-                  <div className="text-xs text-base-content/50">Отсчёт идёт от начала итогового ролика.</div>
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <NumberField
-                    label="Первый показ с, сек."
-                    value={form.startSeconds ?? 0}
-                    min={0}
-                    max={180}
-                    onChange={(value) => update("startSeconds", value)}
-                  />
-                  <NumberField
-                    label="Повторять каждые, сек."
-                    value={form.repeatEverySeconds ?? 0}
-                    min={0}
-                    max={180}
-                    onChange={(value) => update("repeatEverySeconds", value)}
-                    hint="0 — крутить непрерывно"
-                  />
-                </div>
-              </div>
-            )}
-
             <div className="flex flex-wrap gap-2">
               {!selected?.legacy && (
                 <button className="btn btn-primary flex-1 gap-2" disabled={saving} onClick={save}>
@@ -433,38 +399,6 @@ function Field({
         disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
       />
-    </label>
-  );
-}
-
-function NumberField({
-  label,
-  value,
-  min,
-  max,
-  hint,
-  onChange,
-}: {
-  label: string;
-  value: number;
-  min: number;
-  max: number;
-  hint?: string;
-  onChange: (value: number) => void;
-}) {
-  return (
-    <label className="form-control gap-1">
-      <span className="text-xs font-semibold text-base-content/60">{label}</span>
-      <input
-        type="number"
-        className="input input-bordered w-full"
-        value={value}
-        min={min}
-        max={max}
-        step={0.5}
-        onChange={(event) => onChange(Math.min(max, Math.max(min, Number(event.target.value) || 0)))}
-      />
-      {hint && <span className="text-[11px] text-base-content/45">{hint}</span>}
     </label>
   );
 }
