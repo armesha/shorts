@@ -5,6 +5,13 @@ import { basename, dirname, extname, resolve } from "node:path";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import ffmpegPath from "ffmpeg-static";
 import type { Db } from "../db.ts";
+import {
+  activateCircleAdvertiser,
+  circleAdvertiserSource,
+  circleAdvertiserState,
+  deleteCircleAdvertiser,
+  upsertCircleAdvertiser,
+} from "../services/circle-advertisers.ts";
 
 type Layout = {
   circle: { x: number; y: number; size: number };
@@ -174,12 +181,16 @@ function run(command: string, args: string[], cwd: string): Promise<string> {
   });
 }
 
-async function bannerPreview(): Promise<string> {
-  const source = resolve(projectDir(), "banner/output/yuki-shorts-alpha.mov");
-  const target = resolve(projectDir(), ".runtime/editor-banner-preview.png");
+async function bannerPreview(id?: unknown): Promise<string> {
+  const source = circleAdvertiserSource(id);
+  if (!existsSync(source)) throw new Error(`Не найден баннер: ${source}`);
+  const safeId = String(id || circleAdvertiserState().activeAdvertiserId).replace(/[^a-z0-9_-]+/gi, "-");
+  const target = resolve(projectDir(), `.runtime/editor-banner-preview-${safeId}.png`);
   if (existsSync(target) && statSync(target).mtimeMs >= statSync(source).mtimeMs) return target;
   await mkdir(dirname(target), { recursive: true });
-  await run(ffmpeg, ["-hide_banner", "-loglevel", "error", "-y", "-ss", "2", "-i", source, "-vf", "crop=900:260:90:830", "-frames:v", "1", target], projectDir());
+  const image = /\.(png|jpe?g|webp)$/i.test(source);
+  const input = image ? ["-loop", "1", "-i", source] : ["-ss", "2", "-i", source];
+  await run(ffmpeg, ["-hide_banner", "-loglevel", "error", "-y", ...input, "-vf", "crop=900:260:90:830", "-frames:v", "1", target], projectDir());
   return target;
 }
 
@@ -191,6 +202,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
     return {
       layout: layoutFromConfig(config),
       template: { id: "telegram-circles", name: cleanTemplateName(config.templateName) || "Telegram-кружочки" },
+      ...circleAdvertiserState(),
       sources: listVideos(resolve(root, "downloads")),
       gameplays: listVideos(resolve(root, "gameplay")),
       rendering,
@@ -199,13 +211,43 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
 
   app.put("/api/circle-editor/layout", async (req, reply) => {
     if (!requireAdmin(req, reply, db)) return;
-    const body = req.body as { layout?: unknown; name?: unknown } | undefined;
+    const body = req.body as {
+      layout?: unknown;
+      name?: unknown;
+      activeAdvertiserId?: unknown;
+      bannerEnabled?: unknown;
+    } | undefined;
     const name = cleanTemplateName(body?.name) || "Telegram-кружочки";
+    if (body?.activeAdvertiserId !== undefined || body?.bannerEnabled !== undefined) {
+      const state = circleAdvertiserState();
+      await activateCircleAdvertiser(body?.activeAdvertiserId ?? state.activeAdvertiserId, body?.bannerEnabled ?? state.bannerEnabled);
+    }
     return {
       layout: await saveLayout(body?.layout, name),
       saved: true,
       template: { id: "telegram-circles", name },
     };
+  });
+
+  app.post("/api/circle-editor/advertisers", { bodyLimit: 3_000_000 }, async (req, reply) => {
+    if (!requireAdmin(req, reply, db)) return;
+    const body = (req.body && typeof req.body === "object" ? req.body : {}) as Record<string, unknown>;
+    const advertiser = await upsertCircleAdvertiser(body);
+    if (body.activate !== false) await activateCircleAdvertiser(advertiser.id, true);
+    return { advertiser, ...circleAdvertiserState() };
+  });
+
+  app.put("/api/circle-editor/advertisers/active", async (req, reply) => {
+    if (!requireAdmin(req, reply, db)) return;
+    const body = (req.body || {}) as { id?: unknown; enabled?: unknown };
+    await activateCircleAdvertiser(body.id, body.enabled);
+    return circleAdvertiserState();
+  });
+
+  app.delete("/api/circle-editor/advertisers/:id", async (req, reply) => {
+    if (!requireAdmin(req, reply, db)) return;
+    await deleteCircleAdvertiser((req.params as { id?: unknown }).id);
+    return circleAdvertiserState();
   });
 
   app.get("/api/circle-editor/media/:kind/:file", async (req, reply) => {
@@ -218,7 +260,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
 
   app.get("/api/circle-editor/banner-preview.png", async (req, reply) => {
     if (!requireAdmin(req, reply, db)) return;
-    const file = await bannerPreview();
+    const file = await bannerPreview((req.query as { id?: unknown } | undefined)?.id);
     return reply.type("image/png").send(createReadStream(file));
   });
 

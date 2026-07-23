@@ -26,7 +26,7 @@ import type { RouteDeps, LimitedReplyish } from "./deps.ts";
 import { generateTelegramCircleVideo, telegramCircleTemplateName } from "../services/telegram-circle-video.ts";
 
 const STUDIO_IMAGE_LIMIT = { limit: 10, windowMs: 5 * 60 * 1000 };
-const STUDIO_VIDEO_LIMIT = { limit: 3, windowMs: 10 * 60 * 1000 };
+const STUDIO_VIDEO_LIMIT = { limit: 20, windowMs: 10 * 60 * 1000 };
 
 export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
   const { enforceGenerationWindow, runHeavyGenerationLimited, outputDir } = deps;
