@@ -321,7 +321,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
     };
   });
 
-  app.post("/api/circle-editor/overlays", { bodyLimit: 112_000_000 }, async (req, reply) => {
+  app.post("/api/circle-editor/overlays", { bodyLimit: Number.MAX_SAFE_INTEGER }, async (req, reply) => {
     if (!requireAdmin(req, reply, db)) return;
     const body = (req.body && typeof req.body === "object" ? req.body : {}) as Record<string, unknown>;
     const advertiser = await upsertCircleAdvertiser(body);

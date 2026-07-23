@@ -49,7 +49,6 @@ type CircleConfig = {
 
 const ffmpeg = ffmpegPath as unknown as string | null;
 const VIDEO_EXTENSIONS = new Set([".mov", ".mp4", ".webm", ".mkv"]);
-const MAX_BANNER_VIDEO_BYTES = 80 * 1024 * 1024;
 
 const LEGACY_YUKI: CircleAdvertiser = {
   id: "yuki",
@@ -278,7 +277,7 @@ async function saveUploadedVideo(
     throw new Error("Неподдерживаемый тип видео.");
   }
   const buffer = Buffer.from(match[2].replace(/\s+/g, ""), "base64");
-  if (!buffer.length || buffer.length > MAX_BANNER_VIDEO_BYTES) throw new Error("Видео-баннер должен быть меньше 80 МБ.");
+  if (!buffer.length) throw new Error("Загружен пустой видеофайл.");
   const relative = `custom/${id}${extension}`;
   const target = resolve(bannerDir(), relative);
   const temporary = `${target}.${process.pid}.upload`;

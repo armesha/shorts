@@ -101,7 +101,6 @@ export default function BannerLibrary() {
     const file = event.target.files?.[0];
     if (!file) return;
     try {
-      if (file.size > 80 * 1024 * 1024) throw new Error("Видео-баннер должен быть меньше 80 МБ.");
       const extension = file.name.split(".").pop()?.toLowerCase();
       if (!extension || !["mov", "mp4", "webm", "mkv"].includes(extension)) {
         throw new Error("Поддерживаются MOV, MP4, WebM и MKV.");
@@ -310,7 +309,7 @@ export default function BannerLibrary() {
                   <input type="file" accept=".mov,.mp4,.webm,.mkv,video/quicktime,video/mp4,video/webm" className="hidden" onChange={chooseVideo} />
                 </label>
                 <div className="mt-2 text-center text-[11px] text-base-content/55">
-                  До 80 МБ. MOV/WebM — с альфа-каналом; для MP4 можно удалить цветной фон.
+                  Для администраторов размер не ограничен. MOV/WebM — с альфа-каналом; для MP4 можно удалить цветной фон.
                 </div>
               </div>
             )}
