@@ -276,6 +276,11 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
     return { advertiser, ...circleAdvertiserState() };
   });
 
+  app.get("/api/circle-editor/advertisers", async (req, reply) => {
+    if (!requireAdmin(req, reply, db)) return;
+    return circleAdvertiserState();
+  });
+
   app.put("/api/circle-editor/advertisers/active", async (req, reply) => {
     if (!requireAdmin(req, reply, db)) return;
     const body = (req.body || {}) as { id?: unknown; enabled?: unknown };

@@ -267,11 +267,12 @@ export default function Packs() {
         )}
       </header>
 
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-5">
         <LibraryLink to="/cards" icon="cards" title={t("packs.libraryCards")} hint={t("packs.libraryCardsHint")} />
         <LibraryLink to="/editor" icon="skin" title={t("packs.libraryTemplates")} hint={t("packs.libraryTemplatesHint")} />
         <LibraryLink to="/long-videos" icon="video" title={t("packs.libraryLongVideos")} hint={t("packs.libraryLongVideosHint")} />
         {isAdmin && <LibraryLink to="/gallery" icon="library" title={t("packs.libraryGallery")} hint={t("packs.libraryGalleryHint")} />}
+        {isAdmin && <LibraryLink to="/banners" icon="ads" title={t("packs.libraryBanners")} hint={t("packs.libraryBannersHint")} />}
       </div>
 
       {actionErr && (

@@ -904,6 +904,8 @@ export const ru: Record<string, string> = {
   "packs.libraryLongVideosHint": "готовые длинные сборники",
   "packs.libraryTemplates": "Шаблоны",
   "packs.libraryTemplatesHint": "редактор дизайна карточки",
+  "packs.libraryBanners": "Рекламные баннеры",
+  "packs.libraryBannersHint": "рекламодатели для Telegram-кружочков",
   "packs.manageInCards": "Управлять карточками →",
   "packs.myHeading": "Мои паки",
   "packs.myPacks": "Мои паки",

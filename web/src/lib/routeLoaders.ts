@@ -20,6 +20,7 @@ const routeLoaders = {
   longVideos: () => import("../pages/LongVideos"),
   limits: () => import("../pages/Limits"),
   templateEditor: () => import("../pages/TemplateEditor"),
+  bannerLibrary: () => import("../pages/BannerLibrary"),
   login: () => import("../pages/Login"),
   register: () => import("../pages/Register"),
   telegramMiniApp: () => import("../pages/TelegramMiniApp"),
@@ -90,6 +91,8 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
       return "settings";
     case "/editor":
       return "templateEditor";
+    case "/banners":
+      return "bannerLibrary";
     case "/users":
       return "users";
     case "/login":

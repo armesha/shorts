@@ -17,6 +17,7 @@ import type {
   AnecdoteTemplateExamplesResponse, TelegramMiniPanel, TelegramPreferences,
   GeminiTtsCharacter, GeminiTtsCharactersResponse, GeminiTtsOptions, GeminiTtsPreviewRequest, GeminiTtsPreviewResult,
   GeminiTtsLipSyncTimeline,
+  CircleAdvertiser, CircleAdvertiserInput, CircleAdvertiserState,
 } from "./types";
 
 function browserTimeZone(): string {
@@ -384,6 +385,13 @@ export const apiClient = {
   resolveNotification: (id: number | string) =>
     send<NotificationItem>(`/notifications/${id}/resolve`, "POST", {}),
   deleteNotification: (id: number | string) => send<{ ok: boolean }>(`/notifications/${id}`, "DELETE"),
+  circleAdvertisers: () => get<CircleAdvertiserState>("/circle-editor/advertisers"),
+  saveCircleAdvertiser: (body: CircleAdvertiserInput) =>
+    send<CircleAdvertiserState & { advertiser: CircleAdvertiser }>("/circle-editor/advertisers", "POST", body),
+  activateCircleAdvertiser: (id: string, enabled: boolean) =>
+    send<CircleAdvertiserState>("/circle-editor/advertisers/active", "PUT", { id, enabled }),
+  deleteCircleAdvertiser: (id: string) =>
+    send<CircleAdvertiserState>(`/circle-editor/advertisers/${encodeURIComponent(id)}`, "DELETE"),
   readAllNotifications: (scope?: "mine" | "all") =>
     send<{ ok: boolean; changed: number }>(
       `/notifications/read-all${scope === "all" ? "?scope=all" : ""}`,

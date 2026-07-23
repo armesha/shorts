@@ -900,6 +900,8 @@ export const en: Record<string, string> = {
   "packs.libraryLongVideosHint": "ready long compilations",
   "packs.libraryTemplates": "Templates",
   "packs.libraryTemplatesHint": "card design editor",
+  "packs.libraryBanners": "Ad banners",
+  "packs.libraryBannersHint": "advertisers for Telegram circles",
   "packs.manageInCards": "Manage cards →",
   "packs.myHeading": "My packs",
   "packs.myPacks": "My packs",

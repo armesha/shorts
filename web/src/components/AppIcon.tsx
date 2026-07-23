@@ -26,6 +26,7 @@ import {
   LogIn,
   LogOut,
   Menu,
+  Megaphone,
   Music2,
   PackageOpen,
   Pause,
@@ -72,6 +73,7 @@ export type AppIconName =
   | "login"
   | "logout"
   | "menu"
+  | "ads"
   | "music"
   | "notifications"
   | "packs"
@@ -124,6 +126,7 @@ const ICONS: Record<AppIconName, LucideIcon> = {
   login: LogIn,
   logout: LogOut,
   menu: Menu,
+  ads: Megaphone,
   music: Music2,
   notifications: Bell,
   packs: PackageOpen,

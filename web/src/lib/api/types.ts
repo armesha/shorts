@@ -1377,3 +1377,39 @@ export interface GeminiTtsCharacter {
 export interface GeminiTtsCharactersResponse {
   characters: GeminiTtsCharacter[];
 }
+
+export interface CircleAdvertiser {
+  id: string;
+  name: string;
+  brand: string;
+  headline: string;
+  subline: string;
+  cta: string;
+  accentColor: string;
+  backgroundColor: string;
+  textColor: string;
+  assetFile: string;
+  legacy?: boolean;
+  hasLogo?: boolean;
+}
+
+export interface CircleAdvertiserState {
+  advertisers: CircleAdvertiser[];
+  activeAdvertiserId: string;
+  bannerEnabled: boolean;
+}
+
+export interface CircleAdvertiserInput {
+  id?: string;
+  name: string;
+  brand: string;
+  headline: string;
+  subline: string;
+  cta: string;
+  accentColor: string;
+  backgroundColor: string;
+  textColor: string;
+  logoDataUrl?: string;
+  removeLogo?: boolean;
+  activate?: boolean;
+}

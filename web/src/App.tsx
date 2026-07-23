@@ -31,6 +31,7 @@ const AudioLab = lazy(pageLoaders.audioLab);
 const LongVideos = lazy(pageLoaders.longVideos);
 const Limits = lazy(pageLoaders.limits);
 const TemplateEditor = lazy(pageLoaders.templateEditor);
+const BannerLibrary = lazy(pageLoaders.bannerLibrary);
 const Login = lazy(pageLoaders.login);
 const Register = lazy(pageLoaders.register);
 const TelegramMiniApp = lazy(pageLoaders.telegramMiniApp);
@@ -99,6 +100,7 @@ function Gate() {
             <Route path="/system" element={<System />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/editor" element={<TemplateEditor />} />
+            <Route path="/banners" element={realAdmin ? <BannerLibrary /> : <Navigate to="/library" replace />} />
             <Route path="/users" element={realAdmin ? <Users /> : <Navigate to="/statistics" replace />} />
             <Route path="*" element={defaultRoute} />
           </Routes>
