@@ -2,7 +2,7 @@
 // Every existing `import { apiClient, ApiError, type X } from "../lib/api"` resolves here unchanged.
 export * from "./types";
 export { ApiError } from "./http";
-import { get, send } from "./http";
+import { get, send, sendBinary } from "./http";
 import type {
   Account, HistoryPage, AppStatus, AppSettings, OAuthClientsResponse, AddOAuthClientResponse,
   AdminUser, DeckInfo, UserDeckRow, AdminLimits, PackUsageItem, MyDecks, LowDeckRow, ManualVideoLimits, ReadinessLimits,
@@ -388,6 +388,16 @@ export const apiClient = {
   circleAdvertisers: () => get<CircleAdvertiserState>("/circle-editor/overlays"),
   saveCircleAdvertiser: (body: CircleAdvertiserInput) =>
     send<CircleAdvertiserState & { advertiser: CircleAdvertiser }>("/circle-editor/overlays", "POST", body),
+  uploadCircleAdvertiser: (body: CircleAdvertiserInput, file: File) => {
+    const params = new URLSearchParams({
+      metadata: JSON.stringify(body),
+      filename: file.name,
+    });
+    return sendBinary<CircleAdvertiserState & { advertiser: CircleAdvertiser }>(
+      `/circle-editor/overlays/upload?${params.toString()}`,
+      file,
+    );
+  },
   activateCircleAdvertiser: (id: string, enabled: boolean) =>
     send<CircleAdvertiserState>("/circle-editor/overlays/active", "PUT", { id, enabled }),
   deleteCircleAdvertiser: (id: string) =>

@@ -43,3 +43,13 @@ export async function send<T>(path: string, method: string, body?: unknown): Pro
   });
   return handle<T>(r, path);
 }
+
+export async function sendBinary<T>(path: string, body: Blob): Promise<T> {
+  const r = await fetch(`/api${path}`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/octet-stream" },
+    body,
+  });
+  return handle<T>(r, path);
+}

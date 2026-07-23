@@ -1,7 +1,10 @@
 import { spawn } from "node:child_process";
-import { createReadStream, existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
+import { createReadStream, createWriteStream, existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, extname, resolve } from "node:path";
+import { Readable } from "node:stream";
+import { pipeline } from "node:stream/promises";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import ffmpegPath from "ffmpeg-static";
 import type { Db } from "../db.ts";
@@ -252,6 +255,9 @@ async function bannerVideoPreview(id?: unknown): Promise<string> {
 }
 
 export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
+  if (!app.hasContentTypeParser("application/octet-stream")) {
+    app.addContentTypeParser("application/octet-stream", (req, payload, done) => done(null, payload));
+  }
   app.get("/api/circle-editor", async (req, reply) => {
     if (!requireAdmin(req, reply, db)) return;
     const root = projectDir();
@@ -321,12 +327,41 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
     };
   });
 
-  app.post("/api/circle-editor/overlays", { bodyLimit: Number.MAX_SAFE_INTEGER }, async (req, reply) => {
+  app.post("/api/circle-editor/overlays", { bodyLimit: 2_000_000 }, async (req, reply) => {
     if (!requireAdmin(req, reply, db)) return;
     const body = (req.body && typeof req.body === "object" ? req.body : {}) as Record<string, unknown>;
     const advertiser = await upsertCircleAdvertiser(body);
     if (body.activate !== false) await setActiveCircleTemplateAdvertiser(advertiser.id, true);
     return { advertiser, ...circleAdvertiserState() };
+  });
+
+  app.post("/api/circle-editor/overlays/upload", { bodyLimit: Number.MAX_SAFE_INTEGER }, async (req, reply) => {
+    if (!requireAdmin(req, reply, db)) return;
+    const query = (req.query || {}) as { metadata?: string; filename?: string };
+    let body: Record<string, unknown>;
+    try {
+      body = JSON.parse(query.metadata || "{}") as Record<string, unknown>;
+    } catch {
+      return reply.code(400).send({ error: "Некорректные параметры баннера." });
+    }
+    const sourceName = String(query.filename || "").trim();
+    if (!sourceName) return reply.code(400).send({ error: "Не указано имя видеофайла." });
+    if (!(req.body instanceof Readable)) return reply.code(400).send({ error: "Видеофайл не получен." });
+
+    const uploadDir = resolve(projectDir(), "banner", ".uploads");
+    const temporary = resolve(uploadDir, `${randomUUID()}.upload`);
+    await mkdir(uploadDir, { recursive: true });
+    try {
+      await pipeline(req.body, createWriteStream(temporary, { flags: "wx" }));
+      if (!existsSync(temporary) || statSync(temporary).size === 0) {
+        return reply.code(400).send({ error: "Загружен пустой видеофайл." });
+      }
+      const advertiser = await upsertCircleAdvertiser(body, { path: temporary, sourceName });
+      if (body.activate !== false) await setActiveCircleTemplateAdvertiser(advertiser.id, true);
+      return { advertiser, ...circleAdvertiserState() };
+    } finally {
+      await rm(temporary, { force: true });
+    }
   });
 
   app.get("/api/circle-editor/overlays", async (req, reply) => {

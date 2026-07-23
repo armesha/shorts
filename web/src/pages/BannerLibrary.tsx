@@ -31,19 +31,11 @@ function formFromAdvertiser(item: CircleAdvertiser): CircleAdvertiserInput {
   };
 }
 
-function fileDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result || ""));
-    reader.onerror = () => reject(new Error("Не удалось прочитать видео."));
-    reader.readAsDataURL(file);
-  });
-}
-
 export default function BannerLibrary() {
   const [state, setState] = useState<CircleAdvertiserState | null>(null);
   const [selectedId, setSelectedId] = useState("");
   const [form, setForm] = useState<CircleAdvertiserInput>(EMPTY_FORM);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
   const [videoName, setVideoName] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -65,6 +57,7 @@ export default function BannerLibrary() {
     setSelectedId(item?.id || "");
     if (item) setForm(formFromAdvertiser(item));
     else setForm(EMPTY_FORM);
+    setVideoFile(null);
     setVideoName("");
     setPreviewVersion(Date.now());
   };
@@ -80,6 +73,7 @@ export default function BannerLibrary() {
   const selectAdvertiser = (item: CircleAdvertiser) => {
     setSelectedId(item.id);
     setForm(formFromAdvertiser(item));
+    setVideoFile(null);
     setVideoName("");
     setError("");
     setNotice("");
@@ -88,6 +82,7 @@ export default function BannerLibrary() {
   const startNew = () => {
     setSelectedId("");
     setForm(EMPTY_FORM);
+    setVideoFile(null);
     setVideoName("");
     setError("");
     setNotice("Заполните поля и сохраните новый баннер.");
@@ -105,14 +100,13 @@ export default function BannerLibrary() {
       if (!extension || !["mov", "mp4", "webm", "mkv"].includes(extension)) {
         throw new Error("Поддерживаются MOV, MP4, WebM и MKV.");
       }
-      const dataUrl = await fileDataUrl(file);
       setForm((current) => ({
         ...current,
-        videoDataUrl: dataUrl,
         videoName: file.name,
         transparent: extension !== "mp4",
         fullFrameMode: "auto",
       }));
+      setVideoFile(file);
       setVideoName(file.name);
       setError("");
       setNotice(extension === "mp4"
@@ -130,7 +124,7 @@ export default function BannerLibrary() {
       setError("Укажите название баннера.");
       return;
     }
-    if (!selected?.hasVideo && !form.videoDataUrl) {
+    if (!selected?.hasVideo && !videoFile) {
       setError("Загрузите MOV, MP4, WebM или MKV.");
       return;
     }
@@ -138,10 +132,13 @@ export default function BannerLibrary() {
     setError("");
     setNotice("");
     try {
-      const result = await apiClient.saveCircleAdvertiser({
+      const payload = {
         ...form,
         id: selected?.legacy ? undefined : form.id,
-      });
+      };
+      const result = videoFile
+        ? await apiClient.uploadCircleAdvertiser(payload, videoFile)
+        : await apiClient.saveCircleAdvertiser(payload);
       applyState(result, result.advertiser.id);
       setNotice(`Баннер «${result.advertiser.name}» сохранён и выбран активным.`);
     } catch (reason) {
@@ -314,7 +311,7 @@ export default function BannerLibrary() {
               </div>
             )}
 
-            {!selected?.legacy && (selected?.hasVideo || !!form.videoDataUrl) && (
+            {!selected?.legacy && (selected?.hasVideo || !!videoFile) && (
               <div className="space-y-3 rounded-xl border border-base-300 p-3">
                 <div className="font-semibold">Как убрать фон</div>
                 <label className="flex cursor-pointer items-start gap-3">

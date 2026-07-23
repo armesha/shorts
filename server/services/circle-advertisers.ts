@@ -265,24 +265,27 @@ function validateVideo(file: string): Promise<{ width: number; height: number }>
 async function saveUploadedVideo(
   id: string,
   input: Record<string, unknown>,
+  streamedUpload?: { path: string; sourceName: string },
 ): Promise<{ assetFile: string; sourceName: string; fullFrame: boolean } | null> {
-  if (typeof input.videoDataUrl !== "string" || !input.videoDataUrl) return null;
-  const sourceName = clean(input.videoName, "banner.mov", 120);
+  if (!streamedUpload && (typeof input.videoDataUrl !== "string" || !input.videoDataUrl)) return null;
+  const sourceName = clean(streamedUpload?.sourceName || input.videoName, "banner.mov", 120);
   const extension = extname(sourceName).toLowerCase();
   if (!VIDEO_EXTENSIONS.has(extension)) throw new Error("Поддерживаются MOV, MP4, WebM и MKV.");
-  const match = /^data:([^;,]+)?;base64,([a-z0-9+/=\s]+)$/i.exec(input.videoDataUrl);
-  if (!match) throw new Error("Не удалось прочитать загруженное видео.");
-  const mime = String(match[1] || "").toLowerCase();
-  if (mime && !["video/quicktime", "video/mp4", "video/webm", "video/x-matroska", "application/octet-stream"].includes(mime)) {
-    throw new Error("Неподдерживаемый тип видео.");
-  }
-  const buffer = Buffer.from(match[2].replace(/\s+/g, ""), "base64");
-  if (!buffer.length) throw new Error("Загружен пустой видеофайл.");
   const relative = `custom/${id}${extension}`;
   const target = resolve(bannerDir(), relative);
-  const temporary = `${target}.${process.pid}.upload`;
+  const temporary = streamedUpload?.path || `${target}.${process.pid}.upload`;
   await mkdir(dirname(target), { recursive: true });
-  await writeFile(temporary, buffer);
+  if (!streamedUpload) {
+    const match = /^data:([^;,]+)?;base64,([a-z0-9+/=\s]+)$/i.exec(String(input.videoDataUrl));
+    if (!match) throw new Error("Не удалось прочитать загруженное видео.");
+    const mime = String(match[1] || "").toLowerCase();
+    if (mime && !["video/quicktime", "video/mp4", "video/webm", "video/x-matroska", "application/octet-stream"].includes(mime)) {
+      throw new Error("Неподдерживаемый тип видео.");
+    }
+    const buffer = Buffer.from(match[2].replace(/\s+/g, ""), "base64");
+    if (!buffer.length) throw new Error("Загружен пустой видеофайл.");
+    await writeFile(temporary, buffer);
+  }
   try {
     const dimensions = await validateVideo(temporary);
     await rm(target, { force: true });
@@ -296,14 +299,17 @@ async function saveUploadedVideo(
   }
 }
 
-export async function upsertCircleAdvertiser(input: Record<string, unknown>): Promise<CircleAdvertiser> {
+export async function upsertCircleAdvertiser(
+  input: Record<string, unknown>,
+  streamedUpload?: { path: string; sourceName: string },
+): Promise<CircleAdvertiser> {
   const store = loadStore();
   const requestedId = safeId(input.id);
   const current = requestedId ? store.items.find((item) => item.id === requestedId) : undefined;
   if (requestedId === "yuki") throw new Error("Встроенный баннер Yuki нельзя перезаписать.");
   const id = requestedId || `ad-${randomUUID().slice(0, 8)}`;
   const brand = clean(input.brand, "Рекламодатель", 48);
-  const uploaded = await saveUploadedVideo(id, input);
+  const uploaded = await saveUploadedVideo(id, input, streamedUpload);
   const useVideo = !!uploaded || current?.assetType === "video";
   const oldAsset = current?.assetFile;
   const item: CircleAdvertiser = {
