@@ -195,7 +195,7 @@ export async function setActiveCircleTemplateAdvertiser(idValue: unknown, enable
   await saveStore(store);
 }
 
-export async function replaceCircleTemplateAdvertiser(idValue: unknown, replacementId = "yuki"): Promise<void> {
+export async function replaceCircleTemplateAdvertiser(idValue: unknown, replacementId = ""): Promise<void> {
   const id = safeId(idValue);
   if (!id) return;
   const store = loadStore();
@@ -204,7 +204,7 @@ export async function replaceCircleTemplateAdvertiser(idValue: unknown, replacem
   store.items = store.items.map((item) => {
     if (item.advertiserId !== id) return item;
     changed = true;
-    return { ...item, advertiserId: replacementId, updatedAt: now };
+    return { ...item, advertiserId: replacementId, bannerEnabled: replacementId ? item.bannerEnabled : false, updatedAt: now };
   });
   if (changed) await saveStore(store);
 }

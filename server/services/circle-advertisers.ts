@@ -149,7 +149,7 @@ function publicAdvertiser(item: CircleAdvertiser): CircleAdvertiser {
 }
 
 export function listCircleAdvertisers(): CircleAdvertiser[] {
-  return [LEGACY_YUKI, ...loadStore().items].map(publicAdvertiser);
+  return loadStore().items.map(publicAdvertiser);
 }
 
 export function circleAdvertiserState(): {
@@ -159,12 +159,13 @@ export function circleAdvertiserState(): {
 } {
   const config = loadConfig();
   const banner = config.video?.banner;
-  const active = safeId(banner?.advertiserId) || "yuki";
-  const ids = new Set(listCircleAdvertisers().map((item) => item.id));
+  const advertisers = listCircleAdvertisers();
+  const active = safeId(banner?.advertiserId);
+  const ids = new Set(advertisers.map((item) => item.id));
   return {
-    advertisers: listCircleAdvertisers(),
-    activeAdvertiserId: ids.has(active) ? active : "yuki",
-    bannerEnabled: banner?.enabled !== false,
+    advertisers,
+    activeAdvertiserId: ids.has(active) ? active : advertisers[0]?.id || "",
+    bannerEnabled: advertisers.length > 0 && banner?.enabled !== false,
   };
 }
 
@@ -336,12 +337,19 @@ export async function upsertCircleAdvertiser(input: Record<string, unknown>): Pr
 }
 
 export async function activateCircleAdvertiser(idValue: unknown, enabledValue: unknown): Promise<void> {
-  const id = safeId(idValue) || "yuki";
+  const id = safeId(idValue);
   const item = listCircleAdvertisers().find((entry) => entry.id === id);
-  if (!item) throw new Error("Рекламодатель не найден.");
   const config = loadConfig();
   const video = (config.video ||= {});
   const banner = (video.banner ||= {});
+
+  if (!item) {
+    if (enabledValue !== false) throw new Error("Сначала загрузите рекламный баннер.");
+    banner.enabled = false;
+    banner.advertiserId = "";
+    await saveConfig(config);
+    return;
+  }
   banner.enabled = enabledValue !== false;
   banner.advertiserId = item.id;
   banner.file = `./banner/${item.assetFile}`.replace(/\\/g, "/");
@@ -359,12 +367,16 @@ export async function deleteCircleAdvertiser(idValue: unknown): Promise<void> {
   const store = loadStore();
   const item = store.items.find((entry) => entry.id === id);
   if (!item) throw new Error("Рекламодатель не найден.");
-  const wasActive = circleAdvertiserState().activeAdvertiserId === id;
+  const previous = circleAdvertiserState();
+  const wasActive = previous.activeAdvertiserId === id;
   store.items = store.items.filter((entry) => entry.id !== id);
   await saveStore(store);
   await rm(resolve(bannerDir(), item.assetFile), { force: true });
   if (item.logoFile) await rm(resolve(bannerDir(), item.logoFile), { force: true });
-  if (wasActive) await activateCircleAdvertiser("yuki", true);
+  if (wasActive) {
+    const next = listCircleAdvertisers()[0];
+    await activateCircleAdvertiser(next?.id || "", next ? previous.bannerEnabled : false);
+  }
 }
 
 export function circleAdvertiserSource(idValue?: unknown): string {

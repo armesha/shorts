@@ -199,10 +199,21 @@
   }
 
   function renderAdvertisers(selectedId = activeAdvertiserId) {
+    if (!advertisers.length) {
+      advertiserSelect.innerHTML = '<option value="">Сначала загрузите баннер</option>';
+      advertiserSelect.disabled = true;
+      bannerEnabledInput.checked = false;
+      bannerEnabledInput.disabled = true;
+      activeAdvertiserId = "";
+      updateBannerPreview();
+      return;
+    }
     advertiserSelect.innerHTML = advertisers
       .map((item) => `<option value="${item.id}">${item.name}</option>`)
       .join("");
-    activeAdvertiserId = advertisers.some((item) => item.id === selectedId) ? selectedId : (advertisers[0]?.id || "yuki");
+    advertiserSelect.disabled = false;
+    bannerEnabledInput.disabled = false;
+    activeAdvertiserId = advertisers.some((item) => item.id === selectedId) ? selectedId : (advertisers[0]?.id || "");
     advertiserSelect.value = activeAdvertiserId;
     updateBannerPreview();
   }
@@ -211,6 +222,14 @@
     const current = advertisers.find((item) => item.id === activeAdvertiserId);
     const image = $("#bannerImage");
     const video = $("#bannerVideo");
+    if (!current) {
+      video.pause();
+      video.removeAttribute("src");
+      video.hidden = true;
+      image.hidden = true;
+      elements.banner.style.display = "none";
+      return;
+    }
     if (current?.hasVideo) {
       image.hidden = true;
       video.hidden = false;
@@ -384,7 +403,7 @@
       templates = data.templates || [];
       activeTemplateId = data.activeTemplateId || templates[0]?.id || "default";
       advertisers = data.advertisers || [];
-      activeAdvertiserId = data.activeAdvertiserId || "yuki";
+      activeAdvertiserId = data.activeAdvertiserId || "";
       bannerEnabledInput.checked = data.bannerEnabled !== false;
       renderAdvertisers(activeAdvertiserId);
       renderTemplates(activeTemplateId);

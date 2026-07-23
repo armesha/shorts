@@ -64,6 +64,7 @@ export default function BannerLibrary() {
     const item = next.advertisers.find((advertiser) => advertiser.id === id) || next.advertisers[0];
     setSelectedId(item?.id || "");
     if (item) setForm(formFromAdvertiser(item));
+    else setForm(EMPTY_FORM);
     setVideoName("");
     setPreviewVersion(Date.now());
   };
@@ -235,7 +236,7 @@ export default function BannerLibrary() {
           type="checkbox"
           className="toggle toggle-primary"
           checked={state?.bannerEnabled !== false}
-          disabled={saving}
+          disabled={saving || !state?.activeAdvertiserId}
           onChange={toggleEnabled}
           aria-label="Показывать рекламный баннер"
         />
