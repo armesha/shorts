@@ -12,16 +12,12 @@ import {
   deleteCircleAdvertiser,
   upsertCircleAdvertiser,
 } from "../services/circle-advertisers.ts";
-import {
-  activateCircleTemplate,
-  activeCircleTemplateId,
-  deleteCircleTemplate,
-  listCircleTemplates,
-  saveCircleTemplate,
-  type CircleLayout,
-} from "../services/circle-templates.ts";
 
-type Layout = CircleLayout;
+type Layout = {
+  circle: { x: number; y: number; size: number };
+  puzzle: { x: number; y: number; width: number; labelSize: number; puzzleSize: number; gap: number };
+  banner: { x: number; y: number; width: number; height: number };
+};
 
 const VIDEO_EXT = new Set([".mp4", ".mov", ".mkv", ".webm", ".m4v"]);
 const packagedFfmpeg = ffmpegPath as unknown as string | null;
@@ -206,8 +202,6 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
     return {
       layout: layoutFromConfig(config),
       template: { id: "telegram-circles", name: cleanTemplateName(config.templateName) || "Telegram-кружочки" },
-      templates: listCircleTemplates(),
-      activeTemplateId: activeCircleTemplateId(),
       ...circleAdvertiserState(),
       sources: listVideos(resolve(root, "downloads")),
       gameplays: listVideos(resolve(root, "gameplay")),
@@ -222,49 +216,16 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
       name?: unknown;
       activeAdvertiserId?: unknown;
       bannerEnabled?: unknown;
-      templateId?: unknown;
-      createNew?: boolean;
     } | undefined;
     const name = cleanTemplateName(body?.name) || "Telegram-кружочки";
-    const layout = sanitizeLayout(body?.layout);
-    const template = await saveCircleTemplate({
-      id: body?.templateId,
-      createNew: body?.createNew,
-      name,
-      layout,
-      advertiserId: body?.activeAdvertiserId,
-      bannerEnabled: body?.bannerEnabled,
-    });
+    if (body?.activeAdvertiserId !== undefined || body?.bannerEnabled !== undefined) {
+      const state = circleAdvertiserState();
+      await activateCircleAdvertiser(body?.activeAdvertiserId ?? state.activeAdvertiserId, body?.bannerEnabled ?? state.bannerEnabled);
+    }
     return {
-      layout,
+      layout: await saveLayout(body?.layout, name),
       saved: true,
-      template,
-      templates: listCircleTemplates(),
-      activeTemplateId: template.id,
-    };
-  });
-
-  app.put("/api/circle-editor/templates/active", async (req, reply) => {
-    if (!requireAdmin(req, reply, db)) return;
-    const template = await activateCircleTemplate((req.body as { id?: unknown } | undefined)?.id);
-    return {
-      template,
-      layout: template.layout,
-      templates: listCircleTemplates(),
-      activeTemplateId: template.id,
-      ...circleAdvertiserState(),
-    };
-  });
-
-  app.delete("/api/circle-editor/templates/:id", async (req, reply) => {
-    if (!requireAdmin(req, reply, db)) return;
-    const template = await deleteCircleTemplate((req.params as { id?: unknown }).id);
-    return {
-      template,
-      layout: template.layout,
-      templates: listCircleTemplates(),
-      activeTemplateId: template.id,
-      ...circleAdvertiserState(),
+      template: { id: "telegram-circles", name },
     };
   });
 

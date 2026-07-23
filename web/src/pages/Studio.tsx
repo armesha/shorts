@@ -72,7 +72,7 @@ export default function Studio() {
   const packId = isPack ? deck.slice(5) : "";
   const curPack = sourcePacks.find((p) => `pack:${p.id}` === deck);
   const g = gens.find((x) => x.id === deck) ?? gens[0]; // выбранная встроенная дека (остаток/инфо)
-  const selectedIsLiveVideo = deck === "telegram-circles" || deck.startsWith("telegram-circles:") || (!isPack && !!g?.liveVideo);
+  const selectedIsLiveVideo = deck === "telegram-circles" || (!isPack && !!g?.liveVideo);
   const hasVideoSources = gens.some((x) => x.total > 0 && (x.preFact || x.liveVideo));
   const hasTextSources = gens.some((x) => x.total > 0 && !x.preFact && !x.liveVideo) || sourcePacks.length > 0;
   const showPackKind = hasVideoSources && hasTextSources;
@@ -137,14 +137,6 @@ export default function Studio() {
     if (first) setDeck(first);
   }, [deck, deckGroups, forbiddenSourceIds, setDeck]);
 
-  useEffect(() => {
-    if (!gens.length || isPack || gens.some((item) => item.id === deck)) return;
-    const replacement = deck === "telegram-circles"
-      ? gens.find((item) => item.liveVideo)?.id
-      : deckGroups[0]?.items[0]?.id;
-    if (replacement) setDeck(replacement);
-  }, [deck, deckGroups, gens, isPack, setDeck]);
-
   // Keep the save-target channel matching the selected pack's language (hard language guard).
   useEffect(() => {
     const match = accounts.find((a) => accountSources(a).includes(deck));
@@ -193,7 +185,7 @@ export default function Studio() {
     try {
       // preFact deck (e.g. fact-en): not rendered from text — just play a random PRE-BUILT video.
       const cur = gens.find((x) => x.id === deck);
-      if (deck === "telegram-circles" || deck.startsWith("telegram-circles:") || cur?.liveVideo) {
+      if (deck === "telegram-circles" || cur?.liveVideo) {
         const r = await apiClient.generateAnecdoteVideo({ deck });
         if ((r as { error?: string })?.error || !r?.videoUrl) {
           setErr((r as { error?: string })?.error || t("studio.genFailed"));
@@ -231,7 +223,7 @@ export default function Studio() {
             ? { text: preview?.text, title: preview?.title, bg: bgName, avoidBg: bgName ? undefined : preview?.bg, deck }
             : { text, title: preview?.title, bg: preview?.bg, deck };
       const p = await apiClient.generateAnecdote(body);
-      if (p.liveVideo || p.deck === "telegram-circles" || p.deck?.startsWith("telegram-circles:")) {
+      if (p.liveVideo || p.deck === "telegram-circles") {
         const r = await apiClient.generateAnecdoteVideo({ deck: p.deck || deck });
         if ((r as { error?: string })?.error || !r?.videoUrl) {
           setErr((r as { error?: string })?.error || t("studio.genFailed"));
@@ -295,7 +287,7 @@ export default function Studio() {
     for (let index = 0; index < total; index += 1) {
       if (liveQueueCanceled.current) break;
       try {
-        const result = await apiClient.generateAnecdoteVideo({ deck });
+        const result = await apiClient.generateAnecdoteVideo({ deck: "telegram-circles" });
         if ((result as { error?: string })?.error || !result?.videoUrl) {
           throw new Error((result as { error?: string })?.error || t("studio.genFailed"));
         }

@@ -9,13 +9,12 @@ import { useT } from "../lib/i18n";
 const EDITOR_URL = "/template-editor/index.html";
 const EDITOR_VERSION = "20260630-minimal";
 const CIRCLE_EDITOR_URL = "/circle-editor/index.html";
-const CIRCLE_EDITOR_VERSION = "20260723-2";
 
 export default function TemplateEditor() {
   const { t, lang } = useT();
   const [tab, setTab] = useState<"templates" | "circles">("templates");
   const editorSrc = `${EDITOR_URL}?lang=${lang}&v=${EDITOR_VERSION}`;
-  const circleSrc = `${CIRCLE_EDITOR_URL}?lang=${lang}&v=${CIRCLE_EDITOR_VERSION}`;
+  const circleSrc = `${CIRCLE_EDITOR_URL}?lang=${lang}&v=20260722-3`;
   const activeSrc = tab === "templates" ? editorSrc : circleSrc;
 
   return (
