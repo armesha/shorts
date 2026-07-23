@@ -49,11 +49,15 @@ export default function BannerLibrary() {
   );
 
   const applyState = (next: CircleAdvertiserState, preferredId?: string) => {
-    setState(next);
-    const id = preferredId && next.advertisers.some((item) => item.id === preferredId)
+    const advertisers = Array.isArray(next?.advertisers)
+      ? next.advertisers.filter((item): item is CircleAdvertiser => !!item && typeof item.name === "string")
+      : [];
+    const normalized = { ...next, advertisers };
+    setState(normalized);
+    const id = preferredId && advertisers.some((item) => item.id === preferredId)
       ? preferredId
       : next.activeAdvertiserId;
-    const item = next.advertisers.find((advertiser) => advertiser.id === id) || next.advertisers[0];
+    const item = advertisers.find((advertiser) => advertiser.id === id) || advertisers[0];
     setSelectedId(item?.id || "");
     if (item) setForm(formFromAdvertiser(item));
     else setForm(EMPTY_FORM);
@@ -139,8 +143,11 @@ export default function BannerLibrary() {
       const result = videoFile
         ? await apiClient.uploadCircleAdvertiser(payload, videoFile)
         : await apiClient.saveCircleAdvertiser(payload);
-      applyState(result, result.advertiser.id);
-      setNotice(`Баннер «${result.advertiser.name}» сохранён и выбран активным.`);
+      const saved = result.advertiser
+        || result.advertisers?.find((item) => item?.id === form.id)
+        || result.advertisers?.find((item) => item?.name === payload.name);
+      applyState(result, saved?.id);
+      setNotice(`Баннер «${saved?.name || payload.name}» сохранён и выбран активным.`);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : String(reason));
     } finally {
