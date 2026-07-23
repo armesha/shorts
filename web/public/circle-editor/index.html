@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Редактор кружочков</title>
-  <link rel="stylesheet" href="editor.css?v=20260723-1">
+  <link rel="stylesheet" href="editor.css?v=20260722-5">
 </head>
 <body>
   <header class="topbar">
@@ -58,29 +58,6 @@
     <aside class="panel props-panel">
       <div class="panel-title">Положение и размер</div>
       <div id="props"></div>
-      <section class="advertiser-editor">
-        <div class="panel-title">Рекламный баннер</div>
-        <label class="toggle-row"><input id="bannerEnabled" type="checkbox" checked> Показывать баннер</label>
-        <div class="advertiser-picker">
-          <select id="advertiserSelect" aria-label="Рекламодатель"></select>
-          <button id="newAdvertiserButton" type="button">Новый</button>
-        </div>
-        <div class="ad-form">
-          <label class="field wide"><span>Название в библиотеке</span><input id="adName" maxlength="64"></label>
-          <label class="field"><span>Бренд</span><input id="adBrand" maxlength="48"></label>
-          <label class="field"><span>Кнопка</span><input id="adCta" maxlength="24"></label>
-          <label class="field wide"><span>Заголовок</span><input id="adHeadline" maxlength="60"></label>
-          <label class="field wide"><span>Описание</span><input id="adSubline" maxlength="90"></label>
-          <label class="field"><span>Акцент</span><input id="adAccent" type="color" value="#ff2f78"></label>
-          <label class="field"><span>Фон</span><input id="adBackground" type="color" value="#21151f"></label>
-          <label class="field"><span>Текст</span><input id="adTextColor" type="color" value="#ffffff"></label>
-          <label class="field wide"><span>Логотип PNG/JPEG/WebP</span><input id="adLogo" type="file" accept="image/png,image/jpeg,image/webp"></label>
-        </div>
-        <div class="ad-actions">
-          <button id="saveAdvertiserButton" class="secondary ad-save" type="button">Сохранить рекламодателя</button>
-          <button id="deleteAdvertiserButton" class="ad-delete" type="button">Удалить</button>
-        </div>
-      </section>
       <div class="status-card">
         <b id="statusTitle">Готово к работе</b>
         <span id="statusText">Выберите файлы, расставьте элементы и запустите генерацию.</span>
@@ -92,6 +69,6 @@
     </aside>
   </main>
 
-  <script src="editor.js?v=20260723-1"></script>
+  <script src="editor.js?v=20260722-5"></script>
 </body>
 </html>

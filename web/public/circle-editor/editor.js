@@ -8,14 +8,10 @@
   const sourceSelect = $("#sourceSelect");
   const gameplaySelect = $("#gameplaySelect");
   const templateNameInput = $("#templateName");
-  const advertiserSelect = $("#advertiserSelect");
-  const bannerEnabledInput = $("#bannerEnabled");
   const elements = { puzzle: $("#puzzle"), circle: $("#circle"), banner: $("#banner") };
   let scale = 0.35;
   let selected = "puzzle";
   let sourceFiles = [];
-  let advertisers = [];
-  let activeAdvertiserId = "yuki";
   let layout = {
     circle: { x: 130, y: 300, size: 820 },
     puzzle: { x: 90, y: 92, width: 900, labelSize: 30, puzzleSize: 68, gap: 14 },
@@ -138,101 +134,6 @@
     select.innerHTML = random + values.map((value) => `<option value="${value.replace(/&/g, "&amp;").replace(/"/g, "&quot;")}">${value}</option>`).join("");
   }
 
-  const adFields = {
-    name: $("#adName"),
-    brand: $("#adBrand"),
-    headline: $("#adHeadline"),
-    subline: $("#adSubline"),
-    cta: $("#adCta"),
-    accentColor: $("#adAccent"),
-    backgroundColor: $("#adBackground"),
-    textColor: $("#adTextColor"),
-  };
-
-  function fillAdvertiserForm(advertiser) {
-    const value = advertiser || {
-      name: "", brand: "", headline: "", subline: "", cta: "",
-      accentColor: "#ff2f78", backgroundColor: "#21151f", textColor: "#ffffff",
-    };
-    Object.entries(adFields).forEach(([key, input]) => { input.value = value[key] || ""; });
-    $("#adLogo").value = "";
-    $("#saveAdvertiserButton").textContent = advertiser?.legacy ? "Создать копию рекламодателя" : "Сохранить рекламодателя";
-    $("#deleteAdvertiserButton").disabled = !advertiser || advertiser.legacy;
-  }
-
-  function renderAdvertisers(selectedId = activeAdvertiserId) {
-    advertiserSelect.innerHTML = advertisers
-      .map((item) => `<option value="${item.id}">${item.name}</option>`)
-      .join("");
-    activeAdvertiserId = advertisers.some((item) => item.id === selectedId) ? selectedId : (advertisers[0]?.id || "yuki");
-    advertiserSelect.value = activeAdvertiserId;
-    fillAdvertiserForm(advertisers.find((item) => item.id === activeAdvertiserId));
-    updateBannerPreview();
-  }
-
-  function updateBannerPreview() {
-    const image = elements.banner.querySelector("img");
-    image.src = `/api/circle-editor/banner-preview.png?id=${encodeURIComponent(activeAdvertiserId)}&v=${Date.now()}`;
-    elements.banner.style.display = bannerEnabledInput.checked ? "" : "none";
-  }
-
-  const fileDataUrl = (file) => new Promise((resolve, reject) => {
-    if (!file) return resolve(undefined);
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result || ""));
-    reader.onerror = () => reject(new Error("Не удалось прочитать логотип"));
-    reader.readAsDataURL(file);
-  });
-
-  async function saveAdvertiser() {
-    const current = advertisers.find((item) => item.id === advertiserSelect.value);
-    const button = $("#saveAdvertiserButton");
-    button.disabled = true;
-    setStatus("Создаю баннер", "Рендерю прозрачный рекламный ассет…", "busy");
-    try {
-      const logoDataUrl = await fileDataUrl($("#adLogo").files[0]);
-      const body = Object.fromEntries(Object.entries(adFields).map(([key, input]) => [key, input.value]));
-      if (current && !current.legacy) body.id = current.id;
-      if (logoDataUrl) body.logoDataUrl = logoDataUrl;
-      body.activate = true;
-      const result = await api("/circle-editor/advertisers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      advertisers = result.advertisers;
-      activeAdvertiserId = result.activeAdvertiserId;
-      bannerEnabledInput.checked = result.bannerEnabled;
-      renderAdvertisers(activeAdvertiserId);
-      setStatus("Рекламодатель сохранён", `${result.advertiser.name} выбран для следующих роликов.`);
-    } finally {
-      button.disabled = false;
-    }
-  }
-
-  async function activateAdvertiser() {
-    activeAdvertiserId = advertiserSelect.value;
-    fillAdvertiserForm(advertisers.find((item) => item.id === activeAdvertiserId));
-    updateBannerPreview();
-    await api("/circle-editor/advertisers/active", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: activeAdvertiserId, enabled: bannerEnabledInput.checked }),
-    });
-  }
-
-  async function deleteAdvertiser() {
-    const current = advertisers.find((item) => item.id === advertiserSelect.value);
-    if (!current || current.legacy) return;
-    if (!window.confirm(`Удалить рекламодателя «${current.name}»?`)) return;
-    const result = await api(`/circle-editor/advertisers/${encodeURIComponent(current.id)}`, { method: "DELETE" });
-    advertisers = result.advertisers;
-    activeAdvertiserId = result.activeAdvertiserId;
-    bannerEnabledInput.checked = result.bannerEnabled;
-    renderAdvertisers(activeAdvertiserId);
-    setStatus("Рекламодатель удалён", "Активным выбран доступный баннер.");
-  }
-
   function updateMedia() {
     if (gameplaySelect.value) $("#gameplayVideo").src = mediaUrl("gameplay", gameplaySelect.value);
     const previewSource = sourceSelect.value === "__random__" || sourceSelect.value === "__telegram__"
@@ -253,16 +154,7 @@
     setStatus("Сохраняю", "Записываю раскладку в config.json…", "busy");
     const name = templateNameInput.value.trim();
     if (!name) throw new Error("Введите имя шаблона");
-    await api("/circle-editor/layout", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        layout,
-        name,
-        activeAdvertiserId,
-        bannerEnabled: bannerEnabledInput.checked,
-      }),
-    });
+    await api("/circle-editor/layout", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ layout, name }) });
     setStatus("Шаблон сохранён", "Telegram-кружочки теперь видны в библиотеке источников Студии и используют эту раскладку.");
   }
 
@@ -294,18 +186,6 @@
   gameplaySelect.addEventListener("change", updateMedia);
   $("#saveButton").addEventListener("click", () => save().catch((error) => setStatus("Ошибка сохранения", error.message, "error")));
   $("#renderButton").addEventListener("click", generate);
-  $("#saveAdvertiserButton").addEventListener("click", () => saveAdvertiser().catch((error) => setStatus("Ошибка баннера", error.message, "error")));
-  $("#deleteAdvertiserButton").addEventListener("click", () => deleteAdvertiser().catch((error) => setStatus("Ошибка удаления", error.message, "error")));
-  $("#newAdvertiserButton").addEventListener("click", () => {
-    advertiserSelect.value = "";
-    fillAdvertiserForm(null);
-    $("#adName").focus();
-  });
-  advertiserSelect.addEventListener("change", () => activateAdvertiser().catch((error) => setStatus("Ошибка выбора баннера", error.message, "error")));
-  bannerEnabledInput.addEventListener("change", () => {
-    updateBannerPreview();
-    activateAdvertiser().catch((error) => setStatus("Ошибка выбора баннера", error.message, "error"));
-  });
   window.addEventListener("resize", fit);
 
   (async () => {
@@ -313,10 +193,6 @@
       const data = await api("/circle-editor");
       layout = data.layout;
       templateNameInput.value = data.template?.name || "Telegram-кружочки";
-      advertisers = data.advertisers || [];
-      activeAdvertiserId = data.activeAdvertiserId || "yuki";
-      bannerEnabledInput.checked = data.bannerEnabled !== false;
-      renderAdvertisers(activeAdvertiserId);
       sourceFiles = data.sources;
       fillSelect(sourceSelect, data.sources, true);
       fillSelect(gameplaySelect, data.gameplays);
