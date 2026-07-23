@@ -8,12 +8,15 @@
   const sourceSelect = $("#sourceSelect");
   const gameplaySelect = $("#gameplaySelect");
   const templateNameInput = $("#templateName");
+  const templateSelect = $("#templateSelect");
   const advertiserSelect = $("#advertiserSelect");
   const bannerEnabledInput = $("#bannerEnabled");
   const elements = { puzzle: $("#puzzle"), circle: $("#circle"), banner: $("#banner") };
   let scale = 0.35;
   let selected = "puzzle";
   let sourceFiles = [];
+  let templates = [];
+  let activeTemplateId = "default";
   let advertisers = [];
   let activeAdvertiserId = "yuki";
   let layout = {
@@ -160,6 +163,39 @@
     $("#deleteAdvertiserButton").disabled = !advertiser || advertiser.legacy;
   }
 
+  function renderTemplates(selectedId = activeTemplateId) {
+    templateSelect.innerHTML = templates
+      .map((item) => `<option value="${item.id}">${item.name}</option>`)
+      .join("");
+    activeTemplateId = templates.some((item) => item.id === selectedId) ? selectedId : (templates[0]?.id || "default");
+    templateSelect.value = activeTemplateId;
+    $("#deleteTemplateButton").disabled = templates.length <= 1;
+  }
+
+  function applyTemplateResponse(data) {
+    templates = data.templates || templates;
+    activeTemplateId = data.activeTemplateId || data.template?.id || activeTemplateId;
+    if (data.layout) layout = data.layout;
+    const current = data.template || templates.find((item) => item.id === activeTemplateId);
+    if (current?.name) templateNameInput.value = current.name;
+    if (data.advertisers) advertisers = data.advertisers;
+    if (data.activeAdvertiserId) activeAdvertiserId = data.activeAdvertiserId;
+    if (typeof data.bannerEnabled === "boolean") bannerEnabledInput.checked = data.bannerEnabled;
+    renderTemplates(activeTemplateId);
+    renderAdvertisers(activeAdvertiserId);
+    render();
+  }
+
+  async function switchTemplate() {
+    const data = await api("/circle-editor/templates/active", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: templateSelect.value }),
+    });
+    applyTemplateResponse(data);
+    setStatus("Шаблон выбран", `Активен «${data.template.name}».`);
+  }
+
   function renderAdvertisers(selectedId = activeAdvertiserId) {
     advertiserSelect.innerHTML = advertisers
       .map((item) => `<option value="${item.id}">${item.name}</option>`)
@@ -248,7 +284,7 @@
     return body;
   }
 
-  async function save() {
+  async function save(createNew = false) {
     if (!layout) return setStatus("Редактор не загружен", "Обновите страницу после запуска backend.", "error");
     setStatus("Сохраняю", "Записываю раскладку в config.json…", "busy");
     const name = templateNameInput.value.trim();
@@ -261,9 +297,24 @@
         name,
         activeAdvertiserId,
         bannerEnabled: bannerEnabledInput.checked,
+        templateId: activeTemplateId,
+        createNew,
       }),
     });
-    setStatus("Шаблон сохранён", "Telegram-кружочки теперь видны в библиотеке источников Студии и используют эту раскладку.");
+    applyTemplateResponse(result);
+    setStatus(
+      createNew ? "Создан новый шаблон" : "Шаблон сохранён",
+      `«${result.template.name}» доступен отдельным источником в Студии.`,
+    );
+  }
+
+  async function deleteTemplate() {
+    if (templates.length <= 1) return;
+    const current = templates.find((item) => item.id === activeTemplateId);
+    if (!current || !window.confirm(`Удалить шаблон «${current.name}»?`)) return;
+    const data = await api(`/circle-editor/templates/${encodeURIComponent(current.id)}`, { method: "DELETE" });
+    applyTemplateResponse(data);
+    setStatus("Шаблон удалён", `Активен «${data.template.name}».`);
   }
 
   async function generate() {
@@ -292,7 +343,10 @@
 
   sourceSelect.addEventListener("change", updateMedia);
   gameplaySelect.addEventListener("change", updateMedia);
-  $("#saveButton").addEventListener("click", () => save().catch((error) => setStatus("Ошибка сохранения", error.message, "error")));
+  $("#saveButton").addEventListener("click", () => save(false).catch((error) => setStatus("Ошибка сохранения", error.message, "error")));
+  $("#saveAsButton").addEventListener("click", () => save(true).catch((error) => setStatus("Ошибка создания", error.message, "error")));
+  $("#deleteTemplateButton").addEventListener("click", () => deleteTemplate().catch((error) => setStatus("Ошибка удаления", error.message, "error")));
+  templateSelect.addEventListener("change", () => switchTemplate().catch((error) => setStatus("Ошибка выбора шаблона", error.message, "error")));
   $("#renderButton").addEventListener("click", generate);
   $("#saveAdvertiserButton").addEventListener("click", () => saveAdvertiser().catch((error) => setStatus("Ошибка баннера", error.message, "error")));
   $("#deleteAdvertiserButton").addEventListener("click", () => deleteAdvertiser().catch((error) => setStatus("Ошибка удаления", error.message, "error")));
@@ -313,10 +367,13 @@
       const data = await api("/circle-editor");
       layout = data.layout;
       templateNameInput.value = data.template?.name || "Telegram-кружочки";
+      templates = data.templates || [];
+      activeTemplateId = data.activeTemplateId || templates[0]?.id || "default";
       advertisers = data.advertisers || [];
       activeAdvertiserId = data.activeAdvertiserId || "yuki";
       bannerEnabledInput.checked = data.bannerEnabled !== false;
       renderAdvertisers(activeAdvertiserId);
+      renderTemplates(activeTemplateId);
       sourceFiles = data.sources;
       fillSelect(sourceSelect, data.sources, true);
       fillSelect(gameplaySelect, data.gameplays);
