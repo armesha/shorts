@@ -1395,6 +1395,8 @@ export interface CircleAdvertiser {
   similarity?: number;
   blend?: number;
   fullFrame?: boolean;
+  startSeconds?: number;
+  repeatEverySeconds?: number;
   sourceName?: string;
   legacy?: boolean;
   hasLogo?: boolean;
@@ -1410,13 +1412,13 @@ export interface CircleAdvertiserState {
 export interface CircleAdvertiserInput {
   id?: string;
   name: string;
-  brand: string;
-  headline: string;
-  subline: string;
-  cta: string;
-  accentColor: string;
-  backgroundColor: string;
-  textColor: string;
+  brand?: string;
+  headline?: string;
+  subline?: string;
+  cta?: string;
+  accentColor?: string;
+  backgroundColor?: string;
+  textColor?: string;
   logoDataUrl?: string;
   removeLogo?: boolean;
   videoDataUrl?: string;
@@ -1426,5 +1428,7 @@ export interface CircleAdvertiserInput {
   similarity?: number;
   blend?: number;
   fullFrameMode?: "auto" | "canvas" | "banner";
+  startSeconds?: number;
+  repeatEverySeconds?: number;
   activate?: boolean;
 }

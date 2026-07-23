@@ -213,6 +213,33 @@ async function bannerPreview(id?: unknown): Promise<string> {
   return target;
 }
 
+async function bannerVideoPreview(id?: unknown): Promise<string> {
+  const source = circleAdvertiserSource(id);
+  if (!existsSync(source)) throw new Error(`Не найден баннер: ${source}`);
+  const state = circleAdvertiserState();
+  const safeId = String(id || state.activeAdvertiserId).replace(/[^a-z0-9_-]+/gi, "-");
+  const item = state.advertisers.find((entry) => entry.id === safeId)
+    || state.advertisers.find((entry) => entry.id === state.activeAdvertiserId)
+    || state.advertisers[0];
+  if (!item?.hasVideo) throw new Error("У этого баннера нет видео.");
+  const effectKey = `${item.transparent !== false ? "alpha" : "key"}-${item.chromaColor || "00ff00"}-${item.similarity ?? 0.18}-${item.blend ?? 0.08}-${item.fullFrame !== false ? "canvas" : "banner"}`
+    .replace(/[^a-z0-9_-]+/gi, "-");
+  const target = resolve(projectDir(), `.runtime/editor-banner-video-${safeId}-${effectKey}.webm`);
+  if (existsSync(target) && statSync(target).mtimeMs >= statSync(source).mtimeMs) return target;
+  await mkdir(dirname(target), { recursive: true });
+  const crop = item.fullFrame !== false ? "crop=900:260:90:830," : "";
+  const effects = item.transparent !== false
+    ? "format=rgba"
+    : `format=rgba,chromakey=${(item.chromaColor || "#00ff00").replace("#", "0x")}:${item.similarity ?? 0.18}:${item.blend ?? 0.08}`;
+  await run(ffmpeg, [
+    "-hide_banner", "-loglevel", "error", "-y", "-i", source,
+    "-vf", `${crop}scale=900:260:flags=lanczos,${effects},format=yuva420p`,
+    "-an", "-t", "8", "-c:v", "libvpx-vp9", "-deadline", "realtime", "-cpu-used", "6",
+    "-crf", "36", "-b:v", "0", "-pix_fmt", "yuva420p", "-auto-alt-ref", "0", target,
+  ], projectDir());
+  return target;
+}
+
 export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
   app.get("/api/circle-editor", async (req, reply) => {
     if (!requireAdmin(req, reply, db)) return;
@@ -323,6 +350,12 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
     if (!requireAdmin(req, reply, db)) return;
     const file = await bannerPreview((req.query as { id?: unknown } | undefined)?.id);
     return reply.type("image/png").send(createReadStream(file));
+  });
+
+  app.get("/api/circle-editor/banner-preview.webm", async (req, reply) => {
+    if (!requireAdmin(req, reply, db)) return;
+    const file = await bannerVideoPreview((req.query as { id?: unknown } | undefined)?.id);
+    return streamMedia(req, reply, file);
   });
 
   app.post("/api/circle-editor/render", async (req, reply) => {

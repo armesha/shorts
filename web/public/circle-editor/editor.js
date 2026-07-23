@@ -202,13 +202,26 @@
       .join("");
     activeAdvertiserId = advertisers.some((item) => item.id === selectedId) ? selectedId : (advertisers[0]?.id || "yuki");
     advertiserSelect.value = activeAdvertiserId;
-    fillAdvertiserForm(advertisers.find((item) => item.id === activeAdvertiserId));
     updateBannerPreview();
   }
 
   function updateBannerPreview() {
-    const image = elements.banner.querySelector("img");
-    image.src = `/api/circle-editor/banner-preview.png?id=${encodeURIComponent(activeAdvertiserId)}&v=${Date.now()}`;
+    const current = advertisers.find((item) => item.id === activeAdvertiserId);
+    const image = $("#bannerImage");
+    const video = $("#bannerVideo");
+    if (current?.hasVideo) {
+      image.hidden = true;
+      video.hidden = false;
+      video.src = `/api/circle-editor/banner-preview.webm?id=${encodeURIComponent(activeAdvertiserId)}&v=${Date.now()}`;
+      video.load();
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+      video.removeAttribute("src");
+      video.hidden = true;
+      image.hidden = false;
+      image.src = `/api/circle-editor/banner-preview.png?id=${encodeURIComponent(activeAdvertiserId)}&v=${Date.now()}`;
+    }
     elements.banner.style.display = bannerEnabledInput.checked ? "" : "none";
   }
 
@@ -248,7 +261,6 @@
 
   async function activateAdvertiser() {
     activeAdvertiserId = advertiserSelect.value;
-    fillAdvertiserForm(advertisers.find((item) => item.id === activeAdvertiserId));
     updateBannerPreview();
     await api("/circle-editor/advertisers/active", {
       method: "PUT",
@@ -348,9 +360,9 @@
   $("#deleteTemplateButton").addEventListener("click", () => deleteTemplate().catch((error) => setStatus("Ошибка удаления", error.message, "error")));
   templateSelect.addEventListener("change", () => switchTemplate().catch((error) => setStatus("Ошибка выбора шаблона", error.message, "error")));
   $("#renderButton").addEventListener("click", generate);
-  $("#saveAdvertiserButton").addEventListener("click", () => saveAdvertiser().catch((error) => setStatus("Ошибка баннера", error.message, "error")));
-  $("#deleteAdvertiserButton").addEventListener("click", () => deleteAdvertiser().catch((error) => setStatus("Ошибка удаления", error.message, "error")));
-  $("#newAdvertiserButton").addEventListener("click", () => {
+  $("#saveAdvertiserButton")?.addEventListener("click", () => saveAdvertiser().catch((error) => setStatus("Ошибка баннера", error.message, "error")));
+  $("#deleteAdvertiserButton")?.addEventListener("click", () => deleteAdvertiser().catch((error) => setStatus("Ошибка удаления", error.message, "error")));
+  $("#newAdvertiserButton")?.addEventListener("click", () => {
     advertiserSelect.value = "";
     fillAdvertiserForm(null);
     $("#adName").focus();

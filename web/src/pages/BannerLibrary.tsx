@@ -10,18 +10,13 @@ import {
 
 const EMPTY_FORM: CircleAdvertiserInput = {
   name: "",
-  brand: "",
-  headline: "",
-  subline: "",
-  cta: "",
-  accentColor: "#ff2f78",
-  backgroundColor: "#21151f",
-  textColor: "#ffffff",
   transparent: true,
   chromaColor: "#00ff00",
   similarity: 0.18,
   blend: 0.08,
   fullFrameMode: "auto",
+  startSeconds: 0,
+  repeatEverySeconds: 0,
   activate: true,
 };
 
@@ -29,18 +24,13 @@ function formFromAdvertiser(item: CircleAdvertiser): CircleAdvertiserInput {
   return {
     id: item.id,
     name: item.name,
-    brand: item.brand,
-    headline: item.headline,
-    subline: item.subline,
-    cta: item.cta,
-    accentColor: item.accentColor,
-    backgroundColor: item.backgroundColor,
-    textColor: item.textColor,
     transparent: item.transparent !== false,
     chromaColor: item.chromaColor || "#00ff00",
     similarity: item.similarity ?? 0.18,
     blend: item.blend ?? 0.08,
     fullFrameMode: item.fullFrame === false ? "banner" : "canvas",
+    startSeconds: item.startSeconds ?? 0,
+    repeatEverySeconds: item.repeatEverySeconds ?? 0,
     activate: true,
   };
 }
@@ -49,7 +39,7 @@ function fileDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result || ""));
-    reader.onerror = () => reject(new Error("Не удалось прочитать логотип."));
+    reader.onerror = () => reject(new Error("Не удалось прочитать видео."));
     reader.readAsDataURL(file);
   });
 }
@@ -58,7 +48,6 @@ export default function BannerLibrary() {
   const [state, setState] = useState<CircleAdvertiserState | null>(null);
   const [selectedId, setSelectedId] = useState("");
   const [form, setForm] = useState<CircleAdvertiserInput>(EMPTY_FORM);
-  const [logoName, setLogoName] = useState("");
   const [videoName, setVideoName] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -79,7 +68,6 @@ export default function BannerLibrary() {
     const item = next.advertisers.find((advertiser) => advertiser.id === id) || next.advertisers[0];
     setSelectedId(item?.id || "");
     if (item) setForm(formFromAdvertiser(item));
-    setLogoName("");
     setVideoName("");
     setPreviewVersion(Date.now());
   };
@@ -95,7 +83,6 @@ export default function BannerLibrary() {
   const selectAdvertiser = (item: CircleAdvertiser) => {
     setSelectedId(item.id);
     setForm(formFromAdvertiser(item));
-    setLogoName("");
     setVideoName("");
     setError("");
     setNotice("");
@@ -104,7 +91,6 @@ export default function BannerLibrary() {
   const startNew = () => {
     setSelectedId("");
     setForm(EMPTY_FORM);
-    setLogoName("");
     setVideoName("");
     setError("");
     setNotice("Заполните поля и сохраните новый баннер.");
@@ -112,21 +98,6 @@ export default function BannerLibrary() {
 
   const update = <K extends keyof CircleAdvertiserInput>(key: K, value: CircleAdvertiserInput[K]) => {
     setForm((current) => ({ ...current, [key]: value }));
-  };
-
-  const chooseLogo = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    try {
-      update("logoDataUrl", await fileDataUrl(file));
-      update("removeLogo", false);
-      setLogoName(file.name);
-      setError("");
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : String(reason));
-    } finally {
-      event.target.value = "";
-    }
   };
 
   const chooseVideo = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -159,8 +130,12 @@ export default function BannerLibrary() {
   };
 
   const save = async () => {
-    if (!form.name.trim() || !form.brand.trim() || !form.headline.trim()) {
-      setError("Заполните название, бренд и заголовок.");
+    if (!form.name.trim()) {
+      setError("Укажите название баннера.");
+      return;
+    }
+    if (!selected?.hasVideo && !form.videoDataUrl) {
+      setError("Загрузите MOV, MP4, WebM или MKV.");
       return;
     }
     setSaving(true);
@@ -300,8 +275,11 @@ export default function BannerLibrary() {
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
                             <div className="truncate font-bold">{item.name}</div>
-                            <div className="truncate text-xs text-base-content/55">{item.brand} · {item.headline}</div>
-                            {item.hasVideo && <div className="mt-1 text-[11px] font-semibold text-primary">Видео · {item.sourceName || "загруженный файл"}</div>}
+                            <div className="truncate text-xs text-base-content/55">{item.sourceName || "Встроенный баннер"}</div>
+                            <div className="mt-1 text-[11px] text-base-content/45">
+                              С {item.startSeconds ?? 0} сек.
+                              {(item.repeatEverySeconds ?? 0) > 0 ? ` · повтор каждые ${item.repeatEverySeconds} сек.` : " · непрерывно"}
+                            </div>
                           </div>
                           {active && <span className="badge badge-primary badge-sm">Активный</span>}
                         </div>
@@ -326,20 +304,11 @@ export default function BannerLibrary() {
             <div>
               <h2 className="card-title">{selected ? "Настройки баннера" : "Новый баннер"}</h2>
               <p className="text-xs text-base-content/55">
-                {selected?.legacy ? "Встроенный анимированный баннер доступен только для выбора." : "Можно собрать PNG или загрузить готовую анимацию с прозрачностью/цветным фоном."}
+                {selected?.legacy ? "Встроенный баннер доступен только для выбора." : "Только нужные настройки готового видео — без конструктора текста и логотипов."}
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Название в библиотеке" wide value={form.name} disabled={selected?.legacy} onChange={(value) => update("name", value)} />
-              <Field label="Бренд" value={form.brand} disabled={selected?.legacy} onChange={(value) => update("brand", value)} />
-              <Field label="Кнопка" value={form.cta} disabled={selected?.legacy} onChange={(value) => update("cta", value)} />
-              <Field label="Заголовок" wide value={form.headline} disabled={selected?.legacy} onChange={(value) => update("headline", value)} />
-              <Field label="Описание" wide value={form.subline} disabled={selected?.legacy} onChange={(value) => update("subline", value)} />
-              <ColorField label="Акцент" value={form.accentColor} disabled={selected?.legacy} onChange={(value) => update("accentColor", value)} />
-              <ColorField label="Фон" value={form.backgroundColor} disabled={selected?.legacy} onChange={(value) => update("backgroundColor", value)} />
-              <ColorField label="Текст" value={form.textColor} disabled={selected?.legacy} onChange={(value) => update("textColor", value)} />
-            </div>
+            <Field label="Название в библиотеке" value={form.name} disabled={selected?.legacy} onChange={(value) => update("name", value)} />
 
             {!selected?.legacy && (
               <div className="rounded-xl border border-primary/25 bg-primary/5 p-3">
@@ -355,7 +324,7 @@ export default function BannerLibrary() {
 
             {!selected?.legacy && (selected?.hasVideo || !!form.videoDataUrl) && (
               <div className="space-y-3 rounded-xl border border-base-300 p-3">
-                <div className="font-semibold">Прозрачность видео</div>
+                <div className="font-semibold">Как убрать фон</div>
                 <label className="flex cursor-pointer items-start gap-3">
                   <input
                     type="radio"
@@ -363,7 +332,7 @@ export default function BannerLibrary() {
                     checked={form.transparent !== false}
                     onChange={() => update("transparent", true)}
                   />
-                  <span><b className="block text-sm">В файле уже есть альфа-канал</b><span className="text-xs text-base-content/55">Для MOV ProRes 4444 или WebM VP9 с прозрачностью.</span></span>
+                  <span><b className="block text-sm">Фон уже прозрачный</b><span className="text-xs text-base-content/55">Для MOV ProRes 4444 или WebM VP9 с альфа-каналом.</span></span>
                 </label>
                 <label className="flex cursor-pointer items-start gap-3">
                   <input
@@ -372,7 +341,7 @@ export default function BannerLibrary() {
                     checked={form.transparent === false}
                     onChange={() => update("transparent", false)}
                   />
-                  <span><b className="block text-sm">Удалить цветной фон</b><span className="text-xs text-base-content/55">Для MP4 с зелёным, синим или другим однотонным фоном.</span></span>
+                  <span><b className="block text-sm">Удалить зелёный/цветной фон</b><span className="text-xs text-base-content/55">Выбери этот пункт для MP4 с зелёным экраном.</span></span>
                 </label>
                 {form.transparent === false && (
                   <div className="grid gap-3 sm:grid-cols-2">
@@ -396,24 +365,29 @@ export default function BannerLibrary() {
               </div>
             )}
 
-            {!selected?.legacy && !selected?.hasVideo && !form.videoDataUrl && (
-              <div className="rounded-xl border border-dashed border-base-300 p-3">
-                <label className="btn btn-ghost btn-sm w-full gap-2">
-                  <ImagePlus size={16} /> {logoName || (selected?.hasLogo ? "Заменить логотип" : "Добавить логотип")}
-                  <input type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={chooseLogo} />
-                </label>
-                {selected?.hasLogo && (
-                  <label className="mt-2 flex cursor-pointer items-center gap-2 text-xs text-base-content/60">
-                    <input
-                      type="checkbox"
-                      className="checkbox checkbox-xs"
-                      checked={form.removeLogo === true}
-                      onChange={(event) => update("removeLogo", event.target.checked)}
-                    />
-                    Удалить текущий логотип
-                  </label>
-                )}
-                <div className="mt-2 text-center text-[11px] text-base-content/45">PNG, JPEG или WebP до 2,5 МБ</div>
+            {!selected?.legacy && (selected?.hasVideo || !!form.videoDataUrl) && (
+              <div className="space-y-3 rounded-xl border border-base-300 p-3">
+                <div>
+                  <div className="font-semibold">Когда показывать</div>
+                  <div className="text-xs text-base-content/50">Отсчёт идёт от начала итогового ролика.</div>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <NumberField
+                    label="Первый показ с, сек."
+                    value={form.startSeconds ?? 0}
+                    min={0}
+                    max={180}
+                    onChange={(value) => update("startSeconds", value)}
+                  />
+                  <NumberField
+                    label="Повторять каждые, сек."
+                    value={form.repeatEverySeconds ?? 0}
+                    min={0}
+                    max={180}
+                    onChange={(value) => update("repeatEverySeconds", value)}
+                    hint="0 — крутить непрерывно"
+                  />
+                </div>
               </div>
             )}
 
@@ -459,6 +433,38 @@ function Field({
         disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
       />
+    </label>
+  );
+}
+
+function NumberField({
+  label,
+  value,
+  min,
+  max,
+  hint,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  hint?: string;
+  onChange: (value: number) => void;
+}) {
+  return (
+    <label className="form-control gap-1">
+      <span className="text-xs font-semibold text-base-content/60">{label}</span>
+      <input
+        type="number"
+        className="input input-bordered w-full"
+        value={value}
+        min={min}
+        max={max}
+        step={0.5}
+        onChange={(event) => onChange(Math.min(max, Math.max(min, Number(event.target.value) || 0)))}
+      />
+      {hint && <span className="text-[11px] text-base-content/45">{hint}</span>}
     </label>
   );
 }
