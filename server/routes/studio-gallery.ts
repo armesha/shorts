@@ -23,10 +23,22 @@ import * as metrics from "../infra/metrics.ts";
 import { rememberOutputOwner } from "../infra/output-access.ts";
 import { uid } from "../infra/auth-session.ts";
 import type { RouteDeps, LimitedReplyish } from "./deps.ts";
-import { generateTelegramCircleVideo, telegramCircleTemplateName } from "../services/telegram-circle-video.ts";
+import { generateTelegramCircleVideo } from "../services/telegram-circle-video.ts";
+import {
+  activateCircleTemplate,
+  activeCircleTemplateId,
+  listCircleTemplates,
+} from "../services/circle-templates.ts";
 
 const STUDIO_IMAGE_LIMIT = { limit: 10, windowMs: 5 * 60 * 1000 };
 const STUDIO_VIDEO_LIMIT = { limit: 20, windowMs: 10 * 60 * 1000 };
+const CIRCLE_DECK = "telegram-circles";
+const CIRCLE_DECK_PREFIX = `${CIRCLE_DECK}:`;
+
+function circleTemplateId(deckId?: string): string | null {
+  if (deckId === CIRCLE_DECK) return activeCircleTemplateId();
+  return deckId?.startsWith(CIRCLE_DECK_PREFIX) ? deckId.slice(CIRCLE_DECK_PREFIX.length) : null;
+}
 
 export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
   const { enforceGenerationWindow, runHeavyGenerationLimited, outputDir } = deps;
@@ -40,14 +52,15 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
     // «Бесконечный пак»: у этого юзера деки показывают полный размер свободным.
     // Реальный учёт не трогаем (см. infinite-packs.ts).
     const infinite = db.hasFeature(userId, INFINITE_PACKS_FEATURE);
-    const base = visibleDecksForUser(userId).map((d) => {
+    const base = visibleDecksForUser(userId).flatMap((d) => {
       const s = libraryStats(d.id, used);
+      const templates = d.liveVideo ? listCircleTemplates() : [null];
       const c = d.liveVideo
-        ? { total: 1, used: 0, available: 1 }
+        ? { total: 10, used: 0, available: 10 }
         : infinite ? infiniteCounts(s.total) : { total: s.total, used: s.used, available: s.available };
-      return {
-        id: d.id,
-        name: d.liveVideo ? telegramCircleTemplateName() : d.name,
+      return templates.map((template) => ({
+        id: template ? `${CIRCLE_DECK_PREFIX}${template.id}` : d.id,
+        name: template?.name || d.name,
         ai: false,
         preFact: !!d.preFact, // pre-built video pack (no text render) — Studio shows a random video
         liveVideo: !!d.liveVideo,
@@ -62,7 +75,7 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
         readyPacks: s.readyPacks,
         untitledPacks: infinite ? 0 : s.untitledPacks,
         untitledTotal: infinite ? 0 : s.untitledTotal,
-      };
+      }));
     });
     return base;
   });
@@ -134,9 +147,10 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
   let previewCounter = 0;
   app.post("/api/generate/anecdote", async (req, reply) => {
     const body = (req.body as { text?: string; title?: string; bg?: string; avoidBg?: string; deck?: string }) ?? {};
-    const deck = getDeck(body.deck);
+    const templateId = circleTemplateId(body.deck);
+    const deck = getDeck(templateId ? CIRCLE_DECK : body.deck);
     if (!deckAllowed(req, deck.id)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
-    if (deck.liveVideo) return { liveVideo: true, deck: deck.id };
+    if (deck.liveVideo) return { liveVideo: true, deck: templateId ? `${CIRCLE_DECK_PREFIX}${templateId}` : deck.id };
     if (!enforceGenerationWindow(req, reply as LimitedReplyish, "studio-image", STUDIO_IMAGE_LIMIT)) return;
     return runHeavyGenerationLimited(req, reply as LimitedReplyish, "studio-image", async () => {
       let text = body.text;
@@ -176,18 +190,20 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
   let videoCounter = 0;
   app.post("/api/generate/anecdote-video", async (req, reply) => {
     const body = (req.body as { text?: string; title?: string; bg?: string; music?: string; deck?: string }) ?? {};
-    const deck = getDeck(body.deck);
+    const templateId = circleTemplateId(body.deck);
+    const deck = getDeck(templateId ? CIRCLE_DECK : body.deck);
     if (!deckAllowed(req, deck.id)) return reply.code(403).send({ error: "Этот пак вам недоступен." });
     if (!enforceGenerationWindow(req, reply as LimitedReplyish, "studio-video", STUDIO_VIDEO_LIMIT)) return;
     return runHeavyGenerationLimited(req, reply as LimitedReplyish, "studio-video", async () => {
       if (deck.liveVideo) {
+        if (templateId) await activateCircleTemplate(templateId);
         videoCounter++;
         const stamp = `${Date.now()}-${videoCounter}`;
         const generated = await metrics.track("render", () => generateTelegramCircleVideo(OUTPUT_ROOT, stamp));
         rememberOutputOwner([generated.videoRel], uid(req));
         return {
           videoUrl: `/files/${generated.videoRel}`,
-          title: deck.name,
+          title: listCircleTemplates().find((template) => template.id === templateId)?.name || deck.name,
           text: "",
           chars: 0,
           bg: generated.gameplayFile,

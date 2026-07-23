@@ -370,7 +370,7 @@ export function buildDeckGroups(
   for (const g of gens) {
     if (opts.requireTotal && !(g.total && g.total > 0)) continue;
     if (exclude.has(g.id)) continue;
-    const lang = DECK_LANG[g.id] || "en";
+    const lang = g.id.startsWith("telegram-circles") ? "ru" : DECK_LANG[g.id] || "en";
     push(lang, { id: g.id, label: deckLabel(g.id, g.name), lang, video: !!(g.preFact || g.liveVideo), longVideo: !!g.longVideo });
   }
   for (const p of packs) {

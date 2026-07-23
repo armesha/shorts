@@ -5,7 +5,7 @@
 body{display:flex;flex-direction:column;overflow:hidden}
 .topbar{height:68px;flex:none;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:10px 18px;background:#fff;border-bottom:1px solid #ddd7e4}
 .topbar>div:first-child{display:flex;align-items:baseline;gap:10px}.topbar strong{font-size:20px}.topbar span{color:#7d7585;font-size:13px}
-.top-actions{display:flex;align-items:center;gap:10px}.top-actions label{display:flex;align-items:center;gap:6px;color:#655d6c;font-size:12px}.top-actions select{width:180px}.top-actions #templateName{width:190px}
+.top-actions{display:flex;align-items:center;gap:7px}.top-actions label{display:flex;align-items:center;gap:5px;color:#655d6c;font-size:11px}.top-actions select{width:150px}.top-actions #templateName{width:160px}.top-actions button{padding:0 9px;font-size:12px}
 select,input,button{height:38px;border:1px solid #d8d0de;border-radius:10px;background:#fff;padding:0 11px;color:#211b27}
 button{cursor:pointer;font-weight:700}button:hover{border-color:#e1185f}.primary{background:#e1185f;border-color:#e1185f;color:#fff}.primary:disabled{opacity:.55;cursor:wait}.secondary{background:#251c2b;color:#fff;border-color:#251c2b}
 .workspace{min-height:0;flex:1;display:grid;grid-template-columns:220px minmax(360px,1fr) 270px;gap:12px;padding:12px}
