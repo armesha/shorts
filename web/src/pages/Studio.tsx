@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sparkles, Dices, RefreshCw, Wand2, Loader2, Film, Save, Check, Plus, Square } from "lucide-react";
 import {
   apiClient,
@@ -62,6 +62,10 @@ export default function Studio() {
     : packs;
   const [batchN, setBatchN] = useState(5);
   const q = useGenQueue();
+  const [liveBatchN, setLiveBatchN] = useState(10);
+  const [liveQueue, setLiveQueue] = useState({ running: false, done: 0, total: 0 });
+  const [liveResults, setLiveResults] = useState<GeneratedVideo[]>([]);
+  const liveQueueCanceled = useRef(false);
 
   // Кастомный пак выбран в дропдауне (deck = "pack:<id>") — параллельный путь превью/сборки.
   const isPack = deck.startsWith("pack:");
@@ -273,6 +277,31 @@ export default function Studio() {
     }
   }
 
+  async function runLiveVideoQueue() {
+    if (!selectedIsLiveVideo || liveQueue.running) return;
+    const total = Math.max(1, Math.min(10, liveBatchN));
+    liveQueueCanceled.current = false;
+    setErr(null);
+    setLiveResults([]);
+    setLiveQueue({ running: true, done: 0, total });
+    for (let index = 0; index < total; index += 1) {
+      if (liveQueueCanceled.current) break;
+      try {
+        const result = await apiClient.generateAnecdoteVideo({ deck: "telegram-circles" });
+        if ((result as { error?: string })?.error || !result?.videoUrl) {
+          throw new Error((result as { error?: string })?.error || t("studio.genFailed"));
+        }
+        setVideo(result);
+        setLiveResults((items) => [...items, result]);
+        setLiveQueue({ running: true, done: index + 1, total });
+      } catch (error) {
+        setErr(error instanceof Error ? error.message : t("studio.genError"));
+        break;
+      }
+    }
+    setLiveQueue((state) => ({ ...state, running: false }));
+  }
+
   return (
     <div className="space-y-6">
       <header className="flex items-center gap-2">
@@ -333,11 +362,64 @@ export default function Studio() {
                     )
                   )}
                 </div>
-                <button className="btn btn-primary gap-2" onClick={() => gen("new")} disabled={loading}>
+                <button className="btn btn-primary gap-2" onClick={() => gen("new")} disabled={loading || liveQueue.running}>
                   {loading ? <Loader2 className="animate-spin" size={18} /> : <Wand2 size={18} />}
                   {t("common.generate")}
                 </button>
               </div>
+
+              {selectedIsLiveVideo && (
+                <div className="border-t border-base-300 pt-3 space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm font-medium">Последовательная очередь</span>
+                    <input
+                      type="number"
+                      min={1}
+                      max={10}
+                      className="input input-bordered input-sm w-20"
+                      value={liveBatchN}
+                      disabled={liveQueue.running}
+                      onChange={(event) => setLiveBatchN(Math.max(1, Math.min(10, Number(event.target.value) || 1)))}
+                      aria-label="Количество кружочков"
+                    />
+                    <button
+                      className="btn btn-sm btn-secondary gap-2"
+                      onClick={() => void runLiveVideoQueue()}
+                      disabled={liveQueue.running}
+                    >
+                      {liveQueue.running ? <Loader2 className="animate-spin" size={15} /> : <Plus size={15} />}
+                      Сгенерировать очередь
+                    </button>
+                    {liveQueue.running && (
+                      <button
+                        className="btn btn-sm btn-outline btn-error gap-1"
+                        onClick={() => { liveQueueCanceled.current = true; }}
+                      >
+                        <Square size={14} /> Остановить после текущего
+                      </button>
+                    )}
+                    {(liveQueue.running || liveQueue.total > 0) && (
+                      <span className="text-xs text-base-content/60">
+                        Готово {liveQueue.done} из {liveQueue.total}
+                      </span>
+                    )}
+                  </div>
+                  {liveResults.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {liveResults.map((item, index) => (
+                        <a
+                          key={`${item.videoUrl}-${index}`}
+                          href={item.videoUrl}
+                          download
+                          className="badge badge-outline badge-sm link"
+                        >
+                          MP4 #{index + 1}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="flex flex-wrap gap-2 items-center">
                 <button
