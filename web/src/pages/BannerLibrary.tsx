@@ -17,6 +17,11 @@ const EMPTY_FORM: CircleAdvertiserInput = {
   accentColor: "#ff2f78",
   backgroundColor: "#21151f",
   textColor: "#ffffff",
+  transparent: true,
+  chromaColor: "#00ff00",
+  similarity: 0.18,
+  blend: 0.08,
+  fullFrameMode: "auto",
   activate: true,
 };
 
@@ -31,6 +36,11 @@ function formFromAdvertiser(item: CircleAdvertiser): CircleAdvertiserInput {
     accentColor: item.accentColor,
     backgroundColor: item.backgroundColor,
     textColor: item.textColor,
+    transparent: item.transparent !== false,
+    chromaColor: item.chromaColor || "#00ff00",
+    similarity: item.similarity ?? 0.18,
+    blend: item.blend ?? 0.08,
+    fullFrameMode: item.fullFrame === false ? "banner" : "canvas",
     activate: true,
   };
 }
@@ -49,6 +59,7 @@ export default function BannerLibrary() {
   const [selectedId, setSelectedId] = useState("");
   const [form, setForm] = useState<CircleAdvertiserInput>(EMPTY_FORM);
   const [logoName, setLogoName] = useState("");
+  const [videoName, setVideoName] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -69,6 +80,7 @@ export default function BannerLibrary() {
     setSelectedId(item?.id || "");
     if (item) setForm(formFromAdvertiser(item));
     setLogoName("");
+    setVideoName("");
     setPreviewVersion(Date.now());
   };
 
@@ -84,6 +96,7 @@ export default function BannerLibrary() {
     setSelectedId(item.id);
     setForm(formFromAdvertiser(item));
     setLogoName("");
+    setVideoName("");
     setError("");
     setNotice("");
   };
@@ -92,11 +105,12 @@ export default function BannerLibrary() {
     setSelectedId("");
     setForm(EMPTY_FORM);
     setLogoName("");
+    setVideoName("");
     setError("");
     setNotice("Заполните поля и сохраните новый баннер.");
   };
 
-  const update = (key: keyof CircleAdvertiserInput, value: string | boolean) => {
+  const update = <K extends keyof CircleAdvertiserInput>(key: K, value: CircleAdvertiserInput[K]) => {
     setForm((current) => ({ ...current, [key]: value }));
   };
 
@@ -108,6 +122,35 @@ export default function BannerLibrary() {
       update("removeLogo", false);
       setLogoName(file.name);
       setError("");
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : String(reason));
+    } finally {
+      event.target.value = "";
+    }
+  };
+
+  const chooseVideo = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      if (file.size > 80 * 1024 * 1024) throw new Error("Видео-баннер должен быть меньше 80 МБ.");
+      const extension = file.name.split(".").pop()?.toLowerCase();
+      if (!extension || !["mov", "mp4", "webm", "mkv"].includes(extension)) {
+        throw new Error("Поддерживаются MOV, MP4, WebM и MKV.");
+      }
+      const dataUrl = await fileDataUrl(file);
+      setForm((current) => ({
+        ...current,
+        videoDataUrl: dataUrl,
+        videoName: file.name,
+        transparent: extension !== "mp4",
+        fullFrameMode: "auto",
+      }));
+      setVideoName(file.name);
+      setError("");
+      setNotice(extension === "mp4"
+        ? "MP4 выбран. Включено удаление цветного фона."
+        : "Видео выбрано. Проверьте режим прозрачности перед сохранением.");
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : String(reason));
     } finally {
@@ -246,7 +289,7 @@ export default function BannerLibrary() {
                     }`}
                   >
                     <button className="block w-full text-left" onClick={() => selectAdvertiser(item)}>
-                      <div className="aspect-[1080/390] bg-neutral/10">
+                      <div className="aspect-[45/13] bg-[linear-gradient(45deg,#ddd_25%,transparent_25%),linear-gradient(-45deg,#ddd_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#ddd_75%),linear-gradient(-45deg,transparent_75%,#ddd_75%)] bg-[length:18px_18px] bg-[position:0_0,0_9px,9px_-9px,-9px_0px]">
                         <img
                           src={`/api/circle-editor/banner-preview.png?id=${encodeURIComponent(item.id)}&v=${previewVersion}`}
                           alt={`Баннер ${item.name}`}
@@ -258,6 +301,7 @@ export default function BannerLibrary() {
                           <div className="min-w-0">
                             <div className="truncate font-bold">{item.name}</div>
                             <div className="truncate text-xs text-base-content/55">{item.brand} · {item.headline}</div>
+                            {item.hasVideo && <div className="mt-1 text-[11px] font-semibold text-primary">Видео · {item.sourceName || "загруженный файл"}</div>}
                           </div>
                           {active && <span className="badge badge-primary badge-sm">Активный</span>}
                         </div>
@@ -282,7 +326,7 @@ export default function BannerLibrary() {
             <div>
               <h2 className="card-title">{selected ? "Настройки баннера" : "Новый баннер"}</h2>
               <p className="text-xs text-base-content/55">
-                {selected?.legacy ? "Встроенный анимированный баннер доступен только для выбора." : "После сохранения PNG создаётся без потери размера кадра."}
+                {selected?.legacy ? "Встроенный анимированный баннер доступен только для выбора." : "Можно собрать PNG или загрузить готовую анимацию с прозрачностью/цветным фоном."}
               </p>
             </div>
 
@@ -298,6 +342,61 @@ export default function BannerLibrary() {
             </div>
 
             {!selected?.legacy && (
+              <div className="rounded-xl border border-primary/25 bg-primary/5 p-3">
+                <label className="btn btn-primary btn-outline btn-sm w-full gap-2">
+                  <ImagePlus size={16} /> {videoName || (selected?.hasVideo ? "Заменить видео-баннер" : "Загрузить MOV / MP4 / WebM")}
+                  <input type="file" accept=".mov,.mp4,.webm,.mkv,video/quicktime,video/mp4,video/webm" className="hidden" onChange={chooseVideo} />
+                </label>
+                <div className="mt-2 text-center text-[11px] text-base-content/55">
+                  До 80 МБ. MOV/WebM — с альфа-каналом; для MP4 можно удалить цветной фон.
+                </div>
+              </div>
+            )}
+
+            {!selected?.legacy && (selected?.hasVideo || !!form.videoDataUrl) && (
+              <div className="space-y-3 rounded-xl border border-base-300 p-3">
+                <div className="font-semibold">Прозрачность видео</div>
+                <label className="flex cursor-pointer items-start gap-3">
+                  <input
+                    type="radio"
+                    className="radio radio-primary radio-sm mt-0.5"
+                    checked={form.transparent !== false}
+                    onChange={() => update("transparent", true)}
+                  />
+                  <span><b className="block text-sm">В файле уже есть альфа-канал</b><span className="text-xs text-base-content/55">Для MOV ProRes 4444 или WebM VP9 с прозрачностью.</span></span>
+                </label>
+                <label className="flex cursor-pointer items-start gap-3">
+                  <input
+                    type="radio"
+                    className="radio radio-primary radio-sm mt-0.5"
+                    checked={form.transparent === false}
+                    onChange={() => update("transparent", false)}
+                  />
+                  <span><b className="block text-sm">Удалить цветной фон</b><span className="text-xs text-base-content/55">Для MP4 с зелёным, синим или другим однотонным фоном.</span></span>
+                </label>
+                {form.transparent === false && (
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <ColorField label="Удаляемый цвет" value={form.chromaColor || "#00ff00"} onChange={(value) => update("chromaColor", value)} />
+                    <label className="form-control gap-1">
+                      <span className="text-xs font-semibold text-base-content/60">Формат файла</span>
+                      <select
+                        className="select select-bordered select-sm"
+                        value={form.fullFrameMode || "auto"}
+                        onChange={(event) => update("fullFrameMode", event.target.value as CircleAdvertiserInput["fullFrameMode"])}
+                      >
+                        <option value="auto">Определить автоматически</option>
+                        <option value="canvas">Полный кадр 1080×1920</option>
+                        <option value="banner">Только область баннера</option>
+                      </select>
+                    </label>
+                    <RangeField label="Допуск цвета" value={form.similarity ?? 0.18} min={0.01} max={0.6} step={0.01} onChange={(value) => update("similarity", value)} />
+                    <RangeField label="Смягчение края" value={form.blend ?? 0.08} min={0} max={0.5} step={0.01} onChange={(value) => update("blend", value)} />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {!selected?.legacy && !selected?.hasVideo && !form.videoDataUrl && (
               <div className="rounded-xl border border-dashed border-base-300 p-3">
                 <label className="btn btn-ghost btn-sm w-full gap-2">
                   <ImagePlus size={16} /> {logoName || (selected?.hasLogo ? "Заменить логотип" : "Добавить логотип")}
@@ -388,6 +487,37 @@ function ColorField({
         />
         <span className="font-mono text-xs uppercase">{value}</span>
       </div>
+    </label>
+  );
+}
+
+function RangeField({
+  label,
+  value,
+  min,
+  max,
+  step,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  onChange: (value: number) => void;
+}) {
+  return (
+    <label className="form-control gap-1">
+      <span className="flex justify-between text-xs font-semibold text-base-content/60"><span>{label}</span><span>{value.toFixed(2)}</span></span>
+      <input
+        type="range"
+        className="range range-primary range-xs"
+        value={value}
+        min={min}
+        max={max}
+        step={step}
+        onChange={(event) => onChange(Number(event.target.value))}
+      />
     </label>
   );
 }

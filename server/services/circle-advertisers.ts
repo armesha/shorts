@@ -2,6 +2,8 @@ import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { mkdir, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, extname, resolve } from "node:path";
+import { spawn } from "node:child_process";
+import ffmpegPath from "ffmpeg-static";
 import puppeteer from "puppeteer-core";
 import { chromePath } from "../../src/core/chrome.ts";
 
@@ -16,9 +18,17 @@ export type CircleAdvertiser = {
   backgroundColor: string;
   textColor: string;
   assetFile: string;
+  assetType?: "generated" | "video";
+  transparent?: boolean;
+  chromaColor?: string;
+  similarity?: number;
+  blend?: number;
+  fullFrame?: boolean;
+  sourceName?: string;
   logoFile?: string;
   legacy?: boolean;
   hasLogo?: boolean;
+  hasVideo?: boolean;
 };
 
 type AdvertiserStore = { version: 1; items: CircleAdvertiser[] };
@@ -29,9 +39,17 @@ type CircleConfig = {
       file?: string;
       transparent?: boolean;
       advertiserId?: string;
+      chromaColor?: string;
+      similarity?: number;
+      blend?: number;
+      fullFrame?: boolean;
     };
   };
 };
+
+const ffmpeg = ffmpegPath as unknown as string | null;
+const VIDEO_EXTENSIONS = new Set([".mov", ".mp4", ".webm", ".mkv"]);
+const MAX_BANNER_VIDEO_BYTES = 80 * 1024 * 1024;
 
 const LEGACY_YUKI: CircleAdvertiser = {
   id: "yuki",
@@ -44,6 +62,10 @@ const LEGACY_YUKI: CircleAdvertiser = {
   backgroundColor: "#22121d",
   textColor: "#ffffff",
   assetFile: "output/yuki-shorts-alpha.mov",
+  assetType: "video",
+  transparent: true,
+  fullFrame: true,
+  sourceName: "yuki-shorts-alpha.mov",
   legacy: true,
 };
 
@@ -71,6 +93,11 @@ function clean(value: unknown, fallback: string, max = 120): string {
 function color(value: unknown, fallback: string): string {
   const result = String(value || "").trim();
   return /^#[0-9a-f]{6}$/i.test(result) ? result.toLowerCase() : fallback;
+}
+
+function finite(value: unknown, fallback: number, min: number, max: number): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? Math.min(max, Math.max(min, parsed)) : fallback;
 }
 
 function safeId(value: unknown): string {
@@ -114,7 +141,11 @@ async function saveConfig(config: CircleConfig): Promise<void> {
 }
 
 function publicAdvertiser(item: CircleAdvertiser): CircleAdvertiser {
-  return { ...item, hasLogo: !!item.logoFile };
+  return {
+    ...item,
+    hasLogo: !!item.logoFile,
+    hasVideo: item.assetType === "video" || VIDEO_EXTENSIONS.has(extname(item.assetFile).toLowerCase()),
+  };
 }
 
 export function listCircleAdvertisers(): CircleAdvertiser[] {
@@ -212,6 +243,59 @@ async function saveLogo(id: string, dataUrl: unknown, removeLogo: boolean, curre
   return relative;
 }
 
+function validateVideo(file: string): Promise<{ width: number; height: number }> {
+  if (!ffmpeg) throw new Error("FFmpeg недоступен на этой платформе.");
+  return new Promise((resolvePromise, reject) => {
+    const child = spawn(ffmpeg, [
+      "-hide_banner", "-loglevel", "info", "-i", file,
+      "-map", "0:v:0", "-frames:v", "1", "-f", "null", "-",
+    ], { windowsHide: true, stdio: ["ignore", "ignore", "pipe"] });
+    let stderr = "";
+    child.stderr.setEncoding("utf8");
+    child.stderr.on("data", (chunk: string) => { stderr = (stderr + chunk).slice(-30_000); });
+    child.once("error", reject);
+    child.once("close", (code) => {
+      const match = stderr.match(/Video:[^\r\n]*?(\d{2,5})x(\d{2,5})/i);
+      if (code !== 0 || !match) return reject(new Error("Файл не удалось прочитать как видео."));
+      resolvePromise({ width: Number(match[1]), height: Number(match[2]) });
+    });
+  });
+}
+
+async function saveUploadedVideo(
+  id: string,
+  input: Record<string, unknown>,
+): Promise<{ assetFile: string; sourceName: string; fullFrame: boolean } | null> {
+  if (typeof input.videoDataUrl !== "string" || !input.videoDataUrl) return null;
+  const sourceName = clean(input.videoName, "banner.mov", 120);
+  const extension = extname(sourceName).toLowerCase();
+  if (!VIDEO_EXTENSIONS.has(extension)) throw new Error("Поддерживаются MOV, MP4, WebM и MKV.");
+  const match = /^data:([^;,]+)?;base64,([a-z0-9+/=\s]+)$/i.exec(input.videoDataUrl);
+  if (!match) throw new Error("Не удалось прочитать загруженное видео.");
+  const mime = String(match[1] || "").toLowerCase();
+  if (mime && !["video/quicktime", "video/mp4", "video/webm", "video/x-matroska", "application/octet-stream"].includes(mime)) {
+    throw new Error("Неподдерживаемый тип видео.");
+  }
+  const buffer = Buffer.from(match[2].replace(/\s+/g, ""), "base64");
+  if (!buffer.length || buffer.length > MAX_BANNER_VIDEO_BYTES) throw new Error("Видео-баннер должен быть меньше 80 МБ.");
+  const relative = `custom/${id}${extension}`;
+  const target = resolve(bannerDir(), relative);
+  const temporary = `${target}.${process.pid}.upload`;
+  await mkdir(dirname(target), { recursive: true });
+  await writeFile(temporary, buffer);
+  try {
+    const dimensions = await validateVideo(temporary);
+    await rm(target, { force: true });
+    await rename(temporary, target);
+    const requested = String(input.fullFrameMode || "auto");
+    const fullFrame = requested === "canvas" || (requested !== "banner" && dimensions.height > dimensions.width * 1.2);
+    return { assetFile: relative, sourceName, fullFrame };
+  } catch (error) {
+    await rm(temporary, { force: true });
+    throw error;
+  }
+}
+
 export async function upsertCircleAdvertiser(input: Record<string, unknown>): Promise<CircleAdvertiser> {
   const store = loadStore();
   const requestedId = safeId(input.id);
@@ -219,6 +303,9 @@ export async function upsertCircleAdvertiser(input: Record<string, unknown>): Pr
   if (requestedId === "yuki") throw new Error("Встроенный баннер Yuki нельзя перезаписать.");
   const id = requestedId || `ad-${randomUUID().slice(0, 8)}`;
   const brand = clean(input.brand, "Рекламодатель", 48);
+  const uploaded = await saveUploadedVideo(id, input);
+  const useVideo = !!uploaded || current?.assetType === "video";
+  const oldAsset = current?.assetFile;
   const item: CircleAdvertiser = {
     id,
     name: clean(input.name, brand, 64),
@@ -229,14 +316,22 @@ export async function upsertCircleAdvertiser(input: Record<string, unknown>): Pr
     accentColor: color(input.accentColor, "#ff2f78"),
     backgroundColor: color(input.backgroundColor, "#21151f"),
     textColor: color(input.textColor, "#ffffff"),
-    assetFile: `custom/${id}.png`,
-    logoFile: await saveLogo(id, input.logoDataUrl, input.removeLogo === true, current),
+    assetFile: uploaded?.assetFile || current?.assetFile || `custom/${id}.png`,
+    assetType: useVideo ? "video" : "generated",
+    transparent: useVideo ? input.transparent !== false : true,
+    chromaColor: color(input.chromaColor, current?.chromaColor || "#00ff00"),
+    similarity: finite(input.similarity, current?.similarity ?? 0.18, 0.01, 1),
+    blend: finite(input.blend, current?.blend ?? 0.08, 0, 1),
+    fullFrame: uploaded?.fullFrame ?? current?.fullFrame ?? true,
+    sourceName: uploaded?.sourceName || current?.sourceName,
+    logoFile: useVideo ? current?.logoFile : await saveLogo(id, input.logoDataUrl, input.removeLogo === true, current),
   };
-  await renderAdvertiser(item);
+  if (!useVideo) await renderAdvertiser(item);
   const index = store.items.findIndex((entry) => entry.id === id);
   if (index >= 0) store.items[index] = item;
   else store.items.push(item);
   await saveStore(store);
+  if (uploaded && oldAsset && oldAsset !== uploaded.assetFile) await rm(resolve(bannerDir(), oldAsset), { force: true });
   return publicAdvertiser(item);
 }
 
@@ -250,7 +345,11 @@ export async function activateCircleAdvertiser(idValue: unknown, enabledValue: u
   banner.enabled = enabledValue !== false;
   banner.advertiserId = item.id;
   banner.file = `./banner/${item.assetFile}`.replace(/\\/g, "/");
-  banner.transparent = true;
+  banner.transparent = item.transparent !== false;
+  banner.chromaColor = (item.chromaColor || "#00ff00").replace("#", "0x");
+  banner.similarity = item.similarity ?? 0.18;
+  banner.blend = item.blend ?? 0.08;
+  banner.fullFrame = item.fullFrame !== false;
   await saveConfig(config);
 }
 

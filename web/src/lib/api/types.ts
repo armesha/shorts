@@ -1389,8 +1389,16 @@ export interface CircleAdvertiser {
   backgroundColor: string;
   textColor: string;
   assetFile: string;
+  assetType?: "generated" | "video";
+  transparent?: boolean;
+  chromaColor?: string;
+  similarity?: number;
+  blend?: number;
+  fullFrame?: boolean;
+  sourceName?: string;
   legacy?: boolean;
   hasLogo?: boolean;
+  hasVideo?: boolean;
 }
 
 export interface CircleAdvertiserState {
@@ -1411,5 +1419,12 @@ export interface CircleAdvertiserInput {
   textColor: string;
   logoDataUrl?: string;
   removeLogo?: boolean;
+  videoDataUrl?: string;
+  videoName?: string;
+  transparent?: boolean;
+  chromaColor?: string;
+  similarity?: number;
+  blend?: number;
+  fullFrameMode?: "auto" | "canvas" | "banner";
   activate?: boolean;
 }

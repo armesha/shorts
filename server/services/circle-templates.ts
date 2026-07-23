@@ -170,6 +170,36 @@ export async function activateCircleTemplate(idValue: unknown): Promise<CircleTe
   return template;
 }
 
+export async function setActiveCircleTemplateAdvertiser(idValue: unknown, enabledValue: unknown): Promise<void> {
+  await activateCircleAdvertiser(idValue, enabledValue);
+  const advertiser = circleAdvertiserState();
+  const store = loadStore();
+  const activeId = activeCircleTemplateId();
+  const index = store.items.findIndex((item) => item.id === activeId);
+  if (index < 0) return;
+  store.items[index] = {
+    ...store.items[index],
+    advertiserId: advertiser.activeAdvertiserId,
+    bannerEnabled: advertiser.bannerEnabled,
+    updatedAt: new Date().toISOString(),
+  };
+  await saveStore(store);
+}
+
+export async function replaceCircleTemplateAdvertiser(idValue: unknown, replacementId = "yuki"): Promise<void> {
+  const id = safeId(idValue);
+  if (!id) return;
+  const store = loadStore();
+  let changed = false;
+  const now = new Date().toISOString();
+  store.items = store.items.map((item) => {
+    if (item.advertiserId !== id) return item;
+    changed = true;
+    return { ...item, advertiserId: replacementId, updatedAt: now };
+  });
+  if (changed) await saveStore(store);
+}
+
 export async function saveCircleTemplate(input: {
   id?: unknown;
   createNew?: boolean;

@@ -6,7 +6,6 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import ffmpegPath from "ffmpeg-static";
 import type { Db } from "../db.ts";
 import {
-  activateCircleAdvertiser,
   circleAdvertiserSource,
   circleAdvertiserState,
   deleteCircleAdvertiser,
@@ -17,7 +16,9 @@ import {
   activeCircleTemplateId,
   deleteCircleTemplate,
   listCircleTemplates,
+  replaceCircleTemplateAdvertiser,
   saveCircleTemplate,
+  setActiveCircleTemplateAdvertiser,
   type CircleLayout,
 } from "../services/circle-templates.ts";
 
@@ -188,13 +189,27 @@ function run(command: string, args: string[], cwd: string): Promise<string> {
 async function bannerPreview(id?: unknown): Promise<string> {
   const source = circleAdvertiserSource(id);
   if (!existsSync(source)) throw new Error(`Не найден баннер: ${source}`);
-  const safeId = String(id || circleAdvertiserState().activeAdvertiserId).replace(/[^a-z0-9_-]+/gi, "-");
-  const target = resolve(projectDir(), `.runtime/editor-banner-preview-${safeId}.png`);
+  const state = circleAdvertiserState();
+  const safeId = String(id || state.activeAdvertiserId).replace(/[^a-z0-9_-]+/gi, "-");
+  const item = state.advertisers.find((entry) => entry.id === safeId)
+    || state.advertisers.find((entry) => entry.id === state.activeAdvertiserId)
+    || state.advertisers[0];
+  const effectKey = `${item?.transparent !== false ? "alpha" : "key"}-${item?.chromaColor || "00ff00"}-${item?.similarity ?? 0.18}-${item?.blend ?? 0.08}-${item?.fullFrame !== false ? "canvas" : "banner"}`
+    .replace(/[^a-z0-9_-]+/gi, "-");
+  const target = resolve(projectDir(), `.runtime/editor-banner-preview-${safeId}-${effectKey}.png`);
   if (existsSync(target) && statSync(target).mtimeMs >= statSync(source).mtimeMs) return target;
   await mkdir(dirname(target), { recursive: true });
   const image = /\.(png|jpe?g|webp)$/i.test(source);
-  const input = image ? ["-loop", "1", "-i", source] : ["-ss", "2", "-i", source];
-  await run(ffmpeg, ["-hide_banner", "-loglevel", "error", "-y", ...input, "-vf", "crop=900:260:90:830", "-frames:v", "1", target], projectDir());
+  const input = image ? ["-loop", "1", "-i", source] : ["-ss", "0.5", "-i", source];
+  const crop = item?.fullFrame !== false ? "crop=900:260:90:830," : "";
+  const effects = item?.transparent !== false
+    ? "format=rgba"
+    : `format=rgba,chromakey=${(item?.chromaColor || "#00ff00").replace("#", "0x")}:${item?.similarity ?? 0.18}:${item?.blend ?? 0.08}`;
+  await run(ffmpeg, [
+    "-hide_banner", "-loglevel", "error", "-y", ...input,
+    "-vf", `${crop}scale=900:260:flags=lanczos,${effects}`,
+    "-frames:v", "1", "-pix_fmt", "rgba", target,
+  ], projectDir());
   return target;
 }
 
@@ -268,11 +283,11 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
     };
   });
 
-  app.post("/api/circle-editor/advertisers", { bodyLimit: 3_000_000 }, async (req, reply) => {
+  app.post("/api/circle-editor/advertisers", { bodyLimit: 112_000_000 }, async (req, reply) => {
     if (!requireAdmin(req, reply, db)) return;
     const body = (req.body && typeof req.body === "object" ? req.body : {}) as Record<string, unknown>;
     const advertiser = await upsertCircleAdvertiser(body);
-    if (body.activate !== false) await activateCircleAdvertiser(advertiser.id, true);
+    if (body.activate !== false) await setActiveCircleTemplateAdvertiser(advertiser.id, true);
     return { advertiser, ...circleAdvertiserState() };
   });
 
@@ -284,13 +299,15 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
   app.put("/api/circle-editor/advertisers/active", async (req, reply) => {
     if (!requireAdmin(req, reply, db)) return;
     const body = (req.body || {}) as { id?: unknown; enabled?: unknown };
-    await activateCircleAdvertiser(body.id, body.enabled);
+    await setActiveCircleTemplateAdvertiser(body.id, body.enabled);
     return circleAdvertiserState();
   });
 
   app.delete("/api/circle-editor/advertisers/:id", async (req, reply) => {
     if (!requireAdmin(req, reply, db)) return;
-    await deleteCircleAdvertiser((req.params as { id?: unknown }).id);
+    const id = (req.params as { id?: unknown }).id;
+    await deleteCircleAdvertiser(id);
+    await replaceCircleTemplateAdvertiser(id);
     return circleAdvertiserState();
   });
 
