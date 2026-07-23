@@ -18,7 +18,7 @@
   let templates = [];
   let activeTemplateId = "default";
   let advertisers = [];
-  let activeAdvertiserId = "yuki";
+  let activeAdvertiserId = "";
   let layout = {
     circle: { x: 130, y: 300, size: 820 },
     puzzle: { x: 90, y: 92, width: 900, labelSize: 30, puzzleSize: 68, gap: 14 },
@@ -322,7 +322,7 @@
     setStatus("Сохраняю", "Записываю раскладку в config.json…", "busy");
     const name = templateNameInput.value.trim();
     if (!name) throw new Error("Введите имя шаблона");
-    await api("/circle-editor/layout", {
+    const result = await api("/circle-editor/layout", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
