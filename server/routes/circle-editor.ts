@@ -321,7 +321,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
     };
   });
 
-  app.post("/api/circle-editor/advertisers", { bodyLimit: 112_000_000 }, async (req, reply) => {
+  app.post("/api/circle-editor/overlays", { bodyLimit: 112_000_000 }, async (req, reply) => {
     if (!requireAdmin(req, reply, db)) return;
     const body = (req.body && typeof req.body === "object" ? req.body : {}) as Record<string, unknown>;
     const advertiser = await upsertCircleAdvertiser(body);
@@ -329,19 +329,19 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
     return { advertiser, ...circleAdvertiserState() };
   });
 
-  app.get("/api/circle-editor/advertisers", async (req, reply) => {
+  app.get("/api/circle-editor/overlays", async (req, reply) => {
     if (!requireAdmin(req, reply, db)) return;
     return circleAdvertiserState();
   });
 
-  app.put("/api/circle-editor/advertisers/active", async (req, reply) => {
+  app.put("/api/circle-editor/overlays/active", async (req, reply) => {
     if (!requireAdmin(req, reply, db)) return;
     const body = (req.body || {}) as { id?: unknown; enabled?: unknown };
     await setActiveCircleTemplateAdvertiser(body.id, body.enabled);
     return circleAdvertiserState();
   });
 
-  app.delete("/api/circle-editor/advertisers/:id", async (req, reply) => {
+  app.delete("/api/circle-editor/overlays/:id", async (req, reply) => {
     if (!requireAdmin(req, reply, db)) return;
     const id = (req.params as { id?: unknown }).id;
     await deleteCircleAdvertiser(id);

@@ -385,13 +385,13 @@ export const apiClient = {
   resolveNotification: (id: number | string) =>
     send<NotificationItem>(`/notifications/${id}/resolve`, "POST", {}),
   deleteNotification: (id: number | string) => send<{ ok: boolean }>(`/notifications/${id}`, "DELETE"),
-  circleAdvertisers: () => get<CircleAdvertiserState>("/circle-editor/advertisers"),
+  circleAdvertisers: () => get<CircleAdvertiserState>("/circle-editor/overlays"),
   saveCircleAdvertiser: (body: CircleAdvertiserInput) =>
-    send<CircleAdvertiserState & { advertiser: CircleAdvertiser }>("/circle-editor/advertisers", "POST", body),
+    send<CircleAdvertiserState & { advertiser: CircleAdvertiser }>("/circle-editor/overlays", "POST", body),
   activateCircleAdvertiser: (id: string, enabled: boolean) =>
-    send<CircleAdvertiserState>("/circle-editor/advertisers/active", "PUT", { id, enabled }),
+    send<CircleAdvertiserState>("/circle-editor/overlays/active", "PUT", { id, enabled }),
   deleteCircleAdvertiser: (id: string) =>
-    send<CircleAdvertiserState>(`/circle-editor/advertisers/${encodeURIComponent(id)}`, "DELETE"),
+    send<CircleAdvertiserState>(`/circle-editor/overlays/${encodeURIComponent(id)}`, "DELETE"),
   readAllNotifications: (scope?: "mine" | "all") =>
     send<{ ok: boolean; changed: number }>(
       `/notifications/read-all${scope === "all" ? "?scope=all" : ""}`,

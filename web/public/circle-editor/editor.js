@@ -246,7 +246,7 @@
       if (current && !current.legacy) body.id = current.id;
       if (logoDataUrl) body.logoDataUrl = logoDataUrl;
       body.activate = true;
-      const result = await api("/circle-editor/advertisers", {
+      const result = await api("/circle-editor/overlays", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -264,7 +264,7 @@
   async function activateAdvertiser() {
     activeAdvertiserId = advertiserSelect.value;
     updateBannerPreview();
-    await api("/circle-editor/advertisers/active", {
+    await api("/circle-editor/overlays/active", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: activeAdvertiserId, enabled: bannerEnabledInput.checked }),
@@ -275,7 +275,7 @@
     const current = advertisers.find((item) => item.id === advertiserSelect.value);
     if (!current || current.legacy) return;
     if (!window.confirm(`Удалить рекламодателя «${current.name}»?`)) return;
-    const result = await api(`/circle-editor/advertisers/${encodeURIComponent(current.id)}`, { method: "DELETE" });
+    const result = await api(`/circle-editor/overlays/${encodeURIComponent(current.id)}`, { method: "DELETE" });
     advertisers = result.advertisers;
     activeAdvertiserId = result.activeAdvertiserId;
     bannerEnabledInput.checked = result.bannerEnabled;
