@@ -6,10 +6,11 @@ import test from "node:test";
 import {
   listCircleGameplays,
   listUploadedCircleGameplays,
+  pickCircleGameplay,
   resolveCircleGameplay,
 } from "./circle-gameplay-library.ts";
 
-test("circle gameplay library combines uploaded and registered project videos", () => {
+test("circle gameplay library combines uploaded videos and prefers Full HD", async () => {
   const root = mkdtempSync(resolve(tmpdir(), "shorts-circle-gameplay-"));
   const workspace = resolve(root, "workspace");
   const repository = resolve(root, "repository");
@@ -39,6 +40,17 @@ test("circle gameplay library combines uploaded and registered project videos", 
     assert.equal(resolveCircleGameplay("orbital-one.mp4", workspace, repository), shared);
     assert.equal(resolveCircleGameplay("outside.mp4", workspace, repository), null);
     assert.equal(resolveCircleGameplay("../orbital-one.mp4", workspace, repository), null);
+    assert.deepEqual(
+      await pickCircleGameplay(
+        ["uploaded.mp4", "orbital-one.mp4"],
+        workspace,
+        repository,
+        async (file) => file === shared
+          ? { width: 1920, height: 1080 }
+          : { width: 854, height: 480 },
+      ),
+      { name: "orbital-one.mp4", file: shared },
+    );
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

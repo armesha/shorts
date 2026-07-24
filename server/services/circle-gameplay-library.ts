@@ -1,10 +1,16 @@
+import { execFile } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { basename, extname, relative, resolve } from "node:path";
+import { promisify } from "node:util";
+import ffmpegPath from "ffmpeg-static";
 import { circleProjectDir } from "./circle-workspace.ts";
 
 const VIDEO_EXTENSIONS = new Set([".mp4", ".mov", ".mkv", ".webm", ".m4v"]);
 const SHARED_GAMEPLAY_DIR = "assets/fact-videos/voiced-memes-ru/sources";
 const SHARED_GAMEPLAY_REGISTRY = "data/voiced-memes-ru/gameplay-sources.json";
+const pexec = promisify(execFile);
+const FFMPEG = ffmpegPath as unknown as string;
+const dimensionCache = new Map<string, { width: number; height: number }>();
 
 type GameplayRegistry = {
   sources?: Array<{ file?: unknown }>;
@@ -73,4 +79,51 @@ export function resolveCircleGameplay(
   const uploaded = resolve(root, "gameplay", fileName);
   if (isVideoFile(uploaded)) return uploaded;
   return sharedGameplayFiles(repositoryRoot).get(fileName) ?? null;
+}
+
+async function probeGameplayDimensions(file: string): Promise<{ width: number; height: number }> {
+  const cached = dimensionCache.get(file);
+  if (cached) return cached;
+  const { stderr } = await pexec(
+    FFMPEG,
+    [
+      "-hide_banner", "-loglevel", "info", "-i", file,
+      "-map", "0:v:0", "-frames:v", "1", "-f", "null", "-",
+    ],
+    { timeout: 60_000, maxBuffer: 2 * 1024 * 1024 },
+  );
+  const match = /\bVideo:[^\r\n]*?\b(\d{2,5})x(\d{2,5})\b/i.exec(stderr);
+  const dimensions = {
+    width: Number(match?.[1] || 0),
+    height: Number(match?.[2] || 0),
+  };
+  dimensionCache.set(file, dimensions);
+  return dimensions;
+}
+
+export async function pickCircleGameplay(
+  names: string[],
+  root = circleProjectDir(),
+  repositoryRoot = process.cwd(),
+  probe = probeGameplayDimensions,
+): Promise<{ name: string; file: string } | null> {
+  const resolved = names
+    .map((name) => ({ name, file: resolveCircleGameplay(name, root, repositoryRoot) }))
+    .filter((item): item is { name: string; file: string } => !!item.file);
+  if (!resolved.length) return null;
+
+  const measured = await Promise.all(resolved.map(async (item) => ({
+    ...item,
+    ...await probe(item.file),
+  })));
+  const fullHd = measured.filter(({ width, height }) => (
+    Math.max(width, height) >= 1920 && Math.min(width, height) >= 1080
+  ));
+  const candidates = fullHd.length
+    ? fullHd
+    : measured.filter((item) => (
+        item.width * item.height === Math.max(...measured.map(({ width, height }) => width * height))
+      ));
+  const selected = candidates[Math.floor(Math.random() * candidates.length)] || candidates[0];
+  return selected ? { name: selected.name, file: selected.file } : null;
 }
