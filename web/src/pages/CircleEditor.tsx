@@ -2,7 +2,7 @@ import { ExternalLink, Megaphone, Video } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const CIRCLE_EDITOR_URL = "/circle-editor/index.html";
-const CIRCLE_EDITOR_VERSION = "20260724-4";
+const CIRCLE_EDITOR_VERSION = "20260724-5";
 
 export default function CircleEditor() {
   const editorSrc = `${CIRCLE_EDITOR_URL}?v=${CIRCLE_EDITOR_VERSION}`;

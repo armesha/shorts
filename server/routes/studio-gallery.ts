@@ -197,7 +197,7 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
         if (templateId) await activateCircleTemplate(templateId);
         videoCounter++;
         const stamp = `${Date.now()}-${videoCounter}`;
-        const generated = await metrics.track("render", () => generateTelegramCircleVideo(OUTPUT_ROOT, stamp));
+        const generated = await metrics.track("render", () => generateTelegramCircleVideo(OUTPUT_ROOT, stamp, uid(req)));
         rememberOutputOwner([generated.videoRel], uid(req));
         return {
           videoUrl: `/files/${generated.videoRel}`,

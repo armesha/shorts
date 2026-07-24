@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { createReadStream, createWriteStream, existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { createReadStream, createWriteStream, existsSync, readdirSync, statSync } from "node:fs";
+import { chmod, mkdir, rename, rm } from "node:fs/promises";
 import { basename, dirname, extname, resolve } from "node:path";
 import { Readable, Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
@@ -29,6 +29,15 @@ import {
   readCircleConfig,
   writeCircleConfig,
 } from "../services/circle-workspace.ts";
+import {
+  circleSourcePrefix,
+  circleSourceVisibleToUser,
+  listCircleSourcesForUser,
+  pickCircleSourceForUser,
+} from "../services/circle-source-library.ts";
+import {
+  renderCircleVideo,
+} from "../services/circle-video-renderer.ts";
 
 type Layout = CircleLayout;
 
@@ -58,12 +67,17 @@ function requestUser(req: FastifyRequest, db: Db) {
   return userId ? db.getUserById(userId) : null;
 }
 
-function requireUser(req: FastifyRequest, reply: FastifyReply, db: Db): boolean {
-  if (!requestUser(req, db)) {
+function requireUserId(req: FastifyRequest, reply: FastifyReply, db: Db): number | null {
+  const user = requestUser(req, db);
+  if (!user) {
     void reply.code(401).send({ error: "Войдите в аккаунт, чтобы открыть редактор кружков" });
-    return false;
+    return null;
   }
-  return true;
+  return user.id;
+}
+
+function requireUser(req: FastifyRequest, reply: FastifyReply, db: Db): boolean {
+  return requireUserId(req, reply, db) != null;
 }
 
 function num(value: unknown, fallback: number, min: number, max: number): number {
@@ -166,7 +180,7 @@ function listVideos(dir: string): string[] {
     .sort((a, b) => a.localeCompare(b, "ru-RU"));
 }
 
-function uploadedVideoName(sourceName: string, fallbackStem: string): string {
+function uploadedVideoName(sourceName: string, fallbackStem: string, filenamePrefix = ""): string {
   const extension = extname(sourceName).toLowerCase();
   if (!VIDEO_EXT.has(extension)) {
     throw new Error("Поддерживаются MP4, MOV, WebM, MKV и M4V.");
@@ -176,7 +190,8 @@ function uploadedVideoName(sourceName: string, fallbackStem: string): string {
     .replace(/[^\p{L}\p{N}._-]+/gu, "-")
     .replace(/^[._-]+|[._-]+$/g, "")
     .slice(0, 80) || fallbackStem;
-  return `${stem}-${Date.now()}-${randomUUID().slice(0, 8)}${extension}`;
+  const prefix = filenamePrefix ? `${filenamePrefix}-` : "";
+  return `${prefix}${stem}-${Date.now()}-${randomUUID().slice(0, 8)}${extension}`;
 }
 
 function uploadSizeGuard(maxBytes: number, limitMessage: string): Transform {
@@ -199,6 +214,7 @@ async function storeUploadedVideo(
     directory: "downloads" | "gameplay";
     fallbackStem: string;
     limitMessage: string;
+    filenamePrefix?: string;
   },
 ): Promise<string> {
   const sourceName = String((req.query as { filename?: unknown } | undefined)?.filename || "").trim();
@@ -207,7 +223,7 @@ async function storeUploadedVideo(
 
   let storedName: string;
   try {
-    storedName = uploadedVideoName(sourceName, options.fallbackStem);
+    storedName = uploadedVideoName(sourceName, options.fallbackStem, options.filenamePrefix);
   } catch (error) {
     throw new VideoUploadError(error instanceof Error ? error.message : String(error));
   }
@@ -236,6 +252,7 @@ async function storeUploadedVideo(
       "-map", "0:v:0", "-frames:v", "1", "-f", "null", "-",
     ], projectDir());
     await rename(temporary, target);
+    await chmod(target, 0o600);
     return storedName;
   } catch (error) {
     if (error instanceof VideoUploadError) throw error;
@@ -359,7 +376,8 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
     app.addContentTypeParser("application/octet-stream", (req, payload, done) => done(null, payload));
   }
   app.get("/api/circle-editor", async (req, reply) => {
-    if (!requireUser(req, reply, db)) return;
+    const userId = requireUserId(req, reply, db);
+    if (userId == null) return;
     const root = projectDir();
     const config = loadCircleConfig();
     return {
@@ -368,11 +386,17 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
       templates: listCircleTemplates(),
       activeTemplateId: activeCircleTemplateId(),
       ...circleAdvertiserState(),
-      sources: listVideos(resolve(root, "downloads")),
+      sources: listCircleSourcesForUser(userId, root),
       gameplays: listVideos(resolve(root, "gameplay")),
       canManageBanners: true,
       rendering,
     };
+  });
+
+  app.get("/api/circle-editor/sources", async (req, reply) => {
+    const userId = requireUserId(req, reply, db);
+    if (userId == null) return;
+    return { sources: listCircleSourcesForUser(userId, projectDir()) };
   });
 
   app.put("/api/circle-editor/layout", async (req, reply) => {
@@ -486,24 +510,33 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
   });
 
   app.get("/api/circle-editor/media/:kind/:file", async (req, reply) => {
-    if (!requireUser(req, reply, db)) return;
+    const userId = requireUserId(req, reply, db);
+    if (userId == null) return;
     const { kind, file } = req.params as { kind: string; file: string };
+    if (
+      (kind === "source" || kind === "output")
+      && !circleSourceVisibleToUser(basename(file), userId)
+    ) {
+      return reply.code(404).send({ error: "Файл не найден" });
+    }
     const path = mediaPath(kind, file);
     if (!path) return reply.code(404).send({ error: "Файл не найден" });
     return streamMedia(req, reply, path);
   });
 
   app.post("/api/circle-editor/sources/upload", { bodyLimit: Number.MAX_SAFE_INTEGER }, async (req, reply) => {
-    if (!requireUser(req, reply, db)) return;
+    const userId = requireUserId(req, reply, db);
+    if (userId == null) return;
     try {
       const source = await storeUploadedVideo(req, {
         directory: "downloads",
         fallbackStem: "telegram-circle",
         limitMessage: "Файл кружка превышает лимит 500 МБ.",
+        filenamePrefix: circleSourcePrefix(userId),
       });
       return {
         source,
-        sources: listVideos(resolve(projectDir(), "downloads")),
+        sources: listCircleSourcesForUser(userId, projectDir()),
       };
     } catch (error) {
       const uploadError = error instanceof VideoUploadError
@@ -546,29 +579,42 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
   });
 
   app.post("/api/circle-editor/render", async (req, reply) => {
-    if (!requireUser(req, reply, db)) return;
+    const userId = requireUserId(req, reply, db);
+    if (userId == null) return;
     if (rendering) return reply.code(409).send({ error: "Другой ролик уже генерируется" });
     const body = (req.body || {}) as { source?: string; gameplay?: string; layout?: unknown };
     const requestedSource = String(body.source || "");
-    const source = requestedSource === "__random__" || requestedSource === "__telegram__" ? requestedSource : basename(requestedSource);
+    if (requestedSource === "__telegram__") {
+      return reply.code(400).send({ error: "Сначала отправьте кружок боту, затем выберите его в списке." });
+    }
+    const source = requestedSource === "__random__"
+      ? await pickCircleSourceForUser(userId, projectDir())
+      : basename(requestedSource);
     const gameplay = basename(String(body.gameplay || ""));
-    if (source !== "__random__" && source !== "__telegram__" && !mediaPath("source", source)) return reply.code(400).send({ error: "Выберите Telegram-кружок" });
-    if (!mediaPath("gameplay", gameplay)) return reply.code(400).send({ error: "Выберите геймплей" });
-    await saveLayout(body.layout);
+    if (!source || !circleSourceVisibleToUser(source, userId) || !mediaPath("source", source)) {
+      return reply.code(400).send({ error: "Выберите Telegram-кружок" });
+    }
+    const sourcePath = mediaPath("source", source);
+    const gameplayPath = mediaPath("gameplay", gameplay);
+    if (!sourcePath) return reply.code(400).send({ error: "Выберите Telegram-кружок" });
+    if (!gameplayPath) return reply.code(400).send({ error: "Выберите геймплей" });
+    const layout = await saveLayout(body.layout);
+    const file = `${circleSourcePrefix(userId)}-output-${Date.now()}-${randomUUID().slice(0, 8)}.mp4`;
+    const outputPath = resolve(projectDir(), "output", file);
     rendering = true;
     try {
-      const args = source === "__telegram__"
-        ? [resolve(projectDir(), "node_modules/tsx/dist/cli.mjs"), "src/render-telegram-cli.ts", "--gameplay", gameplay]
-        : [resolve(projectDir(), "node_modules/tsx/dist/cli.mjs"), "src/render-cli.ts", "--source", source, "--gameplay", gameplay, "--message-id", String(Date.now() % 2_000_000_000)];
-      const stdout = await run(process.execPath, args, projectDir());
-      const line = stdout.split(/\r?\n/).reverse().find((value) => value.trim().startsWith("{"));
-      const result = line ? JSON.parse(line) as { file?: string; source?: string; sourceFile?: string; gameplayFile?: string } : {};
-      const file = basename(result.file || `${source.replace(/\.[^.]+$/, "")}-short.mp4`);
-      if (!mediaPath("output", file)) throw new Error("Рендер завершён, но итоговый файл не найден");
+      const result = await renderCircleVideo({
+        sourceFile: sourcePath,
+        gameplayFile: gameplayPath,
+        outputFile: outputPath,
+        layout,
+      });
       return {
         file,
-        sourceFile: result.sourceFile || result.source || source,
-        gameplayFile: result.gameplayFile || gameplay,
+        sourceFile: source,
+        gameplayFile: gameplay,
+        durationSec: result.durationSec,
+        puzzle: result.puzzle,
         url: `/api/circle-editor/media/output/${encodeURIComponent(file)}`,
       };
     } finally {

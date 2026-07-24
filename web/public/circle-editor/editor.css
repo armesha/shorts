@@ -133,6 +133,7 @@ button:focus-visible,
 select:focus-visible,
 input:focus-visible,
 .upload-button:focus-within,
+.upload-button:focus-visible,
 .button-link:focus-visible {
   outline: 3px solid rgba(225, 24, 95, 0.25);
   outline-offset: 2px;
@@ -170,6 +171,7 @@ input:focus-visible,
   color: #211b27;
   font-size: 12px;
   font-weight: 700;
+  text-decoration: none;
   touch-action: manipulation;
 }
 

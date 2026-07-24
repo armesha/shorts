@@ -12,6 +12,7 @@ import { sendBotMessage, getBotUsername, setBotWebhook, botStartLink, setBotComm
 import { makeBotStats, type BotCallbackQuery } from "../services/telegram-stats.ts";
 import { COMMERCIAL_CREATOR_FEATURE } from "../services/creator-assets.ts";
 import { grantDefaultRegisteredUserDecks } from "../services/default-user-decks.ts";
+import { handleTelegramCircleInboxMessage } from "../services/telegram-circle-inbox.ts";
 
 const DAY_MS = 86_400_000;
 const LINK_TTL_MIN = 10; // a bot-handshake token is valid 10 min
@@ -42,7 +43,12 @@ interface TgFrom {
 interface TgMessage {
   text?: string;
   from?: TgFrom;
-  chat?: { id?: number };
+  chat?: { id?: number; type?: string };
+  video_note?: {
+    file_id?: string;
+    file_unique_id?: string;
+    file_size?: number;
+  };
 }
 interface TgUpdate {
   message?: TgMessage;
@@ -109,6 +115,7 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
     await setBotCommands(botToken(), [
       { command: "menu", description: "Главное меню" },
       { command: "stats", description: "Статистика каналов" },
+      { command: "circles", description: "Добавить Telegram-кружок" },
       { command: "settings", description: "Настройки уведомлений" },
       { command: "help", description: "Что умеет бот" },
     ]);
@@ -418,9 +425,31 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
     const tgId = msg.from?.id != null ? String(msg.from.id) : "";
     const label = tgLabel(msg.from);
     const dm = (t: string) => (chatId != null ? sendBotMessage(botToken(), chatId, t) : Promise.resolve({ ok: false }));
+    const circleInstructions = "Отправьте или перешлите сюда видеокружок. Если этот Telegram привязан к Shorts Factory, кружок появится в вашем редакторе на странице «Telegram-кружочки».";
+
+    const circleHandled = await handleTelegramCircleInboxMessage({
+      fromId: tgId,
+      chatId,
+      chatType: msg.chat?.type,
+      videoNote: msg.video_note
+        ? {
+            fileId: msg.video_note.file_id,
+            fileUniqueId: msg.video_note.file_unique_id,
+            fileSize: msg.video_note.file_size,
+          }
+        : undefined,
+    }, {
+      botToken: botToken(),
+      publicBaseUrl: process.env.PUBLIC_BASE_URL,
+      findUserByTelegramId: (telegramId) => db.getUserByTelegramId(telegramId),
+      sendMessage: (targetChatId, message) => sendBotMessage(botToken(), targetChatId, message),
+      onError: (error) => app.log.error({ err: error.message }, "[telegram] circle import failed"),
+    });
+    if (circleHandled) return;
 
     // Commands without a site-minted token open the in-bot UI (it handles linked vs not-linked).
     if (text.startsWith("/stats")) return void (await botStats.entry(msg, "stats"));
+    if (text.startsWith("/circles")) return void (await dm(circleInstructions));
     if (text.startsWith("/settings")) return void (await botStats.entry(msg, "settings"));
     if (text.startsWith("/help")) return void (await botStats.entry(msg, "help"));
     if (text.startsWith("/menu")) return void (await botStats.entry(msg, "home"));
@@ -429,6 +458,7 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
     if (!token) return void (await botStats.entry(msg, "home"));
     if (token === "menu") return void (await botStats.entry(msg, "home"));
     if (token === "stats") return void (await botStats.entry(msg, "stats"));
+    if (token === "circles") return void (await dm(circleInstructions));
     if (token === "settings") return void (await botStats.entry(msg, "settings"));
     if (token === "help") return void (await botStats.entry(msg, "help"));
 

@@ -7,6 +7,7 @@
   const props = $("#props");
   const sourceSelect = $("#sourceSelect");
   const sourceUpload = $("#sourceUpload");
+  const telegramBotLink = $("#telegramBotLink");
   const gameplaySelect = $("#gameplaySelect");
   const gameplayUpload = $("#gameplayUpload");
   const templateNameInput = $("#templateName");
@@ -21,6 +22,9 @@
   let activeTemplateId = "default";
   let advertisers = [];
   let activeAdvertiserId = "";
+  let circlePollingTimer = null;
+  let circlePollingStopsAt = 0;
+  let sourceRefreshInFlight = false;
   let layout = {
     circle: { x: 130, y: 300, size: 820 },
     puzzle: { x: 90, y: 92, width: 900, labelSize: 30, puzzleSize: 68, gap: 14 },
@@ -149,7 +153,7 @@
   }
 
   function fillSelect(select, values, withRandom = false) {
-    const random = withRandom ? '<option value="__telegram__">Прямо из Telegram — без повторов</option><option value="__random__">Из скачанных — без повторов</option>' : "";
+    const random = withRandom ? '<option value="__random__">Случайный — без повторов</option>' : "";
     select.innerHTML = random + values.map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join("");
   }
 
@@ -314,7 +318,7 @@
 
   function updateMedia() {
     if (gameplaySelect.value) $("#gameplayVideo").src = mediaUrl("gameplay", gameplaySelect.value);
-    const previewSource = sourceSelect.value === "__random__" || sourceSelect.value === "__telegram__"
+    const previewSource = sourceSelect.value === "__random__"
       ? sourceFiles[Math.floor(Math.random() * sourceFiles.length)]
       : sourceSelect.value;
     if (previewSource) $("#circleVideo").src = mediaUrl("source", previewSource);
@@ -349,6 +353,68 @@
     const body = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(body.error || `${response.status} ${response.statusText}`);
     return body;
+  }
+
+  async function refreshCircleSources({ announce = true } = {}) {
+    if (sourceRefreshInFlight) return;
+    sourceRefreshInFlight = true;
+    try {
+      const current = sourceSelect.value;
+      const previous = new Set(sourceFiles);
+      const body = await api("/circle-editor/sources");
+      const next = Array.isArray(body.sources) ? body.sources : [];
+      const added = next.filter((file) => !previous.has(file));
+      sourceFiles = next;
+      fillSelect(sourceSelect, sourceFiles, true);
+      if (added.length) sourceSelect.value = added[0];
+      else if (current === "__random__" || sourceFiles.includes(current)) sourceSelect.value = current;
+      updateMedia();
+      if (announce && added.length) {
+        setStatus("Кружок получен от бота", "Он выбран и готов к генерации.");
+      }
+    } finally {
+      sourceRefreshInFlight = false;
+    }
+  }
+
+  function stopCirclePolling() {
+    if (circlePollingTimer) window.clearInterval(circlePollingTimer);
+    circlePollingTimer = null;
+    circlePollingStopsAt = 0;
+  }
+
+  function startCirclePolling() {
+    stopCirclePolling();
+    circlePollingStopsAt = Date.now() + 2 * 60 * 1000;
+    circlePollingTimer = window.setInterval(() => {
+      if (Date.now() >= circlePollingStopsAt) {
+        stopCirclePolling();
+        return;
+      }
+      refreshCircleSources().catch(() => {});
+    }, 4000);
+  }
+
+  async function setupTelegramCircleLink() {
+    try {
+      const telegram = await api("/auth/telegram/me");
+      const bot = String(telegram.bot || "").replace(/^@/, "");
+      if (!telegram.enabled || !bot || !/^[a-z0-9_]+$/i.test(bot)) return;
+      telegramBotLink.hidden = false;
+      if (telegram.linked) {
+        telegramBotLink.href = `https://t.me/${bot}?start=circles`;
+        telegramBotLink.target = "_blank";
+        telegramBotLink.textContent = "Отправить кружок боту";
+        telegramBotLink.dataset.linked = "true";
+      } else {
+        telegramBotLink.href = "/settings";
+        telegramBotLink.target = "_top";
+        telegramBotLink.textContent = "Привязать Telegram";
+        telegramBotLink.dataset.linked = "false";
+      }
+    } catch {
+      telegramBotLink.hidden = true;
+    }
   }
 
   async function uploadCircle(file) {
@@ -432,6 +498,11 @@
   }
 
   sourceSelect.addEventListener("change", updateMedia);
+  telegramBotLink.addEventListener("click", () => {
+    if (telegramBotLink.dataset.linked !== "true") return;
+    setStatus("Жду кружок от бота", "Отправьте или перешлите видеокружок в Telegram. После загрузки он появится здесь.", "busy");
+    startCirclePolling();
+  });
   sourceUpload.addEventListener("change", async () => {
     const file = sourceUpload.files?.[0];
     sourceUpload.value = "";
@@ -469,6 +540,10 @@
     activateAdvertiser().catch((error) => setStatus("Ошибка выбора баннера", error.message, "error"));
   });
   window.addEventListener("resize", fit);
+  window.addEventListener("focus", () => refreshCircleSources().catch(() => {}));
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") refreshCircleSources().catch(() => {});
+  });
   if ("ResizeObserver" in window) {
     const observer = new ResizeObserver(() => window.requestAnimationFrame(fit));
     observer.observe(viewport);
@@ -496,7 +571,10 @@
       updateMedia();
       if (!data.gameplays.length) {
         setStatus("Нет геймплея", "Нажмите «Загрузить свой геймплей» и выберите видео до 500 МБ.", "error");
+      } else if (!data.sources.length) {
+        setStatus("Нет кружков", "Отправьте кружок боту или загрузите видеофайл вручную.", "error");
       }
+      await setupTelegramCircleLink();
     } catch (error) {
       render();
       const message = error.message || String(error);

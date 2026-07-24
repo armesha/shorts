@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Редактор кружочков</title>
-  <link rel="stylesheet" href="editor.css?v=20260724-3">
+  <link rel="stylesheet" href="editor.css?v=20260724-4">
 </head>
 <body>
   <header class="topbar">
@@ -20,6 +20,9 @@
         <label><span>Геймплей</span><select id="gameplaySelect"></select></label>
       </div>
       <div class="editor-actions">
+        <a id="telegramBotLink" class="upload-button" href="#" target="_blank" rel="noreferrer" hidden>
+          Отправить кружок боту
+        </a>
         <label class="upload-button">
           <input id="sourceUpload" type="file" accept="video/mp4,video/quicktime,video/webm,video/x-matroska,.m4v" hidden>
           Загрузить свой кружок
@@ -93,6 +96,6 @@
     </aside>
   </main>
 
-  <script src="editor.js?v=20260724-4"></script>
+  <script src="editor.js?v=20260724-5"></script>
 </body>
 </html>
