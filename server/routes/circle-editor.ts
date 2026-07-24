@@ -38,6 +38,10 @@ import {
 import {
   renderCircleVideo,
 } from "../services/circle-video-renderer.ts";
+import {
+  listCircleGameplays,
+  resolveCircleGameplay,
+} from "../services/circle-gameplay-library.ts";
 
 type Layout = CircleLayout;
 
@@ -269,9 +273,9 @@ async function storeUploadedVideo(
 }
 
 function mediaPath(kind: string, name: string): string | null {
+  if (kind === "gameplay") return resolveCircleGameplay(name, projectDir());
   const dirs: Record<string, string> = {
     source: resolve(projectDir(), "downloads"),
-    gameplay: resolve(projectDir(), "gameplay"),
     output: resolve(projectDir(), "output"),
   };
   const dir = dirs[kind];
@@ -387,7 +391,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
       activeTemplateId: activeCircleTemplateId(),
       ...circleAdvertiserState(),
       sources: listCircleSourcesForUser(userId, root),
-      gameplays: listVideos(resolve(root, "gameplay")),
+      gameplays: listCircleGameplays(root),
       canManageBanners: true,
       rendering,
     };
@@ -556,7 +560,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
       });
       return {
         gameplay,
-        gameplays: listVideos(resolve(projectDir(), "gameplay")),
+        gameplays: listCircleGameplays(projectDir()),
       };
     } catch (error) {
       const uploadError = error instanceof VideoUploadError

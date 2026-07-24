@@ -1,8 +1,8 @@
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { mkdir, rename, rm, writeFile } from "node:fs/promises";
-import { basename, dirname, extname, resolve } from "node:path";
+import { basename, dirname, resolve } from "node:path";
 import ffmpegPath from "ffmpeg-static";
 import puppeteer from "puppeteer-core";
 import { chromePath } from "../../src/core/chrome.ts";
@@ -14,7 +14,6 @@ import {
 import type { CircleLayout } from "./circle-templates.ts";
 import { circleProjectDir, ensureCircleWorkspace } from "./circle-workspace.ts";
 
-const VIDEO_EXTENSIONS = new Set([".mp4", ".mov", ".mkv", ".webm", ".m4v"]);
 const packagedFfmpeg = ffmpegPath as unknown as string | null;
 const ffmpeg = packagedFfmpeg && existsSync(packagedFfmpeg)
   ? packagedFfmpeg
@@ -93,18 +92,6 @@ async function probeMedia(file: string): Promise<MediaProbe> {
     throw new Error(`Видео имеет некорректную длительность: ${basename(file)}`);
   }
   return { durationSec, hasAudio: /\bAudio:\s/i.test(stderr) };
-}
-
-function listVideos(dir: string): string[] {
-  if (!existsSync(dir)) return [];
-  return readdirSync(dir, { withFileTypes: true })
-    .filter((entry) => entry.isFile() && VIDEO_EXTENSIONS.has(extname(entry.name).toLowerCase()))
-    .map((entry) => entry.name)
-    .sort((a, b) => a.localeCompare(b, "ru-RU"));
-}
-
-export function listCircleGameplays(root = circleProjectDir()): string[] {
-  return listVideos(resolve(root, "gameplay"));
 }
 
 function readJson<T>(file: string, fallback: T): T {

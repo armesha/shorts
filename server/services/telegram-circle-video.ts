@@ -12,9 +12,12 @@ import {
   pickCircleSourceForUser,
 } from "./circle-source-library.ts";
 import {
-  listCircleGameplays,
   renderCircleVideo,
 } from "./circle-video-renderer.ts";
+import {
+  listCircleGameplays,
+  resolveCircleGameplay,
+} from "./circle-gameplay-library.ts";
 import { circleProjectDir, readCircleConfig } from "./circle-workspace.ts";
 
 function projectDir(): string {
@@ -50,6 +53,10 @@ export async function generateTelegramCircleVideo(
     throw new Error("Нет геймплея. Загрузите фоновое видео в редакторе Telegram-кружочков.");
   }
   const gameplayFile = gameplays[Math.floor(Math.random() * gameplays.length)] || gameplays[0];
+  const gameplayPath = resolveCircleGameplay(gameplayFile, root);
+  if (!gameplayPath) {
+    throw new Error("Выбранный геймплей больше недоступен.");
+  }
   const template = getCircleTemplate(activeCircleTemplateId());
   if (!template) throw new Error("Активный шаблон Telegram-кружочков не найден.");
 
@@ -59,7 +66,7 @@ export async function generateTelegramCircleVideo(
   try {
     await renderCircleVideo({
       sourceFile: resolve(root, "downloads", source),
-      gameplayFile: resolve(root, "gameplay", gameplayFile),
+      gameplayFile: gameplayPath,
       outputFile: target,
       layout: template.layout,
     });

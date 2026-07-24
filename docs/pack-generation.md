@@ -2173,7 +2173,9 @@ hypnotic tunnel, kinetic depth dots, aperture bars, neon ladder, ray afterimage 
 - Раскладка сохраняется в рабочем `config.json`: координаты и размеры кружка, загадки и баннера.
 - Генерация полностью находится в основном проекте: `server/services/circle-video-renderer.ts` собирает
   вертикальный MP4 1080×1920 через FFmpeg. Внешний каталог или отдельный проект `tg circles` не нужен.
-  Telegram-кружок берётся из `downloads/`, gameplay — из `gameplay/`, результат редактора — из `output/`.
+  Telegram-кружок берётся из `downloads/`, пользовательский gameplay — из `gameplay/`, результат
+  редактора — из `output/`. Дополнительно редактор без копирования использует подтверждённый локальный
+  gameplay-пул `voiced-memes-ru` из `data/voiced-memes-ru/gameplay-sources.json`.
 - Пользователь может загрузить собственный MP4/MOV/WebM/MKV/M4V до 500 МБ прямо в редакторе; сервер
   проверяет видеопоток. Также связанный Telegram-пользователь может отправить или переслать видеокружок
   общему боту через `/circles`: webhook сопоставляет `from.id` с `users.telegram_id`, проверяет видео
