@@ -1129,10 +1129,6 @@ export default function AccountDetail() {
                 <RefreshCw size={12} /> {t("common.generate")}
               </button>
             </div>
-            <p className="text-xs text-base-content/50 mb-3 leading-snug">
-              {t("account.scheduleHint")}
-            </p>
-
             <div className="flex flex-wrap gap-2 mb-3 min-h-8 items-center">
               {[...times].sort().map((time) => (
                 <span key={time} className="badge badge-primary badge-lg gap-2 py-3">

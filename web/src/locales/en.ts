@@ -385,7 +385,6 @@ export const en: Record<string, string> = {
   "account.cancelingQueue": "Canceling...",
   "account.cancelQueueTitle": "Cancel active generation; an already-started video may still finish",
   "account.scheduleLimitToastTitle": "Schedule limit",
-  "account.scheduleHint": "Times are spread evenly across the day, but with a small random offset — each channel gets its own minutes so channels don't all publish at the same time. You can adjust them manually below.",
   "account.scheduleLabel": "Upload schedule (server time)",
   "account.slotAuto": "Auto (least posted)",
   "account.slotNeedsLibrary": "Generate videos into the library before pinning a pack to a slot.",
