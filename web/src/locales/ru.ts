@@ -263,6 +263,7 @@ export const ru: Record<string, string> = {
   "account.channelColon": "Канал:",
   "account.channelFallback": "Канал",
   "account.channelLang": "Язык канала",
+  "account.channelLangPlaceholder": "Выберите язык",
   "account.channelLangHint": "Пак ниже должен быть этого языка",
   "account.channelName": "Название канала",
   "account.channelPack": "Пак канала:",

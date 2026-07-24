@@ -137,8 +137,8 @@ export default function AccountDetail() {
   const [page, setPage] = useState(1);
   const [gens, setGens] = useState<Generator[]>([]);
   const [packs, setPacks] = useState<PackSummary[]>([]); // кастомные паки, доступные юзеру (для дропдауна канала)
-  const channelLangRef = useRef("ru");
-  const [channelLang, setChannelLangState] = useState("ru"); // язык канала (стабилен) — пак должен совпадать по языку
+  const channelLangRef = useRef("");
+  const [channelLang, setChannelLangState] = useState(""); // пусто у нового черновика; после выбора стабилен
   const setChannelLang = (next: string) => {
     channelLangRef.current = next;
     setChannelLangState(next);
@@ -243,7 +243,7 @@ export default function AccountDetail() {
           setGenerateDeck(sources[0] || a.lang);
         }
         setLongVideoDecks(a.longVideoDecks ?? []);
-        setChannelLang(a.channelLang || DECK_LANG[a.lang] || "ru");
+        setChannelLang(a.channelLang || DECK_LANG[a.lang] || "");
         setTimes(
           user?.isSuperAdmin === true && (!a.userId || a.userId === user.id)
             ? cleanSuperAdminScheduleTimes(a.schedule, a.channelLang || a.lang, user?.timezone || a.timezone)
@@ -354,7 +354,7 @@ export default function AccountDetail() {
   function applyAccountUpdate(updated: Account) {
     setAccount(updated);
     setLang(updated.lang);
-    setSourceDecks(updated.sourceDecks?.length ? updated.sourceDecks : [updated.lang]);
+    setSourceDecks((updated.sourceDecks?.length ? updated.sourceDecks : [updated.lang]).filter(Boolean));
     setLongVideoDecks(updated.longVideoDecks ?? []);
     setChannelLang(updated.channelLang || DECK_LANG[updated.lang] || channelLang);
     setSlotVideos(updated.slotVideos || {});
@@ -684,15 +684,14 @@ export default function AccountDetail() {
   const deckMeta = (deckId: string) => srcDeckMeta(packs, gens, t, deckId);
   const updateSources = (next: string[]) => {
     const clean = [...new Set(next.filter(Boolean))];
-    const fallback = clean.length ? clean : [lang];
-    setSourceDecks(fallback);
-    setLang(fallback[0] || lang);
-    const sourceLangs = [...new Set(fallback.map(contentLang).filter(Boolean))];
+    setSourceDecks(clean);
+    setLang(clean[0] || "");
+    const sourceLangs = [...new Set(clean.map(contentLang).filter(Boolean))];
     if (sourceLangs.length === 1) setChannelLang(sourceLangs[0]);
     setGenerateDeck((cur) =>
-      cur === GENERATE_ALL_DECKS && fallback.length > 1 ? cur : fallback.includes(cur) ? cur : fallback[0] || "",
+      cur === GENERATE_ALL_DECKS && clean.length > 1 ? cur : clean.includes(cur) ? cur : clean[0] || "",
     );
-    setSlotDecks((prev) => Object.fromEntries(Object.entries(prev).filter(([, deckId]) => fallback.includes(deckId) || deckId === "manual")));
+    setSlotDecks((prev) => Object.fromEntries(Object.entries(prev).filter(([, deckId]) => clean.includes(deckId) || deckId === "manual")));
   };
   useEffect(() => {
     if (longVideoDeckIds.size === 0) return;
@@ -708,7 +707,7 @@ export default function AccountDetail() {
     setGenerateDeck((cur) => (fallback.includes(cur) ? cur : fallback[0] || ""));
     setSlotDecks((prev) => Object.fromEntries(Object.entries(prev).filter(([, deckId]) => fallback.includes(deckId) || deckId === "manual")));
   }, [channelLang, contentLang, longVideoDeckIds, longVideoDecks, normalGens, selectedSources]);
-  const savedSources = account ? (account.sourceDecks?.length ? account.sourceDecks : [account.lang]) : selectedSources;
+  const savedSources = account ? (account.sourceDecks?.length ? account.sourceDecks : [account.lang]).filter(Boolean) : selectedSources;
   const sourcesDirty = savedSources.join("") !== selectedSources.join("");
   const savedLongVideoDecks = account?.longVideoDecks ?? [];
   const longVideoDecksDirty = savedLongVideoDecks.join("") !== longVideoDecks.join("");
@@ -1051,6 +1050,7 @@ export default function AccountDetail() {
               value={channelLang}
               onChange={(e) => setChannelLang(e.target.value)}
             >
+              <option value="" disabled>{t("account.channelLangPlaceholder")}</option>
               {CONTENT_LANGS.map(({ code, label }) => (
                 <option key={code} value={code}>
                   {label}

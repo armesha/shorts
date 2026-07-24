@@ -33,9 +33,20 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
     const body = (req.body as Partial<Account>) ?? {};
     if (rejectScheduleLimit(req, reply, body.schedule, null, undefined, body.channelLang ?? body.lang ?? null)) return;
     const owner = db.getUserById(uid(req));
+    const requestedLang = typeof body.lang === "string" ? body.lang.trim() : "";
+    const sourceDecks = Array.isArray(body.sourceDecks)
+      ? cleanDeckIds(body.sourceDecks)
+      : requestedLang
+        ? [requestedLang]
+        : [];
+    const lang = requestedLang || sourceDecks[0] || "";
+    const requestedChannelLang = typeof body.channelLang === "string" ? body.channelLang.trim() : "";
     return db.createAccount({
       ...body,
       userId: uid(req),
+      lang,
+      sourceDecks,
+      channelLang: requestedChannelLang || (lang ? deckContentLang(req, lang) || "" : ""),
       timezone: owner?.timezone ?? body.timezone,
       avatar: null,
       avatarSource: "youtube",
@@ -91,6 +102,7 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
       body.longVideoDecks = [...new Set([...(acc.longVideoDecks ?? []), ...migratedLongVideoSources])];
     }
     if (body.longVideoDecks && !validateLongVideoDecks(body.longVideoDecks)) return;
+    const hasExplicitSourceDecks = Array.isArray((body as { sourceDecks?: unknown }).sourceDecks);
     if (requestedSources.length) {
       const channelLang = (body.channelLang ?? acc.channelLang ?? "") as string;
       for (const deckId of requestedSources) {
@@ -99,6 +111,15 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
       }
       body.sourceDecks = requestedSources;
       if (!body.lang || !requestedSources.includes(body.lang)) body.lang = requestedSources[0];
+    } else if (hasExplicitSourceDecks) {
+      body.sourceDecks = [];
+      body.lang = "";
+      const currentSlotDecks = body.slotDecks && typeof body.slotDecks === "object" && !Array.isArray(body.slotDecks)
+        ? body.slotDecks
+        : acc.slotDecks;
+      body.slotDecks = Object.fromEntries(
+        Object.entries(currentSlotDecks ?? {}).filter(([, deckId]) => deckId === MANUAL_VIDEO_DECK),
+      );
     } else if (body.lang) {
       if (isLongVideoDeckId(body.lang)) {
         body.longVideoDecks = [...new Set([...(body.longVideoDecks ?? acc.longVideoDecks ?? []), body.lang])];
@@ -111,7 +132,7 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
     }
     // Бэкстоп языка: язык выбранного контента (деки/пака) обязан совпадать с языком канала.
     {
-      const sources = body.sourceDecks?.length ? body.sourceDecks : accountSourceDecks(acc);
+      const sources = Array.isArray(body.sourceDecks) ? body.sourceDecks : accountSourceDecks(acc);
       const newLang = body.lang ?? sources[0] ?? acc.lang ?? "";
       const newChannelLang = (body.channelLang ?? acc.channelLang ?? "") as string;
       for (const source of sources) {
@@ -126,7 +147,7 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
     const hasExplicitSlotDecks = !!body.slotDecks && typeof body.slotDecks === "object" && !Array.isArray(body.slotDecks);
     {
       const schedule = Array.isArray(body.schedule) ? body.schedule : acc.schedule ?? [];
-      const sources = body.sourceDecks?.length ? body.sourceDecks : accountSourceDecks(acc);
+      const sources = Array.isArray(body.sourceDecks) ? body.sourceDecks : accountSourceDecks(acc);
       const mixedAccount = {
         ...acc,
         ...body,
@@ -138,7 +159,7 @@ export function registerAccountsRoutes(app: FastifyInstance, db: Db, deps: Route
       if (mixedSlotDecks) body.slotDecks = mixedSlotDecks;
     }
     if (body.slotDecks && typeof body.slotDecks === "object" && !Array.isArray(body.slotDecks)) {
-      const allowed = new Set(body.sourceDecks?.length ? body.sourceDecks : accountSourceDecks(acc));
+      const allowed = new Set(Array.isArray(body.sourceDecks) ? body.sourceDecks : accountSourceDecks(acc));
       allowed.add(MANUAL_VIDEO_DECK);
       const clean: Record<string, string> = {};
       for (const [time, deckId] of Object.entries(body.slotDecks)) {

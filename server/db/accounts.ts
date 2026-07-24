@@ -65,6 +65,9 @@ export function accountMethods(db: DatabaseSync) {
     },
     createAccount(input: Partial<Account>): Account {
       const avatarSource = input.avatarSource ?? "youtube";
+      const sourceDecks = Array.isArray(input.sourceDecks)
+        ? input.sourceDecks
+        : [input.lang ?? "de"];
       const info = db
         .prepare(
           "INSERT INTO accounts (user_id, channel_name, lang, source_decks, long_video_decks, channel_lang, timezone, schedule, template, status, avatar, avatar_source) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
@@ -73,7 +76,7 @@ export function accountMethods(db: DatabaseSync) {
           input.userId ?? null,
           input.channelName ?? DEFAULT_CHANNEL_NAME,
           input.lang ?? "de",
-          JSON.stringify(input.sourceDecks?.length ? input.sourceDecks : [input.lang ?? "de"]),
+          JSON.stringify(sourceDecks),
           JSON.stringify(input.longVideoDecks ?? []),
           input.channelLang ?? input.lang ?? "de",
           normalizeTimeZone(input.timezone),

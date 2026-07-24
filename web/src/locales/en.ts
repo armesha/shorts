@@ -259,6 +259,7 @@ export const en: Record<string, string> = {
   "account.channelColon": "Channel:",
   "account.channelFallback": "Channel",
   "account.channelLang": "Channel language",
+  "account.channelLangPlaceholder": "Select a language",
   "account.channelLangHint": "The pack below must be in this language",
   "account.channelName": "Channel name",
   "account.channelPack": "Channel pack:",

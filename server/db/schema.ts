@@ -313,7 +313,9 @@ export function applySchema(db: DatabaseSync): void {
     "INSERT OR IGNORE INTO user_granted_long_video_decks (user_id, deck_id) SELECT user_id, deck_id FROM user_granted_decks WHERE deck_id LIKE 'long-%'",
   ).run();
   db.prepare("DELETE FROM user_granted_decks WHERE deck_id LIKE 'long-%'").run();
-  db.prepare("UPDATE accounts SET source_decks = json_array(lang) WHERE source_decks IS NULL OR source_decks = '[]'").run();
+  db.prepare(
+    "UPDATE accounts SET source_decks = json_array(lang) WHERE (source_decks IS NULL OR source_decks = '[]') AND TRIM(COALESCE(lang, '')) != ''",
+  ).run();
   addColumn("accounts", "channel_lang TEXT DEFAULT ''");
   addColumn("accounts", "timezone TEXT DEFAULT ''");
   addColumn("accounts", "avatar TEXT");
