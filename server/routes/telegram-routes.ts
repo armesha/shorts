@@ -8,7 +8,16 @@ import type { Db, Account, TelegramPreferences } from "../db.ts";
 import type { ClientCreds } from "../services/youtube.ts";
 import type { RefreshHooks, SnapshotAnalyticsFields } from "../services/stats-refresh.ts";
 import { hashPassword, isSuperAdminUser, newSessionToken, SESSION_TTL_DAYS } from "../auth.ts";
-import { sendBotMessage, getBotUsername, setBotWebhook, botStartLink, setBotCommands, setChatMenuButton, verifyTelegramWebAppInitData } from "../telegram.ts";
+import {
+  sendBotMessage,
+  getBotUsername,
+  setBotWebhook,
+  botStartLink,
+  setBotCommands,
+  setChatMenuButton,
+  verifyTelegramWebAppInitData,
+  type InlineKeyboard,
+} from "../telegram.ts";
 import { makeBotStats, type BotCallbackQuery } from "../services/telegram-stats.ts";
 import { COMMERCIAL_CREATOR_FEATURE } from "../services/creator-assets.ts";
 import { grantDefaultRegisteredUserDecks } from "../services/default-user-decks.ts";
@@ -125,7 +134,9 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
       app.log.warn("[telegram] PUBLIC_BASE_URL not set — bot webhook NOT registered (bot login/bind/stats won't work; password recovery still does)");
       return;
     }
-    await setChatMenuButton(botToken(), { type: "web_app", text: "Панель", web_app: { url: `${base}/tg` } });
+    // Keep Telegram's native Menu button as a discoverable command drawer. The compact web panel
+    // remains one tap away inside the inline home keyboard.
+    await setChatMenuButton(botToken(), { type: "commands" });
     const url = `${base}/api/telegram/webhook`;
     const r = await setBotWebhook(botToken(), url, webhookSecret());
     if (r.ok) app.log.info(`[telegram] webhook set → ${url}`);
@@ -424,9 +435,14 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
     const chatId = msg.chat?.id;
     const tgId = msg.from?.id != null ? String(msg.from.id) : "";
     const label = tgLabel(msg.from);
-    const dm = (t: string) => (chatId != null ? sendBotMessage(botToken(), chatId, t) : Promise.resolve({ ok: false }));
-    const circleInstructions = "Отправьте или перешлите сюда видеокружок. Если этот Telegram привязан к Shorts Factory, кружок появится в вашем редакторе на странице «Telegram-кружочки».";
-
+    const dm = (t: string, keyboard?: InlineKeyboard) => (
+      chatId != null
+        ? sendBotMessage(botToken(), chatId, t, { replyMarkup: keyboard })
+        : Promise.resolve({ ok: false })
+    );
+    const menuShortcut: InlineKeyboard = {
+      inline_keyboard: [[{ text: "🏠 Открыть главное меню", callback_data: "s:home" }]],
+    };
     const circleHandled = await handleTelegramCircleInboxMessage({
       fromId: tgId,
       chatId,
@@ -442,23 +458,31 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
       botToken: botToken(),
       publicBaseUrl: process.env.PUBLIC_BASE_URL,
       findUserByTelegramId: (telegramId) => db.getUserByTelegramId(telegramId),
-      sendMessage: (targetChatId, message) => sendBotMessage(botToken(), targetChatId, message),
+      sendMessage: (targetChatId, message, keyboard) => sendBotMessage(
+        botToken(),
+        targetChatId,
+        message,
+        { replyMarkup: keyboard },
+      ),
       onError: (error) => app.log.error({ err: error.message }, "[telegram] circle import failed"),
     });
     if (circleHandled) return;
 
     // Commands without a site-minted token open the in-bot UI (it handles linked vs not-linked).
     if (text.startsWith("/stats")) return void (await botStats.entry(msg, "stats"));
-    if (text.startsWith("/circles")) return void (await dm(circleInstructions));
+    if (text.startsWith("/circles")) return void (await botStats.entry(msg, "circles"));
     if (text.startsWith("/settings")) return void (await botStats.entry(msg, "settings"));
     if (text.startsWith("/help")) return void (await botStats.entry(msg, "help"));
     if (text.startsWith("/menu")) return void (await botStats.entry(msg, "home"));
-    if (!text.startsWith("/start")) return;
+    if (!text.startsWith("/start")) {
+      if (text) return void (await botStats.entry(msg, "home"));
+      return;
+    }
     const token = text.slice("/start".length).trim();
     if (!token) return void (await botStats.entry(msg, "home"));
     if (token === "menu") return void (await botStats.entry(msg, "home"));
     if (token === "stats") return void (await botStats.entry(msg, "stats"));
-    if (token === "circles") return void (await dm(circleInstructions));
+    if (token === "circles") return void (await botStats.entry(msg, "circles"));
     if (token === "settings") return void (await botStats.entry(msg, "settings"));
     if (token === "help") return void (await botStats.entry(msg, "help"));
 
@@ -479,7 +503,10 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
       }
       db.setUserTelegram(link.userId, tgId, label);
       db.updateTelegramLink(token, { telegramId: tgId, telegramUsername: label, chatId: String(chatId ?? ""), status: "consumed" });
-      await dm("✅ Telegram привязан.\n\nОткройте /menu — там статистика, уведомления и настройки бота прямо в Telegram.");
+      await dm(
+        "✅ Telegram привязан.\n\nОткройте главное меню: там кружки, статистика, уведомления и настройки.",
+        menuShortcut,
+      );
       return;
     }
 
@@ -499,7 +526,7 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
       const existing = db.getUserByTelegramId(tgId);
       if (existing) {
         db.updateTelegramLink(token, { telegramId: tgId, telegramUsername: label, chatId: String(chatId ?? ""), status: "ready", userId: existing.id });
-        await dm("✅ Этот Telegram уже привязан к аккаунту. Вернитесь на сайт — вход подтверждён.");
+        await dm("✅ Этот Telegram уже привязан к аккаунту. Вернитесь на сайт — вход подтверждён.", menuShortcut);
         return;
       }
       const username = defaultTelegramUsername(db, msg.from, tgId);
@@ -513,7 +540,10 @@ export function registerTelegramRoutes(app: FastifyInstance, db: Db, deps: Deps)
       grantDefaultRegisteredUserDecks(db, user.id);
       db.setUserTelegram(user.id, tgId, label);
       db.updateTelegramLink(token, { telegramId: tgId, telegramUsername: label, chatId: String(chatId ?? ""), status: "ready", userId: user.id });
-      await dm(`✅ Аккаунт создан: ${username}\n\nПароль не нужен. Если захотите входить по паролю — установите его в настройках.`);
+      await dm(
+        `✅ Аккаунт создан: ${username}\n\nПароль не нужен. Если захотите входить по паролю — установите его в настройках.`,
+        menuShortcut,
+      );
       return;
     }
   }

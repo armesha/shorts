@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import test from "node:test";
 import ffmpegPath from "ffmpeg-static";
+import type { InlineKeyboard } from "../telegram.ts";
 import {
   circleSourceVisibleToUser,
   listCircleSourcesForUser,
@@ -92,7 +93,7 @@ test("Telegram Bot API import stores one owner-scoped validated circle", async (
 });
 
 test("bot inbox accepts circles only from a linked Telegram account", async () => {
-  const messages: string[] = [];
+  const messages: { text: string; keyboard?: InlineKeyboard }[] = [];
   const unlinked = await handleTelegramCircleInboxMessage({
     fromId: "100",
     chatId: 100,
@@ -102,11 +103,14 @@ test("bot inbox accepts circles only from a linked Telegram account", async () =
     botToken: "test-token",
     publicBaseUrl: "https://shareboard.live/",
     findUserByTelegramId: () => null,
-    sendMessage: async (_chatId, text) => { messages.push(text); },
+    sendMessage: async (_chatId, text, keyboard) => { messages.push({ text, keyboard }); },
   });
   assert.equal(unlinked, true);
-  assert.match(messages[0], /привяжите/i);
-  assert.match(messages[0], /https:\/\/shareboard\.live\/settings/);
+  assert.match(messages[0]?.text ?? "", /привяжите/i);
+  assert.match(messages[0]?.text ?? "", /https:\/\/shareboard\.live\/settings/);
+  const unlinkedButtons = messages[0]?.keyboard?.inline_keyboard.flat() ?? [];
+  assert.ok(unlinkedButtons.some((button) => button.url === "https://shareboard.live/login"));
+  assert.ok(unlinkedButtons.some((button) => button.url === "https://shareboard.live/register"));
 
   let importedUserId = 0;
   const linked = await handleTelegramCircleInboxMessage({
@@ -116,8 +120,9 @@ test("bot inbox accepts circles only from a linked Telegram account", async () =
     videoNote: { fileId: "file", fileUniqueId: "unique" },
   }, {
     botToken: "test-token",
+    publicBaseUrl: "https://shareboard.live/",
     findUserByTelegramId: () => ({ id: 9 }),
-    sendMessage: async (_chatId, text) => { messages.push(text); },
+    sendMessage: async (_chatId, text, keyboard) => { messages.push({ text, keyboard }); },
     importCircle: async (input) => {
       importedUserId = input.userId;
       return { file: "circle.mp4", duplicate: false };
@@ -125,5 +130,10 @@ test("bot inbox accepts circles only from a linked Telegram account", async () =
   });
   assert.equal(linked, true);
   assert.equal(importedUserId, 9);
-  assert.match(messages.at(-1) || "", /добавлен/i);
+  const success = messages.at(-1);
+  assert.match(success?.text ?? "", /добавлен/i);
+  const successButtons = success?.keyboard?.inline_keyboard.flat() ?? [];
+  assert.ok(successButtons.some((button) => button.url === "https://shareboard.live/circles"));
+  assert.ok(successButtons.some((button) => button.callback_data === "s:circles"));
+  assert.ok(successButtons.some((button) => button.callback_data === "s:home"));
 });

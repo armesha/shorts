@@ -4,6 +4,7 @@ import { existsSync, statSync } from "node:fs";
 import { chmod, mkdir, rename, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import ffmpegPath from "ffmpeg-static";
+import type { InlineKeyboard } from "../telegram.ts";
 import {
   telegramCircleSourceName,
 } from "./circle-source-library.ts";
@@ -216,9 +217,20 @@ interface InboxDeps {
   botToken: string;
   publicBaseUrl?: string;
   findUserByTelegramId: (telegramId: string) => { id: number } | null;
-  sendMessage: (chatId: string | number, text: string) => Promise<unknown>;
+  sendMessage: (chatId: string | number, text: string, keyboard?: InlineKeyboard) => Promise<unknown>;
   importCircle?: typeof importTelegramCircle;
   onError?: (error: Error) => void;
+}
+
+function linkedActions(publicBaseUrl?: string): InlineKeyboard {
+  const rows: InlineKeyboard["inline_keyboard"] = [];
+  const base = publicBaseUrl?.trim().replace(/\/+$/, "");
+  if (base) rows.push([{ text: "🎬 Открыть редактор кружков", url: `${base}/circles` }]);
+  rows.push([
+    { text: "➕ Добавить ещё", callback_data: "s:circles" },
+    { text: "🏠 Главное меню", callback_data: "s:home" },
+  ]);
+  return { inline_keyboard: rows };
 }
 
 export async function handleTelegramCircleInboxMessage(
@@ -238,6 +250,14 @@ export async function handleTelegramCircleInboxMessage(
     await deps.sendMessage(
       message.chatId,
       `Сначала привяжите этот Telegram к аккаунту Shorts Factory, затем отправьте кружок ещё раз.${settingsUrl}`,
+      deps.publicBaseUrl
+        ? {
+            inline_keyboard: [[
+              { text: "🔐 Войти", url: `${deps.publicBaseUrl.replace(/\/+$/, "")}/login` },
+              { text: "✨ Создать аккаунт", url: `${deps.publicBaseUrl.replace(/\/+$/, "")}/register` },
+            ]],
+          }
+        : undefined,
     );
     return true;
   }
@@ -255,6 +275,7 @@ export async function handleTelegramCircleInboxMessage(
       result.duplicate
         ? "Этот кружок уже есть в вашем редакторе."
         : "✅ Кружок добавлен в Shorts Factory. Вернитесь в редактор — он появится в списке «Кружок».",
+      linkedActions(deps.publicBaseUrl),
     );
   } catch (error) {
     const safeError = error instanceof TelegramCircleImportError
@@ -266,6 +287,7 @@ export async function handleTelegramCircleInboxMessage(
       safeError.code === "too_large"
         ? "Не удалось загрузить: Bot API принимает видеокружки размером до 20 МБ."
         : "Не удалось скачать этот кружок. Попробуйте отправить его ещё раз или загрузите файл через сайт.",
+      linkedActions(deps.publicBaseUrl),
     );
   }
   return true;

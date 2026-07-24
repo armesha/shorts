@@ -58,7 +58,7 @@ export interface BotStatsDeps {
 }
 
 type Scope = "mine" | "all";
-type BotScreen = "home" | "stats" | "settings" | "help";
+type BotScreen = "home" | "stats" | "circles" | "settings" | "help";
 // Metric source, mirroring the website's /statistics tabs: "an" = YouTube Analytics (period
 // metrics), "data" = public Data API lifetime counters. Encoded in callback_data as "a"/"d".
 type Src = "an" | "data";
@@ -153,17 +153,47 @@ export function makeBotStats(deps: BotStatsDeps) {
         `🔔 Уведомления: ${prefs.channelAlerts || prefs.quotaWarnings || prefs.postFailures ? "включены" : "выключены"}`,
         `📈 Дайджест: ${DIGEST_LABELS[prefs.statsDigest]}`,
       ]) +
-      `\nВыберите действие кнопками ниже — всё основное можно сделать прямо здесь, без сайта.`;
+      `\nВыберите нужное действие кнопками ниже.`;
     return {
       text,
       keyboard: {
         inline_keyboard: [
-          [{ text: "Открыть компактную панель", web_app: { url: siteUrl("/tg") } }],
+          [{ text: "⭕ Добавить Telegram-кружок", callback_data: "s:circles" }],
           [
             { text: "📊 Статистика", callback_data: "s:sum:mine" },
             { text: "🔔 Уведомления", callback_data: "s:settings" },
           ],
+          [
+            { text: "🎛 Панель", web_app: { url: siteUrl("/tg") } },
+            { text: "🎬 Редактор", url: siteUrl("/circles") },
+          ],
           [{ text: "❔ Помощь", callback_data: "s:help" }],
+        ],
+      },
+    };
+  }
+
+  function circlesView(user: UserAuth, note?: string): { text: string; keyboard: InlineKeyboard } {
+    const text =
+      `${bold("⭕ Добавить Telegram-кружок")}\n` +
+      `${cap(`Аккаунт: ${user.username}`)}\n\n` +
+      `Отправьте или перешлите ${bold("в этот чат")} готовый видеокружок.\n\n` +
+      quote([
+        "1. Выберите кружок в Telegram.",
+        "2. Отправьте или перешлите его боту.",
+        "3. Дождитесь сообщения «Кружок добавлен».",
+      ]) +
+      `\nПосле загрузки кружок появится только в вашей библиотеке редактора.` +
+      (note ? `\n\n${esc(note)}` : "");
+    return {
+      text,
+      keyboard: {
+        inline_keyboard: [
+          [{ text: "🎬 Открыть редактор кружков", url: siteUrl("/circles") }],
+          [
+            { text: "📊 Статистика", callback_data: "s:sum:mine" },
+            { text: "🏠 Главное меню", callback_data: "s:home" },
+          ],
         ],
       },
     };
@@ -173,6 +203,7 @@ export function makeBotStats(deps: BotStatsDeps) {
     const text =
       `${bold("Что умеет бот")}\n\n` +
       `• ${bold("/menu")} — главный экран с быстрыми действиями.\n` +
+      `• ${bold("/circles")} — добавить видеокружок и открыть редактор.\n` +
       `• ${bold("/stats")} — статистика каналов: вкладка ${bold("Analytics")} (метрики за 7/30/90 дней) и вкладка ${bold("Data API")} (публичные счётчики за всё время) — как на сайте.\n` +
       `• ${bold("/settings")} — настройка уведомлений прямо в Telegram.\n` +
       `• Бот присылает критичные сообщения: отвязался канал, проблемы YouTube API/Analytics, лимиты и ошибки, если категории включены.\n\n` +
@@ -181,6 +212,7 @@ export function makeBotStats(deps: BotStatsDeps) {
       text,
       keyboard: {
         inline_keyboard: [
+          [{ text: "⭕ Добавить кружок", callback_data: "s:circles" }],
           [
             { text: "🏠 Меню", callback_data: "s:home" },
             { text: "🔔 Настройки", callback_data: "s:settings" },
@@ -458,18 +490,29 @@ export function makeBotStats(deps: BotStatsDeps) {
     const user = tgId ? db.getUserByTelegramId(tgId) : null;
     if (!user) {
       await send(chatId, NOT_LINKED, {
-        inline_keyboard: [[{ text: "Открыть вход на сайт", url: siteUrl("/login") }]],
+        inline_keyboard: [
+          [
+            { text: "🔐 Войти", url: siteUrl("/login") },
+            { text: "✨ Создать аккаунт", url: siteUrl("/register") },
+          ],
+        ],
       });
       return;
     }
-    const v =
-      screen === "stats"
-        ? summaryView(user, "mine", DEFAULT_DAYS)
-        : screen === "settings"
-          ? settingsView(user)
-          : screen === "help"
-            ? helpView()
-            : homeView(user);
+    const v = (() => {
+      switch (screen) {
+        case "stats":
+          return summaryView(user, "mine", DEFAULT_DAYS);
+        case "circles":
+          return circlesView(user);
+        case "settings":
+          return settingsView(user);
+        case "help":
+          return helpView();
+        default:
+          return homeView(user);
+      }
+    })();
     await send(chatId, v.text, v.keyboard);
   }
 
@@ -516,6 +559,10 @@ export function makeBotStats(deps: BotStatsDeps) {
       const v = helpView();
       await edit(chatId, messageId, v.text, v.keyboard);
     };
+    const showCircles = async (note?: string) => {
+      const v = circlesView(user, note);
+      await edit(chatId, messageId, v.text, v.keyboard);
+    };
 
     try {
       if (action === "noop") return void (await ack());
@@ -528,6 +575,11 @@ export function makeBotStats(deps: BotStatsDeps) {
       if (action === "help") {
         await ack();
         return void (await showHelp());
+      }
+
+      if (action === "circles") {
+        await ack();
+        return void (await showCircles());
       }
 
       if (action === "settings") {
