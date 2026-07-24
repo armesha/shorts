@@ -255,9 +255,10 @@ function circleMask(size: number, duration: number): string {
 }
 
 const VIDEO_FADE_IN_SECONDS = 1;
+const BACKGROUND_PLAYBACK_SPEED = 0.65;
 const BACKGROUND_BLUR_SIGMA = 5;
-const BACKGROUND_BRIGHTNESS = -0.08;
-const BACKGROUND_SATURATION = 0.88;
+const BACKGROUND_BRIGHTNESS = -0.12;
+const BACKGROUND_SATURATION = 0.8;
 
 export async function renderCircleVideo(input: CircleVideoRenderInput): Promise<CircleVideoRenderResult> {
   const root = ensureCircleWorkspace();
@@ -297,7 +298,7 @@ export async function renderCircleVideo(input: CircleVideoRenderInput): Promise<
 
   const size = input.layout.circle.size;
   const filters = [
-    `[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,fps=30,gblur=sigma=${BACKGROUND_BLUR_SIGMA},eq=brightness=${BACKGROUND_BRIGHTNESS}:saturation=${BACKGROUND_SATURATION},setsar=1,trim=duration=${seconds(durationSec)},setpts=PTS-STARTPTS[background]`,
+    `[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setpts=(PTS-STARTPTS)/${BACKGROUND_PLAYBACK_SPEED},fps=30,gblur=sigma=${BACKGROUND_BLUR_SIGMA},eq=brightness=${BACKGROUND_BRIGHTNESS}:saturation=${BACKGROUND_SATURATION},setsar=1,trim=duration=${seconds(durationSec)},setpts=PTS-STARTPTS[background]`,
     `[1:v]scale=${size}:${size}:force_original_aspect_ratio=increase,crop=${size}:${size},setsar=1,fps=30,trim=duration=${seconds(durationSec)},setpts=PTS-STARTPTS,format=rgba[circlebase]`,
     circleMask(size, durationSec),
     "[circlebase][circlemask]alphamerge[circle]",
