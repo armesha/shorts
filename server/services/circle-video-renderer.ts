@@ -259,6 +259,7 @@ const CIRCLE_FLOAT_Y = 12;
 const CIRCLE_FLOAT_X_PERIOD = 4.6;
 const CIRCLE_FLOAT_Y_PERIOD = 3.4;
 const VIDEO_FADE_IN_SECONDS = 1;
+const BACKGROUND_BLUR_SIGMA = 2;
 
 export async function renderCircleVideo(input: CircleVideoRenderInput): Promise<CircleVideoRenderResult> {
   const root = ensureCircleWorkspace();
@@ -300,7 +301,7 @@ export async function renderCircleVideo(input: CircleVideoRenderInput): Promise<
   const circleX = `${input.layout.circle.x}+${CIRCLE_FLOAT_X}*sin(2*PI*t/${CIRCLE_FLOAT_X_PERIOD})`;
   const circleY = `${input.layout.circle.y}+${CIRCLE_FLOAT_Y}*sin(2*PI*t/${CIRCLE_FLOAT_Y_PERIOD})`;
   const filters = [
-    `[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1,fps=30,trim=duration=${seconds(durationSec)},setpts=PTS-STARTPTS[background]`,
+    `[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,gblur=sigma=${BACKGROUND_BLUR_SIGMA},setsar=1,fps=30,trim=duration=${seconds(durationSec)},setpts=PTS-STARTPTS[background]`,
     `[1:v]scale=${size}:${size}:force_original_aspect_ratio=increase,crop=${size}:${size},setsar=1,fps=30,trim=duration=${seconds(durationSec)},setpts=PTS-STARTPTS,format=rgba[circlebase]`,
     circleMask(size, durationSec),
     "[circlebase][circlemask]alphamerge[circle]",
