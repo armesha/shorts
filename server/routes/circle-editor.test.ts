@@ -83,9 +83,10 @@ test("regular users can upload private circles and render a vertical video", { t
       payload: readFileSync(fixture),
     });
     assert.equal(uploaded.statusCode, 200, uploaded.body);
-    const uploadResult = uploaded.json() as { gameplay: string; gameplays: string[] };
+    const uploadResult = uploaded.json() as { gameplay: string; gameplays: string[]; customGameplays: string[] };
     assert.match(uploadResult.gameplay, /^мой-gameplay-1080p-\d+-[a-f0-9]{8}\.mp4$/u);
     assert.equal(uploadResult.gameplays.includes(uploadResult.gameplay), true);
+    assert.deepEqual(uploadResult.customGameplays, [uploadResult.gameplay]);
     assert.equal(existsSync(resolve(root, "gameplay", uploadResult.gameplay)), true);
 
     const sourceUpload = await app.inject({

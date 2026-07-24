@@ -20,6 +20,7 @@
   let selected = "puzzle";
   let sourceFiles = [];
   let gameplayFiles = [];
+  let customGameplayFiles = [];
   let templates = [];
   let activeTemplateId = "default";
   let advertisers = [];
@@ -159,6 +160,19 @@
     select.innerHTML = random + values.map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join("");
   }
 
+  function syncGameplayChoices(selected = gameplaySelect.value) {
+    const isMobile = window.matchMedia("(max-width: 720px)").matches;
+    const choices = isMobile
+      ? [...customGameplayFiles, ...gameplayFiles.filter((file) => !customGameplayFiles.includes(file))]
+      : gameplayFiles;
+    fillSelect(gameplaySelect, choices);
+    gameplaySelect.value = choices.includes(selected)
+      ? selected
+      : (isMobile ? customGameplayFiles[0] : choices[0]) || "";
+    document.body.classList.toggle("has-custom-gameplay", customGameplayFiles.length > 0);
+    randomGameplayButton.disabled = gameplayFiles.length === 0;
+  }
+
   const adFields = {
     name: $("#adName"),
     brand: $("#adBrand"),
@@ -215,9 +229,12 @@
   }
 
   function renderAdvertisers(selectedId = activeAdvertiserId) {
+    const picker = advertiserSelect.closest(".advertiser-picker");
     if (!advertisers.length) {
-      advertiserSelect.innerHTML = '<option value="">Сначала загрузите баннер</option>';
+      advertiserSelect.innerHTML = "";
+      advertiserSelect.hidden = true;
       advertiserSelect.disabled = true;
+      picker?.classList.add("empty");
       bannerEnabledInput.checked = false;
       bannerEnabledInput.disabled = true;
       activeAdvertiserId = "";
@@ -227,7 +244,9 @@
     advertiserSelect.innerHTML = advertisers
       .map((item) => `<option value="${item.id}">${item.name}</option>`)
       .join("");
+    advertiserSelect.hidden = false;
     advertiserSelect.disabled = false;
+    picker?.classList.remove("empty");
     bannerEnabledInput.disabled = false;
     activeAdvertiserId = advertisers.some((item) => item.id === selectedId) ? selectedId : (advertisers[0]?.id || "");
     advertiserSelect.value = activeAdvertiserId;
@@ -449,9 +468,8 @@
     setStatus("Загружаю геймплей", `${file.name} · ${Math.max(1, Math.round(file.size / 1024 / 1024))} МБ`, "busy");
     const body = await postVideoUpload("gameplay/upload", file);
     gameplayFiles = Array.isArray(body.gameplays) ? body.gameplays : [];
-    fillSelect(gameplaySelect, gameplayFiles);
-    gameplaySelect.value = body.gameplay;
-    randomGameplayButton.disabled = gameplayFiles.length === 0;
+    customGameplayFiles = Array.isArray(body.customGameplays) ? body.customGameplays : customGameplayFiles;
+    syncGameplayChoices(body.gameplay);
     updateMedia();
     setStatus("Геймплей загружен", "Файл выбран как фон и готов к генерации.");
   }
@@ -557,6 +575,7 @@
     activateAdvertiser().catch((error) => setStatus("Ошибка выбора баннера", error.message, "error"));
   });
   window.addEventListener("resize", fit);
+  window.addEventListener("resize", () => syncGameplayChoices());
   window.addEventListener("focus", () => refreshCircleSources().catch(() => {}));
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") refreshCircleSources().catch(() => {});
@@ -582,8 +601,8 @@
       sourceFiles = data.sources;
       fillSelect(sourceSelect, data.sources, true);
       gameplayFiles = Array.isArray(data.gameplays) ? data.gameplays : [];
-      fillSelect(gameplaySelect, gameplayFiles);
-      randomGameplayButton.disabled = gameplayFiles.length === 0;
+      customGameplayFiles = Array.isArray(data.customGameplays) ? data.customGameplays : [];
+      syncGameplayChoices();
       fit();
       render();
       select("puzzle");

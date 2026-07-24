@@ -27,6 +27,10 @@ function listWorkspaceGameplays(root: string): string[] {
     .map((entry) => entry.name);
 }
 
+export function listUploadedCircleGameplays(root = circleProjectDir()): string[] {
+  return listWorkspaceGameplays(root).sort((a, b) => a.localeCompare(b, "ru-RU"));
+}
+
 function sharedGameplayFiles(repositoryRoot: string): Map<string, string> {
   const sharedRoot = resolve(repositoryRoot, SHARED_GAMEPLAY_DIR);
   const registryFile = resolve(repositoryRoot, SHARED_GAMEPLAY_REGISTRY);
@@ -54,7 +58,7 @@ export function listCircleGameplays(
   repositoryRoot = process.cwd(),
 ): string[] {
   return [...new Set([
-    ...listWorkspaceGameplays(root),
+    ...listUploadedCircleGameplays(root),
     ...sharedGameplayFiles(repositoryRoot).keys(),
   ])].sort((a, b) => a.localeCompare(b, "ru-RU"));
 }

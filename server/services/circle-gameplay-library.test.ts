@@ -5,6 +5,7 @@ import { resolve } from "node:path";
 import test from "node:test";
 import {
   listCircleGameplays,
+  listUploadedCircleGameplays,
   resolveCircleGameplay,
 } from "./circle-gameplay-library.ts";
 
@@ -33,6 +34,7 @@ test("circle gameplay library combines uploaded and registered project videos", 
     }));
 
     assert.deepEqual(listCircleGameplays(workspace, repository), ["orbital-one.mp4", "uploaded.mp4"]);
+    assert.deepEqual(listUploadedCircleGameplays(workspace), ["uploaded.mp4"]);
     assert.equal(resolveCircleGameplay("uploaded.mp4", workspace, repository), uploaded);
     assert.equal(resolveCircleGameplay("orbital-one.mp4", workspace, repository), shared);
     assert.equal(resolveCircleGameplay("outside.mp4", workspace, repository), null);

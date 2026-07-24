@@ -476,6 +476,10 @@ input:focus-visible,
   margin: 10px 0;
 }
 
+.advertiser-picker.empty {
+  grid-template-columns: 1fr;
+}
+
 .advertiser-picker select {
   min-width: 0;
   width: 100%;
@@ -686,6 +690,20 @@ input:focus-visible,
     grid-column: 1 / -1;
   }
 
+  .top-actions .control-grid .gameplay-picker,
+  .editor-actions .gameplay-upload {
+    display: none;
+  }
+
+  body.has-custom-gameplay .top-actions .control-grid .gameplay-picker {
+    display: grid;
+  }
+
+  .control-grid .source-picker,
+  .editor-actions .random-gameplay {
+    grid-column: 1 / -1;
+  }
+
   select,
   input,
   button {
@@ -776,6 +794,10 @@ input:focus-visible,
   .field input,
   .button-link {
     height: 44px;
+  }
+
+  .advertiser-picker {
+    grid-template-columns: 1fr;
   }
 
   .advertiser-picker {
