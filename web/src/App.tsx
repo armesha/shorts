@@ -101,8 +101,8 @@ function Gate() {
             <Route path="/editor" element={<TemplateEditor />} />
             <Route path="/circles" element={<CircleEditor />} />
             <Route path="/admin/circles" element={<Navigate to="/circles" replace />} />
-            <Route path="/admin/banners" element={realAdmin ? <BannerLibrary /> : <Navigate to="/library" replace />} />
-            <Route path="/banners" element={realAdmin ? <Navigate to="/admin/banners" replace /> : <Navigate to="/library" replace />} />
+            <Route path="/admin/banners" element={<BannerLibrary />} />
+            <Route path="/banners" element={<Navigate to="/admin/banners" replace />} />
             <Route path="/users" element={realAdmin ? <Users /> : <Navigate to="/statistics" replace />} />
             <Route path="*" element={defaultRoute} />
           </Routes>

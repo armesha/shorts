@@ -57,14 +57,6 @@ function requireUser(req: FastifyRequest, reply: FastifyReply, db: Db): boolean 
   return true;
 }
 
-function requireAdmin(req: FastifyRequest, reply: FastifyReply, db: Db): boolean {
-  if (requestUser(req, db)?.role !== "admin") {
-    void reply.code(403).send({ error: "Управление рекламными баннерами доступно только администраторам" });
-    return false;
-  }
-  return true;
-}
-
 function num(value: unknown, fallback: number, min: number, max: number): number {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? Math.round(Math.min(max, Math.max(min, parsed))) : fallback;
@@ -311,7 +303,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
       ...circleAdvertiserState(),
       sources: listVideos(resolve(root, "downloads")),
       gameplays: listVideos(resolve(root, "gameplay")),
-      canManageBanners: requestUser(req, db)?.role === "admin",
+      canManageBanners: true,
       rendering,
     };
   });
@@ -370,7 +362,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
   });
 
   app.post("/api/circle-editor/overlays", { bodyLimit: 2_000_000 }, async (req, reply) => {
-    if (!requireAdmin(req, reply, db)) return;
+    if (!requireUser(req, reply, db)) return;
     const body = (req.body && typeof req.body === "object" ? req.body : {}) as Record<string, unknown>;
     const advertiser = await upsertCircleAdvertiser(body);
     if (body.activate !== false) await setActiveCircleTemplateAdvertiser(advertiser.id, true);
@@ -378,7 +370,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
   });
 
   app.post("/api/circle-editor/overlays/upload", { bodyLimit: Number.MAX_SAFE_INTEGER }, async (req, reply) => {
-    if (!requireAdmin(req, reply, db)) return;
+    if (!requireUser(req, reply, db)) return;
     const query = (req.query || {}) as { metadata?: string; filename?: string };
     let body: Record<string, unknown>;
     try {
@@ -407,7 +399,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
   });
 
   app.get("/api/circle-editor/overlays", async (req, reply) => {
-    if (!requireAdmin(req, reply, db)) return;
+    if (!requireUser(req, reply, db)) return;
     return circleAdvertiserState();
   });
 
@@ -419,7 +411,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
   });
 
   app.delete("/api/circle-editor/overlays/:id", async (req, reply) => {
-    if (!requireAdmin(req, reply, db)) return;
+    if (!requireUser(req, reply, db)) return;
     const id = (req.params as { id?: unknown }).id;
     await deleteCircleAdvertiser(id);
     await replaceCircleTemplateAdvertiser(id);
