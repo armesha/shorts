@@ -204,20 +204,20 @@ export default function BannerLibrary() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4 sm:space-y-5">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="grid size-11 place-items-center rounded-2xl bg-primary/10 text-primary">
             <Megaphone size={23} />
           </div>
-          <div>
-            <h1 className="text-2xl font-bold">Рекламные баннеры</h1>
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold sm:text-2xl">Рекламные баннеры</h1>
             <p className="text-sm text-base-content/60">Библиотека рекламодателей для роликов с Telegram-кружочками.</p>
           </div>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Link to="/admin/circles" className="btn btn-outline btn-sm">Открыть кружочки</Link>
-          <button className="btn btn-primary btn-sm gap-2" onClick={startNew}>
+        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap">
+          <Link to="/admin/circles" className="btn btn-outline min-h-11 sm:btn-sm sm:min-h-0">Открыть кружочки</Link>
+          <button className="btn btn-primary min-h-11 gap-2 sm:btn-sm sm:min-h-0" onClick={startNew}>
             <Plus size={16} /> Новый баннер
           </button>
         </div>
@@ -230,8 +230,8 @@ export default function BannerLibrary() {
         <div className="alert alert-success text-sm"><Check size={18} /><span>{notice}</span></div>
       )}
 
-      <section className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-base-300 bg-base-100 p-4">
-        <div>
+      <section className="flex items-center justify-between gap-3 rounded-2xl border border-base-300 bg-base-100 p-3 sm:p-4">
+        <div className="min-w-0">
           <div className="font-bold">Показывать баннер при генерации</div>
           <div className="text-xs text-base-content/55">Настройка применяется к активному рекламодателю.</div>
         </div>
@@ -247,12 +247,12 @@ export default function BannerLibrary() {
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(360px,.8fr)]">
         <section className="card border border-base-300 bg-base-100">
-          <div className="card-body gap-4">
+          <div className="card-body gap-4 p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <h2 className="card-title">Сохранённые баннеры</h2>
               <span className="badge badge-ghost">{state?.advertisers.length || 0}</span>
             </div>
-            <div className="grid gap-3 md:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-2">
               {state?.advertisers.map((item) => {
                 const active = item.id === state.activeAdvertiserId;
                 const chosen = item.id === selectedId;
@@ -296,7 +296,7 @@ export default function BannerLibrary() {
         </section>
 
         <section className="card h-fit border border-base-300 bg-base-100 xl:sticky xl:top-4">
-          <div className="card-body gap-4">
+          <div className="card-body gap-4 p-4 sm:p-6">
             <div>
               <h2 className="card-title">{selected ? "Настройки баннера" : "Новый баннер"}</h2>
               <p className="text-xs text-base-content/55">
@@ -361,15 +361,15 @@ export default function BannerLibrary() {
               </div>
             )}
 
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
               {!selected?.legacy && (
-                <button className="btn btn-primary flex-1 gap-2" disabled={saving} onClick={save}>
+                <button className="btn btn-primary min-h-11 flex-1 gap-2" disabled={saving} onClick={save}>
                   {saving ? <span className="loading loading-spinner loading-sm" /> : <Save size={17} />}
                   Сохранить
                 </button>
               )}
               {selected && !selected.legacy && (
-                <button className="btn btn-error btn-outline gap-2" disabled={saving} onClick={remove}>
+                <button className="btn btn-error btn-outline min-h-11 gap-2" disabled={saving} onClick={remove}>
                   <Trash2 size={17} /> Удалить
                 </button>
               )}

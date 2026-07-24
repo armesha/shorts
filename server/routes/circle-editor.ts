@@ -33,12 +33,21 @@ import {
 type Layout = CircleLayout;
 
 const VIDEO_EXT = new Set([".mp4", ".mov", ".mkv", ".webm", ".m4v"]);
-const MAX_CIRCLE_UPLOAD_BYTES = 500 * 1024 * 1024;
+const MAX_EDITOR_VIDEO_UPLOAD_BYTES = 500 * 1024 * 1024;
 const packagedFfmpeg = ffmpegPath as unknown as string | null;
 const ffmpeg = packagedFfmpeg && existsSync(packagedFfmpeg)
   ? packagedFfmpeg
   : (process.env.FFMPEG_PATH?.trim() || "ffmpeg");
 let rendering = false;
+
+class VideoUploadError extends Error {
+  constructor(
+    message: string,
+    readonly statusCode = 400,
+  ) {
+    super(message);
+  }
+}
 
 function projectDir(): string {
   return circleProjectDir();
@@ -157,7 +166,7 @@ function listVideos(dir: string): string[] {
     .sort((a, b) => a.localeCompare(b, "ru-RU"));
 }
 
-function uploadedCircleName(sourceName: string): string {
+function uploadedVideoName(sourceName: string, fallbackStem: string): string {
   const extension = extname(sourceName).toLowerCase();
   if (!VIDEO_EXT.has(extension)) {
     throw new Error("Поддерживаются MP4, MOV, WebM, MKV и M4V.");
@@ -166,22 +175,80 @@ function uploadedCircleName(sourceName: string): string {
     .normalize("NFKC")
     .replace(/[^\p{L}\p{N}._-]+/gu, "-")
     .replace(/^[._-]+|[._-]+$/g, "")
-    .slice(0, 80) || "telegram-circle";
+    .slice(0, 80) || fallbackStem;
   return `${stem}-${Date.now()}-${randomUUID().slice(0, 8)}${extension}`;
 }
 
-function uploadSizeGuard(maxBytes: number): Transform {
+function uploadSizeGuard(maxBytes: number, limitMessage: string): Transform {
   let received = 0;
   return new Transform({
     transform(chunk: Buffer, _encoding, callback) {
       received += chunk.length;
       if (received > maxBytes) {
-        callback(new Error("Файл кружка превышает лимит 500 МБ."));
+        callback(new Error(limitMessage));
         return;
       }
       callback(null, chunk);
     },
   });
+}
+
+async function storeUploadedVideo(
+  req: FastifyRequest,
+  options: {
+    directory: "downloads" | "gameplay";
+    fallbackStem: string;
+    limitMessage: string;
+  },
+): Promise<string> {
+  const sourceName = String((req.query as { filename?: unknown } | undefined)?.filename || "").trim();
+  if (!sourceName) throw new VideoUploadError("Не указано имя видеофайла.");
+  if (!(req.body instanceof Readable)) throw new VideoUploadError("Видеофайл не получен.");
+
+  let storedName: string;
+  try {
+    storedName = uploadedVideoName(sourceName, options.fallbackStem);
+  } catch (error) {
+    throw new VideoUploadError(error instanceof Error ? error.message : String(error));
+  }
+
+  const contentLength = Number(req.headers["content-length"] || 0);
+  if (Number.isFinite(contentLength) && contentLength > MAX_EDITOR_VIDEO_UPLOAD_BYTES) {
+    throw new VideoUploadError(options.limitMessage, 413);
+  }
+
+  const targetDir = resolve(projectDir(), options.directory);
+  const uploadDir = resolve(targetDir, ".uploads");
+  const temporary = resolve(uploadDir, `${randomUUID()}.upload`);
+  const target = resolve(targetDir, storedName);
+  await mkdir(uploadDir, { recursive: true });
+  try {
+    await pipeline(
+      req.body,
+      uploadSizeGuard(MAX_EDITOR_VIDEO_UPLOAD_BYTES, options.limitMessage),
+      createWriteStream(temporary, { flags: "wx" }),
+    );
+    if (!existsSync(temporary) || statSync(temporary).size === 0) {
+      throw new VideoUploadError("Загружен пустой видеофайл.");
+    }
+    await run(ffmpeg, [
+      "-hide_banner", "-loglevel", "error", "-i", temporary,
+      "-map", "0:v:0", "-frames:v", "1", "-f", "null", "-",
+    ], projectDir());
+    await rename(temporary, target);
+    return storedName;
+  } catch (error) {
+    if (error instanceof VideoUploadError) throw error;
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.includes(options.limitMessage)) {
+      throw new VideoUploadError(options.limitMessage, 413);
+    }
+    throw new VideoUploadError(
+      "Не удалось прочитать видео. Загрузите исправный MP4, MOV, WebM, MKV или M4V.",
+    );
+  } finally {
+    await rm(temporary, { force: true });
+  }
 }
 
 function mediaPath(kind: string, name: string): string | null {
@@ -428,49 +495,41 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
 
   app.post("/api/circle-editor/sources/upload", { bodyLimit: Number.MAX_SAFE_INTEGER }, async (req, reply) => {
     if (!requireUser(req, reply, db)) return;
-    const sourceName = String((req.query as { filename?: unknown } | undefined)?.filename || "").trim();
-    if (!sourceName) return reply.code(400).send({ error: "Не указано имя видеофайла." });
-    if (!(req.body instanceof Readable)) return reply.code(400).send({ error: "Видеофайл не получен." });
-
-    let storedName: string;
     try {
-      storedName = uploadedCircleName(sourceName);
-    } catch (error) {
-      return reply.code(400).send({ error: error instanceof Error ? error.message : String(error) });
-    }
-
-    const contentLength = Number(req.headers["content-length"] || 0);
-    if (Number.isFinite(contentLength) && contentLength > MAX_CIRCLE_UPLOAD_BYTES) {
-      return reply.code(413).send({ error: "Файл кружка превышает лимит 500 МБ." });
-    }
-
-    const uploadDir = resolve(projectDir(), "downloads", ".uploads");
-    const temporary = resolve(uploadDir, `${randomUUID()}.upload`);
-    const target = resolve(projectDir(), "downloads", storedName);
-    await mkdir(uploadDir, { recursive: true });
-    try {
-      await pipeline(req.body, uploadSizeGuard(MAX_CIRCLE_UPLOAD_BYTES), createWriteStream(temporary, { flags: "wx" }));
-      if (!existsSync(temporary) || statSync(temporary).size === 0) {
-        return reply.code(400).send({ error: "Загружен пустой видеофайл." });
-      }
-      await run(ffmpeg, [
-        "-hide_banner", "-loglevel", "error", "-i", temporary,
-        "-map", "0:v:0", "-frames:v", "1", "-f", "null", "-",
-      ], projectDir());
-      await rename(temporary, target);
+      const source = await storeUploadedVideo(req, {
+        directory: "downloads",
+        fallbackStem: "telegram-circle",
+        limitMessage: "Файл кружка превышает лимит 500 МБ.",
+      });
       return {
-        source: storedName,
+        source,
         sources: listVideos(resolve(projectDir(), "downloads")),
       };
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return reply.code(message.includes("500 МБ") ? 413 : 400).send({
-        error: message.includes("500 МБ")
-          ? message
-          : "Не удалось прочитать видео. Загрузите исправный MP4, MOV, WebM, MKV или M4V.",
+      const uploadError = error instanceof VideoUploadError
+        ? error
+        : new VideoUploadError(error instanceof Error ? error.message : String(error));
+      return reply.code(uploadError.statusCode).send({ error: uploadError.message });
+    }
+  });
+
+  app.post("/api/circle-editor/gameplay/upload", { bodyLimit: Number.MAX_SAFE_INTEGER }, async (req, reply) => {
+    if (!requireUser(req, reply, db)) return;
+    try {
+      const gameplay = await storeUploadedVideo(req, {
+        directory: "gameplay",
+        fallbackStem: "gameplay",
+        limitMessage: "Файл геймплея превышает лимит 500 МБ.",
       });
-    } finally {
-      await rm(temporary, { force: true });
+      return {
+        gameplay,
+        gameplays: listVideos(resolve(projectDir(), "gameplay")),
+      };
+    } catch (error) {
+      const uploadError = error instanceof VideoUploadError
+        ? error
+        : new VideoUploadError(error instanceof Error ? error.message : String(error));
+      return reply.code(uploadError.statusCode).send({ error: uploadError.message });
     }
   });
 
@@ -494,7 +553,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
     const source = requestedSource === "__random__" || requestedSource === "__telegram__" ? requestedSource : basename(requestedSource);
     const gameplay = basename(String(body.gameplay || ""));
     if (source !== "__random__" && source !== "__telegram__" && !mediaPath("source", source)) return reply.code(400).send({ error: "Выберите Telegram-кружок" });
-    if (!mediaPath("gameplay", gameplay)) return reply.code(400).send({ error: "Выберите gameplay" });
+    if (!mediaPath("gameplay", gameplay)) return reply.code(400).send({ error: "Выберите геймплей" });
     await saveLayout(body.layout);
     rendering = true;
     try {

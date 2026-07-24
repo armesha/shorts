@@ -1,13 +1,15 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, rmSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import test from "node:test";
 import Fastify, { type FastifyRequest } from "fastify";
+import ffmpegPath from "ffmpeg-static";
 import type { Db } from "../db.ts";
 import { registerCircleEditorRoutes } from "./circle-editor.ts";
 
-test("regular authenticated users can open and control the banner library", async () => {
+test("regular authenticated users can use the circle editor and upload 1080p gameplay", async () => {
   const root = mkdtempSync(resolve(tmpdir(), "shorts-circle-routes-"));
   const previous = process.env.TG_CIRCLES_DIR;
   process.env.TG_CIRCLES_DIR = root;
@@ -44,6 +46,45 @@ test("regular authenticated users can open and control the banner library", asyn
       payload: { id: "", enabled: false },
     });
     assert.equal(changed.statusCode, 200);
+
+    const anonymousUpload = await app.inject({
+      method: "POST",
+      url: "/api/circle-editor/gameplay/upload?filename=gameplay.mp4",
+      headers: { "content-type": "application/octet-stream" },
+      payload: Buffer.from("not-a-video"),
+    });
+    assert.equal(anonymousUpload.statusCode, 401);
+
+    const invalidExtension = await app.inject({
+      method: "POST",
+      url: "/api/circle-editor/gameplay/upload?filename=gameplay.txt",
+      headers: { ...headers, "content-type": "application/octet-stream" },
+      payload: Buffer.from("not-a-video"),
+    });
+    assert.equal(invalidExtension.statusCode, 400);
+    assert.match(invalidExtension.json().error, /MP4/);
+
+    assert.ok(ffmpegPath, "ffmpeg-static должен предоставить исполняемый файл");
+    const fixture = resolve(root, "gameplay-1080p.mp4");
+    const generated = spawnSync(ffmpegPath, [
+      "-hide_banner", "-loglevel", "error", "-y",
+      "-f", "lavfi", "-i", "color=c=blue:s=1080x1920:r=1:d=1",
+      "-frames:v", "1", "-c:v", "libx264", "-preset", "ultrafast",
+      "-pix_fmt", "yuv420p", fixture,
+    ], { encoding: "utf8" });
+    assert.equal(generated.status, 0, generated.stderr);
+
+    const uploaded = await app.inject({
+      method: "POST",
+      url: "/api/circle-editor/gameplay/upload?filename=%D0%BC%D0%BE%D0%B9-gameplay-1080p.mp4",
+      headers: { ...headers, "content-type": "application/octet-stream" },
+      payload: readFileSync(fixture),
+    });
+    assert.equal(uploaded.statusCode, 200, uploaded.body);
+    const uploadResult = uploaded.json() as { gameplay: string; gameplays: string[] };
+    assert.match(uploadResult.gameplay, /^мой-gameplay-1080p-\d+-[a-f0-9]{8}\.mp4$/u);
+    assert.deepEqual(uploadResult.gameplays, [uploadResult.gameplay]);
+    assert.equal(existsSync(resolve(root, "gameplay", uploadResult.gameplay)), true);
   } finally {
     await app.close();
     if (previous === undefined) delete process.env.TG_CIRCLES_DIR;

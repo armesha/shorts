@@ -8,6 +8,7 @@
   const sourceSelect = $("#sourceSelect");
   const sourceUpload = $("#sourceUpload");
   const gameplaySelect = $("#gameplaySelect");
+  const gameplayUpload = $("#gameplayUpload");
   const templateNameInput = $("#templateName");
   const templateSelect = $("#templateSelect");
   const advertiserSelect = $("#advertiserSelect");
@@ -326,7 +327,7 @@
     return body;
   }
 
-  async function uploadCircle(file) {
+  function validateVideoUpload(file, limitMessage) {
     if (!file) return;
     const allowed = ["mp4", "mov", "webm", "mkv", "m4v"];
     const extension = file.name.split(".").pop()?.toLowerCase();
@@ -334,11 +335,12 @@
       throw new Error("Поддерживаются MP4, MOV, WebM, MKV и M4V.");
     }
     if (file.size > 500 * 1024 * 1024) {
-      throw new Error("Файл кружка превышает лимит 500 МБ.");
+      throw new Error(limitMessage);
     }
+  }
 
-    setStatus("Загружаю кружок", `${file.name} · ${Math.max(1, Math.round(file.size / 1024 / 1024))} МБ`, "busy");
-    const response = await fetch(`/api/circle-editor/sources/upload?filename=${encodeURIComponent(file.name)}`, {
+  async function postVideoUpload(path, file) {
+    const response = await fetch(`/api/circle-editor/${path}?filename=${encodeURIComponent(file.name)}`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/octet-stream" },
@@ -346,11 +348,30 @@
     });
     const body = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(body.error || `${response.status} ${response.statusText}`);
+    return body;
+  }
+
+  async function uploadCircle(file) {
+    if (!file) return;
+    validateVideoUpload(file, "Файл кружка превышает лимит 500 МБ.");
+    setStatus("Загружаю кружок", `${file.name} · ${Math.max(1, Math.round(file.size / 1024 / 1024))} МБ`, "busy");
+    const body = await postVideoUpload("sources/upload", file);
     sourceFiles = Array.isArray(body.sources) ? body.sources : sourceFiles;
     fillSelect(sourceSelect, sourceFiles, true);
     sourceSelect.value = body.source;
     updateMedia();
     setStatus("Кружок загружен", "Файл выбран и готов к генерации.");
+  }
+
+  async function uploadGameplay(file) {
+    if (!file) return;
+    validateVideoUpload(file, "Файл геймплея превышает лимит 500 МБ.");
+    setStatus("Загружаю геймплей", `${file.name} · ${Math.max(1, Math.round(file.size / 1024 / 1024))} МБ`, "busy");
+    const body = await postVideoUpload("gameplay/upload", file);
+    fillSelect(gameplaySelect, Array.isArray(body.gameplays) ? body.gameplays : []);
+    gameplaySelect.value = body.gameplay;
+    updateMedia();
+    setStatus("Геймплей загружен", "Файл выбран как фон и готов к генерации.");
   }
 
   async function save(createNew = false) {
@@ -420,6 +441,15 @@
       setStatus("Ошибка загрузки", error.message || String(error), "error");
     }
   });
+  gameplayUpload.addEventListener("change", async () => {
+    const file = gameplayUpload.files?.[0];
+    gameplayUpload.value = "";
+    try {
+      await uploadGameplay(file);
+    } catch (error) {
+      setStatus("Ошибка загрузки", error.message || String(error), "error");
+    }
+  });
   gameplaySelect.addEventListener("change", updateMedia);
   $("#saveButton").addEventListener("click", () => save(false).catch((error) => setStatus("Ошибка сохранения", error.message, "error")));
   $("#saveAsButton").addEventListener("click", () => save(true).catch((error) => setStatus("Ошибка создания", error.message, "error")));
@@ -439,6 +469,10 @@
     activateAdvertiser().catch((error) => setStatus("Ошибка выбора баннера", error.message, "error"));
   });
   window.addEventListener("resize", fit);
+  if ("ResizeObserver" in window) {
+    const observer = new ResizeObserver(() => window.requestAnimationFrame(fit));
+    observer.observe(viewport);
+  }
 
   (async () => {
     try {
@@ -460,7 +494,9 @@
       render();
       select("puzzle");
       updateMedia();
-      if (!data.gameplays.length) setStatus("Нет gameplay", "Добавьте хотя бы одно фоновое видео в tg circles/gameplay.", "error");
+      if (!data.gameplays.length) {
+        setStatus("Нет геймплея", "Нажмите «Загрузить свой геймплей» и выберите видео до 500 МБ.", "error");
+      }
     } catch (error) {
       render();
       const message = error.message || String(error);
