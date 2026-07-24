@@ -10,6 +10,7 @@
   const telegramBotLink = $("#telegramBotLink");
   const gameplaySelect = $("#gameplaySelect");
   const gameplayUpload = $("#gameplayUpload");
+  const randomGameplayButton = $("#randomGameplayButton");
   const templateNameInput = $("#templateName");
   const templateSelect = $("#templateSelect");
   const advertiserSelect = $("#advertiserSelect");
@@ -18,6 +19,7 @@
   let scale = 0.35;
   let selected = "puzzle";
   let sourceFiles = [];
+  let gameplayFiles = [];
   let templates = [];
   let activeTemplateId = "default";
   let advertisers = [];
@@ -324,6 +326,18 @@
     if (previewSource) $("#circleVideo").src = mediaUrl("source", previewSource);
   }
 
+  function selectRandomGameplay() {
+    if (!gameplayFiles.length) {
+      setStatus("Нет геймплея", "В проекте пока нет доступных gameplay-видео.", "error");
+      return;
+    }
+    const alternatives = gameplayFiles.filter((file) => file !== gameplaySelect.value);
+    const pool = alternatives.length ? alternatives : gameplayFiles;
+    gameplaySelect.value = pool[Math.floor(Math.random() * pool.length)];
+    updateMedia();
+    setStatus("Случайный геймплей выбран", gameplaySelect.value);
+  }
+
   async function api(path, options) {
     const response = await fetch(`/api${path}`, { credentials: "include", ...options });
     const body = await response.json().catch(() => ({}));
@@ -434,8 +448,10 @@
     validateVideoUpload(file, "Файл геймплея превышает лимит 500 МБ.");
     setStatus("Загружаю геймплей", `${file.name} · ${Math.max(1, Math.round(file.size / 1024 / 1024))} МБ`, "busy");
     const body = await postVideoUpload("gameplay/upload", file);
-    fillSelect(gameplaySelect, Array.isArray(body.gameplays) ? body.gameplays : []);
+    gameplayFiles = Array.isArray(body.gameplays) ? body.gameplays : [];
+    fillSelect(gameplaySelect, gameplayFiles);
     gameplaySelect.value = body.gameplay;
+    randomGameplayButton.disabled = gameplayFiles.length === 0;
     updateMedia();
     setStatus("Геймплей загружен", "Файл выбран как фон и готов к генерации.");
   }
@@ -522,6 +538,7 @@
     }
   });
   gameplaySelect.addEventListener("change", updateMedia);
+  randomGameplayButton.addEventListener("click", selectRandomGameplay);
   $("#saveButton").addEventListener("click", () => save(false).catch((error) => setStatus("Ошибка сохранения", error.message, "error")));
   $("#saveAsButton").addEventListener("click", () => save(true).catch((error) => setStatus("Ошибка создания", error.message, "error")));
   $("#deleteTemplateButton").addEventListener("click", () => deleteTemplate().catch((error) => setStatus("Ошибка удаления", error.message, "error")));
@@ -564,12 +581,14 @@
       renderTemplates(activeTemplateId);
       sourceFiles = data.sources;
       fillSelect(sourceSelect, data.sources, true);
-      fillSelect(gameplaySelect, data.gameplays);
+      gameplayFiles = Array.isArray(data.gameplays) ? data.gameplays : [];
+      fillSelect(gameplaySelect, gameplayFiles);
+      randomGameplayButton.disabled = gameplayFiles.length === 0;
       fit();
       render();
       select("puzzle");
       updateMedia();
-      if (!data.gameplays.length) {
+      if (!gameplayFiles.length) {
         setStatus("Нет геймплея", "Нажмите «Загрузить свой геймплей» и выберите видео до 500 МБ.", "error");
       } else if (!data.sources.length) {
         setStatus("Нет кружков", "Отправьте кружок боту или загрузите видеофайл вручную.", "error");
