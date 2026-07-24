@@ -24,6 +24,11 @@ import {
   setActiveCircleTemplateAdvertiser,
   type CircleLayout,
 } from "../services/circle-templates.ts";
+import {
+  circleProjectDir,
+  readCircleConfig,
+  writeCircleConfig,
+} from "../services/circle-workspace.ts";
 
 type Layout = CircleLayout;
 
@@ -36,7 +41,7 @@ const ffmpeg = packagedFfmpeg && existsSync(packagedFfmpeg)
 let rendering = false;
 
 function projectDir(): string {
-  return resolve(process.cwd(), process.env.TG_CIRCLES_DIR?.trim() || "../tg circles");
+  return circleProjectDir();
 }
 
 function requestUser(req: FastifyRequest, db: Db) {
@@ -93,9 +98,7 @@ function sanitizeLayout(value: unknown): Layout {
 }
 
 function loadCircleConfig(): Record<string, unknown> {
-  const file = resolve(projectDir(), "config.json");
-  if (!existsSync(file)) throw new Error(`Не найден проект tg circles: ${file}`);
-  return JSON.parse(readFileSync(file, "utf8")) as Record<string, unknown>;
+  return readCircleConfig();
 }
 
 function layoutFromConfig(config: Record<string, unknown>): Layout {
@@ -129,7 +132,6 @@ function cleanTemplateName(value: unknown): string {
 
 async function saveLayout(layoutValue: unknown, nameValue?: unknown): Promise<Layout> {
   const layout = sanitizeLayout(layoutValue);
-  const file = resolve(projectDir(), "config.json");
   const config = loadCircleConfig();
   const requestedName = cleanTemplateName(nameValue);
   if (requestedName) config.templateName = requestedName;
@@ -151,7 +153,7 @@ async function saveLayout(layoutValue: unknown, nameValue?: unknown): Promise<La
   banner.height = layout.banner.height;
   banner.startSeconds = layout.banner.startSeconds;
   banner.repeatEverySeconds = layout.banner.repeatEverySeconds;
-  await writeFile(file, `${JSON.stringify(config, null, 2)}\n`, "utf8");
+  await writeCircleConfig(config);
   return layout;
 }
 

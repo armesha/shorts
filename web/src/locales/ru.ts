@@ -59,7 +59,7 @@ export const ru: Record<string, string> = {
   "nav.longVideos": "Длинные видео",
   "nav.templates": "Шаблоны",
   "nav.circles": "Кружочки",
-  "nav.banners": "Баннеры",
+  "nav.banners": "Рекламные баннеры",
   "nav.history": "История",
   "nav.statistics": "Статистика",
   "nav.limits": "Лимиты",

@@ -11,6 +11,7 @@ process_anecdotes*.py
 data/output/
 data/packs/
 data/creator-assets/
+data/telegram-circles/
 data/*.db
 data/*.db-*
 data/anecdotes/_*.json

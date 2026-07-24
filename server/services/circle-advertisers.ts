@@ -6,6 +6,13 @@ import { spawn } from "node:child_process";
 import ffmpegPath from "ffmpeg-static";
 import puppeteer from "puppeteer-core";
 import { chromePath } from "../../src/core/chrome.ts";
+import {
+  circleProjectDir,
+  readCircleConfig,
+  writeCircleConfig,
+} from "./circle-workspace.ts";
+
+export { circleProjectDir } from "./circle-workspace.ts";
 
 export type CircleAdvertiser = {
   id: string;
@@ -68,20 +75,12 @@ const LEGACY_YUKI: CircleAdvertiser = {
   legacy: true,
 };
 
-export function circleProjectDir(): string {
-  return resolve(process.cwd(), process.env.TG_CIRCLES_DIR?.trim() || "../tg circles");
-}
-
 function bannerDir(): string {
   return resolve(circleProjectDir(), "banner");
 }
 
 function storeFile(): string {
   return resolve(bannerDir(), "advertisers.json");
-}
-
-function configFile(): string {
-  return resolve(circleProjectDir(), "config.json");
 }
 
 function clean(value: unknown, fallback: string, max = 120): string {
@@ -128,15 +127,11 @@ async function saveStore(store: AdvertiserStore): Promise<void> {
 }
 
 function loadConfig(): CircleConfig {
-  if (!existsSync(configFile())) throw new Error(`Не найден ${configFile()}`);
-  return JSON.parse(readFileSync(configFile(), "utf8")) as CircleConfig;
+  return readCircleConfig() as CircleConfig;
 }
 
 async function saveConfig(config: CircleConfig): Promise<void> {
-  const file = configFile();
-  const temporary = `${file}.${process.pid}.tmp`;
-  await writeFile(temporary, `${JSON.stringify(config, null, 2)}\n`, "utf8");
-  await rename(temporary, file);
+  await writeCircleConfig(config as Record<string, unknown>);
 }
 
 function publicAdvertiser(item: CircleAdvertiser): CircleAdvertiser {

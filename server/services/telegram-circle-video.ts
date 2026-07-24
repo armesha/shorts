@@ -9,14 +9,15 @@ import {
   circleTemplateIdFromDeckId,
   getCircleTemplate,
 } from "./circle-templates.ts";
+import { circleProjectDir, readCircleConfig } from "./circle-workspace.ts";
 
 function projectDir(): string {
-  return resolve(process.cwd(), process.env.TG_CIRCLES_DIR?.trim() || "../tg circles");
+  return circleProjectDir();
 }
 
 export function telegramCircleTemplateName(): string {
   try {
-    const config = JSON.parse(readFileSync(resolve(projectDir(), "config.json"), "utf8")) as { templateName?: unknown };
+    const config = readCircleConfig() as { templateName?: unknown };
     const name = typeof config.templateName === "string" ? config.templateName.trim().slice(0, 80) : "";
     return name || "Telegram-кружочки";
   } catch {

@@ -7,6 +7,7 @@ import {
   circleAdvertiserState,
   circleProjectDir,
 } from "./circle-advertisers.ts";
+import { readCircleConfig, writeCircleConfig } from "./circle-workspace.ts";
 
 export type CircleLayout = {
   circle: { x: number; y: number; size: number };
@@ -48,10 +49,6 @@ type ConfigRecord = Record<string, unknown>;
 
 function storeFile(): string {
   return resolve(circleProjectDir(), "circle-templates.json");
-}
-
-function configFile(): string {
-  return resolve(circleProjectDir(), "config.json");
 }
 
 function cleanName(value: unknown): string {
@@ -98,15 +95,11 @@ function layoutFromConfig(config: ConfigRecord): CircleLayout {
 }
 
 function currentConfig(): ConfigRecord {
-  if (!existsSync(configFile())) throw new Error(`Не найден ${configFile()}`);
-  return JSON.parse(readFileSync(configFile(), "utf8")) as ConfigRecord;
+  return readCircleConfig();
 }
 
 async function saveConfig(config: ConfigRecord): Promise<void> {
-  const file = configFile();
-  const temporary = `${file}.${process.pid}.tmp`;
-  await writeFile(temporary, `${JSON.stringify(config, null, 2)}\n`, "utf8");
-  await rename(temporary, file);
+  await writeCircleConfig(config);
 }
 
 function bootstrapTemplate(): CircleTemplate {
