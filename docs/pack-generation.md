@@ -2159,12 +2159,14 @@ hypnotic tunnel, kinetic depth dots, aperture bars, neon ladder, ray afterimage 
 
 ## Редактор Telegram-кружков
 
-На админской странице `/admin/circles` находится отдельный редактор компоновки динамического Shorts.
+На странице `/circles` находится отдельный редактор компоновки динамического Shorts для всех
+авторизованных пользователей.
 Он не является template-pack и не меняет обычный JSON-редактор карточек.
 
-- UI: `web/public/circle-editor/`, отдельный админский экран: `web/src/pages/CircleEditor.tsx`
-  по адресу `/admin/circles`; библиотека баннеров находится на `/admin/banners`.
-- API-мост: `server/routes/circle-editor.ts`; доступ только администраторам.
+- UI: `web/public/circle-editor/`, отдельный экран: `web/src/pages/CircleEditor.tsx`
+  по адресу `/circles`; админская библиотека баннеров находится на `/admin/banners`.
+- API-мост: `server/routes/circle-editor.ts`; редактор, загрузка кружков и рендер доступны всем
+  авторизованным пользователям, а создание и удаление рекламных баннеров остаётся только для администраторов.
 - Внешний проект задаётся `TG_CIRCLES_DIR`; без переменной используется соседняя папка `../tg circles`.
 - Раскладка сохраняется в `tg circles/config.json`: координаты и размеры кружка, загадки и баннера.
 - Кнопка генерации запускает `tg circles/src/render-cli.ts`; Telegram-кружок берётся из `downloads/`,

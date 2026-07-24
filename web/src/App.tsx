@@ -99,7 +99,8 @@ function Gate() {
             <Route path="/system" element={<System />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/editor" element={<TemplateEditor />} />
-            <Route path="/admin/circles" element={realAdmin ? <CircleEditor /> : <Navigate to="/library" replace />} />
+            <Route path="/circles" element={<CircleEditor />} />
+            <Route path="/admin/circles" element={<Navigate to="/circles" replace />} />
             <Route path="/admin/banners" element={realAdmin ? <BannerLibrary /> : <Navigate to="/library" replace />} />
             <Route path="/banners" element={realAdmin ? <Navigate to="/admin/banners" replace /> : <Navigate to="/library" replace />} />
             <Route path="/users" element={realAdmin ? <Users /> : <Navigate to="/statistics" replace />} />

@@ -450,6 +450,7 @@
       advertisers = data.advertisers || [];
       activeAdvertiserId = data.activeAdvertiserId || "";
       bannerEnabledInput.checked = data.bannerEnabled !== false;
+      $("#manageBannersLink").hidden = !data.canManageBanners;
       renderAdvertisers(activeAdvertiserId);
       renderTemplates(activeTemplateId);
       sourceFiles = data.sources;

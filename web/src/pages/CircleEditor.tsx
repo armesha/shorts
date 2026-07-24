@@ -1,10 +1,13 @@
 import { ExternalLink, Megaphone, Video } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../lib/auth";
+import { isAdminRole } from "../lib/authz";
 
 const CIRCLE_EDITOR_URL = "/circle-editor/index.html";
-const CIRCLE_EDITOR_VERSION = "20260724-1";
+const CIRCLE_EDITOR_VERSION = "20260724-2";
 
 export default function CircleEditor() {
+  const { user } = useAuth();
   const editorSrc = `${CIRCLE_EDITOR_URL}?v=${CIRCLE_EDITOR_VERSION}`;
 
   return (
@@ -22,10 +25,12 @@ export default function CircleEditor() {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link to="/admin/banners" className="btn btn-outline btn-sm gap-2">
-            <Megaphone size={16} />
-            Баннеры
-          </Link>
+          {user && isAdminRole(user) && (
+            <Link to="/admin/banners" className="btn btn-outline btn-sm gap-2">
+              <Megaphone size={16} />
+              Баннеры
+            </Link>
+          )}
           <a href={editorSrc} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm gap-2">
             <ExternalLink size={16} />
             На весь экран

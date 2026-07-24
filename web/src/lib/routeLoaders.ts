@@ -87,6 +87,7 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
       return "settings";
     case "/editor":
       return "templateEditor";
+    case "/circles":
     case "/admin/circles":
       return "circleEditor";
     case "/admin/banners":

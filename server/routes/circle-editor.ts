@@ -39,11 +39,22 @@ function projectDir(): string {
   return resolve(process.cwd(), process.env.TG_CIRCLES_DIR?.trim() || "../tg circles");
 }
 
-function requireAdmin(req: FastifyRequest, reply: FastifyReply, db: Db): boolean {
+function requestUser(req: FastifyRequest, db: Db) {
   const userId = (req as FastifyRequest & { userId?: number }).userId;
-  const user = userId ? db.getUserById(userId) : null;
-  if (!user || user.role !== "admin") {
-    void reply.code(403).send({ error: "Редактор кружков доступен только администраторам" });
+  return userId ? db.getUserById(userId) : null;
+}
+
+function requireUser(req: FastifyRequest, reply: FastifyReply, db: Db): boolean {
+  if (!requestUser(req, db)) {
+    void reply.code(401).send({ error: "Войдите в аккаунт, чтобы открыть редактор кружков" });
+    return false;
+  }
+  return true;
+}
+
+function requireAdmin(req: FastifyRequest, reply: FastifyReply, db: Db): boolean {
+  if (requestUser(req, db)?.role !== "admin") {
+    void reply.code(403).send({ error: "Управление рекламными баннерами доступно только администраторам" });
     return false;
   }
   return true;
@@ -287,7 +298,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
     app.addContentTypeParser("application/octet-stream", (req, payload, done) => done(null, payload));
   }
   app.get("/api/circle-editor", async (req, reply) => {
-    if (!requireAdmin(req, reply, db)) return;
+    if (!requireUser(req, reply, db)) return;
     const root = projectDir();
     const config = loadCircleConfig();
     return {
@@ -298,12 +309,13 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
       ...circleAdvertiserState(),
       sources: listVideos(resolve(root, "downloads")),
       gameplays: listVideos(resolve(root, "gameplay")),
+      canManageBanners: requestUser(req, db)?.role === "admin",
       rendering,
     };
   });
 
   app.put("/api/circle-editor/layout", async (req, reply) => {
-    if (!requireAdmin(req, reply, db)) return;
+    if (!requireUser(req, reply, db)) return;
     const body = req.body as {
       layout?: unknown;
       name?: unknown;
@@ -332,7 +344,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
   });
 
   app.put("/api/circle-editor/templates/active", async (req, reply) => {
-    if (!requireAdmin(req, reply, db)) return;
+    if (!requireUser(req, reply, db)) return;
     const template = await activateCircleTemplate((req.body as { id?: unknown } | undefined)?.id);
     return {
       template,
@@ -344,7 +356,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
   });
 
   app.delete("/api/circle-editor/templates/:id", async (req, reply) => {
-    if (!requireAdmin(req, reply, db)) return;
+    if (!requireUser(req, reply, db)) return;
     const template = await deleteCircleTemplate((req.params as { id?: unknown }).id);
     return {
       template,
@@ -398,7 +410,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
   });
 
   app.put("/api/circle-editor/overlays/active", async (req, reply) => {
-    if (!requireAdmin(req, reply, db)) return;
+    if (!requireUser(req, reply, db)) return;
     const body = (req.body || {}) as { id?: unknown; enabled?: unknown };
     await setActiveCircleTemplateAdvertiser(body.id, body.enabled);
     return circleAdvertiserState();
@@ -413,7 +425,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
   });
 
   app.get("/api/circle-editor/media/:kind/:file", async (req, reply) => {
-    if (!requireAdmin(req, reply, db)) return;
+    if (!requireUser(req, reply, db)) return;
     const { kind, file } = req.params as { kind: string; file: string };
     const path = mediaPath(kind, file);
     if (!path) return reply.code(404).send({ error: "Файл не найден" });
@@ -421,7 +433,7 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
   });
 
   app.post("/api/circle-editor/sources/upload", { bodyLimit: Number.MAX_SAFE_INTEGER }, async (req, reply) => {
-    if (!requireAdmin(req, reply, db)) return;
+    if (!requireUser(req, reply, db)) return;
     const sourceName = String((req.query as { filename?: unknown } | undefined)?.filename || "").trim();
     if (!sourceName) return reply.code(400).send({ error: "Не указано имя видеофайла." });
     if (!(req.body instanceof Readable)) return reply.code(400).send({ error: "Видеофайл не получен." });
@@ -469,19 +481,19 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
   });
 
   app.get("/api/circle-editor/banner-preview.png", async (req, reply) => {
-    if (!requireAdmin(req, reply, db)) return;
+    if (!requireUser(req, reply, db)) return;
     const file = await bannerPreview((req.query as { id?: unknown } | undefined)?.id);
     return reply.type("image/png").send(createReadStream(file));
   });
 
   app.get("/api/circle-editor/banner-preview.webm", async (req, reply) => {
-    if (!requireAdmin(req, reply, db)) return;
+    if (!requireUser(req, reply, db)) return;
     const file = await bannerVideoPreview((req.query as { id?: unknown } | undefined)?.id);
     return streamMedia(req, reply, file);
   });
 
   app.post("/api/circle-editor/render", async (req, reply) => {
-    if (!requireAdmin(req, reply, db)) return;
+    if (!requireUser(req, reply, db)) return;
     if (rendering) return reply.code(409).send({ error: "Другой ролик уже генерируется" });
     const body = (req.body || {}) as { source?: string; gameplay?: string; layout?: unknown };
     const requestedSource = String(body.source || "");
