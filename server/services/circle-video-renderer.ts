@@ -254,10 +254,6 @@ function circleMask(size: number, duration: number): string {
   return `color=c=white:s=${size}x${size}:r=30:d=${seconds(duration)},format=gray,geq=lum='${expression}'[circlemask]`;
 }
 
-const CIRCLE_FLOAT_X = 14;
-const CIRCLE_FLOAT_Y = 12;
-const CIRCLE_FLOAT_X_PERIOD = 4.6;
-const CIRCLE_FLOAT_Y_PERIOD = 3.4;
 const VIDEO_FADE_IN_SECONDS = 1;
 const BACKGROUND_BLUR_SIGMA = 5;
 const BACKGROUND_BRIGHTNESS = -0.08;
@@ -300,14 +296,12 @@ export async function renderCircleVideo(input: CircleVideoRenderInput): Promise<
   }
 
   const size = input.layout.circle.size;
-  const circleX = `${input.layout.circle.x}+${CIRCLE_FLOAT_X}*sin(2*PI*t/${CIRCLE_FLOAT_X_PERIOD})`;
-  const circleY = `${input.layout.circle.y}+${CIRCLE_FLOAT_Y}*sin(2*PI*t/${CIRCLE_FLOAT_Y_PERIOD})`;
   const filters = [
     `[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,fps=30,gblur=sigma=${BACKGROUND_BLUR_SIGMA},eq=brightness=${BACKGROUND_BRIGHTNESS}:saturation=${BACKGROUND_SATURATION},setsar=1,trim=duration=${seconds(durationSec)},setpts=PTS-STARTPTS[background]`,
     `[1:v]scale=${size}:${size}:force_original_aspect_ratio=increase,crop=${size}:${size},setsar=1,fps=30,trim=duration=${seconds(durationSec)},setpts=PTS-STARTPTS,format=rgba[circlebase]`,
     circleMask(size, durationSec),
     "[circlebase][circlemask]alphamerge[circle]",
-    `[background][circle]overlay=x='${circleX}':y='${circleY}':eval=frame:eof_action=pass:shortest=0[withcircle]`,
+    `[background][circle]overlay=x=${input.layout.circle.x}:y=${input.layout.circle.y}:eof_action=pass:shortest=0[withcircle]`,
     `[2:v]format=rgba,fps=30,trim=duration=${seconds(durationSec)},setpts=PTS-STARTPTS[puzzle]`,
     "[withcircle][puzzle]overlay=0:0:eof_action=repeat:shortest=0[withpuzzle]",
   ];

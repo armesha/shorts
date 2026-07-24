@@ -32,7 +32,7 @@ function redFrameStats(frame: Buffer): { x: number; y: number; averageRed: numbe
   };
 }
 
-test("built-in circle renderer produces an animated vertical MP4 with circle audio", { timeout: 60_000 }, async () => {
+test("built-in circle renderer keeps the circle still and fades in a vertical MP4 with audio", { timeout: 60_000 }, async () => {
   const root = mkdtempSync(resolve(tmpdir(), "shorts-circle-render-"));
   const previous = process.env.TG_CIRCLES_DIR;
   process.env.TG_CIRCLES_DIR = root;
@@ -95,8 +95,8 @@ test("built-in circle renderer produces an animated vertical MP4 with circle aud
     };
     const early = redFrameStats(frameAt(0.2));
     const late = redFrameStats(frameAt(0.95));
-    assert.ok(late.x - early.x > 6, `expected horizontal float, got ${early.x} -> ${late.x}`);
-    assert.ok(late.y - early.y > 4, `expected vertical float, got ${early.y} -> ${late.y}`);
+    assert.ok(Math.abs(late.x - early.x) < 2, `expected a fixed horizontal position, got ${early.x} -> ${late.x}`);
+    assert.ok(Math.abs(late.y - early.y) < 2, `expected a fixed vertical position, got ${early.y} -> ${late.y}`);
     assert.ok(late.averageRed - early.averageRed > 100, "expected a one-second fade-in from black");
   } finally {
     if (previous === undefined) delete process.env.TG_CIRCLES_DIR;
