@@ -61,13 +61,6 @@ body {
   font-size: 20px;
 }
 
-.editor-title span {
-  max-width: 110px;
-  color: #7d7585;
-  font-size: 12px;
-  line-height: 1.25;
-}
-
 .top-actions {
   min-width: 0;
   display: flex;
@@ -257,16 +250,6 @@ input:focus-visible,
   color: #827989;
   font-size: 11px;
   font-weight: 400;
-}
-
-.hint {
-  margin-top: 18px;
-  padding: 12px;
-  border-radius: 10px;
-  background: #f6f2f7;
-  color: #766e7d;
-  font-size: 12px;
-  line-height: 1.5;
 }
 
 .stage-column {
@@ -559,10 +542,6 @@ input:focus-visible,
     gap: 9px;
   }
 
-  .editor-title span {
-    max-width: none;
-  }
-
   .top-actions {
     justify-content: flex-start;
   }
@@ -661,11 +640,6 @@ input:focus-visible,
     font-size: 18px;
   }
 
-  .editor-title span {
-    font-size: 11px;
-    text-align: right;
-  }
-
   .control-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
@@ -750,10 +724,6 @@ input:focus-visible,
   .layer small {
     font-size: 9px;
     line-height: 1.2;
-  }
-
-  .hint {
-    display: none;
   }
 
   .stage-column {
