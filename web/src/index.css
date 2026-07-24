@@ -228,10 +228,20 @@ body {
   pointer-events: none;
 }
 
+.app-toast-stack--top-right {
+  top: 16px;
+  bottom: auto;
+}
+
 @media (min-width: 1024px) {
   .app-toast-stack {
     right: 24px;
     bottom: 24px;
+  }
+
+  .app-toast-stack--top-right {
+    top: 24px;
+    bottom: auto;
   }
 }
 

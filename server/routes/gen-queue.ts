@@ -34,6 +34,20 @@ const USER_GEN_QUEUE_CAP = 100;
 const genQueueRunnerMode = (): "embedded" | "external" =>
   process.env.GEN_QUEUE_RUNNER === "0" || process.env.GEN_QUEUE_RUNNER === "external" ? "external" : "embedded";
 
+function queuedCircleRemainingForOwner(ownerId: number): number {
+  let total = 0;
+  for (const job of genListStatuses()) {
+    if (job.ownerUserId !== ownerId || (job.state !== "queued" && job.state !== "running")) continue;
+    const remaining = Math.max(0, job.total - job.done);
+    const decks = job.deckIds ?? [];
+    if (!decks.length) continue;
+    for (let offset = 0; offset < remaining; offset += 1) {
+      if (isCircleDeckId(decks[(job.done + offset) % decks.length])) total += 1;
+    }
+  }
+  return total;
+}
+
 export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: RouteDeps) {
   const { accessibleAccount, accountOwnerId } = deps;
   const { accountSourceDecks, cleanDeckIds, validateAccountSourceDeck, availableUnusedForDecks } = deps.deckAccess;
@@ -112,7 +126,12 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
       const sharedDeckIds = deckIds.filter(
         (deckId) => !perAccountPackIds.includes(deckId) && !repeatPackIds.includes(deckId) && !liveDeckIds.includes(deckId),
       );
-      let free = liveDeckIds.length ? Number.MAX_SAFE_INTEGER : 0;
+      let free = liveDeckIds.length
+        ? Math.max(
+            0,
+            availableUnusedForDecks(ownerId, liveDeckIds) - queuedCircleRemainingForOwner(ownerId),
+          )
+        : 0;
       if (repeatPackIds.length) free = Number.MAX_SAFE_INTEGER;
       if (sharedDeckIds.length) {
         free += Math.max(
@@ -139,7 +158,9 @@ export function registerGenQueueRoutes(app: FastifyInstance, db: Db, deps: Route
       if (free <= 0)
         return reply.code(400).send({
           error:
-            "Свободных карточек не осталось — все карточки выбранного контента уже использованы или стоят в очереди. Дождитесь окончания текущей генерации или сбросьте использованные карточки.",
+            liveDeckIds.length === deckIds.length
+              ? "Свободные Telegram-кружки закончились или уже стоят в очереди. Загрузите новые кружки."
+              : "Свободных карточек не осталось — все карточки выбранного контента уже использованы или стоят в очереди. Дождитесь окончания текущей генерации или сбросьте использованные карточки.",
         });
       total = Math.min(total, free);
     }

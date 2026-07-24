@@ -75,11 +75,19 @@ const TOAST_ICON: Record<ToastType, AppIconName> = {
   info: "info",
 };
 
-export function ToastStack({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: number) => void }) {
+export function ToastStack({
+  toasts,
+  onDismiss,
+  placement = "bottom-right",
+}: {
+  toasts: Toast[];
+  onDismiss: (id: number) => void;
+  placement?: "bottom-right" | "top-right";
+}) {
   const { t } = useT();
   if (toasts.length === 0) return null;
   const content = (
-    <div className="app-toast-stack" aria-live="polite" aria-relevant="additions">
+    <div className={`app-toast-stack app-toast-stack--${placement}`} aria-live="polite" aria-relevant="additions">
       {toasts.map((toast) => (
         <div key={toast.id} className={`app-toast is-${toast.type}`} role="status">
           <span className="app-toast-icon">

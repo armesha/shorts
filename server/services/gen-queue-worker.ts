@@ -22,7 +22,10 @@ import type { DeckAccess } from "./deck-access.ts";
 import { isBuiltInDeckGloballyVisible, isCustomPackGloballyVisible } from "./global-pack-visibility.ts";
 import type { BuildLibraryVideo } from "./library-build.ts";
 import { isCircleDeckId } from "./circle-templates.ts";
-import { buildTelegramCircleLibraryVideo } from "./telegram-circle-video.ts";
+import {
+  buildTelegramCircleLibraryVideo,
+  TelegramCircleSourceExhaustedError,
+} from "./telegram-circle-video.ts";
 
 export function makeGenQueueWorker(
   db: Db,
@@ -48,12 +51,17 @@ export function makeGenQueueWorker(
 
     const generateFromSource = async (sourceDeck: string): Promise<"made" | "exhausted"> => {
       if (isCircleDeckId(sourceDeck)) {
-        await buildTelegramCircleLibraryVideo({
-          db,
-          outputRoot: deps.outputDir,
-          accountId: job.accountId,
-          deckId: sourceDeck,
-        });
+        try {
+          await buildTelegramCircleLibraryVideo({
+            db,
+            outputRoot: deps.outputDir,
+            accountId: job.accountId,
+            deckId: sourceDeck,
+          });
+        } catch (error) {
+          if (error instanceof TelegramCircleSourceExhaustedError) return "exhausted";
+          throw error;
+        }
         return "made";
       }
 

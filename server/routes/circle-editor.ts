@@ -34,6 +34,7 @@ import {
   circleSourceVisibleToUser,
   listCircleSourcesForUser,
   pickCircleSourceForUser,
+  releaseCircleSourceForUser,
 } from "../services/circle-source-library.ts";
 import {
   renderCircleVideo,
@@ -594,7 +595,8 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
     if (requestedSource === "__telegram__") {
       return reply.code(400).send({ error: "Сначала отправьте кружок боту, затем выберите его в списке." });
     }
-    const source = requestedSource === "__random__"
+    const randomSource = requestedSource === "__random__";
+    const source = randomSource
       ? await pickCircleSourceForUser(userId, projectDir())
       : basename(requestedSource);
     const gameplay = basename(String(body.gameplay || ""));
@@ -624,6 +626,9 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
         puzzle: result.puzzle,
         url: `/api/circle-editor/media/output/${encodeURIComponent(file)}`,
       };
+    } catch (error) {
+      if (randomSource) await releaseCircleSourceForUser(userId, source, projectDir());
+      throw error;
     } finally {
       rendering = false;
     }

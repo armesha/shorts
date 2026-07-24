@@ -1104,6 +1104,7 @@ export interface ChannelThemeBlock {
   title: string;
   description: string;
   rules: string[];
+  allowAccountCreation: boolean;
   sourceGroups: ChannelThemeBlockSourceGroup[];
   cells: ChannelThemeBlockCell[];
   totalAccounts: number;
@@ -1114,6 +1115,17 @@ export interface ChannelThemeBlock {
   totalQueued: number;
   totalShortAvailable: number;
   totalPostsPerDay: number;
+  videos: Array<{
+    id: number;
+    accountId: number;
+    channelName: string;
+    channelLang: string;
+    deck: string;
+    title: string;
+    imageRel: string | null;
+    videoRel: string;
+    createdAt: string;
+  }>;
 }
 
 export interface ChannelThemeBlocksResponse {

@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { mkdir, rename, writeFile } from "node:fs/promises";
+import { mkdir, open, rename, rm, stat, writeFile } from "node:fs/promises";
 import { dirname, extname, resolve } from "node:path";
 import { circleProjectDir } from "./circle-workspace.ts";
 
@@ -41,7 +41,14 @@ export function listCircleSourcesForUser(userId: number, root = circleProjectDir
 
 type RotationState = {
   remaining?: string[];
+  used?: string[];
   last?: string;
+};
+
+export type CircleSourceStats = {
+  total: number;
+  used: number;
+  available: number;
 };
 
 function shuffle<T>(items: T[]): T[] {
@@ -57,13 +64,13 @@ function rotationFile(userId: number, root: string): string {
   return resolve(root, ".runtime", `source-rotation-u${Math.max(1, Math.trunc(userId))}.json`);
 }
 
-function readRotation(file: string): RotationState {
-  if (!existsSync(file)) return {};
+function readRotation(file: string): RotationState | null {
+  if (!existsSync(file)) return null;
   try {
     const parsed = JSON.parse(readFileSync(file, "utf8")) as RotationState;
     return parsed && typeof parsed === "object" ? parsed : {};
   } catch {
-    return {};
+    return null;
   }
 }
 
@@ -74,28 +81,122 @@ async function writeRotation(file: string, state: RotationState): Promise<void> 
   await rename(temporary, file);
 }
 
+function cleanNames(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.map((item) => String(item || "").trim()).filter(Boolean))];
+}
+
+function resolvedRotation(userId: number, root: string): {
+  file: string;
+  available: string[];
+  remaining: string[];
+  used: string[];
+  last?: string;
+} {
+  const available = listCircleSourcesForUser(userId, root);
+  const availableSet = new Set(available);
+  const file = rotationFile(userId, root);
+  const previous = readRotation(file);
+  const legacyRemaining = cleanNames(previous?.remaining).filter((item) => availableSet.has(item));
+  const used = previous?.used
+    ? cleanNames(previous.used)
+    : previous
+      ? available.filter((item) => !legacyRemaining.includes(item))
+      : [];
+  const usedSet = new Set(used);
+  const remaining = legacyRemaining.filter((item) => !usedSet.has(item));
+  const known = new Set([...used, ...remaining]);
+  const added = shuffle(available.filter((item) => !known.has(item)));
+  remaining.push(...added);
+  return {
+    file,
+    available,
+    remaining,
+    used,
+    last: typeof previous?.last === "string" ? previous.last : undefined,
+  };
+}
+
+const wait = (ms: number): Promise<void> => new Promise((done) => setTimeout(done, ms));
+
+async function withRotationLock<T>(userId: number, root: string, run: () => Promise<T>): Promise<T> {
+  const file = rotationFile(userId, root);
+  const lockFile = `${file}.lock`;
+  await mkdir(dirname(lockFile), { recursive: true });
+  let handle: Awaited<ReturnType<typeof open>> | null = null;
+  for (let attempt = 0; attempt < 400; attempt += 1) {
+    try {
+      handle = await open(lockFile, "wx", 0o600);
+      break;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+      try {
+        const info = await stat(lockFile);
+        if (Date.now() - info.mtimeMs > 5 * 60_000) await rm(lockFile, { force: true });
+      } catch {
+        // The other process may have released the lock between open() and stat().
+      }
+      await wait(25);
+    }
+  }
+  if (!handle) throw new Error("Не удалось заблокировать выбор Telegram-кружка.");
+  try {
+    return await run();
+  } finally {
+    await handle.close().catch(() => {});
+    await rm(lockFile, { force: true }).catch(() => {});
+  }
+}
+
+export function circleSourceStatsForUser(
+  userId: number,
+  root = circleProjectDir(),
+): CircleSourceStats {
+  const state = resolvedRotation(userId, root);
+  const availableSet = new Set(state.available);
+  const used = state.used.filter((item) => availableSet.has(item)).length;
+  return {
+    total: state.available.length,
+    used,
+    available: Math.max(0, state.available.length - used),
+  };
+}
+
+export function listAvailableCircleSourcesForUser(
+  userId: number,
+  root = circleProjectDir(),
+): string[] {
+  const state = resolvedRotation(userId, root);
+  const used = new Set(state.used);
+  return state.available.filter((item) => !used.has(item));
+}
+
 export async function pickCircleSourceForUser(
   userId: number,
   root = circleProjectDir(),
 ): Promise<string | null> {
-  const available = listCircleSourcesForUser(userId, root);
-  if (!available.length) return null;
+  return withRotationLock(userId, root, async () => {
+    const state = resolvedRotation(userId, root);
+    const picked = state.remaining.shift() || null;
+    const used = picked ? [...new Set([...state.used, picked])] : state.used;
+    await writeRotation(state.file, { remaining: state.remaining, used, last: picked || state.last });
+    return picked;
+  });
+}
 
-  const file = rotationFile(userId, root);
-  const previous = readRotation(file);
-  const availableSet = new Set(available);
-  let remaining = Array.isArray(previous.remaining)
-    ? previous.remaining.filter((item) => availableSet.has(item))
-    : [];
-
-  if (!remaining.length) {
-    remaining = shuffle(available);
-    if (remaining.length > 1 && remaining[0] === previous.last) {
-      [remaining[0], remaining[1]] = [remaining[1], remaining[0]];
-    }
-  }
-
-  const picked = remaining.shift() || available[0];
-  await writeRotation(file, { remaining, last: picked });
-  return picked;
+export async function releaseCircleSourceForUser(
+  userId: number,
+  source: string,
+  root = circleProjectDir(),
+): Promise<void> {
+  const clean = String(source || "").trim();
+  if (!clean) return;
+  await withRotationLock(userId, root, async () => {
+    const state = resolvedRotation(userId, root);
+    const used = state.used.filter((item) => item !== clean);
+    const remaining = state.available.includes(clean) && !state.remaining.includes(clean)
+      ? [clean, ...state.remaining]
+      : state.remaining;
+    await writeRotation(state.file, { remaining, used, last: state.last });
+  });
 }

@@ -1,6 +1,9 @@
 import { randomUUID } from "node:crypto";
+import { execFile } from "node:child_process";
 import { mkdir, rm } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
+import { promisify } from "node:util";
+import ffmpegPath from "ffmpeg-static";
 import type { Db } from "../db.ts";
 import {
   activateCircleTemplate,
@@ -9,7 +12,9 @@ import {
   getCircleTemplate,
 } from "./circle-templates.ts";
 import {
+  circleSourceStatsForUser,
   pickCircleSourceForUser,
+  releaseCircleSourceForUser,
 } from "./circle-source-library.ts";
 import {
   renderCircleVideo,
@@ -19,6 +24,9 @@ import {
   resolveCircleGameplay,
 } from "./circle-gameplay-library.ts";
 import { circleProjectDir, readCircleConfig } from "./circle-workspace.ts";
+
+const pexec = promisify(execFile);
+const FFMPEG = ffmpegPath as unknown as string;
 
 function projectDir(): string {
   return circleProjectDir();
@@ -40,41 +48,83 @@ export async function generateTelegramCircleVideo(
   userId: number,
 ): Promise<{
   videoRel: string;
+  imageRel: string;
   source: string;
   gameplayFile: string;
 }> {
   const root = projectDir();
   const source = await pickCircleSourceForUser(userId, root);
   if (!source) {
-    throw new Error("Нет Telegram-кружков. Загрузите кружок в редакторе или отправьте его боту.");
+    const stats = circleSourceStatsForUser(userId, root);
+    throw new TelegramCircleSourceExhaustedError(
+      stats.total > 0
+        ? "Свободные Telegram-кружки закончились. Загрузите новые кружки."
+        : "Нет Telegram-кружков. Загрузите кружок в редакторе или отправьте его боту.",
+    );
   }
-  const gameplays = listCircleGameplays(root);
-  if (!gameplays.length) {
-    throw new Error("Нет геймплея. Загрузите фоновое видео в редакторе Telegram-кружочков.");
-  }
-  const gameplayFile = gameplays[Math.floor(Math.random() * gameplays.length)] || gameplays[0];
-  const gameplayPath = resolveCircleGameplay(gameplayFile, root);
-  if (!gameplayPath) {
-    throw new Error("Выбранный геймплей больше недоступен.");
-  }
-  const template = getCircleTemplate(activeCircleTemplateId());
-  if (!template) throw new Error("Активный шаблон Telegram-кружочков не найден.");
-
   const videoRel = `preview/telegram-circle-${stamp}.mp4`;
+  const imageRel = telegramCirclePosterRel(videoRel);
   const target = resolve(outputRoot, videoRel);
-  await mkdir(dirname(target), { recursive: true });
   try {
+    const gameplays = listCircleGameplays(root);
+    if (!gameplays.length) {
+      throw new Error("Нет геймплея. Загрузите фоновое видео в редакторе Telegram-кружочков.");
+    }
+    const gameplayFile = gameplays[Math.floor(Math.random() * gameplays.length)] || gameplays[0];
+    const gameplayPath = resolveCircleGameplay(gameplayFile, root);
+    if (!gameplayPath) {
+      throw new Error("Выбранный геймплей больше недоступен.");
+    }
+    const template = getCircleTemplate(activeCircleTemplateId());
+    if (!template) throw new Error("Активный шаблон Telegram-кружочков не найден.");
+    await mkdir(dirname(target), { recursive: true });
     await renderCircleVideo({
       sourceFile: resolve(root, "downloads", source),
       gameplayFile: gameplayPath,
       outputFile: target,
       layout: template.layout,
     });
+    await createTelegramCirclePoster(outputRoot, videoRel);
+    return { videoRel, imageRel, source, gameplayFile };
   } catch (error) {
     await rm(target, { force: true });
+    await rm(resolve(outputRoot, imageRel), { force: true });
+    await releaseCircleSourceForUser(userId, source, root);
     throw error;
   }
-  return { videoRel, source, gameplayFile };
+}
+
+export class TelegramCircleSourceExhaustedError extends Error {}
+
+export function telegramCirclePosterRel(videoRel: string): string {
+  return String(videoRel).replace(/\.[^.]+$/, ".jpg");
+}
+
+export async function createTelegramCirclePoster(outputRoot: string, videoRel: string): Promise<string> {
+  const imageRel = telegramCirclePosterRel(videoRel);
+  const videoPath = resolve(outputRoot, videoRel);
+  const imagePath = resolve(outputRoot, imageRel);
+  await mkdir(dirname(imagePath), { recursive: true });
+  await pexec(
+    FFMPEG,
+    [
+      "-y",
+      "-hide_banner",
+      "-loglevel",
+      "error",
+      "-ss",
+      "1",
+      "-i",
+      videoPath,
+      "-frames:v",
+      "1",
+      "-q:v",
+      "3",
+      imagePath,
+    ],
+    { timeout: 60_000, maxBuffer: 2 * 1024 * 1024 },
+  );
+  return imageRel;
 }
 
 export async function buildTelegramCircleLibraryVideo(input: {
@@ -100,10 +150,12 @@ export async function buildTelegramCircleLibraryVideo(input: {
       music: "none",
       deck: input.deckId,
       videoRel: generated.videoRel,
-      imageRel: null,
+      imageRel: generated.imageRel,
     });
   } catch (error) {
     await rm(resolve(input.outputRoot, generated.videoRel), { force: true });
+    await rm(resolve(input.outputRoot, generated.imageRel), { force: true });
+    await releaseCircleSourceForUser(account.userId, generated.source, projectDir());
     throw error;
   }
 }

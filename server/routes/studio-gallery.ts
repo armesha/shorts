@@ -24,6 +24,7 @@ import { rememberOutputOwner } from "../infra/output-access.ts";
 import { uid } from "../infra/auth-session.ts";
 import type { RouteDeps, LimitedReplyish } from "./deps.ts";
 import { generateTelegramCircleVideo } from "../services/telegram-circle-video.ts";
+import { circleSourceStatsForUser } from "../services/circle-source-library.ts";
 import {
   activateCircleTemplate,
   CIRCLE_DECK_ID,
@@ -54,7 +55,7 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
       const s = libraryStats(d.id, used);
       const templates = d.liveVideo ? listCircleTemplates() : [null];
       const c = d.liveVideo
-        ? { total: 10, used: 0, available: 10 }
+        ? circleSourceStatsForUser(userId)
         : infinite ? infiniteCounts(s.total) : { total: s.total, used: s.used, available: s.available };
       return templates.map((template) => ({
         id: template ? `${CIRCLE_DECK_PREFIX}${template.id}` : d.id,
@@ -198,9 +199,10 @@ export function registerStudioGalleryRoutes(app: FastifyInstance, db: Db, deps: 
         videoCounter++;
         const stamp = `${Date.now()}-${videoCounter}`;
         const generated = await metrics.track("render", () => generateTelegramCircleVideo(OUTPUT_ROOT, stamp, uid(req)));
-        rememberOutputOwner([generated.videoRel], uid(req));
+        rememberOutputOwner([generated.videoRel, generated.imageRel], uid(req));
         return {
           videoUrl: `/files/${generated.videoRel}`,
+          imageUrl: `/files/${generated.imageRel}`,
           title: listCircleTemplates().find((template) => template.id === templateId)?.name || deck.name,
           text: "",
           chars: 0,

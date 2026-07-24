@@ -13,6 +13,7 @@ import { useT } from "../lib/i18n";
 import { AppIcon } from "../components/AppIcon";
 import { BrandIcon } from "../components/BrandIcon";
 import { langTag } from "../lib/deck";
+import { ToastStack, useToasts } from "../components/Toasts";
 import { useGenQueue } from "../lib/genQueue";
 
 type Props = {
@@ -109,10 +110,6 @@ function deckRunways(account: ChannelThemeBlockAccount): DeckRunway[] {
     .sort((a, b) => a.days - b.days || a.deck.name.localeCompare(b.deck.name));
 }
 
-function accountBottleneck(account: ChannelThemeBlockAccount): DeckRunway | null {
-  return deckRunways(account)[0] ?? null;
-}
-
 function blockBottleneck(block: ChannelThemeBlock): DeckRunway | null {
   return accountsInBlock(block)
     .flatMap((account) => deckRunways(account))
@@ -132,26 +129,6 @@ function accountTotalRunwayDays(account: ChannelThemeBlockAccount): number | nul
   if (account.effectiveRunwayDays !== undefined) return account.effectiveRunwayDays;
   const postsPerDay = account.enabled ? account.schedule.length : 0;
   return postsPerDay > 0 ? (account.effectiveQueued ?? account.queued) / postsPerDay : null;
-}
-
-function compactDeckList(decks: string[], max = 4): string {
-  const head = decks.slice(0, max);
-  const rest = decks.length - head.length;
-  return rest > 0 ? `${head.join(", ")} +${rest}` : head.join(", ");
-}
-
-function sourceGapTitle(account: ChannelThemeBlockAccount, t: ReturnType<typeof useT>["t"]): string {
-  const gaps = account.sourceGaps ?? [];
-  if (!gaps.length) return "";
-  const lines = gaps.slice(0, 6).map((gap) => {
-    const reason =
-      gap.reason === "no_free_cards"
-        ? ` · ${t("channelBlocks.sourceGapNoFree")}`
-        : ` · ${t("channelBlocks.sourceGapEmpty")}`;
-    return `${gap.deckName}: ${gap.queued} ${t("channelBlocks.inQueueShort")} · ${gap.postsPerDay} ${t("channelBlocks.perDayShort")}${reason}`;
-  });
-  if (gaps.length > lines.length) lines.push(`+${gaps.length - lines.length}`);
-  return t("channelBlocks.sourceGapWarning", { gaps: lines.join("; ") });
 }
 
 function languagePanelClass(count: number): string {
@@ -176,10 +153,13 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
   const [topUpShortages, setTopUpShortages] = useState<NormalizeShortage[]>([]);
   const [topUpPreviewBusy, setTopUpPreviewBusy] = useState(false);
   const [perDay, setPerDay] = useState(12);
+  const [selectedBlockKey, setSelectedBlockKey] = useState("");
   const [sourceWeights, setSourceWeights] = useState<Record<string, number>>({});
   const [busy, setBusy] = useState<BusyState>(null);
   const [publishingAll, setPublishingAll] = useState(false);
   const [notice, setNotice] = useState("");
+
+  const { toasts, push, dismiss } = useToasts();
 
   const load = () =>
     apiClient
@@ -207,7 +187,7 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
     loadOps();
   }, []);
 
-  const selectedBlock = data?.blocks[0] ?? null;
+  const selectedBlock = data?.blocks.find((block) => block.id === selectedBlockKey) ?? data?.blocks[0] ?? null;
   const selectedBlockId = selectedBlock?.id ?? null;
   const activeLanguageLabels = data?.languages.map((lang) => lang.label).join(", ") ?? "";
   useEffect(() => {
@@ -395,6 +375,22 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
     }
   }
 
+  async function deleteQueueVideo(videoId: number, _channelName?: string) {
+    setNotice("");
+    setErr("");
+    try {
+      await apiClient.deleteVideo(videoId);
+      push({
+        type: "success",
+        text: "Видео удалено из очереди.",
+      });
+      await load();
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      push({ type: "error", text: msg });
+    }
+  }
+
   return (
     <div className="space-y-5">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
@@ -436,6 +432,26 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
         </div>
       )}
 
+      {data && data.blocks.length > 1 && (
+        <nav className="flex flex-wrap gap-2 rounded-md border border-base-300 bg-base-100 p-2" aria-label={t("channelBlocks.blocks")}>
+          {data.blocks.map((block) => {
+            const active = block.id === selectedBlock?.id;
+            return (
+              <button
+                key={block.id}
+                type="button"
+                className={`btn btn-sm gap-2 ${active ? "btn-neutral" : "btn-ghost"}`}
+                onClick={() => setSelectedBlockKey(block.id)}
+              >
+                <span>{block.title}</span>
+                <span className={`badge badge-sm ${active ? "badge-ghost" : "badge-outline"}`}>{block.totalAccounts}</span>
+                <span className="text-xs opacity-65">{block.postsPerDay} · {t("channelBlocks.postsPerDayTotal")}</span>
+              </button>
+            );
+          })}
+        </nav>
+      )}
+
       {!data && !err && (
         <div className="flex items-center gap-2 text-base-content/60">
           <span className="loading loading-spinner loading-sm" />
@@ -465,9 +481,12 @@ export default function ChannelBlocks({ onShowClassic }: Props) {
             setSourceWeights={setSourceWeights}
             applySchedule={applySchedule}
             addBlockAccount={addBlockAccount}
+            onDeleteVideo={deleteQueueVideo}
           />
         </>
       )}
+
+      <ToastStack toasts={toasts} onDismiss={dismiss} placement="top-right" />
     </div>
   );
 }
@@ -553,6 +572,7 @@ function BlockDetail({
   setSourceWeights,
   applySchedule,
   addBlockAccount,
+  onDeleteVideo,
 }: {
   block: ChannelThemeBlock;
   languages: ChannelThemeBlocksResponse["languages"];
@@ -563,6 +583,7 @@ function BlockDetail({
   setSourceWeights: (value: Record<string, number>) => void;
   applySchedule: (block: ChannelThemeBlock) => Promise<void>;
   addBlockAccount: (block: ChannelThemeBlock, lang: string) => Promise<void>;
+  onDeleteVideo?: (videoId: number, channelName?: string) => Promise<void>;
 }) {
   const { t } = useT();
   const scheduleBusy = busy?.blockId === block.id && busy.kind === "schedule";
@@ -587,10 +608,10 @@ function BlockDetail({
       const bHasViews = bCell?.accounts.some((account) => account.views != null) ?? false;
       return Number(bHasViews) - Number(aHasViews) || bViews - aViews || a.label.localeCompare(b.label);
     });
-  const addableLangs = languages.filter((lang) => {
+  const addableLangs = block.allowAccountCreation ? languages.filter((lang) => {
     const cell = block.cells.find((candidate) => candidate.lang === lang.code);
     return (cell?.defaultSourceDecks.length ?? 0) > 0;
-  });
+  }) : [];
   // Default the picker to a language with no channel yet (the usual "add a new language" intent), then
   // fall back to the user's explicit pick, then to the first addable language.
   const defaultAddLang =
@@ -625,10 +646,6 @@ function BlockDetail({
         <MiniStat label={t("channelBlocks.postsPerDayTotal")} value={block.postsPerDay} />
       </div>
 
-      {block.sourceGroups.length > 1 && (
-        <SourceMixSettings block={block} sourceWeights={sourceWeights} setSourceWeights={setSourceWeights} />
-      )}
-
       <section className="rounded-md border border-base-300 bg-base-100 p-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -658,10 +675,17 @@ function BlockDetail({
             </div>
           </div>
         </div>
+        {block.id === "voiced_memes_ru" && block.sourceGroups.length === 2 && (
+          <MemeRatioSettings
+            block={block}
+            sourceWeights={sourceWeights}
+            setSourceWeights={setSourceWeights}
+          />
+        )}
       </section>
 
       {block.rules.length > 0 && (
-        <CollapsibleSection title={t("channelBlocks.blockRules")} meta={String(block.rules.length)}>
+        <CollapsibleSection storageKey={`channel-blocks:${block.id}:rules`} title={t("channelBlocks.blockRules")} meta={String(block.rules.length)}>
           <ul className="space-y-2 text-sm text-base-content/70">
             {block.rules.map((rule) => (
               <li key={rule} className="flex gap-2">
@@ -673,7 +697,7 @@ function BlockDetail({
         </CollapsibleSection>
       )}
 
-      <CollapsibleSection title={t("channelBlocks.blockDecks")} meta={String(decks.length)}>
+      <CollapsibleSection storageKey={`channel-blocks:${block.id}:decks`} title={t("channelBlocks.blockDecks")} meta={String(decks.length)}>
         <div className="flex flex-wrap gap-2">
           {decks.length === 0 ? (
             <span className="text-sm text-base-content/45">{t("channelBlocks.noDecks")}</span>
@@ -767,21 +791,122 @@ function BlockDetail({
           </div>
         )}
       </section>
+
+      {/* Общая очередь: агрегированный список видео из очередей всех каналов блока (armen). */}
+      <CollapsibleSection
+        storageKey={`channel-blocks:${block.id}:common-queue`}
+        title={t("channelBlocks.commonQueue")}
+        meta={String(block.videos?.length ?? 0)}
+      >
+        {(!block.videos || block.videos.length === 0) ? (
+          <div className="text-sm text-base-content/45">{t("channelBlocks.commonQueueEmpty")}</div>
+        ) : (
+          <div className="max-h-[580px] overflow-auto rounded-md border border-base-300 bg-base-100 p-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3">
+              {block.videos.map((v) => (
+                <div
+                  key={v.id}
+                  className="group relative flex flex-col overflow-hidden rounded-xl border border-base-300 bg-base-100 transition hover:border-primary/40 hover:shadow-sm"
+                >
+                  <div className="relative bg-base-200">
+                    {v.imageRel ? (
+                      <img
+                        src={`/files/${v.imageRel}`}
+                        alt=""
+                        className="block aspect-[3/4] w-full object-cover"
+                        loading="lazy"
+                      />
+                    ) : v.videoRel ? (
+                      <video
+                        src={`/files/${v.videoRel}`}
+                        className="block aspect-[3/4] w-full object-cover"
+                        muted
+                        playsInline
+                        preload="metadata"
+                      />
+                    ) : (
+                      <div className="aspect-[3/4] w-full bg-base-300" />
+                    )}
+
+                    {/* "НОВОЕ" badge like in the reference design */}
+                    <div className="absolute left-2 top-2 rounded bg-neutral-800/85 px-1.5 py-px text-[9px] font-bold tracking-wide text-white">
+                      НОВОЕ
+                    </div>
+
+                    {/* Delete button (red icon, top-right, matching the reference screenshot) */}
+                    <button
+                      type="button"
+                      className="absolute right-2 top-2 rounded-md bg-error p-2 text-white shadow-sm opacity-95 transition hover:opacity-100"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        void onDeleteVideo?.(v.id, v.channelName);
+                      }}
+                      title="Удалить из очереди (больше не попадёт в публикации)"
+                    >
+                      <AppIcon name="trash" size={18} />
+                    </button>
+                  </div>
+
+                  <div className="flex-1 space-y-0.5 p-2.5 text-xs">
+                    <div className="line-clamp-2 font-medium leading-tight" title={v.title}>
+                      {v.title || "—"}
+                    </div>
+                    <div className="flex items-center gap-1 text-[10px] text-base-content/60">
+                      <span className="badge badge-ghost badge-xs px-1 py-0">{langTag(v.channelLang)}</span>
+                      <span className="truncate" title={v.channelName}>{v.channelName}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        <div className="mt-1 text-[10px] text-base-content/40">
+          {t("channelBlocks.commonQueueHint")}
+        </div>
+      </CollapsibleSection>
     </>
   );
 }
 
 function CollapsibleSection({
+  storageKey,
   title,
   meta,
   children,
 }: {
+  storageKey: string;
   title: string;
   meta?: string;
   children: ReactNode;
 }) {
+  const readOpen = () => {
+    try {
+      return window.localStorage.getItem(storageKey) === "open";
+    } catch {
+      return false;
+    }
+  };
+  const [open, setOpen] = useState(readOpen);
+
+  useEffect(() => {
+    setOpen(readOpen());
+  }, [storageKey]);
+
   return (
-    <details className="rounded-md border border-base-300 bg-base-100">
+    <details
+      className="rounded-md border border-base-300 bg-base-100"
+      open={open}
+      onToggle={(event) => {
+        const next = event.currentTarget.open;
+        setOpen(next);
+        try {
+          window.localStorage.setItem(storageKey, next ? "open" : "closed");
+        } catch {
+          /* private mode */
+        }
+      }}
+    >
       <summary className="flex cursor-pointer select-none items-center justify-between gap-3 px-4 py-3 text-base font-semibold marker:text-base-content/35">
         <span>{title}</span>
         {meta && <span className="rounded border border-base-300 px-2 py-0.5 text-xs font-semibold text-base-content/55">{meta}</span>}
@@ -864,7 +989,7 @@ function OperationalSummary({ accounts, clients }: { accounts: OperationalAccoun
       </div>
 
       {multiKey && (
-        <CollapsibleSection title={t("accounts.byKeyTitle")} meta={String(keyTileCount)}>
+        <CollapsibleSection storageKey="channel-blocks:oauth-keys" title={t("accounts.byKeyTitle")} meta={String(keyTileCount)}>
           <div className="flex items-center gap-2 text-sm font-semibold text-base-content/70">
             <BrandIcon name="youtube" size={16} />
             {t("accounts.byKeyTitle")}
@@ -928,7 +1053,7 @@ function MiniStat({ label, value }: { label: string; value: ReactNode }) {
   );
 }
 
-function SourceMixSettings({
+function MemeRatioSettings({
   block,
   sourceWeights,
   setSourceWeights,
@@ -938,107 +1063,60 @@ function SourceMixSettings({
   setSourceWeights: (value: Record<string, number>) => void;
 }) {
   const { t } = useT();
-  const groups = block.sourceGroups;
-  const resolvedWeights = groups.map((group) => ({
-    ...group,
-    weight: Math.max(0, Math.min(20, Math.floor(Number(sourceWeights[group.id] ?? group.weight) || 0))),
-  }));
-  const total = resolvedWeights.reduce((sum, group) => sum + group.weight, 0);
-  const sections = Array.from(new Set(resolvedWeights.map((group) => group.section || "").filter(Boolean)));
-  const grouped =
-    sections.length > 0
-      ? sections.map((section) => ({ section, groups: resolvedWeights.filter((group) => group.section === section) }))
-      : [{ section: "", groups: resolvedWeights }];
+  const staticGroup = block.sourceGroups.find((group) => group.id === "static_memes");
+  const voicedGroup = block.sourceGroups.find((group) => group.id === "voiced_memes");
+  if (!staticGroup || !voicedGroup) return null;
+
+  const staticWeight = Math.max(0, Number(sourceWeights[staticGroup.id] ?? staticGroup.weight) || 0);
+  const voicedWeight = Math.max(0, Number(sourceWeights[voicedGroup.id] ?? voicedGroup.weight) || 0);
+  const total = staticWeight + voicedWeight;
+  const staticPercent = total > 0 ? Math.round((staticWeight / total) * 100) : 50;
+  const voicedPercent = 100 - staticPercent;
 
   return (
-    <section className="rounded-md border border-base-300 bg-base-100 p-4">
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
+    <div className="mt-4 border-t border-base-300 pt-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
           <h2 className="text-base font-semibold">{t("channelBlocks.sourceMix")}</h2>
-          <div className="text-xs font-semibold uppercase tracking-wide text-base-content/45">
-            {t("channelBlocks.sourceRatio")} · {total}
-          </div>
+          <p className="mt-1 text-xs text-base-content/55">{t("channelBlocks.memeMixHint")}</p>
         </div>
-        <div className="grid gap-3">
-          {grouped.map((section) => (
-            <div key={section.section || "default"} className={sourceMixSectionClass(section.section)}>
-              <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-                <div className="text-xs font-bold uppercase tracking-wide text-base-content/70">
-                  {section.section || t("channelBlocks.sourceMix")}
-                </div>
-                <div className="text-xs font-semibold text-base-content/45">
-                  {total > 0
-                    ? `${Math.round((section.groups.reduce((sum, group) => sum + group.weight, 0) / total) * 100)}%`
-                    : "0%"}
-                </div>
-              </div>
-              <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-                {section.groups.map((group) => {
-                  const share = total > 0 ? Math.round((group.weight / total) * 100) : 0;
-                  return (
-                    <label key={group.id} className="form-control min-w-0">
-                      <span className="label py-1 pr-0">
-                        <span className="label-text truncate text-xs font-semibold uppercase tracking-wide text-base-content/60" title={group.title}>
-                          {group.title}
-                        </span>
-                        <span className="label-text-alt whitespace-nowrap text-xs text-base-content/45">
-                          {share}%
-                        </span>
-                      </span>
-                      <input
-                        type="number"
-                        min={0}
-                        max={20}
-                        className="input input-bordered input-sm w-full"
-                        value={group.weight}
-                        aria-label={t("channelBlocks.sourceWeight", { name: group.title })}
-                        onChange={(e) =>
-                          setSourceWeights({
-                            ...sourceWeights,
-                            [group.id]: Math.max(0, Math.min(20, Number(e.target.value) || 0)),
-                          })
-                        }
-                      />
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+        <div className="flex items-center gap-2 text-sm font-semibold">
+          <span>{staticGroup.title} {staticPercent}%</span>
+          <span className="text-base-content/35">/</span>
+          <span>{voicedGroup.title} {voicedPercent}%</span>
         </div>
       </div>
-    </section>
+      <input
+        type="range"
+        min={0}
+        max={100}
+        step={5}
+        className="range range-sm mt-4"
+        value={staticPercent}
+        aria-label={t("channelBlocks.sourceRatio")}
+        onChange={(event) => {
+          const nextStaticPercent = Math.max(0, Math.min(100, Number(event.target.value) || 0));
+          setSourceWeights({
+            ...sourceWeights,
+            [staticGroup.id]: nextStaticPercent / 5,
+            [voicedGroup.id]: (100 - nextStaticPercent) / 5,
+          });
+        }}
+      />
+      <div className="mt-1 flex justify-between text-[11px] text-base-content/45">
+        <span>100% {voicedGroup.title}</span>
+        <span>50 / 50</span>
+        <span>100% {staticGroup.title}</span>
+      </div>
+    </div>
   );
 }
 
-function sourceMixSectionClass(section: string): string {
-  const base = "rounded-md border bg-base-100 p-3";
-  if (section === "Ислам") return `${base} border-emerald-200 border-l-4 border-l-emerald-500 bg-emerald-50/45`;
-  if (section === "Христианство") return `${base} border-sky-200 border-l-4 border-l-sky-500 bg-sky-50/45`;
-  if (section === "Общее") return `${base} border-amber-200 border-l-4 border-l-amber-500 bg-amber-50/45`;
-  return `${base} border-base-300`;
-}
+
 
 function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: ReturnType<typeof useT>["t"] }) {
-  const bottleneck = accountBottleneck(account);
   const totalRunwayDays = accountTotalRunwayDays(account);
   const readyVideos = account.effectiveQueued ?? account.queued;
-  const gapTitle = sourceGapTitle(account, t);
-  const missingScheduledDeck = bottleneck && bottleneck.postsPerDay > 0 && bottleneck.queued <= 0 ? bottleneck : null;
-  const depletedSources = account.sourceDecks.filter((deck) => deck.available <= 0 && deck.queued > 0);
-  const missingTitle = missingScheduledDeck
-    ? t("channelBlocks.sourceMissingWarning", {
-        deck: deckDisplayName(missingScheduledDeck.deck),
-        queued: missingScheduledDeck.queued,
-        perDay: missingScheduledDeck.postsPerDay,
-      })
-    : "";
-  const depletedTitle = depletedSources.length
-    ? t("channelBlocks.sourceDepletedWarning", {
-        decks: compactDeckList(depletedSources.map(deckDisplayName)),
-      })
-    : "";
-  const warningTitle = [gapTitle, missingTitle, depletedTitle].filter(Boolean).join("\n");
   const youtubeUrl = account.ytChannelId ? `https://www.youtube.com/channel/${account.ytChannelId}` : null;
   const avatar = account.avatar ? (
     <img src={account.avatar} alt="" className="h-8 w-8 rounded-md border border-base-300 object-cover" loading="lazy" />
@@ -1086,14 +1164,7 @@ function ChannelCell({ account, t }: { account: ChannelThemeBlockAccount; t: Ret
       <div className="pointer-events-none relative z-10 mt-2 block rounded bg-base-200/70 px-2 py-1.5">
         <div className="flex items-baseline justify-between gap-2">
           <span className="text-[11px] font-semibold uppercase tracking-wide text-base-content/45">{t("channelBlocks.videosLeft")}</span>
-          <span className="flex items-center gap-1 text-sm font-bold">
-            {readyVideos}
-            {warningTitle && (
-              <span className="pointer-events-auto text-warning" title={warningTitle} aria-label={warningTitle}>
-                <AppIcon name="warning" size={13} />
-              </span>
-            )}
-          </span>
+          <span className="text-sm font-bold">{readyVideos}</span>
         </div>
         <div className="mt-1 text-[11px] text-base-content/55">
           {totalRunwayDays == null ? t("channelBlocks.bottleneckNone") : `${formatRunwayDays(totalRunwayDays)} ${t("channelBlocks.runwayDays")}`}

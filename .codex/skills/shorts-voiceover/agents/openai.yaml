@@ -1,0 +1,4 @@
+interface:
+  display_name: "Озвучка мемных Shorts"
+  short_description: "Актёрская ИИ-озвучка и сборка мемных Shorts"
+  default_prompt: "Используй $shorts-voiceover, чтобы проанализировать мем и собрать выразительный Shorts с подходящей озвучкой."

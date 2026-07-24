@@ -30,6 +30,7 @@
     "0381": "visible homophobic slur in account name"
   },
   "borderline": {
+    "2619": "coarse sexualized body wording",
     "0000": "mild self-directed insult",
     "0001": "profanity and repeated death reference",
     "0002": "profanity in an escapist statement",
@@ -73,7 +74,56 @@
     "0355": "strong conversational profanity",
     "0361": "profanity and surveillance paranoia",
     "0363": "person visibly wearing revealing underwear",
-    "0375": "dark self-deprecating profanity",
-    "2619": "coarse sexualized body wording"
+    "0375": "dark self-deprecating profanity"
+  },
+  "userRemoved": {
+    "0054": {
+      "removedAt": "2026-07-12T20:35:00.729Z",
+      "reason": "Удалено владельцем из Нарезок"
+    },
+    "0047": {
+      "removedAt": "2026-07-12T20:35:06.828Z",
+      "reason": "Удалено владельцем из Нарезок"
+    },
+    "0192": {
+      "removedAt": "2026-07-12T22:39:53.082Z",
+      "reason": "Удалено владельцем из Нарезок"
+    },
+    "0184": {
+      "removedAt": "2026-07-12T22:40:53.628Z",
+      "reason": "Удалено владельцем из Нарезок"
+    },
+    "0181": {
+      "removedAt": "2026-07-12T22:41:03.708Z",
+      "reason": "Удалено владельцем из Нарезок"
+    },
+    "0174": {
+      "removedAt": "2026-07-12T22:41:57.435Z",
+      "reason": "Удалено владельцем из Нарезок"
+    },
+    "0136": {
+      "removedAt": "2026-07-12T22:42:13.678Z",
+      "reason": "Удалено владельцем из Нарезок"
+    },
+    "0065": {
+      "removedAt": "2026-07-12T22:43:54.914Z",
+      "reason": "Удалено владельцем из Нарезок"
+    },
+    "0081": {
+      "removedAt": "2026-07-12T22:45:33.180Z",
+      "reason": "Удалено владельцем из Нарезок"
+    },
+    "0049": {
+      "removedAt": "2026-07-12T22:46:30.087Z",
+      "reason": "Удалено владельцем из Нарезок"
+    },
+    "0044": {
+      "removedAt": "2026-07-12T22:46:35.294Z",
+      "reason": "Удалено владельцем из Нарезок"
+    },
+    "0389": {
+      "removedAt": "2026-07-13T19:52:22.168Z",
+      "reason": "Удалено владельцем из Нарезок"
+    }
   }
 }

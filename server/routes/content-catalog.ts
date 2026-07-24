@@ -12,6 +12,7 @@ import { INFINITE_PACKS_FEATURE, infiniteCounts } from "../services/infinite-pac
 import { createDeckAvailabilityContext } from "../services/deck-availability.ts";
 import { cachedRead } from "../services/read-cache.ts";
 import { filterGloballyVisibleCustomPacks } from "../services/global-pack-visibility.ts";
+import { circleSourceStatsForUser } from "../services/circle-source-library.ts";
 
 type CatalogKind = "builtin" | "custom_pack" | "manual" | "clip_demo";
 
@@ -104,14 +105,15 @@ export function registerContentCatalogRoutes(app: FastifyInstance, db: Db, deps:
     for (const deck of visibleDecks) {
       const stats = libraryStats(deck.id, usedKeys);
       const counts = infinite ? infiniteCounts(stats.total) : stats;
+      const circleStats = deck.liveVideo ? circleSourceStatsForUser(userId) : null;
       const demo = demos.get(deck.id);
       items.push({
         id: deck.id,
         kind: "builtin",
         title: deck.name,
         lang: deckLang(deck.id) || null,
-        total: counts.total,
-        available: availability.get(deck.id) ?? counts.available,
+        total: circleStats?.total ?? counts.total,
+        available: circleStats?.available ?? availability.get(deck.id) ?? counts.available,
         queued: queued.get(deck.id) ?? 0,
         demoCount: demo?.count ?? 0,
         usedByAccounts: accountsUsingDeck(accounts, deps, deck.id),

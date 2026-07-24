@@ -6,6 +6,8 @@ import { getPack } from "../../src/packs/store.ts";
 import { packCardKey } from "./pack-gen.ts";
 import { INFINITE_PACKS_FEATURE } from "./infinite-packs.ts";
 import { isForbiddenSuperAdminSourceDeck } from "./super-admin-optical-decks.ts";
+import { isCircleDeckId } from "./circle-templates.ts";
+import { circleSourceStatsForUser } from "./circle-source-library.ts";
 
 export type DeckAvailabilityContext = {
   ownerSuperAdmin: Map<number, boolean>;
@@ -174,9 +176,14 @@ export function availableUnusedByDeck(
   const out = new Map<string, number>();
   if (!clean.length) return out;
 
-  const builtinIds = clean.filter((deckId) => !isPackDeckId(deckId));
+  const circleIds = clean.filter(isCircleDeckId);
+  const builtinIds = clean.filter((deckId) => !isPackDeckId(deckId) && !isCircleDeckId(deckId));
   const packIds = clean.filter((deckId) => isPackDeckId(deckId));
   for (const [deckId, available] of builtinAvailableByDeck(db, ownerId, builtinIds, ctx)) out.set(deckId, available);
+  if (circleIds.length) {
+    const available = circleSourceStatsForUser(ownerId).available;
+    for (const deckId of circleIds) out.set(deckId, available);
+  }
   for (const deckId of packIds) out.set(deckId, packAvailableForDeck(db, ownerId, deckId, ctx));
   return out;
 }
@@ -189,9 +196,11 @@ export function availableUnusedForDecks(
 ): number {
   const clean = cleanDeckIds(db, ownerId, deckIds, ctx);
   if (!clean.length) return 0;
-  const builtinIds = clean.filter((deckId) => !isPackDeckId(deckId));
+  const circleIds = clean.filter(isCircleDeckId);
+  const builtinIds = clean.filter((deckId) => !isPackDeckId(deckId) && !isCircleDeckId(deckId));
   const packIds = clean.filter((deckId) => isPackDeckId(deckId));
   let total = builtinAvailableForDecks(db, ownerId, builtinIds, ctx);
+  if (circleIds.length) total += circleSourceStatsForUser(ownerId).available;
   for (const deckId of packIds) total += packAvailableForDeck(db, ownerId, deckId, ctx);
   return total;
 }

@@ -106,17 +106,6 @@ for (const account of accounts) {
     });
   }
 
-  if (!sourceDecks.includes(String(account.lang || ""))) {
-    issues.push({
-      accountId: account.id,
-      channelName,
-      block: block.id,
-      issue: "primary_lang_not_in_sources",
-      lang: account.lang,
-      sourceDecks,
-    });
-  }
-
   for (const [time, deckIdRaw] of Object.entries(slotDecks)) {
     const deckId = String(deckIdRaw || "");
     if (!deckId || sourceDecks.includes(deckId)) continue;
