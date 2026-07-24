@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { SUPER_ADMIN_USERNAME } from "../auth.ts";
 import { openDb } from "../db.ts";
 import { makeDeckAccess } from "../services/deck-access.ts";
+import { CIRCLE_DECK_ID, circleTemplateDeckId } from "../services/circle-templates.ts";
 import { MANUAL_VIDEO_DECK } from "../services/manual-videos.ts";
 import { canPostVideoDeckForAccount, canPrepareLibraryForAccount, visibleLibraryDeckIds } from "./videos.ts";
 
@@ -65,15 +66,27 @@ test("video library visibility excludes globally hidden unused pack rows", () =>
       videoRel: "library/visible.mp4",
       imageRel: "library/visible.png",
     });
+    const circle = db.createVideo({
+      accountId: account.id,
+      title: "Circle",
+      text: "Circle",
+      bg: "",
+      music: "",
+      deck: circleTemplateDeckId("test-template"),
+      videoRel: "library/circle.mp4",
+      imageRel: null,
+    });
 
     const deckIds = visibleLibraryDeckIds(db);
 
     assert.equal(deckIds.has(MANUAL_VIDEO_DECK), true);
+    assert.equal(deckIds.has(CIRCLE_DECK_ID), true);
+    assert.equal(deckIds.has(circleTemplateDeckId("test-template")), true);
     assert.equal(deckIds.has("ru"), true);
     assert.equal(deckIds.has("fact-en"), false);
     assert.deepEqual(
       db.listVideos(account.id).filter((video) => deckIds.has(video.deck)).map((video) => video.id),
-      [visible.id],
+      [circle.id, visible.id],
     );
     assert.equal(db.listVideos(account.id).some((video) => video.id === hidden.id), true);
   } finally {

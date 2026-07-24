@@ -47,6 +47,7 @@ import { uid } from "../infra/auth-session.ts";
 import { isSuperAdminUser } from "../auth.ts";
 import { INFINITE_PACKS_FEATURE } from "../services/infinite-packs.ts";
 import { queuedRemainingForAccount as genQueuedRemainingForAccount } from "../services/gen-queue.ts";
+import { CIRCLE_DECK_ID, isCircleDeckId } from "../services/circle-templates.ts";
 import {
   filterGloballyVisibleBuiltInDecks,
   filterGloballyVisibleCustomPacks,
@@ -83,6 +84,8 @@ export function visibleLibraryDeckIds(db: Db): Set<string> {
   return cachedRead("visible-library-deck-ids", 30_000, () =>
     new Set([
       MANUAL_VIDEO_DECK,
+      CIRCLE_DECK_ID,
+      ...db.videoCountsByAccount().map((row) => row.deck).filter(isCircleDeckId),
       ...filterGloballyVisibleBuiltInDecks(db, DECKS).map((deck) => deck.id),
       ...filterGloballyVisibleCustomPacks(db, listPackVisibilitySummaries()).map((pack) => `pack:${pack.id}`),
     ]),
