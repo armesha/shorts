@@ -10,14 +10,12 @@ import {
   planChannelBlockNormalize,
   normalizeSourceWeightSettings,
   sourceGapsForScheduledDecks,
-  thematicBlockDeckSequenceForGeneration,
   thematicBlockSlotDecksForAccount,
   visibleLanguageDefsForAccounts,
 } from "./super-admin-channel-blocks.ts";
 import { openDb } from "../db.ts";
 
 const FOREIGN_EN_SOURCES = [
-  "en",
   "pack:new-memes-en-superadmin",
 ];
 
@@ -141,37 +139,21 @@ test("RU meme slider weights immediately produce a matching slot mix", () => {
   assert.equal(Object.values(slots).filter((deck) => deck === "voiced-memes-ru").length, 1);
 });
 
-test("thematic block generation keeps source mix stable but varies order per channel", () => {
-  const dbMock = db();
-  const depsMock = deps();
-  const first = thematicBlockDeckSequenceForGeneration(dbMock, depsMock, 1, account(101), FOREIGN_EN_SOURCES, 12);
-  const second = thematicBlockDeckSequenceForGeneration(dbMock, depsMock, 1, account(202), FOREIGN_EN_SOURCES, 12);
-
-  assert.ok(first);
-  assert.ok(second);
-  assert.equal(first.length, 12);
-  assert.equal(second.length, 12);
-  const allowed = new Set(FOREIGN_EN_SOURCES);
-  assert.ok(first.every((deckId) => allowed.has(deckId)));
-  assert.ok(second.every((deckId) => allowed.has(deckId)));
-  assert.notDeepEqual(first, second);
-});
-
-test("single block has localized joke and meme sources and retires armen's fact, quote and psychology videos", () => {
+test("static meme block exposes only the current localized meme pack", () => {
   const dbMock = db();
   const expected: Record<string, string[]> = {
-    ar: ["ar", "pack:new-memes-ar-superadmin"],
-    ru: ["ru", "pack:new-memes-ru-superadmin"],
-    en: ["en", "pack:new-memes-en-superadmin"],
-    de: ["de", "pack:new-memes-de-superadmin"],
-    it: ["it", "pack:new-memes-it-superadmin"],
-    es: ["pack:chistes-es-public-domain", "pack:new-memes-es-superadmin"],
-    pl: ["pack:dowcipy-pl-mit", "pack:new-memes-pl-superadmin"],
-    fr: ["fr", "pack:new-memes-fr-superadmin"],
-    pt: ["pt", "pack:new-memes-pt-superadmin"],
-    ro: ["ro", "pack:new-memes-ro-superadmin"],
-    cs: ["cs", "pack:new-memes-cs-superadmin"],
-    nl: ["nl", "pack:new-memes-nl-superadmin"],
+    ar: ["pack:new-memes-ar-superadmin"],
+    ru: ["pack:new-memes-ru-superadmin"],
+    en: ["pack:new-memes-en-superadmin"],
+    de: ["pack:new-memes-de-superadmin"],
+    it: ["pack:new-memes-it-superadmin"],
+    es: ["pack:new-memes-es-superadmin"],
+    pl: ["pack:new-memes-pl-superadmin"],
+    fr: ["pack:new-memes-fr-superadmin"],
+    pt: ["pack:new-memes-pt-superadmin"],
+    ro: ["pack:new-memes-ro-superadmin"],
+    cs: ["pack:new-memes-cs-superadmin"],
+    nl: ["pack:new-memes-nl-superadmin"],
   };
   for (const [lang, sources] of Object.entries(expected)) {
     assert.deepEqual(blockDefaultSourcesForDb(dbMock, "quotes", lang), sources);
@@ -180,54 +162,10 @@ test("single block has localized joke and meme sources and retires armen's fact,
   assert.deepEqual(blockDefaultSourcesForDb(dbMock, "religion", "ar"), expected.ar);
   assert.deepEqual(blockDefaultSourcesForDb(dbMock, "islam", "ar"), expected.ar);
   assert.deepEqual(blockDefaultSourcesForDb(dbMock, "christianity", "en"), expected.en);
+  assert.ok(blockDefaultSourcesForDb(dbMock, "religion", "ar").every((source) => !source.includes("islam")));
+  assert.ok(blockDefaultSourcesForDb(dbMock, "christianity", "en").every((source) => !source.includes("christian")));
   assert.equal(BLOCKS.some((block) => block.id === "russian"), false);
   assert.equal(BLOCKS.some((block) => block.id === "religion"), false);
-});
-
-test("legacy religion aliases do not expose religious sources", () => {
-  const dbMock = db();
-
-  const sources = blockDefaultSourcesForDb(dbMock, "religion", "ar");
-  assert.deepEqual(blockDefaultSourcesForDb(dbMock, "islam", "ar"), sources);
-  assert.deepEqual(sources, ["ar", "pack:new-memes-ar-superadmin"]);
-  assert.equal(sources.includes("islamic"), false);
-  assert.equal(sources.includes("islamic-quotes-ar"), false);
-  assert.equal(sources.includes("islamic-facts-ar"), false);
-  assert.equal(blockDefaultSourcesForDb(dbMock, "christianity", "en").includes("christian"), false);
-  assert.equal(blockDefaultSourcesForDb(dbMock, "christianity", "en").includes("prayers-en"), false);
-});
-
-test("thematic block generation skips exhausted sources and retired packs", () => {
-  const sources = [...FOREIGN_EN_SOURCES, "visual-riddles-en", "illusions-en", "pack:motivation-en-superadmin"];
-  const acc = { ...account(303), sourceDecks: sources };
-  const sequence = thematicBlockDeckSequenceForGeneration(
-    db(),
-    deps({ "illusions-en": 0 }),
-    1,
-    acc,
-    sources,
-    20,
-  );
-
-  assert.ok(sequence);
-  assert.equal(sequence.length, 20);
-  assert.ok(!sequence.includes("visual-riddles-en"));
-  assert.ok(!sequence.includes("illusions-en"));
-  assert.ok(!sequence.includes("pack:motivation-en-superadmin"));
-  assert.ok(sequence.every((deckId) => FOREIGN_EN_SOURCES.includes(deckId)));
-});
-
-test("thematic block schedule falls back when one source has no ready or free cards", () => {
-  const acc = {
-    ...account(313),
-    schedule: ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00"],
-  };
-  const slotDecks = thematicBlockSlotDecksForAccount(db(), deps({ en: 0 }), acc, acc.schedule, FOREIGN_EN_SOURCES);
-
-  assert.ok(slotDecks);
-  assert.equal(Object.keys(slotDecks).length, acc.schedule.length);
-  assert.ok(!Object.values(slotDecks).includes("en"));
-  assert.ok(Object.values(slotDecks).every((deckId) => FOREIGN_EN_SOURCES.includes(deckId)));
 });
 
 test("block top-up redistributes missing videos away from a depleted source", () => {
@@ -376,10 +314,10 @@ test("prepared block languages are addable before a first channel exists", () =>
   assert.ok(langs.includes("nl"));
   assert.ok(!langs.includes("hi"));
   assert.ok(!langs.includes("id"));
-  assert.deepEqual(blockDefaultSourcesForDb(db(), "quotes", "pl"), ["pack:dowcipy-pl-mit", "pack:new-memes-pl-superadmin"]);
-  assert.deepEqual(blockDefaultSourcesForDb(db(), "quotes", "ro"), ["ro", "pack:new-memes-ro-superadmin"]);
-  assert.deepEqual(blockDefaultSourcesForDb(db(), "quotes", "cs"), ["cs", "pack:new-memes-cs-superadmin"]);
-  assert.deepEqual(blockDefaultSourcesForDb(db(), "quotes", "nl"), ["nl", "pack:new-memes-nl-superadmin"]);
+  assert.deepEqual(blockDefaultSourcesForDb(db(), "quotes", "pl"), ["pack:new-memes-pl-superadmin"]);
+  assert.deepEqual(blockDefaultSourcesForDb(db(), "quotes", "ro"), ["pack:new-memes-ro-superadmin"]);
+  assert.deepEqual(blockDefaultSourcesForDb(db(), "quotes", "cs"), ["pack:new-memes-cs-superadmin"]);
+  assert.deepEqual(blockDefaultSourcesForDb(db(), "quotes", "nl"), ["pack:new-memes-nl-superadmin"]);
 });
 
 test("source weight settings are canonicalized and stale groups are pruned", () => {
@@ -437,16 +375,7 @@ test("source weight settings are canonicalized and stale groups are pruned", () 
   normalizeSourceWeightSettings(dbStore);
 
   const normalized = JSON.parse(dbStore.getSetting("superAdmin.channelBlock.quotes.sourceWeights") ?? "{}") as Record<string, number>;
-  assert.equal(Object.prototype.hasOwnProperty.call(normalized, "static_facts"), false);
-  assert.equal(Object.prototype.hasOwnProperty.call(normalized, "fact_video"), false);
-  assert.equal(Object.prototype.hasOwnProperty.call(normalized, "video_quotes"), false);
-  assert.equal(Object.prototype.hasOwnProperty.call(normalized, "static_quotes"), false);
-  assert.equal(normalized.jokes, 6);
-  assert.equal(normalized.memes, 2);
-  assert.equal(Object.prototype.hasOwnProperty.call(normalized, "psychology"), false);
-  assert.equal(Object.prototype.hasOwnProperty.call(normalized, "motivation"), false);
-  assert.equal(Object.prototype.hasOwnProperty.call(normalized, "visual_riddles"), false);
-  assert.equal(Object.prototype.hasOwnProperty.call(normalized, "mind_flip"), false);
+  assert.deepEqual(normalized, { memes: 2 });
   assert.equal(dbStore.getSetting("superAdmin.channelBlock.religion.sourceWeights"), null);
   assert.equal(dbStore.getSetting("superAdmin.channelBlock.jokes_memes.sourceWeights"), null);
   assert.equal(dbStore.getSetting("superAdmin.channelBlock.riddles_illusions.sourceWeights"), null);
