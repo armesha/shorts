@@ -1,9 +1,9 @@
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { createReadStream, createWriteStream, existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, extname, resolve } from "node:path";
-import { Readable } from "node:stream";
+import { Readable, Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import ffmpegPath from "ffmpeg-static";
@@ -28,6 +28,7 @@ import {
 type Layout = CircleLayout;
 
 const VIDEO_EXT = new Set([".mp4", ".mov", ".mkv", ".webm", ".m4v"]);
+const MAX_CIRCLE_UPLOAD_BYTES = 500 * 1024 * 1024;
 const packagedFfmpeg = ffmpegPath as unknown as string | null;
 const ffmpeg = packagedFfmpeg && existsSync(packagedFfmpeg)
   ? packagedFfmpeg
@@ -149,6 +150,33 @@ function listVideos(dir: string): string[] {
     .filter((entry) => entry.isFile() && VIDEO_EXT.has(extname(entry.name).toLowerCase()))
     .map((entry) => entry.name)
     .sort((a, b) => a.localeCompare(b, "ru-RU"));
+}
+
+function uploadedCircleName(sourceName: string): string {
+  const extension = extname(sourceName).toLowerCase();
+  if (!VIDEO_EXT.has(extension)) {
+    throw new Error("Поддерживаются MP4, MOV, WebM, MKV и M4V.");
+  }
+  const stem = basename(sourceName, extname(sourceName))
+    .normalize("NFKC")
+    .replace(/[^\p{L}\p{N}._-]+/gu, "-")
+    .replace(/^[._-]+|[._-]+$/g, "")
+    .slice(0, 80) || "telegram-circle";
+  return `${stem}-${Date.now()}-${randomUUID().slice(0, 8)}${extension}`;
+}
+
+function uploadSizeGuard(maxBytes: number): Transform {
+  let received = 0;
+  return new Transform({
+    transform(chunk: Buffer, _encoding, callback) {
+      received += chunk.length;
+      if (received > maxBytes) {
+        callback(new Error("Файл кружка превышает лимит 500 МБ."));
+        return;
+      }
+      callback(null, chunk);
+    },
+  });
 }
 
 function mediaPath(kind: string, name: string): string | null {
@@ -390,6 +418,54 @@ export function registerCircleEditorRoutes(app: FastifyInstance, db: Db): void {
     const path = mediaPath(kind, file);
     if (!path) return reply.code(404).send({ error: "Файл не найден" });
     return streamMedia(req, reply, path);
+  });
+
+  app.post("/api/circle-editor/sources/upload", { bodyLimit: Number.MAX_SAFE_INTEGER }, async (req, reply) => {
+    if (!requireAdmin(req, reply, db)) return;
+    const sourceName = String((req.query as { filename?: unknown } | undefined)?.filename || "").trim();
+    if (!sourceName) return reply.code(400).send({ error: "Не указано имя видеофайла." });
+    if (!(req.body instanceof Readable)) return reply.code(400).send({ error: "Видеофайл не получен." });
+
+    let storedName: string;
+    try {
+      storedName = uploadedCircleName(sourceName);
+    } catch (error) {
+      return reply.code(400).send({ error: error instanceof Error ? error.message : String(error) });
+    }
+
+    const contentLength = Number(req.headers["content-length"] || 0);
+    if (Number.isFinite(contentLength) && contentLength > MAX_CIRCLE_UPLOAD_BYTES) {
+      return reply.code(413).send({ error: "Файл кружка превышает лимит 500 МБ." });
+    }
+
+    const uploadDir = resolve(projectDir(), "downloads", ".uploads");
+    const temporary = resolve(uploadDir, `${randomUUID()}.upload`);
+    const target = resolve(projectDir(), "downloads", storedName);
+    await mkdir(uploadDir, { recursive: true });
+    try {
+      await pipeline(req.body, uploadSizeGuard(MAX_CIRCLE_UPLOAD_BYTES), createWriteStream(temporary, { flags: "wx" }));
+      if (!existsSync(temporary) || statSync(temporary).size === 0) {
+        return reply.code(400).send({ error: "Загружен пустой видеофайл." });
+      }
+      await run(ffmpeg, [
+        "-hide_banner", "-loglevel", "error", "-i", temporary,
+        "-map", "0:v:0", "-frames:v", "1", "-f", "null", "-",
+      ], projectDir());
+      await rename(temporary, target);
+      return {
+        source: storedName,
+        sources: listVideos(resolve(projectDir(), "downloads")),
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return reply.code(message.includes("500 МБ") ? 413 : 400).send({
+        error: message.includes("500 МБ")
+          ? message
+          : "Не удалось прочитать видео. Загрузите исправный MP4, MOV, WebM, MKV или M4V.",
+      });
+    } finally {
+      await rm(temporary, { force: true });
+    }
   });
 
   app.get("/api/circle-editor/banner-preview.png", async (req, reply) => {

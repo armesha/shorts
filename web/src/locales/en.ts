@@ -54,6 +54,8 @@ export const en: Record<string, string> = {
   "nav.packs": "Packs",
   "nav.longVideos": "Long videos",
   "nav.templates": "Templates",
+  "nav.circles": "Circles",
+  "nav.banners": "Banners",
   "nav.history": "History",
   "nav.statistics": "Statistics",
   "nav.limits": "Limits",

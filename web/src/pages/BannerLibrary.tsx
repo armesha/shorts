@@ -216,7 +216,7 @@ export default function BannerLibrary() {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link to="/editor" className="btn btn-outline btn-sm">Открыть редактор</Link>
+          <Link to="/admin/circles" className="btn btn-outline btn-sm">Открыть кружочки</Link>
           <button className="btn btn-primary btn-sm gap-2" onClick={startNew}>
             <Plus size={16} /> Новый баннер
           </button>

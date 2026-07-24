@@ -27,10 +27,9 @@ const Settings = lazy(pageLoaders.settings);
 const Users = lazy(pageLoaders.users);
 const ClipDemos = lazy(pageLoaders.clipDemos);
 const Examples = lazy(pageLoaders.examples);
-const AudioLab = lazy(pageLoaders.audioLab);
 const LongVideos = lazy(pageLoaders.longVideos);
-const Limits = lazy(pageLoaders.limits);
 const TemplateEditor = lazy(pageLoaders.templateEditor);
+const CircleEditor = lazy(pageLoaders.circleEditor);
 const BannerLibrary = lazy(pageLoaders.bannerLibrary);
 const Login = lazy(pageLoaders.login);
 const Register = lazy(pageLoaders.register);
@@ -90,9 +89,9 @@ function Gate() {
             <Route path="/admin/analytics" element={<Navigate to="/statistics" replace />} />
             <Route path="/clip-demos" element={<ClipDemos />} />
             <Route path="/examples" element={user.isSuperAdmin ? <Examples /> : <Navigate to="/channels" replace />} />
-            <Route path="/audio/*" element={user.isSuperAdmin ? <AudioLab /> : <Navigate to="/channels" replace />} />
+            <Route path="/audio/*" element={<Navigate to="/channels" replace />} />
             <Route path="/long-videos" element={<LongVideos />} />
-            <Route path="/limits" element={realAdmin ? <Limits /> : <Navigate to="/channels" replace />} />
+            <Route path="/limits" element={<Navigate to="/channels" replace />} />
             <Route path="/creator" element={<CreatorExternalRedirect />} />
             <Route path="/register" element={<Navigate to="/channels" replace />} />
             <Route path="/login" element={defaultRoute} />
@@ -100,7 +99,9 @@ function Gate() {
             <Route path="/system" element={<System />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/editor" element={<TemplateEditor />} />
-            <Route path="/banners" element={realAdmin ? <BannerLibrary /> : <Navigate to="/library" replace />} />
+            <Route path="/admin/circles" element={realAdmin ? <CircleEditor /> : <Navigate to="/library" replace />} />
+            <Route path="/admin/banners" element={realAdmin ? <BannerLibrary /> : <Navigate to="/library" replace />} />
+            <Route path="/banners" element={realAdmin ? <Navigate to="/admin/banners" replace /> : <Navigate to="/library" replace />} />
             <Route path="/users" element={realAdmin ? <Users /> : <Navigate to="/statistics" replace />} />
             <Route path="*" element={defaultRoute} />
           </Routes>

@@ -40,7 +40,6 @@ export const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
     labelKey: "layout.groupContent",
     items: [
       { to: "/library", labelKey: "nav.library", icon: "library", end: false },
-      { to: "/audio", labelKey: "nav.audio", icon: "music", end: false, superOnly: true, adminBadge: true },
       { to: "/memes", labelKey: "nav.memoteka", icon: "globe", end: false, armenOnly: true, external: true, adminBadge: true },
       // Карточки, длинные видео, галерея и редактор шаблонов остаются рабочими внутренними
       // экранами, но не занимают отдельные пункты бокового меню: вход к ним теперь из «Библиотеки».
@@ -50,7 +49,6 @@ export const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
     labelKey: "layout.groupControl",
     items: [
       { to: "/statistics", labelKey: "nav.statistics", icon: "analytics", end: false },
-      { to: "/limits", labelKey: "nav.limits", icon: "limits", end: false, adminOnly: true, adminBadge: true },
       { to: "/notifications", labelKey: "nav.notifications", icon: "notifications", end: false, adminOnly: true, adminBadge: true },
       { to: "/errors", labelKey: "nav.errors", icon: "errors", end: false, adminOnly: true, adminBadge: true },
       { to: "/system", labelKey: "nav.server", icon: "system", end: false },
@@ -67,6 +65,8 @@ export const ADMIN_NAV_GROUPS: { labelKey: string; items: NavItem[] }[] = [
   {
     labelKey: "layout.groupAdmin",
     items: [
+      { to: "/admin/circles", labelKey: "nav.circles", icon: "video", end: false, adminOnly: true, adminBadge: true },
+      { to: "/admin/banners", labelKey: "nav.banners", icon: "ads", end: false, adminOnly: true, adminBadge: true },
       { to: "/users", labelKey: "nav.users", icon: "users", end: false, adminOnly: true, adminBadge: true },
     ],
   },

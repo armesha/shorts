@@ -16,10 +16,9 @@ const routeLoaders = {
   users: () => import("../pages/Users"),
   clipDemos: () => import("../pages/ClipDemos"),
   examples: () => import("../pages/Examples"),
-  audioLab: () => import("../pages/AudioLab"),
   longVideos: () => import("../pages/LongVideos"),
-  limits: () => import("../pages/Limits"),
   templateEditor: () => import("../pages/TemplateEditor"),
+  circleEditor: () => import("../pages/CircleEditor"),
   bannerLibrary: () => import("../pages/BannerLibrary"),
   login: () => import("../pages/Login"),
   register: () => import("../pages/Register"),
@@ -50,7 +49,6 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
 
   if (pathname === "/" || pathname === "/channels" || pathname === "/accounts") return "accounts";
   if (pathname.startsWith("/accounts/")) return "accountDetail";
-  if (pathname.startsWith("/audio")) return "audioLab";
   if (pathname === "/admin/analytics") return "statistics";
   if (pathname === "/tg") return "telegramMiniApp";
 
@@ -81,8 +79,6 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
       return "examples";
     case "/long-videos":
       return "longVideos";
-    case "/limits":
-      return "limits";
     case "/errors":
       return "errors";
     case "/system":
@@ -91,6 +87,9 @@ function loaderKeyForPath(path: string): keyof typeof routeLoaders | null {
       return "settings";
     case "/editor":
       return "templateEditor";
+    case "/admin/circles":
+      return "circleEditor";
+    case "/admin/banners":
     case "/banners":
       return "bannerLibrary";
     case "/users":

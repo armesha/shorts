@@ -6,6 +6,7 @@
   const shell = $("#sceneShell");
   const props = $("#props");
   const sourceSelect = $("#sourceSelect");
+  const sourceUpload = $("#sourceUpload");
   const gameplaySelect = $("#gameplaySelect");
   const templateNameInput = $("#templateName");
   const templateSelect = $("#templateSelect");
@@ -138,9 +139,17 @@
   });
   document.querySelectorAll(".layer").forEach((button) => button.addEventListener("click", () => select(button.dataset.select)));
 
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
   function fillSelect(select, values, withRandom = false) {
     const random = withRandom ? '<option value="__telegram__">Прямо из Telegram — без повторов</option><option value="__random__">Из скачанных — без повторов</option>' : "";
-    select.innerHTML = random + values.map((value) => `<option value="${value.replace(/&/g, "&amp;").replace(/"/g, "&quot;")}">${value}</option>`).join("");
+    select.innerHTML = random + values.map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join("");
   }
 
   const adFields = {
@@ -317,6 +326,33 @@
     return body;
   }
 
+  async function uploadCircle(file) {
+    if (!file) return;
+    const allowed = ["mp4", "mov", "webm", "mkv", "m4v"];
+    const extension = file.name.split(".").pop()?.toLowerCase();
+    if (!extension || !allowed.includes(extension)) {
+      throw new Error("Поддерживаются MP4, MOV, WebM, MKV и M4V.");
+    }
+    if (file.size > 500 * 1024 * 1024) {
+      throw new Error("Файл кружка превышает лимит 500 МБ.");
+    }
+
+    setStatus("Загружаю кружок", `${file.name} · ${Math.max(1, Math.round(file.size / 1024 / 1024))} МБ`, "busy");
+    const response = await fetch(`/api/circle-editor/sources/upload?filename=${encodeURIComponent(file.name)}`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/octet-stream" },
+      body: file,
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(body.error || `${response.status} ${response.statusText}`);
+    sourceFiles = Array.isArray(body.sources) ? body.sources : sourceFiles;
+    fillSelect(sourceSelect, sourceFiles, true);
+    sourceSelect.value = body.source;
+    updateMedia();
+    setStatus("Кружок загружен", "Файл выбран и готов к генерации.");
+  }
+
   async function save(createNew = false) {
     if (!layout) return setStatus("Редактор не загружен", "Обновите страницу после запуска backend.", "error");
     setStatus("Сохраняю", "Записываю раскладку в config.json…", "busy");
@@ -375,6 +411,15 @@
   }
 
   sourceSelect.addEventListener("change", updateMedia);
+  sourceUpload.addEventListener("change", async () => {
+    const file = sourceUpload.files?.[0];
+    sourceUpload.value = "";
+    try {
+      await uploadCircle(file);
+    } catch (error) {
+      setStatus("Ошибка загрузки", error.message || String(error), "error");
+    }
+  });
   gameplaySelect.addEventListener("change", updateMedia);
   $("#saveButton").addEventListener("click", () => save(false).catch((error) => setStatus("Ошибка сохранения", error.message, "error")));
   $("#saveAsButton").addEventListener("click", () => save(true).catch((error) => setStatus("Ошибка создания", error.message, "error")));

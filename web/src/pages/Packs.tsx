@@ -272,7 +272,7 @@ export default function Packs() {
         <LibraryLink to="/editor" icon="skin" title={t("packs.libraryTemplates")} hint={t("packs.libraryTemplatesHint")} />
         <LibraryLink to="/long-videos" icon="video" title={t("packs.libraryLongVideos")} hint={t("packs.libraryLongVideosHint")} />
         {isAdmin && <LibraryLink to="/gallery" icon="library" title={t("packs.libraryGallery")} hint={t("packs.libraryGalleryHint")} />}
-        {isAdmin && <LibraryLink to="/banners" icon="ads" title={t("packs.libraryBanners")} hint={t("packs.libraryBannersHint")} />}
+        {isAdmin && <LibraryLink to="/admin/banners" icon="ads" title={t("packs.libraryBanners")} hint={t("packs.libraryBannersHint")} />}
       </div>
 
       {actionErr && (
