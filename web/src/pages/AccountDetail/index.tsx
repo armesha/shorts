@@ -1412,9 +1412,14 @@ export default function AccountDetail() {
                         {v.imageRel ? (
                           <img src={`/files/${v.imageRel}`} alt="" className="h-full w-full object-cover" loading="lazy" />
                         ) : (
-                          <span className="absolute inset-0 flex items-center justify-center text-base-content/30">
-                            <Play size={28} />
-                          </span>
+                          <video
+                            src={`/files/${v.videoRel}`}
+                            muted
+                            playsInline
+                            preload="metadata"
+                            className="pointer-events-none h-full w-full object-cover"
+                            aria-hidden="true"
+                          />
                         )}
                         <span className="absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover:bg-black/30">
                           <Play size={34} fill="currentColor" className="text-white opacity-0 drop-shadow-lg transition group-hover:opacity-100" />

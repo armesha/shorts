@@ -1,5 +1,5 @@
 import type { Dispatch, ReactNode, SetStateAction } from "react";
-import { AlertTriangle, ChevronLeft, ChevronRight, Loader2, Play, Plus, Square, Trash2, Upload } from "lucide-react";
+import { AlertTriangle, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Loader2, Play, Plus, Square, Trash2, Upload } from "lucide-react";
 import type { Account, VideoItem } from "../../lib/api";
 import type { useGenQueue } from "../../lib/genQueue";
 import type { useT } from "../../lib/i18n";
@@ -368,9 +368,14 @@ export default function LibrarySection({
                     {v.imageRel ? (
                       <img src={`/files/${v.imageRel}`} alt="" className="w-full h-full object-cover" loading="lazy" />
                     ) : (
-                      <span className="absolute inset-0 flex items-center justify-center text-base-content/30">
-                        <Play size={28} />
-                      </span>
+                      <video
+                        src={`/files/${v.videoRel}`}
+                        muted
+                        playsInline
+                        preload="metadata"
+                        className="pointer-events-none h-full w-full object-cover"
+                        aria-hidden="true"
+                      />
                     )}
                     <span className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/30 transition">
                       <Play size={34} fill="currentColor" className="text-white opacity-0 group-hover:opacity-100 drop-shadow-lg transition" />
@@ -410,7 +415,16 @@ export default function LibrarySection({
           </div>
         )}
         {pageCount > 1 && (
-          <div className="flex items-center justify-center gap-3 mt-4">
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+            <button
+              className="btn btn-xs btn-outline gap-1"
+              disabled={clampedPage <= 1}
+              onClick={() => setPage(Math.max(1, clampedPage - 10))}
+              title="На 10 страниц назад"
+              aria-label="На 10 страниц назад"
+            >
+              <ChevronsLeft size={14} /> 10
+            </button>
             <button className="btn btn-xs btn-outline gap-1" disabled={clampedPage <= 1} onClick={() => setPage(clampedPage - 1)}>
               <ChevronLeft size={14} /> {t("common.back")}
             </button>
@@ -419,6 +433,15 @@ export default function LibrarySection({
             </span>
             <button className="btn btn-xs btn-outline gap-1" disabled={clampedPage >= pageCount} onClick={() => setPage(clampedPage + 1)}>
               {t("common.forward")} <ChevronRight size={14} />
+            </button>
+            <button
+              className="btn btn-xs btn-outline gap-1"
+              disabled={clampedPage >= pageCount}
+              onClick={() => setPage(Math.min(pageCount, clampedPage + 10))}
+              title="На 10 страниц вперёд"
+              aria-label="На 10 страниц вперёд"
+            >
+              10 <ChevronsRight size={14} />
             </button>
           </div>
         )}
