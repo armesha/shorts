@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Редактор кружочков</title>
-  <link rel="stylesheet" href="editor.css?v=20260724-10">
+  <link rel="stylesheet" href="editor.css?v=20260727-1">
 </head>
 <body>
   <header class="topbar">
@@ -79,10 +79,14 @@
       <section class="advertiser-editor">
         <div class="panel-title">Рекламный баннер</div>
         <label class="toggle-row"><input id="bannerEnabled" type="checkbox" checked> Показывать баннер</label>
+        <div id="advertiserChoices" class="advertiser-choices" role="radiogroup" aria-label="Доступные баннеры"></div>
         <div class="advertiser-picker">
-          <select id="advertiserSelect" aria-label="Рекламодатель"></select>
-          <a id="manageBannersLink" class="button-link" href="/admin/banners" target="_top">Баннеры</a>
+          <label>
+            <span>Выбранный баннер</span>
+            <select id="advertiserSelect" aria-label="Выбранный баннер"></select>
+          </label>
         </div>
+        <p class="advertiser-hint">Нажмите на превью, чтобы выбрать баннер для следующей генерации.</p>
       </section>
       <div class="status-card">
         <b id="statusTitle">Готово к работе</b>
@@ -95,6 +99,6 @@
     </aside>
   </main>
 
-  <script src="editor.js?v=20260724-10"></script>
+  <script src="editor.js?v=20260727-1"></script>
 </body>
 </html>

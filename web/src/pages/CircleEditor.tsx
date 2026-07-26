@@ -1,11 +1,30 @@
+import { useEffect, useState } from "react";
 import { ExternalLink, Megaphone, Video } from "lucide-react";
-import { Link } from "react-router-dom";
 
 const CIRCLE_EDITOR_URL = "/circle-editor/index.html";
-const CIRCLE_EDITOR_VERSION = "20260724-10";
+const CIRCLE_EDITOR_VERSION = "20260727-1";
 
 export default function CircleEditor() {
   const editorSrc = `${CIRCLE_EDITOR_URL}?v=${CIRCLE_EDITOR_VERSION}`;
+  const [mobileFrameHeight, setMobileFrameHeight] = useState(1200);
+  const [mobile, setMobile] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 639px)");
+    const updateMobile = () => setMobile(media.matches);
+    const updateHeight = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin || event.data?.type !== "circle-editor-height") return;
+      const height = Number(event.data.height);
+      if (Number.isFinite(height)) setMobileFrameHeight(Math.max(900, Math.min(2400, Math.ceil(height))));
+    };
+    updateMobile();
+    media.addEventListener("change", updateMobile);
+    window.addEventListener("message", updateHeight);
+    return () => {
+      media.removeEventListener("change", updateMobile);
+      window.removeEventListener("message", updateHeight);
+    };
+  }, []);
 
   return (
     <div className="editor-page space-y-4">
@@ -22,10 +41,10 @@ export default function CircleEditor() {
           </div>
         </div>
         <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap">
-          <Link to="/admin/banners" className="btn btn-outline min-h-11 gap-2 sm:btn-sm sm:min-h-0">
+          <a href="/admin/banners" target="_blank" rel="noreferrer" className="btn btn-outline min-h-11 gap-2 sm:btn-sm sm:min-h-0">
             <Megaphone size={16} />
-            Баннеры
-          </Link>
+            Управлять баннерами
+          </a>
           <a href={editorSrc} target="_blank" rel="noreferrer" className="btn btn-outline min-h-11 gap-2 sm:btn-sm sm:min-h-0">
             <ExternalLink size={16} />
             На весь экран
@@ -33,7 +52,10 @@ export default function CircleEditor() {
         </div>
       </header>
 
-      <div className="editor-frame-shell h-[calc(100dvh-11rem)] min-h-[680px] max-sm:h-[calc(100dvh-8.5rem)] max-sm:min-h-[620px]">
+      <div
+        className="editor-frame-shell h-[calc(100dvh-11rem)] min-h-[680px] max-sm:min-h-0"
+        style={mobile ? { height: mobileFrameHeight } : undefined}
+      >
         <iframe
           src={editorSrc}
           title="Редактор Telegram-кружочков"

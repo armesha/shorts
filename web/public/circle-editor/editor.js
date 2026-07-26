@@ -230,10 +230,12 @@
 
   function renderAdvertisers(selectedId = activeAdvertiserId) {
     const picker = advertiserSelect.closest(".advertiser-picker");
+    const choices = $("#advertiserChoices");
     if (!advertisers.length) {
       advertiserSelect.innerHTML = "";
       advertiserSelect.hidden = true;
       advertiserSelect.disabled = true;
+      choices.innerHTML = '<div class="advertiser-empty">Пока нет доступных баннеров.</div>';
       picker?.classList.add("empty");
       bannerEnabledInput.checked = false;
       bannerEnabledInput.disabled = true;
@@ -250,7 +252,24 @@
     bannerEnabledInput.disabled = false;
     activeAdvertiserId = advertisers.some((item) => item.id === selectedId) ? selectedId : (advertisers[0]?.id || "");
     advertiserSelect.value = activeAdvertiserId;
+    choices.innerHTML = advertisers
+      .map((item) => {
+        const active = item.id === activeAdvertiserId;
+        return `<button type="button" class="advertiser-choice${active ? " active" : ""}" data-advertiser-id="${escapeHtml(item.id)}" role="radio" aria-checked="${active}">
+          <img src="/api/circle-editor/banner-preview.png?id=${encodeURIComponent(item.id)}" alt="" loading="lazy">
+          <span><b>${escapeHtml(item.name)}</b><small>${escapeHtml(item.sourceName || "Готовый баннер")}</small></span>
+        </button>`;
+      })
+      .join("");
     updateBannerPreview();
+  }
+
+  function syncAdvertiserChoices() {
+    document.querySelectorAll(".advertiser-choice").forEach((button) => {
+      const active = button.dataset.advertiserId === activeAdvertiserId;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-checked", String(active));
+    });
   }
 
   function updateBannerPreview() {
@@ -317,12 +336,21 @@
 
   async function activateAdvertiser() {
     activeAdvertiserId = advertiserSelect.value;
+    syncAdvertiserChoices();
     updateBannerPreview();
     await api("/circle-editor/overlays/active", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: activeAdvertiserId, enabled: bannerEnabledInput.checked }),
     });
+    const current = advertisers.find((item) => item.id === activeAdvertiserId);
+    if (current) setStatus("Баннер выбран", `«${current.name}» будет использован в следующем видео.`);
+  }
+
+  function reportFrameHeight() {
+    if (window.parent === window) return;
+    const height = Math.ceil(Math.max(document.body.scrollHeight, document.documentElement.scrollHeight));
+    window.parent.postMessage({ type: "circle-editor-height", height }, window.location.origin);
   }
 
   async function deleteAdvertiser() {
@@ -570,6 +598,12 @@
     $("#adName").focus();
   });
   advertiserSelect.addEventListener("change", () => activateAdvertiser().catch((error) => setStatus("Ошибка выбора баннера", error.message, "error")));
+  $("#advertiserChoices").addEventListener("click", (event) => {
+    const button = event.target.closest(".advertiser-choice");
+    if (!button || !button.dataset.advertiserId) return;
+    advertiserSelect.value = button.dataset.advertiserId;
+    activateAdvertiser().catch((error) => setStatus("Ошибка выбора баннера", error.message, "error"));
+  });
   bannerEnabledInput.addEventListener("change", () => {
     updateBannerPreview();
     activateAdvertiser().catch((error) => setStatus("Ошибка выбора баннера", error.message, "error"));
@@ -583,7 +617,10 @@
   if ("ResizeObserver" in window) {
     const observer = new ResizeObserver(() => window.requestAnimationFrame(fit));
     observer.observe(viewport);
+    const heightObserver = new ResizeObserver(() => window.requestAnimationFrame(reportFrameHeight));
+    heightObserver.observe(document.body);
   }
+  window.addEventListener("load", reportFrameHeight);
 
   (async () => {
     try {
@@ -595,7 +632,6 @@
       advertisers = data.advertisers || [];
       activeAdvertiserId = data.activeAdvertiserId || "";
       bannerEnabledInput.checked = data.bannerEnabled !== false;
-      $("#manageBannersLink").hidden = !data.canManageBanners;
       renderAdvertisers(activeAdvertiserId);
       renderTemplates(activeTemplateId);
       sourceFiles = data.sources;
@@ -613,6 +649,7 @@
         setStatus("Нет кружков", "Отправьте кружок боту или загрузите видеофайл вручную.", "error");
       }
       await setupTelegramCircleLink();
+      reportFrameHeight();
     } catch (error) {
       render();
       const message = error.message || String(error);
