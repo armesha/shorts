@@ -308,7 +308,7 @@ export default function BannerLibrary() {
 
             {!selected?.legacy && (
               <div className="rounded-xl border border-primary/25 bg-primary/5 p-3">
-                <label className="btn btn-primary btn-outline btn-sm w-full gap-2">
+                <label className="btn btn-primary btn-sm w-full gap-2">
                   <ImagePlus size={16} /> {videoName || (selected?.hasVideo ? "Заменить видео-баннер" : "Загрузить MOV / MP4 / WebM")}
                   <input type="file" accept=".mov,.mp4,.webm,.mkv,video/quicktime,video/mp4,video/webm" className="hidden" onChange={chooseVideo} />
                 </label>
